@@ -1,0 +1,38 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Using XOCL</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch04.html" title="An Introduction to XOCL"><link rel="prev" href="ch04s03.html" title="Models"><link rel="next" href="ch04s05.html" title="Operations"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id634695"></a>Using XOCL</h2></div></div></div><p>In a class model, XOCL is used in the bodies of constraints,
+    operations and constructors. The way that XOCL is added depends on the
+    interface being used.</p><p>For details on how to use XOCL in a class diagram, see chapter <a href="ch02.html" title="Creating and Interacting with a Domain Model"><i>Creating and Interacting with a Domain Model</i></a>.</p><p>For details on how to use XOCL in code, see chapter <a href="ch08.html" title="Using the Programming Interface"><i>Using the Programming Interface</i></a>.</p><p>XOCL is also used in the body of XMap mappings, see chapter <a href="ch06.html" title="Constructing and Running Mappings"><i>Constructing and Running Mappings</i></a>.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id638791"></a>Context</h3></div></div></div><p>The context of an XOCL expression is the model element whose
+      instances will be referenced by the expression. In the case of an
+      operation or constraint, this might be the class that owns the
+      operation/constraint.</p><p>When writing code via the text editor, the context of an
+      expression can be defined in two ways. Firstly, by embedding the
+      operation or constraint in the body of the relevant code definition, for
+      example as follows:</p><pre class="programlisting">context Components
+  @Class Port extends NamedElement
+    @Attribute type : String (?,!) end
+    @Operation setPortName(name : String)
+      self.type := name
+    end
+  end</pre><p>Alternatively, the context keyword can be used to separate the
+      definitions, e.g.</p><pre class="programlisting">context Components
+  @Class Port extends NamedElement
+    @Attribute type : String (?,!) end
+  end
+
+context Port
+ @Operation setPortName(name : String)
+    self.type := name
+  end</pre><p>Contexts are a useful way to separate different aspects of a model
+      into different files.</p><p>In the diagram editor, context is assigned automatically depending
+      on the model element being edited (see the creating a domain model
+      walkthrough).</p><p>For example, if we want to add the operation setPortName() to the
+      class Port, we would use the Add Element &gt; Operation menu option on
+      the class Port:</p><div class="mediaobject"><img src="Part2/XOCLIntroduction/Images/addanoptocontext.png"></div><p>A new operation will be added to the class in the browser - the
+      class Port is now the context of the operation.</p><p>Double clicking on the operation will launch the operation editor
+      and the code for the operation can be entered:</p><div class="mediaobject"><img src="Part2/XOCLIntroduction/Images/operation.png"></div><p>From now on, we will assume that the code examples in this chapter
+      can be added to their context as follows: ..</p><div class="itemizedlist"><ul type="disc"><li><p>Via the text editor (by explicity writing their context or
+          embedding them in the appropriate context element
+          declaration)</p></li><li><p>Via the diagram editor (by selecting the context element and
+          using the appopriate Add Element menu)</p></li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id631190"></a>Self</h3></div></div></div><p>The variable "self" is a reserved word used to refer to instances
+      of the context model element. In the case of the operation setPortName()
+      above, self refers to an instance of the Port class.</p><p>Self is important when referencing the context object as a value,
+      and is required when assigning values to a slot.</p></div></div><p></p><p><img src="copyright.gif"></p></body></html>

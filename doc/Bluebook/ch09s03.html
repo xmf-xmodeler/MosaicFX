@@ -1,0 +1,63 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Initialisation Files</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch09.html" title="Toolbar Menus and Initialisation Files"><link rel="prev" href="ch09s02.html" title="Some Useful Operations"><link rel="next" href="ch10.html" title="Constructing a Diagram Tool for a Model in XTools"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id658097"></a>Initialisation Files</h2></div></div></div><p>To make the task of setting up menus and other general-purpose
+    features easier, XMF-Mosaic provides an init file facility. This file,
+    init.o, is automatically loaded on start-up of the tool provided that it
+    is placed in the directory referenced by the MOSAICINIT environment
+    variable.</p><p>The following init file (init.xmf) is an example of a simple init
+    file. To use it, compile the file in the MOSAICINIT directory. It contans
+    a menu item which enables the init.xmf file to be conveniently edited via
+    a File &gt; Edit &gt; Init menu.</p><pre class="programlisting">// The init file is loaded on startup. It is used to automatically add user customised
+// menus and operation to XMF-Mosaic. These can be used for all sorts of
+// purposes, including setting up menus for specific projects, or running
+// any code you wish. To run the init file, it must be saved in the XMFINIT
+// directory (this must be available under your windows system environment 
+// variables). Compile, save and load the init file before launching XMF-Mosaic
+// to run it.
+
+parserImport XOCL;
+
+import Clients;
+import XmfFileTree;
+import IO;
+
+// Add your customised menus and operations here.
+
+// Provides a drop down menu for editing the Init file. Note the sequence
+// elements denotes the menu hierarchy starting with the root File menu.
+// Use &amp; to add shortcut key binding, e.g. Alt-F, Alt-E in this case to
+// get to the Edit menu.
+
+xmf.addDropDownMenuItem(Seq{"&amp;File","Extras","&amp;Edit","Main","Init"},
+  @Operation()
+    XmfFile(null,xmf.initFile()).editText()
+  end);
+
+// Provides a drop down menu for browsing the files in your project directory
+xmf.addDropDownMenuItem(Seq{"&amp;File","Extras","&amp;Browse","Main","Projects"},
+  @Operation()
+    Directory(xmf.projDir(),Seq{".*.xmf"}).browse()
+  end);
+  
+// An example of a menu that is used to load one or more .xar files in your projects directory into
+// MyProjects
+
+xmf.addDropDownMenuItem(Seq{"&amp;Demo","Main","Load Model"},
+  @Operation()
+    @Busy("Loading Model")
+      xmf.projectManager().getElement("MyProjects").loadMosaicProject(xmf.projDir() + "/Dir/File.xar",false)
+    end
+  end); 
+  
+// An example of a menu that is used to load one or more compiled .o files 
+
+xmf.addDropDownMenuItem(Seq{"&amp;Demo","Main","Load File"},
+  @Operation()
+    @Busy("Loading File")
+      (xmf.projDir() + "/Dir/Code.o").loadBin()
+    end
+  end);
+
+// An example of defining an operation that will be added automatically to Root
+context Root
+  @Operation hello()
+    format(stdout,"HelloWorld")
+  end</pre></div><p></p><p><img src="copyright.gif"></p></body></html>

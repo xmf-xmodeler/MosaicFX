@@ -1,0 +1,28 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Introduction</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch17.html" title="Working with Syntax"><link rel="prev" href="ch17.html" title="Working with Syntax"><link rel="next" href="ch17s02.html" title="Grammar and Text Processing"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id574840"></a>Introduction</h2></div></div></div><p>This chapter describes XMF-Mosaic's powerful facilities for capturing
+		and parsing textual syntaxes. This is important when you wish to develop
+		using a specialised textual programming language, or create parsers
+		for existing programming languages.</p><p>This document describes how to use XMF-Mosaic to parse textual
+    languages and consequently synthesize elements. A textual language is
+    parsed when it is consumed character-by-character and checked against
+    rules (a grammar) governing legal sequences of characters. As text is
+    parsed, the grammar rules can perform actions that construct (or
+    synthesize) new elements.</p><p>A textual language can synthesize anything. For example, if we define a
+    domain model representing two-dimensional tables then a textual language
+    can be defined that, when parsed, synthesizes instances of the class
+    Table2D.</p><p>All textual interaction with XMF-Mosaic (for example file based or
+    console based) is governed using a parser based on a grammar for XOCL. In
+    this case the parser synthesizes XOCL program code that is subsequently
+    passed to the XOCL compiler or the command interpreter.</p><p>XOCL provides a powerful mechanism that allows the XOCL grammar to
+    be arbitrarily extended with new language features (becoming an extensible
+    language). User defined grammars can be added incrementally as modules to the
+    XOCL grammar. Providing the new extension synthesizes valid program code
+    then the new language construct is assimilated into XOCL.</p><p>Working with grammars that synthesize program code occurs frequently
+    when defining textual languages. The synthesizing actions are often required to
+    produce large amounts of program code from a small amount of text (after
+    all this is the point of defining a language). XMF provides technology that
+    vastly reduces the amount of work necessary to define the synthesizing
+    actions; the technology is called quasi-quotes.</p><p>Quasi-quotes are used to define code templates. A code template is a
+    mapping from code fragments to a program by inserting the code fragments
+    into a code pattern. The result of applying a template can be supplied as
+    an argument to subsequent templates. Very large programs can be
+    synthesized from humble beginnings.</p></div><p></p><p><img src="copyright.gif"></p></body></html>

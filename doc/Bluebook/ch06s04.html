@@ -1,0 +1,78 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Constructing a Pretty Printer</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch06.html" title="Constructing and Running Mappings"><link rel="prev" href="ch06s03.html" title="Mapping Hints and Tips"><link rel="next" href="ch07.html" title="Constructing an XML Parser and Generator"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id647049"></a>Constructing a Pretty Printer</h2></div></div></div><p>In the previous section, a mapping from packages and classes to C#
+    was constructed. In practice however, the objective will be to generate
+    concrete code (not just an instance of the C# model). For example, we
+    might expect to generate some code of the following form:</p><pre class="programlisting">using System;
+
+  class Route 
+  {
+    integer capacity;
+    string name;
+    string source;
+    string destination;
+  }
+  class Passenger 
+  {
+    string name;
+  }
+  class Airline 
+  {
+    string name;
+  }
+  class Airport 
+  {
+    string name;
+  }
+  class Flight 
+  {
+    string date;
+  }</pre><p>The basic approach is to add operations to the language model to
+    pretty print it. The first step is to load your language model and plan
+    where the appropriate operations need to be added. In general, it is best
+    to start at the leaf classes where there is minimum dependency on other
+    elements in the model.</p><p>As an example, a pretty print operation can be added to the class
+    CPPAtt (a C# attribute). First, add a pretty print operation to the class
+    and give it a name, e.g. pprint().</p><p>Now, edit the operation. Two parameters are required by the
+    operation: an output type, out, which will be used to direct the output of
+    the operation to an editor or to a file, and an indent, which is the
+    current indent of the code.</p><p>We can now construct the body of the operation. An attribute will be
+    pretty printed as the type name and the attribute name, terminated with a
+    semicolon.</p><pre class="programlisting">@Operation pprint(out : XCore::Element,indent : XCore::Element):XCore::Element
+      format(out,"~V~S~%",Seq{indent, type.name + " " + name + ";"})
+    end</pre><p>The format command is used to generate the text. The sequence of
+    control characters dictates the format of elements that occur in the
+    sequence of elements that are to be formatted. For example, ~V denotes a
+    vertical space, ~S is a string and ~% is a line return. Note, full details
+    of the format command can be found in Part 3 of this guide.</p><p>In this case an indent is inserted before the string is printed, and
+    a character return is inserted after the semicolon.</p><p>The definition of pprint on CSClass is as follows:</p><pre class="programlisting">@Operation pprint(out : XCore::Element,indent : XCore::Element):XCore::Element
+      format(out,"~V~S~%",Seq{indent,"class " + name + " ",indent,"{"});
+      attributes-&gt;collect(a |
+        a.pprint(out,indent + 2));
+      format(out,"~V~S~%",Seq{indent,"}"})
+    end</pre><p>The class signature and name of the class is printed followed by the
+    attributes and operations of the class.</p><p>Finally, we need to construct the pretty printer for a
+    CSProgram.</p><pre class="programlisting">@Operation pprint(out : XCore::Element,indent : XCore::Element):XCore::Element
+      format(out,"~V~S~%",Seq{indent,"using System;"});
+      classes-&gt;collect(c |
+        a.pprint(out,indent + 2))
+    end
+</pre><p>If we run the pprint operation on the result of mapping the Airports
+    package, the following code is generated:</p><pre class="programlisting">using System;
+
+  class Route 
+  {
+  }
+  class Passenger 
+  {
+  }
+  class Airline 
+  {
+  }
+  class Airport 
+  {
+  }
+  class Flight 
+  {
+  }</pre><p>A lot more needs to be done to complete the mapping. In particular
+    mappings from Attribute and Operation to C# Attributes and Operations need
+    to be defined. However, it is simply a case of following the same overall
+    approach.</p></div><p></p><p><img src="copyright.gif"></p></body></html>

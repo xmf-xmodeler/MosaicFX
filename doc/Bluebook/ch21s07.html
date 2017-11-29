@@ -1,0 +1,21 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Assignment</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch21.html" title="XOCL"><link rel="prev" href="ch21s06.html" title="Control Statements"><link rel="next" href="ch21s08.html" title="Pattern Matching"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id572683"></a>Assignment</h2></div></div></div><p>In XOCL, values may be assigned to variables. The assignment keyword
+    is &#8220;:=&#8221;. This should not confused with &#8220;=&#8221; which returns a Boolean
+    value.</p><p>The following code shows an assignment being used to set the name of
+    a State by setting name to be x: </p><pre class="programlisting">Context Java
+  @Operation createState (n:String):State
+    let s = State() in
+      s.name := n;
+      s
+    end
+  end</pre><p>An assignment can be used to set global variables or
+    local variables. When setting the value of a local attribute of a class,
+    self.attname must be used as the target of the assignment. For instance,
+    the following operation will set the name of the State to be
+    x.</p><pre class="programlisting">context State
+  @Operation setName(n)
+    self.name := n
+  end</pre><p>However, the following code will not be
+    legal:</p><pre class="programlisting">context State
+  @Operation setName(n)
+    name := n
+  end</pre></div><p></p><p><img src="copyright.gif"></p></body></html>

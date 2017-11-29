@@ -1,0 +1,42 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Constructing the Grammar</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch07.html" title="Constructing an XML Parser and Generator"><link rel="prev" href="ch07s01.html" title="First Steps"><link rel="next" href="ch07s03.html" title="Invoking the Parser"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id665577"></a>Constructing the Grammar</h2></div></div></div><p>First we need to add the relevant imports to the file so that it can
+    be compiled and loaded by XMF. We import the parsers for XOCL and
+    XML.</p><p>We import the Components and XML packages.</p><pre class="programlisting">parserImport XOCL;
+parserImport XML::Parser;
+
+import Components;
+import XML::Parser;  // Get ParserChannel and Ref</pre><p>A grammar can now be constructed using XXML.</p><p>In the context of the ComponentModel class, we declare a Grammar
+    definition, called ComponentModel.</p><pre class="programlisting">context ComponentModel
+  @Grammar ComponentModel</pre><p>Associated with the Grammar are a number of grammar rules which
+    state how the XML should be parsed.</p><pre class="programlisting">    ComponentModel ::= 
+      &lt;ComponentModel&gt;
+        C = Component*
+        N = Connector*
+      &lt;/ComponentModel&gt;
+      { ComponentModel[components=C,connectors=N] }.
+    Component ::= 
+      &lt;Component n=name&gt;
+        P = Port*
+      &lt;/Component&gt;
+      { Component[name=n,ports=P] }.
+    Port ::= 
+      &lt;Port n=name t=type i=id/&gt;
+      i := { Port[name=n,type=t] }.
+    Connector ::= 
+      &lt;Connector sid=source tid=target/&gt;
+      { Connector[source=Ref(sid),target=Ref(tid)] }.
+   end</pre><p>Each grammar rule describes a rule for recognizing the next bit of
+    XML. It checks the next element tag and binds the variables to the
+    attribute values. The child elements must match the rules defined by the
+    child grammars and binds the variables to the result. If the match is
+    successful then the XOCL action occurs and returns a value.</p><p>The ComponentModel grammar is defined to be the XML tag
+    &lt;ComponentModel&gt; followed by some child grammars (it has no
+    attributes). The child grammars bind the result of parsing a sequence of
+    Components followed by a sequence of Connectors.</p><p>The rule is terminated by the tag &lt;/ComponentModel&gt;</p><p>Every time the grammar rule is parsed, its effect is to unify the
+    variables with the values that are parsed.</p><p>These values are then used to perform an XOCL action, which is
+    written in curly brackets after the grammar expression.</p><p>Here, the action instantiates the class ComponentModel with the
+    variable values.</p><p>Similar grammar rules are written for the other elements in the
+    model.</p><p>The grammar for Component is straightforward - it returns a
+    Component instance.</p><p>The grammar for a Port illustrates the use of an "id" which is
+    associated with each new Port instance.</p><p>The grammar for a Connector uses this "id" to look up the values of
+    the source and target ports of the Connector. This is performed using the
+    Ref() operation. This is how cross-references are managed in XXML.</p></div><p></p><p><img src="copyright.gif"></p></body></html>

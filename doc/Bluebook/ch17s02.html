@@ -1,0 +1,147 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Grammar and Text Processing</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch17.html" title="Working with Syntax"><link rel="prev" href="ch17s01.html" title="Introduction"><link rel="next" href="ch17s03.html" title="XMF Execution Architecture"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id577276"></a>Grammar and Text Processing</h2></div></div></div><p></p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id621669"></a>Introduction</h3></div></div></div><p></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id667520"></a>A Simple language Grammar</h3></div></div></div><p>To construct a minimal textual language we must define a domain model
+      and decide how instances of the model will look when rendered in text.
+      We must then define how to produce the textual representation from an
+      instance and how to synthesize an instance from a textual
+      representation.</p><p>This section shows how all aspects of this process are achieved in
+      XMF-Mosaic. We will assume that we are defining a language from a domain
+      model rather than reverse engineering a domain model from a textual language.
+      All aspects apply to both of these activities.</p><p>Our domain model is that for two-dimensional tables of integers. A
+      table consists of a collection of rows; each row is a sequence of column
+      values. The model is shown below:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image004.jpg"></div><p>Once we have decided on a domain model we can define a textual
+      representation for instances of the model. There may be more than one
+      representation (when dealing with legacy languages this is likely to be the
+      case). If instances can be synthesized from more than one textual
+      representation then this can easily be accommodated by defining more
+      than one grammar. In this example we will keep it simple by defining a
+      single representation as follows:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image006.jpg"></div><p>The task is now to define how to translate from instances of the
+      model to the text and back again. The rest of this section steps through
+      the complete definition of the model, its mapping to text and its
+      synthesis from text. The example is given as a complete XOCL program
+      that can be compiled and loaded.</p><p>The header of the file must import all the name spaces necessary
+      to define the mappings:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image008.jpg"></div><p>Lines 1 and 2 import grammars that define parsing rules used in
+      the rest of the file. Line 1 imports the XOCL grammar that allows us to
+      write XOCL code. Virtually all program files start with this line. Line
+      2 imports the grammar that defines the textual languages for writing
+      grammars (the parsing and synthesis rules for writing grammars are
+      written in themselves).</p><p>Lines 4 and 5 import name spaces that define names referenced in
+      the rest of the file. Line 4 imports the XMF parsing machinery that
+      allows us to create a parse machine state and set it running. Line 5
+      imports the IO package that allows us to open files, read and write
+      channels.</p><p>We have already seen the domain model. It was originally defined
+      in a text file and then displayed as a diagram. The structure of tables
+      is defined below:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image010.jpg"></div><p>We would like to be able to store tables in files. The following
+      operation opens an output file channel and supplies it to the write
+      operation for the table. By separating out the file name and the output
+      operation we allow tales to be sent to other types of output channel
+      (such as stdout):</p><div class="mediaobject"><img src="Part3/Syntax/Images/image012.jpg"></div><p>The output operation write is defined below. It formats the table
+      to the output channel and sends each row a write message.</p><div class="mediaobject"><img src="Part3/Syntax/Images/image014.jpg"></div><p>We want to be able to read formatted tables from text files. We do
+      this to create a table and are unlikely to read a table by sending an
+      existing table a message. XMF allows operations to be defined in classes
+      and called via the class (much like static methods in Java). Of course
+      the value of self is not defined in operations that are used this
+      way.</p><div class="mediaobject"><img src="Part3/Syntax/Images/image016.jpg"></div><p>Note that in line 36 we reference the operation read via the
+      containing class Table2D.</p><p>The read operation must parse the text from the supplied input
+      channel and synthesize a table (assuming that the input is syntactically
+      correct). To parse an input source we must create an instance of a
+      parsing machine initialised with a grammar and the input source. The
+      package Parser::Machine defines the class State that is an initial
+      parsing machine state:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image018.jpg"></div><p>A parsing machine state provides an operation run that is supplied
+      with a starting non-terminal name. The machine will use the rule with
+      the supplied name to start the parse. If the parse is successful then
+      the synthesized value is returned, otherwise an exception is raised
+      describing the parse error.</p><p>We can take advantage of the operation that writes a table to an
+      output channel to produce a convenient string representation for a
+      table. The XMF command interpreter always uses the toString operation to
+      display values at the console. The following operation uses a string
+      output channel to capture the string representation of a table:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image020.jpg"></div><p>The class Row is defined simply as follows:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image022.jpg"></div><p>The language is complete except for the definition of a grammar. A
+      grammar definition can occur within a class definition or can be added
+      to a class using a context definition. It is somewhat a matter of taste;
+      in general it is better to organise XMF source code as a collection of
+      small files that are composed using a manifest file. We have separated
+      out the grammar definition in this example to keep things simple:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image024.jpg"></div><p>A grammar consists of rules or clauses that define how to parse
+      and synthesize individual syntax groups. In the example above we have
+      the group of rows (lines 88 &#8211; 90) and the group of tables (lines 84 &#8211;
+      86).</p><p>A table is defined to be the keyword table followed by a sequence
+      of rows, followed by the keyword end. If this is successfully recognized
+      then the action (contained within { and }) synthesizes an instance of
+      the class Table2D (a restriction on grammars is that absolute paths
+      should be used to reference named elements). The variable rows is bound
+      to the sequence of rows recognized in line 84. Variables bound in this
+      way can be referenced in actions; rows is used to initialize the new
+      instance of the table in line 85.</p><p>A row is defined to be the keyword row followed by a sequence of
+      integers, followed by the keyword end. The name Int is built in to XMF
+      grammars and defines the syntax of integers.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id640751"></a>Debugging</h3></div></div></div><p>When parsing input it is possible that there is a bug in the
+      grammar. This can lead to incorrectly parsed input or an erroneously
+      reported parse error. XMF provides a trace mechanism that allows you to
+      see the steps of the parsing machine as it proceeds. Each grammar has a
+      boolean slot called debug that can be used to toggle the trace
+      information. The following example shows par of the trace output for the
+      table language:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image026.jpg"></div><p>As the parse proceeds the trace shows the names of the clauses
+      that are tried. At each step the parse state has a stack that maintains
+      the values synthesized by parse actions. The top value on this stack is
+      displayed in the trace (TOS =). The trace displays when terminals are
+      successfully matched. The trace also displays when expectations are not
+      matched by the input (not necessarily indicating an error). For example,
+      the grammar entry Int* is terminated when an integer is expected but the
+      terminating keyword end is encountered.</p><p>The following tool snapshot shows a very simple language
+      definition for performing arithmetic calculations. The example shows
+      that grammars can be defined as a stand-alone global variable
+      (Calculator), although they are more often used in conjunction with
+      classes. The console shows the result after compiling and loading the
+      file and invoking the calculator operation:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image028.jpg"></div><p>The following tool snapshot shows a grammar for a tree language
+      (based on XML). The language synthesizes a nested collection of
+      sequences. It is interesting because it shows the use of predicates in
+      the grammar (line 15) where values bound in from actions in a clause are
+      used to perform checks during the parse. The start and end tag of a
+      composite element must be the same for the parse to succeed.</p><div class="mediaobject"><img src="Part3/Syntax/Images/image030.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id629340"></a>XBNF Grammar</h3></div></div></div><p>XMF grammars are written in a textual language called XBNF. This
+      language is very like extended BNF with actions written in XOCL. XBNF
+      itself can be considered a language that supports language definition; it has
+      a domain model and a grammar.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id653242"></a>The Grammar Domain Model</h3></div></div></div><p>An instance of the following model is synthesized when you define
+      an XBNF grammar:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image032.jpg"></div><p>The rest of this section provides an overview of the components of
+      the XBNF model.</p><div class="itemizedlist"><ul type="disc"><li><p>Grammar: A grammar defines a number of clauses that are used
+          to parse input and synthesize elements. A grammar may have a
+          collection of parent grammars from which it inherits clauses. If a
+          grammar inherits multiple clauses with the same name then they are
+          merged using disjunction.</p></li><li><p>Clause: A clause is a parse rule. The name of the clause is a
+          non-terminal of the grammar and can be called from other clauses in
+          the grammar. The body of a clause is a recognizer which defines how
+          to parse input and synthesize elements.</p></li><li><p>Recognizer</p></li><li><p>Action: An action consumes no input and cannot cause the parse
+          to succeed or fail. When an action is encountered in the parse it is
+          evaluated to synthesize a value. The value produced by the action is
+          pushed onto the parse stack.</p></li><li><p>And: A conjunction of recognizers is used to sequence the left
+          then the right components when encountered during a parse. This
+          succeeds when the left then the right components succeed and
+          synthesizes the value produced by the right component.</p></li><li><p>At: A meta-character used to define how to escape from the
+          current grammar and switch to another grammar.</p></li><li><p>Bind: A bind has a name and a component recognizer. It
+          succeeds when the component succeeds and binds the name to the
+          synthesized value.</p></li><li><p>Call: A call references a clause by name. Control switches to
+          the named clause and succeeds when the named clause succeeds. The
+          value synthesized by the parse is that produced by the called
+          clause.</p></li><li><p>EOF: Succeeds when the end of input is encountered.</p></li><li><p>Int : Succeeds when the next input token is an integer;
+          synthesizes the integer.</p></li><li><p>Name : Succeeds when the next input token is a name;
+          synthesizes a string.</p></li><li><p>Not : Succeeds when the component recognizer fails. Note that
+          this does not synthesize anything and bindings occurring within the
+          component recognizer are not available after the negation
+          succeeds.</p></li><li><p>Opt : An optional recognizer succeeds and will consume input
+          if the component recognizer matches the input. No value is
+          synthesized.</p></li><li><p>Or : A disjunction succeeds when either of the component
+          recognizers succeed. Bindings established within the components are
+          not available outside the disjunction. No value is synthesized. When
+          a disjunction is encountered, the left recognizer is tried and the
+          right recognizer is recorded as a choice point. If the parse
+          subsequently fails then the parser backtracks to the most recently
+          established choice point and tries the alternative.</p></li><li><p>ParseError : Exception raised when an error occurs during
+          parsing. An error occurs when the input cannot match the current
+          recognizer and there are no alternative recognizers (arising from
+          disjunctions) left to try.</p></li><li><p>Plus : Succeeds when the component recognizer has been applied
+          at least once to the input. Synthesizes a sequence of values
+          produced by each application of the component.</p></li><li><p>Predicate : Succeeds when the evaluation of the predicate
+          returns true otherwise causes the parse to fail.</p></li><li><p>Star : Succeeds when the component recognizer has been applied
+          0 or more times to the input. Synthesizes a sequence of values
+          produced by each application of the component.</p></li><li><p>Str : Succeeds when the next input token is a string;
+          synthesizes the string.</p></li><li><p>Terminal : Succeeds when the next input token is a named
+          terminal string. No value is synthsized.</p></li><li><p>Token : The parser uses a tokenizer to process the raw stream
+          of input characters into a stream of input tokens.</p></li><li><p>TypeCheck : The value synthesized by the component recognizer
+          is checked against a type referenced as a path. If the value is of
+          the specified type then the parse proceeds otherwise it
+          fails.</p></li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id584430"></a>The XBNF Grammar</h3></div></div></div><p></p><div class="mediaobject"><img src="Part3/Syntax/Images/image034.jpg"></div><div class="mediaobject"><img src="Part3/Syntax/Images/image036.jpg"></div><div class="mediaobject"><img src="Part3/Syntax/Images/image038.jpg"></div><div class="mediaobject"><img src="Part3/Syntax/Images/image040.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id589455"></a>Tokens</h3></div></div></div><p></p></div></div><p></p><p><img src="copyright.gif"></p></body></html>

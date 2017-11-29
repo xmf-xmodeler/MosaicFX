@@ -1,0 +1,132 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Example</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch19.html" title="XMap"><link rel="prev" href="ch19s06.html" title="Running Mappings"><link rel="next" href="ch19s08.html" title="Other Aspects of Mappings"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id650061"></a>Example</h2></div></div></div><p></p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id584963"></a>Class Model to Database</h3></div></div></div><p>This example defines a mapping between a class model and a model
+      of a database. In doing so, it exercises a number of key XMap features,
+      including pattern nesting, variable passing and multiple domain inputs
+      to mappings.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id706609"></a>Class Model</h4></div></div></div><p>The following model describes the concepts in the class model.
+        It includes most of the concepts that are typically found in a class
+        model, including classes, packages, associations and
+        generalization.</p><div class="mediaobject"><img src="Part3/XMap/Images/image030.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id623644"></a>Database Model</h4></div></div></div><p>The database model contains a collection of typical relational
+        database concepts. A relational database contains a collection of
+        tables, which have names. Each table contains a collection of columns,
+        which are named. A Column has a type. A table always contains a Key,
+        which is a pointer to the Column that uniquely identifies an instance
+        of a Table. A table may also contain ForeignKey&#8217;s. These relate a
+        Column to the Column in another table that it is the foreign key
+        for.</p><div class="mediaobject"><img src="Part3/XMap/Images/image032.jpg"></div><p>There will be a significant number of constraints on this model.
+        For example, it must never be the case that a foreign key refers to a
+        column in the same table as the foreign key column:</p><div class="mediaobject"><img src="Part3/XMap/Images/image034.jpg"></div><p>As an example of a database model that could be represented by
+        this model, consider the tables Account and Customer. The table
+        Account has three columns, customerId, accountNo and balance. The
+        column customerId is a foreign key &#8211; it ties each instance of an
+        account to a specific customer. The column accountNo is a key, as it
+        uniquely identifies the account. The column &#8216;balance&#8217; just represents
+        some information about the account. Similarly, the table customer has
+        three columns, one of which, customerId, is its key.</p><div class="mediaobject"><img src="Part3/XMap/Images/image036.jpg"></div><p>The following diagram shows the same information as it would be
+        represented by an instance of the Database model:</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id603821"></a>Database Mapping</h4></div></div></div><p>The following model describes how class models are transformed
+        into database models:</p><div class="mediaobject"><img src="Part3/XMap/Images/image038.jpg"></div><p>A package is mapped to an instance of Tables. This contains the
+        results of mapping each Class in the package into a Table. Each Table
+        contains a collection of columns, each of which is the result of
+        mapping the attributes of the Class into a Column. In the case of an
+        Attribute that is marked as a key, a Key is created which points to
+        the corresponding Column.</p><p>Let&#8217;s take each mapping in turn and explain how it works:</p><p><span class="emphasis"><em>PackageToTables</em></span></p><p>The PackageToTables mapping contains the following
+        clause:</p><div class="mediaobject"><img src="Part3/XMap/Images/image040.jpg"></div><p>Here, the input to the mapping requires a Package containing
+        some classes C and some associations A. If there is a match then the
+        action after the &#8216;do&#8217; part is executed. In this case, it creates an
+        instance of the class Tables, and sets its tables to be T. T is
+        defined in the &#8216;where&#8217; part. T is calculated as the result of mapping
+        each class in C to a table.</p><p>Note Associations will be dealt with in future versions of this
+        example.</p><p><span class="emphasis"><em>ClassToTable</em></span></p><p>The first part of the ClassToTable mapping is as follows:</p><pre class="programlisting">@Clause Clause0
+  ClassModels::Class[
+        name = className,
+        attributes = 
+          A-&gt;including(
+            ClassModels::Attribute[
+              name = attName,
+              isPrimary = true,
+              type = 
+                ClassModels::DataType[
+                  name = typeName
+                ]
+          ]) 
+       ]</pre><p>This pattern expects a Class, and matches the name of
+        the Class with the variable className.</p><p>In addition, this pattern illustrates the use of a collection
+        pattern to match with an element in a collection. In this case, it
+        matches if the attributes of the class bind with a collection of
+        attributes A provided that it includes a primary attribute. This
+        matches provided that the attribute is a primary Attribute, and binds
+        the name of the attribute to the variable attName.</p><p>A similar type of pattern is used to return the name of the type
+        of the attribute. Here the attribute type is matched against a
+        DataType, whose name is then bound to the variable typeName.</p><p>Provided there is a match, the following action is
+        invoked:</p><pre class="programlisting">do
+  DatabaseModels::Table[
+    name = className,
+    key = DatabaseModels::Key[
+             column = c],
+    columns = C-&gt;including(c)].setOwnership()
+  where
+    c = DatabaseModels::Column[ 
+          name = attName,
+          type = typeName];
+    C = Attribute2Column()(A)
+end</pre><p>This creates an instance of a Table, whose name is the class
+        name, and which has a Key that points to a Column that has the same
+        name and type as the primary Attribute.</p><p>In addition, the columns of the Table are calculated by mapping
+        each of the remaining attributes in A to columns and including the key
+        column.</p><p>Finally, the operation setOwnership is called on the generated
+        table. This sets the owner attribute of all the columns of the table,
+        its foreign keys and key to be the table. It is defined as
+        follows:</p><pre class="programlisting">@Operation setOwnership():Element
+  @For c in columns do
+    c.owner := self
+  end;
+  @For f in foreignKeys do
+    f.owner := self
+  end;
+  key.owner := self;
+  self
+end</pre><p>The modified table is returned by the final self.</p><p><span class="emphasis"><em>Attribute2Column</em></span></p><p>The attribute to column mapping takes a collection of attributes
+        and maps them to columns. There are three clauses in this
+        mapping.</p><p>The first one just returns the empty set if there are no
+        attributes:</p><pre class="programlisting">@Clause Clause1
+  Set{}
+do
+  Set{}
+end</pre><p>The second clause matches if the attributes match the collection
+        A that includes a attribute whose type is a datatype. If so, it
+        creates a collection of columns, C, which includes a new column whose
+        name and type is equal to the name and type of the attribute. However,
+        C is calculated by passing the remaining attributes A to self, which
+        in this case is the Attribute2Column mapping. Thus, it recurses
+        through all the attributes applying the appropriate Attribute2Column
+        clauses until they are consumed.</p><pre class="programlisting">@Clause Clause0
+  A-&gt;including(ClassModels::Attribute[
+     name = attName,
+     type = ClassModels::DataType[
+         name = typeName] ])
+  do
+  C-&gt;including(DatabaseModels::Column[
+     name = attName,
+     type = typeName])
+  where
+    C = self(A)
+end</pre><p>The third clause perfoms a similar function to the above, but in
+        this case it only matches if the type of the attribute is a class. In
+        this case, it runs through the attributes in the type applying the
+        Attribute2Column mapping to those elements and adding them to the
+        collection. Once this is complete it modifies the resulting column
+        names so that they reflect the name of the type.</p><pre class="programlisting">@Clause Clause2
+   A-&gt;including(ClassModels::Attribute[
+     name = attName,
+     type = class])
+   when class.isKindOf(ClassModels::Class)
+   do 
+   C-&gt;union(self(class.attributes)-&gt;collect(col | 
+        col.name := class.name + "_" + attName + "_" + col.name))
+   where C = self(A)
+end</pre></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id749344"></a>Running the Mapping</h3></div></div></div><p>As an example, the following snapshot shows an instance of the
+      class model.</p><div class="mediaobject"><img src="Part3/XMap/Images/image042.jpg"></div><p>This corresponds to the following model (with customerId tagged as
+      a primary attribute):</p><div class="mediaobject"><img src="Part3/XMap/Images/image044.jpg"></div><p>This can be run through the mapping as follows:</p><div class="mediaobject"><img src="Part3/XMap/Images/image046.jpg"></div><p>And returns the following snapshot (run toSnapshot() and then
+      showDiagram()) on the result of the mapping:</p><div class="mediaobject"><img src="Part3/XMap/Images/image048.jpg"></div><p>Individual snapshots for specific objects can be shown, again by
+      running toSnapshot() and showDiagram() on the object. For instance, here
+      is the snapshot for the Customer table:</p><div class="mediaobject"><img src="Part3/XMap/Images/image050.jpg"></div><p>As expected, a new Key has been created for the customerId column,
+      and a column resulting from turning the associated Account attributes
+      into columns has also been created.</p></div></div><p></p><p><img src="copyright.gif"></p></body></html>

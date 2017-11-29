@@ -1,0 +1,42 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Models</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch04.html" title="An Introduction to XOCL"><link rel="prev" href="ch04s02.html" title="Basic Types"><link rel="next" href="ch04s04.html" title="Using XOCL"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id613801"></a>Models</h2></div></div></div><p>XOCL is used to add important detail to models. One of the most
+    important types of models is a class model, where XOCL is typically used
+    to write constraints, operations and constructors on classes..</p><p>Classes can be declared in two main ways: via UML style class
+    diagrams or via code.</p><p>Here is an example of a class diagram:</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/model.jpg"></div><p>Here is the equivalent model represented as code:</p><pre class="programlisting">parserImport XOCL;
+
+context Root
+  @Package Components
+  
+    @Class ComponentModel 
+
+      @Attribute components : Set(Component) (?,!) end
+      @Attribute connectors : Set(Connector) (?,!) end
+
+    end
+     
+    @Class Component extends NamedElement
+
+      @Attribute owner : ComponentModel (?,!) end
+      @Attribute ports : Set(Port) (?,!) end
+
+    end
+     
+    @Class NamedElement isabstract 
+
+      @Attribute name : String (?,!) end
+
+    end
+      
+    @Class Connector 
+
+      @Attribute target : Port (?,!) end
+      @Attribute source : Port (?,!) en
+
+    end
+    
+    @Class Port extends NamedElement
+
+      @Attribute type : String (?,!) end
+
+    end
+  end
+</pre></div><p></p><p><img src="copyright.gif"></p></body></html>

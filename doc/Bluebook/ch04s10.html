@@ -1,0 +1,14 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Logical Expressions</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch04.html" title="An Introduction to XOCL"><link rel="prev" href="ch04s09.html" title="Collections"><link rel="next" href="ch04s11.html" title="Conditional Expressions"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id709591"></a>Logical Expressions</h2></div></div></div><p>XOCL provides all the usual Boolean expressions including: and, or,
+    not and equals.</p><p>In addition, it provide "exists" and "forAll" for evaluating Boolean
+    expressions over collections. Their syntax is as follows:</p><pre class="programlisting">collection-&gt;forAll(c | boolean_expression_with_c) // returns true if the expression evaluates to true
+                                                  // for all element of the collection
+collection-&gt;exists(c | boolean_expression_with_c) // returns true if the expression evaluates to true
+                                                  // for at least one element of the collection</pre><p>As an example, the following operation returns true if all
+    connectors match ports of the same type:</p><pre class="programlisting">context ComponentModel
+  @Operation validConnections : Boolean
+    connections-&gt;forAll(c | c.source.type = c.target.type)
+  end</pre><p>The following operation returns true if there is at least one
+    invalid connection:</p><pre class="programlisting">context ComponentModel
+  @Operation invalidConnection : Boolean
+    connections-&gt;exists(c | c.source.type &lt;&gt; c.target.type)
+  end</pre></div><p></p><p><img src="copyright.gif"></p></body></html>

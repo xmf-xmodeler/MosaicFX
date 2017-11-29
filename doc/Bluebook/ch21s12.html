@@ -1,0 +1,23 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Pattern Grammar</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch21.html" title="XOCL"><link rel="prev" href="ch21s11.html" title="XOCL Grammar"><link rel="next" href="ch22.html" title="XTools"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id602850"></a>Pattern Grammar</h2></div></div></div><pre class="programlisting">Pattern ::= Add ('-&gt;including(' Pattern ')')* [ 'when' Exp ].
+
+Add ::= Atom [ '+' Add ].
+
+Atom ::= Varp | Constp | Cnstrp | Seqp | Setp | Syntaxp | '(' Pattern ')'.
+
+Varp ::= Name [ '=' Pattern ] [ ':' Type ]
+
+Constp ::= Integer | String | Boolean | '[' Exp ']'
+
+Cnstrp ::= BOAp | Keyp
+
+BOAp ::= Path '(' [ Pattern (',' Pattern)* ] ')'
+
+Keyp ::= Path '[' [ Name '=' Pattern (',' Name '=' Pattern ] ']' 
+
+Seqp ::= 'Seq{' [ Pattern (',' Pattern)* ] '}' | 'Seq{' Pattern '|' Pattern '}'
+
+Setp ::= 'Set{}'
+
+Syntaxp ::= '[|' Exp '|]'.
+
+Path ::= Name ('::' Name)*.</pre></div><p></p><p><img src="copyright.gif"></p></body></html>

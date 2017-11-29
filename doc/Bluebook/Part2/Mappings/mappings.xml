@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"-->
+<chapter id="mappings">
+  <title>Constructing and Running Mappings</title>
+
+  <para>Mappings are an essential part of being able to transform models
+  written in one language to models written in another language. This part
+  describes how to construct model to model mappings in XMap: a declarative
+  pattern matching mapping language. Full details of the XMap language can be
+  found in part 3 of the Bluebook.</para>
+
+  <section>
+    <title>A Simple Mapping</title>
+
+    <para>We want to create a simple mapping from one class to another
+    class.</para>
+
+    <para>The source model is a simple domain model of Airports:</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/airlines.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Create or load the Airports model.</para>
+
+    <para>Next, create a new project Example1 containing the classes that we
+    want to map between.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/mappingclasses.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Note, the Route class has been copied from the Airports model. This
+    is achieved by right clicking on the class in the Airports model,
+    selecting Drop in Class Diagram and then choosing the Example1
+    package.</para>
+
+    <para>Next, a mapping is added to the model. Select the Mapping from the
+    icons in the diagram editor and place it on the diagram and give it a
+    name.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/addingamapping.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>A mapping must have at least one domain and a single range.</para>
+
+    <para>Select these from the icons underneath the mapping icon.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/addingdomainandrange.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>The domain is the input to the mapping and the range is its output.
+    Although compulsory, it is important to think of the domain and range as
+    indicating a dependency between a mapping and its constituents. In
+    practice, the actual values passed to the mapping need not necessarily be
+    of the domain type. Similarly, the range need not be of the target
+    type.</para>
+
+    <para>The rules and actions performed by a mapping are described by
+    <emphasis>clauses</emphasis>. Add a new clause to a mapping by right
+    clicking on the mapping in the diagram editor or browser and choosing New
+    &gt; Clause.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/addingaclause.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Now, edit the clause by double clicking on it in the browser.</para>
+
+    <para>A clause editor will be displayed.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/aclause.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>A clause has a name, and a default clause expression followed by a
+    “do” action.</para>
+
+    <para>The expression is a pattern that must be matched before the clause
+    will fire.</para>
+
+    <para>When the clause is matched, the action after the 'do' will be
+    performed.</para>
+
+    <para>We wish to capture the rule that a Route with a capacity less than
+    250 will be mapped to a ShortHaul Route with the same name. In addition,
+    we want to map a Route with a capacity &gt;= 250 to a LongHaul
+    Route.</para>
+
+    <para>To achieve this we need to write two clauses. The first clause
+    matches with a Route whose capacity is less than 250 and generates a Short
+    Haul Route.</para>
+
+    <para><programlisting>@Clause Short
+  Airports::Route[
+    name = N,
+    source = S,
+    destination = D,
+    capacity = C]
+when C &lt; 250
+do
+  ShortHaul[
+    name = N,
+    source = S,
+    destination = D]
+end</programlisting></para>
+
+    <para>Here:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>The name of the clause has been changed to Short</para>
+      </listitem>
+
+      <listitem>
+        <para>The clause expression is a Route, whose name equals the variable
+        'N', whose source and destination equals the variables 'S' and 'D' and
+        whose capacity equals the variable C.</para>
+      </listitem>
+
+      <listitem>
+        <para>The when condition states that this clause can only fire if the
+        capacity is &lt; 250.</para>
+      </listitem>
+
+      <listitem>
+        <para>The 'do' action creates a ShortHaul Route whose name is equal to
+        the variable 'N', and which has the same source and
+        destination.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>Note because the variables are global they are matched across the
+    clause, ensuring for example that the name of the source Route matches the
+    target Route name.</para>
+
+    <para>To enter the clause, enter the text and right click &gt; Commit
+    it.</para>
+
+    <para>To deal with the other possibility (that the capacity &gt;= 250) we
+    need to create another clause and add it to the mapping.</para>
+
+    <para>Again, right click on the mapping in the diagram editor or browser
+    and choose New &gt; Clause. Edit and commit the clause as before.</para>
+
+    <programlisting>@Clause Long
+  Airports::Route[ 
+    name = N, 
+    source = S,
+    destination = D,
+    capacity = C]
+when C &gt;= 250
+do
+  LongHaul[
+    name = N,
+    source = S,
+    destination = D]
+end</programlisting>
+
+    <para>The code is similar to that of the previous clause, but the “when”
+    condition requires that the capacity of the route is &gt;= 250. The
+    resulting action creates an instance of a LongHaul Route.</para>
+
+    <section>
+      <title>Running the Mapping</title>
+
+      <para>Mappings can be run in two ways: via the console or by passing the
+      object to the mapping.</para>
+
+      <para>Here's an example of running a mapping via the console. Let's
+      create an instance of a Route, x, named "LAX2LHR", with a capacity of
+      200 and source and destination "LAX" and "LHR" respectively..</para>
+
+      <para>The mapping can be run by calling the mapping and passing it the
+      Route, x.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/runningthesimplemapping.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The result of the mapping is a ShortHaul Route whose name is
+      "LAX2LHR" as we would expect.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/resultofsimplemapping.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The same result can be achieved by creating the same instance of a
+      Route in a Snapshot and selecting Apply Mapping from the object's
+      menu:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/applyingamapping.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>A choice of available mappings will be displayed. Select the
+      mapping that the object is to be passed to, and it will be
+      invoked.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/applychoice.jpg" />
+        </imageobject>
+      </mediaobject>
+    </section>
+  </section>
+
+  <section>
+    <title>A Simple Model to C# Mapping</title>
+
+    <para>This section describes the construction of a mapping between model
+    (XCore) packages and classes to a small model of the C# programming
+    language.</para>
+
+    <section>
+      <title>The C# Model</title>
+
+      <para>The following is a simple model of the abstract syntax of C# that
+      will be used in the mapping. A C# model consists of a program containing
+      a number of classes, which have attributes.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/modelofcsharp.jpg" />
+        </imageobject>
+      </mediaobject>
+    </section>
+
+    <section>
+      <title>The Mapping</title>
+
+      <para>We'll construct two mappings. The first mapping
+      (Package2CSProgram) turns a Package into a C# Program . This mapping
+      then calls the Class2CSClass mapping, which iterates over the classes in
+      the Package and maps them to CSClasses. Of course, further mappings can
+      be constructed to map Class operations and attributes, etc, but we won't
+      deal with those here.</para>
+
+      <para>First, we need to import the Package and Class classes from the
+      XCore package. To do this, open the Root::Kernel::XCore package in the
+      browser. Select the classes Package and Class and then select Drop in
+      Class Diagram to drop them into the mapping package. Note, we also need
+      to import the C# classes CSProgram and CSClass by dropping them into the
+      model from the CS model.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/importedclasses.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>Next, the mappings are added. Remember that the domain and range
+      arrows are added by selecting the domain and range buttons respectively.
+      A dependency arrow is also added to indicate that the Package2CSProgram
+      mapping is dependent on the Class2CSClass mapping.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/mapping.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>Let’s add the mapping clause by starting with the simplest
+      mapping. The Class2CSClass mapping transforms an instance of a Class
+      into an instance of a CSClass.</para>
+
+      <para>Its clause says that whenever the mapping is given a Class it
+      returns a CSClass with the same name.</para>
+
+      <para><programlisting>@Clause Clause0
+  XCore::Class[name = N]
+do
+  CS::CSClass[name = N]
+end</programlisting>The Package2CSProgram maps a Package to a CSProgram. In
+      doing so, it maps each class in the package to a CSClass by calling the
+      Class2CSClass mapping.<programlisting>@Clause Clause0
+  XCore::Package[name = N, classes = C]
+do
+  CS::CSProgram[name = N, classes = Cs]
+where
+  Cs = C-&gt;collect(c | Class2CSClass()(c))
+end</programlisting></para>
+    </section>
+
+    <section>
+      <title>Executing the Mapping</title>
+
+      <para>Just as in the previous example, the mapping can be executed via
+      the console.</para>
+
+      <para>Because we are mapping from XCore packages, we can actually pass a
+      package from a model into the mapping and see what it produces. Let's
+      map the Airports package</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/runningthemapping.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>As expected, the mapping has generated a C# Program. If we edit
+      it, we can see it has produced a CSClass for each class in the Airports
+      package.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/mappingresult.jpg" />
+        </imageobject>
+      </mediaobject>
+    </section>
+  </section>
+
+  <section>
+    <title>Mapping Hints and Tips</title>
+
+    <section>
+      <title>Error Reporting</title>
+
+      <para>When running a mapping, all the usual exception reports will be
+      displayed if for example, the mapping attempts to set an invalid slot or
+      create an invalid instance. In addition, a MapFailed exception is raised
+      if mapping cannot find a clause that matches the input to the
+      mapping.</para>
+
+      <para>As an example, try running the mapping by passing an invalid
+      object, for instance a Class to the Package2CSProgram mapping. Because
+      the Package2CSProgram mapping is expecting a Package it will fail and
+      generate the following exception.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/mappingexception.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>Additional information on the cause of the exception can be found
+      by expanding the tree nodes.</para>
+
+      <para>Here, the value being passed to the mapping can be seen in
+      local(0).</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/expandedmappingexception.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>Clearly, it is of the wrong type.</para>
+
+      <para>If we wanted to examine the passed object in more detail it can be
+      navigated to by double clicking on local(0).</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Constructing a Pretty Printer</title>
+
+    <para>In the previous section, a mapping from packages and classes to C#
+    was constructed. In practice however, the objective will be to generate
+    concrete code (not just an instance of the C# model). For example, we
+    might expect to generate some code of the following form:<programlisting>using System;
+
+  class Route 
+  {
+    integer capacity;
+    string name;
+    string source;
+    string destination;
+  }
+  class Passenger 
+  {
+    string name;
+  }
+  class Airline 
+  {
+    string name;
+  }
+  class Airport 
+  {
+    string name;
+  }
+  class Flight 
+  {
+    string date;
+  }</programlisting></para>
+
+    <para>The basic approach is to add operations to the language model to
+    pretty print it. The first step is to load your language model and plan
+    where the appropriate operations need to be added. In general, it is best
+    to start at the leaf classes where there is minimum dependency on other
+    elements in the model.</para>
+
+    <para>As an example, a pretty print operation can be added to the class
+    CPPAtt (a C# attribute). First, add a pretty print operation to the class
+    and give it a name, e.g. pprint().</para>
+
+    <para>Now, edit the operation. Two parameters are required by the
+    operation: an output type, out, which will be used to direct the output of
+    the operation to an editor or to a file, and an indent, which is the
+    current indent of the code.</para>
+
+    <para>We can now construct the body of the operation. An attribute will be
+    pretty printed as the type name and the attribute name, terminated with a
+    semicolon.</para>
+
+    <para><programlisting>@Operation pprint(out : XCore::Element,indent : XCore::Element):XCore::Element
+      format(out,"~V~S~%",Seq{indent, type.name + " " + name + ";"})
+    end</programlisting></para>
+
+    <para>The format command is used to generate the text. The sequence of
+    control characters dictates the format of elements that occur in the
+    sequence of elements that are to be formatted. For example, ~V denotes a
+    vertical space, ~S is a string and ~% is a line return. Note, full details
+    of the format command can be found in Part 3 of this guide.</para>
+
+    <para>In this case an indent is inserted before the string is printed, and
+    a character return is inserted after the semicolon.</para>
+
+    <para>The definition of pprint on CSClass is as follows:</para>
+
+    <para><programlisting>@Operation pprint(out : XCore::Element,indent : XCore::Element):XCore::Element
+      format(out,"~V~S~%",Seq{indent,"class " + name + " ",indent,"{"});
+      attributes-&gt;collect(a |
+        a.pprint(out,indent + 2));
+      format(out,"~V~S~%",Seq{indent,"}"})
+    end</programlisting></para>
+
+    <para>The class signature and name of the class is printed followed by the
+    attributes and operations of the class.</para>
+
+    <para>Finally, we need to construct the pretty printer for a
+    CSProgram.</para>
+
+    <programlisting>@Operation pprint(out : XCore::Element,indent : XCore::Element):XCore::Element
+      format(out,"~V~S~%",Seq{indent,"using System;"});
+      classes-&gt;collect(c |
+        a.pprint(out,indent + 2))
+    end
+</programlisting>
+
+    <para>If we run the pprint operation on the result of mapping the Airports
+    package, the following code is generated:</para>
+
+    <programlisting>using System;
+
+  class Route 
+  {
+  }
+  class Passenger 
+  {
+  }
+  class Airline 
+  {
+  }
+  class Airport 
+  {
+  }
+  class Flight 
+  {
+  }</programlisting>
+
+    <para>A lot more needs to be done to complete the mapping. In particular
+    mappings from Attribute and Operation to C# Attributes and Operations need
+    to be defined. However, it is simply a case of following the same overall
+    approach.</para>
+  </section>
+</chapter>

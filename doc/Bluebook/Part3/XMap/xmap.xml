@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"-->
+<chapter>
+  <title>XMap</title>
+
+  <para></para>
+
+  <section>
+    <title>Introduction</title>
+
+    <para>This document provides a definitive guide to the XMap language. XMap
+    is a language for constructing mappings between models. Using XMap you can
+    define mappings in a highly declarative way, enabling the essence of what
+    the mapping does to be captured succinctly and precisely (as opposed to
+    having to describe how the mapping is performed).</para>
+
+    <para>Here are some other benefits of XMap:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>It enables system designers to realise a strong separation of
+        concerns between mappings and the models that they relate. Aspects
+        such as pretty printing do not need to be mixed with the detail of the
+        mapping itself.</para>
+      </listitem>
+
+      <listitem>
+        <para>XMap can also make use of XOCL expressions to provide the extra
+        expressiveness required to capture complex mappings</para>
+      </listitem>
+
+      <listitem>
+        <para>The XMap language is fully modelled. This means that mappings
+        expressed in XMap can be easily transformed into other data
+        formats.</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section>
+    <title>Language Basics</title>
+
+    <para>XMap provides both a textual and diagrammatical language for
+    expressing mappings. The model below contains a simple example of the XMap
+    diagram language:</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/image004.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>The example contains a mapping called Person2Cust, which takes a
+    Person object and generates a Customer object.</para>
+
+    <para>Mappings contain rules, known as clauses. These state how one or
+    more objects (the domain) are mapped to a target object (the range). Here
+    is an example of a clause belonging to the Person2Cust mapping:</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/image006.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>A clause has a name, followed by a pattern declaration, a when
+    expression and a do action. Provided that the value supplied to the clause
+    matches the pattern declaration, and the when expression is true, then the
+    do action will execute. In this example, provided that a Person object is
+    supplied whose age is &lt; 16, a Junior customer object will be created
+    with the same name as the Person.</para>
+
+    <para>A mapping may contain more than one clause. In this example, a
+    clause named Adult is also defined. It maps a Person who is older than 16
+    to a Standard customer object.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/image008.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>The rest of this document will dig deeper into the XMap language,
+    starting with its syntax.</para>
+  </section>
+
+  <section>
+    <title>Syntax</title>
+
+    <para></para>
+
+    <section>
+      <title>Diagrammatical Syntax</title>
+
+      <para>A mapping is diagrammatically shown as an arrow with one or more
+      domains (the source types of the mapping) and a single range (the target
+      type of the mapping):</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image010.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The domain and range of a mapping can be any (instantiable)
+      Classifier type, including data types, packages and other
+      mappings.</para>
+
+      <para>Because XMF-Mosaic provides full access to its own definition,
+      mappings can be defined between meta-classes. This is crucial to being
+      able to construct language-to-language mappings.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image012.jpg" />
+        </imageobject>
+      </mediaobject>
+    </section>
+
+    <section>
+      <title>Textual Syntax</title>
+
+      <para>A mapping also has a textual syntax of the form:</para>
+
+      <para><programlisting>  @Map &lt;MapName&gt;(&lt;DomainType&gt;,...) -&gt; &lt;RangeType&gt;
+  
+    @Clause &lt;ClauseName&gt;
+    end
+    ...
+  end</programlisting></para>
+    </section>
+
+    <section>
+      <title>Clause Syntax</title>
+
+      <para>A Clause has the following syntax:</para>
+
+      <para><programlisting>@Clause &lt;ClauseName&gt;
+  &lt;V1&gt; = &lt;PatternDecl&gt;,
+  ...  
+  when &lt;BooleanExpression&gt;
+  do &lt;XOCLExpression&gt;
+  where &lt;X1&gt; = &lt;XOCLExpression&gt;; 
+        ...
+end</programlisting></para>
+
+      <para>A clause consists of a comma-separated list of pattern
+      declarations, which may optionally be equated with a variable. This is
+      followed by an optional when part, containing a Boolean expression, and
+      a do action, which contains an XOCL expression. The optional where
+      clause contains a list of semicolon separated variable introductions,
+      where each variable is equated with an XOCL expression.</para>
+
+      <section>
+        <title>Pattern Syntax</title>
+
+        <para>Full details of the pattern declaration syntax can be found in
+        the XOCL manual, but there are some specific forms that are most
+        generally used in XMap:</para>
+
+        <para><itemizedlist>
+            <listitem>
+              <para>A keyword constructor: &lt;ClassName&gt;[&lt;att1&gt; =
+              &lt;x1&gt;, ...]</para>
+            </listitem>
+          </itemizedlist>Here, the variable/s att refer to named attributes of
+        the class, and x is the variable/s they are matched against.</para>
+
+        <para><itemizedlist>
+            <listitem>
+              <para>A normal constructor : &lt;ClassName&gt;(&lt;v1&gt;,
+              ...)</para>
+            </listitem>
+          </itemizedlist>Where v1is a constructor variable.</para>
+
+        <para><itemizedlist>
+            <listitem>
+              <para>A set pattern:
+              &lt;X&gt;-&gt;including(&lt;PatternDecl&gt;)</para>
+            </listitem>
+          </itemizedlist>Where X represents a collection of values, which
+        include an element that matches the pattern declaration.</para>
+      </section>
+    </section>
+  </section>
+
+  <section>
+    <title>Execution</title>
+
+    <para>XMap is fully executable. The execution of an XMap mapping is as
+    follows:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Iterate through each clause, in order of definition.</para>
+      </listitem>
+
+      <listitem>
+        <para>Attempt to match the input values of the mapping with a clause.
+        A clause matches if:</para>
+      </listitem>
+
+      <listitem>
+        <para>The input to the clause matches the pattern declarations.</para>
+      </listitem>
+
+      <listitem>
+        <para>The when condition is true.</para>
+      </listitem>
+
+      <listitem>
+        <para>If a clause matches, the body of the do action is executed
+        (substituting any variables values bound in the pattern declarations
+        and where part). The mapping terminates.</para>
+      </listitem>
+
+      <listitem>
+        <para>If no clauses match the input values, the mapping terminates and
+        generates an exception.</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section>
+    <title>Constructing Mappings</title>
+
+    <para>Mappings can be constructed using XMF-Mosaic’s modelling interface
+    and via the programming interface as follows.</para>
+
+    <section>
+      <title>Creating Mappings via the Modelling Interface</title>
+
+      <para>Let’s create a simple mapping from one class to another class.
+      First, create a project Example1 containing the classes that we want to
+      map between: Alternatively, we could import classes from other packages
+      into the model.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image014.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>Next, a mapping is added to the model. Select the Mapping from the
+      icons in the diagram editor and place it on the diagram and give it a
+      name.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image016.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>A mapping must have at least one domain and a single range. Select
+      these from the icons underneath the mapping icon.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image018.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The domain is the source class or classes of the mapping and the
+      range is the target class. Although compulsory, it is important to think
+      of the domain and range as indicating a dependency between a mapping and
+      its constituents. In practice, the actual values passed to the mapping
+      need not necessarily be instances of the domain class.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image020.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>To add a clause to a mapping, right click on the mapping in the
+      diagram editor or browser and choosing New &gt; Clause. </para>
+
+      <para>Now, edit the clause by double clicking on it in the
+      browser.</para>
+
+      <para>A clause editor will be displayed.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image022.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>To enter the clause, enter the text and right click &gt;
+      Commit.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image024.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>Other clauses can be created in exactly the same way.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image026.jpg" />
+        </imageobject>
+      </mediaobject>
+    </section>
+
+    <section>
+      <title>Creating Mappings via the Programming Interface</title>
+
+      <para>Creating a mapping via the programming interface is
+      straightforward. Just create a file (select File Browser from the File
+      menu) and create a new File. Provided that XOCL has been imported, a
+      model (along with mappings) can be entered as normal. For example, the
+      following text is equivalent to the above model:</para>
+
+      <programlisting>parserImport XOCL;
+
+context Root
+
+  @Package Example1 
+  
+    @Class Person
+      @Attribute name : String end
+      @Attribute age : Integer end
+    end
+    
+    @Class Customer
+      @Attribute name : String end
+    end
+    
+    @Class Junior extends Customer
+    end
+    
+    @Class Standard extends Customer
+    end
+    
+    @Map Person2Cust(Person) -&gt; Customer
+  
+      @Clause Child
+        Person[name = N, age = A]
+        when A &lt; 16
+        do
+        Junior[name = N]
+      end
+      @Clause Parent
+        Person[name = N, age = A]
+        when A &gt;= 16
+        do
+        Standard[name = N]
+      end
+    end
+  end</programlisting>
+
+      <para>Save, compile and load the file to compile and load the model and
+      the mapping.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Running Mappings</title>
+
+    <para>Mappings are run by instantiating the mapping and passing it the
+    appropriate object/s to be mapped. Thes syntax of a call is as
+    follows:</para>
+
+    <para><programlisting>&lt;Mapping&gt;()(&lt;Value&gt;)</programlisting></para>
+
+    <para>Note that if there is more than one domain, this must be reflected
+    by the list of values passed to the mapping, e.g.</para>
+
+    <para><programlisting>&lt;Mapping&gt;()(&lt;Value1&gt;,&lt;Value2&gt;,..,ValueN)</programlisting></para>
+
+    <para>The following example shows a mapping being executed in the console.
+    Of course, a mapping can be run by calling it from within another mapping
+    or operation.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/image028.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>First, an instance of a person, p, whose name is “Bob” and whose age
+    is 15 is created.</para>
+
+    <para>The mapping is run by calling the mapping and passing it the person,
+    p.</para>
+
+    <para>The result of the mapping is a Junior customer whose name is “Bob”
+    as we would expect.</para>
+  </section>
+
+  <section>
+    <title>Example</title>
+
+    <para></para>
+
+    <section>
+      <title>Class Model to Database</title>
+
+      <para>This example defines a mapping between a class model and a model
+      of a database. In doing so, it exercises a number of key XMap features,
+      including pattern nesting, variable passing and multiple domain inputs
+      to mappings.</para>
+
+      <section>
+        <title>Class Model</title>
+
+        <para>The following model describes the concepts in the class model.
+        It includes most of the concepts that are typically found in a class
+        model, including classes, packages, associations and
+        generalization.</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image030.jpg" />
+          </imageobject>
+        </mediaobject>
+      </section>
+
+      <section>
+        <title>Database Model</title>
+
+        <para>The database model contains a collection of typical relational
+        database concepts. A relational database contains a collection of
+        tables, which have names. Each table contains a collection of columns,
+        which are named. A Column has a type. A table always contains a Key,
+        which is a pointer to the Column that uniquely identifies an instance
+        of a Table. A table may also contain ForeignKey’s. These relate a
+        Column to the Column in another table that it is the foreign key
+        for.</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image032.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>There will be a significant number of constraints on this model.
+        For example, it must never be the case that a foreign key refers to a
+        column in the same table as the foreign key column:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image034.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>As an example of a database model that could be represented by
+        this model, consider the tables Account and Customer. The table
+        Account has three columns, customerId, accountNo and balance. The
+        column customerId is a foreign key – it ties each instance of an
+        account to a specific customer. The column accountNo is a key, as it
+        uniquely identifies the account. The column ‘balance’ just represents
+        some information about the account. Similarly, the table customer has
+        three columns, one of which, customerId, is its key.</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image036.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>The following diagram shows the same information as it would be
+        represented by an instance of the Database model:</para>
+      </section>
+
+      <section>
+        <title>Database Mapping</title>
+
+        <para>The following model describes how class models are transformed
+        into database models:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image038.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>A package is mapped to an instance of Tables. This contains the
+        results of mapping each Class in the package into a Table. Each Table
+        contains a collection of columns, each of which is the result of
+        mapping the attributes of the Class into a Column. In the case of an
+        Attribute that is marked as a key, a Key is created which points to
+        the corresponding Column.</para>
+
+        <para>Let’s take each mapping in turn and explain how it works:</para>
+
+        <para><emphasis>PackageToTables</emphasis></para>
+
+        <para>The PackageToTables mapping contains the following
+        clause:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image040.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>Here, the input to the mapping requires a Package containing
+        some classes C and some associations A. If there is a match then the
+        action after the ‘do’ part is executed. In this case, it creates an
+        instance of the class Tables, and sets its tables to be T. T is
+        defined in the ‘where’ part. T is calculated as the result of mapping
+        each class in C to a table.</para>
+
+        <para>Note Associations will be dealt with in future versions of this
+        example.</para>
+
+        <para><emphasis>ClassToTable</emphasis></para>
+
+        <para>The first part of the ClassToTable mapping is as follows:</para>
+
+        <para><programlisting>@Clause Clause0
+  ClassModels::Class[
+        name = className,
+        attributes = 
+          A-&gt;including(
+            ClassModels::Attribute[
+              name = attName,
+              isPrimary = true,
+              type = 
+                ClassModels::DataType[
+                  name = typeName
+                ]
+          ]) 
+       ]</programlisting>This pattern expects a Class, and matches the name of
+        the Class with the variable className.</para>
+
+        <para>In addition, this pattern illustrates the use of a collection
+        pattern to match with an element in a collection. In this case, it
+        matches if the attributes of the class bind with a collection of
+        attributes A provided that it includes a primary attribute. This
+        matches provided that the attribute is a primary Attribute, and binds
+        the name of the attribute to the variable attName.</para>
+
+        <para>A similar type of pattern is used to return the name of the type
+        of the attribute. Here the attribute type is matched against a
+        DataType, whose name is then bound to the variable typeName.</para>
+
+        <para>Provided there is a match, the following action is
+        invoked:<programlisting>do
+  DatabaseModels::Table[
+    name = className,
+    key = DatabaseModels::Key[
+             column = c],
+    columns = C-&gt;including(c)].setOwnership()
+  where
+    c = DatabaseModels::Column[ 
+          name = attName,
+          type = typeName];
+    C = Attribute2Column()(A)
+end</programlisting></para>
+
+        <para>This creates an instance of a Table, whose name is the class
+        name, and which has a Key that points to a Column that has the same
+        name and type as the primary Attribute.</para>
+
+        <para>In addition, the columns of the Table are calculated by mapping
+        each of the remaining attributes in A to columns and including the key
+        column.</para>
+
+        <para>Finally, the operation setOwnership is called on the generated
+        table. This sets the owner attribute of all the columns of the table,
+        its foreign keys and key to be the table. It is defined as
+        follows:</para>
+
+        <para><programlisting>@Operation setOwnership():Element
+  @For c in columns do
+    c.owner := self
+  end;
+  @For f in foreignKeys do
+    f.owner := self
+  end;
+  key.owner := self;
+  self
+end</programlisting></para>
+
+        <para>The modified table is returned by the final self.</para>
+
+        <para><emphasis>Attribute2Column</emphasis></para>
+
+        <para>The attribute to column mapping takes a collection of attributes
+        and maps them to columns. There are three clauses in this
+        mapping.</para>
+
+        <para>The first one just returns the empty set if there are no
+        attributes:</para>
+
+        <para><programlisting>@Clause Clause1
+  Set{}
+do
+  Set{}
+end</programlisting></para>
+
+        <para>The second clause matches if the attributes match the collection
+        A that includes a attribute whose type is a datatype. If so, it
+        creates a collection of columns, C, which includes a new column whose
+        name and type is equal to the name and type of the attribute. However,
+        C is calculated by passing the remaining attributes A to self, which
+        in this case is the Attribute2Column mapping. Thus, it recurses
+        through all the attributes applying the appropriate Attribute2Column
+        clauses until they are consumed.</para>
+
+        <para><programlisting>@Clause Clause0
+  A-&gt;including(ClassModels::Attribute[
+     name = attName,
+     type = ClassModels::DataType[
+         name = typeName] ])
+  do
+  C-&gt;including(DatabaseModels::Column[
+     name = attName,
+     type = typeName])
+  where
+    C = self(A)
+end</programlisting></para>
+
+        <para>The third clause perfoms a similar function to the above, but in
+        this case it only matches if the type of the attribute is a class. In
+        this case, it runs through the attributes in the type applying the
+        Attribute2Column mapping to those elements and adding them to the
+        collection. Once this is complete it modifies the resulting column
+        names so that they reflect the name of the type.</para>
+
+        <para><programlisting>@Clause Clause2
+   A-&gt;including(ClassModels::Attribute[
+     name = attName,
+     type = class])
+   when class.isKindOf(ClassModels::Class)
+   do 
+   C-&gt;union(self(class.attributes)-&gt;collect(col | 
+        col.name := class.name + "_" + attName + "_" + col.name))
+   where C = self(A)
+end</programlisting></para>
+      </section>
+    </section>
+
+    <section>
+      <title>Running the Mapping</title>
+
+      <para>As an example, the following snapshot shows an instance of the
+      class model.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image042.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>This corresponds to the following model (with customerId tagged as
+      a primary attribute):</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image044.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>This can be run through the mapping as follows:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image046.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>And returns the following snapshot (run toSnapshot() and then
+      showDiagram()) on the result of the mapping:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image048.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>Individual snapshots for specific objects can be shown, again by
+      running toSnapshot() and showDiagram() on the object. For instance, here
+      is the snapshot for the Customer table:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image050.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>As expected, a new Key has been created for the customerId column,
+      and a column resulting from turning the associated Account attributes
+      into columns has also been created.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Other Aspects of Mappings</title>
+
+    <para></para>
+
+    <section>
+      <title>Operations</title>
+
+      <para>XMap mappings can have operations. As an example, let’s add an
+      operation to the Attribute2Column mapping that updates the name of a
+      column.</para>
+
+      <para>An operation is added as usual by right clicking on the mapping
+      (in the browser or the diagram) and selecting New &gt; Operation. An
+      operation is added to the mapping. Let’s call this
+      setColumnName():</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image052.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The body of the operation is as follows:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image054.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The Attribute to Column mapping can be modified to use this
+      operation:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image056.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>Note self is required as it is referring to the instance of the
+      mapping.</para>
+    </section>
+
+    <section>
+      <title>Attributes</title>
+
+      <para>Just like classes, mappings may have attributes. These are a
+      useful way of recording information about a mapping. To add an
+      attribute, right click on the mapping and select New &gt; Attribute (for
+      a primitive typed attribute) or draw an attribute line form the mapping
+      to the class. The following example shows how an Integer attribute can
+      be used to store a count of the classes that where mapped by a specific
+      mapping:</para>
+
+      <para><programlisting>@Clause Clause0
+    p = ClassModels::Package[
+       classes = C,
+       associations = A]
+  do
+    self.count := classes.size;
+    DatabaseModels::Tables[
+      tables = T]
+  where</programlisting></para>
+    </section>
+
+    <section>
+      <title>Variable Passing</title>
+
+      <para>Variables can be bound with patterns as follows:</para>
+
+      <para><programlisting>@Clause Clause0
+    p = ClassModels::Package[
+       classes = C,
+       associations = A]
+  do
+    DatabaseModels::Tables[
+      tables = T]
+  where
+      T = C-&gt;collect(c |
+          ClassToTable()(p,c)) 
+end</programlisting></para>
+
+      <para>The variable p is bound to the Package that is passed to the
+      mapping. This can be used to pass the package to any other part of the
+      mapping. In this case, it is passed to the ClassToTable mapping as a
+      second argument. As this example shows, variable passing is useful when
+      values have to be passed through mappings. For instance, the following
+      ClassToTable mapping could utilize the passed package to prefix the name
+      of the generated Table: Note that the clause now expects two patterns as
+      input, a Package and a Class, and that these must have a comma to
+      separate them.</para>
+
+      <para><programlisting>@Clause Clause0
+  ClassModels::Package[name = N],
+  ClassModels::Class[
+        name = className,
+        attributes = 
+         ...
+  do
+  DatabaseModels::Table[
+    name = P.name + “::” + className,
+    key = DatabaseModels::Key[
+             column = c],
+    columns = C-&gt;including(c)].setOwnership()
+  where
+    c = DatabaseModels::Column[ 
+          name = attName,
+          type = "Integer"];
+    C = Attribute2Column()(A)
+end</programlisting></para>
+    </section>
+  </section>
+</chapter>

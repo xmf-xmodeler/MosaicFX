@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"-->
+<chapter>
+  <title>Creating a Meta-Profile</title>
+
+  <para>One common use of modelling tools is to tailor them to support a
+  specific modelling domain. This typically involves specialising modelling
+  concepts already provided by the tool using stereotypes and tagged values.
+  The advantage of doing this is that the tool’s existing editing and drawing
+  capabilities, etc, do not need to be physically changed. By combining a
+  number of different stereotypes together, a “profile” can be constructed for
+  a specific modelling requirement.</para>
+
+  <para>The disadvantage of traditional stereotype and tagged value mechanisms
+  is that they are essentially just a way of annotating existing model
+  elements – little in the way of semantic or well-formedness information can
+  be added to them.</para>
+
+  <para>XMF supports stereotypes and tagged values, but in a way that is
+  significantly more controllable and powerful than traditional tools. XMF
+  enables “meta profiles” to be constructed, in which stereotyped elements are
+  true instances of specialised language concepts.</para>
+
+  <section>
+    <title>An Example Profile</title>
+
+    <para>Let’s design a data modelling profile, which allows us to construct
+    a data model as an instance of a datamodel metamodel. The data modelling
+    profile provides three key modelling concepts: a data model, a data entity
+    and a key attribute.</para>
+
+    <para>First, create a DBProfile project.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/creatingtheprofile.png" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Next, browse and show the diagram for the project.</para>
+
+    <para>A key part of the profile is that it extends the XCore metamodel.
+    This enables it to inherit the modelling capabilities of XCore - the
+    language used to describe class models.</para>
+
+    <para>Right click on the DBProfile package and select Set Parents, and
+    tick the package XCore from the list.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/inheritingfromxcore.png" />
+      </imageobject>
+    </mediaobject>
+
+    <para>At this point we can open the DBProfile package and begin
+    constructing the profile. We want to be able to extend existing modelling
+    elements so that we can reuse their editing capabilities. Here is the
+    model for the DBProfile:</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/profile.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Here a DataModel specialises the class Package, so we can now model
+    with DataModels rather than Packages. A Key is a specialisation of an
+    Attribute, and an Entity specialises a Class. Finally, an additional
+    attribute is added to Entity to denote that some Entities are also
+    containers.</para>
+
+    <para>Note that in order to specialise the XCore classes, we simply right
+    clicked on each class and selected Inheritance &gt; Add Parent.</para>
+
+    <para>We can now create a model that makes use of this profile.</para>
+
+    <para>First create a new project and browse the package.</para>
+
+    <para>Rather than editing this package as an XCore package, we want to
+    edit it as an instance of the profile.</para>
+
+    <para>To do this, right click on the model package and select Set
+    MetaPackage.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/settingthemetapackage.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>A list of meta packages will be displayed.</para>
+
+    <para>Choose DBProfile.</para>
+
+    <para>Now, open the diagram for the model package using right click
+    ShowDiagram.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/newmodel.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Notice that in addition to the usual tool buttons, a new collection
+    of buttons is displayed at the bottom.</para>
+
+    <para>We can select these elements and start creating models using the new
+    model elements that are provide the by profile.</para>
+
+    <para>For instance, a new DataModel can be created, called
+    Accounts.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/accountsdatamodel.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>The contents of the Accounts can be viewed by showing its diagram
+    (right click Show Diagram). However, when this is done, the profile
+    buttons are no longer there. This is because we need to set the
+    metaPackage of the model to be the profile package.</para>
+
+    <para>We could do this by hand, but manually setting its metaPackage is
+    time consuming. A more general solution is to extend the initialisation
+    operation of the DataModel class so that this is done automatically. This
+    is done as follows:</para>
+
+    <para>Right click on the class and add an init() operation.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/setmetapackageoperation.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>The init() operation requires a single parameter args. Because it
+    extends the init() operation on the class Package, the operation calls its
+    super class’s operation’s body and then sets the metaPackage.</para>
+
+    <para>Now when we view the diagram for a DataModel, the appropriate
+    buttons are available, and a model can be created.</para>
+
+    <para>Let's create some entities:</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/creatingsomeentities.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>We now want to add an attribute to the customer class. However, in
+    this case we want the attribute to be a Key. To select this, Other is
+    chosen from the New &gt; Attribute menu.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/selectingattributesubclass.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>The attribute name is then changed to custid.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/addinganentitykey.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Similarly, we require a Key for the Account class. We'll also add
+    some other non-key attributes as well:</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/modelwithattributes.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Finally, let's add a Bank entity. In this case, we want to capture
+    the fact that the Bank entity is a container. If you remember, the class
+    Entity extended the attribute of the class Class, with an attribute called
+    'contents'. Because the Bank is an instance of the the class Entity, we
+    can now set this value to be true. To do this, right click on the Bank and
+    choose Show Contents &gt; Slot Values. The result is to add a new
+    compartment to the class in which the Slot Value is displayed.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/modelwithbank.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>The Slot Value can be set to true by clicking on the value and
+    editing it.</para>
+
+    <section>
+      <title>Adding Constraints</title>
+
+      <para>Constraints can also be added to the profile model to rule out
+      specific relationships between elements. For example, let's add a
+      constraint to the class Entity that ensures it can only specialise
+      another Entity.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/constraint.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The constraint rejects parents of type Object, as all elements
+      will inherit from this class. It ensures that the type of the parent
+      must be the same as the child.</para>
+
+      <para>A model can be checked to see whether it conforms to its
+      constraints. Here's a model that should fail:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/invalidmodel.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>To check the constraints on the model, we need to run
+      checkConstraints on the contents of the package. To do this, right click
+      on the package in the browser and select Invoke Constraints &gt;
+      checkConstraints() from Container.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/checkconstraints.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The constraint fails as we would expect.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/constraintresult.jpg" />
+        </imageobject>
+      </mediaobject>
+    </section>
+  </section>
+</chapter>

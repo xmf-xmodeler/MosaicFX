@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE part PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"-->
+<part>
+   
+
+  <title>XMF Walkthroughs</title>
+
+  <!-- (removed, won't be displayed anyway without being inside a chapter/section, and itemizedlist causes syntax error during compiling)
+   This section provides a number of walkthroughs that describe how to use many of the key features of XMF-Mosaic. These walkthroughs are broadly structured as follows: 
+
+  <itemizedlist>
+    <listitem>
+      <para>Domain modelling.</para>
+    </listitem>
+
+    <listitem>
+      <para>Introduction to XOCL.</para>
+    </listitem>
+
+    <listitem>
+      <para>Constructing and running mappings.</para>
+    </listitem>
+
+    <listitem>
+      <para>Parsing and generating XML and code.</para>
+    </listitem>
+
+    <listitem>
+      <para>Construction of domain specific user interfaces.</para>
+    </listitem>
+  </itemizedlist>
+
+   Together they provide an overview of the different approaches that can be used to construct tools in XMF-Mosaic.
+    --> 
+
+  <xi:include href="CreatingAModel/creatingamodel.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+   
+
+  <xi:include href="ModellingInterface/modellinginterface.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+   
+
+  <xi:include href="XOCLIntroduction/xoclintro.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+   
+
+  <xi:include href="Debugging/debugging.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+   
+
+  <xi:include href="Mappings/mappings.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+   
+
+  <xi:include href="XML/xml.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+   
+
+  <xi:include href="ProgrammingInterface/programminginterface.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+   
+
+  <xi:include href="TailoringMenus/tailoring.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+   
+
+  <xi:include href="VisualSyntax/visualsyntax.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+   
+
+  <xi:include href="XML/xmi.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+   
+
+  <xi:include href="TextualSyntax/textualsyntax.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+   
+
+  <xi:include href="MetaProfile/metaprofile.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+   
+
+  <xi:include href="GeneratingCode/generating.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+   
+
+  <xi:include href="ManifestsandDeployment/manifestsanddeployment.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+   
+</part>

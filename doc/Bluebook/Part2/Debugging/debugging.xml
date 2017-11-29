@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"-->
+<chapter>
+  <title>Debugging Operations</title>
+
+  <para>Operations can be debugged by setting a trace on them. Calls to the
+  operation will be displayed in the console.</para>
+
+  <para>A trace can be set in a number of ways:</para>
+
+  <itemizedlist>
+    <listitem>
+      <para>By right clicking on an operation and selecting Trace from its
+      Debug menu.</para>
+    </listitem>
+
+    <listitem>
+      <para>By right clicking on a container, e.g. a Class, and selecting
+      Trace from its Debug menu. All operations belonging to the container
+      (and transitively belonging to all its containers) will be
+      traced.</para>
+    </listitem>
+
+    <listitem>
+      <para>Via the console, by typing the path to the operation or container
+      and calling trace(). Note, calling untrace() will stop the trace.</para>
+    </listitem>
+  </itemizedlist>
+
+  <para>As an example, try tracing the operation, addToComponents() on the
+  ComponentModel class:</para>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="Images/addingatracetoanop.jpg" />
+    </imageobject>
+  </mediaobject>
+
+  <para>Running the operation will print the result of tracing the
+  operation:</para>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="Images/runningthetrace.jpg" />
+    </imageobject>
+  </mediaobject>
+
+  <para>Note, you should not run trace on System classes, e.g. XCore or
+  Root.</para>
+</chapter>

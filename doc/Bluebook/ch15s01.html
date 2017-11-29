@@ -1,0 +1,13 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Manifest Actions</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch15.html" title="Using Manifests and Deploying Models"><link rel="prev" href="ch15.html" title="Using Manifests and Deploying Models"><link rel="next" href="ch15s02.html" title="Deploying Manifests"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id653045"></a>Manifest Actions</h2></div></div></div><p>Actions can be added to a manifest to perform specific tasks once
+    the manifest has compiled and loaded its list of files. For example, we
+    might want to edit the results, or we might want to post process the
+    loaded model in some way.</p><p>In the following example, p is the package that results after
+    loading two files: Network and NetworkCons. The action that is called
+    after the &#8220;do&#8221; launches an editor for p.</p><pre class="programlisting">parserImport Manifests;
+
+@Manifest Networks
+  p = @File Network end
+  @File NetworkCons end do
+  p.edit()
+end;</pre><p>Building and loading the manifest results in the appropriate
+    property editor being launched.</p></div><p></p><p><img src="copyright.gif"></p></body></html>

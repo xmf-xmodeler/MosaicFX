@@ -1,0 +1,731 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"-->
+<chapter>
+  <title>XML</title>
+
+  <para></para>
+
+  <section>
+    <title>Introduction</title>
+
+    <para>XML is a standard data format and as such is an essential tool for
+    saving XMF data and allowing XMF to interact with other tools. XMF
+    provides extensive support for working with XML and in particular provides
+    a declarative parser for reading sources of XML and synthesizing XMF
+    data.</para>
+
+    <para>This document describes how to work with XML in XMF. A number of
+    standard formats exist for XML (such as XMI for models). This document
+    does not describe these formats.</para>
+  </section>
+
+  <section>
+    <title>XML</title>
+
+    <para>XML is a markup language for character based information. An XML
+    document consists of a hierarchically organised collection of elements.
+    Each element has a tag, some named attributes and a body. The body of an
+    element is either text or is a sequence of child elements. The following
+    model shows the basic structure of XML:<mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image004.jpg" />
+        </imageobject>
+      </mediaobject></para>
+  </section>
+
+  <section>
+    <title>Parsing XML</title>
+
+    <section>
+      <title>Introduction</title>
+
+      <para>XMF provides a number of technologies for reading sources of XML.
+      In most cases, an application is required to translate the XML input
+      into XMF data elements. This can be achieved by reading the XML source
+      character by character, but fortunately XMF provides XML parsing
+      technology that interprets declarative rules specifying how to match XML
+      input and synthesize XMF elements.</para>
+
+      <para>An XMF parser reads an XML input source and interprets an XML
+      grammar. And XML grammar consists of a collection of clauses. Each
+      clause defines how to match a portion of the input and how to translate
+      it into XMF data. An XML grammar can be viewed as the type of an XML
+      document in the same way as a DTD. Unlike DTDs, grammar components are
+      associated with actions that are performed when the appropriate portion
+      of the input has been successfully consumed.</para>
+
+      <para>This section shows how to define XML grammars and how to run XML
+      parsers. It starts with a number of examples that contain key technology
+      features. Finally the XML grammar model is defined in full with a
+      complete definition of the components.</para>
+    </section>
+
+    <section>
+      <title>Example</title>
+
+      <para></para>
+
+      <section>
+        <title>Two Dimensional Tables</title>
+
+        <para>This section gives an example of how to read the XML
+        representation of a simple domain model and synthesize an instance of
+        the model. The following model represents two dimensional integer
+        tables:<mediaobject>
+            <imageobject>
+              <imagedata fileref="Images/image006.jpg" />
+            </imageobject>
+          </mediaobject></para>
+
+        <para>Suppose that we have been supplied with an XML document that
+        contains a two-dimensional integer table. We want to read the XML and
+        produce an instance of the domain model. This situation occurs
+        frequently in system development when we are supplied with data that
+        has been exported from a third party tool and we want to process the
+        information using XMF. Alternatively, it may occur when we have used
+        XML as the format for storing data from a previous use of
+        XMF-Mosaic.</para>
+
+        <para>The following screen shot shows how the data could be expressed
+        in XML:<mediaobject>
+            <imageobject>
+              <imagedata fileref="Images/image008.jpg" />
+            </imageobject>
+          </mediaobject></para>
+
+        <para>The XML is to be parsed using a grammar that defines how to
+        match tables, rows and columns. An XML grammar consists of a
+        collection of clauses each of which defines how to match elements,
+        their attributes and their children.</para>
+
+        <para>An XML source (such as a file) is read and each element is
+        matched against the clauses in the grammar. When a clause matches
+        against the current XML input element, its action is performed causing
+        an XMF element to be synthesized.</para>
+
+        <para>Matching an element involves matching its tag, attributes and
+        its children. All of these components must match in order for the
+        match to be successful. Attribute values can be extracted as part of
+        the matching process and passed to the synthesizing actions. Values
+        synthesized by matching children can be used in the actions of a
+        parent. This way information can be extracted from the XML elements as
+        they are consumed and synthesized elements can be passed up the tree
+        as it is consumed. Eventually the result of the parse is the value
+        synthesized by the root element of the XML document. The following
+        tool screenshot shows the content of a source file that defines an XML
+        grammar for parsing two-dimensional tables. The file imports the
+        XML::Parser package in line 1 so that the grammar for parsing XML
+        grammars is available in the rest of the file. Line 4 imports the same
+        package so that names can be referenced in code (for example
+        ParserChannel in line 40).<mediaobject>
+            <imageobject>
+              <imagedata fileref="Images/image010.jpg" />
+            </imageobject>
+          </mediaobject></para>
+
+        <para>In order to use an XML grammar to parse and synthesize an XML
+        source, the grammar must be compiled. Compilation processes the
+        grammar, checks it for any errors and then translates it into an
+        efficient parsing table. The table is then used as the input to a
+        general XML parsing engine. Compilation checks for a number of errors.
+        In particular it checks that the grammar is LL(1). An LL(1) grammar
+        allows the parser to proceed based on one token lookahead. In this
+        case, tokens are XML elements. Fortunately, LL(1) grammars can be
+        easily checked and this is done automatically for you. If you specify
+        a non-LL(1) grammar, XMF will report a warning and indicate where you
+        have gone wrong.</para>
+
+        <para>To use a compiled grammar, you create an instance of
+        XML::Parser::ParserChannel. The constructor for this class accepts an
+        XML grammar and an XML input source. A parser channel has an operation
+        parse that is used to consume input from the XML source, to run the
+        parser and return the synthesized result:<mediaobject>
+            <imageobject>
+              <imagedata fileref="Images/image012.jpg" />
+            </imageobject>
+          </mediaobject></para>
+      </section>
+
+      <section>
+        <title>Dealing with References</title>
+
+        <para>XML data is tree-structured. This means that data elements
+        cannot be shared by multiple paths from the root element. This is not
+        true of XMF data elements, and computer data structures in general.
+        General data elements are graphs where individual elements may be
+        shared (or pointed to) by multiple parents.</para>
+
+        <para>This restriction on XML data representation is usually handled
+        using data identifiers and references. Any element that can be
+        referenced by multiple sources is allocated a unique identifier. One
+        of the occurrences of the element is translated into an XML tree and
+        all other occurrences are encoded in the reference source using the
+        identifier. It is then up to the interpretation of the XML data to
+        faithfully interpret the identifiers and their references. XMF manages
+        identifiers and references automatically providing they are
+        appropriately declared in the XML grammar. This section shows how this
+        is achieved using a simple example of encoding graphs using
+        XML.</para>
+
+        <para>The following model is used to represent graphs:<mediaobject>
+            <imageobject>
+              <imagedata fileref="Images/image014.jpg" />
+            </imageobject>
+          </mediaobject></para>
+
+        <para>A graph can be represented in XML as follows. A node can be
+        accessed by the containing graph through a number of routes: via the
+        nodes attribute or via the source or target attributes of edges.
+        Sharing of a node through multiple routes is encoded in the XML by
+        allocating a unique identifier to each node. Nodes are represented
+        using an XML element with the unique tag within the graph element and
+        referenced using their identifier via edges:<mediaobject>
+            <imageobject>
+              <imagedata fileref="Images/image016.jpg" />
+            </imageobject>
+          </mediaobject></para>
+
+        <para>We will synthesize an instance of the graph model using an XML
+        grammar. The grammar is defined as a named element in a package as
+        shown below:<mediaobject>
+            <imageobject>
+              <imagedata fileref="Images/image018.jpg" />
+            </imageobject>
+          </mediaobject></para>
+
+        <para>An XML element representing a node is parsed and an instance of
+        the class Graph::Node is synthesized by the clause defined below. A
+        node has attributes id and data which are matched and bound to clause
+        variables in line 31. The clause synthesizes a node which is
+        associated with the identifier bound to the variable id:<mediaobject>
+            <imageobject>
+              <imagedata fileref="Images/image020.jpg" />
+            </imageobject>
+          </mediaobject></para>
+
+        <para>Edges are parsed and synthesized by the clause defined below.
+        Instances of the class Graph::Edge refer to the graph nodes; but,
+        nodes are not available at this point in the parse since the XML
+        elements refer to the source and target nodes via their ids. An XML
+        parser can indicate that an identifier reference should be replaced
+        with the associated value that is synthesized elsewhere by including a
+        reference in the result of the clause as shown below:<mediaobject>
+            <imageobject>
+              <imagedata fileref="Images/image022.jpg" />
+            </imageobject>
+          </mediaobject></para>
+
+        <para>The following operation shows how the Graph grammar is used to
+        parse a file containing a graph encoded in XML.<mediaobject>
+            <imageobject>
+              <imagedata fileref="Images/image024.jpg" />
+            </imageobject>
+          </mediaobject></para>
+      </section>
+
+      <section>
+        <title>Representing Models in XML</title>
+
+        <para>Most modelling tools allow you to encode models using XML; often
+        this is the only way of saving and loading models to persistent
+        storage. The various versions of XMI for UML is an example of this
+        kind of model encoding. XMF-Mosaic allows models to be encoded in a
+        variety of ways and in particular allows you to develop your own
+        encoding that suits the domain with which you are modelling. This
+        section provides an overview of how models can be encoded using an
+        XMI-style XML format.</para>
+
+        <para>The following XML document shows a simple model
+        encoding:<mediaobject>
+            <imageobject>
+              <imagedata fileref="Images/image026.jpg" />
+            </imageobject>
+          </mediaobject></para>
+
+        <para>Models are just top-level packages containing standard elements
+        such as classes and sub-packages. Each model element is allocated a
+        unique identifier to facilitate cross model references. An example of
+        a reference occurs in the attributes of the model where the type of
+        the attribute is encoded as a reference to a class that is represented
+        in full elsewhere in the document.</para>
+
+        <para>The result of loading the XML model is shown below:<mediaobject>
+            <imageobject>
+              <imagedata fileref="Images/image028.jpg" />
+            </imageobject>
+          </mediaobject></para>
+
+        <para>The model is synthesized by parsing an XML grammar. The grammar
+        is shown below. Each identifier is registered against the associated
+        model element during the parse using :=:<mediaobject>
+            <imageobject>
+              <imagedata fileref="Images/image030.jpg" />
+            </imageobject>
+          </mediaobject></para>
+
+        <para>You should be careful when using references (instances of
+        XML::Parser::Ref) as initialization arguments in class instantiation
+        because class instantiation may process the arguments and expect them
+        to be data values of the referenced type rather than the reference
+        itself. In the following construction of a class we use a keyword
+        constructor since the parents may be references (in which case
+        addParent will fail since it expects a classifier rather than a
+        reference).<mediaobject>
+            <imageobject>
+              <imagedata fileref="Images/image032.jpg" />
+            </imageobject>
+          </mediaobject></para>
+
+        <para>The definition of Attribute below shows a typical scenario where
+        XML attributes encode information that must be processed in order to
+        synthesize the model element. In this case the multiplicity of the
+        attribute (whether it is atomic, a set type or a sequence type) is
+        encoded as an enumerated type that is processed in order to decide
+        what the type of the attribute will be.<mediaobject>
+            <imageobject>
+              <imagedata fileref="Images/image034.jpg" />
+            </imageobject>
+          </mediaobject></para>
+
+        <para>The following ClassRef definition shows how references are
+        synthesized:<mediaobject>
+            <imageobject>
+              <imagedata fileref="Images/image036.jpg" />
+            </imageobject>
+          </mediaobject></para>
+
+        <para>Finally, the following operation can be used to read a file
+        containing a model that is encoded in XML:<mediaobject>
+            <imageobject>
+              <imagedata fileref="Images/image038.jpg" />
+            </imageobject>
+          </mediaobject></para>
+      </section>
+    </section>
+
+    <section>
+      <title>Debugging XML Grammars</title>
+
+      <para>An XML parser channel has an attribute debug that can be used to
+      provide a trace of execution. If the flag is set:<mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image040.jpg" />
+          </imageobject>
+        </mediaobject></para>
+
+      <para>then output is produced that shows the XML input as it is
+      consumed, shows the result of actions as they are performed and shows
+      the clause variables as they are bound. The following is a partial trace
+      produced by reading a graph with debug set:<mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image042.jpg" />
+          </imageobject>
+        </mediaobject></para>
+    </section>
+  </section>
+
+  <section>
+    <title>The XML Parsing Grammar</title>
+
+    <para><mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image044.jpg" />
+        </imageobject>
+      </mediaobject></para>
+  </section>
+
+  <section>
+    <title>DOM Input Channel</title>
+
+    <para>The XML parser provided by XMF does not give direct access to the
+    XML elements in a document. The parser matches against the XML as it is
+    read and the parser actions are used to synthesize any XMF element.</para>
+
+    <para>Certain applications require access to the XML representation of the
+    data. For example, the XML model may be the domain model. In this case you
+    can write an XML parser that synthesizes an instance of the XML model.
+    This use case is supported directly in XMF by DOMInputChannel. The use of
+    this class is equivalent to writing a bespoke parser that synthesizes XML;
+    however, it is much more efficient because general parsing machinery is
+    not required to recognize the XML elements as they are encountered.</para>
+
+    <para>This section shows how DOMInputChannel works by providing a simple
+    example of its use.</para>
+
+    <para>Consider the management of some hierarchical data such as
+    classification trees, component descriptions, and organisation structures.
+    The data can be maintained as a database in XML format. Database queries
+    and update can be implemented as operations that work directly on the XML
+    data. The following Tree package defines operations that partially
+    implement such a database:<mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image046.jpg" />
+        </imageobject>
+      </mediaobject></para>
+
+    <para>The readDB operation uses a DOM input channel to read the contents
+    of a standard XML file. The result of performing the parse operation is an
+    XML document whose root element is the database. The constructor for the
+    class DOMInputChannel accepts an input channel that produces XML
+    characters when read.</para>
+
+    <para>The following operation uses the print operation of XML::Document to
+    write the database to a text file:<mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image048.jpg" />
+        </imageobject>
+      </mediaobject></para>
+
+    <para>Once the database has been read (or constructed by directly creating
+    instances of the XMLmodel). It can be manipulated using XOCL. The
+    following operation adds a child to an element in the
+    database:<mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image050.jpg" />
+        </imageobject>
+      </mediaobject></para>
+
+    <para>The following query operation uses pattern matching to select an
+    element:<mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image050.jpg" />
+        </imageobject>
+      </mediaobject></para>
+  </section>
+
+  <section>
+    <title>SAX Input Channel</title>
+
+    <para>XML input can be processed using an XML grammar or using a DOM input
+    channel. The former provides a convenient way of declaring XML patterns
+    and synthesizing XMF data. The latter provides a convenient way of
+    translating an XML input source into an instance of the XML model.
+    Occasionally, the XML instance is not required and the overhead of using
+    general parsing machinery seems unnecessary. For example, if we wanted to
+    count the number of elements in the input or check whether an element with
+    a given tag exists in the input.</para>
+
+    <para>For occasions where parsing is unnecessary and DOM is not required,
+    XMF provides a SAX input channel. A SAX input channel processes the XML
+    input by generating events each time an XML node is encountered in the
+    input. The channel has handlers that are called when the events are fired.
+    XMF works hard to ensure that the input is processed as efficiently as
+    possible and therefore, SAX input channels are appropriate for processing
+    very large XML data sources.</para>
+
+    <para>The key operations called on an instance of SAXInputChannel are as
+    follows:</para>
+
+    <para><programlisting>startElement(tag:Buffer,attributes:Buffer)</programlisting></para>
+
+    <para>This operation is called when each element is encountered in the
+    input. The tag of the element is supplied as a string buffer and the
+    attributes are supplied as a buffer containing instances of
+    XML::IO::SAXAttribute with attributes name and value both of type string
+    buffer. All buffers are reused in order to ensure the input is processed
+    as efficiently as possible. Therefore if you wish to retain the tag, or
+    the attribute names or attribute values then the buffers should be
+    transformed into the equivalent strings using toString.</para>
+
+    <para><programlisting>endElement(tag:Buffer)</programlisting></para>
+
+    <para>This operation is called when the end tag of each element is
+    encountered in the input. The tag is a string buffer that is subsequently
+    reused as above.</para>
+
+    <para><programlisting>characters(text:Buffer)</programlisting>This
+    operation is called when text is encountered in the input. The text is
+    supplied as a string buffer that is subsequently reused as above.</para>
+
+    <para><programlisting>parse()</programlisting>Call this operation to start
+    processing the input. No value is returned by default. Extend this
+    operation in sub-classes of SAXInputChannel to construct and return values
+    based on the operations defined above.</para>
+
+    <para><programlisting>SAXInputChannel(inch:InputChanel)</programlisting>A
+    constructor for SAX input channels. The argument is an input channel that
+    produces XML text.</para>
+
+    <para>This section shows how SAX input channels work in XMF by
+    implementing a DOM input channel in terms of a SAX input channel. The
+    following tool screenshot shows the class uses a stack to manage the XML
+    nodes as they are read and synthesized by the operations defined
+    above:<mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image054.jpg" />
+        </imageobject>
+      </mediaobject></para>
+
+    <para>When the input source is parsed, the intermediate XML nodes are
+    pushed and popped on the stack. Child nodes are popped when the end
+    element event occurs and added to the currently open element on the stack.
+    Eventually, the root node is left as the single stack element. The parse
+    just pops the root node, creates and returns an XML document:<mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image056.jpg" />
+        </imageobject>
+      </mediaobject></para>
+
+    <para>When the characters operation is called, a Text node is created and
+    pushed on the stack. Note how toString is used to copy the text on the
+    string buffer:<mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image058.jpg" />
+        </imageobject>
+      </mediaobject></para>
+
+    <para>When a new element node is encountered in the input we create a new
+    XML element object and push it on the stack. Between the start element
+    event and the associated end element event there will be any number of
+    events that create the children nodes. The children nodes will be pushed
+    on the stack. When the end element event occurs it is straightforward to
+    pop the child elements from the stack up to the parent element and modify
+    the parent by inserting the children:<mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image060.jpg" />
+        </imageobject>
+      </mediaobject></para>
+
+    <para>The end element event causes all the children that have been pushed
+    since the corresponding parent element node to be popped and
+    inserted:</para>
+
+    <para><mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image062.jpg" />
+        </imageobject>
+      </mediaobject></para>
+
+    <para><mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image064.jpg" />
+        </imageobject>
+      </mediaobject></para>
+  </section>
+
+  <section>
+    <title>XML Output</title>
+
+    <para></para>
+
+    <section>
+      <title>Introduction</title>
+
+      <para>When developing XMF applications it is likely that you will want
+      to generate XML from XMF data. This can be achieved in a number of ways
+      depending on the level of control and the amount of reuse that you want
+      to have over the output. This section describes approaches to XML
+      output. The most direct way of producing an XML document is to print the
+      characters, for example: <programlisting>format(out,”&lt;Class name=’~S’ id=’~S’/&gt;”,Seq{c.name(),c.path()}) </programlisting>This
+      approach to output provides complete control over the text that is
+      produced, but suffers from a lack of XML semantics – the format command
+      does not know it is processing an XML element.</para>
+
+      <para>There are two strategies for producing XML output that are more
+      attractive than directly writing characters:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Generating instances of the XML model and then sending the
+          instance a print message.</para>
+        </listitem>
+
+        <listitem>
+          <para>Using the XML::PrintXML::XML construct to specify output
+          patterns.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>The rest of this section describe the second of these
+      approaches.</para>
+    </section>
+
+    <section>
+      <title>XML Output Patterns</title>
+
+      <para>Consider the task of translating a model to an XML document. The
+      model consists of packages, classes, attributes and operations. The XML
+      tags reflect the type of model elements. Models contain multiple
+      references to the same model elements, this is encoded in the XML
+      document using attributes whose values are unique identifiers.</para>
+
+      <para>The following operation defines a mapping that writes a model
+      element to an XML document. It uses the XML::PrintXML::XML pattern
+      language:<mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image066.jpg" />
+          </imageobject>
+        </mediaobject></para>
+
+      <para>Line 12 starts a case analysis on the supplied element. The
+      CaseObj construct matches the supplied value (element) against patterns
+      consisting of the path to the direct classifier of the value followed by
+      a number of slot names defined by the classifier. If the value is a
+      direct instance of the classifier (i.e. its of operation returns the
+      named classifier) then the body of the matching CaseObj clause is
+      performed with the named slots bound to the corresponding slot
+      values.</para>
+
+      <para>The first pattern in line 13 matches against a package. The XML
+      pattern starting in line 14 specifies some XML to be sent to the
+      supplied output channel (out).</para>
+
+      <para>Line 15 defines some XML output. The output pattern is specified
+      in the same format as an XML element containing a tag and some
+      attributes. The tag name and the attribute names are all literal names
+      (you can also use strings or expressions in parentheses). The values of
+      attributes are expressions. When a pattern is evaluated, the character
+      are written to the supplied output channel; any expressions are
+      evaluated and the corresponding values are transformed to
+      strings.</para>
+
+      <para>The body of the element pattern ranges over lines 16 – 21. Element
+      bodies can be nested elements or program code. In 16 – 21 there is
+      program code that loops through the packages and classes bound in line
+      13 and calls writeXML to produce the appropriate output.</para>
+
+      <para>The package pattern is complete at line 22 where the terminating
+      tag is output.</para>
+
+      <para>Classes are output as follows:<mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image068.jpg" />
+          </imageobject>
+        </mediaobject></para>
+
+      <para>The example above shows that XML pattern directed output can be
+      nested. Line 33 uses a pattern to produce a classifier reference for the
+      parents of a class; this is nested inside the pattern started in line
+      30.</para>
+
+      <para>Attributes are represented in XML as an element with a nested
+      class reference for the type. The multiplicity of the attribute type is
+      encoded in the attribute:<mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image070.jpg" />
+          </imageobject>
+        </mediaobject></para>
+
+      <para></para>
+
+      <para><mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image072.jpg" />
+          </imageobject>
+        </mediaobject></para>
+
+      <para></para>
+
+      <para><mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image074.jpg" />
+          </imageobject>
+        </mediaobject></para>
+
+      <para></para>
+
+      <para><mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image076.jpg" />
+          </imageobject>
+        </mediaobject></para>
+
+      <para></para>
+
+      <para><mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image078.jpg" />
+          </imageobject>
+        </mediaobject></para>
+
+      <para></para>
+
+      <para><mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image080.jpg" />
+          </imageobject>
+        </mediaobject></para>
+
+      <para></para>
+
+      <para><mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image082.jpg" />
+          </imageobject>
+        </mediaobject></para>
+    </section>
+
+    <section>
+      <title>XML Output Channels</title>
+
+      <para></para>
+
+      <section>
+        <title>Introduction</title>
+
+        <para></para>
+      </section>
+
+      <section>
+        <title>Basic XML Output</title>
+
+        <para></para>
+      </section>
+
+      <section>
+        <title>Object Formatters</title>
+
+        <para></para>
+      </section>
+
+      <section>
+        <title>Name Space Formatters</title>
+
+        <para></para>
+      </section>
+
+      <section>
+        <title>Saving Models as XML</title>
+
+        <para></para>
+      </section>
+    </section>
+  </section>
+
+  <section>
+    <title>Raising Events</title>
+
+    <para></para>
+  </section>
+
+  <section>
+    <title>Deploying Java</title>
+
+    <para></para>
+
+    <section>
+      <title>Introduction</title>
+
+      <para></para>
+    </section>
+
+    <section>
+      <title>Deploying Models</title>
+
+      <para></para>
+    </section>
+
+    <section>
+      <title>Deploying Parsers</title>
+
+      <para></para>
+    </section>
+
+    <section>
+      <title>Deploying Factories</title>
+
+      <para></para>
+    </section>
+  </section>
+</chapter>

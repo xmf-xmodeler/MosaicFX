@@ -1,0 +1,147 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Introduction</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch23.html" title="Clients"><link rel="prev" href="ch23s01.html" title="Introduction"><link rel="next" href="ch23s03.html" title="Internal Clients"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id627246"></a>Introduction</h2></div></div></div><p>XMF supports three different types of clients.</p><p>Message : A message based client communicates by passing structured
+    messages to and from the kernel. Currently message based clients must be
+    written in Java as Eclipse plugins so that they are able to utilise
+    external Java libraries provided by XMF-Mosaic.</p><p>Internal : An Internal client is written in Java and communicates
+    over stream based data. Unlike Message based clients, internal clients
+    have no inherent messaging architecture although one could be easily built
+    on this foundation. Message based clients must be written in Java and are
+    run in the same process as the XMF kernel.</p><p>External : An external client are like internal clients and
+    communicate over stream based data. However external clients connect to
+    the XMF kernel (via XOS) using socket based communication. This means that
+    external clients can be written in any language that supports socket
+    communication and such clients can also be run using a distributed
+    architecture.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id651515"></a>Message Based Client</h3></div></div></div><p>This section describes how to construct both the Java (Eclipse)
+      and XMF implementation for a message based client. This is done by way
+      of a traffic light example. Such a style of tool might be used as a tool
+      to simulate a model using an external GUI. The implementation of this
+      client assumes a certain level of Eclipse knowledge, further information
+      about Eclipse can be found in Eclipse's help system or at
+      http://www.eclipse.org.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id626814"></a>Eclipse Implementation</h3></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id636374"></a>Dependencies</h4></div></div></div><p>A message based client is constructed as an Eclipse plugin.
+        Since it is necessary to use libraries provided by XMF-Mosaic, the new
+        client needs to declare this dependencies. The simplest way of doing
+        this is to import the XMF plugins com.ceteva.client and
+        com.ceteva.xmf into an Eclipse workspace, and then in the newly
+        created plugin declare the dependencies as illustrated below.</p><div class="mediaobject"><img src="Part3/Clients/Images/javaPluginXML.jpg"></div><p>Generally speaking, message based clients should connect to XOS
+        prior to the machine being started. Therefore the plugin must connect
+        as soon as it is started. This is achieved by way of the Eclipse early
+        startup interface which must be declared in the as illustrated below.
+        We will show later in this document how this facilitates the early
+        connection of the client.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id629476"></a>Basic structure</h4></div></div></div><p>The figure below illustrates a basic structure of message client
+        is shown below. A message client must extend com.ceteva.client.Client
+        and implement a number of abstract methods. The constructor for the
+        client must pass as an argument the name that this client is going to
+        identify itself as, in this case org.myproject.trafficlights. A method
+        must be implemented to process messages passed to the client, a
+        boolean return value indicates whether or not the passed message was
+        successfully processed. Finally the setEventHandler method is called
+        by XOS to set the handler for events, the general pattern is to record
+        the handler so that it can be usefully referenced in the future. In
+        this case the handler is scoped over the class.</p><div class="mediaobject"><img src="Part3/Clients/Images/javaClientSkeleton.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id680610"></a>Handling Messages</h4></div></div></div><p>A message consists of a name and a number of arguments. The
+        client we are building can potentially receive three messages: setRed,
+        setAmber and setGreen; each message has a single boolean argument. In
+        the figure below the incoming message is tested against the three
+        possible messages the client can handle. In addition to checking the
+        messages name, the messages arity is also checked. The ability to
+        check a message's arity enables the same message name to be handled in
+        different ways depending on the number of parameters passed.</p><p>In the case of this example the state of the message is simply
+        printed to standard output and true is returned to indicate to XOS
+        that the message has been successfully processed. If none of the
+        message handlers match then the false value is returned.</p><div class="mediaobject"><img src="Part3/Clients/Images/javaMessageHandler.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id608924"></a>Handling Calls</h4></div></div></div><p>Sometimes it is necessary for a client to be asked a question to
+        which it returns an answer. For example XMF may ask its traffic light
+        client the current value of the red light. This scenario is provided
+        by the call mechanism which is like a message but rather than the
+        return value indicating successful processing, it is an actual value
+        that XMF requires. When an XMF call is made then it switches to
+        synchronous communication rather than the aysynchronous communication
+        of regular message processing.</p><p>The figure below illustrates the pattern for implementing call
+        handlers. The method processCall is overridden to provide handlers for
+        the call. Return values must be of type Value and are formed by
+        passing primitive types into the constructor of Value. In this case a
+        null value is returned to indicate failure to handle the call.</p><div class="mediaobject"><img src="Part3/Clients/Images/javaCallHandler.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id609787"></a>Raising Events</h4></div></div></div><p>A client can send information to XMF by sending messages on the
+        event handler. In the example below a java method is implemented which
+        sends an event reporting the number of cars in a queue. An event is
+        constructed by asking the handler for a new event when supplied with
+        the event's and arity. The parameter values are then assigned to the
+        newly constructed event, in this case this is a single parameter
+        denotating the length of the queue. Finally the event is raised on the
+        handler. </p><div class="mediaobject"><img src="Part3/Clients/Images/javaEventRaising.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id627204"></a>Registering the Client</h4></div></div></div><p>As discussed at the beginning of this section, a message client
+        should generally connect to XMF prior to the machine being started.
+        The pattern for doing this is illustrated below in the context of the
+        traffic light example, the early startup method is called as a result
+        of the plugin's class implementing the IStartup interface (and the
+        declarative extension shown earlier in the plugin.xml file). This
+        method creates a new instance of the client and informs XOS of this
+        client by passing both the client's name and the client itself.</p><div class="mediaobject"><img src="Part3/Clients/Images/JavaPlugin.jpg"></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id647293"></a>XMF Implementation</h3></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id627333"></a>Architecture</h4></div></div></div><p>In this section we will show how a client can be modelled in XMF
+        that interfaces to the Eclipse client described in the previous
+        section.</p><p>The first step is to create a package to put the xmf
+        client.</p><div class="mediaobject"><img src="Part3/Clients/Images/xmfClientPackage.jpg"></div><p>The general architecture for an XMF message based client is
+        shown below. An event handler is defined which specialises the
+        abstract class Root::Clients::EventHandler, this describes how events
+        are received by the XMF client. Similarly a command interpreter is
+        defined which specialises the abstract class
+        Root::Clients::CommandInterpreter, this describes how both messages
+        (commands) and calls are sent to the Java client and how. A client is
+        then defined which specialises Root::Clients::Clients, this acts as a
+        wrapper to both the event handler and the command interpreter. The
+        next sections will examine each of these components in detail in the
+        context of the traffic light example.</p><div class="mediaobject"><img src="Part3/Clients/Images/xmfArchitecture.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id587120"></a>Sending Messages and Making Calls</h4></div></div></div><p>Messages are sent, and calls are made, in the command
+        interpreter. Generally speaking each message is wrapped in an
+        operation and the body of the operation contains a send command of the
+        form illustrated in the following example:</p><pre class="programlisting">@Operation setRed(state:Boolean)
+  @SendCommand(self)
+    setRed(state)
+  end
+end</pre><p>The body of the send command contains the command named
+        and the parameter values to bind to the command enclosed in brackets
+        (and separated by commas where there are more than one). In the above
+        example, when the setRed/1 operation is called then the setRed(..)
+        message is sent to the client. The figure below shows the command
+        interpreter implementing each of the different message types supported
+        by the Java client.</p><div class="mediaobject"><img src="Part3/Clients/Images/xmfClientInterpreter.jpg"></div><p>The above figure also gives an example of a call command which
+        is exactly the same for as a send command but is wrapped as a call
+        command. It is important to note that when a send command is made, the
+        message is sent and code execution continues regardless of whether the
+        message was successfully processed. By contrast when a call command is
+        made, code execution halts and waits for the return value of the call
+        command prior to continuing execution. The getRed() operation will
+        return the value of the result of the getRed() call command (a boolean
+        value).</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id570259"></a>Handling Events</h4></div></div></div><p>Events are processed in an event handler, the standard pattern
+        for writing these is shown below. When the event handler receives an
+        event, it passes the event and its parameters to the operation
+        dispatchEvent. This operation should be overridden to perform client
+        specific event handling. In the figure below the incoming event is
+        tested to see whether it has the name reportCarQueue, if so it is
+        passed to the readCarQueue method and simply printed to standard
+        output.</p><div class="mediaobject"><img src="Part3/Clients/Images/xmfClientHandler.jpg"></div><p>As we we will demonstrate in the next section, the event handler
+        is run in its own thread. This allows the event handler to process
+        events regardless of what is happening in the main thread of
+        execution.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id617700"></a>Putting it Together</h4></div></div></div><p>The figure below shows the standard approach to defining an XMF
+        client using the command interpreter and event handler. The
+        constructor for the client sets the clients name, this must match the
+        name defined in the Java client which in this case is
+        org.myproject.trafficLights. As shown below, the constructor then
+        creates an instance of both the command interpreter and the event
+        handler (note that if communication is uni-directional either the
+        command interpreter or event handler may be omitted as
+        appropriate).</p><div class="mediaobject"><img src="Part3/Clients/Images/xmfClient.jpg"></div><p>In addition to constructing the client, the above example
+        defines a futher operation runLights/0 which simply tests that the
+        command interpreter works by sending a number of messages.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id670556"></a>Starting the Communication</h4></div></div></div><p>In order to start the communication between XMF and the Java
+        client it is necessary to take two steps. The first step involves
+        informing XOS about the new Java client by adding details to its
+        startup.txt file which can be found in the directory
+        XMF_INSTALL/xmfMosaic/plugins/com.ceteva.xmf_x.x.x/Server (replacing
+        the x.x.x with the current version number of XMF, if there are
+        multiple versions then consider the largest number to be the most
+        recent). In this file you will see details of the existing Mosaic
+        clients, simply append the new client to this list as illustrated
+        below:</p><pre class="programlisting">-message :com.ceteva.mosaic:wait
+...
+-message :org.myproject.trafficlights:wait
+...</pre><p>The final step is to create an instance of the XMF client and
+        add it to XMF's client manager as shown below. If the client has an
+        event handler as in the traffic light example, then it is necessary to
+        start the event handler in its own independent thread so that it can
+        handle events independently of the main thread of execution. This can
+        be done using the pattern demonstrated below where a call to
+        Client::start/0 is wrapped in a fork. The code below also runs the
+        example operation defined in the previous section. </p><div class="mediaobject"><img src="Part3/Clients/Images/xmfRun.jpg"></div></div></div></div><p></p><p><img src="copyright.gif"></p></body></html>

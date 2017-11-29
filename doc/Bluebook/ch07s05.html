@@ -1,0 +1,78 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Debugging the Parser</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch07.html" title="Constructing an XML Parser and Generator"><link rel="prev" href="ch07s04.html" title="Example"><link rel="next" href="ch07s06.html" title="Generating XML"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id660921"></a>Debugging the Parser</h2></div></div></div><p>If debug has been set to true for a grammar, the console will
+    display a trace of pattern matches that have taken place during the
+    parsing process:</p><pre class="programlisting">Components::parseFile();
+&lt;ComponentModel&gt;
+  &lt;Component name='Displays'&gt;
+    BIND n = Displays
+    &lt;Port id='Displays:CurrentPosition' type='Long' name='CurrentPosition'&gt;
+      BIND n = CurrentPosition
+      BIND t = Long
+      BIND i = Displays:CurrentPosition
+    &lt;/Port&gt;
+    PUSH(&lt;Port d69cc1&gt;)
+    BIND x = &lt;Port d69cc1&gt;
+  &lt;/Component&gt;
+  PUSH(Seq{})
+  BIND xs = Seq{}
+  PUSH(Seq{})
+  PUSH(&lt;Port d69cc1&gt;)
+  PUSH(Seq{&lt;Port d69cc1&gt;})
+  BIND P = Seq{&lt;Port d69cc1&gt;}
+  PUSH(Seq{&lt;Port d69cc1&gt;})
+  BIND P = Seq{&lt;Port d69cc1&gt;}
+  PUSH(&lt;Component d6f173&gt;)
+  BIND x = &lt;Component d6f173&gt;
+  &lt;Component name='Navigation'&gt;
+    BIND n = Navigation
+    &lt;Port id='Navigation:CurrentPosition' type='LatLong' name='CurrentPosition'&gt;
+      BIND n = CurrentPosition
+      BIND t = LatLong
+      BIND i = Navigation:CurrentPosition
+    &lt;/Port&gt;
+    PUSH(&lt;Port d76f09&gt;)
+    BIND x = &lt;Port d76f09&gt;
+  &lt;/Component&gt;
+  PUSH(Seq{})
+  BIND xs = Seq{}
+  PUSH(Seq{})
+  PUSH(&lt;Port d76f09&gt;)
+  PUSH(Seq{&lt;Port d76f09&gt;})
+  BIND P = Seq{&lt;Port d76f09&gt;}
+  PUSH(Seq{&lt;Port d76f09&gt;})
+  BIND P = Seq{&lt;Port d76f09&gt;}
+  PUSH(&lt;Component d7c2d5&gt;)
+  BIND x = &lt;Component d7c2d5&gt;
+  &lt;Connector target='Navigation:CurrentPosition' source='Displays:CurrentPosition'&gt;
+    PUSH(Seq{})
+    BIND xs = Seq{}
+    PUSH(Seq{})
+    PUSH(&lt;Component d7c2d5&gt;)
+    PUSH(Seq{&lt;Component d7c2d5&gt;})
+    BIND xs = Seq{&lt;Component d7c2d5&gt;}
+    PUSH(Seq{&lt;Component d7c2d5&gt;})
+    PUSH(&lt;Component d6f173&gt;)
+    PUSH(Seq{&lt;Component d6f173&gt;,&lt;Component d7c2d5&gt;})
+    BIND C = Seq{&lt;Component d6f173&gt;,&lt;Component d7c2d5&gt;}
+    BIND sid = Displays:CurrentPosition
+    BIND tid = Navigation:CurrentPosition
+  &lt;/Connector&gt;
+  PUSH(&lt;Connector d86f69&gt;)
+  BIND x = &lt;Connector d86f69&gt;
+&lt;/ComponentModel&gt;
+PUSH(Seq{})
+BIND xs = Seq{}
+PUSH(Seq{})
+PUSH(&lt;Connector d86f69&gt;)
+PUSH(Seq{&lt;Connector d86f69&gt;})
+BIND N = Seq{&lt;Connector d86f69&gt;}
+PUSH(Seq{&lt;Connector d86f69&gt;})
+PUSH(Seq{&lt;Component d6f173&gt;,&lt;Component d7c2d5&gt;})
+BIND C = Seq{&lt;Component d6f173&gt;,&lt;Component d7c2d5&gt;}
+BIND N = Seq{&lt;Connector d86f69&gt;}
+PUSH(&lt;ComponentModel d8a323&gt;)</pre><p>The parser starts at the root of the grammar tree and calls each
+    element in turn. Whenever an XML element is encountered that matches a
+    grammar element, the values of variables are bound with the attributes of
+    the element. Once successfully bound, the action associated with the
+    grammar expression is performed to create the appropriate model
+    instance/s.</p><p>Once you are happy with the grammar, the debug option should be
+    switched off for efficient execution of the parser.</p></div><p></p><p><img src="copyright.gif"></p></body></html>

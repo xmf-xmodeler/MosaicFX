@@ -1,0 +1,1800 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"-->
+<chapter>
+  <title>Working with Syntax</title>
+
+  <para></para>
+
+  <section>
+    <title>Introduction</title>
+
+    <para>This chapter describes XMF-Mosaic's powerful facilities for capturing
+		and parsing textual syntaxes. This is important when you wish to develop
+		using a specialised textual programming language, or create parsers
+		for existing programming languages.</para>
+
+    <para>This document describes how to use XMF-Mosaic to parse textual
+    languages and consequently synthesize elements. A textual language is
+    parsed when it is consumed character-by-character and checked against
+    rules (a grammar) governing legal sequences of characters. As text is
+    parsed, the grammar rules can perform actions that construct (or
+    synthesize) new elements.</para>
+
+    <para>A textual language can synthesize anything. For example, if we define a
+    domain model representing two-dimensional tables then a textual language
+    can be defined that, when parsed, synthesizes instances of the class
+    Table2D.</para>
+
+    <para>All textual interaction with XMF-Mosaic (for example file based or
+    console based) is governed using a parser based on a grammar for XOCL. In
+    this case the parser synthesizes XOCL program code that is subsequently
+    passed to the XOCL compiler or the command interpreter.</para>
+
+    <para>XOCL provides a powerful mechanism that allows the XOCL grammar to
+    be arbitrarily extended with new language features (becoming an extensible
+    language). User defined grammars can be added incrementally as modules to the
+    XOCL grammar. Providing the new extension synthesizes valid program code
+    then the new language construct is assimilated into XOCL.</para>
+
+    <para>Working with grammars that synthesize program code occurs frequently
+    when defining textual languages. The synthesizing actions are often required to
+    produce large amounts of program code from a small amount of text (after
+    all this is the point of defining a language). XMF provides technology that
+    vastly reduces the amount of work necessary to define the synthesizing
+    actions; the technology is called quasi-quotes.</para>
+
+    <para>Quasi-quotes are used to define code templates. A code template is a
+    mapping from code fragments to a program by inserting the code fragments
+    into a code pattern. The result of applying a template can be supplied as
+    an argument to subsequent templates. Very large programs can be
+    synthesized from humble beginnings.</para>
+  </section>
+
+  <section>
+    <title>Grammar and Text Processing</title>
+
+    <para></para>
+
+    <section>
+      <title>Introduction</title>
+
+      <para></para>
+    </section>
+
+    <section>
+      <title>A Simple language Grammar</title>
+
+      <para>To construct a minimal textual language we must define a domain model
+      and decide how instances of the model will look when rendered in text.
+      We must then define how to produce the textual representation from an
+      instance and how to synthesize an instance from a textual
+      representation.</para>
+
+      <para>This section shows how all aspects of this process are achieved in
+      XMF-Mosaic. We will assume that we are defining a language from a domain
+      model rather than reverse engineering a domain model from a textual language.
+      All aspects apply to both of these activities.</para>
+
+      <para>Our domain model is that for two-dimensional tables of integers. A
+      table consists of a collection of rows; each row is a sequence of column
+      values. The model is shown below:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image004.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>Once we have decided on a domain model we can define a textual
+      representation for instances of the model. There may be more than one
+      representation (when dealing with legacy languages this is likely to be the
+      case). If instances can be synthesized from more than one textual
+      representation then this can easily be accommodated by defining more
+      than one grammar. In this example we will keep it simple by defining a
+      single representation as follows:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image006.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The task is now to define how to translate from instances of the
+      model to the text and back again. The rest of this section steps through
+      the complete definition of the model, its mapping to text and its
+      synthesis from text. The example is given as a complete XOCL program
+      that can be compiled and loaded.</para>
+
+      <para>The header of the file must import all the name spaces necessary
+      to define the mappings:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image008.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>Lines 1 and 2 import grammars that define parsing rules used in
+      the rest of the file. Line 1 imports the XOCL grammar that allows us to
+      write XOCL code. Virtually all program files start with this line. Line
+      2 imports the grammar that defines the textual languages for writing
+      grammars (the parsing and synthesis rules for writing grammars are
+      written in themselves).</para>
+
+      <para>Lines 4 and 5 import name spaces that define names referenced in
+      the rest of the file. Line 4 imports the XMF parsing machinery that
+      allows us to create a parse machine state and set it running. Line 5
+      imports the IO package that allows us to open files, read and write
+      channels.</para>
+
+      <para>We have already seen the domain model. It was originally defined
+      in a text file and then displayed as a diagram. The structure of tables
+      is defined below:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image010.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>We would like to be able to store tables in files. The following
+      operation opens an output file channel and supplies it to the write
+      operation for the table. By separating out the file name and the output
+      operation we allow tales to be sent to other types of output channel
+      (such as stdout):</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image012.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The output operation write is defined below. It formats the table
+      to the output channel and sends each row a write message.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image014.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>We want to be able to read formatted tables from text files. We do
+      this to create a table and are unlikely to read a table by sending an
+      existing table a message. XMF allows operations to be defined in classes
+      and called via the class (much like static methods in Java). Of course
+      the value of self is not defined in operations that are used this
+      way.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image016.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>Note that in line 36 we reference the operation read via the
+      containing class Table2D.</para>
+
+      <para>The read operation must parse the text from the supplied input
+      channel and synthesize a table (assuming that the input is syntactically
+      correct). To parse an input source we must create an instance of a
+      parsing machine initialised with a grammar and the input source. The
+      package Parser::Machine defines the class State that is an initial
+      parsing machine state:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image018.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>A parsing machine state provides an operation run that is supplied
+      with a starting non-terminal name. The machine will use the rule with
+      the supplied name to start the parse. If the parse is successful then
+      the synthesized value is returned, otherwise an exception is raised
+      describing the parse error.</para>
+
+      <para>We can take advantage of the operation that writes a table to an
+      output channel to produce a convenient string representation for a
+      table. The XMF command interpreter always uses the toString operation to
+      display values at the console. The following operation uses a string
+      output channel to capture the string representation of a table:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image020.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The class Row is defined simply as follows:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image022.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The language is complete except for the definition of a grammar. A
+      grammar definition can occur within a class definition or can be added
+      to a class using a context definition. It is somewhat a matter of taste;
+      in general it is better to organise XMF source code as a collection of
+      small files that are composed using a manifest file. We have separated
+      out the grammar definition in this example to keep things simple:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image024.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>A grammar consists of rules or clauses that define how to parse
+      and synthesize individual syntax groups. In the example above we have
+      the group of rows (lines 88 – 90) and the group of tables (lines 84 –
+      86).</para>
+
+      <para>A table is defined to be the keyword table followed by a sequence
+      of rows, followed by the keyword end. If this is successfully recognized
+      then the action (contained within { and }) synthesizes an instance of
+      the class Table2D (a restriction on grammars is that absolute paths
+      should be used to reference named elements). The variable rows is bound
+      to the sequence of rows recognized in line 84. Variables bound in this
+      way can be referenced in actions; rows is used to initialize the new
+      instance of the table in line 85.</para>
+
+      <para>A row is defined to be the keyword row followed by a sequence of
+      integers, followed by the keyword end. The name Int is built in to XMF
+      grammars and defines the syntax of integers.</para>
+    </section>
+
+    <section>
+      <title>Debugging</title>
+
+      <para>When parsing input it is possible that there is a bug in the
+      grammar. This can lead to incorrectly parsed input or an erroneously
+      reported parse error. XMF provides a trace mechanism that allows you to
+      see the steps of the parsing machine as it proceeds. Each grammar has a
+      boolean slot called debug that can be used to toggle the trace
+      information. The following example shows par of the trace output for the
+      table language:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image026.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>As the parse proceeds the trace shows the names of the clauses
+      that are tried. At each step the parse state has a stack that maintains
+      the values synthesized by parse actions. The top value on this stack is
+      displayed in the trace (TOS =). The trace displays when terminals are
+      successfully matched. The trace also displays when expectations are not
+      matched by the input (not necessarily indicating an error). For example,
+      the grammar entry Int* is terminated when an integer is expected but the
+      terminating keyword end is encountered.</para>
+
+      <para>The following tool snapshot shows a very simple language
+      definition for performing arithmetic calculations. The example shows
+      that grammars can be defined as a stand-alone global variable
+      (Calculator), although they are more often used in conjunction with
+      classes. The console shows the result after compiling and loading the
+      file and invoking the calculator operation:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image028.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The following tool snapshot shows a grammar for a tree language
+      (based on XML). The language synthesizes a nested collection of
+      sequences. It is interesting because it shows the use of predicates in
+      the grammar (line 15) where values bound in from actions in a clause are
+      used to perform checks during the parse. The start and end tag of a
+      composite element must be the same for the parse to succeed.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image030.jpg" />
+        </imageobject>
+      </mediaobject>
+    </section>
+
+    <section>
+      <title>XBNF Grammar</title>
+
+      <para>XMF grammars are written in a textual language called XBNF. This
+      language is very like extended BNF with actions written in XOCL. XBNF
+      itself can be considered a language that supports language definition; it has
+      a domain model and a grammar.</para>
+    </section>
+
+    <section>
+      <title>The Grammar Domain Model</title>
+
+      <para>An instance of the following model is synthesized when you define
+      an XBNF grammar:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image032.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The rest of this section provides an overview of the components of
+      the XBNF model.</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Grammar: A grammar defines a number of clauses that are used
+          to parse input and synthesize elements. A grammar may have a
+          collection of parent grammars from which it inherits clauses. If a
+          grammar inherits multiple clauses with the same name then they are
+          merged using disjunction.</para>
+        </listitem>
+
+        <listitem>
+          <para>Clause: A clause is a parse rule. The name of the clause is a
+          non-terminal of the grammar and can be called from other clauses in
+          the grammar. The body of a clause is a recognizer which defines how
+          to parse input and synthesize elements.</para>
+        </listitem>
+
+        <listitem>
+          <para>Recognizer</para>
+        </listitem>
+
+        <listitem>
+          <para>Action: An action consumes no input and cannot cause the parse
+          to succeed or fail. When an action is encountered in the parse it is
+          evaluated to synthesize a value. The value produced by the action is
+          pushed onto the parse stack.</para>
+        </listitem>
+
+        <listitem>
+          <para>And: A conjunction of recognizers is used to sequence the left
+          then the right components when encountered during a parse. This
+          succeeds when the left then the right components succeed and
+          synthesizes the value produced by the right component.</para>
+        </listitem>
+
+        <listitem>
+          <para>At: A meta-character used to define how to escape from the
+          current grammar and switch to another grammar.</para>
+        </listitem>
+
+        <listitem>
+          <para>Bind: A bind has a name and a component recognizer. It
+          succeeds when the component succeeds and binds the name to the
+          synthesized value.</para>
+        </listitem>
+
+        <listitem>
+          <para>Call: A call references a clause by name. Control switches to
+          the named clause and succeeds when the named clause succeeds. The
+          value synthesized by the parse is that produced by the called
+          clause.</para>
+        </listitem>
+
+        <listitem>
+          <para>EOF: Succeeds when the end of input is encountered.</para>
+        </listitem>
+
+        <listitem>
+          <para>Int : Succeeds when the next input token is an integer;
+          synthesizes the integer.</para>
+        </listitem>
+
+        <listitem>
+          <para>Name : Succeeds when the next input token is a name;
+          synthesizes a string.</para>
+        </listitem>
+
+        <listitem>
+          <para>Not : Succeeds when the component recognizer fails. Note that
+          this does not synthesize anything and bindings occurring within the
+          component recognizer are not available after the negation
+          succeeds.</para>
+        </listitem>
+
+        <listitem>
+          <para>Opt : An optional recognizer succeeds and will consume input
+          if the component recognizer matches the input. No value is
+          synthesized.</para>
+        </listitem>
+
+        <listitem>
+          <para>Or : A disjunction succeeds when either of the component
+          recognizers succeed. Bindings established within the components are
+          not available outside the disjunction. No value is synthesized. When
+          a disjunction is encountered, the left recognizer is tried and the
+          right recognizer is recorded as a choice point. If the parse
+          subsequently fails then the parser backtracks to the most recently
+          established choice point and tries the alternative.</para>
+        </listitem>
+
+        <listitem>
+          <para>ParseError : Exception raised when an error occurs during
+          parsing. An error occurs when the input cannot match the current
+          recognizer and there are no alternative recognizers (arising from
+          disjunctions) left to try.</para>
+        </listitem>
+
+        <listitem>
+          <para>Plus : Succeeds when the component recognizer has been applied
+          at least once to the input. Synthesizes a sequence of values
+          produced by each application of the component.</para>
+        </listitem>
+
+        <listitem>
+          <para>Predicate : Succeeds when the evaluation of the predicate
+          returns true otherwise causes the parse to fail.</para>
+        </listitem>
+
+        <listitem>
+          <para>Star : Succeeds when the component recognizer has been applied
+          0 or more times to the input. Synthesizes a sequence of values
+          produced by each application of the component.</para>
+        </listitem>
+
+        <listitem>
+          <para>Str : Succeeds when the next input token is a string;
+          synthesizes the string.</para>
+        </listitem>
+
+        <listitem>
+          <para>Terminal : Succeeds when the next input token is a named
+          terminal string. No value is synthsized.</para>
+        </listitem>
+
+        <listitem>
+          <para>Token : The parser uses a tokenizer to process the raw stream
+          of input characters into a stream of input tokens.</para>
+        </listitem>
+
+        <listitem>
+          <para>TypeCheck : The value synthesized by the component recognizer
+          is checked against a type referenced as a path. If the value is of
+          the specified type then the parse proceeds otherwise it
+          fails.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>The XBNF Grammar</title>
+
+      <para></para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image034.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image036.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image038.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image040.jpg" />
+        </imageobject>
+      </mediaobject>
+    </section>
+
+    <section>
+      <title>Tokens</title>
+
+      <para></para>
+    </section>
+  </section>
+
+  <section>
+    <title>XMF Execution Architecture</title>
+
+    <para></para>
+
+    <section>
+      <title>Introduction</title>
+
+      <para>Execution of XOCL programs or console commands conforms to a
+      standard execution architecture. This architecture is extensible; new
+      language constructs can be added dynamically. This section describes the
+      basic features of the XMF execution architecture and how the extension
+      mechanism works so that new languages can be embedded within XOCL.</para>
+
+      <para>The basic execution process parses an input source and synthesizes
+      a performable element. XMF provides a large number of performable
+      elements in XOCL and its various language extensions. You can easily
+      define your own type of performable elements in terms of how they are
+      parsed and executed.</para>
+    </section>
+
+    <section>
+      <title>Performable Elements</title>
+
+      <para>An XMF performable element implements an interface that supports
+      its evaluation. Evaluation can occur in one of two ways:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Interpretation. This occurs via the element’s eval operation and
+      invokes an interpreter that inspects the structure of the element and
+      returns its value. The eval operation takes arguments that define the
+      context of the interpretation. The context defines the value of self,
+      the value of any variables and the name spaces that are imported at the
+      point of evaluation.</para>
+        </listitem>
+		<listitem>
+		  <para>Compilation. This occurs via the element’s compile operation and
+      invokes a compiler that translates the receiver into a sequence of
+      XMF-VM instructions. The compilation operation takes a number of
+      arguments that define the compilation context.</para>	
+		</listitem>
+      </itemizedlist>      
+
+      <para>In both cases, as far as the user of XMF is concerned, the key
+      factor is that the target of evaluation is an instance of
+      XCore::Performable. Therefore, any user interface that executes
+      interpretation or compilation must translate from input to a performable
+      element.</para>
+
+      <para>The majority of user interfaces to this process accept text as
+      input. The text is parsed using a grammar and a performable instance is
+      synthesized. Therefore, to hook into the evaluation process of XMF you
+      need to understand how to write grammars that recognize new language
+      constructs and synthesize performable elements. Fortunately, there are a
+      number of XMF technologies that ease this activity.</para>
+
+      <para>The following example shows how a grammar that synthesizes
+      performable elements is linked into the XMF evaluation architecture. The
+      example is a simplified version of the XMF top level command
+      interpreter:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image042.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The eval operation accepts a grammar argument in line 8. The
+      grammar should synthesize a performable instance that is subsequently
+      evaluated in line 26. If OCL::OCL.grammar is supplied to eval then the
+      operation behaves like the XMF-Mosaic top level command
+      interpreter.</para>
+
+      <para>Compilation of performable elements occurs when you compile an XMF
+      source file. The compiler reads the input source, synthesizes a
+      performable element, compiles the element to a sequence of machine
+      instructions and then writes the instructions to a binary file.</para>
+
+      <para>Instead of writing to a binary file, the instructions can be
+      transformed to a compiled operation using the operation
+      Compiler::compileToFun as shown below:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image044.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The free variables of the element are calculates in line 18 and
+      used as the argument names for the operation constructed in line
+      25.</para>
+
+      <para>The key feature of operations eval and compile is that the XML
+      evaluation architecture reads sources of XMF program code, parses the
+      input using a grammar, synthesizes an instance of XCore::Performable and
+      then interprets or compiles the element.</para>
+
+      <para>XOCL allows new language constructs to be added as describes in
+      the following section. The new constructs are defined as grammars that
+      are integrated into the XOCL grammar. Language extensions that are added
+      in this way should therefore synthesize performable elements.</para>
+    </section>
+
+    <section>
+      <title>Syntax Extensions</title>
+
+      <para></para>
+    </section>
+  </section>
+
+  <section>
+    <title>Synthesising Syntax</title>
+
+    <para></para>
+
+    <section>
+      <title>Introduction</title>
+
+      <para>Language definitions in XMF-Mosaic are defined as grammars that
+      synthesize performable elements. The package OCL defines a complete
+      language of performable classes. A convenient way of defining a new
+      language feature is to define a grammar that synthesizes instances of
+      OCL classes. This section describes the classes in the OCL package and
+      how to use them to define new language features.</para>
+    </section>
+
+    <section>
+      <title>The OCL Package</title>
+
+      <para>The OCL package defines a language whose elements are extensions
+      of XCore::Performable. The language has a concrete syntax that is
+      defined by the grammar OCL::OCL.grammar. This grammar synthesizes
+      instances of the OCL classes. All of XMF-Mosaic is written in this
+      language.</para>
+
+      <para>Each class in the OCL package has one or more constructors. These
+      constructors can be used to synthesize performable elements when
+      defining new language constructs. This section defines the OCL class
+      constructors.</para>
+
+      <para>The table below lists all of the main OCL class constructors. The
+      constructors are defined in the first column and the second column
+      describes what the class implements and the types of the arguments. When
+      specifying the types of the arguments we refer to performable elements
+      as ‘exps’.</para>
+
+      <table>
+        <title></title>
+
+        <tgroup cols="2">
+          <tbody>
+            <row>
+              <entry>Addp(left,right)</entry>
+
+              <entry>Creates an add pattern. An example is the argument
+              pattern in the following operation: @Operation(l + r) l
+              end.</entry>
+            </row>
+
+            <row>
+              <entry>Apply(operator,args)</entry>
+
+              <entry>The operator expression is applied to the sequence of
+              argument expressions, for example f(1,2,3).</entry>
+            </row>
+
+            <row>
+              <entry>BinExp(left,binOp,right)</entry>
+
+              <entry>A binary expression. The binary operator is a string. An
+              example is: x + 1.</entry>
+            </row>
+
+            <row>
+              <entry>BoolExp(value)</entry>
+
+              <entry>A boolean value. The value argument should be either true
+              or false.</entry>
+            </row>
+
+            <row>
+              <entry>CollExp(collection,collOp,args)</entry>
+
+              <entry>A collection expression. The collOp is a string naming a
+              standard collection expression. For example
+              S-&gt;including(x).</entry>
+            </row>
+
+            <row>
+              <entry>Condp(pattern,condition)</entry>
+
+              <entry>A condition pattern. The condition is a boolean values
+              expression. For example the following pattern in a case
+              statement: @Case c of Class(name) when name &lt;&gt; “C” do name
+              end end</entry>
+            </row>
+
+            <row>
+              <entry>ConsExp(head,tail)</entry>
+
+              <entry>A pair constructing expression. For example Seq{1 |
+              s}.</entry>
+            </row>
+
+            <row>
+              <entry>Consp(head,tail)</entry>
+
+              <entry>A pair pattern. For example in the following operation
+              argument pattern: @Operation(Seq{h | t}) h end.</entry>
+            </row>
+
+            <row>
+              <entry>Constp(const)</entry>
+
+              <entry>A constant pattern. The value of the constant should be
+              an integer, string, boolean or float. For example in the
+              following case statement: @Case x of 10 do “10” end end</entry>
+            </row>
+
+            <row>
+              <entry>ContextDef(path,element)</entry>
+
+              <entry>A context definition as occurring at the top level of a
+              source file. Both the path and the element are expressions. It
+              is equivalent to path.add(element).</entry>
+            </row>
+
+            <row>
+              <entry>ContextDef(path,element,isForward)</entry>
+
+              <entry>As for ContextDef except that the isForward boolean
+              argument controls whether or not the element is initialised
+              after it is added to the container. This is useful when loading
+              multiple definitions from files where the definition contain
+              mutual dependencies.</entry>
+            </row>
+
+            <row>
+              <entry>Dot(target,name)</entry>
+
+              <entry>A slot reference. The target is an expression and the
+              name is a string.</entry>
+            </row>
+
+            <row>
+              <entry>FloatExp(prePoint,postPoint)</entry>
+
+              <entry>A slot expression. The pre and post points are string
+              representations of the numbers before and after the decimal
+              point.</entry>
+            </row>
+
+            <row>
+              <entry>HeadUpdate(seq,value)</entry>
+
+              <entry>Update the head of a sequence as in S-&gt;head :=
+              e.</entry>
+            </row>
+
+            <row>
+              <entry>If(test,conseq,alt)</entry>
+
+              <entry>An if expression. Each of the arguments are
+              expressions.</entry>
+            </row>
+
+            <row>
+              <entry>ImportIn(nameSpace,body)</entry>
+
+              <entry>A local import. Both arguments are expressions. For
+              example: import namespace in MyClass(YourClass(1,2,3))
+              end</entry>
+            </row>
+
+            <row>
+              <entry>Includingp(set,element)</entry>
+
+              <entry>An including pattern. Both the set and element are
+              patterns. For example the element selection pattern occurring as
+              the argument in the following operation:
+              @Operation(S-&gt;including(x)) x end</entry>
+            </row>
+
+            <row>
+              <entry>Instantiate(class,args)</entry>
+
+              <entry>A keyword instantiation expression. The class is an
+              expression and the arguments are key args. For example:
+              Class[name=”C”].</entry>
+            </row>
+
+            <row>
+              <entry>IntExp(value)</entry>
+
+              <entry>An integer constant expression. The value is an
+              integer.</entry>
+            </row>
+
+            <row>
+              <entry>IterExp(collection,iterOp,name,body)</entry>
+
+              <entry>An iteration expression where the collection and body are
+              expressions and the iterOp and name are strings. The iterOp
+              should be one of the strings: “select”, “collect”, “reject”. For
+              example: S-&gt;collect(x | x + 1).</entry>
+            </row>
+
+            <row>
+              <entry>Iterate(collection,name,accumulator,value,body)</entry>
+
+              <entry>An iterate expression where the collection, value and
+              body are all expressions and the name and accumulator are
+              strings. For example: S-&gt;iterate(x y = 100 | x + y)</entry>
+            </row>
+
+            <row>
+              <entry>KeyArg(name,value)</entry>
+
+              <entry>A key arg is a value used in an Instantiate
+              expression.</entry>
+            </row>
+
+            <row>
+              <entry>Keyp(name,pattern)</entry>
+
+              <entry>A keyword pattern occurring in an instance of the
+              Keywordp pattern. The name is a string.</entry>
+            </row>
+
+            <row>
+              <entry>Keywordp(class,names,keys)</entry>
+
+              <entry>A keyword constructor pattern. The class is a string and
+              the names are a sequence of strings. To represent the class
+              P::Q::C the class arg is “P” and the names are Seq{“Q”,”C”}. The
+              keys are a sequence of Keyp instances.</entry>
+            </row>
+
+            <row>
+              <entry>Let(bindings,body)</entry>
+
+              <entry>A let expression. The bindings argument is a sequence of
+              instances of ValueBinding and the body is an expression. For
+              example: let x = 10; y = 20 in x + y end</entry>
+            </row>
+
+            <row>
+              <entry>NamedType()</entry>
+
+              <entry>A type expression. With no arguments the type represents
+              XCore::Element.</entry>
+            </row>
+
+            <row>
+              <entry>NamedType(path)</entry>
+
+              <entry>A type expression where the argument is a sequence of
+              strings determining the path (relative to current imports) of
+              the type.</entry>
+            </row>
+
+            <row>
+              <entry>Negate(exp)</entry>
+
+              <entry>A not expression.</entry>
+            </row>
+
+            <row>
+              <entry>Objectp(class,names,slots)</entry>
+
+              <entry>A positional constructor pattern. The class is a string
+              and the names are a sequence of strings. To represent the class
+              P::Q::C the class arg is “P” and the names are Seq{“Q”,”C”}. The
+              slots is a sequence of patterns. For example the argument
+              pattern in the following operation: @Operation(C(x,10)) x
+              end</entry>
+            </row>
+
+            <row>
+              <entry>OpType(domains,range)</entry>
+
+              <entry>The type of an operation. The domains are a sequence of
+              type expressions and the range is a type expression. For example
+              the type of the argument in the following operation:
+              @Operation(f: (Integer,Integer)-&gt;Integer):Integer f(1,2)
+              end</entry>
+            </row>
+
+            <row>
+              <entry>Operation(name,parameters,type)</entry>
+
+              <entry>An operation expression. The name is a string, the
+              parameters are a sequence of patterns, the type is a type
+              expression.</entry>
+            </row>
+
+            <row>
+              <entry>Operation(name,parameters,type,performable)</entry>
+
+              <entry>As above where the performable argument is an expression
+              which is the body of the operation.</entry>
+            </row>
+
+            <row>
+              <entry>Operation(name,parameters,type,performable,documentation)</entry>
+
+              <entry>As above where the documentation is a string.</entry>
+            </row>
+
+            <row>
+              <entry>Operation(name,parameters,type,performable,documentation,isMultiArgs)</entry>
+
+              <entry>As above where the isMultiArgs is a boolean that
+              determines whether the operation can accept a variable number of
+              arguments.</entry>
+            </row>
+
+            <row>
+              <entry>Order(first,second)</entry>
+
+              <entry>A sequenced expression where the arguments are
+              expressions. For example: x.m(1); y.n(2)</entry>
+            </row>
+
+            <row>
+              <entry>ParametricType(constructor,args)</entry>
+
+              <entry>A type expression of the form C(T).</entry>
+            </row>
+
+            <row>
+              <entry>Parentheses(exp)</entry>
+
+              <entry>Parentheses in source code are recorded in the abstract
+              syntax using an instance of Parentheses. For evaluation purposes
+              this behaves exactly like the expression argument.</entry>
+            </row>
+
+            <row>
+              <entry>ParserImport(names,exp)</entry>
+
+              <entry>Not supported.</entry>
+            </row>
+
+            <row>
+              <entry>Path(root,names)</entry>
+
+              <entry>A path expression consists of an expression root and a
+              sequence of names. For example Root::XCore::Class.</entry>
+            </row>
+
+            <row>
+              <entry>PathUpdate(path,value)</entry>
+
+              <entry>The update of a name in a name space. The path is a an
+              instance of the class Path and the value is an expression. For
+              example: P::Q::X := 100</entry>
+            </row>
+
+            <row>
+              <entry>Self()</entry>
+
+              <entry>A reference to the current value of self.</entry>
+            </row>
+
+            <row>
+              <entry>Send(target,message,args)</entry>
+
+              <entry>Send a message to an element. The target is an
+              expression. The message is a string and the args is a sequence
+              of expressions. For example: o.m(a,b,c)</entry>
+            </row>
+
+            <row>
+              <entry>SetExp(collType,elements)</entry>
+
+              <entry>A set expression constructs sets and sequences. The
+              collType argument is either “Set” or “Seq” and the elements is a
+              sequence of expressions. For example Set{1,2,3} or
+              Seq{1,2,3}.</entry>
+            </row>
+
+            <row>
+              <entry>SlotUpdate(target,name,value)</entry>
+
+              <entry>Update the slot of an object. The target and value are
+              expressions and the name is a string. For example: o.n :=
+              100</entry>
+            </row>
+
+            <row>
+              <entry>StrExp(value)</entry>
+
+              <entry>A string constant. The value argument is a
+              string.</entry>
+            </row>
+
+            <row>
+              <entry>Syntaxp(exp)</entry>
+
+              <entry>A syntax pattern.</entry>
+            </row>
+
+            <row>
+              <entry>TailUpdate(seq,value)</entry>
+
+              <entry>Update the tail of a sequence as in S-&gt;tail :=
+              e.</entry>
+            </row>
+
+            <row>
+              <entry>Throw(exp)</entry>
+
+              <entry>Throw the value of the expression as in: throw Error(“no
+              handler”)</entry>
+            </row>
+
+            <row>
+              <entry>Try(body,name,handler)</entry>
+
+              <entry>A try expression. The body and handler are expressions
+              and the name is a string. For example: try body catch(e) handler
+              end</entry>
+            </row>
+
+            <row>
+              <entry>ValueBinding(name,value)</entry>
+
+              <entry>A value binding is used in let expressions to bind names
+              to values. The name is a string and the value is an
+              expression.</entry>
+            </row>
+
+            <row>
+              <entry>Var(name)</entry>
+
+              <entry>A variable reference. The name is a string.</entry>
+            </row>
+
+            <row>
+              <entry>Var(name,lineCount,charCount)</entry>
+
+              <entry>A variable reference where the occurrence of the variable
+              in source code has been recorded. The line and char count are
+              both integers.</entry>
+            </row>
+
+            <row>
+              <entry>VarUpdate(name,value)</entry>
+
+              <entry>Update the value of a local variable. The name is a
+              string and the value is an expression. For example: x :=
+              10</entry>
+            </row>
+
+            <row>
+              <entry>Varp(name)</entry>
+
+              <entry>A variable pattern. The name is a string. Arguments to
+              operations are patterns. An argument that is just a name is
+              represented as a variable pattern.</entry>
+            </row>
+
+            <row>
+              <entry>Varp(name,pattern,type)</entry>
+
+              <entry>A variable pattern which binds a value to name providing
+              it matches pattern. The type is a type expression recording the
+              declared type of the variable. For example: @Operation(x = C(10)
+              : P::C) x.m(100) end</entry>
+            </row>
+
+            <row>
+              <entry>Varp(name,type)</entry>
+
+              <entry>A variable pattern declaring just the name and the
+              type.</entry>
+            </row>
+
+            <row>
+              <entry>XOCL::While(test,body)</entry>
+
+              <entry>A while loop. Defined in the package XOCL. The test
+              argument is a boolean values expression and the body is an
+              expression. For example: @While x &gt; 10 do y := y + x; x := x
+              – 1 end</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Examples</title>
+
+      <para>Suppose that we want to write operations together with their
+      specifications. The specification of an operation consists of a
+      pre-condition and a post-condition. A pre-condition states what must be
+      true on entry to the operation and a post-condition states what must be
+      true on exit from the operation. The context for the conditions includes
+      the arguments of the operation.</para>
+
+      <para>A specification serves two important purposes: firstly we can
+      specify an operation without knowing how the operation is to be
+      implemented. The pre-condition and post-condition are used to restrict
+      the possible legal implementations.</para>
+
+      <para>Secondly, the conditions can be performed when the operation is
+      called. The conditions provide a form of dynamic run-time
+      checking.</para>
+
+      <para>This section shows how a simple specification construct can be
+      defined. A grammar for the new construct is defined that synthesizes an
+      operation definition.</para>
+
+      <para>A specification will be defined as follows:</para>
+
+      <programlisting>@Spec incx(dx:Integer)
+  pre dx &gt; 0
+    self.x := x + dx
+  post x = preSelf.x + dx
+end</programlisting>
+
+      <para>The specification above requires that the value of dx is greater
+      than 0 before it is used to increase the value of the slot x. The post
+      condition specifies that the state of the x slot must have changed
+      appropriately. The state of the receiver is accessible in the
+      post-condition via the variable preSelf. The class definition for the
+      Spec construct is shown below:</para>
+
+      <para></para>
+
+      <section>
+        <title>Checking Conditions</title>
+
+        <para>Suppose that we wish to implement a new language construct that
+        checks a condition and raises an error if the condition does not hold.
+        Essentially this is just an if-expression used in a particular
+        pattern. The pattern is captured as a class with a grammar that
+        synthesizes a performable instance:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image046.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>The following example shows how the new language construct is
+        used:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image048.jpg" />
+          </imageobject>
+        </mediaobject>
+      </section>
+
+      <section>
+        <title>Specification</title>
+
+        <para>Suppose that we want to write operations together with their
+        specifications. The specification of an operation consists of a
+        pre-condition and a post-condition. A pre-condition states what must
+        be true on entry to the operation and a post-condition states what
+        must be true on exit from the operation. The context for the
+        conditions includes the arguments of the operation.</para>
+
+        <para>A specification serves two important purposes: firstly we can
+        specify an operation without knowing how the operation is to be
+        implemented. The pre-condition and post-condition are used to restrict
+        the possible legal implementations.</para>
+
+        <para>Secondly, the conditions can be performed when the operation is
+        called. The conditions provide a form of dynamic run-time
+        checking.</para>
+
+        <para>This section shows how a simple specification construct can be
+        defined. A grammar for the new construct is defined that synthesizes
+        an operation definition.</para>
+
+        <para>A specification will be defined as follows:</para>
+
+        <para><programlisting>@Spec incx(dx:Integer)
+  pre dx &gt; 0
+    self.x := x + dx
+  post x = preSelf.x + dx
+end</programlisting></para>
+
+        <para>The specification above requires that the value of dx is greater
+        than 0 before it is used to increase the value of the slot x. The post
+        condition specifies that the state of the x slot must have changed
+        appropriately. The state of the receiver is accessible in the
+        post-condition via the variable preSelf.</para>
+
+        <para>The class definition for the Spec construct is shown
+        below:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image050.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image052.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image054.jpg" />
+          </imageobject>
+        </mediaobject>
+      </section>
+
+      <section>
+        <title>A For Loop</title>
+
+        <para></para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image056.jpg" />
+          </imageobject>
+        </mediaobject>
+      </section>
+    </section>
+  </section>
+
+  <section>
+    <title>Quasi-Quotes</title>
+
+    <para></para>
+
+    <section>
+      <title>Introduction</title>
+
+      <para>When designing languages and language constructs it is usual to
+      construct grammars that synthesize syntax elements. As we have seen in
+      earlier sections, grammars can perform any commands in their actions; in
+      particular they can construct and return instances of classes. If the
+      classes inherit from XCore::Performable then the grammar synthesizes
+      syntax.</para>
+
+      <para>One of the characterising features of grammars that synthesize
+      syntax is that they map from relatively simple constructs to relatively
+      complex syntax trees (after all this is the key reason for defining new
+      language features – they are simpler to use than the corresponding
+      expanded form).</para>
+
+      <para>Syntax comes in two key formats: abstract syntax and concrete
+      syntax. Abstract syntax is oriented towards machines and is essentially
+      the data structure that the machine represents when supplied with
+      syntax. Concrete syntax is oriented towards humans and is character
+      based. For example, the following is concrete syntax:</para>
+
+      <programlisting>X + 1</programlisting>
+
+      <para>and equivalently in abstract syntax:</para>
+
+      <programlisting>BinExp(Var(“x”),”+”,IntExp(1))</programlisting>
+
+      <para>Working with abstract syntax in the actions of grammars that
+      synthesize syntax can be cumbersome. The size of the instantiation
+      expressions can become large and you must remember all of the arguments
+      to the constructors. Fortunately, XMF provides a key technology that
+      allows you to work with concrete syntax when constructing instances of
+      performable classes. This technology is called quasi-quotes.</para>
+
+      <para>Quasi-quotes allow you to write concrete syntax that constructs a
+      performable element. In addition, quasi-quote expressions can be used to
+      construct syntax templates by leaving holes where syntax can be dropped
+      in to a surrounding expression. Quasi-quotes with holes can be used to
+      capture syntax patterns.</para>
+
+      <para>This section describes how quasi-quotes work and how to construct
+      syntax templates.</para>
+    </section>
+
+    <section>
+      <title>Literal Syntax</title>
+
+      <para>Syntax is constructed in XMF by instantiating a sub-class of
+      XCore::Performable. A performable class is one that implements the API
+      for evaluation, in terms of eval, compile and operations that they need
+      to do their tasks. You will rarely need to implement the evaluation
+      operations yourself since you can implement virtually all new
+      constructs, however complex, in terms of new syntax constructs that
+      expand into configurations of existing syntax classes.</para>
+    </section>
+
+    <section>
+      <title>Syntax Templates</title>
+
+      <para></para>
+    </section>
+
+    <section>
+      <title>Splicing</title>
+
+      <para></para>
+    </section>
+
+    <section>
+      <title>Patterns</title>
+
+      <para></para>
+    </section>
+  </section>
+
+  <section>
+    <title>New Performable Elements</title>
+
+    <para></para>
+
+    <section>
+      <title>Introduction</title>
+
+      <para></para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/image058.jpg" />
+        </imageobject>
+      </mediaobject>
+    </section>
+
+    <section>
+      <title>Sugar</title>
+
+      <para></para>
+
+      <section>
+        <title>Introduction</title>
+
+        <para>It is usually the case that new syntax constructs can be
+        implemented by translating to existing syntax constructs. The
+        translation is often referred to as desugaring. It is convenient to
+        create an instance of a new syntax class and then to desugar when the
+        construct when XMF performs an evaluation or compilation request on
+        the instance. By leaving the desugaring step to the last possible
+        moment, the structure of the original syntax construct is retained for
+        as long as possible.</para>
+
+        <para>Grammars that synthesize instances of new syntax classes can
+        then use operations defined on the classes to implement the desugaring
+        step. The classes can be as complex or as simple as required. In the
+        limit, a sugared syntax class can implement a complete compiler for a
+        complex new syntax construct, where the compiler produces performable
+        elements.</para>
+
+        <para>XMF provides a sub-class of XCore::Performable called
+        XOCL::Sugar that implements evaluation and compilation in terms of a
+        call to an operation desugar. The desugaring operation performs a
+        mapping from the receiver to a new performable object that already
+        implements the evaluation or compilation. This section describes how
+        to use XOCL::Sugar.</para>
+      </section>
+
+      <section>
+        <title>Guarded Statements</title>
+
+        <para>Consider a new language feature that implements a guarded
+        statement. A guarded statement is to be implemented as an if
+        expression with no else clause. The following is an example of its
+        use:</para>
+
+        <para><programlisting>@When passengers &gt; 63 do
+  format(stdout,”Too many people on the bus.~%”)
+end</programlisting></para>
+
+        <para>The conditional statement is implemented as a sugared syntax
+        class whose desugar operation produces the equivalent if
+        expression:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image060.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>The grammar for a when-statement synthesizes an instance of the
+        When class:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image062.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>The desugar operation produces an instance of performable for a
+        lower-level construct. In this case we produce an if expression and
+        lose the fact that the then-part was guarded and the else-part was
+        inserted.</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image064.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>By providing a pprint operation in the syntax class for When we
+        will see the original statement in any source code that is saved by
+        the XMF compiler:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image066.jpg" />
+          </imageobject>
+        </mediaobject>
+      </section>
+
+      <section>
+        <title>Conditional Expressions</title>
+
+        <para>Suppose we are developing a system that involves testing a large
+        number of conditions. The conditions can be tested using nested
+        if-expressions, however this gets difficult to read as the number of
+        nested expressions increases. Suppose that XMF did not provide an
+        elseif keyword as part of an if-expression and that, therefore, there
+        is a requirement for a tabular conditional expression of the following
+        form:</para>
+
+        <para><programlisting>@Cond
+  self.inRange(x,0,m) do
+    self.tooLow(x)
+  end
+  self.inRange(x,m,n) do
+    self.justRight(x)
+  end
+  self.inRange(x,n,infinity) do
+    self.tooHigh(x)
+  end
+end</programlisting></para>
+
+        <para>where each clause is tried in turn until a test evaluates to
+        true whereupon the corresponding action is performed.</para>
+
+        <para>We can implement the conditional expression above using sugar as
+        follows:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image068.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image070.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>Notice that the cond-expression synthesizes instances of
+        CondClause in line 41 as part of the overall synthesis of a Cond. This
+        is typical of a sugared construct which needs to represent internal
+        structure prior to the desugaring process. The instances of CondClause
+        are transient and exist only long enough to process the containing
+        Cond. In general, many such transient objects may be created when
+        processing sophisticated sugared constructs.</para>
+
+        <para>A cond-expression is desugared into a nested
+        if-expression:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image072.jpg" />
+          </imageobject>
+        </mediaobject>
+      </section>
+    </section>
+
+    <section>
+      <title>Syntax</title>
+
+      <para></para>
+    </section>
+
+    <section>
+      <title>Exp</title>
+
+      <para></para>
+
+      <section>
+        <title>Introduction</title>
+
+        <para></para>
+      </section>
+
+      <section>
+        <title>State Machines</title>
+
+        <para>State machines are ubiquitous in Software Engineering. Whilst
+        the basic notion of a state machine is very simple (the idea that
+        components have a number of states and execution occurs when the
+        component changes from one state to another) there are a huge number
+        of ways in which state machines are implemented and deployed.</para>
+
+        <para>Fortunately, XMF-Mosaic makes it very easy to construct a state
+        machine model and to define its semantics. This section shows how
+        XCore::Class can be extended to provide states and transitions. The
+        example shows a number of technologies:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>A new language for defining state machines. The language
+            provides constructs for state machines; states; initial states and
+            transitions. Transitions have guards and actions both of which are
+            implemented using the XOCL::Exp.</para>
+          </listitem>
+
+          <listitem>
+            <para>Meta-classes. The class StateMachine is an extension of
+            XCore::Class and as such supports class-contents such as
+            attributes and operations. The new meta-class defines attributes
+            for states and transitions and a number of meta-operations for
+            running the state machine against objects with state.</para>
+          </listitem>
+
+          <listitem>
+            <para>Daemons. An instance of a state machine class is an object
+            with state. A state machine monitors changes in the state of its
+            instances by placing a daemon on each instance. When the daemon
+            fires, the state machine determines whether any of its transitions
+            are enabled and performs any enabled actions.</para>
+          </listitem>
+        </itemizedlist>
+
+        <para>The following model shows the classes in the state machine
+        language:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image074.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>The key features of the model are as follows:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>Instances of StateMachine are classes with states and
+        transitions. Therefore we can have instances of state machines.</para>
+          </listitem>
+		  <listitem>
+			<para>The class ObjectWithState is defines to be a parent of any state
+        machine. This class defines an attribute state that records the
+        current state of the state machine instance.</para>
+		  </listitem>
+		  <listitem>
+			<para>Transitions have predicates and actions that are implemented as
+        expressions. The expressions will be run against an object with state
+        when it changes.</para>
+		  </listitem>
+        </itemizedlist>
+
+        <para>The model above defines a domain specific language for
+        representing state machines. In addition to defining the structure of
+        state machines, the model defines the executable semantics for state
+        machines. Before showing how the semantics is defined, we give two
+        examples of how state machines are used to implement simple
+        applications. The first example shows traffic lights and the second
+        example shows a vending machine.</para>
+
+        <para>The following state machine implements a simple traffic light
+        system: </para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image076.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>Line 6 introduces a state machine and names it. State machines
+        may contain the same elements as classes and line 12 and 13 define the
+        state that is manipulated by the state machine. The event attribute is
+        monitored by the state machine and corresponds to events received from
+        an external source such as a timer.</para>
+
+        <para>Lines 17 – 20 define the states for the machine. At any time an
+        instance of TrafficLight must be in one of the states: Red, RedAmber,
+        Green or Amber. The transitions that control how a traffic light
+        changes between these states are defined below:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image078.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>A transition has a name, a source and target state name, a guard
+        and an action. For example the transition defined in line 24 is named
+        t1, changes between state Red and RedAmber, occurs when the traffic
+        light state changes so that event is true and updates the value of the
+        event slot to be false.</para>
+
+        <para>A traffic light is defined to change state when it receives an
+        event (the value of the event slot changes to be true). The state is
+        changed and the event flag is reset.</para>
+
+        <para>A vending machine dispenses cans of drink. Each can has a price;
+        a customer enters coins into the machine until the value of the coins
+        exceeds the price of a can. A can is dispensed and the machine waits
+        for any change to be withdrawn before waiting for the next
+        customer.</para>
+
+        <para>A vending machine is either idle (waiting for a customer),
+        vending (accepting coins up to the price of a can), or waiting for
+        change to be removed. The vending machine state machine is defined
+        below:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image080.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>As a textual definition:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image082.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>The transitions for a vending machine are defined below:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image084.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>The semantics of state machines is defined as a package
+        below:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image086.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>The class ObjectWithState is typical of a pattern occurring when
+        defining new meta-classes. The new meta-class StateMachine (below)
+        requires that its instances have a support system. In this case the
+        support system is the attribute state and associated operations. When
+        instances of StateMachine are created, the class ObjectWithState is
+        added as a parent of the resulting class. This ensures that instances
+        of instance of StateMachine have the correct basic slots and
+        supporting operations.</para>
+
+        <para>When an XMF object is created via a constructor, the init
+        operation is called with the constructor arguments. An object with
+        state needs to install a daemon that monitors state changes (any slot
+        modification). The daemon inspects the state machine controlling the
+        object and fires any enabled state transition. In addition an object
+        with state must initialise the state slot.</para>
+
+        <para>The init operation for ObjectWithState is defined below:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image088.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>The daemon added to an object with state uses a handler
+        slotChanged. This handler is called whenever a slot of the object
+        monitored by the daemon changes. A daemon may be added to more than
+        one object (here the daemon is created on a per-object basis). The
+        type of the daemon determines which slot it monitors. In this case the
+        type Daemon::ANY defines that the handler is called when any slot of a
+        monitored object changes.</para>
+
+        <para>The handler used by the daemon is defined by the class
+        ObjectWithState. A daemon handler is passed four arguments:</para>
+
+        <para><itemizedlist>
+            <listitem>
+              <para>The object whose state has changed.</para>
+            </listitem>
+
+            <listitem>
+              <para>The name of the slot that has changed.</para>
+            </listitem>
+
+            <listitem>
+              <para>The new value of the slot.</para>
+            </listitem>
+
+            <listitem>
+              <para>The old value of the slot.</para>
+            </listitem>
+          </itemizedlist></para>
+
+        <para>In the following we check that the slot is not the state slot
+        and then calculate the transitions that are enabled. If any
+        transitions are enabled then one is selected at random and its action
+        is performed. Both the predicate and the action are expressions. An
+        expression has an operation perform that is used to evaluate the
+        expression. The perform operation is supplied with a value for self in
+        the expression and a sequence of local variable values. The target
+        argument is used in the same way as that to Operation::invoke where
+        unqualified slot references are resolved with respect to the supplied
+        target object.</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image090.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>The class StateMachine is defined as a meta-class that creates
+        sub-classes of ObjectWithState:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image092.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>A state machine is a new language feature. The grammar is
+        defined on lines 72 – 79 and is a simple example of how to define a
+        new syntax feature for a new type of meta-class. The syntax definition
+        for Class (as in @Class X … end) expands to a collection of calls to
+        add for each contained definition (for example attributes and
+        operations). A class knows how to add the supplied elements. This is
+        exploited above, by just allowing state machines to contain arbitrary
+        expressions each of which will be evaluated and the resulting element
+        supplied as an argument to add on the state machine. We then leave it
+        to an extended definition of add in StateMachine to handle any new
+        types of element that we wish to add to a state machine, leaving the
+        definition of Class::add to handle the rest:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image094.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>When a new state machine is created we must arrange for it to
+        inherit from ObjectWithState so that its instances get the state slot
+        and associated initialisation support. All name spaces must be
+        initialised via the init() operation prior to use. Normally this
+        occurs automatically and you are not aware of the call to init (for
+        example defining context P @Class C … end automatically calls init
+        when C is added to P). We extend the initialisation below to add in
+        the required super-class:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image096.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>Operations used via ObjectWithState:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image098.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>In this example of state machines, a state is just a name. We
+        define a new syntax construct for defining a state. A more
+        sophisticated implementation of state machines might, for example,
+        introduce enter and exit actions for states or allow nested state
+        machines:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image100.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>An initial state is just a state. We use the type of an initial
+        state to select the initial state of a state machine:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image102.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>A transition is implemented as a new syntax construct as
+        follows. The guard and action on a transition are implemented as an
+        expression (XOCL::Exp) that is performed in order to check whether the
+        transition is enabled and when the transition fires
+        respectively:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/image104.jpg" />
+          </imageobject>
+        </mediaobject>
+      </section>
+    </section>
+  </section>
+</chapter>

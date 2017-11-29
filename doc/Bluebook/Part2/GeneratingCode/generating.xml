@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"-->
+<chapter>
+  <title>Generating Code</title>
+
+  <para>XMF-Mosaic provides a number of off the shelf routes for generating
+  code from models. These are available off the right click Deploy menu on a
+  package.</para>
+
+  <section>
+    <title>Generating Java</title>
+
+    <para>Selecting Java from the Deploy menu will generate a new directory
+    containing a Java classes for each of the model classes. The Java classes
+    include the attributes and appropriate accessor and updator operations. In
+    addition, a toXML operation is provided for serialising instances of Java
+    classes as XML.</para>
+
+    <para>The following Java code was generated from the Components
+    model.</para>
+
+    <programlisting>package Components1;
+
+public class ComponentModel {
+
+ // Attributes...
+
+  private java.util.Vector components;
+  private java.util.Vector connectors;
+
+ // Accessors...
+
+  public java.util.Vector components() { return components; }
+  public java.util.Vector connectors() { return connectors; }
+
+ // Updaters...
+
+  public void setComponents(java.util.Vector value) { this.components = value; }
+  public void setConnectors(java.util.Vector value) { this.connectors = value; }
+
+ // Display...
+
+  public String toString() {
+    String s = "ComponentModel[";
+    return s + "]";
+  }
+
+ // Operation stubs...
+
+  public int deleteFromComponents(int v) {
+    return null;
+  }
+
+  public int addToComponents(int v) {
+    return null;
+  }
+
+  public int connectedTo(int p) {
+    return null;
+  }
+
+  public int dontMatch() {
+    return null;
+  }
+
+  public int componentForPort(int p) {
+    return null;
+  }
+
+  public int addToConnectors(int v) {
+    return null;
+  }
+
+  public int deleteFromConnectors(int v) {
+    return null;
+  }
+ // XML Serialization...
+
+  public void writeXML(java.io.PrintStream out,java.util.Hashtable idTable) {
+    if(idTable.containsKey(this))
+      out.print("&lt;Ref id='" + idTable.get(this) + "'/&gt;");
+    else {
+      String id = Integer.toHexString(this.hashCode()).toUpperCase();
+      out.print("&lt;Object id='" + id + "'");
+      out.print("&gt;");
+      out.print("&lt;Slot name='components'&gt;");
+      out.print("&lt;Set&gt;");
+      for(int i = 0; i &lt; components.size(); i++) {
+         Component o = (Component)components.elementAt(i);
+         o.writeXML(out,idTable);
+      }
+      out.print("&lt;/Set&gt;");
+      out.print("&lt;/Slot&gt;");
+      out.print("&lt;Slot name='connectors'&gt;");
+      out.print("&lt;Set&gt;");
+      for(int i = 0; i &lt; connectors.size(); i++) {
+         Connector o = (Connector)connectors.elementAt(i);
+         o.writeXML(out,idTable);
+      }
+      out.print("&lt;/Set&gt;");
+      out.print("&lt;/Slot&gt;");
+      out.print("&lt;/Object&gt;");
+    }
+  }
+}
+</programlisting>
+  </section>
+</chapter>

@@ -1,0 +1,49 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>An Example Profile</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch13.html" title="Creating a Meta-Profile"><link rel="prev" href="ch13.html" title="Creating a Meta-Profile"><link rel="next" href="ch14.html" title="Generating Code"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id686333"></a>An Example Profile</h2></div></div></div><p>Let&#8217;s design a data modelling profile, which allows us to construct
+    a data model as an instance of a datamodel metamodel. The data modelling
+    profile provides three key modelling concepts: a data model, a data entity
+    and a key attribute.</p><p>First, create a DBProfile project.</p><div class="mediaobject"><img src="Part2/MetaProfile/Images/creatingtheprofile.png"></div><p>Next, browse and show the diagram for the project.</p><p>A key part of the profile is that it extends the XCore metamodel.
+    This enables it to inherit the modelling capabilities of XCore - the
+    language used to describe class models.</p><p>Right click on the DBProfile package and select Set Parents, and
+    tick the package XCore from the list.</p><div class="mediaobject"><img src="Part2/MetaProfile/Images/inheritingfromxcore.png"></div><p>At this point we can open the DBProfile package and begin
+    constructing the profile. We want to be able to extend existing modelling
+    elements so that we can reuse their editing capabilities. Here is the
+    model for the DBProfile:</p><div class="mediaobject"><img src="Part2/MetaProfile/Images/profile.jpg"></div><p>Here a DataModel specialises the class Package, so we can now model
+    with DataModels rather than Packages. A Key is a specialisation of an
+    Attribute, and an Entity specialises a Class. Finally, an additional
+    attribute is added to Entity to denote that some Entities are also
+    containers.</p><p>Note that in order to specialise the XCore classes, we simply right
+    clicked on each class and selected Inheritance &gt; Add Parent.</p><p>We can now create a model that makes use of this profile.</p><p>First create a new project and browse the package.</p><p>Rather than editing this package as an XCore package, we want to
+    edit it as an instance of the profile.</p><p>To do this, right click on the model package and select Set
+    MetaPackage.</p><div class="mediaobject"><img src="Part2/MetaProfile/Images/settingthemetapackage.jpg"></div><p>A list of meta packages will be displayed.</p><p>Choose DBProfile.</p><p>Now, open the diagram for the model package using right click
+    ShowDiagram.</p><div class="mediaobject"><img src="Part2/MetaProfile/Images/newmodel.jpg"></div><p>Notice that in addition to the usual tool buttons, a new collection
+    of buttons is displayed at the bottom.</p><p>We can select these elements and start creating models using the new
+    model elements that are provide the by profile.</p><p>For instance, a new DataModel can be created, called
+    Accounts.</p><div class="mediaobject"><img src="Part2/MetaProfile/Images/accountsdatamodel.jpg"></div><p>The contents of the Accounts can be viewed by showing its diagram
+    (right click Show Diagram). However, when this is done, the profile
+    buttons are no longer there. This is because we need to set the
+    metaPackage of the model to be the profile package.</p><p>We could do this by hand, but manually setting its metaPackage is
+    time consuming. A more general solution is to extend the initialisation
+    operation of the DataModel class so that this is done automatically. This
+    is done as follows:</p><p>Right click on the class and add an init() operation.</p><div class="mediaobject"><img src="Part2/MetaProfile/Images/setmetapackageoperation.jpg"></div><p>The init() operation requires a single parameter args. Because it
+    extends the init() operation on the class Package, the operation calls its
+    super class&#8217;s operation&#8217;s body and then sets the metaPackage.</p><p>Now when we view the diagram for a DataModel, the appropriate
+    buttons are available, and a model can be created.</p><p>Let's create some entities:</p><div class="mediaobject"><img src="Part2/MetaProfile/Images/creatingsomeentities.jpg"></div><p>We now want to add an attribute to the customer class. However, in
+    this case we want the attribute to be a Key. To select this, Other is
+    chosen from the New &gt; Attribute menu.</p><div class="mediaobject"><img src="Part2/MetaProfile/Images/selectingattributesubclass.jpg"></div><p>The attribute name is then changed to custid.</p><div class="mediaobject"><img src="Part2/MetaProfile/Images/addinganentitykey.jpg"></div><p>Similarly, we require a Key for the Account class. We'll also add
+    some other non-key attributes as well:</p><div class="mediaobject"><img src="Part2/MetaProfile/Images/modelwithattributes.jpg"></div><p>Finally, let's add a Bank entity. In this case, we want to capture
+    the fact that the Bank entity is a container. If you remember, the class
+    Entity extended the attribute of the class Class, with an attribute called
+    'contents'. Because the Bank is an instance of the the class Entity, we
+    can now set this value to be true. To do this, right click on the Bank and
+    choose Show Contents &gt; Slot Values. The result is to add a new
+    compartment to the class in which the Slot Value is displayed.</p><div class="mediaobject"><img src="Part2/MetaProfile/Images/modelwithbank.jpg"></div><p>The Slot Value can be set to true by clicking on the value and
+    editing it.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id615426"></a>Adding Constraints</h3></div></div></div><p>Constraints can also be added to the profile model to rule out
+      specific relationships between elements. For example, let's add a
+      constraint to the class Entity that ensures it can only specialise
+      another Entity.</p><div class="mediaobject"><img src="Part2/MetaProfile/Images/constraint.jpg"></div><p>The constraint rejects parents of type Object, as all elements
+      will inherit from this class. It ensures that the type of the parent
+      must be the same as the child.</p><p>A model can be checked to see whether it conforms to its
+      constraints. Here's a model that should fail:</p><div class="mediaobject"><img src="Part2/MetaProfile/Images/invalidmodel.jpg"></div><p>To check the constraints on the model, we need to run
+      checkConstraints on the contents of the package. To do this, right click
+      on the package in the browser and select Invoke Constraints &gt;
+      checkConstraints() from Container.</p><div class="mediaobject"><img src="Part2/MetaProfile/Images/checkconstraints.jpg"></div><p>The constraint fails as we would expect.</p><div class="mediaobject"><img src="Part2/MetaProfile/Images/constraintresult.jpg"></div></div></div><p></p><p><img src="copyright.gif"></p></body></html>

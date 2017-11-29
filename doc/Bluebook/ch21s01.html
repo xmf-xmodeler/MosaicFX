@@ -1,0 +1,117 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Introduction</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch21.html" title="XOCL"><link rel="prev" href="ch21.html" title="XOCL"><link rel="next" href="ch21s02.html" title="Basic Data Types"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id680259"></a>Introduction</h2></div></div></div><p>The basic technology that underpins XMF-Mosaic is a programming
+    language called XOCL. The programming language is very similar to standard
+    object-oriented languages such as Java or C#. In addition, XOCL is a
+    meta-programming language meaning that it provides facilities for
+    inspecting and controlling its own behaviour. This is the key to
+    supporting flexible tool development. Tools defined in XOCL can inspect
+    and interpret other tools defined in XOCL. Tools defined in XOCL can
+    generate other tools defined in XOCL, and can generate tools defined in
+    other languages such as Java.</p><p>This document is a technical description of XOCL. It defines all
+    aspects of the language and provides a complete definition of the
+    programming constructs and what they do. This document is not a
+    description of how to use XOCL. For that you should read the example
+    Walkthroughs in the Bluebook.</p><p>The document is structured as follows: the basic architecture of
+    XOCL is describes in terms of what it does and how programs are
+    represented at the lowest level; the basic data types provided by XOCL are
+    defined; XOCL program structure is defined including conditional
+    constructs, binding constructs, errors and looping. Finally, the interface
+    of each basic data type is defined.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id659741"></a>Purpose</h3></div></div></div><p>XOCL is a programming language that is intended to support
+      powerful programming over meta-data. In achieving this aim, the
+      following objectives have been addressed:</p><div class="itemizedlist"><ul type="disc"><li><p><span class="emphasis"><em>Efficiency</em></span>. XOCL provides a programming
+          language that is used on primarily data intensive applications (as
+          opposed to real-time applications, safety critical applications or
+          applications that require intensive numeric processing). XOCL will
+          process large data sets (several tens of thousands of objects) using
+          average memory and average processor resources.</p></li><li><p><span class="emphasis"><em>Extensibility</em></span>. XOCL is designed to be
+          highly extensible. New language features can be added to XOCL by
+          defining an XBNF grammar for the new feature and the rule to process
+          the new syntax structures. In many cases, new syntax structures can
+          be translated to basic XOCL; this provides a powerful macro-facility
+          for defining declarative language constructs.</p></li><li><p><span class="emphasis"><em>Dynamic</em></span>. XOCL is designed to be highly
+          configurable and easy to modify at run-time. Although XOCL is a
+          compiled language, new definitions can be introduced at any time
+          during execution and existing definitions can be modified at
+          run-time.</p></li><li><p><span class="emphasis"><em>Meta-circularity</em></span>. XOCL is designed to
+          allow existing language features to be extended and modified. XOCL
+          understands its own rules of execution. New tools can introduce
+          modification to these rules. XOCL can process its own syntax; the
+          XOCL compiler and interpreter is written in XOCL.</p></li><li><p><span class="emphasis"><em>Standards</em></span>. XMF-Mosaic aims to make
+          standards available wherever these are appropriate. The environment
+          provides a MOF-like meta-modelling language and a UML-like modeling
+          language. The XML facilities of XMF can be used to import and export
+          XMI encoded data. The language XOCL is based on the UML Object
+          Constraint Language.</p></li><li><p><span class="emphasis"><em>Conventional</em></span>. XOCL aims to provide a
+          language that is as familiar to users as possible whilst achieving
+          the aim of being a powerful basis for tool generation. The basic
+          language features of XOCL will be familiar to users of standard
+          object-oriented programming languages such as Java.</p></li><li><p><span class="emphasis"><em>Complete</em></span>. XOCL provides a complete
+          solution to tool construction. XOCL is not a scripting language
+          (i.e. a lightweight language used as glue for programs written in
+          other languages). XOCL provides features that support the
+          implementation of industrial strength tools, including sophisticated
+          data structures, error handling and a variety of input/output
+          mechanisms.</p></li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id600575"></a>Language Basics</h3></div></div></div><p>XOCL programs consist of a collection of units (text files). Each
+      unit can be compiled and loaded separately; however, there are
+      restrictions on the order of compilation and loading multiple units that
+      must be followed; these are explained in this section. A unit is
+      processed by loading and then evaluating it. Loading involves syntax
+      analysis.</p><p>A unit has entries in the following order:</p><div class="itemizedlist"><ul type="disc"><li><p>Parser declarations. A parser declaration is processed by the
+          syntax analysis phase. Typically a declaration imports a collection
+          of grammars that define new language constructs. Each language
+          construct in the rest of the unit must be declared before it is
+          used. Basic XOCL is imported by default.</p></li><li><p>NameSpace imports. Global variables must be imported before
+          they can be used. Each global variable is defined in a name space.
+          Importing the name space makes all the names it defines available in
+          the rest of the unit. The names in Root and XCore are imported by
+          default.</p></li><li><p>Commands and definitions. The rest of the unit is a sequence
+          of any valid XOCL syntax as defined in terms of the parser
+          declarations and imports that precede it. Definitions take the form
+          of the keyword context followed by a name and then an expression
+          whose value is a named element. The name must reference a name
+          space. The effect of a definition is to add the named element to the
+          named name space. Commands take the form of XOCL syntax followed by
+          a semi-colon (;).</p></li><li><p>A typical unit has the form shown on the right. All components
+          are optional but, if present, must occur in the order shown.</p></li></ul></div><pre class="programlisting">// Comments at the head of the file&#8230;.
+
+parserImport &lt;PATH&gt;;
+// More parser imports&#8230;
+
+// Comments here&#8230;.
+
+import &lt;PATH&gt;;
+// More imports&#8230;.
+
+// Comments here&#8230;.
+
+context &lt;PATH&gt;
+  &lt;NAMEDELEMENT&gt;
+
+// More defs&#8230;.
+
+&lt;COMMAND&gt;
+// More commands&#8230;.</pre><p>When a unit is loaded, its syntax is analysed with respect to the
+      parser declarations. If the syntax is legal then the unit is evaluated.
+      Evaluation processes each name space import in turn. Each import is
+      performed in the context of all preceding imports. If the imports are
+      successful then the rest of the unit is evaluated in the context of the
+      imported names. Definitions are evaluated by constructing the named
+      element, referencing the name space and adding the named element to the
+      name space. Commands are evaluated; any result produced by the commands
+      is discarded.</p><p>The effect of evaluating a unit is the result of adding all
+      definitions to their name spaces and any side-effects produced by the
+      commands.</p><p>Note that although the basic unit of execution is the text file,
+      XOCL is a meta-language and can be used to process definitions and
+      expressions at run-time. This makes XOCL ideal for handling expressions
+      typed at a command interpreter and definitions typed in forms as part of
+      a user interface.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id706623"></a>Overview of Syntax</h3></div></div></div><p>XOCL is a textual language. When a unit is loaded its syntax is
+      processed prior to evaluation. The first stage of syntax analysis if to
+      recognize lexical tokens. A lexical token is a sequence of characters
+      read from the input starting with a non-whitespace character. This
+      section provides an overview of the token types:</p><div class="itemizedlist"><ul type="disc"><li><p>Integer tokens start with a numeric character and continue up
+          to, but not including, the first non-numeric character.</p></li><li><p>Parentheses ( and ).</p></li><li><p>Braces { and }.</p></li><li><p>Dot .</p></li><li><p>At @.</p></li><li><p>Comma ,.</p></li><li><p>Special tokens are those that do not consist of an
+          alpha-numeric character and are not listed elsewhere. Examples of
+          special tokens are infix operators such as * and +, arrow -&gt; and
+          quasi-quotes [| and |].</p></li><li><p>Name tokens start with an alpha-character and continue up to,
+          but not including, the first non-alpha-numeric character.</p></li><li><p>Symbol tokens start with a &#8216; and end with the following
+          &#8216;.</p></li><li><p>String tokens start with a &#8220; and end with the following &#8220;.
+          Within strings the following escape characters are useful:</p><div class="itemizedlist"><ul type="circle"><li><p>Newline \n</p></li><li><p>Tab \t</p></li><li><p>Return \r</p></li><li><p>String quote \&#8221;</p></li></ul></div></li></ul></div></div></div><p></p><p><img src="copyright.gif"></p></body></html>

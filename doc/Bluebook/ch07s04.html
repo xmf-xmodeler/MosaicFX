@@ -1,0 +1,12 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Example</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch07.html" title="Constructing an XML Parser and Generator"><link rel="prev" href="ch07s03.html" title="Invoking the Parser"><link rel="next" href="ch07s05.html" title="Debugging the Parser"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id639088"></a>Example</h2></div></div></div><p>As an example we can construct a small XML file such as below and
+    save it in an XML file, e.g example.xml.</p><pre class="programlisting">&lt;ComponentModel&gt;
+  &lt;Component name="Displays"&gt;
+    &lt;Port id="Displays:CurrentPosition" type="Long" name="CurrentPosition" /&gt; 
+  &lt;/Component&gt;
+  &lt;Component name="Navigation"&gt;
+    &lt;Port id="Navigation:CurrentPosition" type="LatLong" name="CurrentPosition" /&gt; 
+  &lt;/Component&gt;
+  &lt;Connector target="Navigation:CurrentPosition" source="Displays:CurrentPosition" /&gt; 
+&lt;/ComponentModel&gt;</pre><p>To run the parser, run the parseFile() package operation from the
+    console by typing Components::parseFile();</p><p>The result will be to parse the XML and create an instance of the
+    Components model:</p><div class="mediaobject"><img src="Part2/XML/Images/loadedXML.jpg"></div></div><p></p><p><img src="copyright.gif"></p></body></html>

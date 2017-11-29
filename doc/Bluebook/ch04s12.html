@@ -1,0 +1,56 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Imperative Features</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch04.html" title="An Introduction to XOCL"><link rel="prev" href="ch04s11.html" title="Conditional Expressions"><link rel="next" href="ch04s13.html" title="Exceptions"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id646435"></a>Imperative Features</h2></div></div></div><p>XOCL extends OCL with a number of imperative programming features,
+    which turn it into a powerful programming language.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id643813"></a>Object Creation</h3></div></div></div><p>Objects are instances of classes. Objects are created by calling a
+      class constructor. The syntax is as follows:</p><pre class="programlisting">class_name(parameter_values)</pre><p>Assumng that the Components model example is in scope, the
+      following can be typed into the console:</p><pre class="programlisting">Port();</pre><p>This will create an instance of the class Port using the default
+      (empty) constructor.</p><p>Note, if we define a constructor for the class then we could call
+      this by passing the appropriate parameter values. For example, if the
+      following constructor has been created:</p><pre class="programlisting">context Port
+  @Constructor(name,type)
+  end</pre><p>We can pass the name and type of the Port to the instance like
+      so:</p><pre class="programlisting">Port("x","Integer");</pre><p>An alternative instantiation syntax is also provided, which
+      enables values to be bound to slots using name bindings. The following
+      binds the values to the slots by their name:</p><pre class="programlisting">Port[name = "x", type = "Integer");</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id666262"></a>Assignment</h3></div></div></div><p>Values can be assigned to attributes (slot update) using the
+      assignment operator.</p><pre class="programlisting">var := expression // assigns the result of evaluating the expression to var</pre><p>The following operation gives an example of setting the owner of a
+      Component to be the ComponentModel, c.</p><pre class="programlisting">context Component
+ @Operation setOwner(c : ComponentModel)
+    self.owner := c
+  end</pre><p>Note, that self is required when setting slot values.</p><p>A common assignment pattern is adding a new element to a
+      collection. This can be easily achieved using the including()
+      operation:</p><pre class="programlisting">context ComponentModel
+  @Operation addToComponents(v : Component)
+    self.components := self.components-&gt;including(v)
+  end</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id679337"></a>Sequential Execution</h3></div></div></div><p>A sequential operator (";") is provided for sequencing different
+      operations. For example, adding a component to a component model and
+      setting it to be owned by the component model.</p><pre class="programlisting">context ComponentModel
+  @Operation addToComponents(c : Component)
+    self.components := self.components-&gt;including(v);
+    c.owner := self
+  end</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id567704"></a>Operation Invocation</h3></div></div></div><p>The dot notation (".") is used to invoke operations on objects.
+      The following operation invokes the setOwner() operation on the
+      component, c.</p><pre class="programlisting">context ComponentModel
+  @Operation addToComponents(c : Component)
+    self.components := self.components-&gt;including(v);
+    c.setOwner(self)
+  end</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id650181"></a>Looping</h3></div></div></div><p>XOCL provides a number of looping constructs, including while
+      loops and for loops.</p><p>The syntax for a "for" loop is as follows:</p><pre class="programlisting">@For var in collection do
+  expression
+end</pre><p>The reAssign() operation uses a for loop to reassign any
+      connections that target the Port, old, to the Port, new.</p><pre class="programlisting">context ComponentModel
+  @Operation reAssign(old:Port,new:Port)
+    @For c in connectors do
+      if c.target = old then
+        c.target := new
+      end
+    end
+  end</pre><p>The syntax for a "while" loop is as follows:</p><pre class="programlisting">@While condition do
+  expression
+end</pre><p>Here is an example of a simple counter that makes use of a while
+      loop.</p><pre class="programlisting">context Root
+  @Operation count()
+    let x = 0
+    in @While x &lt; 1000000 do
+         x := x + 1
+       end;
+       x.println()
+    end
+  end</pre></div></div><p></p><p><img src="copyright.gif"></p></body></html>

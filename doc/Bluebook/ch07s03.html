@@ -1,0 +1,30 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Invoking the Parser</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch07.html" title="Constructing an XML Parser and Generator"><link rel="prev" href="ch07s02.html" title="Constructing the Grammar"><link rel="next" href="ch07s04.html" title="Example"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id663524"></a>Invoking the Parser</h2></div></div></div><p>The following code provides operations for reading in XML files and
+    parsing them using the parser.</p><pre class="programlisting">
+context Components
+  @Operation parseFile()
+    let file = xmf.openFile(xmf.projDir(),"*.xml")
+    in if file &lt;&gt; ""
+       then
+         @WithOpenFile(fout &lt;- file)
+           Components::parse(fout).edit()
+         end
+       else xmf.message("Parse Cancelled")
+       end
+    end
+  end
+  
+context Components
+  @Operation parse(inch:InputChannel)
+    let grammar = ComponentModel::ComponentModel.compile()
+    in let xin = ParserChannel(inch,grammar)
+       in xin.debug := true;
+          xin.parse("ComponentModel");
+       // Get the result and resolve the references.
+          xin.result(true)
+       end
+    end
+  end</pre><p>The package operation parseFile() first opens a browser to select
+    the XML to be imported. If the file exists. This calls the parse()
+    operation, which opens an XMLInputChannel and the XML is read into
+    variable xin. The result (an instance of the ComponentsModel) is
+    returned.</p></div><p></p><p><img src="copyright.gif"></p></body></html>

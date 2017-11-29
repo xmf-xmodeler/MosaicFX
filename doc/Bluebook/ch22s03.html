@@ -1,0 +1,451 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Diagram Tools</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch22.html" title="XTools"><link rel="prev" href="ch22s02.html" title="The XTools Architecture"><link rel="next" href="ch22s04.html" title="Form Tools"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id629383"></a>Diagram Tools</h2></div></div></div><p>XTools supports a number of tool types. Diagram tools manage
+    elements based on diagram editors. A diagram consists of nodes and edges
+    with various display elements attached to the diagram components. A user
+    interacts with the diagram by creating nodes and edges and editing the
+    display elements. Each interaction gives rise to an event that is handled
+    by the diagram tool&#8217;s element manager. This section defines the features
+    of diagram tools and provides a number of examples to show you how to go
+    about creating and deploying a rich collection of domain specific
+    tools.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id569340"></a>Introduction</h3></div></div></div><p>A diagram tool extends the basic notion of an Xtool with a
+      diagram. XMF-Mosaic provides a model of diagrams in Clients::Diagrams;
+      this is the basis for diagram tools.</p><p>Typically you will define a domain model and then decide how you
+      want to construct elements of the model and interact with them. This
+      design is the basis for a domain specific user interface (you may have
+      more than one for any given domain model). The user interface is defined
+      as an Xtool in terms of a diagram type and an element manager.</p><p>The following model shows a simple extension of basic XTools Tool
+      to support diagrams:</p><div class="mediaobject"><img src="Part3/XTools/Images/image015.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id657248"></a>Diagram Tool Components</h3></div></div></div><p>A diagram tool manages a diagram. The diagram is modelled and
+      consists of a graph of nodes and edges. Each node contains a collection
+      of display elements that describe how the node is to be rendered. A node
+      has a number of ports that are used as places on the node to connect
+      edges. A node without any ports cannot be connected via edges (but may
+      be useful as a diagram element nonetheless).</p><p>An edge has a source and target port, has a line style, end arrows
+      and a number of labels. The line style defines how the edge will be
+      drawn (for example a dashed line). The end arrows defined the
+      decoration, if any, that occurs on either end of the edge (for example
+      an arrow head or a diamond). The labels of an edge are text fields that
+      are attached to one of the start, end or middle of the edge. Labels may
+      be readonly in which case they cannot be modified.</p><p>Node display elements may be one of the following:</p><div class="itemizedlist"><ul type="disc"><li><p>Boxes. A box acts as a container of display elements. The
+            edges of a box may be hidden or drawn. Boxes are useful when
+            managing a collection of sub-elements on a node.</p></li><li><p>Ellipse. An ellipse has a outline that may be hidden.</p></li><li><p>Image. An image is a bitmap that is defined in an external
+            file.</p></li><li><p>Text. A text field may be readonly.</p></li></ul></div><p>All display elements have a position relative to (0,0)
+      which is the top left hand corner of its container (y increases down the
+      screen). You do not have to worry about positions because XTools
+      provides layout managers that deal with all the hard work of placing
+      display elements.</p><p>All display elements have a width and height. In most cases these
+      values are handled by the layout manager so you don&#8217;t have to worry
+      about positioning or size, you can focus on what the information is
+      rather than how it is presented.</p><p>Both nodes and node display elements may be associated with ports.
+      A port is a place on a node that acts as a receptor for edge connection.
+      Whilst ports have position and size, associating a port with a diagram
+      element in XTools automatically arranges for the port to be at the same
+      location and size as the associated element. Typically you will
+      associate a port with each node type you define. The node can therefore
+      act as the source or target of an edge and XTools manages the resizing
+      of the ports automatically when the node changes shape. Occasionally you
+      may have a strange shaped node where various parts of the node can be
+      connected differently; in this case you will associate ports with node
+      display components.</p><p>The following model provides an overview of diagrams used in
+      diagram tools. As noted above, you probably will not need to know about
+      the detail of this model, just acquaint yourself with the logical
+      relationships between the classes:</p><div class="mediaobject"><img src="Part3/XTools/Images/image017.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id634734"></a>Nodes and Edges</h3></div></div></div><p>A diagram consists of nodes and edges. For example, the diagram
+      shown in the previous section consists of nodes of type ClassNode and
+      edges of types InheritanceEdge and AttributeEdge. When defining a domain
+      specific language editor, you need to list the node and edge types that
+      you wish to display on the diagram. These may correspond directly to the
+      classes in your domain model and the associations between them (node and
+      edge types respectively). Of course the relationship between model
+      classes and diagram types need not be so direct. This section describes
+      how you define node and edge types in the XTools textual
+      language.</p><p>A node type has the following format:</p><pre class="programlisting">@NodeType name(properties) extends parents
+  display elements
+  menu
+end
+</pre><p>A node type has a name followed by a collection of comma separated
+      properties in parentheses. Optionally you may define that a node type is
+      an extension of a comma separated list of node type names. This allows
+      node type hierarchies to be constructed and can be important when
+      defining edge types as described below.</p><p>Display elements are defined next followed by the menu for the
+      node type. A node type may have the following properties:</p><p>HORIZONTAL, VERTICAL or OVERLAY layout directives for the display
+      elements. This directive defines how the contained display elements will
+      be arranged when a node of this type is created. These are defined in
+      more detail in the section on layout later in this document.</p><p>hasport. This property defines that each instance of this node
+      type has a port associated with the entire node. The port will
+      automatically be resized when the node is resized.</p><p>An edge type has the following format:</p><pre class="programlisting">@EdgeType name source -&gt; target optSource optTarget optStyle
+  labels
+  menu
+end</pre><p>An edge type has a name followed by the name of the source and
+      target node types. An edge of the defined type may only be added to a
+      diagram between nodes of the declared types. Note that node types are
+      arranged in an inheritance hierarchy so that edge instances may be drawn
+      between any sub-types of the declared source and target.</p><p>The source and target arrows are optional. If they are specified
+      then they must both be specified and must be an integer that specifies
+      the display element at the appropriate end. The integer values are as
+      follows: noArrow, arrow, blackDiamond, whiteDiamond, blackArrow,
+      whiteArrow. The optional style defines the way in which the edge will be
+      drawn. The values are as follows: solidLine, dashLine, dottedLine,
+      dashDottedLine, dashDotDotLine.</p><p>A label has the following format:</p><pre class="programlisting">@Label name(position,dx,dy) string end</pre><p>A label has a name. The name is used to navigate to the label in
+      an instance of the enclosing edge type. The position of the label
+      defines where it will be drawn relative to the edge. The position may be
+      start, end or middle. The dx and dy values are integers that specify
+      co-ordinates relative to the position of the label. The initial text of
+      the label is given as a string in the body of the label type
+      definition.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id636591"></a>Toolbar</h3></div></div></div><p>A toolbar is drawn at the left hand side of a diagram tool and
+      contains tool groups and buttons. Groups are named collections of
+      buttons. A toolbar is used to create instances of node and edge types.
+      The following model shows the structure of toolbars:</p><div class="mediaobject"><img src="Part3/XTools/Images/image022.jpg"></div><p>The textual language for defining tool groups is as
+      follows:</p><pre class="programlisting">@ToolBar
+  groups 
+end</pre><p>Each group is defined as follows:</p><pre class="programlisting">@ToolGroup name
+  buttons
+end</pre><p>The name of the group appears in the tool bar. Each button is
+      defined as follows:</p><pre class="programlisting">@ToolButton name optIsEdge
+  icon = filename
+end</pre><p>The name of the button defines the text that appears on the
+      diagram. The name of the button should be the name of a node type or an
+      edge type. If it is the name of a node type then it defines a node
+      creation button and will not contain isEdge. If it is an edge creation
+      button then it must contain isEdge. The icon for the button is specified
+      by giving the file containing the bitmap as a string.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id592645"></a>Menus</h3></div></div></div><p>Menus may be added to a large number of diagram tool elements. A
+      menu definition specifies the functionality that is associated with the
+      diagram element. When the element is selected on the diagram using a
+      mouse right click, the menu appears offering menu actions. Menus can be
+      defined for diagram tool types, node types, display types and edge
+      types. The following model shows the structure of a menu:</p><div class="mediaobject"><img src="Part3/XTools/Images/image027.jpg"></div><p>A menu is specified as follows:</p><pre class="programlisting">@Menu
+  items 
+end</pre><p>A menu item is either a named sequence of menu items or a single
+      menu action. A sequence of menu items produces a sub-menu and is used to
+      group related menu actions. A menu action has an operation that is used
+      to implement the action when it is selected.</p><pre class="programlisting">@MenuItems name
+  items 
+end</pre><p>The body of a menu action is just XOCL code:</p><pre class="programlisting">@MenuAction name
+  body
+end</pre><p>A menu is displayed when you right click on an instance of the
+      containing element type. You may then select one of the actions
+      (possibly by navigating down sub-menus). The body of the selected action
+      is performed. Within the body you may refer to the containing instance
+      as self, and refer to the containing tool as tool. The action that is
+      being performed can be referred to as action (this is useful in the rare
+      circumstance that you want to remove the action from the menu).</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id564527"></a>Diagram Events</h3></div></div></div><p>You perform operations on a diagram tool using the mouse. You may
+      add a new node or re-attach an edge. When these changes take place, an
+      event of an appropriate type is raised in the containing Xtool. The
+      event contains references to the tool and to any elements that are
+      involved in the diagram operation.</p><p>Events are raised and then handled by the event handlers defined
+      by the tool&#8217;s element manager. A handler is selected by calculating the
+      event&#8217;s raised name. Generally this name is composed of a path
+      identifying the diagram component that changes and the type of the
+      event. The path is a sequence of attribute names starting with the name
+      of the type of the root diagram element (for example a node or edge) .
+      For example, if we have the following node type:</p><p>When the text is modified on the diagram, the path component of
+      the raised name is N_B_T and the event type (as we see below) is
+      _Changed, therefore the raised name is N_B_T_Changed. The raised name is
+      the name used in the event handler that will be used to handle the
+      event.</p><p>Diagram events fall into one of three general categories:</p><p>Change events. These occur when an existing diagram element is
+      modified, for example by editing some text or by re-attaching an edge
+      end. These also occur when an existing container is modified by adding
+      or removing a new element.</p><p>Creation events. These occur when a new node or edge is
+      created.</p><p>Deletion events. These occur when a node or edge is
+      removed.</p><p>The following model shows the various types of change
+      event:</p><div class="mediaobject"><img src="Part3/XTools/Images/image033.jpg"></div><p>The rest of this section describes each of the diagram event types
+      and how their raised name is calculated.</p><div class="itemizedlist"><ul type="disc"><li><p>AttributeChanged. This event is raised when text is modified.
+          The changed text element is the value of the event, the node
+          containing the display element is the root of the event. The
+          attribute value before and after the change is supplied via old and
+          new in the event. The raised name is the path followed by
+          _Changed.</p></li><li><p>EdgeAttributeChanged. The same as AttributeChanged except that
+          the text on an edge label is modified.</p></li><li><p>AttributeValueAdded. When a container has a *-type (see later
+          in the document), new instances of the *-ed type can be added. When
+          a new instance is added this event is raised. The path identifies
+          the attribute that has been added and the value of the event is the
+          new display element. The raised name is the path followed by
+          _Added.</p></li><li><p>SourceChanged. When the source of an edge is moved from one
+          node to another this event is raised. The source before and after
+          the change is recorded in the old and new of the event. The raised
+          name is the type of the modified edge followed by
+          _Source_Changed.</p></li><li><p>TargetChanged. As for source changed but the target of the
+          edge has changed.</p></li><li><p>ChangeTo</p></li></ul></div><div class="mediaobject"><img src="Part3/XTools/Images/image035.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id667637"></a>An Example Domain Specific XTool</h3></div></div></div><p>This section provides a complete example of an Xtool. The tool
+      manages a graph where the nodes and edges are labelled with text. The
+      graph is updated by events occurring on a diagram interface and the
+      diagram is updated by events occurring to the graph. The example is
+      deliberately simple, but contains examples of most Xtool definition
+      features.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id671625"></a>A Domain Model</h4></div></div></div><p>The first step in defining a DSL-tool is to define the domain
+        model and its semantics. An Xtool exposes an interface over the domain
+        model to the user and other tools. Our example domain model is one
+        that it provided as standard with XMF-Mosaic: Graphs. The interface
+        that we expose to the user is the creation and deletion of graph nodes
+        and edges. In addition we label the nodes and edges with strings and
+        expose the setData operations via the diagram tool. The following
+        model shows the domain model:</p><div class="mediaobject"><img src="Part3/XTools/Images/image037.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id633688"></a>Design of the User Interface</h4></div></div></div><p>Once we have defined the domain model and chosen the interface
+        we want to expose, the next step is to informally sketch out the look
+        and feel of the Xtool. In this case we will define a diagram tool to
+        expose the chosen interface. The creation operations will be exposed
+        via toolbar operations, node and edge deletion will be exposed via
+        menu operations on the respective diagram elements. Data modification
+        will be exposed via text modification on the diagram labels and edge
+        source and target changes will be exposed by retargeting the edges on
+        the diagram. The following screenshot shows an example usage of the
+        tool we want to build:</p><div class="mediaobject"><img src="Part3/XTools/Images/image039.jpg"></div><p>The left hand part of the tool shows a tool bar with a single
+        tool group called Operations with a node creation button Node and an
+        edge creation button Edge. The diagram canvas shows a graph diagram
+        consisting of nodes (created by selecting the Node button and then
+        clicking on the canvas) and edges (created by selecting the Edge
+        button and linking two nodes). Each node and edge has a label that can
+        be edited by selecting and modifying the text.</p><p>When we create and edit a graph diagram an underlying element is
+        created and modified. In this case we will create and modify a graph
+        from the package Graphs. This makes the example easy because the
+        element and the diagram are in one-to-one correspondence. The graph
+        consists of nodes and edges whose data components are the labels on
+        the diagram. The following property editor shows the underlying graph
+        element after constructing the diagram shown above:</p><div class="mediaobject"><img src="Part3/XTools/Images/image041.jpg"></div><p>The following snapshot shows the graph as a snapshot
+        diagram:</p><div class="mediaobject"><img src="Part3/XTools/Images/image043.jpg"></div><p>The rest of this section provides a step-by-step analysis of the
+        graph editing tool definition.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id564170"></a>Defining the Tool Type</h4></div></div></div><p>The first step is to define the tool type. The tool type defines
+        the nodes types, the edge types and the tool bar type. Each node and
+        edge type defines named attributes. Node types have named attributes
+        that are display elements; each display element contributes to how a
+        node is drawn and to the events raised when a node is created and
+        modified. Edge types have named attributes for the labels on the edge.
+        Node, edge and display types can have menu types. The following tool
+        snapshot shows the source code for the graph editor tool; the code
+        includes comments that describe each of the type components:</p><div class="mediaobject"><img src="Part3/XTools/Images/image045.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id635490"></a>Defining the Element Manager</h4></div></div></div><p>Once the tool type has been defined it is possible to define the
+        element manager for the tool. The element manager defines an event
+        handler for each of the events that the tool must handle. Events are
+        raised in two ways: either by modifications to the diagram (such as
+        creating a new node or editing a label); or, by modifying the
+        underlying data element that the tool is managing (such as adding a
+        node to the graph managed by the graph editor). In the case of events
+        raised by the data element, event handlers are only necessary of the
+        tool is observing the data element. In some cases a tool is used to
+        construct the underlying data element that is then exported or
+        exclusively manipulated by the tool. In this case the tool is in full
+        control of the underlying element and does not need to observe it for
+        externally generated changes. Our graph editor will observe the
+        underlying graph in order for the example to cover as many tool
+        definition issues as possible.</p><p>An element manager must define a creation event handler for each
+        diagram node and edge type. A creation event is raised whenever a new
+        node or edge is created on the diagram. An event handler has a name
+        that corresponds to the event that it is designed to handle. The event
+        handler has an argument list (which will be empty for the purposes of
+        this example) and a body. The body is supplied with the raised event
+        as the value of the variable event. The state of the event is accessed
+        using a collection of accessor operations; the names of the operations
+        correspond to the attributes of the particular event type. All events
+        have an operation tool() that returns the tool that raised the
+        event.</p><p>The event handler body may also reference two special
+        operations: register and find. Register is used to associate a key
+        with a value in the element handler table. Typically this is used to
+        as associate tool elements with domain elements so that when events
+        are raised, the handlers can map from a tool element to the
+        appropriate domain element and vice versa. The graph editor example
+        contains many examples of the use of these operations.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id597222"></a>Handling Diagram Events</h4></div></div></div><p>In the case of a node creation event, the new tool node is the
+        value of node(). The following tool snapshot shows the source code for
+        the node creation handler:</p><div class="mediaobject"><img src="Part3/XTools/Images/image047.jpg"></div><p>Line 49 creates a new graph node corresponding to the tool node
+        whose creation raised the event. Once created, the two nodes are
+        associated using the register operation in lines 50 and 51.
+        Registration is necessary so that modifications to either node can map
+        to, and therefore modify, the other node. Finally, the domain element
+        is modified by adding the new node to the graph.</p><p>A new edge raises an event that is handled by the following
+        definition:</p><div class="mediaobject"><img src="Part3/XTools/Images/image049.jpg"></div><p>An edge creation event contains the new edge and its source and
+        target nodes. Since the source and target nodes must have been created
+        previously, they must have been registered by a node creation event
+        handler. Therefore, the find operation can be used in line 59 to map
+        from tool nodes to graph nodes when creating a graph edge. Once
+        created, the edges are registered against one another in lines 60 and
+        61. The domain element is modified in line 62.</p><p>The tool type for a graph editor allows the nodes and edges to
+        be removed via a menu action. When a tool element is deleted, an
+        appropriate event is raised. The following handlers deal with node and
+        edge deletion:</p><div class="mediaobject"><img src="Part3/XTools/Images/image051.jpg"></div><p>The find operation is used to map from the tool node to the
+        graph node in lines 68 and 73. The graph elements are then removed
+        from the graph.</p><p>The tool type for a graph editor specifies that a node and an
+        edge both have labels. In the case of a node, the label is defined as
+        a text attribute named label. Since we did not specify that these are
+        read only, they can be modified on the diagram. When modifications
+        take place, an appropriate event is raised.</p><p>In both cases the diagram components are tool attributes named
+        label. Events that are raised in response to modifications to
+        contained tool elements (such as a text component of a node or an edge
+        label) have names that are based on the path from the root container
+        of the element. For example, a modification to a node label gives rise
+        to an event named Node_label_Changed where the path from the root
+        container to the modified element is Node_label. This rule applies no
+        matter how deeply nested the modified element is.</p><p>The handlers for label modifications are given below.</p><div class="mediaobject"><img src="Part3/XTools/Images/image053.jpg"></div><p>A node change event has an operation root() that returns the
+        root container of the modified element. This is used in line 78 to
+        find the graph node to modify. A change event also contains a value()
+        operation that returns the modified tool element; this operation is
+        not required for this example. A change event returns the value before
+        the change as old() and the value after the change as new(). Line79
+        changes the data on the graph node to be the modified label
+        text.</p><div class="mediaobject"><img src="Part3/XTools/Images/image055.jpg"></div><p>This concludes the event handlers for events arising as a result
+        of changes to the diagram.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id630314"></a>Handling Managed Element Events</h4></div></div></div><p>When a node is added to the graph we must modify the diagram on
+        the tool to keep it in sync. Each event handler for managed element
+        modifications has a name consisting of the type of the changed
+        element, the word Object the name of the slot that is modified and the
+        word Changed. The event has operations to access to the new and old
+        values of the slot.</p><p>The following handler deals with changes to the nodes of the
+        graph:</p><div class="mediaobject"><img src="Part3/XTools/Images/image057.jpg"></div><p>When designing event handlers for Xtools that process events
+        from both the user interface and the managed element it is necessary
+        to decide on a policy for preventing the same change being propagated
+        back and forth. Consider the case of adding a new node on the diagram.
+        This raises a New_Node event causing the managed graph to be updated
+        with a new node. When this occurs, a Graph_Object_nodes_Added event is
+        raised; since this event may have been caused by some external agent
+        adding a new node to the graph, a reasonable implementation for this
+        handler is to modify the diagram interface to add a new node. If we do
+        this, we cause an infinite ping-pong between the user interface and
+        the managed element.</p><p>To address this issue it is sensible to take each pair of
+        dependent handlers and to ensure that events bottom out. This can be
+        achieved by preventing events occurring in one of the handlers and by
+        checking that actions have not already occurred as shown above in
+        lines 108 and 110. When a new node is added to the managed graph in
+        the handler for New_Node, a Graph_Object_nodes_Added event is raised;
+        when this event is handled no New_Node event is raised (although the
+        diagram will be updated as we will see). This ensures that diagram
+        changes update the graph and graph changes update the diagram but that
+        this does not lead to infinite regress. Note that it is possible to
+        suppress events in both handlers, but this is not necessary; if you do
+        suppress events in both then it is not necessary to include a
+        registration check as in line 110 since neither handler will cause the
+        other to be invoked.</p><p>Line 112 shows the creation of a new instance of the diagram
+        node type Node. Xtools allow new node types to be instantiated at a
+        given position on the diagram using the newNode operation. Once the
+        new node is created, it is registered in lines 113 and 114. The label
+        on the new node is updated to contain the graph node label in line
+        116.</p><p>The following shows how the removal of nodes from the managed
+        graph is handled:</p><div class="mediaobject"><img src="Part3/XTools/Images/image059.jpg"></div><p>The nodes that have been removed are supplied as the old part of
+        the event. We should only remove nodes if they are currently
+        registered (line 127). All display elements implement a delete
+        operation (line 129) that removes the element from the diagram (and
+        fires events if they are enabled). Finally the elements are
+        deregistered from the tool (lines 130 and 131).</p><div class="mediaobject"><img src="Part3/XTools/Images/image061.jpg"></div><p>When an edge is added to the graph we must create an edge on the
+        diagram. Diagram edges are attached to ports that are contained in
+        nodes. A node may have more than one port (some may be associated with
+        display components of the node), but providing that the node has at
+        least one port, a port is produced by calling the port operation of
+        the diagram node (lines 143 and 144).</p><p>A diagram tool provides a newEdge operation that draws a new
+        edge between ports on the diagram (line 145). In order to register
+        when the ends of an edge change we must observe the edge (line 148).
+        The text in labels on edges are changed using the textChanged
+        operation (line 149).</p><p>When an edge is removed from a graph that is monitored by a
+        tool, the following event is raised. The handler, deletes the diagram
+        element and deregisters the appropriate elements:</p><div class="mediaobject"><img src="Part3/XTools/Images/image063.jpg"></div><p>When the data on a monitored graph node or edge changes the
+        following events are raised. The handlers just update the appropriate
+        diagram elements:</p><div class="mediaobject"><img src="Part3/XTools/Images/image065.jpg"></div><p>Finally, the source and target of a monitored graph edge may
+        change. A diagram edge provides operations sourceReconnected and
+        targetReconnected that are used to change the corresponding port that
+        the edge connects to.</p><div class="mediaobject"><img src="Part3/XTools/Images/image067.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id606913"></a>Creating a Tool from a Domain Model Instance</h4></div></div></div><p>It is often the case that we have an instance of the domain
+        model and wish to create a tool that displays the current state of the
+        instance and is then used to extend and modify the instance. Using
+        XTools this is quite straightforward. We map from the domain instance
+        to a tool and create instances of the appropriate tool types. This
+        section shows how this is achieved for our graph editor tool.</p><p>To generate a tool from a graph we must create the new tool with
+        the appropriate tool type and element manager and then map the nodes
+        and edges of the graph to instances of the appropriate tool types. The
+        following operation definition adds a new operation to Graph that
+        implements the mapping. The source code contains comments explaining
+        each of the steps in the mapping:</p><div class="mediaobject"><img src="Part3/XTools/Images/image069.jpg"></div><p>The definition of Graph::toTool is a typical example of how to
+        define a mapping from a domain instance to an Xtool. We create a tool
+        in line 209. The constructor arguments for a tool are the type, an id
+        string, the manager and the domain instance. Since a graph is a
+        container of nodes and edges, we use auxiliary definitions of toTool
+        to map these elements passing the new tool as an argument. Finally, in
+        line 230 if we want changes in the domain instance to be reflected in
+        the tool we must register the tool as an observer.</p><p>The following operation shows how a graph node is mapped to a
+        diagram node:</p><div class="mediaobject"><img src="Part3/XTools/Images/image071.jpg"></div><p>Node and edges types can be referenced in a tool type:</p><div class="mediaobject"><img src="Part3/XTools/Images/image073.jpg"></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id629637"></a>Display Elements</h3></div></div></div><p></p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id648726"></a>Introduction</h4></div></div></div><p>XTool node types consist of a collection of display element
+        types. Each display element type is a named attribute of the node.
+        When a node is created, the display type is instantiated and its
+        instance can be referred to by giving the path from the node (the
+        root) to the named display element.</p><p>Each display element type has a textual syntax that is used to
+        define it. This section shows you how to define display element types
+        by showing each one in the context of the type Node in our graph
+        editor example. The general form for the textual definition of a
+        display element is:</p><pre class="programlisting">@ElementType name(properties)
+  attributes
+  display components
+  menu
+end</pre><p>The properties of the element type are names and values enclosed
+        in parentheses. If no properties are defined then the parentheses
+        should be omitted. The attributes of a display element are name/value
+        pairs of the form name = value. Typically, the attributes specify the
+        maximum and minimum dimensions of the element and features such as
+        color. The display components of an element are the contained
+        elements; only boxes may contain sub-components. Each element may have
+        a menu.</p><p>All elements can be associated with a port in the element&#8217;s root
+        node. By specifying the property hasport, you associate the instances
+        of the element type with a port such that the port will move and
+        resize with the instance relative to the containing node.</p><p>Most elements can have a colors. The value of a color attribute
+        should be one of the predefined colors: red, green, blue, or should be
+        a string &#8220;r,g,b&#8221; where the three components are integers in the range
+        0 to 255 specifying the red, green and blue color contributions
+        respectively.</p><p>Many types can be specified with minimum and maximum dimensions.
+        By stating these attributes you are placing bounds on the amount that
+        instances of the type can be resized. Specifying the same value for
+        the minimum and maximum dimensions requires that instances of the type
+        are of a fixes size.</p><p>Many types can be padded. A padding attribute specifies the
+        amount of space that should be left surrounding instances of the type
+        when placing the instance in a display container (such as a box or a
+        node). Padding can be specified to the left, right, on top and below
+        elements. If the padding attributes are omitted then it is assumed
+        that no space need be left between adjacent elements and between
+        elements and the borders of their containers.</p><p>All types may specify a layout property. The layout defines how
+        instances of the type will be placed within their container. Elements
+        may be aligned with their container in which case they stretch to fit
+        the size of their container; elements may be left and right justified,
+        and centered within a container. Interpretation of the layout property
+        depends on the content layout property of the container.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id694973"></a>Box</h4></div></div></div><p>A box is a container of display elements. A box may have a
+        border and may be filled or empty. A box specifies the layout format
+        of its contained elements (layout is the subject of a later section).
+        Suppose we want to have the label of a node contained within a
+        box:</p><div class="mediaobject"><img src="Part3/XTools/Images/image076.jpg"></div><p>The corresponding node type definition is as follows:</p><div class="mediaobject"><img src="Part3/XTools/Images/image078.jpg"></div><p>The syntax for boxes is as follows:</p><pre class="programlisting">@Box name(hasport,hide,contentLayout,layout,nofill)
+  minWidth = integer
+  minHeight = integer
+  maxWidth = integer
+  maxHeight = integer
+  cornerCurve = integer
+  padLeft = integer
+  padRight = integer
+  padTop = integer
+  padBottom = integer
+  fillColor = color
+  lineColor = color
+end</pre><p>All components of a box definition are optional except for the
+        name. If hasport is present then the box defines the location of a
+        port in the root node. A hide directive is one of the following
+        hideLeft, hideRight, hideTop or hideBottom and may be repeated. A
+        content layout directive is one of the following HORIZONTAL, VERTICAL
+        or OVERLAY. A layout directive is one of the following: LEFT, RIGHT,
+        ALIGN. If nofill is present then the box is not filled. The minimum
+        and maximum dimension attributes specify the sized below and above
+        which the box cannot be resized. The padding attributes specify the
+        white space that is left between the box and its container and
+        adjacent elements.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id700690"></a>Ellipse</h4></div></div></div><p>Ellipses are used to draw ovals and circles. Ellipses are not
+        containers of elements, but can be placed in boxes with overlay layout
+        to give the impression that they contain element that are displayed
+        over them. For example, suppose that we want to have nodes with
+        circles around the labels:</p><div class="mediaobject"><img src="Part3/XTools/Images/image081.jpg"></div><p>The node type is defined as follows:</p><div class="mediaobject"><img src="Part3/XTools/Images/image083.jpg"></div><p>Note that the node type has content layout OVERLAY meaning that
+        all the contents will be drawn over each other in the order that they
+        appear in the type definition. The contained ellipse type has ALIGN
+        layout so that instances grow and shrink with their container. Each
+        ellipse is left unfilled.</p><p>The syntax for ellipses is as follows:</p><pre class="programlisting">@Ellipse name(hasport,noOutline,layout,nofill)
+  minWidth = integer
+  minHeight = integer
+  maxWidth = integer
+  maxHeight = integer
+  padLeft = integer
+  padRight = integer
+  padTop = integer
+  padBottom = integer
+  fillColor = color
+  lineColor = color
+end</pre><p>All properties and attributes are optional.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id658662"></a>Image</h4></div></div></div><p></p><div class="mediaobject"><img src="Part3/XTools/Images/image086.jpg"></div><div class="mediaobject"><img src="Part3/XTools/Images/image088.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id713446"></a>Text</h4></div></div></div><p></p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id627492"></a>Diagram Layout</h3></div></div></div><p></p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id655618"></a>Element Layout</h4></div></div></div><p></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id639775"></a>Container Layout</h4></div></div></div><p></p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id563254"></a>Example Tool: Class Diagrams</h3></div></div></div><p>A typical example of a modelling tool is a class diagram editor.
+      The domain model is shown below:</p><div class="mediaobject"><img src="Part3/XTools/Images/image090.jpg"></div><p>The interface that we wish to expose over the domain model is the
+      ability to create classes and attributes in a single package. The names
+      of the classes and attributes can be changed and the types of the
+      attributes can be modified. We will make a distinction between builtin
+      classes used as attribute types (for example NamedElement::name :
+      String) and other classes. Attributes of classes with builtin types will
+      be shown inside the class box whereas all other attribute will be
+      attached to classes via an edge (such as Attribute::type).</p><p>The domain model is an example of a meta-model in that it
+      describes itself and the model has been constructed using the Xtool for
+      package editing. Another example, (showing a non-meta model) is a
+      standard information model for a Library as follows:</p><div class="mediaobject"><img src="Part3/XTools/Images/image092.jpg"></div><p>The tool type for a package editor is shown below. It contains an
+      example of the use of Star to define that part of a class node that
+      contains a sequence of attribute definitions. Initially bodyBox will be
+      emptyInstances of the display type attribute may be added to, and
+      deleted from, bodyBox.</p><div class="mediaobject"><img src="Part3/XTools/Images/image094.jpg"></div></div></div><p></p><p><img src="copyright.gif"></p></body></html>

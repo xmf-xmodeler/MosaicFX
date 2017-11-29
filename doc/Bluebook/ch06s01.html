@@ -1,0 +1,69 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>A Simple Mapping</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch06.html" title="Constructing and Running Mappings"><link rel="prev" href="ch06.html" title="Constructing and Running Mappings"><link rel="next" href="ch06s02.html" title="A Simple Model to C# Mapping"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id647007"></a>A Simple Mapping</h2></div></div></div><p>We want to create a simple mapping from one class to another
+    class.</p><p>The source model is a simple domain model of Airports:</p><div class="mediaobject"><img src="Part2/Mappings/Images/airlines.jpg"></div><p>Create or load the Airports model.</p><p>Next, create a new project Example1 containing the classes that we
+    want to map between.</p><div class="mediaobject"><img src="Part2/Mappings/Images/mappingclasses.jpg"></div><p>Note, the Route class has been copied from the Airports model. This
+    is achieved by right clicking on the class in the Airports model,
+    selecting Drop in Class Diagram and then choosing the Example1
+    package.</p><p>Next, a mapping is added to the model. Select the Mapping from the
+    icons in the diagram editor and place it on the diagram and give it a
+    name.</p><div class="mediaobject"><img src="Part2/Mappings/Images/addingamapping.jpg"></div><p>A mapping must have at least one domain and a single range.</p><p>Select these from the icons underneath the mapping icon.</p><div class="mediaobject"><img src="Part2/Mappings/Images/addingdomainandrange.jpg"></div><p>The domain is the input to the mapping and the range is its output.
+    Although compulsory, it is important to think of the domain and range as
+    indicating a dependency between a mapping and its constituents. In
+    practice, the actual values passed to the mapping need not necessarily be
+    of the domain type. Similarly, the range need not be of the target
+    type.</p><p>The rules and actions performed by a mapping are described by
+    <span class="emphasis"><em>clauses</em></span>. Add a new clause to a mapping by right
+    clicking on the mapping in the diagram editor or browser and choosing New
+    &gt; Clause.</p><div class="mediaobject"><img src="Part2/Mappings/Images/addingaclause.jpg"></div><p>Now, edit the clause by double clicking on it in the browser.</p><p>A clause editor will be displayed.</p><div class="mediaobject"><img src="Part2/Mappings/Images/aclause.jpg"></div><p>A clause has a name, and a default clause expression followed by a
+    &#8220;do&#8221; action.</p><p>The expression is a pattern that must be matched before the clause
+    will fire.</p><p>When the clause is matched, the action after the 'do' will be
+    performed.</p><p>We wish to capture the rule that a Route with a capacity less than
+    250 will be mapped to a ShortHaul Route with the same name. In addition,
+    we want to map a Route with a capacity &gt;= 250 to a LongHaul
+    Route.</p><p>To achieve this we need to write two clauses. The first clause
+    matches with a Route whose capacity is less than 250 and generates a Short
+    Haul Route.</p><pre class="programlisting">@Clause Short
+  Airports::Route[
+    name = N,
+    source = S,
+    destination = D,
+    capacity = C]
+when C &lt; 250
+do
+  ShortHaul[
+    name = N,
+    source = S,
+    destination = D]
+end</pre><p>Here:</p><div class="itemizedlist"><ul type="disc"><li><p>The name of the clause has been changed to Short</p></li><li><p>The clause expression is a Route, whose name equals the variable
+        'N', whose source and destination equals the variables 'S' and 'D' and
+        whose capacity equals the variable C.</p></li><li><p>The when condition states that this clause can only fire if the
+        capacity is &lt; 250.</p></li><li><p>The 'do' action creates a ShortHaul Route whose name is equal to
+        the variable 'N', and which has the same source and
+        destination.</p></li></ul></div><p>Note because the variables are global they are matched across the
+    clause, ensuring for example that the name of the source Route matches the
+    target Route name.</p><p>To enter the clause, enter the text and right click &gt; Commit
+    it.</p><p>To deal with the other possibility (that the capacity &gt;= 250) we
+    need to create another clause and add it to the mapping.</p><p>Again, right click on the mapping in the diagram editor or browser
+    and choose New &gt; Clause. Edit and commit the clause as before.</p><pre class="programlisting">@Clause Long
+  Airports::Route[ 
+    name = N, 
+    source = S,
+    destination = D,
+    capacity = C]
+when C &gt;= 250
+do
+  LongHaul[
+    name = N,
+    source = S,
+    destination = D]
+end</pre><p>The code is similar to that of the previous clause, but the &#8220;when&#8221;
+    condition requires that the capacity of the route is &gt;= 250. The
+    resulting action creates an instance of a LongHaul Route.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id632105"></a>Running the Mapping</h3></div></div></div><p>Mappings can be run in two ways: via the console or by passing the
+      object to the mapping.</p><p>Here's an example of running a mapping via the console. Let's
+      create an instance of a Route, x, named "LAX2LHR", with a capacity of
+      200 and source and destination "LAX" and "LHR" respectively..</p><p>The mapping can be run by calling the mapping and passing it the
+      Route, x.</p><div class="mediaobject"><img src="Part2/Mappings/Images/runningthesimplemapping.jpg"></div><p>The result of the mapping is a ShortHaul Route whose name is
+      "LAX2LHR" as we would expect.</p><div class="mediaobject"><img src="Part2/Mappings/Images/resultofsimplemapping.jpg"></div><p>The same result can be achieved by creating the same instance of a
+      Route in a Snapshot and selecting Apply Mapping from the object's
+      menu:</p><div class="mediaobject"><img src="Part2/Mappings/Images/applyingamapping.jpg"></div><p>A choice of available mappings will be displayed. Select the
+      mapping that the object is to be passed to, and it will be
+      invoked.</p><div class="mediaobject"><img src="Part2/Mappings/Images/applychoice.jpg"></div></div></div><p></p><p><img src="copyright.gif"></p></body></html>

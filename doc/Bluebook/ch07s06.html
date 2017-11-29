@@ -1,0 +1,97 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Generating XML</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch07.html" title="Constructing an XML Parser and Generator"><link rel="prev" href="ch07s05.html" title="Debugging the Parser"><link rel="next" href="ch08.html" title="Using the Programming Interface"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id638578"></a>Generating XML</h2></div></div></div><p>A similar approach can be used to construct an XML generator. A
+    simple domain specific language is used to capture the rules for
+    generating XML. Here are the rules for generating XML for instances of the
+    Component model:</p><pre class="programlisting">context ComponentModel 
+  @Operation exportXML(out:OutputChannel)
+    @XML(out)
+      &lt;ComponentModel&gt;
+        @For component in components do
+          component.exportXML(out)
+        end;
+        @For connector in connectors do
+          connector.exportXML(out,self)
+        end
+      &lt;/ComponentModel&gt;
+    end
+  end
+  
+context ComponentModel
+  @Operation portId(port:Port):String
+    @Find(component,components)
+      when component.ports-&gt;includes(port)
+      do component.name + ":" + port.name
+      else self.error("Cannot find port " + port.toString())
+    end
+  end
+  
+context Component
+  @Operation exportXML(out:OutputChannel)
+    @XML(out)
+      &lt;Component name=name&gt;
+        @For port in ports do
+          port.exportXML(out,self)
+        end
+      &lt;/Component&gt;
+    end
+  end
+  
+context Port
+  @Operation exportXML(out:OutputChannel,component:Component)
+    let portId = component.name + ":" + name
+    in @XML(out)
+         &lt;Port name=name type=type id=portId/&gt;
+       end
+    end
+  end
+  
+context Connector
+  @Operation exportXML(out:OutputChannel,model:ComponentModel)
+    let sourceId = model.portId(source);
+        targetId = model.portId(target)
+    in @XML(out)
+         &lt;Connector source=sourceId target=targetId/&gt;
+       end
+    end
+  end</pre><p>The structure of each rule is as follows:</p><pre class="programlisting">@XML(outputChannel)
+ &lt;Tag name=exp name=exp &#8230;&gt;
+  body
+ &lt;/Tag&gt;
+end</pre><p>An @XML command writes the XML data to the supplied output channel.
+    The XML elements and their attributes are then written. The body is XOCL
+    code that writes the child elements.</p><p>As an example, the exportXML() operation generats a ComponentModel
+    tag, followed by the results of calling the exportXML() operation on the
+    ComponentModel's components and connectors.</p><p>To generate the XML, the following operation is defined:</p><pre class="programlisting">parserImport XOCL;
+parserImport XML::PrintXML;
+
+import Components;
+import IO;
+
+context ComponentModel
+
+  @Operation exportXML()
+    let file = xmf.saveFile(xmf.projDir(),"*.xml")
+    in if file &lt;&gt; ""
+       then
+         if not file.fileExists() orelse xmf.question("Overwrite " + file)
+         then
+           @WithOpenFile(fout -&gt; file)
+              self.exportXML(fout);
+              xmf.message("written " + self.toString() + " to " + file)
+           end
+         else xmf.message("Deployment Cancelled")
+         end
+       else xmf.message("Deployment Cancelled")
+       end
+    end
+  end
+
+//Rest of rules</pre><p>This can be run on any ComponentModel instance, for example:</p><div class="mediaobject"><img src="Part2/XML/Images/generateXML.jpg"></div><p>The following XML is produced:</p><pre class="programlisting">&lt;ComponentModel&gt;
+  &lt;Component name="Displays"&gt;
+    &lt;Port id="Displays:CurrentPosition" type="Long" name="CurrentPosition" /&gt; 
+  &lt;/Component&gt;
+  &lt;Component name="Navigation"&gt;
+    &lt;Port id="Navigation:CurrentPosition" type="LatLong" name="CurrentPosition" /&gt; 
+  &lt;/Component&gt;
+  &lt;Connector target="Navigation:CurrentPosition" source="Displays:CurrentPosition" /&gt; 
+&lt;/ComponentModel&gt;</pre><p>This can now be parsed back into the tool if required using the XML
+    parser!</p></div><p></p><p><img src="copyright.gif"></p></body></html>

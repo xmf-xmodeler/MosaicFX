@@ -1,0 +1,24 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>DOM Input Channel</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch20.html" title="XML"><link rel="prev" href="ch20s04.html" title="The XML Parsing Grammar"><link rel="next" href="ch20s06.html" title="SAX Input Channel"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id644896"></a>DOM Input Channel</h2></div></div></div><p>The XML parser provided by XMF does not give direct access to the
+    XML elements in a document. The parser matches against the XML as it is
+    read and the parser actions are used to synthesize any XMF element.</p><p>Certain applications require access to the XML representation of the
+    data. For example, the XML model may be the domain model. In this case you
+    can write an XML parser that synthesizes an instance of the XML model.
+    This use case is supported directly in XMF by DOMInputChannel. The use of
+    this class is equivalent to writing a bespoke parser that synthesizes XML;
+    however, it is much more efficient because general parsing machinery is
+    not required to recognize the XML elements as they are encountered.</p><p>This section shows how DOMInputChannel works by providing a simple
+    example of its use.</p><p>Consider the management of some hierarchical data such as
+    classification trees, component descriptions, and organisation structures.
+    The data can be maintained as a database in XML format. Database queries
+    and update can be implemented as operations that work directly on the XML
+    data. The following Tree package defines operations that partially
+    implement such a database:</p><div class="mediaobject"><img src="Part3/XML/Images/image046.jpg"></div><p>The readDB operation uses a DOM input channel to read the contents
+    of a standard XML file. The result of performing the parse operation is an
+    XML document whose root element is the database. The constructor for the
+    class DOMInputChannel accepts an input channel that produces XML
+    characters when read.</p><p>The following operation uses the print operation of XML::Document to
+    write the database to a text file:</p><div class="mediaobject"><img src="Part3/XML/Images/image048.jpg"></div><p>Once the database has been read (or constructed by directly creating
+    instances of the XMLmodel). It can be manipulated using XOCL. The
+    following operation adds a child to an element in the
+    database:</p><div class="mediaobject"><img src="Part3/XML/Images/image050.jpg"></div><p>The following query operation uses pattern matching to select an
+    element:</p><div class="mediaobject"><img src="Part3/XML/Images/image050.jpg"></div></div><p></p><p><img src="copyright.gif"></p></body></html>

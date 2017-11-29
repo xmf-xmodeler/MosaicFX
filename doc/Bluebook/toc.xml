@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<toc label="XMF Bluebook" topic="Bluebook/index.html">
+  <topic label="Introduction and Tool Overview" href="Bluebook/pt01.html">
+    <topic label="Introduction" href="Bluebook/ch01.html">
+      <topic label="What is XMF-Mosaic?" href="Bluebook/ch01s01.html"/>
+      <topic label="Using XMF-Mosaic" href="Bluebook/ch01s02.html">
+        <topic label="Domain Models" href="Bluebook/ch01s02.html#id571167"/>
+        <topic label="Concrete Syntax" href="Bluebook/ch01s02.html#id571181"/>
+        <topic label="Behaviour" href="Bluebook/ch01s02.html#id493435"/>
+        <topic label="Transformations and Mappings" href="Bluebook/ch01s02.html#id493496"/>
+        <topic label="Extensibility" href="Bluebook/ch01s02.html#id493546"/>
+      </topic>
+      <topic label="Why use XMF-Mosaic?" href="Bluebook/ch01s03.html"/>
+      <topic label="Technical Features" href="Bluebook/ch01s04.html"/>
+      <topic label="Architecture" href="Bluebook/ch01s05.html">
+        <topic label="Operating System" href="Bluebook/ch01s05.html#id571217"/>
+        <topic label="Virtual Machine" href="Bluebook/ch01s05.html#id571243"/>
+        <topic label="Kernel" href="Bluebook/ch01s05.html#id571269"/>
+        <topic label="XOCL" href="Bluebook/ch01s05.html#id571440"/>
+        <topic label="Base Toolset" href="Bluebook/ch01s05.html#id574070"/>
+        <topic label="Tool Definition" href="Bluebook/ch01s05.html#id601919"/>
+        <topic label="XMF Clients" href="Bluebook/ch01s05.html#id601953"/>
+      </topic>
+    </topic>
+  </topic>
+  <topic label="XMF Walkthroughs" href="Bluebook/pt02.html">
+    <topic label="Creating and Interacting with a Domain Model" href="Bluebook/ch02.html">
+      <topic label="Example" href="Bluebook/ch02s01.html"/>
+      <topic label="Getting Started" href="Bluebook/ch02s02.html"/>
+      <topic label="Constructing a Domain Model" href="Bluebook/ch02s03.html">
+        <topic label="Adding Classes" href="Bluebook/ch02s03.html#id616743"/>
+        <topic label="Adding Attributes" href="Bluebook/ch02s03.html#id650878"/>
+        <topic label="Adding Associations" href="Bluebook/ch02s03.html#id660508"/>
+      </topic>
+      <topic label="Using the Property Editor" href="Bluebook/ch02s04.html"/>
+      <topic label="Saving and Loading" href="Bluebook/ch02s05.html"/>
+      <topic label="Interacting with Models" href="Bluebook/ch02s06.html"/>
+      <topic label="Snapshots" href="Bluebook/ch02s07.html">
+        <topic label="Creating Standalone Snapshots" href="Bluebook/ch02s07.html#id679335"/>
+        <topic label="Dealing with Sequences" href="Bluebook/ch02s07.html#id615544"/>
+        <topic label="Synchronisation between Snapshots and Class Models" href="Bluebook/ch02s07.html#id616794"/>
+        <topic label="Creating Multiple Views of Snapshots" href="Bluebook/ch02s07.html#id660758"/>
+        <topic label="Exporting Snapshots" href="Bluebook/ch02s07.html#id669668"/>
+      </topic>
+      <topic label="Saving and Loading Diagram Layout" href="Bluebook/ch02s08.html"/>
+      <topic label="Adding Constraints" href="Bluebook/ch02s09.html">
+        <topic label="Constraint Reasons" href="Bluebook/ch02s09.html#id615077"/>
+        <topic label="Parse Errors" href="Bluebook/ch02s09.html#id648573"/>
+        <topic label="Checking Snapshots" href="Bluebook/ch02s09.html#id613425">
+          <topic label="Interpreting the results" href="Bluebook/ch02s09.html#id650705"/>
+        </topic>
+        <topic label="Exercises" href="Bluebook/ch02s09.html#id615645"/>
+      </topic>
+      <topic label="Adding Queries" href="Bluebook/ch02s10.html">
+        <topic label="Exercises" href="Bluebook/ch02s10.html#id616276"/>
+      </topic>
+      <topic label="Running Operations" href="Bluebook/ch02s11.html">
+        <topic label="Running Operations on Snapshots" href="Bluebook/ch02s11.html#id616521"/>
+      </topic>
+      <topic label="Operations" href="Bluebook/ch02s12.html">
+        <topic label="Exercises" href="Bluebook/ch02s12.html#id616507"/>
+      </topic>
+      <topic label="Adding Getters and Setters" href="Bluebook/ch02s13.html">
+        <topic label="Exercises" href="Bluebook/ch02s13.html#id668521"/>
+      </topic>
+      <topic label="Adding Constructors" href="Bluebook/ch02s14.html">
+        <topic label="Exercises" href="Bluebook/ch02s14.html#id655793"/>
+      </topic>
+      <topic label="Interacting with Models using the Console" href="Bluebook/ch02s15.html">
+        <topic label="Other Console Hints and Tips" href="Bluebook/ch02s15.html#id651815"/>
+        <topic label="Editing Values via the Console" href="Bluebook/ch02s15.html#id649647"/>
+        <topic label="Using Global Variables" href="Bluebook/ch02s15.html#id645740"/>
+        <topic label="Error Reports" href="Bluebook/ch02s15.html#id653429"/>
+      </topic>
+      <topic label="Using Snapshots" href="Bluebook/ch02s16.html">
+        <topic label="Generating Snapshots from the Console" href="Bluebook/ch02s16.html#id632375"/>
+      </topic>
+      <topic label="Adding Package Operations" href="Bluebook/ch02s17.html">
+        <topic label="Adding and Running Package Operations" href="Bluebook/ch02s17.html#id642103"/>
+      </topic>
+      <topic label="Next Steps" href="Bluebook/ch02s18.html"/>
+    </topic>
+    <topic label="Working with the Modelling Interface" href="Bluebook/ch03.html">
+      <topic label="Windows" href="Bluebook/ch03s01.html">
+        <topic label="Displaying Multiple Diagrams and Windows" href="Bluebook/ch03s01.html#id663207"/>
+      </topic>
+      <topic label="Preferences" href="Bluebook/ch03s02.html"/>
+      <topic label="Property Editor" href="Bluebook/ch03s03.html"/>
+    </topic>
+    <topic label="An Introduction to XOCL" href="Bluebook/ch04.html">
+      <topic label="Introduction" href="Bluebook/ch04s01.html"/>
+      <topic label="Basic Types" href="Bluebook/ch04s02.html">
+        <topic label="Examples" href="Bluebook/ch04s02.html#id662756"/>
+      </topic>
+      <topic label="Models" href="Bluebook/ch04s03.html"/>
+      <topic label="Using XOCL" href="Bluebook/ch04s04.html">
+        <topic label="Context" href="Bluebook/ch04s04.html#id638791"/>
+        <topic label="Self" href="Bluebook/ch04s04.html#id631190"/>
+      </topic>
+      <topic label="Operations" href="Bluebook/ch04s05.html">
+        <topic label="Constructors" href="Bluebook/ch04s05.html#id655480"/>
+        <topic label="Constraints" href="Bluebook/ch04s05.html#id637207"/>
+      </topic>
+      <topic label="Variables" href="Bluebook/ch04s06.html"/>
+      <topic label="Types" href="Bluebook/ch04s07.html"/>
+      <topic label="Navigation" href="Bluebook/ch04s08.html"/>
+      <topic label="Collections" href="Bluebook/ch04s09.html">
+        <topic label="Collection Operations" href="Bluebook/ch04s09.html#id618295">
+          <topic label="Select" href="Bluebook/ch04s09.html#id617114"/>
+          <topic label="Collect" href="Bluebook/ch04s09.html#id645463"/>
+          <topic label="Iterate" href="Bluebook/ch04s09.html#id651729"/>
+          <topic label="Other Operations" href="Bluebook/ch04s09.html#id644069"/>
+        </topic>
+      </topic>
+      <topic label="Logical Expressions" href="Bluebook/ch04s10.html"/>
+      <topic label="Conditional Expressions" href="Bluebook/ch04s11.html"/>
+      <topic label="Imperative Features" href="Bluebook/ch04s12.html">
+        <topic label="Object Creation" href="Bluebook/ch04s12.html#id643813"/>
+        <topic label="Assignment" href="Bluebook/ch04s12.html#id666262"/>
+        <topic label="Sequential Execution" href="Bluebook/ch04s12.html#id679337"/>
+        <topic label="Operation Invocation" href="Bluebook/ch04s12.html#id567704"/>
+        <topic label="Looping" href="Bluebook/ch04s12.html#id650181"/>
+      </topic>
+      <topic label="Exceptions" href="Bluebook/ch04s13.html"/>
+      <topic label="Formatting" href="Bluebook/ch04s14.html"/>
+      <topic label="Advanced Features" href="Bluebook/ch04s15.html"/>
+    </topic>
+    <topic label="Debugging Operations" href="Bluebook/ch05.html"/>
+    <topic label="Constructing and Running Mappings" href="Bluebook/ch06.html">
+      <topic label="A Simple Mapping" href="Bluebook/ch06s01.html">
+        <topic label="Running the Mapping" href="Bluebook/ch06s01.html#id632105"/>
+      </topic>
+      <topic label="A Simple Model to C# Mapping" href="Bluebook/ch06s02.html">
+        <topic label="The C# Model" href="Bluebook/ch06s02.html#id646964"/>
+        <topic label="The Mapping" href="Bluebook/ch06s02.html#id670915"/>
+        <topic label="Executing the Mapping" href="Bluebook/ch06s02.html#id662690"/>
+      </topic>
+      <topic label="Mapping Hints and Tips" href="Bluebook/ch06s03.html">
+        <topic label="Error Reporting" href="Bluebook/ch06s03.html#id567743"/>
+      </topic>
+      <topic label="Constructing a Pretty Printer" href="Bluebook/ch06s04.html"/>
+    </topic>
+    <topic label="Constructing an XML Parser and Generator" href="Bluebook/ch07.html">
+      <topic label="First Steps" href="Bluebook/ch07s01.html"/>
+      <topic label="Constructing the Grammar" href="Bluebook/ch07s02.html"/>
+      <topic label="Invoking the Parser" href="Bluebook/ch07s03.html"/>
+      <topic label="Example" href="Bluebook/ch07s04.html"/>
+      <topic label="Debugging the Parser" href="Bluebook/ch07s05.html"/>
+      <topic label="Generating XML" href="Bluebook/ch07s06.html"/>
+    </topic>
+    <topic label="Using the Programming Interface" href="Bluebook/ch08.html">
+      <topic label="Getting Started" href="Bluebook/ch08s01.html"/>
+      <topic label="Compiling and Loading" href="Bluebook/ch08s02.html"/>
+      <topic label="Checking the Model" href="Bluebook/ch08s03.html"/>
+      <topic label="Adding Constraints" href="Bluebook/ch08s04.html"/>
+      <topic label="Adding Operations" href="Bluebook/ch08s05.html"/>
+      <topic label="Context" href="Bluebook/ch08s06.html"/>
+      <topic label="Importing Packages" href="Bluebook/ch08s07.html"/>
+    </topic>
+    <topic label="Toolbar Menus and Initialisation Files" href="Bluebook/ch09.html">
+      <topic label="Toolbar menus" href="Bluebook/ch09s01.html"/>
+      <topic label="Some Useful Operations" href="Bluebook/ch09s02.html"/>
+      <topic label="Initialisation Files" href="Bluebook/ch09s03.html"/>
+    </topic>
+    <topic label="Constructing a Diagram Tool for a Model in XTools" href="Bluebook/ch10.html">
+      <topic label="Domain Model" href="Bluebook/ch10s01.html"/>
+      <topic label="A Candidate Diagram Syntax" href="Bluebook/ch10s02.html"/>
+      <topic label="Constructing an XTool Definition" href="Bluebook/ch10s03.html">
+        <topic label="Creating the Tool Definition" href="Bluebook/ch10s03.html#id631246"/>
+        <topic label="Adding a Node" href="Bluebook/ch10s03.html#id673917"/>
+        <topic label="Adding a Box to the Node" href="Bluebook/ch10s03.html#id666990"/>
+        <topic label="Adding an Attribute to the Box" href="Bluebook/ch10s03.html#id618309"/>
+        <topic label="Adding a Free Node" href="Bluebook/ch10s03.html#id629857"/>
+        <topic label="Adding Tool Bars" href="Bluebook/ch10s03.html#id678487"/>
+        <topic label="Running the Tool" href="Bluebook/ch10s03.html#id659656"/>
+        <topic label="Adding Edges" href="Bluebook/ch10s03.html#id641272"/>
+        <topic label="Adding Edge Toolbar Buttons" href="Bluebook/ch10s03.html#id646982"/>
+        <topic label="Adding Menus" href="Bluebook/ch10s03.html#id668973"/>
+        <topic label="Re-running the tool" href="Bluebook/ch10s03.html#id644275"/>
+      </topic>
+      <topic label="Other XTool Capabilities" href="Bluebook/ch10s04.html"/>
+    </topic>
+    <topic label="Importing XMI" href="Bluebook/ch11.html"/>
+    <topic label="Constructing a Textual Syntax and Parser" href="Bluebook/ch12.html">
+      <topic label="Parsing and Synthesising Instances of Models" href="Bluebook/ch12s01.html"/>
+    </topic>
+    <topic label="Creating a Meta-Profile" href="Bluebook/ch13.html">
+      <topic label="An Example Profile" href="Bluebook/ch13s01.html">
+        <topic label="Adding Constraints" href="Bluebook/ch13s01.html#id615426"/>
+      </topic>
+    </topic>
+    <topic label="Generating Code" href="Bluebook/ch14.html">
+      <topic label="Generating Java" href="Bluebook/ch14s01.html"/>
+    </topic>
+    <topic label="Using Manifests and Deploying Models" href="Bluebook/ch15.html">
+      <topic label="Manifest Actions" href="Bluebook/ch15s01.html"/>
+      <topic label="Deploying Manifests" href="Bluebook/ch15s02.html"/>
+    </topic>
+  </topic>
+  <topic label="Reference" href="Bluebook/pt03.html">
+    <topic label="Namespace, Classes, Packages and MetaClasses" href="Bluebook/ch16.html">
+      <topic label="Introduction" href="Bluebook/ch16s01.html"/>
+      <topic label="NameSpaces" href="Bluebook/ch16s02.html"/>
+      <topic label="Classes" href="Bluebook/ch16s03.html">
+        <topic label="Class Definition" href="Bluebook/ch16s03.html#id595688"/>
+        <topic label=" Attributes" href="Bluebook/ch16s03.html#id573787"/>
+        <topic label="Operations" href="Bluebook/ch16s03.html#id617717"/>
+        <topic label="Constraints" href="Bluebook/ch16s03.html#id647970"/>
+        <topic label="Inheritance" href="Bluebook/ch16s03.html#id600577">
+          <topic label="Multiple" href="Bluebook/ch16s03.html#id625864"/>
+          <topic label="Run-Super" href="Bluebook/ch16s03.html#id671239"/>
+        </topic>
+      </topic>
+      <topic label="Packages" href="Bluebook/ch16s04.html"/>
+      <topic label="Metaclasses" href="Bluebook/ch16s05.html">
+        <topic label="Message Passing" href="Bluebook/ch16s05.html#id581846"/>
+        <topic label="Object Creation" href="Bluebook/ch16s05.html#id622515"/>
+        <topic label="Slot Access" href="Bluebook/ch16s05.html#id762594"/>
+        <topic label="Slot Update" href="Bluebook/ch16s05.html#id640002"/>
+        <topic label="Default Parents" href="Bluebook/ch16s05.html#id702128"/>
+        <topic label="Example" href="Bluebook/ch16s05.html#id610452"/>
+      </topic>
+    </topic>
+    <topic label="Working with Syntax" href="Bluebook/ch17.html">
+      <topic label="Introduction" href="Bluebook/ch17s01.html"/>
+      <topic label="Grammar and Text Processing" href="Bluebook/ch17s02.html">
+        <topic label="Introduction" href="Bluebook/ch17s02.html#id621669"/>
+        <topic label="A Simple language Grammar" href="Bluebook/ch17s02.html#id667520"/>
+        <topic label="Debugging" href="Bluebook/ch17s02.html#id640751"/>
+        <topic label="XBNF Grammar" href="Bluebook/ch17s02.html#id629340"/>
+        <topic label="The Grammar Domain Model" href="Bluebook/ch17s02.html#id653242"/>
+        <topic label="The XBNF Grammar" href="Bluebook/ch17s02.html#id584430"/>
+        <topic label="Tokens" href="Bluebook/ch17s02.html#id589455"/>
+      </topic>
+      <topic label="XMF Execution Architecture" href="Bluebook/ch17s03.html">
+        <topic label="Introduction" href="Bluebook/ch17s03.html#id652579"/>
+        <topic label="Performable Elements" href="Bluebook/ch17s03.html#id601770"/>
+        <topic label="Syntax Extensions" href="Bluebook/ch17s03.html#id629455"/>
+      </topic>
+      <topic label="Synthesising Syntax" href="Bluebook/ch17s04.html">
+        <topic label="Introduction" href="Bluebook/ch17s04.html#id625537"/>
+        <topic label="The OCL Package" href="Bluebook/ch17s04.html#id566863"/>
+        <topic label="Examples" href="Bluebook/ch17s04.html#id578703">
+          <topic label="Checking Conditions" href="Bluebook/ch17s04.html#id602892"/>
+          <topic label="Specification" href="Bluebook/ch17s04.html#id622321"/>
+          <topic label="A For Loop" href="Bluebook/ch17s04.html#id628065"/>
+        </topic>
+      </topic>
+      <topic label="Quasi-Quotes" href="Bluebook/ch17s05.html">
+        <topic label="Introduction" href="Bluebook/ch17s05.html#id582561"/>
+        <topic label="Literal Syntax" href="Bluebook/ch17s05.html#id564162"/>
+        <topic label="Syntax Templates" href="Bluebook/ch17s05.html#id595274"/>
+        <topic label="Splicing" href="Bluebook/ch17s05.html#id592010"/>
+        <topic label="Patterns" href="Bluebook/ch17s05.html#id630970"/>
+      </topic>
+      <topic label="New Performable Elements" href="Bluebook/ch17s06.html">
+        <topic label="Introduction" href="Bluebook/ch17s06.html#id689751"/>
+        <topic label="Sugar" href="Bluebook/ch17s06.html#id706576">
+          <topic label="Introduction" href="Bluebook/ch17s06.html#id642550"/>
+          <topic label="Guarded Statements" href="Bluebook/ch17s06.html#id680269"/>
+          <topic label="Conditional Expressions" href="Bluebook/ch17s06.html#id629326"/>
+        </topic>
+        <topic label="Syntax" href="Bluebook/ch17s06.html#id684717"/>
+        <topic label="Exp" href="Bluebook/ch17s06.html#id570690">
+          <topic label="Introduction" href="Bluebook/ch17s06.html#id606341"/>
+          <topic label="State Machines" href="Bluebook/ch17s06.html#id631711"/>
+        </topic>
+      </topic>
+    </topic>
+    <topic label="XCore" href="Bluebook/ch18.html">
+      <topic label="Introduction" href="Bluebook/ch18s01.html"/>
+      <topic label="The XCore Package" href="Bluebook/ch18s02.html">
+        <topic label="Attribute" href="Bluebook/ch18s02.html#id581822"/>
+        <topic label="Behavioural Feature" href="Bluebook/ch18s02.html#id644024"/>
+        <topic label="Bind" href="Bluebook/ch18s02.html#id662201"/>
+        <topic label="Classifier" href="Bluebook/ch18s02.html#id599317"/>
+        <topic label="Class" href="Bluebook/ch18s02.html#id635066"/>
+        <topic label="CodeBox" href="Bluebook/ch18s02.html#id585588"/>
+        <topic label="Collection" href="Bluebook/ch18s02.html#id581971"/>
+        <topic label="Compiled Operation" href="Bluebook/ch18s02.html#id581957"/>
+        <topic label="Constraint" href="Bluebook/ch18s02.html#id580644"/>
+        <topic label="Constraint Report" href="Bluebook/ch18s02.html#id600567"/>
+        <topic label="Constructor" href="Bluebook/ch18s02.html#id679520"/>
+        <topic label="Contained" href="Bluebook/ch18s02.html#id662205"/>
+        <topic label="Container" href="Bluebook/ch18s02.html#id679361"/>
+        <topic label="Daemon" href="Bluebook/ch18s02.html#id629532"/>
+        <topic label="Data Type" href="Bluebook/ch18s02.html#id577260"/>
+        <topic label="Dependency" href="Bluebook/ch18s02.html#id617564"/>
+        <topic label="Doc" href="Bluebook/ch18s02.html#id572820"/>
+        <topic label="DocumentedElement" href="Bluebook/ch18s02.html#id568398"/>
+        <topic label="Element" href="Bluebook/ch18s02.html#id680507"/>
+        <topic label="Enum" href="Bluebook/ch18s02.html#id709075"/>
+        <topic label="Exception" href="Bluebook/ch18s02.html#id610705"/>
+        <topic label="ForeignOperation" href="Bluebook/ch18s02.html#id619652"/>
+        <topic label="IndexedContainer" href="Bluebook/ch18s02.html#id577570"/>
+        <topic label="InterpretedOperation" href="Bluebook/ch18s02.html#id610168"/>
+        <topic label="Namespace" href="Bluebook/ch18s02.html#id597253"/>
+        <topic label="NamedElement" href="Bluebook/ch18s02.html#id648738"/>
+        <topic label="Object" href="Bluebook/ch18s02.html#id630172"/>
+        <topic label="Operation" href="Bluebook/ch18s02.html#id570212"/>
+        <topic label="OrderedCollection" href="Bluebook/ch18s02.html#id589955"/>
+        <topic label="Package" href="Bluebook/ch18s02.html#id698358"/>
+        <topic label="Parameter" href="Bluebook/ch18s02.html#id671462"/>
+        <topic label="Performable" href="Bluebook/ch18s02.html#id636684"/>
+        <topic label="Resource" href="Bluebook/ch18s02.html#id671815"/>
+        <topic label="Seq" href="Bluebook/ch18s02.html#id615000"/>
+        <topic label="Set" href="Bluebook/ch18s02.html#id590301"/>
+        <topic label="Snapshot" href="Bluebook/ch18s02.html#id562666"/>
+        <topic label="StructuralFeature" href="Bluebook/ch18s02.html#id654472"/>
+        <topic label="Table" href="Bluebook/ch18s02.html#id619453"/>
+        <topic label="Thread" href="Bluebook/ch18s02.html#id599395"/>
+        <topic label="TypedElement" href="Bluebook/ch18s02.html#id664767"/>
+        <topic label="Unordered Collection" href="Bluebook/ch18s02.html#id675158"/>
+        <topic label="Vector" href="Bluebook/ch18s02.html#id636626"/>
+      </topic>
+    </topic>
+    <topic label="XMap" href="Bluebook/ch19.html">
+      <topic label="Introduction" href="Bluebook/ch19s01.html"/>
+      <topic label="Language Basics" href="Bluebook/ch19s02.html"/>
+      <topic label="Syntax" href="Bluebook/ch19s03.html">
+        <topic label="Diagrammatical Syntax" href="Bluebook/ch19s03.html#id595204"/>
+        <topic label="Textual Syntax" href="Bluebook/ch19s03.html#id677121"/>
+        <topic label="Clause Syntax" href="Bluebook/ch19s03.html#id666557">
+          <topic label="Pattern Syntax" href="Bluebook/ch19s03.html#id680719"/>
+        </topic>
+      </topic>
+      <topic label="Execution" href="Bluebook/ch19s04.html"/>
+      <topic label="Constructing Mappings" href="Bluebook/ch19s05.html">
+        <topic label="Creating Mappings via the Modelling Interface" href="Bluebook/ch19s05.html#id578720"/>
+        <topic label="Creating Mappings via the Programming Interface" href="Bluebook/ch19s05.html#id618206"/>
+      </topic>
+      <topic label="Running Mappings" href="Bluebook/ch19s06.html"/>
+      <topic label="Example" href="Bluebook/ch19s07.html">
+        <topic label="Class Model to Database" href="Bluebook/ch19s07.html#id584963">
+          <topic label="Class Model" href="Bluebook/ch19s07.html#id706609"/>
+          <topic label="Database Model" href="Bluebook/ch19s07.html#id623644"/>
+          <topic label="Database Mapping" href="Bluebook/ch19s07.html#id603821"/>
+        </topic>
+        <topic label="Running the Mapping" href="Bluebook/ch19s07.html#id749344"/>
+      </topic>
+      <topic label="Other Aspects of Mappings" href="Bluebook/ch19s08.html">
+        <topic label="Operations" href="Bluebook/ch19s08.html#id611097"/>
+        <topic label="Attributes" href="Bluebook/ch19s08.html#id646139"/>
+        <topic label="Variable Passing" href="Bluebook/ch19s08.html#id607011"/>
+      </topic>
+    </topic>
+    <topic label="XML" href="Bluebook/ch20.html">
+      <topic label="Introduction" href="Bluebook/ch20s01.html"/>
+      <topic label="XML" href="Bluebook/ch20s02.html"/>
+      <topic label="Parsing XML" href="Bluebook/ch20s03.html">
+        <topic label="Introduction" href="Bluebook/ch20s03.html#id670871"/>
+        <topic label="Example" href="Bluebook/ch20s03.html#id680516">
+          <topic label="Two Dimensional Tables" href="Bluebook/ch20s03.html#id636641"/>
+          <topic label="Dealing with References" href="Bluebook/ch20s03.html#id570342"/>
+          <topic label="Representing Models in XML" href="Bluebook/ch20s03.html#id618362"/>
+        </topic>
+        <topic label="Debugging XML Grammars" href="Bluebook/ch20s03.html#id622134"/>
+      </topic>
+      <topic label="The XML Parsing Grammar" href="Bluebook/ch20s04.html"/>
+      <topic label="DOM Input Channel" href="Bluebook/ch20s05.html"/>
+      <topic label="SAX Input Channel" href="Bluebook/ch20s06.html"/>
+      <topic label="XML Output" href="Bluebook/ch20s07.html">
+        <topic label="Introduction" href="Bluebook/ch20s07.html#id569429"/>
+        <topic label="XML Output Patterns" href="Bluebook/ch20s07.html#id699335"/>
+        <topic label="XML Output Channels" href="Bluebook/ch20s07.html#id679484">
+          <topic label="Introduction" href="Bluebook/ch20s07.html#id640741"/>
+          <topic label="Basic XML Output" href="Bluebook/ch20s07.html#id669910"/>
+          <topic label="Object Formatters" href="Bluebook/ch20s07.html#id573956"/>
+          <topic label="Name Space Formatters" href="Bluebook/ch20s07.html#id693835"/>
+          <topic label="Saving Models as XML" href="Bluebook/ch20s07.html#id609451"/>
+        </topic>
+      </topic>
+      <topic label="Raising Events" href="Bluebook/ch20s08.html"/>
+      <topic label="Deploying Java" href="Bluebook/ch20s09.html">
+        <topic label="Introduction" href="Bluebook/ch20s09.html#id600239"/>
+        <topic label="Deploying Models" href="Bluebook/ch20s09.html#id639792"/>
+        <topic label="Deploying Parsers" href="Bluebook/ch20s09.html#id590943"/>
+        <topic label="Deploying Factories" href="Bluebook/ch20s09.html#id600767"/>
+      </topic>
+    </topic>
+    <topic label="XOCL" href="Bluebook/ch21.html">
+      <topic label="Introduction" href="Bluebook/ch21s01.html">
+        <topic label="Purpose" href="Bluebook/ch21s01.html#id659741"/>
+        <topic label="Language Basics" href="Bluebook/ch21s01.html#id600575"/>
+        <topic label="Overview of Syntax" href="Bluebook/ch21s01.html#id706623"/>
+      </topic>
+      <topic label="Basic Data Types" href="Bluebook/ch21s02.html"/>
+      <topic label="Program Constructs" href="Bluebook/ch21s03.html">
+        <topic label="Self Evaluating Expressions" href="Bluebook/ch21s03.html#id634424"/>
+        <topic label="Variables and Update" href="Bluebook/ch21s03.html#id667614"/>
+        <topic label="Calling Operations" href="Bluebook/ch21s03.html#id660536"/>
+        <topic label="Infix Operators" href="Bluebook/ch21s03.html#id675840"/>
+        <topic label="Prefix Operators" href="Bluebook/ch21s03.html#id617920"/>
+        <topic label="Sequencing" href="Bluebook/ch21s03.html#id657763"/>
+        <topic label="Special Forms" href="Bluebook/ch21s03.html#id648703"/>
+        <topic label="Quasi-Quotes" href="Bluebook/ch21s03.html#id623639"/>
+        <topic label="The Meta Character @" href="Bluebook/ch21s03.html#id562870"/>
+      </topic>
+      <topic label="Documentation" href="Bluebook/ch21s04.html"/>
+      <topic label="Error Handling" href="Bluebook/ch21s05.html"/>
+      <topic label="Control Statements" href="Bluebook/ch21s06.html">
+        <topic label="If" href="Bluebook/ch21s06.html#id618406"/>
+        <topic label="Case" href="Bluebook/ch21s06.html#id643419"/>
+        <topic label="CaseInt" href="Bluebook/ch21s06.html#id599920"/>
+        <topic label="TypeCase" href="Bluebook/ch21s06.html#id629117"/>
+        <topic label="While" href="Bluebook/ch21s06.html#id619876"/>
+        <topic label="For" href="Bluebook/ch21s06.html#id631564"/>
+        <topic label="Find" href="Bluebook/ch21s06.html#id565620"/>
+        <topic label="Iterators" href="Bluebook/ch21s06.html#id604611">
+          <topic label="Select" href="Bluebook/ch21s06.html#id638174"/>
+          <topic label="Reject" href="Bluebook/ch21s06.html#id573717"/>
+          <topic label="Collect" href="Bluebook/ch21s06.html#id617556"/>
+          <topic label="Iterate" href="Bluebook/ch21s06.html#id621247"/>
+        </topic>
+      </topic>
+      <topic label="Assignment" href="Bluebook/ch21s07.html"/>
+      <topic label="Pattern Matching" href="Bluebook/ch21s08.html">
+        <topic label="Patterns and Pattern Matching" href="Bluebook/ch21s08.html#id587076"/>
+        <topic label="Pattern Categories" href="Bluebook/ch21s08.html#id648785">
+          <topic label="Variables" href="Bluebook/ch21s08.html#id606370"/>
+          <topic label="Constants" href="Bluebook/ch21s08.html#id617583"/>
+          <topic label="Sequences" href="Bluebook/ch21s08.html#id700749"/>
+          <topic label="Constructors" href="Bluebook/ch21s08.html#id628698"/>
+          <topic label="Conditions" href="Bluebook/ch21s08.html#id655469"/>
+          <topic label="Sets" href="Bluebook/ch21s08.html#id590452"/>
+          <topic label="Sequences" href="Bluebook/ch21s08.html#id601131"/>
+          <topic label="Syntax" href="Bluebook/ch21s08.html#id639319"/>
+        </topic>
+        <topic label="Pattern Contexts" href="Bluebook/ch21s08.html#id563234"/>
+      </topic>
+      <topic label="Data Type Operations" href="Bluebook/ch21s09.html">
+        <topic label="Boolean" href="Bluebook/ch21s09.html#id666708">
+          <topic label="Operators" href="Bluebook/ch21s09.html#id606923"/>
+          <topic label="Examples" href="Bluebook/ch21s09.html#id707657"/>
+        </topic>
+        <topic label="Channels" href="Bluebook/ch21s09.html#id587058">
+          <topic label="Standard Input and Output" href="Bluebook/ch21s09.html#id599417"/>
+          <topic label="Formatting Output" href="Bluebook/ch21s09.html#id630036"/>
+          <topic label="File Based Input and Output" href="Bluebook/ch21s09.html#id609269"/>
+        </topic>
+        <topic label="Clients" href="Bluebook/ch21s09.html#id660359"/>
+        <topic label="Daemons" href="Bluebook/ch21s09.html#id660931"/>
+        <topic label="Elements" href="Bluebook/ch21s09.html#id630129"/>
+        <topic label="Integers" href="Bluebook/ch21s09.html#id619560">
+          <topic label="Operators" href="Bluebook/ch21s09.html#id636618"/>
+          <topic label="Operations" href="Bluebook/ch21s09.html#id630946"/>
+          <topic label="Examples" href="Bluebook/ch21s09.html#id627192"/>
+        </topic>
+        <topic label="Floats" href="Bluebook/ch21s09.html#id605296">
+          <topic label="Operators" href="Bluebook/ch21s09.html#id638271"/>
+          <topic label="Operations" href="Bluebook/ch21s09.html#id671552"/>
+          <topic label="Examples" href="Bluebook/ch21s09.html#id580396"/>
+        </topic>
+        <topic label="Objects" href="Bluebook/ch21s09.html#id668550"/>
+        <topic label="Null" href="Bluebook/ch21s09.html#id591195"/>
+        <topic label="Operations" href="Bluebook/ch21s09.html#id591001">
+          <topic label="Operations" href="Bluebook/ch21s09.html#id706737"/>
+        </topic>
+        <topic label="Strings" href="Bluebook/ch21s09.html#id667331">
+          <topic label="Operators" href="Bluebook/ch21s09.html#id587854"/>
+          <topic label="Operations" href="Bluebook/ch21s09.html#id617355"/>
+          <topic label="Examples" href="Bluebook/ch21s09.html#id749313"/>
+        </topic>
+        <topic label="Sequences" href="Bluebook/ch21s09.html#id568404">
+          <topic label="Operators" href="Bluebook/ch21s09.html#id660670"/>
+          <topic label="Operations" href="Bluebook/ch21s09.html#id627285"/>
+          <topic label="Examples" href="Bluebook/ch21s09.html#id614921"/>
+        </topic>
+        <topic label="Sets" href="Bluebook/ch21s09.html#id674338">
+          <topic label="Operators" href="Bluebook/ch21s09.html#id644412"/>
+          <topic label="Operations" href="Bluebook/ch21s09.html#id566867"/>
+          <topic label="Examples" href="Bluebook/ch21s09.html#id572699"/>
+        </topic>
+        <topic label="Symbols" href="Bluebook/ch21s09.html#id650623">
+          <topic label="Operations" href="Bluebook/ch21s09.html#id622829"/>
+        </topic>
+        <topic label="Tables" href="Bluebook/ch21s09.html#id645232">
+          <topic label="Operations" href="Bluebook/ch21s09.html#id713905"/>
+          <topic label="Examples" href="Bluebook/ch21s09.html#id586650"/>
+        </topic>
+        <topic label="Threads" href="Bluebook/ch21s09.html#id589615"/>
+        <topic label="Vectors" href="Bluebook/ch21s09.html#id600413">
+          <topic label="Operations" href="Bluebook/ch21s09.html#id662465"/>
+          <topic label="Examples" href="Bluebook/ch21s09.html#id651453"/>
+        </topic>
+        <topic label="Debugging" href="Bluebook/ch21s09.html#id569905"/>
+      </topic>
+      <topic label="Relationship to OCL and ASL" href="Bluebook/ch21s10.html"/>
+      <topic label="XOCL Grammar" href="Bluebook/ch21s11.html"/>
+      <topic label="Pattern Grammar" href="Bluebook/ch21s12.html"/>
+    </topic>
+    <topic label="XTools" href="Bluebook/ch22.html">
+      <topic label="Introduction" href="Bluebook/ch22s01.html"/>
+      <topic label="The XTools Architecture" href="Bluebook/ch22s02.html">
+        <topic label="Introduction" href="Bluebook/ch22s02.html#id619383"/>
+        <topic label="Tool Component" href="Bluebook/ch22s02.html#id629093"/>
+        <topic label="Tool Event" href="Bluebook/ch22s02.html#id626974"/>
+        <topic label="Tool Definition" href="Bluebook/ch22s02.html#id581171"/>
+        <topic label="Tool Deployment" href="Bluebook/ch22s02.html#id618188"/>
+      </topic>
+      <topic label="Diagram Tools" href="Bluebook/ch22s03.html">
+        <topic label="Introduction" href="Bluebook/ch22s03.html#id569340"/>
+        <topic label="Diagram Tool Components" href="Bluebook/ch22s03.html#id657248"/>
+        <topic label="Nodes and Edges" href="Bluebook/ch22s03.html#id634734"/>
+        <topic label="Toolbar" href="Bluebook/ch22s03.html#id636591"/>
+        <topic label="Menus" href="Bluebook/ch22s03.html#id592645"/>
+        <topic label="Diagram Events" href="Bluebook/ch22s03.html#id564527"/>
+        <topic label="An Example Domain Specific XTool" href="Bluebook/ch22s03.html#id667637">
+          <topic label="A Domain Model" href="Bluebook/ch22s03.html#id671625"/>
+          <topic label="Design of the User Interface" href="Bluebook/ch22s03.html#id633688"/>
+          <topic label="Defining the Tool Type" href="Bluebook/ch22s03.html#id564170"/>
+          <topic label="Defining the Element Manager" href="Bluebook/ch22s03.html#id635490"/>
+          <topic label="Handling Diagram Events" href="Bluebook/ch22s03.html#id597222"/>
+          <topic label="Handling Managed Element Events" href="Bluebook/ch22s03.html#id630314"/>
+          <topic label="Creating a Tool from a Domain Model Instance" href="Bluebook/ch22s03.html#id606913"/>
+        </topic>
+        <topic label="Display Elements" href="Bluebook/ch22s03.html#id629637">
+          <topic label="Introduction" href="Bluebook/ch22s03.html#id648726"/>
+          <topic label="Box" href="Bluebook/ch22s03.html#id694973"/>
+          <topic label="Ellipse" href="Bluebook/ch22s03.html#id700690"/>
+          <topic label="Image" href="Bluebook/ch22s03.html#id658662"/>
+          <topic label="Text" href="Bluebook/ch22s03.html#id713446"/>
+        </topic>
+        <topic label="Diagram Layout" href="Bluebook/ch22s03.html#id627492">
+          <topic label="Element Layout" href="Bluebook/ch22s03.html#id655618"/>
+          <topic label="Container Layout" href="Bluebook/ch22s03.html#id639775"/>
+        </topic>
+        <topic label="Example Tool: Class Diagrams" href="Bluebook/ch22s03.html#id563254"/>
+      </topic>
+      <topic label="Form Tools" href="Bluebook/ch22s04.html">
+        <topic label="Introduction" href="Bluebook/ch22s04.html#id713912"/>
+        <topic label="Form Components" href="Bluebook/ch22s04.html#id581291"/>
+        <topic label="Menus on Forms" href="Bluebook/ch22s04.html#id664409"/>
+        <topic label="Form Events" href="Bluebook/ch22s04.html#id612327"/>
+        <topic label="Example: Airports" href="Bluebook/ch22s04.html#id593121">
+          <topic label="Domain Model" href="Bluebook/ch22s04.html#id699238"/>
+          <topic label="Property Editor" href="Bluebook/ch22s04.html#id596784"/>
+          <topic label="Browser" href="Bluebook/ch22s04.html#id632656"/>
+        </topic>
+      </topic>
+    </topic>
+    <topic label="Clients" href="Bluebook/ch23.html">
+      <topic label="Introduction" href="Bluebook/ch23s01.html"/>
+      <topic label="Introduction" href="Bluebook/ch23s02.html">
+        <topic label="Message Based Client" href="Bluebook/ch23s02.html#id651515"/>
+        <topic label="Eclipse Implementation" href="Bluebook/ch23s02.html#id626814">
+          <topic label="Dependencies" href="Bluebook/ch23s02.html#id636374"/>
+          <topic label="Basic structure" href="Bluebook/ch23s02.html#id629476"/>
+          <topic label="Handling Messages" href="Bluebook/ch23s02.html#id680610"/>
+          <topic label="Handling Calls" href="Bluebook/ch23s02.html#id608924"/>
+          <topic label="Raising Events" href="Bluebook/ch23s02.html#id609787"/>
+          <topic label="Registering the Client" href="Bluebook/ch23s02.html#id627204"/>
+        </topic>
+        <topic label="XMF Implementation" href="Bluebook/ch23s02.html#id647293">
+          <topic label="Architecture" href="Bluebook/ch23s02.html#id627333"/>
+          <topic label="Sending Messages and Making Calls" href="Bluebook/ch23s02.html#id587120"/>
+          <topic label="Handling Events" href="Bluebook/ch23s02.html#id570259"/>
+          <topic label="Putting it Together" href="Bluebook/ch23s02.html#id617700"/>
+          <topic label="Starting the Communication" href="Bluebook/ch23s02.html#id670556"/>
+        </topic>
+      </topic>
+      <topic label="Internal Clients" href="Bluebook/ch23s03.html"/>
+      <topic label="External (Socket Based) Clients" href="Bluebook/ch23s04.html"/>
+    </topic>
+  </topic>
+</toc>

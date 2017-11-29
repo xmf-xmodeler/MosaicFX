@@ -1,0 +1,14 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Language Basics</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch19.html" title="XMap"><link rel="prev" href="ch19s01.html" title="Introduction"><link rel="next" href="ch19s03.html" title="Syntax"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id671408"></a>Language Basics</h2></div></div></div><p>XMap provides both a textual and diagrammatical language for
+    expressing mappings. The model below contains a simple example of the XMap
+    diagram language:</p><div class="mediaobject"><img src="Part3/XMap/Images/image004.jpg"></div><p>The example contains a mapping called Person2Cust, which takes a
+    Person object and generates a Customer object.</p><p>Mappings contain rules, known as clauses. These state how one or
+    more objects (the domain) are mapped to a target object (the range). Here
+    is an example of a clause belonging to the Person2Cust mapping:</p><div class="mediaobject"><img src="Part3/XMap/Images/image006.jpg"></div><p>A clause has a name, followed by a pattern declaration, a when
+    expression and a do action. Provided that the value supplied to the clause
+    matches the pattern declaration, and the when expression is true, then the
+    do action will execute. In this example, provided that a Person object is
+    supplied whose age is &lt; 16, a Junior customer object will be created
+    with the same name as the Person.</p><p>A mapping may contain more than one clause. In this example, a
+    clause named Adult is also defined. It maps a Person who is older than 16
+    to a Standard customer object.</p><div class="mediaobject"><img src="Part3/XMap/Images/image008.jpg"></div><p>The rest of this document will dig deeper into the XMap language,
+    starting with its syntax.</p></div><p></p><p><img src="copyright.gif"></p></body></html>

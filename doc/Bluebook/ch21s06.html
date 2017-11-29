@@ -1,0 +1,269 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Control Statements</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch21.html" title="XOCL"><link rel="prev" href="ch21s05.html" title="Error Handling"><link rel="next" href="ch21s07.html" title="Assignment"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id588573"></a>Control Statements</h2></div></div></div><p>Flow of control in XOCL is controlled by the constructs defined in
+    this section. All the basic control statements are supported, including
+    If, Case, While and For. In addition, XOCL supports convenient notations
+    for iterating over collections.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id618406"></a>If</h3></div></div></div><p>An if expression if used to choose between alternative expressions
+      based on the outcome of a boolean expression. The different forms of if
+      expression are outlined as follows:</p><pre class="programlisting">1  if test
+2  then consequent
+3  end
+4 
+5  if test 
+6  then consequent
+7  else alternative
+8  end
+9 
+10 if test1
+11 then consequent1
+12 elseif test2
+13 then consequent2
+14 elseif test3
+15 then &#8230;
+16 else alternative
+17 end</pre><p>Lines 1-3 show that an if can be used to construct a guarded
+      expression. If the test in line 1 produces true then the consequent in
+      line 2 is evaluated and produces the value fo the if expression
+      otherwise nothing is evaluated and the value of the if expression is
+      undefined.</p><p>Lines 5 &#8211; 8 show how a n if expression is used to choose between
+      two different expressions. If the expression at line 5 produces true
+      then the expression at line 6 is evaluated and produces the value of the
+      if expression. Otherwise the expression at line 7 is evaluated and
+      produces the value of the if expression.</p><p>Lines 10 &#8211; 17 show how the elseif keyword can be used to avoid
+      deeply nested if expressions.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id643419"></a>Case</h3></div></div></div><p>A case expression is used to dispatch on a sequence of values. The
+      simplest form of a case expression is shown as follows:</p><pre class="programlisting">@Case e of
+  p1 do 
+    e1 
+  end
+  p2 do
+    e2
+  end
+  &#8230;
+  pn do
+    en
+  end
+  else x
+end</pre><p>The case expression is evaluated as follows. The expression e at
+      line 1 is evaluated to produce a value v. If v matches pattern p1 then
+      e1 is evaluated and produces the value of the case expression. Otherwise
+      if value v matches p2 then e2 is evaluated and produces the value of the
+      case expression. Matching continues sequentially until a pattern pi
+      matches and the corresponding expression ei produces the value of the
+      case or the else-clause is reached. If the else-clause is reached then x
+      is evaluated and produces the value of the case expression. Note that
+      the else-clause is optional.</p><p>Note that the semantics of pattern matching is covered elsewhere
+      in this document. The simplest form of pattern matching is against basic
+      values:</p><pre class="programlisting">@Case x of
+  1 do 
+    // The value of x is 1&#8230;
+  end
+  2 do
+    // The value of x is 2&#8230;
+  end
+  &#8230;
+  100 do
+   // The value of x is 100&#8230;
+  end
+  else self.error(&#8220;Illegal value for x: &#8220; + x.toString())
+end</pre><p>In general a case statement can match over a sequence of
+      values:</p><pre class="programlisting">@Case e1,e2,&#8230;,en of
+  p11,p12,&#8230;,p1n do 
+    b1 
+  end
+  p21,p22,&#8230;,p2n do
+    b2
+  end
+  &#8230;
+  pm1,pm2,&#8230;,pmn do
+    bm
+  end
+  else x
+end</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id599920"></a>CaseInt</h3></div></div></div><p>An integer case expression dispatches on the value of an integer.
+      An integer case expression is much more efficient that a case expression
+      because it compiles to a simple indexed dispatch in XVM. The following
+      is an example that returns true when the value of char is an
+      alpha-numeric character code:</p><pre class="programlisting">       @CaseInt[256] char of
+         " "-&gt;at(0) do false end
+         "\n"-&gt;at(0) do false end
+         "\t"-&gt;at(0) do false end
+         "\r"-&gt;at(0) do false end
+         "("-&gt;at(0) do false end
+         ")"-&gt;at(0) do false end
+         "\""-&gt;at(0) do false end
+         "0"-&gt;at(0) to "9"-&gt;at(0) do true end
+         "A"-&gt;at(0) to "z"-&gt;at(0) do true end
+         else false
+     end</pre><p>Line 1 states that the range of values for char is 0 to 255. Each
+      case arm uses s-&gt;at(0) to include a literal character code. Note that
+      the values in case arms may be any XOCL expression but that the
+      expression must have a value at compile time. A case arm has values to
+      be matched before the keyword do. The values can take the following
+      forms:</p><div class="itemizedlist"><ul type="disc"><li><p>A constant integer valued expression.</p></li><li><p>A range x to y where x and y are constant integer valued
+          expressions.</p></li><li><p>A sequence of integer case values separated with comma
+          (,).</p></li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id629117"></a>TypeCase</h3></div></div></div><p>In a pure OO program it should not be necessary to test the type
+      of a value, all computation should be performed using message passing.
+      However, few if any applications are pure and testing the type of a
+      value at run-time is occasionally necessary. All values in XOCL can
+      respond to an isKindOf message whose single argument is an XCore
+      classifier. The return is a Boolean value determining whether or not the
+      value is considered, with respect to inheritance, to be an instance of
+      the classifier. Where there are many such tests on a value it is more
+      declarative and potentially more efficient to use the TypeCase special
+      form:</p><pre class="programlisting">@TypeCase(x)
+     type1 do
+        exp1
+     end
+     type2 do
+       exp2
+     end
+     &#8230;.
+     typen do
+        expn
+     end
+     else d
+  end
+</pre><p>The expression x is evaluated in line 1 to produce a value.
+      Each type (lines 2,5 etc) is a name or path referencing a classifier. If
+      the value of x is of type type1 then exp1 is evaluated and produces the
+      value of the case expression. Otherwise, checking proceeds case by case
+      until the optional default case us evaluated. A value v is of type t
+      when it is a direct instance of t or when the direct type of v inherits
+      from t.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id619876"></a>While</h3></div></div></div><p>A While loop performs an action until a condition is satisfied
+      (note a named element may use a symbol for its name so we ensure the
+      name is a string using the toString operation):</p><pre class="programlisting">context Root
+  @Operation findElement(N:Set(NamedElement),name:String)
+    let found = null
+    in @While not N-&gt;isEmpty do
+         let n = N-&gt;sel
+         in if n.name().toString() = name
+            then found := n
+            else N := N-&gt;excluding(n)
+            end
+         end
+       end;
+       found
+    end
+  end</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id631564"></a>For</h3></div></div></div><p>It is often the case that While loops are used to iterate through
+      a collection. This pattern is captured by a For loop:</p><pre class="programlisting">context Root
+  @Operation findElement(N:Set(NamedElement),name:String)
+    let found = null
+    in @For n in N do
+         if n.name().toString() = name
+         then found := n
+         end
+       end;
+       found
+    end
+  end</pre><p>In general a For loop @For x in S do e end is equivalent to the
+      following While loop:</p><pre class="programlisting">let forColl = S;
+    isFirst = true
+in @While not forColl-&gt;isEmpty do
+     let x = forColl-&gt;sel
+     in forColl := forColl-&gt;excluding(x);
+        let isLast = forColl-&gt;isEmpty
+        in e;
+           isFirst := false
+        end
+     end
+   end
+end</pre><p>Where the variables forColl, isFirst and isLast are scoped over
+      the body of the loop e. These can be useful if we want the body action
+      to depend on whether this is the first or last iteration, for example
+      turning a sequence into a string:</p><pre class="programlisting">context Seq(Operation)
+  @Operation toString()
+    let s = "Seq{"
+    in @For e in self do
+         s := s + e.toString();
+         if not isLast then s := s + "," end
+       end;
+       s + "}"
+    end
+  end</pre><p>A For loop may return a result. The keyword do states that the
+      body of the For loop is an action and that the result of performing the
+      entire loop will be ignored when the loop exits. Alternatively, the
+      keyword produce states that the loop will return a sequence of values.
+      The values are the results returned by the loop body each time it is
+      performed. For example, suppose we want to calculate the sequence of
+      names from a sequence of people:</p><pre class="programlisting">context Root
+  @Operation getNames(people:Seq(Person)):Seq(String)
+    @For person in people produce 
+      person.name 
+    end
+  end</pre><p>The keyword in is a For-loop directive. After in the loop expects
+      one or more collections. The in directive supports multiple variables.
+      This feature is useful when stepping through multiple collections in
+      sync, as in:</p><pre class="programlisting">context Root
+  @Operation createTable(names:Seq(String),addresses:Seq(String),telNos:Seq(String))
+    @For name,address,telNo in names,addresses,telNos produce
+      Seq{name,address,telNo}
+    end
+  end
+</pre><p>A For-loop also has a where option. This allows the elements to be
+      filtered. The following only iterates over names of persons that are not
+      excluded.</p><pre class="programlisting">context Root
+  @Operation getNames(people:Seq(Person),excluded:Seq(Person)):Seq(String)
+    @For person in people where not excluded-&gt;includes(person) do
+      person.name 
+    end
+  end</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id565620"></a>Find</h3></div></div></div><p>The Find construct is used to perform an action in terms of an
+      element of a collection. Typically we want to find the first element in
+      a collection that satisfies a given predicate and to perform an action.
+      If no value exists that satisfies the predicate then we optionally want
+      to perform some other action. This construct captures that
+      pattern.</p><p>As an example, imagine we want find a transition in a statemachine
+      whose targetName is equal to the name of a state, and that when we do,
+      we want to return the State object with that name, or if one does not
+      exist, return the initial state. The following operation getTarget()
+      implements this using Find.</p><pre class="programlisting">@Operation getTarget(name: String):XCore::Element
+      let next = null
+      in @Find(t,transition)
+           when t.targetName = name
+           do next := states-&gt;select(s |
+                       s.name = name)-&gt;sel
+           else next := states-&gt;select(s |
+                       s.name = startName)-&gt;sel
+         end;
+         next
+      end
+    end</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id604611"></a>Iterators</h3></div></div></div><p>There are number of important collection operations that can be
+      used to iterate over elements in a collection to produce a result. Each
+      iterator operation has an iterator variable, which is matched with each
+      element of the collection in turn. An iterator expression is then
+      evaluated against the variable to produce a result.</p><p>There are four main iterator operations: select, collect, reject
+      and iterate.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id638174"></a>Select</h4></div></div></div><pre class="programlisting">C-&gt;select(c | &lt;expression with c&gt;)</pre><p>Select
+        filters the elements in the collection. The element c is added to the
+        result if and only if the &lt;Expr&gt; is true. The following example
+        will return only those values of the set that are greater than
+        5:</p><pre class="programlisting">Set{1,2,3,4,5,6,7,8,9,10}-&gt;select(i | i &gt; 5)</pre><p>In
+        the context of a class model, select statements are very useful for
+        filtering collections of objects subject to some property. For
+        instance, this operation returns all states of a StateMachine that
+        match the name x and which are not an initial state of the
+        StateMachine (see Part 2 of this Reference Manual):</p><pre class="programlisting">context StateMachine
+@Operation statesForName(x):Set(Element)
+  states-&gt;select(s | s.name = x and not startName = x)
+end</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id573717"></a>Reject</h4></div></div></div><pre class="programlisting">C-&gt;reject(c | &lt;expression with c&gt;)</pre><p>Reject
+        is the converse of select. It rejects any elements where &lt;Expr&gt;
+        returns true.</p><p>As an example, the following rejects all the values of the
+        sequence of characters that are alphabetically greater than the
+        character "a":</p><pre class="programlisting">Seq{"a","b"}-&gt;reject(x | x &gt; "a")</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id617556"></a>Collect</h4></div></div></div><pre class="programlisting">C-&gt;collect(c | &lt;expression with c&gt;)</pre><p>Collect
+        iterates over the elements in the collection and collects together the
+        result of evaluating the expression. The following collect expression
+        add 1 to each element in the set:</p><pre class="programlisting">Set{1,2,3,4,5,6,7,8,9}-&gt;collect(x | x+1)</pre><p>Here
+        is an example that collects together the names of the states in a
+        state machine: context StateMachine</p><pre class="programlisting">@Operation allStateNames()
+  states-&gt;collect(s | s.name)
+end</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id621247"></a>Iterate</h4></div></div></div><pre class="programlisting">C-&gt;iterate(c acc = &lt;expression&gt; | &lt;expression with c and acc&gt;)</pre><p>The
+        iterate operation is the most fundamental and general of the iterator
+        operations. All other loop operations can be described as a special
+        case of this operation. Like select and collect, an iterate has a
+        iterator variable. In addition, it has an accumulator variable, which
+        is given an initial value. The result of the iterate operation is the
+        result of iterating over all the elements in the collection. For each
+        successive element, the body expression is evaluated using the
+        previous result of the accumulator. Here is an example of using
+        iterate to add together a collection of numbers: </p><pre class="programlisting">Seq{1,2,3,4,5,6,7,8,9,10}-&gt;iterate(e s=0 | s + e)</pre><p>This
+        sum() operation makes use of an iterate to sum a collection of
+        integers: </p><pre class="programlisting">context Seq(Element)
+@Operation sum()
+  self-&gt;iterate(e sum=0 | sum + e)
+end
+</pre></div></div></div><p></p><p><img src="copyright.gif"></p></body></html>

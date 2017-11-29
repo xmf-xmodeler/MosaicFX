@@ -1,0 +1,10 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Debugging Operations</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="pt02.html" title="Part II. XMF Walkthroughs"><link rel="prev" href="ch04s15.html" title="Advanced Features"><link rel="next" href="ch06.html" title="Constructing and Running Mappings"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="id646426"></a>Debugging Operations</h2></div></div></div><p>Operations can be debugged by setting a trace on them. Calls to the
+  operation will be displayed in the console.</p><p>A trace can be set in a number of ways:</p><div class="itemizedlist"><ul type="disc"><li><p>By right clicking on an operation and selecting Trace from its
+      Debug menu.</p></li><li><p>By right clicking on a container, e.g. a Class, and selecting
+      Trace from its Debug menu. All operations belonging to the container
+      (and transitively belonging to all its containers) will be
+      traced.</p></li><li><p>Via the console, by typing the path to the operation or container
+      and calling trace(). Note, calling untrace() will stop the trace.</p></li></ul></div><p>As an example, try tracing the operation, addToComponents() on the
+  ComponentModel class:</p><div class="mediaobject"><img src="Part2/Debugging/Images/addingatracetoanop.jpg"></div><p>Running the operation will print the result of tracing the
+  operation:</p><div class="mediaobject"><img src="Part2/Debugging/Images/runningthetrace.jpg"></div><p>Note, you should not run trace on System classes, e.g. XCore or
+  Root.</p></div><p></p><p><img src="copyright.gif"></p></body></html>

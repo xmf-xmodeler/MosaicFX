@@ -1,0 +1,31 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Error Handling</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch21.html" title="XOCL"><link rel="prev" href="ch21s04.html" title="Documentation"><link rel="next" href="ch21s06.html" title="Control Statements"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id710706"></a>Error Handling</h2></div></div></div><p>When an error occurs in XOCL, the source of the error throws an
+    exception. The exception is a value that, in general, contains a
+    description of the problem and any data that might help explain the reason
+    why the problem occurred. An exception is thrown to the most recently
+    established handler; intermediate code is discarded. If no handler exists
+    then the XMF VM will terminate. In most cases, the exception is caught by
+    a user-defined handler or, for example in the case of the XMF console, a
+    handler established by the command interpreter.</p><p>When an exception is caught, the handler can inspect the contents of
+    the exception and decide what to do. For example it may be necessary to
+    re-throw the exception to the next-most recently established handler,
+    since it cannot be dealt with. On the other hand, it is usual to catch the
+    exception, print a message, patch up the problem, or just give up on the
+    requested action.</p><p>Exception handling is performed by a try catch expression with the
+    following form:</p><pre class="programlisting">try
+  normal
+catch(x)
+  abnormal
+end</pre><p>The try expression evaluates the normal sub-expression
+    that may perform an arbitrary amount of computation. If the normal
+    expression completes without throwing an exception then its value is
+    returned as the value of the try expression. Alternatively, an exception
+    is thrown at some point during the execution of normal:</p><pre class="programlisting">throw e</pre><p>where e is an expression that produces the exception. An exception
+    can be any value, but is typically an instance of the class Exception or
+    one of its sub-classes. An exception is handled by the most recently
+    established try expression. The evaluation of normal is terminated and
+    execution passes to line 3. The variable x is bound to the thrown
+    exception and abnormal is evaluated. If abnormal evaluates without
+    throwing an exception then the value of abnormal is the value returned by
+    the try expression. Otherwise, abnormal throws an exception (perhaps x)
+    that is handled by the next most recently established try
+    expression.</p></div><p></p><p><img src="copyright.gif"></p></body></html>

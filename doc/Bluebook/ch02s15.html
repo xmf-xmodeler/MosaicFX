@@ -1,0 +1,44 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Interacting with Models using the Console</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch02.html" title="Creating and Interacting with a Domain Model"><link rel="prev" href="ch02s14.html" title="Adding Constructors"><link rel="next" href="ch02s16.html" title="Using Snapshots"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id655068"></a>Interacting with Models using the Console</h2></div></div></div><p>Once a model has been built, it is useful to validate that it is
+    accurate. One way to do this is by interacting with the model via the
+    console. The console is an interpreter for evaluating XOCL
+    expressions.</p><p>Switch to the console by clicking on the Console View tab on
+    property editor. XOCL expressions can be entered that evaluate to create
+    instances of models, modify them and invoke operations on them.</p><p>For example, the following shows the use of the console to interact
+    with and test the Components model:</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/console.jpg"></div><p>Here is what is happening:</p><div class="itemizedlist"><ul type="disc"><li><p>The ?i command is used to import the Components package so that
+        all its contents are visible. Note, otherwise we would have to give
+        the full path names to each element, e.g.
+        Components::Component.</p></li><li><p>A is the result of creating an instance of the class
+        ComponentModel In XOCL, the use of brackets after a class name denotes
+        the invocation of a constructor. Note, we will have needed to create a
+        constructor for Component beforehand.</p></li><li><p>The result of navigating down the components of A is evaluated.
+        Because no components have been added to A it returns the empty set
+        Set{}.</p></li><li><p>A new Component is added to A by invoking the addToComponents()
+        operation on A. The string &#8220;Displays&#8221; is passed as a parameter to the
+        constructor.</p></li><li><p>We enter "A.components" again and a Set containing the new
+        Component is returned.</p></li><li><p>The process is repeated by adding a new Component named
+        'Navigation'.</p></li><li><p>Finally, the names of the components are returned by perfoming
+        the expression A.components.name</p></li></ul></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id651815"></a>Other Console Hints and Tips</h3></div></div></div><p>The console is a very flexible tool for interacting with models.
+      The following are some examples.</p><p>Basic variable values can be created simply by typing them into
+      the console. In addition, the console is a useful place to test out XOCL
+      operations and expressions.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/basicvalueconsoleops.jpg"></div><p>All values can be assigned to variables.</p><p>The console is also useful for creating instances of classes. As
+      described in the XOCL manual, there are two ways that instances of
+      classes can be created in XOCL. The first is to use a constructor as
+      described above. The second approach is to use a <span class="emphasis"><em>pattern
+      constructor</em></span>. The following uses a pattern constructor to
+      create an instance of a component and match its name to the string
+      literal "Navigation". The advantage of a pattern constructor is that it
+      allows values to be explicitly assigned to local variables.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/instancevalueconsoleassign.jpg"></div><p>When using the console, the up and down cursor keys can be used to
+      move between previous commands.</p><p>The console provides a number of "hot keys". These can be accessed
+      by typing ?h (no semi-colon is required).</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/hotkeys.jpg"></div><p>Any operation running in the console can be interupted by pressing
+      the escape key.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id649647"></a>Editing Values via the Console</h3></div></div></div><p>At any point we can edit/view the properties of an object in a
+      property editor by running edit() against it. For example, let&#8217;s edit
+      the ComponentModel instance which was assigned to the variable A
+      (above):</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/consolepropertyedit.jpg"></div><p>A collection editor will be displayed containing the
+      instance.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/consolecomponentedit.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id645740"></a>Using Global Variables</h3></div></div></div><p>Global variables can be assigned to elements which can then be
+      used in the console. For example, edit the properties of a Port object,
+      then select right click &gt; Assign to Global Variable. The tool will
+      prompt for a global variable name for the object.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/portassigntoglobal.jpg"></div><p>The port object is then available in the console:</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/portconsoleedit.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id653429"></a>Error Reports</h3></div></div></div><p>If errors occur when building the model, they will be shown as an
+      ErrorReport.</p><p>Try modifying addToComponents() so that it attempts to update an
+      invalid slot, e.g. change &#8220;components&#8221; to &#8220;component&#8221;.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/errorexample.jpg"></div><p>Error reports can be expanded to show the sequence of calls that
+      resulted in the error. These go from the most specific call right down
+      to the engine calls that handled the error.</p></div></div><p></p><p><img src="copyright.gif"></p></body></html>

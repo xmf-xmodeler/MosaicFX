@@ -1,0 +1,47 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>XMF Execution Architecture</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch17.html" title="Working with Syntax"><link rel="prev" href="ch17s02.html" title="Grammar and Text Processing"><link rel="next" href="ch17s04.html" title="Synthesising Syntax"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id595456"></a>XMF Execution Architecture</h2></div></div></div><p></p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id652579"></a>Introduction</h3></div></div></div><p>Execution of XOCL programs or console commands conforms to a
+      standard execution architecture. This architecture is extensible; new
+      language constructs can be added dynamically. This section describes the
+      basic features of the XMF execution architecture and how the extension
+      mechanism works so that new languages can be embedded within XOCL.</p><p>The basic execution process parses an input source and synthesizes
+      a performable element. XMF provides a large number of performable
+      elements in XOCL and its various language extensions. You can easily
+      define your own type of performable elements in terms of how they are
+      parsed and executed.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id601770"></a>Performable Elements</h3></div></div></div><p>An XMF performable element implements an interface that supports
+      its evaluation. Evaluation can occur in one of two ways:</p><div class="itemizedlist"><ul type="disc"><li><p>Interpretation. This occurs via the element&#8217;s eval operation and
+      invokes an interpreter that inspects the structure of the element and
+      returns its value. The eval operation takes arguments that define the
+      context of the interpretation. The context defines the value of self,
+      the value of any variables and the name spaces that are imported at the
+      point of evaluation.</p></li><li><p>Compilation. This occurs via the element&#8217;s compile operation and
+      invokes a compiler that translates the receiver into a sequence of
+      XMF-VM instructions. The compilation operation takes a number of
+      arguments that define the compilation context.</p></li></ul></div><p>In both cases, as far as the user of XMF is concerned, the key
+      factor is that the target of evaluation is an instance of
+      XCore::Performable. Therefore, any user interface that executes
+      interpretation or compilation must translate from input to a performable
+      element.</p><p>The majority of user interfaces to this process accept text as
+      input. The text is parsed using a grammar and a performable instance is
+      synthesized. Therefore, to hook into the evaluation process of XMF you
+      need to understand how to write grammars that recognize new language
+      constructs and synthesize performable elements. Fortunately, there are a
+      number of XMF technologies that ease this activity.</p><p>The following example shows how a grammar that synthesizes
+      performable elements is linked into the XMF evaluation architecture. The
+      example is a simplified version of the XMF top level command
+      interpreter:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image042.jpg"></div><p>The eval operation accepts a grammar argument in line 8. The
+      grammar should synthesize a performable instance that is subsequently
+      evaluated in line 26. If OCL::OCL.grammar is supplied to eval then the
+      operation behaves like the XMF-Mosaic top level command
+      interpreter.</p><p>Compilation of performable elements occurs when you compile an XMF
+      source file. The compiler reads the input source, synthesizes a
+      performable element, compiles the element to a sequence of machine
+      instructions and then writes the instructions to a binary file.</p><p>Instead of writing to a binary file, the instructions can be
+      transformed to a compiled operation using the operation
+      Compiler::compileToFun as shown below:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image044.jpg"></div><p>The free variables of the element are calculates in line 18 and
+      used as the argument names for the operation constructed in line
+      25.</p><p>The key feature of operations eval and compile is that the XML
+      evaluation architecture reads sources of XMF program code, parses the
+      input using a grammar, synthesizes an instance of XCore::Performable and
+      then interprets or compiles the element.</p><p>XOCL allows new language constructs to be added as describes in
+      the following section. The new constructs are defined as grammars that
+      are integrated into the XOCL grammar. Language extensions that are added
+      in this way should therefore synthesize performable elements.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id629455"></a>Syntax Extensions</h3></div></div></div><p></p></div></div><p></p><p><img src="copyright.gif"></p></body></html>

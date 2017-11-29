@@ -1,0 +1,90 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Generating Java</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch14.html" title="Generating Code"><link rel="prev" href="ch14.html" title="Generating Code"><link rel="next" href="ch15.html" title="Using Manifests and Deploying Models"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id654660"></a>Generating Java</h2></div></div></div><p>Selecting Java from the Deploy menu will generate a new directory
+    containing a Java classes for each of the model classes. The Java classes
+    include the attributes and appropriate accessor and updator operations. In
+    addition, a toXML operation is provided for serialising instances of Java
+    classes as XML.</p><p>The following Java code was generated from the Components
+    model.</p><pre class="programlisting">package Components1;
+
+public class ComponentModel {
+
+ // Attributes...
+
+  private java.util.Vector components;
+  private java.util.Vector connectors;
+
+ // Accessors...
+
+  public java.util.Vector components() { return components; }
+  public java.util.Vector connectors() { return connectors; }
+
+ // Updaters...
+
+  public void setComponents(java.util.Vector value) { this.components = value; }
+  public void setConnectors(java.util.Vector value) { this.connectors = value; }
+
+ // Display...
+
+  public String toString() {
+    String s = "ComponentModel[";
+    return s + "]";
+  }
+
+ // Operation stubs...
+
+  public int deleteFromComponents(int v) {
+    return null;
+  }
+
+  public int addToComponents(int v) {
+    return null;
+  }
+
+  public int connectedTo(int p) {
+    return null;
+  }
+
+  public int dontMatch() {
+    return null;
+  }
+
+  public int componentForPort(int p) {
+    return null;
+  }
+
+  public int addToConnectors(int v) {
+    return null;
+  }
+
+  public int deleteFromConnectors(int v) {
+    return null;
+  }
+ // XML Serialization...
+
+  public void writeXML(java.io.PrintStream out,java.util.Hashtable idTable) {
+    if(idTable.containsKey(this))
+      out.print("&lt;Ref id='" + idTable.get(this) + "'/&gt;");
+    else {
+      String id = Integer.toHexString(this.hashCode()).toUpperCase();
+      out.print("&lt;Object id='" + id + "'");
+      out.print("&gt;");
+      out.print("&lt;Slot name='components'&gt;");
+      out.print("&lt;Set&gt;");
+      for(int i = 0; i &lt; components.size(); i++) {
+         Component o = (Component)components.elementAt(i);
+         o.writeXML(out,idTable);
+      }
+      out.print("&lt;/Set&gt;");
+      out.print("&lt;/Slot&gt;");
+      out.print("&lt;Slot name='connectors'&gt;");
+      out.print("&lt;Set&gt;");
+      for(int i = 0; i &lt; connectors.size(); i++) {
+         Connector o = (Connector)connectors.elementAt(i);
+         o.writeXML(out,idTable);
+      }
+      out.print("&lt;/Set&gt;");
+      out.print("&lt;/Slot&gt;");
+      out.print("&lt;/Object&gt;");
+    }
+  }
+}
+</pre></div><p></p><p><img src="copyright.gif"></p></body></html>

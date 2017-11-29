@@ -1,0 +1,49 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>SAX Input Channel</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch20.html" title="XML"><link rel="prev" href="ch20s05.html" title="DOM Input Channel"><link rel="next" href="ch20s07.html" title="XML Output"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id653371"></a>SAX Input Channel</h2></div></div></div><p>XML input can be processed using an XML grammar or using a DOM input
+    channel. The former provides a convenient way of declaring XML patterns
+    and synthesizing XMF data. The latter provides a convenient way of
+    translating an XML input source into an instance of the XML model.
+    Occasionally, the XML instance is not required and the overhead of using
+    general parsing machinery seems unnecessary. For example, if we wanted to
+    count the number of elements in the input or check whether an element with
+    a given tag exists in the input.</p><p>For occasions where parsing is unnecessary and DOM is not required,
+    XMF provides a SAX input channel. A SAX input channel processes the XML
+    input by generating events each time an XML node is encountered in the
+    input. The channel has handlers that are called when the events are fired.
+    XMF works hard to ensure that the input is processed as efficiently as
+    possible and therefore, SAX input channels are appropriate for processing
+    very large XML data sources.</p><p>The key operations called on an instance of SAXInputChannel are as
+    follows:</p><pre class="programlisting">startElement(tag:Buffer,attributes:Buffer)</pre><p>This operation is called when each element is encountered in the
+    input. The tag of the element is supplied as a string buffer and the
+    attributes are supplied as a buffer containing instances of
+    XML::IO::SAXAttribute with attributes name and value both of type string
+    buffer. All buffers are reused in order to ensure the input is processed
+    as efficiently as possible. Therefore if you wish to retain the tag, or
+    the attribute names or attribute values then the buffers should be
+    transformed into the equivalent strings using toString.</p><pre class="programlisting">endElement(tag:Buffer)</pre><p>This operation is called when the end tag of each element is
+    encountered in the input. The tag is a string buffer that is subsequently
+    reused as above.</p><pre class="programlisting">characters(text:Buffer)</pre><p>This
+    operation is called when text is encountered in the input. The text is
+    supplied as a string buffer that is subsequently reused as above.</p><pre class="programlisting">parse()</pre><p>Call this operation to start
+    processing the input. No value is returned by default. Extend this
+    operation in sub-classes of SAXInputChannel to construct and return values
+    based on the operations defined above.</p><pre class="programlisting">SAXInputChannel(inch:InputChanel)</pre><p>A
+    constructor for SAX input channels. The argument is an input channel that
+    produces XML text.</p><p>This section shows how SAX input channels work in XMF by
+    implementing a DOM input channel in terms of a SAX input channel. The
+    following tool screenshot shows the class uses a stack to manage the XML
+    nodes as they are read and synthesized by the operations defined
+    above:</p><div class="mediaobject"><img src="Part3/XML/Images/image054.jpg"></div><p>When the input source is parsed, the intermediate XML nodes are
+    pushed and popped on the stack. Child nodes are popped when the end
+    element event occurs and added to the currently open element on the stack.
+    Eventually, the root node is left as the single stack element. The parse
+    just pops the root node, creates and returns an XML document:</p><div class="mediaobject"><img src="Part3/XML/Images/image056.jpg"></div><p>When the characters operation is called, a Text node is created and
+    pushed on the stack. Note how toString is used to copy the text on the
+    string buffer:</p><div class="mediaobject"><img src="Part3/XML/Images/image058.jpg"></div><p>When a new element node is encountered in the input we create a new
+    XML element object and push it on the stack. Between the start element
+    event and the associated end element event there will be any number of
+    events that create the children nodes. The children nodes will be pushed
+    on the stack. When the end element event occurs it is straightforward to
+    pop the child elements from the stack up to the parent element and modify
+    the parent by inserting the children:</p><div class="mediaobject"><img src="Part3/XML/Images/image060.jpg"></div><p>The end element event causes all the children that have been pushed
+    since the corresponding parent element node to be popped and
+    inserted:</p><div class="mediaobject"><img src="Part3/XML/Images/image062.jpg"></div><div class="mediaobject"><img src="Part3/XML/Images/image064.jpg"></div></div><p></p><p><img src="copyright.gif"></p></body></html>

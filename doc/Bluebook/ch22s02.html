@@ -1,0 +1,154 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>The XTools Architecture</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch22.html" title="XTools"><link rel="prev" href="ch22s01.html" title="Introduction"><link rel="next" href="ch22s03.html" title="Diagram Tools"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id584755"></a>The XTools Architecture</h2></div></div></div><p></p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id619383"></a>Introduction</h3></div></div></div><p>An Xtool is an instance of a domain model together with an exposed
+      interface for constructing and manipulating the instance. An Xtool is
+      modelled and is expressed in an XTools modelling language. The language
+      hides away much of the implementation detail that is necessary to
+      construct tools and ensures that multiple tools over a variety of domain
+      models have a consistent look and feel. In addition, since an Xtool is
+      modelled, it can be mechanically processed. In particular an Xtool can
+      be transformed into different formats, for example exporting the
+      definition as XML or as programming language source code.</p><p>Xtools manage changes in domain model instances by raising and
+      handling events. Each Xtool contains a monitor for all the events that
+      can be raised on the user interface and by external agents that change
+      the domain model instance. By raising and handling events, multiple
+      Xtools can be seamlessly composed without having to know anything about
+      each other.</p><p>All Xtools conform to a basic architecture that ensures consistent
+      look and feel across all generated tools and allows Xtools to work
+      together to form tool federations. This section describes the components
+      of the architecture.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id629093"></a>Tool Component</h3></div></div></div><p>The basic features of an Xtool are defined in the package
+      Clients::Tools::Basic:</p><div class="mediaobject"><img src="Part3/XTools/Images/image004.jpg"></div><p>A tool consists of:</p><p>A tool type that defines how the tool&#8217;s user interface should be
+      constructed and managed. A tool type is like a class in that a single
+      tool type can be the type of many tools. A tool type defines named
+      attributes of the tool; the value of each attribute depends on the type
+      of tool we are constructing: for example, a diagram tool can have text
+      attributes and image attributes whereas a form tool can have tree
+      attributes and text box attributes. The tool type also defines the
+      events that are generated when the user interacts with the interface.
+      For example, if the tool type defines a text field called name then an
+      event name_Changed will be raised whenever the user types in the text
+      field.</p><p>An element manager that defines how the tool responds to events.
+      Events are generated either by user interaction with the interface or by
+      modifications to the underlying element managed by the tool. An element
+      manager contains a collection of event handlers.</p><p>A domain element that is managed by the tool. Change events from
+      the user interface cause the element manager to modify the managed
+      element. Change events from the managed element cause the element
+      manager to modify the user interface associated with the tool.</p><p>Note that the user interface is not a prescribed part of a tool
+      definition since the details of the user interface will depend on the
+      type of tool.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id626974"></a>Tool Event</h3></div></div></div><p>Tool execution occurs in the form of events. An event occurs due
+      to a change arising in the user interface (such as a diagram edit); or
+      due to a change in the element managed by the tool. Events are handled
+      by a tool&#8217;s element manager. The element manager contains a collection
+      of event handlers; each handler listens for events of a particular type.
+      The event handler runs some code that handles the event when it occurs.
+      Typically the code propagates a change from the user interface to the
+      managed element and vice versa. The following diagram shows how events
+      are handled when a change occurs to a user interface:</p><div class="mediaobject"><img src="Part3/XTools/Images/image006.jpg"></div><p>The user performs a modification to the interface via the mouse.
+      This causes a state change in the interface object which is detected by
+      a monitor and translated into an event of the appropriate type. The
+      event is sent from the interface to the tool and then to the element
+      manager. The element manager selects an event handler by matching
+      against the type of the event. When a suitable event handler has been
+      selected, it is executed. The body of the event handler performs
+      appropriate updates to the managed element.</p><p>Conversely, the following diagram shows how changes to the managed
+      element update the user interface. An external agent changes the managed
+      element. If changes to the managed element are being monitored by the
+      tool (sometimes this is not required) then the changes gives rise to an
+      event in the tool which, like changes to the user interface, give rise
+      to an event in the element manager. An appropriate handler is selected
+      which uses lookup mechanisms in the element manager to associate the
+      changed element with a user interface component; the component is then
+      updated.</p><div class="mediaobject"><img src="Part3/XTools/Images/image008.jpg"></div><p>The following model shows the basic architecture of the XTools
+      event mechanism:</p><div class="mediaobject"><img src="Part3/XTools/Images/image010.jpg"></div><p>An event manager is a name space that defines event handlers. Each
+      event handler has an operation that implements the code for handling the
+      event. An event handler has a pattern that matches against the type of
+      the event that the handler monitors. An element manager inherits
+      handlers from its parents.</p><p>Creation events are typically propagated from user interface to
+      managed element and vice versa. Once created, elements must be managed
+      so that subsequent modification events can be propagated. An element
+      manager has a table that is used to record associations between user
+      interface elements and managed elements when they are created.
+      Subsequent modification events can then look up the modified element in
+      the table and propagate the change.</p><p>XTools provides a range of tool types. Each tool type provides a
+      different collection of events. All XTool events inherit from the basic
+      Event class that requires the event to record the tool that raised the
+      event. The tool is particularly useful when implementing event handlers
+      since it provides access to the managed element and the element manager
+      with its table of associations.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id581171"></a>Tool Definition</h3></div></div></div><p>XTools provides a number of technologies for tool definition. The
+      essential representation is using the XTools textual language to
+      construct the tool components. The XTools classes define a number of
+      grammars that must be imported using parserImport in order to use the
+      textual format. The essential components of a tool definition are the
+      tool type and the element manager. If the tool is to be defined in a
+      single file then the following XMF code skeleton shows the key
+      definitions:</p><pre class="programlisting">parserImport Tools::DiagramTools::Types;
+parserImport Tools::Events;
+
+context MyPackage
+
+@Package NewTool
+
+  @ToolType NewToolType
+
+     // Type component definitions...
+
+  end
+
+  @ElementManager NewToolManager
+
+    @EventHandler EventName()
+
+      // Handler body...
+    
+    end
+
+     // Event handler definitions...
+
+  end
+
+end</pre><p>The tool type, element manager and event handlers need not be
+      defined inside their container&#8217;s textual definition. You may use context
+      definitions to define these elements in isolation, for example:</p><pre class="programlisting">context MyPackage
+
+  @ToolType NewTool
+
+    // Type component definitions...
+
+  end
+
+context MyPackage
+
+  @ElementManager NewToolManager
+
+  end
+
+context MyPackage::NewToolManager
+
+  @EventHandler EventName()
+
+    // Handler body...
+
+  end
+</pre><p>Different context definitions may exist in different files
+      (probably composed using a manifest). Of course, definitions must exist
+      before they can be referenced, in the build order.</p><p>Once the tool type and the element manager have been defined a new
+      tool is created by instantiating the appropriate XTools tool class. For
+      example, if we are defining an diagram tool then we create an instance
+      of the tool class Tools::DiagramTools::Structure::Tool:</p><pre class="programlisting">import Tools::DiagramTools::Structure;
+import MyPackage::NewTool;
+
+...
+
+let tool = Tool(toolName,NewToolType,NewToolManager,element)
+in tool.showDiagram()
+end
+
+...</pre><p>A tool constructor takes four arguments: the name of the tool, the
+      tool type, the tool manager and the managed element. The managed element
+      can be any value: it is up to the event handlers to interpret this value
+      appropriately. It is likely that new types of tool (based on diagram or
+      form tools) will be required. It is easy to define your own extensions
+      to these types of tool by sub-classing the appropriate Tool
+      class.</p><p>Once a tool has been created, it is displayed and ready for use
+      after a call of showDiagram. This call will create the user interface
+      for the tool and display it. Subsequent calls to showDiagram will switch
+      the tool focus back to this tool.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id618188"></a>Tool Deployment</h3></div></div></div><p>Tools can only be deployed into XMF-Mosaic in version 1.0 of
+      XTools.</p></div></div><p></p><p><img src="copyright.gif"></p></body></html>

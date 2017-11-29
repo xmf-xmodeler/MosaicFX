@@ -1,0 +1,23 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Documentation</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch21.html" title="XOCL"><link rel="prev" href="ch21s03.html" title="Program Constructs"><link rel="next" href="ch21s05.html" title="Error Handling"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id691639"></a>Documentation</h2></div></div></div><p>Comments can be inserted into XOCL in two ways. The first way is
+    using the standard // &lt;line of text&gt; line comment and /*
+    &lt;para&gt; */ paragraph comments. These can only be used in text files
+    and are ignored by the parser.</p><p>The second way is using the @Doc &lt;some text&gt; end syntax. The
+    text within an @Doc is ignored for the purposes of executing the
+    statement. However, the comment is parsed and is stored as part of the
+    XOCL statement. This means that documentation attached to an XOCL
+    expression can be processed as part of a model. Note a semicolon is not
+    required if the documentation is placed at the head of the code body
+    (otherwise it is). Here is an example of its use:</p><pre class="programlisting">context Float
+  @Operation max(other:Integer):Integer
+    @Doc
+      Compares a float with other and returns
+      the maximum value.
+    end
+    if self &gt; other
+    then self
+    else other
+    end
+  end</pre><p>Note, there are currently some limitations to the characters that
+    can be used in an @Doc expression. In particular, the string end must not
+    occur in a @Doc body, even if it is embedded in a word. To resolve this, a
+    separator can be used, e.g. send becomes sen-d.</p></div><p></p><p><img src="copyright.gif"></p></body></html>

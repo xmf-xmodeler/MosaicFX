@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!--DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"-->
+
+<book>
+  <title>XMF Bluebook</title>
+
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Part1/part1.xml" />
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Part2/part2.xml" />
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="Part3/part3.xml" />
+</book>

@@ -1,0 +1,144 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>The XCore Package</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch18.html" title="XCore"><link rel="prev" href="ch18s01.html" title="Introduction"><link rel="next" href="ch19.html" title="XMap"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id610027"></a>The XCore Package</h2></div></div></div><p>The contents of the XCore package is shown in the following
+    diagram:</p><div class="mediaobject"><img src="Part3/XCore/Images/image004.jpg"></div><p>The following sections provide a brief summary of each class. Note,
+    the XCore model can be explored by clicking on Kernel &gt; XCore in the
+    XMF browser.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id581822"></a>Attribute</h3></div></div></div><p>An attribute is a structural feature of a class. It defines the
+      name and type of a slot of the instances of the class. When the class is
+      instantiated, a new object is created and a slot is added for each
+      attribute defined and inherited by the class. Each slot is initialised
+      to contain the default value for the type of the corresponding
+      attribute. Constructor: Attribute(name,type) The name is a string and
+      the type is a classifier.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id644024"></a>Behavioural Feature</h3></div></div></div><p>A behavioural feature is a typed element that can be invoked.
+      Typically a behavioural feature is an operation.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id662201"></a>Bind</h3></div></div></div><p>A binding associates a name with a value. Constructor:
+      Bind(name,value) Constructs a binding, the name is a string and the
+      value is any element.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id599317"></a>Classifier</h3></div></div></div><p>A classifier is a name space for operations and constraints. A
+      classifier is generalizable and has parents from which it inherits
+      operations and constraints. A classifier can be instantiated via new/0
+      and new/1. In both cases the default behaviour is to return a default
+      value as an instance. If the classifier is a datatype then the basic
+      value for the datatype is returned otherwise null is returned as the
+      default value. A classifier can also be applied to arguments (0 or more)
+      in order to instantiate it. Typically you will not create a Classifier
+      directly, but create a class or an instance of a sub-class of
+      Class.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id635066"></a>Class</h3></div></div></div><p>XMF-Mosaic is a class-based system. Tools are defined as
+      collections of classes whose instances have state and behaviour. The
+      XCore class Class defines the essential features of a class. Inheritance
+      is used to extend class features in XMF. Since Class is available; user
+      defined tools can extend what it means to be a class. This ability is
+      the basis for meta-programming. For example, Class may be extended with
+      the ability to keep track of all instances or to access instance data
+      from an external database. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id585588"></a>CodeBox</h3></div></div></div><p>A CodeBox contains compiled code that can be executed on the XMF
+      VM.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id581971"></a>Collection</h3></div></div></div><p>The root class for all collection types.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id581957"></a>Compiled Operation</h3></div></div></div><p>A CompiledOperation is the type of all XMF compiled operations. A
+      compiled operation can be invoked using invoke/2 or by applying it to
+      its arguments. A compiled operation consists of machine code
+      instructions. A compiled operation may be associated with its source
+      code to aid debugging.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id580644"></a>Constraint</h3></div></div></div><p>A constraint is a named Boolean expression owned by a classifier.
+      Constraints are defined by classifiers to be performed with respect to
+      their instances and as such any occurrences of self in a constraint will
+      refer to the instance that is being checked.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id600567"></a>Constraint Report</h3></div></div></div><p>A constraint report is produced by sending a classify message to
+      an element or a check constraints message to a classifier. A report is a
+      tree structured element describing the constraints that were performed
+      and their outcomes. Note that internal nodes of the tree may have dummy
+      constraint reports used as containers of sub-constraint reports. Such
+      dummies have a null constraint and an empty reason, but the satisfied
+      Boolean is the conjunction of the sub-reports.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id679520"></a>Constructor</h3></div></div></div><p>A constructor contains a code body that is invoked on
+      instantiation of a classifier.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id662205"></a>Contained</h3></div></div></div><p>A contained element has an owner. The owner is set when the
+      contained element is added to a container. Removing an owned element
+      from a container and adding it to another container will change the
+      value of owner in the contained element.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id679361"></a>Container</h3></div></div></div><p>A container has a slot contents that is a table. The table
+      maintains the contained elements indexed by keys. By default the leys
+      for the elements in the table are the elements themselves, but
+      sub-classes of container will modify this feature accordingly. Container
+      provides operations for accessing and managing its contents.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id629532"></a>Daemon</h3></div></div></div><p>Daemons monitor the state of objects and perform actions when the
+      object changes state. Daemon technology is the key to implementing a
+      variety of modular reusable tool architectures such as the observer
+      pattern. XMF-Mosaic uses daemons extensively to synchronize data across
+      multiple tools. User defined tools can use daemons to make tools
+      reactive and to ensure data is always consistent. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id577260"></a>Data Type</h3></div></div></div><p>Instances of this meta-class are XMF types for basic data values.
+      XMF types include Integer, String, Boolean and Float. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id617564"></a>Dependency</h3></div></div></div><p>A dependency occurs between a source and a target model element.
+      When a dependency is created, the attach operation is performed and when
+      it is removed the detach operation is performed. These operations allow
+      sub-classes of Dependency to have semantics.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id572820"></a>Doc</h3></div></div></div><p>A class used to represent documentation.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id568398"></a>DocumentedElement</h3></div></div></div><p>A documented element has an attribute doc:Doc, which is used to
+      store documentation relating to the element. Any class that can be
+      documented should specialize this class.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id680507"></a>Element</h3></div></div></div><p>All classes in XMF are extensions of the XCore class Element.
+      Element defines the essential behaviour of all XMF data. For example
+      Element defines features such as being able to produce a printed
+      representation and the ability to handle messages. XMF is a dynamically
+      extensible system; this means that new behaviour can be added to
+      existing classes. This is sometimes referred to as aspect oriented
+      programming. Since Element is available, user defined tools can add
+      system-wide aspects. For example this can be used to add the ability to
+      export any XMF data in any required format (binary encoded, XML, text
+      etc).</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id709075"></a>Enum</h3></div></div></div><p>The enumerated type.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id610705"></a>Exception</h3></div></div></div><p>XMF provides exception handling for dealing with exceptional
+      circumstances in running code. The XCore class Exception is the basis
+      for a hierarchy of classes that implement specific types of errors.
+      Exceptions are raise at the point at which they occur and encapsulate
+      data that describes exactly the source of the problem. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id619652"></a>ForeignOperation</h3></div></div></div><p>Provides an interface to operations written in external
+      programming languages, such as Java.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id577570"></a>IndexedContainer</h3></div></div></div><p>An indexed container is a class that manages a hashtable
+      associating keys with values. The Container::add/1 operation is
+      implemented by IndexedContainer to add the argument as both an index and
+      a value. The class IndexedContainer provides a 2-place operation for
+      'add' that allows the index to be different from the value. Note that
+      'remove/1&#8217; expects to be supplied with the index.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id610168"></a>InterpretedOperation</h3></div></div></div><p>An interpreted operation is created when we evaluate an operation
+      definition.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id597253"></a>Namespace</h3></div></div></div><p>A name space is a container of named elements. A name space
+      defines two operations getElement/1 and hasElement/1 that are used to
+      get an element by name and check for an element by name. Typically a
+      name space will contain different categories of elements in which case
+      the name space will place the contained elements in its contents table
+      and in a type specific collection. For example, a class is a container
+      for operations, attributes and constraints. Each of these elements are
+      placed in the contents table for the class and in a slot containing a
+      collection with the names operations, attributes; and constraints
+      respectively. The special syntax :: is used to invoke the getElement/1
+      operation on a name space.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id648738"></a>NamedElement</h3></div></div></div><p>A named element is an owned element with a name. The name may be a
+      string or a symbol. typically we use symbols where the lookup of the
+      name needs to be efficient.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id630172"></a>Object</h3></div></div></div><p>Object is the super-class of all classes with structural features
+      in XMF. Object provides access to slots via the get/1 and set/2
+      operations. Object is the default super-class for a class definition -
+      if you do not specify a super-class then Object is assumed.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id570212"></a>Operation</h3></div></div></div><p>The basis for all XMF execution is the XCore class Operation. An
+      operation has parameters and a body and is equivalent to a standard
+      programming language procedure or function. A significant difference to
+      conventional procedures is that operations are XMF objects that can be
+      created and stored just like any other object. This makes XMF very
+      flexible since behaviour can be encapsulated at the appropriate point in
+      models and data. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id589955"></a>OrderedCollection</h3></div></div></div><p>A container that wraps a collections of ordered elements.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id698358"></a>Package</h3></div></div></div><p>XMF supports name spaces that contain collections of named
+      elements. The XCore class Package is used to structure collections of
+      class and sub-package definitions. XMF-Mosaic is structured as a tree of
+      packages containing definitions of all aspects of the system (including
+      XCore). The root name space is called Root; all XMF classes can be
+      referenced via Root. Unlike UML and MOF, XCore packages are subclasses
+      of Class. They can therefore be instantiated and can have operations,
+      attributes and constraints.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id671462"></a>Parameter</h3></div></div></div><p>A parameter is a typed element that occurs in operations.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id636684"></a>Performable</h3></div></div></div><p>XMF provides an environment in which executable languages can be
+      conveniently developed. An executable language implements the interface
+      defined by the abstract XCore class Performable. XOCL is an example of a
+      language that implements this interface. </p><p>XCore is an example of a language that can be performed by XVM.
+      XVM may be initialised with different kernel language definitions
+      although in practice, XVM relies on a small sub-set of XCore being
+      present. This feature allows XMF to deploy embedded systems that run
+      application code without requiring the tools that were used in
+      XMF-Mosaic to develop the application.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id671815"></a>Resource</h3></div></div></div><p>A resource records where the resource originated via a resource
+      name. For example a definition is a resource that records the file where
+      it was loaded from.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id615000"></a>Seq</h3></div></div></div><p>Seq is a sub-class of DataType. All sequence data types are an
+      instance of Seq. Seq defines an attribute elementType that is used to
+      record the type of the elements in a sequence data type.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id590301"></a>Set</h3></div></div></div><p>Set is a sub-class of DataType. All set data types are an instance
+      of Set. Set defines an attribute elementType that is used to record the
+      type of the elements in a set data type.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id562666"></a>Snapshot</h3></div></div></div><p>A snapshot is collection of objects. A snapshot is an instanceOf
+      another element (typically a package), which contains elements which
+      classify the contents of the snapshot.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id654472"></a>StructuralFeature</h3></div></div></div><p>This is an abstract class that is the super-class of all classes
+      that describe structural features. For example Attribute is a sub-class
+      of StructuralFeature. Other types of structural feature are possible by
+      managing the internal structure of objects via a MOP.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id619453"></a>Table</h3></div></div></div><p>A table associates keys with values. Any element can be used as a
+      key. A table has an initial size and can support any number of values.
+      Use hasKey/1 to determine whether a table contains a key. Use get/1 to
+      access a table via a key and put/2 to update a table given a key and a
+      value. Use keys/0 to access the set of keys for a table.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id599395"></a>Thread</h3></div></div></div><p>A thread is a unit of concurrent execution. When a thread is
+      created, it continues processing on the XVM until either it performs a
+      read operation that blocks on input or when it explicitly calls yield.
+      All XOCL values implement the yield operation. In both cases the thread
+      is said to yield control. When a thread yields control, the XOS
+      schedules another thread that is waiting. The scheduling algorithm aims
+      to ensure that all waiting threads get scheduled providing that they
+      yield.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id664767"></a>TypedElement</h3></div></div></div><p>A typed element is a named element with an associated type. The
+      type is a classifier. This is an abstract class and is used (for
+      example) to define Attribute.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id675158"></a>Unordered Collection</h3></div></div></div><p>A container that wraps a collections of unordered elements.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id636626"></a>Vector</h3></div></div></div><p>A vector is a fixed length array of elements. They are created
+      using the constructor Vector(). Vectors provide very efficient insert
+      (put/2) and lookup operations (ref/1).</p></div></div><p></p><p><img src="copyright.gif"></p></body></html>

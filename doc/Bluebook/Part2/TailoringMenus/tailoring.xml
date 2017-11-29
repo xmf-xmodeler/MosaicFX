@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"-->
+<chapter id="tailoring">
+  <title>Toolbar Menus and Initialisation Files</title>
+
+  <para>This section describes how XMF-Mosaic can support user customised
+  menus and intialisation files.</para>
+
+  <section>
+    <title>Toolbar menus</title>
+
+    <para>XMF-Mosaic provides facilities for rapidly building customised menus
+    that can be used to perform repetitive tasks such as loading projects, or
+    running operations.</para>
+
+    <para>You can add a new menu, or a new menu item to an existing menu, on
+    the toolbar by sending a message to the xmf object:
+    xmf.addDropDownMenuItem(menuPath,handler) where menu path is a sequence of
+    strings that identifies the menu item, and handler is a 0-arity operation
+    that is called when the new menu item is selected. For example, the
+    following can be run in the console: </para>
+
+    <programlisting>xmf.addDropDownMenuItem(Seq{"&amp;A","B","&amp;C"},@Operation() "Selected".println() end);</programlisting>
+
+    <para>This will produce the following:</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/addedmenu.png" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Selecting C will run the operation and generate the text "Selected"
+    in the console.</para>
+
+    <para>Note, the menu item "B" denotes a menu category. If other menus are
+    created using "A" and "B" they will be shown as belonging to the same
+    category of sub-menus.</para>
+
+    <para>Also note, if the menu item is preceded by an "&amp;" it represents
+    a key-binding. In this case, "Alt-A" followed by "Alt-C" will run the
+    operation.</para>
+
+    <para>Commands to add menus can be loaded on startup of the tool using the
+    Init file (see below).</para>
+  </section>
+
+  <section>
+    <title>Some Useful Operations</title>
+
+    <para>The following are examples of useful operations that are typically
+    used in menus.</para>
+
+    <para>This is an example of a menu that is used to load one or more .xar
+    files in your projects directory, MyProjects, via a Demo menu:</para>
+
+    <programlisting>xmf.addDropDownMenuItem(Seq{"&amp;Demo","Main","Load Model"},
+  @Operation()
+    @Busy("Loading Model")
+      xmf.projectManager().getElement("MyProjects").loadMosaicProject(xmf.projDir() + "/Dir/File.xar",false)
+    end
+  end);</programlisting>
+
+    <para>This is an example of a menu that is used to load one or more
+    compiled .o files:</para>
+
+    <programlisting>xmf.addDropDownMenuItem(Seq{"&amp;Demo","Main","Load Model"},
+  @Operation()
+    @Busy("Loading Model")
+      xmf.projectManager().getElement("MyProjects").loadMosaicProject(xmf.projDir() + "/Dir/File.xar",false)
+    end
+  end); </programlisting>
+
+    <para>This example enables a specific file to be edited after selecting it
+    using a file chooser. Note, the following two examples need to import the
+    XmfFileTree (as shown in the next section).</para>
+
+    <programlisting>xmf.addDropDownMenuItem(Seq{"&amp;Demo","Main","Edit File"},
+  @Operation()
+    let file = xmf.openFile(xmf.projDir(),"*.xmf") in
+      if file.fileExists() then
+        XmfFile(null,file).editText()
+      end
+    end
+  end); </programlisting>
+
+    <para>This example enables a specific file to be selected and then
+    compiles and loads it: Note the use of the string operation splitBy. This
+    splits a file name around the "." into a sequence, the head of which is
+    the preceding part of the file name.</para>
+
+    <programlisting>xmf.addDropDownMenuItem(Seq{"&amp;Demo","Main","Compile and Load File"},
+  @Operation()
+    let file = xmf.openFile(xmf.projDir(),"*.xmf") in
+      if file.fileExists() then
+        @Busy("Compiling and loading "+file)
+          let filename = file-&gt;splitBy(".",0,0)-&gt;head in
+            Compiler::compileFile(file,true,true);
+            (filename + ".o").loadBin()
+          end
+        end
+      end
+    end
+  end); </programlisting>
+  </section>
+
+  <section>
+    <title>Initialisation Files</title>
+
+    <para>To make the task of setting up menus and other general-purpose
+    features easier, XMF-Mosaic provides an init file facility. This file,
+    init.o, is automatically loaded on start-up of the tool provided that it
+    is placed in the directory referenced by the MOSAICINIT environment
+    variable.</para>
+
+    <para>The following init file (init.xmf) is an example of a simple init
+    file. To use it, compile the file in the MOSAICINIT directory. It contans
+    a menu item which enables the init.xmf file to be conveniently edited via
+    a File &gt; Edit &gt; Init menu.</para>
+
+    <programlisting>// The init file is loaded on startup. It is used to automatically add user customised
+// menus and operation to XMF-Mosaic. These can be used for all sorts of
+// purposes, including setting up menus for specific projects, or running
+// any code you wish. To run the init file, it must be saved in the XMFINIT
+// directory (this must be available under your windows system environment 
+// variables). Compile, save and load the init file before launching XMF-Mosaic
+// to run it.
+
+parserImport XOCL;
+
+import Clients;
+import XmfFileTree;
+import IO;
+
+// Add your customised menus and operations here.
+
+// Provides a drop down menu for editing the Init file. Note the sequence
+// elements denotes the menu hierarchy starting with the root File menu.
+// Use &amp; to add shortcut key binding, e.g. Alt-F, Alt-E in this case to
+// get to the Edit menu.
+
+xmf.addDropDownMenuItem(Seq{"&amp;File","Extras","&amp;Edit","Main","Init"},
+  @Operation()
+    XmfFile(null,xmf.initFile()).editText()
+  end);
+
+// Provides a drop down menu for browsing the files in your project directory
+xmf.addDropDownMenuItem(Seq{"&amp;File","Extras","&amp;Browse","Main","Projects"},
+  @Operation()
+    Directory(xmf.projDir(),Seq{".*.xmf"}).browse()
+  end);
+  
+// An example of a menu that is used to load one or more .xar files in your projects directory into
+// MyProjects
+
+xmf.addDropDownMenuItem(Seq{"&amp;Demo","Main","Load Model"},
+  @Operation()
+    @Busy("Loading Model")
+      xmf.projectManager().getElement("MyProjects").loadMosaicProject(xmf.projDir() + "/Dir/File.xar",false)
+    end
+  end); 
+  
+// An example of a menu that is used to load one or more compiled .o files 
+
+xmf.addDropDownMenuItem(Seq{"&amp;Demo","Main","Load File"},
+  @Operation()
+    @Busy("Loading File")
+      (xmf.projDir() + "/Dir/Code.o").loadBin()
+    end
+  end);
+
+// An example of defining an operation that will be added automatically to Root
+context Root
+  @Operation hello()
+    format(stdout,"HelloWorld")
+  end</programlisting>
+  </section>
+</chapter>

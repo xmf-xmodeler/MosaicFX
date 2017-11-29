@@ -1,0 +1,38 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>A Simple Model to C# Mapping</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch06.html" title="Constructing and Running Mappings"><link rel="prev" href="ch06s01.html" title="A Simple Mapping"><link rel="next" href="ch06s03.html" title="Mapping Hints and Tips"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id659470"></a>A Simple Model to C# Mapping</h2></div></div></div><p>This section describes the construction of a mapping between model
+    (XCore) packages and classes to a small model of the C# programming
+    language.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id646964"></a>The C# Model</h3></div></div></div><p>The following is a simple model of the abstract syntax of C# that
+      will be used in the mapping. A C# model consists of a program containing
+      a number of classes, which have attributes.</p><div class="mediaobject"><img src="Part2/Mappings/Images/modelofcsharp.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id670915"></a>The Mapping</h3></div></div></div><p>We'll construct two mappings. The first mapping
+      (Package2CSProgram) turns a Package into a C# Program . This mapping
+      then calls the Class2CSClass mapping, which iterates over the classes in
+      the Package and maps them to CSClasses. Of course, further mappings can
+      be constructed to map Class operations and attributes, etc, but we won't
+      deal with those here.</p><p>First, we need to import the Package and Class classes from the
+      XCore package. To do this, open the Root::Kernel::XCore package in the
+      browser. Select the classes Package and Class and then select Drop in
+      Class Diagram to drop them into the mapping package. Note, we also need
+      to import the C# classes CSProgram and CSClass by dropping them into the
+      model from the CS model.</p><div class="mediaobject"><img src="Part2/Mappings/Images/importedclasses.jpg"></div><p>Next, the mappings are added. Remember that the domain and range
+      arrows are added by selecting the domain and range buttons respectively.
+      A dependency arrow is also added to indicate that the Package2CSProgram
+      mapping is dependent on the Class2CSClass mapping.</p><div class="mediaobject"><img src="Part2/Mappings/Images/mapping.jpg"></div><p>Let&#8217;s add the mapping clause by starting with the simplest
+      mapping. The Class2CSClass mapping transforms an instance of a Class
+      into an instance of a CSClass.</p><p>Its clause says that whenever the mapping is given a Class it
+      returns a CSClass with the same name.</p><pre class="programlisting">@Clause Clause0
+  XCore::Class[name = N]
+do
+  CS::CSClass[name = N]
+end</pre><p>The Package2CSProgram maps a Package to a CSProgram. In
+      doing so, it maps each class in the package to a CSClass by calling the
+      Class2CSClass mapping.</p><pre class="programlisting">@Clause Clause0
+  XCore::Package[name = N, classes = C]
+do
+  CS::CSProgram[name = N, classes = Cs]
+where
+  Cs = C-&gt;collect(c | Class2CSClass()(c))
+end</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id662690"></a>Executing the Mapping</h3></div></div></div><p>Just as in the previous example, the mapping can be executed via
+      the console.</p><p>Because we are mapping from XCore packages, we can actually pass a
+      package from a model into the mapping and see what it produces. Let's
+      map the Airports package</p><div class="mediaobject"><img src="Part2/Mappings/Images/runningthemapping.jpg"></div><p>As expected, the mapping has generated a C# Program. If we edit
+      it, we can see it has produced a CSClass for each class in the Airports
+      package.</p><div class="mediaobject"><img src="Part2/Mappings/Images/mappingresult.jpg"></div></div></div><p></p><p><img src="copyright.gif"></p></body></html>

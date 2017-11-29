@@ -1,0 +1,126 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Parsing XML</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch20.html" title="XML"><link rel="prev" href="ch20s02.html" title="XML"><link rel="next" href="ch20s04.html" title="The XML Parsing Grammar"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id607126"></a>Parsing XML</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id670871"></a>Introduction</h3></div></div></div><p>XMF provides a number of technologies for reading sources of XML.
+      In most cases, an application is required to translate the XML input
+      into XMF data elements. This can be achieved by reading the XML source
+      character by character, but fortunately XMF provides XML parsing
+      technology that interprets declarative rules specifying how to match XML
+      input and synthesize XMF elements.</p><p>An XMF parser reads an XML input source and interprets an XML
+      grammar. And XML grammar consists of a collection of clauses. Each
+      clause defines how to match a portion of the input and how to translate
+      it into XMF data. An XML grammar can be viewed as the type of an XML
+      document in the same way as a DTD. Unlike DTDs, grammar components are
+      associated with actions that are performed when the appropriate portion
+      of the input has been successfully consumed.</p><p>This section shows how to define XML grammars and how to run XML
+      parsers. It starts with a number of examples that contain key technology
+      features. Finally the XML grammar model is defined in full with a
+      complete definition of the components.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id680516"></a>Example</h3></div></div></div><p></p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id636641"></a>Two Dimensional Tables</h4></div></div></div><p>This section gives an example of how to read the XML
+        representation of a simple domain model and synthesize an instance of
+        the model. The following model represents two dimensional integer
+        tables:</p><div class="mediaobject"><img src="Part3/XML/Images/image006.jpg"></div><p>Suppose that we have been supplied with an XML document that
+        contains a two-dimensional integer table. We want to read the XML and
+        produce an instance of the domain model. This situation occurs
+        frequently in system development when we are supplied with data that
+        has been exported from a third party tool and we want to process the
+        information using XMF. Alternatively, it may occur when we have used
+        XML as the format for storing data from a previous use of
+        XMF-Mosaic.</p><p>The following screen shot shows how the data could be expressed
+        in XML:</p><div class="mediaobject"><img src="Part3/XML/Images/image008.jpg"></div><p>The XML is to be parsed using a grammar that defines how to
+        match tables, rows and columns. An XML grammar consists of a
+        collection of clauses each of which defines how to match elements,
+        their attributes and their children.</p><p>An XML source (such as a file) is read and each element is
+        matched against the clauses in the grammar. When a clause matches
+        against the current XML input element, its action is performed causing
+        an XMF element to be synthesized.</p><p>Matching an element involves matching its tag, attributes and
+        its children. All of these components must match in order for the
+        match to be successful. Attribute values can be extracted as part of
+        the matching process and passed to the synthesizing actions. Values
+        synthesized by matching children can be used in the actions of a
+        parent. This way information can be extracted from the XML elements as
+        they are consumed and synthesized elements can be passed up the tree
+        as it is consumed. Eventually the result of the parse is the value
+        synthesized by the root element of the XML document. The following
+        tool screenshot shows the content of a source file that defines an XML
+        grammar for parsing two-dimensional tables. The file imports the
+        XML::Parser package in line 1 so that the grammar for parsing XML
+        grammars is available in the rest of the file. Line 4 imports the same
+        package so that names can be referenced in code (for example
+        ParserChannel in line 40).</p><div class="mediaobject"><img src="Part3/XML/Images/image010.jpg"></div><p>In order to use an XML grammar to parse and synthesize an XML
+        source, the grammar must be compiled. Compilation processes the
+        grammar, checks it for any errors and then translates it into an
+        efficient parsing table. The table is then used as the input to a
+        general XML parsing engine. Compilation checks for a number of errors.
+        In particular it checks that the grammar is LL(1). An LL(1) grammar
+        allows the parser to proceed based on one token lookahead. In this
+        case, tokens are XML elements. Fortunately, LL(1) grammars can be
+        easily checked and this is done automatically for you. If you specify
+        a non-LL(1) grammar, XMF will report a warning and indicate where you
+        have gone wrong.</p><p>To use a compiled grammar, you create an instance of
+        XML::Parser::ParserChannel. The constructor for this class accepts an
+        XML grammar and an XML input source. A parser channel has an operation
+        parse that is used to consume input from the XML source, to run the
+        parser and return the synthesized result:</p><div class="mediaobject"><img src="Part3/XML/Images/image012.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id570342"></a>Dealing with References</h4></div></div></div><p>XML data is tree-structured. This means that data elements
+        cannot be shared by multiple paths from the root element. This is not
+        true of XMF data elements, and computer data structures in general.
+        General data elements are graphs where individual elements may be
+        shared (or pointed to) by multiple parents.</p><p>This restriction on XML data representation is usually handled
+        using data identifiers and references. Any element that can be
+        referenced by multiple sources is allocated a unique identifier. One
+        of the occurrences of the element is translated into an XML tree and
+        all other occurrences are encoded in the reference source using the
+        identifier. It is then up to the interpretation of the XML data to
+        faithfully interpret the identifiers and their references. XMF manages
+        identifiers and references automatically providing they are
+        appropriately declared in the XML grammar. This section shows how this
+        is achieved using a simple example of encoding graphs using
+        XML.</p><p>The following model is used to represent graphs:</p><div class="mediaobject"><img src="Part3/XML/Images/image014.jpg"></div><p>A graph can be represented in XML as follows. A node can be
+        accessed by the containing graph through a number of routes: via the
+        nodes attribute or via the source or target attributes of edges.
+        Sharing of a node through multiple routes is encoded in the XML by
+        allocating a unique identifier to each node. Nodes are represented
+        using an XML element with the unique tag within the graph element and
+        referenced using their identifier via edges:</p><div class="mediaobject"><img src="Part3/XML/Images/image016.jpg"></div><p>We will synthesize an instance of the graph model using an XML
+        grammar. The grammar is defined as a named element in a package as
+        shown below:</p><div class="mediaobject"><img src="Part3/XML/Images/image018.jpg"></div><p>An XML element representing a node is parsed and an instance of
+        the class Graph::Node is synthesized by the clause defined below. A
+        node has attributes id and data which are matched and bound to clause
+        variables in line 31. The clause synthesizes a node which is
+        associated with the identifier bound to the variable id:</p><div class="mediaobject"><img src="Part3/XML/Images/image020.jpg"></div><p>Edges are parsed and synthesized by the clause defined below.
+        Instances of the class Graph::Edge refer to the graph nodes; but,
+        nodes are not available at this point in the parse since the XML
+        elements refer to the source and target nodes via their ids. An XML
+        parser can indicate that an identifier reference should be replaced
+        with the associated value that is synthesized elsewhere by including a
+        reference in the result of the clause as shown below:</p><div class="mediaobject"><img src="Part3/XML/Images/image022.jpg"></div><p>The following operation shows how the Graph grammar is used to
+        parse a file containing a graph encoded in XML.</p><div class="mediaobject"><img src="Part3/XML/Images/image024.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id618362"></a>Representing Models in XML</h4></div></div></div><p>Most modelling tools allow you to encode models using XML; often
+        this is the only way of saving and loading models to persistent
+        storage. The various versions of XMI for UML is an example of this
+        kind of model encoding. XMF-Mosaic allows models to be encoded in a
+        variety of ways and in particular allows you to develop your own
+        encoding that suits the domain with which you are modelling. This
+        section provides an overview of how models can be encoded using an
+        XMI-style XML format.</p><p>The following XML document shows a simple model
+        encoding:</p><div class="mediaobject"><img src="Part3/XML/Images/image026.jpg"></div><p>Models are just top-level packages containing standard elements
+        such as classes and sub-packages. Each model element is allocated a
+        unique identifier to facilitate cross model references. An example of
+        a reference occurs in the attributes of the model where the type of
+        the attribute is encoded as a reference to a class that is represented
+        in full elsewhere in the document.</p><p>The result of loading the XML model is shown below:</p><div class="mediaobject"><img src="Part3/XML/Images/image028.jpg"></div><p>The model is synthesized by parsing an XML grammar. The grammar
+        is shown below. Each identifier is registered against the associated
+        model element during the parse using :=:</p><div class="mediaobject"><img src="Part3/XML/Images/image030.jpg"></div><p>You should be careful when using references (instances of
+        XML::Parser::Ref) as initialization arguments in class instantiation
+        because class instantiation may process the arguments and expect them
+        to be data values of the referenced type rather than the reference
+        itself. In the following construction of a class we use a keyword
+        constructor since the parents may be references (in which case
+        addParent will fail since it expects a classifier rather than a
+        reference).</p><div class="mediaobject"><img src="Part3/XML/Images/image032.jpg"></div><p>The definition of Attribute below shows a typical scenario where
+        XML attributes encode information that must be processed in order to
+        synthesize the model element. In this case the multiplicity of the
+        attribute (whether it is atomic, a set type or a sequence type) is
+        encoded as an enumerated type that is processed in order to decide
+        what the type of the attribute will be.</p><div class="mediaobject"><img src="Part3/XML/Images/image034.jpg"></div><p>The following ClassRef definition shows how references are
+        synthesized:</p><div class="mediaobject"><img src="Part3/XML/Images/image036.jpg"></div><p>Finally, the following operation can be used to read a file
+        containing a model that is encoded in XML:</p><div class="mediaobject"><img src="Part3/XML/Images/image038.jpg"></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id622134"></a>Debugging XML Grammars</h3></div></div></div><p>An XML parser channel has an attribute debug that can be used to
+      provide a trace of execution. If the flag is set:</p><div class="mediaobject"><img src="Part3/XML/Images/image040.jpg"></div><p>then output is produced that shows the XML input as it is
+      consumed, shows the result of actions as they are performed and shows
+      the clause variables as they are bound. The following is a partial trace
+      produced by reading a graph with debug set:</p><div class="mediaobject"><img src="Part3/XML/Images/image042.jpg"></div></div></div><p></p><p><img src="copyright.gif"></p></body></html>

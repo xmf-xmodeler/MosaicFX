@@ -1,0 +1,14 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Operations</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch02.html" title="Creating and Interacting with a Domain Model"><link rel="prev" href="ch02s11.html" title="Running Operations"><link rel="next" href="ch02s13.html" title="Adding Getters and Setters"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id615014"></a>Operations</h2></div></div></div><p>In addition to writing queries, operations also enable instances of
+    models to be manipulated (just as you would manipulate data in a
+    programming language). XOCL provides a number of imperative (programming
+    style) features for the purpose of writing operations. These include
+    standard "for", "while", and "case" constructs among others. Full details
+    can be found in part 3 of the Bluebook.</p><p>As an example, the following operation sets the name of a Port to be
+    the value passed by the parameter of the operation.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/operationexample.jpg"></div><p>Right click &gt; Commit Changes to update the model with the new
+    operation. Edit self to change the operation name.</p><p>Again, if the code is not syntactically correct a parse error will
+    be raised.</p><p>Operations can make use of queries to access properties of a model
+    before they manipulate them. For example, the following operation uses a
+    query to calculate all the connections that target the port, p, and then
+    sets the source port names to tbe the same as p's name:</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/opqueryexample.jpg"></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id616507"></a>Exercises</h3></div></div></div><p>Try adding the following operations to the domain model:</p><div class="itemizedlist"><ul type="disc"><li><p>An operation on the class Component that sets its owner to be
+          a passed ComponentModel.</p></li><li><p>An operation on the class Component that sets the name of the
+          Component to be a passed String.</p></li></ul></div></div></div><p></p><p><img src="copyright.gif"></p></body></html>

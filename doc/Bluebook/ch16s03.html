@@ -1,0 +1,130 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Classes</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch16.html" title="Namespace, Classes, Packages and MetaClasses"><link rel="prev" href="ch16s02.html" title="NameSpaces"><link rel="next" href="ch16s04.html" title="Packages"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id649802"></a>Classes</h2></div></div></div><p>XMF is a class-based object-oriented modelling environment. Each
+    value in XMF has a type or classifier that describes its structure and
+    behaviour. Values in XMF are divided into objects and non-objects. Object
+    types are called classes and non-object types are called classifiers. If a
+    value v is of a type c then we say that v is an instance of c. XMF is
+    provided with a large number of classes and classifiers; XMF developers
+    can define their own classes and classifiers as extensions of those
+    provided.</p><p>Classes and classifiers classify their instances by running
+    constraints. A constraint is a boolean valued expression that runs in the
+    context of the current state of the candidate instance. The outcome of
+    constraint checking is a constraint report containing details of the
+    constraints that were performed, the candidates, the outcome and a reason
+    for any constraints that failed. Constraint checking is a powerful
+    mechanism for checking whether a model or a model scenario is correctly
+    formed.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id595688"></a>Class Definition</h3></div></div></div><p>A class describes the structure and behaviour of its instances. A
+      class has a name and lives in a name-space. The following is a basic
+      class that lives in the name-space Root:</p><pre class="programlisting">context Root
+
+  @Class EmptyClass
+
+  end</pre><p>By default, the class EmptyClass specializes the XMF class
+      XCore::Object and provides a single constructor for creating instances:
+      EmptyClass(). If we perform the following expression:</p><pre class="programlisting">EmptyClass().isKindOf(EmptyClass)</pre><p>then the result is true since the newly created instance is
+      directly an instance of EmptyClasss. In addition, the expression:</p><pre class="programlisting">EmptyClass().isKindOf(Object) and EmptyClass().isKindOf(Element)</pre><p>returns true since EmptyClass inherits (by default) from Object
+      and Object inherits from Element (the class Element does not inherit
+      from anywhere). The class EmptyClass is itself a value:</p><pre class="programlisting">EmptyClass.isKindOf(Class) and 
+EmptyClass.isKindOf(Classifier) and 
+EmptyClass.isKindOf(NamedElement) and
+EmptyClass.isKindOf(Object) and 
+EmptyClass.isKindOf(Element)</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id573787"></a> Attributes</h3></div></div></div><p>A class typically defines some attributes that correspond to slots
+      in the instances of the class. Each attribute has a name and a type and
+      may optionally have some modifiers and an initial value. The following
+      is a simple example of a class with attributes:</p><pre class="programlisting">context Root
+  @Class Point 
+    @Attribute x : Integer end
+    @Attribute y : Integer end
+    @Constructor(x,y) ! end
+  end
+</pre><p>A new point is creates using the constructor defined by
+      Point. A class may define any number of constructors; each constructor
+      must have a different number of arguments. Each constructor argument
+      corresponds to one of the attributes in the class. The optional modifier
+      ! declares that the printed representation for a point is defined by
+      that constructor.</p><p>A new Point is constructed:</p><pre class="programlisting">Point(100,200)</pre><p>where
+      100 is the value of the slot x and 200 is the value of the slot y.
+      Accessor and updater operations are automatically produced by including
+      attribute modifiers:</p><pre class="programlisting">context Root
+  @Class Point 
+    @Attribute x : Integer (?,!) end
+    @Attribute y : Integer (?,!) end
+    @Constructor(x,y) ! end
+  end</pre><p>The modifier ? defines that operations getX and getY are
+      automatically provided; modifier ! defines that operations setX and setY
+      are automatically provided:</p><pre class="programlisting">let p = Point(100,200)
+in p.setX(p.getX() - 1);
+   p.setY(p.getY() - 1)
+end</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id617717"></a>Operations</h3></div></div></div><p>Object-oriented execution proceeds by message passing; a message
+      consists of a name and some argument values. When a message is sent to
+      an object, the name is looked up in the class of the object (and its
+      parents); if an operation is found then it is invoked otherwise an error
+      is reported. Operations may be defined as part of a class or a package
+      definition or added to existing classes and packages via a context
+      defintion.</p><p>The following defines a class of stacks and adds the definition to
+      a package named Stacks. The example shows the complete contents of a
+      file containing the definition. XMF can be used in a file-based mode
+      where files contain source code that is compiled using the XMF compiler.
+      The compiled binary is then loaded into XMF.</p><pre class="programlisting">parserImport XOCL;
+
+context Stacks
+
+  @Class Stack
+  
+    @Attribute elements : Seq(Element) end
+    @Attribute index : Integer end 
+    
+    @Operation isEmpty():Boolean
+      self.elements-&gt;isEmpty
+    end
+    
+    @Operation pop()
+      if self.isEmpty()
+      then throw StackUnderflow(self)
+      else 
+        let head = elements-&gt;head
+        in self.elements := elements-&gt;tail;
+           head
+        end
+      end
+    end
+
+    @Operation push(e:Element)
+      self.elements := Seq{e | elements}
+    end
+
+    @Operation top()
+      if self.isEmpty()
+      then throw StackUnderflow(self)
+      else elements-&gt;head
+      end
+    end
+</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id647970"></a>Constraints</h3></div></div></div><p></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id600577"></a>Inheritance</h3></div></div></div><p>All classes are specializations or sub-classes of at least one
+      other class. By default a class is a sub-class of XCore::Object. A class
+      inherits constructors, attributes, operations and constraints from its
+      parent. For example the following class specializes Point with a z
+      co-ordinate:</p><pre class="programlisting">context Root
+  @Class Point3D extends Point
+    @Attribute z : Integer (?,!) end
+    @Constructor(x,y,z) ! end
+  end
+</pre><p>An instance of Point3D may be constructed using a two-place
+      constructor or a three-place constructor (the three-place is probably
+      more useful). An instance of the class Point3D is also an instance of
+      the parent class Point:</p><pre class="programlisting">let p = Point3D(1,2,3)
+in p.isKindOf(Point)
+end</pre><p>returns true.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id625864"></a>Multiple</h4></div></div></div><p>A class may inherit from more than one super-class in which case
+        the sequence of parents is given by comma separated paths after the
+        extends keyword. The order of the parents is used to determine the
+        lookup order for operations, although it is considered bad practice to
+        rely on the ordering when handling messages. </p><p>Multiple inheritance is most useful when inheriting orthogonal
+        behaviour and structure that is then extended in the new
+        sub-class.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id671239"></a>Run-Super</h4></div></div></div><p>When a sub-class extends a super-class it may shadow an existing
+        operation by defining a new operation in the sub-class with the same
+        name and arity as an inherited class. Sending a message to an instance
+        of the sub-class will cause the shadowing operation definition to be
+        performed.</p><p>Sometimes it is useful to be able to reference a shadowed
+        operation from a shadowing operation body. This occurs when the
+        shadowing class extends the behaviour of the shadowed class. XMF
+        provides the keyword super that is used to invoke the shadowed
+        operation from the shadowing operation.</p><p>This section provides a simple example of how super is
+        used.</p></div></div></div><p></p><p><img src="copyright.gif"></p></body></html>

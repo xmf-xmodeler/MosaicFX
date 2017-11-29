@@ -1,0 +1,3912 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"-->
+<chapter>
+  <title>XOCL</title>
+
+  <para></para>
+
+  <section>
+    <title>Introduction</title>
+
+    <para>The basic technology that underpins XMF-Mosaic is a programming
+    language called XOCL. The programming language is very similar to standard
+    object-oriented languages such as Java or C#. In addition, XOCL is a
+    meta-programming language meaning that it provides facilities for
+    inspecting and controlling its own behaviour. This is the key to
+    supporting flexible tool development. Tools defined in XOCL can inspect
+    and interpret other tools defined in XOCL. Tools defined in XOCL can
+    generate other tools defined in XOCL, and can generate tools defined in
+    other languages such as Java.</para>
+
+    <para>This document is a technical description of XOCL. It defines all
+    aspects of the language and provides a complete definition of the
+    programming constructs and what they do. This document is not a
+    description of how to use XOCL. For that you should read the example
+    Walkthroughs in the Bluebook.</para>
+
+    <para>The document is structured as follows: the basic architecture of
+    XOCL is describes in terms of what it does and how programs are
+    represented at the lowest level; the basic data types provided by XOCL are
+    defined; XOCL program structure is defined including conditional
+    constructs, binding constructs, errors and looping. Finally, the interface
+    of each basic data type is defined.</para>
+
+    <section>
+      <title>Purpose</title>
+
+      <para>XOCL is a programming language that is intended to support
+      powerful programming over meta-data. In achieving this aim, the
+      following objectives have been addressed:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para><emphasis>Efficiency</emphasis>. XOCL provides a programming
+          language that is used on primarily data intensive applications (as
+          opposed to real-time applications, safety critical applications or
+          applications that require intensive numeric processing). XOCL will
+          process large data sets (several tens of thousands of objects) using
+          average memory and average processor resources.</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis>Extensibility</emphasis>. XOCL is designed to be
+          highly extensible. New language features can be added to XOCL by
+          defining an XBNF grammar for the new feature and the rule to process
+          the new syntax structures. In many cases, new syntax structures can
+          be translated to basic XOCL; this provides a powerful macro-facility
+          for defining declarative language constructs.</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis>Dynamic</emphasis>. XOCL is designed to be highly
+          configurable and easy to modify at run-time. Although XOCL is a
+          compiled language, new definitions can be introduced at any time
+          during execution and existing definitions can be modified at
+          run-time.</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis>Meta-circularity</emphasis>. XOCL is designed to
+          allow existing language features to be extended and modified. XOCL
+          understands its own rules of execution. New tools can introduce
+          modification to these rules. XOCL can process its own syntax; the
+          XOCL compiler and interpreter is written in XOCL.</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis>Standards</emphasis>. XMF-Mosaic aims to make
+          standards available wherever these are appropriate. The environment
+          provides a MOF-like meta-modelling language and a UML-like modeling
+          language. The XML facilities of XMF can be used to import and export
+          XMI encoded data. The language XOCL is based on the UML Object
+          Constraint Language.</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis>Conventional</emphasis>. XOCL aims to provide a
+          language that is as familiar to users as possible whilst achieving
+          the aim of being a powerful basis for tool generation. The basic
+          language features of XOCL will be familiar to users of standard
+          object-oriented programming languages such as Java.</para>
+        </listitem>
+
+        <listitem>
+          <para><emphasis>Complete</emphasis>. XOCL provides a complete
+          solution to tool construction. XOCL is not a scripting language
+          (i.e. a lightweight language used as glue for programs written in
+          other languages). XOCL provides features that support the
+          implementation of industrial strength tools, including sophisticated
+          data structures, error handling and a variety of input/output
+          mechanisms.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Language Basics</title>
+
+      <para>XOCL programs consist of a collection of units (text files). Each
+      unit can be compiled and loaded separately; however, there are
+      restrictions on the order of compilation and loading multiple units that
+      must be followed; these are explained in this section. A unit is
+      processed by loading and then evaluating it. Loading involves syntax
+      analysis.</para>
+
+      <para>A unit has entries in the following order:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Parser declarations. A parser declaration is processed by the
+          syntax analysis phase. Typically a declaration imports a collection
+          of grammars that define new language constructs. Each language
+          construct in the rest of the unit must be declared before it is
+          used. Basic XOCL is imported by default.</para>
+        </listitem>
+
+        <listitem>
+          <para>NameSpace imports. Global variables must be imported before
+          they can be used. Each global variable is defined in a name space.
+          Importing the name space makes all the names it defines available in
+          the rest of the unit. The names in Root and XCore are imported by
+          default.</para>
+        </listitem>
+
+        <listitem>
+          <para>Commands and definitions. The rest of the unit is a sequence
+          of any valid XOCL syntax as defined in terms of the parser
+          declarations and imports that precede it. Definitions take the form
+          of the keyword context followed by a name and then an expression
+          whose value is a named element. The name must reference a name
+          space. The effect of a definition is to add the named element to the
+          named name space. Commands take the form of XOCL syntax followed by
+          a semi-colon (;).</para>
+        </listitem>
+
+        <listitem>
+          <para>A typical unit has the form shown on the right. All components
+          are optional but, if present, must occur in the order shown.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para><programlisting>// Comments at the head of the file….
+
+parserImport &lt;PATH&gt;;
+// More parser imports…
+
+// Comments here….
+
+import &lt;PATH&gt;;
+// More imports….
+
+// Comments here….
+
+context &lt;PATH&gt;
+  &lt;NAMEDELEMENT&gt;
+
+// More defs….
+
+&lt;COMMAND&gt;
+// More commands….</programlisting></para>
+
+      <para>When a unit is loaded, its syntax is analysed with respect to the
+      parser declarations. If the syntax is legal then the unit is evaluated.
+      Evaluation processes each name space import in turn. Each import is
+      performed in the context of all preceding imports. If the imports are
+      successful then the rest of the unit is evaluated in the context of the
+      imported names. Definitions are evaluated by constructing the named
+      element, referencing the name space and adding the named element to the
+      name space. Commands are evaluated; any result produced by the commands
+      is discarded.</para>
+
+      <para>The effect of evaluating a unit is the result of adding all
+      definitions to their name spaces and any side-effects produced by the
+      commands.</para>
+
+      <para>Note that although the basic unit of execution is the text file,
+      XOCL is a meta-language and can be used to process definitions and
+      expressions at run-time. This makes XOCL ideal for handling expressions
+      typed at a command interpreter and definitions typed in forms as part of
+      a user interface.</para>
+    </section>
+
+    <section>
+      <title>Overview of Syntax</title>
+
+      <para>XOCL is a textual language. When a unit is loaded its syntax is
+      processed prior to evaluation. The first stage of syntax analysis if to
+      recognize lexical tokens. A lexical token is a sequence of characters
+      read from the input starting with a non-whitespace character. This
+      section provides an overview of the token types:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Integer tokens start with a numeric character and continue up
+          to, but not including, the first non-numeric character.</para>
+        </listitem>
+
+        <listitem>
+          <para>Parentheses ( and ).</para>
+        </listitem>
+
+        <listitem>
+          <para>Braces { and }.</para>
+        </listitem>
+
+        <listitem>
+          <para>Dot .</para>
+        </listitem>
+
+        <listitem>
+          <para>At @.</para>
+        </listitem>
+
+        <listitem>
+          <para>Comma ,.</para>
+        </listitem>
+
+        <listitem>
+          <para>Special tokens are those that do not consist of an
+          alpha-numeric character and are not listed elsewhere. Examples of
+          special tokens are infix operators such as * and +, arrow -&gt; and
+          quasi-quotes [| and |].</para>
+        </listitem>
+
+        <listitem>
+          <para>Name tokens start with an alpha-character and continue up to,
+          but not including, the first non-alpha-numeric character.</para>
+        </listitem>
+
+        <listitem>
+          <para>Symbol tokens start with a ‘ and end with the following
+          ‘.</para>
+        </listitem>
+
+        <listitem>
+          <para>String tokens start with a “ and end with the following “.
+          Within strings the following escape characters are useful:</para>
+
+          <itemizedlist>
+            <listitem>
+              <para>Newline \n</para>
+            </listitem>
+
+            <listitem>
+              <para>Tab \t</para>
+            </listitem>
+
+            <listitem>
+              <para>Return \r</para>
+            </listitem>
+
+            <listitem>
+              <para>String quote \”</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+      </itemizedlist>
+    </section>
+  </section>
+
+  <section>
+    <title>Basic Data Types</title>
+
+    <para>XOCL is an object-oriented language that runs on the Virtual
+    Machine (XVM) and uses a library of class definitions (written in XOCL)
+    called XCore. Most data types in XMF are represented as instances of XCore
+    classes; however, there is a sub-set of XCore, that is fundamental to XOCL
+    and its execution on XVM. These classes are the basic data types necessary
+    to run XOCL. They are listed here. Their interface definitions are given
+    in subsequent sections of this document.</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Booleans. A boolean value is either true or false. Booleans are
+        used to control branches in execution.</para>
+      </listitem>
+
+      <listitem>
+        <para>Clients. XMF-Mosaic can act as a client that connects to and
+        communicates with an external server. The connection is constructed
+        and maintained through a client value.</para>
+      </listitem>
+
+      <listitem>
+        <para>Channels. XOCL performs input and output through channels.
+        StandardInputChannel and StandardOutputChannel define interfaces that
+        are implemented by a wide variety of concrete classes that support
+        different forms of input and output; for example: file i/o.</para>
+      </listitem>
+
+      <listitem>
+        <para>Daemons. A daemon is a value that can be attached to an object
+        in XOCL that monitors the state of the object. A daemon is activated
+        when the object changes state.</para>
+      </listitem>
+
+      <listitem>
+        <para>Integers. Positive and negative integers in the range -24^2 to
+        +24^2.</para>
+      </listitem>
+
+      <listitem>
+        <para>Floats. 64 bit floating point numbers.</para>
+      </listitem>
+
+      <listitem>
+        <para>Null. The undefined value.</para>
+      </listitem>
+
+      <listitem>
+        <para>Objects. An object is a data value with slots. Each slot has a
+        name and a value. All data in XMF is represented in on the formats in
+        this list. Most data in XMF is represented as objects. All types
+        (classes) in XMF are objects and all types have their own
+        types.</para>
+      </listitem>
+
+      <listitem>
+        <para>Operations. An operation has a name, arguments and a body. The
+        body of the operation is XOCL program code. When the operation is
+        invoked, it is supplied with values for the arguments and it performs
+        its body. An operation invocation returns the value produced by the
+        body. Operations are the basis for all execution in XOCL. Operations
+        are proper values in the seinse that they can be passed as argument
+        values and stored in slots.</para>
+      </listitem>
+
+      <listitem>
+        <para>Sequences. XOCL provides lisp-like lists which it calls
+        sequences. A sequence is either a cons pair with a head and a tail or
+        is the empty sequence. Cons pairs have state such that the head and
+        the tail may be updated. Sequences provide a very flexible and
+        efficient way of organising collections of data that change over
+        time.</para>
+      </listitem>
+
+      <listitem>
+        <para>Sets. XOCL provides a data type for representing sets. A set is
+        like a sequence except that it has no state, its elements are
+        unordered and it cannot contain duplicates. Although sets can be
+        defined in terms of objects and sequences, they are provided as a
+        basic data type for efficiency reasons (on the rare occasions that
+        very large sets are necessary).</para>
+      </listitem>
+
+      <listitem>
+        <para>Strings. A string is a sequence of character codes. Two strings
+        are equal when they have the same sequence of character codes. A
+        string has no state.</para>
+      </listitem>
+
+      <listitem>
+        <para>Symbols. A symbol is a string with state. Two symbols are equal
+        when they are the same data value in computer memory. Symbols are very
+        similar to strings except they facilitate efficient name lookup in
+        dictionaries. Named elements in XCore use symbols.</para>
+      </listitem>
+
+      <listitem>
+        <para>Tables. A table associates keys with values. Keys have hash
+        codes that make lookup and update efficient in tables.</para>
+      </listitem>
+
+      <listitem>
+        <para>Threads. XOCL is multi-threaded. Each thread is a separate unit
+        of computation that can share global data with other threads. XOCL
+        multi-threading is provided to allow XMF to monitor interactions with
+        multiple clients (although could be used for a variety of tasks). It
+        is not expected that there would be more than 10 – 20 threads active
+        at any given time.</para>
+      </listitem>
+
+      <listitem>
+        <para>Vectors. Vectors are fixed size, indexable sequences of
+        values.</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section>
+    <title>Program Constructs</title>
+
+    <para>As described above, XOCL programs consist of units. Each unit
+    contains parser declarations followed by name space imports and then a
+    sequence of commands and definitions. Both commands and definitions
+    contain general XOCL expressions; an expression is the basic component of
+    an XOCL language construct. All XOCL language features are evaluated to
+    produce a value; in addition some features produce a side effect as a
+    result of evaluation. Expressions fall into a small number of different
+    categories depending on how they are evaluated. This section provides an
+    overview of XOCL program features and their evaluation mechanisms.</para>
+
+    <section>
+      <title>Self Evaluating Expressions</title>
+
+      <para>The simplest type of XOCL expression is self evaluating, these are
+      often referred to as constants and include integer, string, Boolean and
+      float literals. In addition, the empty sequence Seq{} and the empty set
+      Set{} are self evaluating.</para>
+    </section>
+
+    <section>
+      <title>Variables and Update</title>
+
+      <para>A name is an XOCL expression that evaluates to a value depending
+      on the association that the name has in the current context. In general,
+      names refer to variable locations that contain values and are often
+      referred to as variables. XOCL supports three types of variable: local,
+      global and slot. Examples of local variables are operation parameters
+      and let-introduced names. Examples of global variables are names that
+      have been imported from name spaces. Slot variables refer to the state
+      of the currently executing object.</para>
+
+      <para>Slot variables may be qualified or unqualified. A qualified
+      reference includes the object that contains the slot followed by dot (.)
+      and the name of the slot. An unqualified reference is just the name of
+      the slot: such a reference assumes the object containing the slot to be
+      self.</para>
+
+      <para>Global variable references occur may be qualified or unqualified.
+      A qualified reference references the global variable via some or all of
+      its containing name spaces; this is similar to a path in a file system.
+      For example P::Q::V refers to the variable V in the name space Q which
+      itself is contained in the name space P. The name space P is assumed to
+      be available at the point of reference because it is imported. An
+      unqualified reference to a global variable does not include any
+      containing name spaces: they must be imported at the point of
+      reference.</para>
+
+      <para>Variables may be updated using the := operator. The left hand
+      operand must be a variable and the right hand operator must be an
+      expression. The expression is evaluated and the resulting value is
+      placed in the variable location. Slot updates must use qualified slot
+      variables. Global updates must use qualified global variables.</para>
+
+      <para>The following class definition contains examples of all types of
+      variable reference and update:</para>
+
+      <para><programlisting>context P
+  @Class C extends D, Q::E
+    @Attribute v : Element end
+    @Operation getV():Element
+      v
+    end
+    @Operation setV(newV:Element)
+      P::lastGoodV := self.v;
+      self.v := newV
+    end
+    @Operation lastGoodV():Element
+      import P
+      in lastGoodV
+      end
+    end
+  end</programlisting></para>
+
+      <para>Line 1 is an unqualified global reference to the name space P.
+      Line 2 contains an unqualified global reference to D and a qualified
+      global reference to E. Line 5 is an unqualified slot reference to v.
+      Line 8 contains a qualified global update for lastGoodV and a qualified
+      slot reference to v. Line 9 contains a qualified slot update for v and a
+      local reference to newV. Line 13 contains an unqualified global
+      reference to P and line 14 contains an unqualified global reference
+      (since it has been imported) to lastGoodV.</para>
+
+      <para>Local variables are typically created when values are supplied as
+      arguments to an operation or when local definitions are executed. The
+      association between the Local variable name and the value persist for
+      the duration of the operation definition or the execution of the body of
+      the local block. In both cases, as the name suggests, variable values
+      can change by side effect.</para>
+
+      <para>Local variables are established when arguments are passed to an
+      operation or using a let expression. In both cases the variable can be
+      referenced in the body of the expression, but not outside the body. In
+      both cases the variables can be updated using v := e. Suppose we require
+      an operation that takes two integers and returns a pair where the head
+      is the smallest integer and the tail is the other integer:</para>
+
+      <para><programlisting>context Root
+  @Operation orderedPair(x,y)
+    let min = 0;
+        max = 0
+    in if x &lt; y then min := x else min := y end;
+       if x &gt; y then max := x else max := y end;
+       Seq{min | max}
+    end
+  end</programlisting></para>
+
+      <para>The definition of orderedPair shows how a let expression can
+      introduce a number of variables (in this case min and max). If the let -
+      bindings are separated using ; then the bindings are established
+      in-parallel meaning that the variables cannot affect each other (i.e.
+      the value for max cannot refer to min and vice versa). If the bindings
+      are separated using then they are established in-series meaning that
+      values in subsequent bindings can refer to variables in earlier
+      bindings, for example:</para>
+
+      <para><programlisting>context Root
+  @Operation orderedPair(x,y)
+    let min = if x &lt; y then x else y end then
+        max = if min = x then y else x end
+    in Seq{min | max}
+    end
+  end</programlisting></para>
+    </section>
+
+    <section>
+      <title>Calling Operations</title>
+
+      <para>An operation is invoked by directly invoking it on some argument
+      values or by sending an object a message for which the operation has
+      been defined as the handler. The two types of invocation use the same
+      underlying evaluation machinery, but are syntactically very different.
+      In both cases there is only one parameter passing mechanism: values are
+      passed into the operation and values with state can be modified by the
+      operation. Variables cannot be modified in the sense of Pascal or Ada
+      out parameters. The parameter passing mechanism is directly equivalent
+      to that of Java.</para>
+
+      <para>Operations are applied to arguments using the conventional
+      procedure call notation:</para>
+
+      <para><programlisting>p(arg1,arg2,…,argn)</programlisting></para>
+
+      <para>where p is an XOCL expression that evaluates to an operator and
+      each argi is an XOCL expression that evaluates to produce an argument
+      value.</para>
+
+      <para>Messages are sent to a value using the conventional method
+      invocation notation:</para>
+
+      <para><programlisting>o.m(arg1,arg2,…,argn)</programlisting></para>
+
+      <para>where o is an XOCL expression that evaluates to produce a value
+      (the receiver), m is a name and argi are the operation parameter
+      expressions. To calculate the operation that is invoked, XOCL finds the
+      type of o, and calculates its operator precedence list (OPL). The OPL
+      contains all the operators defined by the type of o with the name m in
+      order of most recently defined (with respect to inheritance) first. The
+      first operation in the OPL is invoked.</para>
+
+      <para>The receiver of a message defines the value of self in the body of
+      the operation invocation. In the case of direct operator application,
+      the value of self is that which was in scope when the operator was
+      defined. The value of self can be changed by sending the operation an
+      invoke message:</para>
+
+      <para><programlisting>p.invoke(o,Seq{arg1,arg2,…,argn})</programlisting></para>
+    </section>
+
+    <section>
+      <title>Infix Operators</title>
+
+      <para>XOCL supports infix notation for the usual arithmetic and boolean
+      operators. In most cases the evaluation of an infix expression will
+      evaluate both sub-expressions in left to right order and then perform
+      the appropriate function on the results. The exceptions are:</para>
+
+      <para><itemizedlist>
+          <listitem>
+            <para>p andthen q evaluates p, if p is false then q is not
+            evaluated, otherwise this behaves as p and q.</para>
+          </listitem>
+
+          <listitem>
+            <para>p orelse q evaluates p, if p is true then q is not evaluated
+            otherwise this behaves as p or q.</para>
+          </listitem>
+        </itemizedlist></para>
+    </section>
+
+    <section>
+      <title>Prefix Operators</title>
+
+      <para>XOCL supports one prefix operator – not. Note that prefix – for
+      negative numbers is not supported (use infix – as in: 0-n).</para>
+    </section>
+
+    <section>
+      <title>Sequencing</title>
+
+      <para>XOCL expressions may produce side effects, either by changing the
+      state of values, producing output or consuming input. Expression
+      evaluation is controlled using the semi-colon (;) operator that
+      sequences evaluation: e1; e2 is evaluated by evaluating e1 and then
+      evaluating e2. The result of the sequenced expression is the value of
+      e2. This operator associates to the right.</para>
+    </section>
+
+    <section>
+      <title>Special Forms</title>
+
+      <para>An XOCL special form is an expression that has its own evaluation
+      rules that do not necessarily follow the usual rules of sub-expression
+      evaluation followed by operator call. This section lists the special
+      forms and defines their evaluation rules.</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Conditional expressions are defined using standard
+          if…then…else…end notation. The test following the if is evaluated,
+          if it is true then the consequent expression is evaluated otherwise
+          the alternative expression is evaluated.</para>
+        </listitem>
+
+        <listitem>
+          <para>A definition occurs in a program unit as the keyword context
+          followed by a name space and a n expression whose value is a named
+          element. The definition causes the named element to be added to
+          thename space when it is performed. The only place this type of
+          definition can occur is at the top level of an evaluation
+          unit.</para>
+        </listitem>
+
+        <listitem>
+          <para>Local variables are introduced using a let expression: let
+          bindings in body end. The bindings introduce local variable names
+          and their initial values. The body is an XOCL expression whose
+          evaluation may reference the local variables. The variables are
+          discarded when the evaluation is complete and the value of the let
+          expression is the value of its body.</para>
+        </listitem>
+
+        <listitem>
+          <para>A set or sequence is constructed using the form
+          Set{exp1,exp2,…,expn} and Seq{exp1,exp2,…,expn}. The sub-expressions
+          are evaluated and the result is a set or sequence containing the
+          values.</para>
+        </listitem>
+
+        <listitem>
+          <para>XOCL is based on OCL which provides a number of convenient
+          types of iteration expression. These have the form: s-&gt;iterOp(v |
+          body) where s is an expression whose value is a set or sequence,
+          iterOp is one of forAll, exists, select, collect or reject, v is a
+          variable name and body is an expression. Depending on the iteration
+          operation the body expression is evaluated in a context where v is
+          bound to successive elements selected from s. A special form of
+          iteration expression is also provided: s-&gt;iterate(v w = e | body)
+          where w is initialized to e and body is evaluated with v bound to
+          successive elements of s; at each evaluation w is rebound to the
+          value produced by body.</para>
+        </listitem>
+
+        <listitem>
+          <para>OCL provides a notation for invoking sequence and set
+          operations: s-&gt;collOp and s-&gt;collOp(arg1,arg2,…,argn). These
+          are retained in XOCL for compatibility with OCL, but are unnecessary
+          since method calling notation works just as well.</para>
+        </listitem>
+
+        <listitem>
+          <para>A name space is imported for the scope of an expression e by
+          import n in e end. All of the names defined in n are available in
+          the expression e.</para>
+        </listitem>
+
+        <listitem>
+          <para>XOCL provides an exception mechanism for handling errors and
+          other exceptional circumstances during execution. An exception is
+          created and thrown from the point of error using a throw e command
+          (an example of an XOCL construct that does not behave like a
+          standard expression). The expression e is evaluated and can produce
+          any value. XCore provides a collection of exception classes that can
+          be used and extended. The exception is caught by the most recently
+          established try … catch(x) … end expression. The exception can be
+          handled in by the catch or may be re-thrown to the next try
+          expression.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Quasi-Quotes</title>
+
+      <para>XOCL is a language that provides features for meta-programming. A
+      key feature of meta-programming is language processing: the ability to
+      construct, transform and manipulate programs. XOCL provides quasi-quotes
+      [| and |] for this purpose. Quasi-quotes can be placed around any XOCL
+      expression e (including XOCL language extensions), the value of the
+      resulting expression [| e |] is the syntax structure for e (as opposed
+      to the value of e). For example: the value of [| x + 1 |] is not an
+      integer, but a syntax structure representing an addition expression
+      whose operator is + and whose left operand is a variable with name x and
+      whose right operand is the constant 1.</para>
+
+      <para>Within quasi-quotes any expression surrounded by drop braces &lt;
+      and &gt; is expected to produce syntax that is inserted into the syntax
+      structure constructed by the quotes. For example:</para>
+
+      <para><programlisting>let e = [| x + 1 |]
+in [| y * &lt;x&gt; |]
+end</programlisting></para>
+
+      <para>line 1 creates a syntax structure called e that is then inserted
+      into the syntax structure as the right operand of the multiplication
+      expression in line 2. The resulting structure is equivalent
+      to:<programlisting>[| y * (x + 1) |]</programlisting></para>
+
+      <para>Quasi quotes and drop braces are very important when
+      meta-programming with languages. They make constructing code templates
+      very easy. Code templates are used to construct XOCL language extensions
+      and to facilitate mappings that translate from one language to
+      another.</para>
+    </section>
+
+    <section>
+      <title>The Meta Character @</title>
+
+      <para>XOCL is an extensible language. New language features are easy to
+      add to XOCL to provide new expression types, new command and new
+      declarative definitions. A big problem of current programming languages
+      is that they cannot be extended very easily. Thus, it is not possible to
+      construct abstraction mechanisms that capture the key features of the
+      application domain. This results in large amounts of program code that
+      is difficult to maintain. Examples of such patterns are: new types of
+      looping construct; a state machine definition; the observer pattern; new
+      types of interface definition; coding standards; specific types of
+      classes such as containers.</para>
+
+      <para>XOCL provides a novel feature that allows new language constructs
+      to be conveniently added to the language. Once they are added, the new
+      features are seamlessly integrated with all other language constructs.
+      The language feature that supports this is the meta-character @.</para>
+
+      <para>When an XOCL unit is processed it is syntactically analysed and
+      then evaluated. During the syntax analysis phase, if an expression
+      starts with the character @ then the analyzer is informed that the
+      characters up to and including the corresponding end are to be processed
+      by a language extension. A language extension is defined by providing a
+      grammar that parses the characters from the @ to the end; the grammar is
+      expected to synthesize and return a syntax construct. Grammars can be
+      attached to classes and the name following the @ should be a class that
+      defines a grammar. A syntax construct is required to implement the
+      Performable interface that allows the second phase of XOCL unit
+      processing. These two features: grammars and Performable are all that is
+      necessary to allow XOCL to be arbitrarily extended with new
+      constructs.</para>
+
+      <para>Typically, syntax classes implement the Performable interface by
+      translating to existing XOCL syntax classes (that already implement the
+      Performable interface). This form of language extension is termed sugar
+      and the processif translation is called desugaring.</para>
+
+      <para>XOCL makes extensive use of the @ feature. Looping constructs such
+      as While, Find and For are all implemented as extensions of the basic
+      XOCL language. Definitions for classes, packages, constraints and
+      operations are defined using @.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Documentation</title>
+
+    <para>Comments can be inserted into XOCL in two ways. The first way is
+    using the standard // &lt;line of text&gt; line comment and /*
+    &lt;para&gt; */ paragraph comments. These can only be used in text files
+    and are ignored by the parser.</para>
+
+    <para>The second way is using the @Doc &lt;some text&gt; end syntax. The
+    text within an @Doc is ignored for the purposes of executing the
+    statement. However, the comment is parsed and is stored as part of the
+    XOCL statement. This means that documentation attached to an XOCL
+    expression can be processed as part of a model. Note a semicolon is not
+    required if the documentation is placed at the head of the code body
+    (otherwise it is). Here is an example of its use:</para>
+
+    <para><programlisting>context Float
+  @Operation max(other:Integer):Integer
+    @Doc
+      Compares a float with other and returns
+      the maximum value.
+    end
+    if self &gt; other
+    then self
+    else other
+    end
+  end</programlisting></para>
+
+    <para>Note, there are currently some limitations to the characters that
+    can be used in an @Doc expression. In particular, the string end must not
+    occur in a @Doc body, even if it is embedded in a word. To resolve this, a
+    separator can be used, e.g. send becomes sen-d.</para>
+  </section>
+
+  <section>
+    <title>Error Handling</title>
+
+    <para>When an error occurs in XOCL, the source of the error throws an
+    exception. The exception is a value that, in general, contains a
+    description of the problem and any data that might help explain the reason
+    why the problem occurred. An exception is thrown to the most recently
+    established handler; intermediate code is discarded. If no handler exists
+    then the XMF VM will terminate. In most cases, the exception is caught by
+    a user-defined handler or, for example in the case of the XMF console, a
+    handler established by the command interpreter.</para>
+
+    <para>When an exception is caught, the handler can inspect the contents of
+    the exception and decide what to do. For example it may be necessary to
+    re-throw the exception to the next-most recently established handler,
+    since it cannot be dealt with. On the other hand, it is usual to catch the
+    exception, print a message, patch up the problem, or just give up on the
+    requested action.</para>
+
+    <para>Exception handling is performed by a try catch expression with the
+    following form:<programlisting>try
+  normal
+catch(x)
+  abnormal
+end</programlisting>The try expression evaluates the normal sub-expression
+    that may perform an arbitrary amount of computation. If the normal
+    expression completes without throwing an exception then its value is
+    returned as the value of the try expression. Alternatively, an exception
+    is thrown at some point during the execution of normal:</para>
+
+    <para><programlisting>throw e</programlisting></para>
+
+    <para>where e is an expression that produces the exception. An exception
+    can be any value, but is typically an instance of the class Exception or
+    one of its sub-classes. An exception is handled by the most recently
+    established try expression. The evaluation of normal is terminated and
+    execution passes to line 3. The variable x is bound to the thrown
+    exception and abnormal is evaluated. If abnormal evaluates without
+    throwing an exception then the value of abnormal is the value returned by
+    the try expression. Otherwise, abnormal throws an exception (perhaps x)
+    that is handled by the next most recently established try
+    expression.</para>
+  </section>
+
+  <section>
+    <title>Control Statements</title>
+
+    <para>Flow of control in XOCL is controlled by the constructs defined in
+    this section. All the basic control statements are supported, including
+    If, Case, While and For. In addition, XOCL supports convenient notations
+    for iterating over collections.</para>
+
+    <section>
+      <title>If</title>
+
+      <para>An if expression if used to choose between alternative expressions
+      based on the outcome of a boolean expression. The different forms of if
+      expression are outlined as follows:</para>
+
+      <programlisting>1  if test
+2  then consequent
+3  end
+4 
+5  if test 
+6  then consequent
+7  else alternative
+8  end
+9 
+10 if test1
+11 then consequent1
+12 elseif test2
+13 then consequent2
+14 elseif test3
+15 then …
+16 else alternative
+17 end</programlisting>
+
+      <para>Lines 1-3 show that an if can be used to construct a guarded
+      expression. If the test in line 1 produces true then the consequent in
+      line 2 is evaluated and produces the value fo the if expression
+      otherwise nothing is evaluated and the value of the if expression is
+      undefined.</para>
+
+      <para>Lines 5 – 8 show how a n if expression is used to choose between
+      two different expressions. If the expression at line 5 produces true
+      then the expression at line 6 is evaluated and produces the value of the
+      if expression. Otherwise the expression at line 7 is evaluated and
+      produces the value of the if expression.</para>
+
+      <para>Lines 10 – 17 show how the elseif keyword can be used to avoid
+      deeply nested if expressions.</para>
+    </section>
+
+    <section>
+      <title>Case</title>
+
+      <para>A case expression is used to dispatch on a sequence of values. The
+      simplest form of a case expression is shown as follows:</para>
+
+      <programlisting>@Case e of
+  p1 do 
+    e1 
+  end
+  p2 do
+    e2
+  end
+  …
+  pn do
+    en
+  end
+  else x
+end</programlisting>
+
+      <para>The case expression is evaluated as follows. The expression e at
+      line 1 is evaluated to produce a value v. If v matches pattern p1 then
+      e1 is evaluated and produces the value of the case expression. Otherwise
+      if value v matches p2 then e2 is evaluated and produces the value of the
+      case expression. Matching continues sequentially until a pattern pi
+      matches and the corresponding expression ei produces the value of the
+      case or the else-clause is reached. If the else-clause is reached then x
+      is evaluated and produces the value of the case expression. Note that
+      the else-clause is optional.</para>
+
+      <para>Note that the semantics of pattern matching is covered elsewhere
+      in this document. The simplest form of pattern matching is against basic
+      values:</para>
+
+      <programlisting>@Case x of
+  1 do 
+    // The value of x is 1…
+  end
+  2 do
+    // The value of x is 2…
+  end
+  …
+  100 do
+   // The value of x is 100…
+  end
+  else self.error(“Illegal value for x: “ + x.toString())
+end</programlisting>
+
+      <para>In general a case statement can match over a sequence of
+      values:</para>
+
+      <programlisting>@Case e1,e2,…,en of
+  p11,p12,…,p1n do 
+    b1 
+  end
+  p21,p22,…,p2n do
+    b2
+  end
+  …
+  pm1,pm2,…,pmn do
+    bm
+  end
+  else x
+end</programlisting>
+    </section>
+
+    <section>
+      <title>CaseInt</title>
+
+      <para>An integer case expression dispatches on the value of an integer.
+      An integer case expression is much more efficient that a case expression
+      because it compiles to a simple indexed dispatch in XVM. The following
+      is an example that returns true when the value of char is an
+      alpha-numeric character code:</para>
+
+      <programlisting>       @CaseInt[256] char of
+         " "-&gt;at(0) do false end
+         "\n"-&gt;at(0) do false end
+         "\t"-&gt;at(0) do false end
+         "\r"-&gt;at(0) do false end
+         "("-&gt;at(0) do false end
+         ")"-&gt;at(0) do false end
+         "\""-&gt;at(0) do false end
+         "0"-&gt;at(0) to "9"-&gt;at(0) do true end
+         "A"-&gt;at(0) to "z"-&gt;at(0) do true end
+         else false
+     end</programlisting>
+
+      <para>Line 1 states that the range of values for char is 0 to 255. Each
+      case arm uses s-&gt;at(0) to include a literal character code. Note that
+      the values in case arms may be any XOCL expression but that the
+      expression must have a value at compile time. A case arm has values to
+      be matched before the keyword do. The values can take the following
+      forms:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>A constant integer valued expression.</para>
+        </listitem>
+
+        <listitem>
+          <para>A range x to y where x and y are constant integer valued
+          expressions.</para>
+        </listitem>
+
+        <listitem>
+          <para>A sequence of integer case values separated with comma
+          (,).</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>TypeCase</title>
+
+      <para>In a pure OO program it should not be necessary to test the type
+      of a value, all computation should be performed using message passing.
+      However, few if any applications are pure and testing the type of a
+      value at run-time is occasionally necessary. All values in XOCL can
+      respond to an isKindOf message whose single argument is an XCore
+      classifier. The return is a Boolean value determining whether or not the
+      value is considered, with respect to inheritance, to be an instance of
+      the classifier. Where there are many such tests on a value it is more
+      declarative and potentially more efficient to use the TypeCase special
+      form:<programlisting>@TypeCase(x)
+     type1 do
+        exp1
+     end
+     type2 do
+       exp2
+     end
+     ….
+     typen do
+        expn
+     end
+     else d
+  end
+</programlisting>The expression x is evaluated in line 1 to produce a value.
+      Each type (lines 2,5 etc) is a name or path referencing a classifier. If
+      the value of x is of type type1 then exp1 is evaluated and produces the
+      value of the case expression. Otherwise, checking proceeds case by case
+      until the optional default case us evaluated. A value v is of type t
+      when it is a direct instance of t or when the direct type of v inherits
+      from t.</para>
+    </section>
+
+    <section>
+      <title>While</title>
+
+      <para>A While loop performs an action until a condition is satisfied
+      (note a named element may use a symbol for its name so we ensure the
+      name is a string using the toString operation):</para>
+
+      <programlisting>context Root
+  @Operation findElement(N:Set(NamedElement),name:String)
+    let found = null
+    in @While not N-&gt;isEmpty do
+         let n = N-&gt;sel
+         in if n.name().toString() = name
+            then found := n
+            else N := N-&gt;excluding(n)
+            end
+         end
+       end;
+       found
+    end
+  end</programlisting>
+    </section>
+
+    <section>
+      <title>For</title>
+
+      <para>It is often the case that While loops are used to iterate through
+      a collection. This pattern is captured by a For loop:</para>
+
+      <programlisting>context Root
+  @Operation findElement(N:Set(NamedElement),name:String)
+    let found = null
+    in @For n in N do
+         if n.name().toString() = name
+         then found := n
+         end
+       end;
+       found
+    end
+  end</programlisting>
+
+      <para>In general a For loop @For x in S do e end is equivalent to the
+      following While loop:</para>
+
+      <programlisting>let forColl = S;
+    isFirst = true
+in @While not forColl-&gt;isEmpty do
+     let x = forColl-&gt;sel
+     in forColl := forColl-&gt;excluding(x);
+        let isLast = forColl-&gt;isEmpty
+        in e;
+           isFirst := false
+        end
+     end
+   end
+end</programlisting>
+
+      <para>Where the variables forColl, isFirst and isLast are scoped over
+      the body of the loop e. These can be useful if we want the body action
+      to depend on whether this is the first or last iteration, for example
+      turning a sequence into a string:</para>
+
+      <programlisting>context Seq(Operation)
+  @Operation toString()
+    let s = "Seq{"
+    in @For e in self do
+         s := s + e.toString();
+         if not isLast then s := s + "," end
+       end;
+       s + "}"
+    end
+  end</programlisting>
+
+      <para>A For loop may return a result. The keyword do states that the
+      body of the For loop is an action and that the result of performing the
+      entire loop will be ignored when the loop exits. Alternatively, the
+      keyword produce states that the loop will return a sequence of values.
+      The values are the results returned by the loop body each time it is
+      performed. For example, suppose we want to calculate the sequence of
+      names from a sequence of people:</para>
+
+      <programlisting>context Root
+  @Operation getNames(people:Seq(Person)):Seq(String)
+    @For person in people produce 
+      person.name 
+    end
+  end</programlisting>
+
+      <para>The keyword in is a For-loop directive. After in the loop expects
+      one or more collections. The in directive supports multiple variables.
+      This feature is useful when stepping through multiple collections in
+      sync, as in:</para>
+
+      <programlisting>context Root
+  @Operation createTable(names:Seq(String),addresses:Seq(String),telNos:Seq(String))
+    @For name,address,telNo in names,addresses,telNos produce
+      Seq{name,address,telNo}
+    end
+  end
+</programlisting>
+
+      <para>A For-loop also has a where option. This allows the elements to be
+      filtered. The following only iterates over names of persons that are not
+      excluded.</para>
+
+      <programlisting>context Root
+  @Operation getNames(people:Seq(Person),excluded:Seq(Person)):Seq(String)
+    @For person in people where not excluded-&gt;includes(person) do
+      person.name 
+    end
+  end</programlisting>
+    </section>
+
+    <section>
+      <title>Find</title>
+
+      <para>The Find construct is used to perform an action in terms of an
+      element of a collection. Typically we want to find the first element in
+      a collection that satisfies a given predicate and to perform an action.
+      If no value exists that satisfies the predicate then we optionally want
+      to perform some other action. This construct captures that
+      pattern.</para>
+
+      <para>As an example, imagine we want find a transition in a statemachine
+      whose targetName is equal to the name of a state, and that when we do,
+      we want to return the State object with that name, or if one does not
+      exist, return the initial state. The following operation getTarget()
+      implements this using Find.</para>
+
+      <programlisting>@Operation getTarget(name: String):XCore::Element
+      let next = null
+      in @Find(t,transition)
+           when t.targetName = name
+           do next := states-&gt;select(s |
+                       s.name = name)-&gt;sel
+           else next := states-&gt;select(s |
+                       s.name = startName)-&gt;sel
+         end;
+         next
+      end
+    end</programlisting>
+    </section>
+
+    <section>
+      <title>Iterators</title>
+
+      <para>There are number of important collection operations that can be
+      used to iterate over elements in a collection to produce a result. Each
+      iterator operation has an iterator variable, which is matched with each
+      element of the collection in turn. An iterator expression is then
+      evaluated against the variable to produce a result.</para>
+
+      <para>There are four main iterator operations: select, collect, reject
+      and iterate.</para>
+
+      <section>
+        <title>Select</title>
+
+        <para><programlisting>C-&gt;select(c | &lt;expression with c&gt;)</programlisting>Select
+        filters the elements in the collection. The element c is added to the
+        result if and only if the &lt;Expr&gt; is true. The following example
+        will return only those values of the set that are greater than
+        5:<programlisting>Set{1,2,3,4,5,6,7,8,9,10}-&gt;select(i | i &gt; 5)</programlisting>In
+        the context of a class model, select statements are very useful for
+        filtering collections of objects subject to some property. For
+        instance, this operation returns all states of a StateMachine that
+        match the name x and which are not an initial state of the
+        StateMachine (see Part 2 of this Reference Manual):<programlisting>context StateMachine
+@Operation statesForName(x):Set(Element)
+  states-&gt;select(s | s.name = x and not startName = x)
+end</programlisting></para>
+      </section>
+
+      <section>
+        <title>Reject</title>
+
+        <para><programlisting>C-&gt;reject(c | &lt;expression with c&gt;)</programlisting>Reject
+        is the converse of select. It rejects any elements where &lt;Expr&gt;
+        returns true.</para>
+
+        <para>As an example, the following rejects all the values of the
+        sequence of characters that are alphabetically greater than the
+        character "a":<programlisting>Seq{"a","b"}-&gt;reject(x | x &gt; "a")</programlisting></para>
+      </section>
+
+      <section>
+        <title>Collect</title>
+
+        <para><programlisting>C-&gt;collect(c | &lt;expression with c&gt;)</programlisting>Collect
+        iterates over the elements in the collection and collects together the
+        result of evaluating the expression. The following collect expression
+        add 1 to each element in the set:<programlisting>Set{1,2,3,4,5,6,7,8,9}-&gt;collect(x | x+1)</programlisting>Here
+        is an example that collects together the names of the states in a
+        state machine: context StateMachine<programlisting>@Operation allStateNames()
+  states-&gt;collect(s | s.name)
+end</programlisting></para>
+      </section>
+
+      <section>
+        <title>Iterate</title>
+
+        <para><programlisting>C-&gt;iterate(c acc = &lt;expression&gt; | &lt;expression with c and acc&gt;)</programlisting>The
+        iterate operation is the most fundamental and general of the iterator
+        operations. All other loop operations can be described as a special
+        case of this operation. Like select and collect, an iterate has a
+        iterator variable. In addition, it has an accumulator variable, which
+        is given an initial value. The result of the iterate operation is the
+        result of iterating over all the elements in the collection. For each
+        successive element, the body expression is evaluated using the
+        previous result of the accumulator. Here is an example of using
+        iterate to add together a collection of numbers: <programlisting>Seq{1,2,3,4,5,6,7,8,9,10}-&gt;iterate(e s=0 | s + e)</programlisting>This
+        sum() operation makes use of an iterate to sum a collection of
+        integers: <programlisting>context Seq(Element)
+@Operation sum()
+  self-&gt;iterate(e sum=0 | sum + e)
+end
+</programlisting></para>
+      </section>
+    </section>
+  </section>
+
+  <section>
+    <title>Assignment</title>
+
+    <para>In XOCL, values may be assigned to variables. The assignment keyword
+    is “:=”. This should not confused with “=” which returns a Boolean
+    value.</para>
+
+    <para>The following code shows an assignment being used to set the name of
+    a State by setting name to be x: <programlisting>Context Java
+  @Operation createState (n:String):State
+    let s = State() in
+      s.name := n;
+      s
+    end
+  end</programlisting>An assignment can be used to set global variables or
+    local variables. When setting the value of a local attribute of a class,
+    self.attname must be used as the target of the assignment. For instance,
+    the following operation will set the name of the State to be
+    x.<programlisting>context State
+  @Operation setName(n)
+    self.name := n
+  end</programlisting>However, the following code will not be
+    legal:<programlisting>context State
+  @Operation setName(n)
+    name := n
+  end</programlisting></para>
+  </section>
+
+  <section>
+    <title>Pattern Matching</title>
+
+    <para>XOCL provides a powerful pattern matching language. This greatly
+    simplifies the writing of pattern matching operations that would otherwise
+    require a very imperative style of programming.</para>
+
+    <section>
+      <title>Patterns and Pattern Matching</title>
+
+      <para>A pattern is matched against a value. The pattern match may
+      succeed or fail in a given matching context. A matching context keeps
+      track of any variable bindings generated by the match and maintains
+      choice points for backtracking if the current match fails.</para>
+
+      <para>Pattern matching can be viewed as being performed by a pattern
+      matching engine that maintains the current pattern matching context as
+      its state. The engine state consists of a stack of patterns to be
+      matched against a stack of values, a collection of variable bindings and
+      a stack of choice points. A choice point is a machine state. At any
+      given time there is a pattern at the head of the pattern stack and a
+      value at the head of the value stack. The machine executes by performing
+      state transitions driven by the head of the pattern stack: if the outer
+      structure of the pattern matches that of the value at the head of the
+      value stack then:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>0 or more values are bound.</para>
+        </listitem>
+
+        <listitem>
+          <para>0 or more choice points are added to the choice point
+          stack.</para>
+        </listitem>
+
+        <listitem>
+          <para>0 or more component patterns are pushed onto the pattern
+          stack.</para>
+        </listitem>
+
+        <listitem>
+          <para>0 or more component values are pushed onto the value
+          stack.</para>
+        </listitem>
+
+        <listitem>
+          <para>If the machine fails to match the pattern and value at the
+          head of the respective stacks then the most recently created choice
+          point is popped and becomes the new machine state. Execution
+          continues until either the pattern stack is exhausted or the machine
+          fails when the choice stack is empty.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Pattern Categories</title>
+
+      <para>This section describes the different categories of pattern. The
+      semantics of matching are defined informally in terms of a general
+      description and example definitions involving the pattern.</para>
+
+      <section>
+        <title>Variables</title>
+
+        <para>A variable pattern consists of a name, optionally another
+        pattern and optionally a type. The simplest form of variable pattern
+        is just a name, for example, the formal parameter x is a variable
+        pattern:<programlisting>let add1 = @Operation(x) x + 1 end in ...</programlisting>Matching
+        a simple variable pattern such as that shown above always succeeds and
+        causes the name to be bound to the corresponding value. A variable may
+        be qualified with a type declaration:<programlisting>let add1 = @Operation(x:Integer) x + 1 end in ...</programlisting>which
+        has no effect on pattern matching. A variable may be qualified with a
+        pattern as in x = &lt;Pattern&gt; where the pattern must occur before
+        any type declaration. Such a qualified variable matches a value when
+        the pattern also matches the value. Any variables in the pattern and x
+        are bound in the process.</para>
+      </section>
+
+      <section>
+        <title>Constants</title>
+
+        <para>A constant pattern is either a string, an integer, a boolean or
+        an expression (in the case of an expression the pattern consists of [
+        followed by an expression followed by ]). A constant pattern matches a
+        value when the values is equal to the constant (in the case of an
+        expression the matching process evaluates the expression each time the
+        match occurs). For example:<programlisting>let fourArgs = @Operation(1,true,"three",x = [2 + 2]) x end in ...</programlisting>is
+        an operation that succeeds in the case: <programlisting>fourArgs(1,true,"three",4)</programlisting>and
+        returns 4.</para>
+      </section>
+
+      <section>
+        <title>Sequences</title>
+
+        <para>A sequence pattern consists of either a pair of patterns or a
+        sequence of patterns. In the case of a pair:<programlisting>let head = @Operation(Seq{head | tail}) head end in ...</programlisting>the
+        pattern matches a non-empty sequence whose head must match the head
+        pattern and whose tail must match the tail pattern. In the case of a
+        sequence of patterns:<programlisting>let add3 = @Operation(Seq{x,y,z}) x + y + z end in ...</programlisting>the
+        pattern matches a sequence of exactly the same size where each element
+        matches the corresponding pattern.</para>
+      </section>
+
+      <section>
+        <title>Constructors</title>
+
+        <para>A constructor pattern matches an object. A constructor pattern
+        may be either a by-order-of-arguments constructor pattern (or
+        BOA-constructor pattern) or a keyword constructor pattern. A
+        BOA-constructor pattern is linked with the constructors of a class. It
+        has the form:<programlisting>let flatten = @Operation(C(x,y,z)) Seq{x,y,z} end in ...</programlisting>where
+        the class {\tt C} must define a 3-argument constructor. A
+        BOA-constructor pattern matches an object when the object is an
+        instance of the class (here {\tt C} but in general defined using a
+        path) and when the object's slot values identified by the constructor
+        of the class with the appropriate arity match the corresponding
+        sub-patterns (here xy and z). A keyword constructor pattern has the
+        form:<programlisting>let flatten = @Operation(C[name=y,age=x,address=y]) Seq{x,y,z} end in ...</programlisting>where
+        the names of the slots are explicitly defined in any order (and may be
+        repeated) .Such a pattern matches an object when it is an instance of
+        the given class and when the values of the named slots match the
+        appropriate sub-patterns.</para>
+      </section>
+
+      <section>
+        <title>Conditions</title>
+
+        <para>A conditional pattern consists of a pattern and a predicate
+        expression. It matches a value when the value matches the sub-pattern
+        and when the expression evaluates to true in the resulting variable
+        context. For example:<programlisting>let repeat = @Operation(Seq{x,y} when x = y) Seq{x} end in ...</programlisting>Note
+        that the above example will fail (and probably throw an error
+        depending on the context) if it is supplied with a pair whose values
+        are different.</para>
+      </section>
+
+      <section>
+        <title>Sets</title>
+
+        <para>Set patterns consist of an element pattern and a residual
+        pattern. A set matches a pattern when an element can be chosen that
+        matches the element pattern and where the rest of the set matches the
+        residual pattern. For example:<programlisting>let choose = @Operation(S-&gt;including(x)) x end in ...</programlisting>which
+        matches any non-empty set and selects a value from it at random. Set
+        patterns introduce choice into the current context because often there
+        is more than one way to choose a value from the set that matches the
+        element pattern. For example:<programlisting>let chooseBigger = @Operation(S-&gt;including(x),y where x &gt; y) x end in ...</programlisting>Pattern
+        matching in chooseBigger, for example:<programlisting>chooseBigger(Set{1,2,3},2)</programlisting>starts
+        by selecting an element and binding it to x and binding S to the rest.
+        In this case suppose that x = 1 and S = Set{2,3}. The pattern y
+        matches and binds 2 and then the condition is applied. At this point,
+        in general, there may be choices left in the context due to there
+        being more than one element in the set supplied as the first
+        parameter. If the condition x &gt; y fails then the matching process
+        jumps to the most recent choice point (which in this cases causes the
+        next element in the set to be chosen and bound to x). Suppose that 3
+        is chosen this time; the condition is satisfied and the call returns3.
+        The following is an example that sorts a set of integers into
+        descending order:<programlisting>context Root
+  @Operation sort(S)
+    @Case S of
+      Set{} do Seq{} end
+      S-&gt;including(x) 
+        when S-&gt;forAll(y | y &lt;= x) 
+        do Seq{x | Q} where Q = sort(S) 
+      end
+    end
+  end</programlisting></para>
+      </section>
+
+      <section>
+        <title>Sequences</title>
+
+        <para>Sequence patterns use the infix + operator to combine two
+        patterns that match against two sub-sequences. For example the
+        following operation removes a sequence of 0's occurring in a
+        sequence:<programlisting>context Root
+  @Operation remove0s(x) 
+    @Case x of 
+      (S1 when S1-&gt;forAll(x | x &lt;&gt; 0)) + 
+        (S2 when S2-&gt;forAll(x | x = 0)) + 
+        (S3 when S3-&gt;forAll(x | x &lt;&gt; 0)) 
+      do S1 + S3 
+      end 
+    end
+  end</programlisting></para>
+      </section>
+
+      <section>
+        <title>Syntax</title>
+
+        <para>Syntax patterns consist of expressions within quasi-quotes [|
+        and |]. The quotes are a short-hand for writing out the equivalent
+        constructor patterns. Syntax patterns provide a powerful way of
+        constructing syntax mappings where the pattern is defined in terms of
+        concrete syntax rather than the equivalent abstract syntax structures.
+        Consider an operation that extracts the body of a
+        letexpression:<programlisting>context Root
+  @Operation getBody([| let x = value in body end |]) 
+    body 
+  end</programlisting>Unfortunately, this will not work as you may expect
+        since the syntax pattern states that the operation expects to be
+        supplied with a let expression that consists of exactly one binding
+        and where the body of the expression is the variable whose name is
+        body. We wish to place patterns within the syntax construct that match
+        against specific elements of the abstract syntax structure. To do this
+        we use pattern-unquotes:<programlisting>context Root
+  @Operation getBody([| let &lt;| bindings |&gt; in &lt;| body |&gt; end |]) 
+    body 
+   end</programlisting>Within a syntax pattern the unquotes &lt;| and |&gt;
+        are used to surround patterns that are to be matched against the
+        abstract syntax structures occurring at that point in the supplied
+        expression. In the example above, bindings is bound to the sequence of
+        bindings in the let and body is bound to the body. The following
+        example shows an operation that calculates the free variables
+        occurring in an expression. The expression is limited to a small
+        number of XOCL expressions: <programlisting>context Root
+  @Operation FV(e)
+    @Case e of 
+      [| let &lt;| Seq{} |&gt; in &lt;| e |&gt; end |] do 
+         FV(e) 
+         end
+      [| let &lt;| Seq{ ValueBinding(v,e1) | bs } |&gt;
+         in &lt;| e2 |&gt; 
+         end
+      |] do
+         FV([| let &lt;bs&gt; in &lt;e2&gt; end|])-&gt;excluding(v)
+         end
+      [| if &lt;| e1 |&gt; 
+         then &lt;| e2 |&gt;
+         else &lt;| e3 |&gt; 
+         end 
+      |] do
+         FV(e1) + FV(e2) + FV(e3)
+      end
+      [| &lt;| e1 |&gt; = &lt;| e2 |&gt; |] do
+         FV(e1) + FV(e2)
+      end
+      Var[name=n] do 
+         Set{n} 
+      end
+    end
+  end</programlisting>The following call:<programlisting>FV[| let x = 10; y = 20 in if x = y then z else a end end |])</programlisting>produces
+        the set <programlisting>Set{a,z}</programlisting></para>
+      </section>
+    </section>
+
+    <section>
+      <title>Pattern Contexts</title>
+
+      <para>Patterns may be used in the following contexts:</para>
+
+      <para>Operation Parameters. Each parameter in an operation definition is
+      a pattern. Parameter patterns are useful when defining an operation that
+      must deconstruct one or more values passed as arguments. Note that if
+      the pattern match fails then the operation invocation will raise an
+      error. Operations defined in the same class and with the same name are
+      merged into a single operation in which each operation is tried in turn
+      when the operation is called via an instance of the class. Therefore in
+      the following example:<programlisting>@Class P
+   @Operation f(Seq{}) 0 end
+   @Operation f(Seq{x | t}) x + self.f(t) end
+end</programlisting>an instance of P has a single operation f that adds up all
+      the elements of a sequence.</para>
+
+      <para>Case Arms. A case expression consists of a number of arms each of
+      which has a sequence of patterns and an expression. A case expression
+      dispatches on a sequence of values and attempts to match them against
+      the corresponding patterns in each arm in turn. For example, suppose we
+      want to calculate the set of duplicated elements in a pair of
+      sets:<programlisting>context Root
+   @Operation dups(s1,s2)
+     @Case s1,s2 of
+         s1-&gt;including(x),s2-&gt;including(y) when x = y do 
+            Set{x} + dups(s1,s2) 
+         end
+         s1-&gt;including(x),s2 do 
+           dups(s1,s2) 
+         end
+         s1,s2-&gt;including(y) do 
+            dups(s1,s2) 
+         end
+         Set{},Set{} do 
+            Set{} 
+         end
+     end
+   end</programlisting>In XMap transformations, as described in the XMap
+      manual.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Data Type Operations</title>
+
+    <para></para>
+
+    <section>
+      <title>Boolean</title>
+
+      <para>A value of the Boolean type can either be true or false.</para>
+
+      <section>
+        <title>Operators</title>
+
+        <para>All the usual Boolean operators are provided.</para>
+
+        <table>
+          <tgroup cols="3">
+            <tbody>
+              <row>
+                <entry>
+                  <emphasis>Operators</emphasis>
+                </entry>
+
+                <entry>
+                  <emphasis>Syntax</emphasis>
+                </entry>
+
+                <entry>
+                  <emphasis>Result Type</emphasis>
+                </entry>
+              </row>
+
+              <row>
+                <entry>Or</entry>
+
+                <entry>a or b</entry>
+
+                <entry>Boolean</entry>
+              </row>
+
+              <row>
+                <entry>And</entry>
+
+                <entry>a and b</entry>
+
+                <entry>Boolean</entry>
+              </row>
+
+              <row>
+                <entry>negation</entry>
+
+                <entry>not b</entry>
+
+                <entry>Boolean</entry>
+              </row>
+
+              <row>
+                <entry>equals</entry>
+
+                <entry>a = b</entry>
+
+                <entry>Boolean</entry>
+              </row>
+
+              <row>
+                <entry>not equals</entry>
+
+                <entry>a &lt;&gt; b</entry>
+
+                <entry>Boolean</entry>
+              </row>
+
+              <row>
+                <entry>implies</entry>
+
+                <entry>a implies b</entry>
+
+                <entry>Boolean</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </section>
+
+      <section>
+        <title>Examples</title>
+
+        <para><programlisting>not true
+balance &gt; 0 or balance &lt; 100
+x &lt;&gt; y implies x.name &lt;&gt; y.name</programlisting>The following
+        example shows the definition of the logical operator and. It uses an
+        if statement to test whether other is a Boolean value and if it is
+        returns the conjunct of self and other. An error is reported if the
+        type is incorrect.</para>
+
+        <para><programlisting>context Boolean
+@Operation booland(other)
+      if other.isKindOf(Boolean)
+      then
+        self and other
+      else
+        self.error("Boolean::booland expects a boolean " + other.toString())
+      end
+    end</programlisting></para>
+      </section>
+    </section>
+
+    <section>
+      <title>Channels</title>
+
+      <para>XOCL provides channels to perform input and output. The channel
+      classes are defined in the IO package and are defined in a separate
+      document. This section provides a very brief overview of input and
+      output using channels.</para>
+
+      <section>
+        <title>Standard Input and Output</title>
+
+        <para>XOCL provides two channels as global variables defined in the
+        name space Root. The output channel stdout is used to send characters
+        to the standard output. The input channel stdin reads characters from
+        the standard input. In both cases characters are represented as
+        integer character codes in the range 0 to 255. Characters are written
+        on output channels by outch.write(c) and read from input channels by
+        inch.read().</para>
+      </section>
+
+      <section>
+        <title>Formatting Output</title>
+
+        <para>XOCL provides a convenient means for formatting output to
+        channels. The global variable format is bound to a character formatter
+        that is used as an operation by applying it to arguments that control
+        the output of characters. The general form is:<programlisting>format(outch,formatString,args)</programlisting>where
+        the format string is a string of characters controlling how the
+        sequence of argument values is formatted as output to the output
+        channel. A format string is a sequence of characters and format
+        directives. Each character occurring in a format string is written to
+        the output channel in sequence. A format directive starts with the
+        tilde (~) character and controls how the output is written and how the
+        fomat arguments are consumed and written to the output channel. A
+        typical use of format will print a message followed by a newline. A
+        newline is produced using the format directive ~% as
+        in:<programlisting>format(outch,”hello world~%”,Seq{})</programlisting>Note
+        that there are no format arguments in the example above. Where there
+        are no format args, they can be omitted: <programlisting>format(outch,”hello world~%”)</programlisting>The
+        directive ~S consumes the next format argument, translates it to a
+        string and prints it to the output channel. For example, if we want to
+        print out the source and target of an edge with an arrow between them:
+        <programlisting>format(outch,”~S -&gt; ~S~%”,Seq{edge.source,edge.target})</programlisting>Format
+        defines many other directives that are defined in the XMF guide to
+        IO.</para>
+      </section>
+
+      <section>
+        <title>File Based Input and Output</title>
+
+        <para>The IO package of XMF provides file channels for accessing and
+        updating files. These channels are defined in the XMF guide to IO. A
+        useful special form is provided that hides the details of file
+        IO:<programlisting>@WithOpenFile(inch &lt;- filename)
+  // Use inch.read() to read characters from the file.
+  // inch.read() returns -1 when EOF is reached.
+end</programlisting><programlisting>@WithOpenFile(outch -&gt; filename)
+  // Use outch in format expressions to write characters to the file.
+end</programlisting>In both of the examples above the filename is specified as
+        an expression whose value is a string. The channels used to perform
+        the input and output are automatically closed when the WithOpenFile
+        expression completes. If an IO error occurs during the evaluation of
+        the WithOpenFile then XOCL guarantees that the channels are closed
+        before the error is reported.</para>
+      </section>
+    </section>
+
+    <section>
+      <title>Clients</title>
+
+      <para>XOCL provides clients that can be used to connect to external
+      servers on ports and then communicate via input output channels with the
+      server.</para>
+    </section>
+
+    <section>
+      <title>Daemons</title>
+
+      <para>An XOCL daemon is an operation that is attached to an object’s
+      slot such that whenever the slot changes state the operation is invoked.
+      The invocation is referred to as firing the daemon. There are several
+      different types of daemon depending on the required firing mode: whether
+      the operation is invoked when any change occurs, when a new value is
+      added to the slot or when a value is removed from the slot.</para>
+
+      <para>A new daemon is created using the Daemon
+      constructor:<programlisting>Daemon(id,type,slot,action,persistent,traced,target)</programlisting>Where
+      id is any XOCL value and is used to identify the daemon in a given
+      context; type is an integer determining the firing mode of the daemon;
+      slot is a symbol that names the slot that is being monitored by the
+      daemon (or null if this is not appropriate); action is an operation to
+      be invoked when the daemon fires; persistent is a boolean value
+      determining whether or not the daemon will be saved when an object
+      containing the daemon is saved to a XAR file; traced is a boolean value
+      that determines whether or not tracing information is printed when the
+      daemon fires; target is any XOCL value and provides a means of
+      associating state with a daemon.</para>
+
+      <para>The type of the daemon is supplied as an integer value. The types
+      are defined by an enumerated type defined in the class Daemon; the type
+      determines the number of arguments that the action should have. The
+      following table lists the types and provides skeleton operations of the
+      appropriate form for the daemon type:</para>
+
+      <para><table>
+          <tgroup cols="3">
+            <tbody>
+              <row>
+                <entry>Type</entry>
+                <entry>Description</entry>
+				<entry>Action Skeleton</entry>
+              </row>
+              <row>
+                <entry>XCore::Daemon::ANY</entry>
+                <entry>Any change to the object will fire the daemon. The action is supplied with the object, the name of the slot that changes, the new value and the old value of the slot. The value of slot in the construction of the daemon is null.</entry>
+				<entry>@Operation(object,slot,newValue,oldValue) … end</entry>
+              </row>
+              <row>
+                <entry>XCore::Daemon::VALUE</entry>
+                <entry>Any change to the named slot will fire the daemon.</entry>
+				<entry>@Operation(object,slot,newValue,oldValue) … end</entry>
+              </row>
+              <row>
+                <entry>XCore::Daemon::ADD</entry>
+                <entry>The slot must contain a set or sequence. When a new value is added to the set or sequence the daemon will fire. The action is supplied with the added value.</entry>
+				<entry>@Operation(object,slot,value) … end</entry>
+              </row>
+              <row>
+                <entry>XCore::Daemon::REMOVE</entry>
+                <entry>The slot must contain a set or sequence. When a value is removed from the set or sequence the daemon will fire. The action is supplied with the removed value.</entry>
+				<entry>@Operation(object,slot,value) … end</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table></para>
+    </section>
+
+    <section>
+      <title>Elements</title>
+
+      <para>All XOCL values are instances of the XCore class named Element.
+      The operations defined by this class are available for all values in
+      XMF-Mosaic. The following table shows the essential operations defined
+      by this class. Note that XOCl is a dynamic language and new operations
+      can be added to a class at any time. Adding operations to Element will
+      cause these to be available for all values.</para>
+
+      <para><table>
+          <tgroup cols="2">
+            <tbody>
+              <row>
+                <entry>copy():Element</entry>
+
+                <entry>Returns a copy of the receiver. By default this returns the receiver. Sub-classes o Element may redefine this appropriately.</entry>
+              </row>
+              <row>
+                <entry>equals(other:Element):Boolean</entry>
+
+                <entry>Returns true when the receiver is equal to the argument. By default this is defined to be true when the identify (memory location) of elements with state are the same. Strings are compared character by character. Sets are equal when all elements are equal.</entry>
+              </row>
+              <row>
+                <entry>error(reason:String)</entry>
+
+                <entry>A convenient way of raising an error exception.</entry>
+              </row>
+              <row>
+                <entry>hashCode():Integer</entry>
+
+                <entry>Returns the code used to index into hash tables.</entry>
+              </row>
+              <row>
+                <entry>init(args:Seq(Element)):Element</entry>
+
+                <entry>All elements can be initialised with respect to arguments. See Object for more specific information.</entry>
+              </row>
+              <row>
+                <entry>isKindOf(c:Classifier):Boolean</entry>
+
+                <entry>Returns true when the receiver is an instance (dorect or otherwise) of the argument. Note that null is considered an instance of everything.</entry>
+              </row>
+              <row>
+                <entry>isReallyKindOf(classifier:Classifier):Boolean</entry>
+
+                <entry>True when isKindOf is true and the receiver is not null.</entry>
+              </row>
+              <row>
+                <entry>of():Classifier</entry>
+
+                <entry>Returns the direct classifier of the receiver.</entry>
+              </row>
+              <row>
+                <entry>send(message:String,args:Seq(Element)):Element
+                </entry>
+
+                <entry>Sends the supplied message with the given arguments to the receiver. Returns the result.</entry>
+              </row>
+              <row>
+                <entry>toString():String</entry>
+
+                <entry>Produces a string representation of the receiver. The system uses toString to display XOCL values in all circumstances. It is usual to provide an appropriate definition of toString in all class definitions. This aids debugging systems.</entry>
+              </row>
+              <row>
+                <entry>yield()</entry>
+
+                <entry>Halt the current thread and reschedule it.</entry>
+              </row>
+
+            </tbody>
+          </tgroup>
+        </table></para>
+    </section>
+
+    <section>
+      <title>Integers</title>
+
+      <para>This is the data type for integer values The default value is
+      0.</para>
+
+      <section>
+        <title>Operators</title>
+
+        <para>All the usual operators on Integer types are provided.</para>
+
+        <para><table>
+            <tgroup cols="3">
+              <tbody>
+                <row>
+                  <entry>Operator</entry>
+                  <entry>Syntax</entry>
+                  <entry>Result Type</entry>
+                </row>
+                <row>
+                  <entry>equals</entry>
+                  <entry>a = b</entry>
+                  <entry>Boolean</entry>
+                </row>
+                <row>
+                  <entry>not equals</entry>
+                  <entry>a &lt;&gt; b</entry>
+                  <entry>Boolean</entry>
+                </row>
+                <row>
+                  <entry>less than</entry>
+                  <entry>a &lt; b</entry>
+                  <entry>Boolean</entry>
+                </row>
+                <row>
+                  <entry>more than</entry>
+                  <entry>a &gt; b</entry>
+                  <entry>Boolean</entry>
+                </row>
+                <row>
+                  <entry>less or equal</entry>
+                  <entry>a &lt;= b</entry>
+                  <entry>Boolean</entry>
+                </row>
+                <row>
+                  <entry>more or equal</entry>
+                  <entry>a &gt;= b</entry>
+                  <entry>Boolean</entry>
+                </row>
+                <row>
+                  <entry>plus</entry>
+                  <entry>a + b</entry>
+                  <entry>Integer or Float</entry>
+                </row>
+                <row>
+                  <entry>minus</entry>
+                  <entry>a - b</entry>
+                  <entry>Integer or Float</entry>
+                </row>
+                <row>
+                  <entry>multiplication</entry>
+                  <entry>a * b</entry>
+                  <entry>Integer or Float</entry>
+                </row>
+                <row>
+                  <entry>divison</entry>
+                  <entry>a / b</entry>
+                  <entry>Integer or Float</entry>
+                </row>
+                <row>
+                  <entry>operation</entry>
+                  <entry>a.op()</entry>
+                  <entry>Element</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table></para>
+      </section>
+
+      <section>
+        <title>Operations</title>
+
+        <para>A variety of integer operations are also provided.</para>
+
+        <para><table>
+            <tgroup cols="2">
+              <tbody>
+                <row>
+                  <entry>abs():Integer</entry>
+                  <entry>Returns the absolute value of an integer. </entry>
+                </row>
+                <row>
+                  <entry>add(other:Element):Element</entry>
+                  <entry>Adds an integer to another integer of a float. </entry>
+                </row>
+                <row>
+                  <entry>asSeq():Seq(Integer)</entry>
+                  <entry>Turns an integer into a 24 bit sequence of binary values. </entry>
+                </row>
+                <row>
+                  <entry>bit(index:Element):Element</entry>
+                  <entry>Returns the ith bit after converting an integer into a 24 bit sequence of binary values. </entry>
+                </row>
+                <row>
+                  <entry>byte(index:Integer):Integer</entry>
+                  <entry>Returns the byte of an indexed by index. Bytes are indexed from 1 (low) to 4 (high). </entry>
+                </row>
+                <row>
+                  <entry>div(other:Integer):Integer</entry>
+                  <entry>Integer division returns the number of times an integer can be divided by other a whole number of times. </entry>
+                </row>
+                <row>
+                  <entry>floor():Integer</entry>
+                  <entry>Rounds a float down to an integer. </entry>
+                </row>
+                <row>
+                  <entry>greater(other:Integer):Element</entry>
+                  <entry>Returns true if an integer is greater than other. </entry>
+                </row>
+                <row>
+                  <entry>isAlphaChar():Boolean</entry>
+                  <entry>Returns true if an integer is a valid alphanumeric value. </entry>
+                </row>
+                <row>
+                  <entry>isLowerCaseChar():Boolean</entry>
+                  <entry>Returns true if an integer is a valid lower case alphanumeric value. </entry>
+                </row>
+                <row>
+                  <entry>isNewLineChar():Boolean</entry>
+                  <entry>Returns true if an integer is the new line alphanumeric value.</entry>
+                </row>
+                <row>
+                  <entry>isNumericChar():Boolean</entry>
+                  <entry>Returns true if an integer is a valid numeric alphanumeric value. </entry>
+                </row>
+                <row>
+                  <entry>isUpperCaseChar():Boolean</entry>
+                  <entry>Returns true if an integer is a valid upper case alphanumeric value. </entry>
+                </row>
+                <row>
+                  <entry>isWhiteSpaceChar():Boolean</entry>
+                  <entry>Returns true if an integer is the white space alphanumeric value. </entry>
+                </row>
+                <row>
+                  <entry>less(other:Element):Element</entry>
+                  <entry>Returns true if the integer is lower than other. </entry>
+                </row>
+                <row>
+                  <entry>lsh(n:Integer):Integer</entry>
+                  <entry>Left shift bit operation.</entry>
+                </row>
+                <row>
+                  <entry>max(other:Integer):Integer</entry>
+                  <entry>Compares an integer with other and returns the maximum value. </entry>
+                </row>
+                <row>
+                  <entry>min(other:Integer):Integer</entry>
+                  <entry>Compares an integer with other and returns the minimum value. </entry>
+                </row>
+                <row>
+                  <entry>mod(other:Integer):Integer</entry>
+                  <entry>Returns the remainder when an integer is divided by other. </entry>
+                </row>
+                <row>
+                  <entry>mul(other:Element):Element</entry>
+                  <entry>Multiples an integer by other. </entry>
+                </row>
+                <row>
+                  <entry>round():Integer</entry>
+                  <entry>Rounds a float to the nearest whole integer. </entry>
+                </row>
+                <row>
+                  <entry>rsh(n:Integer):Integer</entry>
+                  <entry>Right shift bit operation.</entry>
+                </row>
+                <row>
+                  <entry>slash(other:Element):Element</entry>
+                  <entry>Divides an integer by other. </entry>
+                </row>
+                <row>
+                  <entry>sqrt():Element</entry>
+                  <entry>Returns the square root of an integer.</entry>
+                </row>
+                <row>
+                  <entry>sub(other:Element):Element</entry>
+                  <entry>Substracts other from an integer.</entry>
+                </row>
+                <row>
+                  <entry>to(n:Integer):Seq(Integer)</entry>
+                  <entry>Generates a sequence of integers from self to n.</entry>
+                </row>
+                <row>
+                  <entry>toString():String</entry>
+                  <entry>Converts an integer to a string.</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table></para>
+      </section>
+
+      <section>
+        <title>Examples</title>
+
+        <para><programlisting>13 * 42 = 546
+12 &gt; 10 = false
+12.max(11) = 12
+12.min(11) = 11
+12.mod(5) = 2
+1.to(3) = Seq{1,2,3}</programlisting>The following example shows an operator
+        definition for factorial. The operator is named fact, takes a single
+        argument n and is defined in the global context Root which means that
+        the name fact is available everywhere: <programlisting>context Root
+  @Operation fact(n)
+    if n = 0
+    then 1
+    else n * fact(n - 1)
+    end
+  end</programlisting>Another example of a global operation definition is gcd
+        below that computes the greatest common divisor for a pair of positive
+        integers. The example shows that operations can optionally have
+        argument and return types: <programlisting>context Root
+  @Operation gcd(m:Integer,n:Integer):Integer
+    if m = n
+    then n
+    else
+      if m &gt; n
+      then gcd(m-n,n)
+      else gcd(m,n-m)
+      end
+    end
+  end</programlisting></para>
+      </section>
+    </section>
+
+    <section>
+      <title>Floats</title>
+
+      <para>The data type for real values. The default value is 0.0.</para>
+
+      <section>
+        <title>Operators</title>
+
+        <para><table>
+            <tgroup cols="3">
+              <tbody>
+                <row>
+                  <entry>Operator</entry>
+				  <entry>Syntax</entry>
+				  <entry>Result Type</entry>
+                </row>
+                <row>
+                  <entry>equals</entry>
+				  <entry>a = b</entry>
+				  <entry>Boolean</entry>
+                </row>
+                <row>
+                  <entry>not equals</entry>
+				  <entry>a &lt;&gt; b</entry>
+				  <entry>Boolean</entry>
+                </row>
+                <row>
+                  <entry>less than</entry>
+				  <entry>a &lt; b</entry>
+				  <entry>Boolean</entry>
+                </row>
+                <row>
+                  <entry>more than</entry>
+				  <entry>a &gt; b</entry>
+				  <entry>Boolean</entry>
+                </row>
+                <row>
+                  <entry>less or equal</entry>
+				  <entry>a &lt;= b</entry>
+				  <entry>Boolean</entry>
+                </row>
+                <row>
+                  <entry>more or equal</entry>
+				  <entry>a &gt;=</entry>
+				  <entry>Boolean</entry>
+                </row>
+                <row>
+                  <entry>plus</entry>
+				  <entry>a + b</entry>
+				  <entry>Integer or Float</entry>
+                </row>
+                <row>
+                  <entry>minus</entry>
+				  <entry>a - b</entry>
+				  <entry>Integer or Float</entry>
+                </row>
+                <row>
+                  <entry>multiplication</entry>
+				  <entry>a * b</entry>
+				  <entry>Integer or Float</entry>
+                </row>
+                <row>
+                  <entry>division</entry>
+				  <entry>a/b</entry>
+				  <entry>Integer or Float</entry>
+                </row>
+                <row>
+                  <entry>operation</entry>
+				  <entry>a.op()</entry>
+				  <entry>Element</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table></para>
+      </section>
+
+      <section>
+        <title>Operations</title>
+
+        <para><table>
+            <tgroup cols="2">
+              <tbody>
+                <row>
+                  <entry>abs():Float</entry>
+                  <entry>Returns the absolute value of a float. </entry>
+                </row>
+                <row>
+                  <entry>add(other:Element):Element</entry>
+                  <entry>Adds a float to other.</entry>
+                </row>
+                <row>
+                  <entry>cos():Element</entry>
+                  <entry>Returns the cosine of a float.</entry>
+                </row>
+                <row>
+                  <entry>div(other:Element):Element</entry>
+                  <entry>Divides a rounded float by the result of rounding other. </entry>
+                </row>
+                <row>
+                  <entry>floor():Element</entry>
+                  <entry>Rounds a float down to an integer. </entry>
+                </row>
+                <row>
+                  <entry>greater(other:Element):Element</entry>
+                  <entry>Returns true if a float is greater than other. </entry>
+                </row>
+                <row>
+                  <entry>init(args:Element):Element</entry>
+                  <entry>No Documentation Specified</entry>
+                </row>
+                <row>
+                  <entry>less(other:Element):Element</entry>
+                  <entry>Returns true if a float is less than other. </entry>
+                </row>
+                <row>
+                  <entry>max(other:Integer):Integer</entry>
+                  <entry>Compares a float with other and returns the maximum value. </entry>
+                </row>
+                <row>
+                  <entry>min(other:Integer):Integer</entry>
+                  <entry>Compares a float with other and returns the minimum value.</entry>
+                </row>
+                <row>
+                  <entry>mod(other:Element):Element</entry>
+                  <entry>Returns a float modulo other after rounding down to integers. </entry>
+                </row>
+                <row>
+                  <entry>mul(other:Element):Element</entry>
+                  <entry>Multiply a float by other.</entry>
+                </row>
+                <row>
+                  <entry>round():Element</entry>
+                  <entry>Returns the result of rounding a float down. </entry>
+                </row>
+                <row>
+                  <entry>sin():Element</entry>
+                  <entry>Returns the sin() of a float.</entry>
+                </row>
+                <row>
+                  <entry>slash(other:Element):Element</entry>
+                  <entry>Divided a float by other.</entry>
+                </row>
+                <row>
+                  <entry>sqrt():Element</entry>
+                  <entry>Returns the square root of a float.</entry>
+                </row>
+                <row>
+                  <entry>sub(other:Element):Element</entry>
+                  <entry>Subtracts an integer from a float.</entry>
+                </row>
+                <row>
+                  <entry>toString():String</entry>
+                  <entry>Converts and integer to a string.</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table></para>
+      </section>
+
+      <section>
+        <title>Examples</title>
+
+        <para><programlisting>1.1 &gt; 1.01 = true
+3.5.round() = 4
+3.2.floor() = 3
+13.sqrt() = 3.6055512</programlisting>The following operation defines the
+        operation abs(). If the float is a negative number it is subtracted
+        from 0, otherwise the value of the float is returned.<programlisting>@Operation abs():Float
+      if self &lt; 0
+      then
+        0 - self
+      else
+        self
+      end
+    end</programlisting></para>
+      </section>
+    </section>
+
+    <section>
+      <title>Objects</title>
+
+      <para>XOCL objects are XCore elements with slots. A slot is an
+      association between a name (symbol) and a value. A slot has state and
+      can be updated. All objects in XMF-Mosaic are instances of classes that
+      inherit from the XCore class Object. The essential operations supported
+      by Object are defined below:</para>
+
+      <table>
+        <tgroup cols="2">
+          <tbody>
+            <row>
+              <entry>addDaemon(d:Daemon)</entry>
+              <entry>All objects have a collection of daemons. A daemon is an operation that is invoked whenever a slot of the object is updated </entry>
+            </row>
+            <row>
+              <entry>daemons():Seq(Daemon)</entry>
+              <entry>Returns the currently defined daemons for the receiver. Daemons are fired when the object changes state and when the objects daemons are active. </entry>
+            </row>
+            <row>
+              <entry>daemonsActive():Boolean</entry>
+              <entry>Returns whether or not the daemons of this object will be fired when an update takes place.</entry>
+            </row>
+            <row>
+              <entry>get(name:String)</entry>
+              <entry>Returns the value of the named slot of the receiver. The name may be a string or a symbol. An exception is raised if the receiver has no slot with the given name.</entry>
+            </row>
+            <row>
+              <entry>getStructuralFeatureNames():Set(String)</entry>
+              <entry>Returns the slot names of the object. </entry>
+            </row>
+            <row>
+              <entry>hasDaemonWithId(id:Element):Boolean</entry>
+              <entry>Returns true when the receiver has a daemon with the supplied id.</entry>
+            </row>
+            <row>
+              <entry>hasSlot(name:Element):Boolean</entry>
+              <entry>Returns true when the receiver has a slot with the given name. The name may be a string or a symbol.</entry>
+            </row>
+            <row>
+              <entry>init(args:Element)</entry>
+              <entry>When an object is initialised, by default we look for a constructor that has the same arity as the supplied arguments. If we find one then it is invoked. This operation causes constructors to be invoked when they are defined for the class of the receiver. If this operation is redefined then you should use super(args) in the sub-class to invoke this operation.</entry>
+            </row>
+            <row>
+              <entry>removeDaemon(d:Daemon)</entry>
+              <entry>Removes the supplied daemon.</entry>
+            </row>
+            <row>
+              <entry>set(name:String,value:Element)</entry>
+              <entry>Sets the named slot to the supplied value in the receiver. Raises an exception if the receiver has no slot with the supplied name. The name may be a symbol or a string.</entry>
+            </row>
+            <row>
+              <entry>setDaemons(daemons:Seq(Daemon))</entry>
+              <entry>Updates the daemons of the receiver to be the supplied sequence.</entry>
+            </row>
+            <row>
+              <entry>setDaemonsActive(active:Boolean)</entry>
+              <entry>Sets whether or not the daemons of this receiver will be fired when an update takes place</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>Null</title>
+
+      <para>The value null is an instance of the XCore class Null and is
+      considered special in the sense that it can be viewed as the undefined
+      value. It is an instance of all classes in XMF and is the default value
+      of all slots whose type is not a basic type (such as String) or a set or
+      sequence. There is only one null value and it is only equal to
+      itself.</para>
+    </section>
+
+    <section>
+      <title>Operations</title>
+
+      <para>XOCL operations are used to implement both procedures and
+      functions (queries). An operation has an optional name, some parameters,
+      a return type and a body. Operations are objects with internal state;
+      part of the internal state is the name, parameter information, type and
+      body. Operations also have property lists that can be used to attach
+      information to the operation for use by XOCL programs.</para>
+
+      <para>Operations can be created and stored in XMF data items. In
+      particular, operations can be added to name spaces and then referenced
+      via the name space (either where the name space is imported or directly
+      by giving the path to the operation). We have seen many examples of
+      adding operations to the name space called Root in earlier parts of this
+      primer. The syntax:<programlisting>context Root
+  @Operation add(x,y) x + y end</programlisting>can occur at the top-level of
+      an XMF source file, compiled and loaded. It is equivalent to the
+      following expression:<programlisting>Root.add(@Operation add(x,y) x + y end);</programlisting>Unlike
+      the context expression, the call to add may occur anywhere in XMF
+      code.</para>
+
+      <para>Operations are performed by sending them a message invoke with two
+      arguments: the value of self (or target) to be used in the body of the
+      operation and a sequence of argument values. The target of the
+      invocation is important because it provides the value of self in the
+      body of the operation and supplies the values of the slot-bound
+      variables. The add operation can be invoked by:<programlisting>add.invoke(null,Seq{1,2})</programlisting>It
+      produces the value 3. Note that in this case there is no reference to
+      selfor slot-bound variables in the body and therefore the target of the
+      invocation is null. A shorthand for invocation is provided:
+      add(1,2)</para>
+
+      <para>However, note that no target can be supplied with the shorthand.
+      In this case the target will default to the value of self that was in
+      scope when the operation was created.</para>
+
+      <para>Locally bound variables that are scoped over an operation are
+      available within the body of the operation event though the operation is
+      returned from the lexical context. This is often referred to as closing
+      the local variable into the operation (or closure). This feature is very
+      useful when generating behaviour that differs only in terms of context.
+      Suppose that transition machine states have an action that is
+      implemented as an operation and that the action is to be performed when
+      the state is entered:<programlisting>context StateMachines
+  @Class State
+    @Attribute name : String end
+    @Attribute action : Operation end
+    @Constructor(name,action) end
+    @Operation enter()
+      action()
+    end
+  end</programlisting>Compiled operations have the following slots:</para>
+
+      <para><table>
+          <tgroup cols="3">
+            <tbody>
+              <row>
+                <entry>arity</entry>
+                <entry>Integer</entry>
+				<entry>The number of arguments required by the operation.</entry>
+              </row>
+              <row>
+                <entry>codeBox</entry>
+                <entry>Element</entry>
+				<entry>The XVM instructions.</entry>
+              </row>
+              <row>
+                <entry>dynamics</entry>
+                <entry>Seq(element)</entry>
+				<entry>The global variables available via imports.</entry>
+              </row>
+              <row>
+                <entry>globals</entry>
+                <entry>Seq(Element)</entry>
+				<entry>The global variables available via imports.</entry>
+              </row>
+              <row>
+                <entry>isVarArgs</entry>
+                <entry>Boolean</entry>
+				<entry>Whether this operation can take a variable number of arguments.</entry>
+              </row>
+              <row>
+                <entry>properties</entry>
+                <entry>Seq(Element)</entry>
+				<entry>A sequence of name value pairs.</entry>
+              </row>
+              <row>
+                <entry>sig</entry>
+                <entry>Seq(Element)</entry>
+				<entry>A type signature for the operation.</entry>
+              </row>
+              <row>
+                <entry>supers</entry>
+                <entry>Seq(Operation)</entry>
+				<entry>A sequence of operations headed by the owner of the slot. Used when invoking super.</entry>
+              </row>
+              <row>
+                <entry>target</entry>
+                <entry>Element</entry>
+				<entry>Value used as self within the operation.</entry>
+              </row>
+              <row>
+                <entry>traced</entry>
+                <entry>Operation</entry>
+				<entry>An operation used as a proxy when the operation is traced. (null is not traced).</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table></para>
+
+      <section>
+        <title>Operations</title>
+
+        <para>Compiled operation defines the following operations:</para>
+
+        <para><table>
+            <tgroup cols="2">
+              <tbody>
+                <row>
+                  <entry>addDaemon(daemon:Element)</entry>
+				  <entry>Operations have daemons that monitor their slots.</entry>
+                </row>
+                <row>
+                  <entry>addNameChangedDaemon(d:Element,actionSource:Element) </entry>
+				  <entry>Use this operation to add a daemon that monitors the name of a compiled operation for changes. The args for the daemon are the new name and the old name.</entry>
+                </row>
+                <row>
+                  <entry>arity():Integer</entry>
+				  <entry>The number of arguments expected by the operation. Use this rather than reference the slot.</entry>
+                </row>
+                <row>
+                  <entry>daemons():Seq(Operation)</entry>
+				  <entry>Returns the daemons currently monitoring the operation.</entry>
+                </row>
+                <row>
+                  <entry>disassemble():String</entry>
+				  <entry>Displays the XVM instructions to stdout.</entry>
+                </row>
+                <row>
+                  <entry>disassemble(out:Element)</entry>
+				  <entry>Displays the XVM instructions to out.</entry>
+                </row>
+                <row>
+                  <entry>doc():Element</entry>
+				  <entry>Any documentation defined for the receiver.</entry>
+                </row>
+                <row>
+                  <entry>get(name:String):Element</entry>
+				  <entry>Reference a named slot of the receiver.</entry>
+                </row>
+                <row>
+                  <entry>getStructuralFeatureNames():Set(String)</entry>
+				  <entry>Get the slots defined for the receiver.</entry>
+                </row>
+                <row>
+                  <entry>hasProperty(property:Element):Boolean</entry>
+				  <entry>Returns true when the receiver has the supplied property.</entry>
+                </row>
+                <row>
+                  <entry>hasSlot(name:String):Boolean</entry>
+				  <entry>Returns true when the receiver has the supplied name.</entry>
+                </row>
+                <row>
+                  <entry>importNameSpace(n:NameSpace)</entry>
+				  <entry>Imports the supplied name space and its contents to the receiver. If the name space is already imported then no change is made. Otherwise the name space is added as the most specific imported name space.</entry>
+                </row>
+                <row>
+                  <entry>importNameSpaces(N:Seq(NameSpace))</entry>
+				  <entry>Imports the sequence of name spaces in the order that they are supplied.</entry>
+                </row>
+                <row>
+                  <entry>imports(n:NameSpace):Boolean</entry>
+				  <entry>Returns true when the receiver imports the supplied name space.</entry>
+                </row>
+                <row>
+                  <entry>imports():Seq(NameSpace)</entry>
+				  <entry>Returns the sequence of imported name spaces.</entry>
+                </row>
+                <row>
+                  <entry>isVarArgs():Boolean</entry>
+				  <entry>returns true when the receiver can be supplied with a variable number of arguments. Use this in preference to referencing the slot.</entry>
+                </row>
+                <row>
+                  <entry>name():Symbol</entry>
+				  <entry>Returns the name of the receiver. Use this in preference to referencing the slot.</entry>
+                </row>
+                <row>
+                  <entry>owner():Element</entry>
+				  <entry>Returns the owner of the receiver. Use this in preference to referencing the slot.</entry>
+                </row>
+                <row>
+                  <entry>paramNames():Seq(String)</entry>
+				  <entry>Returns the sequence of parameter names.</entry>
+                </row>
+                <row>
+                  <entry>paramTypes():Seq(Classifier)</entry>
+				  <entry>Returns the sequence of parameter types.</entry>
+                </row>
+                <row>
+                  <entry>properties():Element</entry>
+				  <entry>Returns the receivers property list.</entry>
+                </row>
+                <row>
+                  <entry>property(property:Element):Element</entry>
+				  <entry>Returns the value of the supplied property.</entry>
+                </row>
+                <row>
+                  <entry>removeDaemon(daemon:Element)</entry>
+				  <entry>Removes the supplied daemon.</entry>
+                </row>
+                <row>
+                  <entry>set(name:String,value:Element)</entry>
+				  <entry>Sets the supplied slot.</entry>
+                </row>
+                <row>
+                  <entry>setArity(arity:Element) </entry>
+				  <entry>Changes the arity (don’t use).</entry>
+                </row>
+                <row>
+                  <entry>setDaemons(daemons:Element)</entry>
+				  <entry>Sets the daemons.</entry>
+                </row>
+                <row>
+                  <entry>setDoc(doc:Element)</entry>
+				  <entry>Sets the documentation.</entry>
+                </row>
+                <row>
+                  <entry>setName(name:Element)</entry>
+				  <entry>Sets the name.</entry>
+                </row>
+                <row>
+                  <entry>setOwner(owner:Element)</entry>
+				  <entry>Sets the owner.</entry>
+                </row>
+                <row>
+                  <entry>setProperties(properties:Element)</entry>
+				  <entry>Sets the properties.</entry>
+                </row>
+                <row>
+                  <entry>setProperty(property:Element,value:Element)</entry>
+				  <entry>Sets the property.</entry>
+                </row>
+                <row>
+                  <entry>setSig(sig:Element)</entry>
+				  <entry>Sets the type signature.</entry>
+                </row>
+                <row>
+                  <entry>setSource(source:String)</entry>
+				  <entry>Sets the source code string.</entry>
+                </row>
+                <row>
+                  <entry>setSupers(supers:Element)</entry>
+				  <entry>Sets the supers list.</entry>
+                </row>
+                <row>
+                  <entry>setTarget(target:Element)</entry>
+				  <entry>Sets the target.</entry>
+                </row>
+                <row>
+                  <entry>sig():Seq(Element)</entry>
+				  <entry>Returns the type signature.</entry>
+                </row>
+                <row>
+                  <entry>source():String</entry>
+				  <entry>Returns the source code string.</entry>
+                </row>
+                <row>
+                  <entry>supers():Seq(Operation)</entry>
+				  <entry>Returns the supers list.</entry>
+                </row>
+                <row>
+                  <entry>target():Element</entry>
+				  <entry>Returns the target.</entry>
+                </row>
+                <row>
+                  <entry>trace():Operation</entry>
+				  <entry>Returns the trace operation.</entry>
+                </row>
+                <row>
+                  <entry>traced():Boolean</entry>
+				  <entry>True when the receiver is traced.</entry>
+                </row>
+                <row>
+                  <entry>type():Classifier</entry>
+				  <entry>Returns the return type.</entry>
+                </row>
+                <row>
+                  <entry>untrace()</entry>
+				  <entry>Stops printing trace information when the receiver is invoked.</entry>
+                </row>
+                <row>
+                  <entry>update(newOp:Element)</entry>
+				  <entry>Replaces the receiver with the argument. The update is performed in place so that all references to the receiver are also updated.</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table></para>
+      </section>
+    </section>
+
+    <section>
+      <title>Strings</title>
+
+      <para>A string is a sequence of characters. Literal strings are written
+      in enclosing double string quotes, such as “fred” and “fido”.</para>
+
+      <section>
+        <title>Operators</title>
+
+        <para>Strings can be compared using equals (=) and can be
+        concatenated.</para>
+
+        <para><table>
+            <tgroup cols="3">
+              <tbody>
+                <row>
+                  <entry>Operator</entry>
+                  <entry>Syntax</entry>
+				  <entry>Result Type</entry>
+                </row>
+                <row>
+                  <entry>equals</entry>
+                  <entry>a = b</entry>
+				  <entry>Boolean</entry>
+                </row>
+                <row>
+                  <entry>not equals</entry>
+                  <entry>a &lt;&gt; b</entry>
+				  <entry>Boolean</entry>
+                </row>
+                <row>
+                  <entry>concatenate</entry>
+                  <entry>a + b</entry>
+				  <entry>String</entry>
+                </row>
+                <row>
+                  <entry>operation</entry>
+                  <entry>a.op()</entry>
+				  <entry>Element</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table>Strings can also be compared using &lt;, &lt;=, &gt; and
+        &gt;= in which case the usual lexicographic ordering applies.</para>
+      </section>
+
+      <section>
+        <title>Operations</title>
+
+        <para>A large number of string operations are provided for
+        manipulating strings. These are given below.</para>
+
+        <para><table>
+            <tgroup cols="2">
+              <tbody>
+                <row>
+                  <entry>asBool():Boolean</entry>
+                  <entry>Converts a string into a Boolean provided it has the string value true or false. String can be lower or upper case. An exception is raised if the string is invalid.</entry>
+                </row>
+                <row>
+                  <entry>asFloat():Float</entry>
+                  <entry>Converts a string into a Float. It splits the string on its decimal point, converts the two strings into integers and passes them to the Float constructor. An exception is raised if the result is not a Float.</entry>
+                </row>
+                <row>
+                  <entry>asHTML():String</entry>
+                  <entry>Transforms a string literal to HTML replacing any illegal HTML characters so that the string is faithfully printed.</entry>
+                </row>
+                <row>
+                  <entry>asInt():Integer</entry>
+                  <entry>Converts a string into an Integer. Raises an exception if it cannot be converted.</entry>
+                </row>
+                <row>
+                  <entry>asSeq():Seq(Integer)</entry>
+                  <entry>Converts a string into a sequence of character codes.</entry>
+                </row>
+                <row>
+                  <entry>asSet():Set(Integer)</entry>
+                  <entry>Converts a string into a set of character codes</entry>
+                </row>
+                <row>
+                  <entry>asSymbol():Symbol</entry>
+                  <entry>Converts a string into a Symbol. In general, symbols can be processed more efficiently than strings, e.g. as indexes in table lookups.</entry>
+                </row>
+                <row>
+                  <entry>at(i:Integer):Integer</entry>
+                  <entry>Returns the ith character in a string starting from position 0.</entry>
+                </row>
+                <row>
+                  <entry>default():Element</entry>
+                  <entry>Returns the default value for a string: the empty string</entry>
+                </row>
+                <row>
+                  <entry>deleteFile():Boolean</entry>
+                  <entry>Deletes the file given by a string path. Raises an exception if the file does not exist or cannot be deleted.</entry>
+                </row>
+                <row>
+                  <entry>drop(n:Integer):Element</entry>
+                  <entry>Removes the first i elements from a string.</entry>
+                </row>
+                <row>
+                  <entry>edit():Element</entry>
+                  <entry>Launches an editor for a string.</entry>
+                </row>
+                <row>
+                  <entry>escapeCharsToNewLines():Element</entry>
+                  <entry>Substitutes escape characters in a string for new lines.</entry>
+                </row>
+                <row>
+                  <entry>exec(args:Seq(String)):Element</entry>
+                  <entry>Currently not supported.</entry>
+                </row>
+                <row>
+                  <entry>fileExists():Boolean</entry>
+                  <entry>Returns true if the file given by a string path exists, otherwise false.</entry>
+                </row>
+                <row>
+                  <entry>fileSize():Integer</entry>
+                  <entry>Returns the size of a file given by a string path.</entry>
+                </row>
+                <row>
+                  <entry>greater(other:String):Boolean</entry>
+                  <entry>Returns true if a string is greater than the supplied string. The strings are compared alphabetically.</entry>
+                </row>
+                <row>
+                  <entry>hasPrefix(prefix:String):Boolean</entry>
+                  <entry>Returns true if a string is prefixed by the string, prefix.</entry>
+                </row>
+                <row>
+                  <entry>hasSuffix(suffix:String):Boolean</entry>
+                  <entry>Returns true if a string has a suffix, suffix.</entry>
+                </row>
+                <row>
+                  <entry>indexOf(char:String):Integer</entry>
+                  <entry>Returns the index of a character, char in a string.</entry>
+                </row>
+                <row>
+                  <entry>isOlder(file:String):Boolean</entry>
+                  <entry>Compares the last modified date of the file referenced by a string path with file. Returns true if file is older.</entry>
+                </row>
+                <row>
+                  <entry>less(other:String):Boolean</entry>
+                  <entry>Returns true if a string is less than the supplied string. The strings are compared alphabetically. </entry>
+                </row>
+                <row>
+                  <entry>loadBin(verbose:Boolean):Element</entry>
+                  <entry>Load the binary for the file referenced by a string path. Displays loading information if verbose is true. Raises an exception if it does not exist.</entry>
+                </row>
+                <row>
+                  <entry>lookup():Element</entry>
+                  <entry>Returns the value of the dynamic variable with the name defined by self or raises an error otherwise.</entry>
+                </row>
+                <row>
+                  <entry>lowerCaseInitialLetter():String</entry>
+                  <entry>Makes the first letter of a string lower case.</entry>
+                </row>
+                <row>
+                  <entry>mkDir():Boolean</entry>
+                  <entry>Creates a directory. Returns true when the directory already exists or is successfully created. Returns false when the directory cannot be created.</entry>
+                </row>
+                <row>
+                  <entry>newLinesToEscapeChars():Element</entry>
+                  <entry>Substitutes new lines in a string for escape characters.</entry>
+                </row>
+                <row>
+                  <entry>padFrom(width:Integer,char:Integer):String</entry>
+                  <entry>Pads ups to a string with additional character codes up to width</entry>
+                </row>
+                <row>
+                  <entry>padTo(width:Integer,char:Integer):String</entry>
+                  <entry>Pads after a string with additional character codes up to width.</entry>
+                </row>
+                <row>
+                  <entry>parentDir():String</entry>
+                  <entry>Returns the parent directory of the file referenced by a string path. Returns an exception if it cannot be found.</entry>
+                </row>
+                <row>
+                  <entry>readFile():String</entry>
+                  <entry>Reads the file referenced by a string path, provided that it exists.</entry>
+                </row>
+                <row>
+                  <entry>renameFile(newName:String):Boolean</entry>
+                  <entry>Renames a file referenced by a string path. A rename is only performed if the file exists and there doesnt exist a file with the new name.</entry>
+                </row>
+                <row>
+                  <entry>repeat(n:Integer):Element</entry>
+                  <entry>Duplicates a string the given number of times.</entry>
+                </row>
+                <row>
+                  <entry>reverse():String</entry>
+                  <entry>Reverses the characters in a string. </entry>
+                </row>
+                <row>
+                  <entry>size():Integer</entry>
+                  <entry>Returns the size of a string.</entry>
+                </row>
+                <row>
+                  <entry>splitBy(chars:String,start:Integer,last:Integer):Seq(String)</entry>
+                  <entry>Splits a string into a sequence of strings around some characters. The variables start and last can be used to filter the returned string by returning the characters from start to last. Setting start and last to 0 will return the whole string.</entry>
+                </row>
+                <row>
+                  <entry>stripNonAlphaChars():String</entry>
+                  <entry>Strips all non-alphanumeric characters from a string.</entry>
+                </row>
+                <row>
+                  <entry>stripWhiteSpace():String</entry>
+                  <entry>Strips any whitespaces from a string.</entry>
+                </row>
+                <row>
+                  <entry>subString(firstChar:String,pastLastChar:String):String</entry>
+                  <entry>Uses indices to chop up a string. The first index is the starting character and the second index is 1+ the final character.</entry>
+                </row>
+                <row>
+                  <entry>subst(new:String,old:String,all:Boolean):Element</entry>
+                  <entry>Substitutes the string old in a string with new. If all is set to false, just replaces the first occurence. If true replaces them all.</entry>
+                </row>
+                <row>
+                  <entry>toLower():String</entry>
+                  <entry>Converts all characters in a string to lower case.</entry>
+                </row>
+                <row>
+                  <entry>toString():String</entry>
+                  <entry>Prints a string.</entry>
+                </row>
+                <row>
+                  <entry>toUpper():String</entry>
+                  <entry>Converts all characters in a string to upper case.</entry>
+                </row>
+                <row>
+                  <entry>truncate(width:Integer):String</entry>
+                  <entry>Truncates a string by width characters.</entry>
+                </row>
+                <row>
+                  <entry>upperCaseInitialLetter():String</entry>
+                  <entry>Makes the first letter of a string upper case.</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table></para>
+      </section>
+
+      <section>
+        <title>Examples</title>
+
+        <para><programlisting>"to" + "day" = "today"
+"tomorrow".size() = 8
+"UPPER".toLower() = "upper"
+"lower".toUpper() = "LOWER"
+"Ceteva".subString(0,4) = "Ceta"
+"lower" &lt;&gt; "LOWER" = true
+"123.456".splitBy(".",0,0) = Seq{"123","456"}</programlisting>Characters are
+        represented as integer ASCII codes. The following operation checks
+        whether a string starts with an upper case character:<programlisting>context Root
+@Operation startsUpperCase(s:String):Boolean
+  if s-&gt;size &gt; 0
+  then
+    let c = s-&gt;at(0)
+    in "A"-&gt;at(0) &lt;= c and c &lt;= "Z"-&gt;at(0)
+    end
+  else false
+  end
+end</programlisting></para>
+      </section>
+    </section>
+
+    <section>
+      <title>Sequences</title>
+
+      <para>A sequence is a list of values that may have duplicates. A
+      sequence literal is denoted by enumerating the elements in a Seq{}. For
+      example, a sequence of numbers: Seq{1,2,3}. Sequences can be nested, for
+      example: Seq{Seq{“a”,”b”},1}.</para>
+
+      <para>The default value of a sequence is the empty sequence, Seq{}. A
+      Seq(Element) is an instance of the Sequence type. It contains the
+      elements in the sequence.</para>
+
+      <section>
+        <title>Operators</title>
+
+        <para>Two sequences can be tested for equality and inequality. Two
+        sequences are equal provides that they contain the same elements in
+        the same order. Sequences can be concatenated.</para>
+
+        <para><table>
+            <tgroup cols="3">
+              <tbody>
+                <row>
+                  <entry>Operator</entry>
+                  <entry>Syntax</entry>
+                  <entry>Result Type</entry>
+                </row>
+                <row>
+                  <entry>equals</entry>
+                  <entry>a = b</entry>
+                  <entry>Boolean</entry>
+                </row>
+                <row>
+                  <entry>not equals</entry>
+                  <entry>a &lt;&gt; b</entry>
+                  <entry>Boolean</entry>
+                </row>
+                <row>
+                  <entry>concatenation</entry>
+                  <entry>a + b</entry>
+                  <entry>Sequence(Element)</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table></para>
+      </section>
+
+      <section>
+        <title>Operations</title>
+
+        <para>XOCL provides a large number of sequence operations, including
+        all those support by standard OCL.</para>
+
+        <para><table>
+            <tgroup cols="2">
+              <tbody>
+                <row>
+                  <entry>append(s:Seq(Element)):Seq(Element)</entry>
+                  <entry>Append two sequences.</entry>
+                </row>
+                <row>
+                  <entry>asProperSeq():Seq(Element)</entry>
+                  <entry>No Documentation Specified</entry>
+                </row>
+                <row>
+                  <entry>asSeq():Seq(Element)</entry>
+                  <entry>Turns a sequence into a sequence.</entry>
+                </row>
+                <row>
+                  <entry>asSet():Set(Element)</entry>
+                  <entry>Turn a sequence into a set.</entry>
+                </row>
+                <row>
+                  <entry>asString():String</entry>
+                  <entry>Turns a sequence of integers into a string.</entry>
+                </row>
+                <row>
+                  <entry>asVector():Vector</entry>
+                  <entry>Turns a sequence into a vector.</entry>
+                </row>
+                <row>
+                  <entry>at(n:Integer):Element</entry>
+                  <entry>Returns the nth element of a sequence starting from 0.</entry>
+                </row>
+                <row>
+                  <entry>bind(key:Element,value:Element):Seq(Element)</entry>
+                  <entry>Binds a key with a value and adds it to the head of the sequence.</entry>
+                </row>
+                <row>
+                  <entry>binds(key:Element):Boolean</entry>
+                  <entry>Returns true of a sequence contains a binding that matches the key/</entry>
+                </row>
+                <row>
+                  <entry>butLast():Seq(Element)</entry>
+                  <entry>Returns all elements but the last element.</entry>
+                </row>
+                <row>
+                  <entry>contains(element:Element):Boolean</entry>
+                  <entry>Returns true if the sequence contains the element.</entry>
+                </row>
+                <row>
+                  <entry>default():Seq(Element)</entry>
+                  <entry>Returns the default sequence: an empty sequence.</entry>
+                </row>
+                <row>
+                  <entry>dot(name:String):Seq(Element)</entry>
+                  <entry>Returns the result of iterating over a sequence and performing dot on each element.</entry>
+                </row>
+                <row>
+                  <entry>drop(n:Integer):Seq(Element)</entry>
+                  <entry>Drops the first n elements from a sequence.</entry>
+                </row>
+                <row>
+                  <entry>equals(other:Element):Boolean</entry>
+                  <entry>Returns true if a sequence equals another sequence. To be equal they must both be sequences and their elements should be equal and in the same order.</entry>
+                </row>
+                <row>
+                  <entry>excluding(element:Element):Element</entry>
+                  <entry>Returns all elements in the sequence excluding element.</entry>
+                </row>
+                <row>
+                  <entry>exists(pred:Element):Boolean</entry>
+                  <entry>Returns true when one element of the sequence satisfies the predicate otherwise it returns false.</entry>
+                </row>
+                <row>
+                  <entry>flatten():Seq(Element)</entry>
+                  <entry>Turns a sequence of sequences of X into a sequence of X. </entry>
+                </row>
+                <row>
+                  <entry>forAll(pred:Element):Boolean</entry>
+                  <entry>Returns true if all elements of the sequence satisfy the predicate otherwise returns false.</entry>
+                </row>
+                <row>
+                  <entry>hasPrefix(prefix:Seq(Element)):Boolean</entry>
+                  <entry>Returns true if a sequence is prefixed by the sequence prefix.</entry>
+                </row>
+                <row>
+                  <entry>hasSuffix(suffix:Seq(Element)):Boolean</entry>
+                  <entry>Returns true if a sequence is suffixed by the sequence suffix</entry>
+                </row>
+                <row>
+                  <entry>head():Element</entry>
+                  <entry>Returns the head of a sequence.</entry>
+                </row>
+                <row>
+                  <entry>includes(element:Element):Boolean</entry>
+                  <entry>Returns true if a sequence contains element. </entry>
+                </row>
+                <row>
+                  <entry>includesAll(c:Collection(Element)):Boolean</entry>
+                  <entry>Returns true if a sequence includes all the elements in the collection c.</entry>
+                </row>
+                <row>
+                  <entry>including(e:Element):Seq(Element)</entry>
+                  <entry>Returns the result of including the element e in a sequence. The element is added to the head of the sequence.</entry>
+                </row>
+                <row>
+                  <entry>indexOf(element:Element):Integer</entry>
+                  <entry>Returns the first index of the element in a sequence. If it is not found, returns -1.</entry>
+                </row>
+                <row>
+                  <entry>insertAt(e:Element,i:Integer):Seq(Element)</entry>
+                  <entry>Inserts an element e at position i in a sequence.</entry>
+                </row>
+                <row>
+                  <entry>inspectDialog(level:Element):Element</entry>
+                  <entry>No Documentation Specified</entry>
+                </row>
+                <row>
+                  <entry>isEmpty():Boolean</entry>
+                  <entry>Returns true if a sequence is empty.</entry>
+                </row>
+                <row>
+                  <entry>isKindOf(type:Classifier):Boolean</entry>
+                  <entry>Returns true if all elements in a sequence are instances of type.</entry>
+                </row>
+                <row>
+                  <entry>isProperSequence():Boolean</entry>
+                  <entry>Returns true if the last tail is a valid sequence.</entry>
+                </row>
+                <row>
+                  <entry>iter(iterator:Element,value:Element):Seq(Element)</entry>
+                  <entry>Iterates through a sequence, returning a sequence.</entry>
+                </row>
+                <row>
+                  <entry>last():Element</entry>
+                  <entry>Returns the last element of a non-empty sequence.</entry>
+                </row>
+                <row>
+                  <entry>linkAt(element:Element,index:Integer):Seq(Element)</entry>
+                  <entry>Returns the last element of a non-empty sequence.</entry>
+                </row>
+                <row>
+                  <entry>lookup(key:Element):Element</entry>
+                  <entry>Looks up a pair in a sequence using the key. Returns an error if the key cannot be found.</entry>
+                </row>
+                <row>
+                  <entry>max():Integer</entry>
+                  <entry>Returns the maximum valued element in the sequence.</entry>
+                </row>
+                <row>
+                  <entry>mul(s:Seq(Element)):Seq(Element)</entry>
+                  <entry>Generates a sequence containing all combinations of elements in the two sequences.</entry>
+                </row>
+                <row>
+                  <entry>prefixes():Seq(Element)</entry>
+                  <entry>Returns all possible prefixes of a sequence including the empty sequence.</entry>
+                </row>
+                <row>
+                  <entry>prepend(e:Element):Seq(Element)</entry>
+                  <entry>Prepend adds an element to the head of a sequence and returns a new sequence.</entry>
+                </row>
+                <row>
+                  <entry>qsort(pred:Operation):Seq(Element)</entry>
+                  <entry>Quicksorts the elements in the sequence. Is supplied with an operation of the form @Operation(x,y) predicate en-d where x and y will be elements in the sequence. An example predicate might be x &lt; y. </entry>
+                </row>
+                <row>
+                  <entry>ref(nameSpaces:Element):Element</entry>
+                  <entry>ooks up a namespace path represented as a sequence of strings to the element found at the path. The operation takes a sequence of namespaces as an argument; the namespace arguments are used as the basis for the lookup.</entry>
+                </row>
+                <row>
+                  <entry>reverse():Seq(Element)</entry>
+                  <entry>Reverses a sequence.</entry>
+                </row>
+                <row>
+                  <entry>sel():Element</entry>
+                  <entry>Returns one element from a sequence.</entry>
+                </row>
+                <row>
+                  <entry>select(predicate:Element):Seq(Element)</entry>
+                  <entry>Applies a filter to a sequence of elements.</entry>
+                </row>
+                <row>
+                  <entry>separateWith(sep:String):String</entry>
+                  <entry>Constructs a string by concatenating the elements of a sequence together, separated by sep.</entry>
+                </row>
+                <row>
+                  <entry>set(key:Element,value:Element):Seq(Element)</entry>
+                  <entry>Sets the value of a binding in a sequence indexed by key. Creates a binding if one does not exist.</entry>
+                </row>
+                <row>
+                  <entry>size():Integer</entry>
+                  <entry>Returns the size of a sequence. </entry>
+                </row>
+                <row>
+                  <entry>sort(pred:Element):Seq(Element)</entry>
+                  <entry>Sorts a sequence using a comparison predicate of the form @Operation(x,y) predicate end. The predicate must be a comparison expression, e.g. x &lt; y.</entry>
+                </row>
+                <row>
+                  <entry>sortByString():Seq(Element)</entry>
+                  <entry>Sorts by string value.</entry>
+                </row>
+                <row>
+                  <entry>sortNamedElements():Seq(NamedElement)</entry>
+                  <entry>Sorts a sequence of named elements. This operation is implemented in the kernel as is therefore very fast.</entry>
+                </row>
+                <row>
+                  <entry>sortNamedElements_CaseIndependent():Seq(Element)</entry>
+                  <entry>Sorts named elements by names ignoring case.</entry>
+                </row>
+				<row>
+				  <entry>sortNames():Seq(String)</entry>
+				  <entry>Sorts a sequence of names.</entry>
+				</row>
+                <row>
+                  <entry>subSequence(starting:Element,terminating:Element):Element</entry>
+                  <entry>Produces a subsequence given two indices. The first index is inclusive and is the starting index. The second index is exclusive and is the terminating index.</entry>
+                </row>
+                <row>
+                  <entry>subst(new:Element,old:Element,all:Boolean):Seq(Element)</entry>
+                  <entry>Substitutes old for new in a sequence. If all is true, it will replace all elements, otherwise it will replace the first element.</entry>
+                </row>
+                <row>
+                  <entry>tail():Seq(Element)</entry>
+                  <entry>Returns the tail of a sequence.</entry>
+                </row>
+                <row>
+                  <entry>take(n:Integer):Element</entry>
+                  <entry>Takes n elements from the tail of a sequence.</entry>
+                </row>
+                <row>
+                  <entry>toString():String</entry>
+                  <entry>Produces a printed representation of a sequence.</entry>
+                </row>
+                <row>
+                  <entry>zip(s:Seq(Element)):Seq(Element)</entry>
+                  <entry>Produces a sequences of pairs by matching the first element of a sequence with the first element of s, and so on...</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table></para>
+      </section>
+
+      <section>
+        <title>Examples</title>
+
+        <para><programlisting>Seq{"red"}+Seq{"green"} = Seq{"red","green"}
+Seq{"red"}-&gt;at(0) = "red"
+Seq{"red","green"}-&gt;last() = "green"
+Seq{"red"}-&gt;insertAt(0,"green") = Seq{"red","green"}
+Seq{"red","green"}-&gt;indexOf("green") = 1
+Seq{"red","green","amber"}-&gt;subSequence(1,2) = Seq{"green"}
+Seq{"red","green","amber"}-&gt;tail() = Seq{"green","amber"}</programlisting>The
+        operation butLast returns all elements in a sequence but the last
+        element. It could have been defined as follows, note the use of
+        Seq{head | tail} to construct a sequence with the given head and
+        tail:<programlisting>context Seq(Element)
+  @Operation butLast():Seq(Element)
+    if self-&gt;size = 0
+    then self.error("Seq(Element)::butLast: empty sequence.")
+    else if self-&gt;size = 1
+      then Seq{}
+      else Seq{self-&gt;head | self-&gt;tail-&gt;butLast}
+      end
+    end
+  end</programlisting></para>
+      </section>
+    </section>
+
+    <section>
+      <title>Sets</title>
+
+      <para>A set is a list of values that may not have duplicates. A set
+      literal is denoted by enumerating the elements in a Set{}. For example,
+      a set of numbers: Set{1,2,3}. Sets can be nested, for example:
+      Set{Set{“a”,”b”},1}. The default value of a set is the empty set, Set{}.
+      A Set(Element) is an instance of the Set type. It contains the elements
+      in the set.</para>
+
+      <section>
+        <title>Operators</title>
+
+        <para>Two sets can be tested for equality and inequality. Two sets are
+        equal provided they contain the same elements irrespective of
+        order.</para>
+
+        <para><table>
+            <tgroup cols="3">
+              <tbody>
+                <row>
+                  <entry>Operator</entry>
+                  <entry>Syntax</entry>
+				  <entry>Result Type</entry>
+                </row>
+                <row>
+                  <entry>equals</entry>
+                  <entry>a = b</entry>
+				  <entry>Boolean</entry>
+                </row>
+                <row>
+                  <entry>not equals</entry>
+                  <entry>a &lt;&gt; b</entry>
+				  <entry>Boolean</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table></para>
+      </section>
+
+      <section>
+        <title>Operations</title>
+
+        <para><table>
+            <tgroup cols="2">
+              <tbody>
+                <row>
+                  <entry>asSeq():Seq(Element)</entry>
+                  <entry>Turns a set into a sequence.</entry>
+                </row>
+                <row>
+                  <entry>asSet():Set(Element)</entry>
+                  <entry>Turns a set into a set.</entry>
+                </row>
+                <row>
+                  <entry>collect(filter:Element):Set(Element)</entry>
+                  <entry>Returns the set of elements that result from evaluating filter over a set.</entry>
+                </row>
+                <row>
+                  <entry>contains(element:Element):Boolean</entry>
+                  <entry>Returns true if a set contains an element.</entry>
+                </row>
+                <row>
+                  <entry>default():Set(Element)</entry>
+                  <entry>Returns the default value of a set: the empty set.</entry>
+                </row>
+                <row>
+                  <entry>dot(name:String):Set(Element)</entry>
+                  <entry>Returns the result of iterating over a set and applying dot to the slot named name.</entry>
+                </row>
+                <row>
+                  <entry>edit():Element</entry>
+                  <entry>Launches a browser for a set.</entry>
+                </row>
+                <row>
+                  <entry>excluding(element:Element):Set(Element)</entry>
+                  <entry>The set excluding the element.</entry>
+                </row>
+                <row>
+                  <entry>exists(pred:Element):Element</entry>
+                  <entry>Returns true if an element satisfying the predicate exists in a set.</entry>
+                </row>
+                <row>
+                  <entry>flatten():Set(Element)</entry>
+                  <entry>Turns a set of sets into a set.</entry>
+                </row>
+                <row>
+                  <entry>includes(element:Element):Boolean</entry>
+                  <entry>Returns true if a set includes element.</entry>
+                </row>
+                <row>
+                  <entry>includesAll(c:Collection(Element)):Boolean</entry>
+                  <entry>Returns true if a set includes all elements from another collection.</entry>
+                </row>
+                <row>
+                  <entry>including(element:Element):Set(Element)</entry>
+                  <entry>The result of the set including element.</entry>
+                </row>
+                <row>
+                  <entry>intersection(set:Set(Element)):Set(Element)</entry>
+                  <entry>Returns the intersection of two sets.</entry>
+                </row>
+                <row>
+                  <entry>isEmpty():Boolean</entry>
+                  <entry>Returns true if the set is empty.</entry>
+                </row>
+                <row>
+                  <entry>isKindOf(type:Classifier):Boolean</entry>
+                  <entry>Returns true if all elements in a set are of the type.</entry>
+                </row>
+                <row>
+                  <entry>iter(iterator:Element,value:Element):Element</entry>
+                  <entry>Iterates over the elements in the set</entry>
+                </row>
+                <row>
+                  <entry>max():Integer</entry>
+                  <entry>Find the element with the maximum value in the set.</entry>
+                </row>
+                <row>
+                  <entry>power():Set(Element)</entry>
+                  <entry>Returns the powerset of elements in a set, i.e. all possible subsets of a set including the empty set.</entry>
+                </row>
+                <row>
+                  <entry>reject(pred:Element):Set(Element)</entry>
+                  <entry>Rejects any elements in the set that satisfy the predicate.</entry>
+                </row>
+                <row>
+                  <entry>sel():Element</entry>
+                  <entry>Selects a single element from a set.</entry>
+                </row>
+                <row>
+                  <entry>select(predicate:Element):Set(Element)</entry>
+                  <entry>Selects any elements in the set that satisfy the predicate.</entry>
+                </row>
+                <row>
+                  <entry>size():Integer</entry>
+                  <entry>Returns the size of the set.</entry>
+                </row>
+                <row>
+                  <entry>toString():String</entry>
+                  <entry>Prints the set as a string/</entry>
+                </row>
+                <row>
+                  <entry>union(set:Set(Element)):Set(Element)</entry>
+                  <entry>Returns the union of the two sets.</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table></para>
+      </section>
+
+      <section>
+        <title>Examples</title>
+
+        <para><programlisting>Set{1,2,3}-&gt;includes(1) = true
+Set{1,2,3}-&gt;includesAll(1,2) = true
+Set{1,2,3}-&gt;including(4) = Set{1,2,3,4}
+Set{1,2,3}-&gt;excludes(1) = false
+Set{1,2,3}-&gt;excludesAll(Set{4,5}) = true
+Set{1,2,3}-&gt;excluding(1) = Set{2,3}
+Set{1,2}-&gt;union(Set{2,3}) = Set{1,2,3}
+Set{1,2,3} - Set{1,2,3} = Set{}
+Set{1,2}-&gt;intersection(Set{2,3}) = Set{2}
+Set{}-&gt;isEmpty() = true
+Set{1,2,3}-&gt;size() = 3
+Set{1}-&gt;sel() = 1
+Set{Set{1},Set{2}}-&gt;flatten() = Set{1,2}</programlisting>Suppose that the
+        set operation includes was not provided as part of XOCL. It could be
+        defined by:<programlisting>context Set(Element)
+  @Operation includes(e:Element):Boolean
+    if self-&gt;isEmpty
+    then false
+    else
+     let x = self-&gt;sel
+     in if x = e
+       then true
+       else self-&gt;excluding(x)-&gt;includes(e)
+       end
+     end
+   end
+end</programlisting></para>
+      </section>
+    </section>
+
+    <section>
+      <title>Symbols</title>
+
+      <para>Symbol is a sub-class of String. Whereas there may be two
+      different strings with the same sequence of characters, there can only
+      be one symbol with the same sequence of characters. This is useful when
+      using names as the basis for lookup (in tables). For example XMF ensures
+      that classes, packages, operations, slots are named using symbols so
+      that the lookup of these features by name is as efficient as possible.
+      If strings were used the lookup would necessarily involve a
+      character-by-character comparison. Using symbols the lookup can use the
+      symbols identity as the comparison operator. You can reference a symbol
+      by constructing an instance: Symbol(name).</para>
+
+      <section>
+        <title>Operations</title>
+
+        <para><table>
+            <tgroup cols="3">
+              <tbody>
+                <row>
+                  <entry>Operator</entry>
+                  <entry>Syntax</entry>
+                  <entry>ResultType</entry>
+                </row>
+                <row>
+                  <entry>equals</entry>
+                  <entry>a = b</entry>
+				  <entry>Boolean</entry>
+                </row>
+                <row>
+                  <entry>not equals</entry>
+                  <entry>a &lt;&gt; b</entry>
+				  <entry>Boolean</entry>
+                </row>
+                <row>
+                  <entry>greater</entry>
+                  <entry>a &gt; b</entry>
+				  <entry>Boolean</entry>
+                </row>
+                <row>
+                  <entry>less than</entry>
+                  <entry>a &lt; b</entry>
+				  <entry>Boolean</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table>Symbols can be compared for equality, non-equality, greater
+        than and less than, in which case the usual lexicographic ordering
+        applies.</para>
+      </section>
+    </section>
+
+    <section>
+      <title>Tables</title>
+
+      <para>A table associates keys with values. Any element can be used as a
+      key. A table has an initial size and can support any number of values.
+      Use 'hasKey/1' to determine whether a table contains a key. Use 'get/1'
+      to access a table via a key and 'put/2' to update a table given a key
+      and a value. Use 'keys/0' to access the set of keys for a table.</para>
+
+      <section>
+        <title>Operations</title>
+
+        <para><table>
+            <tgroup cols="2">
+              <tbody>
+                <row>
+                  <entry>get(key:Element):Element</entry>
+                  <entry>Return the value of the supplied key in the table. If the key does not exist then an exception is raised. Use 'hasKey/1' to check if the key exists.</entry>
+                </row>
+                <row>
+                  <entry>hasKey(key:Element):Boolean</entry>
+                  <entry>Tests whether the table has a key or not.</entry>
+                </row>
+                <row>
+                  <entry>keys():Seq(Element)</entry>
+                  <entry>Returns all the keys in the table.</entry>
+                </row>
+                <row>
+                  <entry>pprint():String</entry>
+                  <entry>This operation prints out all the entries in a table.</entry>
+                </row>
+                <row>
+                  <entry>put(key:Element,value:Element):Element</entry>
+                  <entry>Add an association between the supplied key and value. Any existing association for the key is removed.</entry>
+                </row>
+                <row>
+                  <entry>ref(index:Integer):Element</entry>
+                  <entry>No Documentation Specified</entry>
+                </row>
+                <row>
+                  <entry>remove(key:Element):Element</entry>
+                  <entry>Remove the supplied key from the table. This succeeds whether the key exists in the tabel or not. Any daemons defined for the table are performed. The table is returned.</entry>
+                </row>
+                <row>
+                  <entry>set(index:Integer,value:Element):Element</entry>
+                  <entry>No Documentation Specified</entry>
+                </row>
+                <row>
+                  <entry>size():Integer</entry>
+                  <entry>Returns the size of a table.</entry>
+                </row>
+                <row>
+                  <entry>toString():String</entry>
+                  <entry>Returns a string representation of a table.</entry>
+                </row>
+                <row>
+                  <entry>values():Set(Element)</entry>
+                  <entry>Returns all elements in the tables as a set.</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table></para>
+      </section>
+
+      <section>
+        <title>Examples</title>
+
+        <para>The following example adds and retrieves elements from a
+        table:<programlisting>context Root
+  @Class Fill
+    @Attribute table : Table(1000) end
+    @Operation add(key,element)
+      self.table.put(key,element)
+    end
+    @Operation retrieve(key)
+      self.table.get(key)
+     end
+  end</programlisting></para>
+      </section>
+    </section>
+
+    <section>
+      <title>Threads</title>
+
+      <para>XOCL provides threads for concurrent processing. A new thread of
+      control is created using the special form:<programlisting>@Fork(n) 
+  body
+end</programlisting>where n is a name used to identify the thread and body is
+      an XOCL expression that is run when the thread starts. At any time the
+      XVM is executing a single thread of control. The thread continues on the
+      XVM until either it performs a read operation that blocks on input or
+      when it explicitly calls yield. All XOCL values implement the yield
+      operation. In both cases the thread is said to yield control. When a
+      thread yields control, the XOS schedules another thread that is waiting.
+      The scheduling algorithm aims to ensure that all waiting threads get
+      scheduled providing that they yield.</para>
+
+      <para>Note that XMF is not intended to be a heavy-weight concurrent
+      programming environment. Threads are provided for light-weight use,
+      primarily for handling multiple connections from processes that
+      communicate with XMF via input and output channels. There is nothing to
+      stop threads being used to implement a variety of concurrent process
+      architectures, however there are no facilities in XMF for controlling
+      concurrent access to resource (such as locks, monitors etc).</para>
+    </section>
+
+    <section>
+      <title>Vectors</title>
+
+      <para>Vectors provide an efficient way of maintaining and accessing an
+      array of values. Vectors are created using the constructor
+      Vector(&lt;vector length&gt;), where size is the length of the vector. A
+      vector is indexed starting at position 0.</para>
+
+      <section>
+        <title>Operations</title>
+
+        <para>A vector is a fixed length array of elements. They are created
+        using the constructor Vector(). Vectors provide very efficient insert
+        (put/2) and lookup operations (ref/1).</para>
+
+        <para><table>
+            <tgroup cols="2">
+              <tbody>
+                <row>
+                  <entry>asSeq():Seq(Element)</entry>
+                  <entry>Converts a vector into a sequence. </entry>
+                </row>
+                <row>
+                  <entry>asString():String</entry>
+                  <entry>Converts a vector to a string.</entry>
+                </row>
+                <row>
+                  <entry>copyInto(vector:Element):Element</entry>
+                  <entry>Copies the elements of vector into self starting at position 0.</entry>
+                </row>
+                <row>
+                  <entry>put(index:Element,value:Element):Element</entry>
+                  <entry>Put the element value into a vector at position index.</entry>
+                </row>
+                <row>
+                  <entry>ref(index:Element):Element</entry>
+                  <entry>Returns the value at position index in a vector.</entry>
+                </row>
+                <row>
+                  <entry>size():Integer</entry>
+                  <entry>Returns the size of a vector.</entry>
+                </row>
+                <row>
+                  <entry>toString():String</entry>
+                  <entry>Returns a string representation of a vector.</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table></para>
+      </section>
+
+      <section>
+        <title>Examples</title>
+
+        <para>The following operation creates a vector and populates it with
+        element.<programlisting>context Vector
+  @Operation fill(element:Element)
+     @For e in 0.to(self.size()) do
+       self.put(e,element)
+     end
+  end</programlisting></para>
+      </section>
+    </section>
+
+    <section>
+      <title>Debugging</title>
+
+      <para>XOCL operation invocation can be traced to check whether the
+      operator is being called correctly. To trace an operation send it a
+      trace message with no arguments. To stop the trace, send it an untrace
+      message with no arguments. A traced operation will print out its
+      arguments when it is called and its return value when it returns. All
+      the operations defined in a name space N can be traced and untraced by
+      N.traceAll() and N.untraceAll().</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Relationship to OCL and ASL</title>
+
+    <para>XOCL is intended to be a superset of OCL, providing many additional
+    operations and data types over standard OCL. There are a few places where
+    XOCL differs from standard OCL however. These include the following
+    features:</para>
+
+    <para><table>
+        <tgroup cols="2">
+          <tbody>
+            <row>
+              <entry>XOCL</entry>
+              <entry>Standard OCL</entry>
+            </row>
+            <row>
+              <entry>OCL tags, e.g. inv: and pre: are not supported</entry>
+              <entry>These tags are defined by the grammar declaration, e.g. @OCL or by the context of the form it is being typed into.</entry>
+            </row>
+            <row>
+              <entry>isKindOf</entry>
+              <entry>oclIsKindOf</entry>
+            </row>
+            <row>
+              <entry>collect</entry>
+              <entry>Standard OCL collect always flattens the resulting collection. In XOCL flattening is not automatic, so the flatten operation must be applied where required.</entry>
+            </row>
+            <row>
+              <entry>iterate</entry>
+              <entry>Does not currently support types in accumulator declaration, e.g: -&gt;iterate(a x : Integer = 0 | ...)</entry>
+            </row>
+            <row>
+              <entry>XOCL currently does not support Bags</entry>
+              <entry>Standard OCL supports Bags</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>ASL (the Action Semantics Language) is the OMG’s standard
+    language for expressing dynamic behaviour. It is particularly oriented
+    towards capturing concurrent and real-time behaviour. Although XOCL
+    incorporates some of the features of ASL, XOCL is intended to fill a
+    different gap: that of a general-purpose metaprogramming language. It
+    therefore does not incorporate many of the complex features provided by
+    ASL.</para>
+  </section>
+
+  <section>
+    <title>XOCL Grammar</title>
+
+    <para><programlisting>  AName ::= Name | Drop. 
+
+  Apply ::= PathExp Args | KeyArgs .
+
+  ArithExp ::= UpdateExp [ ArithOp ArithExp ].
+
+  ArithOp ::= '+' | '-' | '*' | '/'.
+
+  Args ::= '(' (')' | Exp (',' Exp)* ')'.
+
+  AtExp ::= '@' AtPath @ 'end'.
+
+  AtPath ::= Name ('::' Name)*.
+
+  Atom ::= VarExp | 'self' | Str | Int | IfExp | Bool | LetExp | 
+           CollExp | AtExp | Drop | Lift | '(' Exp ')' | Throw | Try | 
+           ImportIn | Float.
+
+  AtomicPattern ::= Varp | Constp | Objectp | Consp | Keywordp.
+    
+  Binding ::= AName '=' LogicalExp.
+
+  Bindings ::= Binding (';' Binding)*.
+
+  Bool ::= 'true' | 'false'.
+
+  CollExp ::= SetExp | SeqExp. 
+
+  CompareExp ::= ArithExp [ CompareOp CompareExp ].
+
+  CompareOp ::= '='| '&lt;' | '&gt;' | '&lt;&gt;' | '&gt;=' | '&lt;='. 
+
+  CompilationUnit ::= ParserImport* Import* (Def | TopLevelExp)* EOF.
+  
+  Consp ::= Pairp | Seqp | Emptyp.
+
+  Constp ::=  Int | Str | Bool | Expp.
+
+  Def ::= 'context' PathExp Exp. 
+ 
+  Drop ::= '&lt;' Exp '&gt;'. 
+
+  EmptyColl ::= Name '{' '}'.
+
+  Emptyp ::= Name '{' '}'.
+
+  Exp ::= OrderedExp.
+    
+  Expp ::= '[' Exp ']'.
+    
+  Float ::= Int '.' Int.
+
+  Import ::= 'import' TopLevelExp.
+
+  ImportIn ::= 'import' Exp 'in' Exp 'end'.
+
+  ParserImport ::= 'parserImport' Name ('::' Name)* ';' ImportAt.
+
+  IfExp ::= 'if'Exp 'then'Exp IfTail.
+
+  IfTail ::= 'else' Exp 'end' | 'elseif' Exp 'then' Exp IfTail | 'end'.
+
+  KeyArgs ::= '[' (']' | KeyArg (',' KeyArg)* ']'.
+    
+  KeyArg ::= Name '=' Exp.
+    
+  Keywordp ::= Name ('::' Name)* '[' Keyps ']'.
+    
+  Keyps ::= Keyp (',' Keyp)* | .
+    
+  Keyp ::= Name '=' Pattern.
+    
+  Lift ::= '[|' Exp '|]'.
+
+  LetBody ::= 'in'Exp| 'then' Bindings LetBody.
+
+  LetExp ::= 'let'Bindings LetBody 'end'.
+    
+  LogicalExp ::= NotExp [ LogicalOp LogicalExp ].
+
+  LogicalOp ::= 'and' | 'or' | 'implies'.
+
+  NonEmptySeq ::= Name '{' Exp ((',' Exp)* '}' | '|' Exp '}').
+    
+  NonEmptyColl ::= Name '{' Exp (',' Exp)* '}'.
+
+  NotExp ::= CompareExp | 'not' CompareExp.
+
+  Objectp ::= Name ('::' Name)* '(' Patterns ')'.
+
+  OrderedExp ::= LogicalExp [ ';' OrderedExp ].
+
+  OptionallyArgs ::= Args | .
+
+  Pairp ::= Name '{' Pattern '|' Pattern '}'.
+    
+  PathExp ::= Atom [ '::' AName ('::' AName)* ].
+
+  Pattern ::= AtomicPattern ('-&gt;' Name '(' Pattern ')')* ('when'  Exp  | ).
+
+  Patterns ::= Pattern (',' Pattern)* | .
+    
+  RefExp ::= Apply 
+      (
+        '-&gt;' 
+         (
+            'iterate' '(' AName AName '=' Exp '|' Exp ')' 
+          | 
+           AName 
+            ( 
+              OptionallyArgs 
+            | 
+              '(' AName '|' Exp ')'  
+            |
+            
+            ) 
+          ) 
+     
+        | 
+          '.' AName 
+          (
+            Args
+          |   
+          
+          )   
+      )*. 
+  
+    Seqp ::=  Name '{' Pattern SeqpTail.
+
+    SeqpTail ::= ',' Pattern SeqpTail | '}'.
+    
+    SeqExp ::= EmptyColl | NonEmptySeq.
+
+    SetExp ::= EmptyColl | NonEmptyColl. 
+
+    Throw ::= 'throw' LogicalExp.
+
+    TopLevelExp ::= LogicalExp ';'.
+
+    Try ::= 'try' Exp 'catch' '(' Name ')' Exp 'end'.
+
+    UpdateExp ::= RefExp (':=' ! LogicalExp | ).
+
+    VarExp ::= Name Token.
+
+    Varp ::= AName ('=' Pattern | ) (':' Exp | ).</programlisting></para>
+  </section>
+
+  <section>
+    <title>Pattern Grammar</title>
+
+    <para><programlisting>Pattern ::= Add ('-&gt;including(' Pattern ')')* [ 'when' Exp ].
+
+Add ::= Atom [ '+' Add ].
+
+Atom ::= Varp | Constp | Cnstrp | Seqp | Setp | Syntaxp | '(' Pattern ')'.
+
+Varp ::= Name [ '=' Pattern ] [ ':' Type ]
+
+Constp ::= Integer | String | Boolean | '[' Exp ']'
+
+Cnstrp ::= BOAp | Keyp
+
+BOAp ::= Path '(' [ Pattern (',' Pattern)* ] ')'
+
+Keyp ::= Path '[' [ Name '=' Pattern (',' Name '=' Pattern ] ']' 
+
+Seqp ::= 'Seq{' [ Pattern (',' Pattern)* ] '}' | 'Seq{' Pattern '|' Pattern '}'
+
+Setp ::= 'Set{}'
+
+Syntaxp ::= '[|' Exp '|]'.
+
+Path ::= Name ('::' Name)*.</programlisting></para>
+  </section>
+</chapter>

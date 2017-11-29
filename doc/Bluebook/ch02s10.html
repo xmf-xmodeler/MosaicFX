@@ -1,0 +1,17 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Adding Queries</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch02.html" title="Creating and Interacting with a Domain Model"><link rel="prev" href="ch02s09.html" title="Adding Constraints"><link rel="next" href="ch02s11.html" title="Running Operations"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id640342"></a>Adding Queries</h2></div></div></div><p>Queries are <span class="bold"><strong>operations</strong></span> that do not
+    change the state of the model. They are a very useful means of navigating
+    around a model, filtering and collecting information about its
+    properties.</p><p>Operations can be added to classes in a similar way to adding
+    constraints and queries.</p><p>To add an operation, right click on a class in the class diagram or
+    in the browser and choose Add Element&gt;Operation. A new operation will
+    be added to the browser under the class. Click on it to show the operation
+    editor.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/addinganoperation.jpg"></div><p>The default syntax for an operation will be displayed.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/blankoperation.jpg"></div><p>The name of the operation, its parameters, return type and body can
+    all be entered as part of the code. Right click &gt; Commit Changes to
+    update the model.</p><p>You should not change the "@Operation" and "end" parts of the
+    expression.</p><p>An an example, here is a query on the class ComponentModel that
+    returns all the connectros whose source and target port types don't
+    match.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/queriesdontmatch.jpg"></div><p>Queries may also take parameter values. Here is a query on the class
+    ComponentModel that returns all the connectors that are connected to a
+    port, p.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/queries.jpg"></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id616276"></a>Exercises</h3></div></div></div><p>Add the following queries to the domain model: </p><div class="itemizedlist"><ul type="disc"><li><p>A query on the class ComponentModel that returns the set of
+            components that have more than x ports.</p></li><li><p>A query on the class Component that returns all the
+            components whose ports it is connected to.</p></li></ul></div></div></div><p></p><p><img src="copyright.gif"></p></body></html>

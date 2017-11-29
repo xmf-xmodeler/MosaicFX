@@ -1,0 +1,1418 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"-->
+<chapter id="domainmodelling">
+  <title>Creating and Interacting with a Domain Model</title>
+
+  <para>One of the key steps in building a tool to support a specific
+  application domain, is to precisely capture the domain concepts that the
+  tool will manipulate.</para>
+
+  <para>To do this, we need to construct a <emphasis>domain model</emphasis>.
+  A domain model captures the key concepts in the domain, along with their
+  properties and relationships. For example, if the domain is business
+  processes, then we would aim to capture all the concepts of a business
+  process (activities, flow, constraints, etc) in the model.</para>
+
+  <para>This part describes how to <emphasis>model</emphasis> the concepts in
+  a domain. It describes how to capture the domain concepts as class models,
+  and how the model can be enriched with constraints, operations and
+  constructors. It then shows how the powerful dynamic capabiltites of
+  XMF-Mosaic can be used to validate the domain model, through the creation of
+  model instances and by executing the model.</para>
+
+  <section>
+    <title>Example</title>
+
+    <para>The example we are going to use is a simple component modelling
+    domain. This domain deals with capturing information about the components
+    in a system, their interfaces (ports) and their connections to one another
+    (connectors).</para>
+  </section>
+
+  <section>
+    <title>Getting Started</title>
+
+    <para>Boot up XMF-Mosaic.</para>
+
+    <para>The first step in creating a model is to create a project.</para>
+
+    <para>From the file menu, select New Project.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/afilenewproject.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Alternatively, the same operation can be called by right clicking on
+    the User project in the browser.</para>
+
+    <para>A new empty project with a default name appears in the MyProrjects
+    project tree.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/anewproject.png" />
+      </imageobject>
+    </mediaobject>
+
+    <para>We want the name of the project to reflect what it contains, so the
+    project name is selected and changed to “Components”.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/unamedproject.png" />
+      </imageobject>
+    </mediaobject>
+
+    <para>By default, a project contains a <emphasis>package</emphasis> - this
+    is where the model will reside.</para>
+
+    <para>The package can be viewed by expanding the (Component) project icon
+    by clicking on the cross. By default it has the same name as the
+    project.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/renamedproject.png" />
+      </imageobject>
+    </mediaobject>
+  </section>
+
+  <section>
+    <title>Constructing a Domain Model</title>
+
+    <para>We are now going to create a domain model of the concepts in the
+    component modelling domain. We will do this using a class model. This
+    model will focus primarily on describing the concepts in the
+    domain.</para>
+
+    <para>The model can be constructed as follows:</para>
+
+    <para>First, right click on the Components package in the browser and
+    select Create Diagram &gt; Class Diagram.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/creatingaclassdiagram.png" />
+      </imageobject>
+    </mediaobject>
+
+    <para>A class diagram editor will be shown.</para>
+
+    <section>
+      <title>Adding Classes</title>
+
+      <para>In order to add a class to the model select the Class button and
+      click on the diagram. The newly added class is automatically given a
+      default name.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/unamedclass.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>Click on the class name to change or amend it. In this case, we
+      will change the name of Class0 to ComponentModel.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/namedclass.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The properties of the class can be edited by right clicking on the
+      class and selecting Edit.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/classpropertyedit.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The property editor tells us that:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>The element being edited (self) is ComponentModel.</para>
+        </listitem>
+
+        <listitem>
+          <para>It is an instance of the class Class.</para>
+        </listitem>
+
+        <listitem>
+          <para>It has no attributes (see right hand panel).</para>
+        </listitem>
+
+        <listitem>
+          <para>Its name is ComponentModel.</para>
+        </listitem>
+
+        <listitem>
+          <para>It is owned by the Components package.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>We can ignore the grammar and default properties for now.</para>
+
+      <para>Let's add another class. This time a class called
+      NamedElement.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/namedelement.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>We want to make this abstract (i.e. non-instantiable). To do this,
+      right click on the class and select Edit. In the class's property editor
+      tick the isAbstract box. The name of the class will become italicised to
+      indicate that it is now an abstract class.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/changetoabstract.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>Let's add some more domain concepts to the model.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/addingmoreclasses.jpg" />
+        </imageobject>
+      </mediaobject>
+    </section>
+
+    <section>
+      <title>Adding Attributes</title>
+
+      <para>Attributes are variables owned by a class. Attributes are used to
+      represent properties of a class. They have a name and a type.</para>
+
+      <para>The class NamedElement requires an attribute 'name' of type
+      String. This is added by left clicking on the selected class. From the
+      Add Element menu select an Attribute of type String.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/addinganattribute.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>Double click on the attribute name in the class box and change it
+      to 'name'.</para>
+
+      <para>Attributes can also have a class as their type. They are
+      represented as named arrows connecting the owner of the attribute to the
+      class that is its type. Note, this use of attributes are similar to
+      uni-directional associations in UML.</para>
+
+      <para>The relationship between a Component and a Port can be described
+      by an attribute "ports" whose owner is a Component, and whose type is a
+      Port.</para>
+
+      <para>Let's add this attribute to the model. First select the Attribute
+      button in the toolbar. Select the Component class and then drag the edge
+      to the Port class. Edit the name of the attribute by clicking on it. In
+      this case, we are going to change it to "ports".</para>
+
+      <para>Note, the name of the attribute can be moved by left clicking on
+      it and dragging it with the mouse.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/addinganattributeedge.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The attribute edge can be moved by clicking on it, and moving the
+      cursor over the waypoint. A drag icon will appear. Click and drag the
+      edge to the required position. This can also be used to add waypoints to
+      the line.</para>
+
+      <para>A default multiplicity of <emphasis role="bold">one</emphasis> is
+      associated with the newly added attribute. Change the multiplicity by
+      right clicking on the attribute line and selecting the appropriate
+      multiplicity. In this case a Component is associated with <emphasis
+      role="bold">many </emphasis>Ports, so select * (many):</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/addingmultiplicity.jpg" />
+        </imageobject>
+      </mediaobject>
+    </section>
+
+    <section>
+      <title>Adding Associations</title>
+
+      <para>Associations represent bi-directional relationships between two
+      classes. In XMF-Mosaic, an association is equivalent to a pair of
+      attributes owned by two classes and a constraint which guarantees that
+      there is a round-trip relationship between the attributes.</para>
+
+      <para>As an example, an association is required between the classes
+      ComponentModel and Component.</para>
+
+      <para>The relationship we want to capture is that a ComponentModel
+      contains many Components, and a Component is owned by a
+      ComponentModel.</para>
+
+      <para>To create an Association, select the Association tool button and
+      drag the edge from the ComponentModel to the Component. Change the names
+      of the association ends as shown below. The multiplicity of each
+      association end is changed by <emphasis role="bold">right clicking on
+      its role name </emphasis>and selecting Multiplicity.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/addinganassociation.jpg" />
+        </imageobject>
+      </mediaobject>
+    </section>
+
+    <para>A more comprehensive Components model can now be constructed. Here
+    further attributes have been added, along with two generalizations. The
+    latter ensure that the Component and Port classes inherit the name
+    attribute from the class NamedElement.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/model.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Note: right click on an edge and select Straighten to straighten an
+    edge.</para>
+  </section>
+
+  <section>
+    <title>Using the Property Editor</title>
+
+    <para>The property editor provides some useful features for viewing and
+    managing the properties of model elements. Right clicking and selecting
+    Edit on an element will display a property editor for that element. For
+    example, editing the package Components (in the browser) will show the
+    properties of the package:</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/propertyeditpackage.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Single value properties (slots) are displayed on the left hand of
+    the property editor. For instance, the package Components has a name slot
+    whose value is "Component" and an owned slot whose value is the "Root"
+    package. The "of" slot is the class that the element is an instance "of",
+    in this case, a Package.</para>
+
+    <para>Double clicking on the value of a slot will display a property
+    editor for that element, for example clicking on the Component class in
+    the classes list will show the property editor for the class
+    Component..</para>
+
+    <para>One of the powerful features of XMF-Mosaic is its uniform
+    representation of its own implementation. To see this, double cllck on the
+    "of" slot. This will display a property editor for the class Package - the
+    class that defines what a package is.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/packagedit.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>When navigating through the properties of large models, it is often
+    useful to be able to quickly flick back to previous property editors.
+    Rather than displaying hundreds of tabs, XMF-Mosaic provides buttons for
+    managing property editor histories. These can be found in the top right
+    hand bar of the property editor. The left and right hand arrows allow you
+    to move between previous and next editors in the history.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/propertyedit.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>A list of all the editors can be seen by clicking on the up and down
+    arrows. A history can be deleted by clicking on the eraser icon. Finally,
+    property editors can be kept as tabs by clicking on the lock icon - when a
+    new property editor is shown, it will be displayed in a new tab. This is
+    useful when comparing two or more properties.</para>
+  </section>
+
+  <section>
+    <title>Saving and Loading</title>
+
+    <para>Save the project by right clicking on the project in the browser and
+    selecting Save As or Save. Files are saved in a .xar file.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/savingamodel.png" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Saving the project for the first time requires that it is given a
+    name, for example Components.xar.</para>
+
+    <para>Subsequent saves will save the project under the same name. Save As
+    can be used to save the project under a different name.</para>
+
+    <para>A backup (.xar.bak) file is also be saved.</para>
+
+    <para>Projects can be loaded by selecting Open Project ... from the File
+    menu. Choose the project to load from the file chooser.</para>
+  </section>
+
+  <section>
+    <title>Interacting with Models</title>
+
+    <para>A key difference between XMF-Mosaic and other modelling tools is
+    that its models are fully interactive. In XMF-Mosaic you can create and
+    visualise instances of models in a variety of different ways, and then
+    write operations, transformations, etc. that do things with the models.
+    The ability to interact with models is essential when capturing and
+    validating detailed properties of a complex problem domain. In addition,
+    because XMF-Mosaic is itself completely modelled, all the properties of
+    the tool can be accessed in exactly the same way, resulting in a
+    consistent and highly interoperable approach to tool definition.</para>
+
+    <para>The following sections describe these facilities in detail.</para>
+  </section>
+
+  <section>
+    <title>Snapshots</title>
+
+    <para>Snapshots provide a visual way of interacting with instances of a
+    model. A snapshot is a diagram that contains instances of classes in
+    package.</para>
+
+    <para>Note, snapshots are intended to provide a simple visual way of
+    viewing instances, but they can become difficult to read if they are
+    applied to large numbers of objects.</para>
+
+    <para>To create a snapshot of a specific package right click on a package
+    in the model browser and select Create Snapshot. Instances of the classes
+    in the package (or its sub-packages) can now be created.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/creatingasnapshot.png" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Add objects by selecting the Object button and then clicking onto
+    the diagram. The list of object types that can be created will be
+    displayed. Select the appropriate one and it will be added to the
+    snapshot.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/chooseanobject.png" />
+      </imageobject>
+    </mediaobject>
+
+    <para>For example, a Component can be added to the diagram.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/exampleobject.png" />
+      </imageobject>
+    </mediaobject>
+
+    <para>The value of primitive slot (attribute) values can be changed by
+    double clicking on the values in the object.</para>
+
+    <para>It is also possible to change the name of the object by clicking on
+    it.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/changingobjectname.png" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Links can be created between objects by selecting the Slot Value
+    button and connecting the owning object to the target object. As an
+    example, add an instance of the class ComponentModel to the snapshot and
+    create a link between the ComponentModel instance and the Component
+    instance.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/snapshotlink.png" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Slot names will be assigned automatically where possible (as shown
+    here), but a choice of slot names will be provided if there is more than
+    one possible attribute that the slot can be an instance of.</para>
+
+    <para>A complete snapshot of the model can be created as illustrated
+    below. This represents a simple Component model, in which two components
+    (Displays and Navigation) are connected together. The Displays component
+    expects to receive the current position from the Navigation
+    component.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/snapshotexample.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Just like other model elements in XMF-Mosaic, objects can be edited
+    (using right click &gt; Edit). Here is the result of editing
+    object2.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/objectedit.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <section>
+      <title>Creating Standalone Snapshots</title>
+
+      <para>Sometimes it is useful to create instances of elements in another
+      package or project, for example, when we want to manage them separately
+      from the model. To do this, first create a snapshot in the project which
+      the snapshot is to be saved under. Next select the snapshot in the
+      browser and right click &gt; Set Parents. A list of all available
+      packages will be shown. Select the appropriate package, and the snapshot
+      can now be populated with instances of the selected package.</para>
+
+      <para>As an example, here is a separate snapshot project that has been
+      created for the Components model:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/seperatesnapshotexample.png" />
+        </imageobject>
+      </mediaobject>
+    </section>
+
+    <section>
+      <title>Dealing with Sequences</title>
+
+      <para>Snapshots can also accommodate the ordering of objects in a
+      collection. As an example, imagine we want to extend the Components
+      model to accommodate ports with sequences of parameters. The extended
+      model is shown below:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/modelwithparameters.png" />
+        </imageobject>
+      </mediaobject>
+
+      <para>Our example snapshot can be extended as follows:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/sequenceorderingsnap.png" />
+        </imageobject>
+      </mediaobject>
+
+      <para>Objects can be re-ordered by right clicking on the owning object,
+      in this case object4, and re-ordering the elements:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/sequenceordering.png" />
+        </imageobject>
+      </mediaobject>
+
+      <para>Edit the objects in the diagram to find out which objects are
+      associated with each id. </para>
+    </section>
+
+    <section>
+      <title>Synchronisation between Snapshots and Class Models</title>
+
+      <para>In XMF-Mosaic, snapshots are designed to stay in step with class
+      models, even if changes are made to the class model. As an example,
+      let's imagine that we want to delete the attribute, type, from a Port as
+      we will defer it to a parameter. We can delete type from Port and add it
+      to the Parameter instead. The snapshot remains in sync, the type slot
+      has been removed from the Port objects and has been added to the
+      Parameter objects: </para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/snapshotupdated.png" />
+        </imageobject>
+      </mediaobject>
+    </section>
+
+    <section>
+      <title>Creating Multiple Views of Snapshots</title>
+
+      <para>Just as with class diagrams, multiple views of the same snapshot
+      can be created in XMF-Mosaic. This is very useful when you wish to
+      capture different aspects of a model instance, and can considerably
+      reduce the size of the snapshots you create.</para>
+
+      <para>To create a new snapshot, simply right click on the snapshot and
+      select Create &gt; Snapshot Diagram. This will create a partial (empty
+      view) of the snapshot. Adding more objects to it will add new objects to
+      the snapshot.</para>
+
+      <para>To create a total (synchronised view), select Create &gt; Snapshot
+      Diagram (Total View). This will create a diagram containing all the
+      objects in the snapshot.</para>
+    </section>
+
+    <section>
+      <title>Exporting Snapshots</title>
+
+      <para>There are two main ways that snapshot (instance data) can be
+      exported: as XOCL and as XML.</para>
+
+      <para>To export a snapshot as XOCL, right click on a the snapshot and
+      select Deploy &gt; Snapshot.</para>
+
+      <para>Choose where to put the file. A .xmf file will be generated
+      containing XOCL code. Here is the XOCL for the Components
+      snapshot:</para>
+
+      <programlisting>parserImport XOCL;
+
+context Root
+  @Snapshot snapshot0
+
+    object0 = Root::Components::ComponentModel[
+                  connectors = Set{object5};
+                  components = Set{object1,object3} ]
+    object5 = Root::Components::Connector[
+                  source = object2;
+                  target = object4 ]
+    object4 = Root::Components::Port[
+                  name = "CurrentPosition";
+                  type = "LatLong" ]
+    object1 = Root::Components::Component[
+                  ports = Set{object2};
+                  name = "Displays";
+                  owner = object0 ]
+    object2 = Root::Components::Port[
+                  name = "CurrentPosition";
+                  type = "LatLong" ]
+    object3 = Root::Components::Component[
+                  ports = Set{object4};
+                  name = "Navigation";
+                  owner = object0 ]
+
+  end</programlisting>
+
+      <para>The code contains the XOCL constructors and data necessary to
+      compile and then load the snapshot back into the tool.</para>
+
+      <para>To re-load, simply open the file in XMF-Mosaic and then Compile
+      and Load it. Note, the snapshot is saved by default as owned by the Root
+      package. This can be changed to an appropriate project package, e.g.
+      Components or ComponentSnapshots, by editing the package name. </para>
+
+      <para>To view the contents of a loaded snapshot, a diagram needs to be
+      created. Select Create Diagram &gt; Snapshot Diagram (Total
+      View).</para>
+
+      <para>Note, this will not save the layout of the diagram. To do this,
+      follow the instructions for saving and loading diagram layout
+      below.</para>
+
+      <para>To export as XML, select the Deploy &gt; XML option. </para>
+    </section>
+  </section>
+
+  <section>
+    <title>Saving and Loading Diagram Layout</title>
+
+    <para>It is possible to save and load the layout of a diagram, so that
+    when it is imported in an un-formatted way, its layout can be
+    reconstructed. This is useful when re-constructing snapshots saved as XML
+    or XOCL (see above), or when working with class models written in
+    code.</para>
+
+    <para>To save the diagram layout, right click on the diagram and choose
+    Layout &gt; Save Layout:</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/savinglayout.png" />
+      </imageobject>
+    </mediaobject>
+
+    <para>To load, right click on the diagram you wish to lay out, then choose
+    Layout &gt; Load Layout and load the layout file. Note, only diagram
+    elements whose layout has been saved will be laid out.</para>
+  </section>
+
+  <section>
+    <title>Adding Constraints</title>
+
+    <para>A class diagram can only capture certain information about the
+    concepts and relationships in a domain. To add extra information,
+    XMF-Mosaic provides a language for conveniently writing constraints and
+    operations on models. This language is called <emphasis
+    role="bold">XOCL</emphasis> (eXtensible Object Command Language). XOCL is
+    based on OCL (the Object Constraint Language). See the XOCL walkthrough
+    for more details.</para>
+
+    <para>To add a constraint, right click on a class in the class diagram or
+    in the browser and choose New&gt;Constraint. A new constraint is added to
+    the browser under the class. Click on it to show the constraint property
+    editor.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/addingaconstraing.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>The constraint property editor provides a text window for entering
+    constraint expressions.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/constrainteditor.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>The maximise button can be used to expand the window if
+    required.</para>
+
+    <para>The following expression is added to the constraint. Right click
+    &gt; Commit Changes to update the model with the new constraint. Edit self
+    to change the constraint name.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/constraintexample.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>This constraint states that a connector should only connect two port
+    if they are of the same type.</para>
+
+    <para>Note the code box will turn a tasteful shade of pink when the code
+    changes. This will clear when the code is successfully committed.</para>
+
+    <section>
+      <title>Constraint Reasons</title>
+
+      <para>When a constraint fails, it is often useful to generate a report
+      that describes the reason for the failure.</para>
+
+      <para>A reason can be added to a constraint via the reason editor
+      (scroll down to view it). Add an XOCL expression that generates an
+      appropriate string report. For example, the following report generates a
+      reason for the failure of the SamePortType constraint:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/reasonexample.jpg" />
+        </imageobject>
+      </mediaobject>
+    </section>
+
+    <section>
+      <title>Parse Errors</title>
+
+      <para>When entering code into the bodies of constraints, operations,
+      etc. parse errors will displayed if an attempt is made to commit code
+      that does not parse.</para>
+
+      <para>For example, try adding an additional "." to the SamePortType
+      expression. A parse error will be displayed indicating where the parser
+      reached before it failed.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/parseerror.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>In this case, the code box will remain pink until the mistake is
+      removed, or, the right click &gt; Cancel Changes option is chosen. This
+      will return the code box to its previous (valid) state.</para>
+
+      <para>Many other constraints can be added to the model. As an example,
+      the following constraint on ComponentModel ensures that no two
+      components can have the same name:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/secondconstraintexample.jpg" />
+        </imageobject>
+      </mediaobject>
+    </section>
+
+    <section>
+      <title>Checking Snapshots</title>
+
+      <para>Objects in a snapshot can be checked against their constraints in
+      the following ways:</para>
+
+      <para>Via the Object menu in the browser:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Right click on the object, select Invoke Operation ..., then
+          choose checkConstraints()</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>Via the Snapshot menu in the browser or diagram:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Right click on the snapshot icon in the browser, or the
+          background of the snapshot diagram, and select Check Constraints.
+          This will check the constraints on all the objects in the snapshot.
+          Note, a choice of whether to check only the objects in the diagram,
+          or all the objects in the snapshot (if using a partial view) can be
+          made at this point.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>Via the Console:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Invoke the checkConstraints() operation on the relevant
+          object. The details of the ConstraintReport can be edited by
+          appending .edit() to checkConstraints().</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>Here is the constraint checker being invoked via the snapshot
+      diagram:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/checkingasnapshot.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The result of checking an object or snapshot is to display a
+      <emphasis>ConstraintReport</emphasis>: a tree of object constraint
+      reports.</para>
+
+      <section>
+        <title>Interpreting the results</title>
+
+        <para>A ConstraintReport is displayed as a tree containing the result
+        of each constraint check:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/constraintreport.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>In this example, every object has passed its constraints.</para>
+
+        <para>Let's change the snapshot so that it fails a constraint, for
+        example by setting the type of one of the ports to be different from a
+        port it is connected to. Do this by editing the value of type in the
+        object. Running the constraint checker produces the following:</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/failedconstraint.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>In this case, the snapshot fails the constraint check, and if we
+        expand it to see why, it is because the types don't match.
+        Furthermore, because we added a Constraint Reason when we wrote the
+        constraint, it has printed out some helpful diagnostics.</para>
+
+        <para>The failed constraint can be edited by double clicking on
+        it.</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/constraintfailsreason.jpg" />
+          </imageobject>
+        </mediaobject>
+
+        <para>Finally, a constraint report can be exported in HTML. Right
+        click on the background of the report and choose Export &gt; HTML, or
+        View &gt; HTML.</para>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/constrainthtmlreport.jpg" />
+          </imageobject>
+        </mediaobject>
+      </section>
+    </section>
+
+    <section>
+      <title>Exercises</title>
+
+      <para>Here are some other constraints to try adding to the domain
+      model:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>A connector cannot connect the same port.</para>
+        </listitem>
+
+        <listitem>
+          <para>A component cannot contain two or more ports with the same
+          name.</para>
+        </listitem>
+
+        <listitem>
+          <para>The component models connectors can only connect ports
+          belonging to its components.</para>
+
+          <para>Write constraint reasons for the above.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+  </section>
+
+  <section>
+    <title>Adding Queries</title>
+
+    <para>Queries are <emphasis role="bold">operations</emphasis> that do not
+    change the state of the model. They are a very useful means of navigating
+    around a model, filtering and collecting information about its
+    properties.</para>
+
+    <para>Operations can be added to classes in a similar way to adding
+    constraints and queries.</para>
+
+    <para>To add an operation, right click on a class in the class diagram or
+    in the browser and choose Add Element&gt;Operation. A new operation will
+    be added to the browser under the class. Click on it to show the operation
+    editor.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/addinganoperation.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>The default syntax for an operation will be displayed.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/blankoperation.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>The name of the operation, its parameters, return type and body can
+    all be entered as part of the code. Right click &gt; Commit Changes to
+    update the model.</para>
+
+    <para>You should not change the "@Operation" and "end" parts of the
+    expression.</para>
+
+    <para>An an example, here is a query on the class ComponentModel that
+    returns all the connectros whose source and target port types don't
+    match.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/queriesdontmatch.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Queries may also take parameter values. Here is a query on the class
+    ComponentModel that returns all the connectors that are connected to a
+    port, p.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/queries.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <section>
+      <title>Exercises</title>
+
+      <para>Add the following queries to the domain model: <itemizedlist>
+          <listitem>
+            <para>A query on the class ComponentModel that returns the set of
+            components that have more than x ports.</para>
+          </listitem>
+
+          <listitem>
+            <para>A query on the class Component that returns all the
+            components whose ports it is connected to.</para>
+          </listitem>
+        </itemizedlist></para>
+    </section>
+  </section>
+
+  <section>
+     
+
+    <title>Running Operations</title>
+
+     Operations and queries can be run in a number of different of ways in XMF-Mosaic. The following describes the most common ways. 
+
+    <section>
+      <title>Running Operations on Snapshots</title>
+
+      <para>Operations and queries can be run on objects in a snapshot.</para>
+
+      <para>Right click on the object in the browser and select Invoke
+      Operation. This will display the operations that can be invoked on the
+      object. Because all classes inherit from Object, this list will include
+      all operations that have been defined for an Object. In addition,
+      operations on the class will be displayed.</para>
+
+      <para>Only operations with zero parameters are displayed in this list
+      (operations that require parameters should be accessed via the console
+      or via the expression evaluator - see later).</para>
+
+      <para>As an example, we can call the dontMatch() query via Invoke
+      Operation.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/invokinganobjectoperation.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The result of running the operation will be displayed in the
+      property editor.</para>
+
+      <para>Note that operations are immediately available via the menu once
+      they have been successfully committed.</para>
+
+      <para>In the case of operations with parameters, we must be able to pass
+      the parameters into the operation in order to call it. This can be
+      achieved using the console (see later). However, there is menu based
+      support for this as follows:</para>
+
+      <para>First assign any objects that will be used as parameter values to
+      global variables. To do this right click on the object in a property
+      editor and then select Assign To Global Variable. Give the object a
+      name, in this case we are assigning p to a Port.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/assigninglobal.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>Next, select the object that the operation is to be run on, and
+      select right click &gt; Evaluate Expression.</para>
+
+      <para>A simple expression editor will appear. Type the operation in,
+      followed by an edit() operation to show the results. Press OK to run the
+      operation.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/evaluateexp.jpg" />
+        </imageobject>
+      </mediaobject>
+    </section>
+
+     
+  </section>
+
+  <section>
+    <title>Operations</title>
+
+    <para>In addition to writing queries, operations also enable instances of
+    models to be manipulated (just as you would manipulate data in a
+    programming language). XOCL provides a number of imperative (programming
+    style) features for the purpose of writing operations. These include
+    standard "for", "while", and "case" constructs among others. Full details
+    can be found in part 3 of the Bluebook.</para>
+
+    <para>As an example, the following operation sets the name of a Port to be
+    the value passed by the parameter of the operation.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/operationexample.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Right click &gt; Commit Changes to update the model with the new
+    operation. Edit self to change the operation name.</para>
+
+    <para>Again, if the code is not syntactically correct a parse error will
+    be raised.</para>
+
+    <para>Operations can make use of queries to access properties of a model
+    before they manipulate them. For example, the following operation uses a
+    query to calculate all the connections that target the port, p, and then
+    sets the source port names to tbe the same as p's name:</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/opqueryexample.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <section>
+      <title>Exercises</title>
+
+      <para>Try adding the following operations to the domain model:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>An operation on the class Component that sets its owner to be
+          a passed ComponentModel.</para>
+        </listitem>
+
+        <listitem>
+          <para>An operation on the class Component that sets the name of the
+          Component to be a passed String.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+  </section>
+
+  <section>
+    <title>Adding Getters and Setters</title>
+
+    <para>Getter and Setter operations for specific attributes can be
+    conveniently added to a class. Right click on the attribute (in the
+    diagram or browser) and select Create Getter or Creat Setter.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/creatingasetter.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Creating a Setter will add operations for adding new instances to
+    the attribute (as shown below), while adding a Getter will add an
+    operation to query the value of an attribute.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/examplesetter.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <section>
+      <title>Exercises</title>
+
+      <para>Create a Setter for the attribute "components" of the class
+      ComponentModel.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Adding Constructors</title>
+
+    <para>Constructors are operations on classes which are called when
+    creating a new instance of the class.</para>
+
+    <para>Note by default all classes have the empty constructor and this need
+    not be defined.</para>
+
+    <para>To add a constructor right click on a class in the class diagram or
+    in the browser and choose New&gt;Constructor. A new constructor will be
+    added to the browser under the class. Click on it to show the constructor
+    editor.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/addingaconstructor.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Parameters can be added to a constructor. To do this, add the name
+    of each parameter in the desired order within the comma separated sequence
+    of names. For example, the following constructor for a Port has 'name' and
+    'type' as its parameters.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/constructorwithparam.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Note each name should correspond to a name of an attribute of the
+    class that is to be instantiated when the constructor is called.</para>
+
+    <para>Any number of constructors may be defined for a class. This enables
+    different tasks to be performed per type of instantiation depending on the
+    number of parameters that are passed.</para>
+
+    <para>In addition to supporting simple parameter passing, XOCL code can be
+    entered in the body of a constructor to perform a specific task when the
+    constructor is called.</para>
+
+    <para>Here is an example of an action that sets the name of a Port to be
+    uppercase when it is created.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/constructorwithaction.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>After this action is performed, an action to return the object
+    (self) is called. If this were not added the constructor would only return
+    the value of self.name.</para>
+
+    <section>
+      <title>Exercises</title>
+
+      <para>Try adding a constructor for a Component takes its name as a
+      parameter.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Interacting with Models using the Console</title>
+
+    <para>Once a model has been built, it is useful to validate that it is
+    accurate. One way to do this is by interacting with the model via the
+    console. The console is an interpreter for evaluating XOCL
+    expressions.</para>
+
+    <para>Switch to the console by clicking on the Console View tab on
+    property editor. XOCL expressions can be entered that evaluate to create
+    instances of models, modify them and invoke operations on them.</para>
+
+    <para>For example, the following shows the use of the console to interact
+    with and test the Components model:</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/console.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Here is what is happening:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>The ?i command is used to import the Components package so that
+        all its contents are visible. Note, otherwise we would have to give
+        the full path names to each element, e.g.
+        Components::Component.</para>
+      </listitem>
+
+      <listitem>
+        <para>A is the result of creating an instance of the class
+        ComponentModel In XOCL, the use of brackets after a class name denotes
+        the invocation of a constructor. Note, we will have needed to create a
+        constructor for Component beforehand.</para>
+      </listitem>
+
+      <listitem>
+        <para>The result of navigating down the components of A is evaluated.
+        Because no components have been added to A it returns the empty set
+        Set{}.</para>
+      </listitem>
+
+      <listitem>
+        <para>A new Component is added to A by invoking the addToComponents()
+        operation on A. The string “Displays” is passed as a parameter to the
+        constructor.</para>
+      </listitem>
+
+      <listitem>
+        <para>We enter "A.components" again and a Set containing the new
+        Component is returned.</para>
+      </listitem>
+
+      <listitem>
+        <para>The process is repeated by adding a new Component named
+        'Navigation'.</para>
+      </listitem>
+
+      <listitem>
+        <para>Finally, the names of the components are returned by perfoming
+        the expression A.components.name</para>
+      </listitem>
+    </itemizedlist>
+
+    <section>
+      <title>Other Console Hints and Tips</title>
+
+      <para>The console is a very flexible tool for interacting with models.
+      The following are some examples.</para>
+
+      <para>Basic variable values can be created simply by typing them into
+      the console. In addition, the console is a useful place to test out XOCL
+      operations and expressions.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/basicvalueconsoleops.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>All values can be assigned to variables.</para>
+
+      <para>The console is also useful for creating instances of classes. As
+      described in the XOCL manual, there are two ways that instances of
+      classes can be created in XOCL. The first is to use a constructor as
+      described above. The second approach is to use a <emphasis>pattern
+      constructor</emphasis>. The following uses a pattern constructor to
+      create an instance of a component and match its name to the string
+      literal "Navigation". The advantage of a pattern constructor is that it
+      allows values to be explicitly assigned to local variables.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/instancevalueconsoleassign.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>When using the console, the up and down cursor keys can be used to
+      move between previous commands.</para>
+
+      <para>The console provides a number of "hot keys". These can be accessed
+      by typing ?h (no semi-colon is required).</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/hotkeys.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>Any operation running in the console can be interupted by pressing
+      the escape key.</para>
+    </section>
+
+    <section>
+      <title>Editing Values via the Console</title>
+
+      <para>At any point we can edit/view the properties of an object in a
+      property editor by running edit() against it. For example, let’s edit
+      the ComponentModel instance which was assigned to the variable A
+      (above):</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/consolepropertyedit.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>A collection editor will be displayed containing the
+      instance.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/consolecomponentedit.jpg" />
+        </imageobject>
+      </mediaobject>
+    </section>
+
+    <section>
+      <title>Using Global Variables</title>
+
+      <para>Global variables can be assigned to elements which can then be
+      used in the console. For example, edit the properties of a Port object,
+      then select right click &gt; Assign to Global Variable. The tool will
+      prompt for a global variable name for the object.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/portassigntoglobal.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The port object is then available in the console:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/portconsoleedit.jpg" />
+        </imageobject>
+      </mediaobject>
+    </section>
+
+    <section>
+      <title>Error Reports</title>
+
+      <para>If errors occur when building the model, they will be shown as an
+      ErrorReport.</para>
+
+      <para>Try modifying addToComponents() so that it attempts to update an
+      invalid slot, e.g. change “components” to “component”.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/errorexample.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>Error reports can be expanded to show the sequence of calls that
+      resulted in the error. These go from the most specific call right down
+      to the engine calls that handled the error.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Using Snapshots</title>
+
+    <section>
+      <title>Generating Snapshots from the Console</title>
+
+      <para>Snapshots can also be generated from an object by running
+      toSnapshot() followed by showDiagram() on the object. Select TotalView
+      (a partial view will by default not be populated with objects). For
+      example, running A.toSnapshot().showDiagram() in the console produces
+      the following snapshot:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/generatedsnapshot.jpg" />
+        </imageobject>
+      </mediaobject>
+    </section>
+  </section>
+
+  <section>
+    <title>Adding Package Operations</title>
+
+    <para>In XMF-Mosaic, packages have class like features. They can have
+    operations and attributes, can be instantiated and inherit from other
+    packages.</para>
+
+    <para>Package operations in particular are useful for capturing global
+    operations that apply across an entire model.</para>
+
+    <section>
+      <title>Adding and Running Package Operations</title>
+
+      <para>To add an operation to a package, right click New &gt; Operation.
+      Edit the operation in the browser. The following operation creates an
+      instance of a ComponentModel and populates it with values.</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/packageop.jpg" />
+        </imageobject>
+      </mediaobject>
+
+      <para>The operation can be invoked via the console using the special
+      package operation invocation syntax (Package::Op()). The result of
+      runnning the operation can be edited by adding .edit() after the
+      operation call.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Next Steps</title>
+
+    <para>Although more can be added, most of the basic concepts in the domain
+    have been captured. In the remainder of this document, different ways of
+    manipulating models of languages are described and illustrated through
+    this example.</para>
+  </section>
+</chapter>

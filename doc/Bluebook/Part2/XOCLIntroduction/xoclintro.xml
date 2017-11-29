@@ -1,0 +1,943 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"-->
+<chapter>
+  <title>An Introduction to XOCL</title>
+
+  <section id="xoclintro">
+    <title>Introduction</title>
+
+    <para>XOCL (the eXtensible Object Command Language) is a flexible and
+    powerful language for writing programs and constraints on models. XOCL is
+    based on OCL (the Object Constraint Language) but extends it with
+    programming features that make it much more productive.</para>
+
+    <para>XOCL includes many useful features, including facilities for
+    conveniently navigating around models, and for filtering and manipulating
+    model data. XOCL is based on standard OO programming principles, which
+    means it is easy to learn. XOCL can be used in a wide variety of places in
+    a model; wherever there is a need to evaluate a property of a model or
+    modify it in some way. This means that once you have learnt XOCL it can be
+    used in many different contexts.</para>
+
+    <para>This chapter provides a walkthrough of the key features of XOCL. It
+    includes an introduction to its basic types, the basic features offered by
+    XOCL for manipulating values and navigating around models, and its
+    imperative programming features.</para>
+
+    <para>For an in-depth description of all the features of XOCL, see Part 3
+    of the Bluebook.</para>
+  </section>
+
+  <section>
+    <title>Basic Types</title>
+
+    <para>XOCL provides four basic types</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Boolean</para>
+      </listitem>
+
+      <listitem>
+        <para>String</para>
+      </listitem>
+
+      <listitem>
+        <para>Integer</para>
+      </listitem>
+
+      <listitem>
+        <para>Float (64 bit real numbers)</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>All the usual operators, e.g. arithimetic operators, are provided
+    (see the Bluebook for a detailed list).</para>
+
+    <para>XOCL also provides the inbuilt value "null" for situations when the
+    result of an expression cannot be evaluated.</para>
+
+    <section>
+      <title>Examples</title>
+
+      <para>Type the following into the console:</para>
+
+      <programlisting>        1 + 2;
+        10.mod(3);
+        true and false;
+        true implies false;
+        "Hello" + "World";
+        "Hello".toUpper();
+        10.1.cos();
+        3.14.sqrt();
+        null;</programlisting>
+    </section>
+  </section>
+
+  <section>
+    <title>Models</title>
+
+    <para>XOCL is used to add important detail to models. One of the most
+    important types of models is a class model, where XOCL is typically used
+    to write constraints, operations and constructors on classes..</para>
+
+    <para>Classes can be declared in two main ways: via UML style class
+    diagrams or via code.</para>
+
+    <para>Here is an example of a class diagram:</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="../CreatingAModel/Images/model.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Here is the equivalent model represented as code:</para>
+
+    <programlisting>parserImport XOCL;
+
+context Root
+  @Package Components
+  
+    @Class ComponentModel 
+
+      @Attribute components : Set(Component) (?,!) end
+      @Attribute connectors : Set(Connector) (?,!) end
+
+    end
+     
+    @Class Component extends NamedElement
+
+      @Attribute owner : ComponentModel (?,!) end
+      @Attribute ports : Set(Port) (?,!) end
+
+    end
+     
+    @Class NamedElement isabstract 
+
+      @Attribute name : String (?,!) end
+
+    end
+      
+    @Class Connector 
+
+      @Attribute target : Port (?,!) end
+      @Attribute source : Port (?,!) en
+
+    end
+    
+    @Class Port extends NamedElement
+
+      @Attribute type : String (?,!) end
+
+    end
+  end
+</programlisting>
+  </section>
+
+  <section>
+    <title>Using XOCL</title>
+
+    <para>In a class model, XOCL is used in the bodies of constraints,
+    operations and constructors. The way that XOCL is added depends on the
+    interface being used.</para>
+
+    <para>For details on how to use XOCL in a class diagram, see chapter <xref
+    linkend="domainmodelling" />.</para>
+
+    <para>For details on how to use XOCL in code, see chapter <xref
+    linkend="programming" />.</para>
+
+    <para>XOCL is also used in the body of XMap mappings, see chapter <xref
+    linkend="mappings" />.</para>
+
+    <section>
+      <title>Context</title>
+
+      <para>The context of an XOCL expression is the model element whose
+      instances will be referenced by the expression. In the case of an
+      operation or constraint, this might be the class that owns the
+      operation/constraint.</para>
+
+      <para>When writing code via the text editor, the context of an
+      expression can be defined in two ways. Firstly, by embedding the
+      operation or constraint in the body of the relevant code definition, for
+      example as follows:</para>
+
+      <programlisting>context Components
+  @Class Port extends NamedElement
+    @Attribute type : String (?,!) end
+    @Operation setPortName(name : String)
+      self.type := name
+    end
+  end</programlisting>
+
+      <para>Alternatively, the context keyword can be used to separate the
+      definitions, e.g.</para>
+
+      <programlisting>context Components
+  @Class Port extends NamedElement
+    @Attribute type : String (?,!) end
+  end
+
+context Port
+ @Operation setPortName(name : String)
+    self.type := name
+  end</programlisting>
+
+      <para>Contexts are a useful way to separate different aspects of a model
+      into different files.</para>
+
+      <para>In the diagram editor, context is assigned automatically depending
+      on the model element being edited (see the creating a domain model
+      walkthrough).</para>
+
+      <para>For example, if we want to add the operation setPortName() to the
+      class Port, we would use the Add Element &gt; Operation menu option on
+      the class Port:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/addanoptocontext.png" />
+        </imageobject>
+      </mediaobject>
+
+      <para>A new operation will be added to the class in the browser - the
+      class Port is now the context of the operation.</para>
+
+      <para>Double clicking on the operation will launch the operation editor
+      and the code for the operation can be entered:</para>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/operation.png" />
+        </imageobject>
+      </mediaobject>
+
+      <para>From now on, we will assume that the code examples in this chapter
+      can be added to their context as follows: ..</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Via the text editor (by explicity writing their context or
+          embedding them in the appropriate context element
+          declaration)</para>
+        </listitem>
+
+        <listitem>
+          <para>Via the diagram editor (by selecting the context element and
+          using the appopriate Add Element menu)</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Self</title>
+
+      <para>The variable "self" is a reserved word used to refer to instances
+      of the context model element. In the case of the operation setPortName()
+      above, self refers to an instance of the Port class.</para>
+
+      <para>Self is important when referencing the context object as a value,
+      and is required when assigning values to a slot.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Operations</title>
+
+    <para>Operations capture the behaviour of classes. Operations can be added
+    to classes either via the diagram editor, or by declaring them in code.
+    Operations can change the state of objects, or simply return information
+    without causing a state change (i.e. perform a query).</para>
+
+    <para>The syntax of an operation is as follows:</para>
+
+    <programlisting>context model_element 
+  @Operation name(parameter_list):return_type
+    body
+  end</programlisting>
+
+    <para>Here is an example of an operation that sets the name of a Port
+    object:</para>
+
+    <programlisting>context Port
+  @Operation setPortName(name : String)
+    self.type := name
+  end</programlisting>
+
+    <para>Operations have a context, which is the model element whose
+    instances will be referenced by the operation. In the case of an operation
+    added to a class in the diagram editor, this context is set
+    automatically.</para>
+
+    <section>
+      <title>Constructors</title>
+
+      <para>Constructors are operations that are called when a class is
+      instantiated. Constructors may have parameters that contain values that
+      are passed to the attribute values (slots) of an object when it is
+      created.</para>
+
+      <para>The syntax of a Constructor is a follows:</para>
+
+      <programlisting>context model_element
+  @Constructor(parameter_list) 
+    body
+  end</programlisting>
+
+      <para>The body of constructor is code that is run on initialisation of
+      the object.</para>
+
+      <para>As an example, the following is a constructor for a Port. A port
+      has two attributes, its name and type. By default, if the names of the
+      parameters match the attribute names, their values will be assigned
+      automatically when the class is instantiated. Note, any number of
+      constructors can be created for a specific class - the constructor that
+      is invoked is determined by the number of parameters passed.</para>
+
+      <programlisting>context Port
+  @Constructor(name,type)  
+  end</programlisting>
+
+      <para>Here is an example where the body of the constructor is used to
+      assign a value to a slot:</para>
+
+      <para><programlisting>context Port
+  @Constructor(name)  
+    self.type := name + "_Type"
+  end</programlisting>Note, the use of self in the assignment is
+      required.</para>
+    </section>
+
+    <section>
+      <title>Constraints</title>
+
+      <para>Constraints are XOCL expressions which evaluate to true or false.
+      Constraints are typically added to classes.</para>
+
+      <para>The syntax of a constraint is as follows:</para>
+
+      <programlisting>context model_element
+  @Constraint name
+    boolean_expression
+  end</programlisting>
+
+      <para>Constraints have a context and a name. The body of a constraint
+      should be a boolean expression.</para>
+
+      <para>The following constraint states that the source and target ports
+      of a connector should have the same type.</para>
+
+      <programlisting>context Connector
+  @Constraint SamePortType
+    source.type = target.type
+  end</programlisting>
+    </section>
+  </section>
+
+  <section>
+    <title>Variables</title>
+
+    <para>Variables can be declared in a number of different ways in
+    XOCL:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>As attributes on classes (and packages)</para>
+      </listitem>
+
+      <listitem>
+        <para>As local variables</para>
+      </listitem>
+
+      <listitem>
+        <para>Using a binding (not described here)</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>We have already seen attribute declarations.</para>
+
+    <para>Local variables are declared using the let expression. The syntax of
+    a let expression is as follows:</para>
+
+    <programlisting>let var_name_1 = expression_1;
+    var_name_2 = expression _2 
+in
+  body
+end</programlisting>
+
+    <para>Variable declarations are seperated by semicolons. They can be
+    referenced by any expression in the body of the let expression. As an
+    example, the following let expression introduces three variables x,y,z
+    into an expression:</para>
+
+    <programlisting>let x = 1;
+    y = 2;
+    z = 3 
+in
+   x + y + z
+end</programlisting>
+
+    <para>Variable declarations cannot normally reference each other unless
+    they are in the body of another let expression. However, the "then"
+    expression provides a convenient way of permitting this:</para>
+
+    <programlisting>let x = 1;
+    y = 2 then
+      c = x + y
+in
+   c + z
+end</programlisting>
+  </section>
+
+  <section>
+    <title>Types</title>
+
+    <para>XOCL provides full access to the type of an object via the <emphasis
+    role="bold">of()</emphasis> operation. For instance, if the object o is of
+    type Connector, then o.of() will return the class Connector.</para>
+
+    <para>Because XOCL treats all elements as objects, the of() operation can
+    be used to determine the type of all model elements. For example,
+    Component.of() will return the class Class because a Component class is an
+    instance of the class Class.</para>
+
+    <para>XOCL also provides facilities for testing type conformance. If we
+    extend the Components model by specialising the class Port like so:</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/type.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>the operation <emphasis role="bold">isKindOf()</emphasis> can be
+    used to determine the type of a Port object.</para>
+
+    <para>If p is a port, then the expression</para>
+
+    <programlisting>p.isKindOf(Provides)</programlisting>
+
+    <para>will return true if p is an instance of the class Provides.</para>
+  </section>
+
+  <section>
+    <title>Navigation</title>
+
+    <para>The dot notation “.” is used to navigate down attribute values. It
+    has the form:</para>
+
+    <programlisting>obj.attribute_name</programlisting>
+
+    <para>The result of the navigation depends on the type of the attribute.
+    If the attribute type is a Set, then a set of elements will be returned.
+    If the type is a Sequence, a sequence of elements will be returned.</para>
+
+    <para>In the case of a class model, this means that navigating down
+    attributes and association ends of multiplicity * and {ordered} will
+    return a set or a sequence of objects respectively. For example, the
+    following operation will return the result of navigating down the
+    components attribute of a ComponentModel, and will return a set of
+    components. Note the use of self is optional when navigating down
+    attributes and associations.</para>
+
+    <programlisting>context ComponentModel
+  @Operation components()
+    self.components
+  end</programlisting>
+
+    <para>The dot notation can be applied multiple times. In XOCL, the result
+    of navigating down multiple attributes whose types are sets or sequences
+    is not sets of sequences, etc, but the result of flattening the resultant
+    values. For example, the following expression will return the set of Ports
+    associated with all the components belonging to the component
+    model:</para>
+
+    <programlisting>context ComponentModel
+  @Operation components()
+    self.components.ports
+  end</programlisting>
+  </section>
+
+  <section>
+    <title>Collections</title>
+
+    <para>XOCL provides two main types for managing collections of elements:
+    Sets and Sequences.</para>
+
+    <para>The value of a Sequence and Set are represented by the following
+    literals:</para>
+
+    <programlisting>Set{v1,v2,..} // The set containing the elements v1, v2, ..
+Seq{v1,v2,..} // The sequence containing the ordered elements v1, v2, ..</programlisting>
+
+    <para>As an example, try entering the following into the console:</para>
+
+    <programlisting>Set{"bill","ed","hilda"};
+Seq{1,2,3,4};</programlisting>
+
+    <para>Sets and Sequences can also contain objects and other values,
+    including other sets, sequences, etc.</para>
+
+    <section>
+      <title>Collection Operations</title>
+
+      <para>XOCL provides a number of OCL based operations for dealing with
+      collections of objects. These are important when dealing with the
+      results of navigating over models.</para>
+
+      <para>The three primary operations are select, collect and
+      iterate.</para>
+
+      <para>XOCL uses the "-&gt;" notation to denote the application of an
+      operation on a collection, e.g. collection-&gt;select(c |
+      expression)</para>
+
+      <section>
+        <title>Select</title>
+
+        <para>Select filters a collection. It has the following syntax:</para>
+
+        <programlisting>collection-&gt;select(var | expression_with_var)</programlisting>
+
+        <para>Selects just those elements of the collection that satisfy the
+        expression. The variable var is bound to each element in turn.</para>
+
+        <para>The following operation makes use of select to return only those
+        connectors whose source and target ports don't match:</para>
+
+        <programlisting>context ComponentModel
+  @Operation dontMatch()
+    connectors-&gt;select(c |
+      c.source.type &lt;&gt; c.target.type)
+  end</programlisting>
+      </section>
+
+      <section>
+        <title>Collect</title>
+
+        <para>Collect builds a collection of values. It has the following
+        syntax:</para>
+
+        <programlisting>collection-&gt;collect(var | expression_with_var)</programlisting>
+
+        <para>Collects the result of evaluating the expression. The variable
+        var is bound to each element in turn.</para>
+
+        <para>The following operation makes use of collect to return the set
+        of port names associated with all components:</para>
+
+        <programlisting>context ComponentModel
+  @Operation portNames()
+    components.ports-&gt;collect(p | p.name))
+  end</programlisting>
+      </section>
+
+      <section>
+        <title>Iterate</title>
+
+        <para>Accumulate a collection of values. It has the following
+        syntax:</para>
+
+        <programlisting>collection-&gt;iterate(var acc=expression | expression_with_var)</programlisting>
+
+        <para>Accumulates the result of evaluating an expression in the
+        variable acc. The variable var is bound to each element in turn. The
+        inital value of acc is expression.</para>
+
+        <para>The following operation makes use of iterate to accumulate the
+        total number of ports of type t:</para>
+
+        <programlisting>context ComponentModel
+  @Operation numberOfPorts(t:String)
+    components-&gt;iterate(c tot=0 |
+      tot + (c.ports-&gt;select(p | p.type = t)-&gt;size))
+  end</programlisting>
+      </section>
+
+      <section>
+        <title>Other Operations</title>
+
+        <para>XOCL many other useful collection operations. Here are a few of
+        the most commonly used.</para>
+
+        <programlisting>collection-&gt;size() // Returns the number of elements in the collection
+collection-&gt;includes(x) // Returns true if the collection includes x
+collection-&gt;including(x) // The result of including x in the collection</programlisting>
+
+        <para>Some operations relate specifically to Sequences or Sets. The
+        following are some common Sequence operations:</para>
+
+        <programlisting>sequence-&gt;head() // Returns the value at the head of the sequence
+sequence-&gt;tail() // Returns the tail of the sequence
+sequence + sequence // The concatenation of two sequences
+sequence-&gt;asSet // Turns a sequence into a set</programlisting>
+      </section>
+    </section>
+  </section>
+
+  <section>
+    <title>Logical Expressions</title>
+
+    <para>XOCL provides all the usual Boolean expressions including: and, or,
+    not and equals.</para>
+
+    <para>In addition, it provide "exists" and "forAll" for evaluating Boolean
+    expressions over collections. Their syntax is as follows:</para>
+
+    <programlisting>collection-&gt;forAll(c | boolean_expression_with_c) // returns true if the expression evaluates to true
+                                                  // for all element of the collection
+collection-&gt;exists(c | boolean_expression_with_c) // returns true if the expression evaluates to true
+                                                  // for at least one element of the collection</programlisting>
+
+    <para>As an example, the following operation returns true if all
+    connectors match ports of the same type:</para>
+
+    <programlisting>context ComponentModel
+  @Operation validConnections : Boolean
+    connections-&gt;forAll(c | c.source.type = c.target.type)
+  end</programlisting>
+
+    <para>The following operation returns true if there is at least one
+    invalid connection:</para>
+
+    <programlisting>context ComponentModel
+  @Operation invalidConnection : Boolean
+    connections-&gt;exists(c | c.source.type &lt;&gt; c.target.type)
+  end</programlisting>
+  </section>
+
+  <section>
+    <title>Conditional Expressions</title>
+
+    <para>The standard if and case expressions are provided in XOCL.</para>
+
+    <para>The syntax of an "if" expression is shown below. Note, both the else
+    and elseif expressions are optional.</para>
+
+    <programlisting>if condition then
+  expression
+elseif condition
+  expression
+else
+  expression
+end</programlisting>
+
+    <para>Here is an example that makes use of an "if" expression to determine
+    whether a new component can be added to a component model.</para>
+
+    <programlisting>context ComponentModel
+  @Operation addToComponents(v : Component):XCore::Element
+    if components-&gt;exists(c |
+      c.name = v.name)
+    then
+      self.error("Cant add a component with the same name as an existing component")
+    else
+      self.components := self.components-&gt;including(v)
+    end
+  end</programlisting>
+
+    <para>The syntax of a "case" expression is shown below.</para>
+
+    <programlisting>@Case var of
+  [ pattern1 ] do expression end
+  [ pattern2 ] do expression end
+end</programlisting>
+
+    <para>Here is an example that makes use of a "case" expression to
+    determine the type of a Port and to print out a report.</para>
+
+    <programlisting>context Port  
+  @Operation testPort()
+    let p = self.type
+    in @Case p of
+           [ "Integer" ] do
+             "An Integer Port".println()
+           end
+           [ "Complex" ] do
+             "A Complex Port".println()
+           end
+     end
+   end</programlisting>
+
+    <para>An alternative form of a case expression is a @TypeCase. This
+    selects a do expression depending on the type of the element being passed
+    to it. For example, the following code will return a different string
+    depending on the type of element it is supplied.</para>
+
+    <programlisting>@TypeCase(element) 
+   Component do "Component" end
+   Port do "Port" end
+   else "Failed"
+ end</programlisting>
+  </section>
+
+  <section>
+    <title>Imperative Features</title>
+
+    <para>XOCL extends OCL with a number of imperative programming features,
+    which turn it into a powerful programming language.</para>
+
+    <section>
+      <title>Object Creation</title>
+
+      <para>Objects are instances of classes. Objects are created by calling a
+      class constructor. The syntax is as follows:</para>
+
+      <programlisting>class_name(parameter_values)</programlisting>
+
+      <para>Assumng that the Components model example is in scope, the
+      following can be typed into the console:</para>
+
+      <programlisting>Port();</programlisting>
+
+      <para>This will create an instance of the class Port using the default
+      (empty) constructor.</para>
+
+      <para>Note, if we define a constructor for the class then we could call
+      this by passing the appropriate parameter values. For example, if the
+      following constructor has been created:</para>
+
+      <programlisting>context Port
+  @Constructor(name,type)
+  end</programlisting>
+
+      <para>We can pass the name and type of the Port to the instance like
+      so:</para>
+
+      <programlisting>Port("x","Integer");</programlisting>
+
+      <para>An alternative instantiation syntax is also provided, which
+      enables values to be bound to slots using name bindings. The following
+      binds the values to the slots by their name:</para>
+
+      <programlisting>Port[name = "x", type = "Integer");</programlisting>
+    </section>
+
+    <section>
+      <title>Assignment</title>
+
+      <para>Values can be assigned to attributes (slot update) using the
+      assignment operator.</para>
+
+      <programlisting>var := expression // assigns the result of evaluating the expression to var</programlisting>
+
+      <para>The following operation gives an example of setting the owner of a
+      Component to be the ComponentModel, c.</para>
+
+      <programlisting>context Component
+ @Operation setOwner(c : ComponentModel)
+    self.owner := c
+  end</programlisting>
+
+      <para>Note, that self is required when setting slot values.</para>
+
+      <para>A common assignment pattern is adding a new element to a
+      collection. This can be easily achieved using the including()
+      operation:</para>
+
+      <programlisting>context ComponentModel
+  @Operation addToComponents(v : Component)
+    self.components := self.components-&gt;including(v)
+  end</programlisting>
+    </section>
+
+    <section>
+      <title>Sequential Execution</title>
+
+      <para>A sequential operator (";") is provided for sequencing different
+      operations. For example, adding a component to a component model and
+      setting it to be owned by the component model.</para>
+
+      <programlisting>context ComponentModel
+  @Operation addToComponents(c : Component)
+    self.components := self.components-&gt;including(v);
+    c.owner := self
+  end</programlisting>
+    </section>
+
+    <section>
+      <title>Operation Invocation</title>
+
+      <para>The dot notation (".") is used to invoke operations on objects.
+      The following operation invokes the setOwner() operation on the
+      component, c.</para>
+
+      <programlisting>context ComponentModel
+  @Operation addToComponents(c : Component)
+    self.components := self.components-&gt;including(v);
+    c.setOwner(self)
+  end</programlisting>
+    </section>
+
+    <section>
+      <title>Looping</title>
+
+      <para>XOCL provides a number of looping constructs, including while
+      loops and for loops.</para>
+
+      <para>The syntax for a "for" loop is as follows:</para>
+
+      <programlisting>@For var in collection do
+  expression
+end</programlisting>
+
+      <para>The reAssign() operation uses a for loop to reassign any
+      connections that target the Port, old, to the Port, new.</para>
+
+      <programlisting>context ComponentModel
+  @Operation reAssign(old:Port,new:Port)
+    @For c in connectors do
+      if c.target = old then
+        c.target := new
+      end
+    end
+  end</programlisting>
+
+      <para>The syntax for a "while" loop is as follows:</para>
+
+      <programlisting>@While condition do
+  expression
+end</programlisting>
+
+      <para>Here is an example of a simple counter that makes use of a while
+      loop.</para>
+
+      <programlisting>context Root
+  @Operation count()
+    let x = 0
+    in @While x &lt; 1000000 do
+         x := x + 1
+       end;
+       x.println()
+    end
+  end</programlisting>
+    </section>
+  </section>
+
+  <section>
+    <title>Exceptions</title>
+
+    <para>XOCL provides the operation <emphasis role="bold">error()</emphasis>
+    to raise an error which can be caught by the XMF-Mosaic Virtual Machine.
+    Here is an example of its use to raise an error when an invalid Component
+    is about to be added to a ComponentModel.</para>
+
+    <programlisting>context ComponentModel
+  @Operation addToComponents(v : Component):XCore::Element
+    if components-&gt;exists(c |
+      c.name = v.name)
+    then
+      self.error("Cant add a component with the same name as an existing component")
+    else
+      self.components := self.components-&gt;including(v)
+    end
+  end</programlisting>
+
+    <para>XOCL also provides a <emphasis role="bold">try catch</emphasis>
+    mechanism for handling exceptions. For full details see the XOCL guide in
+    the Bluebook.</para>
+  </section>
+
+  <section>
+    <title>Formatting</title>
+
+    <para>XOCL provides a powerful facility called "format" for formatting and
+    outputting data to a variety of output streams. The general form a format
+    expression is:</para>
+
+    <programlisting>format(OUTPUT,CONTROLSTRING,SEQOFARGS)</programlisting>
+
+    <para>where</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>OUTPUT is an output channel (often stdout).</para>
+      </listitem>
+
+      <listitem>
+        <para>CONTROLSTRING is a string of chars and control chars (see
+        below).</para>
+      </listitem>
+
+      <listitem>
+        <para>SEQOFARGS is a sequence of args consumed by the control string.
+        This is optional if no args are required by the control string.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>The control string a little program. The simplest form is just a
+    string containing no control characters:</para>
+
+    <programlisting>format(stdout,"Hello world")</programlisting>
+
+    <para>sends the chars to the output channel. Control characters start with
+    a ~, for example:</para>
+
+    <programlisting>format(stdout,"Hello~%World~%")</programlisting>
+
+    <para>prints a newline (~% meaning print a newline char) after each word.
+    Control characters can consume args:</para>
+
+    <programlisting>format(stdout,"Hello ~S, how are you ~S~%",Seq{"Fred","diddling"})</programlisting>
+
+    <para>the ~S control consumes the next arg, turns it to a string using
+    .toString() and then prints it. Some of the control characters take
+    args:</para>
+
+    <programlisting>format(stdout,"Hello~&lt;?,x&gt;S~%",Seq{10,"Fred"})</programlisting>
+
+    <para>prints Fred in a column width of 10 characters padding the extra
+    spaces out with 'x' like so:</para>
+
+    <programlisting>HelloFredxxxxxx</programlisting>
+
+    <para>A useful control char is ~{ which is used to loop through a
+    sequence:</para>
+
+    <programlisting>format(stdout,"~{~S~%~}",Seq{names})</programlisting>
+
+    <para>prints each element of the sequence names on a new line. The ~{ can
+    include separator chars:</para>
+
+    <programlisting>format(stdout,"~{,~%~;~S~}",Seq{names})</programlisting>
+
+    <para>prints each element iof the sequence names with a ',' followed by a
+    new line char between each pair. The ~; is used to terminate the
+    separator. This is particularly useful when generating comma separated
+    code in a programming language.</para>
+
+    <programlisting>format(stdout,"~S~^~S",Seq{1,2,3});</programlisting>
+
+    <para>The ~^ control character enables you to repeat a print (~S)
+    statement. For example, the above prints, 1 followed by 1. This is useful
+    when printing a string at both the start and end of an expression, e.g.
+    proc A ..... end A.</para>
+  </section>
+
+  <section>
+    <title>Advanced Features</title>
+
+    <para>XOCL provides a number of powerful programming features which for
+    brevity are not described here. These include:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Pattern matching.</para>
+      </listitem>
+
+      <listitem>
+        <para>Continuations.</para>
+      </listitem>
+
+      <listitem>
+        <para>An extensible grammar (the @For and @Case constructs are
+        examples of extensions to the language).</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>See the XOCL guide for more information.</para>
+  </section>
+</chapter>

@@ -1,0 +1,30 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Quasi-Quotes</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch17.html" title="Working with Syntax"><link rel="prev" href="ch17s04.html" title="Synthesising Syntax"><link rel="next" href="ch17s06.html" title="New Performable Elements"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id584860"></a>Quasi-Quotes</h2></div></div></div><p></p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id582561"></a>Introduction</h3></div></div></div><p>When designing languages and language constructs it is usual to
+      construct grammars that synthesize syntax elements. As we have seen in
+      earlier sections, grammars can perform any commands in their actions; in
+      particular they can construct and return instances of classes. If the
+      classes inherit from XCore::Performable then the grammar synthesizes
+      syntax.</p><p>One of the characterising features of grammars that synthesize
+      syntax is that they map from relatively simple constructs to relatively
+      complex syntax trees (after all this is the key reason for defining new
+      language features &#8211; they are simpler to use than the corresponding
+      expanded form).</p><p>Syntax comes in two key formats: abstract syntax and concrete
+      syntax. Abstract syntax is oriented towards machines and is essentially
+      the data structure that the machine represents when supplied with
+      syntax. Concrete syntax is oriented towards humans and is character
+      based. For example, the following is concrete syntax:</p><pre class="programlisting">X + 1</pre><p>and equivalently in abstract syntax:</p><pre class="programlisting">BinExp(Var(&#8220;x&#8221;),&#8221;+&#8221;,IntExp(1))</pre><p>Working with abstract syntax in the actions of grammars that
+      synthesize syntax can be cumbersome. The size of the instantiation
+      expressions can become large and you must remember all of the arguments
+      to the constructors. Fortunately, XMF provides a key technology that
+      allows you to work with concrete syntax when constructing instances of
+      performable classes. This technology is called quasi-quotes.</p><p>Quasi-quotes allow you to write concrete syntax that constructs a
+      performable element. In addition, quasi-quote expressions can be used to
+      construct syntax templates by leaving holes where syntax can be dropped
+      in to a surrounding expression. Quasi-quotes with holes can be used to
+      capture syntax patterns.</p><p>This section describes how quasi-quotes work and how to construct
+      syntax templates.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id564162"></a>Literal Syntax</h3></div></div></div><p>Syntax is constructed in XMF by instantiating a sub-class of
+      XCore::Performable. A performable class is one that implements the API
+      for evaluation, in terms of eval, compile and operations that they need
+      to do their tasks. You will rarely need to implement the evaluation
+      operations yourself since you can implement virtually all new
+      constructs, however complex, in terms of new syntax constructs that
+      expand into configurations of existing syntax classes.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id595274"></a>Syntax Templates</h3></div></div></div><p></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id592010"></a>Splicing</h3></div></div></div><p></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id630970"></a>Patterns</h3></div></div></div><p></p></div></div><p></p><p><img src="copyright.gif"></p></body></html>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"-->
+<chapter>
+  <title>Constructing a Textual Syntax and Parser</title>
+
+  <para>This chapter demonstrates how a textual syntax can be constructed in
+  XBNF: a language for defining grammars and mappings of grammars to
+  models.</para>
+
+  <para>Here we show how this can enable us to parse code and synthesise
+  instances of models. However, XBNF supports many other powerful
+  capabilities, including capabilities for extending the grammars of existing
+  languages and for conveniently synthesising code.</para>
+
+  <section>
+    <title>Parsing and Synthesising Instances of Models</title>
+
+    <para>We want to synthesise instances of the following model by parsing in
+    a textual representation:</para>
+
+    <programlisting>parserImport XOCL;
+
+context Root
+
+  @Package EntityModels
+  
+    @Doc
+      A Simple Entity Model
+    end
+    
+    @Class Named extends XOCL::Syntax
+      @Attribute name : String end
+    end
+    
+    @Class EntityModel extends Named
+      @Attribute entities : Set(Entity) end
+    end
+    
+    @Class Entity extends Named
+      @Attribute relationships : Set(Relationship) end
+    end
+    
+    @Class Relationship extends Named
+      @Attribute type : String end
+    end
+    
+  end</programlisting>
+
+    <para>Note that the class Named extends the class XOCL::Syntax. It is
+    necessary for all classes we want to synthesise to inherit from this
+    class.</para>
+
+    <para>The code for a grammar for this language is shown below:</para>
+
+    <programlisting>parserImport XOCL;
+parserImport Parser::BNF;
+
+import EntityModels;
+
+context EntityModel
+
+  @Grammar extends OCL::OCL.grammar
+  
+    EntityModel ::=
+      name = Name 
+      entities = Entity*
+        {EntityModel[name = name, entities = entities]}.
+      
+    Entity ::= 'entity' name = Name rels = Relationship*
+      {Entity[name = name, relationships = rels]}.
+      
+    Relationship ::= 'rel' name = Name '-&gt;' type = Name
+      {Relationship[name = name, type = type]}.
+    
+  end</programlisting>
+
+    <para>Note, just as with the XML grammar in the previous chapter, we
+    define a series of grammar rules that synthesise instances of the
+    model.</para>
+
+    <para>Here are some points to note:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>The grammar first imports the parsers for XOCL and BNF. It also
+        imports the EntityModels package (which must be loaded). The grammar
+        of the EntityModel class is defined as follows:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>The root of the grammar is the rule EntityModel.</para>
+          </listitem>
+
+          <listitem>
+            <para>A rule is sequences of pattern declarations followed by an
+            action (in curly brackets} which is called after the parsing has
+            occured.</para>
+          </listitem>
+
+          <listitem>
+            <para>In the case of the EntityModel rule, it is defined to be a
+            name, followed by a sequence of Entity (which is bound to the
+            variable entities).</para>
+          </listitem>
+
+          <listitem>
+            <para>The result of parsing an EntityModel is to create an
+            instance of a EntityModel class with the variables name and
+            entities populated with the above values.</para>
+          </listitem>
+
+          <listitem>
+            <para>An Entity is the string ‘name’ and a sequence of
+            Relationships (bound to the variable rels). The result of parsing
+            it is to create an instance of a Event class with the variable
+            name passed as a parameter.</para>
+          </listitem>
+
+          <listitem>
+            <para>A similar rule is used for Relationships.</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+    </itemizedlist>
+
+    <para>The following is a small example of a model written in the
+    syntax:</para>
+
+    <programlisting>parserImport EntityModels;
+
+import EntityModels;
+
+Root::p :=
+  @EntityModel Customers 
+    entity Customer
+      rel Owns -&gt; Account
+    entity Account
+  end;</programlisting>
+
+    <para>Compiling and loading the above three files in order will load the
+    model, the parser definition and the example. The result will be stored in
+    the Root variable p, which can be edited in the console using
+    p.edit().</para>
+  </section>
+</chapter>

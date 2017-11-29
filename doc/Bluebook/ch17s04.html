@@ -1,0 +1,159 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Synthesising Syntax</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch17.html" title="Working with Syntax"><link rel="prev" href="ch17s03.html" title="XMF Execution Architecture"><link rel="next" href="ch17s05.html" title="Quasi-Quotes"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id742676"></a>Synthesising Syntax</h2></div></div></div><p></p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id625537"></a>Introduction</h3></div></div></div><p>Language definitions in XMF-Mosaic are defined as grammars that
+      synthesize performable elements. The package OCL defines a complete
+      language of performable classes. A convenient way of defining a new
+      language feature is to define a grammar that synthesizes instances of
+      OCL classes. This section describes the classes in the OCL package and
+      how to use them to define new language features.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id566863"></a>The OCL Package</h3></div></div></div><p>The OCL package defines a language whose elements are extensions
+      of XCore::Performable. The language has a concrete syntax that is
+      defined by the grammar OCL::OCL.grammar. This grammar synthesizes
+      instances of the OCL classes. All of XMF-Mosaic is written in this
+      language.</p><p>Each class in the OCL package has one or more constructors. These
+      constructors can be used to synthesize performable elements when
+      defining new language constructs. This section defines the OCL class
+      constructors.</p><p>The table below lists all of the main OCL class constructors. The
+      constructors are defined in the first column and the second column
+      describes what the class implements and the types of the arguments. When
+      specifying the types of the arguments we refer to performable elements
+      as &#8216;exps&#8217;.</p><div class="table"><a name="id629448"></a><p class="title"><b>Table 1. </b></p><table summary="" border="1"><colgroup><col><col></colgroup><tbody><tr><td>Addp(left,right)</td><td>Creates an add pattern. An example is the argument
+              pattern in the following operation: @Operation(l + r) l
+              end.</td></tr><tr><td>Apply(operator,args)</td><td>The operator expression is applied to the sequence of
+              argument expressions, for example f(1,2,3).</td></tr><tr><td>BinExp(left,binOp,right)</td><td>A binary expression. The binary operator is a string. An
+              example is: x + 1.</td></tr><tr><td>BoolExp(value)</td><td>A boolean value. The value argument should be either true
+              or false.</td></tr><tr><td>CollExp(collection,collOp,args)</td><td>A collection expression. The collOp is a string naming a
+              standard collection expression. For example
+              S-&gt;including(x).</td></tr><tr><td>Condp(pattern,condition)</td><td>A condition pattern. The condition is a boolean values
+              expression. For example the following pattern in a case
+              statement: @Case c of Class(name) when name &lt;&gt; &#8220;C&#8221; do name
+              end end</td></tr><tr><td>ConsExp(head,tail)</td><td>A pair constructing expression. For example Seq{1 |
+              s}.</td></tr><tr><td>Consp(head,tail)</td><td>A pair pattern. For example in the following operation
+              argument pattern: @Operation(Seq{h | t}) h end.</td></tr><tr><td>Constp(const)</td><td>A constant pattern. The value of the constant should be
+              an integer, string, boolean or float. For example in the
+              following case statement: @Case x of 10 do &#8220;10&#8221; end end</td></tr><tr><td>ContextDef(path,element)</td><td>A context definition as occurring at the top level of a
+              source file. Both the path and the element are expressions. It
+              is equivalent to path.add(element).</td></tr><tr><td>ContextDef(path,element,isForward)</td><td>As for ContextDef except that the isForward boolean
+              argument controls whether or not the element is initialised
+              after it is added to the container. This is useful when loading
+              multiple definitions from files where the definition contain
+              mutual dependencies.</td></tr><tr><td>Dot(target,name)</td><td>A slot reference. The target is an expression and the
+              name is a string.</td></tr><tr><td>FloatExp(prePoint,postPoint)</td><td>A slot expression. The pre and post points are string
+              representations of the numbers before and after the decimal
+              point.</td></tr><tr><td>HeadUpdate(seq,value)</td><td>Update the head of a sequence as in S-&gt;head :=
+              e.</td></tr><tr><td>If(test,conseq,alt)</td><td>An if expression. Each of the arguments are
+              expressions.</td></tr><tr><td>ImportIn(nameSpace,body)</td><td>A local import. Both arguments are expressions. For
+              example: import namespace in MyClass(YourClass(1,2,3))
+              end</td></tr><tr><td>Includingp(set,element)</td><td>An including pattern. Both the set and element are
+              patterns. For example the element selection pattern occurring as
+              the argument in the following operation:
+              @Operation(S-&gt;including(x)) x end</td></tr><tr><td>Instantiate(class,args)</td><td>A keyword instantiation expression. The class is an
+              expression and the arguments are key args. For example:
+              Class[name=&#8221;C&#8221;].</td></tr><tr><td>IntExp(value)</td><td>An integer constant expression. The value is an
+              integer.</td></tr><tr><td>IterExp(collection,iterOp,name,body)</td><td>An iteration expression where the collection and body are
+              expressions and the iterOp and name are strings. The iterOp
+              should be one of the strings: &#8220;select&#8221;, &#8220;collect&#8221;, &#8220;reject&#8221;. For
+              example: S-&gt;collect(x | x + 1).</td></tr><tr><td>Iterate(collection,name,accumulator,value,body)</td><td>An iterate expression where the collection, value and
+              body are all expressions and the name and accumulator are
+              strings. For example: S-&gt;iterate(x y = 100 | x + y)</td></tr><tr><td>KeyArg(name,value)</td><td>A key arg is a value used in an Instantiate
+              expression.</td></tr><tr><td>Keyp(name,pattern)</td><td>A keyword pattern occurring in an instance of the
+              Keywordp pattern. The name is a string.</td></tr><tr><td>Keywordp(class,names,keys)</td><td>A keyword constructor pattern. The class is a string and
+              the names are a sequence of strings. To represent the class
+              P::Q::C the class arg is &#8220;P&#8221; and the names are Seq{&#8220;Q&#8221;,&#8221;C&#8221;}. The
+              keys are a sequence of Keyp instances.</td></tr><tr><td>Let(bindings,body)</td><td>A let expression. The bindings argument is a sequence of
+              instances of ValueBinding and the body is an expression. For
+              example: let x = 10; y = 20 in x + y end</td></tr><tr><td>NamedType()</td><td>A type expression. With no arguments the type represents
+              XCore::Element.</td></tr><tr><td>NamedType(path)</td><td>A type expression where the argument is a sequence of
+              strings determining the path (relative to current imports) of
+              the type.</td></tr><tr><td>Negate(exp)</td><td>A not expression.</td></tr><tr><td>Objectp(class,names,slots)</td><td>A positional constructor pattern. The class is a string
+              and the names are a sequence of strings. To represent the class
+              P::Q::C the class arg is &#8220;P&#8221; and the names are Seq{&#8220;Q&#8221;,&#8221;C&#8221;}. The
+              slots is a sequence of patterns. For example the argument
+              pattern in the following operation: @Operation(C(x,10)) x
+              end</td></tr><tr><td>OpType(domains,range)</td><td>The type of an operation. The domains are a sequence of
+              type expressions and the range is a type expression. For example
+              the type of the argument in the following operation:
+              @Operation(f: (Integer,Integer)-&gt;Integer):Integer f(1,2)
+              end</td></tr><tr><td>Operation(name,parameters,type)</td><td>An operation expression. The name is a string, the
+              parameters are a sequence of patterns, the type is a type
+              expression.</td></tr><tr><td>Operation(name,parameters,type,performable)</td><td>As above where the performable argument is an expression
+              which is the body of the operation.</td></tr><tr><td>Operation(name,parameters,type,performable,documentation)</td><td>As above where the documentation is a string.</td></tr><tr><td>Operation(name,parameters,type,performable,documentation,isMultiArgs)</td><td>As above where the isMultiArgs is a boolean that
+              determines whether the operation can accept a variable number of
+              arguments.</td></tr><tr><td>Order(first,second)</td><td>A sequenced expression where the arguments are
+              expressions. For example: x.m(1); y.n(2)</td></tr><tr><td>ParametricType(constructor,args)</td><td>A type expression of the form C(T).</td></tr><tr><td>Parentheses(exp)</td><td>Parentheses in source code are recorded in the abstract
+              syntax using an instance of Parentheses. For evaluation purposes
+              this behaves exactly like the expression argument.</td></tr><tr><td>ParserImport(names,exp)</td><td>Not supported.</td></tr><tr><td>Path(root,names)</td><td>A path expression consists of an expression root and a
+              sequence of names. For example Root::XCore::Class.</td></tr><tr><td>PathUpdate(path,value)</td><td>The update of a name in a name space. The path is a an
+              instance of the class Path and the value is an expression. For
+              example: P::Q::X := 100</td></tr><tr><td>Self()</td><td>A reference to the current value of self.</td></tr><tr><td>Send(target,message,args)</td><td>Send a message to an element. The target is an
+              expression. The message is a string and the args is a sequence
+              of expressions. For example: o.m(a,b,c)</td></tr><tr><td>SetExp(collType,elements)</td><td>A set expression constructs sets and sequences. The
+              collType argument is either &#8220;Set&#8221; or &#8220;Seq&#8221; and the elements is a
+              sequence of expressions. For example Set{1,2,3} or
+              Seq{1,2,3}.</td></tr><tr><td>SlotUpdate(target,name,value)</td><td>Update the slot of an object. The target and value are
+              expressions and the name is a string. For example: o.n :=
+              100</td></tr><tr><td>StrExp(value)</td><td>A string constant. The value argument is a
+              string.</td></tr><tr><td>Syntaxp(exp)</td><td>A syntax pattern.</td></tr><tr><td>TailUpdate(seq,value)</td><td>Update the tail of a sequence as in S-&gt;tail :=
+              e.</td></tr><tr><td>Throw(exp)</td><td>Throw the value of the expression as in: throw Error(&#8220;no
+              handler&#8221;)</td></tr><tr><td>Try(body,name,handler)</td><td>A try expression. The body and handler are expressions
+              and the name is a string. For example: try body catch(e) handler
+              end</td></tr><tr><td>ValueBinding(name,value)</td><td>A value binding is used in let expressions to bind names
+              to values. The name is a string and the value is an
+              expression.</td></tr><tr><td>Var(name)</td><td>A variable reference. The name is a string.</td></tr><tr><td>Var(name,lineCount,charCount)</td><td>A variable reference where the occurrence of the variable
+              in source code has been recorded. The line and char count are
+              both integers.</td></tr><tr><td>VarUpdate(name,value)</td><td>Update the value of a local variable. The name is a
+              string and the value is an expression. For example: x :=
+              10</td></tr><tr><td>Varp(name)</td><td>A variable pattern. The name is a string. Arguments to
+              operations are patterns. An argument that is just a name is
+              represented as a variable pattern.</td></tr><tr><td>Varp(name,pattern,type)</td><td>A variable pattern which binds a value to name providing
+              it matches pattern. The type is a type expression recording the
+              declared type of the variable. For example: @Operation(x = C(10)
+              : P::C) x.m(100) end</td></tr><tr><td>Varp(name,type)</td><td>A variable pattern declaring just the name and the
+              type.</td></tr><tr><td>XOCL::While(test,body)</td><td>A while loop. Defined in the package XOCL. The test
+              argument is a boolean values expression and the body is an
+              expression. For example: @While x &gt; 10 do y := y + x; x := x
+              &#8211; 1 end</td></tr></tbody></table></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id578703"></a>Examples</h3></div></div></div><p>Suppose that we want to write operations together with their
+      specifications. The specification of an operation consists of a
+      pre-condition and a post-condition. A pre-condition states what must be
+      true on entry to the operation and a post-condition states what must be
+      true on exit from the operation. The context for the conditions includes
+      the arguments of the operation.</p><p>A specification serves two important purposes: firstly we can
+      specify an operation without knowing how the operation is to be
+      implemented. The pre-condition and post-condition are used to restrict
+      the possible legal implementations.</p><p>Secondly, the conditions can be performed when the operation is
+      called. The conditions provide a form of dynamic run-time
+      checking.</p><p>This section shows how a simple specification construct can be
+      defined. A grammar for the new construct is defined that synthesizes an
+      operation definition.</p><p>A specification will be defined as follows:</p><pre class="programlisting">@Spec incx(dx:Integer)
+  pre dx &gt; 0
+    self.x := x + dx
+  post x = preSelf.x + dx
+end</pre><p>The specification above requires that the value of dx is greater
+      than 0 before it is used to increase the value of the slot x. The post
+      condition specifies that the state of the x slot must have changed
+      appropriately. The state of the receiver is accessible in the
+      post-condition via the variable preSelf. The class definition for the
+      Spec construct is shown below:</p><p></p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id602892"></a>Checking Conditions</h4></div></div></div><p>Suppose that we wish to implement a new language construct that
+        checks a condition and raises an error if the condition does not hold.
+        Essentially this is just an if-expression used in a particular
+        pattern. The pattern is captured as a class with a grammar that
+        synthesizes a performable instance:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image046.jpg"></div><p>The following example shows how the new language construct is
+        used:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image048.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id622321"></a>Specification</h4></div></div></div><p>Suppose that we want to write operations together with their
+        specifications. The specification of an operation consists of a
+        pre-condition and a post-condition. A pre-condition states what must
+        be true on entry to the operation and a post-condition states what
+        must be true on exit from the operation. The context for the
+        conditions includes the arguments of the operation.</p><p>A specification serves two important purposes: firstly we can
+        specify an operation without knowing how the operation is to be
+        implemented. The pre-condition and post-condition are used to restrict
+        the possible legal implementations.</p><p>Secondly, the conditions can be performed when the operation is
+        called. The conditions provide a form of dynamic run-time
+        checking.</p><p>This section shows how a simple specification construct can be
+        defined. A grammar for the new construct is defined that synthesizes
+        an operation definition.</p><p>A specification will be defined as follows:</p><pre class="programlisting">@Spec incx(dx:Integer)
+  pre dx &gt; 0
+    self.x := x + dx
+  post x = preSelf.x + dx
+end</pre><p>The specification above requires that the value of dx is greater
+        than 0 before it is used to increase the value of the slot x. The post
+        condition specifies that the state of the x slot must have changed
+        appropriately. The state of the receiver is accessible in the
+        post-condition via the variable preSelf.</p><p>The class definition for the Spec construct is shown
+        below:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image050.jpg"></div><div class="mediaobject"><img src="Part3/Syntax/Images/image052.jpg"></div><div class="mediaobject"><img src="Part3/Syntax/Images/image054.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id628065"></a>A For Loop</h4></div></div></div><p></p><div class="mediaobject"><img src="Part3/Syntax/Images/image056.jpg"></div></div></div></div><p></p><p><img src="copyright.gif"></p></body></html>

@@ -1,0 +1,52 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Adding Constraints</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch02.html" title="Creating and Interacting with a Domain Model"><link rel="prev" href="ch02s08.html" title="Saving and Loading Diagram Layout"><link rel="next" href="ch02s10.html" title="Adding Queries"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id670469"></a>Adding Constraints</h2></div></div></div><p>A class diagram can only capture certain information about the
+    concepts and relationships in a domain. To add extra information,
+    XMF-Mosaic provides a language for conveniently writing constraints and
+    operations on models. This language is called <span class="bold"><strong>XOCL</strong></span> (eXtensible Object Command Language). XOCL is
+    based on OCL (the Object Constraint Language). See the XOCL walkthrough
+    for more details.</p><p>To add a constraint, right click on a class in the class diagram or
+    in the browser and choose New&gt;Constraint. A new constraint is added to
+    the browser under the class. Click on it to show the constraint property
+    editor.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/addingaconstraing.jpg"></div><p>The constraint property editor provides a text window for entering
+    constraint expressions.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/constrainteditor.jpg"></div><p>The maximise button can be used to expand the window if
+    required.</p><p>The following expression is added to the constraint. Right click
+    &gt; Commit Changes to update the model with the new constraint. Edit self
+    to change the constraint name.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/constraintexample.jpg"></div><p>This constraint states that a connector should only connect two port
+    if they are of the same type.</p><p>Note the code box will turn a tasteful shade of pink when the code
+    changes. This will clear when the code is successfully committed.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id615077"></a>Constraint Reasons</h3></div></div></div><p>When a constraint fails, it is often useful to generate a report
+      that describes the reason for the failure.</p><p>A reason can be added to a constraint via the reason editor
+      (scroll down to view it). Add an XOCL expression that generates an
+      appropriate string report. For example, the following report generates a
+      reason for the failure of the SamePortType constraint:</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/reasonexample.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id648573"></a>Parse Errors</h3></div></div></div><p>When entering code into the bodies of constraints, operations,
+      etc. parse errors will displayed if an attempt is made to commit code
+      that does not parse.</p><p>For example, try adding an additional "." to the SamePortType
+      expression. A parse error will be displayed indicating where the parser
+      reached before it failed.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/parseerror.jpg"></div><p>In this case, the code box will remain pink until the mistake is
+      removed, or, the right click &gt; Cancel Changes option is chosen. This
+      will return the code box to its previous (valid) state.</p><p>Many other constraints can be added to the model. As an example,
+      the following constraint on ComponentModel ensures that no two
+      components can have the same name:</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/secondconstraintexample.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id613425"></a>Checking Snapshots</h3></div></div></div><p>Objects in a snapshot can be checked against their constraints in
+      the following ways:</p><p>Via the Object menu in the browser:</p><div class="itemizedlist"><ul type="disc"><li><p>Right click on the object, select Invoke Operation ..., then
+          choose checkConstraints()</p></li></ul></div><p>Via the Snapshot menu in the browser or diagram:</p><div class="itemizedlist"><ul type="disc"><li><p>Right click on the snapshot icon in the browser, or the
+          background of the snapshot diagram, and select Check Constraints.
+          This will check the constraints on all the objects in the snapshot.
+          Note, a choice of whether to check only the objects in the diagram,
+          or all the objects in the snapshot (if using a partial view) can be
+          made at this point.</p></li></ul></div><p>Via the Console:</p><div class="itemizedlist"><ul type="disc"><li><p>Invoke the checkConstraints() operation on the relevant
+          object. The details of the ConstraintReport can be edited by
+          appending .edit() to checkConstraints().</p></li></ul></div><p>Here is the constraint checker being invoked via the snapshot
+      diagram:</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/checkingasnapshot.jpg"></div><p>The result of checking an object or snapshot is to display a
+      <span class="emphasis"><em>ConstraintReport</em></span>: a tree of object constraint
+      reports.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id650705"></a>Interpreting the results</h4></div></div></div><p>A ConstraintReport is displayed as a tree containing the result
+        of each constraint check:</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/constraintreport.jpg"></div><p>In this example, every object has passed its constraints.</p><p>Let's change the snapshot so that it fails a constraint, for
+        example by setting the type of one of the ports to be different from a
+        port it is connected to. Do this by editing the value of type in the
+        object. Running the constraint checker produces the following:</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/failedconstraint.jpg"></div><p>In this case, the snapshot fails the constraint check, and if we
+        expand it to see why, it is because the types don't match.
+        Furthermore, because we added a Constraint Reason when we wrote the
+        constraint, it has printed out some helpful diagnostics.</p><p>The failed constraint can be edited by double clicking on
+        it.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/constraintfailsreason.jpg"></div><p>Finally, a constraint report can be exported in HTML. Right
+        click on the background of the report and choose Export &gt; HTML, or
+        View &gt; HTML.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/constrainthtmlreport.jpg"></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id615645"></a>Exercises</h3></div></div></div><p>Here are some other constraints to try adding to the domain
+      model:</p><div class="itemizedlist"><ul type="disc"><li><p>A connector cannot connect the same port.</p></li><li><p>A component cannot contain two or more ports with the same
+          name.</p></li><li><p>The component models connectors can only connect ports
+          belonging to its components.</p><p>Write constraint reasons for the above.</p></li></ul></div></div></div><p></p><p><img src="copyright.gif"></p></body></html>

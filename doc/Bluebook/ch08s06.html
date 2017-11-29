@@ -1,0 +1,11 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Context</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch08.html" title="Using the Programming Interface"><link rel="prev" href="ch08s05.html" title="Adding Operations"><link rel="next" href="ch08s07.html" title="Importing Packages"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id668683"></a>Context</h2></div></div></div><p>A context is a powerful device for adding new elements to a class or
+    package. It enables different aspects of an element to be separated out
+    and declared elsewhere.</p><p>To use a context, first declare the context, and then the element
+    that is to be added to it. For example, we can add the ValidPortTypes
+    constraint using a context.</p><pre class="programlisting">context Connector      
+      @Constraint ValidPortTypes
+        source.type = target.type
+      end
+</pre><p>Note, this must be declared outside of the Airports package
+    declaration to be syntactically valid.</p><p>In general, any element that has an owner can make use of context,
+    including attributes, operations, classes and packages.</p></div><p></p><p><img src="copyright.gif"></p></body></html>

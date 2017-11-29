@@ -1,0 +1,42 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Operations</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch04.html" title="An Introduction to XOCL"><link rel="prev" href="ch04s04.html" title="Using XOCL"><link rel="next" href="ch04s06.html" title="Variables"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id653443"></a>Operations</h2></div></div></div><p>Operations capture the behaviour of classes. Operations can be added
+    to classes either via the diagram editor, or by declaring them in code.
+    Operations can change the state of objects, or simply return information
+    without causing a state change (i.e. perform a query).</p><p>The syntax of an operation is as follows:</p><pre class="programlisting">context model_element 
+  @Operation name(parameter_list):return_type
+    body
+  end</pre><p>Here is an example of an operation that sets the name of a Port
+    object:</p><pre class="programlisting">context Port
+  @Operation setPortName(name : String)
+    self.type := name
+  end</pre><p>Operations have a context, which is the model element whose
+    instances will be referenced by the operation. In the case of an operation
+    added to a class in the diagram editor, this context is set
+    automatically.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id655480"></a>Constructors</h3></div></div></div><p>Constructors are operations that are called when a class is
+      instantiated. Constructors may have parameters that contain values that
+      are passed to the attribute values (slots) of an object when it is
+      created.</p><p>The syntax of a Constructor is a follows:</p><pre class="programlisting">context model_element
+  @Constructor(parameter_list) 
+    body
+  end</pre><p>The body of constructor is code that is run on initialisation of
+      the object.</p><p>As an example, the following is a constructor for a Port. A port
+      has two attributes, its name and type. By default, if the names of the
+      parameters match the attribute names, their values will be assigned
+      automatically when the class is instantiated. Note, any number of
+      constructors can be created for a specific class - the constructor that
+      is invoked is determined by the number of parameters passed.</p><pre class="programlisting">context Port
+  @Constructor(name,type)  
+  end</pre><p>Here is an example where the body of the constructor is used to
+      assign a value to a slot:</p><pre class="programlisting">context Port
+  @Constructor(name)  
+    self.type := name + "_Type"
+  end</pre><p>Note, the use of self in the assignment is
+      required.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id637207"></a>Constraints</h3></div></div></div><p>Constraints are XOCL expressions which evaluate to true or false.
+      Constraints are typically added to classes.</p><p>The syntax of a constraint is as follows:</p><pre class="programlisting">context model_element
+  @Constraint name
+    boolean_expression
+  end</pre><p>Constraints have a context and a name. The body of a constraint
+      should be a boolean expression.</p><p>The following constraint states that the source and target ports
+      of a connector should have the same type.</p><pre class="programlisting">context Connector
+  @Constraint SamePortType
+    source.type = target.type
+  end</pre></div></div><p></p><p><img src="copyright.gif"></p></body></html>

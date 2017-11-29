@@ -1,0 +1,23 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Deploying Manifests</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch15.html" title="Using Manifests and Deploying Models"><link rel="prev" href="ch15s01.html" title="Manifest Actions"><link rel="next" href="pt03.html" title="Part III. Reference"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id651582"></a>Deploying Manifests</h2></div></div></div><p>Often, we don&#8217;t want to create manifests for a model by hand. XMF
+    provides a deployment capability that enables manifests (and the files
+    they manage) to be automatically generated from a model in the model
+    editor.</p><p>As an example, let&#8217;s imagine we want to generate a manifest and
+    associated files for the Airports model:</p><p>First right click on the packageand choose deploy.</p><p>This will offer a number of deployment types.</p><p>Select XOCL.</p><p>Now choose the directory that you want to save the deployed code
+    to.</p><p>Now create a file browser (right click on any Project in the
+    browser) for the created directory.</p><p>Each of the classes in the model will have been deployed in code,
+    along with a Manifest file.</p><p>The manifest file will contain all the relevant files:</p><pre class="programlisting">parserImport XOCL;
+parserImport Manifests;
+
+// Manifest deployed by Andy on Sat Sep 24 17:22:04 BST 2005
+
+@Manifest Components
+  p = @File Components end
+  @File Component end
+  @File ComponentModel end
+  @File Port end
+  @File NamedElement end
+  @File Connector end
+do p
+end;
+</pre><p>Right click Compile, Build and Load to compile, buld and load the
+    manifest.</p></div><p></p><p><img src="copyright.gif"></p></body></html>

@@ -1,0 +1,31 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Syntax</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch19.html" title="XMap"><link rel="prev" href="ch19s02.html" title="Language Basics"><link rel="next" href="ch19s04.html" title="Execution"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id635595"></a>Syntax</h2></div></div></div><p></p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id595204"></a>Diagrammatical Syntax</h3></div></div></div><p>A mapping is diagrammatically shown as an arrow with one or more
+      domains (the source types of the mapping) and a single range (the target
+      type of the mapping):</p><div class="mediaobject"><img src="Part3/XMap/Images/image010.jpg"></div><p>The domain and range of a mapping can be any (instantiable)
+      Classifier type, including data types, packages and other
+      mappings.</p><p>Because XMF-Mosaic provides full access to its own definition,
+      mappings can be defined between meta-classes. This is crucial to being
+      able to construct language-to-language mappings.</p><div class="mediaobject"><img src="Part3/XMap/Images/image012.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id677121"></a>Textual Syntax</h3></div></div></div><p>A mapping also has a textual syntax of the form:</p><pre class="programlisting">  @Map &lt;MapName&gt;(&lt;DomainType&gt;,...) -&gt; &lt;RangeType&gt;
+  
+    @Clause &lt;ClauseName&gt;
+    end
+    ...
+  end</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id666557"></a>Clause Syntax</h3></div></div></div><p>A Clause has the following syntax:</p><pre class="programlisting">@Clause &lt;ClauseName&gt;
+  &lt;V1&gt; = &lt;PatternDecl&gt;,
+  ...  
+  when &lt;BooleanExpression&gt;
+  do &lt;XOCLExpression&gt;
+  where &lt;X1&gt; = &lt;XOCLExpression&gt;; 
+        ...
+end</pre><p>A clause consists of a comma-separated list of pattern
+      declarations, which may optionally be equated with a variable. This is
+      followed by an optional when part, containing a Boolean expression, and
+      a do action, which contains an XOCL expression. The optional where
+      clause contains a list of semicolon separated variable introductions,
+      where each variable is equated with an XOCL expression.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id680719"></a>Pattern Syntax</h4></div></div></div><p>Full details of the pattern declaration syntax can be found in
+        the XOCL manual, but there are some specific forms that are most
+        generally used in XMap:</p><div class="itemizedlist"><ul type="disc"><li><p>A keyword constructor: &lt;ClassName&gt;[&lt;att1&gt; =
+              &lt;x1&gt;, ...]</p></li></ul></div><p>Here, the variable/s att refer to named attributes of
+        the class, and x is the variable/s they are matched against.</p><div class="itemizedlist"><ul type="disc"><li><p>A normal constructor : &lt;ClassName&gt;(&lt;v1&gt;,
+              ...)</p></li></ul></div><p>Where v1is a constructor variable.</p><div class="itemizedlist"><ul type="disc"><li><p>A set pattern:
+              &lt;X&gt;-&gt;including(&lt;PatternDecl&gt;)</p></li></ul></div><p>Where X represents a collection of values, which
+        include an element that matches the pattern declaration.</p></div></div></div><p></p><p><img src="copyright.gif"></p></body></html>

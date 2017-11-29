@@ -1,0 +1,56 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Constructing Mappings</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch19.html" title="XMap"><link rel="prev" href="ch19s04.html" title="Execution"><link rel="next" href="ch19s06.html" title="Running Mappings"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id638733"></a>Constructing Mappings</h2></div></div></div><p>Mappings can be constructed using XMF-Mosaic&#8217;s modelling interface
+    and via the programming interface as follows.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id578720"></a>Creating Mappings via the Modelling Interface</h3></div></div></div><p>Let&#8217;s create a simple mapping from one class to another class.
+      First, create a project Example1 containing the classes that we want to
+      map between: Alternatively, we could import classes from other packages
+      into the model.</p><div class="mediaobject"><img src="Part3/XMap/Images/image014.jpg"></div><p>Next, a mapping is added to the model. Select the Mapping from the
+      icons in the diagram editor and place it on the diagram and give it a
+      name.</p><div class="mediaobject"><img src="Part3/XMap/Images/image016.jpg"></div><p>A mapping must have at least one domain and a single range. Select
+      these from the icons underneath the mapping icon.</p><div class="mediaobject"><img src="Part3/XMap/Images/image018.jpg"></div><p>The domain is the source class or classes of the mapping and the
+      range is the target class. Although compulsory, it is important to think
+      of the domain and range as indicating a dependency between a mapping and
+      its constituents. In practice, the actual values passed to the mapping
+      need not necessarily be instances of the domain class.</p><div class="mediaobject"><img src="Part3/XMap/Images/image020.jpg"></div><p>To add a clause to a mapping, right click on the mapping in the
+      diagram editor or browser and choosing New &gt; Clause. </p><p>Now, edit the clause by double clicking on it in the
+      browser.</p><p>A clause editor will be displayed.</p><div class="mediaobject"><img src="Part3/XMap/Images/image022.jpg"></div><p>To enter the clause, enter the text and right click &gt;
+      Commit.</p><div class="mediaobject"><img src="Part3/XMap/Images/image024.jpg"></div><p>Other clauses can be created in exactly the same way.</p><div class="mediaobject"><img src="Part3/XMap/Images/image026.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id618206"></a>Creating Mappings via the Programming Interface</h3></div></div></div><p>Creating a mapping via the programming interface is
+      straightforward. Just create a file (select File Browser from the File
+      menu) and create a new File. Provided that XOCL has been imported, a
+      model (along with mappings) can be entered as normal. For example, the
+      following text is equivalent to the above model:</p><pre class="programlisting">parserImport XOCL;
+
+context Root
+
+  @Package Example1 
+  
+    @Class Person
+      @Attribute name : String end
+      @Attribute age : Integer end
+    end
+    
+    @Class Customer
+      @Attribute name : String end
+    end
+    
+    @Class Junior extends Customer
+    end
+    
+    @Class Standard extends Customer
+    end
+    
+    @Map Person2Cust(Person) -&gt; Customer
+  
+      @Clause Child
+        Person[name = N, age = A]
+        when A &lt; 16
+        do
+        Junior[name = N]
+      end
+      @Clause Parent
+        Person[name = N, age = A]
+        when A &gt;= 16
+        do
+        Standard[name = N]
+      end
+    end
+  end</pre><p>Save, compile and load the file to compile and load the model and
+      the mapping.</p></div></div><p></p><p><img src="copyright.gif"></p></body></html>

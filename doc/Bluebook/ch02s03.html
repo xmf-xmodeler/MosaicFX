@@ -1,0 +1,46 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Constructing a Domain Model</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch02.html" title="Creating and Interacting with a Domain Model"><link rel="prev" href="ch02s02.html" title="Getting Started"><link rel="next" href="ch02s04.html" title="Using the Property Editor"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id616598"></a>Constructing a Domain Model</h2></div></div></div><p>We are now going to create a domain model of the concepts in the
+    component modelling domain. We will do this using a class model. This
+    model will focus primarily on describing the concepts in the
+    domain.</p><p>The model can be constructed as follows:</p><p>First, right click on the Components package in the browser and
+    select Create Diagram &gt; Class Diagram.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/creatingaclassdiagram.png"></div><p>A class diagram editor will be shown.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id616743"></a>Adding Classes</h3></div></div></div><p>In order to add a class to the model select the Class button and
+      click on the diagram. The newly added class is automatically given a
+      default name.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/unamedclass.jpg"></div><p>Click on the class name to change or amend it. In this case, we
+      will change the name of Class0 to ComponentModel.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/namedclass.jpg"></div><p>The properties of the class can be edited by right clicking on the
+      class and selecting Edit.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/classpropertyedit.jpg"></div><p>The property editor tells us that:</p><div class="itemizedlist"><ul type="disc"><li><p>The element being edited (self) is ComponentModel.</p></li><li><p>It is an instance of the class Class.</p></li><li><p>It has no attributes (see right hand panel).</p></li><li><p>Its name is ComponentModel.</p></li><li><p>It is owned by the Components package.</p></li></ul></div><p>We can ignore the grammar and default properties for now.</p><p>Let's add another class. This time a class called
+      NamedElement.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/namedelement.jpg"></div><p>We want to make this abstract (i.e. non-instantiable). To do this,
+      right click on the class and select Edit. In the class's property editor
+      tick the isAbstract box. The name of the class will become italicised to
+      indicate that it is now an abstract class.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/changetoabstract.jpg"></div><p>Let's add some more domain concepts to the model.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/addingmoreclasses.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id650878"></a>Adding Attributes</h3></div></div></div><p>Attributes are variables owned by a class. Attributes are used to
+      represent properties of a class. They have a name and a type.</p><p>The class NamedElement requires an attribute 'name' of type
+      String. This is added by left clicking on the selected class. From the
+      Add Element menu select an Attribute of type String.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/addinganattribute.jpg"></div><p>Double click on the attribute name in the class box and change it
+      to 'name'.</p><p>Attributes can also have a class as their type. They are
+      represented as named arrows connecting the owner of the attribute to the
+      class that is its type. Note, this use of attributes are similar to
+      uni-directional associations in UML.</p><p>The relationship between a Component and a Port can be described
+      by an attribute "ports" whose owner is a Component, and whose type is a
+      Port.</p><p>Let's add this attribute to the model. First select the Attribute
+      button in the toolbar. Select the Component class and then drag the edge
+      to the Port class. Edit the name of the attribute by clicking on it. In
+      this case, we are going to change it to "ports".</p><p>Note, the name of the attribute can be moved by left clicking on
+      it and dragging it with the mouse.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/addinganattributeedge.jpg"></div><p>The attribute edge can be moved by clicking on it, and moving the
+      cursor over the waypoint. A drag icon will appear. Click and drag the
+      edge to the required position. This can also be used to add waypoints to
+      the line.</p><p>A default multiplicity of <span class="bold"><strong>one</strong></span> is
+      associated with the newly added attribute. Change the multiplicity by
+      right clicking on the attribute line and selecting the appropriate
+      multiplicity. In this case a Component is associated with <span class="bold"><strong>many </strong></span>Ports, so select * (many):</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/addingmultiplicity.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id660508"></a>Adding Associations</h3></div></div></div><p>Associations represent bi-directional relationships between two
+      classes. In XMF-Mosaic, an association is equivalent to a pair of
+      attributes owned by two classes and a constraint which guarantees that
+      there is a round-trip relationship between the attributes.</p><p>As an example, an association is required between the classes
+      ComponentModel and Component.</p><p>The relationship we want to capture is that a ComponentModel
+      contains many Components, and a Component is owned by a
+      ComponentModel.</p><p>To create an Association, select the Association tool button and
+      drag the edge from the ComponentModel to the Component. Change the names
+      of the association ends as shown below. The multiplicity of each
+      association end is changed by <span class="bold"><strong>right clicking on
+      its role name </strong></span>and selecting Multiplicity.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/addinganassociation.jpg"></div></div><p>A more comprehensive Components model can now be constructed. Here
+    further attributes have been added, along with two generalizations. The
+    latter ensure that the Component and Port classes inherit the name
+    attribute from the class NamedElement.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/model.jpg"></div><p>Note: right click on an edge and select Straighten to straighten an
+    edge.</p></div><p></p><p><img src="copyright.gif"></p></body></html>

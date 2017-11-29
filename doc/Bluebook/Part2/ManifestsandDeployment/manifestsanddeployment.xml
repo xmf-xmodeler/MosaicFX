@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"-->
+<chapter>
+  <title>Using Manifests and Deploying Models</title>
+
+  <para>In order to manage the compilation and loading of multiple files, XMF
+  supports a convenient project management abstraction called a manifest. A
+  manifest provides a convenient way of managing collections of files that
+  have dependencies on each other.</para>
+
+  <para>In version 1.0 of XMF, manifests must be declared in a file. The
+  following file imports the Manifest facility and implements a manifest that
+  compiles Airports.xmf file followed by AirportsCons.xmf:</para>
+
+  <programlisting>parserImport Manifests;
+
+@Manifest Airports
+  p = @File Airports end
+  @File AirportsCons end
+end;</programlisting>
+
+  <para>A manifest is declared using @Manifest. A manifest has a name (in this
+  case Airports) and contains a list of files.</para>
+
+  <para>Save, Compile and Load the Manifest (right click &gt; Save, Compile
+  and Load). A manifest icon will appear in the file browser which contains
+  some additional menu options:</para>
+
+  <para>The two additional options are:</para>
+
+  <para>Build Manifest: This will compile all the files in the
+  manifest.</para>
+
+  <para>Load Manifest: This will load the binary of the files.</para>
+
+  <para>Compile, Build and Load: Compiles the Manifest, then Builds and Loads
+  the files.</para>
+
+  <para>These can be used to compile and load as many files as required in a
+  specific development project.</para>
+
+  <section>
+    <title>Manifest Actions</title>
+
+    <para>Actions can be added to a manifest to perform specific tasks once
+    the manifest has compiled and loaded its list of files. For example, we
+    might want to edit the results, or we might want to post process the
+    loaded model in some way.</para>
+
+    <para>In the following example, p is the package that results after
+    loading two files: Network and NetworkCons. The action that is called
+    after the “do” launches an editor for p.</para>
+
+    <programlisting>parserImport Manifests;
+
+@Manifest Networks
+  p = @File Network end
+  @File NetworkCons end do
+  p.edit()
+end;</programlisting>
+
+    <para>Building and loading the manifest results in the appropriate
+    property editor being launched.</para>
+  </section>
+
+  <section>
+    <title>Deploying Manifests</title>
+
+    <para>Often, we don’t want to create manifests for a model by hand. XMF
+    provides a deployment capability that enables manifests (and the files
+    they manage) to be automatically generated from a model in the model
+    editor.</para>
+
+    <para>As an example, let’s imagine we want to generate a manifest and
+    associated files for the Airports model:</para>
+
+    <para>First right click on the packageand choose deploy.</para>
+
+    <para>This will offer a number of deployment types.</para>
+
+    <para>Select XOCL.</para>
+
+    <para>Now choose the directory that you want to save the deployed code
+    to.</para>
+
+    <para>Now create a file browser (right click on any Project in the
+    browser) for the created directory.</para>
+
+    <para>Each of the classes in the model will have been deployed in code,
+    along with a Manifest file.</para>
+
+    <para>The manifest file will contain all the relevant files:</para>
+
+    <programlisting>parserImport XOCL;
+parserImport Manifests;
+
+// Manifest deployed by Andy on Sat Sep 24 17:22:04 BST 2005
+
+@Manifest Components
+  p = @File Components end
+  @File Component end
+  @File ComponentModel end
+  @File Port end
+  @File NamedElement end
+  @File Connector end
+do p
+end;
+</programlisting>
+
+    <para>Right click Compile, Build and Load to compile, buld and load the
+    manifest.</para>
+  </section>
+</chapter>

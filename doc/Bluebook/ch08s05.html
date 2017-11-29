@@ -1,0 +1,13 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Adding Operations</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch08.html" title="Using the Programming Interface"><link rel="prev" href="ch08s04.html" title="Adding Constraints"><link rel="next" href="ch08s06.html" title="Context"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id654550"></a>Adding Operations</h2></div></div></div><p>Operations can be added in exactly the same way: This operation
+    returns all the connectors whose port types don't match</p><pre class="programlisting">   @Class ComponentModel 
+
+      @Attribute components : Set(Component) (?,!,+,-) end
+      @Attribute connectors : Set(Connector) (?,!,+,-) end
+
+      @Constructor(components,connectors) end
+
+      @Operation dontMatch()
+        connectors-&gt;select(c |
+          c.source.type &lt;&gt; c.target.type)
+      end
+    end</pre></div><p></p><p><img src="copyright.gif"></p></body></html>

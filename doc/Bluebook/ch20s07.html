@@ -1,0 +1,44 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>XML Output</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch20.html" title="XML"><link rel="prev" href="ch20s06.html" title="SAX Input Channel"><link rel="next" href="ch20s08.html" title="Raising Events"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id712849"></a>XML Output</h2></div></div></div><p></p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id569429"></a>Introduction</h3></div></div></div><p>When developing XMF applications it is likely that you will want
+      to generate XML from XMF data. This can be achieved in a number of ways
+      depending on the level of control and the amount of reuse that you want
+      to have over the output. This section describes approaches to XML
+      output. The most direct way of producing an XML document is to print the
+      characters, for example: </p><pre class="programlisting">format(out,&#8221;&lt;Class name=&#8217;~S&#8217; id=&#8217;~S&#8217;/&gt;&#8221;,Seq{c.name(),c.path()}) </pre><p>This
+      approach to output provides complete control over the text that is
+      produced, but suffers from a lack of XML semantics &#8211; the format command
+      does not know it is processing an XML element.</p><p>There are two strategies for producing XML output that are more
+      attractive than directly writing characters:</p><div class="itemizedlist"><ul type="disc"><li><p>Generating instances of the XML model and then sending the
+          instance a print message.</p></li><li><p>Using the XML::PrintXML::XML construct to specify output
+          patterns.</p></li></ul></div><p>The rest of this section describe the second of these
+      approaches.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id699335"></a>XML Output Patterns</h3></div></div></div><p>Consider the task of translating a model to an XML document. The
+      model consists of packages, classes, attributes and operations. The XML
+      tags reflect the type of model elements. Models contain multiple
+      references to the same model elements, this is encoded in the XML
+      document using attributes whose values are unique identifiers.</p><p>The following operation defines a mapping that writes a model
+      element to an XML document. It uses the XML::PrintXML::XML pattern
+      language:</p><div class="mediaobject"><img src="Part3/XML/Images/image066.jpg"></div><p>Line 12 starts a case analysis on the supplied element. The
+      CaseObj construct matches the supplied value (element) against patterns
+      consisting of the path to the direct classifier of the value followed by
+      a number of slot names defined by the classifier. If the value is a
+      direct instance of the classifier (i.e. its of operation returns the
+      named classifier) then the body of the matching CaseObj clause is
+      performed with the named slots bound to the corresponding slot
+      values.</p><p>The first pattern in line 13 matches against a package. The XML
+      pattern starting in line 14 specifies some XML to be sent to the
+      supplied output channel (out).</p><p>Line 15 defines some XML output. The output pattern is specified
+      in the same format as an XML element containing a tag and some
+      attributes. The tag name and the attribute names are all literal names
+      (you can also use strings or expressions in parentheses). The values of
+      attributes are expressions. When a pattern is evaluated, the character
+      are written to the supplied output channel; any expressions are
+      evaluated and the corresponding values are transformed to
+      strings.</p><p>The body of the element pattern ranges over lines 16 &#8211; 21. Element
+      bodies can be nested elements or program code. In 16 &#8211; 21 there is
+      program code that loops through the packages and classes bound in line
+      13 and calls writeXML to produce the appropriate output.</p><p>The package pattern is complete at line 22 where the terminating
+      tag is output.</p><p>Classes are output as follows:</p><div class="mediaobject"><img src="Part3/XML/Images/image068.jpg"></div><p>The example above shows that XML pattern directed output can be
+      nested. Line 33 uses a pattern to produce a classifier reference for the
+      parents of a class; this is nested inside the pattern started in line
+      30.</p><p>Attributes are represented in XML as an element with a nested
+      class reference for the type. The multiplicity of the attribute type is
+      encoded in the attribute:</p><div class="mediaobject"><img src="Part3/XML/Images/image070.jpg"></div><p></p><div class="mediaobject"><img src="Part3/XML/Images/image072.jpg"></div><p></p><div class="mediaobject"><img src="Part3/XML/Images/image074.jpg"></div><p></p><div class="mediaobject"><img src="Part3/XML/Images/image076.jpg"></div><p></p><div class="mediaobject"><img src="Part3/XML/Images/image078.jpg"></div><p></p><div class="mediaobject"><img src="Part3/XML/Images/image080.jpg"></div><p></p><div class="mediaobject"><img src="Part3/XML/Images/image082.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id679484"></a>XML Output Channels</h3></div></div></div><p></p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id640741"></a>Introduction</h4></div></div></div><p></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id669910"></a>Basic XML Output</h4></div></div></div><p></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id573956"></a>Object Formatters</h4></div></div></div><p></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id693835"></a>Name Space Formatters</h4></div></div></div><p></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id609451"></a>Saving Models as XML</h4></div></div></div><p></p></div></div></div><p></p><p><img src="copyright.gif"></p></body></html>

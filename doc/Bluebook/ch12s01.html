@@ -1,0 +1,76 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Parsing and Synthesising Instances of Models</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch12.html" title="Constructing a Textual Syntax and Parser"><link rel="prev" href="ch12.html" title="Constructing a Textual Syntax and Parser"><link rel="next" href="ch13.html" title="Creating a Meta-Profile"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id693014"></a>Parsing and Synthesising Instances of Models</h2></div></div></div><p>We want to synthesise instances of the following model by parsing in
+    a textual representation:</p><pre class="programlisting">parserImport XOCL;
+
+context Root
+
+  @Package EntityModels
+  
+    @Doc
+      A Simple Entity Model
+    end
+    
+    @Class Named extends XOCL::Syntax
+      @Attribute name : String end
+    end
+    
+    @Class EntityModel extends Named
+      @Attribute entities : Set(Entity) end
+    end
+    
+    @Class Entity extends Named
+      @Attribute relationships : Set(Relationship) end
+    end
+    
+    @Class Relationship extends Named
+      @Attribute type : String end
+    end
+    
+  end</pre><p>Note that the class Named extends the class XOCL::Syntax. It is
+    necessary for all classes we want to synthesise to inherit from this
+    class.</p><p>The code for a grammar for this language is shown below:</p><pre class="programlisting">parserImport XOCL;
+parserImport Parser::BNF;
+
+import EntityModels;
+
+context EntityModel
+
+  @Grammar extends OCL::OCL.grammar
+  
+    EntityModel ::=
+      name = Name 
+      entities = Entity*
+        {EntityModel[name = name, entities = entities]}.
+      
+    Entity ::= 'entity' name = Name rels = Relationship*
+      {Entity[name = name, relationships = rels]}.
+      
+    Relationship ::= 'rel' name = Name '-&gt;' type = Name
+      {Relationship[name = name, type = type]}.
+    
+  end</pre><p>Note, just as with the XML grammar in the previous chapter, we
+    define a series of grammar rules that synthesise instances of the
+    model.</p><p>Here are some points to note:</p><div class="itemizedlist"><ul type="disc"><li><p>The grammar first imports the parsers for XOCL and BNF. It also
+        imports the EntityModels package (which must be loaded). The grammar
+        of the EntityModel class is defined as follows:</p><div class="itemizedlist"><ul type="circle"><li><p>The root of the grammar is the rule EntityModel.</p></li><li><p>A rule is sequences of pattern declarations followed by an
+            action (in curly brackets} which is called after the parsing has
+            occured.</p></li><li><p>In the case of the EntityModel rule, it is defined to be a
+            name, followed by a sequence of Entity (which is bound to the
+            variable entities).</p></li><li><p>The result of parsing an EntityModel is to create an
+            instance of a EntityModel class with the variables name and
+            entities populated with the above values.</p></li><li><p>An Entity is the string &#8216;name&#8217; and a sequence of
+            Relationships (bound to the variable rels). The result of parsing
+            it is to create an instance of a Event class with the variable
+            name passed as a parameter.</p></li><li><p>A similar rule is used for Relationships.</p></li></ul></div></li></ul></div><p>The following is a small example of a model written in the
+    syntax:</p><pre class="programlisting">parserImport EntityModels;
+
+import EntityModels;
+
+Root::p :=
+  @EntityModel Customers 
+    entity Customer
+      rel Owns -&gt; Account
+    entity Account
+  end;</pre><p>Compiling and loading the above three files in order will load the
+    model, the parser definition and the example. The result will be stored in
+    the Root variable p, which can be edited in the console using
+    p.edit().</p></div><p></p><p><img src="copyright.gif"></p></body></html>

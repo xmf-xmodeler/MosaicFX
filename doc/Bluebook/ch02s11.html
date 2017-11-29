@@ -1,0 +1,23 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Running Operations</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch02.html" title="Creating and Interacting with a Domain Model"><link rel="prev" href="ch02s10.html" title="Adding Queries"><link rel="next" href="ch02s12.html" title="Operations"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id673057"></a>Running Operations</h2></div></div></div>
+
+     Operations and queries can be run in a number of different of ways in XMF-Mosaic. The following describes the most common ways. 
+
+    <div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id616521"></a>Running Operations on Snapshots</h3></div></div></div><p>Operations and queries can be run on objects in a snapshot.</p><p>Right click on the object in the browser and select Invoke
+      Operation. This will display the operations that can be invoked on the
+      object. Because all classes inherit from Object, this list will include
+      all operations that have been defined for an Object. In addition,
+      operations on the class will be displayed.</p><p>Only operations with zero parameters are displayed in this list
+      (operations that require parameters should be accessed via the console
+      or via the expression evaluator - see later).</p><p>As an example, we can call the dontMatch() query via Invoke
+      Operation.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/invokinganobjectoperation.jpg"></div><p>The result of running the operation will be displayed in the
+      property editor.</p><p>Note that operations are immediately available via the menu once
+      they have been successfully committed.</p><p>In the case of operations with parameters, we must be able to pass
+      the parameters into the operation in order to call it. This can be
+      achieved using the console (see later). However, there is menu based
+      support for this as follows:</p><p>First assign any objects that will be used as parameter values to
+      global variables. To do this right click on the object in a property
+      editor and then select Assign To Global Variable. Give the object a
+      name, in this case we are assigning p to a Port.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/assigninglobal.jpg"></div><p>Next, select the object that the operation is to be run on, and
+      select right click &gt; Evaluate Expression.</p><p>A simple expression editor will appear. Type the operation in,
+      followed by an edit() operation to show the results. Press OK to run the
+      operation.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/evaluateexp.jpg"></div></div></div><p></p><p><img src="copyright.gif"></p></body></html>

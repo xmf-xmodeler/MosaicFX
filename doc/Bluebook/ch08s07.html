@@ -1,0 +1,15 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Importing Packages</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch08.html" title="Using the Programming Interface"><link rel="prev" href="ch08s06.html" title="Context"><link rel="next" href="ch09.html" title="Toolbar Menus and Initialisation Files"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id677273"></a>Importing Packages</h2></div></div></div><p>Import declarations enable the contents of other packages to be
+    imported so that they can be referenced by other elements. For instance,
+    let&#8217;s say we wanted to separate out the constraints of the Components
+    model from the class. We can create a new file called ComponentsCons.xmf
+    that contains the constraints:</p><p>Provided that we have loaded the Components package, we can compile
+    and run the new file and the constraints will be added to the appropriate
+    classes.</p><pre class="programlisting">parserImport XOCL;
+
+import Components;
+
+context Connector
+
+  @Constraint ValidPortTypes
+        source.type = target.type
+      end</pre><p>Imports are transitive, and can be used to any depth.</p></div><p></p><p><img src="copyright.gif"></p></body></html>

@@ -1,0 +1,18 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Adding Constructors</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch02.html" title="Creating and Interacting with a Domain Model"><link rel="prev" href="ch02s13.html" title="Adding Getters and Setters"><link rel="next" href="ch02s15.html" title="Interacting with Models using the Console"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id568130"></a>Adding Constructors</h2></div></div></div><p>Constructors are operations on classes which are called when
+    creating a new instance of the class.</p><p>Note by default all classes have the empty constructor and this need
+    not be defined.</p><p>To add a constructor right click on a class in the class diagram or
+    in the browser and choose New&gt;Constructor. A new constructor will be
+    added to the browser under the class. Click on it to show the constructor
+    editor.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/addingaconstructor.jpg"></div><p>Parameters can be added to a constructor. To do this, add the name
+    of each parameter in the desired order within the comma separated sequence
+    of names. For example, the following constructor for a Port has 'name' and
+    'type' as its parameters.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/constructorwithparam.jpg"></div><p>Note each name should correspond to a name of an attribute of the
+    class that is to be instantiated when the constructor is called.</p><p>Any number of constructors may be defined for a class. This enables
+    different tasks to be performed per type of instantiation depending on the
+    number of parameters that are passed.</p><p>In addition to supporting simple parameter passing, XOCL code can be
+    entered in the body of a constructor to perform a specific task when the
+    constructor is called.</p><p>Here is an example of an action that sets the name of a Port to be
+    uppercase when it is created.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/constructorwithaction.jpg"></div><p>After this action is performed, an action to return the object
+    (self) is called. If this were not added the constructor would only return
+    the value of self.name.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id655793"></a>Exercises</h3></div></div></div><p>Try adding a constructor for a Component takes its name as a
+      parameter.</p></div></div><p></p><p><img src="copyright.gif"></p></body></html>

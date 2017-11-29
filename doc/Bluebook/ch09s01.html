@@ -1,0 +1,14 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Toolbar menus</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch09.html" title="Toolbar Menus and Initialisation Files"><link rel="prev" href="ch09.html" title="Toolbar Menus and Initialisation Files"><link rel="next" href="ch09s02.html" title="Some Useful Operations"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id643546"></a>Toolbar menus</h2></div></div></div><p>XMF-Mosaic provides facilities for rapidly building customised menus
+    that can be used to perform repetitive tasks such as loading projects, or
+    running operations.</p><p>You can add a new menu, or a new menu item to an existing menu, on
+    the toolbar by sending a message to the xmf object:
+    xmf.addDropDownMenuItem(menuPath,handler) where menu path is a sequence of
+    strings that identifies the menu item, and handler is a 0-arity operation
+    that is called when the new menu item is selected. For example, the
+    following can be run in the console: </p><pre class="programlisting">xmf.addDropDownMenuItem(Seq{"&amp;A","B","&amp;C"},@Operation() "Selected".println() end);</pre><p>This will produce the following:</p><div class="mediaobject"><img src="Part2/TailoringMenus/images/addedmenu.png"></div><p>Selecting C will run the operation and generate the text "Selected"
+    in the console.</p><p>Note, the menu item "B" denotes a menu category. If other menus are
+    created using "A" and "B" they will be shown as belonging to the same
+    category of sub-menus.</p><p>Also note, if the menu item is preceded by an "&amp;" it represents
+    a key-binding. In this case, "Alt-A" followed by "Alt-C" will run the
+    operation.</p><p>Commands to add menus can be loaded on startup of the tool using the
+    Init file (see below).</p></div><p></p><p><img src="copyright.gif"></p></body></html>

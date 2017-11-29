@@ -1,0 +1,598 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"-->
+<chapter>
+  <title>Namespace, Classes, Packages and MetaClasses</title>
+
+  <para></para>
+
+  <section>
+    <title>Introduction</title>
+
+    <para></para>
+  </section>
+
+  <section>
+    <title>NameSpaces</title>
+
+    <para></para>
+  </section>
+
+  <section>
+    <title>Classes</title>
+
+    <para>XMF is a class-based object-oriented modelling environment. Each
+    value in XMF has a type or classifier that describes its structure and
+    behaviour. Values in XMF are divided into objects and non-objects. Object
+    types are called classes and non-object types are called classifiers. If a
+    value v is of a type c then we say that v is an instance of c. XMF is
+    provided with a large number of classes and classifiers; XMF developers
+    can define their own classes and classifiers as extensions of those
+    provided.</para>
+
+    <para>Classes and classifiers classify their instances by running
+    constraints. A constraint is a boolean valued expression that runs in the
+    context of the current state of the candidate instance. The outcome of
+    constraint checking is a constraint report containing details of the
+    constraints that were performed, the candidates, the outcome and a reason
+    for any constraints that failed. Constraint checking is a powerful
+    mechanism for checking whether a model or a model scenario is correctly
+    formed.</para>
+
+    <section>
+      <title>Class Definition</title>
+
+      <para>A class describes the structure and behaviour of its instances. A
+      class has a name and lives in a name-space. The following is a basic
+      class that lives in the name-space Root:</para>
+
+      <para><programlisting>context Root
+
+  @Class EmptyClass
+
+  end</programlisting></para>
+
+      <para>By default, the class EmptyClass specializes the XMF class
+      XCore::Object and provides a single constructor for creating instances:
+      EmptyClass(). If we perform the following expression:</para>
+
+      <para><programlisting>EmptyClass().isKindOf(EmptyClass)</programlisting></para>
+
+      <para>then the result is true since the newly created instance is
+      directly an instance of EmptyClasss. In addition, the expression:</para>
+
+      <para><programlisting>EmptyClass().isKindOf(Object) and EmptyClass().isKindOf(Element)</programlisting></para>
+
+      <para>returns true since EmptyClass inherits (by default) from Object
+      and Object inherits from Element (the class Element does not inherit
+      from anywhere). The class EmptyClass is itself a value:</para>
+
+      <para><programlisting>EmptyClass.isKindOf(Class) and 
+EmptyClass.isKindOf(Classifier) and 
+EmptyClass.isKindOf(NamedElement) and
+EmptyClass.isKindOf(Object) and 
+EmptyClass.isKindOf(Element)</programlisting></para>
+    </section>
+
+    <section>
+      <title> Attributes</title>
+
+      <para>A class typically defines some attributes that correspond to slots
+      in the instances of the class. Each attribute has a name and a type and
+      may optionally have some modifiers and an initial value. The following
+      is a simple example of a class with attributes:</para>
+
+      <para><programlisting>context Root
+  @Class Point 
+    @Attribute x : Integer end
+    @Attribute y : Integer end
+    @Constructor(x,y) ! end
+  end
+</programlisting>A new point is creates using the constructor defined by
+      Point. A class may define any number of constructors; each constructor
+      must have a different number of arguments. Each constructor argument
+      corresponds to one of the attributes in the class. The optional modifier
+      ! declares that the printed representation for a point is defined by
+      that constructor.</para>
+
+      <para>A new Point is constructed:<programlisting>Point(100,200)</programlisting>where
+      100 is the value of the slot x and 200 is the value of the slot y.
+      Accessor and updater operations are automatically produced by including
+      attribute modifiers:</para>
+
+      <programlisting>context Root
+  @Class Point 
+    @Attribute x : Integer (?,!) end
+    @Attribute y : Integer (?,!) end
+    @Constructor(x,y) ! end
+  end</programlisting>
+
+      <para>The modifier ? defines that operations getX and getY are
+      automatically provided; modifier ! defines that operations setX and setY
+      are automatically provided:</para>
+
+      <programlisting>let p = Point(100,200)
+in p.setX(p.getX() - 1);
+   p.setY(p.getY() - 1)
+end</programlisting>
+    </section>
+
+    <section>
+      <title>Operations</title>
+
+      <para>Object-oriented execution proceeds by message passing; a message
+      consists of a name and some argument values. When a message is sent to
+      an object, the name is looked up in the class of the object (and its
+      parents); if an operation is found then it is invoked otherwise an error
+      is reported. Operations may be defined as part of a class or a package
+      definition or added to existing classes and packages via a context
+      defintion.</para>
+
+      <para>The following defines a class of stacks and adds the definition to
+      a package named Stacks. The example shows the complete contents of a
+      file containing the definition. XMF can be used in a file-based mode
+      where files contain source code that is compiled using the XMF compiler.
+      The compiled binary is then loaded into XMF.</para>
+
+      <programlisting>parserImport XOCL;
+
+context Stacks
+
+  @Class Stack
+  
+    @Attribute elements : Seq(Element) end
+    @Attribute index : Integer end 
+    
+    @Operation isEmpty():Boolean
+      self.elements-&gt;isEmpty
+    end
+    
+    @Operation pop()
+      if self.isEmpty()
+      then throw StackUnderflow(self)
+      else 
+        let head = elements-&gt;head
+        in self.elements := elements-&gt;tail;
+           head
+        end
+      end
+    end
+
+    @Operation push(e:Element)
+      self.elements := Seq{e | elements}
+    end
+
+    @Operation top()
+      if self.isEmpty()
+      then throw StackUnderflow(self)
+      else elements-&gt;head
+      end
+    end
+</programlisting>
+    </section>
+
+    <section>
+      <title>Constraints</title>
+
+      <para></para>
+    </section>
+
+    <section>
+      <title>Inheritance</title>
+
+      <para>All classes are specializations or sub-classes of at least one
+      other class. By default a class is a sub-class of XCore::Object. A class
+      inherits constructors, attributes, operations and constraints from its
+      parent. For example the following class specializes Point with a z
+      co-ordinate:</para>
+
+      <para><programlisting>context Root
+  @Class Point3D extends Point
+    @Attribute z : Integer (?,!) end
+    @Constructor(x,y,z) ! end
+  end
+</programlisting>An instance of Point3D may be constructed using a two-place
+      constructor or a three-place constructor (the three-place is probably
+      more useful). An instance of the class Point3D is also an instance of
+      the parent class Point:</para>
+
+      <para><programlisting>let p = Point3D(1,2,3)
+in p.isKindOf(Point)
+end</programlisting>returns true.</para>
+
+      <section>
+        <title>Multiple</title>
+
+        <para>A class may inherit from more than one super-class in which case
+        the sequence of parents is given by comma separated paths after the
+        extends keyword. The order of the parents is used to determine the
+        lookup order for operations, although it is considered bad practice to
+        rely on the ordering when handling messages. </para>
+
+        <para>Multiple inheritance is most useful when inheriting orthogonal
+        behaviour and structure that is then extended in the new
+        sub-class.</para>
+      </section>
+
+      <section>
+        <title>Run-Super</title>
+
+        <para>When a sub-class extends a super-class it may shadow an existing
+        operation by defining a new operation in the sub-class with the same
+        name and arity as an inherited class. Sending a message to an instance
+        of the sub-class will cause the shadowing operation definition to be
+        performed.</para>
+
+        <para>Sometimes it is useful to be able to reference a shadowed
+        operation from a shadowing operation body. This occurs when the
+        shadowing class extends the behaviour of the shadowed class. XMF
+        provides the keyword super that is used to invoke the shadowed
+        operation from the shadowing operation.</para>
+
+        <para>This section provides a simple example of how super is
+        used.</para>
+      </section>
+    </section>
+  </section>
+
+  <section>
+    <title>Packages</title>
+
+    <para></para>
+  </section>
+
+  <section>
+    <title>Metaclasses</title>
+
+    <para>XMF is an environment for language design and deployment. Languages
+    control the structure and behaviour of the values that they denote. In
+    this sense, language design is a meta-activity and requires a
+    meta-language that represents the structure and behaviour of the language
+    components.</para>
+
+    <para>XMF provides a meta-circular object-oriented kernel language called
+    XOCL. The meta-circular property means that XOCL is defined completely in
+    itself. This property validates XOCL as a meta-language.
+    Object-orientation provides a basis for application extension and reuse
+    through inheritance and modularity through encapsulation. </para>
+
+    <para>XOCL is both meta-circular and object-oriented, it is suitable for
+    language definition where languages can be easily constructed as modular
+    extensions of the basic XOCL language. Instantiations of XOCL are
+    languages and extensions of XOCL are meta-languages.</para>
+
+    <para>All languages have key semantic features that can be represented as
+    an interface in the definition of the language. Consider a language with
+    an operational semantics. In this case programs written in the language
+    may be viewed as controlling a machine that contains the state of the
+    execution at any given snapshot in time. The key semantic features of the
+    language form the API of the machine.</para>
+
+    <para>Given a language L, we would like to construct a new language that
+    is L-like. If L is defined using object-oriented principles then it is
+    attractive to construct the new language as an extension of L using
+    inheritance. Syntax structures and values of the new language can be
+    defined by extending the appropriate features of L. We would like to
+    construct the semantics of the new language using the same approach. If we
+    have constructed the semantics of L by encapsulating the key features as
+    an implementation of the API as described above, then the new language
+    semantics can be defined by inheriting and extending these operations as
+    appropriate.</para>
+
+    <para>Where the semantics of a language has been constructed using
+    object-oriented principles, the resulting collection of classes and
+    operations is referred to as a meta-object-protocol. This section
+    describes the XOCL MOP. </para>
+
+    <section>
+      <title>Message Passing</title>
+
+      <para>XOCL performs computation in terms of messages between elements. A
+      message consists of a name andsome data. A message is sent from a source
+      element to a target element. The target element receives themessage,
+      performs appropriate computation and returns a result. Messages between
+      elements aresynchronous: the source element halts computation and waits
+      the return value from the target element.</para>
+
+      <para>Message passing occurs when the source element performs an
+      expression of the form: o.m(x,y,z,...) where o is the target element, m
+      is the message name and x, y, z etc. is the data, or parameters, of the
+      message.</para>
+
+      <para>Message passing is defined by the MOP component referred to as the
+      massage passing protocol.The protocol is defined by the meta-class of
+      the target element and is called sendInstance:</para>
+
+      <programlisting>context Element
+  @Operation send(message,args):Element
+    self.of().sendInstance(self,message,args)
+  end
+</programlisting>
+
+      <para>A default protocol is provided by the Kernel meta-class
+      Classifier:</para>
+
+      <para><programlisting>context Classifier
+  @Operation sendInstance(element,name,args)
+    // Get all the operations of element with the 
+    // correct name and arity. Select the most 
+    // specific and invoke it.
+    let arity = args-&gt;size then
+        operations = element.of().allOperations()
+          -&gt;asSeq
+          -&gt;select(o | o.name = name and o.arity() = arity)
+    in if operations-&gt;isEmpty
+       then 
+         element.error("Cannot handle "+message+"/"+arity)
+       else operations-&gt;head.invoke(element,args)
+       end
+    end
+  end
+</programlisting>Since Class is a sub-class of Classifier, any sub-class of
+      Class that defines a new sendInstance operation will provide a
+      specialized message passing protocol for the instances of its instances.
+      This can be used to implement specialized operation lookup mechanisms,
+      to facilitiate debugging information and to change the basic message
+      passing mechanisms (for example by defining a class of objects with
+      message queues). </para>
+    </section>
+
+    <section>
+      <title>Object Creation</title>
+
+      <para>Objects are created by sending a new message to a class together
+      with some initialization data. The preferred way of invoking the new
+      operation of a class is to apply the class as an operator to the
+      initialization arguments. This is preferred because it is succinct and
+      because the compiler and XMF VM can handle class instantiation more
+      efficiently in this form:</para>
+
+      <para><programlisting>context Classifier
+  @Operation invoke(target:Element,args:Seq(Element)):Element
+    self.new(args)
+  end</programlisting>The new operation is defined by the meta-class of the
+      receiving class. It constitutes the instantiation procotol for a
+      collection of classes. The class Classifier defines the default
+      instantiation protocol:<programlisting>context Classifier
+  @Operation new(args:Seq(Element)):Element
+    self.new().init(args)
+  end</programlisting></para>
+
+      <para>where the operation new creates an empty new instance of the
+      receiver and init initializes the new instance. </para>
+
+      <para>Sub-classes of Classifier can define their own instantiation
+      protocol. Typically this will use super to create an instance using the
+      default protocol and then perform some extra computation to initialize
+      the new instance; however, in principle the instantiation protocol can
+      by-pass the default protocol altogether. To create a raw instance of a
+      class C and add a single slot named "x" with initial value 10 you can do
+      the following:</para>
+
+      <para><programlisting>let o = Kernel_mkObj()
+in Kernel_setOf(o,C);
+   Kernel_addAtt(o,Symbol("x",100));
+   o
+end</programlisting>Using the kernel-level operations, you can create a
+      completely bespoke instantiation protocol. </para>
+    </section>
+
+    <section>
+      <title>Slot Access</title>
+
+      <para>Objects have internal storage in the form of named slots. Access
+      to a slot value is via the object and the name of the slot. Slots are
+      named using symbols. Access is defined by the object's slot access
+      protocol. The slot access protocol is used when an expression of the
+      form o.a is performed. Access involves checking that the slot exists and
+      then accessing the value of the slot.</para>
+
+      <para>The existence of a slot can be checked using the hasSlot operation
+      defined by Object:</para>
+
+      <para><programlisting>context Object 
+  @Operation hasSlot(name):Boolean
+    self.of().hasInstanceSlot(self,name)
+  end</programlisting></para>
+
+      <para>The hasSlot operation invokes the hasInstanceSlot operation of the
+      object's class. hasInstanceSlot forms part of the slot access protocol
+      for the object; the operation is defined by the object's meta-class. The
+      default definition is provided by Class and uses the kernel operation
+      Kernel_hasSlot to directly check whether there is a machine-level
+      slot:<programlisting>context Class
+  @Operation hasInstanceSlot(object,name)
+    Kernel_hasSlot(object,name)
+  end</programlisting></para>
+
+      <para>Access to a slot's value is provided by the operation get defined
+      by Object:<programlisting>context Object
+  @Operation get(name:String):Element
+    self.of().getInstanceSlot(self,name)
+  end
+</programlisting></para>
+
+      <para>The operation getInstanceSlot is defined by an object's meta-class
+      and describes how to access the storage associated with an object and a
+      slot name. The default protocol is provided by Class and uses the kernel
+      operation Kernel_getSlotValue to access the machine-level slot (as added
+      using Kernel_addAtt):<programlisting>context Class
+  @Operation getInstanceSlot(object,name)
+    Kernel_getSlotValue(object,name)
+  end</programlisting></para>
+
+      <para>Typically a new slot access protocol is required because a
+      collection of classes implement object storage in a non-standard way
+      (for example using a table, in a data base or distributed over a
+      network).</para>
+    </section>
+
+    <section>
+      <title>Slot Update</title>
+
+      <para>The value of an object's slot can be updated using the object's
+      slot update protocol. A slot is updated when an expression of the form
+      o.a := e is performed. The class Object provides an operation used to
+      set the value of a slot:<programlisting>context Object
+  @Operation set(name:String,value:Element):Element
+    self.of().setInstanceSlot(self,name,value);
+    self
+  end
+</programlisting></para>
+
+      <para>The object's meta-class defines an operation setInstanceSlot that
+      forms the update protocol. The default update protocol is defined by
+      Class and uses the kernel-level operation Kernel_setSlotValue to update
+      the machine-level slot and to invoke any daemons that are defined on the
+      object:</para>
+
+      <para><programlisting>context Class
+  @Operation setInstanceSlot(object,name,value)
+    Kernel_setSlotValue(object,name,value)
+  end</programlisting>A new slot update protocol is used to circumvent the
+      default storage. For example the storage for a slot may be in a database
+      or accessed over a network. </para>
+    </section>
+
+    <section>
+      <title>Default Parents</title>
+
+      <para>A class is created as an instance of a meta-class. When a class is
+      created it must have some parents. The meta-class defines an operation
+      defaultParents that produces a set of classes that are the default
+      parents for its instances. The basic definition for defaultParents is
+      provided by Classifier:</para>
+
+      <para><programlisting>context Classifier
+  @Operation defaultParents():Set(Classifier)
+    Set{Element}
+  end</programlisting>Most classes are instances of the class Class, that
+      overrides the definition as follows:<programlisting>context Class
+  @Operation defaultParents():Set(Classifier)
+    Set{Object}
+  end</programlisting></para>
+    </section>
+
+    <section>
+      <title>Example</title>
+
+      <para>Suppose that we want to define a class of objects that can have
+      standard attribute defined slots in addition to dynamic slots. Attribute
+      defined slots are defined at the class level. Dynamic slots are defined
+      at the object level and can be added and removed dynamically. Both types
+      of slot can be accessed and updated via the standard protocols using o.a
+      and o.a := e expressions.</para>
+
+      <para>In order to implement these objects we require a new slot access
+      and update protocol. The protocol is defined at the meta-level and is to
+      be called the Elastic protocol. We require two new classes:
+      ElasticObject that is the super-class of all user-defined elastic
+      classes; and, ElasticClass that defines the elastic protocol.</para>
+
+      <para>The class ElasticObject uses a table to contain the dynamic
+      slots:<programlisting>context Root
+  @Class ElasticObject
+    @Attribute slots : Table = Table(100) end
+  end</programlisting></para>
+
+      <para>An elastic object provides operations to add and remove the
+      dynamic slots:<programlisting>context ElasticObject
+  @Operation addSlot(name:String,value)
+    slots.put(Symbol(name),value)
+  end
+
+context ElasticObject
+  @Operation removeSlot(name)
+    slots.remove(Symbol(name))
+  end</programlisting></para>
+
+      <para>An elastic object can remove all the dynamic
+      slots:<programlisting>context ElasticObject
+  @Operation removeAll()
+    @For key inTableKeys slots do
+      self.removeSlot(key.toString())
+    end
+  end</programlisting></para>
+
+      <para>An elastic object can increment the values of all the dynamic
+      slots. Note that incAll uses the slot access and update protocol for the
+      object to change the value of the dynamic slots:<programlisting>context ElasticObject
+  @Operation incAll()
+    @For key inTableKeys slots do
+      self.set(key,self.get(key) + 1)
+    end
+  end</programlisting></para>
+
+      <para>The class ElasticClass defines the elastic MOP:<programlisting>context Root
+  @Class ElasticClass extends Class
+  end</programlisting></para>
+
+      <para>ElasticObject must be a parent of any elastic
+      class:<programlisting>context ElasticClass
+  @Operation defaultParents()
+    Set{ElasticObject}
+  end</programlisting></para>
+
+      <para>The elastic slot access protocol inspects the slots table to see
+      if the required slot is defined there. If not then the protocol uses
+      super to revert to the default protocol inherited from
+      Class:<programlisting>context ElasticClass
+  @Operation getInstanceSlot(object,name)
+    if Kernel_getSlotValue(object,Symbol("slots")).hasKey(name)
+    then Kernel_getSlotValue(object,Symbol("slots")).get(name)
+    else super(object,name)
+    end
+  end
+
+context ElasticClass
+  @Operation setInstanceSlot(object,name,value)
+    if Kernel_getSlotValue(object,Symbol("slots")).hasKey(name)
+    then Kernel_getSlotValue(object,Symbol("slots")).put(name,value)
+    else super(object,name,value)
+    end
+  end
+
+context ElasticClass
+  @Operation hasInstanceSlot(object,name)
+    if Kernel_getSlotValue(object,Symbol("slots")).hasKey(name)
+    then true
+    else super(object,name)
+    end
+  end</programlisting></para>
+
+      <para>There is no specific need for sendInstance in the elastic
+      protocol, however it is defined for completeness and simply prints a
+      message before reverting to the default protocol:<programlisting>context ElasticClass
+  @Operation sendInstance(element,message,args)
+    format(stdout,"Sending message ~S(~{,~;~S~})~%",Seq{message,args});
+    super(element,message,args)
+  end</programlisting></para>
+
+      <para>There is no specific need for new in the elastic protocol, however
+      it is defined for completeness and simply prints a message before
+      reverting to the default protocol:<programlisting>context ElasticClass
+  @Operation new(args)
+    format(stdout,"Creating a new instance of an elastic class~%");
+    super(args)
+  end</programlisting></para>
+
+      <para>The following is an example class definition that specifies its
+      meta-class as ElasticClass:<programlisting>context Root
+  @Class C metaclass ElasticClass
+    @Attribute s : Element end
+    @Operation test()
+      self.addSlot("x",100);
+      self.addSlot("y",200);
+      self.addSlot("z",300);
+      self.x := self.x + 1;
+      self.y := self.y + 1;
+      self.z := self.z + 1;
+      self.incAll();
+      self.s := self.x + self.y + self.z;
+      self.removeAll();
+      s
+    end
+  end</programlisting></para>
+    </section>
+  </section>
+</chapter>

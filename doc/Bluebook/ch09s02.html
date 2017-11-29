@@ -1,0 +1,38 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Some Useful Operations</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch09.html" title="Toolbar Menus and Initialisation Files"><link rel="prev" href="ch09s01.html" title="Toolbar menus"><link rel="next" href="ch09s03.html" title="Initialisation Files"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id646121"></a>Some Useful Operations</h2></div></div></div><p>The following are examples of useful operations that are typically
+    used in menus.</p><p>This is an example of a menu that is used to load one or more .xar
+    files in your projects directory, MyProjects, via a Demo menu:</p><pre class="programlisting">xmf.addDropDownMenuItem(Seq{"&amp;Demo","Main","Load Model"},
+  @Operation()
+    @Busy("Loading Model")
+      xmf.projectManager().getElement("MyProjects").loadMosaicProject(xmf.projDir() + "/Dir/File.xar",false)
+    end
+  end);</pre><p>This is an example of a menu that is used to load one or more
+    compiled .o files:</p><pre class="programlisting">xmf.addDropDownMenuItem(Seq{"&amp;Demo","Main","Load Model"},
+  @Operation()
+    @Busy("Loading Model")
+      xmf.projectManager().getElement("MyProjects").loadMosaicProject(xmf.projDir() + "/Dir/File.xar",false)
+    end
+  end); </pre><p>This example enables a specific file to be edited after selecting it
+    using a file chooser. Note, the following two examples need to import the
+    XmfFileTree (as shown in the next section).</p><pre class="programlisting">xmf.addDropDownMenuItem(Seq{"&amp;Demo","Main","Edit File"},
+  @Operation()
+    let file = xmf.openFile(xmf.projDir(),"*.xmf") in
+      if file.fileExists() then
+        XmfFile(null,file).editText()
+      end
+    end
+  end); </pre><p>This example enables a specific file to be selected and then
+    compiles and loads it: Note the use of the string operation splitBy. This
+    splits a file name around the "." into a sequence, the head of which is
+    the preceding part of the file name.</p><pre class="programlisting">xmf.addDropDownMenuItem(Seq{"&amp;Demo","Main","Compile and Load File"},
+  @Operation()
+    let file = xmf.openFile(xmf.projDir(),"*.xmf") in
+      if file.fileExists() then
+        @Busy("Compiling and loading "+file)
+          let filename = file-&gt;splitBy(".",0,0)-&gt;head in
+            Compiler::compileFile(file,true,true);
+            (filename + ".o").loadBin()
+          end
+        end
+      end
+    end
+  end); </pre></div><p></p><p><img src="copyright.gif"></p></body></html>

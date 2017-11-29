@@ -1,0 +1,57 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Other Aspects of Mappings</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch19.html" title="XMap"><link rel="prev" href="ch19s07.html" title="Example"><link rel="next" href="ch20.html" title="XML"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id685231"></a>Other Aspects of Mappings</h2></div></div></div><p></p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id611097"></a>Operations</h3></div></div></div><p>XMap mappings can have operations. As an example, let&#8217;s add an
+      operation to the Attribute2Column mapping that updates the name of a
+      column.</p><p>An operation is added as usual by right clicking on the mapping
+      (in the browser or the diagram) and selecting New &gt; Operation. An
+      operation is added to the mapping. Let&#8217;s call this
+      setColumnName():</p><div class="mediaobject"><img src="Part3/XMap/Images/image052.jpg"></div><p>The body of the operation is as follows:</p><div class="mediaobject"><img src="Part3/XMap/Images/image054.jpg"></div><p>The Attribute to Column mapping can be modified to use this
+      operation:</p><div class="mediaobject"><img src="Part3/XMap/Images/image056.jpg"></div><p>Note self is required as it is referring to the instance of the
+      mapping.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id646139"></a>Attributes</h3></div></div></div><p>Just like classes, mappings may have attributes. These are a
+      useful way of recording information about a mapping. To add an
+      attribute, right click on the mapping and select New &gt; Attribute (for
+      a primitive typed attribute) or draw an attribute line form the mapping
+      to the class. The following example shows how an Integer attribute can
+      be used to store a count of the classes that where mapped by a specific
+      mapping:</p><pre class="programlisting">@Clause Clause0
+    p = ClassModels::Package[
+       classes = C,
+       associations = A]
+  do
+    self.count := classes.size;
+    DatabaseModels::Tables[
+      tables = T]
+  where</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id607011"></a>Variable Passing</h3></div></div></div><p>Variables can be bound with patterns as follows:</p><pre class="programlisting">@Clause Clause0
+    p = ClassModels::Package[
+       classes = C,
+       associations = A]
+  do
+    DatabaseModels::Tables[
+      tables = T]
+  where
+      T = C-&gt;collect(c |
+          ClassToTable()(p,c)) 
+end</pre><p>The variable p is bound to the Package that is passed to the
+      mapping. This can be used to pass the package to any other part of the
+      mapping. In this case, it is passed to the ClassToTable mapping as a
+      second argument. As this example shows, variable passing is useful when
+      values have to be passed through mappings. For instance, the following
+      ClassToTable mapping could utilize the passed package to prefix the name
+      of the generated Table: Note that the clause now expects two patterns as
+      input, a Package and a Class, and that these must have a comma to
+      separate them.</p><pre class="programlisting">@Clause Clause0
+  ClassModels::Package[name = N],
+  ClassModels::Class[
+        name = className,
+        attributes = 
+         ...
+  do
+  DatabaseModels::Table[
+    name = P.name + &#8220;::&#8221; + className,
+    key = DatabaseModels::Key[
+             column = c],
+    columns = C-&gt;including(c)].setOwnership()
+  where
+    c = DatabaseModels::Column[ 
+          name = attName,
+          type = "Integer"];
+    C = Attribute2Column()(A)
+end</pre></div></div><p></p><p><img src="copyright.gif"></p></body></html>

@@ -1,0 +1,215 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Program Constructs</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch21.html" title="XOCL"><link rel="prev" href="ch21s02.html" title="Basic Data Types"><link rel="next" href="ch21s04.html" title="Documentation"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id582759"></a>Program Constructs</h2></div></div></div><p>As described above, XOCL programs consist of units. Each unit
+    contains parser declarations followed by name space imports and then a
+    sequence of commands and definitions. Both commands and definitions
+    contain general XOCL expressions; an expression is the basic component of
+    an XOCL language construct. All XOCL language features are evaluated to
+    produce a value; in addition some features produce a side effect as a
+    result of evaluation. Expressions fall into a small number of different
+    categories depending on how they are evaluated. This section provides an
+    overview of XOCL program features and their evaluation mechanisms.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id634424"></a>Self Evaluating Expressions</h3></div></div></div><p>The simplest type of XOCL expression is self evaluating, these are
+      often referred to as constants and include integer, string, Boolean and
+      float literals. In addition, the empty sequence Seq{} and the empty set
+      Set{} are self evaluating.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id667614"></a>Variables and Update</h3></div></div></div><p>A name is an XOCL expression that evaluates to a value depending
+      on the association that the name has in the current context. In general,
+      names refer to variable locations that contain values and are often
+      referred to as variables. XOCL supports three types of variable: local,
+      global and slot. Examples of local variables are operation parameters
+      and let-introduced names. Examples of global variables are names that
+      have been imported from name spaces. Slot variables refer to the state
+      of the currently executing object.</p><p>Slot variables may be qualified or unqualified. A qualified
+      reference includes the object that contains the slot followed by dot (.)
+      and the name of the slot. An unqualified reference is just the name of
+      the slot: such a reference assumes the object containing the slot to be
+      self.</p><p>Global variable references occur may be qualified or unqualified.
+      A qualified reference references the global variable via some or all of
+      its containing name spaces; this is similar to a path in a file system.
+      For example P::Q::V refers to the variable V in the name space Q which
+      itself is contained in the name space P. The name space P is assumed to
+      be available at the point of reference because it is imported. An
+      unqualified reference to a global variable does not include any
+      containing name spaces: they must be imported at the point of
+      reference.</p><p>Variables may be updated using the := operator. The left hand
+      operand must be a variable and the right hand operator must be an
+      expression. The expression is evaluated and the resulting value is
+      placed in the variable location. Slot updates must use qualified slot
+      variables. Global updates must use qualified global variables.</p><p>The following class definition contains examples of all types of
+      variable reference and update:</p><pre class="programlisting">context P
+  @Class C extends D, Q::E
+    @Attribute v : Element end
+    @Operation getV():Element
+      v
+    end
+    @Operation setV(newV:Element)
+      P::lastGoodV := self.v;
+      self.v := newV
+    end
+    @Operation lastGoodV():Element
+      import P
+      in lastGoodV
+      end
+    end
+  end</pre><p>Line 1 is an unqualified global reference to the name space P.
+      Line 2 contains an unqualified global reference to D and a qualified
+      global reference to E. Line 5 is an unqualified slot reference to v.
+      Line 8 contains a qualified global update for lastGoodV and a qualified
+      slot reference to v. Line 9 contains a qualified slot update for v and a
+      local reference to newV. Line 13 contains an unqualified global
+      reference to P and line 14 contains an unqualified global reference
+      (since it has been imported) to lastGoodV.</p><p>Local variables are typically created when values are supplied as
+      arguments to an operation or when local definitions are executed. The
+      association between the Local variable name and the value persist for
+      the duration of the operation definition or the execution of the body of
+      the local block. In both cases, as the name suggests, variable values
+      can change by side effect.</p><p>Local variables are established when arguments are passed to an
+      operation or using a let expression. In both cases the variable can be
+      referenced in the body of the expression, but not outside the body. In
+      both cases the variables can be updated using v := e. Suppose we require
+      an operation that takes two integers and returns a pair where the head
+      is the smallest integer and the tail is the other integer:</p><pre class="programlisting">context Root
+  @Operation orderedPair(x,y)
+    let min = 0;
+        max = 0
+    in if x &lt; y then min := x else min := y end;
+       if x &gt; y then max := x else max := y end;
+       Seq{min | max}
+    end
+  end</pre><p>The definition of orderedPair shows how a let expression can
+      introduce a number of variables (in this case min and max). If the let -
+      bindings are separated using ; then the bindings are established
+      in-parallel meaning that the variables cannot affect each other (i.e.
+      the value for max cannot refer to min and vice versa). If the bindings
+      are separated using then they are established in-series meaning that
+      values in subsequent bindings can refer to variables in earlier
+      bindings, for example:</p><pre class="programlisting">context Root
+  @Operation orderedPair(x,y)
+    let min = if x &lt; y then x else y end then
+        max = if min = x then y else x end
+    in Seq{min | max}
+    end
+  end</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id660536"></a>Calling Operations</h3></div></div></div><p>An operation is invoked by directly invoking it on some argument
+      values or by sending an object a message for which the operation has
+      been defined as the handler. The two types of invocation use the same
+      underlying evaluation machinery, but are syntactically very different.
+      In both cases there is only one parameter passing mechanism: values are
+      passed into the operation and values with state can be modified by the
+      operation. Variables cannot be modified in the sense of Pascal or Ada
+      out parameters. The parameter passing mechanism is directly equivalent
+      to that of Java.</p><p>Operations are applied to arguments using the conventional
+      procedure call notation:</p><pre class="programlisting">p(arg1,arg2,&#8230;,argn)</pre><p>where p is an XOCL expression that evaluates to an operator and
+      each argi is an XOCL expression that evaluates to produce an argument
+      value.</p><p>Messages are sent to a value using the conventional method
+      invocation notation:</p><pre class="programlisting">o.m(arg1,arg2,&#8230;,argn)</pre><p>where o is an XOCL expression that evaluates to produce a value
+      (the receiver), m is a name and argi are the operation parameter
+      expressions. To calculate the operation that is invoked, XOCL finds the
+      type of o, and calculates its operator precedence list (OPL). The OPL
+      contains all the operators defined by the type of o with the name m in
+      order of most recently defined (with respect to inheritance) first. The
+      first operation in the OPL is invoked.</p><p>The receiver of a message defines the value of self in the body of
+      the operation invocation. In the case of direct operator application,
+      the value of self is that which was in scope when the operator was
+      defined. The value of self can be changed by sending the operation an
+      invoke message:</p><pre class="programlisting">p.invoke(o,Seq{arg1,arg2,&#8230;,argn})</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id675840"></a>Infix Operators</h3></div></div></div><p>XOCL supports infix notation for the usual arithmetic and boolean
+      operators. In most cases the evaluation of an infix expression will
+      evaluate both sub-expressions in left to right order and then perform
+      the appropriate function on the results. The exceptions are:</p><div class="itemizedlist"><ul type="disc"><li><p>p andthen q evaluates p, if p is false then q is not
+            evaluated, otherwise this behaves as p and q.</p></li><li><p>p orelse q evaluates p, if p is true then q is not evaluated
+            otherwise this behaves as p or q.</p></li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id617920"></a>Prefix Operators</h3></div></div></div><p>XOCL supports one prefix operator &#8211; not. Note that prefix &#8211; for
+      negative numbers is not supported (use infix &#8211; as in: 0-n).</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id657763"></a>Sequencing</h3></div></div></div><p>XOCL expressions may produce side effects, either by changing the
+      state of values, producing output or consuming input. Expression
+      evaluation is controlled using the semi-colon (;) operator that
+      sequences evaluation: e1; e2 is evaluated by evaluating e1 and then
+      evaluating e2. The result of the sequenced expression is the value of
+      e2. This operator associates to the right.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id648703"></a>Special Forms</h3></div></div></div><p>An XOCL special form is an expression that has its own evaluation
+      rules that do not necessarily follow the usual rules of sub-expression
+      evaluation followed by operator call. This section lists the special
+      forms and defines their evaluation rules.</p><div class="itemizedlist"><ul type="disc"><li><p>Conditional expressions are defined using standard
+          if&#8230;then&#8230;else&#8230;end notation. The test following the if is evaluated,
+          if it is true then the consequent expression is evaluated otherwise
+          the alternative expression is evaluated.</p></li><li><p>A definition occurs in a program unit as the keyword context
+          followed by a name space and a n expression whose value is a named
+          element. The definition causes the named element to be added to
+          thename space when it is performed. The only place this type of
+          definition can occur is at the top level of an evaluation
+          unit.</p></li><li><p>Local variables are introduced using a let expression: let
+          bindings in body end. The bindings introduce local variable names
+          and their initial values. The body is an XOCL expression whose
+          evaluation may reference the local variables. The variables are
+          discarded when the evaluation is complete and the value of the let
+          expression is the value of its body.</p></li><li><p>A set or sequence is constructed using the form
+          Set{exp1,exp2,&#8230;,expn} and Seq{exp1,exp2,&#8230;,expn}. The sub-expressions
+          are evaluated and the result is a set or sequence containing the
+          values.</p></li><li><p>XOCL is based on OCL which provides a number of convenient
+          types of iteration expression. These have the form: s-&gt;iterOp(v |
+          body) where s is an expression whose value is a set or sequence,
+          iterOp is one of forAll, exists, select, collect or reject, v is a
+          variable name and body is an expression. Depending on the iteration
+          operation the body expression is evaluated in a context where v is
+          bound to successive elements selected from s. A special form of
+          iteration expression is also provided: s-&gt;iterate(v w = e | body)
+          where w is initialized to e and body is evaluated with v bound to
+          successive elements of s; at each evaluation w is rebound to the
+          value produced by body.</p></li><li><p>OCL provides a notation for invoking sequence and set
+          operations: s-&gt;collOp and s-&gt;collOp(arg1,arg2,&#8230;,argn). These
+          are retained in XOCL for compatibility with OCL, but are unnecessary
+          since method calling notation works just as well.</p></li><li><p>A name space is imported for the scope of an expression e by
+          import n in e end. All of the names defined in n are available in
+          the expression e.</p></li><li><p>XOCL provides an exception mechanism for handling errors and
+          other exceptional circumstances during execution. An exception is
+          created and thrown from the point of error using a throw e command
+          (an example of an XOCL construct that does not behave like a
+          standard expression). The expression e is evaluated and can produce
+          any value. XCore provides a collection of exception classes that can
+          be used and extended. The exception is caught by the most recently
+          established try &#8230; catch(x) &#8230; end expression. The exception can be
+          handled in by the catch or may be re-thrown to the next try
+          expression.</p></li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id623639"></a>Quasi-Quotes</h3></div></div></div><p>XOCL is a language that provides features for meta-programming. A
+      key feature of meta-programming is language processing: the ability to
+      construct, transform and manipulate programs. XOCL provides quasi-quotes
+      [| and |] for this purpose. Quasi-quotes can be placed around any XOCL
+      expression e (including XOCL language extensions), the value of the
+      resulting expression [| e |] is the syntax structure for e (as opposed
+      to the value of e). For example: the value of [| x + 1 |] is not an
+      integer, but a syntax structure representing an addition expression
+      whose operator is + and whose left operand is a variable with name x and
+      whose right operand is the constant 1.</p><p>Within quasi-quotes any expression surrounded by drop braces &lt;
+      and &gt; is expected to produce syntax that is inserted into the syntax
+      structure constructed by the quotes. For example:</p><pre class="programlisting">let e = [| x + 1 |]
+in [| y * &lt;x&gt; |]
+end</pre><p>line 1 creates a syntax structure called e that is then inserted
+      into the syntax structure as the right operand of the multiplication
+      expression in line 2. The resulting structure is equivalent
+      to:</p><pre class="programlisting">[| y * (x + 1) |]</pre><p>Quasi quotes and drop braces are very important when
+      meta-programming with languages. They make constructing code templates
+      very easy. Code templates are used to construct XOCL language extensions
+      and to facilitate mappings that translate from one language to
+      another.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id562870"></a>The Meta Character @</h3></div></div></div><p>XOCL is an extensible language. New language features are easy to
+      add to XOCL to provide new expression types, new command and new
+      declarative definitions. A big problem of current programming languages
+      is that they cannot be extended very easily. Thus, it is not possible to
+      construct abstraction mechanisms that capture the key features of the
+      application domain. This results in large amounts of program code that
+      is difficult to maintain. Examples of such patterns are: new types of
+      looping construct; a state machine definition; the observer pattern; new
+      types of interface definition; coding standards; specific types of
+      classes such as containers.</p><p>XOCL provides a novel feature that allows new language constructs
+      to be conveniently added to the language. Once they are added, the new
+      features are seamlessly integrated with all other language constructs.
+      The language feature that supports this is the meta-character @.</p><p>When an XOCL unit is processed it is syntactically analysed and
+      then evaluated. During the syntax analysis phase, if an expression
+      starts with the character @ then the analyzer is informed that the
+      characters up to and including the corresponding end are to be processed
+      by a language extension. A language extension is defined by providing a
+      grammar that parses the characters from the @ to the end; the grammar is
+      expected to synthesize and return a syntax construct. Grammars can be
+      attached to classes and the name following the @ should be a class that
+      defines a grammar. A syntax construct is required to implement the
+      Performable interface that allows the second phase of XOCL unit
+      processing. These two features: grammars and Performable are all that is
+      necessary to allow XOCL to be arbitrarily extended with new
+      constructs.</p><p>Typically, syntax classes implement the Performable interface by
+      translating to existing XOCL syntax classes (that already implement the
+      Performable interface). This form of language extension is termed sugar
+      and the processif translation is called desugaring.</p><p>XOCL makes extensive use of the @ feature. Looping constructs such
+      as While, Find and For are all implemented as extensions of the basic
+      XOCL language. Definitions for classes, packages, constraints and
+      operations are defined using @.</p></div></div><p></p><p><img src="copyright.gif"></p></body></html>

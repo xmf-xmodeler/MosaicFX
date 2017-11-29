@@ -1,0 +1,11 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Mapping Hints and Tips</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch06.html" title="Constructing and Running Mappings"><link rel="prev" href="ch06s02.html" title="A Simple Model to C# Mapping"><link rel="next" href="ch06s04.html" title="Constructing a Pretty Printer"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id671217"></a>Mapping Hints and Tips</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id567743"></a>Error Reporting</h3></div></div></div><p>When running a mapping, all the usual exception reports will be
+      displayed if for example, the mapping attempts to set an invalid slot or
+      create an invalid instance. In addition, a MapFailed exception is raised
+      if mapping cannot find a clause that matches the input to the
+      mapping.</p><p>As an example, try running the mapping by passing an invalid
+      object, for instance a Class to the Package2CSProgram mapping. Because
+      the Package2CSProgram mapping is expecting a Package it will fail and
+      generate the following exception.</p><div class="mediaobject"><img src="Part2/Mappings/Images/mappingexception.jpg"></div><p>Additional information on the cause of the exception can be found
+      by expanding the tree nodes.</p><p>Here, the value being passed to the mapping can be seen in
+      local(0).</p><div class="mediaobject"><img src="Part2/Mappings/Images/expandedmappingexception.jpg"></div><p>Clearly, it is of the wrong type.</p><p>If we wanted to examine the passed object in more detail it can be
+      navigated to by double clicking on local(0).</p></div></div><p></p><p><img src="copyright.gif"></p></body></html>

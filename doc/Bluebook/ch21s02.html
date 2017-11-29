@@ -1,0 +1,48 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Basic Data Types</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch21.html" title="XOCL"><link rel="prev" href="ch21s01.html" title="Introduction"><link rel="next" href="ch21s03.html" title="Program Constructs"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id621086"></a>Basic Data Types</h2></div></div></div><p>XOCL is an object-oriented language that runs on the Ceteva Virtual
+    Machine (XVM) and uses a library of class definitions (written in XOCL)
+    called XCore. Most data types in XMF are represented as instances of XCore
+    classes; however, there is a sub-set of XCore, that is fundamental to XOCL
+    and its execution on XVM. These classes are the basic data types necessary
+    to run XOCL. They are listed here. Their interface definitions are given
+    in subsequent sections of this document.</p><div class="itemizedlist"><ul type="disc"><li><p>Booleans. A boolean value is either true or false. Booleans are
+        used to control branches in execution.</p></li><li><p>Clients. XMF-Mosaic can act as a client that connects to and
+        communicates with an external server. The connection is constructed
+        and maintained through a client value.</p></li><li><p>Channels. XOCL performs input and output through channels.
+        StandardInputChannel and StandardOutputChannel define interfaces that
+        are implemented by a wide variety of concrete classes that support
+        different forms of input and output; for example: file i/o.</p></li><li><p>Daemons. A daemon is a value that can be attached to an object
+        in XOCL that monitors the state of the object. A daemon is activated
+        when the object changes state.</p></li><li><p>Integers. Positive and negative integers in the range -24^2 to
+        +24^2.</p></li><li><p>Floats. 64 bit floating point numbers.</p></li><li><p>Null. The undefined value.</p></li><li><p>Objects. An object is a data value with slots. Each slot has a
+        name and a value. All data in XMF is represented in on the formats in
+        this list. Most data in XMF is represented as objects. All types
+        (classes) in XMF are objects and all types have their own
+        types.</p></li><li><p>Operations. An operation has a name, arguments and a body. The
+        body of the operation is XOCL program code. When the operation is
+        invoked, it is supplied with values for the arguments and it performs
+        its body. An operation invocation returns the value produced by the
+        body. Operations are the basis for all execution in XOCL. Operations
+        are proper values in the seinse that they can be passed as argument
+        values and stored in slots.</p></li><li><p>Sequences. XOCL provides lisp-like lists which it calls
+        sequences. A sequence is either a cons pair with a head and a tail or
+        is the empty sequence. Cons pairs have state such that the head and
+        the tail may be updated. Sequences provide a very flexible and
+        efficient way of organising collections of data that change over
+        time.</p></li><li><p>Sets. XOCL provides a data type for representing sets. A set is
+        like a sequence except that it has no state, its elements are
+        unordered and it cannot contain duplicates. Although sets can be
+        defined in terms of objects and sequences, they are provided as a
+        basic data type for efficiency reasons (on the rare occasions that
+        very large sets are necessary).</p></li><li><p>Strings. A string is a sequence of character codes. Two strings
+        are equal when they have the same sequence of character codes. A
+        string has no state.</p></li><li><p>Symbols. A symbol is a string with state. Two symbols are equal
+        when they are the same data value in computer memory. Symbols are very
+        similar to strings except they facilitate efficient name lookup in
+        dictionaries. Named elements in XCore use symbols.</p></li><li><p>Tables. A table associates keys with values. Keys have hash
+        codes that make lookup and update efficient in tables.</p></li><li><p>Threads. XOCL is multi-threaded. Each thread is a separate unit
+        of computation that can share global data with other threads. XOCL
+        multi-threading is provided to allow XMF to monitor interactions with
+        multiple clients (although could be used for a variety of tasks). It
+        is not expected that there would be more than 10 &#8211; 20 threads active
+        at any given time.</p></li><li><p>Vectors. Vectors are fixed size, indexable sequences of
+        values.</p></li></ul></div></div><p></p><p><img src="copyright.gif"></p></body></html>

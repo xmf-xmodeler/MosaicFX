@@ -1,0 +1,69 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Constructing an XTool Definition</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch10.html" title="Constructing a Diagram Tool for a Model in XTools"><link rel="prev" href="ch10s02.html" title="A Candidate Diagram Syntax"><link rel="next" href="ch10s04.html" title="Other XTool Capabilities"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id640391"></a>Constructing an XTool Definition</h2></div></div></div><p>Let's go through the process of constructing an XTool
+    definition.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id631246"></a>Creating the Tool Definition</h3></div></div></div><p>First, we need to create an XTool definition. This will contain
+      all the information needed to support the XTool..</p><p>To do this, simply right click on the class that represents the
+      root type of the model to be XTooled: In this case, it is the class
+      ComponentModel:</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/creatingatooldefinition.png"></div><p>Enter a name for the XTool, e.g. Components.</p><p>A new XTool definition will be created.This will be displayed in
+      the form editor and in the XTool browser.</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/tooltype.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id673917"></a>Adding a Node</h3></div></div></div><p>Two main types of diagram element can be added to the tool: nodes
+      and edges.</p><p>Let's create a node definition that represents a Component.</p><p>To do this, right click on the root type and select New &gt; Root
+      Node.</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/creatinganode.png"></div><p>A choice of elements to be displayed as nodes will be shown. In
+      this case, we want to select the Component element.</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/selectingacomponent.png"></div><p>The Component node is then added to the XTool:</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/componentadded.png"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id666990"></a>Adding a Box to the Node</h3></div></div></div><p>A Node on its own will not have a diagrammatical representation.
+      To enable this, we need to add a shape to it.</p><p>An Entity will be represented as a Box, so we'll add one to the
+      Component node. To do this right click on the Component node and create
+      a new box:</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/addingabox.jpg"></div><p>Boxes can be parameterised in a wide variety of ways. In this
+      case, we want the box to have a minimum width of 100, a minimum heights
+      of 50 and a corner curve of 30 degrees. To change this, right click on
+      the create box and select Edit. Change the properties as
+      required:</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/boxproperties.png"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id618309"></a>Adding an Attribute to the Box</h3></div></div></div><p>In order to be able to edit the name of the Component, we need an
+      Attribute text field. This can be added to the Box as follows:</p><p>Right click on the box and select New &gt; Attribute. Sele</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/addinganattribute.png"></div><p>Select the name attrbute from the drop down list. The new
+      attribute has been added to the box:</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/attributeadded.png"></div><p>A Text box is automatically added to the Attribute to display it's
+      value. It can be edited to view its properties.</p><p>We want to ensure that the text for the Attribute is centred in
+      the box. To do this, right click on the box and set its Layout to
+      Centre:</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/aligningthetext.png"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id629857"></a>Adding a Free Node</h3></div></div></div><p>A Free Node is a node whose class is not directly accessible from
+      the root class. In this example, Port is a free node.</p><p>To add a Free node, right cilck on the root element type and
+      select New &gt; Free Node. A list of all the packages available in the
+      system will be displayed. Select the Port class from the package
+      Components.</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/freenodeselect.png"></div><p>The node will be added to the browser.</p><p>We want to represent a Port as an Ellipse. An ellipse can be added
+      in the same way as a box:</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/addinganellipse.png"></div><p>We will need to adjust the size and colour of the ellipse. To
+      change its fill colour, right click and select Colour &gt; Fill
+      Colour.</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/changingfillcolour.png"></div><p>The size of the ellipse can be changed by editing the properties
+      of the Ellipse. In thie case, we want its height and width properties to
+      be 10 points, however, this is the default size, and we therefore don't
+      need to make any changes.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id678487"></a>Adding Tool Bars</h3></div></div></div><p>Toolbar groups and buttons need to be created to enable the
+      selection of a creation tool for the element.</p><p>To do this, right click on the Tool Bar node and select New Group.
+      Give the Group a name, e.g. Components:</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/firsttoolbarelement.png"></div><p>This provides a tool bar group, under which a number of tool bar
+      buttons can be added.</p><p>Let's create a button for adding Component nodes. Right click on
+      the Component group and select New &gt; Node Button. Choose
+      Root(component:Component) from the list. Change the name of the button
+      to be "Component".</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/newnodebutton.png"></div><p>Follow exactly the same steps to add a button for Port
+      nodes.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id659656"></a>Running the Tool</h3></div></div></div><p>One of the powerful features of XTools is that there is no compile
+      cycle involved in running a tool. This makes testing a very dynamic and
+      iterative process.</p><p>Let's run the tool we have built so far.</p><p>First, Save the XTool (right click on the Root Node and select
+      Save) so that it is backed up.</p><p>Next right click on the Object node in the XTool browser (select
+      Browse &gt; XTools Browser if you cannot see it in the browser) and
+      select Add Element &gt; ComponentModel to create an instance of the
+      ComponentModel class.</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/runningtool.jpg"></div><p>A ComponentModel object will be created. To show its diagram
+      select it and right click Create Diagram &gt; Component.</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/addingadiagram.png"></div><p>A new diagram editor for the tool will be displayed. Note that the
+      relevant tool bar and buttons are now available for adding Component and
+      Port nodes to the tool.</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/firsttool.png"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id641272"></a>Adding Edges</h3></div></div></div><p>Another type of diagram element is an Edge (a connection between
+      Nodes). Edge definitions can be added to the tool in a similar way to
+      Node definitions.</p><p>Edges come in two types:</p><div class="itemizedlist"><ul type="disc"><li><p>Associations, which map to a class that acts as a relationship
+          between elements.</p></li><li><p>Links, which map to an attribute of a class.</p></li></ul></div><p>We want to represent a Connector as an Association between Ports.
+      To do this, we add an Association to the tool definition as
+      follows:</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/creatinganassociation.png"></div><p>A choice of collections that the Association will map to will be
+      displayed. Select the connectors collection.</p><p>An Association may define the shape of its ends, and in this case
+      we can chose to make its target end an arrowhead by setting the target
+      arrow of the edge to be a simple arrow.</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/settingthearrowtype.png"></div><p>The second edge to add to the tool is the link between a Component
+      and a Port which corresponds to the ports attribute of the Component
+      class.</p><p>To do this, add a new Link to the tool using the New menu.</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/addingalink.png"></div><p>Select the source of the Link (in this case the class Component),
+      then select the attribute that will map to the link (in this case the
+      attribute ports). The resulting tool is shown below:</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/linkadded.png"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id646982"></a>Adding Edge Toolbar Buttons</h3></div></div></div><p>Edge tools bar buttons can be added in exactly the same as node
+      buttons. Here the two edge buttons corresponding to the Port Link and
+      Connector Association have been added.</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/edgebuttonsadded.png"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id668973"></a>Adding Menus</h3></div></div></div><p>It is possible to add menus to all diagram elements for performing
+      a wide variety tasks. For example, Edit and Delete menu items, or menu
+      items that perform specific XOCL commands.</p><p>To add a menu item, select an element and right click on its Menu
+      to add a New menu item. Here two menus have been added. An Edit menu
+      item to the tool diagram and a Delete menu item to the Component
+      node.</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/addingadeletemenu.png"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id644275"></a>Re-running the tool</h3></div></div></div><p>We can re-run the tool to test out it's functionality.</p><div class="mediaobject"><img src="Part2/VisualSyntax/Images/secondtool.png"></div><p>Running Edit, will show the property editor for the ComponentModel
+      instance being managed by the tool.</p><p>This is just the start of developing a fully blown tool.
+      Additional menus and diagram elements can be added very flexibly and
+      tested interatively.</p></div></div><p></p><p><img src="copyright.gif"></p></body></html>

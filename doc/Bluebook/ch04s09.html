@@ -1,0 +1,38 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Collections</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch04.html" title="An Introduction to XOCL"><link rel="prev" href="ch04s08.html" title="Navigation"><link rel="next" href="ch04s10.html" title="Logical Expressions"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id666860"></a>Collections</h2></div></div></div><p>XOCL provides two main types for managing collections of elements:
+    Sets and Sequences.</p><p>The value of a Sequence and Set are represented by the following
+    literals:</p><pre class="programlisting">Set{v1,v2,..} // The set containing the elements v1, v2, ..
+Seq{v1,v2,..} // The sequence containing the ordered elements v1, v2, ..</pre><p>As an example, try entering the following into the console:</p><pre class="programlisting">Set{"bill","ed","hilda"};
+Seq{1,2,3,4};</pre><p>Sets and Sequences can also contain objects and other values,
+    including other sets, sequences, etc.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id618295"></a>Collection Operations</h3></div></div></div><p>XOCL provides a number of OCL based operations for dealing with
+      collections of objects. These are important when dealing with the
+      results of navigating over models.</p><p>The three primary operations are select, collect and
+      iterate.</p><p>XOCL uses the "-&gt;" notation to denote the application of an
+      operation on a collection, e.g. collection-&gt;select(c |
+      expression)</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id617114"></a>Select</h4></div></div></div><p>Select filters a collection. It has the following syntax:</p><pre class="programlisting">collection-&gt;select(var | expression_with_var)</pre><p>Selects just those elements of the collection that satisfy the
+        expression. The variable var is bound to each element in turn.</p><p>The following operation makes use of select to return only those
+        connectors whose source and target ports don't match:</p><pre class="programlisting">context ComponentModel
+  @Operation dontMatch()
+    connectors-&gt;select(c |
+      c.source.type &lt;&gt; c.target.type)
+  end</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id645463"></a>Collect</h4></div></div></div><p>Collect builds a collection of values. It has the following
+        syntax:</p><pre class="programlisting">collection-&gt;collect(var | expression_with_var)</pre><p>Collects the result of evaluating the expression. The variable
+        var is bound to each element in turn.</p><p>The following operation makes use of collect to return the set
+        of port names associated with all components:</p><pre class="programlisting">context ComponentModel
+  @Operation portNames()
+    components.ports-&gt;collect(p | p.name))
+  end</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id651729"></a>Iterate</h4></div></div></div><p>Accumulate a collection of values. It has the following
+        syntax:</p><pre class="programlisting">collection-&gt;iterate(var acc=expression | expression_with_var)</pre><p>Accumulates the result of evaluating an expression in the
+        variable acc. The variable var is bound to each element in turn. The
+        inital value of acc is expression.</p><p>The following operation makes use of iterate to accumulate the
+        total number of ports of type t:</p><pre class="programlisting">context ComponentModel
+  @Operation numberOfPorts(t:String)
+    components-&gt;iterate(c tot=0 |
+      tot + (c.ports-&gt;select(p | p.type = t)-&gt;size))
+  end</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id644069"></a>Other Operations</h4></div></div></div><p>XOCL many other useful collection operations. Here are a few of
+        the most commonly used.</p><pre class="programlisting">collection-&gt;size() // Returns the number of elements in the collection
+collection-&gt;includes(x) // Returns true if the collection includes x
+collection-&gt;including(x) // The result of including x in the collection</pre><p>Some operations relate specifically to Sequences or Sets. The
+        following are some common Sequence operations:</p><pre class="programlisting">sequence-&gt;head() // Returns the value at the head of the sequence
+sequence-&gt;tail() // Returns the tail of the sequence
+sequence + sequence // The concatenation of two sequences
+sequence-&gt;asSet // Turns a sequence into a set</pre></div></div></div><p></p><p><img src="copyright.gif"></p></body></html>

@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"-->
+<chapter id="programming">
+  <title>Using the Programming Interface</title>
+
+  <para>This section shows how to use the programming interface to construct
+  some of the models described above. We will add use the programming
+  interface (see Part 1 of this guide) to construct the code.</para>
+
+  <section>
+    <title>Getting Started</title>
+
+    <para>Select File Browser .. from the File menu. Choose a directory (or
+    create one), where you want the code to reside.</para>
+
+    <para>Right click on the directory and choose New XMF File From Template
+    &gt; Package to create an XMF file.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/createafile.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>The file will contain the default declarations needed to construct
+    an XMF package definition. Change the name of the file to
+    Components.xmf.</para>
+
+    <para>We will be creating a package in the context of the Root package, so
+    make sure that the context is set to Root. There are no imports.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/newfile.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>Code can now be entered for each of the classes in the model. For a
+    detailed guide to XOCL and XMF classes and package see Part 3 of this
+    guide.</para>
+
+    <para>The following code constructs the classes used in the Airports
+    model. Note that constructors have been added for each class, and that
+    attributes have getters (?) and setters (!), and in the case of Set and
+    Sequence types, updators (+) and removers (-).</para>
+
+    <programlisting>parserImport XOCL;
+
+context Root
+  @Package Components
+  
+    @Doc The Components model end
+  
+    @Class ComponentModel 
+
+      @Attribute components : Set(Component) (?,!,+,-) end
+      @Attribute connectors : Set(Connector) (?,!,+,-) end
+
+      @Constructor(components,connectors) end
+    
+    end
+     
+    @Class Component extends NamedElement
+
+      @Attribute owner : ComponentModel (?,!,+,-) end
+      @Attribute ports : Set(Port) (?,!,+,-) end
+
+      @Constructor(ports,owner,name) end
+      
+    end
+     
+    @Class NamedElement isabstract 
+
+      @Attribute name : String (?,!) end
+
+      @Constructor(name) ! end
+
+    end
+      
+    @Class Connector 
+
+      @Attribute target : Port (?,!) end
+      @Attribute source : Port (?,!) end
+
+      @Constructor(target,source) ! end
+
+    end
+    
+    @Class Port extends NamedElement
+
+      @Attribute type : String (?,!) end
+
+      @Constructor(type,name) ! end
+
+    end
+  end</programlisting>
+  </section>
+
+  <section>
+    <title>Compiling and Loading</title>
+
+    <para>At any point, right click on the editor and select Save, Compile and
+    Load to save, compile and load the model.</para>
+  </section>
+
+  <section>
+    <title>Checking the Model</title>
+
+    <para>The contents of the model can be checked in the property editor by
+    editing the package via the console.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/editingthepackage.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>To view the package in the browser, enter the package name,
+    Airports, followed by .browse().</para>
+  </section>
+
+  <section>
+    <title>Adding Constraints</title>
+
+    <para>Constraints can be added by using the @Constraint end
+    declaration.</para>
+
+    <para>As an example, let’s add a constraint that checks for source and
+    target port types:</para>
+
+    <programlisting>   @Class Connector 
+
+      @Attribute target : Port (?,!) end
+      @Attribute source : Port (?,!) end
+
+      @Constructor(target,source) ! end
+
+      @Constraint ValidPortTypes
+        source.type = target.type
+      end
+
+    end</programlisting>
+  </section>
+
+  <section>
+    <title>Adding Operations</title>
+
+    <para>Operations can be added in exactly the same way: This operation
+    returns all the connectors whose port types don't match</para>
+
+    <programlisting>   @Class ComponentModel 
+
+      @Attribute components : Set(Component) (?,!,+,-) end
+      @Attribute connectors : Set(Connector) (?,!,+,-) end
+
+      @Constructor(components,connectors) end
+
+      @Operation dontMatch()
+        connectors-&gt;select(c |
+          c.source.type &lt;&gt; c.target.type)
+      end
+    end</programlisting>
+  </section>
+
+  <section>
+    <title>Context</title>
+
+    <para>A context is a powerful device for adding new elements to a class or
+    package. It enables different aspects of an element to be separated out
+    and declared elsewhere.</para>
+
+    <para>To use a context, first declare the context, and then the element
+    that is to be added to it. For example, we can add the ValidPortTypes
+    constraint using a context.</para>
+
+    <programlisting>context Connector      
+      @Constraint ValidPortTypes
+        source.type = target.type
+      end
+</programlisting>
+
+    <para>Note, this must be declared outside of the Airports package
+    declaration to be syntactically valid.</para>
+
+    <para>In general, any element that has an owner can make use of context,
+    including attributes, operations, classes and packages.</para>
+  </section>
+
+  <section>
+    <title>Importing Packages</title>
+
+    <para>Import declarations enable the contents of other packages to be
+    imported so that they can be referenced by other elements. For instance,
+    let’s say we wanted to separate out the constraints of the Components
+    model from the class. We can create a new file called ComponentsCons.xmf
+    that contains the constraints:</para>
+
+    <para>Provided that we have loaded the Components package, we can compile
+    and run the new file and the constraints will be added to the appropriate
+    classes.</para>
+
+    <programlisting>parserImport XOCL;
+
+import Components;
+
+context Connector
+
+  @Constraint ValidPortTypes
+        source.type = target.type
+      end</programlisting>
+
+    <para>Imports are transitive, and can be used to any depth.</para>
+  </section>
+</chapter>

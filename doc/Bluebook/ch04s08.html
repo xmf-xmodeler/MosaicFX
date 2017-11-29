@@ -1,0 +1,21 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Navigation</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch04.html" title="An Introduction to XOCL"><link rel="prev" href="ch04s07.html" title="Types"><link rel="next" href="ch04s09.html" title="Collections"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id643391"></a>Navigation</h2></div></div></div><p>The dot notation &#8220;.&#8221; is used to navigate down attribute values. It
+    has the form:</p><pre class="programlisting">obj.attribute_name</pre><p>The result of the navigation depends on the type of the attribute.
+    If the attribute type is a Set, then a set of elements will be returned.
+    If the type is a Sequence, a sequence of elements will be returned.</p><p>In the case of a class model, this means that navigating down
+    attributes and association ends of multiplicity * and {ordered} will
+    return a set or a sequence of objects respectively. For example, the
+    following operation will return the result of navigating down the
+    components attribute of a ComponentModel, and will return a set of
+    components. Note the use of self is optional when navigating down
+    attributes and associations.</p><pre class="programlisting">context ComponentModel
+  @Operation components()
+    self.components
+  end</pre><p>The dot notation can be applied multiple times. In XOCL, the result
+    of navigating down multiple attributes whose types are sets or sequences
+    is not sets of sequences, etc, but the result of flattening the resultant
+    values. For example, the following expression will return the set of Ports
+    associated with all the components belonging to the component
+    model:</p><pre class="programlisting">context ComponentModel
+  @Operation components()
+    self.components.ports
+  end</pre></div><p></p><p><img src="copyright.gif"></p></body></html>

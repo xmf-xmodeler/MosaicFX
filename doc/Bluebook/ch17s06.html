@@ -1,0 +1,164 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>New Performable Elements</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch17.html" title="Working with Syntax"><link rel="prev" href="ch17s05.html" title="Quasi-Quotes"><link rel="next" href="ch18.html" title="XCore"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id657791"></a>New Performable Elements</h2></div></div></div><p></p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id689751"></a>Introduction</h3></div></div></div><p></p><div class="mediaobject"><img src="Part3/Syntax/Images/image058.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id706576"></a>Sugar</h3></div></div></div><p></p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id642550"></a>Introduction</h4></div></div></div><p>It is usually the case that new syntax constructs can be
+        implemented by translating to existing syntax constructs. The
+        translation is often referred to as desugaring. It is convenient to
+        create an instance of a new syntax class and then to desugar when the
+        construct when XMF performs an evaluation or compilation request on
+        the instance. By leaving the desugaring step to the last possible
+        moment, the structure of the original syntax construct is retained for
+        as long as possible.</p><p>Grammars that synthesize instances of new syntax classes can
+        then use operations defined on the classes to implement the desugaring
+        step. The classes can be as complex or as simple as required. In the
+        limit, a sugared syntax class can implement a complete compiler for a
+        complex new syntax construct, where the compiler produces performable
+        elements.</p><p>XMF provides a sub-class of XCore::Performable called
+        XOCL::Sugar that implements evaluation and compilation in terms of a
+        call to an operation desugar. The desugaring operation performs a
+        mapping from the receiver to a new performable object that already
+        implements the evaluation or compilation. This section describes how
+        to use XOCL::Sugar.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id680269"></a>Guarded Statements</h4></div></div></div><p>Consider a new language feature that implements a guarded
+        statement. A guarded statement is to be implemented as an if
+        expression with no else clause. The following is an example of its
+        use:</p><pre class="programlisting">@When passengers &gt; 63 do
+  format(stdout,&#8221;Too many people on the bus.~%&#8221;)
+end</pre><p>The conditional statement is implemented as a sugared syntax
+        class whose desugar operation produces the equivalent if
+        expression:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image060.jpg"></div><p>The grammar for a when-statement synthesizes an instance of the
+        When class:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image062.jpg"></div><p>The desugar operation produces an instance of performable for a
+        lower-level construct. In this case we produce an if expression and
+        lose the fact that the then-part was guarded and the else-part was
+        inserted.</p><div class="mediaobject"><img src="Part3/Syntax/Images/image064.jpg"></div><p>By providing a pprint operation in the syntax class for When we
+        will see the original statement in any source code that is saved by
+        the XMF compiler:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image066.jpg"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id629326"></a>Conditional Expressions</h4></div></div></div><p>Suppose we are developing a system that involves testing a large
+        number of conditions. The conditions can be tested using nested
+        if-expressions, however this gets difficult to read as the number of
+        nested expressions increases. Suppose that XMF did not provide an
+        elseif keyword as part of an if-expression and that, therefore, there
+        is a requirement for a tabular conditional expression of the following
+        form:</p><pre class="programlisting">@Cond
+  self.inRange(x,0,m) do
+    self.tooLow(x)
+  end
+  self.inRange(x,m,n) do
+    self.justRight(x)
+  end
+  self.inRange(x,n,infinity) do
+    self.tooHigh(x)
+  end
+end</pre><p>where each clause is tried in turn until a test evaluates to
+        true whereupon the corresponding action is performed.</p><p>We can implement the conditional expression above using sugar as
+        follows:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image068.jpg"></div><div class="mediaobject"><img src="Part3/Syntax/Images/image070.jpg"></div><p>Notice that the cond-expression synthesizes instances of
+        CondClause in line 41 as part of the overall synthesis of a Cond. This
+        is typical of a sugared construct which needs to represent internal
+        structure prior to the desugaring process. The instances of CondClause
+        are transient and exist only long enough to process the containing
+        Cond. In general, many such transient objects may be created when
+        processing sophisticated sugared constructs.</p><p>A cond-expression is desugared into a nested
+        if-expression:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image072.jpg"></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id684717"></a>Syntax</h3></div></div></div><p></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id570690"></a>Exp</h3></div></div></div><p></p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id606341"></a>Introduction</h4></div></div></div><p></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id631711"></a>State Machines</h4></div></div></div><p>State machines are ubiquitous in Software Engineering. Whilst
+        the basic notion of a state machine is very simple (the idea that
+        components have a number of states and execution occurs when the
+        component changes from one state to another) there are a huge number
+        of ways in which state machines are implemented and deployed.</p><p>Fortunately, XMF-Mosaic makes it very easy to construct a state
+        machine model and to define its semantics. This section shows how
+        XCore::Class can be extended to provide states and transitions. The
+        example shows a number of technologies:</p><div class="itemizedlist"><ul type="disc"><li><p>A new language for defining state machines. The language
+            provides constructs for state machines; states; initial states and
+            transitions. Transitions have guards and actions both of which are
+            implemented using the XOCL::Exp.</p></li><li><p>Meta-classes. The class StateMachine is an extension of
+            XCore::Class and as such supports class-contents such as
+            attributes and operations. The new meta-class defines attributes
+            for states and transitions and a number of meta-operations for
+            running the state machine against objects with state.</p></li><li><p>Daemons. An instance of a state machine class is an object
+            with state. A state machine monitors changes in the state of its
+            instances by placing a daemon on each instance. When the daemon
+            fires, the state machine determines whether any of its transitions
+            are enabled and performs any enabled actions.</p></li></ul></div><p>The following model shows the classes in the state machine
+        language:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image074.jpg"></div><p>The key features of the model are as follows:</p><div class="itemizedlist"><ul type="disc"><li><p>Instances of StateMachine are classes with states and
+        transitions. Therefore we can have instances of state machines.</p></li><li><p>The class ObjectWithState is defines to be a parent of any state
+        machine. This class defines an attribute state that records the
+        current state of the state machine instance.</p></li><li><p>Transitions have predicates and actions that are implemented as
+        expressions. The expressions will be run against an object with state
+        when it changes.</p></li></ul></div><p>The model above defines a domain specific language for
+        representing state machines. In addition to defining the structure of
+        state machines, the model defines the executable semantics for state
+        machines. Before showing how the semantics is defined, we give two
+        examples of how state machines are used to implement simple
+        applications. The first example shows traffic lights and the second
+        example shows a vending machine.</p><p>The following state machine implements a simple traffic light
+        system: </p><div class="mediaobject"><img src="Part3/Syntax/Images/image076.jpg"></div><p>Line 6 introduces a state machine and names it. State machines
+        may contain the same elements as classes and line 12 and 13 define the
+        state that is manipulated by the state machine. The event attribute is
+        monitored by the state machine and corresponds to events received from
+        an external source such as a timer.</p><p>Lines 17 &#8211; 20 define the states for the machine. At any time an
+        instance of TrafficLight must be in one of the states: Red, RedAmber,
+        Green or Amber. The transitions that control how a traffic light
+        changes between these states are defined below:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image078.jpg"></div><p>A transition has a name, a source and target state name, a guard
+        and an action. For example the transition defined in line 24 is named
+        t1, changes between state Red and RedAmber, occurs when the traffic
+        light state changes so that event is true and updates the value of the
+        event slot to be false.</p><p>A traffic light is defined to change state when it receives an
+        event (the value of the event slot changes to be true). The state is
+        changed and the event flag is reset.</p><p>A vending machine dispenses cans of drink. Each can has a price;
+        a customer enters coins into the machine until the value of the coins
+        exceeds the price of a can. A can is dispensed and the machine waits
+        for any change to be withdrawn before waiting for the next
+        customer.</p><p>A vending machine is either idle (waiting for a customer),
+        vending (accepting coins up to the price of a can), or waiting for
+        change to be removed. The vending machine state machine is defined
+        below:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image080.jpg"></div><p>As a textual definition:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image082.jpg"></div><p>The transitions for a vending machine are defined below:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image084.jpg"></div><p>The semantics of state machines is defined as a package
+        below:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image086.jpg"></div><p>The class ObjectWithState is typical of a pattern occurring when
+        defining new meta-classes. The new meta-class StateMachine (below)
+        requires that its instances have a support system. In this case the
+        support system is the attribute state and associated operations. When
+        instances of StateMachine are created, the class ObjectWithState is
+        added as a parent of the resulting class. This ensures that instances
+        of instance of StateMachine have the correct basic slots and
+        supporting operations.</p><p>When an XMF object is created via a constructor, the init
+        operation is called with the constructor arguments. An object with
+        state needs to install a daemon that monitors state changes (any slot
+        modification). The daemon inspects the state machine controlling the
+        object and fires any enabled state transition. In addition an object
+        with state must initialise the state slot.</p><p>The init operation for ObjectWithState is defined below:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image088.jpg"></div><p>The daemon added to an object with state uses a handler
+        slotChanged. This handler is called whenever a slot of the object
+        monitored by the daemon changes. A daemon may be added to more than
+        one object (here the daemon is created on a per-object basis). The
+        type of the daemon determines which slot it monitors. In this case the
+        type Daemon::ANY defines that the handler is called when any slot of a
+        monitored object changes.</p><p>The handler used by the daemon is defined by the class
+        ObjectWithState. A daemon handler is passed four arguments:</p><div class="itemizedlist"><ul type="disc"><li><p>The object whose state has changed.</p></li><li><p>The name of the slot that has changed.</p></li><li><p>The new value of the slot.</p></li><li><p>The old value of the slot.</p></li></ul></div><p>In the following we check that the slot is not the state slot
+        and then calculate the transitions that are enabled. If any
+        transitions are enabled then one is selected at random and its action
+        is performed. Both the predicate and the action are expressions. An
+        expression has an operation perform that is used to evaluate the
+        expression. The perform operation is supplied with a value for self in
+        the expression and a sequence of local variable values. The target
+        argument is used in the same way as that to Operation::invoke where
+        unqualified slot references are resolved with respect to the supplied
+        target object.</p><div class="mediaobject"><img src="Part3/Syntax/Images/image090.jpg"></div><p>The class StateMachine is defined as a meta-class that creates
+        sub-classes of ObjectWithState:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image092.jpg"></div><p>A state machine is a new language feature. The grammar is
+        defined on lines 72 &#8211; 79 and is a simple example of how to define a
+        new syntax feature for a new type of meta-class. The syntax definition
+        for Class (as in @Class X &#8230; end) expands to a collection of calls to
+        add for each contained definition (for example attributes and
+        operations). A class knows how to add the supplied elements. This is
+        exploited above, by just allowing state machines to contain arbitrary
+        expressions each of which will be evaluated and the resulting element
+        supplied as an argument to add on the state machine. We then leave it
+        to an extended definition of add in StateMachine to handle any new
+        types of element that we wish to add to a state machine, leaving the
+        definition of Class::add to handle the rest:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image094.jpg"></div><p>When a new state machine is created we must arrange for it to
+        inherit from ObjectWithState so that its instances get the state slot
+        and associated initialisation support. All name spaces must be
+        initialised via the init() operation prior to use. Normally this
+        occurs automatically and you are not aware of the call to init (for
+        example defining context P @Class C &#8230; end automatically calls init
+        when C is added to P). We extend the initialisation below to add in
+        the required super-class:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image096.jpg"></div><p>Operations used via ObjectWithState:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image098.jpg"></div><p>In this example of state machines, a state is just a name. We
+        define a new syntax construct for defining a state. A more
+        sophisticated implementation of state machines might, for example,
+        introduce enter and exit actions for states or allow nested state
+        machines:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image100.jpg"></div><p>An initial state is just a state. We use the type of an initial
+        state to select the initial state of a state machine:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image102.jpg"></div><p>A transition is implemented as a new syntax construct as
+        follows. The guard and action on a transition are implemented as an
+        expression (XOCL::Exp) that is performed in order to check whether the
+        transition is enabled and when the transition fires
+        respectively:</p><div class="mediaobject"><img src="Part3/Syntax/Images/image104.jpg"></div></div></div></div><p></p><p><img src="copyright.gif"></p></body></html>

@@ -1,0 +1,60 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Getting Started</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch08.html" title="Using the Programming Interface"><link rel="prev" href="ch08.html" title="Using the Programming Interface"><link rel="next" href="ch08s02.html" title="Compiling and Loading"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id661411"></a>Getting Started</h2></div></div></div><p>Select File Browser .. from the File menu. Choose a directory (or
+    create one), where you want the code to reside.</p><p>Right click on the directory and choose New XMF File From Template
+    &gt; Package to create an XMF file.</p><div class="mediaobject"><img src="Part2/ProgrammingInterface/Images/createafile.jpg"></div><p>The file will contain the default declarations needed to construct
+    an XMF package definition. Change the name of the file to
+    Components.xmf.</p><p>We will be creating a package in the context of the Root package, so
+    make sure that the context is set to Root. There are no imports.</p><div class="mediaobject"><img src="Part2/ProgrammingInterface/Images/newfile.jpg"></div><p>Code can now be entered for each of the classes in the model. For a
+    detailed guide to XOCL and XMF classes and package see Part 3 of this
+    guide.</p><p>The following code constructs the classes used in the Airports
+    model. Note that constructors have been added for each class, and that
+    attributes have getters (?) and setters (!), and in the case of Set and
+    Sequence types, updators (+) and removers (-).</p><pre class="programlisting">parserImport XOCL;
+
+context Root
+  @Package Components
+  
+    @Doc The Components model end
+  
+    @Class ComponentModel 
+
+      @Attribute components : Set(Component) (?,!,+,-) end
+      @Attribute connectors : Set(Connector) (?,!,+,-) end
+
+      @Constructor(components,connectors) end
+    
+    end
+     
+    @Class Component extends NamedElement
+
+      @Attribute owner : ComponentModel (?,!,+,-) end
+      @Attribute ports : Set(Port) (?,!,+,-) end
+
+      @Constructor(ports,owner,name) end
+      
+    end
+     
+    @Class NamedElement isabstract 
+
+      @Attribute name : String (?,!) end
+
+      @Constructor(name) ! end
+
+    end
+      
+    @Class Connector 
+
+      @Attribute target : Port (?,!) end
+      @Attribute source : Port (?,!) end
+
+      @Constructor(target,source) ! end
+
+    end
+    
+    @Class Port extends NamedElement
+
+      @Attribute type : String (?,!) end
+
+      @Constructor(type,name) ! end
+
+    end
+  end</pre></div><p></p><p><img src="copyright.gif"></p></body></html>

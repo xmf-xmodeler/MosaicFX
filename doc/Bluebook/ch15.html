@@ -1,0 +1,17 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Using Manifests and Deploying Models</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="pt02.html" title="Part II. XMF Walkthroughs"><link rel="prev" href="ch14s01.html" title="Generating Java"><link rel="next" href="ch15s01.html" title="Manifest Actions"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="id652185"></a>Using Manifests and Deploying Models</h2></div></div></div><p>In order to manage the compilation and loading of multiple files, XMF
+  supports a convenient project management abstraction called a manifest. A
+  manifest provides a convenient way of managing collections of files that
+  have dependencies on each other.</p><p>In version 1.0 of XMF, manifests must be declared in a file. The
+  following file imports the Manifest facility and implements a manifest that
+  compiles Airports.xmf file followed by AirportsCons.xmf:</p><pre class="programlisting">parserImport Manifests;
+
+@Manifest Airports
+  p = @File Airports end
+  @File AirportsCons end
+end;</pre><p>A manifest is declared using @Manifest. A manifest has a name (in this
+  case Airports) and contains a list of files.</p><p>Save, Compile and Load the Manifest (right click &gt; Save, Compile
+  and Load). A manifest icon will appear in the file browser which contains
+  some additional menu options:</p><p>The two additional options are:</p><p>Build Manifest: This will compile all the files in the
+  manifest.</p><p>Load Manifest: This will load the binary of the files.</p><p>Compile, Build and Load: Compiles the Manifest, then Builds and Loads
+  the files.</p><p>These can be used to compile and load as many files as required in a
+  specific development project.</p></div><p></p><p><img src="copyright.gif"></p></body></html>

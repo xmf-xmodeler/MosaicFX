@@ -1,0 +1,19 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Formatting</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch04.html" title="An Introduction to XOCL"><link rel="prev" href="ch04s13.html" title="Exceptions"><link rel="next" href="ch04s15.html" title="Advanced Features"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id633370"></a>Formatting</h2></div></div></div><p>XOCL provides a powerful facility called "format" for formatting and
+    outputting data to a variety of output streams. The general form a format
+    expression is:</p><pre class="programlisting">format(OUTPUT,CONTROLSTRING,SEQOFARGS)</pre><p>where</p><div class="itemizedlist"><ul type="disc"><li><p>OUTPUT is an output channel (often stdout).</p></li><li><p>CONTROLSTRING is a string of chars and control chars (see
+        below).</p></li><li><p>SEQOFARGS is a sequence of args consumed by the control string.
+        This is optional if no args are required by the control string.</p></li></ul></div><p>The control string a little program. The simplest form is just a
+    string containing no control characters:</p><pre class="programlisting">format(stdout,"Hello world")</pre><p>sends the chars to the output channel. Control characters start with
+    a ~, for example:</p><pre class="programlisting">format(stdout,"Hello~%World~%")</pre><p>prints a newline (~% meaning print a newline char) after each word.
+    Control characters can consume args:</p><pre class="programlisting">format(stdout,"Hello ~S, how are you ~S~%",Seq{"Fred","diddling"})</pre><p>the ~S control consumes the next arg, turns it to a string using
+    .toString() and then prints it. Some of the control characters take
+    args:</p><pre class="programlisting">format(stdout,"Hello~&lt;?,x&gt;S~%",Seq{10,"Fred"})</pre><p>prints Fred in a column width of 10 characters padding the extra
+    spaces out with 'x' like so:</p><pre class="programlisting">HelloFredxxxxxx</pre><p>A useful control char is ~{ which is used to loop through a
+    sequence:</p><pre class="programlisting">format(stdout,"~{~S~%~}",Seq{names})</pre><p>prints each element of the sequence names on a new line. The ~{ can
+    include separator chars:</p><pre class="programlisting">format(stdout,"~{,~%~;~S~}",Seq{names})</pre><p>prints each element iof the sequence names with a ',' followed by a
+    new line char between each pair. The ~; is used to terminate the
+    separator. This is particularly useful when generating comma separated
+    code in a programming language.</p><pre class="programlisting">format(stdout,"~S~^~S",Seq{1,2,3});</pre><p>The ~^ control character enables you to repeat a print (~S)
+    statement. For example, the above prints, 1 followed by 1. This is useful
+    when printing a string at both the start and end of an expression, e.g.
+    proc A ..... end A.</p></div><p></p><p><img src="copyright.gif"></p></body></html>

@@ -1,0 +1,200 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Architecture</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch01.html" title="Introduction"><link rel="prev" href="ch01s04.html" title="Technical Features"><link rel="next" href="pt02.html" title="Part II. XMF Walkthroughs"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id493834"></a>Architecture</h2></div></div></div><p>This section provides a <span class="emphasis"><em>detailed technical
+      description</em></span> of the main components of XMF-Mosaic.</p><p>XMF-Mosaic is a layered open modular system that is specifically
+      designed to support the definition a rich array of tool development
+      capabilities. The Mosaic layer provides general-purpose graphical
+      interfaces on top of XMF that support features such as diagram and
+      property editors.</p><p>The following diagram is an overview of the architecture of XMF
+      Mosaic V 1.0. Each block is a system component that relies on the
+      components below it. Everything above the Virtual Machine is written in
+      XMF-Mosaic in the form of models. The system is open in the sense that
+      users can browse, modify and extend the system models. XMF can be used
+      as a server where external clients communicate via sockets.</p><div class="mediaobject"><img src="Part1/Images/arch.jpg"></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id571217"></a>Operating System</h3></div></div></div><p>The Operating System (XOS) provides services that allow
+        XMF to connect to the outside world, to interface to code written in
+        Java and to schedule XMF threads. XOS implements a collection of
+        channel types that are used for input and output including file
+        channels, compressed data channels and XML channels. XOS acts as a
+        server for external clients that connect to XMF using sockets. Inside
+        XMF the connection provides input and output data channels. An
+        external client is any third party software component that can connect
+        using a socket; communication with the client may be synchronous or
+        asynchronous. Internal clients are written in Java and are registered
+        with XOS; they run in the same process space as XMF and communicate
+        with XMF using channels. XOS is written in Java.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id571243"></a>Virtual Machine</h3></div></div></div><p>XMF source code is compiled to a binary format that is performed
+        on the Virtual Machine (XVM). XVM is an object-oriented
+        machine whose instruction set is designed to efficiently support
+        meta-circular language definitions based on XCore. XVM has a rich data
+        set including integers, floats, collections, channels and objects. XVM
+        is multi-threaded and allows multiple threads to run concurrently. XMF
+        source code can be compiled directly into the XVM heap during a
+        session or can be written to a binary file (.o) and loaded into a
+        subsequent XMF session. XVM supports a number of novel features that
+        supports the definition of XMF tools including meta-object-protocols
+        and object daemons. XVM is also designed to interface to external
+        programming languages, such as Java, through &#8220;foreign&#8221;
+        operations.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id571269"></a>Kernel</h3></div></div></div><p>XMF provides a collection of classes that form the basis of all
+        XMF-Mosaic defined tools. These classes form the kernel of XMF and are
+        collectively called XCore. The classes are self-describing: all XCore
+        classes are instances of XCore classes. This feature is called
+        meta-circularity and is the key to modularity, uniformity and
+        reusability throughout all system and user defined XMF tools. XCore is
+        based on the MOF (Meta-Object Facility, a meta-data standard developed
+        by the Object Management Group).</p><p>XCore includes class definitions for the basic types including
+        Integer, Boolean and String and collection types for sets and
+        sequences of values. XCore is object-oriented, it provides basic
+        notions of Object and Class. XCore is executable; it provides
+        definitions for executable (Performable) entities and
+        Operations.</p><p>All tools built using XMF-Mosaic are instances of XCore;
+        therefore tools that are defined to work on instances of XCore can be
+        used on any tool data. For example, general-purpose editors and
+        mappings are provided by XMF that are guaranteed to work across all
+        system and user defined data.</p><p>Key classes in XCore are:</p><div class="itemizedlist"><ul type="disc"><li><p><span class="bold"><strong>Class</strong></span>. XMF-Mosaic is a
+            class-based system. Tools are defined as collections of classes
+            whose instances have state and behaviour. The class Class defines
+            the essential features of a class. Inheritance is used to extend
+            class features in XMF. Since Class is available; user defined
+            tools can extend what it means to be a class. This ability is the
+            basis for meta-programming. For example, Class may be extended
+            with the ability to keep track of all instances or to access
+            instance data from an external database.</p></li><li><p><span class="bold"><strong>Daemon</strong></span>. Daemons monitor the
+            state of objects and perform actions when the object changes
+            state. Daemon technology is the key to implementing a variety of
+            modular reusable tool architectures such as the observer pattern.
+            XMF-Mosaic uses daemons extensively to synchronize data across
+            multiple tools. User defined tools can use daemons to make tools
+            reactive and to ensure data is always consistent.</p></li><li><p><span class="bold"><strong>DataType</strong></span>. Instances of this
+            class are XMF types for basic data values. XMF types include
+            Integer, String, Boolean and Float.</p></li><li><p><span class="bold"><strong>Element.</strong></span> All classes in XMF
+            are extensions of the class Element. Element defines the essential
+            behaviour of all XMF data. For example Element defines features
+            such as being able to produce a printed representation and the
+            ability to handle messages. XMF is a dynamically extensible
+            system; this means that new behaviour can be added to existing
+            classes. This is sometimes referred to as aspect oriented
+            programming. Since Element is available, user defined tools can
+            add system-wide aspects. For example this can be used to add the
+            ability to export any XMF data in any required format (binary
+            encoded, XML, text etc).</p></li><li><p><span class="bold"><strong>Exception</strong></span>. XMF provides
+            exception handling for dealing with exceptional circumstances in
+            running code. The class Exception is the basis for a hierarchy of
+            classes that implement specific types of errors. Exceptions are
+            raise at the point at which they occur and encapsulate data that
+            describes exactly the source of the problem.</p></li><li><p><span class="bold"><strong>Operation.</strong></span> The basis for
+            all XMF execution is the class Operation. An operation has
+            parameters and a body and is equivalent to a standard programming
+            language procedure or function. A significant difference to
+            conventional procedures is that operations are XMF objects that
+            can be created and stored just like any other object. This makes
+            XMF very flexible since behaviour can be encapsulated at the
+            appropriate point in models and data.</p></li><li><p><span class="bold"><strong>Package.</strong></span> XMF supports name
+            spaces that contain collections of named elements. The class
+            Package is used to structure collections of class and sub-package
+            definitions. XMF-Mosaic is structured as a tree of packages
+            containing definitions of all aspects of the system (including
+            XCore). The root name space is called Root; all XMF classes can be
+            referenced via Root.</p></li><li><p><span class="bold"><strong>Performable.</strong></span> XMF provides
+            an environment in which executable languages can be conveniently
+            developed. An executable language implements the interface defined
+            by the abstract class Performable. XOCL is an example of a
+            language that implements this interface.</p></li></ul></div><p>XCore is an example of a language that can be executed on the
+        Virtual Machine. The Virtual Machine may be initialised with different
+        kernel language definitions although in practice it relies on a small
+        sub-set of XCore being present. This feature allows XMF to deploy
+        embedded systems that run application code without requiring the tools
+        that were used in XMF-Mosaic to develop the application.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id571440"></a>XOCL</h3></div></div></div><p>XMF provides an extensive language for constructing tools; the
+        language is built from XCore and runs on the the Virtual Machine. The
+        language, called XOCL, or eXtensible Object Command Language provides
+        a first class language for manipulating XCore objects.</p><p>XOCL provides a large number of language features that address
+        the implementation of real-world scalable tools (the whole of
+        XMF-Mosaic is written in about 100KLOC XOCL). These include
+        side-effects, object creation, exception handling, multi-tasking,
+        pattern matching, first-class types, first-class operations, efficient
+        looping constructs, input output, client-server support, daemon
+        mechanisms and support for dealing with syntax constructs.</p><p>XOCL also supports many features of OCL (the Object Constraint
+        Language, mandated by the Object Management Group), and therefore is
+        an excellent foundation for querying models and writing constraints
+        over models.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id574070"></a>Base Toolset</h3></div></div></div><p>XMF provides a basic collection of languages and tools defined
+        in XOCL. These include the following:</p><div class="itemizedlist"><ul type="disc"><li><p>The XOCL <span class="bold"><strong>compiler</strong></span>. XOCL is
+            an example of a language that is constructed on top of XCore and
+            running on the XVM. The XOCL compiler is a fully bootstrapped
+            parser and language translator that converts text (or instances of
+            the XOCL classes) into sequences of XVM instructions. The compiler
+            can be invoked on files, strings or instances of the XOCL model.
+            The compiler is extensible &#8211; new language constructs can be
+            introduced that define how to translate themselves to instances of
+            the XVM instruction model</p></li><li><p>XMF provides a BNF-style parser language called <span class="bold"><strong>XBNF</strong></span> for defining new textual languages.
+            XCore allows grammars to be defined for classes and XOCL allows
+            language constructs defined by any newly defined grammar to be
+            integrated with any existing language construct. This makes XOCL
+            an infinitely extensible programming language. XOCL takes the form
+            of a grammar for a basic language and then many extra language
+            features are added to XOCL (including fancy looping mechanisms,
+            various definitional constructs and case statements) in terms of
+            separately defined grammars. The extension mechanism is very
+            convenient; once the grammar is defined and loaded, the new
+            language feature is ready to use. Language features can implement
+            new commands or appropriate ways of defining new data constructs
+            (and mixtures of the two).</p></li><li><p>XOCL does not need to be compiled in order to run. XMF
+            provides an XOCL <span class="bold"><strong>interpreter</strong></span>. The
+            XOCL class Performable defines an interface for any language
+            construct that is to be executed, including interpreted.
+            Interpretation is often more convenient that compilation since no
+            language translation is involved.</p></li><li><p>XMF provides a top-level <span class="bold"><strong>console</strong></span> based command interpreter that can
+            be used as the interactive interface to an XMF or XMF-Mosaic
+            session. The command interpreter reads any valid XOCL syntax typed
+            at the console, evaluates it and then prints the result. The user
+            can access any data in the XMF system via the console, inspect it
+            and modify it. The command interpreter provides a collection of
+            convenient top-level commands that can be extended to provide
+            productivity accelerators.</p></li><li><p>XOCL provides powerful inbuilt support for pattern matching
+            using <span class="bold"><strong>XMatch</strong></span>. XMatch enables
+            patterns of expressions to be matched across XOCL statements
+            thereby facilitating the declarative definition of mappings,
+            constructors, etc.</p></li><li><p>The <span class="bold"><strong>XSync</strong></span> language provides
+            a high-level way of synchronising data, where changes in one
+            element cause changes to be automatically propagated to other
+            elements.</p></li><li><p><span class="bold"><strong>XMap</strong></span> is a language that is
+            used to write model-to-model transformations. In XMap, patterns
+            are used to describe how objects of a specific type and structure
+            are mapped to objects of another type and structure. XMap patterns
+            can incorporate arbitrary XOCL, enabling complex mappings to be
+            implemented with ease. XMap is based on the emerging QVT (Query,
+            Views, Transformations) standard.</p></li><li><p>XMF provides facilities for parsing and generating <span class="bold"><strong>XML</strong></span> documents. High-level grammar rules can
+            be written which state how a specific XML element pattern can be
+            mapped to a XCore element or trigger the invocation a XOCL action.
+            These rules can be used to generate a parser for a specific XML
+            syntax.</p></li><li><p><span class="bold"><strong>XWalk</strong></span> is an extension to
+            XOCL that provides facilities for efficiently running over large
+            XCore object structures and evaluating its properties, for example
+            running constraints or modifying data.</p></li><li><p>In XMF, <span class="bold"><strong>documentation</strong></span> is
+            captured using a special language extension. This enables
+            documentation to be processed and managed at the model level,
+            facilitating flexible production of documentation in XMF.</p></li><li><p><span class="bold"><strong>Projects </strong></span>provide a resource
+            for managing models and for deploying them to code and to files.
+            Projects can be created in the browser, and can be saved and
+            loaded using the XMF (.xar) serialisation format.</p></li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id601919"></a>Tool Definition</h3></div></div></div><p>The base toolset provides a powerful collection of tools for the
+        rapid construction of new development tools. Everything from small
+        tools that analyse data to full scale modelling and/or programming
+        language environments can be defined in an open, flexible and
+        transparent way. Currently, the base version of XMF is distributed
+        with some languages built in, including:</p><div class="itemizedlist"><ul type="disc"><li><p>A Java based language called MicroJava, which implements the
+            key features of Java (including statements and expressions). A
+            mapping from XOCL is provided to MicroJava. MicroJava knows how to
+            pretty-print itself to executable code.</p></li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id601953"></a>XMF Clients</h3></div></div></div><p>XMF can be connected to a wide variety of external clients
+        (using socket channels) and internal clients (via the XOS). External
+        clients can be any software that supports a well-defined API, for
+        instance other tools or IDE environments. The Mosaic clients are
+        pre-defined internal clients that provide common tool based user
+        interface clients for the languages defined in XMF such as diagram
+        editors, browsers and so on. Each of these clients has two aspects: an
+        XMF client model of the abstractions and functionality provided the by
+        client and an external client implementation of the rendering of these
+        abstractions. Because the clients are modelled in a generic fashion,
+        independently of the rendering technology, clients are extremely
+        flexible and adaptable. As a result, new user interface clients can be
+        constructed very rapidly.</p><div class="mediaobject"><img src="Part1/Images/clients.gif"></div><p>Some of the client models that are supported by Mosaic
+        include:</p><div class="itemizedlist"><ul type="disc"><li><p>Diagrams: provides general diagramming abstractions.</p></li><li><p>Browser: provides general facilities for creating browsers
+            and attaching menus, etc.</p></li><li><p>Forms: provide general form based abstractions.</p></li><li><p>Text: provides text editing, generic syntax highlighting and
+            manipulation functions and html functionality.</p></li><li><p>Console provides input and output streams to a
+            console.</p></li></ul></div><p>These clients have been used to construct all the user interface
+        tools provided with XMF, including the following:</p><div class="itemizedlist"><ul type="disc"><li><p>Class diagrams for visualising XCore models</p></li><li><p>Mapping diagrams (as an extension to Class diagrams)</p></li><li><p>Model browsers</p></li><li><p>Snapshot diagrams</p></li><li><p>The file browser</p></li></ul></div><p>The implementations of the clients have been constructed using
+        Eclipse: a generic, open source IDE platform.</p><div class="mediaobject"><img src="Part1/Images/builtoneclipse.png"></div></div></div><p></p><p><img src="copyright.gif"></p></body></html>

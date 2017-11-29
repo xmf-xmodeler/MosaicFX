@@ -1,0 +1,146 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>XOCL Grammar</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch21.html" title="XOCL"><link rel="prev" href="ch21s10.html" title="Relationship to OCL and ASL"><link rel="next" href="ch21s12.html" title="Pattern Grammar"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id676036"></a>XOCL Grammar</h2></div></div></div><pre class="programlisting">  AName ::= Name | Drop. 
+
+  Apply ::= PathExp Args | KeyArgs .
+
+  ArithExp ::= UpdateExp [ ArithOp ArithExp ].
+
+  ArithOp ::= '+' | '-' | '*' | '/'.
+
+  Args ::= '(' (')' | Exp (',' Exp)* ')'.
+
+  AtExp ::= '@' AtPath @ 'end'.
+
+  AtPath ::= Name ('::' Name)*.
+
+  Atom ::= VarExp | 'self' | Str | Int | IfExp | Bool | LetExp | 
+           CollExp | AtExp | Drop | Lift | '(' Exp ')' | Throw | Try | 
+           ImportIn | Float.
+
+  AtomicPattern ::= Varp | Constp | Objectp | Consp | Keywordp.
+    
+  Binding ::= AName '=' LogicalExp.
+
+  Bindings ::= Binding (';' Binding)*.
+
+  Bool ::= 'true' | 'false'.
+
+  CollExp ::= SetExp | SeqExp. 
+
+  CompareExp ::= ArithExp [ CompareOp CompareExp ].
+
+  CompareOp ::= '='| '&lt;' | '&gt;' | '&lt;&gt;' | '&gt;=' | '&lt;='. 
+
+  CompilationUnit ::= ParserImport* Import* (Def | TopLevelExp)* EOF.
+  
+  Consp ::= Pairp | Seqp | Emptyp.
+
+  Constp ::=  Int | Str | Bool | Expp.
+
+  Def ::= 'context' PathExp Exp. 
+ 
+  Drop ::= '&lt;' Exp '&gt;'. 
+
+  EmptyColl ::= Name '{' '}'.
+
+  Emptyp ::= Name '{' '}'.
+
+  Exp ::= OrderedExp.
+    
+  Expp ::= '[' Exp ']'.
+    
+  Float ::= Int '.' Int.
+
+  Import ::= 'import' TopLevelExp.
+
+  ImportIn ::= 'import' Exp 'in' Exp 'end'.
+
+  ParserImport ::= 'parserImport' Name ('::' Name)* ';' ImportAt.
+
+  IfExp ::= 'if'Exp 'then'Exp IfTail.
+
+  IfTail ::= 'else' Exp 'end' | 'elseif' Exp 'then' Exp IfTail | 'end'.
+
+  KeyArgs ::= '[' (']' | KeyArg (',' KeyArg)* ']'.
+    
+  KeyArg ::= Name '=' Exp.
+    
+  Keywordp ::= Name ('::' Name)* '[' Keyps ']'.
+    
+  Keyps ::= Keyp (',' Keyp)* | .
+    
+  Keyp ::= Name '=' Pattern.
+    
+  Lift ::= '[|' Exp '|]'.
+
+  LetBody ::= 'in'Exp| 'then' Bindings LetBody.
+
+  LetExp ::= 'let'Bindings LetBody 'end'.
+    
+  LogicalExp ::= NotExp [ LogicalOp LogicalExp ].
+
+  LogicalOp ::= 'and' | 'or' | 'implies'.
+
+  NonEmptySeq ::= Name '{' Exp ((',' Exp)* '}' | '|' Exp '}').
+    
+  NonEmptyColl ::= Name '{' Exp (',' Exp)* '}'.
+
+  NotExp ::= CompareExp | 'not' CompareExp.
+
+  Objectp ::= Name ('::' Name)* '(' Patterns ')'.
+
+  OrderedExp ::= LogicalExp [ ';' OrderedExp ].
+
+  OptionallyArgs ::= Args | .
+
+  Pairp ::= Name '{' Pattern '|' Pattern '}'.
+    
+  PathExp ::= Atom [ '::' AName ('::' AName)* ].
+
+  Pattern ::= AtomicPattern ('-&gt;' Name '(' Pattern ')')* ('when'  Exp  | ).
+
+  Patterns ::= Pattern (',' Pattern)* | .
+    
+  RefExp ::= Apply 
+      (
+        '-&gt;' 
+         (
+            'iterate' '(' AName AName '=' Exp '|' Exp ')' 
+          | 
+           AName 
+            ( 
+              OptionallyArgs 
+            | 
+              '(' AName '|' Exp ')'  
+            |
+            
+            ) 
+          ) 
+     
+        | 
+          '.' AName 
+          (
+            Args
+          |   
+          
+          )   
+      )*. 
+  
+    Seqp ::=  Name '{' Pattern SeqpTail.
+
+    SeqpTail ::= ',' Pattern SeqpTail | '}'.
+    
+    SeqExp ::= EmptyColl | NonEmptySeq.
+
+    SetExp ::= EmptyColl | NonEmptyColl. 
+
+    Throw ::= 'throw' LogicalExp.
+
+    TopLevelExp ::= LogicalExp ';'.
+
+    Try ::= 'try' Exp 'catch' '(' Name ')' Exp 'end'.
+
+    UpdateExp ::= RefExp (':=' ! LogicalExp | ).
+
+    VarExp ::= Name Token.
+
+    Varp ::= AName ('=' Pattern | ) (':' Exp | ).</pre></div><p></p><p><img src="copyright.gif"></p></body></html>

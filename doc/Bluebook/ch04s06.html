@@ -1,0 +1,22 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Variables</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch04.html" title="An Introduction to XOCL"><link rel="prev" href="ch04s05.html" title="Operations"><link rel="next" href="ch04s07.html" title="Types"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id648328"></a>Variables</h2></div></div></div><p>Variables can be declared in a number of different ways in
+    XOCL:</p><div class="itemizedlist"><ul type="disc"><li><p>As attributes on classes (and packages)</p></li><li><p>As local variables</p></li><li><p>Using a binding (not described here)</p></li></ul></div><p>We have already seen attribute declarations.</p><p>Local variables are declared using the let expression. The syntax of
+    a let expression is as follows:</p><pre class="programlisting">let var_name_1 = expression_1;
+    var_name_2 = expression _2 
+in
+  body
+end</pre><p>Variable declarations are seperated by semicolons. They can be
+    referenced by any expression in the body of the let expression. As an
+    example, the following let expression introduces three variables x,y,z
+    into an expression:</p><pre class="programlisting">let x = 1;
+    y = 2;
+    z = 3 
+in
+   x + y + z
+end</pre><p>Variable declarations cannot normally reference each other unless
+    they are in the body of another let expression. However, the "then"
+    expression provides a convenient way of permitting this:</p><pre class="programlisting">let x = 1;
+    y = 2 then
+      c = x + y
+in
+   c + z
+end</pre></div><p></p><p><img src="copyright.gif"></p></body></html>

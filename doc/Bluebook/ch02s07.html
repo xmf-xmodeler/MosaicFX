@@ -1,0 +1,88 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Snapshots</title><link rel="stylesheet" href="book.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"><link rel="start" href="index.html" title="XMF Bluebook"><link rel="up" href="ch02.html" title="Creating and Interacting with a Domain Model"><link rel="prev" href="ch02s06.html" title="Interacting with Models"><link rel="next" href="ch02s08.html" title="Saving and Loading Diagram Layout"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id567685"></a>Snapshots</h2></div></div></div><p>Snapshots provide a visual way of interacting with instances of a
+    model. A snapshot is a diagram that contains instances of classes in
+    package.</p><p>Note, snapshots are intended to provide a simple visual way of
+    viewing instances, but they can become difficult to read if they are
+    applied to large numbers of objects.</p><p>To create a snapshot of a specific package right click on a package
+    in the model browser and select Create Snapshot. Instances of the classes
+    in the package (or its sub-packages) can now be created.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/creatingasnapshot.png"></div><p>Add objects by selecting the Object button and then clicking onto
+    the diagram. The list of object types that can be created will be
+    displayed. Select the appropriate one and it will be added to the
+    snapshot.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/chooseanobject.png"></div><p>For example, a Component can be added to the diagram.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/exampleobject.png"></div><p>The value of primitive slot (attribute) values can be changed by
+    double clicking on the values in the object.</p><p>It is also possible to change the name of the object by clicking on
+    it.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/changingobjectname.png"></div><p>Links can be created between objects by selecting the Slot Value
+    button and connecting the owning object to the target object. As an
+    example, add an instance of the class ComponentModel to the snapshot and
+    create a link between the ComponentModel instance and the Component
+    instance.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/snapshotlink.png"></div><p>Slot names will be assigned automatically where possible (as shown
+    here), but a choice of slot names will be provided if there is more than
+    one possible attribute that the slot can be an instance of.</p><p>A complete snapshot of the model can be created as illustrated
+    below. This represents a simple Component model, in which two components
+    (Displays and Navigation) are connected together. The Displays component
+    expects to receive the current position from the Navigation
+    component.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/snapshotexample.jpg"></div><p>Just like other model elements in XMF-Mosaic, objects can be edited
+    (using right click &gt; Edit). Here is the result of editing
+    object2.</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/objectedit.jpg"></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id679335"></a>Creating Standalone Snapshots</h3></div></div></div><p>Sometimes it is useful to create instances of elements in another
+      package or project, for example, when we want to manage them separately
+      from the model. To do this, first create a snapshot in the project which
+      the snapshot is to be saved under. Next select the snapshot in the
+      browser and right click &gt; Set Parents. A list of all available
+      packages will be shown. Select the appropriate package, and the snapshot
+      can now be populated with instances of the selected package.</p><p>As an example, here is a separate snapshot project that has been
+      created for the Components model:</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/seperatesnapshotexample.png"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id615544"></a>Dealing with Sequences</h3></div></div></div><p>Snapshots can also accommodate the ordering of objects in a
+      collection. As an example, imagine we want to extend the Components
+      model to accommodate ports with sequences of parameters. The extended
+      model is shown below:</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/modelwithparameters.png"></div><p>Our example snapshot can be extended as follows:</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/sequenceorderingsnap.png"></div><p>Objects can be re-ordered by right clicking on the owning object,
+      in this case object4, and re-ordering the elements:</p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/sequenceordering.png"></div><p>Edit the objects in the diagram to find out which objects are
+      associated with each id. </p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id616794"></a>Synchronisation between Snapshots and Class Models</h3></div></div></div><p>In XMF-Mosaic, snapshots are designed to stay in step with class
+      models, even if changes are made to the class model. As an example,
+      let's imagine that we want to delete the attribute, type, from a Port as
+      we will defer it to a parameter. We can delete type from Port and add it
+      to the Parameter instead. The snapshot remains in sync, the type slot
+      has been removed from the Port objects and has been added to the
+      Parameter objects: </p><div class="mediaobject"><img src="Part2/CreatingAModel/Images/snapshotupdated.png"></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id660758"></a>Creating Multiple Views of Snapshots</h3></div></div></div><p>Just as with class diagrams, multiple views of the same snapshot
+      can be created in XMF-Mosaic. This is very useful when you wish to
+      capture different aspects of a model instance, and can considerably
+      reduce the size of the snapshots you create.</p><p>To create a new snapshot, simply right click on the snapshot and
+      select Create &gt; Snapshot Diagram. This will create a partial (empty
+      view) of the snapshot. Adding more objects to it will add new objects to
+      the snapshot.</p><p>To create a total (synchronised view), select Create &gt; Snapshot
+      Diagram (Total View). This will create a diagram containing all the
+      objects in the snapshot.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id669668"></a>Exporting Snapshots</h3></div></div></div><p>There are two main ways that snapshot (instance data) can be
+      exported: as XOCL and as XML.</p><p>To export a snapshot as XOCL, right click on a the snapshot and
+      select Deploy &gt; Snapshot.</p><p>Choose where to put the file. A .xmf file will be generated
+      containing XOCL code. Here is the XOCL for the Components
+      snapshot:</p><pre class="programlisting">parserImport XOCL;
+
+context Root
+  @Snapshot snapshot0
+
+    object0 = Root::Components::ComponentModel[
+                  connectors = Set{object5};
+                  components = Set{object1,object3} ]
+    object5 = Root::Components::Connector[
+                  source = object2;
+                  target = object4 ]
+    object4 = Root::Components::Port[
+                  name = "CurrentPosition";
+                  type = "LatLong" ]
+    object1 = Root::Components::Component[
+                  ports = Set{object2};
+                  name = "Displays";
+                  owner = object0 ]
+    object2 = Root::Components::Port[
+                  name = "CurrentPosition";
+                  type = "LatLong" ]
+    object3 = Root::Components::Component[
+                  ports = Set{object4};
+                  name = "Navigation";
+                  owner = object0 ]
+
+  end</pre><p>The code contains the XOCL constructors and data necessary to
+      compile and then load the snapshot back into the tool.</p><p>To re-load, simply open the file in XMF-Mosaic and then Compile
+      and Load it. Note, the snapshot is saved by default as owned by the Root
+      package. This can be changed to an appropriate project package, e.g.
+      Components or ComponentSnapshots, by editing the package name. </p><p>To view the contents of a loaded snapshot, a diagram needs to be
+      created. Select Create Diagram &gt; Snapshot Diagram (Total
+      View).</p><p>Note, this will not save the layout of the diagram. To do this,
+      follow the instructions for saving and loading diagram layout
+      below.</p><p>To export as XML, select the Deploy &gt; XML option. </p></div></div><p></p><p><img src="copyright.gif"></p></body></html>
