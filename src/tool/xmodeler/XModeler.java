@@ -9,19 +9,19 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Display;
+//import org.eclipse.swt.SWT;
+//import org.eclipse.swt.custom.CTabFolder;
+//import org.eclipse.swt.custom.SashForm;
+//import org.eclipse.swt.graphics.Image;
+//import org.eclipse.swt.layout.FillLayout;
+//import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
+//import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
+//import org.eclipse.swt.widgets.Menu;
+//import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.ToolBar;
+//import org.eclipse.swt.widgets.ToolBar;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -32,6 +32,23 @@ import org.xml.sax.SAXException;
 //import com.ceteva.undo.UndoClient;
 
 import engine.Machine;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Orientation;
+import javafx.scene.Scene;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.image.Image;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import tool.clients.browser.ModelBrowserClient;
 import tool.clients.diagrams.DiagramClient;
 import tool.clients.dialogs.DialogsClient;
@@ -50,7 +67,7 @@ import tool.console.Console;
 import tool.console.ConsoleClient;
 import xos.OperatingSystem;
 
-public class XModeler {
+public class XModeler extends Application {
 
   // XModeler is a tool that controls and is controlled by the XMF VM that runs
   // on the XMF operating system.
@@ -64,14 +81,14 @@ public class XModeler {
   static int             TOOL_WIDTH          = 1200;
   static int             TOOL_HEIGHT         = 900;
   static OperatingSystem xos                 = new OperatingSystem();
-  static Shell           XModeler            = new Shell(SWT.BORDER | SWT.SHELL_TRIM);
-  static SashForm        outerSash           = null;
-  static SashForm        rightSash           = null;
-  static SplitSashForm   editorSash          = null;
-  static SplitSashForm   propertySash        = null;
-  static CTabFolder      browserTabFolder    = null;
-  static Display         display             = null;
-  static Menu            menuBar             = null;
+//  static Shell           XModeler            = new Shell(SWT.BORDER | SWT.SHELL_TRIM);
+//  static SashForm        outerSash           = null;
+//  static SashForm        rightSash           = null;
+//  static SplitSashForm   editorSash          = null;
+//  static SplitSashForm   propertySash        = null;
+//  static CTabFolder      browserTabFolder    = null;
+//  static Display         display             = null;
+//  static org.eclipse.swt.widgets.Menu            menuBar             = null;
   static String          projDir             = null;
   static String          loadedImagePath     = null;
   static String          version             = null;
@@ -79,6 +96,17 @@ public class XModeler {
   static boolean         showLoad            = false;
   public static String   textEditorClass     = "tool.clients.editors.TextEditor";
 
+  //JavaFX
+  static Stage 			 stage 		 		 = null;
+  static Scene			 scene 				 = null;
+  static VBox			 containingBox		 = null;           
+  static SplitPane       outerSplitPane      = null;
+  static SplitPane       rightSplitPane      = null;
+  static TabPane 		 browserTab 		 = null;
+  static TabPane 		 editorTabs 		 = null;
+  static TabPane 		 propertyTabs 		 = null;
+  static MenuBar		 menu				 = null;
+  
   // private static boolean overwrite(final String file) {
   // final boolean[] result = new boolean[] { false };
   // XModeler.getDisplay().syncExec(new Runnable() {
@@ -109,6 +137,7 @@ public class XModeler {
     else return value;
   }
 
+  //TODO re-uimplement
   private static Listener closeListener() {
     return new Listener() {
       public void handleEvent(Event event) {
@@ -180,19 +209,29 @@ public class XModeler {
     return true;
   }
 
-  public static Menu getMenuBar() {
-    return menuBar;
+  public static MenuBar getMenu() {
+    return menu;
   }
 
+  @Deprecated
+  public static org.eclipse.swt.widgets.Menu getMenuBar() {
+	    return null;
+  }
+  
   private static String getVersion(String[] args) {
     for (int i = 0; i < args.length; i++) {
       if (args[i].startsWith("version:")) { return args[i].replace("version:", ""); }
     }
     return "";
   }
+  
+  public static Stage getStage() {
+	    return stage;
+	  }
 
+  @Deprecated 
   public static Shell getXModeler() {
-    return XModeler;
+    return null;
   }
 
   private static String img2xml(String imgString) {
@@ -231,12 +270,16 @@ public class XModeler {
           final int y = Integer.parseInt(attributeValue(node, "y"));
           final int width = Integer.parseInt(attributeValue(node, "width"));
           final int height = Integer.parseInt(attributeValue(node, "height"));
-          XModeler.getDisplay().syncExec(new Runnable() {
-            public void run() {
-              XModeler.setLocation(x, y);
-              XModeler.setSize(width, height);
-            }
-          });
+          stage.setX(x);
+          stage.setY(y);
+          stage.setHeight(height);
+          stage.setWidth(width);
+//          XModeler.getDisplay().syncExec(new Runnable() {
+//            public void run() {
+//              XModeler.setLocation(x, y);
+//              XModeler.setSize(width, height);
+//            }
+//          });
           ModelBrowserClient.theClient().inflateXML(doc);
           DiagramClient.theClient().inflateXML(doc);
           MenuClient.theClient().inflateXML(doc);
@@ -274,30 +317,38 @@ public class XModeler {
   public static void main(String[] args) {
     copyOfArgs = Arrays.copyOf(args, args.length);
     textEditorClass = args.length > 1 ? args[1] : "tool.clients.editors.TextEditor";
-    startXOS(args[0]);
-    startXModeler();
-    startClients();
-    startDispatching();
+//    startXOS(args[0]);
+//    startXModeler();
+    launch(args);
+//    startClients();
+//    startDispatching();
+//    openXModeler();
   }
 
   public static void removeBusyInformation() {
     busyMessage = "";
-    setToolLabel();
+//    setToolLabel();
+    setToolTitle();
   }
 
   public static void saveInflator(final String inflationPath) {
-    XModeler.getDisplay().syncExec(new Runnable() {
-      public void run() {
+//    XModeler.getDisplay().syncExec(new Runnable() {
+//      public void run() {
         try {
           if (inflationPath != null) {
             loadedImagePath = inflationPath.substring(0, inflationPath.lastIndexOf('.')) + ".img";
-            setToolLabel();
+//            setToolLabel();
+            setToolTitle();
             File file = new File(inflationPath);
             // FileOutputStream fout = new FileOutputStream(file);
-            int x = XModeler.getLocation().x;
-            int y = XModeler.getLocation().y;
-            int width = XModeler.getSize().x;
-            int height = XModeler.getSize().y;
+            int x = (new Double(stage.getX())).intValue();
+            int y = (new Double(stage.getY())).intValue();
+            int width = (new Double(stage.getWidth())).intValue();
+            int height = (new Double(stage.getHeight())).intValue();
+//            int x = XModeler.getLocation().x;
+//            int y = XModeler.getLocation().y;
+//            int width = XModeler.getSize().x;
+//            int height = XModeler.getSize().y;
             // PrintStream out = new PrintStream(fout);
             PrintStream out = new PrintStream(file, "UTF-8");
             out.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?><XModeler x='" + x + "' y='" + y + "' width='" + width + "' height = '" + height + "'>");
@@ -313,8 +364,8 @@ public class XModeler {
         } catch (IOException e) {
           e.printStackTrace();
         }
-      }
-    });
+//      }
+//    });
   }
 
   private static void setImage(String[] args) {
@@ -324,16 +375,34 @@ public class XModeler {
     boolean imageDialog = getImageDialog(args);
     String selectedImage = null;
     if (imageDialog || showLoad) {
-      FileDialog dialog = new FileDialog(XModeler, SWT.OPEN);
-      dialog.setText("Select the image file");
-      dialog.setFilterExtensions(new String[] { "*.img" });
-      dialog.setFileName(defaultImage);
-      dialog.setFilterPath(projDir);
-      selectedImage = dialog.open();
+    	//TODO File Dialog Java FX
+    	
+    	final FileChooser fileChooser = new FileChooser();
+    	
+    	fileChooser.setTitle("Select the image file");
+    	fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("*.img", "*.img"));
+//		TODO set Initial Directory?
+//        fileChooser.setInitialDirectory(new File(projDir));
+        
+        fileChooser.setInitialFileName(defaultImage);    
+    	
+    	File file = fileChooser.showOpenDialog(stage);
+    	
+    	if(file != null){
+    		selectedImage = file.getAbsolutePath();
+    	}
+    	
+//      FileDialog dialog = new FileDialog(XModeler, SWT.OPEN);
+//      dialog.setText("Select the image file");
+//      dialog.setFilterExtensions(new String[] { "*.img" });
+//      dialog.setFileName(defaultImage);
+//      dialog.setFilterPath(projDir);
+//      selectedImage = dialog.open();
     }
     if (selectedImage != null && !selectedImage.equals(defaultImage)) {
       loadedImagePath = selectedImage;
-      setToolLabel();
+//      setToolLabel();
+      setToolTitle();
       for (int i = 0; i < args.length; i++) {
         if (args[i].equals("-image")) args[i + 1] = loadedImagePath;
       }
@@ -345,14 +414,21 @@ public class XModeler {
     if (projDir == null) throw new Error("you have not set the project directory in the initialisation arguments:\n" + Arrays.toString(args));
   }
 
+  public static void setToolTitle() {
+	    String path = loadedImagePath == null ? "NO_IMAGE_SET" : loadedImagePath;
+	    stage.setTitle(NAME + " " + version + " [" + path + "]" + busyMessage);
+ }
+  
+/*  @Deprecated
   public static void setToolLabel() {
     String path = loadedImagePath == null ? "NO_IMAGE_SET" : loadedImagePath;
     XModeler.setText(NAME + " " + version + " [" + path + "]" + busyMessage);
-  }
+  } */
 
   public static void showBusyInformation(String info) {
     busyMessage = info;
-    setToolLabel();
+//    setToolLabel();
+    setToolTitle();
   }
 
   public static void showMessage(String title, String message) {
@@ -360,15 +436,17 @@ public class XModeler {
   }
 
   public static void shutdown() {
-    XModeler.getDisplay().syncExec(new Runnable() {
-      public void run() {
-        try {
-          XModeler.dispose();
-        } catch (Throwable t) {
-          t.printStackTrace();
-        }
-      }
-    });
+	  //Sufficient?
+	  stage.close();
+//    XModeler.getDisplay().syncExec(new Runnable() {
+//      public void run() {
+//        try {
+//          XModeler.dispose();
+//        } catch (Throwable t) {
+//          t.printStackTrace();
+//        }
+//      }
+//    });
   }
 
   public static void startClients() {
@@ -383,29 +461,149 @@ public class XModeler {
     xos.newMessageClient("com.ceteva.oleBridge", new OleBridgeClient());
     xos.newMessageClient("screenGeneration", new ScreenGenerationClient()); // BB
   }
-
+  
+  public static void initClients() {
+	  //TODO Adapt clients to java FX
+	  
+//	  ModelBrowserClient.start(browserTabFolder, SWT.LEFT);
+//	  outerSash.setWeights(new int[] { 1, 5 });
+//	  EditorClient.start(editorSash.getFolder1(), SWT.BORDER);
+//	  browserTabFolder.addCTabFolder2Listener(new BrowserResizeListener());
+//	  DiagramClient.start(editorSash.getFolder1());
+//	  FormsClient.start(propertySash.getFolder1(), propertyToolbar1, SWT.BORDER);
+//	  ScreenGenerationClient.start(propertySash.getFolder1()); // BB
+//	  Console.start(propertySash.getFolder1());
+  }
+  
+  public static void openXModeler() {
+	  //TODO open
+		stage.show();
+  }
+  
+/*  @Deprecated
   public static void startDispatching() {
     while (!XModeler.isDisposed()) {
       if (!display.readAndDispatch()) display.sleep();
     }
     display.dispose();
     System.exit(0);
-  }
+  } */
 
+  @Override
+  public void start(Stage primaryStage) throws Exception {
+	  stage = primaryStage;
+	  startXOS(copyOfArgs[0]);
+	  createXmodeler();
+	  initClients();
+//    startClients();
+	  openXModeler();
+  }	  
+	
+  public void createXmodeler() throws Exception {
+//TODO implement
+	  
+	  // Set up MenuBar and Main Screen
+	  
+	  		outerSplitPane = new SplitPane();
+			
+			//Sample Project Tree
+//			TreeProjectFolder rootItem = new TreeProjectFolder("Projects");
+//			rootItem.getChildren().add(new TreeProjectItem("Project1"));
+//			TreeView<String> projectTree = new TreeView<String>(rootItem);
+			
+			// Tabs for proejcts
+			browserTab = new TabPane();//new Tab("MyProjects",projectTree),new Tab("Project0",new TreeView<String>()));
+			
+			//Tab welcomeTab = new Tab("Welcome", new WelcomePage());
+			
+			rightSplitPane = new SplitPane();
+			rightSplitPane.setOrientation(Orientation.VERTICAL);
+			rightSplitPane.setDividerPosition(0, 0.66);
+			
+			editorTabs = new TabPane();// welcomeTab ,new Tab("Diagram", new DiagramPanel()));
+			propertyTabs = new TabPane(new Tab("XMF Console"));
+			
+			rightSplitPane.getItems().addAll(editorTabs, propertyTabs);
+			
+			outerSplitPane.getItems().addAll(browserTab, rightSplitPane);
+			outerSplitPane.setDividerPosition(0, 0.2 );
+						
+			menu = new MyMenuBar();
+			
+			containingBox = new VBox();
+			containingBox.getChildren().addAll(menu, outerSplitPane);
+			VBox.setVgrow(outerSplitPane,Priority.ALWAYS);
+			
+			scene = new Scene(containingBox,TOOL_WIDTH,TOOL_HEIGHT);
+			
+			// Set up Stage
+			stage.getIcons().add(new Image("file:icons/shell/mosaic32.gif"));
+			setToolTitle();
+			
+			stage.setX(TOOL_X);
+			stage.setY(TOOL_Y);			
+			stage.setScene(scene);
+			
+//TODO Why timer? Can we intergrate it properly? 						
+//			XModeler.getDisplay().timerExec(3000, new Runnable() {
+//			      public void run() {
+
+			MenuItem itemVMPanic = new MenuItem("VM Panic");
+			itemVMPanic.setOnAction(new EventHandler<ActionEvent>() {
+	            public void handle(ActionEvent t) {
+	            	Machine.interrupt = true;
+	            }
+	        }); 
+
+			Menu menuDebug = new Menu("Debug");
+			menuDebug.getItems().add(itemVMPanic);
+			menu.getMenus().add(menuDebug);
+			
+			MenuItem itemLoadImage = new MenuItem("Load Image...");
+			itemLoadImage.setOnAction(new EventHandler<ActionEvent>() {
+	            public void handle(ActionEvent t) {
+	            		Platform.runLater(new Runnable() {
+	                        @Override public void run() {
+	                        	stage.close();
+	                        	busyMessage = "";
+	                        	TOOL_X = 100;
+	                        	TOOL_Y = 100;
+	                        	TOOL_WIDTH = 1200;
+	                        	TOOL_HEIGHT = 900;
+	                        	xos = new OperatingSystem();
+	                        	loadedImagePath = null;
+	                        	showLoad = true;
+	                        	try {
+	                        		start(stage);
+	                        	} catch (Exception e) {
+	                        		e.printStackTrace();
+	                        	}
+	                        }
+	                    });
+	            }
+	        }); 
+			menu.getMenus().get(0).getItems().add(itemLoadImage);
+
+//			primaryStage.show();
+  }
+  
+/*  @Deprecated 
   public static void startXModeler() {
-    display = Display.getDefault();
+    //TODO old
+	  
+	display = Display.getDefault();
 
     DEVICE_ZOOM_PERCENT = display.getDPI().x * 100 / 75;
     System.err.println("The zoom for this device was detected as " + DEVICE_ZOOM_PERCENT + "%.");
 
     setToolLabel();
-    Image windowIcon = new Image(XModeler.getDisplay(), "icons/shell/mosaic32.gif");
+    org.eclipse.swt.graphics.Image windowIcon = new org.eclipse.swt.graphics.Image(XModeler.getDisplay(), "icons/shell/mosaic32.gif");
     XModeler.setImage(windowIcon);
     XModeler.setLayout(new FillLayout());
     XModeler.setLocation(TOOL_X, TOOL_Y);
     XModeler.setSize(new org.eclipse.swt.graphics.Point(TOOL_WIDTH, TOOL_HEIGHT));
     XModeler.addListener(SWT.Close, closeListener());
-    menuBar = new Menu(XModeler, SWT.BAR);
+    menuBar = new org.eclipse.swt.widgets.Menu(XModeler, SWT.BAR);
     outerSash = new SashForm(XModeler, SWT.HORIZONTAL);
     browserTabFolder = new CTabFolder(outerSash, SWT.BORDER);
     rightSash = new SashForm(outerSash, SWT.VERTICAL);
@@ -428,18 +626,18 @@ public class XModeler {
 
     XModeler.getDisplay().timerExec(3000, new Runnable() {
       public void run() {
-        Menu exitMenu = new Menu(menuBar);
-        MenuItem exit = new MenuItem(menuBar, SWT.CASCADE);
+    	org.eclipse.swt.widgets.Menu exitMenu = new org.eclipse.swt.widgets.Menu(menuBar);
+    	org.eclipse.swt.widgets.MenuItem exit = new org.eclipse.swt.widgets.MenuItem(menuBar, SWT.CASCADE);
         exit.setText("Debug");
         exit.setMenu(exitMenu);
-        MenuItem panic = new MenuItem(exitMenu, SWT.NONE);
+        org.eclipse.swt.widgets.MenuItem panic = new org.eclipse.swt.widgets.MenuItem(exitMenu, SWT.NONE);
         panic.setText("VM Panic");
         panic.addListener(SWT.Selection, new Listener() {
           public void handleEvent(Event e) {
             Machine.interrupt = true;
           }
         });
-        MenuItem loadImage = new MenuItem(menuBar.getItem(0).getMenu(), SWT.NONE);
+        org.eclipse.swt.widgets.MenuItem loadImage = new org.eclipse.swt.widgets.MenuItem(menuBar.getItem(0).getMenu(), SWT.NONE);
         loadImage.setText("Load Image");
         loadImage.addListener(SWT.Selection, new Listener() {
           public void handleEvent(Event e) {
@@ -462,7 +660,7 @@ public class XModeler {
 
       }
     });
-  }
+  } */
 
   static void startXOS(String initFile) {
     final String[] args = xos.getInitArgs(initFile);
@@ -483,32 +681,42 @@ public class XModeler {
     t.start();
   }
 
+//TODO recreate?
+  @Deprecated 
   public static void maximiseEditors() {
-    outerSash.setMaximizedControl(rightSash);
-    rightSash.setMaximizedControl(editorSash);
+//    outerSash.setMaximizedControl(rightSash);
+//    rightSash.setMaximizedControl(editorSash);
   }
 
+  @Deprecated
   public static void minimiseEditors() {
-    rightSash.setMaximizedControl(null);
-    outerSash.setMaximizedControl(null);
+//    rightSash.setMaximizedControl(null);
+//    outerSash.setMaximizedControl(null);
   }
 
+  @Deprecated
   public static void maximiseProperties() {
-    outerSash.setMaximizedControl(rightSash);
-    rightSash.setMaximizedControl(propertySash);
+//    outerSash.setMaximizedControl(rightSash);
+//    rightSash.setMaximizedControl(propertySash);
   }
 
+  @Deprecated
   public static void minimiseProperties() {
-    rightSash.setMaximizedControl(null);
-    outerSash.setMaximizedControl(null);
+//    rightSash.setMaximizedControl(null);
+//    outerSash.setMaximizedControl(null);
   }
 
+  @Deprecated
   public static void maximiseBrowser() {
-    outerSash.setMaximizedControl(browserTabFolder);
+//    outerSash.setMaximizedControl(browserTabFolder);
   }
 
+  @Deprecated
   public static void minimiseBrowser() {
-    outerSash.setMaximizedControl(null);
+//    outerSash.setMaximizedControl(null);
   }
 
+
+  
 }
+
