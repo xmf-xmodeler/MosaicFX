@@ -1,19 +1,23 @@
 package tool.clients.menus;
 
 import java.io.PrintStream;
-import java.util.Vector;
+//import java.util.Vector;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Menu;
+import javafx.scene.control.ContextMenu;
+//import javafx.scene.control.Menu;
 
-import tool.xmodeler.XModeler;
+//import org.eclipse.swt.SWT;
+//import org.eclipse.swt.widgets.Menu;
+
+//import tool.xmodeler.XModeler;
 
 public class PopupMenu extends PopupMenuItemContainer {
 
-  public Menu popup(String id) {
-    Menu menu = new Menu(XModeler.getXModeler(), SWT.POP_UP);
+  public ContextMenu popup(String id) {
+    ContextMenu menu = new ContextMenu();//XModeler.getXModeler(), SWT.POP_UP);
     for (PopupMenuItem child : getChildren())
-      child.popup(menu, id);
+//      child.popup(menu, id);
+       menu.getItems().add(child.popup(id));
     return menu;
   }
 

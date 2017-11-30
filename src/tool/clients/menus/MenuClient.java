@@ -3,23 +3,28 @@ package tool.clients.menus;
 import java.io.PrintStream;
 import java.util.Hashtable;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
+//import org.eclipse.swt.SWT;
+//import org.eclipse.swt.events.SelectionEvent;
+//import org.eclipse.swt.events.SelectionListener;
+//import org.eclipse.swt.widgets.Display;
+//import org.eclipse.swt.widgets.Menu;
+//import org.eclipse.swt.widgets.MenuItem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javafx.event.ActionEvent;
+import javafx.scene.control.ContextMenu;
+//import javafx.event.EventHandler;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import tool.clients.Client;
 import tool.clients.EventHandler;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
 
-public class MenuClient extends Client implements SelectionListener {
+public class MenuClient extends Client implements javafx.event.EventHandler<ActionEvent>{//implements SelectionListener {
 
   static MenuClient                   theClient;
   static Hashtable<String, Menu>      menus            = new Hashtable<String, Menu>();
@@ -68,9 +73,10 @@ public class MenuClient extends Client implements SelectionListener {
   }
 
   private String rootMenuText(Menu menu) {
-    for (MenuItem item : XModeler.getMenuBar().getItems())
-      if (item.getMenu() == menu) return item.getText();
-    return "";
+	 return menu.getText(); 
+//    for (MenuItem item : XModeler.getMenuBar().getItems())
+//      if (item.getMenu() == menu) return item.getText();
+//    return "";
   }
 
   private void writeMenu(String id, Menu menu, String text, PrintStream out) {
@@ -86,8 +92,10 @@ public class MenuClient extends Client implements SelectionListener {
   }
 
   private void writeMenuItem(MenuItem item, PrintStream out) {
-    if (item.getMenu() != null) {
-      writeMenu(getId(item.getMenu()), item.getMenu(), item.getText(), out);
+    if (item instanceof Menu){
+	//if (item.getMenu() != null) {
+      Menu m = (Menu)item;
+      writeMenu(getId(m), m, m.getText(), out);
     } else out.print("<MenuItem id='" + getId(item) + "' text='" + XModeler.encodeXmlAttribute(item.getText()) + "'/>");
   }
 
@@ -104,9 +112,10 @@ public class MenuClient extends Client implements SelectionListener {
   }
 
   private boolean isRootMenu(Menu menu) {
-    for (MenuItem item : XModeler.getMenuBar().getItems())
-      if (item.getMenu() == menu) return true;
-    return false;
+    return XModeler.getMenuBar().getMenus().contains(menu);
+//	for (MenuItem item : XModeler.getMenuBar().getItems())
+//      if (item.getMenu() == menu) return true;
+//    return false;
   }
 
   public void sendMessage(final Message message) {
@@ -131,24 +140,26 @@ public class MenuClient extends Client implements SelectionListener {
     String id = message.args[0].strValue();
     if (menus.containsKey(id)) {
       final Menu menu = menus.get(id);
-      if (!menu.isDisposed()) {
-        runOnDisplay(new Runnable() {
-          public void run() {
-            menu.dispose();
-          }
-        });
-      }
+      menu.getParentMenu().getItems().remove(menu); //is this enough?
+//      if (!menu.isDisposed()) {
+//        runOnDisplay(new Runnable() {
+//          public void run() {
+//            menu.dispose();
+//          }
+//        });
+//      }
       menus.remove(id);
     }
     if (items.containsKey(id)) {
       final MenuItem item = items.get(id);
-      if (!item.isDisposed()) {
-        runOnDisplay(new Runnable() {
-          public void run() {
-            item.dispose();
-          }
-        });
-      }
+      item.getParentMenu().getItems().remove(item);
+//      if (!item.isDisposed()) {
+//        runOnDisplay(new Runnable() {
+//          public void run() {
+//            item.dispose();
+//          }
+//        });
+//      }
       items.remove(id);
     }
     if (popups.containsKey(id)) {
@@ -292,19 +303,22 @@ public class MenuClient extends Client implements SelectionListener {
 
   private void newMenuItem(final String parent, final String id, final String name) {
     if (menus.containsKey(parent)) {
-      Display.getDefault().syncExec(new Runnable() {
-        public void run() {
+//      Display.getDefault().syncExec(new Runnable() {
+//        public void run() {
           Menu menu = menus.get(parent);
-          MenuItem item = new MenuItem(menu, SWT.PUSH);
-          item.setText(name);
+          MenuItem item = new MenuItem(name); //new MenuItem(menu, SWT.PUSH);
+//          item.setText(name);
+          menu.getItems().add(item);
           items.put(id, item);
-          item.addSelectionListener(MenuClient.this);
-          XModeler.getXModeler().setMenuBar(XModeler.getMenuBar());
-        }
-      });
+          item.setOnAction(this);
+          //item.addSelectionListener(MenuClient.this);
+          //XModeler.getXModeler().setMenuBar(XModeler.getMenuBar());
+//        }
+//      });
     } else System.err.println("Cannot find menu " + parent);
   }
 
+  //TODO ????
   private void newGroupMarker(Message message) {
     Value parent = message.args[0];
     Value id = message.args[1];
@@ -325,45 +339,49 @@ public class MenuClient extends Client implements SelectionListener {
   }
 
   private void newMenu(final String parent, final String id, final String name) {
-    Display.getDefault().syncExec(new Runnable() {
-      public void run() {
+//    Display.getDefault().syncExec(new Runnable() {
+//      public void run() {
         if (menus.containsKey(parent)) {
           Menu menu = menus.get(parent);
-          Menu subMenu = new Menu(XModeler.getXModeler(), SWT.DROP_DOWN);
-          MenuItem menuItem = new MenuItem(menu, SWT.CASCADE);
-          menuItem.setMenu(subMenu);
-          menuItem.setText(name);
+          Menu subMenu = new Menu(name);//new Menu(XModeler.getXModeler(), SWT.DROP_DOWN);
+//          MenuItem menuItem = new MenuItem(menu, SWT.CASCADE);
+//          menuItem.setMenu(subMenu);
+//          menuItem.setText(name);
+          menu.getItems().add(subMenu);
           menus.put(id, subMenu);
-          XModeler.getXModeler().setMenuBar(XModeler.getMenuBar());
+//          XModeler.getXModeler().setMenuBar(XModeler.getMenuBar());
         } else System.err.println("Cannot find menu " + parent);
-      }
-    });
+//      }
+//    });
   }
 
   private void newRootMenu(final String id, final String name) {
-    runOnDisplay(new Runnable() {
-      public void run() {
-        MenuItem item = getRootMenuItemNamed(name);
-        if (item != null) {
-          Menu menu = item.getMenu();
-          String oldId = getId(menu);
-          menus.remove(oldId);
-          item.dispose();
+//    runOnDisplay(new Runnable() {
+//      public void run() {
+        Menu oldMenu = getRootMenuItemNamed(name);
+        if (oldMenu != null) {
+        	XModeler.getMenuBar().getMenus().remove(oldMenu);
+        	String oldId = getId(oldMenu);
+        	menus.remove(oldId);
         }
-        Menu menuBar = XModeler.getMenuBar();
-        MenuItem menuItem = new MenuItem(menuBar, SWT.CASCADE);
-        Menu menu = new Menu(XModeler.getXModeler(), SWT.DROP_DOWN);
-        menuItem.setMenu(menu);
-        menuItem.setText(name);
-        XModeler.getXModeler().setMenuBar(XModeler.getMenuBar());
+        //Menu menuBar = XModeler.getMenuBar();
+        //MenuItem menuItem = new MenuItem(menuBar, SWT.CASCADE);
+        Menu menu = new Menu(name);//(XModeler.getXModeler(), SWT.DROP_DOWN);
+        //menuItem.setMenu(menu);
+        //menuItem.setText(name);
+        XModeler.getMenuBar().getMenus().add(menu);
+//        XModeler.getXModeler().setMenuBar(XModeler.getMenuBar());
         menus.put(id, menu);
-      }
-    });
+//      }
+//    });
   }
 
-  private MenuItem getRootMenuItemNamed(String name) {
-    for (MenuItem item : XModeler.getMenuBar().getItems())
-      if (item.getText().equals(name)) return item;
+  private Menu getRootMenuItemNamed(String name) {
+	for (Menu menu : XModeler.getMenuBar().getMenus()){
+		if(menu.getText().equals(name)) return menu;
+	}
+//	for (MenuItem item : XModeler.getMenuBar().getItems())
+//      if (item.getText().equals(name)) return item;
     return null;
   }
 
@@ -371,26 +389,49 @@ public class MenuClient extends Client implements SelectionListener {
     return true;
   }
 
-  public void widgetDefaultSelected(SelectionEvent arg0) {
-  }
+//  public void widgetDefaultSelected(SelectionEvent arg0) {
+//  }
+//
+//  public void widgetSelected(SelectionEvent event) {
+//    MenuItem item = (MenuItem) event.widget;
+//    for (String id : items.keySet())
+//      if (items.get(id) == item) {
+//        EventHandler handler = getHandler();
+//        Message m = handler.newMessage("menuSelected", 1);
+//        Value v1 = new Value(id);
+//        m.args[0] = v1;
+//        handler.raiseEvent(m);
+//      }
+//  }
 
-  public void widgetSelected(SelectionEvent event) {
-    MenuItem item = (MenuItem) event.widget;
-    for (String id : items.keySet())
-      if (items.get(id) == item) {
-        EventHandler handler = getHandler();
-        Message m = handler.newMessage("menuSelected", 1);
-        Value v1 = new Value(id);
-        m.args[0] = v1;
-        handler.raiseEvent(m);
-      }
-  }
-
+  @Deprecated
   public static void popup(String id, int x, int y) {
-    if (popupAssignments.containsKey(id)) {
-      PopupMenu pmenu = popupAssignments.get(id);
-      Menu menu = pmenu.popup(id);
-      menu.setVisible(true);
-    } else System.err.println("no menu for " + id);
+//    if (popupAssignments.containsKey(id)) {
+//      PopupMenu pmenu = popupAssignments.get(id);
+//      Menu menu = pmenu.popup(id);
+//      menu.setVisible(true);
+//    } else System.err.println("no menu for " + id);
   }
+
+//TODO Testen
+  public static void popup(String id, javafx.scene.Node anchor, int x, int y) {
+	    if (popupAssignments.containsKey(id)) {
+	      PopupMenu pmenu = popupAssignments.get(id);
+	      ContextMenu contextmenu = pmenu.popup(id);
+	      contextmenu.show(anchor,x,y);
+	    } else System.err.println("no menu for " + id);
+	  }
+  
+  @Override
+	public void handle(ActionEvent event) {
+	    MenuItem item = (MenuItem) event.getSource();
+	    for (String id : items.keySet())
+	      if (items.get(id) == item) {
+	        EventHandler handler = getHandler();
+	        Message m = handler.newMessage("menuSelected", 1);
+	        Value v1 = new Value(id);
+	        m.args[0] = v1;
+	        handler.raiseEvent(m);
+	      }
+	}
 }

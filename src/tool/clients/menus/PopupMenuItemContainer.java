@@ -2,9 +2,6 @@ package tool.clients.menus;
 
 import java.util.Vector;
 
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
-
 public class PopupMenuItemContainer {
 
   String                id;
