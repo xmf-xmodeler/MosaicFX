@@ -49,6 +49,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import tool.clients.browser.ModelBrowserClient;
 import tool.clients.diagrams.DiagramClient;
 import tool.clients.dialogs.DialogsClient;
@@ -105,7 +106,7 @@ public class XModeler extends Application {
   static TabPane 		 browserTab 		 = null;
   static TabPane 		 editorTabs 		 = null;
   static TabPane 		 propertyTabs 		 = null;
-  static MenuBar		 menu				 = null;
+  static MenuBar		 menuBar				 = null;
   
   // private static boolean overwrite(final String file) {
   // final boolean[] result = new boolean[] { false };
@@ -209,14 +210,14 @@ public class XModeler extends Application {
     return true;
   }
 
-  public static MenuBar getMenu() {
-    return menu;
+  public static MenuBar getMenuBar() {
+    return menuBar;
   }
 
-  @Deprecated
-  public static org.eclipse.swt.widgets.Menu getMenuBar() {
-	    return null;
-  }
+//  @Deprecated
+//  public static org.eclipse.swt.widgets.Menu getMenuBar() {
+//	    return null;
+//  }
   
   private static String getVersion(String[] args) {
     for (int i = 0; i < args.length; i++) {
@@ -451,13 +452,13 @@ public class XModeler extends Application {
 
   public static void startClients() {
 //    xos.newMessageClient("com.ceteva.text", new EditorClient());
-//    xos.newMessageClient("com.ceteva.mosaic", new WorkbenchClient());
-//    xos.newMessageClient("com.ceteva.menus", new MenuClient());
+    xos.newMessageClient("com.ceteva.mosaic", new WorkbenchClient());
+    xos.newMessageClient("com.ceteva.menus", new MenuClient());
 //    xos.newMessageClient("com.ceteva.modelBrowser", new ModelBrowserClient());
 //    xos.newMessageClient("com.ceteva.diagram", new DiagramClient());
 //    xos.newMessageClient("com.ceteva.dialogs", new DialogsClient());
 //    xos.newMessageClient("com.ceteva.forms", new FormsClient());
-    xos.newMessageClient("com.ceteva.undo", new UndoClient());
+//    xos.newMessageClient("com.ceteva.undo", new UndoClient());
 //    xos.newMessageClient("com.ceteva.oleBridge", new OleBridgeClient());
 //    xos.newMessageClient("screenGeneration", new ScreenGenerationClient()); // BB
   }
@@ -528,10 +529,10 @@ public class XModeler extends Application {
 			outerSplitPane.getItems().addAll(browserTab, rightSplitPane);
 			outerSplitPane.setDividerPosition(0, 0.2 );
 						
-			menu = new MyMenuBar();
+			menuBar = new MenuBar(); //MyMenuBar();
 			
 			containingBox = new VBox();
-			containingBox.getChildren().addAll(menu, outerSplitPane);
+			containingBox.getChildren().addAll(menuBar, outerSplitPane);
 			VBox.setVgrow(outerSplitPane,Priority.ALWAYS);
 			
 			scene = new Scene(containingBox,TOOL_WIDTH,TOOL_HEIGHT);
@@ -543,6 +544,18 @@ public class XModeler extends Application {
 			stage.setX(TOOL_X);
 			stage.setY(TOOL_Y);			
 			stage.setScene(scene);
+			stage.setOnCloseRequest(  new EventHandler<WindowEvent>() {
+				  public void handle(WindowEvent event) {
+					  if (loadedImagePath == null) {
+						  WorkbenchClient.theClient().shutdownEvent();
+					  } else {
+						  WorkbenchClient.theClient().shutdownAndSaveEvent(loadedImagePath, inflationPath());
+					  }
+//					  event.consume();
+//					  event.doit = false;
+				  }
+		  });
+			
 			
 //TODO Why timer? Can we intergrate it properly? 						
 //			XModeler.getDisplay().timerExec(3000, new Runnable() {
@@ -557,7 +570,7 @@ public class XModeler extends Application {
 
 			Menu menuDebug = new Menu("Debug");
 			menuDebug.getItems().add(itemVMPanic);
-			menu.getMenus().add(menuDebug);
+			menuBar.getMenus().add(menuDebug);
 			
 			MenuItem itemLoadImage = new MenuItem("Load Image...");
 			itemLoadImage.setOnAction(new EventHandler<ActionEvent>() {
@@ -582,7 +595,7 @@ public class XModeler extends Application {
 	                    });
 	            }
 	        }); 
-			menu.getMenus().get(0).getItems().add(itemLoadImage);
+			menuBar.getMenus().get(0).getItems().add(itemLoadImage);
 
 //			primaryStage.show();
   }
@@ -681,40 +694,40 @@ public class XModeler extends Application {
     t.start();
   }
 
-//TODO recreate?
-  @Deprecated 
-  public static void maximiseEditors() {
-//    outerSash.setMaximizedControl(rightSash);
-//    rightSash.setMaximizedControl(editorSash);
-  }
-
-  @Deprecated
-  public static void minimiseEditors() {
-//    rightSash.setMaximizedControl(null);
-//    outerSash.setMaximizedControl(null);
-  }
-
-  @Deprecated
-  public static void maximiseProperties() {
-//    outerSash.setMaximizedControl(rightSash);
-//    rightSash.setMaximizedControl(propertySash);
-  }
-
-  @Deprecated
-  public static void minimiseProperties() {
-//    rightSash.setMaximizedControl(null);
-//    outerSash.setMaximizedControl(null);
-  }
-
-  @Deprecated
-  public static void maximiseBrowser() {
-//    outerSash.setMaximizedControl(browserTabFolder);
-  }
-
-  @Deprecated
-  public static void minimiseBrowser() {
-//    outerSash.setMaximizedControl(null);
-  }
+////TODO recreate?
+//  @Deprecated 
+//  public static void maximiseEditors() {
+////    outerSash.setMaximizedControl(rightSash);
+////    rightSash.setMaximizedControl(editorSash);
+//  }
+//
+//  @Deprecated
+//  public static void minimiseEditors() {
+////    rightSash.setMaximizedControl(null);
+////    outerSash.setMaximizedControl(null);
+//  }
+//
+//  @Deprecated
+//  public static void maximiseProperties() {
+////    outerSash.setMaximizedControl(rightSash);
+////    rightSash.setMaximizedControl(propertySash);
+//  }
+//
+//  @Deprecated
+//  public static void minimiseProperties() {
+////    rightSash.setMaximizedControl(null);
+////    outerSash.setMaximizedControl(null);
+//  }
+//
+//  @Deprecated
+//  public static void maximiseBrowser() {
+////    outerSash.setMaximizedControl(browserTabFolder);
+//  }
+//
+//  @Deprecated
+//  public static void minimiseBrowser() {
+////    outerSash.setMaximizedControl(null);
+//  }
 
 
   
