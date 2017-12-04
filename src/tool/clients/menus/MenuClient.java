@@ -2,6 +2,7 @@ package tool.clients.menus;
 
 import java.io.PrintStream;
 import java.util.Hashtable;
+import java.util.concurrent.CountDownLatch;
 
 //import org.eclipse.swt.SWT;
 //import org.eclipse.swt.events.SelectionEvent;
@@ -13,6 +14,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ContextMenu;
 //import javafx.event.EventHandler;
@@ -303,18 +306,28 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
 
   private void newMenuItem(final String parent, final String id, final String name) {
     if (menus.containsKey(parent)) {
-//      Display.getDefault().syncExec(new Runnable() {
-//        public void run() {
+    	CountDownLatch l = new CountDownLatch(1);
+    	Platform.runLater(
+//      Display.getDefault().syncExec(
+    			new Runnable() {
+    				public void run() {
           Menu menu = menus.get(parent);
-          MenuItem item = new MenuItem(name); //new MenuItem(menu, SWT.PUSH);
+          MenuItem item = new MenuItem(name.replace('&', '_')); //new MenuItem(menu, SWT.PUSH);
 //          item.setText(name);
           menu.getItems().add(item);
           items.put(id, item);
-          item.setOnAction(this);
+          item.setOnAction(MenuClient.theClient);
+          l.countDown();
           //item.addSelectionListener(MenuClient.this);
           //XModeler.getXModeler().setMenuBar(XModeler.getMenuBar());
-//        }
-//      });
+    	}
+      });
+      try {
+		l.await();
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
     } else System.err.println("Cannot find menu " + parent);
   }
 
@@ -339,25 +352,38 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
   }
 
   private void newMenu(final String parent, final String id, final String name) {
-//    Display.getDefault().syncExec(new Runnable() {
-//      public void run() {
+//    Display.getDefault().syncExec(
+  	CountDownLatch l = new CountDownLatch(1);
+  	Platform.runLater(
+	  new Runnable() {
+      public void run() {
         if (menus.containsKey(parent)) {
           Menu menu = menus.get(parent);
-          Menu subMenu = new Menu(name);//new Menu(XModeler.getXModeler(), SWT.DROP_DOWN);
+          Menu subMenu = new Menu(name.replace('&', '_'));//new Menu(XModeler.getXModeler(), SWT.DROP_DOWN);
 //          MenuItem menuItem = new MenuItem(menu, SWT.CASCADE);
 //          menuItem.setMenu(subMenu);
 //          menuItem.setText(name);
           menu.getItems().add(subMenu);
           menus.put(id, subMenu);
 //          XModeler.getXModeler().setMenuBar(XModeler.getMenuBar());
+          l.countDown();
         } else System.err.println("Cannot find menu " + parent);
-//      }
-//    });
+      }
+    });
+  	try {
+		l.await();
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
   }
 
   private void newRootMenu(final String id, final String name) {
-//    runOnDisplay(new Runnable() {
-//      public void run() {
+//    runOnDisplay(
+  	CountDownLatch l = new CountDownLatch(1);
+  	Platform.runLater(
+	  new Runnable() {
+      public void run() {
         Menu oldMenu = getRootMenuItemNamed(name);
         if (oldMenu != null) {
         	XModeler.getMenuBar().getMenus().remove(oldMenu);
@@ -366,14 +392,22 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
         }
         //Menu menuBar = XModeler.getMenuBar();
         //MenuItem menuItem = new MenuItem(menuBar, SWT.CASCADE);
-        Menu menu = new Menu(name);//(XModeler.getXModeler(), SWT.DROP_DOWN);
+        Menu menu = new Menu(name.replace('&', '_'));//(XModeler.getXModeler(), SWT.DROP_DOWN);
+        
         //menuItem.setMenu(menu);
         //menuItem.setText(name);
         XModeler.getMenuBar().getMenus().add(menu);
 //        XModeler.getXModeler().setMenuBar(XModeler.getMenuBar());
         menus.put(id, menu);
-//      }
-//    });
+        l.countDown();
+      }
+    });
+  	try {
+		l.await();
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
   }
 
   private Menu getRootMenuItemNamed(String name) {

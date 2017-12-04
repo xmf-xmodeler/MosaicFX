@@ -467,9 +467,7 @@ public class XModeler extends Application {
 	  //TODO Adapt clients to java FX
 	  
 //	  ModelBrowserClient.start(browserTabFolder, SWT.LEFT);
-//	  outerSash.setWeights(new int[] { 1, 5 });
 //	  EditorClient.start(editorSash.getFolder1(), SWT.BORDER);
-//	  browserTabFolder.addCTabFolder2Listener(new BrowserResizeListener());
 //	  DiagramClient.start(editorSash.getFolder1());
 //	  FormsClient.start(propertySash.getFolder1(), propertyToolbar1, SWT.BORDER);
 //	  ScreenGenerationClient.start(propertySash.getFolder1()); // BB
@@ -557,11 +555,12 @@ public class XModeler extends Application {
 		  });
 			
 			
-//TODO Why timer? Can we intergrate it properly? 						
-//			XModeler.getDisplay().timerExec(3000, new Runnable() {
+//TODO Why timer? Can we intergrate it properly?
+//			XModeler.getDisplay().timerExec(3000, 
+//					new Runnable() {
 //			      public void run() {
-
-			MenuItem itemVMPanic = new MenuItem("VM Panic");
+			
+			/*MenuItem itemVMPanic = new MenuItem("VM Panic");
 			itemVMPanic.setOnAction(new EventHandler<ActionEvent>() {
 	            public void handle(ActionEvent t) {
 	            	Machine.interrupt = true;
@@ -595,8 +594,10 @@ public class XModeler extends Application {
 	                    });
 	            }
 	        }); 
-			menuBar.getMenus().get(0).getItems().add(itemLoadImage);
+			menuBar.getMenus().get(0).getItems().add(itemLoadImage); */
 
+//			      }});
+			
 //			primaryStage.show();
   }
   
