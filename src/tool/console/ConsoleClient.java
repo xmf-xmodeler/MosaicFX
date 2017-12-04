@@ -43,7 +43,9 @@ public class ConsoleClient extends Thread {
     return theConsole;
   }
 
+  @Override
   public void run() {
+	System.err.println("run...");
     char[] buffer = new char[1000];
     while (true) {
       try {

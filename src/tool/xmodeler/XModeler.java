@@ -450,16 +450,16 @@ public class XModeler extends Application {
   }
 
   public static void startClients() {
-    xos.newMessageClient("com.ceteva.text", new EditorClient());
-    xos.newMessageClient("com.ceteva.mosaic", new WorkbenchClient());
-    xos.newMessageClient("com.ceteva.menus", new MenuClient());
-    xos.newMessageClient("com.ceteva.modelBrowser", new ModelBrowserClient());
-    xos.newMessageClient("com.ceteva.diagram", new DiagramClient());
-    xos.newMessageClient("com.ceteva.dialogs", new DialogsClient());
-    xos.newMessageClient("com.ceteva.forms", new FormsClient());
+//    xos.newMessageClient("com.ceteva.text", new EditorClient());
+//    xos.newMessageClient("com.ceteva.mosaic", new WorkbenchClient());
+//    xos.newMessageClient("com.ceteva.menus", new MenuClient());
+//    xos.newMessageClient("com.ceteva.modelBrowser", new ModelBrowserClient());
+//    xos.newMessageClient("com.ceteva.diagram", new DiagramClient());
+//    xos.newMessageClient("com.ceteva.dialogs", new DialogsClient());
+//    xos.newMessageClient("com.ceteva.forms", new FormsClient());
     xos.newMessageClient("com.ceteva.undo", new UndoClient());
-    xos.newMessageClient("com.ceteva.oleBridge", new OleBridgeClient());
-    xos.newMessageClient("screenGeneration", new ScreenGenerationClient()); // BB
+//    xos.newMessageClient("com.ceteva.oleBridge", new OleBridgeClient());
+//    xos.newMessageClient("screenGeneration", new ScreenGenerationClient()); // BB
   }
   
   public static void initClients() {
@@ -472,12 +472,12 @@ public class XModeler extends Application {
 //	  DiagramClient.start(editorSash.getFolder1());
 //	  FormsClient.start(propertySash.getFolder1(), propertyToolbar1, SWT.BORDER);
 //	  ScreenGenerationClient.start(propertySash.getFolder1()); // BB
-//	  Console.start(propertySash.getFolder1());
+	  Console.start(propertyTabs);
   }
   
   public static void openXModeler() {
 	  //TODO open
-		stage.show();
+		stage.show();		
   }
   
 /*  @Deprecated
@@ -495,7 +495,7 @@ public class XModeler extends Application {
 	  startXOS(copyOfArgs[0]);
 	  createXmodeler();
 	  initClients();
-//    startClients();
+      startClients();
 	  openXModeler();
   }	  
 	
@@ -521,7 +521,7 @@ public class XModeler extends Application {
 			rightSplitPane.setDividerPosition(0, 0.66);
 			
 			editorTabs = new TabPane();// welcomeTab ,new Tab("Diagram", new DiagramPanel()));
-			propertyTabs = new TabPane(new Tab("XMF Console"));
+			propertyTabs = new TabPane();
 			
 			rightSplitPane.getItems().addAll(editorTabs, propertyTabs);
 			
