@@ -6,22 +6,13 @@ import java.util.HashSet;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
-import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.custom.StyledTextContent;
-import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
@@ -40,9 +31,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import net.sf.pisee.swtextedit.util.StringUtil;
 import tool.clients.consoleInterface.EscapeHandler;
 import tool.clients.dialogs.notifier.NotificationType;
 import tool.clients.dialogs.notifier.NotifierDialog;
@@ -124,9 +113,9 @@ public class ConsoleView {
     text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
   }
 
-  public void addCommand(StyledText text, String command) {
-    int length = text.getCharCount() - inputStart;
-    text.replaceTextRange(inputStart, length, command);
+  public void addCommand(TextArea textArea, String command) {
+//    int length = text.getCharCount() - inputStart;
+    textArea.replaceText(inputStart, textArea.getText().length(), command);
     goToEnd();
   }
 
@@ -232,116 +221,108 @@ public class ConsoleView {
 	    @Override
 	    public void handle(KeyEvent keyEvent) {
 	        	
-
-//    text.addVerifyKeyListener(new VerifyKeyListener() {
-//      public void verifyKey(VerifyEvent e) {
-//        if (overwriting(e.character)) {
-//          try {
-//            text.setCaretOffset(text.getCaretOffset() + 1);
-//          } catch (Exception err) {
-//            System.err.println("something's wrong with a caret");
-//            err.printStackTrace();
-//          }
-//          e.doit = false;
-//        } else if (e.keyCode == SWT.ESC) {
-//          if (escape != null) escape.interrupt();
-//          e.doit = false;
-//        } else if (e.keyCode == SWT.ARROW_UP) {
-//          String command = recallFromHistoryForward();
-//          if (command != "") addCommand(text, command);
-//          e.doit = false;
-//        } else if (e.keyCode == SWT.ARROW_DOWN) {
-//          String command = recallFromHistoryBackward();
-//          if (command != "") addCommand(text, command);
-//          e.doit = false;
+        if (overwriting(keyEvent.getCharacter())) {
+          try {
+        	positionCaret(textArea.getCaretPosition() + 1);
+          } catch (Exception err) {
+            System.err.println("something's wrong with a caret");
+            err.printStackTrace();
+          }
+          revertInput();
+        } else if (keyEvent.getCode() == KeyCode.ESCAPE) {
+          if (escape != null) escape.interrupt();
+          revertInput();
+        } else if (keyEvent.getCode() == KeyCode.UP) {
+          String command = recallFromHistoryForward();
+          if (command != "") addCommand(textArea, command);
+          revertInput();
+        } else if (keyEvent.getCode() == KeyCode.DOWN) {
+          String command = recallFromHistoryBackward();
+          if (command != "") addCommand(textArea, command);
+          revertInput();
 //        } else if (e.keyCode == '+' && ((e.stateMask & SWT.CTRL) == SWT.CTRL)) {
 //          fontData.setHeight(Math.min(fontData.getHeight() + FONT_INC, MAX_FONT_HEIGHT));
 //          text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
-//          e.doit = false;
+//          revertInput();
 //        } else if (e.keyCode == '-' && ((e.stateMask & SWT.CTRL) == SWT.CTRL)) {
 //          fontData.setHeight(Math.max(MIN_FONT_HEIGHT, fontData.getHeight() - FONT_INC));
 //          text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
-//          e.doit = false;
+//          revertInput();
 //        } else if (e.keyCode == 't' && ((e.stateMask & SWT.CTRL) == SWT.CTRL)) {
 //          fontToggleTest = !fontToggleTest;
 //          if (fontToggleTest)
 //            setFont("dejavu/DejaVuSans.ttf", "DejaVu Sans");
 //          else setFont("dejavu/DejaVuSansMono.ttf", "DejaVu Sans Mono");
-//          e.doit = false;
+//          revertInput();
 //        } else if (e.keyCode == 'a' && ((e.stateMask & SWT.CTRL) == SWT.CTRL)) {
 //          autoComplete.toggleMainSwitch();
 //          showStatus();
-//          e.doit = false;
+//          revertInput();
 //        } else if (e.keyCode == '/' && ((e.stateMask & SWT.CTRL) == SWT.CTRL) && ((e.stateMask & SWT.SHIFT) == SWT.SHIFT)) {
 //          help();
-//        } else if (e.keyCode == SWT.CR) {
-	        if (keyEvent.getCode() == KeyCode.ENTER)  {
-//          goToEnd();
-//          appendText("\n");
-//          goToEnd();
-//          e.doit = false;
+        } else if (keyEvent.getCode() == KeyCode.ENTER)  {
           String output = pushToHistory(textArea);
-          System.err.println("out: " + out);
           if (out != null) {
             out.print(output + "\r");
             out.flush();
           }
+          revertInput();
           goToEnd();
           inputStart = textArea.getText().length();
-	        }
-//        } else if (e.character == '.' || e.keyCode == ' ' && ((e.stateMask & SWT.CTRL) == SWT.CTRL) && autoComplete.isDisplayOptions()) {
-//          // Display options based on the type of the input.
-//          StyledTextContent content = text.getContent();
-//          if (text.getCaretOffset() >= inputStart) {
-//            String command = content.getTextRange(inputStart, text.getCaretOffset() - inputStart);
-//            WorkbenchClient.theClient().dotConsole(command);
-//          }
-//        } else if (e.character == ':' && autoComplete.isColonAddPath()) {
-//          // We might have a :: where there is a path to the left ...
-//          StyledTextContent content = text.getContent();
-//          String command = content.getTextRange(inputStart, text.getCaretOffset() - inputStart);
-//          if (command.endsWith(":")) {
-//            WorkbenchClient.theClient().nameLookup(command.substring(0, command.length() - 1));
-//          }
-//        } else if (e.keyCode == '.' && ((e.stateMask & SWT.SHIFT) == SWT.SHIFT) && autoComplete.isRightArrowFillPatterns()) {
-//          // We might have a -> and can fill in the standard patterns ...
-//          StyledTextContent content = text.getContent();
-//          String command = content.getTextRange(inputStart, text.getCaretOffset() - inputStart);
-//          if (command.endsWith("-")) {
-//            completeArrow();
-//          }
-//        } else if (e.keyCode == '[' && ((e.stateMask & SWT.SHIFT) == SWT.SHIFT) && autoComplete.isSquareStartCollection()) {
-//          // Are we starting a collection?
-//          StyledTextContent content = text.getContent();
-//          String command = content.getTextRange(inputStart, text.getCaretOffset() - inputStart);
-//          if (command.endsWith("Set") || command.endsWith("Seq")) {
-//            insert("{}");
-//            backup(1);
-//            e.doit = false;
-//          }
-//        } else if (e.character == '(' && autoComplete.isNineAddParenthesis()) {
-//          // Insert the corresponding parenthesis...
-//          insert("()");
-//          backup(1);
-//          e.doit = false;
-//        } else if (e.keyCode == '\'' && ((e.stateMask & SWT.SHIFT) == SWT.SHIFT) && autoComplete.isApostropheAddQuotes()) {
-//          // Insert the corresponding close string...
-//          insert("\"\"");
-//          backup(1);
-//          e.doit = false;
-//        } else prepareTopLevelCommand();
-//      }
-//    });
+        } else if (keyEvent.getCharacter().charAt(0) == '.' /*|| e.keyCode == ' ' && ((e.stateMask & SWT.CTRL) == SWT.CTRL)*/ && autoComplete.isDisplayOptions()) {
+          // Display options based on the type of the input.
+          String content = textArea.getText();
+          if (textArea.getCaretPosition() >= inputStart) {
+          String command = content.substring(inputStart);
+            WorkbenchClient.theClient().dotConsole(command);
+          }
+        } else if (keyEvent.getCharacter().charAt(0) == ':' && autoComplete.isColonAddPath()) {
+          // We might have a :: where there is a path to the left ...
+          String content = textArea.getText();
+          String command = content.substring(inputStart);
+          if (command.endsWith(":")) {
+            WorkbenchClient.theClient().nameLookup(command.substring(0, command.length() - 1));
+          }
+        } else if (keyEvent.getCharacter().charAt(0) == '>' && autoComplete.isRightArrowFillPatterns()) {
+          // We might have a -> and can fill in the standard patterns ...
+          String content = textArea.getText();
+          String command = content.substring(inputStart);
+          if (command.endsWith("-")) {
+            completeArrow();
+          }
+        } else if (keyEvent.getCharacter().charAt(0) == '{' && autoComplete.isSquareStartCollection()) {
+          // Are we starting a collection?
+          String content = textArea.getText();
+          String command = content.substring(inputStart);
+          if (command.endsWith("Set") || command.endsWith("Seq")) {
+            insert("{}");
+            backup(1);
+            revertInput();
+          }
+        } else if (keyEvent.getCharacter().charAt(0) == '(' && autoComplete.isNineAddParenthesis()) {
+          // Insert the corresponding parenthesis...
+          insert("()");
+          backup(1);
+          revertInput();
+        } else if (keyEvent.getCharacter().charAt(0) == '\"' && autoComplete.isApostropheAddQuotes()) {
+          // Insert the corresponding close string...
+          insert("\"\"");
+          backup(1);
+          revertInput();
+        } else prepareTopLevelCommand();
+      }
+    });
 	        	
-//	        }
-	    }
-	});
 //
 //    ConsoleLineStyler consoleLineStyper = new ConsoleLineStyler();
 //    text.addLineStyleListener(consoleLineStyper);
   }
   
-	private void positionCaret(int pos) {
+		private void revertInput() {
+			System.err.println("revert input");
+			
+		}
+		private void positionCaret(int pos) {
     	Platform.runLater( new Runnable() {
     	    @Override
     	    public void run() {
@@ -372,17 +353,21 @@ public class ConsoleView {
     }
   }
 
-  public void prepareTopLevelCommand() {
-    if (text.getText().length() == text.getCaretOffset() && !text.getText().endsWith(";")) {
-      insert(";");
-      backup(1);
-    }
+  public void prepareTopLevelCommand() { //TODO
+//    if (textArea.getText().length() == textArea.getCaretPosition() && !textArea.getText().endsWith(";")) {
+//      listenerActive = false;
+//      insert(";");
+//      backup(1);
+//    }
   }
 
   public void insert(String string) {
     synchronized (overflowLock) {
-      text.insert(string);
-      text.setCaretOffset(text.getCaretOffset() + string.length());
+    	
+    	textArea.insertText(textArea.getCaretPosition(), string);
+    	positionCaret(textArea.getCaretPosition() + string.length());
+
+//      text.setCaretOffset(text.getCaretOffset() + string.length());
     }
   }
 
@@ -410,14 +395,15 @@ public class ConsoleView {
 //    text.setSelection(end, end);
   }
 
-  public boolean overwriting(char c) {
-    int end = text.getCharCount();
-    int caret = text.getCaretOffset();
-    return caret < end && text.getText().charAt(caret) == c;
+  public boolean overwriting(String c) {
+//    int end = text.getCharCount();
+//    int caret = text.getCaretOffset();
+//    return caret < end && c.startsWith(text.getText().charAt(caret)+""); /*Todo: check if ok*/
+	  /*TODO*/ return false;
   }
 
   public void backup(int backup) {
-    text.setCaretOffset(text.getCaretOffset() - backup);
+	  positionCaret(textArea.getText().length() - backup);
   }
 
   public void processInput(String input) {
@@ -629,22 +615,22 @@ public class ConsoleView {
     return menu;
   }
 
-  public void namespaceOld(final Message message) {
-    // Replaced to be consistent with the '.' dialog...
-    XModeler.getXModeler().getDisplay().syncExec(new Runnable() {
-      public void run() {
-        try {
-          Menu menu = getNameSpacePopup(message);
-          Point p = text.getCaret().getLocation();
-          Point displayPoint = text.toDisplay(p);
-          menu.setLocation(displayPoint);
-          menu.setVisible(true);
-        } catch (Throwable t) {
-          t.printStackTrace();
-        }
-      }
-    });
-  }
+//  public void namespaceOld(final Message message) {
+//    // Replaced to be consistent with the '.' dialog...
+//    XModeler.getXModeler().getDisplay().syncExec(new Runnable() {
+//      public void run() {
+//        try {
+//          Menu menu = getNameSpacePopup(message);
+//          Point p = text.getCaret().getLocation();
+//          Point displayPoint = text.toDisplay(p);
+//          menu.setLocation(displayPoint);
+//          menu.setVisible(true);
+//        } catch (Throwable t) {
+//          t.printStackTrace();
+//        }
+//      }
+//    });
+//  }
 
 
 }
