@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -200,10 +201,16 @@ public class ConsoleView {
         	 *        append diff there
         	 */
         	listenerActive = false;
-        	textArea.end();
-        	textArea.setText(oldValue + diffText);
-//        	textArea.selectPositionCaret(text.getText().length());
-//        	textArea.positionCaret(text.getText().length());
+//        	textArea.end();
+        	textArea.setText(oldValue);
+//        	textArea.selectPositionCaret(textArea.getText().length());
+        	textArea.appendText(diffText);
+
+//        	textArea.end();
+//        	textArea.positionCaret(textArea.getText().length());
+        	
+        	positionCaret(textArea.getText().length());
+        	
 //          goToEnd();
 //          appendText(e.text);
 //          goToEnd();
@@ -215,7 +222,11 @@ public class ConsoleView {
 
 	    /*TEST*/ if (newValue.endsWith("X")) {inputStart += 1; System.err.println(inputStart);}
       }
+
+
     });
+	
+	
 	
 	textArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
 	    @Override
@@ -276,7 +287,7 @@ public class ConsoleView {
             out.flush();
           }
           goToEnd();
-          inputStart = text.getText().length();
+          inputStart = textArea.getText().length();
 	        }
 //        } else if (e.character == '.' || e.keyCode == ' ' && ((e.stateMask & SWT.CTRL) == SWT.CTRL) && autoComplete.isDisplayOptions()) {
 //          // Display options based on the type of the input.
@@ -329,6 +340,15 @@ public class ConsoleView {
 //    ConsoleLineStyler consoleLineStyper = new ConsoleLineStyler();
 //    text.addLineStyleListener(consoleLineStyper);
   }
+  
+	private void positionCaret(int pos) {
+    	Platform.runLater( new Runnable() {
+    	    @Override
+    	    public void run() {
+    	        textArea.positionCaret(textArea.getText().length());
+    	    }
+    	});
+	}
 
   private void help() {
     // Show the commands...
@@ -347,7 +367,8 @@ public class ConsoleView {
 
   public void appendText(String string) {
     synchronized (overflowLock) {
-    	textArea.setText(textArea.getText() + string);
+    	textArea.appendText(string);
+//    	textArea.setText(textArea.getText() + string);
     }
   }
 
