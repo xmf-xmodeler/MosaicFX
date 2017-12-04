@@ -9,22 +9,26 @@ import tool.xmodeler.XModeler;
 
 public class BrowserResizeListener implements CTabFolder2Listener {
   
-  
+	@Deprecated  
 public void close(CTabFolderEvent arg0) {
   }
 
+	@Deprecated
   public void maximize(CTabFolderEvent event) {
-    XModeler.maximiseBrowser();
+//    XModeler.maximiseBrowser();
   }
 
+	@Deprecated
   public void minimize(CTabFolderEvent event) {
-    XModeler.minimiseBrowser();
+//    XModeler.minimiseBrowser();
   }
 
+	@Deprecated
   public void restore(CTabFolderEvent arg0) {
     
   }
 
+	@Deprecated
   public void showList(CTabFolderEvent arg0) {
     
   }

@@ -376,7 +376,6 @@ public class XModeler extends Application {
     boolean imageDialog = getImageDialog(args);
     String selectedImage = null;
     if (imageDialog || showLoad) {
-    	//TODO File Dialog Java FX
     	
     	final FileChooser fileChooser = new FileChooser();
     	
@@ -438,7 +437,10 @@ public class XModeler extends Application {
 
   public static void shutdown() {
 	  //Sufficient?
+	 Platform.runLater(new Runnable() {
+	      public void run() {
 	  stage.close();
+	      }});
 //    XModeler.getDisplay().syncExec(new Runnable() {
 //      public void run() {
 //        try {
@@ -456,7 +458,7 @@ public class XModeler extends Application {
     xos.newMessageClient("com.ceteva.menus", new MenuClient());
 //    xos.newMessageClient("com.ceteva.modelBrowser", new ModelBrowserClient());
 //    xos.newMessageClient("com.ceteva.diagram", new DiagramClient());
-//    xos.newMessageClient("com.ceteva.dialogs", new DialogsClient());
+    xos.newMessageClient("com.ceteva.dialogs", new DialogsClient());
 //    xos.newMessageClient("com.ceteva.forms", new FormsClient());
 //    xos.newMessageClient("com.ceteva.undo", new UndoClient());
 //    xos.newMessageClient("com.ceteva.oleBridge", new OleBridgeClient());
@@ -549,7 +551,7 @@ public class XModeler extends Application {
 					  } else {
 						  WorkbenchClient.theClient().shutdownAndSaveEvent(loadedImagePath, inflationPath());
 					  }
-//					  event.consume();
+					  event.consume();
 //					  event.doit = false;
 				  }
 		  });

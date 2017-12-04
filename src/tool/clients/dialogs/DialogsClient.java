@@ -2,6 +2,7 @@ package tool.clients.dialogs;
 
 import java.io.File;
 import java.util.Vector;
+import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -19,6 +20,13 @@ import org.eclipse.swt.widgets.FontDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ListDialog;
 
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.Alert.AlertType;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import tool.clients.Client;
 import tool.clients.dialogs.notifier.NotificationType;
 import tool.clients.dialogs.notifier.NotifierDialog;
@@ -71,14 +79,30 @@ public class DialogsClient extends Client {
 
   public static Value newInputDialog(final String title, final String message, final String value) {
     final String[] result = new String[] { null };
-    DialogsClient.theClient().runOnDisplay(new Runnable() {
+	 CountDownLatch l = new CountDownLatch(1);
+//    DialogsClient.theClient().runOnDisplay(
+    Platform.runLater(
+    		new Runnable() {
       public void run() {
-        InputDialog dialog = new InputDialog(XModeler.getXModeler(), title, message, value, null);
-        dialog.open();
-        //if (dialog.getValue() != null && !dialog.getValue().equals("")) 
-        result[0] = dialog.getValue();
+          final TextInputDialog inputDlg = new TextInputDialog(value);
+          inputDlg.setTitle(title);
+          inputDlg.setContentText(message);
+          inputDlg.setHeaderText(title);
+           inputDlg.showAndWait();
+    	  
+//    	InputDialog dialog = new InputDialog(XModeler.getXModeler(), title, message, value, null);
+//        dialog.open();
+        //if (dialog.getValue() != null && !dialog.getValue().equals(""))
+           
+        result[0] = inputDlg.getResult(); //dialog.getValue();
+        l.countDown();
       }
     });
+    try {
+		l.await();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
+	}
     return result[0] != null 
     		? new Value(result[0]) 
     		: new Value(false);
@@ -192,25 +216,25 @@ public class DialogsClient extends Client {
 
   public Value callMessage(Message message) {
 	if (message.hasName("newColorDialog") && message.arity == 4)
-	  return colorDialog(message);
+	  return colorDialog(message); //TODO
 	else if (message.hasName("newQuestionDialog"))
-      return newQuestionDialog(message);
+      return newQuestionDialog(message); //TODO
     else if (message.hasName("newQuestionDialogYesNoCancel"))
-        return newQuestionDialogYesNoCancel(message);
+        return newQuestionDialogYesNoCancel(message); 
     else if (message.hasName("newQuestionDialogYesOnly"))
-        return newQuestionDialogYesOnly(message);
+        return newQuestionDialogYesOnly(message); 
     else if (message.hasName("newDirectoryDialog"))
-      return newDirectoryDialog(message);
+      return newDirectoryDialog(message); 
     else if (message.hasName("newFileDialog"))
-      return newFileDialog(message);
+      return newFileDialog(message); 
     else if (message.hasName("newInputDialog"))
-      return newInputDialog(message);
+      return newInputDialog(message); 
     else if (message.hasName("newSelectionDialog"))
-      return selectionDialog(message);
+      return selectionDialog(message); //TODO
     else if (message.hasName("newConfirmDialog"))
-        return newConfirmDialog(message);
+        return newConfirmDialog(message); 
     else if (message.hasName("newTreeDialog"))
-        return simpleTreeDialog(message);
+        return simpleTreeDialog(message); //TODO
     else return super.callMessage(message);
   }
 
@@ -230,41 +254,97 @@ public class DialogsClient extends Client {
 
   private Value newDirectoryDialog(final Message message) {
     final Value[] result = new Value[1];
-    runOnDisplay(new Runnable() {
+	CountDownLatch l = new CountDownLatch(1);
+//    runOnDisplay(
+    		Platform.runLater(new Runnable() {
       public void run() {
-        String path = message.args[0].strValue();
-        DirectoryDialog dialog = new DirectoryDialog(XModeler.getXModeler());
-        if (new File(path).exists()) dialog.setFilterPath(path);
-        path = dialog.open();
-        path = path == null ? "" : path;
-        result[0] = new Value(path);
+    	  String path = message.args[0].strValue();  
+    	  
+    	  DirectoryChooser directoryChooser = new DirectoryChooser();
+    	  
+    	  File initDirectory = new File(path);
+    	  if (initDirectory.exists()){
+    		  directoryChooser.setInitialDirectory(initDirectory);
+    	  }
+          File selectedDirectory = 
+                  directoryChooser.showDialog(XModeler.getStage());
+          
+          if(selectedDirectory == null){
+        	  result[0] = new Value("");
+          }else{
+        	  result[0] = new Value(selectedDirectory.getAbsolutePath());
+          }  
+        l.countDown();
+//        DirectoryDialog dialog = new DirectoryDialog(XModeler.getXModeler());
+//        if (new File(path).exists()) dialog.setFilterPath(path);
+//        path = dialog.open();
+//        path = path == null ? "" : path;
+//        result[0] = new Value(path);
       }
     });
+    try {
+		l.await();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
+	}
     return result[0];
   }
 
   private Value newFileDialog(final Message message) {
     final Value[] result = new Value[] { new Value("") };
-    runOnDisplay(new Runnable() {
+	   CountDownLatch l = new CountDownLatch(1);
+//    runOnDisplay(
+     Platform.runLater(
+    		new Runnable() {
       public void run() {
-        try {
+//        try {
           String type = message.args[0].strValue();
           String path = message.args[1].strValue();
           String pattern = message.args[2].strValue();
           String def = message.args[3].strValue();
-          FileDialog dialog = new FileDialog(XModeler.getXModeler(), type.equals("open") ? SWT.OPEN : SWT.SAVE);
-          dialog.setFilterExtensions(new String[] { pattern });
-          dialog.setFileName(def);
-          if (new File(path).exists()) dialog.setFilterPath(path);
-          path = dialog.open();
-          path = path == null ? "" : path;
-          result[0] = new Value(path);
-        } catch (Exception e) {
-          e.printStackTrace(System.err);
-        }
+          
+          final FileChooser fileChooser = new FileChooser();
+      	
+				fileChooser.setTitle("Select the image file");
+				fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter(pattern, pattern));
+
+				File initFile = new File(path);
+				fileChooser.setInitialFileName(def);
+				if (initFile.exists()) {
+					fileChooser.setInitialDirectory(initFile);
+
+				}
+				File file;
+				if (type.equals("open")) {
+					file = fileChooser.showOpenDialog(XModeler.getStage());
+				} else {
+					file = fileChooser.showSaveDialog(XModeler.getStage());
+				}
+
+				if (file != null) {
+					result[0] = new Value(file.getAbsolutePath());
+				} else {
+					result[0] = new Value("");
+				}
+				l.countDown();
+//          FileDialog dialog = new FileDialog(XModeler.getXModeler(), type.equals("open") ? SWT.OPEN : SWT.SAVE);
+//          dialog.setFilterExtensions(new String[] { pattern });
+//          dialog.setFileName(def);
+//          if (new File(path).exists()) dialog.setFilterPath(path);
+//          path = dialog.open();
+//          path = path == null ? "" : path;
+//          result[0] = new Value(path);
+//        } catch (Exception e) {
+//          e.printStackTrace(System.err);
+//        }
       }
     });
-    System.err.println(message);
+//    System.err.println(message);
+     try {
+		l.await();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
+	}
     return result[0];
   }
 
@@ -319,56 +399,112 @@ public class DialogsClient extends Client {
   }
 
   private Value newQuestionDialogYesOnly(final Message message) {
-	    runOnDisplay(new Runnable() {
-	      public void run() {
-	        Value question = message.args[0];
-	        new MessageDialog(XModeler.getXModeler(), "Question", null, question.strValue(), MessageDialog.INFORMATION, 
-	    			new String[]{
-	    					"OK"},0).open();
-	      }});
+	  CountDownLatch l = new CountDownLatch(1);
+	   Platform.runLater(new Runnable() {
+		      public void run() {
+		    	  Value question = message.args[0];
+			   
+		    	  Alert alert = new Alert(AlertType.INFORMATION, question.strValue(), ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
+		    	  alert.setTitle("Question");
+		    	  alert.showAndWait();
+
+		    	  l.countDown();
+		      }});
+	  try {
+		l.await();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
+	}
+	  
+//	  runOnDisplay(new Runnable() {
+//	      public void run() {
+//	        Value question = message.args[0];
+//	        new MessageDialog(XModeler.getXModeler(), "Question", null, question.strValue(), MessageDialog.INFORMATION, 
+//	    			new String[]{
+//	    					"OK"},0).open();
+//	      }});
 	    return new Value("VOID");
 	  }
   
   private Value newQuestionDialogYesNoCancel(final Message message) {
 	   final Value[] values = new Value[1];
-	    runOnDisplay(new Runnable() {
+//	    runOnDisplay(
+	   CountDownLatch l = new CountDownLatch(1);
+	   Platform.runLater(	   
+	    new Runnable() {
 	      public void run() {
 	        Value question = message.args[0];
 //	        Value defaultResponse = message.args[1];
 //	        Value icon = message.args[2];
-	        MessageDialog md = new MessageDialog(XModeler.getXModeler(), "Question", null, question.strValue(), MessageDialog.QUESTION_WITH_CANCEL, 
-	    			new String[]{
-	    				"Yes", 
-	    				"No", 
-	    				"Cancel"},
-	    			0
-	    	);
-	    	switch(md.open()) {
-	    	case 0: 
-		        values[0] = new Value("Yes");
-	    		break;
-	    	case 1:
-		        values[0] = new Value("No");
-	    		break;
-	    	case 2:
-		        values[0] = new Value("");
-	    		break;
-	    	}	        
+//	        MessageDialog md = new MessageDialog(XModeler.getXModeler(), "Question", null, question.strValue(), MessageDialog.QUESTION_WITH_CANCEL, 
+//	    			new String[]{
+//	    				"Yes", 
+//	    				"No", 
+//	    				"Cancel"},
+//	    			0
+//	    	);
+	        Alert alert = new Alert(AlertType.CONFIRMATION, question.strValue(), ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
+	        alert.setTitle("Question");
+	        alert.showAndWait();
+	        
+	        if(alert.getResult() == ButtonType.YES){
+	        	values[0] = new Value("Yes");
+	        }else if(alert.getResult() == ButtonType.NO){
+	        	values[0] = new Value("No");
+	        }else {
+	        	values[0] = new Value("");
+	        }
+	        l.countDown();
+//	    	switch(md.open()) {
+//	    	case 0: 
+//		        values[0] = new Value("Yes");
+//	    		break;
+//	    	case 1:
+//		        values[0] = new Value("No");
+//	    		break;
+//	    	case 2:
+//		        values[0] = new Value("");
+//	    		break;
+//	    	}	        
 	      }
 	    });
+	    try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	    return values[0];
 	}
 
 	private Value newConfirmDialog(final Message message) {
 	    final Value[] values = new Value[1];
-	    runOnDisplay(new Runnable() { public void run() {
+	    CountDownLatch l = new CountDownLatch(1);
+		   Platform.runLater(	
+//	    runOnDisplay(
+	    		new Runnable() { public void run() {
 	    	String question = message.args[0].strValue();
-	    	boolean reply = MessageDialog.openQuestion(XModeler.getXModeler(), "Confirm", question);
-	    	if (reply)
-	    		values[0] = new Value("Yes");
-	    	else
-	    		values[0] = new Value("No");
+	    	
+	        Alert alert = new Alert(AlertType.CONFIRMATION, question, ButtonType.YES, ButtonType.NO);
+	        alert.setTitle("Confirm");
+	        alert.showAndWait();
+	        
+	        if(alert.getResult() == ButtonType.YES){
+	        	values[0] = new Value("Yes");
+	        }else if(alert.getResult() == ButtonType.NO){
+	        	values[0] = new Value("No");
+	        }
+	        l.countDown();
+//	    	boolean reply = MessageDialog.openQuestion(XModeler.getXModeler(), "Confirm", question);
+//	    	if (reply)
+//	    		values[0] = new Value("Yes");
+//	    	else
+//	    		values[0] = new Value("No");
 	    	}});
+		   try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		return values[0];
 	}
 
