@@ -5,34 +5,18 @@ import java.util.Optional;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
-import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.swt.SWT;
-//import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.widgets.ColorDialog;
-import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.FontDialog;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.dialogs.ListDialog;
-
 import javafx.application.Platform;
 import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import tool.clients.Client;
-import tool.clients.dialogs.notifier.NotificationType;
-import tool.clients.dialogs.notifier.NotifierDialog;
+//import tool.clients.dialogs.notifier.NotificationType;
+//import tool.clients.dialogs.notifier.NotifierDialog;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
@@ -43,19 +27,19 @@ public class DialogsClient extends Client {
 
 	  static Cursor        cursor = null;
 	
-  public static String chooseFont() {
-    final String[] result = new String[1];
-    DialogsClient.theClient().runOnDisplay(new Runnable() {
-      public void run() {
-        FontDialog dialog = new FontDialog(XModeler.getXModeler());
-        FontData data = dialog.open();
-        if (data != null)
-          result[0] = data.toString();
-        else result[0] = "";
-      }
-    });
-    return result[0];
-  }
+//  public static String chooseFont() {
+//    final String[] result = new String[1];
+//    DialogsClient.theClient().runOnDisplay(new Runnable() {
+//      public void run() {
+//        FontDialog dialog = new FontDialog(XModeler.getXModeler());
+//        FontData data = dialog.open();
+//        if (data != null)
+//          result[0] = data.toString();
+//        else result[0] = "";
+//      }
+//    });
+//    return result[0];
+//  }
 
   private static boolean containedInDefault(String string, String[] defaults) {
     for (int i = 0; i < defaults.length; i++) {
@@ -127,56 +111,57 @@ public class DialogsClient extends Client {
     }
   }
 
-  public static Value openMultiSelectionDialog(String title, String message, Value[] options) {
-    String[] stringOptions = objectsToStrings(options);
-    String[] allOptions = processAllOptions(stringOptions);
-    String[] defaultOptions = processDefaultOptions(stringOptions);
-    Shell shell = XModeler.getXModeler();
-    ListDialog ld = new ListDialog(shell);
-    ld.setInput(allOptions);
-    ld.setContentProvider(new ArrayContentProvider());
-    ld.setLabelProvider(new LabelProvider());
-    ld.setMessage(message);
-    ld.setTitle(title);
-    ld.setInitialSelections(defaultOptions);
-    if (ld.open() != SWT.CANCEL) {
-      Object[] result = ld.getResult();
-      if (result != null && result.length > 0) return new Value(getResultArray(result, defaultOptions));
-    }
-    return new Value("-1");
-  }
+//  public static Value openMultiSelectionDialog(String title, String message, Value[] options) {
+//    String[] stringOptions = objectsToStrings(options);
+//    String[] allOptions = processAllOptions(stringOptions);
+//    String[] defaultOptions = processDefaultOptions(stringOptions);
+//    Shell shell = XModeler.getXModeler();
+//    ListDialog ld = new ListDialog(shell);
+//    ld.setInput(allOptions);
+//    ld.setContentProvider(new ArrayContentProvider());
+//    ld.setLabelProvider(new LabelProvider());
+//    ld.setMessage(message);
+//    ld.setTitle(title);
+//    ld.setInitialSelections(defaultOptions);
+//    if (ld.open() != SWT.CANCEL) {
+//      Object[] result = ld.getResult();
+//      if (result != null && result.length > 0) return new Value(getResultArray(result, defaultOptions));
+//    }
+//    return new Value("-1");
+//  }
+//
+//  public static Value openSelectionDialog(String title, String message, Value[] options) {
+//    String[] stringOptions = objectsToStrings(options);
+//    String[] allOptions = processAllOptions(stringOptions);
+//    String[] defaultOptions = processDefaultOptions(stringOptions);
+//    Shell shell = XModeler.getXModeler();
+//    ListDialog ld = new ListDialog(shell);
+//    ld.setInput(allOptions);
+//    ld.setContentProvider(new ArrayContentProvider());
+//    ld.setLabelProvider(new LabelProvider());
+//    ld.setMessage(message);
+//    ld.setTitle(title);
+//    ld.setInitialSelections(defaultOptions);
+//    if (ld.open() != SWT.CANCEL) {
+//      Object[] result = ld.getResult();
+//      if (result != null && result.length > 0) return getResultArray(result, defaultOptions)[0];
+//    }
+//    return new Value("");
+//  }
 
-  public static Value openSelectionDialog(String title, String message, Value[] options) {
-    String[] stringOptions = objectsToStrings(options);
-    String[] allOptions = processAllOptions(stringOptions);
-    String[] defaultOptions = processDefaultOptions(stringOptions);
-    Shell shell = XModeler.getXModeler();
-    ListDialog ld = new ListDialog(shell);
-    ld.setInput(allOptions);
-    ld.setContentProvider(new ArrayContentProvider());
-    ld.setLabelProvider(new LabelProvider());
-    ld.setMessage(message);
-    ld.setTitle(title);
-    ld.setInitialSelections(defaultOptions);
-    if (ld.open() != SWT.CANCEL) {
-      Object[] result = ld.getResult();
-      if (result != null && result.length > 0) return getResultArray(result, defaultOptions)[0];
-    }
-    return new Value("");
-  }
-
-  public static String[] orderingDialog(final String title, final String question, final String[] strings) {
-    final Object[] result = new Object[] { null };
-    DialogsClient.theClient().runOnDisplay(new Runnable() {
-      public void run() {
-        OrderingDialog d = new OrderingDialog(XModeler.getXModeler(), title, question, strings);
-        if (d.open() != SWT.CANCEL)
-          result[0] = d.getChoice();
-        else result[0] = new String[0];
-      }
-    });
-    return (String[]) result[0];
-  }
+  //TODO is it used?
+//  public static String[] orderingDialog(final String title, final String question, final String[] strings) {
+//    final Object[] result = new Object[] { null };
+//    DialogsClient.theClient().runOnDisplay(new Runnable() {
+//      public void run() {
+//        OrderingDialog d = new OrderingDialog(XModeler.getXModeler(), title, question, strings);
+//        if (d.open() != SWT.CANCEL)
+//          result[0] = d.getChoice();
+//        else result[0] = new String[0];
+//      }
+//    });
+//    return (String[]) result[0];
+//  }
 
   private static String[] processAllOptions(String[] declaredOptions) {
     if (declaredOptions == null) {
@@ -212,8 +197,6 @@ public class DialogsClient extends Client {
     return theClient;
   }
 
-
-
   public DialogsClient() {
 	    super("com.ceteva.dialogs");
     theClient = this;
@@ -235,7 +218,7 @@ public class DialogsClient extends Client {
     else if (message.hasName("newInputDialog"))
       return newInputDialog(message); 
     else if (message.hasName("newSelectionDialog"))
-      return selectionDialog(message); //TODO
+      return selectionDialog(message); 
     else if (message.hasName("newConfirmDialog"))
         return newConfirmDialog(message); 
     else if (message.hasName("newTreeDialog"))
@@ -243,30 +226,29 @@ public class DialogsClient extends Client {
     else return super.callMessage(message);
   }
 
-  private void newBusyDialog(final Message message) {
-	  CountDownLatch l = new CountDownLatch(1);
-//    runOnDisplay(new Runnable() {
-	  Platform.runLater(new Runnable() {
-      public void run() {
-//        Value id = message.args[0];
-        Value info = message.args[1];
-//        Value ignore = message.args[2];
-        XModeler.showBusyInformation(info.strValue());
-        
-//        Cursor busy = new Cursor(Display.getCurrent(), SWT.CURSOR_WAIT);
-        
-        cursor = XModeler.getStage().getScene().getCursor(); //XModeler.getXModeler().getCursor();
-        XModeler.getStage().getScene().setCursor(Cursor.WAIT);
-//        XModeler.getXModeler().setCursor(busy);
-        l.countDown();
-      }
-    });
-	    try {
+	private void newBusyDialog(final Message message) {
+		// runOnDisplay(new Runnable() {
+		// public void run() {
+		CountDownLatch l = new CountDownLatch(1);
+		Platform.runLater(() -> {
+			// Value id = message.args[0];
+			Value info = message.args[1];
+			// Value ignore = message.args[2];
+			XModeler.showBusyInformation(info.strValue());
+			// Cursor busy = new Cursor(Display.getCurrent(), SWT.CURSOR_WAIT);
+
+			cursor = XModeler.getStage().getScene().getCursor(); // XModeler.getXModeler().getCursor();
+			XModeler.getStage().getScene().setCursor(Cursor.WAIT);
+			// XModeler.getXModeler().setCursor(busy);
+			l.countDown();
+			// }
+		});
+		try {
 			l.await();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-  }
+	}
 
   private Value newDirectoryDialog(final Message message) {
     final Value[] result = new Value[1];
@@ -631,14 +613,45 @@ public class DialogsClient extends Client {
     final String message_ = message.args[2].strValue();
     final Value[] options = message.args[3].values;
     final Value[] result = new Value[1];
-    runOnDisplay(new Runnable() {
-      public void run() {
-        if (multi)
-          result[0] = openMultiSelectionDialog(title, message_, options);
-        else result[0] = openSelectionDialog(title, message_, options);
-      }
+    
+    String[] stringOptions = objectsToStrings(options);
+    String[] allOptions = processAllOptions(stringOptions);
+    String[] defaultOptions = processDefaultOptions(stringOptions);
+    
+//    runOnDisplay(new Runnable() {
+//      public void run() {
+//    	if (multi)
+//          result[0] = openMultiSelectionDialog(title, message_, options);
+//        else result[0] = openSelectionDialog(title, message_, options);
+//      }
+//    });
+    CountDownLatch l = new CountDownLatch(1);
+    Platform.runLater(()->{
+        SelectionDialog sd = new SelectionDialog(title, message_, multi, allOptions, defaultOptions);
+        Optional<String[]> dialogResult = sd.showAndWait();
+        
+        if(dialogResult.isPresent()){
+        	Value[] resultRaw = getResultArray(dialogResult.get(), defaultOptions); 
+        	if (multi){
+        		result[0] = new Value(resultRaw);
+        	}else {
+            	result[0] = resultRaw[0];
+          	}
+        }else{
+        	if (multi){
+        		result[0] = new Value("-1");
+        	}else {
+            	result[0] = new Value("");
+          	}
+        }
+        l.countDown();
     });
-    return result[0];
+	try {
+		l.await();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
+	}
+	return result[0];
   }
 
 	/**
@@ -828,7 +841,6 @@ public class DialogsClient extends Client {
     else if (message.hasName("newMessageDialog"))
       newMessageDialog(message);
     else if (message.hasName("newWarningDialog"))
-//      newMessageDialog(message);
     	newWarningDialog(message);
     else if (message.hasName("newErrorDialog"))
         newErrorDialog(message);
@@ -861,15 +873,33 @@ public class DialogsClient extends Client {
 	 */
 	public Value colorDialog(final Message message) {
 	    final Value[] result = new Value[1];
-	    //TODO implement
-	    System.err.println("colorDialog not implemented, yet");
-	    return null;
 //	    DialogsClient.theClient().runOnDisplay(new Runnable() {
 //		    public void run() {
-//		    	String text = message.args[0].strValue();
-//				int red = message.args[1].intValue;
-//				int green = message.args[2].intValue;
-//				int blue = message.args[3].intValue;
+	    CountDownLatch l = new CountDownLatch(1);
+	    Platform.runLater(()->{
+		    	String text = message.args[0].strValue();
+				int red = message.args[1].intValue;
+				int green = message.args[2].intValue;
+				int blue = message.args[3].intValue;
+				
+				ColorSelectionDialog csd = new ColorSelectionDialog(text, red, green, blue);
+				Optional<Color> resultsRaw = csd.showAndWait();
+		        
+		        if(resultsRaw.isPresent()){
+		        	Value[] color = new Value[3];
+					color[0] = new Value((new Double(resultsRaw.get().getRed()*255)).intValue());
+					color[1] = new Value((new Double(resultsRaw.get().getGreen()*255)).intValue());
+					color[2] = new Value((new Double(resultsRaw.get().getBlue()*255)).intValue());
+					result[0] = new  Value(color);
+		        	
+		        }else{
+		        	Value[] color = new Value[3];
+					color[0] = new Value(-1);
+					color[1] = new Value(-1);
+					color[2] = new Value(-1);
+					result[0] = new Value(color);
+		        }
+				l.countDown();
 //				ColorDialog dialog = new ColorDialog(XModeler.getXModeler());
 //				dialog.setText(text);
 //				if (red > 0 && green > 0 && blue > 0)
@@ -889,8 +919,13 @@ public class DialogsClient extends Client {
 //					result[0] = new Value(color);
 //				}
 //			}
-//	    });
-//	    return result[0];
+	    });
+	    try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	    return result[0];
 	}
 
 }
