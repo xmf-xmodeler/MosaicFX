@@ -1,6 +1,7 @@
 package tool.clients.dialogs;
 
 import java.io.File;
+import java.util.Optional;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
@@ -9,7 +10,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Cursor;
+//import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.ColorDialog;
@@ -21,8 +22,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ListDialog;
 
 import javafx.application.Platform;
+import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.DirectoryChooser;
@@ -36,6 +39,10 @@ import xos.Value;
 
 public class DialogsClient extends Client {
 
+	  static DialogsClient theClient;
+
+	  static Cursor        cursor = null;
+	
   public static String chooseFont() {
     final String[] result = new String[1];
     DialogsClient.theClient().runOnDisplay(new Runnable() {
@@ -205,9 +212,7 @@ public class DialogsClient extends Client {
     return theClient;
   }
 
-  static DialogsClient theClient;
 
-  static Cursor        cursor = null;
 
   public DialogsClient() {
 	    super("com.ceteva.dialogs");
@@ -216,9 +221,9 @@ public class DialogsClient extends Client {
 
   public Value callMessage(Message message) {
 	if (message.hasName("newColorDialog") && message.arity == 4)
-	  return colorDialog(message); //TODO
+	  return colorDialog(message); 
 	else if (message.hasName("newQuestionDialog"))
-      return newQuestionDialog(message); //TODO
+      return newQuestionDialog(message); 
     else if (message.hasName("newQuestionDialogYesNoCancel"))
         return newQuestionDialogYesNoCancel(message); 
     else if (message.hasName("newQuestionDialogYesOnly"))
@@ -234,22 +239,33 @@ public class DialogsClient extends Client {
     else if (message.hasName("newConfirmDialog"))
         return newConfirmDialog(message); 
     else if (message.hasName("newTreeDialog"))
-        return simpleTreeDialog(message); //TODO
+        return simpleTreeDialog(message); 
     else return super.callMessage(message);
   }
 
   private void newBusyDialog(final Message message) {
-    runOnDisplay(new Runnable() {
+	  CountDownLatch l = new CountDownLatch(1);
+//    runOnDisplay(new Runnable() {
+	  Platform.runLater(new Runnable() {
       public void run() {
 //        Value id = message.args[0];
         Value info = message.args[1];
 //        Value ignore = message.args[2];
         XModeler.showBusyInformation(info.strValue());
-        Cursor busy = new Cursor(Display.getCurrent(), SWT.CURSOR_WAIT);
-        cursor = XModeler.getXModeler().getCursor();
-        XModeler.getXModeler().setCursor(busy);
+        
+//        Cursor busy = new Cursor(Display.getCurrent(), SWT.CURSOR_WAIT);
+        
+        cursor = XModeler.getStage().getScene().getCursor(); //XModeler.getXModeler().getCursor();
+        XModeler.getStage().getScene().setCursor(Cursor.WAIT);
+//        XModeler.getXModeler().setCursor(busy);
+        l.countDown();
       }
     });
+	    try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
   }
 
   private Value newDirectoryDialog(final Message message) {
@@ -356,45 +372,98 @@ public class DialogsClient extends Client {
   }
 
   private void newMessageDialog(final Message message) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+	  //TODO reimplement notify
+//    runOnDisplay(   new Runnable() {
+//    public void run() {
+	    CountDownLatch l = new CountDownLatch(1);
+		   Platform.runLater(()->{
 //        Value id = message.args[0];
         Value info = message.args[1];
-        NotifierDialog.notify("Message", info.strValue(), NotificationType.values()[5]);
-      }
+        Alert alert = new Alert(AlertType.CONFIRMATION, info.strValue(), ButtonType.OK);
+        alert.showAndWait();
+        l.countDown();
+//        NotifierDialog.notify("Message", info.strValue(), NotificationType.values()[5]);
+//      }
     });
+	try {
+		l.await();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
+	}
   }
 
   private void newWarningDialog(final Message message) {
-	    runOnDisplay(new Runnable() {
-	      public void run() {
+	  //TODO reimplement notify
+//	    runOnDisplay(new Runnable() {
+//      public void run() {
+	  CountDownLatch l = new CountDownLatch(1);
+		Platform.runLater(() ->{
 //	        Value id = message.args[0];
 	        Value info = message.args[1];
-	        NotifierDialog.notify("Warning", info.strValue(), NotificationType.values()[3]);
-	      }
+	        Alert alert = new Alert(AlertType.WARNING, info.strValue(), ButtonType.OK);
+	        alert.showAndWait();
+	        l.countDown();
+//	        NotifierDialog.notify("Warning", info.strValue(), NotificationType.values()[3]);
+//	      }
 	    });
+		try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	  }
   
   private void newErrorDialog(final Message message) {
-	    runOnDisplay(new Runnable() {
-	      public void run() {
+	  //TODO reimplement notify
+//	    runOnDisplay(new Runnable() {
+//      public void run() {
+	  	CountDownLatch l = new CountDownLatch(1);
+		Platform.runLater(() ->{	
 //	        Value id = message.args[0];
 	        Value info = message.args[1];
-	        NotifierDialog.notify("Error", info.strValue(), NotificationType.values()[1]);
-	      }
+	        Alert alert = new Alert(AlertType.ERROR, info.strValue(), ButtonType.OK);
+	        alert.showAndWait();
+	        l.countDown();
+//	        NotifierDialog.notify("Error", info.strValue(), NotificationType.values()[1]);
+//	      }
 	    });
+		try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	  }
   
   private Value newQuestionDialog(final Message message) {
     final Value[] values = new Value[1];
-    runOnDisplay(new Runnable() {
-      public void run() {
-        Value question = message.args[0];
+    
+    CountDownLatch l = new CountDownLatch(1);
+	   Platform.runLater(	
+// runOnDisplay(
+ 		new Runnable() { public void run() {
+ 	        Value question = message.args[0];
+ 	        
+     Alert alert = new Alert(AlertType.CONFIRMATION, question.strValue(), ButtonType.YES, ButtonType.NO);
+     alert.setTitle("Confirm");
+     alert.showAndWait();
+     
+     if(alert.getResult() == ButtonType.YES){
+     	values[0] = new Value("Yes");
+     }else if(alert.getResult() == ButtonType.NO){
+     	values[0] = new Value("No");
+     }
+     l.countDown();
+
 //        Value defaultResponse = message.args[1];
 //        Value icon = message.args[2];
-        values[0] = new Value(MessageDialog.openQuestion(XModeler.getXModeler(), "Question", question.strValue()) ? "Yes" : "No");
+//        values[0] = new Value(MessageDialog.openQuestion(XModeler.getXModeler(), "Question", question.strValue()) ? "Yes" : "No");
       }
     });
+	 try {
+		l.await();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
+	}
     return values[0];
   }
 
@@ -513,23 +582,43 @@ public class DialogsClient extends Client {
 //    String type = message.args[1].strValue();
     final String title = message.args[2].strValue();
     final String info = message.args[3].strValue();
-    runOnDisplay(new Runnable() {
-      public void run() {
-        MessageDialog dialog = new MessageDialog(XModeler.getXModeler(), title, null, info, MessageDialog.INFORMATION, new String[] { "OK" }, 0);
-        dialog.open();
-      }
+//    runOnDisplay(new Runnable() {
+//      public void run() {
+//        MessageDialog dialog = new MessageDialog(XModeler.getXModeler(), title, null, info, MessageDialog.INFORMATION, new String[] { "OK" }, 0);
+//        dialog.open();
+//      }
+    CountDownLatch l = new CountDownLatch(1);
+	   Platform.runLater(()->{
+		   Alert alert = new Alert(AlertType.CONFIRMATION, info, ButtonType.OK);
+	        alert.setTitle(title);
+	        alert.showAndWait();
+	        l.countDown();
     });
+	try {
+		l.await();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
+	}
   }
 
   private void noLongerBusy(final Message message) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(	new Runnable() {
+//      public void run() {
+	  CountDownLatch l = new CountDownLatch(1);
+	   Platform.runLater(()->{	
 //        Value id = message.args[0];
         XModeler.removeBusyInformation();
-        XModeler.getXModeler().setCursor(cursor);
+        XModeler.getStage().getScene().setCursor(cursor);
+//        XModeler.getXModeler().setCursor(cursor);
         cursor = null;
-      }
+        l.countDown();
+//      }
     });
+	  try {
+		l.await();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
+	}
   }
 
   public boolean processMessage(Message message) {
@@ -680,31 +769,54 @@ public class DialogsClient extends Client {
 		final TreeElement root = buildTree(tree, expand, disable, selected);
 	    final Value[] result = new Value[] { new Value("") };
 
-		DialogsClient.theClient().runOnDisplay(new Runnable() {
-			public void run() {
-				TreeDialog treeDialog = new TreeDialog(XModeler.getXModeler(),	new LabelProvider(), new TreeElementProvider());
-				treeDialog.setTitle(title);
-				treeDialog.setInput(root);
-				treeDialog.create();
-				treeDialog.expandTree(expand);
-				int returncode = treeDialog.open();
-				//result[0] = new Value("");
-				if (returncode != 1) {
-					Object[] res = treeDialog.getResult();
-					if (res.length > 0) {
-						TreeElement te = (TreeElement) res[0];
-						Vector<String> path = new Vector<String>();
-						te.getPath(path);
-						Value[] value = new Value[path.size()];
-						for (int i = path.size(); i > 0; i--) {
-							String s = (String) path.elementAt(i - 1);
-							value[path.size() - i] = new Value(s);
-						}
-						result[0] = new Value(value);
+		 CountDownLatch l = new CountDownLatch(1);
+		   Platform.runLater(()->{	
+			   TreeDialog treeDialog = new TreeDialog(root, title, expand, disable, selected);
+			   Optional<TreeElement> dialogResult = treeDialog.showAndWait();
+		        
+		        if(dialogResult.isPresent()){
+		        	TreeElement te = dialogResult.get();
+		        	Vector<String> path = new Vector<String>();
+					te.getPath(path);
+					Value[] value = new Value[path.size()];
+					for (int i = path.size(); i > 0; i--) {
+						String s = (String) path.elementAt(i - 1);
+						value[path.size() - i] = new Value(s);
 					}
-				}
-			}
-		});
+					result[0] = new Value(value);
+		        }
+		        l.countDown();
+		   });
+		   try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+//		DialogsClient.theClient().runOnDisplay(new Runnable() {
+//			public void run() {
+//				TreeDialog treeDialog = new TreeDialog(XModeler.getXModeler(),	new LabelProvider(), new TreeElementProvider());
+//				treeDialog.setTitle(title);
+//				treeDialog.setInput(root);
+//				treeDialog.create();
+//				treeDialog.expandTree(expand);
+//				int returncode = treeDialog.open();
+//				//result[0] = new Value("");
+//				if (returncode != 1) {
+//					Object[] res = treeDialog.getResult();
+//					if (res.length > 0) {
+//						TreeElement te = (TreeElement) res[0];
+//						Vector<String> path = new Vector<String>();
+//						te.getPath(path);
+//						Value[] value = new Value[path.size()];
+//						for (int i = path.size(); i > 0; i--) {
+//							String s = (String) path.elementAt(i - 1);
+//							value[path.size() - i] = new Value(s);
+//						}
+//						result[0] = new Value(value);
+//					}
+//				}
+//			}
+//		});
 		return result[0];
 	}
 
@@ -749,33 +861,36 @@ public class DialogsClient extends Client {
 	 */
 	public Value colorDialog(final Message message) {
 	    final Value[] result = new Value[1];
-	    DialogsClient.theClient().runOnDisplay(new Runnable() {
-		    public void run() {
-		    	String text = message.args[0].strValue();
-				int red = message.args[1].intValue;
-				int green = message.args[2].intValue;
-				int blue = message.args[3].intValue;
-				ColorDialog dialog = new ColorDialog(XModeler.getXModeler());
-				dialog.setText(text);
-				if (red > 0 && green > 0 && blue > 0)
-					dialog.setRGB(new RGB(red, green, blue));
-				RGB choosen = dialog.open();
-				if (choosen != null) {
-					Value[] color = new Value[3];
-					color[0] = new Value(choosen.red);
-					color[1] = new Value(choosen.green);
-					color[2] = new Value(choosen.blue);
-					result[0] = new  Value(color);
-				} else {
-					Value[] color = new Value[3];
-					color[0] = new Value(-1);
-					color[1] = new Value(-1);
-					color[2] = new Value(-1);
-					result[0] = new Value(color);
-				}
-			}
-	    });
-	    return result[0];
+	    //TODO implement
+	    System.err.println("colorDialog not implemented, yet");
+	    return null;
+//	    DialogsClient.theClient().runOnDisplay(new Runnable() {
+//		    public void run() {
+//		    	String text = message.args[0].strValue();
+//				int red = message.args[1].intValue;
+//				int green = message.args[2].intValue;
+//				int blue = message.args[3].intValue;
+//				ColorDialog dialog = new ColorDialog(XModeler.getXModeler());
+//				dialog.setText(text);
+//				if (red > 0 && green > 0 && blue > 0)
+//					dialog.setRGB(new RGB(red, green, blue));
+//				RGB choosen = dialog.open();
+//				if (choosen != null) {
+//					Value[] color = new Value[3];
+//					color[0] = new Value(choosen.red);
+//					color[1] = new Value(choosen.green);
+//					color[2] = new Value(choosen.blue);
+//					result[0] = new  Value(color);
+//				} else {
+//					Value[] color = new Value[3];
+//					color[0] = new Value(-1);
+//					color[1] = new Value(-1);
+//					color[2] = new Value(-1);
+//					result[0] = new Value(color);
+//				}
+//			}
+//	    });
+//	    return result[0];
 	}
 
 }

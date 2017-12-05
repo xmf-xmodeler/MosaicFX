@@ -60,6 +60,12 @@ public class EditorClient extends Client implements LocationListener, CTabFolder
   static Hashtable<String, Browser>     browsers       = new Hashtable<String, Browser>();
   static Hashtable<String, ITextEditor> editors        = new Hashtable<String, ITextEditor>();
 
+  boolean browserLocked = true;
+  
+  Hashtable<Browser, Stack<String>> backQueues     = new Hashtable<Browser, Stack<String>>();
+  Hashtable<Browser, String>        browserCurrent = new Hashtable<Browser, String>();
+  Hashtable<Browser, Stack<String>> forwardQueues  = new Hashtable<Browser, Stack<String>>();
+  
   public static void start(CTabFolder tabFolder, int style) {
     EditorClient.tabFolder = tabFolder;
   }
@@ -68,7 +74,7 @@ public class EditorClient extends Client implements LocationListener, CTabFolder
     return theClient;
   }
 
-  boolean browserLocked = true;
+  
 
   public EditorClient() {
     super("com.ceteva.text");
@@ -121,40 +127,40 @@ public class EditorClient extends Client implements LocationListener, CTabFolder
       editor.addMultilineRule(id, start, end, red, green, blue);
   }
 
-  private void addToolBar(CTabFolder parent, Browser browser) {
-    ToolBar toolbar = new ToolBar(parent, SWT.NONE);
-    FormData data = new FormData();
-    data.top = new FormAttachment(0, 5);
-    toolbar.setLayoutData(data);
-    ToolItem itemBack = new ToolItem(toolbar, SWT.PUSH);
-    itemBack.setText(("Back"));
-    ToolItem itemForward = new ToolItem(toolbar, SWT.PUSH);
-    itemForward.setText(("Forward"));
-    final ToolItem itemStop = new ToolItem(toolbar, SWT.PUSH);
-    itemStop.setText(("Stop"));
-    final ToolItem itemRefresh = new ToolItem(toolbar, SWT.PUSH);
-    itemRefresh.setText(("Refresh"));
-    final ToolItem itemGo = new ToolItem(toolbar, SWT.PUSH);
-    itemGo.setText(("Go"));
-
-    itemBack.setEnabled(browser.isBackEnabled());
-    itemForward.setEnabled(browser.isForwardEnabled());
-    // Listener listener = new Listener() {
-    // public void handleEvent(Event event) {
-    // ToolItem item = (ToolItem) event.widget;
-    // if (item == itemBack)
-    // browser.back();
-    // else if (item == itemForward)
-    // browser.forward();
-    // else if (item == itemStop)
-    // browser.stop();
-    // else if (item == itemRefresh)
-    // browser.refresh();
-    // else if (item == itemGo)
-    // browser.setUrl(locationBar.getText());
-    // }
-    // };
-  }
+//  private void addToolBar(CTabFolder parent, Browser browser) {
+//    ToolBar toolbar = new ToolBar(parent, SWT.NONE);
+//    FormData data = new FormData();
+//    data.top = new FormAttachment(0, 5);
+//    toolbar.setLayoutData(data);
+//    ToolItem itemBack = new ToolItem(toolbar, SWT.PUSH);
+//    itemBack.setText(("Back"));
+//    ToolItem itemForward = new ToolItem(toolbar, SWT.PUSH);
+//    itemForward.setText(("Forward"));
+//    final ToolItem itemStop = new ToolItem(toolbar, SWT.PUSH);
+//    itemStop.setText(("Stop"));
+//    final ToolItem itemRefresh = new ToolItem(toolbar, SWT.PUSH);
+//    itemRefresh.setText(("Refresh"));
+//    final ToolItem itemGo = new ToolItem(toolbar, SWT.PUSH);
+//    itemGo.setText(("Go"));
+//
+//    itemBack.setEnabled(browser.isBackEnabled());
+//    itemForward.setEnabled(browser.isForwardEnabled());
+//    // Listener listener = new Listener() {
+//    // public void handleEvent(Event event) {
+//    // ToolItem item = (ToolItem) event.widget;
+//    // if (item == itemBack)
+//    // browser.back();
+//    // else if (item == itemForward)
+//    // browser.forward();
+//    // else if (item == itemStop)
+//    // browser.stop();
+//    // else if (item == itemRefresh)
+//    // browser.refresh();
+//    // else if (item == itemGo)
+//    // browser.setUrl(locationBar.getText());
+//    // }
+//    // };
+//  }
 
   private void addWordRule(Message message) {
     if (message.arity == 3)
@@ -787,11 +793,7 @@ public class EditorClient extends Client implements LocationListener, CTabFolder
     } else System.err.println("cannot find text editor " + id);
   }
 
-  Hashtable<Browser, Stack<String>> backQueues     = new Hashtable<Browser, Stack<String>>();
-  Hashtable<Browser, String>        browserCurrent = new Hashtable<Browser, String>();
-  Hashtable<Browser, Stack<String>> forwardQueues  = new Hashtable<Browser, Stack<String>>();
-
-  private void setUrl(Message message) {
+    private void setUrl(Message message) {
     final Value id = message.args[0];
     final Value url = message.args[1];
     setUrl(id.strValue(), url.strValue(), true);
