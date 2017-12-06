@@ -208,9 +208,20 @@ public class ConsoleView {
         	/* Do nothing */
 //        	e.doit = true;
 		}
+        
+        if(newValue.startsWith(oldValue)) {
+        	if(".".equals(diff.textPlus)) {
+	            // Display options based on the type of the input.
+	            String content = textArea.getText();
+	            if (textArea.getCaretPosition() >= inputStart) {
+	            String command = content.substring(inputStart);
+	              System.err.println("dot --> command: " + command);
+	              WorkbenchClient.theClient().dotConsole(command.substring(0, command.length()-1));
+	            }
+        	}
+        }
 
-	    /*TEST*/ if (newValue.endsWith("X")) {inputStart += 1; System.err.println(inputStart);}
-      }
+     }
 
 
     });
@@ -220,7 +231,7 @@ public class ConsoleView {
 	textArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
 	    @Override
 	    public void handle(KeyEvent keyEvent) {
-	        	
+	    	
         if (overwriting(keyEvent.getCharacter())) {
           try {
         	positionCaret(textArea.getCaretPosition() + 1);
@@ -272,6 +283,7 @@ public class ConsoleView {
         } else if (keyEvent.getCharacter().charAt(0) == '.' /*|| e.keyCode == ' ' && ((e.stateMask & SWT.CTRL) == SWT.CTRL)*/ && autoComplete.isDisplayOptions()) {
           // Display options based on the type of the input.
           String content = textArea.getText();
+          System.err.println("dot --> content: " + content);
           if (textArea.getCaretPosition() >= inputStart) {
           String command = content.substring(inputStart);
             WorkbenchClient.theClient().dotConsole(command);
@@ -497,39 +509,33 @@ public class ConsoleView {
     menu.setVisible(true);
   }
 
-  public void dot(final Message message) {
-    XModeler.getXModeler().getDisplay().syncExec(new Runnable() {
-      public void run() {
-        try {
-          Point p = text.getCaret().getLocation();
-          Point displayPoint = text.toDisplay(p);
-          String insertText = new AutoCompleteBox(XModeler.getXModeler().getShell(), message).show(displayPoint);
-          if (insertText != null) insert(insertText);
-        } catch (Throwable t) {
-          t.printStackTrace();
-        }
-      }
-    });
-  }
+    public void dot(final Message message) {
+    	Platform.runLater(() -> dot2(message));
+    }
+    
+	public void dot2(final Message message) {
+		try {
+			String insertText = new AutoCompleteBox(XModeler.getStage(), message).show(100, 100);
+			if (insertText != null)
+				insert(insertText);
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
+    }
 
-  public void namespace(final Message message) {
-    XModeler.getXModeler().getDisplay().syncExec(new Runnable() {
-      public void run() {
+	public void namespace(final Message message) {
+		System.err.println("namespace...");
         try {
-          Point p = text.getCaret().getLocation();
-          Point displayPoint = text.toDisplay(p);
-          for(int i = 0; i < message.args[0].values.length;i++) {
-            String name = message.args[0].values[i].strValue();
-            message.args[0].values[i].values = new Value[] {new Value(name),new Value(name)};
+            for(int i = 0; i < message.args[0].values.length;i++) {
+              String name = message.args[0].values[i].strValue();
+              message.args[0].values[i].values = new Value[] {new Value(name),new Value(name)};
+            }
+            String insertText = new AutoCompleteBox(XModeler.getStage(), message).show(100,100);
+            if (insertText != null) insert(insertText);
+          } catch (Throwable t) {
+            t.printStackTrace();
           }
-          String insertText = new AutoCompleteBox(XModeler.getXModeler().getShell(), message).show(displayPoint);
-          if (insertText != null) insert(insertText);
-        } catch (Throwable t) {
-          t.printStackTrace();
-        }
-      }
-    });
-  }
+	}
 
   public Menu getDotPopup(Message message) {
     HashSet<String> labels = new HashSet<String>();

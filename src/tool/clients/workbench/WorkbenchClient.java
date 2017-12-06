@@ -17,6 +17,7 @@ public class WorkbenchClient extends Client {
   }
 
   public void sendMessage(final Message message) {
+	System.err.println("message:" + message);
     if (message.hasName("shutdown"))
       shutdown(message);
     else if (message.hasName("saveInflater"))
@@ -81,6 +82,7 @@ public class WorkbenchClient extends Client {
   }
 
   public void dotConsole(String command) {
+	System.err.println("command: " + command);
     Message message = getHandler().newMessage("consoleDot", 1);
     message.args[0] = new Value(command);
     getHandler().raiseEvent(message);
