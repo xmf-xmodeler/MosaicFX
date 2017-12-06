@@ -3,10 +3,10 @@ package tool.console;
 import java.util.Collections;
 import java.util.Vector;
 
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -31,8 +31,8 @@ public class AutoCompleteBox extends Dialog<String> {
 	
 	public AutoCompleteBox(Stage owner, Message message) {
 		super();
-//		super(owner);
 		initModality(Modality.WINDOW_MODAL);
+		initOwner(owner);
 		
 	    Value[] pairs = message.args[0].values;
 	    for (Value value : pairs) {
@@ -42,33 +42,16 @@ public class AutoCompleteBox extends Dialog<String> {
 	      if(!labels.contains(newSuggestion)) labels.add(newSuggestion);
 	    }
 	    
-//	    if(labels.size() <= 0) {
-//	    	labels.add(new Suggestion("Aardvark"));
-//	    	labels.add(new Suggestion("Bee"));
-//	    	labels.add(new Suggestion("Cat"));
-//	    	labels.add(new Suggestion("Dog"));
-//	    	labels.add(new Suggestion("Elephant"));
-//	    	labels.add(new Suggestion("Fox"));
-//	    	labels.add(new Suggestion("Mouse"));
-//	    	labels.add(new Suggestion("Unicorn"));
-//	    	labels.add(new Suggestion("Wolpertinger"));
-//	    	labels.add(new Suggestion("Yeti"));
-//	    }
-	    
+	    //Add FAKE Close Button
+        getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        javafx.scene.Node closeButton = getDialogPane().lookupButton(ButtonType.CLOSE);
+        closeButton.managedProperty().bind(closeButton.visibleProperty());
+        closeButton.setVisible(false);
 	}
 
-	
 	public String show(int x, int y) {
 		if(labels.size() <= 0) {return "";}
-		
-//        Shell parent = getParent();
-//        Shell shell = new Shell(parent, SWT.RESIZE | SWT.APPLICATION_MODAL);//SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-//        shell.setText("getText()");
-//        shell.setSize(150, 200);
-//        shell.setLocation(displayPoint.x, displayPoint.y-250);
-//        
-//        shell.setLayout(new GridLayout(1, false));
-		
+	
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
 		grid.setVgap(10);
@@ -76,47 +59,21 @@ public class AutoCompleteBox extends Dialog<String> {
 
         searchField = new TextField();
         searchField.setText("Search here...");
-//        searchField.setForeground(new Color(Display.getCurrent (), 100, 100, 100));
-//        GridData gridData = new GridData();
-//		gridData.horizontalAlignment = SWT.FILL;
-//		gridData.grabExcessHorizontalSpace = true;
-//		searchField.setLayoutData(gridData);
         grid.add(searchField, 0, 0);
-//		searchField.adaddKeyListener(new MySearchListener());
-//		searchField.textProperty().addListener(new MySearchListener());
 		searchField.setOnKeyPressed(new MySearchListener());
 		
         listOfSuggestions = new ListView<String>();
-//		gridData = new GridData();
-//		gridData.horizontalAlignment = SWT.FILL;
-//		gridData.grabExcessHorizontalSpace = true;
-//		gridData.verticalAlignment = SWT.FILL;
-//		gridData.grabExcessVerticalSpace = true;
-//		listOfSuggestions.setLayoutData(gridData);
         grid.add(listOfSuggestions, 0, 1);
-//		listOfSuggestions.addMouseListener(new MyListListener());
 		listOfSuggestions.setOnMouseClicked(new MyListListener());
-		
 		
 		addAllToListSortedBy("");
         
 		getDialogPane().setContent(grid);
 		
 		searchField.requestFocus();
-//		Platform.runLater(() -> searchField.requestFocus());
-//		
-//		Platform.runLater(() -> 
-		System.err.println("show and wait...");
+
 		showAndWait();
-		System.err.println("waited: result = " + result);
-		
-//        shell.open();
-//        Display display = parent.getDisplay();
-//        while (!shell.isDisposed() && result == null) {
-////        	System.err.println("sleeping: " + result);
-//            if (!display.readAndDispatch()) display.sleep();
-//        }
-//        if(result != null) shell.dispose();
+
         return result==null?"":result;
 	}
 
@@ -134,6 +91,7 @@ public class AutoCompleteBox extends Dialog<String> {
 		} else {
 			if(warning) {
 				result = searchField.getText();
+				close();
 			} else {
 				warning = true;
 			}
@@ -197,16 +155,12 @@ public class AutoCompleteBox extends Dialog<String> {
 	}
 	
 	private class MySearchListener implements EventHandler<KeyEvent> {
-
-
 		@Override
 		public void handle(KeyEvent e) {
 			if(!searchFieldInitialised) {
-//				searchField.setForeground(new Color(Display.getCurrent (), 0, 0, 0));
 				searchField.setText("");
 				searchFieldInitialised = true;
 			}
-//			System.err.println(e.keyCode);
 			if(e.getCode() == KeyCode.UP) {
 				int index = listOfSuggestions.getSelectionModel().getSelectedIndex();
 				index--;
@@ -222,7 +176,6 @@ public class AutoCompleteBox extends Dialog<String> {
 				}
 			} else
 			if(e.getCode() == KeyCode.ENTER ) {
-//					|| e.getCode() == KeyCode.) { // RETURN 
 			    if(listOfSuggestions.getSelectionModel().getSelectedIndex() != -1) {
 			    	result = listOfSuggestions.getSelectionModel().getSelectedItem();
 			    } else {
@@ -234,7 +187,6 @@ public class AutoCompleteBox extends Dialog<String> {
 				if(!oldKey.equals(searchField.getText())) {
 					oldKey = searchField.getText();
 					addAllToListSortedBy(oldKey);
-//					searchField.setForeground(new Color(Display.getCurrent (), warning?255:0, 0, 0));
 				}
 			}
 		}
@@ -246,8 +198,7 @@ public class AutoCompleteBox extends Dialog<String> {
 			System.err.println("list: " + listOfSuggestions.getSelectionModel().getSelectedIndex());
 		    if(listOfSuggestions.getSelectionModel().getSelectedIndex() != -1) {
 		    	result = listOfSuggestions.getSelectionModel().getSelectedItem();
-		    	System.err.println("close();");
-		    	Platform.runLater(() -> close());
+		    	close();
 		    }
 		}
 	}
