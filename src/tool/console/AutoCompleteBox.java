@@ -3,6 +3,7 @@ package tool.console;
 import java.util.Collections;
 import java.util.Vector;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -13,7 +14,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Paint;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import xos.Message;
@@ -60,7 +65,8 @@ public class AutoCompleteBox extends Dialog<String> {
         searchField = new TextField();
         searchField.setText("Search here...");
         grid.add(searchField, 0, 0);
-		searchField.setOnKeyPressed(new MySearchListener());
+		searchField.setOnKeyPressed(new MySearchListener_Pressed());
+		searchField.setOnKeyReleased(new MySearchListener_Released());
 		
         listOfSuggestions = new ListView<String>();
         grid.add(listOfSuggestions, 0, 1);
@@ -154,25 +160,16 @@ public class AutoCompleteBox extends Dialog<String> {
 		}
 	}
 	
-	private class MySearchListener implements EventHandler<KeyEvent> {
+	private class MySearchListener_Released implements EventHandler<KeyEvent> {
 		@Override
 		public void handle(KeyEvent e) {
-			if(!searchFieldInitialised) {
-				searchField.setText("");
-				searchFieldInitialised = true;
-			}
-			if(e.getCode() == KeyCode.UP) {
+			if(e.getCode() == KeyCode.UP || e.getCode() == KeyCode.DOWN) {
 				int index = listOfSuggestions.getSelectionModel().getSelectedIndex();
-				index--;
+				index += e.getCode() == KeyCode.UP ? -1 : 1;
 				if(index >= 0 && index < listOfSuggestions.getItems().size()) {
 					listOfSuggestions.getSelectionModel().select(index);
-				}
-			} else
-			if(e.getCode() == KeyCode.DOWN) {
-				int index = listOfSuggestions.getSelectionModel().getSelectedIndex();
-				index++;
-				if(index >= 0 && index < listOfSuggestions.getItems().size()) {
-					listOfSuggestions.getSelectionModel().select(index);
+					searchField.setText(listOfSuggestions.getItems().get(index));
+					Platform.runLater(() -> searchField.positionCaret(searchField.getText().length()));
 				}
 			} else
 			if(e.getCode() == KeyCode.ENTER ) {
@@ -180,14 +177,24 @@ public class AutoCompleteBox extends Dialog<String> {
 			    	result = listOfSuggestions.getSelectionModel().getSelectedItem();
 			    } else {
 			    	result = searchField.getText();
-			    	close();
 			    }
+			    close();
 			}  else
 			if(searchFieldInitialised) {
-				if(!oldKey.equals(searchField.getText())) {
-					oldKey = searchField.getText();
-					addAllToListSortedBy(oldKey);
-				}
+				addAllToListSortedBy(searchField.getText());
+			}
+			
+			Paint bgColor = Paint.valueOf(listOfSuggestions.getItems().size() == 0 ? "FF0000" : "FFFFFF");
+			searchField.setBackground(new Background(new BackgroundFill(bgColor, CornerRadii.EMPTY, Insets.EMPTY)));
+		}
+	}
+	
+	private class MySearchListener_Pressed implements EventHandler<KeyEvent> {
+		@Override
+		public void handle(KeyEvent e) {
+			if(!searchFieldInitialised) {
+				searchField.setText("");
+				searchFieldInitialised = true;
 			}
 		}
 	}
@@ -195,8 +202,7 @@ public class AutoCompleteBox extends Dialog<String> {
 	private class MyListListener implements EventHandler<MouseEvent> {
 		@Override
 		public void handle(MouseEvent e) {
-			System.err.println("list: " + listOfSuggestions.getSelectionModel().getSelectedIndex());
-		    if(listOfSuggestions.getSelectionModel().getSelectedIndex() != -1) {
+		    if(listOfSuggestions.getSelectionModel().getSelectedIndex() != -1 && e.getClickCount() == 2) {
 		    	result = listOfSuggestions.getSelectionModel().getSelectedItem();
 		    	close();
 		    }

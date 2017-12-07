@@ -214,16 +214,12 @@ public class ConsoleView {
 	            // Display options based on the type of the input.
 	            String content = textArea.getText();
 	            if (textArea.getCaretPosition() >= inputStart) {
-	            String command = content.substring(inputStart);
-	              System.err.println("dot --> command: " + command);
-	              WorkbenchClient.theClient().dotConsole(command.substring(0, command.length()-1));
+	                String command = content.substring(inputStart);
+	                WorkbenchClient.theClient().dotConsole(command.substring(0, command.length()-1));
 	            }
         	}
         }
-
      }
-
-
     });
 	
 	

@@ -82,7 +82,6 @@ public class WorkbenchClient extends Client {
   }
 
   public void dotConsole(String command) {
-	System.err.println("command: " + command);
     Message message = getHandler().newMessage("consoleDot", 1);
     message.args[0] = new Value(command);
     getHandler().raiseEvent(message);
