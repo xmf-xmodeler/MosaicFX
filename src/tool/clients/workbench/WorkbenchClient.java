@@ -1,7 +1,6 @@
 package tool.clients.workbench;
 
 import tool.clients.Client;
-import tool.clients.diagrams.DiagramClient;
 import tool.console.ConsoleClient;
 import tool.xmodeler.XModeler;
 import xos.Message;
