@@ -7,6 +7,11 @@ package tool.clients.oleBridge;
 public class DispatchException extends Exception {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Instantiates a new dispatch exception.
 	 *
 	 * @param message the message

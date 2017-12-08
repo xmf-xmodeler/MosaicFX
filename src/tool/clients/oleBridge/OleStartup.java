@@ -13,7 +13,7 @@ public class OleStartup implements IStartup {
 	 */
 	public void earlyStartup() {
 		System.out.println("[ register com.ceteva.oleBridge ]");
-		OleBridgeClient client = new OleBridgeClient();
+//		OleBridgeClient client = new OleBridgeClient();
 		// XmfPlugin.xos.newMessageClient("com.ceteva.oleBridge",client);
 	}
 }

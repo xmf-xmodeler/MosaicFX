@@ -18,7 +18,7 @@ public class Component {
 	// call, invoke, get, getProperty, setProperty, put
 
 	/** The id dispatch. */
-	private static Hashtable idDispatch = new Hashtable();
+	private static Hashtable<String,Object> idDispatch = new Hashtable<String,Object>();
 
 	/**
 	 * New top level.
@@ -127,7 +127,7 @@ public class Component {
 			store(id, Dispatch.get((Dispatch) o, property).getDispatch());
 		} else {
 			String available = "";
-			Enumeration e = idDispatch.keys();
+			Enumeration<String> e = idDispatch.keys();
 			while (e.hasMoreElements()) {
 				available = available + e.nextElement() + " ";
 			}

@@ -461,7 +461,7 @@ public class XModeler extends Application {
     xos.newMessageClient("com.ceteva.dialogs", new DialogsClient());
 //    xos.newMessageClient("com.ceteva.forms", new FormsClient());
     xos.newMessageClient("com.ceteva.undo", new UndoClient());
-//    xos.newMessageClient("com.ceteva.oleBridge", new OleBridgeClient());
+    xos.newMessageClient("com.ceteva.oleBridge", new OleBridgeClient());
 //    xos.newMessageClient("screenGeneration", new ScreenGenerationClient()); // BB
   }
   
