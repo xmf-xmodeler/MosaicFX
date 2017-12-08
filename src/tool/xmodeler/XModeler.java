@@ -456,7 +456,7 @@ public class XModeler extends Application {
 //    xos.newMessageClient("com.ceteva.text", new EditorClient());
     xos.newMessageClient("com.ceteva.mosaic", new WorkbenchClient());
     xos.newMessageClient("com.ceteva.menus", new MenuClient());
-//    xos.newMessageClient("com.ceteva.modelBrowser", new ModelBrowserClient());
+    xos.newMessageClient("com.ceteva.modelBrowser", new ModelBrowserClient());
 //    xos.newMessageClient("com.ceteva.diagram", new DiagramClient());
     xos.newMessageClient("com.ceteva.dialogs", new DialogsClient());
 //    xos.newMessageClient("com.ceteva.forms", new FormsClient());
@@ -467,6 +467,10 @@ public class XModeler extends Application {
   
   public static void initClients() {
 	  //TODO Adapt clients to java FX
+	  ModelBrowserClient.start(browserTab);
+//	  EditorClient.start(editorSash.getFolder1(), SWT.BORDER);
+//	  DiagramClient.start(editorSash.getFolder1());
+//	  FormsClient.start(propertySash.getFolder1(), propertyToolbar1, SWT.BORDER);
 	  
 //	  ModelBrowserClient.start(browserTabFolder, SWT.LEFT);
 //	  EditorClient.start(editorSash.getFolder1(), SWT.BORDER);

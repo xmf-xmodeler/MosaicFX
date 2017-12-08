@@ -420,7 +420,7 @@ public class XModelerBeforeEdtorSplitter {
     browserTabFolder.setMaximizeVisible(true);
     browserTabFolder.setMinimizeVisible(true);
     propertyTabFolder.setTopRight(propertyToolbar);
-    ModelBrowserClient.start(browserTabFolder, SWT.LEFT);
+//    ModelBrowserClient.start(browserTabFolder, SWT.LEFT);
     outerSash.setWeights(new int[] { 1, 5 });
     EditorClient.start(editorTabFolder, SWT.BORDER);
     editorTabFolder.addCTabFolder2Listener(new EditorResizeListener());
@@ -429,7 +429,7 @@ public class XModelerBeforeEdtorSplitter {
     DiagramClient.start(editorTabFolder);
     FormsClient.start(propertyTabFolder, propertyToolbar, SWT.BORDER);
     ScreenGenerationClient.start(propertyTabFolder); // BB
-    Console.start(propertyTabFolder);
+//    Console.start(propertyTabFolder);
     rightSash.setWeights(new int[] { 2, 1 });
     XModeler.open();
 

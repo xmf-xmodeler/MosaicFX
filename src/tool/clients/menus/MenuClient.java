@@ -15,7 +15,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ContextMenu;
 //import javafx.event.EventHandler;
@@ -325,13 +324,11 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
       try {
 		l.await();
 	} catch (InterruptedException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
     } else System.err.println("Cannot find menu " + parent);
   }
 
-  //TODO ????
   private void newGroupMarker(Message message) {
     Value parent = message.args[0];
     Value id = message.args[1];
@@ -373,7 +370,6 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
   	try {
 		l.await();
 	} catch (InterruptedException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
   }
@@ -405,7 +401,6 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
   	try {
 		l.await();
 	} catch (InterruptedException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
   }
@@ -447,7 +442,6 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
 //    } else System.err.println("no menu for " + id);
   }
 
-//TODO Testen
   public static void popup(String id, javafx.scene.Node anchor, int x, int y) {
 	    if (popupAssignments.containsKey(id)) {
 	      PopupMenu pmenu = popupAssignments.get(id);
