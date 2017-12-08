@@ -12,7 +12,7 @@ public class UndoStartup implements IStartup {
 	 * @see org.eclipse.ui.IStartup#earlyStartup()
 	 */
 	public void earlyStartup() {
-		UndoClient undoClient = new UndoClient();
+//		UndoClient undoClient = new UndoClient();
 		// XmfPlugin.xos.newMessageClient("com.ceteva.undo",undoClient);
 	}
 }
