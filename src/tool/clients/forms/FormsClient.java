@@ -23,6 +23,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javafx.event.Event;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import tool.clients.Client;
 import tool.clients.EventHandler;
 import tool.clients.diagrams.Diagram;
@@ -30,7 +33,61 @@ import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
 
-public class FormsClient extends Client implements CTabFolder2Listener {
+public class FormsClient extends Client {
+	
+	public FormsClient() {
+		super("com.ceteva.forms");
+
+	    setDebug(true);
+		theClient = this;
+	}
+
+	public static void start(TabPane tabFolder) {
+		FormsClient.tabFolder = tabFolder;
+
+//		tab.setOnClosed(new javafx.event.EventHandler<Event>() {
+//			@Override
+//			public void handle(Event t) {
+//				close(t);
+//				t.consume();
+//			}
+//		});
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////// OLD STUFF ///////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //	public static boolean HIGH_RESOLUTION = false;
 	public static final int HIGH_RESOLUTION_FACTOR_OLD = 2;
@@ -75,33 +132,22 @@ public class FormsClient extends Client implements CTabFolder2Listener {
     return formLabelFont;
   }
 
-  public static void select() {
-	for (ToolItem item : toolBar.getItems())
-          item.dispose();
-	CTabItem selectedItem = tabFolder.getSelection();
-	for (String id : tabs.keySet()) {
-      if (tabs.get(id) == selectedItem) {
-//        for (ToolItem item : toolBar.getItems())
+//  public static void select() {
+//	for (ToolItem item : toolBar.getItems())
 //          item.dispose();
-    	  FormTools formTools = FormsClient.theClient().getFormTools(id);
-    	  formTools.populateToolBar(toolBar);
-      }
-    }
-	toolBar.pack();
-  }
+//	CTabItem selectedItem = tabFolder.getSelection();
+//	for (String id : tabs.keySet()) {
+//      if (tabs.get(id) == selectedItem) {
+////        for (ToolItem item : toolBar.getItems())
+////          item.dispose();
+//    	  FormTools formTools = FormsClient.theClient().getFormTools(id);
+//    	  formTools.populateToolBar(toolBar);
+//      }
+//    }
+//	toolBar.pack();
+//  }
 
-  public static void start(CTabFolder tabFolder, ToolBar toolBar, int style) {
-    FormsClient.tabFolder = tabFolder;
-    FormsClient.toolBar = toolBar;
-    tabFolder.addSelectionListener(new SelectionListener() {
-      public void widgetDefaultSelected(SelectionEvent event) {
-      }
 
-      public void widgetSelected(SelectionEvent event) {
-        select();
-      }
-    });
-  }
 
   public static FormsClient theClient() {
     return theClient;
@@ -109,20 +155,15 @@ public class FormsClient extends Client implements CTabFolder2Listener {
 
   static final Color                  WHITE             = new Color(null, 255, 255, 255);
   static FormsClient                  theClient;
-  static CTabFolder                   tabFolder;
-  static ToolBar                      toolBar;
+  static TabPane                      tabFolder;
+//  static ToolBar                      toolBar;
 
-  static Hashtable<String, CTabItem>  tabs              = new Hashtable<String, CTabItem>();
+  static Hashtable<String, Tab>  tabs              = new Hashtable<String, Tab>();
   static Vector<Form>                 forms             = new Vector<Form>();
   static Hashtable<String, FormTools> toolDefs          = new Hashtable<String, FormTools>();
   static Font                         formLabelFont     = Display.getDefault().getSystemFont();//new Font(Display.getDefault(), new FontData("Monaco", 12, SWT.NO));
   static Font                         formTextFieldFont = Display.getDefault().getSystemFont();//new Font(Display.getDefault(), new FontData("Monaco", 12, SWT.NO));
 
-  public FormsClient() {
-    super("com.ceteva.forms");
-    theClient = this;
-    tabFolder.addCTabFolder2Listener(this);
-  }
 
   private void addComboItem(Message message) {
     String parentId = message.args[0].strValue();
@@ -477,14 +518,19 @@ public class FormsClient extends Client implements CTabFolder2Listener {
   private void newForm(final String id, final String label, final boolean selected) {
     runOnDisplay(new Runnable() {
       public void run() {
-        CTabItem tabItem = new CTabItem(tabFolder, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-        tabItem.setText(label);
+    	Tab tabItem = new Tab(label);
+    	tabFolder.getTabs().add(tabItem);
+//    	tabFolder.toFront();
         tabs.put(id, tabItem);
+       
+//        CTabItem tabItem = new CTabItem(tabFolder, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+//        tabItem.setText(label);
+//        tabs.put(id, tabItem);
         Form form = new Form(tabFolder, id);
-        tabItem.setControl(form.getForm());
-        tabItem.setShowClose(true);
+        // REMOVED // tabItem.setControl(form.getForm());
+        // REMOVED // tabItem.setShowClose(true);
         forms.add(form);
-        if (selected) tabFolder.setSelection(tabItem);
+        // REMOVED // if (selected) tabFolder.setSelection(tabItem);
       }
     });
   }
@@ -596,14 +642,15 @@ public class FormsClient extends Client implements CTabFolder2Listener {
   }
 
   private void selectForm(final String id) {
-    runOnDisplay(new Runnable() {
-      public void run() {
-        if (tabs.containsKey(id))
-          tabFolder.setSelection(tabs.get(id));
-        else System.err.println("cannot find form: " + id);
-        select();
-      }
-    });
+	 /*REMOVED*/
+//    runOnDisplay(new Runnable() {
+//      public void run() {
+//        if (tabs.containsKey(id))
+//          tabFolder.setSelection(tabs.get(id));
+//        else System.err.println("cannot find form: " + id);
+////        select();
+//      }
+//    });
   }
   
   private void removeNode(Message message) {
@@ -639,6 +686,7 @@ public class FormsClient extends Client implements CTabFolder2Listener {
 	}
 
   public void sendMessage(final Message message) {
+	  System.err.println("MESSAGE: "+message);
     if (message.hasName("newForm"))
       newForm(message);
     else if (message.hasName("setTool"))
@@ -842,12 +890,13 @@ public class FormsClient extends Client implements CTabFolder2Listener {
   }
 
   public void writeXML(PrintStream out) {
-    out.print("<Forms>");
-    for (Form form : forms)
-      form.writeXML(out, tabFolder.getSelection() == tabs.get(form.getId()), tabs.get(form.getId()).getText());
-    for (FormTools tools : toolDefs.values())
-      tools.writeXML(out);
-    out.print("</Forms>");
+		 /*REMOVED*/
+//    out.print("<Forms>");
+//    for (Form form : forms)
+//      form.writeXML(out, tabFolder.getSelection() == tabs.get(form.getId()), tabs.get(form.getId()).getText());
+//    for (FormTools tools : toolDefs.values())
+//      tools.writeXML(out);
+//    out.print("</Forms>");
   }
 
   public void close(CTabFolderEvent event) {

@@ -452,6 +452,7 @@ public class XModeler extends Application {
 //    });
   }
 
+
   public static void startClients() {
 //    xos.newMessageClient("com.ceteva.text", new EditorClient());
     xos.newMessageClient("com.ceteva.mosaic", new WorkbenchClient());
@@ -459,26 +460,27 @@ public class XModeler extends Application {
     xos.newMessageClient("com.ceteva.modelBrowser", new ModelBrowserClient());
 //    xos.newMessageClient("com.ceteva.diagram", new DiagramClient());
     xos.newMessageClient("com.ceteva.dialogs", new DialogsClient());
-//    xos.newMessageClient("com.ceteva.forms", new FormsClient());
+    xos.newMessageClient("com.ceteva.forms", new FormsClient());
     xos.newMessageClient("com.ceteva.undo", new UndoClient());
     xos.newMessageClient("com.ceteva.oleBridge", new OleBridgeClient());
 //    xos.newMessageClient("screenGeneration", new ScreenGenerationClient()); // BB
   }
   
   public static void initClients() {
-	  //TODO Adapt clients to java FX
 	  ModelBrowserClient.start(browserTab);
+//	  FormsClient.start(propertyTabs);
+	  Console.start(propertyTabs);
+	  
+	  //TODO Adapt clients to java FX
 //	  EditorClient.start(editorSash.getFolder1(), SWT.BORDER);
 //	  DiagramClient.start(editorSash.getFolder1());
-//	  FormsClient.start(propertySash.getFolder1(), propertyToolbar1, SWT.BORDER);
 	  
 //	  ModelBrowserClient.start(browserTabFolder, SWT.LEFT);
 //	  EditorClient.start(editorSash.getFolder1(), SWT.BORDER);
 //	  DiagramClient.start(editorSash.getFolder1());
-//	  FormsClient.start(propertySash.getFolder1(), propertyToolbar1, SWT.BORDER);
 //	  ScreenGenerationClient.start(propertySash.getFolder1()); // BB
-	  Console.start(propertyTabs);
   }
+  
   
   public static void openXModeler() {
 	  //TODO open
