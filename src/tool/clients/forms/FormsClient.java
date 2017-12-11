@@ -687,7 +687,7 @@ public class FormsClient extends Client {
 
   public void sendMessage(final Message message) {
 	  System.err.println("MESSAGE: "+message);
-    if (message.hasName("newForm"))
+/*    if (message.hasName("newForm"))
       newForm(message);
     else if (message.hasName("setTool"))
       setTool(message);
@@ -745,7 +745,7 @@ public class FormsClient extends Client {
     else {
 //System.out.println("------- UNKNOWN");    	
     	super.sendMessage(message);
-    }
+    } */
   }
   
   private void move(Message message) {

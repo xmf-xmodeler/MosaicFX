@@ -458,7 +458,7 @@ public class XModeler extends Application {
     xos.newMessageClient("com.ceteva.mosaic", new WorkbenchClient());
     xos.newMessageClient("com.ceteva.menus", new MenuClient());
     xos.newMessageClient("com.ceteva.modelBrowser", new ModelBrowserClient());
-//    xos.newMessageClient("com.ceteva.diagram", new DiagramClient());
+    xos.newMessageClient("com.ceteva.diagram", new DiagramClient());
     xos.newMessageClient("com.ceteva.dialogs", new DialogsClient());
     xos.newMessageClient("com.ceteva.forms", new FormsClient());
     xos.newMessageClient("com.ceteva.undo", new UndoClient());
@@ -468,7 +468,7 @@ public class XModeler extends Application {
   
   public static void initClients() {
 	  ModelBrowserClient.start(browserTab);
-//	  FormsClient.start(propertyTabs);
+	  FormsClient.start(propertyTabs);
 	  Console.start(propertyTabs);
 	  
 	  //TODO Adapt clients to java FX

@@ -24,7 +24,7 @@ import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
 
-public class DiagramClient extends Client implements CTabFolder2Listener {
+public class DiagramClient extends Client {
 
   public static void start(CTabFolder tabFolder) {
     DiagramClient.tabFolder = tabFolder;
@@ -36,19 +36,19 @@ public class DiagramClient extends Client implements CTabFolder2Listener {
 
   static DiagramClient               theClient;
   static CTabFolder                  tabFolder;
-  static Hashtable<String, CTabItem> tabs              = new Hashtable<String, CTabItem>();
-  static Vector<Diagram>             diagrams          = new Vector<Diagram>();
+/*  static Hashtable<String, CTabItem> tabs              = new Hashtable<String, CTabItem>();
+  static Vector<Diagram>             diagrams          = new Vector<Diagram>();*/
   transient static Vector<Diagram>   newlyCreatedDiagrams;
-  static Font                        diagramFont       = new Font(XModeler.getXModeler().getDisplay(), new FontData("Courier New", 12, SWT.NO));
-  static Font                        diagramItalicFont = new Font(XModeler.getXModeler().getDisplay(), new FontData("Courier New", 12, SWT.ITALIC));
+  static Font                        diagramFont       ;//= new Font(XModeler.getXModeler().getDisplay(), new FontData("Courier New", 12, SWT.NO));
+  static Font                        diagramItalicFont ;//= new Font(XModeler.getXModeler().getDisplay(), new FontData("Courier New", 12, SWT.ITALIC)); 
   // static java.awt.Font diagramFont_AWT = new java.awt.Font("Courier New", java.awt.Font.PLAIN, 16);
 
   public DiagramClient() {
     super("com.ceteva.diagram");
     theClient = this;
-    tabFolder.addCTabFolder2Listener(this);
+//    tabFolder.addCTabFolder2Listener(this);
   }
-
+/*
   public Value callMessage(Message message) {
     if (message.hasName("getTextDimension"))
       return getTextDimension(message);
@@ -149,11 +149,11 @@ public class DiagramClient extends Client implements CTabFolder2Listener {
   // }
   // throw new Error("cannot find the current diagram");
   // }
-
+ */
   /*
    * These functions calculate the size for a String for use in XMF's layouts. Unfortunately, hi-dpi changes the font size, so we need to get that factor out of the dimensions again. The value sent to XMF are those AS IF the font size were at 100%
    */
-  private Value getTextDimension(final Message message) {
+  /*private Value getTextDimension(final Message message) {
     final Value[] result = new Value[1];
     runOnDisplay(new Runnable() {
       public void run() {
@@ -182,7 +182,7 @@ public class DiagramClient extends Client implements CTabFolder2Listener {
     });
     return result[0];
   }
-
+  
   private Value getTextDimensionWithFont(final Message message) {
     final Value[] result = new Value[1];
     runOnDisplay(new Runnable() {
@@ -819,7 +819,7 @@ public class DiagramClient extends Client implements CTabFolder2Listener {
     Value selectable = message.args[6];
     newNode(parentId.strValue(), id.strValue(), x.intValue, y.intValue, width.intValue, height.intValue, selectable.boolValue);
   }
-
+*/
   protected void newNode(String type, String id, int x, int y) {
     Message m = getHandler().newMessage("newNode", 4);
     m.args[0] = new Value(type);
@@ -828,7 +828,7 @@ public class DiagramClient extends Client implements CTabFolder2Listener {
     m.args[3] = new Value(y);
     getHandler().raiseEvent(m);
   }
-
+/*
   private void newNode(String parentId, String id, int x, int y, int width, int height, boolean selectable) {
     if (getDiagram(parentId) != null) {
       Diagram diagram = getDiagram(parentId);
@@ -1504,7 +1504,7 @@ public class DiagramClient extends Client implements CTabFolder2Listener {
     for (Diagram diagram : diagrams)
       if (diagram.getId().equals(id.strValue())) diagram.renderOff();
   }
-
+*/
   public Point textDimension(String text, Font font) {
     Text t = new Text(tabFolder, SWT.NONE);
     t.setFont(diagramFont);
@@ -1514,11 +1514,18 @@ public class DiagramClient extends Client implements CTabFolder2Listener {
     t.dispose();
     return extent;
   }
-
+  /*
   public void writeXML(PrintStream out) {
     out.print("<Diagrams>");
     for (Diagram diagram : diagrams)
       diagram.writeXML(tabs.get(diagram.getId()).getText(), out);
     out.print("</Diagrams>");
   }
+  */
+
+@Override
+public boolean processMessage(Message message) {
+	return false;
+}
+
 }

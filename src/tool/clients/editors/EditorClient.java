@@ -44,7 +44,7 @@ import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
 
-public class EditorClient extends Client implements LocationListener, CTabFolder2Listener {
+public class EditorClient extends Client {
 
   public static final Color             LINE_HIGHLIGHT = new Color(XModeler.getXModeler().getDisplay(), 192, 192, 192);
   public static final Color             RED            = new Color(XModeler.getXModeler().getDisplay(), 255, 0, 0);
@@ -64,7 +64,7 @@ public class EditorClient extends Client implements LocationListener, CTabFolder
   
   Hashtable<Browser, Stack<String>> backQueues     = new Hashtable<Browser, Stack<String>>();
   Hashtable<Browser, String>        browserCurrent = new Hashtable<Browser, String>();
-  Hashtable<Browser, Stack<String>> forwardQueues  = new Hashtable<Browser, Stack<String>>();
+  Hashtable<Browser, Stack<String>> forwardQueues  = new Hashtable<Browser, Stack<String>>(); 
   
   public static void start(CTabFolder tabFolder, int style) {
     EditorClient.tabFolder = tabFolder;
@@ -79,7 +79,7 @@ public class EditorClient extends Client implements LocationListener, CTabFolder
   public EditorClient() {
     super("com.ceteva.text");
     theClient = this;
-    tabFolder.addCTabFolder2Listener(this);
+//    tabFolder.addCTabFolder2Listener(this);
   }
 
   private void addLineHighlight(Message message) {
@@ -266,7 +266,7 @@ public class EditorClient extends Client implements LocationListener, CTabFolder
       browsers.remove(id);
       tabs.remove(id);
     } else {
-      DiagramClient.theClient().close(event);
+//      DiagramClient.theClient().close(event);
     }
   }
 
@@ -474,7 +474,7 @@ public class EditorClient extends Client implements LocationListener, CTabFolder
         }
         browsers.put(id, browser);
         browser.setVisible(true);
-        browser.addLocationListener(EditorClient.this);
+//        browser.addLocationListener(EditorClient.this);
         tabFolder.setSelection(tabItem);
       }
     });
@@ -529,9 +529,9 @@ public class EditorClient extends Client implements LocationListener, CTabFolder
     });
   }
 
-  public boolean processMessage(Message message) {
-    return false;
-  }
+//  public boolean processMessage(Message message) {
+//    return false;
+//  }
 
   public void restore(CTabFolderEvent event) {
   }
@@ -882,4 +882,9 @@ public class EditorClient extends Client implements LocationListener, CTabFolder
     out.print("</Editors>");
   }
 
+
+@Override
+public boolean processMessage(Message message) {
+	return false;
+}
 }
