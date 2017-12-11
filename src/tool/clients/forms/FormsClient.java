@@ -607,8 +607,7 @@ public class FormsClient extends Client {
   }
 
   private void newText(final String parentId, final String id, final String string, final int x, final int y) {
-
-		System.err.println("newText...");
+    System.err.println("newText...");
     final Form form = getForm(parentId);
     if (form != null) {
         CountDownLatch l = new CountDownLatch(1);  

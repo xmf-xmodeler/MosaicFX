@@ -2,7 +2,9 @@ package tool.clients.forms;
 
 import java.io.PrintStream;
 import java.util.Hashtable;
+import java.util.concurrent.CountDownLatch;
 
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -108,7 +110,6 @@ public void newButton(String parentId, String id, String label, int x, int y, in
 
 	  public void newComboBox(String parentId, String id, int x, int y, int width, int height) {
 	    if (this.id.equals(parentId)) {
-	      System.err.println("newComboBox: " + x + "," + y + " (" + width + "x" + height + ")");
 	      ComboBox<String> combo = new ComboBox<String>();
 	      AnchorPane.setLeftAnchor(combo, x*1.);
 	      AnchorPane.setTopAnchor(combo, y*1.);
@@ -119,17 +120,23 @@ public void newButton(String parentId, String id, String label, int x, int y, in
 	    }
 	  }
 
-	  public void newList(String parentId, final String id, final int x, final int y, final int width, final int height) {
-	    if (this.id.equals(parentId)) {
-//	      FormsClient.theClient().runOnDisplay(new Runnable() {
-//	        public void run() {
-	        	ListView<String> list = new ListView<String>();
-	          lists.put(id, list);
-
-		      root.getChildren().add(list);
-//	        }
-//	      });
-	    }
+	public void newList(String parentId, final String id, final int x, final int y, final int width, final int height) {
+		if (this.id.equals(parentId)) {
+			CountDownLatch l = new CountDownLatch(1);
+			Platform.runLater(() -> {
+				ListView<String> list = new ListView<String>();
+				lists.put(id, list);
+			    AnchorPane.setLeftAnchor(list, x*1.);
+			    AnchorPane.setTopAnchor(list, y*1.);
+				root.getChildren().add(list);
+                l.countDown();
+			});
+			try {
+				l.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	  }
 
 	  public void newNodeWithIcon(String parentId, String nodeId, String text, boolean editable, String icon, int index) {
