@@ -3,32 +3,24 @@ package tool.clients.forms;
 import java.io.PrintStream;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.draw2d.FigureUtilities;
 import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabFolder2Listener;
 import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javafx.event.Event;
+import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import tool.clients.Client;
 import tool.clients.EventHandler;
-import tool.clients.diagrams.Diagram;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
@@ -101,6 +93,7 @@ public class FormsClient extends Client {
 			  public Value value = null;
 			  //calcTextDimension(){ 
 	 			public void run() {
+	 				System.err.println("calcTextDimension");
   					try {
   						Value[] values = new Value[2];
 		        	Font f = XModeler.getXModeler().getDisplay().getSystemFont();
@@ -116,7 +109,9 @@ public class FormsClient extends Client {
 	  		};
 //			  				);
 	  		calcTextDimension r = new calcTextDimension();
-	  		runOnDisplay(r);
+	  		//CountDownLatch l = new CountDownLatch(1);  //TODO
+	  		Platform.runLater(r);
+
 			return r.value;
 	  }
 	
@@ -158,7 +153,7 @@ public class FormsClient extends Client {
   static TabPane                      tabFolder;
 //  static ToolBar                      toolBar;
 
-  static Hashtable<String, Tab>  tabs              = new Hashtable<String, Tab>();
+  static Hashtable<String, Tab>       tabs              = new Hashtable<String, Tab>();
   static Vector<Form>                 forms             = new Vector<Form>();
   static Hashtable<String, FormTools> toolDefs          = new Hashtable<String, FormTools>();
   static Font                         formLabelFont     = Display.getDefault().getSystemFont();//new Font(Display.getDefault(), new FontData("Monaco", 12, SWT.NO));
@@ -172,12 +167,17 @@ public class FormsClient extends Client {
   }
 
   private void addComboItem(final String parentId, final String value) {
-    runOnDisplay(new Runnable() {
-      public void run() {
-        for (Form form : forms)
-          form.addComboItem(parentId, value);
-      }
+	CountDownLatch l = new CountDownLatch(1);  
+    Platform.runLater(() ->{
+      for (Form form : forms)
+        form.addComboItem(parentId, value);
+      l.countDown();
     });
+    try {
+     l.await();
+    } catch (InterruptedException e) {
+     e.printStackTrace();
+    }
   }
 
   private void addItem(Message message) {
@@ -194,12 +194,17 @@ public class FormsClient extends Client {
   }
 
   private void addListItem(final String parentId, final String id, final String value) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+	CountDownLatch l = new CountDownLatch(1);  
+	Platform.runLater(() ->{
         for (Form form : forms)
           form.addListItem(parentId, id, value);
-      }
-    });
+        l.countDown();
+	});
+	try {
+	 l.await();
+	} catch (InterruptedException e) {
+	 e.printStackTrace();
+	}
   }
 
   private void addNodeWithIcon(Message message) {
@@ -214,12 +219,17 @@ public class FormsClient extends Client {
   }
 
   private void addNodeWithIcon(final String parentId, final String nodeId, final String text, final boolean editable, final String icon, final int index) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+	CountDownLatch l = new CountDownLatch(1);  
+	Platform.runLater(() ->{
         for (Form form : forms)
           form.newNodeWithIcon(parentId, nodeId, text, editable, icon, index);
-      }
-    });
+        l.countDown();
+	});
+	try {
+	 l.await();
+	} catch (InterruptedException e) {
+	 e.printStackTrace();
+	}
   }
 
   public Value callMessage(Message message) {
@@ -233,14 +243,19 @@ public class FormsClient extends Client {
   private Value getText(Message message) {
     final String id = message.args[0].strValue();
     final String[] text = new String[] { "" };
-    runOnDisplay(new Runnable() {
-      public void run() {
+	CountDownLatch l = new CountDownLatch(1);  
+	Platform.runLater(() ->{
         for (Form form : forms) {
           String textIn = form.getText(id);
           if (textIn != null) text[0] = textIn;
         }
-      }
-    });
+        l.countDown();
+	});
+	try {
+	 l.await();
+	} catch (InterruptedException e) {
+	 e.printStackTrace();
+	}
     return new Value(text[0]);
   }
 
@@ -257,6 +272,7 @@ public class FormsClient extends Client {
   }
 
   private Form getForm(String id) {
+	System.err.println("forms: " + forms);
     for (Form form : forms)
       if (form.getId().equals(id)) return form;
     return null;
@@ -428,8 +444,8 @@ public class FormsClient extends Client {
   }
 
   public void inflateXML(final Document doc) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+	CountDownLatch l = new CountDownLatch(1);  
+	Platform.runLater(() ->{
         try {
           NodeList formClients = doc.getElementsByTagName("Forms");
           if (formClients.getLength() == 1) {
@@ -443,8 +459,13 @@ public class FormsClient extends Client {
         } catch (Throwable t) {
           t.printStackTrace(System.err);
         }
-      }
-    });
+        l.countDown();
+	});
+	try {
+	 l.await();
+	} catch (InterruptedException e) {
+	 e.printStackTrace();
+	}
   }
 
   private void newButton(Message message) {
@@ -460,12 +481,17 @@ public class FormsClient extends Client {
   }
 
   private void newButton(final String parentId, final String id, final String label, final int x, final int y, final int width, final int height) {
-    runOnDisplay(new Runnable() {
-      public void run() {
-        for (Form form : forms)
-          form.newButton(parentId, id, label, x, y, width, height);
-      }
+	CountDownLatch l = new CountDownLatch(1);  
+    Platform.runLater(() ->{
+      for (Form form : forms)
+        form.newButton(parentId, id, label, x, y, width, height);
+      l.countDown();
     });
+    try {
+     l.await();
+    } catch (InterruptedException e) {
+     e.printStackTrace();
+    }
   }
 
   private void newCheckBox(Message message) {
@@ -479,12 +505,17 @@ public class FormsClient extends Client {
   }
 
   private void newCheckBox(final String parentId, final String id, final int x, final int y, final boolean checked) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+		CountDownLatch l = new CountDownLatch(1);  
+		Platform.runLater(() ->{
         for (Form form : forms)
           form.newCheckBox(parentId, id, x, y, checked);
-      }
-    });
+        l.countDown();
+		});
+		try {
+		 l.await();
+		} catch (InterruptedException e) {
+		 e.printStackTrace();
+		}
   }
 
   private void newComboBox(Message message) {
@@ -500,12 +531,17 @@ public class FormsClient extends Client {
   }
 
   private void newComboBox(final String parentId, final String id, final int x, final int y, final int width, final int height) {
-    runOnDisplay(new Runnable() {
-      public void run() {
-        for (Form form : forms)
-          form.newComboBox(parentId, id, x, y, width, height);
-      }
-    });
+	CountDownLatch l = new CountDownLatch(1);  
+	Platform.runLater(() ->{
+      for (Form form : forms)
+        form.newComboBox(parentId, id, x, y, width, height);
+      l.countDown();
+	});
+	try {
+	 l.await();
+	} catch (InterruptedException e) {
+	 e.printStackTrace();
+	}
   }
 
   private void newForm(Message message) {
@@ -516,8 +552,10 @@ public class FormsClient extends Client {
   }
 
   private void newForm(final String id, final String label, final boolean selected) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
+	  CountDownLatch l = new CountDownLatch(1);  
+	  Platform.runLater(()->{
     	Tab tabItem = new Tab(label);
     	tabFolder.getTabs().add(tabItem);
 //    	tabFolder.toFront();
@@ -526,13 +564,20 @@ public class FormsClient extends Client {
 //        CTabItem tabItem = new CTabItem(tabFolder, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 //        tabItem.setText(label);
 //        tabs.put(id, tabItem);
-        Form form = new Form(tabFolder, id);
+        Form form = new Form(tabItem, id);
         // REMOVED // tabItem.setControl(form.getForm());
         // REMOVED // tabItem.setShowClose(true);
         forms.add(form);
+        System.err.println("new:   " + forms);
         // REMOVED // if (selected) tabFolder.setSelection(tabItem);
-      }
-    });
+//      }
+        l.countDown();
+	  });
+	  try {
+	   l.await();
+	  } catch (InterruptedException e) {
+	   e.printStackTrace();
+	  }
   }
 
   private void newList(Message message) {
@@ -562,13 +607,20 @@ public class FormsClient extends Client {
   }
 
   private void newText(final String parentId, final String id, final String string, final int x, final int y) {
+
+		System.err.println("newText...");
     final Form form = getForm(parentId);
     if (form != null) {
-      Display.getDefault().syncExec(new Runnable() {
-        public void run() {
-          form.newText(id, string, x, y);
-        }
-      });
+        CountDownLatch l = new CountDownLatch(1);  
+  	    Platform.runLater(() ->{
+        form.newText(id, string, x, y);
+        l.countDown();
+  	  });
+  	  try {
+  	   l.await();
+  	  } catch (InterruptedException e) {
+  	   e.printStackTrace();
+  	  }
     } else System.err.println("cannot find text parent " + parentId);
   }
 
@@ -585,12 +637,17 @@ public class FormsClient extends Client {
   }
 
   private void newTextBox(final String parentId, final String id, final int x, final int y, final int width, final int height, final boolean editable) {
-    runOnDisplay(new Runnable() {
-      public void run() {
-        for (Form form : forms)
-          form.newTextBox(parentId, id, x, y, width, height, editable);
-      }
-    });
+    CountDownLatch l = new CountDownLatch(1);  
+	Platform.runLater(() ->{
+      for (Form form : forms)
+        form.newTextBox(parentId, id, x, y, width, height, editable);
+      l.countDown();
+	});
+	try {
+	 l.await();
+	} catch (InterruptedException e) {
+	 e.printStackTrace();
+	}
   }
 
   private void newTextField(Message message) {
@@ -629,12 +686,17 @@ public class FormsClient extends Client {
   }
 
   private void newTree(final String parentId, final String id, final int x, final int y, final int width, final int height, final boolean editable) {
-    runOnDisplay(new Runnable() {
-      public void run() {
-        for (Form form : forms)
-          form.newTree(parentId, id, x, y, width, height, editable);
-      }
-    });
+	CountDownLatch l = new CountDownLatch(1);  
+	Platform.runLater(() ->{
+    for (Form form : forms)
+      form.newTree(parentId, id, x, y, width, height, editable);
+    l.countDown();
+	});
+	try {
+	 l.await();
+	} catch (InterruptedException e) {
+	 e.printStackTrace();
+	}
   }
 
   public boolean processMessage(Message message) {
@@ -654,40 +716,55 @@ public class FormsClient extends Client {
   }
   
   private void removeNode(Message message) {
-	  final String id = message.args[0].strValue();
-	    runOnDisplay(new Runnable() {
-	        public void run() {
-	          for (Form form : forms) {
-	            form.removeItem(id);
-	          }
-	        }
-	      });	  
+    final String id = message.args[0].strValue();
+	CountDownLatch l = new CountDownLatch(1);  
+	Platform.runLater(() ->{
+          for (Form form : forms) {
+            form.removeItem(id);
+          }
+          l.countDown();
+	});
+	try {
+	 l.await();
+	} catch (InterruptedException e) {
+	 e.printStackTrace();
+	}  
   }
 
   private void maximiseToCanvas(Message message) {
 	    final String id = message.args[0].strValue();
-	    runOnDisplay(new Runnable() {
-	        public void run() {
+		CountDownLatch l = new CountDownLatch(1);  
+		Platform.runLater(() ->{
 	          for (Form form : forms)
 	            form.maximiseToCanvas(id);
-	        }
-	      });
+	          l.countDown();
+		});
+		try {
+		 l.await();
+		} catch (InterruptedException e) {
+		 e.printStackTrace();
+		}
   }
 
 	private void changesMade(Message message) {
 		final String id = message.args[0].strValue();
 		final boolean made = message.args[1].boolValue;
-		runOnDisplay(new Runnable() {
-			public void run() {
+		CountDownLatch l = new CountDownLatch(1);  
+		Platform.runLater(() ->{
 				for (Form form : forms)
 					form.changesMade(id, made);
-			}
+				  l.countDown();
 		});
+		try {
+		 l.await();
+		} catch (InterruptedException e) {
+		 e.printStackTrace();
+		}
 	}
 
   public void sendMessage(final Message message) {
 	  System.err.println("MESSAGE: "+message);
-/*    if (message.hasName("newForm"))
+    if (message.hasName("newForm"))
       newForm(message);
     else if (message.hasName("setTool"))
       setTool(message);
@@ -745,7 +822,7 @@ public class FormsClient extends Client {
     else {
 //System.out.println("------- UNKNOWN");    	
     	super.sendMessage(message);
-    } */
+    } 
   }
   
   private void move(Message message) {
@@ -776,21 +853,31 @@ public class FormsClient extends Client {
   }
 
   private void check(final String id) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+		CountDownLatch l = new CountDownLatch(1);  
+		Platform.runLater(() ->{
         for (Form form : forms)
           form.check(id);
-      }
-    });
+        l.countDown();
+		});
+		try {
+		 l.await();
+		} catch (InterruptedException e) {
+		 e.printStackTrace();
+		}
   }
 
   private void uncheck(final String id) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+		CountDownLatch l = new CountDownLatch(1);  
+		Platform.runLater(() ->{
         for (Form form : forms)
           form.uncheck(id);
-      }
-    });
+        l.countDown();
+		});
+		try {
+		 l.await();
+		} catch (InterruptedException e) {
+		 e.printStackTrace();
+		}
   }
 
   private void uncheck(Message message) {
@@ -804,13 +891,18 @@ public class FormsClient extends Client {
   }
 
   private void clear(final String id) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+	CountDownLatch l = new CountDownLatch(1);  
+	Platform.runLater(() ->{
         for (Form form : forms) {
           form.clear(id);
         }
-      }
-    });
+        l.countDown();
+	});
+	try {
+	 l.await();
+	} catch (InterruptedException e) {
+	 e.printStackTrace();
+	}
   }
 
   private void setSelection(Message message) {
@@ -820,24 +912,34 @@ public class FormsClient extends Client {
   }
 
   private void setSelection(final String comboId, final int index) {
-    runOnDisplay(new Runnable() {
-      public void run() {
-        for (Form form : forms)
-          form.setSelection(comboId, index);
-      }
-    });
+    CountDownLatch l = new CountDownLatch(1);  
+	Platform.runLater(() ->{
+      for (Form form : forms)
+        form.setSelection(comboId, index);
+      l.countDown();
+	});
+	try {
+	 l.await();
+	} catch (InterruptedException e) {
+	 e.printStackTrace();
+	}
   }
 
   private void setText(Message message) {
     final Value id = message.args[0];
     final Value text = message.args[1];
-    runOnDisplay(new Runnable() {
-      public void run() {
-        for (Form form : forms) {
-          form.setText(id.strValue(), text.strValue());
-        }
+    CountDownLatch l = new CountDownLatch(1);  
+    Platform.runLater(() ->{
+      for (Form form : forms) {
+        form.setText(id.strValue(), text.strValue());
       }
+      l.countDown();
     });
+    try {
+     l.await();
+    } catch (InterruptedException e) {
+     e.printStackTrace();
+    }
   }
 
   private void setTool(Message message) {

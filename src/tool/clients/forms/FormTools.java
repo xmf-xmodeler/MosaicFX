@@ -6,6 +6,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.swt.widgets.ToolBar;
 
+import javafx.application.Platform;
+
 public class FormTools {
 
 	String id;
@@ -46,10 +48,8 @@ public class FormTools {
 			if (formToolDef.event.equals(eventName(toolName)) && formToolDef.id.equals(id)) {
 				found = true;
 				final FormToolDef formToolDef_final = formToolDef;
-				FormsClient.theClient().runOnDisplay(new Runnable() {
-					public void run() {
-						formToolDef_final.setEnabled(enabled);
-					}
+				Platform.runLater(()->{
+					formToolDef_final.setEnabled(enabled);
 				});
 			}
 		}

@@ -9,6 +9,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -34,7 +35,7 @@ public class Form {
   private String                        id;
   
   private ScrollPane                    form;
-  private AnchorPane                          content;
+  private AnchorPane                          root;
   
   private Hashtable<String, TextField>        textFields          = new Hashtable<String, TextField>();
   private Hashtable<String, Label>            labels              = new Hashtable<String, Label>();
@@ -49,16 +50,28 @@ public class Form {
 
 //  private int                   TEXTFIELDHEIGHT         = 20;
 
-  public Form(TabPane parent, String id) {
+  public Form(Tab parent, String id) {
     this.id = id;
     form = new ScrollPane();
-    content = new AnchorPane();
-    form.setContent(content);
+    root = new AnchorPane();
+    form.setContent(root);
+    form.setFitToHeight(true);
+    form.setFitToWidth(true); 
+    
+    parent.setContent(form);
+    
   }  
+  
+    @Override
+	public String toString() {
+		return "Form [id=" + id + " " + root.getHeight() + " of " +form.getHeight() + "]";
+	}
+
   
   ///////////////////////// SETUP ( ADD NEW ELEMENTS) //////////////////////////
   
-  public void newButton(String parentId, String id, String label, int x, int y, int width, int height) {
+
+public void newButton(String parentId, String id, String label, int x, int y, int width, int height) {
 	    if (this.id.equals(parentId)) {
 	      Button button = new Button();
 	      if (label.startsWith("Maximi")) {
@@ -69,7 +82,7 @@ public class Form {
 	      AnchorPane.setTopAnchor(button, y*1.);
 	      button.setText(label);
 	      buttons.put(id, button);
-	      content.getChildren().add(button);
+	      root.getChildren().add(button);
 	    }
 	  }
 
@@ -89,7 +102,7 @@ public class Form {
 	      button.setSelected(checked);
 	      button.setText("");
 	      checks.put(id, button);
-	      content.getChildren().add(button);
+	      root.getChildren().add(button);
 	    }
 	  }
 
@@ -102,7 +115,7 @@ public class Form {
 //	      combo.setSize(150, 25);
 //	      combo.setFont(FormsClient.formLabelFont);
 	      combos.put(id, combo);
-	      content.getChildren().add(combo);
+	      root.getChildren().add(combo);
 	    }
 	  }
 
@@ -113,7 +126,7 @@ public class Form {
 	        	ListView<String> list = new ListView<String>();
 	          lists.put(id, list);
 
-		      content.getChildren().add(list);
+		      root.getChildren().add(list);
 //	        }
 //	      });
 	    }
@@ -136,7 +149,9 @@ public class Form {
 	    labels.put(id, text);
 //	    form_OLD.setMinSize(content_OLD.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 
-	    content.getChildren().add(text);
+	    root.getChildren().add(text);
+
+		System.err.println("newText " + (x*1.) + "/" + (y*1.));
 	  }
 
 	  public void newTextBox(String parentId, String id, int x, int y, int width, int height, boolean editable) {
@@ -163,7 +178,7 @@ public class Form {
 //	        }
 //	      });
 	      boxes.put(id, text);
-		  content.getChildren().add(text);
+		  root.getChildren().add(text);
 	    }
 	  }
 
@@ -177,7 +192,8 @@ public class Form {
 	    textFields.put(id, text);
 	    AnchorPane.setLeftAnchor(text, x*1.);
 	    AnchorPane.setTopAnchor(text, y*1.);
-		  content.getChildren().add(text);
+		root.getChildren().add(text);
+		
 //	    Listener listener = new Listener() {
 //	      public void handleEvent(Event event) {
 //	        switch (event.type) {
@@ -204,7 +220,7 @@ public class Form {
 	      TreeView<String> tree = new TreeView<String>();
 	      AnchorPane.setLeftAnchor(tree, x*1.);
 	      AnchorPane.setTopAnchor(tree, y*1.);
-		  content.getChildren().add(tree);
+		  root.getChildren().add(tree);
 	      trees.put(id, tree);
 	    }
 	  }
@@ -267,12 +283,11 @@ public class Form {
   }
 
   public void setSelection(String comboId, int index) {
-	  iHaventImplementedItYet();
-//    for (String id : combos.keySet()) {
-//      if (id.equals(comboId)) {
-//        combos.get(id).select(index);
-//      }
-//    }
+    for (String id : combos.keySet()) {
+      if (id.equals(comboId)) {
+        combos.get(id).getSelectionModel().select(index);
+      }
+    }
   }
 
   public void setText(String id, String string) {
