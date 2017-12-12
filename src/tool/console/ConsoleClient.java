@@ -45,7 +45,6 @@ public class ConsoleClient extends Thread {
 
   @Override
   public void run() {
-	System.err.println("run...");
     char[] buffer = new char[1000];
     while (true) {
       try {
@@ -66,7 +65,7 @@ public class ConsoleClient extends Thread {
     while ((view = Console.getConsoleView()) == null)
       try {
         // We might not have got everything set up just yet...
-        Thread.currentThread().sleep(1000);
+        Thread.sleep(1000);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }

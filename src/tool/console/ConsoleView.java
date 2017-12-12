@@ -169,7 +169,6 @@ public class ConsoleView {
   public void addVerifyListener(final TextArea textArea) {
 
 	textArea.textProperty().addListener(new ChangeListener<String>() {
-//    text.addVerifyListener(new VerifyListener() {
 		public void changed(
 				final ObservableValue<? extends String> observable, 
 				final String oldValue, final String newValue) {
@@ -180,9 +179,7 @@ public class ConsoleView {
 	      int start 		= diff.left;
 	      int end   		= oldValue.length()-diff.right;
 	      String diffText   = diff.textPlus;
-	      System.err.println(diff);
-//        int start = e.start;
-//        int end = e.end;
+//	      System.err.println(diff);
         if (start < inputStart || end < inputStart) {
         	/* if cursor not at end, 
         	 *   then revert change, 
@@ -190,23 +187,13 @@ public class ConsoleView {
         	 *        append diff there
         	 */
         	listenerActive = false;
-//        	textArea.end();
         	textArea.setText(oldValue);
-//        	textArea.selectPositionCaret(textArea.getText().length());
         	textArea.appendText(diffText);
-
-//        	textArea.end();
-//        	textArea.positionCaret(textArea.getText().length());
         	
         	positionCaret(textArea.getText().length());
         	
-//          goToEnd();
-//          appendText(e.text);
-//          goToEnd();
-//          e.doit = false;
         } else {
         	/* Do nothing */
-//        	e.doit = true;
 		}
         
         if(newValue.startsWith(oldValue)) {
@@ -279,7 +266,6 @@ public class ConsoleView {
         } else if (keyEvent.getCharacter().charAt(0) == '.' /*|| e.keyCode == ' ' && ((e.stateMask & SWT.CTRL) == SWT.CTRL)*/ && autoComplete.isDisplayOptions()) {
           // Display options based on the type of the input.
           String content = textArea.getText();
-          System.err.println("dot --> content: " + content);
           if (textArea.getCaretPosition() >= inputStart) {
           String command = content.substring(inputStart);
             WorkbenchClient.theClient().dotConsole(command);
@@ -327,14 +313,14 @@ public class ConsoleView {
   }
   
 		private void revertInput() {
-			System.err.println("revert input");
-			
+			System.err.println("revert input?");	
 		}
+		
 		private void positionCaret(int pos) {
     	Platform.runLater( new Runnable() {
     	    @Override
     	    public void run() {
-    	        textArea.positionCaret(textArea.getText().length());
+    	        textArea.positionCaret(pos);
     	    }
     	});
 	}
@@ -398,9 +384,8 @@ public class ConsoleView {
 //    if (foregroundColor != null) foregroundColor.dispose();
   }
 
-  public void goToEnd() { /*todo*/
-//    int end = text.getCharCount();
-//    text.setSelection(end, end);
+  public void goToEnd() {
+	  positionCaret(textArea.getText().length());
   }
 
   public boolean overwriting(String c) {

@@ -272,7 +272,6 @@ public class FormsClient extends Client {
   }
 
   private Form getForm(String id) {
-	System.err.println("forms: " + forms);
     for (Form form : forms)
       if (form.getId().equals(id)) return form;
     return null;
@@ -519,7 +518,6 @@ public class FormsClient extends Client {
   }
 
   private void newComboBox(Message message) {
-	System.err.println("newComboBox:" + message);
     String parentId = message.args[0].strValue();
     String id = message.args[1].strValue();
     int zoom = getDeviceZoomPercent();
@@ -568,7 +566,6 @@ public class FormsClient extends Client {
         // REMOVED // tabItem.setControl(form.getForm());
         // REMOVED // tabItem.setShowClose(true);
         forms.add(form);
-        System.err.println("new:   " + forms);
         // REMOVED // if (selected) tabFolder.setSelection(tabItem);
 //      }
         l.countDown();
@@ -607,7 +604,6 @@ public class FormsClient extends Client {
   }
 
   private void newText(final String parentId, final String id, final String string, final int x, final int y) {
-    System.err.println("newText...");
     final Form form = getForm(parentId);
     if (form != null) {
         CountDownLatch l = new CountDownLatch(1);  
@@ -762,7 +758,7 @@ public class FormsClient extends Client {
 	}
 
   public void sendMessage(final Message message) {
-	  System.err.println("MESSAGE: "+message);
+//	  System.err.println("MESSAGE: "+message);
     if (message.hasName("newForm"))
       newForm(message);
     else if (message.hasName("setTool"))

@@ -5,6 +5,9 @@ import java.util.Hashtable;
 import java.util.concurrent.CountDownLatch;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -90,21 +93,28 @@ public void newButton(String parentId, String id, String label, int x, int y, in
 
 	  public void newCheckBox(String parentId, final String id, int x, int y, boolean checked) {
 	    if (this.id.equals(parentId)) {
-	      final CheckBox button = new CheckBox();
-//	      button.addSelectionListener(new SelectionListener() {
-//	        public void widgetDefaultSelected(SelectionEvent event) {
-//	        }
-//
-//	        public void widgetSelected(SelectionEvent event) {
-//	          setSelection(id, button.getSelection());
-//	        }
-//	      });
-	      AnchorPane.setLeftAnchor(button, x*1.);
-	      AnchorPane.setTopAnchor(button, y*1.);
-	      button.setSelected(checked);
-	      button.setText("");
-	      checks.put(id, button);
-	      root.getChildren().add(button);
+	      final CheckBox box = new CheckBox();
+	      	      
+	      javafx.event.EventHandler<ActionEvent> eh = new javafx.event.EventHandler<ActionEvent>() {
+	    	    @Override
+	    	    public void handle(ActionEvent event) {
+	    	        if (event.getSource() instanceof CheckBox) {
+	    	            CheckBox chk = (CheckBox) event.getSource();
+	    	            if (box == chk) {
+	    	            	xmf_setSelection(id, chk.isSelected());
+	    	            }
+	    	        }
+	    	    }
+	    	};
+
+	      box.setOnAction(eh);
+	      
+	      AnchorPane.setLeftAnchor(box, x*1.);
+	      AnchorPane.setTopAnchor(box, y*1.);
+	      box.setSelected(checked);
+	      box.setText("");
+	      checks.put(id, box);
+	      root.getChildren().add(box);
 	    }
 	  }
 
@@ -157,8 +167,6 @@ public void newButton(String parentId, String id, String label, int x, int y, in
 //	    form_OLD.setMinSize(content_OLD.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 
 	    root.getChildren().add(text);
-
-		System.err.println("newText " + (x*1.) + "/" + (y*1.));
 	  }
 
 	  public void newTextBox(String parentId, String id, int x, int y, int width, int height, boolean editable) {
@@ -200,6 +208,16 @@ public void newButton(String parentId, String id, String label, int x, int y, in
 	    AnchorPane.setLeftAnchor(text, x*1.);
 	    AnchorPane.setTopAnchor(text, y*1.);
 		root.getChildren().add(text);
+		
+		text.focusedProperty().addListener(new ChangeListener<Boolean>() {
+		    @Override
+		    public void changed(ObservableValue<? extends Boolean> arg0, Boolean wasFocused, Boolean isFocused) {
+		        if (!isFocused) {
+		            System.out.println("Textfield out focus");
+		            textChangedEvent(id, text.getText());
+		        }
+		    }
+		});
 		
 //	    Listener listener = new Listener() {
 //	      public void handleEvent(Event event) {
@@ -259,7 +277,7 @@ public void newButton(String parentId, String id, String label, int x, int y, in
       item.setExpanded(expanded);
 //      item.setFont(labelFont);
       parent.getChildren().add(item);
-    } else System.err.println("Cannot find node " + parentId);
+    } //else System.err.println("Cannot find node " + parentId);
   }  
   
   private void addRootNodeWithIcon(final String parentId, final String nodeId, final String text, boolean editable, final boolean expanded, final String icon, final int index) {
@@ -336,18 +354,18 @@ public void newButton(String parentId, String id, String label, int x, int y, in
 
   public void clear(String id) {
 	  iHaventImplementedItYet();
-//    if (getId().equals(id))
-//      clear();
-//    else {
-//      if (lists.containsKey(id)) {
-//        List l = lists.get(id);
-//        l.clear();
-//      }
-//    }
+    if (getId().equals(id))
+      clear();
+    else {
+      if (lists.containsKey(id)) {
+        ListView<String> l = lists.get(id);
+        l.getItems().clear();
+      }
+    }
   }
 
   private void iHaventImplementedItYet() {
-	new RuntimeException("I haven't implemented that yet:").printStackTrace();
+//	new RuntimeException("I haven't implemented that yet:").printStackTrace();
 	
 }
 
@@ -627,13 +645,13 @@ public void newButton(String parentId, String id, String label, int x, int y, in
 //    handler.raiseEvent(message);
 //  }
 //
-//  private void setSelection(String id, boolean state) {
-//    EventHandler handler = FormsClient.theClient().getHandler();
-//    Message message = handler.newMessage("setBoolean", 2);
-//    message.args[0] = new Value(id);
-//    message.args[1] = new Value(state);
-//    handler.raiseEvent(message);
-//  }
+  private void xmf_setSelection(String id, boolean state) {
+    EventHandler handler = FormsClient.theClient().getHandler();
+    Message message = handler.newMessage("setBoolean", 2);
+    message.args[0] = new Value(id);
+    message.args[1] = new Value(state);
+    handler.raiseEvent(message);
+  }
 
 
   public void textChangedEvent(String id, String text) {
