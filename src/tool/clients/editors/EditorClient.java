@@ -1,85 +1,94 @@
 package tool.clients.editors;
 
+import java.io.File;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.Stack;
-import java.util.Vector;
+import java.util.concurrent.CountDownLatch;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.LocationEvent;
-import org.eclipse.swt.browser.LocationListener;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabFolder2Listener;
-import org.eclipse.swt.custom.CTabFolderEvent;
-import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
+//import org.eclipse.swt.SWT;
+//import org.eclipse.swt.browser.Browser;
+//import org.eclipse.swt.browser.LocationEvent;
+//import org.eclipse.swt.browser.LocationListener;
+//import org.eclipse.swt.custom.CTabFolder;
+//import org.eclipse.swt.custom.CTabFolder2Listener;
+//import org.eclipse.swt.custom.CTabFolderEvent;
+//import org.eclipse.swt.custom.CTabItem;
+//import org.eclipse.swt.graphics.Color;
+//import org.eclipse.swt.graphics.Image;
+//import org.eclipse.swt.graphics.ImageData;
+//import org.eclipse.swt.layout.FormAttachment;
+//import org.eclipse.swt.layout.FormData;
+//import org.eclipse.swt.layout.GridData;
+//import org.eclipse.swt.layout.GridLayout;
+//import org.eclipse.swt.widgets.Button;
+//import org.eclipse.swt.widgets.Composite;
+//import org.eclipse.swt.widgets.Display;
+//import org.eclipse.swt.widgets.Event;
+//import org.eclipse.swt.widgets.Label;
+//import org.eclipse.swt.widgets.Listener;
+//import org.eclipse.swt.widgets.Text;
+//import org.eclipse.swt.widgets.ToolBar;
+//import org.eclipse.swt.widgets.ToolItem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javafx.application.Platform;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.web.WebView;
 import tool.clients.Client;
 import tool.clients.EventHandler;
-import tool.clients.diagrams.DiagramClient;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
 
 public class EditorClient extends Client {
 
-  public static final Color             LINE_HIGHLIGHT = new Color(XModeler.getXModeler().getDisplay(), 192, 192, 192);
-  public static final Color             RED            = new Color(XModeler.getXModeler().getDisplay(), 255, 0, 0);
-  public static final Color             GREY           = new Color(XModeler.getXModeler().getDisplay(), 192, 192, 192);
-  public static final Color             WHITE          = new Color(XModeler.getXModeler().getDisplay(), 255, 255, 255);
-  public static final Color             GREEN          = new Color(XModeler.getXModeler().getDisplay(), 0, 170, 0);
-  public static final Color             BLACK          = new Color(XModeler.getXModeler().getDisplay(), 0, 0, 0);
+//  public static final Color             LINE_HIGHLIGHT = new Color(XModeler.getXModeler().getDisplay(), 192, 192, 192);
+//  public static final Color             RED            = new Color(XModeler.getXModeler().getDisplay(), 255, 0, 0);
+//  public static final Color             GREY           = new Color(XModeler.getXModeler().getDisplay(), 192, 192, 192);
+//  public static final Color             WHITE          = new Color(XModeler.getXModeler().getDisplay(), 255, 255, 255);
+//  public static final Color             GREEN          = new Color(XModeler.getXModeler().getDisplay(), 0, 170, 0);
+//  public static final Color             BLACK          = new Color(XModeler.getXModeler().getDisplay(), 0, 0, 0);
 
   static EditorClient                   theClient;
-  static CTabFolder                     tabFolder;
+  static TabPane   						tabPane;
+  
 
-  static Hashtable<String, CTabItem>    tabs           = new Hashtable<String, CTabItem>();
-  static Hashtable<String, Browser>     browsers       = new Hashtable<String, Browser>();
+  static Hashtable<String, Tab>    tabs           = new Hashtable<String, Tab>();
+  static Hashtable<String, WebView>     browsers       = new Hashtable<String, WebView>();
   static Hashtable<String, ITextEditor> editors        = new Hashtable<String, ITextEditor>();
 
-  boolean browserLocked = true;
+//  boolean browserLocked = true;
   
-  Hashtable<Browser, Stack<String>> backQueues     = new Hashtable<Browser, Stack<String>>();
-  Hashtable<Browser, String>        browserCurrent = new Hashtable<Browser, String>();
-  Hashtable<Browser, Stack<String>> forwardQueues  = new Hashtable<Browser, Stack<String>>(); 
+//  Hashtable<Browser, Stack<String>> backQueues     = new Hashtable<Browser, Stack<String>>();
+//  Hashtable<Browser, String>        browserCurrent = new Hashtable<Browser, String>();
+//  Hashtable<Browser, Stack<String>> forwardQueues  = new Hashtable<Browser, Stack<String>>(); 
   
-  public static void start(CTabFolder tabFolder, int style) {
-    EditorClient.tabFolder = tabFolder;
+  public static void start(TabPane tabPane) {
+    EditorClient.tabPane = tabPane;
   }
 
   public static EditorClient theClient() {
     return theClient;
   }
 
-  
-
   public EditorClient() {
     super("com.ceteva.text");
     theClient = this;
-//    tabFolder.addCTabFolder2Listener(this);
   }
 
   private void addLineHighlight(Message message) {
@@ -89,13 +98,21 @@ public class EditorClient extends Client {
   }
 
   private void addLineHighlight(final String id, final int line) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+	  CountDownLatch l = new CountDownLatch(1);  
+	  Platform.runLater(()->{
+//	  runOnDisplay(new Runnable() {
+//      public void run() {
         if (editors.containsKey(id))
           editors.get(id).addLineHighlight(line);
         else System.err.println("cannot find editor: " + id);
-      }
+        l.countDown();
+//      }
     });
+	  try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
   }
 
   private void addMultilineRule(Message message) {
@@ -219,24 +236,23 @@ public class EditorClient extends Client {
     return super.callMessage(message);
   }
 
-  public void changed(LocationEvent event) {
-  }
-
-  public void changing(LocationEvent event) {
-    if (browserLocked) {
-      event.doit = false;
-      Browser browser = (Browser) event.widget;
-      EventHandler handler = getHandler();
-      Message message = handler.newMessage("urlRequest", 2);
-      message.args[0] = new Value(getId(browser));
-      message.args[1] = new Value(event.location);
-      // Can be used to push on an undo stack?
-      // System.err.println("FROM: " + browser.getText());
-      handler.raiseEvent(message);
-    } else {
-      browserLocked = true;
-    }
-  }
+//  public void changed(LocationEvent event) {
+//  }
+//  public void changing(LocationEvent event) {
+//    if (browserLocked) {
+//      event.doit = false;
+//      Browser browser = (Browser) event.widget;
+//      EventHandler handler = getHandler();
+//      Message message = handler.newMessage("urlRequest", 2);
+//      message.args[0] = new Value(getId(browser));
+//      message.args[1] = new Value(event.location);
+//      // Can be used to push on an undo stack?
+//      // System.err.println("FROM: " + browser.getText());
+//      handler.raiseEvent(message);
+//    } else {
+//      browserLocked = true;
+//    }
+//  }
 
   private void clearHighlights(Message message) {
     String id = message.args[0].strValue();
@@ -244,56 +260,72 @@ public class EditorClient extends Client {
   }
 
   private void clearHighlights(final String id) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+	  CountDownLatch l = new CountDownLatch(1);  
+	  Platform.runLater(()->{
+//	  runOnDisplay(new Runnable() {
+//      public void run() {
         if (editors.containsKey(id))
           editors.get(id).clearHighlights();
         else System.err.println("cannot find editor: " + id);
-      }
-    });
+//      }
+	  l.countDown();
+	  });
+	  try {
+		  l.await();
+	  } catch (InterruptedException e) {
+		  e.printStackTrace();
+	  }
   }
 
-  public void close(CTabFolderEvent event) {
-    // Careful because the diagrams and files share the same tab folder...
-    CTabItem item = (CTabItem) event.item;
-    String id = getId(item);
-    if (id != null && (editors.containsKey(id) || browsers.containsKey(id))) {
-      EventHandler handler = getHandler();
-      Message message = handler.newMessage("textClosed", 1);
-      message.args[0] = new Value(id);
-      handler.raiseEvent(message);
-      editors.remove(id);
-      browsers.remove(id);
-      tabs.remove(id);
-    } else {
-//      DiagramClient.theClient().close(event);
-    }
-  }
+//  public void close(CTabFolderEvent event) {
+//    // Careful because the diagrams and files share the same tab folder...
+//    CTabItem item = (CTabItem) event.item;
+//    String id = getId(item);
+//    if (id != null && (editors.containsKey(id) || browsers.containsKey(id))) {
+//      EventHandler handler = getHandler();
+//      Message message = handler.newMessage("textClosed", 1);
+//      message.args[0] = new Value(id);
+//      handler.raiseEvent(message);
+//      editors.remove(id);
+//      browsers.remove(id);
+//      tabs.remove(id);
+//    } else {
+////      DiagramClient.theClient().close(event);
+//    }
+//  }
 
-  private String getId(Browser browser) {
-    for (String id : browsers.keySet())
-      if (browsers.get(id) == browser) return id;
-    return null;
-  }
-
-  private String getId(CTabItem item) {
-    for (String id : tabs.keySet())
-      if (tabs.get(id) == item) return id;
-    return null;
-  }
+//  private String getId(WebView browser) {
+//    for (String id : browsers.keySet())
+//      if (browsers.get(id) == browser) return id;
+//    return null;
+//  }
+//
+//  private String getId(Tab item) {
+//    for (String id : tabs.keySet())
+//      if (tabs.get(id) == item) return id;
+//    return null;
+//  }
 
   private Value getText(final Message message) {
     final String id = message.args[0].strValue();
     final Value[] result = new Value[] { null };
-    runOnDisplay(new Runnable() {
-      public void run() {
+    CountDownLatch l = new CountDownLatch(1);  
+    Platform.runLater(()->{
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         for (String editorId : editors.keySet()) {
           if (id.equals(editorId)) {
             result[0] = new Value(editors.get(editorId).getString());
           }
         }
-      }
+//      }
+        l.countDown();
     });
+    try {
+    	l.await();
+    } catch (InterruptedException e) {
+    	e.printStackTrace();
+    }
     if (result[0] == null)
       throw new Error("Cannot find editor with id " + id);
     else return result[0];
@@ -327,16 +359,24 @@ public class EditorClient extends Client {
     final boolean selected = XModeler.attributeValue(NewTextEditor, "selected").equals("true");
     boolean editable = XModeler.attributeValue(NewTextEditor, "editable").equals("true");
     boolean lineNumbers = XModeler.attributeValue(NewTextEditor, "lineNumbers").equals("true");
-    int fontHeight = Integer.parseInt(XModeler.attributeValue(NewTextEditor, "fontHeight"));
+//    int fontHeight = Integer.parseInt(XModeler.attributeValue(NewTextEditor, "fontHeight"));
     newNewTextEditor(id, label, toolTip, editable, lineNumbers, text);
     final ITextEditor editor = editors.get(id);
     editor.inflate(NewTextEditor);
-    runOnDisplay(new Runnable() {
-      public void run() {
-        editor.getText().redraw();
-        if (selected) tabFolder.setSelection(tabs.get(id));
-      }
+    CountDownLatch l = new CountDownLatch(1);  
+    Platform.runLater(()->{
+//    runOnDisplay(new Runnable() {
+//      public void run() {
+//        editor.getText().redraw();
+        if (selected) tabPane.getSelectionModel().select(tabs.get(id));
+//      }
+      l.countDown();
     });
+    try {
+    	l.await();
+    } catch (InterruptedException e) {
+    	e.printStackTrace();
+    }
   }
 
   public void inflateXML(Document doc) {
@@ -355,12 +395,14 @@ public class EditorClient extends Client {
     return url.startsWith("http://") || url.startsWith("file:/");
   }
 
-  public void maximize(CTabFolderEvent event) {
-  }
-
-  public void minimize(CTabFolderEvent event) {
-  }
-
+  private boolean isLikelyToBeHTML(String s) {
+      s = s.trim();
+      s = s.toLowerCase();
+      if (s.startsWith("<html>")) return true;
+      if (s.startsWith("<!doctype html")) return true;
+      return false;
+    }
+  
   private void newBrowser(Message message) {
     String id = message.args[0].strValue();
     String label = message.args[1].strValue();
@@ -370,114 +412,197 @@ public class EditorClient extends Client {
   }
 
   private void newBrowser(final String id, final String label, String tooltip, final String url, final String text) {
-    runOnDisplay(new Runnable() {
-      public void run() {
-        CTabItem tabItem = new CTabItem(tabFolder, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-        tabItem.setText(label);
-        tabItem.setShowClose(true);
-        tabs.put(id, tabItem);
-        Composite browserParent = new Composite(tabFolder, SWT.NONE);
-        Vector<Object> buttons = new Vector<Object>();
-        Button up = new Button(browserParent, SWT.PUSH);
-        up.setText("+");
-        buttons.add(up);
-        Button down = new Button(browserParent, SWT.PUSH);
-        down.setText("-");
-        buttons.add(down);
-        Button b1a = new Button(browserParent, SWT.PUSH);
-        b1a.setImage(new Image(tabItem.getDisplay(), new ImageData("icons/User/Arrow4Left.gif")));
-        buttons.addElement(b1a);
-        Button b1b = new Button(browserParent, SWT.PUSH);
-        b1b.setImage(new Image(tabItem.getDisplay(), new ImageData("icons/User/Arrow4Right.gif")));
-        buttons.addElement(b1b);
-        Label b2 = new Label(browserParent, SWT.NONE);
-        b2.setText("URL:");
-        buttons.addElement(b2);
-        final Text b3 = new Text(browserParent, SWT.BORDER);
-        b3.setText("Enter URL here...");
-        buttons.addElement(b3);
-        final Browser browser = new Browser(browserParent, SWT.BORDER);
-        final int defaultZoom = 100;// XModeler.getDeviceZoomPercent();
-        final int[] zoom = new int[] { defaultZoom };
-        up.addListener(SWT.Selection, new Listener() {
-          public void handleEvent(Event arg0) {
-            zoom[0] += defaultZoom / 10;
-            browser.execute("document.body.style.zoom = \"" + zoom[0] + "%\"");
-            browser.redraw();
-          }
-        });
-        down.addListener(SWT.Selection, new Listener() {
-          public void handleEvent(Event arg0) {
-            if (zoom[0] > defaultZoom / 10) {
-              zoom[0] -= defaultZoom / 10;
-              browser.execute("document.body.style.zoom = \"" + zoom[0] + "%\"");
-              browser.redraw();
-            }
-          }
-        });
-        b1a.addListener(SWT.Selection, new Listener() {
-          public void handleEvent(Event arg0) {
-            // browser.back();
-            if (!getBackQueue(browser).isEmpty()) {
-              if (browserCurrent.containsKey(browser)) {
-                getForwardQueue(browser).push(browserCurrent.get(browser));
-              }
-              setUrl(id, getBackQueue(browser).pop(), false);
-            }
-          }
-        });
-        b1b.addListener(SWT.Selection, new Listener() {
-          public void handleEvent(Event arg0) {
-            // browser.forward();
-            if (!getForwardQueue(browser).isEmpty()) {
-              if (browserCurrent.containsKey(browser)) {
-                getBackQueue(browser).push(browserCurrent.get(browser));
-              }
-              setUrl(id, getForwardQueue(browser).pop(), false);
-            }
-          }
-        });
-        b3.addListener(SWT.DefaultSelection, new Listener() {
-          public void handleEvent(Event e) {
-            browser.setUrl(b3.getText());
-          }
-        });
-        browser.addLocationListener(new LocationListener() {
-          public void changed(LocationEvent event) {
-            if (event.top) b3.setText(event.location);
-          }
-
-          public void changing(LocationEvent event) {
-          }
-        });
-        tabItem.setControl(browserParent);
-        browser.setText(text);
-        browser.setJavascriptEnabled(true);
-        int buttonCount = buttons.size();
-        GridLayout gridLayout = new GridLayout();
-        gridLayout.numColumns = buttonCount;
-        browserParent.setLayout(gridLayout);
-        GridData gd = new GridData();
-        gd.grabExcessHorizontalSpace = true;
-        gd.grabExcessVerticalSpace = true;
-        gd.horizontalAlignment = GridData.FILL;
-        gd.verticalAlignment = GridData.FILL;
-        gd.horizontalSpan = buttonCount;
-        browser.setLayoutData(gd);
-        gd = new GridData();
-        gd.grabExcessHorizontalSpace = true;
-        gd.horizontalAlignment = GridData.FILL;
-        b3.setLayoutData(gd);
-        browserLocked = false;
+	CountDownLatch l = new CountDownLatch(1);
+	Platform.runLater(()->{
+		Tab tab = new Tab(label);
+		tab.setClosable(true);
+		tab.setOnCloseRequest((e)->{
+			// Careful because the diagrams and files share the same tab folder...
+		    if (id != null && (editors.containsKey(id) || browsers.containsKey(id))) {
+		      EventHandler handler = getHandler();
+		      Message message = handler.newMessage("textClosed", 1);
+		      message.args[0] = new Value(id);
+		      handler.raiseEvent(message);
+		      editors.remove(id);
+		      browsers.remove(id);
+		      tabs.remove(id);
+		    }
+		});
+		tab.setTooltip(new Tooltip(tooltip));
+		tabs.put(id, tab);
+		
+        WebView browser = new WebView();
+		browser.getEngine().setJavaScriptEnabled(true);
+		browser.getEngine().loadContent(text);
         if (isURL(url)) {
-          browser.setUrl(url);
-        }
+        	browser.getEngine().load(url);
+          };
+//        browserLocked = false;
         browsers.put(id, browser);
-        browser.setVisible(true);
+          
+        Button increaseZoom = new Button("+");
+        increaseZoom.setOnAction((e)->{
+        	browser.setZoom(browser.getZoom()+10);
+        });
+        Button decreaseZoom = new Button("-");
+        decreaseZoom.setOnAction((e)->{
+        	browser.setZoom(browser.getZoom()-10);
+        });
+        Button back = new Button("", new ImageView(new Image((new File("icons/User/Arrow4Left.gif").toURI().toString()))));
+        back.setOnAction((e)->{
+        	if( browser.getEngine().getHistory().getCurrentIndex()>0){
+        		browser.getEngine().getHistory().go(-1);
+        	}
+        });
+        Button forward = new Button("", new ImageView(new Image((new File("icons/User/Arrow4Right.gif").toURI().toString()))));
+        forward.setOnAction((e)->{
+        	if( browser.getEngine().getHistory().getCurrentIndex()<browser.getEngine().getHistory().getEntries().size()-1){
+        		browser.getEngine().getHistory().go(1);
+        	}
+        });
+        Label urlLabel = new Label("URL:");
+        TextField urlField = new TextField("Enter URL here...");
+        Button go = new Button("Go");
+        go.setOnAction((e)->{
+        	        EventHandler handler = getHandler();
+        	        Message message = handler.newMessage("urlRequest", 2);
+        	        message.args[0] = new Value(id);
+        	        message.args[1] = new Value(urlField.getText());
+        	        handler.raiseEvent(message);
+        });
+        
+        browser.getEngine().locationProperty().addListener((e)->{
+        	urlField.setText(browser.getEngine().getLocation());
+        });
+        
+        HBox hbox = new HBox();
+		hbox.getChildren().addAll(increaseZoom,decreaseZoom,back,forward,urlLabel,urlField,go);
+                
+        VBox vbox = new VBox();
+        vbox.getChildren().addAll(hbox,browser);
+        
+        tab.setContent(vbox);
+        
+        tabPane.getTabs().add(tab);
+        tabPane.getSelectionModel().select(tab);
+        
+		l.countDown();
+	});
+	try {
+		l.await();
+	} catch (InterruptedException e1) {
+		e1.printStackTrace();
+	}  
+	  
+	  
+//    runOnDisplay(new Runnable() {
+//      public void run() {
+//        CTabItem tabItem = new CTabItem(tabFolder, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+//        tabItem.setText(label);
+//        tabItem.setShowClose(true);
+//        tabs.put(id, tabItem);
+//        Composite browserParent = new Composite(tabFolder, SWT.NONE);
+//        //Vector<Object> buttons = new Vector<Object>();
+//        Button up = new Button(browserParent, SWT.PUSH);
+//        up.setText("+");
+//        buttons.add(up);
+//        Button down = new Button(browserParent, SWT.PUSH);
+//        down.setText("-");
+//        buttons.add(down);
+//        Button b1a = new Button(browserParent, SWT.PUSH);
+//        b1a.setImage(new Image(tabItem.getDisplay(), new ImageData("icons/User/Arrow4Left.gif")));
+//        buttons.addElement(b1a);
+//        Button b1b = new Button(browserParent, SWT.PUSH);
+//        b1b.setImage(new Image(tabItem.getDisplay(), new ImageData("icons/User/Arrow4Right.gif")));
+//        buttons.addElement(b1b);
+//        Label b2 = new Label(browserParent, SWT.NONE);
+//        b2.setText("URL:");
+//        buttons.addElement(b2);
+//        final Text b3 = new Text(browserParent, SWT.BORDER);
+//        b3.setText("Enter URL here...");
+//        buttons.addElement(b3);
+//        final Browser browser = new Browser(browserParent, SWT.BORDER);
+//        final int defaultZoom = 100;// XModeler.getDeviceZoomPercent();
+//        final int[] zoom = new int[] { defaultZoom };
+//        up.addListener(SWT.Selection, new Listener() {
+//          public void handleEvent(Event arg0) {
+//            zoom[0] += defaultZoom / 10;
+//            browser.execute("document.body.style.zoom = \"" + zoom[0] + "%\"");
+//            browser.redraw();
+//          }
+//        });
+//        down.addListener(SWT.Selection, new Listener() {
+//          public void handleEvent(Event arg0) {
+//            if (zoom[0] > defaultZoom / 10) {
+//              zoom[0] -= defaultZoom / 10;
+//              browser.execute("document.body.style.zoom = \"" + zoom[0] + "%\"");
+//              browser.redraw();
+//            }
+//          }
+//        });
+//        b1a.addListener(SWT.Selection, new Listener() {
+//          public void handleEvent(Event arg0) {
+//            // browser.back();
+//            if (!getBackQueue(browser).isEmpty()) {
+//              if (browserCurrent.containsKey(browser)) {
+//                getForwardQueue(browser).push(browserCurrent.get(browser));
+//              }
+//              setUrl(id, getBackQueue(browser).pop(), false);
+//            }
+//          }
+//        });
+//        b1b.addListener(SWT.Selection, new Listener() {
+//          public void handleEvent(Event arg0) {
+//            // browser.forward();
+//            if (!getForwardQueue(browser).isEmpty()) {
+//              if (browserCurrent.containsKey(browser)) {
+//                getBackQueue(browser).push(browserCurrent.get(browser));
+//              }
+//              setUrl(id, getForwardQueue(browser).pop(), false);
+//            }
+//          }
+//        });
+//        b3.addListener(SWT.DefaultSelection, new Listener() {
+//          public void handleEvent(Event e) {
+//            browser.setUrl(b3.getText());
+//          }
+//        });
+//        browser.addLocationListener(new LocationListener() {
+//          public void changed(LocationEvent event) {
+//            if (event.top) b3.setText(event.location);
+//          }
+//
+//          public void changing(LocationEvent event) {
+//          }
+//        });
+//        tabItem.setControl(browserParent);
+//        browser.setText(text);
+//        browser.setJavascriptEnabled(true);
+//        int buttonCount = buttons.size();
+//        GridLayout gridLayout = new GridLayout();
+//        gridLayout.numColumns = buttonCount;
+//        browserParent.setLayout(gridLayout);
+//        GridData gd = new GridData();
+//        gd.grabExcessHorizontalSpace = true;
+//        gd.grabExcessVerticalSpace = true;
+//        gd.horizontalAlignment = GridData.FILL;
+//        gd.verticalAlignment = GridData.FILL;
+//        gd.horizontalSpan = buttonCount;
+//        browser.setLayoutData(gd);
+//        gd = new GridData();
+//        gd.grabExcessHorizontalSpace = true;
+//        gd.horizontalAlignment = GridData.FILL;
+//        b3.setLayoutData(gd);
+//        browserLocked = false;
+//        if (isURL(url)) {
+//          browser.setUrl(url);
+//        }
+//        browsers.put(id, browser);
+//        browser.setVisible(true);
 //        browser.addLocationListener(EditorClient.this);
-        tabFolder.setSelection(tabItem);
-      }
-    });
+//        tabFolder.setSelection(tabItem);
+//      }
+//    });
   }
 
   private void newNewTextEditor(Message message) {
@@ -489,52 +614,54 @@ public class EditorClient extends Client {
   }
 
   private void newNewTextEditor(final String id, final String label, final String toolTip, final boolean editable, final boolean lineNumbers, final String text) {
-    Display.getDefault().syncExec(new Runnable() {
-      public void run() {
-        CTabItem tabItem = new CTabItem(tabFolder, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-        tabItem.setText(label);
-        tabItem.setToolTipText(toolTip);
-        tabItem.setShowClose(true);
-        tabs.put(id, tabItem);
+//    Display.getDefault().syncExec(new Runnable() {
+//      public void run() {
+	  CountDownLatch l = new CountDownLatch(1);
+	  Platform.runLater(()->{
+        Tab tab = new Tab(label);
+        tab.setTooltip(new Tooltip(toolTip));
+        tab.setClosable(true);
+        tabs.put(id, tab);
         try {
           Class<?> textEditorClass = Class.forName(XModeler.textEditorClass);
-          Constructor<?> cnstr = textEditorClass.getConstructor(new Class<?>[] { String.class, String.class, CTabFolder.class, Boolean.TYPE, Boolean.TYPE, String.class });
-          ITextEditor editor = (ITextEditor) cnstr.newInstance(id, label, tabFolder, editable, lineNumbers, text);
+          Constructor<?> cnstr = textEditorClass.getConstructor(new Class<?>[] { String.class, String.class, TabPane.class, Boolean.TYPE, Boolean.TYPE, String.class });
+          ITextEditor editor = (ITextEditor) cnstr.newInstance(id, label, tabPane, editable, lineNumbers, text);
           // ITextEditor editor = new TextEditor(id, label, tabFolder, editable, lineNumbers, text);
-          tabItem.setControl(editor.getText());
+          tab.setContent(editor.getText());
           editors.put(id, editor);
-          tabFolder.setSelection(tabItem);
+          tabPane.getTabs().add(tab);
+          tabPane.getSelectionModel().select(tab);
         } catch (ClassNotFoundException e) {
           e.printStackTrace();
         } catch (NoSuchMethodException e) {
-          // TODO Auto-generated catch block
           e.printStackTrace();
         } catch (SecurityException e) {
-          // TODO Auto-generated catch block
           e.printStackTrace();
         } catch (InstantiationException e) {
-          // TODO Auto-generated catch block
           e.printStackTrace();
         } catch (IllegalAccessException e) {
-          // TODO Auto-generated catch block
           e.printStackTrace();
         } catch (IllegalArgumentException e) {
-          // TODO Auto-generated catch block
           e.printStackTrace();
         } catch (InvocationTargetException e) {
-          // TODO Auto-generated catch block
           e.printStackTrace();
         }
-      }
+        l.countDown();
+//      }
     });
+	  try {
+		l.await();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
+	}
   }
 
 //  public boolean processMessage(Message message) {
 //    return false;
 //  }
 
-  public void restore(CTabFolderEvent event) {
-  }
+//  public void restore(CTabFolderEvent event) {
+//  }
 
   public void sendMessage(final Message message) {
     if (message.hasName("newBrowser"))
@@ -546,7 +673,7 @@ public class EditorClient extends Client {
     else if (message.hasName("setText"))
       setText(message);
     else if (message.hasName("addWordRule"))
-      addWordRule(message);
+      addWordRule(message);			
     else if (message.hasName("addMultilineRule"))
       addMultilineRule(message);
     else if (message.hasName("setDirty"))
@@ -559,31 +686,31 @@ public class EditorClient extends Client {
       showLine(message);
     else if (message.hasName("addLineHighlight"))
       addLineHighlight(message);
-    else if (message.hasName("clearHighlights"))
+    else if (message.hasName("clearHighlights")) 
       clearHighlights(message);
-    else if (message.hasName("setFocus"))
+    else if (message.hasName("setFocus")) 
       setFocus(message);
-    else if (message.hasName("syntaxError"))
+    else if (message.hasName("syntaxError")) 
       syntaxError(message);
-    else if (message.hasName("clearErrors"))
+    else if (message.hasName("clearErrors")) 
       clearErrors(message);
-    else if (message.hasName("unboundVar"))
+    else if (message.hasName("unboundVar")) 
       unboundVar(message);
-    else if (message.hasName("rendering"))
+    else if (message.hasName("rendering")) 
       rendering(message);
-    else if (message.hasName("varType"))
+    else if (message.hasName("varType")) 
       varType(message);
-    else if (message.hasName("varDec"))
+    else if (message.hasName("varDec")) 
       varDec(message);
-    else if (message.hasName("setTooltip"))
+    else if (message.hasName("setTooltip")) 
       setTooltip(message);
     else if (message.hasName("ast"))
       ast(message);
-    else if (message.hasName("addTerminates"))
+    else if (message.hasName("addTerminates")) 
       terminates(message);
-    else if (message.hasName("setSignature"))
+    else if (message.hasName("setSignature")) 
       setSignature(message);
-    else if (message.hasName("action"))
+    else if (message.hasName("action")) 
       action(message);
     else super.sendMessage(message);
   }
@@ -595,22 +722,38 @@ public class EditorClient extends Client {
     int charStart = message.args[3].intValue;
     int charEnd = message.args[4].intValue;
     final ITextEditor editor = editors.get(id);
-    runOnDisplay(new Runnable() {
-      public void run() {
+    CountDownLatch l = new CountDownLatch(1);  
+    Platform.runLater(()->{
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         editor.action(name,args,charStart,charEnd);
+//      }
+        l.countDown();
+      });
+      try {
+      	l.await();
+      } catch (InterruptedException e) {
+      	e.printStackTrace();
       }
-    });
   }
 
   private void setSignature(Message message) {
     String id = message.args[0].strValue();
     Value[] entries = message.args[1].values;
     final ITextEditor editor = editors.get(id);
-    runOnDisplay(new Runnable() {
-      public void run() {
+    CountDownLatch l = new CountDownLatch(1);  
+    Platform.runLater(()->{
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         editor.setSignature(entries);
-      }
+//      }
+        l.countDown();
     });
+    try {
+    	l.await();
+    } catch (InterruptedException e) {
+    	e.printStackTrace();
+    }
   }
 
   private void terminates(Message message) {
@@ -618,11 +761,19 @@ public class EditorClient extends Client {
     String end = message.args[1].strValue();
     String start = message.args[2].strValue();
     final ITextEditor editor = editors.get(id);
-    runOnDisplay(new Runnable() {
-      public void run() {
+    CountDownLatch l = new CountDownLatch(1);  
+    Platform.runLater(()->{
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         editor.terminates(end,start);
+//      }
+        l.countDown();
+      });
+      try {
+      	l.await();
+      } catch (InterruptedException e) {
+      	e.printStackTrace();
       }
-    });
   }
 
   private void ast(Message message) {
@@ -631,11 +782,19 @@ public class EditorClient extends Client {
     int charStart = message.args[2].intValue;
     int charEnd = message.args[3].intValue;
     final ITextEditor editor = editors.get(id);
-    runOnDisplay(new Runnable() {
-      public void run() {
+    CountDownLatch l = new CountDownLatch(1);  
+    Platform.runLater(()->{
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         editor.ast(tooltip, charStart, charEnd);
-      }
+//      }
+        l.countDown();
     });
+    try {
+    	l.await();
+    } catch (InterruptedException e) {
+    	e.printStackTrace();
+    }
   }
 
   private void setTooltip(Message message) {
@@ -644,11 +803,19 @@ public class EditorClient extends Client {
     int charStart = message.args[2].intValue;
     int charEnd = message.args[3].intValue;
     final ITextEditor editor = editors.get(id);
-    runOnDisplay(new Runnable() {
-      public void run() {
+    CountDownLatch l = new CountDownLatch(1);  
+    Platform.runLater(()->{
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         editor.setTooltip(tooltip, charStart, charEnd);
-      }
+//      }
+      l.countDown();
     });
+    try {
+    	l.await();
+    } catch (InterruptedException e) {
+    	e.printStackTrace();
+    }
   }
 
   private void varDec(Message message) {
@@ -658,11 +825,19 @@ public class EditorClient extends Client {
     int decStart = message.args[3].intValue;
     int decEnd = message.args[4].intValue;
     final ITextEditor editor = editors.get(id);
-    runOnDisplay(new Runnable() {
-      public void run() {
+    CountDownLatch l = new CountDownLatch(1);  
+    Platform.runLater(()->{
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         editor.varDec(charStart, charEnd, decStart, decEnd);
-      }
+//      }
+        l.countDown();
     });
+    try {
+    	l.await();
+    } catch (InterruptedException e) {
+    	e.printStackTrace();
+    }
   }
 
   private void varType(Message message) {
@@ -673,11 +848,19 @@ public class EditorClient extends Client {
     String id = message.args[0].strValue();
     boolean state = message.args[1].boolValue;
     final ITextEditor editor = editors.get(id);
-    runOnDisplay(new Runnable() {
-      public void run() {
+    CountDownLatch l = new CountDownLatch(1);  
+    Platform.runLater(()->{
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         editor.setRendering(state);
-      }
+//      }
+      l.countDown();
     });
+    try {
+    	l.await();
+    } catch (InterruptedException e) {
+    	e.printStackTrace();
+    }
   }
 
   private void unboundVar(Message message) {
@@ -686,11 +869,19 @@ public class EditorClient extends Client {
     int charStart = message.args[2].intValue;
     int charEnd = message.args[3].intValue;
     final ITextEditor editor = editors.get(id);
-    runOnDisplay(new Runnable() {
-      public void run() {
+    CountDownLatch l = new CountDownLatch(1);  
+    Platform.runLater(()->{
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         editor.unboundVar(name, charStart, charEnd);
-      }
+//      }
+        l.countDown();
     });
+    try {
+    	l.await();
+    } catch (InterruptedException e) {
+    	e.printStackTrace();
+    }
   }
 
   private void syntaxError(Message message) {
@@ -698,21 +889,37 @@ public class EditorClient extends Client {
     int pos = message.args[1].intValue;
     String error = message.args[2].strValue();
     final ITextEditor editor = editors.get(id);
-    runOnDisplay(new Runnable() {
-      public void run() {
+    CountDownLatch l = new CountDownLatch(1);  
+    Platform.runLater(()->{
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         editor.syntaxError(pos, error);
-      }
+//      }
+        l.countDown();
     });
+    try {
+    	l.await();
+    } catch (InterruptedException e) {
+    	e.printStackTrace();
+    }
   }
 
   private void clearErrors(Message message) {
     String id = message.args[0].strValue();
     final ITextEditor editor = editors.get(id);
-    runOnDisplay(new Runnable() {
-      public void run() {
+    CountDownLatch l = new CountDownLatch(1);  
+    Platform.runLater(()->{
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         editor.clearErrors();
-      }
+//      }
+      l.countDown();
     });
+    try {
+    	l.await();
+    } catch (InterruptedException e) {
+    	e.printStackTrace();
+    }
   }
 
   private void setClean(Message message) {
@@ -721,14 +928,22 @@ public class EditorClient extends Client {
   }
 
   public void setClean(String id) {
-    final CTabItem item = tabs.get(id);
+    final Tab tab = tabs.get(id);
     final ITextEditor editor = editors.get(id);
-    runOnDisplay(new Runnable() {
-      public void run() {
+    CountDownLatch l = new CountDownLatch(1);
+    Platform.runLater(()->{
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         editor.setDirty(false);
-        item.setText(editor.getLabel());
-      }
+        tab.setText(editor.getLabel());
+        l.countDown();
+//      }
     });
+    try {
+		l.await();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
+	}
   }
 
   private void setDirty(Message message) {
@@ -737,14 +952,22 @@ public class EditorClient extends Client {
   }
 
   public void setDirty(String id) {
-    final CTabItem item = tabs.get(id);
+    final Tab tab = tabs.get(id);
     final ITextEditor editor = editors.get(id);
-    runOnDisplay(new Runnable() {
-      public void run() {
+    CountDownLatch l = new CountDownLatch(1);
+    Platform.runLater(()->{
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         editor.setDirty(true);
-        item.setText("*" + editor.getLabel());
-      }
+        tab.setText("*" + editor.getLabel());
+        l.countDown();
+//      }
     });
+    try {
+		l.await();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
+	}
   }
 
   private void setFocus(Message message) {
@@ -753,13 +976,22 @@ public class EditorClient extends Client {
   }
 
   private void setFocus(final String id) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+	  CountDownLatch l = new CountDownLatch(1);
+	  Platform.runLater(()->{
+//	  runOnDisplay(new Runnable() {
+//      public void run() {
         if (tabs.containsKey(id))
-          tabFolder.setSelection(tabs.get(id));
+        	tabPane.getSelectionModel().select(tabs.get(id));  	
+//          tabFolder.setSelection(tabs.get(id));
         else System.err.println("cannot set focus to editor: " + id);
-      }
+//      }
+      l.countDown();
     });
+    try {
+    	l.await();
+    } catch (InterruptedException e) {
+    	e.printStackTrace();
+    }
   }
 
   private void setName(Message message) {
@@ -769,27 +1001,42 @@ public class EditorClient extends Client {
   }
 
   private void setName(final String id, final String name) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+	CountDownLatch l = new CountDownLatch(1);
+  	Platform.runLater(()->{
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         for (String tid : tabs.keySet()) {
           if (tid.equals(id)) tabs.get(id).setText(name);
         }
-      }
+        l.countDown();
+//      }
     });
+    try {
+		l.await();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
+	}
   }
 
   private void setText(Message message) {
     final Value id = message.args[0];
     final Value text = message.args[1];
     if (editors.containsKey(id.strValue())) {
-      Display.getDefault().syncExec(new Runnable() {
-        public void run() {
+//      Display.getDefault().syncExec(new Runnable() {
+//        public void run() {
+    	CountDownLatch l = new CountDownLatch(1);
+    	Platform.runLater(()->{
           ITextEditor editor = editors.get(id.strValue());
           editor.setString(text.strValue());
-          tabFolder.setFocus();
-          tabFolder.setSelection(tabs.get(id.strValue()));
-        }
+          tabPane.getSelectionModel().select(tabs.get(id.strValue()));
+          l.countDown();
+//        }
       });
+    	try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
     } else System.err.println("cannot find text editor " + id);
   }
 
@@ -799,45 +1046,62 @@ public class EditorClient extends Client {
     setUrl(id.strValue(), url.strValue(), true);
   }
 
-  private Stack<String> getBackQueue(Browser browser) {
-    if (!backQueues.containsKey(browser)) backQueues.put(browser, new Stack<String>());
-    return backQueues.get(browser);
-  }
-
-  private Stack<String> getForwardQueue(Browser browser) {
-    if (!forwardQueues.containsKey(browser)) forwardQueues.put(browser, new Stack<String>());
-    return forwardQueues.get(browser);
-  }
+//  private Stack<String> getBackQueue(Browser browser) {
+//    if (!backQueues.containsKey(browser)) backQueues.put(browser, new Stack<String>());
+//    return backQueues.get(browser);
+//  }
+//
+//  private Stack<String> getForwardQueue(Browser browser) {
+//    if (!forwardQueues.containsKey(browser)) forwardQueues.put(browser, new Stack<String>());
+//    return forwardQueues.get(browser);
+//  }
 
   private void setUrl(final String id, final String url, final boolean addToHistory) {
     if (browsers.containsKey(id)) {
-      final Browser browser = browsers.get(id);
-      Display.getDefault().syncExec(new Runnable() {
-        private boolean isLikelyToBeHTML(String s) {
-          s = s.trim();
-          s = s.toLowerCase();
-          if (s.startsWith("<html>")) return true;
-          if (s.startsWith("<!doctype html")) return true;
-          return false;
-        }
-
-        public void run() {
-          browserLocked = false;
-          if (addToHistory) {
-            if (browserCurrent.containsKey(browser)) {
-              getBackQueue(browser).push(browserCurrent.get(browser));
-            }
+      final WebView browser = browsers.get(id);
+      CountDownLatch l = new CountDownLatch(1);
+      Platform.runLater(()->{
+//    	  browserLocked = false;
+          if (!addToHistory) {
+            //currently not implemented 
           }
-          browserCurrent.put(browser, url);
           if (isLikelyToBeHTML(url))
-            browser.setText(url);
-          else browser.setUrl(url);
+            browser.getEngine().loadContent(url);
+          else browser.getEngine().load(url);
 
-          tabFolder.setFocus();
-          tabFolder.setSelection(tabs.get(id));
-        }
-
+          tabPane.getSelectionModel().select(tabs.get(id));
+    	  l.countDown();
       });
+      try {
+		l.await();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
+	}
+//      Display.getDefault().syncExec(new Runnable() {
+//        private boolean isLikelyToBeHTML(String s) {
+//          s = s.trim();
+//          s = s.toLowerCase();
+//          if (s.startsWith("<html>")) return true;
+//          if (s.startsWith("<!doctype html")) return true;
+//          return false;
+//        }
+//
+//        public void run() {
+//          browserLocked = false;
+//          if (addToHistory) {
+//            if (browserCurrent.containsKey(browser)) {
+//              getBackQueue(browser).push(browserCurrent.get(browser));
+//            }
+//          }
+//          browserCurrent.put(browser, url);
+//          if (isLikelyToBeHTML(url))
+//            browser.setText(url);
+//          else browser.setUrl(url);
+//
+//          tabFolder.setFocus();
+//          tabFolder.setSelection(tabs.get(id));
+//        }
+//      });
     } else System.err.println("cannot find browser " + id);
   }
 
@@ -848,35 +1112,43 @@ public class EditorClient extends Client {
   }
 
   private void showLine(final String id, final int line) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+	CountDownLatch l = new CountDownLatch(1);
+	Platform.runLater(()->{
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         if (editors.containsKey(id))
           editors.get(id).showLine(line);
         else System.err.println("cannot find editor: " + id);
-      }
+        l.countDown();
+//      }
     });
+	try {
+		l.await();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
+	}
   }
 
-  public void showList(CTabFolderEvent event) {
-  }
+//  public void showList(CTabFolderEvent event) {
+//  }
 
   public void writeXML(PrintStream out) {
     out.print("<Editors>");
     for (String id : editors.keySet()) {
-      CTabItem item = tabs.get(id);
+      Tab item = tabs.get(id);
       ITextEditor editor = editors.get(id);
-      editor.writeXML(out, tabFolder.getSelection() == item, item.getText(), item.getToolTipText());
+      editor.writeXML(out, item.isSelected(), item.getText(), item.getTooltip().getText());
     }
     for (String id : browsers.keySet()) {
-      CTabItem tab = tabs.get(id);
+      Tab tab = tabs.get(id);
       String label = tab.getText();
-      String tooltip = tab.getToolTipText();
-      Browser browser = browsers.get(id);
-      String url = browser.getUrl();
+      String tooltip = tab.getTooltip().getText();
+      WebView browser = browsers.get(id);
+      String url = browser.getEngine().getLocation();
       if (url.startsWith("file:") && url.endsWith("/web/index.html")) {
         url = "welcome";
       }
-      String text = browser.getText();
+      String text = browser.getEngine().getDocument().toString();
       out.print("<Browser id='" + id + "' label='" + label + "' tooltip='" + tooltip + "' url='" + url + "' text='" + XModeler.encodeXmlAttribute(text) + "'/>");
     }
     out.print("</Editors>");

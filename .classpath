@@ -41,5 +41,6 @@
 	<classpathentry kind="lib" path="lib/org.eclipse.draw2d_3.5.0.jar"/>
 	<classpathentry exported="true" kind="src" path="/com.ceteva.xmf.machine"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/richtextfx-fat-0.8.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

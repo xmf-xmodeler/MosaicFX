@@ -6,44 +6,56 @@ import java.io.PrintStream;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.Bullet;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.ExtendedModifyEvent;
-import org.eclipse.swt.custom.ExtendedModifyListener;
-import org.eclipse.swt.custom.LineBackgroundEvent;
-import org.eclipse.swt.custom.LineBackgroundListener;
-import org.eclipse.swt.custom.PaintObjectEvent;
-import org.eclipse.swt.custom.PaintObjectListener;
-import org.eclipse.swt.custom.ST;
-import org.eclipse.swt.custom.StyleRange;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.custom.VerifyKeyListener;
-import org.eclipse.swt.dnd.Clipboard;
-import org.eclipse.swt.dnd.ImageTransfer;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.MouseWheelListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.swt.events.VerifyListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.GlyphMetrics;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.ImageLoader;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
+//import org.eclipse.swt.SWT;
+//import org.eclipse.swt.custom.Bullet;
+//import org.eclipse.swt.custom.CTabFolder;
+//import org.eclipse.swt.custom.ExtendedModifyEvent;
+//import org.eclipse.swt.custom.ExtendedModifyListener;
+//import org.eclipse.swt.custom.LineBackgroundEvent;
+//import org.eclipse.swt.custom.LineBackgroundListener;
+//import org.eclipse.swt.custom.PaintObjectEvent;
+//import org.eclipse.swt.custom.PaintObjectListener;
+//import org.eclipse.swt.custom.ST;
+//import org.eclipse.swt.custom.StyleRange;
+//import org.eclipse.swt.custom.StyledText;
+//import org.eclipse.swt.custom.VerifyKeyListener;
+//import org.eclipse.swt.dnd.Clipboard;
+//import org.eclipse.swt.dnd.ImageTransfer;
+//import org.eclipse.swt.events.MouseEvent;
+//import org.eclipse.swt.events.MouseListener;
+//import org.eclipse.swt.events.MouseWheelListener;
+//import org.eclipse.swt.events.SelectionEvent;
+//import org.eclipse.swt.events.SelectionListener;
+//import org.eclipse.swt.events.VerifyEvent;
+//import org.eclipse.swt.events.VerifyListener;
+//import org.eclipse.swt.graphics.Color;
+//import org.eclipse.swt.graphics.Font;
+//import org.eclipse.swt.graphics.FontData;
+//import org.eclipse.swt.graphics.GC;
+//import org.eclipse.swt.graphics.GlyphMetrics;
+//import org.eclipse.swt.graphics.Image;
+//import org.eclipse.swt.graphics.ImageData;
+//import org.eclipse.swt.graphics.ImageLoader;
+//import org.eclipse.swt.graphics.Point;
+//import org.eclipse.swt.graphics.Rectangle;
+//import org.eclipse.swt.widgets.Display;
+//import org.eclipse.swt.widgets.Menu;
+//import org.eclipse.swt.widgets.MenuItem;
+import org.fxmisc.flowless.VirtualizedScrollPane;
+import org.fxmisc.richtext.InlineCssTextArea;
+import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.model.StyleSpan;
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javafx.application.Platform;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TabPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.paint.Color;
 import tool.clients.editors.pprint.Indent;
 import tool.clients.editors.pprint.Literal;
 import tool.clients.editors.pprint.NewLine;
@@ -55,7 +67,7 @@ import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
 
-public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListener, MouseWheelListener, LineBackgroundListener, ExtendedModifyListener, PaintObjectListener, SelectionListener, ITextEditor {
+public class TextEditor implements ITextEditor{
 
   private static final int           ZOOM          = 2;
   private static final int           MAX_FONT_SIZE = 40;
@@ -64,16 +76,19 @@ public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListe
   private static final int           MIDDLE_BUTTON = 2;
   private static final int           RIGHT_BUTTON  = 3;
 
+  InlineCssTextArea							textArea;
+  VirtualizedScrollPane<InlineCssTextArea>					virtualizedScrollPane;					
+  
   String                             id;
   String                             label;
-  StyledText                         text;
-  FontData                           fontData;                                                // = new FontData("Courier", 12, SWT.NO);
+//  StyledText                         text;
+//  FontData                           fontData;                                                // = new FontData("Courier", 12, SWT.NO);
   Hashtable<String, PPrint>          atTable       = new Hashtable<String, PPrint>();
   Hashtable<String, Vector<Keyword>> keyTable      = new Hashtable<String, Vector<Keyword>>();
   Vector<WordRule>                   wordRules     = new Vector<WordRule>();
   Vector<Integer>                    highlights    = new Vector<Integer>();
-  Image[]                            images        = new Image[] {};
-  Image                              selectedImage = null;
+//  Image[]                            images        = new Image[] {};
+//  Image                              selectedImage = null;
   int[]                              offsets       = new int[] {};
   boolean                            lineNumbers   = true;
   boolean                            dirty         = false;
@@ -83,33 +98,125 @@ public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListe
 
   private boolean                    syntaxBusy;
 
-  public TextEditor(String id, String label, CTabFolder parent, boolean editable, boolean lineNumbers, String s) {
+  public TextEditor(String id, String label, TabPane parent, boolean editable, boolean lineNumbers, String s) {
     this.id = id;
     this.lineNumbers = lineNumbers;
     this.label = label;
-    text = new StyledText(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
-    text.setEditable(editable);
-    text.setText(s);
-    FontData[] fontData = Display.getDefault().getSystemFont().getFontData();
-    this.fontData = fontData[0];
-    XModeler.getXModeler().getDisplay().loadFont("dejavu/DejaVuSansMono.ttf");
-    this.fontData.setName("DejaVu Sans Mono");
-    text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
-    Color bg = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
-    text.setBackground(bg);
-    text.addExtendedModifyListener(this);
-    text.addVerifyKeyListener(this);
-    text.addMouseListener(this);
-    text.addMouseWheelListener(this);
-    text.addLineBackgroundListener(this);
-    text.addVerifyListener(this);
-    text.addPaintObjectListener(this);
-    text.addSelectionListener(this);
-    GC gc = new GC(text);
-    gc.setTextAntialias(SWT.ON);
+    
+    textArea = new InlineCssTextArea(s);
+    virtualizedScrollPane = new VirtualizedScrollPane<InlineCssTextArea>(textArea);
+    textArea.setEditable(editable);    
+    //font currently not supported
+    
+    textArea.richChanges().filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
+    .subscribe(change -> {
+        if (!dirty) {
+            Message message = EditorClient.theClient().getHandler().newMessage("textDirty", 2);
+            message.args[0] = new Value(getId());
+            message.args[1] = new Value(true);
+            EditorClient.theClient().getHandler().raiseEvent(message);
+
+            dirty = true;
+          }
+        int start = change.getPosition();
+        int length = change.getNetLength();
+        if (length > 0) addStylesQueueRequest(start, length, textArea.getText());
+    });
+    
+    textArea.setOnMouseClicked(e->{
+    	if(e.isSecondaryButtonDown() || e.isControlDown()){
+    		MenuClient.popup(id, textArea, (new Double(e.getScreenX())).intValue(), (new Double(e.getScreenY())).intValue());
+    	}
+    });
+    
+    textArea.setOnZoom(e->{
+    	//TODO
+//    	if (isCntrl(e) && (e.keyCode == '=')) {
+//            if (selectedImage != null)
+//              growSelectedImage();
+//            else {
+//              fontData.setHeight(Math.min(fontData.getHeight() + ZOOM, MAX_FONT_SIZE));
+//              text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
+//              e.doit = false;
+//            }
+//          }
+//          if (isCntrl(e) && (e.keyCode == '-')) {
+//            if (selectedImage != null)
+//              shrinkSelectedImage();
+//            else {
+//              fontData.setHeight(Math.max(MIN_FONT_SIZE, fontData.getHeight() - ZOOM));
+//              text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
+//              e.doit = false;
+//            }
+//          }
+    });
+    
+    textArea.setOnKeyReleased(e->{
+        
+          if (e.isControlDown() && (e.getCode() == KeyCode.F)) {
+        	  //TODO
+//            FindUtil.show(XModeler.getXModeler(), text);
+            e.consume();
+          }
+          if (e.isControlDown() && (e.getCode() == KeyCode.S)) {
+            save();
+            e.consume();
+          }
+          if (e.isControlDown() && (e.getCode() == KeyCode.L)) {
+        	TextEditor.this.lineNumbers = !TextEditor.this.lineNumbers;
+            addLines();
+            e.consume();
+          }
+//          if (isCntrl(e) && (e.keyCode == 'v')) {
+//            Display display = XModeler.getXModeler().getDisplay();
+//            Clipboard clipboard = new Clipboard(display);
+//            ImageData imageData = (ImageData) clipboard.getContents(ImageTransfer.getInstance());
+//            if (imageData != null) {
+//              e.doit = false;
+//              insertImage(imageData, text.getCaretOffset());
+//            }
+//          }
+          if (e.getCharacter().equals("@") && autoComplete) {
+            if(!at()){
+            	e.consume();
+            }
+          }
+          //propably not required anymore do to JavaFX
+//          if (e.character == '\r') {
+//            newline(getCurrentIndent());
+//            e.doit = false;
+//          }
+          if (e.isConsumed()) lastChar = e.getCharacter().charAt(0);
+    });
+    
     populateAt();
     populateKeywords();
-    new UndoRedoImpl(text);
+    addCommentWordRule();
+    
+//    text = new StyledText(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+//    text.setEditable(editable);
+//    text.setText(s);
+//    FontData[] fontData = Display.getDefault().getSystemFont().getFontData();
+//    this.fontData = fontData[0];
+//    XModeler.getXModeler().getDisplay().loadFont("dejavu/DejaVuSansMono.ttf");
+//    this.fontData.setName("DejaVu Sans Mono");
+//    text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
+//    Color bg = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
+//    text.setBackground(bg);
+//    text.addExtendedModifyListener(this);
+//    text.addVerifyKeyListener(this);
+//    text.addMouseListener(this);
+//    text.addMouseWheelListener(this);
+//    text.addLineBackgroundListener(this);
+//    text.addVerifyListener(this);
+//    text.addPaintObjectListener(this);
+//    text.addSelectionListener(this);  
+//    GC gc = new GC(text);
+//    gc.setTextAntialias(SWT.ON);
+    populateAt();
+    populateKeywords();
+//	included out of the box    
+//    new UndoRedoImpl(text);
     addCommentWordRule();
   }
 
@@ -135,38 +242,39 @@ public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListe
     wordRules.addElement(new NumberWordRule());
   }
 
-  public void addImage(Image image, int offset) {
-    StyleRange style = new StyleRange();
-    style.start = offset;
-    style.length = 1;
-    Rectangle rect = image.getBounds();
-    style.metrics = new GlyphMetrics(rect.height, 0, rect.width);
-    text.setStyleRange(style);
-  }
-
-  private void addImages(String s) {
-    // Images are encoded using #i[byte,byte,...] format. They start at the offset
-    // in the string that they will occur in the text...
-    int stringIndex = 0;
-    int offset = 0;
-    while (stringIndex < s.length()) {
-      if (s.startsWith("#i[", stringIndex)) {
-        int end = s.indexOf("]", stringIndex);
-        String byteString = s.substring(stringIndex + 3, end);
-        String[] byteStrings = byteString.split(",");
-        byte[] bytes = new byte[byteStrings.length];
-        for (int i = 0; i < bytes.length; i++) {
-          bytes[i] = Byte.parseByte(byteStrings[i]);
-        }
-        ImageLoader loader = new ImageLoader();
-        ByteArrayInputStream in = new ByteArrayInputStream(bytes);
-        ImageData data = loader.load(in)[0];
-        insertImage(data, offset);
-        stringIndex = end + 1;
-      } else stringIndex++;
-      offset++;
-    }
-  }
+//Currently not supported  
+//  public void addImage(Image image, int offset) {
+//    StyleRange style = new StyleRange();
+//    style.start = offset;
+//    style.length = 1;
+//    Rectangle rect = image.getBounds();
+//    style.metrics = new GlyphMetrics(rect.height, 0, rect.width);
+//    text.setStyleRange(style);
+//  }
+//
+//  private void addImages(String s) {
+//    // Images are encoded using #i[byte,byte,...] format. They start at the offset
+//    // in the string that they will occur in the text...
+//    int stringIndex = 0;
+//    int offset = 0;
+//    while (stringIndex < s.length()) {
+//      if (s.startsWith("#i[", stringIndex)) {
+//        int end = s.indexOf("]", stringIndex);
+//        String byteString = s.substring(stringIndex + 3, end);
+//        String[] byteStrings = byteString.split(",");
+//        byte[] bytes = new byte[byteStrings.length];
+//        for (int i = 0; i < bytes.length; i++) {
+//          bytes[i] = Byte.parseByte(byteStrings[i]);
+//        }
+//        ImageLoader loader = new ImageLoader();
+//        ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+//        ImageData data = loader.load(in)[0];
+//        insertImage(data, offset);
+//        stringIndex = end + 1;
+//      } else stringIndex++;
+//      offset++;
+//    }
+//  }
 
   private void addKeyword(String keyword, String description, PPrint pprint) {
     if (!keyTable.containsKey(keyword)) keyTable.put(keyword, new Vector<Keyword>());
@@ -175,34 +283,40 @@ public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListe
   }
 
   public void addLineHighlight(int line) {
-    highlights.add(text.getOffsetAtLine(line - 1));
-    text.redraw();
+	  //TODO
+//    highlights.add(text.getOffsetAtLine(line - 1));
+//    text.redraw();
   }
 
   public void addLines() {
-    if (lineNumbers) {
-      int maxLine = text.getLineCount();
-      int lineCountWidth = Math.max(String.valueOf(maxLine).length(), 3);
-      StyleRange style = new StyleRange(0, text.getTextLimit(), EditorClient.GREY, EditorClient.WHITE);
-      style.metrics = new GlyphMetrics(0, 0, lineCountWidth * 8 + 5);
-      Bullet bullet = new Bullet(ST.BULLET_NUMBER, style);
-      text.setLineBullet(0, text.getLineCount(), null);
-      text.setLineBullet(0, text.getLineCount(), bullet);
-      text.setLineIndent(0, text.getLineCount(), lineCountWidth + 10);
-    } else {
-      text.setLineBullet(0, text.getLineCount(), null);
-      text.setLineIndent(0, text.getLineCount(), 10);
-    }
+	  if (lineNumbers) {
+		  textArea.setParagraphGraphicFactory(LineNumberFactory.get(textArea));
+	    } else {
+	    	textArea.setParagraphGraphicFactory(null);
+	    }
+//    if (lineNumbers) {
+//      int maxLine = text.getLineCount();
+//      int lineCountWidth = Math.max(String.valueOf(maxLine).length(), 3);
+//      StyleRange style = new StyleRange(0, text.getTextLimit(), EditorClient.GREY, EditorClient.WHITE);
+//      style.metrics = new GlyphMetrics(0, 0, lineCountWidth * 8 + 5);
+//      Bullet bullet = new Bullet(ST.BULLET_NUMBER, style);
+//      text.setLineBullet(0, text.getLineCount(), null);
+//      text.setLineBullet(0, text.getLineCount(), bullet);
+//      text.setLineIndent(0, text.getLineCount(), lineCountWidth + 10);
+//    } else {
+//      text.setLineBullet(0, text.getLineCount(), null);
+//      text.setLineIndent(0, text.getLineCount(), 10);
+//    }
   }
 
   public void addMultilineRule(String id, String start, String end, int red, int green, int blue) {
     if (getId().equals(id)) {
-      wordRules.add(new MultiLineRule(start, end, new Color(XModeler.getXModeler().getDisplay(), red, green, blue)));
+      wordRules.add(new MultiLineRule(start, end, Color.rgb(red, green, blue)));
     }
   }
 
   private void addStyles() {
-    addStylesQueueRequest(0, text.getText().length(), text.getText());
+    addStylesQueueRequest(0, textArea.getText().length(), textArea.getText());
     // System.err.println("addStyles START");
     // if (text.getCharCount() > 0) {
     // final StyleRange[] styleRanges = styleRanges();
@@ -264,32 +378,39 @@ public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListe
     RuntimeException err = new RuntimeException();
     // StackTraceElement el = err.getStackTrace()[1];
 
-    final Display display = Display.getCurrent();
-    if (text.getCharCount() > 0) {
+//    final Display display = Display.getCurrent();
+    if (textArea.getText().length() > 0) {
       Thread thread = new Thread(new Runnable() {
         @Override
         public void run() {
-          final StyleRange[] styleRanges = styleRange(start, start + length, s);
-          if (styleRanges != null && styleRanges.length > 0) {
-            display.asyncExec(new Runnable() {
-              @Override
-              public void run() {
-                try {
-                  text.replaceStyleRanges(start, length, styleRanges);
-                } catch (Exception e) {
-                }
-              }
-            });
+          final StyleSpans<String> styleSpans = styleRange(start, start + length, s);	
+//          final StyleRange[] styleRanges = styleRange(start, start + length, s);
+          if (styleSpans != null && styleSpans.length() > 0) {
+        	Platform.runLater(()->{
+        		textArea.setStyleSpans(0, styleSpans);
+        	});  
+//            display.asyncExec(new Runnable() {
+//              @Override
+//              public void run() {
+//                try {
+//                  text.replaceStyleRanges(start, length, styleRanges);
+//                } catch (Exception e) {
+//                }
+//              }
+//            });
           }
           if (styleQueue.size() != 0) {
             final StyleQueueItem next = styleQueue.remove(0);
             // System.err.println("request unqueued");
-            display.asyncExec(new Runnable() {
-              @Override
-              public void run() {
-                addStylesNew(next.start, next.length, next.s);
-              }
-            });
+            Platform.runLater(()->{
+            	addStylesNew(next.start, next.length, next.s);
+        	});
+//            display.asyncExec(new Runnable() {
+//              @Override
+//              public void run() {
+//                addStylesNew(next.start, next.length, next.s);
+//              }
+//            });
           } else {
             syntaxBusy = false;
           }
@@ -303,24 +424,26 @@ public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListe
   }
 
   public void addWordRule(String id, String text, int red, int green, int blue) {
-    if (getId().equals(id)) wordRules.add(new WordRule(text, new Color(XModeler.getXModeler().getDisplay(), red, green, blue)));
+    if (getId().equals(id)) wordRules.add(new WordRule(text, Color.rgb(red, green, blue)));
   }
 
   private boolean at() {
+	//TODO
     // The user typed an '@'. Offer up the options in the atTable and
     // return false if nothing is selected. Insert the choice and return
     // true if selected...
     if (!atTable.isEmpty()) {
       final boolean[] result = new boolean[] { false };
-      Menu menu = getAtPopup(result);
-      Point p = text.getCaret().getLocation();
-      Point displayPoint = text.toDisplay(p);
-      menu.setLocation(displayPoint);
-      menu.setVisible(true);
-      while (!menu.isDisposed() && menu.isVisible()) {
-        if (!Display.getCurrent().readAndDispatch()) Display.getCurrent().sleep();
-      }
-      menu.dispose();
+      ContextMenu cm = getAtPopup(result);
+//      Point p = text.getCaret().getLocation();
+//      Point displayPoint = text.toDisplay(p);
+//      menu.setLocation(displayPoint);
+      cm.show(textArea, textArea.getContextMenuXOffset(), textArea.getContextMenuXOffset());
+//      menu.setVisible(true);
+//      while (!menu.isDisposed() && menu.isVisible()) {
+//        if (!Display.getCurrent().readAndDispatch()) Display.getCurrent().sleep();
+//      }
+//      menu.dispose();
       return result[0];
     } else return false;
   }
@@ -332,16 +455,27 @@ public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListe
   private int backupToPossibleStyleStart(int start) {
     start -= 10;
     if (start < 0) return 0;
-    StyleRange[] ranges = text.getStyleRanges();
-    // System.err.println("start: " + start);
-    for (int i = 0; i < ranges.length; i++) {
-      // System.err.println("rangeStart: " + ranges[i].start);
-      // System.err.println("rangeEnd: " + (ranges[i].start + ranges[i].length));
-      if (ranges[i].start <= start && ranges[i].start + ranges[i].length >= start) return ranges[i].start;
+    int checkStart = start-1;
+    StyleSpans<String> spans = textArea.getStyleSpans(start, start);
+    spans.getStyleSpan(0);
+        
+    //TODO prüfen
+    if(spans.getStyleSpan(0) == textArea.getStyleSpans(checkStart, checkStart).getStyleSpan(0) ){
+    	while(spans.getStyleSpan(0) == textArea.getStyleSpans(checkStart, checkStart).getStyleSpan(0) ){
+    		checkStart--;
+    	}
+    	return checkStart+1;
     }
-    // System.err.println("findStartFailed");
+//    StyleRange[] ranges = text.getStyleRanges();
+//    // System.err.println("start: " + start);
+//    for (int i = 0; i < ranges.length; i++) {
+//      // System.err.println("rangeStart: " + ranges[i].start);
+//      // System.err.println("rangeEnd: " + (ranges[i].start + ranges[i].length));
+//      if (ranges[i].start <= start && ranges[i].start + ranges[i].length >= start) return ranges[i].start;
+//    }
+//    // System.err.println("findStartFailed");
 
-    String s = text.getText();
+    String s = textArea.getText();
     while (start > 0 && s.charAt(start) != ' ') // isKeywordChar2(s.charAt(start)))
       start--;
     return start;
@@ -394,33 +528,43 @@ public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListe
     return new Literal("(stdout, \"\",Seq{})");
   }
 
-  protected Menu getAtPopup(final boolean[] result) {
+  protected ContextMenu getAtPopup(final boolean[] result) {
     // Offer the @ options. If selected then insert the text
     // including the '@' and set the result...
-    Menu menu = new Menu(XModeler.getXModeler(), SWT.POP_UP);
+	ContextMenu cm = new ContextMenu();   
+//    Menu menu = new Menu(XModeler.getXModeler(), SWT.POP_UP);
     for (final String name : atTable.keySet()) {
-      MenuItem item = new MenuItem(menu, SWT.CASCADE);
-      item.setText(name);
-      item.addSelectionListener(new SelectionListener() {
-        public void widgetDefaultSelected(SelectionEvent event) {
-        }
-
-        public void widgetSelected(SelectionEvent event) {
-          PPrint pprint = atTable.get(name);
+      MenuItem item = new MenuItem(name);
+//      item.setText(name);
+      item.setOnAction(e->{
+    	  PPrint pprint = atTable.get(name);
           int indent = getCurrentIndent();
           String s = pprint.toString(indent);
-          text.insert(s);
-          text.setCaretOffset(text.getCaretOffset() + s.length());
+          textArea.insertText(textArea.getCaretPosition(), s);
+          textArea.moveTo(textArea.getCaretPosition() + s.length());
           result[0] = true;
-        }
       });
+//      item.addSelectionListener(new SelectionListener() {
+//        public void widgetDefaultSelected(SelectionEvent event) {
+//        }
+//
+//        public void widgetSelected(SelectionEvent event) {
+//          PPrint pprint = atTable.get(name);
+//          int indent = getCurrentIndent();
+//          String s = pprint.toString(indent);
+//          text.insert(s);
+//          text.setCaretOffset(text.getCaretOffset() + s.length());
+//          result[0] = true;
+//        }
+//      });
     }
-    return menu;
+    return cm;
   }
 
   private int getCurrentIndent() {
-    String s = text.getText();
-    int start = text.getOffsetAtLine(text.getLineAtOffset(text.getCaretOffset()));
+    String s = textArea.getText();
+    //TODO stimmt das?
+    int start = 0;//text.getOffsetAtLine(text.getLineAtOffset(text.getCaretOffset()));
     int indent = 0;
     for (int i = start; i < s.length() && s.charAt(i) == ' '; i++)
       indent++;
@@ -431,16 +575,17 @@ public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListe
     return id;
   }
 
-  private Image getImageAt(int offset) {
-    for (int i = 0; i < images.length; i++) {
-      if (offsets[i] == offset) return images[i];
-    }
-    return null;
-  }
+//TODO  
+//  private Image getImageAt(int offset) {
+//    for (int i = 0; i < images.length; i++) {
+//      if (offsets[i] == offset) return images[i];
+//    }
+//    return null;
+//  }
 
   private Vector<Keyword> getKeysAtCurrentPosition() {
-    int index = text.getCaretOffset();
-    String s = text.getText();
+    int index = textArea.getCaretPosition();
+    String s = textArea.getText();
     for (String key : keyTable.keySet()) {
       int match = s.indexOf(key, index - key.length());
       if (match != -1 && match == index - key.length()) return keyTable.get(key);
@@ -452,47 +597,52 @@ public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListe
     return label;
   }
 
-  public int getOffset(Image image) {
-    for (int i = 0; i < offsets.length; i++)
-      if (images[i] == image) return offsets[i];
-    return -1;
-  }
+//  public int getOffset(Image image) {
+//    for (int i = 0; i < offsets.length; i++)
+//      if (images[i] == image) return offsets[i];
+//    return -1;
+//  }
 
   public String getString() {
     // Called to get the content of the editor.
     // If the text contains embedded controls then these need to be
     // encoded...
-    if (images.length > 0) {
-      StringBuffer s = new StringBuffer();
-      String t = text.getText();
-      int offset = 0;
-      while (offset < t.length()) {
-        if (getImageAt(offset) != null) {
-          Image image = getImageAt(offset);
-          ImageData data = image.getImageData();
-          s.append("#i[");
-          ByteArrayOutputStream out = new ByteArrayOutputStream();
-          ImageLoader loader = new ImageLoader();
-          loader.data = new ImageData[] { data };
-          loader.save(out, SWT.IMAGE_PNG);
-          byte[] bytes = out.toByteArray();
-          for (int i = 0; i < bytes.length; i++) {
-            byte b = bytes[i];
-            s.append(Byte.toString(b));
-            if (i < bytes.length - 1) s.append(",");
-          }
-          s.append("]");
-        } else s.append(t.charAt(offset));
-        offset++;
-      }
-      return new String(s);
-    } else return text.getText();
+//    if (images.length > 0) {
+//      StringBuffer s = new StringBuffer();
+//      String t = text.getText();
+//      int offset = 0;
+//      while (offset < t.length()) {
+//        if (getImageAt(offset) != null) {
+//          Image image = getImageAt(offset);
+//          ImageData data = image.getImageData();
+//          s.append("#i[");
+//          ByteArrayOutputStream out = new ByteArrayOutputStream();
+//          ImageLoader loader = new ImageLoader();
+//          loader.data = new ImageData[] { data };
+//          loader.save(out, SWT.IMAGE_PNG);
+//          byte[] bytes = out.toByteArray();
+//          for (int i = 0; i < bytes.length; i++) {
+//            byte b = bytes[i];
+//            s.append(Byte.toString(b));
+//            if (i < bytes.length - 1) s.append(",");
+//          }
+//          s.append("]");
+//        } else s.append(t.charAt(offset));
+//        offset++;
+//      }
+//      return new String(s);
+//    } else 
+    	return textArea.getText();
   }
 
-  public StyledText getText() {
-    return text;
-  }
+//  public StyledText getText() {
+//    return text;
+//  }
 
+  public InlineCssTextArea getText() {
+	    return textArea;
+	  }
+  
   private PPrint ifThen() {
     return new Seq(new Space(), new Literal("exp"), new Space(), new NewLine(), new Literal("then"), new Space(), new Literal("exp"), new NewLine(), new Literal("end"));
   }
@@ -536,31 +686,31 @@ public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListe
     addWordRule(getId(), word, red, green, blue);
   }
 
-  private void insertImage(ImageData imageData, int offset) {
-    Display display = XModeler.getXModeler().getDisplay();
-    Image image = new Image(display, imageData);
-    try {
-      text.replaceTextRange(offset, 0, "\uFFFC");
-      int index = 0;
-      while (index < offsets.length) {
-        if (offsets[index] == -1 && images[index] == null) break;
-        index++;
-      }
-      if (index == offsets.length) {
-        int[] tmpOffsets = new int[index + 1];
-        System.arraycopy(offsets, 0, tmpOffsets, 0, offsets.length);
-        offsets = tmpOffsets;
-        Image[] tmpImages = new Image[index + 1];
-        System.arraycopy(images, 0, tmpImages, 0, images.length);
-        images = tmpImages;
-      }
-      offsets[index] = offset;
-      images[index] = image;
-      addImage(image, offset);
-    } catch (Exception e1) {
-      e1.printStackTrace();
-    }
-  }
+//  private void insertImage(ImageData imageData, int offset) {
+//    Display display = XModeler.getXModeler().getDisplay();
+//    Image image = new Image(display, imageData);
+//    try {
+//      text.replaceTextRange(offset, 0, "\uFFFC");
+//      int index = 0;
+//      while (index < offsets.length) {
+//        if (offsets[index] == -1 && images[index] == null) break;
+//        index++;
+//      }
+//      if (index == offsets.length) {
+//        int[] tmpOffsets = new int[index + 1];
+//        System.arraycopy(offsets, 0, tmpOffsets, 0, offsets.length);
+//        offsets = tmpOffsets;
+//        Image[] tmpImages = new Image[index + 1];
+//        System.arraycopy(images, 0, tmpImages, 0, images.length);
+//        images = tmpImages;
+//      }
+//      offsets[index] = offset;
+//      images[index] = image;
+//      addImage(image, offset);
+//    } catch (Exception e1) {
+//      e1.printStackTrace();
+//    }
+//  }
 
   private boolean isAlpha(char c) {
     return 'a' <= c && c <= 'z';
@@ -574,9 +724,9 @@ public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListe
   // return isLowerAlphaChar(c) || isUpperAlphaChar(c);
   // }
 
-  private boolean isCommand(MouseEvent event) {
-    return (event.stateMask & SWT.COMMAND) != 0;
-  }
+//  private boolean isCommand(MouseEvent event) {
+//    return (event.stateMask & SWT.COMMAND) != 0;
+//  }
 
   public boolean isDirty() {
     return dirty;
@@ -590,17 +740,17 @@ public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListe
   // return isAlphaChar(c) || isNumber(c) || c == '_' || c == '.' || c == '-' ;
   // }
 
-  public boolean isLeft(MouseEvent event) {
-    return event.button == 1;
-  }
+//  public boolean isLeft(MouseEvent event) {
+//    return event.button == 1;
+//  }
 
   // private boolean isLowerAlphaChar(char c) {
   // return 'a' <= c && 'z' >= c;
   // }
 
-  private boolean isRightClick(MouseEvent event) {
-    return event.button == RIGHT_BUTTON || isCntrl(event);
-  }
+//  private boolean isRightClick(MouseEvent event) {
+//    return event.button == RIGHT_BUTTON || isCntrl(event);
+//  }
 
   // private boolean isUpperAlphaChar(char c) {
   // return 'A' <= c && 'Z' >= c;
@@ -610,33 +760,45 @@ public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListe
     if (keys.size() == 1) {
       String s = keys.elementAt(0).toString(getCurrentIndent());
       autoComplete = false;
-      text.insert(s);
+      textArea.insertText(textArea.getCaretPosition(), s);
       autoComplete = true;
-      text.setCaretOffset(text.getCaretOffset() + s.length());
+      textArea.moveTo(textArea.getCaretPosition()+ s.length());
+//      text.setCaretOffset(text.getCaretOffset() + s.length());
     }
     if (keys.size() > 1) {
-      Menu menu = new Menu(XModeler.getXModeler(), SWT.POP_UP);
+    	ContextMenu cm = new ContextMenu();
+//      Menu menu = new Menu(XModeler.getXModeler(), SWT.POP_UP);
       for (final Keyword keyword : keys) {
-        MenuItem item = new MenuItem(menu, SWT.NONE);
+        MenuItem item = new MenuItem("keyword.description");
         item.setText(keyword.description);
-        item.addSelectionListener(new SelectionListener() {
-          public void widgetDefaultSelected(SelectionEvent event) {
-          }
-
-          public void widgetSelected(SelectionEvent event) {
-            String s = keyword.toString(getCurrentIndent());
+        item.setOnAction(e->{
+        	String s = keyword.toString(getCurrentIndent());
             autoComplete = false;
-            text.insert(s);
+            textArea.insertText(textArea.getCaretPosition(), s);
             autoComplete = true;
-            text.setCaretOffset(text.getCaretOffset() + s.length());
-          }
+            textArea.moveTo(textArea.getCaretPosition()+ s.length());
         });
+        
+//        item.addSelectionListener(new SelectionListener() {
+//          public void widgetDefaultSelected(SelectionEvent event) {
+//          }
+//
+//          public void widgetSelected(SelectionEvent event) {
+//            String s = keyword.toString(getCurrentIndent());
+//            autoComplete = false;
+//            text.insert(s);
+//            autoComplete = true;
+//            text.setCaretOffset(text.getCaretOffset() + s.length());
+//          }
+//        });
       }
-      menu.setVisible(true);
-      while (!menu.isDisposed() && menu.isVisible()) {
-        if (!Display.getCurrent().readAndDispatch()) Display.getCurrent().sleep();
-      }
-      menu.dispose();
+      //TODO stimmt das?
+      cm.show(textArea, textArea.getContextMenuXOffset(), textArea.getContextMenuYOffset());
+//      menu.setVisible(true);
+//      while (!menu.isDisposed() && menu.isVisible()) {
+//        if (!Display.getCurrent().readAndDispatch()) Display.getCurrent().sleep();
+//      }
+//      menu.dispose();
     }
   }
 
@@ -648,99 +810,102 @@ public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListe
     return new Seq(new Space(), new Literal("name = exp"), new NewLine(), new Literal("in"), new Space(), new Literal("body"), new NewLine(), new Literal("end"));
   }
 
-  public void lineGetBackground(LineBackgroundEvent event) {
-    if (highlights.contains(event.lineOffset)) event.lineBackground = EditorClient.LINE_HIGHLIGHT;
-  }
+  //TODO 
+//  public void lineGetBackground(LineBackgroundEvent event) {
+//    if (highlights.contains(event.lineOffset)) event.lineBackground = EditorClient.LINE_HIGHLIGHT;
+//  }
 
-  public void modifyText(ExtendedModifyEvent event) {
-    if (!dirty) {
-      Message message = EditorClient.theClient().getHandler().newMessage("textDirty", 2);
-      message.args[0] = new Value(getId());
-      message.args[1] = new Value(true);
-      EditorClient.theClient().getHandler().raiseEvent(message);
+//  public void modifyText(ExtendedModifyEvent event) {
+//    if (!dirty) {
+//      Message message = EditorClient.theClient().getHandler().newMessage("textDirty", 2);
+//      message.args[0] = new Value(getId());
+//      message.args[1] = new Value(true);
+//      EditorClient.theClient().getHandler().raiseEvent(message);
+//
+//      dirty = true;
+//    }
+//    // System.err.println("start: " + event.start);
+//    // System.err.println("length: " + event.length);
+//    int start = event.start;
+//    int length = event.length;
+//    if (length > 0) addStylesQueueRequest(start, length, text.getText());
+////TODO Currently not supported
+////    if (autoComplete) checkKeywords();
+//
+//    // addStylesNew(start, length, s);
+//
+//    //TODO for what reason?
+////    syntaxDirty++;
+////    Display.getCurrent().timerExec(3000, new Runnable() {
+////      @Override
+////      public void run() {
+////        syntaxDirty--;
+////        if (syntaxDirty == 0) {
+////          addStyles();
+////        }
+////      }
+////    });
+//
+//    addLines();
+//  }
 
-      dirty = true;
-    }
-    // System.err.println("start: " + event.start);
-    // System.err.println("length: " + event.length);
-    int start = event.start;
-    int length = event.length;
-    if (length > 0) addStylesQueueRequest(start, length, text.getText());
-    if (autoComplete) checkKeywords();
+//  public void mouseDoubleClick(MouseEvent event) {
+//
+//  }
 
-    // addStylesNew(start, length, s);
+//  public void mouseDown(MouseEvent event) {
+//    if (isRightClick(event) || isCommand(event)) {
+//      rightClick(event);
+//    }
+//  }
 
-    syntaxDirty++;
-    Display.getCurrent().timerExec(3000, new Runnable() {
-      @Override
-      public void run() {
-        syntaxDirty--;
-        if (syntaxDirty == 0) {
-          addStyles();
-        }
-      }
-    });
+//  public void mouseUp(MouseEvent event) {
+//
+//  }
 
-    addLines();
-  }
+//  @Override
+//  public void mouseScrolled(MouseEvent e) {
+//    if (isCntrl(e) && (e.count > 0)) {
+//      fontData.setHeight(Math.min(fontData.getHeight() + ZOOM, MAX_FONT_SIZE));
+//      text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
+//    }
+//    if (isCntrl(e) && (e.count < 0)) {
+//      fontData.setHeight(Math.max(MIN_FONT_SIZE, fontData.getHeight() - ZOOM));
+//      text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
+//    }
+//  }
 
-  public void mouseDoubleClick(MouseEvent event) {
-
-  }
-
-  public void mouseDown(MouseEvent event) {
-    if (isRightClick(event) || isCommand(event)) {
-      rightClick(event);
-    }
-  }
-
-  public void mouseUp(MouseEvent event) {
-
-  }
-
-  @Override
-  public void mouseScrolled(MouseEvent e) {
-    if (isCntrl(e) && (e.count > 0)) {
-      fontData.setHeight(Math.min(fontData.getHeight() + ZOOM, MAX_FONT_SIZE));
-      text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
-    }
-    if (isCntrl(e) && (e.count < 0)) {
-      fontData.setHeight(Math.max(MIN_FONT_SIZE, fontData.getHeight() - ZOOM));
-      text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
-    }
-  }
-
-  private void newline(int indent) {
-    text.insert("\n");
-    try {
-      text.setCaretOffset(text.getCaretOffset() + 1);
-      for (int i = 0; i < indent; i++)
-        text.insert(" ");
-      text.setCaretOffset(text.getCaretOffset() + indent);
-    } catch (IllegalArgumentException iae) {
-      System.err.println("This exception caused the program to freeze.\n Whatever went wrong, now it does not freeze for this reason anymore.");
-      iae.printStackTrace();
-    }
-  }
+//  private void newline(int indent) {
+//    text.insert("\n");
+//    try {
+//      text.setCaretOffset(text.getCaretOffset() + 1);
+//      for (int i = 0; i < indent; i++)
+//        text.insert(" ");
+//      text.setCaretOffset(text.getCaretOffset() + indent);
+//    } catch (IllegalArgumentException iae) {
+//      System.err.println("This exception caused the program to freeze.\n Whatever went wrong, now it does not freeze for this reason anymore.");
+//      iae.printStackTrace();
+//    }
+//  }
 
   private PPrint operation() {
     return new Seq(new Literal("@Operation name(args)"), new Indent(new Seq(new NewLine(), new Literal("body"))), new NewLine(), new Literal("end"));
   }
 
-  public void paintObject(PaintObjectEvent event) {
-    GC gc = event.gc;
-    StyleRange style = event.style;
-    int start = style.start;
-    for (int i = 0; i < offsets.length; i++) {
-      int offset = offsets[i];
-      if (start == offset) {
-        Image image = images[i];
-        int x = event.x;
-        int y = event.y + event.ascent - style.metrics.ascent;
-        gc.drawImage(image, x, y);
-      }
-    }
-  }
+//  public void paintObject(PaintObjectEvent event) {
+//    GC gc = event.gc;
+//    StyleRange style = event.style;
+//    int start = style.start;
+//    for (int i = 0; i < offsets.length; i++) {
+//      int offset = offsets[i];
+//      if (start == offset) {
+//        Image image = images[i];
+//        int x = event.x;
+//        int y = event.y + event.ascent - style.metrics.ascent;
+//        gc.drawImage(image, x, y);
+//      }
+//    }
+//  }
 
   private void populateAt() {
     atTable.put("Attribute", attribute());
@@ -765,9 +930,9 @@ public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListe
     addKeyword("context", "context (package)", contextPackage());
   }
 
-  public void rightClick(MouseEvent event) {
-    MenuClient.popup(id, event.x, event.y);
-  }
+//  public void rightClick(MouseEvent event) {
+//    MenuClient.popup(id, event.x, event.y);
+//  }
 
   public void save() {
     Message message = EditorClient.theClient().getHandler().newMessage("saveText", 2);
@@ -786,9 +951,9 @@ public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListe
       setText(filterImages(text));
       // Fool the system into thinking that it has already informed
       // the server that the editor is dirty...
-      dirty = true;
-      addImages(text);
-      dirty = false;
+//      dirty = true;
+//      addImages(text);
+//      dirty = false;
     } else setText(text);
   }
 
@@ -797,41 +962,48 @@ public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListe
     // this should only be called to initialize the content or to
     // refresh the content...
     dirty = true;
-    text.setText(s);
+    textArea.replaceText(s);
     dirty = false;
     addLines();
   }
 
+  //TODO wofür?
   public void showLine(int line) {
-    text.setCaretOffset(text.getOffsetAtLine(line));
-    text.redraw();
+//    text.setCaretOffset(text.getOffsetAtLine(line));
+//    text.redraw();
   }
 
-  private StyleRange[] styleRange(int start, int end, String s) {
-    java.util.List<StyleRange> ranges = new java.util.ArrayList<StyleRange>();
+  private StyleSpans<String> styleRange(int start, int end, String s) {
+//  private StyleRange[] styleRange(int start, int end, String s) {
+	  StyleSpansBuilder<String> sb = new StyleSpansBuilder<String>();  
+//	java.util.List<StyleRange> ranges = new java.util.ArrayList<StyleRange>();
     // String s = text.getText();
+	StyleSpan<String> defaultStyle = new StyleSpan<String>("", 1);
+	  
     int prevChar = -1;
     for (int i = start; i < end; i++) {
-      StyleRange style = null;
+      StyleSpan<String> style = null;
       for (WordRule wordRule : wordRules) {
         style = wordRule.match(s, i, prevChar);
         if (style != null) {
-          ranges.add(style);
-          i = i + style.length - 1;
+        	sb.add(style);
+//          ranges.add(style);
+          i = i + style.getLength() - 1;
           break;
         }
       }
       if (style == null) {
-        StyleRange defaultStyle = new StyleRange();
-        defaultStyle.start = i;
-        defaultStyle.length = 1;
-        defaultStyle.fontStyle = SWT.UNDERLINE_SINGLE;
-        defaultStyle.foreground = new Color(Display.getCurrent(), 0, 0, 0);
-        ranges.add(defaultStyle);
+    	sb.add(defaultStyle);  
+//        StyleRange defaultStyle = new StyleRange();
+//        defaultStyle.start = i;
+//        defaultStyle.length = 1;
+//        defaultStyle.fontStyle = SWT.UNDERLINE_SINGLE;
+//        defaultStyle.foreground = new Color(Display.getCurrent(), 0, 0, 0);
+//        ranges.add(defaultStyle);
       }
       prevChar = s.charAt(i);
     }
-    return (StyleRange[]) ranges.toArray(new StyleRange[0]);
+    return sb.create();
   }
 
   // private StyleRange[] styleRanges() {
@@ -842,123 +1014,124 @@ public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListe
     return new Seq(new Indent(new Seq(new Literal("@TypeCase(exp)"), new NewLine(), new Indent(new Seq(new Literal("exp"), new Space(), new Literal("do"), new NewLine(), new Literal("exp"))), new NewLine(), new Literal("end"), new NewLine(), new Literal("else"), new Space(), new Literal("exp"))), new NewLine(), new Literal("end"));
   }
 
-  private boolean isCntrl(VerifyEvent e) {
-    return (e.stateMask & SWT.CTRL) == SWT.CTRL || (e.stateMask & SWT.COMMAND) == SWT.COMMAND;
-  }
+//  private boolean isCntrl(VerifyEvent e) {
+//    return (e.stateMask & SWT.CTRL) == SWT.CTRL || (e.stateMask & SWT.COMMAND) == SWT.COMMAND;
+//  }
+//
+//  private boolean isCntrl(MouseEvent e) {
+//    return (e.stateMask & SWT.CTRL) == SWT.CTRL || (e.stateMask & SWT.COMMAND) == SWT.COMMAND;
+//  }
 
-  private boolean isCntrl(MouseEvent e) {
-    return (e.stateMask & SWT.CTRL) == SWT.CTRL || (e.stateMask & SWT.COMMAND) == SWT.COMMAND;
-  }
+//  public void verifyKey(VerifyEvent e) {
+//    if (isCntrl(e) && (e.keyCode == '=')) {
+//      if (selectedImage != null)
+//        growSelectedImage();
+//      else {
+//        fontData.setHeight(Math.min(fontData.getHeight() + ZOOM, MAX_FONT_SIZE));
+//        text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
+//        e.doit = false;
+//      }
+//    }
+//    if (isCntrl(e) && (e.keyCode == '-')) {
+//      if (selectedImage != null)
+//        shrinkSelectedImage();
+//      else {
+//        fontData.setHeight(Math.max(MIN_FONT_SIZE, fontData.getHeight() - ZOOM));
+//        text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
+//        e.doit = false;
+//      }
+//    }
+//    if (isCntrl(e) && (e.keyCode == 'f')) {
+//      FindUtil.show(XModeler.getXModeler(), text);
+//      e.doit = false;
+//    }
+//    if (isCntrl(e) && (e.keyCode == 's')) {
+//      save();
+//      e.doit = false;
+//    }
+//    if (isCntrl(e) && (e.keyCode == 'l')) {
+//      lineNumbers = !lineNumbers;
+//      addLines();
+//      e.doit = false;
+//    }
+//    if (isCntrl(e) && (e.keyCode == 'v')) {
+//      Display display = XModeler.getXModeler().getDisplay();
+//      Clipboard clipboard = new Clipboard(display);
+//      ImageData imageData = (ImageData) clipboard.getContents(ImageTransfer.getInstance());
+//      if (imageData != null) {
+//        e.doit = false;
+//        insertImage(imageData, text.getCaretOffset());
+//      }
+//    }
+//    if (e.character == '@' && autoComplete) {
+//      e.doit = !at();
+//    }
+//    //propably not required anymore do to JavaFX
+////    if (e.character == '\r') {
+////      newline(getCurrentIndent());
+////      e.doit = false;
+////    }
+//    if (e.doit) lastChar = e.character;
+//  }
 
-  public void verifyKey(VerifyEvent e) {
-    if (isCntrl(e) && (e.keyCode == '=')) {
-      if (selectedImage != null)
-        growSelectedImage();
-      else {
-        fontData.setHeight(Math.min(fontData.getHeight() + ZOOM, MAX_FONT_SIZE));
-        text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
-        e.doit = false;
-      }
-    }
-    if (isCntrl(e) && (e.keyCode == '-')) {
-      if (selectedImage != null)
-        shrinkSelectedImage();
-      else {
-        fontData.setHeight(Math.max(MIN_FONT_SIZE, fontData.getHeight() - ZOOM));
-        text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
-        e.doit = false;
-      }
-    }
-    if (isCntrl(e) && (e.keyCode == 'f')) {
-      FindUtil.show(XModeler.getXModeler(), text);
-      e.doit = false;
-    }
-    if (isCntrl(e) && (e.keyCode == 's')) {
-      save();
-      e.doit = false;
-    }
-    if (isCntrl(e) && (e.keyCode == 'l')) {
-      lineNumbers = !lineNumbers;
-      addLines();
-      e.doit = false;
-    }
-    if (isCntrl(e) && (e.keyCode == 'v')) {
-      Display display = XModeler.getXModeler().getDisplay();
-      Clipboard clipboard = new Clipboard(display);
-      ImageData imageData = (ImageData) clipboard.getContents(ImageTransfer.getInstance());
-      if (imageData != null) {
-        e.doit = false;
-        insertImage(imageData, text.getCaretOffset());
-      }
-    }
-    if (e.character == '@' && autoComplete) {
-      e.doit = !at();
-    }
-    if (e.character == '\r') {
-      newline(getCurrentIndent());
-      e.doit = false;
-    }
-    if (e.doit) lastChar = e.character;
-  }
+//  private void growSelectedImage() {
+//    ImageData data = selectedImage.getImageData();
+//    int width = data.width;
+//    int height = data.height;
+//    Image image = resize(selectedImage, (int) (width * 1.2), (int) (height * 1.2));
+//    for (int i = 0; i < images.length; i++) {
+//      if (images[i] == selectedImage) {
+//        images[i] = image;
+//        addImage(image, offsets[i]);
+//        selectedImage.dispose();
+//        selectedImage = image;
+//      }
+//    }
+//  }
 
-  private void growSelectedImage() {
-    ImageData data = selectedImage.getImageData();
-    int width = data.width;
-    int height = data.height;
-    Image image = resize(selectedImage, (int) (width * 1.2), (int) (height * 1.2));
-    for (int i = 0; i < images.length; i++) {
-      if (images[i] == selectedImage) {
-        images[i] = image;
-        addImage(image, offsets[i]);
-        selectedImage.dispose();
-        selectedImage = image;
-      }
-    }
-  }
+//  private Image resize(Image image, int width, int height) {
+//    Image scaled = new Image(Display.getDefault(), width, height);
+//    GC gc = new GC(scaled);
+//    gc.setAntialias(SWT.ON);
+//    gc.setInterpolation(SWT.HIGH);
+//    gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height, 0, 0, width, height);
+//    gc.dispose();
+//    return scaled;
+//  }
 
-  private Image resize(Image image, int width, int height) {
-    Image scaled = new Image(Display.getDefault(), width, height);
-    GC gc = new GC(scaled);
-    gc.setAntialias(SWT.ON);
-    gc.setInterpolation(SWT.HIGH);
-    gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height, 0, 0, width, height);
-    gc.dispose();
-    return scaled;
-  }
+//  private void shrinkSelectedImage() {
+//    ImageData data = selectedImage.getImageData();
+//    int width = data.width;
+//    int height = data.height;
+//    Image image = resize(selectedImage, (int) (width * 0.8), (int) (height * 0.8));
+//    for (int i = 0; i < images.length; i++) {
+//      if (images[i] == selectedImage) {
+//        images[i] = image;
+//        addImage(image, offsets[i]);
+//        selectedImage.dispose();
+//        selectedImage = image;
+//      }
+//    }
+//  }
 
-  private void shrinkSelectedImage() {
-    ImageData data = selectedImage.getImageData();
-    int width = data.width;
-    int height = data.height;
-    Image image = resize(selectedImage, (int) (width * 0.8), (int) (height * 0.8));
-    for (int i = 0; i < images.length; i++) {
-      if (images[i] == selectedImage) {
-        images[i] = image;
-        addImage(image, offsets[i]);
-        selectedImage.dispose();
-        selectedImage = image;
-      }
-    }
-  }
-
-  public void verifyText(VerifyEvent e) {
-    int start = e.start;
-    int replaceCharCount = e.end - e.start;
-    int newCharCount = e.text.length();
-    for (int i = 0; i < offsets.length; i++) {
-      int offset = offsets[i];
-      if (start <= offset && offset < start + replaceCharCount) {
-        // this image is being deleted from the text
-        if (images[i] != null && !images[i].isDisposed()) {
-          images[i].dispose();
-          images[i] = null;
-        }
-        offset = -1;
-      }
-      if (offset != -1 && offset >= start) offset += newCharCount - replaceCharCount;
-      offsets[i] = offset;
-    }
-  }
+//  public void verifyText(VerifyEvent e) {
+//    int start = e.start;
+//    int replaceCharCount = e.end - e.start;
+//    int newCharCount = e.text.length();
+//    for (int i = 0; i < offsets.length; i++) {
+//      int offset = offsets[i];
+//      if (start <= offset && offset < start + replaceCharCount) {
+//        // this image is being deleted from the text
+//        if (images[i] != null && !images[i].isDisposed()) {
+//          images[i].dispose();
+//          images[i] = null;
+//        }
+//        offset = -1;
+//      }
+//      if (offset != -1 && offset >= start) offset += newCharCount - replaceCharCount;
+//      offsets[i] = offset;
+//    }
+//  }
 
   private PPrint withOpenFileIn() {
     return new Seq(new Indent(new Seq(new Literal("@WithOpenFile(fin <- filename)"), new NewLine(), new Literal("body"))), new NewLine(), new Literal("end"));
@@ -970,27 +1143,27 @@ public class TextEditor implements VerifyListener, VerifyKeyListener, MouseListe
 
   public void writeXML(PrintStream out, boolean isSelected, String label, String toolTip) {
     out.print("<TextEditor id='" + getId() + "' selected='" + isSelected + "'");
-    out.print(" text='" + XModeler.encodeXmlAttribute(text.getText()) + "'");
+    out.print(" text='" + XModeler.encodeXmlAttribute(textArea.getText()) + "'");
     out.print(" lineNumbers='" + lineNumbers + "'");
     out.print(" label='" + label + "'");
     out.print(" toolTip='" + toolTip + "'");
-    out.print(" editable='" + text.getEditable() + "'>");
+    out.print(" editable='" + textArea.isEditable() + "'>");
     // out.print(" fontHeight='" + fontData.getHeight() + "'>");
     for (WordRule rule : wordRules)
       rule.writeXML(out);
     out.print("</TextEditor>");
   }
 
-  public void widgetDefaultSelected(SelectionEvent event) {
-  }
+//  public void widgetDefaultSelected(SelectionEvent event) {
+//  }
 
-  public void widgetSelected(SelectionEvent event) {
-    try {
-      selectedImage = getImageAt(text.getSelection().x);
-    } catch (Exception e) {
-      // Silently fail where things go wrong.
-    }
-  }
+//  public void widgetSelected(SelectionEvent event) {
+//    try {
+//      selectedImage = getImageAt(text.getSelection().x);
+//    } catch (Exception e) {
+//      // Silently fail where things go wrong.
+//    }
+//  }
 
   public void varDec(int charStart, int charEnd, int decStart, int decEnd) {
     

@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-import tool.clients.editors.EditorResizeListener;
+//import tool.clients.editors.EditorResizeListener;
 
 public class SplitSashForm extends SashForm {
 
@@ -26,8 +26,8 @@ public class SplitSashForm extends SashForm {
     folder2.setMaximizeVisible(true);
     folder1.setMinimizeVisible(true);
     folder2.setMinimizeVisible(true);
-    folder1.addCTabFolder2Listener(new EditorResizeListener());
-    folder2.addCTabFolder2Listener(new EditorResizeListener());
+//    folder1.addCTabFolder2Listener(new EditorResizeListener());
+//    folder2.addCTabFolder2Listener(new EditorResizeListener());
   }
 
   public CTabFolder getFolder1() {

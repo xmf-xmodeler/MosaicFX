@@ -55,9 +55,7 @@ import tool.clients.diagrams.DiagramClient;
 import tool.clients.dialogs.DialogsClient;
 import tool.clients.dialogs.notifier.NotificationType;
 import tool.clients.dialogs.notifier.NotifierDialog;
-import tool.clients.editors.BrowserResizeListener;
 import tool.clients.editors.EditorClient;
-import tool.clients.editors.PropertyResizeListener;
 import tool.clients.forms.FormsClient;
 import tool.clients.menus.MenuClient;
 import tool.clients.oleBridge.OleBridgeClient;
@@ -454,7 +452,7 @@ public class XModeler extends Application {
 
 
   public static void startClients() {
-//    xos.newMessageClient("com.ceteva.text", new EditorClient());
+    xos.newMessageClient("com.ceteva.text", new EditorClient());
     xos.newMessageClient("com.ceteva.mosaic", new WorkbenchClient());
     xos.newMessageClient("com.ceteva.menus", new MenuClient());
     xos.newMessageClient("com.ceteva.modelBrowser", new ModelBrowserClient());
@@ -468,6 +466,7 @@ public class XModeler extends Application {
   
   public static void initClients() {
 	  ModelBrowserClient.start(browserTab);
+	  EditorClient.start(editorTabs);
 	  FormsClient.start(propertyTabs);
 	  Console.start(propertyTabs);
 	  

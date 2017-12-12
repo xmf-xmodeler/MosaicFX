@@ -2,34 +2,37 @@ package tool.clients.editors;
 
 import java.io.PrintStream;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyleRange;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.widgets.Display;
+import org.fxmisc.richtext.model.StyleSpan;
+
+import javafx.scene.paint.Color;
 
 
 public class NumberWordRule extends WordRule {
 
 	public NumberWordRule() {
-		super(null, new Color(Display.getCurrent(), 255, 0, 128));
+		super(null, Color.rgb(255, 0, 128));
 	}
 
 	public void writeXML(PrintStream out) {
 		out.print("");
 	}
 
-	public StyleRange match(String s, int i, int prevChar) {
+	public StyleSpan<String> match(String s, int i, int prevChar) {
 		if (!Character.isLetterOrDigit(prevChar)) { // If previous is neither letter nor number
 			String number = parseNumber(s, i);
 			if (number != null) {
+				Color localColor = number.contains(".") || number.contains("e") || number.contains("E")
+						? Color.rgb(100, 50, 0)
+					    : Color.rgb(200, 0, 100);
 				int length = number.length();
-				StyleRange style = new StyleRange();
-				style.start = i;
-				style.length = length;
-				style.fontStyle = SWT.BOLD;
-				style.foreground = number.contains(".") || number.contains("e") || number.contains("E")
-						? new Color(Display.getCurrent(), 100, 50, 0)
-					    : new Color(Display.getCurrent(), 200, 0, 100);
+				StyleSpan<String> style = new StyleSpan<String>("-fx-fill:rgb("+localColor.getRed()+","+localColor.getGreen()+","+localColor.getBlue()+");-fx-font-weight: bold;", length);
+//				StyleRange style = new StyleRange();
+//				style.start = i;
+//				style.length = length;
+//				style.fontStyle = SWT.BOLD;
+//				style.foreground = number.contains(".") || number.contains("e") || number.contains("E")
+//						? Color.rgb(100, 50, 0)
+//					    : Color.rgb(200, 0, 100);
 				return style;
 			} else
 				return null;

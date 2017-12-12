@@ -2,7 +2,6 @@ package tool.clients.editors;
 
 import java.io.PrintStream;
 
-import org.eclipse.swt.widgets.Control;
 import org.w3c.dom.Node;
 
 import xos.Value;
@@ -21,7 +20,7 @@ public interface ITextEditor {
 
   void inflate(Node newTextEditor);
 
-  Control getText();
+  javafx.scene.Node getText();
 
   void varDec(int charStart, int charEnd, int decStart, int decEnd);
 

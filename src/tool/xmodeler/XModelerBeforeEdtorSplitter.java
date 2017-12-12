@@ -37,10 +37,7 @@ import tool.clients.diagrams.DiagramClient;
 import tool.clients.dialogs.DialogsClient;
 import tool.clients.dialogs.notifier.NotificationType;
 import tool.clients.dialogs.notifier.NotifierDialog;
-import tool.clients.editors.BrowserResizeListener;
 import tool.clients.editors.EditorClient;
-import tool.clients.editors.EditorResizeListener;
-import tool.clients.editors.PropertyResizeListener;
 import tool.clients.forms.FormsClient;
 import tool.clients.menus.MenuClient;
 import tool.clients.oleBridge.OleBridgeClient;
@@ -422,10 +419,10 @@ public class XModelerBeforeEdtorSplitter {
     propertyTabFolder.setTopRight(propertyToolbar);
 //    ModelBrowserClient.start(browserTabFolder, SWT.LEFT);
     outerSash.setWeights(new int[] { 1, 5 });
-    EditorClient.start(editorTabFolder, SWT.BORDER);
-    editorTabFolder.addCTabFolder2Listener(new EditorResizeListener());
-    propertyTabFolder.addCTabFolder2Listener(new PropertyResizeListener());
-    browserTabFolder.addCTabFolder2Listener(new BrowserResizeListener());
+//    EditorClient.start(editorTabFolder, SWT.BORDER);
+//    editorTabFolder.addCTabFolder2Listener(new EditorResizeListener());
+//    propertyTabFolder.addCTabFolder2Listener(new PropertyResizeListener());
+//    browserTabFolder.addCTabFolder2Listener(new BrowserResizeListener());
     DiagramClient.start(editorTabFolder);
 //    FormsClient.start(propertyTabFolder, propertyToolbar, SWT.BORDER);
     ScreenGenerationClient.start(propertyTabFolder); // BB
