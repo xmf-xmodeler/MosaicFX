@@ -9,10 +9,11 @@ import org.eclipse.swt.custom.Bullet;
 import org.eclipse.swt.custom.LineStyleEvent;
 import org.eclipse.swt.custom.ST;
 import org.eclipse.swt.custom.StyleRange;
-import org.eclipse.swt.graphics.Color;
+//import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GlyphMetrics;
 import org.eclipse.swt.widgets.Display;
 
+import javafx.scene.paint.Color;
 import tool.clients.editors.EditorClient;
 import tool.clients.editors.MultiLineRule;
 import tool.clients.editors.WordRule;
@@ -20,7 +21,7 @@ import tool.xmodeler.XModeler;
 
 public class LineStyler {
 
-  private static final Color       BLACK          = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+  private static final Color       BLACK          = Color.rgb(0,0,0);
 
   TextEditor                       editor;
   boolean                          lineNumbers    = true;
@@ -34,11 +35,11 @@ public class LineStyler {
   }
 
   public void addMultilineRule(String id, String start, String end, int red, int green, int blue) {
-    multiLineRules.add(new MultiLineRule(start, end, new Color(XModeler.getXModeler().getDisplay(), red, green, blue)));
+    multiLineRules.add(new MultiLineRule(start, end, Color.rgb(red, green, blue)));
   }
 
   public void addWordRule(String id, String text, int red, int green, int blue) {
-    wordRules.add(new WordRule(text, new Color(XModeler.getXModeler().getDisplay(), red, green, blue)));
+    wordRules.add(new WordRule(text, Color.rgb(red, green, blue)));
   }
 
   public void clearCache(int line, boolean isNewline) {

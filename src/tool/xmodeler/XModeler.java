@@ -436,6 +436,7 @@ public class XModeler extends Application {
 	 Platform.runLater(new Runnable() {
 	      public void run() {
 	  stage.close();
+	  System.exit(0);
 	      }});
 //    XModeler.getDisplay().syncExec(new Runnable() {
 //      public void run() {

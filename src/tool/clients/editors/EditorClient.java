@@ -46,8 +46,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
 import tool.clients.Client;
 import tool.clients.EventHandler;
@@ -57,12 +59,12 @@ import xos.Value;
 
 public class EditorClient extends Client {
 
-//  public static final Color             LINE_HIGHLIGHT = new Color(XModeler.getXModeler().getDisplay(), 192, 192, 192);
-//  public static final Color             RED            = new Color(XModeler.getXModeler().getDisplay(), 255, 0, 0);
-//  public static final Color             GREY           = new Color(XModeler.getXModeler().getDisplay(), 192, 192, 192);
-//  public static final Color             WHITE          = new Color(XModeler.getXModeler().getDisplay(), 255, 255, 255);
-//  public static final Color             GREEN          = new Color(XModeler.getXModeler().getDisplay(), 0, 170, 0);
-//  public static final Color             BLACK          = new Color(XModeler.getXModeler().getDisplay(), 0, 0, 0);
+  public static final Color             LINE_HIGHLIGHT = Color.rgb(192, 192, 192);
+  public static final Color             RED            = Color.rgb(255, 0, 0);
+  public static final Color             GREY           = Color.rgb(192, 192, 192);
+  public static final Color             WHITE          = Color.rgb(255, 255, 255);
+  public static final Color             GREEN          = Color.rgb(0, 170, 0);
+  public static final Color             BLACK          = Color.rgb(0, 0, 0);
 
   static EditorClient                   theClient;
   static TabPane   						tabPane;
@@ -468,6 +470,15 @@ public class EditorClient extends Client {
         });
         Label urlLabel = new Label("URL:");
         TextField urlField = new TextField("Enter URL here...");
+        urlField.setOnKeyReleased(e->{
+        	if(e.getCode() == KeyCode.ENTER){
+        		EventHandler handler = getHandler();
+    	        Message message = handler.newMessage("urlRequest", 2);
+    	        message.args[0] = new Value(id);
+    	        message.args[1] = new Value(urlField.getText());
+    	        handler.raiseEvent(message);
+        	}
+        });
         urlFields.put(id, urlField);
         Button go = new Button("Go");
         go.setOnAction((e)->{
@@ -476,6 +487,10 @@ public class EditorClient extends Client {
         	        message.args[0] = new Value(id);
         	        message.args[1] = new Value(urlField.getText());
         	        handler.raiseEvent(message);
+        });
+        
+        browser.getEngine().locationProperty().addListener(c->{
+        	urlField.setText(browser.getEngine().getLocation());
         });
         
         HBox hbox = new HBox();
