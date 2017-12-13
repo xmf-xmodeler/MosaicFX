@@ -446,6 +446,7 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
 	    if (popupAssignments.containsKey(id)) {
 	      PopupMenu pmenu = popupAssignments.get(id);
 	      ContextMenu contextmenu = pmenu.popup(id);
+	      contextmenu.setAutoHide(true);
 	      contextmenu.show(anchor,x,y);
 	    } else System.err.println("no menu for " + id);
 	  }

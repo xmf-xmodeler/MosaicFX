@@ -25,7 +25,7 @@ public class NumberWordRule extends WordRule {
 						? Color.rgb(100, 50, 0)
 					    : Color.rgb(200, 0, 100);
 				int length = number.length();
-				StyleSpan<String> style = new StyleSpan<String>("-fx-fill:rgb("+localColor.getRed()+","+localColor.getGreen()+","+localColor.getBlue()+");-fx-font-weight: bold;", length);
+				StyleSpan<String> style = new StyleSpan<String>("-fx-fill:"+toRGB(localColor)+";-fx-font-weight: bold;", length);
 //				StyleRange style = new StyleRange();
 //				style.start = i;
 //				style.length = length;

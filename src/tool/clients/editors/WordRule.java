@@ -27,7 +27,7 @@ public class WordRule {
       int length = word.length();
       int nextchar = getNextChar(s, i, length);
       if (canStartKeyword(word.charAt(length - 1), nextchar)) {
-    	  StyleSpan<String> style = new StyleSpan<String>("-fx-fill:rgb("+color.getRed()+","+color.getGreen()+","+color.getBlue()+")", length);
+    	  StyleSpan<String> style = new StyleSpan<String>("-fx-fill:"+toRGB(color), length);
 //    	StyleRange style = new StyleRange();
 //        style.start = i;
 //        style.length = length;
@@ -48,6 +48,14 @@ public class WordRule {
     return !(Character.isLetterOrDigit(prevChar) && Character.isLetterOrDigit(keyChar));
   }
 
+  public String toRGB(Color c){
+	  int red = (new Double(c.getRed()*192)).intValue();
+	  int green = (new Double(c.getGreen()*192)).intValue();
+	  int blue = (new Double(c.getBlue()*192)).intValue();
+	  return "rgb("+red+","+green+","+blue+")";
+	  
+  }
+  
   public String toString() {
     return "WordRule(" + word + "," + color + ")";
   }

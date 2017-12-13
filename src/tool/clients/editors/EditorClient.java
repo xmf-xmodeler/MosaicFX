@@ -71,7 +71,9 @@ public class EditorClient extends Client {
   static Hashtable<String, Tab>    tabs           = new Hashtable<String, Tab>();
   static Hashtable<String, WebView>     browsers       = new Hashtable<String, WebView>();
   static Hashtable<String, ITextEditor> editors        = new Hashtable<String, ITextEditor>();
-
+  static Hashtable<String, TextField>     urlFields       = new Hashtable<String, TextField>();
+  
+  
 //  boolean browserLocked = true;
   
 //  Hashtable<Browser, Stack<String>> backQueues     = new Hashtable<Browser, Stack<String>>();
@@ -439,14 +441,18 @@ public class EditorClient extends Client {
           };
 //        browserLocked = false;
         browsers.put(id, browser);
-          
+        
+        browser.setOnZoom(e->{
+        	browser.setZoom(browser.getZoom()*e.getZoomFactor());
+        });
+        
         Button increaseZoom = new Button("+");
         increaseZoom.setOnAction((e)->{
-        	browser.setZoom(browser.getZoom()+10);
+        	browser.setZoom(browser.getZoom()+0.1);
         });
         Button decreaseZoom = new Button("-");
         decreaseZoom.setOnAction((e)->{
-        	browser.setZoom(browser.getZoom()-10);
+        	browser.setZoom(browser.getZoom()-0.1);
         });
         Button back = new Button("", new ImageView(new Image((new File("icons/User/Arrow4Left.gif").toURI().toString()))));
         back.setOnAction((e)->{
@@ -462,6 +468,7 @@ public class EditorClient extends Client {
         });
         Label urlLabel = new Label("URL:");
         TextField urlField = new TextField("Enter URL here...");
+        urlFields.put(id, urlField);
         Button go = new Button("Go");
         go.setOnAction((e)->{
         	        EventHandler handler = getHandler();
@@ -469,10 +476,6 @@ public class EditorClient extends Client {
         	        message.args[0] = new Value(id);
         	        message.args[1] = new Value(urlField.getText());
         	        handler.raiseEvent(message);
-        });
-        
-        browser.getEngine().locationProperty().addListener((e)->{
-        	urlField.setText(browser.getEngine().getLocation());
         });
         
         HBox hbox = new HBox();
@@ -1065,9 +1068,12 @@ public class EditorClient extends Client {
           if (!addToHistory) {
             //currently not implemented 
           }
-          if (isLikelyToBeHTML(url))
-            browser.getEngine().loadContent(url);
-          else browser.getEngine().load(url);
+//          if (isLikelyToBeHTML(url)){
+          System.out.println(url);
+            browser.getEngine().load(url);
+          	urlFields.get(id).setText(url);
+//          }	
+//          else browser.getEngine().loadContent(url);
 
           tabPane.getSelectionModel().select(tabs.get(id));
     	  l.countDown();

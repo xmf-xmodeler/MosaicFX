@@ -26,6 +26,7 @@ public class DialogsClient extends Client {
 	  static DialogsClient theClient;
 
 	  static Cursor        cursor = null;
+	  static File 		   lastFile = new File(System.getProperty("user.home"));
 	
 //  public static String chooseFont() {
 //    final String[] result = new String[1];
@@ -72,9 +73,9 @@ public class DialogsClient extends Client {
     final String[] result = new String[] { null };
 	 CountDownLatch l = new CountDownLatch(1);
 //    DialogsClient.theClient().runOnDisplay(
-    Platform.runLater(
-    		new Runnable() {
-      public void run() {
+    Platform.runLater(()->{
+//    		new Runnable() {
+//      public void run() {
           final TextInputDialog inputDlg = new TextInputDialog(value);
           inputDlg.setTitle(title);
           inputDlg.setContentText(message);
@@ -87,7 +88,7 @@ public class DialogsClient extends Client {
            
         result[0] = inputDlg.getResult(); //dialog.getValue();
         l.countDown();
-      }
+//      }
     });
     try {
 		l.await();
@@ -149,7 +150,6 @@ public class DialogsClient extends Client {
 //    return new Value("");
 //  }
 
-  //TODO is it used?
 //  public static String[] orderingDialog(final String title, final String question, final String[] strings) {
 //    final Object[] result = new Object[] { null };
 //    DialogsClient.theClient().runOnDisplay(new Runnable() {
@@ -254,8 +254,7 @@ public class DialogsClient extends Client {
     final Value[] result = new Value[1];
 	CountDownLatch l = new CountDownLatch(1);
 //    runOnDisplay(
-    		Platform.runLater(new Runnable() {
-      public void run() {
+    	Platform.runLater(()-> {
     	  String path = message.args[0].strValue();  
     	  
     	  DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -263,6 +262,8 @@ public class DialogsClient extends Client {
     	  File initDirectory = new File(path);
     	  if (initDirectory.exists()){
     		  directoryChooser.setInitialDirectory(initDirectory);
+    	  }else{
+    		  directoryChooser.setInitialDirectory(lastFile.getParentFile());
     	  }
           File selectedDirectory = 
                   directoryChooser.showDialog(XModeler.getStage());
@@ -270,6 +271,7 @@ public class DialogsClient extends Client {
           if(selectedDirectory == null){
         	  result[0] = new Value("");
           }else{
+        	  lastFile = selectedDirectory;
         	  result[0] = new Value(selectedDirectory.getAbsolutePath());
           }  
         l.countDown();
@@ -278,7 +280,6 @@ public class DialogsClient extends Client {
 //        path = dialog.open();
 //        path = path == null ? "" : path;
 //        result[0] = new Value(path);
-      }
     });
     try {
 		l.await();
@@ -292,9 +293,9 @@ public class DialogsClient extends Client {
     final Value[] result = new Value[] { new Value("") };
 	   CountDownLatch l = new CountDownLatch(1);
 //    runOnDisplay(
-     Platform.runLater(
-    		new Runnable() {
-      public void run() {
+     Platform.runLater(()->{
+//    		new Runnable() {
+//      public void run() {
 //        try {
           String type = message.args[0].strValue();
           String path = message.args[1].strValue();
@@ -305,12 +306,13 @@ public class DialogsClient extends Client {
       	
 				fileChooser.setTitle("Select the image file");
 				fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter(pattern, pattern));
-
+				
 				File initFile = new File(path);
 				fileChooser.setInitialFileName(def);
 				if (initFile.exists()) {
 					fileChooser.setInitialDirectory(initFile);
-
+				}else{
+					fileChooser.setInitialDirectory(lastFile.getParentFile());
 				}
 				File file;
 				if (type.equals("open")) {
@@ -320,6 +322,7 @@ public class DialogsClient extends Client {
 				}
 
 				if (file != null) {
+					lastFile = file;
 					result[0] = new Value(file.getAbsolutePath());
 				} else {
 					result[0] = new Value("");
@@ -335,7 +338,7 @@ public class DialogsClient extends Client {
 //        } catch (Exception e) {
 //          e.printStackTrace(System.err);
 //        }
-      }
+//      }
     });
 //    System.err.println(message);
      try {
@@ -420,9 +423,9 @@ public class DialogsClient extends Client {
     final Value[] values = new Value[1];
     
     CountDownLatch l = new CountDownLatch(1);
-	   Platform.runLater(	
+	   Platform.runLater(()->{	
 // runOnDisplay(
- 		new Runnable() { public void run() {
+// 		new Runnable() { public void run() {
  	        Value question = message.args[0];
  	        
      Alert alert = new Alert(AlertType.CONFIRMATION, question.strValue(), ButtonType.YES, ButtonType.NO);
@@ -439,7 +442,7 @@ public class DialogsClient extends Client {
 //        Value defaultResponse = message.args[1];
 //        Value icon = message.args[2];
 //        values[0] = new Value(MessageDialog.openQuestion(XModeler.getXModeler(), "Question", question.strValue()) ? "Yes" : "No");
-      }
+//      }
     });
 	 try {
 		l.await();
@@ -451,8 +454,7 @@ public class DialogsClient extends Client {
 
   private Value newQuestionDialogYesOnly(final Message message) {
 	  CountDownLatch l = new CountDownLatch(1);
-	   Platform.runLater(new Runnable() {
-		      public void run() {
+	   Platform.runLater(()->{
 		    	  Value question = message.args[0];
 			   
 		    	  Alert alert = new Alert(AlertType.INFORMATION, question.strValue(), ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
@@ -460,7 +462,7 @@ public class DialogsClient extends Client {
 		    	  alert.showAndWait();
 
 		    	  l.countDown();
-		      }});
+		      });
 	  try {
 		l.await();
 	} catch (InterruptedException e) {
@@ -481,9 +483,7 @@ public class DialogsClient extends Client {
 	   final Value[] values = new Value[1];
 //	    runOnDisplay(
 	   CountDownLatch l = new CountDownLatch(1);
-	   Platform.runLater(	   
-	    new Runnable() {
-	      public void run() {
+	   Platform.runLater(()->{	   
 	        Value question = message.args[0];
 //	        Value defaultResponse = message.args[1];
 //	        Value icon = message.args[2];
@@ -517,7 +517,6 @@ public class DialogsClient extends Client {
 //		        values[0] = new Value("");
 //	    		break;
 //	    	}	        
-	      }
 	    });
 	    try {
 			l.await();
@@ -530,9 +529,8 @@ public class DialogsClient extends Client {
 	private Value newConfirmDialog(final Message message) {
 	    final Value[] values = new Value[1];
 	    CountDownLatch l = new CountDownLatch(1);
-		   Platform.runLater(	
+		   Platform.runLater(	()->{
 //	    runOnDisplay(
-	    		new Runnable() { public void run() {
 	    	String question = message.args[0].strValue();
 	    	
 	        Alert alert = new Alert(AlertType.CONFIRMATION, question, ButtonType.YES, ButtonType.NO);
@@ -550,7 +548,7 @@ public class DialogsClient extends Client {
 //	    		values[0] = new Value("Yes");
 //	    	else
 //	    		values[0] = new Value("No");
-	    	}});
+	    	});
 		   try {
 			l.await();
 		} catch (InterruptedException e) {

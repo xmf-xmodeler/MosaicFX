@@ -1,7 +1,5 @@
 package tool.clients.editors;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -69,13 +67,6 @@ import xos.Value;
 
 public class TextEditor implements ITextEditor{
 
-  private static final int           ZOOM          = 2;
-  private static final int           MAX_FONT_SIZE = 40;
-  private static final int           MIN_FONT_SIZE = 2;
-  private static final int           LEFT_BUTTON   = 1;
-  private static final int           MIDDLE_BUTTON = 2;
-  private static final int           RIGHT_BUTTON  = 3;
-
   InlineCssTextArea							textArea;
   VirtualizedScrollPane<InlineCssTextArea>					virtualizedScrollPane;					
   
@@ -108,7 +99,7 @@ public class TextEditor implements ITextEditor{
     textArea.setEditable(editable);    
     //font currently not supported
     
-    textArea.richChanges().filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
+    textArea.richChanges().filter(ch -> !ch.getInserted().getText().equals(ch.getRemoved().getText())) 
     .subscribe(change -> {
         if (!dirty) {
             Message message = EditorClient.theClient().getHandler().newMessage("textDirty", 2);
@@ -118,15 +109,20 @@ public class TextEditor implements ITextEditor{
 
             dirty = true;
           }
+        if (autoComplete) checkKeywords();
         int start = change.getPosition();
         int length = change.getNetLength();
         if (length > 0) addStylesQueueRequest(start, length, textArea.getText());
     });
     
     textArea.setOnMouseClicked(e->{
-    	if(e.isSecondaryButtonDown() || e.isControlDown()){
+    	if(e.isControlDown()){
     		MenuClient.popup(id, textArea, (new Double(e.getScreenX())).intValue(), (new Double(e.getScreenY())).intValue());
     	}
+    });
+    
+    textArea.setOnContextMenuRequested(e->{
+    	MenuClient.popup(id, textArea, (new Double(e.getScreenX())).intValue(), (new Double(e.getScreenY())).intValue());
     });
     
     textArea.setOnZoom(e->{
@@ -375,7 +371,7 @@ public class TextEditor implements ITextEditor{
 
   private void addStylesNew(final int start, final int length, final String s) {
     // System.err.println("\n");
-    RuntimeException err = new RuntimeException();
+//    RuntimeException err = new RuntimeException();
     // StackTraceElement el = err.getStackTrace()[1];
 
 //    final Display display = Display.getCurrent();
@@ -428,13 +424,13 @@ public class TextEditor implements ITextEditor{
   }
 
   private boolean at() {
-	//TODO
     // The user typed an '@'. Offer up the options in the atTable and
     // return false if nothing is selected. Insert the choice and return
     // true if selected...
     if (!atTable.isEmpty()) {
       final boolean[] result = new boolean[] { false };
       ContextMenu cm = getAtPopup(result);
+      cm.setAutoHide(true);
 //      Point p = text.getCaret().getLocation();
 //      Point displayPoint = text.toDisplay(p);
 //      menu.setLocation(displayPoint);
@@ -459,7 +455,6 @@ public class TextEditor implements ITextEditor{
     StyleSpans<String> spans = textArea.getStyleSpans(start, start);
     spans.getStyleSpan(0);
         
-    //TODO prüfen
     if(spans.getStyleSpan(0) == textArea.getStyleSpans(checkStart, checkStart).getStyleSpan(0) ){
     	while(spans.getStyleSpan(0) == textArea.getStyleSpans(checkStart, checkStart).getStyleSpan(0) ){
     		checkStart--;
@@ -563,7 +558,6 @@ public class TextEditor implements ITextEditor{
 
   private int getCurrentIndent() {
     String s = textArea.getText();
-    //TODO stimmt das?
     int start = 0;//text.getOffsetAtLine(text.getLineAtOffset(text.getCaretOffset()));
     int indent = 0;
     for (int i = start; i < s.length() && s.charAt(i) == ' '; i++)
@@ -639,8 +633,8 @@ public class TextEditor implements ITextEditor{
 //    return text;
 //  }
 
-  public InlineCssTextArea getText() {
-	    return textArea;
+  public  javafx.scene.Node getText() {
+	    return virtualizedScrollPane;
 	  }
   
   private PPrint ifThen() {
@@ -769,8 +763,8 @@ public class TextEditor implements ITextEditor{
     	ContextMenu cm = new ContextMenu();
 //      Menu menu = new Menu(XModeler.getXModeler(), SWT.POP_UP);
       for (final Keyword keyword : keys) {
-        MenuItem item = new MenuItem("keyword.description");
-        item.setText(keyword.description);
+        MenuItem item = new MenuItem(keyword.description);
+//        item.setText(keyword.description);
         item.setOnAction(e->{
         	String s = keyword.toString(getCurrentIndent());
             autoComplete = false;
@@ -829,12 +823,10 @@ public class TextEditor implements ITextEditor{
 //    int start = event.start;
 //    int length = event.length;
 //    if (length > 0) addStylesQueueRequest(start, length, text.getText());
-////TODO Currently not supported
 ////    if (autoComplete) checkKeywords();
 //
 //    // addStylesNew(start, length, s);
 //
-//    //TODO for what reason?
 ////    syntaxDirty++;
 ////    Display.getCurrent().timerExec(3000, new Runnable() {
 ////      @Override
@@ -967,7 +959,7 @@ public class TextEditor implements ITextEditor{
     addLines();
   }
 
-  //TODO wofür?
+//  TODO wofür?
   public void showLine(int line) {
 //    text.setCaretOffset(text.getOffsetAtLine(line));
 //    text.redraw();
