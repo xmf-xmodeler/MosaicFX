@@ -306,9 +306,18 @@ public class TextEditor implements ITextEditor{
   }
 
   public void addLineHighlight(int line) {
-	  //TODO
 //    highlights.add(text.getOffsetAtLine(line - 1));
 //    text.redraw();
+	  
+  	  String s = textArea.getText();
+  	  int index = -1;
+  	  
+  	  for(int i=1; i< line;i++){
+  		  index = s.indexOf("\n",index+1);  
+  	  }
+  	  index += 1;
+  	  int lineEnd = s.indexOf("\n",index+1);
+  	  textArea.setStyle(index, lineEnd, "-fx-highlight-fill:rgb(192, 192, 192);");
   }
 
   public void addLines() {
@@ -833,7 +842,6 @@ public class TextEditor implements ITextEditor{
     return new Seq(new Space(), new Literal("name = exp"), new NewLine(), new Literal("in"), new Space(), new Literal("body"), new NewLine(), new Literal("end"));
   }
 
-  //TODO 
 //  public void lineGetBackground(LineBackgroundEvent event) {
 //    if (highlights.contains(event.lineOffset)) event.lineBackground = EditorClient.LINE_HIGHLIGHT;
 //  }
@@ -988,17 +996,16 @@ public class TextEditor implements ITextEditor{
     addLines();
   }
 
-//  TODO wofür?
   public void showLine(int line) {
-	  String s = textArea.getText();
-	  int lastFound = 0;
-	  int index = 0;
-	  
-	  for(int i=0; i< line;i++){
-		  lastFound = index;
-		  index = s.indexOf("\r", lastFound);  
-	  }
-	  
+  	  String s = textArea.getText();
+  	  int index = -1;
+  	  
+  	  for(int i=1; i< line;i++){
+  		  index = s.indexOf("\n",index+1);  
+  	  }
+  	  index += 1;
+  	  textArea.requestFocus();
+  	  textArea.moveTo(index);
 	  
 //    text.setCaretOffset(text.getOffsetAtLine(line));
 //    text.redraw();

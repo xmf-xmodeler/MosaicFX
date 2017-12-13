@@ -397,13 +397,13 @@ public class EditorClient extends Client {
     return url.startsWith("http://") || url.startsWith("file:/");
   }
 
-  private boolean isLikelyToBeHTML(String s) {
-      s = s.trim();
-      s = s.toLowerCase();
-      if (s.startsWith("<html>")) return true;
-      if (s.startsWith("<!doctype html")) return true;
-      return false;
-    }
+//  private boolean isLikelyToBeHTML(String s) {
+//      s = s.trim();
+//      s = s.toLowerCase();
+//      if (s.startsWith("<html>")) return true;
+//      if (s.startsWith("<!doctype html")) return true;
+//      return false;
+//    }
   
   private void newBrowser(Message message) {
     String id = message.args[0].strValue();
