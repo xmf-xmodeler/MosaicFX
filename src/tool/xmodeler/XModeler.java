@@ -45,6 +45,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -136,19 +137,18 @@ public class XModeler extends Application {
     else return value;
   }
 
-  //TODO re-uimplement
-  private static Listener closeListener() {
-    return new Listener() {
-      public void handleEvent(Event event) {
-        if (loadedImagePath == null) {
-          WorkbenchClient.theClient().shutdownEvent();
-        } else {
-          WorkbenchClient.theClient().shutdownAndSaveEvent(loadedImagePath, inflationPath());
-        }
-        event.doit = false;
-      }
-    };
-  }
+//  private static Listener closeListener() {
+//    return new Listener() {
+//      public void handleEvent(Event event) {
+//        if (loadedImagePath == null) {
+//          WorkbenchClient.theClient().shutdownEvent();
+//        } else {
+//          WorkbenchClient.theClient().shutdownAndSaveEvent(loadedImagePath, inflationPath());
+//        }
+//        event.doit = false;
+//      }
+//    };
+//  }
 
   public static String encodeXmlAttribute(String str) {
     if (str == null) return null;
@@ -379,8 +379,6 @@ public class XModeler extends Application {
     	
     	fileChooser.setTitle("Select the image file");
     	fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("*.img", "*.img"));
-//		TODO set Initial Directory?
-//        fileChooser.setInitialDirectory(new File(projDir));
         
         fileChooser.setInitialFileName(defaultImage);    
     	

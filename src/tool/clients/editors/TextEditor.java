@@ -53,6 +53,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import tool.clients.editors.pprint.Indent;
 import tool.clients.editors.pprint.Literal;
@@ -72,6 +73,7 @@ public class TextEditor implements ITextEditor{
   
   String                             id;
   String                             label;
+  int 								 fontsize = 10;
 //  StyledText                         text;
 //  FontData                           fontData;                                                // = new FontData("Courier", 12, SWT.NO);
   Hashtable<String, PPrint>          atTable       = new Hashtable<String, PPrint>();
@@ -83,8 +85,9 @@ public class TextEditor implements ITextEditor{
   int[]                              offsets       = new int[] {};
   boolean                            lineNumbers   = true;
   boolean                            dirty         = false;
-  boolean                            autoComplete  = false;
-  char                               lastChar      = '\0';
+  boolean                            autoComplete  = true;//false;
+//  char                               lastChar      = '\0';
+  boolean                               lastCharIsLetter      = false;
   int                                syntaxDirty   = 0;                                       // counter for delaying syntax highlighting update
 
   private boolean                    syntaxBusy;
@@ -98,8 +101,10 @@ public class TextEditor implements ITextEditor{
     virtualizedScrollPane = new VirtualizedScrollPane<InlineCssTextArea>(textArea);
     textArea.setEditable(editable);    
     //font currently not supported
+    textArea.setStyle("-fx-font-size:"+fontsize+"pt;");
     
-    textArea.richChanges().filter(ch -> !ch.getInserted().getText().equals(ch.getRemoved().getText())) 
+    
+    textArea.plainTextChanges().filter(ch -> !ch.getInserted().equals(ch.getRemoved())) 
     .subscribe(change -> {
         if (!dirty) {
             Message message = EditorClient.theClient().getHandler().newMessage("textDirty", 2);
@@ -109,10 +114,23 @@ public class TextEditor implements ITextEditor{
 
             dirty = true;
           }
-        if (autoComplete) checkKeywords();
+        if (autoComplete){
+        	checkKeywords();
+        }
+        if (autoComplete && change.getInserted().length() == 1 && change.getInserted().charAt(0)=='@') {
+        	at(); 
+        }
         int start = change.getPosition();
         int length = change.getNetLength();
         if (length > 0) addStylesQueueRequest(start, length, textArea.getText());
+        syntaxDirty++;
+        Platform.runLater(()->{
+        	syntaxDirty--;
+        	if (syntaxDirty == 0) {
+        		addStyles();
+        	}	
+        });
+    
     });
     
     textArea.setOnMouseClicked(e->{
@@ -125,40 +143,46 @@ public class TextEditor implements ITextEditor{
     	MenuClient.popup(id, textArea, (new Double(e.getScreenX())).intValue(), (new Double(e.getScreenY())).intValue());
     });
     
-    textArea.setOnZoom(e->{
-    	//TODO
-//    	if (isCntrl(e) && (e.keyCode == '=')) {
-//            if (selectedImage != null)
-//              growSelectedImage();
-//            else {
-//              fontData.setHeight(Math.min(fontData.getHeight() + ZOOM, MAX_FONT_SIZE));
-//              text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
-//              e.doit = false;
-//            }
-//          }
-//          if (isCntrl(e) && (e.keyCode == '-')) {
-//            if (selectedImage != null)
-//              shrinkSelectedImage();
-//            else {
-//              fontData.setHeight(Math.max(MIN_FONT_SIZE, fontData.getHeight() - ZOOM));
-//              text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
-//              e.doit = false;
-//            }
-//          }
+    textArea.addEventFilter(ScrollEvent.ANY, e->{
+    	if(e.isControlDown()){
+    		if(e.getDeltaY()>1){
+    			fontsize += 2;
+    		}else{
+    		if (fontsize > 6) {
+    				fontsize -= 2;
+    			}
+    		}
+    		textArea.setStyle("-fx-font-size:"+fontsize+"pt;");
+    		e.consume();
+    	}
+   
     });
     
     textArea.setOnKeyReleased(e->{
-        
-          if (e.isControlDown() && (e.getCode() == KeyCode.F)) {
-        	  //TODO
-//            FindUtil.show(XModeler.getXModeler(), text);
+    	if ((e.isControlDown() || e.isMetaDown()) && (e.getCode() == KeyCode.PLUS)) {
+    		fontsize += 2;
+    		textArea.setStyle("-fx-font-size:"+fontsize+"pt;");
+    		e.consume();
+        }
+        if ((e.isControlDown() || e.isMetaDown()) && (e.getCode() == KeyCode.MINUS)) {
+        	fontsize -= 2;
+        	textArea.setStyle("-fx-font-size:"+fontsize+"pt;");
+        	e.consume();
+        }
+        if ((e.isControlDown() || e.isMetaDown()) && ((e.getCode() == KeyCode.DIGIT0)||(e.getCode() == KeyCode.NUMPAD0)) ) {
+        	fontsize = 10;
+        	textArea.setStyle("-fx-font-size:"+fontsize+"pt;");
+        	e.consume();
+        }
+          if ((e.isControlDown() || e.isMetaDown()) && (e.getCode() == KeyCode.F)) {
+            FindUtil.show3(textArea);
             e.consume();
           }
-          if (e.isControlDown() && (e.getCode() == KeyCode.S)) {
+          if ((e.isControlDown() || e.isMetaDown()) && (e.getCode() == KeyCode.S)) {
             save();
             e.consume();
           }
-          if (e.isControlDown() && (e.getCode() == KeyCode.L)) {
+          if ((e.isControlDown() || e.isMetaDown()) && (e.getCode() == KeyCode.L)) {
         	TextEditor.this.lineNumbers = !TextEditor.this.lineNumbers;
             addLines();
             e.consume();
@@ -172,17 +196,20 @@ public class TextEditor implements ITextEditor{
 //              insertImage(imageData, text.getCaretOffset());
 //            }
 //          }
-          if (e.getCharacter().equals("@") && autoComplete) {
+          
+          
+          
+          if ((e.getCode() == KeyCode.AT) ){//&& autoComplete) {
+        	System.out.println(e.getCharacter());  
             if(!at()){
             	e.consume();
             }
           }
-          //propably not required anymore do to JavaFX
-//          if (e.character == '\r') {
-//            newline(getCurrentIndent());
-//            e.doit = false;
-//          }
-          if (e.isConsumed()) lastChar = e.getCharacter().charAt(0);
+          
+          if (!e.isConsumed()) lastCharIsLetter = e.getCode().isLetterKey();
+          
+                   
+          
     });
     
     populateAt();
@@ -209,11 +236,11 @@ public class TextEditor implements ITextEditor{
 //    text.addSelectionListener(this);  
 //    GC gc = new GC(text);
 //    gc.setTextAntialias(SWT.ON);
-    populateAt();
-    populateKeywords();
+//    populateAt();
+//    populateKeywords();
 //	included out of the box    
 //    new UndoRedoImpl(text);
-    addCommentWordRule();
+//    addCommentWordRule();
   }
 
   private PPrint _class() {
@@ -430,11 +457,14 @@ public class TextEditor implements ITextEditor{
     if (!atTable.isEmpty()) {
       final boolean[] result = new boolean[] { false };
       ContextMenu cm = getAtPopup(result);
+      System.out.println(cm.getItems());
+      System.out.println(textArea.getCaretBounds().get().getMaxX());
+      System.out.println(textArea.getCaretBounds().get().getMaxY());
       cm.setAutoHide(true);
 //      Point p = text.getCaret().getLocation();
 //      Point displayPoint = text.toDisplay(p);
 //      menu.setLocation(displayPoint);
-      cm.show(textArea, textArea.getContextMenuXOffset(), textArea.getContextMenuXOffset());
+      cm.show(textArea, textArea.getCaretBounds().get().getMaxX(),textArea.getCaretBounds().get().getMaxY());
 //      menu.setVisible(true);
 //      while (!menu.isDisposed() && menu.isVisible()) {
 //        if (!Display.getCurrent().readAndDispatch()) Display.getCurrent().sleep();
@@ -477,7 +507,7 @@ public class TextEditor implements ITextEditor{
   }
 
   private void checkKeywords() {
-    if (isAlpha(lastChar)) {
+    if (lastCharIsLetter) {
       Vector<Keyword> keys = getKeysAtCurrentPosition();
       if (keys != null) key(keys);
     }
@@ -535,10 +565,12 @@ public class TextEditor implements ITextEditor{
     	  PPrint pprint = atTable.get(name);
           int indent = getCurrentIndent();
           String s = pprint.toString(indent);
+          textArea.deleteText(textArea.getCaretPosition()-1, textArea.getCaretPosition());
           textArea.insertText(textArea.getCaretPosition(), s);
-          textArea.moveTo(textArea.getCaretPosition() + s.length());
+//          textArea.moveTo(textArea.getCaretPosition() + s.length());
           result[0] = true;
       });
+      cm.getItems().add(item);
 //      item.addSelectionListener(new SelectionListener() {
 //        public void widgetDefaultSelected(SelectionEvent event) {
 //        }
@@ -569,7 +601,6 @@ public class TextEditor implements ITextEditor{
     return id;
   }
 
-//TODO  
 //  private Image getImageAt(int offset) {
 //    for (int i = 0; i < images.length; i++) {
 //      if (offsets[i] == offset) return images[i];
@@ -582,7 +613,7 @@ public class TextEditor implements ITextEditor{
     String s = textArea.getText();
     for (String key : keyTable.keySet()) {
       int match = s.indexOf(key, index - key.length());
-      if (match != -1 && match == index - key.length()) return keyTable.get(key);
+      if (match != -1 && match == index - key.length()+1) return keyTable.get(key);
     }
     return null;
   }
@@ -706,9 +737,9 @@ public class TextEditor implements ITextEditor{
 //    }
 //  }
 
-  private boolean isAlpha(char c) {
-    return 'a' <= c && c <= 'z';
-  }
+//  private boolean isAlpha(char c) {
+//    return 'a' <= c && c <= 'z';
+//  }
 
   // private boolean isNumber(char c) {
   // return '0' <= c && c <= '9';
@@ -770,9 +801,8 @@ public class TextEditor implements ITextEditor{
             autoComplete = false;
             textArea.insertText(textArea.getCaretPosition(), s);
             autoComplete = true;
-            textArea.moveTo(textArea.getCaretPosition()+ s.length());
         });
-        
+        cm.getItems().add(item);
 //        item.addSelectionListener(new SelectionListener() {
 //          public void widgetDefaultSelected(SelectionEvent event) {
 //          }
@@ -786,8 +816,7 @@ public class TextEditor implements ITextEditor{
 //          }
 //        });
       }
-      //TODO stimmt das?
-      cm.show(textArea, textArea.getContextMenuXOffset(), textArea.getContextMenuYOffset());
+      cm.show(textArea, textArea.getCaretBounds().get().getMaxX(), textArea.getCaretBounds().get().getMaxY());
 //      menu.setVisible(true);
 //      while (!menu.isDisposed() && menu.isVisible()) {
 //        if (!Display.getCurrent().readAndDispatch()) Display.getCurrent().sleep();
@@ -961,6 +990,16 @@ public class TextEditor implements ITextEditor{
 
 //  TODO wofür?
   public void showLine(int line) {
+	  String s = textArea.getText();
+	  int lastFound = 0;
+	  int index = 0;
+	  
+	  for(int i=0; i< line;i++){
+		  lastFound = index;
+		  index = s.indexOf("\r", lastFound);  
+	  }
+	  
+	  
 //    text.setCaretOffset(text.getOffsetAtLine(line));
 //    text.redraw();
   }

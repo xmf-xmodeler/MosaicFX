@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
+import org.fxmisc.richtext.InlineCssTextArea;
 
 public class FindUtil {
 
@@ -30,6 +31,10 @@ public class FindUtil {
   static String     keyword;
   static Button     button;
 
+  public static void show3(InlineCssTextArea textArea){
+	  
+  }
+  
   public static void show(Shell shell, final StyledText styledText) {
     Menu menu = new Menu(shell);
     GuiConfigData config = new GuiConfigData();
