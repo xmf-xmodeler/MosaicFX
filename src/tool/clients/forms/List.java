@@ -3,30 +3,34 @@ package tool.clients.forms;
 import java.io.PrintStream;
 import java.util.Hashtable;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.widgets.Composite;
-
+import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import tool.xmodeler.XModeler;
 
-public class List implements MouseListener {
+public class List {
 
   String                       id;
-  org.eclipse.swt.widgets.List list;
   Hashtable<String, String>    items = new Hashtable<String, String>();
+  ListView<String>             list; 
 
-  public List(String id, Composite parent, int x, int y, int width, int height) {
+  public List(String id, AnchorPane parent, int x, int y, int width, int height) {
+
     this.id = id;
-    list = new org.eclipse.swt.widgets.List(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-    list.setLocation(x, y);
-    list.setSize(width, height);
-    list.setFont(FormsClient.formTextFieldFont);
-    list.addMouseListener(this);
+    list = new ListView<String>();
+    AnchorPane.setLeftAnchor(list, x*1.);
+    AnchorPane.setTopAnchor(list, y*1.);
+    list.setOnMouseClicked(new javafx.event.EventHandler<MouseEvent>() {
+		@Override
+		public void handle(MouseEvent click) {
+		    if (click.getClickCount() == 2) {
+		    	FormsClient.theClient().doubleClick(getId(list.getSelectionModel().getSelectedItem()));}}});
+    parent.getChildren().add(list);
+
   }
 
   public void add(String id, String value) {
-    list.add(value);
+    list.getItems().add(value);
     items.put(id, value);
   }
 
@@ -36,43 +40,24 @@ public class List implements MouseListener {
 
   public void writeXML(PrintStream out) {
     out.print("<List id='" + getId() + "'");
-    out.print(" x='" + list.getLocation().x + "'");
-    out.print(" y='" + list.getLocation().y + "'");
-    out.print(" width='" + list.getSize().x + "'");
-    out.print(" height='" + list.getSize().y + "'>");
+    out.print(" x='" + (int)(list.getLayoutX()) + "'");
+    out.print(" y='" + (int)(list.getLayoutY()) + "'");
+    out.print(" width='" + (int)(list.getWidth()) + "'");
+    out.print(" height='" + (int)(list.getHeight()) + "'>");
     for (String id : items.keySet())
       out.print("<Item id='" + id + "' value='" + XModeler.encodeXmlAttribute(items.get(id)) + "'/>");
     out.print("</List>");
   }
 
   public void clear() {
-    list.removeAll();
+    list.getItems().removeAll();
     items.clear();
-  }
-
-  public void mouseDoubleClick(MouseEvent arg0) {
-    if (list.getSelectionCount() == 1) {
-      String id = getId(list.getSelection()[0]);
-      FormsClient.theClient().doubleClick(id);
-    }
   }
 
   private String getId(String string) {
     for (String id : items.keySet())
       if (items.get(id).equals(string)) return id;
     return null;
-  }
-
-  @Override
-  public void mouseDown(MouseEvent arg0) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void mouseUp(MouseEvent arg0) {
-    // TODO Auto-generated method stub
-
   }
 
 }

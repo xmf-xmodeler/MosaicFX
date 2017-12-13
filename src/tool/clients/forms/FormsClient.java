@@ -5,13 +5,13 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
-import org.eclipse.draw2d.FigureUtilities;
-import org.eclipse.draw2d.geometry.Dimension;
-import org.eclipse.swt.custom.CTabFolderEvent;
-import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.widgets.Display;
+//import org.eclipse.draw2d.FigureUtilities;
+//import org.eclipse.draw2d.geometry.Dimension;
+//import org.eclipse.swt.custom.CTabFolderEvent;
+//import org.eclipse.swt.custom.CTabItem;
+//import org.eclipse.swt.graphics.Color;
+//import org.eclipse.swt.graphics.Font;
+//import org.eclipse.swt.widgets.Display;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -45,87 +45,52 @@ public class FormsClient extends Client {
 //			}
 //		});
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////// OLD STUFF ///////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //	public static boolean HIGH_RESOLUTION = false;
 	public static final int HIGH_RESOLUTION_FACTOR_OLD = 2;
 	
-	  private Value getTextDimension(final Message message) {
-
-//		  runOnDisplay( )
-		  
-//		  XModeler.getXModeler().getDisplay().syncExec(
-		  class calcTextDimension implements Runnable{ 
-			  public Value value = null;
-			  //calcTextDimension(){ 
-	 			public void run() {
-	 				System.err.println("calcTextDimension");
-  					try {
-  						Value[] values = new Value[2];
-		        	Font f = XModeler.getXModeler().getDisplay().getSystemFont();
-		  			Dimension d = FigureUtilities.getTextExtents(message.args[0].strValue(), f);
-		  			
-  						values[0] = new Value(d.width);
-  						values[1] = new Value(d.height);
-  						value = new Value(values);
-  					} catch (Throwable t) {
-  						t.printStackTrace();
-  					}
-  				}
-	  		};
-//			  				);
-	  		calcTextDimension r = new calcTextDimension();
-	  		//CountDownLatch l = new CountDownLatch(1);  //TODO
-	  		Platform.runLater(r);
-
-			return r.value;
-	  }
+//	  private Value getTextDimension(final Message message) {
+//
+////		  runOnDisplay( )
+//		  
+////		  XModeler.getXModeler().getDisplay().syncExec(
+//		  class calcTextDimension implements Runnable{ 
+//			  public Value value = null;
+//			  //calcTextDimension(){ 
+//	 			public void run() {
+//	 				System.err.println("calcTextDimension");
+//  					try {
+//  						Value[] values = new Value[2];
+//		        	Font f = XModeler.getXModeler().getDisplay().getSystemFont();
+//		  			Dimension d = FigureUtilities.getTextExtents(message.args[0].strValue(), f);
+//		  			
+//  						values[0] = new Value(d.width);
+//  						values[1] = new Value(d.height);
+//  						value = new Value(values);
+//  					} catch (Throwable t) {
+//  						t.printStackTrace();
+//  					}
+//  				}
+//	  		};
+////			  				);
+//	  		calcTextDimension r = new calcTextDimension();
+//	  		//CountDownLatch l = new CountDownLatch(1);  //TODO
+//	  		Platform.runLater(r);
+//
+//			return r.value;
+//	  }
 	
   public static int getDeviceZoomPercent() {
 	  return XModeler.getDeviceZoomPercent();
   }
 	
-  public static Font getFormLabelFont() {
-    return formLabelFont;
-  }
-
-  public static Font getFormTextFieldFont() {
-    return formLabelFont;
-  }
+//  public static Font getFormLabelFont() {
+//    return formLabelFont;
+//  }
+//
+//  public static Font getFormTextFieldFont() {
+//    return formLabelFont;
+//  }
 
 //  public static void select() {
 //	for (ToolItem item : toolBar.getItems())
@@ -148,7 +113,7 @@ public class FormsClient extends Client {
     return theClient;
   }
 
-  static final Color                  WHITE             = new Color(null, 255, 255, 255);
+//  static final Color                  WHITE             = new Color(null, 255, 255, 255);
   static FormsClient                  theClient;
   static TabPane                      tabFolder;
 //  static ToolBar                      toolBar;
@@ -156,8 +121,8 @@ public class FormsClient extends Client {
   static Hashtable<String, Tab>       tabs              = new Hashtable<String, Tab>();
   static Vector<Form>                 forms             = new Vector<Form>();
   static Hashtable<String, FormTools> toolDefs          = new Hashtable<String, FormTools>();
-  static Font                         formLabelFont     = Display.getDefault().getSystemFont();//new Font(Display.getDefault(), new FontData("Monaco", 12, SWT.NO));
-  static Font                         formTextFieldFont = Display.getDefault().getSystemFont();//new Font(Display.getDefault(), new FontData("Monaco", 12, SWT.NO));
+//  static Font                         formLabelFont     = Display.getDefault().getSystemFont();//new Font(Display.getDefault(), new FontData("Monaco", 12, SWT.NO));
+//  static Font                         formTextFieldFont = Display.getDefault().getSystemFont();//new Font(Display.getDefault(), new FontData("Monaco", 12, SWT.NO));
 
 
   private void addComboItem(Message message) {
@@ -235,8 +200,9 @@ public class FormsClient extends Client {
   public Value callMessage(Message message) {
     if (message.hasName("getText"))
       return getText(message);
-    else  if (message.hasName("getTextDimension"))
-        return getTextDimension(message);
+    else if (message.hasName("getTextDimension"))
+    	throw new RuntimeException("The method getTextDimension(message) was removed.");
+//        return getTextDimension(message);
     else return super.callMessage(message);
   }
 
@@ -263,11 +229,16 @@ public class FormsClient extends Client {
     String id = message.args[0].strValue();
     final Form form = getForm(id);
     if (form != null) {
-      Display.getDefault().syncExec(new Runnable() {
-        public void run() {
+    	CountDownLatch l = new CountDownLatch(1);  
+    	Platform.runLater(() ->{
           form.clear();
-        }
-      });
+          l.countDown();
+    	});
+    	try {
+    	 l.await();
+    	} catch (InterruptedException e) {
+    	 e.printStackTrace();
+    	}
     } else System.err.println("cannot find form to clear " + id);
   }
 
@@ -299,7 +270,7 @@ public class FormsClient extends Client {
 
   private void inflateCheck(String parentId, Node check) {
     String id = XModeler.attributeValue(check, "id");
-    String text = XModeler.attributeValue(check, "text");
+//    String text = XModeler.attributeValue(check, "text");
     int x = Integer.parseInt(XModeler.attributeValue(check, "x"));
     int y = Integer.parseInt(XModeler.attributeValue(check, "y"));
     boolean checked = XModeler.attributeValue(check, "checked").equals("true");
@@ -308,12 +279,12 @@ public class FormsClient extends Client {
 
   private void inflateCombo(String parentId, Node combo) {
     String id = XModeler.attributeValue(combo, "id");
-    String string = XModeler.attributeValue(combo, "string");
+//    String string = XModeler.attributeValue(combo, "string");
     int x = Integer.parseInt(XModeler.attributeValue(combo, "x"));
     int y = Integer.parseInt(XModeler.attributeValue(combo, "y"));
     int width = Integer.parseInt(XModeler.attributeValue(combo, "width"));
     int height = Integer.parseInt(XModeler.attributeValue(combo, "height"));
-    boolean editable = XModeler.attributeValue(combo, "editable").equals("true");
+//    boolean editable = XModeler.attributeValue(combo, "editable").equals("true");
     newComboBox(parentId, id, x, y, width, height);
     NodeList items = combo.getChildNodes();
     for (int i = 0; i < items.getLength(); i++) {
@@ -365,7 +336,7 @@ public class FormsClient extends Client {
       Node node = children.item(i);
       String toolId = XModeler.attributeValue(node, "id");
       String event = XModeler.attributeValue(node, "event");
-      String icon = XModeler.attributeValue(node, "icon");
+//      String icon = XModeler.attributeValue(node, "icon");
       tools.addTool(event, toolId);
     }
   }
@@ -544,21 +515,19 @@ public class FormsClient extends Client {
 
   private void newForm(Message message) {
     String id = message.args[0].strValue();
-    String type = message.args[1].strValue(); // needed?
+//    String type = message.args[1].strValue(); // needed?
     String label = message.args[2].strValue();
+	System.err.println("*** NEW FORM *** " + id + " *** " + label + " ***");
     newForm(id, label, true);
   }
 
   private void newForm(final String id, final String label, final boolean selected) {
-//    runOnDisplay(new Runnable() {
-//      public void run() {
 	  CountDownLatch l = new CountDownLatch(1);  
 	  Platform.runLater(()->{
     	Tab tabItem = new Tab(label);
     	tabFolder.getTabs().add(tabItem);
 //    	tabFolder.toFront();
         tabs.put(id, tabItem);
-       
 //        CTabItem tabItem = new CTabItem(tabFolder, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 //        tabItem.setText(label);
 //        tabs.put(id, tabItem);
@@ -657,16 +626,23 @@ public class FormsClient extends Client {
     newTextField(parentId, id, x, y, width, height, editable);
   }
 
-  private void newTextField(final String parentId, final String id, final int x, final int y, final int width, final int height, final boolean editable) {
-	final Form form = getForm(parentId);
-    if (form != null) {
-      Display.getDefault().syncExec(new Runnable() {
-        public void run() {
-          form.newTextField(id, x, y, width, height, editable);
-        }
-      });
-    } else System.err.println("cannot find text field parent " + parentId);
-  }
+	private void newTextField(final String parentId, final String id, final int x, final int y, final int width,
+			final int height, final boolean editable) {
+		final Form form = getForm(parentId);
+		if (form != null) {
+			CountDownLatch l = new CountDownLatch(1);
+			Platform.runLater(() -> {
+				form.newTextField(id, x, y, width, height, editable);
+				l.countDown();
+			});
+			try {
+				l.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		} else
+			System.err.println("cannot find text field parent " + parentId);
+	}
 
   private void newTree(Message message) {
     String parentId = message.args[0].strValue();
@@ -698,17 +674,32 @@ public class FormsClient extends Client {
     return false;
   }
 
-  private void selectForm(final String id) {
-	 /*REMOVED*/
-//    runOnDisplay(new Runnable() {
-//      public void run() {
-//        if (tabs.containsKey(id))
-//          tabFolder.setSelection(tabs.get(id));
-//        else System.err.println("cannot find form: " + id);
-////        select();
-//      }
-//    });
-  }
+	private void selectForm(final String id) {
+		CountDownLatch l = new CountDownLatch(1);
+		Platform.runLater(() -> {
+			
+		 if (tabs.containsKey(id))
+		 tabFolder.getSelectionModel().select(tabs.get(id));	
+			
+			l.countDown();
+		});
+		try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+//		System.err.println("selectForm not implemented yet");
+		/* REMOVED */
+		// runOnDisplay(new Runnable() {
+		// public void run() {
+		// if (tabs.containsKey(id))
+		// tabFolder.setSelection(tabs.get(id));
+		// else System.err.println("cannot find form: " + id);
+		//// select();
+		// }
+		// });
+	}
   
   private void removeNode(Message message) {
     final String id = message.args[0].strValue();
@@ -938,6 +929,7 @@ public class FormsClient extends Client {
   }
 
   private void setTool(Message message) {
+	  System.err.println("setTool: "+ message);
     Value id = message.args[0];
     Value name = message.args[1];
     Value enabled = message.args[2];
@@ -996,40 +988,40 @@ public class FormsClient extends Client {
 //    out.print("</Forms>");
   }
 
-  public void close(CTabFolderEvent event) {
-    CTabItem item = (CTabItem) event.item;
-    String id = getId(item);
-    if (id != null && getForm(id) != null) {
-      EventHandler handler = getHandler();
-      Message message = handler.newMessage("formClosed", 1);
-      message.args[0] = new Value(id);
-      handler.raiseEvent(message);
-      forms.remove(getForm(id));
-      tabs.remove(id);
-    }
-  }
+//  public void close(CTabFolderEvent event) {
+//    CTabItem item = (CTabItem) event.item;
+//    String id = getId(item);
+//    if (id != null && getForm(id) != null) {
+//      EventHandler handler = getHandler();
+//      Message message = handler.newMessage("formClosed", 1);
+//      message.args[0] = new Value(id);
+//      handler.raiseEvent(message);
+//      forms.remove(getForm(id));
+//      tabs.remove(id);
+//    }
+//  }
+//
+//  private String getId(CTabItem item) {
+//    for (String id : tabs.keySet())
+//      if (tabs.get(id).equals(item)) return id;
+//    return null;
+//  }
 
-  private String getId(CTabItem item) {
-    for (String id : tabs.keySet())
-      if (tabs.get(id).equals(item)) return id;
-    return null;
-  }
-
-  public void maximize(CTabFolderEvent event) {
-
-  }
-
-  public void minimize(CTabFolderEvent event) {
-
-  }
-
-  public void restore(CTabFolderEvent event) {
-
-  }
-
-  public void showList(CTabFolderEvent event) {
-
-  }
+//  public void maximize(CTabFolderEvent event) {
+//
+//  }
+//
+//  public void minimize(CTabFolderEvent event) {
+//
+//  }
+//
+//  public void restore(CTabFolderEvent event) {
+//
+//  }
+//
+//  public void showList(CTabFolderEvent event) {
+//
+//  }
 
   public void doubleClick(String id) {
     EventHandler handler = getHandler();
