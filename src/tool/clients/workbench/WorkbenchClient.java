@@ -27,6 +27,8 @@ public class WorkbenchClient extends Client {
       consoleDot(message);
     else if (message.hasName("namespace"))
       consoleNamespace(message);
+    else if (message.hasName("loadImage"))
+    	loadImage(message);
     else super.sendMessage(message);
   }
 
@@ -38,6 +40,10 @@ public class WorkbenchClient extends Client {
     ConsoleClient.theConsole().namespace(message);
   }
 
+  private void loadImage(Message message) {
+	XModeler.loadImage();
+  }
+  
   private void inflate(Message message) {
     Value inflationPath = message.args[0];
     XModeler.inflate(inflationPath.strValue());

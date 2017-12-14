@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -38,12 +39,15 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Priority;
@@ -66,14 +70,17 @@ import tool.clients.workbench.WorkbenchClient;
 import tool.console.Console;
 import tool.console.ConsoleClient;
 import xos.OperatingSystem;
+import xos.Value;
 
 public class XModeler extends Application {
 
   // XModeler is a tool that controls and is controlled by the XMF VM that runs
   // on the XMF operating system.
-
+	
   private static Integer DEVICE_ZOOM_PERCENT = null;
 
+  static XModeler singelton = null;
+  
   static final String    NAME                = "XModeler";
   static String          busyMessage         = "";
   static int             TOOL_X              = 100;
@@ -428,11 +435,23 @@ public class XModeler extends Application {
   }
 
   public static void showMessage(String title, String message) {
-    NotifierDialog.notify(title, message, NotificationType.values()[2]);
+	 //TODO implement Notifier Dialog
+    //NotifierDialog.notify(title, message, NotificationType.values()[2]);
+	  CountDownLatch l = new CountDownLatch(1);
+	   Platform.runLater(()->{
+		   Alert alert = new Alert(AlertType.CONFIRMATION, message, ButtonType.OK);
+		   alert.setTitle(title);
+		   alert.showAndWait();
+		   l.countDown();
+	   });
+	   try {
+		   l.await();
+	   } catch (InterruptedException e) {
+		   e.printStackTrace();
+	   }
   }
 
   public static void shutdown() {
-	  //Sufficient?
 	 Platform.runLater(new Runnable() {
 	      public void run() {
 	  stage.close();
@@ -468,34 +487,16 @@ public class XModeler extends Application {
 	  EditorClient.start(editorTabs);
 	  FormsClient.start(propertyTabs);
 	  Console.start(propertyTabs);
-	  
-	  //TODO Adapt clients to java FX
-//	  EditorClient.start(editorSash.getFolder1(), SWT.BORDER);
-//	  DiagramClient.start(editorSash.getFolder1());
-	  
-//	  ModelBrowserClient.start(browserTabFolder, SWT.LEFT);
-//	  EditorClient.start(editorSash.getFolder1(), SWT.BORDER);
-//	  DiagramClient.start(editorSash.getFolder1());
-//	  ScreenGenerationClient.start(propertySash.getFolder1()); // BB
   }
   
   
   public static void openXModeler() {
-	  //TODO open
 		stage.show();		
   }
   
-/*  @Deprecated
-  public static void startDispatching() {
-    while (!XModeler.isDisposed()) {
-      if (!display.readAndDispatch()) display.sleep();
-    }
-    display.dispose();
-    System.exit(0);
-  } */
-
   @Override
   public void start(Stage primaryStage) throws Exception {
+	  singelton = this;
 	  stage = primaryStage;
 	  startXOS(copyOfArgs[0]);
 	  createXmodeler();
@@ -505,21 +506,10 @@ public class XModeler extends Application {
   }	  
 	
   public void createXmodeler() throws Exception {
-//TODO implement
-	  
-	  // Set up MenuBar and Main Screen
-	  
 	  		outerSplitPane = new SplitPane();
-			
-			//Sample Project Tree
-//			TreeProjectFolder rootItem = new TreeProjectFolder("Projects");
-//			rootItem.getChildren().add(new TreeProjectItem("Project1"));
-//			TreeView<String> projectTree = new TreeView<String>(rootItem);
 			
 			// Tabs for proejcts
 			browserTab = new TabPane();//new Tab("MyProjects",projectTree),new Tab("Project0",new TreeView<String>()));
-			
-			//Tab welcomeTab = new Tab("Welcome", new WelcomePage());
 			
 			rightSplitPane = new SplitPane();
 			rightSplitPane.setOrientation(Orientation.VERTICAL);
@@ -560,7 +550,6 @@ public class XModeler extends Application {
 				  }
 		  });
 			
-			
 //TODO Why timer? Can we intergrate it properly?
 //			XModeler.getDisplay().timerExec(3000, 
 //					new Runnable() {
@@ -577,111 +566,31 @@ public class XModeler extends Application {
 			menuDebug.getItems().add(itemVMPanic);
 			menuBar.getMenus().add(menuDebug);
 			
-			MenuItem itemLoadImage = new MenuItem("Load Image...");
-			itemLoadImage.setOnAction(new EventHandler<ActionEvent>() {
-	            public void handle(ActionEvent t) {
-	            		Platform.runLater(new Runnable() {
-	                        @Override public void run() {
-	                        	stage.close();
-	                        	busyMessage = "";
-	                        	TOOL_X = 100;
-	                        	TOOL_Y = 100;
-	                        	TOOL_WIDTH = 1200;
-	                        	TOOL_HEIGHT = 900;
-	                        	xos = new OperatingSystem();
-	                        	loadedImagePath = null;
-	                        	showLoad = true;
-	                        	try {
-	                        		start(stage);
-	                        	} catch (Exception e) {
-	                        		e.printStackTrace();
-	                        	}
-	                        }
-	                    });
-	            }
-	        }); 
-			menuBar.getMenus().get(0).getItems().add(itemLoadImage); */
+			 */
 
 //			      }});
 			
-//			primaryStage.show();
   }
   
-/*  @Deprecated 
-  public static void startXModeler() {
-    //TODO old
-	  
-	display = Display.getDefault();
-
-    DEVICE_ZOOM_PERCENT = display.getDPI().x * 100 / 75;
-    System.err.println("The zoom for this device was detected as " + DEVICE_ZOOM_PERCENT + "%.");
-
-    setToolLabel();
-    org.eclipse.swt.graphics.Image windowIcon = new org.eclipse.swt.graphics.Image(XModeler.getDisplay(), "icons/shell/mosaic32.gif");
-    XModeler.setImage(windowIcon);
-    XModeler.setLayout(new FillLayout());
-    XModeler.setLocation(TOOL_X, TOOL_Y);
-    XModeler.setSize(new org.eclipse.swt.graphics.Point(TOOL_WIDTH, TOOL_HEIGHT));
-    XModeler.addListener(SWT.Close, closeListener());
-    menuBar = new org.eclipse.swt.widgets.Menu(XModeler, SWT.BAR);
-    outerSash = new SashForm(XModeler, SWT.HORIZONTAL);
-    browserTabFolder = new CTabFolder(outerSash, SWT.BORDER);
-    rightSash = new SashForm(outerSash, SWT.VERTICAL);
-    editorSash = new SplitSashForm(rightSash);
-    propertySash = new SplitSashForm(rightSash);
-    ToolBar propertyToolbar1 = new ToolBar(propertySash.getFolder1(), SWT.HORIZONTAL | SWT.FLAT);
-    ToolBar propertyToolbar2 = new ToolBar(propertySash.getFolder2(), SWT.HORIZONTAL | SWT.FLAT);
-    propertySash.getFolder1().setTopRight(propertyToolbar1);
-    propertySash.getFolder2().setTopRight(propertyToolbar2);
-    ModelBrowserClient.start(browserTabFolder, SWT.LEFT);
-    outerSash.setWeights(new int[] { 1, 5 });
-    EditorClient.start(editorSash.getFolder1(), SWT.BORDER);
-    browserTabFolder.addCTabFolder2Listener(new BrowserResizeListener());
-    DiagramClient.start(editorSash.getFolder1());
-    FormsClient.start(propertySash.getFolder1(), propertyToolbar1, SWT.BORDER);
-    ScreenGenerationClient.start(propertySash.getFolder1()); // BB
-    Console.start(propertySash.getFolder1());
-    rightSash.setWeights(new int[] { 2, 1 });
-    XModeler.open();
-
-    XModeler.getDisplay().timerExec(3000, new Runnable() {
-      public void run() {
-    	org.eclipse.swt.widgets.Menu exitMenu = new org.eclipse.swt.widgets.Menu(menuBar);
-    	org.eclipse.swt.widgets.MenuItem exit = new org.eclipse.swt.widgets.MenuItem(menuBar, SWT.CASCADE);
-        exit.setText("Debug");
-        exit.setMenu(exitMenu);
-        org.eclipse.swt.widgets.MenuItem panic = new org.eclipse.swt.widgets.MenuItem(exitMenu, SWT.NONE);
-        panic.setText("VM Panic");
-        panic.addListener(SWT.Selection, new Listener() {
-          public void handleEvent(Event e) {
-            Machine.interrupt = true;
-          }
-        });
-        org.eclipse.swt.widgets.MenuItem loadImage = new org.eclipse.swt.widgets.MenuItem(menuBar.getItem(0).getMenu(), SWT.NONE);
-        loadImage.setText("Load Image");
-        loadImage.addListener(SWT.Selection, new Listener() {
-          public void handleEvent(Event e) {
-            XModeler.dispose();
-            busyMessage = "";
-            TOOL_X = 100;
-            TOOL_Y = 100;
-            TOOL_WIDTH = 1200;
-            TOOL_HEIGHT = 900;
-            xos = new OperatingSystem();
-            XModeler = new Shell(SWT.BORDER | SWT.SHELL_TRIM);
-            display = null;
-            menuBar = null;
-            projDir = null;
-            loadedImagePath = null;
-            showLoad = true;
-            main(copyOfArgs);
-          }
-        });
-
-      }
-    });
-  } */
-
+  public static void loadImage(){
+	  Platform.runLater(()->{
+          	stage.close();
+          	busyMessage = "";
+          	TOOL_X = 100;
+          	TOOL_Y = 100;
+          	TOOL_WIDTH = 1200;
+          	TOOL_HEIGHT = 900;
+          	xos = new OperatingSystem();
+          	loadedImagePath = null;
+          	showLoad = true;
+          	try {
+          		singelton.start(stage);
+          	} catch (Exception e) {
+          		e.printStackTrace();
+          	}
+	  });
+  }
+  
   static void startXOS(String initFile) {
     final String[] args = xos.getInitArgs(initFile);
     // /*QUICKFIX FOR HI_RES*/FormsClient.HIGH_RESOLUTION = checkHiRes(args);
@@ -700,42 +609,6 @@ public class XModeler extends Application {
     };
     t.start();
   }
-
-////TODO recreate?
-//  @Deprecated 
-//  public static void maximiseEditors() {
-////    outerSash.setMaximizedControl(rightSash);
-////    rightSash.setMaximizedControl(editorSash);
-//  }
-//
-//  @Deprecated
-//  public static void minimiseEditors() {
-////    rightSash.setMaximizedControl(null);
-////    outerSash.setMaximizedControl(null);
-//  }
-//
-//  @Deprecated
-//  public static void maximiseProperties() {
-////    outerSash.setMaximizedControl(rightSash);
-////    rightSash.setMaximizedControl(propertySash);
-//  }
-//
-//  @Deprecated
-//  public static void minimiseProperties() {
-////    rightSash.setMaximizedControl(null);
-////    outerSash.setMaximizedControl(null);
-//  }
-//
-//  @Deprecated
-//  public static void maximiseBrowser() {
-////    outerSash.setMaximizedControl(browserTabFolder);
-//  }
-//
-//  @Deprecated
-//  public static void minimiseBrowser() {
-////    outerSash.setMaximizedControl(null);
-//  }
-
 
   
 }

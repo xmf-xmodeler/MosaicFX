@@ -94,7 +94,9 @@ public class TreeItemInteractionHandler extends TreeCell<String> {
         		});
         		
         		this.getTreeItem().expandedProperty().addListener((observable, oldValue, newValue)->{
-        			ModelBrowserClient.theClient().sendMessageExpanded(getTreeItem());
+        			if( newValue){
+        				ModelBrowserClient.theClient().sendMessageExpanded(getTreeItem());
+        			}
         	    });
         		
         		this.selectedProperty().addListener((observable, oldValue,newValue)->{
