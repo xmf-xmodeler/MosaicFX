@@ -10,19 +10,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-//import org.eclipse.swt.SWT;
-//import org.eclipse.swt.custom.CTabFolder;
-//import org.eclipse.swt.custom.SashForm;
-//import org.eclipse.swt.graphics.Image;
-//import org.eclipse.swt.layout.FillLayout;
-//import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-//import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Listener;
-//import org.eclipse.swt.widgets.Menu;
-//import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
-//import org.eclipse.swt.widgets.ToolBar;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -32,24 +20,18 @@ import org.xml.sax.SAXException;
 //import com.ceteva.oleBridge.OleBridgeClient;
 //import com.ceteva.undo.UndoClient;
 
-import engine.Machine;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -58,19 +40,15 @@ import javafx.stage.WindowEvent;
 import tool.clients.browser.ModelBrowserClient;
 import tool.clients.diagrams.DiagramClient;
 import tool.clients.dialogs.DialogsClient;
-import tool.clients.dialogs.notifier.NotificationType;
-import tool.clients.dialogs.notifier.NotifierDialog;
 import tool.clients.editors.EditorClient;
 import tool.clients.forms.FormsClient;
 import tool.clients.menus.MenuClient;
 import tool.clients.oleBridge.OleBridgeClient;
-import tool.clients.screenGeneration.ScreenGenerationClient;
 import tool.clients.undo.UndoClient;
 import tool.clients.workbench.WorkbenchClient;
 import tool.console.Console;
 import tool.console.ConsoleClient;
 import xos.OperatingSystem;
-import xos.Value;
 
 public class XModeler extends Application {
 
@@ -88,14 +66,6 @@ public class XModeler extends Application {
   static int             TOOL_WIDTH          = 1200;
   static int             TOOL_HEIGHT         = 900;
   static OperatingSystem xos                 = new OperatingSystem();
-//  static Shell           XModeler            = new Shell(SWT.BORDER | SWT.SHELL_TRIM);
-//  static SashForm        outerSash           = null;
-//  static SashForm        rightSash           = null;
-//  static SplitSashForm   editorSash          = null;
-//  static SplitSashForm   propertySash        = null;
-//  static CTabFolder      browserTabFolder    = null;
-//  static Display         display             = null;
-//  static org.eclipse.swt.widgets.Menu            menuBar             = null;
   static String          projDir             = null;
   static String          loadedImagePath     = null;
   static String          version             = null;
@@ -114,20 +84,6 @@ public class XModeler extends Application {
   static TabPane 		 propertyTabs 		 = null;
   static MenuBar		 menuBar				 = null;
   
-  // private static boolean overwrite(final String file) {
-  // final boolean[] result = new boolean[] { false };
-  // XModeler.getDisplay().syncExec(new Runnable() {
-  // public void run() {
-  // try {
-  // result[0] = MessageDialog.openConfirm(XModeler, "Overwite", "Overwrite " + file);
-  // } catch (Throwable t) {
-  // t.printStackTrace();
-  // }
-  // }
-  // });
-  // return result[0];
-  // }
-
   public static String attributeValue(Node node, String name) {
     NamedNodeMap attrs = node.getAttributes();
     for (int i = 0; i < attrs.getLength(); i++) {
@@ -143,19 +99,6 @@ public class XModeler extends Application {
       return defaultValue;
     else return value;
   }
-
-//  private static Listener closeListener() {
-//    return new Listener() {
-//      public void handleEvent(Event event) {
-//        if (loadedImagePath == null) {
-//          WorkbenchClient.theClient().shutdownEvent();
-//        } else {
-//          WorkbenchClient.theClient().shutdownAndSaveEvent(loadedImagePath, inflationPath());
-//        }
-//        event.doit = false;
-//      }
-//    };
-//  }
 
   public static String encodeXmlAttribute(String str) {
     if (str == null) return null;
@@ -219,11 +162,6 @@ public class XModeler extends Application {
     return menuBar;
   }
 
-//  @Deprecated
-//  public static org.eclipse.swt.widgets.Menu getMenuBar() {
-//	    return null;
-//  }
-  
   private static String getVersion(String[] args) {
     for (int i = 0; i < args.length; i++) {
       if (args[i].startsWith("version:")) { return args[i].replace("version:", ""); }
@@ -249,14 +187,6 @@ public class XModeler extends Application {
     return xml.getAbsolutePath();
   }
 
-  // private static boolean checkHiRes(String[] args) {
-  // for (int i = 0; i < args.length; i++) {
-  // if (args[i].equals("-hi-res"))
-  // return "true".equals(args[i + 1]);
-  // }
-  // return false;
-  // }
-
   public static void inflate(String inflationPath) {
     inflationPath = img2xml(loadedImagePath);
     // System.err.println("loadedImagePath: " + loadedImagePath);
@@ -280,12 +210,6 @@ public class XModeler extends Application {
           stage.setY(y);
           stage.setHeight(height);
           stage.setWidth(width);
-//          XModeler.getDisplay().syncExec(new Runnable() {
-//            public void run() {
-//              XModeler.setLocation(x, y);
-//              XModeler.setSize(width, height);
-//            }
-//          });
           ModelBrowserClient.theClient().inflateXML(doc);
           DiagramClient.theClient().inflateXML(doc);
           MenuClient.theClient().inflateXML(doc);
@@ -323,27 +247,18 @@ public class XModeler extends Application {
   public static void main(String[] args) {
     copyOfArgs = Arrays.copyOf(args, args.length);
     textEditorClass = args.length > 1 ? args[1] : "tool.clients.editors.TextEditor";
-//    startXOS(args[0]);
-//    startXModeler();
     launch(args);
-//    startClients();
-//    startDispatching();
-//    openXModeler();
   }
 
   public static void removeBusyInformation() {
     busyMessage = "";
-//    setToolLabel();
     setToolTitle();
   }
 
   public static void saveInflator(final String inflationPath) {
-//    XModeler.getDisplay().syncExec(new Runnable() {
-//      public void run() {
         try {
           if (inflationPath != null) {
             loadedImagePath = inflationPath.substring(0, inflationPath.lastIndexOf('.')) + ".img";
-//            setToolLabel();
             setToolTitle();
             File file = new File(inflationPath);
             // FileOutputStream fout = new FileOutputStream(file);
@@ -351,10 +266,6 @@ public class XModeler extends Application {
             int y = (new Double(stage.getY())).intValue();
             int width = (new Double(stage.getWidth())).intValue();
             int height = (new Double(stage.getHeight())).intValue();
-//            int x = XModeler.getLocation().x;
-//            int y = XModeler.getLocation().y;
-//            int width = XModeler.getSize().x;
-//            int height = XModeler.getSize().y;
             // PrintStream out = new PrintStream(fout);
             PrintStream out = new PrintStream(file, "UTF-8");
             out.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?><XModeler x='" + x + "' y='" + y + "' width='" + width + "' height = '" + height + "'>");
@@ -370,8 +281,6 @@ public class XModeler extends Application {
         } catch (IOException e) {
           e.printStackTrace();
         }
-//      }
-//    });
   }
 
   private static void setImage(String[] args) {
@@ -395,16 +304,9 @@ public class XModeler extends Application {
     		selectedImage = file.getAbsolutePath();
     	}
     	
-//      FileDialog dialog = new FileDialog(XModeler, SWT.OPEN);
-//      dialog.setText("Select the image file");
-//      dialog.setFilterExtensions(new String[] { "*.img" });
-//      dialog.setFileName(defaultImage);
-//      dialog.setFilterPath(projDir);
-//      selectedImage = dialog.open();
     }
     if (selectedImage != null && !selectedImage.equals(defaultImage)) {
       loadedImagePath = selectedImage;
-//      setToolLabel();
       setToolTitle();
       for (int i = 0; i < args.length; i++) {
         if (args[i].equals("-image")) args[i + 1] = loadedImagePath;
@@ -422,15 +324,8 @@ public class XModeler extends Application {
 	    stage.setTitle(NAME + " " + version + " [" + path + "]" + busyMessage);
  }
   
-/*  @Deprecated
-  public static void setToolLabel() {
-    String path = loadedImagePath == null ? "NO_IMAGE_SET" : loadedImagePath;
-    XModeler.setText(NAME + " " + version + " [" + path + "]" + busyMessage);
-  } */
-
   public static void showBusyInformation(String info) {
     busyMessage = info;
-//    setToolLabel();
     setToolTitle();
   }
 
@@ -457,15 +352,6 @@ public class XModeler extends Application {
 	  stage.close();
 	  System.exit(0);
 	      }});
-//    XModeler.getDisplay().syncExec(new Runnable() {
-//      public void run() {
-//        try {
-//          XModeler.dispose();
-//        } catch (Throwable t) {
-//          t.printStackTrace();
-//        }
-//      }
-//    });
   }
 
 
