@@ -361,7 +361,6 @@ public void newButton(String parentId, String id, String label, int x, int y, in
   }
 
   public void clear(String id) {
-	System.err.println("# # # clear: " + id);
     if (getId().equals(id))
       clear();
     else {
@@ -388,7 +387,6 @@ public void newButton(String parentId, String id, String label, int x, int y, in
 		Message m = FormsClient.theClient().getHandler().newMessage("doubleSelected", 1);
 		try {
 			m.args[0] = new Value(id);
-			System.err.println("Double click: " + m);
 			FormsClient.theClient().getHandler().raiseEvent(m);
 		} catch (Exception e) {
 			System.err.println("Double click into nowhere detected...");

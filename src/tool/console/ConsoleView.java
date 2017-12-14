@@ -1,29 +1,20 @@
 package tool.console;
 
 import java.io.PrintStream;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Vector;
 
 import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.Point;
+
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
@@ -53,10 +44,10 @@ public class ConsoleView {
 
   static EscapeHandler escape          = null;
 
-  StyledText           text            = null;
+//  StyledText           text            = null;
   History              history         = new History();
   int                  inputStart      = 0;
-  FontData             fontData;
+//  FontData             fontData;
   // Font textFont = new Font(Display.getCurrent(), "Monaco", 14, SWT.NORMAL);
   Color                backgroundColor = Color.WHEAT;//new Color(org.eclipse.swt.widgets.Display.getCurrent(), 255, 255, 255); 
   Color                foregroundColor = Color.CHOCOLATE;//new Color(org.eclipse.swt.widgets.Display.getCurrent(), 0, 0, 0);
@@ -102,15 +93,15 @@ public class ConsoleView {
   }
 
   public final void setFont(String fileName, String name) {
-    int oldHeight = fontData == null ? 13 : fontData.getHeight();
-    FontData[] fontData = Display.getDefault().getSystemFont().getFontData();
-    this.fontData = fontData[0];
-    // File root = getB
-    // URL url = ConsoleView.class.getResource(fileName);
-    XModeler.getXModeler().getDisplay().loadFont(fileName);
-    this.fontData.setName(name);
-    this.fontData.setHeight(oldHeight);
-    text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
+//    int oldHeight = fontData == null ? 13 : fontData.getHeight();
+//    FontData[] fontData = Display.getDefault().getSystemFont().getFontData();
+//    this.fontData = fontData[0];
+//    // File root = getB
+//    // URL url = ConsoleView.class.getResource(fileName);
+//    XModeler.getXModeler().getDisplay().loadFont(fileName);
+//    this.fontData.setName(name);
+//    this.fontData.setHeight(oldHeight);
+//    text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
   }
 
   public void addCommand(TextArea textArea, String command) {
@@ -444,50 +435,34 @@ public class ConsoleView {
   public void addCommand(String command) {
     history.add(command);
   }
+  
+    private void addQuickCompleteItem(ContextMenu menu, String text) {
+    	MenuItem item = new MenuItem("->" + text);
+    	item.setOnAction(new EventHandler<ActionEvent>() {
+    	    public void handle(ActionEvent e) {
+    	    	insert(text);
+    	    }
+    	});
+    }
 
-  private void completeArrow() {
-    Menu menu = new Menu(XModeler.getXModeler(), SWT.POP_UP);
-    SelectionListener listener = new SelectionListener() {
-      public void widgetDefaultSelected(SelectionEvent event) {
-      }
-
-      public void widgetSelected(SelectionEvent event) {
-        MenuItem item = (MenuItem) event.widget;
-        String label = item.getText().substring(2);
-        insert(label);
-      }
-    };
-    Point p = text.getCaret().getLocation();
-    Point displayPoint = text.toDisplay(p);
-    menu.setLocation(displayPoint);
-    MenuItem asSeq = new MenuItem(menu, SWT.NONE);
-    asSeq.setText("->asSeq");
-    asSeq.addSelectionListener(listener);
-    MenuItem asSet = new MenuItem(menu, SWT.NONE);
-    asSet.setText("->asSet");
-    asSet.addSelectionListener(listener);
-    MenuItem collect = new MenuItem(menu, SWT.NONE);
-    collect.setText("->collect(element | exp)");
-    collect.addSelectionListener(listener);
-    MenuItem exists = new MenuItem(menu, SWT.NONE);
-    exists.setText("->exists(element | condition)");
-    exists.addSelectionListener(listener);
-    MenuItem forall = new MenuItem(menu, SWT.NONE);
-    forall.setText("->forall(element | condition)");
-    forall.addSelectionListener(listener);
-    MenuItem isEmpty = new MenuItem(menu, SWT.NONE);
-    isEmpty.setText("->isEmpty");
-    isEmpty.addSelectionListener(listener);
-    MenuItem reject = new MenuItem(menu, SWT.NONE);
-    reject.setText("->reject(element | condition)");
-    reject.addSelectionListener(listener);
-    MenuItem select = new MenuItem(menu, SWT.NONE);
-    select.setText("->select(element | condition)");
-    select.addSelectionListener(listener);
-    MenuItem size = new MenuItem(menu, SWT.NONE);
-    size.setText("->size");
-    size.addSelectionListener(listener);
-    menu.setVisible(true);
+  	private void completeArrow() {
+  		final ContextMenu contextMenu = new ContextMenu();
+  		addQuickCompleteItem(contextMenu, "asSeq");
+  		addQuickCompleteItem(contextMenu, "asSet");
+  		addQuickCompleteItem(contextMenu, "collect(element | exp)");
+  		addQuickCompleteItem(contextMenu, "exists(element | condition)");
+  		addQuickCompleteItem(contextMenu, "forall(element | condition)");
+  		addQuickCompleteItem(contextMenu, "isEmpty");
+  		addQuickCompleteItem(contextMenu, "reject(element | condition)");
+  		addQuickCompleteItem(contextMenu, "select(element | condition)");
+  		addQuickCompleteItem(contextMenu, "size");
+  		
+ 
+//    Point p = text.getCaret().getLocation();
+//    Point displayPoint = text.toDisplay(p);
+//    contextMenu.setLocation(displayPoint);
+    
+    contextMenu.show(XModeler.getStage());
   }
 
     public void dot(final Message message) {
@@ -518,89 +493,89 @@ public class ConsoleView {
           }
 	}
 
-  public Menu getDotPopup(Message message) {
-    HashSet<String> labels = new HashSet<String>();
-    Value[] pairs = message.args[0].values;
-    for (Value value : pairs) {
-      Value[] pair = value.values;
-      String type = pair[0].strValue();
-      String label = pair[1].strValue();
-      labels.add(label);
-    }
-    Vector<String> sortedLabels = new Vector<String>(labels);
-    Collections.sort(sortedLabels);
-    if (labels.size() < 26)
-      return getShortDotPopup(sortedLabels);
-    else return getLongDotPopup(sortedLabels);
-  }
+//  public Menu getDotPopup(Message message) {
+//    HashSet<String> labels = new HashSet<String>();
+//    Value[] pairs = message.args[0].values;
+//    for (Value value : pairs) {
+//      Value[] pair = value.values;
+//      String type = pair[0].strValue();
+//      String label = pair[1].strValue();
+//      labels.add(label);
+//    }
+//    Vector<String> sortedLabels = new Vector<String>(labels);
+//    Collections.sort(sortedLabels);
+//    if (labels.size() < 26)
+//      return getShortDotPopup(sortedLabels);
+//    else return getLongDotPopup(sortedLabels);
+//  }
 
-  private Menu getLongDotPopup(Vector<String> labels) {
-    Menu mainMenu = new Menu(XModeler.getXModeler(), SWT.POP_UP);
-    for (int i = 0; i < 26; i++) {
-      char c = (char) ('a' + i);
-      MenuItem nestedItem = new MenuItem(mainMenu, SWT.CASCADE);
-      nestedItem.setText("" + c);
-      Menu menu = new Menu(mainMenu);
-      nestedItem.setMenu(menu);
-      for (final String label : labels) {
-        if (label.charAt(0) == c || label.charAt(0) == (c + 26)) {
-          MenuItem item = new MenuItem(menu, SWT.NONE);
-          item.addSelectionListener(new SelectionListener() {
-            public void widgetDefaultSelected(SelectionEvent event) {
-            }
+//  private Menu getLongDotPopup(Vector<String> labels) {
+//    Menu mainMenu = new Menu(XModeler.getXModeler(), SWT.POP_UP);
+//    for (int i = 0; i < 26; i++) {
+//      char c = (char) ('a' + i);
+//      MenuItem nestedItem = new MenuItem(mainMenu, SWT.CASCADE);
+//      nestedItem.setText("" + c);
+//      Menu menu = new Menu(mainMenu);
+//      nestedItem.setMenu(menu);
+//      for (final String label : labels) {
+//        if (label.charAt(0) == c || label.charAt(0) == (c + 26)) {
+//          MenuItem item = new MenuItem(menu, SWT.NONE);
+//          item.addSelectionListener(new SelectionListener() {
+//            public void widgetDefaultSelected(SelectionEvent event) {
+//            }
+//
+//            public void widgetSelected(SelectionEvent event) {
+//              insert(label);
+//            }
+//          });
+//          item.setText(label);
+//        }
+//      }
+//      if (menu.getItemCount() == 0) nestedItem.dispose();
+//    }
+//    return mainMenu;
+//  }
 
-            public void widgetSelected(SelectionEvent event) {
-              insert(label);
-            }
-          });
-          item.setText(label);
-        }
-      }
-      if (menu.getItemCount() == 0) nestedItem.dispose();
-    }
-    return mainMenu;
-  }
+//  private Menu getShortDotPopup(Vector<String> labels) {
+//    Menu menu = new Menu(XModeler.getXModeler(), SWT.POP_UP);
+//    for (final String label : labels) {
+//      MenuItem item = new MenuItem(menu, SWT.NONE);
+//      item.addSelectionListener(new SelectionListener() {
+//        public void widgetDefaultSelected(SelectionEvent event) {
+//        }
+//
+//        public void widgetSelected(SelectionEvent event) {
+//          insert(label);
+//        }
+//      });
+//      item.setText(label);
+//    }
+//    return menu;
+//  }
 
-  private Menu getShortDotPopup(Vector<String> labels) {
-    Menu menu = new Menu(XModeler.getXModeler(), SWT.POP_UP);
-    for (final String label : labels) {
-      MenuItem item = new MenuItem(menu, SWT.NONE);
-      item.addSelectionListener(new SelectionListener() {
-        public void widgetDefaultSelected(SelectionEvent event) {
-        }
-
-        public void widgetSelected(SelectionEvent event) {
-          insert(label);
-        }
-      });
-      item.setText(label);
-    }
-    return menu;
-  }
-
-  private Menu getNameSpacePopup(Message message) {
-    HashSet<String> unsortedNames = new HashSet<String>();
-    Value[] names = message.args[0].values;
-    for (Value name : names) {
-      unsortedNames.add(name.strValue());
-    }
-    Vector<String> sortedNames = new Vector<String>(unsortedNames);
-    Collections.sort(sortedNames);
-    Menu menu = new Menu(XModeler.getXModeler(), SWT.POP_UP);
-    for (final String label : sortedNames) {
-      MenuItem item = new MenuItem(menu, SWT.NONE);
-      item.addSelectionListener(new SelectionListener() {
-        public void widgetDefaultSelected(SelectionEvent event) {
-        }
-
-        public void widgetSelected(SelectionEvent event) {
-          insert(label);
-        }
-      });
-      item.setText(label);
-    }
-    return menu;
-  }
+//  private Menu getNameSpacePopup(Message message) {
+//    HashSet<String> unsortedNames = new HashSet<String>();
+//    Value[] names = message.args[0].values;
+//    for (Value name : names) {
+//      unsortedNames.add(name.strValue());
+//    }
+//    Vector<String> sortedNames = new Vector<String>(unsortedNames);
+//    Collections.sort(sortedNames);
+//    Menu menu = new Menu(XModeler.getXModeler(), SWT.POP_UP);
+//    for (final String label : sortedNames) {
+//      MenuItem item = new MenuItem(menu, SWT.NONE);
+//      item.addSelectionListener(new SelectionListener() {
+//        public void widgetDefaultSelected(SelectionEvent event) {
+//        }
+//
+//        public void widgetSelected(SelectionEvent event) {
+//          insert(label);
+//        }
+//      });
+//      item.setText(label);
+//    }
+//    return menu;
+//  }
 
 //  public void namespaceOld(final Message message) {
 //    // Replaced to be consistent with the '.' dialog...
