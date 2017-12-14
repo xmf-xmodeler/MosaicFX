@@ -1,5 +1,6 @@
 package tool.clients.forms;
 
+import java.io.File;
 import java.io.PrintStream;
 import java.util.Hashtable;
 import java.util.concurrent.CountDownLatch;
@@ -12,20 +13,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 
 import tool.clients.EventHandler;
-import tool.clients.menus.MenuClient;
-import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
 
@@ -44,7 +43,8 @@ public class Form {
   
   private Hashtable<String, TextField>        textFields          = new Hashtable<String, TextField>();
   private Hashtable<String, Label>            labels              = new Hashtable<String, Label>();
-  private Hashtable<String, ListView<String>> lists               = new Hashtable<String, ListView<String>>();
+//  private Hashtable<String, ListView<String>> lists               = new Hashtable<String, ListView<String>>();
+  private Hashtable<String, List> lists               = new Hashtable<String, List>();
   private Hashtable<String, TextArea>         boxes               = new Hashtable<String, TextArea>();
   private Hashtable<String, ComboBox<String>>         combos              = new Hashtable<String, ComboBox<String>>();
   private Hashtable<String, CheckBox>     	  checks              = new Hashtable<String, CheckBox>();
@@ -56,6 +56,7 @@ public class Form {
 //  private int                   TEXTFIELDHEIGHT         = 20;
 
   public Form(Tab parent, String id) {
+	System.err.println("new Form(): " + id + " on " + parent);
     this.id = id;
     form = new ScrollPane();
     root = new AnchorPane();
@@ -71,7 +72,6 @@ public class Form {
 	public String toString() {
 		return "Form [id=" + id + " " + root.getHeight() + " of " +form.getHeight() + "]";
 	}
-
   
   ///////////////////////// SETUP ( ADD NEW ELEMENTS) //////////////////////////
   
@@ -134,11 +134,12 @@ public void newButton(String parentId, String id, String label, int x, int y, in
 		if (this.id.equals(parentId)) {
 			CountDownLatch l = new CountDownLatch(1);
 			Platform.runLater(() -> {
-				ListView<String> list = new ListView<String>();
+//				ListView<String> list = new ListView<String>();
+				List list = new List(id, root, x, y, width, height);
 				lists.put(id, list);
-			    AnchorPane.setLeftAnchor(list, x*1.);
-			    AnchorPane.setTopAnchor(list, y*1.);
-				root.getChildren().add(list);
+//			    AnchorPane.setLeftAnchor(list, x*1.);
+//			    AnchorPane.setTopAnchor(list, y*1.);
+//				root.getChildren().add(list);
                 l.countDown();
 			});
 			try {
@@ -219,6 +220,13 @@ public void newButton(String parentId, String id, String label, int x, int y, in
 		    }
 		});
 		
+        text.setOnMouseClicked(new javafx.event.EventHandler<MouseEvent>() {
+	  		@Override public void handle(MouseEvent click) {
+	  		    if (click.getClickCount() == 2) {
+	  		    	System.err.println("text.setOnMouseClicked: " + click.getClickCount());
+	  		    	doubleClick(text);
+	      }}});
+		
 //	    Listener listener = new Listener() {
 //	      public void handleEvent(Event event) {
 //	        switch (event.type) {
@@ -247,6 +255,12 @@ public void newButton(String parentId, String id, String label, int x, int y, in
 	      AnchorPane.setTopAnchor(tree, y*1.);
 		  root.getChildren().add(tree);
 	      trees.put(id, tree);
+	      
+	      tree.setOnMouseClicked(new javafx.event.EventHandler<MouseEvent>() {
+	  		@Override public void handle(MouseEvent click) {
+	  		    if (click.getClickCount() == 2) {
+	  		    	doubleClick(tree.getSelectionModel().getSelectedItem());
+	      }}});
 	    }
 	  }
 	  
@@ -258,7 +272,7 @@ public void newButton(String parentId, String id, String label, int x, int y, in
   
   public void addListItem(String parentId, String id, String value) {
     for (String listId : lists.keySet()) {
-        if (listId.equals(parentId)) lists.get(listId).getItems().add(value);
+        if (listId.equals(parentId)) lists.get(listId).add(id, value);
 //        if (listId.equals(parentId)) lists.get(listId).add(id, value);
     }
   }
@@ -267,31 +281,23 @@ public void newButton(String parentId, String id, String label, int x, int y, in
     if (items.containsKey(parentId)) {
       TreeItem<String> parent = items.get(parentId);
       String iconFile = "icons/" + icon;
-//      ImageData data = new ImageData(iconFile);
-//      Image image = new Image(XModeler.getXModeler().getDisplay(), data);
-      TreeItem<String> item = new TreeItem<String>(text);//parent, SWT.NONE, (index == -1) ? parent.getItemCount() : index);
+	  ImageView image = new ImageView(new Image(new File(iconFile).toURI().toString()));
+      TreeItem<String> item = new TreeItem<String>(text, image);
       images.put(nodeId, icon);
       items.put(nodeId, item);
-//      item.setText(text);
-//      item.setImage(image);
       item.setExpanded(expanded);
-//      item.setFont(labelFont);
-      parent.getChildren().add(item);
+      parent.getChildren().add((index == -1) ? parent.getChildren().size() : index, item);
     } //else System.err.println("Cannot find node " + parentId);
   }  
   
   private void addRootNodeWithIcon(final String parentId, final String nodeId, final String text, boolean editable, final boolean expanded, final String icon, final int index) {
 	    String iconFile = "icons/" + icon;
-//	    ImageData data = new ImageData(iconFile);
-//	    Image image = new Image(XModeler.getXModeler().getDisplay(), data);
+	    ImageView image = new ImageView(new Image(new File(iconFile).toURI().toString()));
 	    TreeView<String> tree = trees.get(parentId);
-	    TreeItem<String> item = new TreeItem<String>(text);
+	    TreeItem<String> item = new TreeItem<String>(text, image);
 	    images.put(nodeId, icon);
 	    items.put(nodeId, item);
-//	    item.setText(text);
-//	    item.setImage(image);
 	    item.setExpanded(expanded);
-//	    item.setFont(labelFont);
 	    tree.setRoot(item);
 	  }
   
@@ -337,55 +343,57 @@ public void newButton(String parentId, String id, String label, int x, int y, in
   
 
   public void clear() {
-	  iHaventImplementedItYet();
-//    labels.clear();
-//    textFields.clear();
-//    lists.clear();
-//    boxes.clear();
-//    combos.clear();
-//    checks.clear();
-//    buttons.clear();
-//    trees.clear();
-//    items.clear();
-//    images.clear();
+	System.err.println("# # # clear all");
+    labels.clear();
+    textFields.clear();
+    lists.clear();
+    boxes.clear();
+    combos.clear();
+    checks.clear();
+    buttons.clear();
+    trees.clear();
+    items.clear();
+    images.clear();
+    
+    root.getChildren().clear();
 //    for (Control child : content_OLD.getChildren())
 //      child.dispose();
   }
 
   public void clear(String id) {
-	  iHaventImplementedItYet();
+	System.err.println("# # # clear: " + id);
     if (getId().equals(id))
       clear();
     else {
       if (lists.containsKey(id)) {
-        ListView<String> l = lists.get(id);
-        l.getItems().clear();
+        List l = lists.get(id);
+        l.clear();
       }
     }
   }
 
   private void iHaventImplementedItYet() {
-//	new RuntimeException("I haven't implemented that yet:").printStackTrace();
-	
+	new RuntimeException("I haven't implemented that yet:").printStackTrace();
 }
 
-//private void doubleClick(TreeItem item) {
-//    String id = getId(item);
-//    Message m = FormsClient.theClient().getHandler().newMessage("doubleSelected", 1);
-//    m.args[0] = new Value(id);
-//    FormsClient.theClient().getHandler().raiseEvent(m);
-//  }
-//
-//  private void doubleClick(Text item) {
-//    String id = getId(item);
-//    Message m = FormsClient.theClient().getHandler().newMessage("doubleSelected", 1);
-//    try {
-//      m.args[0] = new Value(id);
-//      FormsClient.theClient().getHandler().raiseEvent(m);
-//    } catch (Exception e) {
-//      System.err.println("Double click into nowhere detected...");
-//    }
-//  }
+	private void doubleClick(TreeItem<String> item) {
+		String id = getId(item);
+		Message m = FormsClient.theClient().getHandler().newMessage("doubleSelected", 1);
+		m.args[0] = new Value(id);
+		FormsClient.theClient().getHandler().raiseEvent(m);
+	}
+
+	private void doubleClick(TextField item) {
+		String id = getId(item);
+		Message m = FormsClient.theClient().getHandler().newMessage("doubleSelected", 1);
+		try {
+			m.args[0] = new Value(id);
+			System.err.println("Double click: " + m);
+			FormsClient.theClient().getHandler().raiseEvent(m);
+		} catch (Exception e) {
+			System.err.println("Double click into nowhere detected...");
+		}
+	}
 
   public Hashtable<String, TextArea> getBoxes() {
     return boxes;
@@ -429,17 +437,17 @@ public void newButton(String parentId, String id, String label, int x, int y, in
 //    return null;
 //  }
 //
-//  private String getId(TextField item) {
-//    for (String id : textFields.keySet())
-//      if (textFields.get(id) == item) return id;
-//    return null;
-//  }
-//
-//  private String getId(TreeItem item) {
-//    for (String id : items.keySet())
-//      if (items.get(id) == item) return id;
-//    return null;
-//  }
+  private String getId(TextField item) {
+    for (String id : textFields.keySet())
+      if (textFields.get(id) == item) return id;
+    return null;
+  }
+
+  private String getId(TreeItem<String> item) {
+    for (String id : items.keySet())
+      if (items.get(id) == item) return id;
+    return null;
+  }
 
   public Hashtable<String, TreeItem<String>> getItems() {
     return items;
@@ -449,7 +457,7 @@ public void newButton(String parentId, String id, String label, int x, int y, in
     return labels;
   }
 
-  public Hashtable<String, ListView<String>> getLists() {
+  public Hashtable<String, List> getLists() {
     return lists;
   }
 
