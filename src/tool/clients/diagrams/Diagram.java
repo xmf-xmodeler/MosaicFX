@@ -4,7 +4,9 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.concurrent.CountDownLatch;
 
+import org.eclipse.gef.palette.PaletteTemplateEntry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -29,6 +31,8 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
 
+import javafx.application.Platform;
+import javafx.scene.layout.Pane;
 import tool.clients.EventHandler;
 import tool.clients.editors.texteditor.Tool;
 import tool.clients.menus.MenuClient;
@@ -41,6 +45,72 @@ public class Diagram implements Display {
   enum MouseMode {
     NONE, SELECTED, NEW_EDGE, DOUBLE_CLICK, MOVE_TARGET, MOVE_SOURCE, RESIZE_TOP_LEFT, RESIZE_TOP_RIGHT, RESIZE_BOTTOM_LEFT, RESIZE_BOTTOM_RIGHT, RUBBER_BAND
   };
+  
+  private Pane pane;
+
+  static final Color[]     COLOURS                = new Color[] {};// color(SWT.COLOR_RED), color(SWT.COLOR_BLUE), color(SWT.COLOR_DARK_GREEN), color(SWT.COLOR_YELLOW), color(SWT.COLOR_GRAY), color(SWT.COLOR_DARK_RED), color(SWT.COLOR_CYAN), color(SWT.COLOR_DARK_YELLOW), color(SWT.COLOR_MAGENTA) };
+
+  static final Color       BLUE                   = null;//new Color(XModeler.getXModeler().getDisplay(), 0, 0, 255);
+  static final Color       RED                    = null;//new Color(XModeler.getXModeler().getDisplay(), 255, 0, 0);
+  static final Color       GREY                   = null;//new Color(XModeler.getXModeler().getDisplay(), 192, 192, 192);
+  static final Color       WHITE                  = null;//new Color(XModeler.getXModeler().getDisplay(), 255, 255, 255);
+  static final Color       GREEN                  = null;//new Color(XModeler.getXModeler().getDisplay(), 0, 170, 0);
+  static final Color       BLACK                  = null;//new Color(XModeler.getXModeler().getDisplay(), 0, 0, 0);
+
+  static double            ATTRACTION_CONSTANT    = 0.1;
+  static int               REPULSION_CONSTANT     = 700;
+  static double            DEFAULT_DAMPING        = 0.5;
+  static int               DEFAULT_SPRING_LENGTH  = 200;
+  static int               DEFAULT_MAX_ITERATIONS = 200;
+  static int               RIGHT_BUTTON           = 3;
+  static float             MAX_ZOOM               = 2.00f;
+  static float             MIN_ZOOM               = .20f;
+  static float             ZOOM_INC               = .10f;
+  static int               MIN_EDGE_DISTANCE      = 5;
+  private static final int TRAY_PAD               = 5;
+  transient static boolean dontSelectNextWaypoint = false;  
+  
+  public static Color color(int code) {
+    return XModeler.getXModeler().getDisplay().getSystemColor(code);
+  }
+
+  Color                                    diagramBackgroundColor = WHITE;
+  Vector<Node>                             nodes                  = new Vector<Node>();
+  Vector<Edge>                             edges                  = new Vector<Edge>();
+  Vector<Display>                          displays               = new Vector<Display>();
+  Vector<Selectable>                       selection              = new Vector<Selectable>();
+  Vector<DiagramError>                     errors                 = new Vector<DiagramError>();
+  Transform                                transform              = new Transform(org.eclipse.swt.widgets.Display.getCurrent());
+  String                                   id;
+  Tray                                     tray                   = new Tray();
+  ErrorTool                                errorTool              = new ErrorTool();
+  SashForm                                 container;
+  final Palette                                  palette;
+  Canvas                                   canvas;
+  ScrolledComposite                        scroller;
+  Edge                                     selectedEdge           = null;
+  Node                                     selectedNode           = null;
+
+  int                                      render                 = 0;
+  int                                      firstX                 = 0;
+  int                                      firstY                 = 0;
+  int                                      bandX                  = 0;
+  int                                      bandY                  = 0;
+  int                                      lastX                  = 0;
+  int                                      lastY                  = 0;
+
+  PortAndDiagram                           sourcePort;
+  MouseMode                                mode                   = MouseMode.NONE;
+  float                                    zoom                   = 1.00f;
+  boolean                                  disambiguationColors   = true;
+  boolean                                  showWaypoints          = true;
+  boolean                                  magneticWaypoints      = true;
+  boolean                                  dogLegs                = true;
+  String                                   edgeCreationType       = null;
+  String                                   nodeCreationType       = null;
+  public String                            updateID               = null;
+  private final Box                        nestedParent;
+  private transient HashMap<String, Point> nestedDiagramOffsets   = new HashMap<String, Point>();
 
   private class MyKeyListener implements KeyListener {
 
@@ -249,8 +319,8 @@ public class Diagram implements Display {
     public void mouseMove(final MouseEvent event) {
       scale(event);
       // if (mode == MouseMode.SELECTED) {
-      DiagramClient.theClient().runOnDisplay(new Runnable() {
-        public void run() {
+		CountDownLatch l = new CountDownLatch(1);
+		Platform.runLater(() -> {	  
           int dx = event.x - lastX;
           int dy = event.y - lastY;
           storeLastXY(event.x, event.y);
@@ -260,9 +330,13 @@ public class Diagram implements Display {
             if (nestedDiagram.mode == MouseMode.SELECTED) for (Selectable selectable : nestedDiagram.selection)
               selectable.moveBy(dx, dy);
           redraw();
-        }
-      });
-      // }
+	      l.countDown();
+	    });
+		try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
       if (mode == MouseMode.NEW_EDGE) {
         storeLastXY(event.x, event.y);
         redraw();
@@ -393,74 +467,11 @@ public class Diagram implements Display {
     }
   }
 
-  static final Color[]     COLOURS                = new Color[] { color(SWT.COLOR_RED), color(SWT.COLOR_BLUE), color(SWT.COLOR_DARK_GREEN), color(SWT.COLOR_YELLOW), color(SWT.COLOR_GRAY), color(SWT.COLOR_DARK_RED), color(SWT.COLOR_CYAN), color(SWT.COLOR_DARK_YELLOW), color(SWT.COLOR_MAGENTA) };
-
-  static final Color       BLUE                   = new Color(XModeler.getXModeler().getDisplay(), 0, 0, 255);
-  static final Color       RED                    = new Color(XModeler.getXModeler().getDisplay(), 255, 0, 0);
-  static final Color       GREY                   = new Color(XModeler.getXModeler().getDisplay(), 192, 192, 192);
-  static final Color       WHITE                  = new Color(XModeler.getXModeler().getDisplay(), 255, 255, 255);
-  static final Color       GREEN                  = new Color(XModeler.getXModeler().getDisplay(), 0, 170, 0);
-  static final Color       BLACK                  = new Color(XModeler.getXModeler().getDisplay(), 0, 0, 0);
-
-  static double            ATTRACTION_CONSTANT    = 0.1;
-  static int               REPULSION_CONSTANT     = 700;
-  static double            DEFAULT_DAMPING        = 0.5;
-  static int               DEFAULT_SPRING_LENGTH  = 200;
-  static int               DEFAULT_MAX_ITERATIONS = 200;
-  static int               RIGHT_BUTTON           = 3;
-  static float             MAX_ZOOM               = 2.00f;
-  static float             MIN_ZOOM               = .20f;
-  static float             ZOOM_INC               = .10f;
-  static int               MIN_EDGE_DISTANCE      = 5;
-  private static final int TRAY_PAD               = 5;
-  transient static boolean dontSelectNextWaypoint = false;                                                                                                                                                                                                                                             // set,
-                                                                                                                                                                                                                                                                                                       // when
-
-  public static Color color(int code) {
-    return XModeler.getXModeler().getDisplay().getSystemColor(code);
-  }
-
-  Color                                    diagramBackgroundColor = WHITE;
-  Vector<Node>                             nodes                  = new Vector<Node>();
-  Vector<Edge>                             edges                  = new Vector<Edge>();
-  Vector<Display>                          displays               = new Vector<Display>();
-  Vector<Selectable>                       selection              = new Vector<Selectable>();
-  Vector<DiagramError>                     errors                 = new Vector<DiagramError>();
-  Transform                                transform              = new Transform(org.eclipse.swt.widgets.Display.getCurrent());
-  String                                   id;
-  Tray                                     tray                   = new Tray();
-  ErrorTool                                errorTool              = new ErrorTool();
-  SashForm                                 container;
-  Palette                                  palette;
-  Canvas                                   canvas;
-  ScrolledComposite                        scroller;
-  Edge                                     selectedEdge           = null;
-  Node                                     selectedNode           = null;
-
-  int                                      render                 = 0;
-  int                                      firstX                 = 0;
-  int                                      firstY                 = 0;
-  int                                      bandX                  = 0;
-  int                                      bandY                  = 0;
-  int                                      lastX                  = 0;
-  int                                      lastY                  = 0;
-
-  PortAndDiagram                           sourcePort;
-  MouseMode                                mode                   = MouseMode.NONE;
-  float                                    zoom                   = 1.00f;
-  boolean                                  disambiguationColors   = true;
-  boolean                                  showWaypoints          = true;
-  boolean                                  magneticWaypoints      = true;
-  boolean                                  dogLegs                = true;
-  String                                   edgeCreationType       = null;
-  String                                   nodeCreationType       = null;
-  public String                            updateID               = null;
-  private final Box                        nestedParent;
-  private transient HashMap<String, Point> nestedDiagramOffsets   = new HashMap<String, Point>();
-
+  @Deprecated
   public Diagram(String id, Composite parent, Box parentIfNested) {
-    container = new SashForm(parent, SWT.HORIZONTAL | SWT.BORDER);
-    palette = new Palette(container, this);
+	System.err.println("old Diagram()");
+	container = new SashForm(parent, SWT.HORIZONTAL | SWT.BORDER);
+    palette = null; //new Palette(container, this);
     scroller = new ScrolledComposite(container, SWT.V_SCROLL | SWT.H_SCROLL);
     scroller.setExpandHorizontal(true);
     scroller.setExpandVertical(true);
@@ -476,6 +487,30 @@ public class Diagram implements Display {
     this.nestedParent = parentIfNested;
     createTray();
   }
+  
+	public Diagram(String id, Box parentIfNested) {
+		System.err.println("new Diagram()");
+		pane = new Pane();
+	    this.id = id;
+		this.nestedParent = parentIfNested;
+		palette = new Palette(this);
+		palette.init(this);
+		pane.getChildren().add(palette.getToolBar());
+//		scroller = new ScrolledComposite(container, SWT.V_SCROLL | SWT.H_SCROLL);
+//		scroller.setExpandHorizontal(true);
+//		scroller.setExpandVertical(true);
+//		canvas = new Canvas(scroller, SWT.BORDER | SWT.DOUBLE_BUFFERED);
+//		canvas.setBackground(diagramBackgroundColor);
+//		canvas.addMouseListener(new MyMouseListener());
+//		canvas.addPaintListener(new MyPaintListener());
+//		canvas.addMouseMoveListener(new MyMouseMoveListener());
+//		canvas.addKeyListener(new MyKeyListener());
+//		container.setWeights(new int[] { 1, 5 });
+//		scroller.setContent(canvas);
+//		this.id = id;
+//		this.nestedParent = parentIfNested;
+//		createTray();
+	}
 
   public void action(String id) {
     new OutboundMessages().action(id);
@@ -742,6 +777,10 @@ public class Diagram implements Display {
 
   public SashForm getContainer() {
     return container;
+  }
+  
+  public Pane getView() {
+	return pane;
   }
 
   public Color getDiagramBackgroundColor() {
@@ -1145,7 +1184,7 @@ public class Diagram implements Display {
   public void newGroup(String name) {
     if (!palette.hasGroup(name)) {
       palette.newGroup(name);
-      container.layout();
+//      container.layout();
     }
   }
 
@@ -1241,12 +1280,12 @@ public class Diagram implements Display {
 
   public void newToggle(String groupId, String label, String toolId, boolean state, String iconTrue, String iconFalse) {
     palette.newToggle(this, groupId, label, toolId, state, iconTrue, iconFalse);
-    container.layout();
+//    container.layout();
   }
 
   public void newTool(String group, String label, String toolId, boolean isEdge, String icon) {
     palette.newTool(this, group, label, toolId, isEdge, icon);
-    container.layout();
+//    container.layout();
   }
 
   public void newWaypoint(String parentId, String id, int index, int x, int y, boolean skipSelection) {
@@ -1497,16 +1536,22 @@ public class Diagram implements Display {
 
   public void redraw() {
     if (render == 0) {
-      DiagramClient.theClient().runOnDisplay(new Runnable() {
-        public void run() {
+		CountDownLatch l = new CountDownLatch(1);
+		Platform.runLater(() -> {	  
           checkSize();
           container.redraw();
           canvas.redraw(); // ensure repainting on all platforms
           canvas.update();
-        }
-      });
+            l.countDown();
+		});
+		try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} 
+      }
     }
-  }
+  
 
   public void remove(String id) {
     Display d = getDisplay(id);
@@ -1553,11 +1598,16 @@ public class Diagram implements Display {
   public void resetPalette() {
     edgeCreationType = null;
     nodeCreationType = null;
-    DiagramClient.theClient().runOnDisplay(new Runnable() {
-      public void run() {
-        palette.reset();
-      }
-    });
+	CountDownLatch l = new CountDownLatch(1);
+	Platform.runLater(() -> {	  
+		palette.reset();
+        l.countDown();
+	});
+	try {
+		l.await();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
+	}
   }
 
   public void resize(String id, int width, int height) {

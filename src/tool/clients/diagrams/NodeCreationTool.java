@@ -1,34 +1,35 @@
 package tool.clients.diagrams;
 
+import java.io.File;
 import java.io.PrintStream;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
 
+import javafx.scene.control.Button;
+import javafx.scene.control.TreeItem;
+import javafx.scene.image.ImageView;
 import tool.xmodeler.XModeler;
 
 public class NodeCreationTool extends Tool {
 
-  public NodeCreationTool(Composite parent, Diagram diagram, String label, String id, String icon) {
-    super(parent, diagram, label, id, icon);
+  public NodeCreationTool(Diagram diagram, String label, String id, String icon) {
+    super(diagram, label, id, icon);
   }
 
-  public Button createButton(Composite parent) {
-    Image image = new Image(XModeler.getXModeler().getDisplay(), new ImageData("icons/" + icon));
-    Button button = new Button(parent, SWT.CHECK);
-    GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
-    button.setText(label);
-    button.setImage(image);
-    button.setLayoutData(data);
-    button.setFont(new Font(XModeler.getXModeler().getDisplay(), Group.defaultFont));
-    button.addSelectionListener(this);
-    button.pack();
+  public TreeItem<String> createButton() {
+	String iconFile = "icons/" + icon;
+	ImageView image = new ImageView(new javafx.scene.image.Image(new File(iconFile).toURI().toString()));
+	button = new TreeItem<String>(label, image);
+	
+//    Image image = new Image(XModeler.getXModeler().getDisplay(), new ImageData("icons/" + icon));
+//    Button button = new Button(parent, SWT.CHECK);
+//    GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
+//    button.setText(label);
+//    button.setImage(image);
+//    button.setLayoutData(data);
+//    button.setFont(new Font(XModeler.getXModeler().getDisplay(), Group.defaultFont));
+//    button.addSelectionListener(this);
+//    button.pack();
     return button;
   }
 
@@ -51,14 +52,14 @@ public class NodeCreationTool extends Tool {
     return "NODE";
   }
 
-  public void reset() {
-    button.setSelection(false);
-    button.setGrayed(false);
-  }
-
-  public void select() {
-    button.setSelection(true);
-    button.setGrayed(true);
-  }
+//  public void reset() {
+//    button.setSelection(false);
+//    button.setGrayed(false);
+//  }
+//
+//  public void select() {
+//    button.setSelection(true);
+//    button.setGrayed(true);
+//  }
 
 }

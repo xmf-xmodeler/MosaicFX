@@ -3,6 +3,7 @@ package tool.clients.diagrams;
 import java.io.PrintStream;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -18,6 +19,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javafx.application.Platform;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import tool.clients.Client;
 import tool.clients.EventHandler;
 import tool.xmodeler.XModeler;
@@ -26,8 +30,8 @@ import xos.Value;
 
 public class DiagramClient extends Client {
 
-  public static void start(CTabFolder tabFolder) {
-    DiagramClient.tabFolder = tabFolder;
+  public static void start(TabPane tabPane) {
+    DiagramClient.tabPane = tabPane;
   }
 
   public static DiagramClient theClient() {
@@ -35,9 +39,9 @@ public class DiagramClient extends Client {
   }
 
   static DiagramClient               theClient;
-  static CTabFolder                  tabFolder;
-/*  static Hashtable<String, CTabItem> tabs              = new Hashtable<String, CTabItem>();
-  static Vector<Diagram>             diagrams          = new Vector<Diagram>();*/
+  static TabPane                  	 tabPane;
+  private static Hashtable<String, Tab> tabs = new Hashtable<String, Tab>();
+  private static Vector<Diagram>             diagrams          = new Vector<Diagram>();
   transient static Vector<Diagram>   newlyCreatedDiagrams;
   static Font                        diagramFont       ;//= new Font(XModeler.getXModeler().getDisplay(), new FontData("Courier New", 12, SWT.NO));
   static Font                        diagramItalicFont ;//= new Font(XModeler.getXModeler().getDisplay(), new FontData("Courier New", 12, SWT.ITALIC)); 
@@ -72,7 +76,6 @@ public class DiagramClient extends Client {
       tabs.remove(id);
     }
   }
-
   private void copyToClipboard(Message message) {
     String id = message.args[0].strValue();
     copyToClipboard(id);
@@ -122,13 +125,13 @@ public class DiagramClient extends Client {
       }
     });
   }
-
+*/
   private Diagram getDiagram(String id) {
     for (Diagram diagram : diagrams)
       if (diagram.getId().equals(id)) return diagram;
     return null;
   }
-
+/*
   private String getId(CTabItem item) {
     for (String id : tabs.keySet())
       if (tabs.get(id) == item) return id;
@@ -579,13 +582,13 @@ public class DiagramClient extends Client {
       diagram.newBox(parentId, id, x, y, width, height, curve, top, right, bottom, left, lineRed, lineGreen, lineBlue, fillRed, fillGreen, fillBlue);
     }
   }
-
+*/
   private void newDiagram(Message message) {
     final Value id = message.args[0];
     final Value label = message.args[1];
     newDiagram(id.strValue(), label.strValue());
   }
-
+/*
   private void newNestedDiagram(Message message) {
     final Value parentId = message.args[0];
     final Value groupId = message.args[1];
@@ -598,22 +601,30 @@ public class DiagramClient extends Client {
     diagrams.addAll(newlyCreatedDiagrams);
     newlyCreatedDiagrams = null;
   }
+*/
+	private void newDiagram(final String id, final String label) {
+		CountDownLatch l = new CountDownLatch(1);
+		Platform.runLater(() -> {
+			System.err.println("Create Diagram...");
+		
+			Diagram diagram = new Diagram(id, null);
+			Tab tab = new Tab(label);
+			tab.setContent(diagram.getView());
+			tab.setClosable(true);			
+	        tabs.put(id, tab);    
+	        diagrams.add(diagram);
+	        tabPane.getTabs().add(tab);
+	        tabPane.getSelectionModel().selectLast();
 
-  private void newDiagram(final String id, final String label) {
-    runOnDisplay(new Runnable() {
-      public void run() {
-        Diagram diagram = new Diagram(id, tabFolder, null);
-        CTabItem item = new CTabItem(tabFolder, SWT.BORDER);
-        item.setControl(diagram.getContainer());
-        item.setText(label);
-        item.setShowClose(true);
-        tabs.put(id, item);
-        diagrams.add(diagram);
-        tabFolder.setSelection(item);
-      }
-    });
-  }
-
+	        l.countDown();
+		});
+		try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+    }
+/*
   private void newNestedDiagram(final String parentId, final String id, int x, int y, int width, int height) {
     // System.err.println("diagramClient->newNestedDiagram("+parentId+"->"+id+")");
     for (Diagram diagram : diagrams) {
@@ -707,7 +718,7 @@ public class DiagramClient extends Client {
       }
     });
   }
-
+*/
   private void newGroup(final String diagramId, final String name) {
     if (getDiagram(diagramId) != null) {
       runOnDisplay(new Runnable() {
@@ -717,7 +728,7 @@ public class DiagramClient extends Client {
         }
       });
     } else System.err.println("cannot find diagram " + diagramId);
-  }
+  }/*
 
   private void newImage(Message message) {
     String parentId = message.args[0].strValue();
@@ -885,7 +896,7 @@ public class DiagramClient extends Client {
     final Value oldName = message.args[2];
     renameAny(diagramId.strValue(), newName.strValue(), oldName.strValue());
   }
-
+*/
   private void newTool(Message message) {
     final Value diagramId = message.args[0];
     final Value groupId = message.args[1];
@@ -915,7 +926,7 @@ public class DiagramClient extends Client {
     final Value icon = message.args[4];
     newAction(diagramId.strValue(), groupId.strValue(), label.strValue(), toolId.strValue(), icon.strValue());
   }
-
+/*
   private void removeAny(final String diagramId, final String toolId) {
     if (getDiagram(diagramId) != null) {
       runOnDisplay(new Runnable() {
@@ -937,7 +948,7 @@ public class DiagramClient extends Client {
       });
     } else System.err.println("cannot find diagram " + diagramId);
   }
-
+*/
   private void newTool(final String diagramId, final String groupId, final String label, final String toolId, final boolean isEdge, final String icon) {
     if (getDiagram(diagramId) != null) {
       runOnDisplay(new Runnable() {
@@ -974,7 +985,7 @@ public class DiagramClient extends Client {
       }
     } else System.err.println("cannot find diagram " + diagramId);
   }
-
+/*
   // public static int updateID = -1;
 
   // private void addUpdateTimer(final String diagramId, final String toolId) {
@@ -990,13 +1001,13 @@ public class DiagramClient extends Client {
   // XModeler.getXModeler().getDisplay().timerExec(time, timer);
   // }});
   // }
-
+*/
   private void newToolGroup(Message message) {
     final Value diagramId = message.args[0];
     final Value name = message.args[1];
     newGroup(diagramId.strValue(), name.strValue());
   }
-
+/*
   private void newWaypoint(final Message message) {
     String parentId = message.args[0].strValue();
     String id = message.args[1].strValue();
@@ -1038,31 +1049,32 @@ public class DiagramClient extends Client {
 
   }
 
-  // TODO: Copy from uk.ac.mdx.xmf.swt.model
-  // Trying to use only one REMOVE command for ANY Button, TODO: remove others if that works
+*/
+
   public void sendMessage(final Message message) {
+	
     if (message.hasName("newDiagram"))
-      newDiagram(message);
-    else if (message.hasName("newGroup"))
+      newDiagram(message); 
+    /*else if (message.hasName("newGroup"))
       newNestedDiagram(message);
     else if (message.hasName("removeAny"))
       removeAny(message);
     else if (message.hasName("renameAny"))
-      renameAny(message);
+      renameAny(message);*/
     else if (message.hasName("newToolGroup"))
-      newToolGroup(message);
+      newToolGroup(message);/*
     else if (message.hasName("removeToolGroup"))
-      removeAny(message);
+      removeAny(message);*/
     else if (message.hasName("newTool"))
-      newTool(message);
+      newTool(message);/*
     else if (message.hasName("removeTool"))
-      removeAny(message);
+      removeAny(message);*/
     else if (message.hasName("newToggle"))
-      newToggle(message);
+      newToggle(message);/*
     else if (message.hasName("removeToggle"))
-      removeAny(message);
+      removeAny(message);*/
     else if (message.hasName("newAction"))
-      newAction(message);
+      newAction(message);/*
     else if (message.hasName("removeAction"))
       removeAny(message);
     else if (message.hasName("newNode"))
@@ -1156,10 +1168,13 @@ public class DiagramClient extends Client {
     else if (message.hasName("showEdges"))
       showEdges(message); // Bj�rn
     else if (message.hasName("setEditable"))
-      setEditable(message); // Bj�rn
-    else super.sendMessage(message);
+      setEditable(message); // Bj�rn */
+    else 
+    	System.err.println("send message to diagram Client: " + message);
+//    else super.sendMessage(message);
   }
 
+/*
   private void error(Message message) {
     String id = message.args[0].strValue();
     String error = message.args[1].strValue();
@@ -1506,7 +1521,8 @@ public class DiagramClient extends Client {
   }
 */
   public Point textDimension(String text, Font font) {
-    Text t = new Text(tabFolder, SWT.NONE);
+	  System.err.println("textDimension not working");
+    Text t = new Text(null/*replace*/, SWT.NONE);
     t.setFont(diagramFont);
     GC gc = new GC(t);
     Point extent = gc.textExtent(text);

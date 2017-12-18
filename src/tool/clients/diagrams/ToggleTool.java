@@ -1,16 +1,13 @@
 package tool.clients.diagrams;
 
+import java.io.File;
 import java.io.PrintStream;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
 
+import javafx.scene.control.Button;
+import javafx.scene.control.TreeItem;
+import javafx.scene.image.ImageView;
 import tool.xmodeler.XModeler;
 
 public class ToggleTool extends Tool {
@@ -21,28 +18,33 @@ public class ToggleTool extends Tool {
   transient Image imageTrue;
   transient Image imageFalse;
 
-  public ToggleTool(Composite parent, Diagram diagram, String label, String id, boolean state, String iconTrue, String iconFalse) {
-    super(parent, diagram, label, id, state?iconTrue:iconFalse);
+  public ToggleTool(Diagram diagram, String label, String id, boolean state, String iconTrue, String iconFalse) {
+    super(diagram, label, id, state?iconTrue:iconFalse);
     this.state = state;
     this.iconTrue = iconTrue;
     this.iconFalse = iconFalse;
-    if (state)
-      select();
-    else unselect();
+//    if (state)
+//      select();
+//    else unselect();
   }
 
-  public Button createButton(Composite parent) {
+  public TreeItem<String> createButton() {
+
+		String iconFile = "icons/" + icon;
+		ImageView image = new ImageView(new javafx.scene.image.Image(new File(iconFile).toURI().toString()));
+		button = new TreeItem<String>(label, image);	  
+	  
 //	  imageTrue = new Image(XModeler.getXModeler().getDisplay(), new ImageData("icons/" + iconTrue));
 //	  imageFalse = new Image(XModeler.getXModeler().getDisplay(), new ImageData("icons/" + iconFalse));
-    Image image = new Image(XModeler.getXModeler().getDisplay(), new ImageData("icons/" + icon));
-    Button button = new Button(parent, SWT.CHECK);
-    GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
-    button.setText(label);
-    button.setImage(image);
-    button.setLayoutData(data);
-    button.setFont(new Font(XModeler.getXModeler().getDisplay(), Group.defaultFont));
-    button.addSelectionListener(this);
-    button.pack();
+//    Image image = new Image(XModeler.getXModeler().getDisplay(), new ImageData("icons/" + icon));
+//    Button button = new Button(parent, SWT.CHECK);
+//    GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
+//    button.setText(label);
+//    button.setImage(image);
+//    button.setLayoutData(data);
+//    button.setFont(new Font(XModeler.getXModeler().getDisplay(), Group.defaultFont));
+//    button.addSelectionListener(this);
+//    button.pack();
     return button;
   }
 
@@ -60,17 +62,18 @@ public class ToggleTool extends Tool {
   public void widgetSelected(SelectionEvent event) {
     toggle();
     event.doit = false;
-    diagram.toggle(getId(), button.getSelection());
+    // TODO //diagram.toggle(getId(), button.getSelection());
   }
 
   private void toggle() {
-    state = !state;
-    button.setSelection(state);
-    System.err.println("toggle: " + state);
-    String file = "icons/" + (state?iconTrue:iconFalse);
-    System.err.println(file);
-    button.setImage(new Image(XModeler.getXModeler().getDisplay(), new ImageData(file)));
-    System.err.println(button.getImage());
+	  throw new RuntimeException("Button cannot be toggled yet.");
+//    state = !state;
+//    button.setSelection(state);
+//    System.err.println("toggle: " + state);
+//    String file = "icons/" + (state?iconTrue:iconFalse);
+//    System.err.println(file);
+//    button.setImage(new Image(XModeler.getXModeler().getDisplay(), new ImageData(file)));
+//    System.err.println(button.getImage());
   }
 
   public String getType() {
@@ -83,16 +86,16 @@ public class ToggleTool extends Tool {
     // of a boolean flag...
   }
 
-  private void unselect() {
-    button.setSelection(false);
-    button.setGrayed(false);
-    button.setImage(new Image(XModeler.getXModeler().getDisplay(), new ImageData("icons/" + iconFalse)));
-  }
-
-  public void select() {
-    button.setSelection(true);
-    button.setGrayed(true);
-    button.setImage(new Image(XModeler.getXModeler().getDisplay(), new ImageData("icons/" + iconTrue)));
-  }
+//  private void unselect() {
+//    button.setSelection(false);
+//    button.setGrayed(false);
+//    button.setImage(new Image(XModeler.getXModeler().getDisplay(), new ImageData("icons/" + iconFalse)));
+//  }
+//
+//  public void select() {
+//    button.setSelection(true);
+//    button.setGrayed(true);
+//    button.setImage(new Image(XModeler.getXModeler().getDisplay(), new ImageData("icons/" + iconTrue)));
+//  }
 
 }

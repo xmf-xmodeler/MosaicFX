@@ -368,11 +368,12 @@ public class XModeler extends Application {
 //    xos.newMessageClient("screenGeneration", new ScreenGenerationClient()); // BB
   }
   
-  public static void initClients() {
+  public static void initClients() { // only sets the tab pane
 	  ModelBrowserClient.start(browserTab);
 	  EditorClient.start(editorTabs);
 	  FormsClient.start(propertyTabs);
-	  Console.start(propertyTabs);
+	  Console.start(propertyTabs); // only one which does more
+	  DiagramClient.start(editorTabs);
   }
   
   

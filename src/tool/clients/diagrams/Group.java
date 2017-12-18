@@ -12,27 +12,34 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ExpandBar;
 import org.eclipse.swt.widgets.ExpandItem;
 
+import javafx.scene.control.ToolBar;
+import javafx.scene.control.TreeItem;
 import tool.xmodeler.XModeler;
 import xos.Value;
 
-public class Group {
+public class Group extends TreeItem<String>{
 
-  public static FontData getDefaultFont() {
-    return defaultFont;
-  }
+//  public static FontData getDefaultFont() {
+//    return defaultFont;
+//  }
 
-  static FontData defaultFont = new FontData("Monaco", 10, SWT.NORMAL);
+//  static FontData defaultFont = new FontData("Monaco", 10, SWT.NORMAL);
   Composite       buttonContainer;
   ExpandItem      item;
   Palette         palette;
   String          name;
   Vector<Tool>    tools       = new Vector<Tool>();
 
-  public Group(Palette palette, ExpandBar parent, String name) {
+  public Group(String name) {
+	  super(name);
+  }
+  
+  @Deprecated
+  public Group(Palette palette, ToolBar parent, String name) {
     this.palette = palette;
     this.name = name;
-    buttonContainer = new Composite(parent, SWT.BORDER);
-    item = new ExpandItem(parent, SWT.NONE);
+//    buttonContainer = new Composite(parent, SWT.BORDER);
+//    item = new ExpandItem(parent, SWT.NONE);
     item.setControl(buttonContainer);
     item.setText(name);
     GridLayout layout = new GridLayout(1, true);
@@ -44,17 +51,17 @@ public class Group {
     GridData buttonData = new GridData(GridData.HORIZONTAL_ALIGN_FILL, GridData.VERTICAL_ALIGN_FILL, true, true);
     buttonData.horizontalSpan = 2;
     buttonContainer.setLayoutData(buttonData);
-    setFont("dejavu/DejaVuSans.ttf", "DejaVu Sans");
+//    setFont("dejavu/DejaVuSans.ttf", "DejaVu Sans");
   }
 
-	public final void setFont(String fileName, String name) {
-		int oldHeight = defaultFont == null ? 13 : defaultFont.getHeight();
-		FontData[] fontData = Display.getDefault().getSystemFont().getFontData();
-		defaultFont = fontData[0];
-		XModeler.getXModeler().getDisplay().loadFont(fileName);
-		defaultFont.setName(name);
-		defaultFont.setHeight(oldHeight);
-	}
+//	public final void setFont(String fileName, String name) {
+//		int oldHeight = defaultFont == null ? 13 : defaultFont.getHeight();
+//		FontData[] fontData = Display.getDefault().getSystemFont().getFontData();
+//		defaultFont = fontData[0];
+//		XModeler.getXModeler().getDisplay().loadFont(fileName);
+//		defaultFont.setName(name);
+//		defaultFont.setHeight(oldHeight);
+//	}
 	
   public String getName() {
     return name;
@@ -72,7 +79,7 @@ public class Group {
 
   public void delete() {
     for (Tool tool : tools) {
-      tool.getButton().dispose();
+      tool.delete();
     }
     item.dispose();
     buttonContainer.dispose();
@@ -103,17 +110,22 @@ public class Group {
   }
 
   public void newToggle(Diagram diagram, String label, String toolId, boolean state, String iconTrue, String iconFalse) {
-    tools.add(new ToggleTool(buttonContainer, diagram, label, toolId, state, iconTrue, iconFalse));
-    item.setHeight(buttonContainer.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
-    item.setExpanded(true);
+	ToggleTool tool = new ToggleTool(diagram, label, toolId, state, iconTrue, iconFalse);
+    tools.add(tool);
+    getChildren().add(tool.getButton());
+//    item.setHeight(buttonContainer.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+//    item.setExpanded(true);
   }
 
   public void newAction(Diagram diagram, String label, String toolId, String icon) {
     Tool tool = getTool(label);
     if (tool != null) removeTool(label);
-    tools.add(new ActionTool(buttonContainer, diagram, label, toolId, icon));
-    item.setHeight(buttonContainer.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
-    item.setExpanded(true);
+    
+    ActionTool actionTool = new ActionTool(diagram, label, toolId, icon);
+    tools.add(actionTool);
+    getChildren().add(actionTool.getButton());
+//    item.setHeight(buttonContainer.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+//    item.setExpanded(true);
   }
 
   private void removeTool(String label) {
@@ -137,11 +149,16 @@ public class Group {
   }
 
   public void newTool(Diagram diagram, String label, String toolId, boolean isEdge, String icon) {
-    if (isEdge)
-      tools.add(new EdgeCreationTool(buttonContainer, diagram, label, toolId, icon));
-    else tools.add(new NodeCreationTool(buttonContainer, diagram, label, toolId, icon));
-    item.setHeight(buttonContainer.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
-    item.setExpanded(true);
+    if (isEdge) {
+    	Tool edge = new EdgeCreationTool(diagram, label, toolId, icon);
+        tools.add(edge); 
+        getChildren().add(edge.getButton());
+    } else {
+    	Tool node = new NodeCreationTool(diagram, label, toolId, icon);
+    	tools.add(node);
+    }
+//    item.setHeight(buttonContainer.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+//    item.setExpanded(true);
   }
 
   public void resetButtons() {

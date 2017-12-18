@@ -1,9 +1,11 @@
 package tool.clients;
 
 import java.io.PrintStream;
+import java.util.concurrent.CountDownLatch;
 
 import org.w3c.dom.Document;
 
+import javafx.application.Platform;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.MessageHandler;
@@ -68,16 +70,28 @@ public abstract class Client implements MessageHandler, SerializableClient {
       sendMessage(packet.getMessage(i));
   }
 
+  @Deprecated
   public void runOnDisplay(final Runnable r) {
-    XModeler.getXModeler().getDisplay().syncExec(new Runnable() {
-      public void run() {
-        try {
-          r.run();
-        } catch (Throwable t) {
-          t.printStackTrace();
-        }
-      }
-    });
+		CountDownLatch l = new CountDownLatch(1);
+		Platform.runLater(() -> {	  
+			r.run();
+            l.countDown();
+		});
+		try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	   
+//    XModeler.getXModeler().getDisplay().syncExec(new Runnable() {
+//      public void run() {
+//        try {
+//          r.run();
+//        } catch (Throwable t) {
+//          t.printStackTrace();
+//        }
+//      }
+//    });
   }
 
   public void writeXML(PrintStream out) {

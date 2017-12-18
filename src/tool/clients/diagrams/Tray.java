@@ -21,7 +21,8 @@ public class Tray {
     int x = width - trayWidth;
     int y = height - TOOL_HEIGHT;
     for (TrayTool tool : tools) {
-      tool.paint(gc, x, y, TOOL_WIDTH, TOOL_HEIGHT);
+    	System.err.println("Tray::paint()");
+//      TODO tool.paint(gc, x, y, TOOL_WIDTH, TOOL_HEIGHT);
       x += TOOL_WIDTH + SEPARATE;
     }
   }

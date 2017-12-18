@@ -79,6 +79,26 @@ public class Form {
 public void newButton(String parentId, String id, String label, int x, int y, int width, int height) {
 	    if (this.id.equals(parentId)) {
 	      Button button = new Button();
+	      
+	      javafx.event.EventHandler<ActionEvent> eh = new javafx.event.EventHandler<ActionEvent>() {
+	    	    @Override
+	    	    public void handle(ActionEvent event) {
+	    	        if (event.getSource() instanceof Button) {
+	    	        	Button es = (Button) event.getSource();
+	    	            if (button == es) {
+	    	            	System.err.println("buttonPressed: " + id);
+	    	                String id = getId(button);
+	    	                EventHandler handler = FormsClient.theClient().getHandler();
+	    	                Message message = handler.newMessage("buttonPressed", 1);
+	    	                message.args[0] = new Value(id);
+	    	                handler.raiseEvent(message);
+	    	            }
+	    	        }
+	    	    }
+	    	};
+
+	      button.setOnAction(eh);
+	      
 	      if (label.startsWith("Maximi")) {
 	        width += 16;
 	        x -= 16;
@@ -251,6 +271,7 @@ public void newButton(String parentId, String id, String label, int x, int y, in
 	  public void newTree(String parentId, String id, int x, int y, int width, int height, boolean editable) {
 	    if (this.id.equals(parentId)) {
 	      TreeView<String> tree = new TreeView<String>();
+	      tree.setPrefSize(width, height);
 	      AnchorPane.setLeftAnchor(tree, x*1.);
 	      AnchorPane.setTopAnchor(tree, y*1.);
 		  root.getChildren().add(tree);
@@ -417,11 +438,11 @@ public void newButton(String parentId, String id, String label, int x, int y, in
     return id;
   }
 
-//  private String getId(Button b) {
-//    for (String id : buttons.keySet())
-//      if (buttons.get(id) == b) return id;
-//    return null;
-//  }
+  private String getId(Button b) {
+    for (String id : buttons.keySet())
+      if (buttons.get(id) == b) return id;
+    return null;
+  }
 //
 //  private String getId(ComboBox<String> c) {
 //    for (String id : combos.keySet())

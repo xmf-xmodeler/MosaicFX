@@ -3,8 +3,9 @@ package tool.clients.diagrams;
 import java.io.PrintStream;
 
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
+
+import javafx.scene.control.Button;
+import javafx.scene.control.TreeItem;
 
 public abstract class Tool implements SelectionListener {
 
@@ -16,15 +17,15 @@ public abstract class Tool implements SelectionListener {
   String  label;
   String  id;
   String  icon;
-  Button  button;
+  TreeItem<String>  button;
 
-  public Tool(Composite container, Diagram diagram, String label, String id, String icon) {
+  public Tool(Diagram diagram, String label, String id, String icon) {
     super();
     this.diagram = diagram;
     this.label = label;
     this.id = id;
     this.icon = icon;
-    button = createButton(container);
+    button = createButton();
   }
 
   public String getIcon() {
@@ -38,28 +39,29 @@ public abstract class Tool implements SelectionListener {
   public void setID(String text) {
 	  this.label = text;
 	  this.id = text;
-	  getButton().setText(text);
+	  getButton().setValue(text);
   }
 
   public String getId() {
     return id;
   }
 
-  public Button getButton() {
+  public TreeItem<String> getButton() {
     return button;
   }
 
-  public abstract Button createButton(Composite container);
+  public abstract TreeItem<String> createButton();
 
   public abstract void writeXML(PrintStream out);
 
   public abstract String getType();
 
-  public abstract void reset();
+  public /*abstract*/ void reset() {throw new RuntimeException("Not implemented yet.");}
 
-  public abstract void select();
+  public /*abstract*/ void select() {throw new RuntimeException("Not implemented yet.");}
 
   public void delete() {
-    button.dispose();
+	  new RuntimeException("Button cannot be deleted yet.");
+//    button.dispose();
   }
 }
