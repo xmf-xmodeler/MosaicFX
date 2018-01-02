@@ -1,6 +1,7 @@
 package tool.console;
 
 import java.io.PrintStream;
+import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
 
@@ -391,9 +392,19 @@ public class ConsoleView {
   }
 
   public void processInput(String input) {
-    appendText(input);
-    goToEnd();
-    inputStart = textArea.getText().length();
+		CountDownLatch l = new CountDownLatch(1);
+		Platform.runLater(() -> {
+//		  System.err.println("processInput: " + input);
+	      appendText(input);
+	      goToEnd();
+	      inputStart = textArea.getText().length();
+	      l.countDown();
+		});
+		try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
   }
 
   public void propertyChange(PropertyChangeEvent event) {
