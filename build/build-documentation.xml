@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="docbook-to-pdf" basedir="/home/user/git/Mosaic" name="Create XModeler Bluebook pdf from DocBook sources">
+
+	<!-- 
+        Written by Jens Gulden. ant4docbook 0.7.1 is required, 0.8.0 won't work.
+        No <!DOCTYPE> declarations must be included in the sources.
+	-->
+
+	<property name="ant4docbook.keepTempFiles" value="false" />
+
+	<!-- from http://ant4docbook.sourceforge.net -->
+	<taskdef name="dbk"	
+		classname="net.sourceforge.ant4docbook.taskdefs.DocbookTask"
+		classpath="/home/user/ant4docbook-0.7.1/ant4docbook-0.7.1.jar"/>
+		<!--classpath="/home/user/ant4docbook-0.8.0/ant4docbook-0.8.0.jar:/home/user/ant4docbook-0.8.0/ant4x.jar"/>-->
+	
+	<target name="docbook-to-pdf">
+		<dbk file="doc/Bluebook/bluebook.xml" tofile="../XMF/com.ceteva.xmf.system/xmf-doc/xmf-books/Bluebook.pdf">
+			<parameter name="paper.type" value="A4" />
+		</dbk>
+	</target>
+
+</project>

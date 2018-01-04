@@ -1,0 +1,41 @@
+=== Version 1.0.8 ===== 30.10.2017
+- new prototypical texteditor
+- changes to compiler
+- operation values reactivated
+- statistical operations
+- age-calculations for date
+
+=== Version 1.0.7 ===== 22.08.2017
+- fixed missing shapes (e.g., stars) in diagrams
+
+=== Version 1.0.6 ===== 04.08.2017
+- Added further snippets
+
+=== Version 1.0.5 ===== 05.07.2017
+- Added further snippets
+
+=== Version 1.0.4 ===== 22.05.2017
+- Fixed problems with XTools examples 
+
+=== Version 1.0.4 ===== 22.05.2017
+- Fixed problems with XTools examples 
+
+=== Version 1.0.3 ===== 19.05.2017
+- Fixed problems at Windows 32 Bit
+
+=== Version 1.0.2 ===== 16.05.2017
+- Fixed problems at Linux 32 Bit 
+
+=== Version 1.0.1 ===== 28.04.2017
+- Operator precedence has been corrected
+- Texteditor shows line-numbers correctly
+- An integer overflow has been fixed
+- The intrinsic level of associations can be removed
+- Deletion of associations has been fixed
+- Renaming of classes does not lead to problems concerning instance creation anymore
+- Diagrams which has been created with XTools can be opened directly.   
+
+=== Version 1.0.0 =====
+initial version 
+
+Image dialog does not appear on start-up any more. If the dialog should be shown, just set -imagedialog to true.
