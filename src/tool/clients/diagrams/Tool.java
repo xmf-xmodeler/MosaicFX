@@ -2,6 +2,7 @@ package tool.clients.diagrams;
 
 import java.io.PrintStream;
 
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 
 import javafx.scene.control.Button;
@@ -56,9 +57,11 @@ public abstract class Tool implements SelectionListener {
 
   public abstract String getType();
 
-  public /*abstract*/ void reset() {throw new RuntimeException("Not implemented yet.");}
+  public /*abstract*/ void reset() {/*throw new RuntimeException("Not implemented yet.");*/}
 
-  public /*abstract*/ void select() {throw new RuntimeException("Not implemented yet.");}
+  public /*abstract*/ void select() {/*throw new RuntimeException("Not implemented yet.");*/}
+  
+  public /*abstract*/ void widgetSelected(SelectionEvent event) {System.err.println("widgetSelected");}
 
   public void delete() {
 	  new RuntimeException("Button cannot be deleted yet.");

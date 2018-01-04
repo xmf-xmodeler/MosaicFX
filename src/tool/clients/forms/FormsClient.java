@@ -519,11 +519,14 @@ public class FormsClient extends Client {
     String label = message.args[2].strValue();
 	System.err.println("*** NEW FORM *** " + id + " *** " + label + " ***");
     newForm(id, label, true);
+	System.err.println("NEW FORM done");
   }
 
   private void newForm(final String id, final String label, final boolean selected) {
-	  CountDownLatch l = new CountDownLatch(1);  
+	  CountDownLatch l = new CountDownLatch(1); 
+	  
 	  Platform.runLater(()->{
+		  System.err.println("Platform.runLater START");
     	Tab tabItem = new Tab(label);
     	tabFolder.getTabs().add(tabItem);
 //    	tabFolder.toFront();
@@ -537,10 +540,13 @@ public class FormsClient extends Client {
         forms.add(form);
         // REMOVED // if (selected) tabFolder.setSelection(tabItem);
 //      }
+        System.err.println("Platform.runLater END");
         l.countDown();
 	  });
 	  try {
+	   System.err.println("waiting...");
 	   l.await();
+	   System.err.println("waited");
 	  } catch (InterruptedException e) {
 	   e.printStackTrace();
 	  }

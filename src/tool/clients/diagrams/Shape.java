@@ -92,6 +92,12 @@ public class Shape implements Display {
 	    return points;
   }
   
+  @Override
+  public void paint(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
+	  
+  }
+  
+  @Override @Deprecated
   public void paint(GC gc, int x, int y) {
 //    if (width > 0 && height > 0) {
 	  int[] shiftedPoints = new int[points.length];
@@ -125,7 +131,7 @@ public class Shape implements Display {
 
   }
   
-  public void newNestedDiagram(String parentId, String id, int x, int y, int width, int height, org.eclipse.swt.widgets.Composite canvas) {}
+  public void newNestedDiagram(String parentId, String id, int x, int y, int width, int height, javafx.scene.canvas.Canvas canvas) {}
 
   public void resize(String id, int width, int height) {
     if (getId().equals(id)) {

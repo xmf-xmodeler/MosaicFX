@@ -44,6 +44,7 @@ public class DiagramClient extends Client {
   private static Vector<Diagram>             diagrams          = new Vector<Diagram>();
   transient static Vector<Diagram>   newlyCreatedDiagrams;
   static Font                        diagramFont       ;//= new Font(XModeler.getXModeler().getDisplay(), new FontData("Courier New", 12, SWT.NO));
+  static javafx.scene.text.Font      diagramFontFX       ;//= new Font(XModeler.getXModeler().getDisplay(), new FontData("Courier New", 12, SWT.NO));
   static Font                        diagramItalicFont ;//= new Font(XModeler.getXModeler().getDisplay(), new FontData("Courier New", 12, SWT.ITALIC)); 
   // static java.awt.Font diagramFont_AWT = new java.awt.Font("Courier New", java.awt.Font.PLAIN, 16);
 
@@ -52,17 +53,17 @@ public class DiagramClient extends Client {
     theClient = this;
 //    tabFolder.addCTabFolder2Listener(this);
   }
-/*
+
   public Value callMessage(Message message) {
     if (message.hasName("getTextDimension"))
       return getTextDimension(message);
-    else if (message.hasName("getTextDimensionWithFont"))
-      return getTextDimensionWithFont(message);
-    else if (message.hasName("getPalette"))
-      return getPalette(message);
+//    else if (message.hasName("getTextDimensionWithFont"))
+//      return getTextDimensionWithFont(message);
+//    else if (message.hasName("getPalette"))
+//      return getPalette(message);
     else return super.callMessage(message);
   }
-
+/*
   public void close(CTabFolderEvent event) {
     CTabItem item = (CTabItem) event.item;
     String id = getId(item);
@@ -156,10 +157,10 @@ public class DiagramClient extends Client {
   /*
    * These functions calculate the size for a String for use in XMF's layouts. Unfortunately, hi-dpi changes the font size, so we need to get that factor out of the dimensions again. The value sent to XMF are those AS IF the font size were at 100%
    */
-  /*private Value getTextDimension(final Message message) {
+  private Value getTextDimension(final Message message) {
     final Value[] result = new Value[1];
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         Value text = message.args[0];
 
         // FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
@@ -167,7 +168,7 @@ public class DiagramClient extends Client {
         // double awtHeight = diagramFont_AWT.getStringBounds(text.strValue(), frc).getHeight();
 
         // Value italics = message.args[1];
-        Point extent = textDimension(text.strValue(), diagramFont);
+        javafx.geometry.Point2D extent = textDimension(text.strValue(), diagramFontFX);
 
         // FontDescriptor myDescriptor = FontDescriptor.createFrom(DiagramClient.diagramFont).setHeight(12 * 100 / XModeler.getDeviceZoomPercent());
         // Font zoomFont = myDescriptor.createFont(XModeler.getXModeler().getDisplay());
@@ -176,16 +177,17 @@ public class DiagramClient extends Client {
         // System.err.println("width: " + extent.x + "\nadjusted to: " + (extent.x*100/XModeler.getDeviceZoomPercent())
         // + "\nwould be readjusted to: " + extentTest.x+ "\nfont: " + diagramFont
         // + "\nawt size: " + awtWidth);
-        Value width = new Value(extent.x);// *100/XModeler.getDeviceZoomPercent());
-        Value height = new Value(extent.y);// *100/XModeler.getDeviceZoomPercent());
+        Value width = new Value((int)(extent.getX()+.5));// *100/XModeler.getDeviceZoomPercent());
+        Value height = new Value((int)(extent.getY()+.5));// *100/XModeler.getDeviceZoomPercent());
+        System.err.println("getTextDimension -> " + extent.getX() + "x" + extent.getY()); 
         // Value width = new Value((int)(awtWidth+.5));
         // Value height = new Value((int)(awtHeight+.5));
         result[0] = new Value(new Value[] { width, height });
-      }
-    });
+//      }
+//    });
     return result[0];
   }
-  
+  /*
   private Value getTextDimensionWithFont(final Message message) {
     final Value[] result = new Value[1];
     runOnDisplay(new Runnable() {
@@ -555,7 +557,7 @@ public class DiagramClient extends Client {
     for (Diagram diagram : diagrams)
       diagram.move(id.strValue(), x.intValue, y.intValue);
   }
-
+*/
   private void newBox(Message message) {
     final String parentId = message.args[0].strValue();
     final String id = message.args[1].strValue();
@@ -582,7 +584,7 @@ public class DiagramClient extends Client {
       diagram.newBox(parentId, id, x, y, width, height, curve, top, right, bottom, left, lineRed, lineGreen, lineBlue, fillRed, fillGreen, fillBlue);
     }
   }
-*/
+
   private void newDiagram(Message message) {
     final Value id = message.args[0];
     final Value label = message.args[1];
@@ -819,7 +821,7 @@ public class DiagramClient extends Client {
       }
     });
   }
-
+*/
   private void newNode(Message message) {
     Value parentId = message.args[0];
     Value id = message.args[1];
@@ -830,7 +832,7 @@ public class DiagramClient extends Client {
     Value selectable = message.args[6];
     newNode(parentId.strValue(), id.strValue(), x.intValue, y.intValue, width.intValue, height.intValue, selectable.boolValue);
   }
-*/
+
   protected void newNode(String type, String id, int x, int y) {
     Message m = getHandler().newMessage("newNode", 4);
     m.args[0] = new Value(type);
@@ -839,14 +841,14 @@ public class DiagramClient extends Client {
     m.args[3] = new Value(y);
     getHandler().raiseEvent(m);
   }
-/*
+
   private void newNode(String parentId, String id, int x, int y, int width, int height, boolean selectable) {
     if (getDiagram(parentId) != null) {
       Diagram diagram = getDiagram(parentId);
       diagram.newNode(id, x, y, width, height, selectable);
     } else System.err.println("cannot find diagram " + parentId);
   }
-
+/*
   private void newPort(Message message) {
     Value parentId = message.args[0];
     Value id = message.args[1];
@@ -862,7 +864,7 @@ public class DiagramClient extends Client {
       diagram.newPort(parentId, id, x, y, width, height);
     }
   }
-
+*/
   private void newText(Message message) {
     final String parentId = message.args[0].strValue();
     final String id = message.args[1].strValue();
@@ -883,7 +885,7 @@ public class DiagramClient extends Client {
       diagram.newText(parentId, id, text, x, y, editable, underline, italicise, red, green, blue);
     }
   }
-
+/*
   private void removeAny(Message message) {
     final Value diagramId = message.args[0];
     final Value toolId = message.args[1];
@@ -950,7 +952,7 @@ public class DiagramClient extends Client {
   }
 */
   private void newTool(final String diagramId, final String groupId, final String label, final String toolId, final boolean isEdge, final String icon) {
-    if (getDiagram(diagramId) != null) {
+	  if (getDiagram(diagramId) != null) {
       runOnDisplay(new Runnable() {
         public void run() {
           Diagram diagram = getDiagram(diagramId);
@@ -1076,15 +1078,15 @@ public class DiagramClient extends Client {
     else if (message.hasName("newAction"))
       newAction(message);/*
     else if (message.hasName("removeAction"))
-      removeAny(message);
+      removeAny(message);*/
     else if (message.hasName("newNode"))
-      newNode(message);
+      newNode(message);/*
     else if (message.hasName("newPort"))
-      newPort(message);
+      newPort(message);*/
     else if (message.hasName("newBox"))
       newBox(message);
     else if (message.hasName("newText"))
-      newText(message);
+      newText(message);/*
     else if (message.hasName("resize"))
       resize(message);
     else if (message.hasName("move"))
@@ -1520,14 +1522,16 @@ public class DiagramClient extends Client {
       if (diagram.getId().equals(id.strValue())) diagram.renderOff();
   }
 */
-  public Point textDimension(String text, Font font) {
-	  System.err.println("textDimension not working");
-    Text t = new Text(null/*replace*/, SWT.NONE);
-    t.setFont(diagramFont);
-    GC gc = new GC(t);
-    Point extent = gc.textExtent(text);
-    gc.dispose();
-    t.dispose();
+  public javafx.geometry.Point2D textDimension(String text, javafx.scene.text.Font font) {
+
+	javafx.scene.text.Text t = new javafx.scene.text.Text(text);
+	if(font != null) t.setFont(font); else System.err.println("calculating text dimension without font");
+	t.applyCss();
+	
+	final double width = t.getLayoutBounds().getWidth();
+	final double height = t.getLayoutBounds().getHeight();
+	javafx.geometry.Point2D extent = new javafx.geometry.Point2D(width, height);
+	
     return extent;
   }
   /*

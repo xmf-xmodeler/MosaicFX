@@ -19,6 +19,11 @@ public class Line implements Display {
   }
 
   @Override
+  public void paint(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
+	  
+  }
+  
+  @Override @Deprecated
   public void paint(GC gc, int x, int y) {
     // TODO Auto-generated method stub
 
@@ -125,7 +130,7 @@ public void showEdges(String id, boolean top, boolean bottom, boolean left,
 	// TODO Auto-generated method stub
 	
 }
-public void newNestedDiagram(String parentId, String id, int x, int y, int width, int height, org.eclipse.swt.widgets.Composite canvas) {}
+public void newNestedDiagram(String parentId, String id, int x, int y, int width, int height, javafx.scene.canvas.Canvas canvas) {}
 
 @Override
 public void newShape(String parentId, String id, int x, int y, int width, int height, boolean showOutline, int lineRed,

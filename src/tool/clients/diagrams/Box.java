@@ -158,7 +158,7 @@ public class Box implements Display {
     }
   }
 
-  public void newNestedDiagram(String parentId, String id, int x, int y, int width, int height, org.eclipse.swt.widgets.Composite canvas) {
+  public void newNestedDiagram(String parentId, String id, int x, int y, int width, int height, javafx.scene.canvas.Canvas canvas) {
     if (getId().equals(parentId)) {
       DiagramClient.theClient().runOnDisplay(new Runnable() {
         public void run() {
@@ -221,6 +221,32 @@ public class Box implements Display {
     }
   }
 
+	@Override
+	public void paint(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
+        System.err.println("paint " +this+ " width=" + width + " height=" + height);
+		if (width > 0 && height > 0 || true) { // TODO remove
+//			Color fillColor = gc.getBackground();
+			if (getFillRed() != -1 && getFillGreen() != -1 && getFillBlue() != -1) {
+				gc.setFill(new javafx.scene.paint.Color(getFillRed()/255., getFillGreen()/255., getFillBlue()/255., 1));
+				gc.fillRect(x + getX(), y + getY(), width, height);
+			}
+//			gc.setBackground(fillColor);
+			for (Display display : displays){
+				System.err.println("paint box::display:" + display);
+				display.paint(gc, x + getX(), y + getY());
+			}
+			if (top || bottom || left || right) { 
+//				Color lineColor = gc.getForeground();
+				gc.setStroke(new javafx.scene.paint.Color(getLineRed()/255., getLineGreen()/255., getLineBlue()/255., 1));
+				gc.strokeRect(x + getX(), y + getY(), width, height);
+//				gc.setForeground(lineColor);
+			}
+		}
+		if (nestedDiagram != null)
+			nestedDiagram.paint(gc, x + getX(), y + getY());
+	}
+  
+  @Override @Deprecated
   public void paint(GC gc, int x, int y) {
     if (width > 0 && height > 0) {
       Color fillColor = gc.getBackground();

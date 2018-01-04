@@ -6,10 +6,9 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
-import org.eclipse.gef.palette.PaletteTemplateEntry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.ScrolledComposite;
+import javafx.scene.control.ScrollPane;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.ImageTransfer;
@@ -27,14 +26,13 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
-import org.eclipse.swt.widgets.Canvas;
+import javafx.scene.canvas.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
 
 import javafx.application.Platform;
-import javafx.scene.layout.Pane;
+import javafx.scene.control.SplitPane;
 import tool.clients.EventHandler;
-import tool.clients.editors.texteditor.Tool;
 import tool.clients.menus.MenuClient;
 import tool.xmodeler.XModeler;
 import xos.Message;
@@ -46,7 +44,7 @@ public class Diagram implements Display {
     NONE, SELECTED, NEW_EDGE, DOUBLE_CLICK, MOVE_TARGET, MOVE_SOURCE, RESIZE_TOP_LEFT, RESIZE_TOP_RIGHT, RESIZE_BOTTOM_LEFT, RESIZE_BOTTOM_RIGHT, RUBBER_BAND
   };
   
-  private Pane pane;
+  private SplitPane pane;
 
   static final Color[]     COLOURS                = new Color[] {};// color(SWT.COLOR_RED), color(SWT.COLOR_BLUE), color(SWT.COLOR_DARK_GREEN), color(SWT.COLOR_YELLOW), color(SWT.COLOR_GRAY), color(SWT.COLOR_DARK_RED), color(SWT.COLOR_CYAN), color(SWT.COLOR_DARK_YELLOW), color(SWT.COLOR_MAGENTA) };
 
@@ -85,9 +83,9 @@ public class Diagram implements Display {
   Tray                                     tray                   = new Tray();
   ErrorTool                                errorTool              = new ErrorTool();
   SashForm                                 container;
-  final Palette                                  palette;
+  final Palette                            palette;
   Canvas                                   canvas;
-  ScrolledComposite                        scroller;
+  ScrollPane		                       scroller;
   Edge                                     selectedEdge           = null;
   Node                                     selectedNode           = null;
 
@@ -235,6 +233,70 @@ public class Diagram implements Display {
     }
 
   }
+  
+  /////////////////////////Mouse Listener Start/////////////////////////////
+  
+  private void mouseClicked(javafx.scene.input.MouseEvent event) {
+	  System.err.println("mouseClicked");
+	  if(event.getButton() == javafx.scene.input.MouseButton.PRIMARY) {
+		  leftMouseClicked(event);
+	  }
+  }
+  
+  private void leftMouseClicked(javafx.scene.input.MouseEvent event) {
+	  System.err.println("leftMouseClicked");
+	  if(event.getClickCount() == 1) {
+		  leftMouseClickedOnce(event);
+	  }
+  }  
+  
+	private void leftMouseClickedOnce(javafx.scene.input.MouseEvent event) {
+		System.err.println("leftMouseClickedOnce");
+		System.err.println("nodeCreationType:" + nodeCreationType);
+		System.err.println("edgeCreationType:" + edgeCreationType);
+		TrayTool tool = null;//selectTool((int) event.getX(), (int) event.getY());
+		if (tool != null)
+			tool.click(Diagram.this);
+		else {
+			if (nodeCreationType == null && edgeCreationType == null) {
+				select(0 /*event state mask*/, (int) event.getX(), (int) event.getY(), false);
+				storeLastXY((int) event.getX(), (int) event.getY());
+				redraw();
+			} else if (edgeCreationType != null) {
+				deselectAll();
+				int x = (int) event.getX();
+				int y = (int) event.getY();
+				PortAndDiagram port = selectPort(x, y);
+				if (port != null) {
+					sourcePort = port;
+					firstX = x;
+					firstY = y;
+					storeFirstXY(x, y);
+					storeLastXY(x, y);
+					mode = MouseMode.NEW_EDGE;
+				}
+				redraw();
+			} else if (nodeCreationType != null) {
+				Object[] diagramData = new Object[] { id, 0, 0 }; // default
+																	// this
+				// unless any node is hit
+				Object[] nestedDiagramData = getNestedDiagramID((int) event.getX(), (int) event.getY());
+				if (nestedDiagramData != null) {
+					diagramData = nestedDiagramData;
+					// System.err.println("found diagramID: " + diagramID);
+				}
+				DiagramClient.theClient().newNode(nodeCreationType, (String) diagramData[0],
+						((int) event.getX()) - ((Integer) diagramData[1]), 
+						((int) event.getY()) - ((Integer) diagramData[2]));
+				resetPalette();
+				redraw();
+			}
+			if (updateID != null)
+				action(updateID);
+		}
+	}
+  
+  /////////////////////////Mouse Listener End///////////////////////////////
 
   private class MyMouseListener implements MouseListener {
 
@@ -319,6 +381,7 @@ public class Diagram implements Display {
     public void mouseMove(final MouseEvent event) {
       scale(event);
       // if (mode == MouseMode.SELECTED) {
+        System.err.println("mouseMove");
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {	  
           int dx = event.x - lastX;
@@ -468,21 +531,21 @@ public class Diagram implements Display {
   }
 
   @Deprecated
-  public Diagram(String id, Composite parent, Box parentIfNested) {
-	System.err.println("old Diagram()");
-	container = new SashForm(parent, SWT.HORIZONTAL | SWT.BORDER);
+  public Diagram(String id, Canvas parent, Box parentIfNested) {
+	System.err.println("old Diagram() / nested?");
+//	container = new SashForm(parent, SWT.HORIZONTAL | SWT.BORDER);
     palette = null; //new Palette(container, this);
-    scroller = new ScrolledComposite(container, SWT.V_SCROLL | SWT.H_SCROLL);
-    scroller.setExpandHorizontal(true);
-    scroller.setExpandVertical(true);
-    canvas = new Canvas(scroller, SWT.BORDER | SWT.DOUBLE_BUFFERED);
-    canvas.setBackground(diagramBackgroundColor);
-    canvas.addMouseListener(new MyMouseListener());
-    canvas.addPaintListener(new MyPaintListener());
-    canvas.addMouseMoveListener(new MyMouseMoveListener());
-    canvas.addKeyListener(new MyKeyListener());
+//    scroller = new ScrolledComposite(container, SWT.V_SCROLL | SWT.H_SCROLL);
+//    scroller.setExpandHorizontal(true);
+//    scroller.setExpandVertical(true);
+//    canvas = new Canvas(scroller, SWT.BORDER | SWT.DOUBLE_BUFFERED);
+//    canvas.setBackground(diagramBackgroundColor);
+//    canvas.addMouseListener(new MyMouseListener());
+//    canvas.addPaintListener(new MyPaintListener());
+//    canvas.addMouseMoveListener(new MyMouseMoveListener());
+//    canvas.addKeyListener(new MyKeyListener());
     container.setWeights(new int[] { 1, 5 });
-    scroller.setContent(canvas);
+//    scroller.setContent(canvas);
     this.id = id;
     this.nestedParent = parentIfNested;
     createTray();
@@ -490,12 +553,26 @@ public class Diagram implements Display {
   
 	public Diagram(String id, Box parentIfNested) {
 		System.err.println("new Diagram()");
-		pane = new Pane();
+		pane = new SplitPane();
 	    this.id = id;
 		this.nestedParent = parentIfNested;
 		palette = new Palette(this);
 		palette.init(this);
-		pane.getChildren().add(palette.getToolBar());
+		canvas = new Canvas(500,500);
+		scroller = new ScrollPane(canvas);
+		
+        canvas.setOnMouseClicked((event) -> { mouseClicked(event); } );
+//        canvasFX.pref
+//        scene.setOnMouseDragged(mouseHandler);
+//        scene.setOnMouseEntered(mouseHandler);
+//        scene.setOnMouseExited(mouseHandler);
+//        scene.setOnMouseMoved(mouseHandler);
+//        scene.setOnMousePressed(mouseHandler);
+//        scene.setOnMouseReleased(mouseHandler);		
+		
+		
+		
+//		pane.getChildren().add(palette.getToolBar());
 //		scroller = new ScrolledComposite(container, SWT.V_SCROLL | SWT.H_SCROLL);
 //		scroller.setExpandHorizontal(true);
 //		scroller.setExpandVertical(true);
@@ -506,6 +583,10 @@ public class Diagram implements Display {
 //		canvas.addMouseMoveListener(new MyMouseMoveListener());
 //		canvas.addKeyListener(new MyKeyListener());
 //		container.setWeights(new int[] { 1, 5 });
+		pane.getItems().addAll(palette.getToolBar(), scroller);
+		pane.setDividerPosition(0, 0.2);
+		
+		redraw();
 //		scroller.setContent(canvas);
 //		this.id = id;
 //		this.nestedParent = parentIfNested;
@@ -560,7 +641,8 @@ public class Diagram implements Display {
     /*
      * p is the size of the canvas. The size does not change with the zoom.
      */
-    Point p = canvas.getSize();
+	
+//    Point p = canvas.getWidth()
     // System.err.println("canvas Screen Size : " + p);
     /*
      * Now it is compared with the needed size. This is calculated as raw positions.
@@ -570,12 +652,12 @@ public class Diagram implements Display {
     /*
      * Now the canvas' screen size has to be converted to raw size.
      */
-    float[] canvasPoints = new float[] { (float) p.x, (float) p.y };
+    float[] canvasPoints = new float[] { (float) canvas.getWidth(), (float) canvas.getHeight() };
     transform.invert();
     transform.transform(canvasPoints);
     transform.invert();
     Point canvasRawSize = new Point((int) canvasPoints[0], (int) canvasPoints[1]);
-    // System.err.println("canvas Raw Size : " + canvasRawSize);
+    System.err.println("canvas Raw Size : " + canvasRawSize);
     /* The new size can now be calculated */
     int width = Math.max(canvasRawSize.x, maxRawSize.x);
     int height = Math.max(canvasRawSize.y, maxRawSize.y);
@@ -589,15 +671,16 @@ public class Diagram implements Display {
     /*
      * As some rounding errors may have accumulated now, any change which is less then 5 is ignored.
      */
-    if (Math.abs(width - canvas.getSize().x) < 4.5) width = canvas.getSize().x;
-    if (Math.abs(height - canvas.getSize().y) < 4.5) height = canvas.getSize().y;
+    if (Math.abs(width - canvas.getWidth()) < 4.5) width = (int) canvas.getWidth();
+    if (Math.abs(height - canvas.getHeight()) < 4.5) height = (int) canvas.getHeight();
     /* The new sizes are now set */
-    canvas.setSize(width, height);
+    canvas.setWidth(width); canvas.setHeight(height);
     scroller.setMinSize(width, height);
   }
 
-  private void clear(GC gc, int x, int y) {
-    gc.fillRectangle(x + 1, y + 1, canvas.getSize().x - 2, canvas.getSize().y - 2); // TODO: Problem with box border
+  private void clear(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
+	  gc.setFill(javafx.scene.paint.Color.WHITE);
+      gc.fillRect(x + 1, y + 1, (int)(canvas.getWidth() - 2), (int)(canvas.getHeight() - 2)); // TODO: Problem with box border
   }
 
   private void copyToClipboard() {
@@ -779,7 +862,7 @@ public class Diagram implements Display {
     return container;
   }
   
-  public Pane getView() {
+  public SplitPane getView() {
 	return pane;
   }
 
@@ -1127,7 +1210,7 @@ public class Diagram implements Display {
 
   public void newAction(String groupId, String label, String toolId, String icon) {
     palette.newAction(this, groupId, label, toolId, icon);
-    container.layout();
+//    container.layout();
   }
 
   public void newBox(String id, int x, int y, int width, int height, int curve, boolean top, boolean right, boolean bottom, boolean left, int lineRed, int lineGreen, int lineBlue, int fillRed, int fillGreen, int fillBlue) {
@@ -1221,7 +1304,7 @@ public class Diagram implements Display {
     redraw();
   }
 
-  public void newNestedDiagram(String parentId, String id, int x, int y, int width, int height, org.eclipse.swt.widgets.Composite canvas) {
+  public void newNestedDiagram(String parentId, String id, int x, int y, int width, int height, javafx.scene.canvas.Canvas canvas) {
     if (parentId.equals(getId())) {
       // System.err.println("Diagram(" + parentId + ")->newNestedDiagram(" + id + ")");
     } else {
@@ -1325,6 +1408,12 @@ public class Diagram implements Display {
     }
   }
 
+  @Override
+  public void paint(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
+	  
+  }
+  
+  @Override @Deprecated
   public void paint(GC gc, int xOffset, int yOffset) {
     // This is called when a diagram is a display element. The offsets need to be
     // included so that global painting is relative to (0,0).
@@ -1462,7 +1551,7 @@ public class Diagram implements Display {
         }
   }
 
-  private void paintNodes(GC gc, int x, int y) {
+  private void paintNodes(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
     for (Node node : nodes)
       node.paint(gc, this, x, y);
   }
@@ -1473,12 +1562,12 @@ public class Diagram implements Display {
     gc.setInterpolation(SWT.HIGH);
     gc.setAdvanced(true);
     gc.setTransform(transform);
-    clear(gc, xOffset, yOffset);
+//    clear(gc, xOffset, yOffset);
     paintDisplays(gc, xOffset, yOffset);
     paintResizing(gc, xOffset, yOffset);
     paintEdges(gc, xOffset, yOffset);
     paintAlignment(gc);
-    paintNodes(gc, xOffset, yOffset);
+//    paintNodes(gc, xOffset, yOffset);
     paintHover(gc, xOffset, yOffset);
     paintSelected(gc, xOffset, yOffset);
     paintRubberBand(gc, xOffset, yOffset);
@@ -1487,11 +1576,29 @@ public class Diagram implements Display {
     paintErrors(gc);
     paintTray(gc);
     handleDoubleClick(gc);
-
-    // gc.drawString("Zoom: " + zoom, 5, 5);
-    // gc.drawString("Width M: " + maxWidth(), 5, 17);
-    // gc.drawString("Width C: " + canvas.getSize().x, 5, 29);
   }
+  
+  private void paintOn(javafx.scene.canvas.GraphicsContext gc, int xOffset, int yOffset) {
+//	    gc.setAntialias(SWT.ON);
+//	    gc.setTextAntialias(SWT.ON);
+//	    gc.setInterpolation(SWT.HIGH);
+//	    gc.setAdvanced(true);
+//	    gc.setTransform(transform);
+	    clear(gc, xOffset, yOffset);
+//	    paintDisplays(gc, xOffset, yOffset);
+//	    paintResizing(gc, xOffset, yOffset);
+//	    paintEdges(gc, xOffset, yOffset);
+//	    paintAlignment(gc);
+	    paintNodes(gc, xOffset, yOffset);
+//	    paintHover(gc, xOffset, yOffset);
+//	    paintSelected(gc, xOffset, yOffset);
+//	    paintRubberBand(gc, xOffset, yOffset);
+//	    paintNewNode(gc);
+//	    paintNewEdge(gc);
+//	    paintErrors(gc);
+//	    paintTray(gc);
+//	    handleDoubleClick(gc);
+	  }
 
   private void paintResizing(GC gc, int xOffset, int yOffset) {
     if (mode == MouseMode.RESIZE_BOTTOM_RIGHT) {
@@ -1515,15 +1622,16 @@ public class Diagram implements Display {
   }
 
   private void paintTray(GC gc) {
-    ScrollBar bar = canvas.getVerticalBar();
-    Rectangle r = scroller.getClientArea();
-    int width = r.width;
-    int height = r.height;
-    if (bar != null) width -= bar.getSize().x;
-    height -= canvas.getBorderWidth();
-    height -= canvas.getParent().getBorderWidth();
-    height -= TRAY_PAD;
-    tray.paint(gc, width, height);
+	  System.err.println("Can't paint tray yet");
+//    ScrollBar bar = canvas.getVerticalBar();
+//    Rectangle r = scroller.getClientArea();
+//    int width = r.width;
+//    int height = r.height;
+//    if (bar != null) width -= bar.getSize().x;
+//    height -= canvas.getBorderWidth();
+//    height -= canvas.getParent().getBorderWidth();
+//    height -= TRAY_PAD;
+//    tray.paint(gc, width, height);
   }
 
   /*
@@ -1536,19 +1644,29 @@ public class Diagram implements Display {
 
   public void redraw() {
     if (render == 0) {
-		CountDownLatch l = new CountDownLatch(1);
-		Platform.runLater(() -> {	  
-          checkSize();
-          container.redraw();
-          canvas.redraw(); // ensure repainting on all platforms
-          canvas.update();
-            l.countDown();
-		});
-		try {
-			l.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} 
+        checkSize();    
+        paintOn(canvas.getGraphicsContext2D(), 0, 0);  
+          
+//    	canvas.getGraphicsContext2D().fillRect(0, 0, 100, 100);
+//    	System.err.println("canvas redraw ?");
+    	
+//    	
+//		CountDownLatch l = new CountDownLatch(1);
+//		Platform.runLater(() -> {	  
+
+//          container.redraw();
+          
+          
+//          canvas.
+//          canvas.redraw(); // ensure repainting on all platforms
+//          canvas.update();
+//            l.countDown();
+//		});
+//		try {
+//			l.await();
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		} 
       }
     }
   
@@ -1597,17 +1715,8 @@ public class Diagram implements Display {
 
   public void resetPalette() {
     edgeCreationType = null;
-    nodeCreationType = null;
-	CountDownLatch l = new CountDownLatch(1);
-	Platform.runLater(() -> {	  
-		palette.reset();
-        l.countDown();
-	});
-	try {
-		l.await();
-	} catch (InterruptedException e) {
-		e.printStackTrace();
-	}
+    nodeCreationType = null;  
+	palette.reset();
   }
 
   public void resize(String id, int width, int height) {
@@ -1825,15 +1934,17 @@ public class Diagram implements Display {
   }
 
   private TrayTool selectTool(int x, int y) {
-    ScrollBar bar = canvas.getVerticalBar();
-    Rectangle r = scroller.getClientArea();
-    int width = r.width;
-    int height = r.height;
-    if (bar != null) width -= bar.getSize().x;
-    height -= canvas.getBorderWidth();
-    height -= canvas.getParent().getBorderWidth();
-    height -= TRAY_PAD;
-    return tray.selectTool(x, y, width, height);
+	  System.err.println("selectTool temporarily removed");
+//    ScrollBar bar = canvas.getVerticalBar();
+//    Rectangle r = scroller.getClientArea();
+//    int width = r.width;
+//    int height = r.height;
+//    if (bar != null) width -= bar.getSize().x;
+//    height -= canvas.getBorderWidth();
+//    height -= canvas.getParent().getBorderWidth();
+//    height -= TRAY_PAD;
+//    return tray.selectTool(x, y, width, height);
+	  return null;
   }
 
   private void sendMessageToDeleteSelection() {
@@ -1929,6 +2040,7 @@ public class Diagram implements Display {
 
   public void setNodeCreationType(String nodeCreationType) {
     this.nodeCreationType = nodeCreationType;
+    System.err.println("nodeCreationType:" + nodeCreationType);
   }
 
   public void setText(String id, String text) {

@@ -497,6 +497,20 @@ public class XModeler extends Application {
     t.start();
   }
 
-  
+//  private static boolean runLaterDebug = true;
+//  public static void runLater(Runnable runnable, String debugName) {
+//		CountDownLatch l = new CountDownLatch(1);
+//		Platform.runLater(() -> {
+//			if(runLaterDebug) System.err.println("Runnable " + debugName + " started...");
+////			runnable.run();
+//	        l.countDown();
+//	        if(runLaterDebug) System.err.println("Runnable " + debugName + " done");
+//		});
+//		try {
+//			l.await();
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+//  }
 }
 

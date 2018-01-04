@@ -57,7 +57,13 @@ public class MultilineText implements Display {
     return "MultilineText(" + x + "," + y + "," + width + "," + height + "," + text + ")";
   }
 
-  public void paint(GC gc, int parentX, int parentY) { 
+  @Override
+  public void paint(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
+	  
+  }
+  
+  @Override @Deprecated
+  public void paint(GC gc, int parentX, int parentY) {
     //FontData fontData = font.equals("") ? DiagramClient.diagramFont.getFontData()[0] : new FontData(font);
     FontData fontData = DiagramClient.diagramFont.getFontData()[0];
     Font font = gc.getFont();
@@ -141,7 +147,7 @@ public class MultilineText implements Display {
   public void newBox(String parentId, String id, int x, int y, int width, int height, int curve, boolean top, boolean right, boolean bottom, boolean left, int lineRed, int lineGreen, int lineBlue, int fillRed, int fillGreen, int fillBlue) {
   }
   
-  public void newNestedDiagram(String parentId, String id, int x, int y, int width, int height, org.eclipse.swt.widgets.Composite canvas) {}
+  public void newNestedDiagram(String parentId, String id, int x, int y, int width, int height, javafx.scene.canvas.Canvas canvas) {}
 
   public void resize(String id, int width, int height) {
     if (id.equals(getId())) {
@@ -172,59 +178,60 @@ public class MultilineText implements Display {
   }
 
   public void doubleClick(GC gc, final Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
-    int x = this.x + dx;
-    int y = this.y + dy;
-    if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height) {
-      final org.eclipse.swt.widgets.Text text = new org.eclipse.swt.widgets.Text(diagram.getCanvas(), SWT.BORDER | SWT.MULTI);
-      text.setFont(DiagramClient.diagramFont);
-      text.setText(this.text);
-      text.setLocation(dx + getX(), dy + getY());
-      text.setSize(getWidth() + 10, getHeight() + 10);
-      text.setVisible(true);
-      text.setFocus();
-      NotifierDialog.notify("Edit Text", "Type text then TAB to update.\nType ESC to cancel.", NotificationType.values()[3]);
-      Listener listener = new Listener() {
-        public void handleEvent(Event event) {
-          org.eclipse.swt.widgets.Text t;
-          switch (event.type) {
-          case SWT.FocusOut:
-            t = (org.eclipse.swt.widgets.Text) event.widget;
-            t.setVisible(false);
-            t.dispose();
-            diagram.redraw();
-            break;
-          case SWT.Verify:
-            t = (org.eclipse.swt.widgets.Text) event.widget;
-            GC gc = new GC(t);
-            Point size = gc.textExtent(t.getText() + event.text);
-            t.setSize(size.x + 10, getHeight() + 10);
-            break;
-          case SWT.Traverse:
-            switch (event.detail) {
-            case SWT.TRAVERSE_TAB_NEXT:
-              t = (org.eclipse.swt.widgets.Text) event.widget;
-              textChangedEvent(t.getText());
-              t.setVisible(false);
-              t.dispose();
-              diagram.redraw();
-              event.doit = false;
-              break;
-            case SWT.TRAVERSE_ESCAPE:
-              t = (org.eclipse.swt.widgets.Text) event.widget;
-              t.setVisible(false);
-              t.dispose();
-              diagram.redraw();
-              event.doit = false;
-              break;
-            }
-            break;
-          }
-        }
-      };
-      text.addListener(SWT.FocusOut, listener);
-      text.addListener(SWT.Verify, listener);
-      text.addListener(SWT.Traverse, listener);
-    }
+	  System.err.println("Cannot doubleclick MultiLineText yet");
+//    int x = this.x + dx;
+//    int y = this.y + dy;
+//    if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height) {
+//      final org.eclipse.swt.widgets.Text text = new org.eclipse.swt.widgets.Text(diagram.getCanvas(), SWT.BORDER | SWT.MULTI);
+//      text.setFont(DiagramClient.diagramFont);
+//      text.setText(this.text);
+//      text.setLocation(dx + getX(), dy + getY());
+//      text.setSize(getWidth() + 10, getHeight() + 10);
+//      text.setVisible(true);
+//      text.setFocus();
+//      NotifierDialog.notify("Edit Text", "Type text then TAB to update.\nType ESC to cancel.", NotificationType.values()[3]);
+//      Listener listener = new Listener() {
+//        public void handleEvent(Event event) {
+//          org.eclipse.swt.widgets.Text t;
+//          switch (event.type) {
+//          case SWT.FocusOut:
+//            t = (org.eclipse.swt.widgets.Text) event.widget;
+//            t.setVisible(false);
+//            t.dispose();
+//            diagram.redraw();
+//            break;
+//          case SWT.Verify:
+//            t = (org.eclipse.swt.widgets.Text) event.widget;
+//            GC gc = new GC(t);
+//            Point size = gc.textExtent(t.getText() + event.text);
+//            t.setSize(size.x + 10, getHeight() + 10);
+//            break;
+//          case SWT.Traverse:
+//            switch (event.detail) {
+//            case SWT.TRAVERSE_TAB_NEXT:
+//              t = (org.eclipse.swt.widgets.Text) event.widget;
+//              textChangedEvent(t.getText());
+//              t.setVisible(false);
+//              t.dispose();
+//              diagram.redraw();
+//              event.doit = false;
+//              break;
+//            case SWT.TRAVERSE_ESCAPE:
+//              t = (org.eclipse.swt.widgets.Text) event.widget;
+//              t.setVisible(false);
+//              t.dispose();
+//              diagram.redraw();
+//              event.doit = false;
+//              break;
+//            }
+//            break;
+//          }
+//        }
+//      };
+//      text.addListener(SWT.FocusOut, listener);
+//      text.addListener(SWT.Verify, listener);
+//      text.addListener(SWT.Traverse, listener);
+//    }
   }
 
   public void textChangedEvent(String text) {

@@ -156,6 +156,7 @@ public class Group extends TreeItem<String>{
     } else {
     	Tool node = new NodeCreationTool(diagram, label, toolId, icon);
     	tools.add(node);
+        getChildren().add(node.getButton());
     }
 //    item.setHeight(buttonContainer.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
 //    item.setExpanded(true);

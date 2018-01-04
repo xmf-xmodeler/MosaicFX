@@ -423,7 +423,7 @@ public class XModelerBeforeEdtorSplitter {
 //    editorTabFolder.addCTabFolder2Listener(new EditorResizeListener());
 //    propertyTabFolder.addCTabFolder2Listener(new PropertyResizeListener());
 //    browserTabFolder.addCTabFolder2Listener(new BrowserResizeListener());
-    DiagramClient.start(editorTabFolder);
+//    DiagramClient.start(editorTabFolder);
 //    FormsClient.start(propertyTabFolder, propertyToolbar, SWT.BORDER);
     ScreenGenerationClient.start(propertyTabFolder); // BB
 //    Console.start(propertyTabFolder);

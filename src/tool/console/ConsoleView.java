@@ -391,21 +391,22 @@ public class ConsoleView {
 	  positionCaret(textArea.getText().length() - backup);
   }
 
-  public void processInput(String input) {
+	public void processInput(String input) {
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
-//		  System.err.println("processInput: " + input);
-	      appendText(input);
-	      goToEnd();
-	      inputStart = textArea.getText().length();
-	      l.countDown();
+//			System.err.println("processInput start... (" + input + ")");
+			appendText(input);
+			goToEnd();
+			inputStart = textArea.getText().length();
+			l.countDown();
+//		    System.err.println("processInput done");
 		});
 		try {
 			l.await();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-  }
+	}
 
   public void propertyChange(PropertyChangeEvent event) {
     getPreferences();

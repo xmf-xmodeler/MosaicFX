@@ -4,6 +4,8 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Vector;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -25,6 +27,32 @@ public class Palette {
 	  tree = new TreeView<String>();
 	  root = new TreeItem<String>("Root");
 	  tree.setRoot(root);
+	  
+	  tree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<String>>() {
+
+        @Override
+        public void changed(
+        		ObservableValue<? extends TreeItem<String>> observable, 
+        		TreeItem<String> oldValue,
+        		TreeItem<String> newValue) {
+
+//            TreeItem<String> selectedItem = (TreeItem<String>) newValue;
+            System.out.println("Selected Text : " + newValue.getValue());
+
+            // Workaround:
+            // if leaf is selected, 
+            // then it must be part of a group
+            if(newValue.getChildren().isEmpty()) {
+            	TreeItem<String> parent = newValue.getParent();
+            	if(parent instanceof Group) {
+            		Group group = (Group) parent;
+            		Tool tool = group.getToolLabelled(newValue.getValue());
+            		if(tool != null) tool.widgetSelected(null);
+            	}
+            }
+        }
+
+	  });
   }
 
   public void init(Diagram diagram) {
@@ -97,7 +125,8 @@ public class Palette {
 
 
   public void reset() {
-	    throw new RuntimeException("Not implemented yet");
+	  System.err.println("Palette.reset called.");
+//	    throw new RuntimeException("Not implemented yet");
 //    for (Group group : groups)
 //      group.resetButtons();
 //    getGroup("Diagram").getToolLabelled("Select").select();
@@ -115,7 +144,7 @@ public class Palette {
   }
 
   public void deselect() {
-	    throw new RuntimeException("Not implemented yet");
+//	    throw new RuntimeException("Not implemented yet");
 //    for (Group group : groups)
 //      group.deselect();
   }

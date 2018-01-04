@@ -124,8 +124,8 @@ public class Label implements Selectable {
 
   public boolean contains(int x, int y) {
 	if (hidden) return false;
-    Point extent = DiagramClient.theClient().textDimension(text, DiagramClient.diagramFont);
-    return x >= getAbsoluteX() && y >= getAbsoluteY() && x <= getAbsoluteX() + extent.x && y <= getAbsoluteY() + extent.y;
+    javafx.geometry.Point2D extent = DiagramClient.theClient().textDimension(text, DiagramClient.diagramFontFX);
+    return x >= getAbsoluteX() && y >= getAbsoluteY() && x <= getAbsoluteX() + extent.getX() && y <= getAbsoluteY() + extent.getY();
   }
 
   Node getParentNode() {
@@ -167,8 +167,8 @@ public class Label implements Selectable {
   }
 
   public int getHeight() {
-    Point extent = DiagramClient.theClient().textDimension(text, DiagramClient.diagramFont);
-    return extent.y;
+	javafx.geometry.Point2D extent = DiagramClient.theClient().textDimension(text, DiagramClient.diagramFontFX);
+    return (int) extent.getY();
   }
 
   public String getId() {
@@ -176,8 +176,8 @@ public class Label implements Selectable {
   }
 
   public int getWidth() {
-    Point extent = DiagramClient.theClient().textDimension(text, DiagramClient.diagramFont);
-    return extent.x;
+	javafx.geometry.Point2D extent = DiagramClient.theClient().textDimension(text, DiagramClient.diagramFontFX);
+    return (int) extent.getX();
   }
 
   public int getX() {
@@ -354,7 +354,7 @@ public class Label implements Selectable {
 //	  Point p3 = new Point(
 //			  xArrow+(int)(SIZE * Math.cos(angle-Math.PI*2/3)), 
 //			  yArrow+(int)(SIZE * Math.sin(angle-Math.PI*2/3)));
-////	  System.err.println((angle * 180 / Math.PI) + "°");
+////	  System.err.println((angle * 180 / Math.PI) + "ï¿½");
 //	  Color c = gc.getBackground();
 //	  if(red >= 0 && green >= 0 && blue >= 0 ){
 //		  gc.setBackground(new Color (org.eclipse.swt.widgets.Display.getCurrent(), red, green, blue));
@@ -461,67 +461,67 @@ public class Label implements Selectable {
   public void select() {
   }
 
-//public void doubleClick(GC gc, Diagram diagram, int x2, int y2) {
   public void doubleClick(GC gc, final Diagram diagram, int mouseX, int mouseY) {
-	    if (editable && contains(mouseX, mouseY) && !hidden) {
-	      final org.eclipse.swt.widgets.Text text = new org.eclipse.swt.widgets.Text(diagram.getCanvas(), SWT.BORDER);
-	      text.setFont(DiagramClient.diagramFont);
-	      text.setText(this.text);
-	      Point p = diagram.scaleinv(getAbsoluteX(), getAbsoluteY());
-	      text.setLocation(p.x, p.y);
-	      text.setSize(getWidth() + 10, getHeight() + 10);
-	      text.setVisible(true);
-	      text.selectAll();
-	      //text.setFocus(); - done delayed to not loose focus on Linux, see below
-	      NotifierDialog.notify("Edit Text", "Type text then RET to update.\nType ESC to cancel.", NotificationType.values()[3]);
-	      Listener listener = new Listener() {
-	        public void handleEvent(Event event) {
-	          org.eclipse.swt.widgets.Text t;
-	          switch (event.type) {
-	          case SWT.FocusOut:
-				t = (org.eclipse.swt.widgets.Text) event.widget;
-				t.setVisible(false);
-				t.dispose();
-				diagram.redraw();
-	            break;
-	          case SWT.Verify:
-	            t = (org.eclipse.swt.widgets.Text) event.widget;
-	            GC gc = new GC(t);
-	            Point size = gc.textExtent(t.getText() + event.text);
-	            t.setSize(size.x + 10, getHeight() + 10);
-	            break;
-	          case SWT.Traverse:
-	            switch (event.detail) {
-	            case SWT.TRAVERSE_RETURN:
-	              t = (org.eclipse.swt.widgets.Text) event.widget;
-	              textChangedEvent(t.getText());
-	              t.setVisible(false);
-	              t.dispose();
-	              diagram.redraw();
-	              event.doit = false;
-	              break;
-	            case SWT.TRAVERSE_ESCAPE:
-	              t = (org.eclipse.swt.widgets.Text) event.widget;
-	              t.setVisible(false);
-	              t.dispose();
-	              diagram.redraw();
-	              event.doit = false;
-	              break;
-	            }
-	            break;
-	          }
-	        }
-	      };
-	      text.addListener(SWT.FocusOut, listener);
-	      text.addListener(SWT.Verify, listener);
-	      text.addListener(SWT.Traverse, listener);
-
-	      XModeler.getXModeler().getDisplay().timerExec(100, new Runnable() {
-	          public void run() {
-	          	  text.setFocus();
-	          }
-	      });
-	    }
+	  System.err.println("Cannot doubleclick Labels yet");
+//	    if (editable && contains(mouseX, mouseY) && !hidden) {
+//	      final org.eclipse.swt.widgets.Text text = new org.eclipse.swt.widgets.Text(diagram.getCanvas(), SWT.BORDER);
+//	      text.setFont(DiagramClient.diagramFont);
+//	      text.setText(this.text);
+//	      Point p = diagram.scaleinv(getAbsoluteX(), getAbsoluteY());
+//	      text.setLocation(p.x, p.y);
+//	      text.setSize(getWidth() + 10, getHeight() + 10);
+//	      text.setVisible(true);
+//	      text.selectAll();
+//	      //text.setFocus(); - done delayed to not loose focus on Linux, see below
+//	      NotifierDialog.notify("Edit Text", "Type text then RET to update.\nType ESC to cancel.", NotificationType.values()[3]);
+//	      Listener listener = new Listener() {
+//	        public void handleEvent(Event event) {
+//	          org.eclipse.swt.widgets.Text t;
+//	          switch (event.type) {
+//	          case SWT.FocusOut:
+//				t = (org.eclipse.swt.widgets.Text) event.widget;
+//				t.setVisible(false);
+//				t.dispose();
+//				diagram.redraw();
+//	            break;
+//	          case SWT.Verify:
+//	            t = (org.eclipse.swt.widgets.Text) event.widget;
+//	            GC gc = new GC(t);
+//	            Point size = gc.textExtent(t.getText() + event.text);
+//	            t.setSize(size.x + 10, getHeight() + 10);
+//	            break;
+//	          case SWT.Traverse:
+//	            switch (event.detail) {
+//	            case SWT.TRAVERSE_RETURN:
+//	              t = (org.eclipse.swt.widgets.Text) event.widget;
+//	              textChangedEvent(t.getText());
+//	              t.setVisible(false);
+//	              t.dispose();
+//	              diagram.redraw();
+//	              event.doit = false;
+//	              break;
+//	            case SWT.TRAVERSE_ESCAPE:
+//	              t = (org.eclipse.swt.widgets.Text) event.widget;
+//	              t.setVisible(false);
+//	              t.dispose();
+//	              diagram.redraw();
+//	              event.doit = false;
+//	              break;
+//	            }
+//	            break;
+//	          }
+//	        }
+//	      };
+//	      text.addListener(SWT.FocusOut, listener);
+//	      text.addListener(SWT.Verify, listener);
+//	      text.addListener(SWT.Traverse, listener);
+//
+//	      XModeler.getXModeler().getDisplay().timerExec(100, new Runnable() {
+//	          public void run() {
+//	          	  text.setFocus();
+//	          }
+//	      });
+//	    }
 	  }
 
     public void textChangedEvent(String text) {

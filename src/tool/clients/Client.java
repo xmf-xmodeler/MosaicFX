@@ -72,9 +72,12 @@ public abstract class Client implements MessageHandler, SerializableClient {
 
   @Deprecated
   public void runOnDisplay(final Runnable r) {
+	    
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {	  
+			System.err.println("runOnDisplay (deprecated) start");
 			r.run();
+			System.err.println("runOnDisplay (deprecated)       done");
             l.countDown();
 		});
 		try {

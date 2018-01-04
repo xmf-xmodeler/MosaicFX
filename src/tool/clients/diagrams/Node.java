@@ -254,7 +254,7 @@ public class Node implements Selectable {
     displays.add(text);
   }
   
-  public void newNestedDiagram(String parentId, String id, int x, int y, int width, int height, org.eclipse.swt.widgets.Composite canvas) {
+  public void newNestedDiagram(String parentId, String id, int x, int y, int width, int height, javafx.scene.canvas.Canvas canvas) {
 	  for (Display display : displays) {
 		  display.newNestedDiagram(parentId, id, x, y, width, height, canvas);
 	  }
@@ -267,13 +267,18 @@ public class Node implements Selectable {
       display.newText(parentId, id, text, x, y, editable, underline, italicise, red, green, blue);
   }
 
-  public void paint(GC gc, Diagram diagram, int xOffset, int yOffset) {
+  public void paint(javafx.scene.canvas.GraphicsContext gc, Diagram diagram, int xOffset, int yOffset) {
     if (!hidden) {
       // Clear the background of the node...
-      Color background = gc.getBackground();
-      gc.setBackground(diagram.getDiagramBackgroundColor());
-      gc.fillRectangle(x+xOffset, y+yOffset, getWidth(), getHeight());
-      gc.setBackground(background);
+      gc.setFill(javafx.scene.paint.Color.WHEAT);
+      gc.fillRect(x+xOffset, y+yOffset, getWidth(), getHeight());
+//      gc.setStroke(javafx.scene.paint.Color.BLACK);
+//      gc.strokeRect(x+xOffset, y+yOffset, getWidth(), getHeight());
+    	
+//      Color background = gc.getBackground();
+//      gc.setBackground(diagram.getDiagramBackgroundColor());
+//      gc.fillRectangle(x+xOffset, y+yOffset, getWidth(), getHeight());
+//      gc.setBackground(background);
       for (Display display : displays) {
         display.paint(gc, x+xOffset, y+yOffset);
       }

@@ -40,8 +40,9 @@ public class DiagramError {
   }
 
   public void paint(GC gc, Diagram diagram) {
-    org.eclipse.swt.graphics.Rectangle r = diagram.scroller.getClientArea();
-    drawErrorBox(gc, PAD, r.height - PAD);
+	  System.err.println("Can't paint error yet.");
+//    org.eclipse.swt.graphics.Rectangle r = diagram.scroller.getClientArea();
+//    drawErrorBox(gc, PAD, r.height - PAD);
   }
 
   protected int getWidth(GC gc) {

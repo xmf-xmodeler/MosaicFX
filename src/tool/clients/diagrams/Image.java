@@ -69,6 +69,12 @@ public class Image implements Display {
     image = new org.eclipse.swt.graphics.Image(null, data);
   }
 
+  @Override
+  public void paint(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
+	  
+  }
+  
+  @Override @Deprecated
   public void paint(GC gc, int x, int y) {
     ensureImage();
     gc.drawImage(image, x + getX(), y + getY());
@@ -82,7 +88,7 @@ public class Image implements Display {
 
   }
 
-  public void newNestedDiagram(String parentId, String id, int x, int y, int width, int height, org.eclipse.swt.widgets.Composite canvas) {}
+  public void newNestedDiagram(String parentId, String id, int x, int y, int width, int height, javafx.scene.canvas.Canvas canvas) {}
 
   public void resize(String id, int width, int height) {
     if (getId().equals(id)) {
