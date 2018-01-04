@@ -10,6 +10,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
+import javafx.scene.canvas.GraphicsContext;
 import tool.clients.dialogs.notifier.NotificationType;
 import tool.clients.dialogs.notifier.NotifierDialog;
 import tool.xmodeler.XModeler;
@@ -171,12 +172,20 @@ public class MultilineText implements Display {
     }
   }
 
+  @Override
+  public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {}
+  
+  @Override @Deprecated
   public void paintHover(GC gc, int x, int y, int dx, int dy) {
   }
 
   public void remove(String id) {
   }
 
+  @Override
+  public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {}
+  
+  @Override @Deprecated
   public void doubleClick(GC gc, final Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
 	  System.err.println("Cannot doubleclick MultiLineText yet");
 //    int x = this.x + dx;

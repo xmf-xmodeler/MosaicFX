@@ -4,6 +4,8 @@ import java.io.PrintStream;
 
 import org.eclipse.swt.graphics.GC;
 
+import javafx.scene.canvas.GraphicsContext;
+
 public class Line implements Display {
 
   public static final int SOLID_LINE        = 1;
@@ -66,6 +68,9 @@ public class Line implements Display {
   }
 
   @Override
+  public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {}
+  
+  @Override @Deprecated
   public void paintHover(GC gc, int x, int y, int dx, int dy) {
     // TODO Auto-generated method stub
 
@@ -78,6 +83,9 @@ public class Line implements Display {
   }
 
   @Override
+  public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {}
+  
+  @Override @Deprecated
   public void doubleClick(GC gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
     // TODO Auto-generated method stub
 

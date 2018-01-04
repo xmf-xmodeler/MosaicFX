@@ -27,6 +27,8 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
 
@@ -814,7 +816,11 @@ public class Diagram implements Display {
 
     }
   }
-
+  
+  @Override
+  public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {}
+  
+  @Override @Deprecated
   public void doubleClick(GC gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
     // Called when a diagram is a display element.
     // Currently does nothing.
@@ -1415,9 +1421,9 @@ public class Diagram implements Display {
   
   @Override @Deprecated
   public void paint(GC gc, int xOffset, int yOffset) {
-    // This is called when a diagram is a display element. The offsets need to be
-    // included so that global painting is relative to (0,0).
-    paintOn(gc, xOffset, yOffset);
+//    // This is called when a diagram is a display element. The offsets need to be
+//    // included so that global painting is relative to (0,0).
+//    paintOn(gc, xOffset, yOffset);
   }
 
   private void paintAlignment(GC gc) {
@@ -1427,7 +1433,7 @@ public class Diagram implements Display {
     }
   }
 
-  private void paintDisplays(GC gc, int xOffset, int yOffset) {
+  private void paintDisplays(GraphicsContext gc, int xOffset, int yOffset) {
     for (Display display : displays) {
       display.paint(gc, xOffset, yOffset);
     }
@@ -1482,6 +1488,10 @@ public class Diagram implements Display {
     }
   }
 
+  @Override
+  public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {}
+  
+  @Override @Deprecated
   public void paintHover(GC gc, int x, int y, int dx, int dy) {
     // Called when a diagram is a display element.
     // Currently does nothing.
@@ -1563,7 +1573,7 @@ public class Diagram implements Display {
     gc.setAdvanced(true);
     gc.setTransform(transform);
 //    clear(gc, xOffset, yOffset);
-    paintDisplays(gc, xOffset, yOffset);
+//    paintDisplays(gc, xOffset, yOffset);
     paintResizing(gc, xOffset, yOffset);
     paintEdges(gc, xOffset, yOffset);
     paintAlignment(gc);
@@ -1585,7 +1595,7 @@ public class Diagram implements Display {
 //	    gc.setAdvanced(true);
 //	    gc.setTransform(transform);
 	    clear(gc, xOffset, yOffset);
-//	    paintDisplays(gc, xOffset, yOffset);
+	    paintDisplays(gc, xOffset, yOffset);
 //	    paintResizing(gc, xOffset, yOffset);
 //	    paintEdges(gc, xOffset, yOffset);
 //	    paintAlignment(gc);

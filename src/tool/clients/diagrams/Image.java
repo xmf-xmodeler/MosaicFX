@@ -6,6 +6,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.ImageData;
 
+import javafx.scene.canvas.GraphicsContext;
 import tool.xmodeler.XModeler;
 
 public class Image implements Display {
@@ -113,6 +114,10 @@ public class Image implements Display {
     }
   }
 
+  @Override
+  public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {}
+  
+  @Override @Deprecated
   public void paintHover(GC gc, int x, int y, int dx, int dy) {
 
   }
@@ -121,6 +126,10 @@ public class Image implements Display {
 
   }
 
+  @Override
+  public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {}
+  
+  @Override @Deprecated
   public void doubleClick(GC gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
 
   }

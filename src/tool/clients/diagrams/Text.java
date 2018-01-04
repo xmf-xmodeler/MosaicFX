@@ -13,6 +13,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
+import javafx.scene.canvas.GraphicsContext;
 import tool.clients.dialogs.notifier.NotificationType;
 import tool.clients.dialogs.notifier.NotifierDialog;
 import tool.xmodeler.XModeler;
@@ -52,6 +53,11 @@ public class Text implements Display {
     return x >= getX() && y >= getY() && x <= getX() + getWidth() && y <= getY() + getHeight();
   }
 
+  
+  @Override
+  public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {}
+  
+  @Override @Deprecated
   public void doubleClick(GC gc, final Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
 	  System.err.println("Cannot doubleclick Text yet");
 //    if (editable && contains(mouseX - dx, mouseY - dy)) {
@@ -226,18 +232,22 @@ public class Text implements Display {
   
   @Override @Deprecated
   public void paint(GC gc, int x, int y) {
-	    Font font = gc.getFont();
-	    Color c = gc.getForeground(); //Bj�rn
-	    gc.setFont(italicise ? DiagramClient.diagramItalicFont : DiagramClient.diagramFont);
-	    //Check if a color is set
-	    if(getRed() >=0 && getGreen() >= 0 && getBlue() >= 0){ //Bj�rn
-	    	gc.setForeground(new Color(org.eclipse.swt.widgets.Display.getCurrent(), getRed(), getGreen(), getBlue()));
-	    }
-	    gc.drawText(text, x + getX(), y + getY(), true);
-	    gc.setFont(font);
-	    gc.setForeground(c); //Bj�rn
+//	    Font font = gc.getFont();
+//	    Color c = gc.getForeground(); //Bj�rn
+//	    gc.setFont(italicise ? DiagramClient.diagramItalicFont : DiagramClient.diagramFont);
+//	    //Check if a color is set
+//	    if(getRed() >=0 && getGreen() >= 0 && getBlue() >= 0){ //Bj�rn
+//	    	gc.setForeground(new Color(org.eclipse.swt.widgets.Display.getCurrent(), getRed(), getGreen(), getBlue()));
+//	    }
+//	    gc.drawText(text, x + getX(), y + getY(), true);
+//	    gc.setFont(font);
+//	    gc.setForeground(c); //Bj�rn
 	  }
 
+  @Override
+  public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {}
+  
+  @Override @Deprecated
   public void paintHover(GC gc, int x, int y, int dx, int dy) {
     if (editable && contains(x - dx, y - dy)) paintSelectableOutline(gc, dx, dy);
   }
@@ -333,4 +343,6 @@ public void newShape(String parentId, String id, int x, int y, int width, int he
 	// TODO Auto-generated method stub
 	
 }
+
+
 }

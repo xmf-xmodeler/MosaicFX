@@ -5,6 +5,7 @@ import java.io.PrintStream;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 
+import javafx.scene.canvas.GraphicsContext;
 import tool.xmodeler.XModeler;
 
 public class Shape implements Display {
@@ -155,6 +156,10 @@ public class Shape implements Display {
     }
   }
 
+  @Override
+  public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {}
+  
+  @Override @Deprecated
   public void paintHover(GC gc, int x, int y, int dx, int dy) {
 
   }
@@ -163,6 +168,10 @@ public class Shape implements Display {
 
   }
 
+  @Override
+  public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {}
+  
+  @Override @Deprecated
   public void doubleClick(GC gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
 
   }

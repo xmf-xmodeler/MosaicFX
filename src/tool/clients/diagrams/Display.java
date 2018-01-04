@@ -3,14 +3,23 @@ package tool.clients.diagrams;
 import java.io.PrintStream;
 
 import org.eclipse.swt.graphics.GC;
+import javafx.scene.canvas.GraphicsContext;
 
 public interface Display {
 
   String getId();
 
-  void paint(GC gc, int x, int y);
+  void paint(GraphicsContext gc, int x, int y);
   
-  void paint(javafx.scene.canvas.GraphicsContext gc, int x, int y);
+  void paintHover(GraphicsContext gc, int x, int y, int dx, int dy);
+  
+  void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY);
+  
+  @Deprecated void paint(GC gc, int x, int y);
+  
+  @Deprecated void paintHover(GC gc, int x, int y, int dx, int dy);
+  
+  @Deprecated  void doubleClick(GC gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY);
 
   void newText(String parentId, String id, String text, int x, int y, boolean editable, boolean underline, boolean italicise, int red, int green, int blue);
 
@@ -26,11 +35,7 @@ public interface Display {
 
   void move(String id, int x, int y);
 
-  void paintHover(GC gc, int x, int y, int dx, int dy);
-
   void remove(String id);
-
-  void doubleClick(GC gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY);
 
   void writeXML(PrintStream out);
 

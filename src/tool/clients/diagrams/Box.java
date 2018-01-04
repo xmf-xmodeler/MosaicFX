@@ -6,6 +6,7 @@ import java.util.Vector;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 
+import javafx.scene.canvas.GraphicsContext;
 import tool.xmodeler.XModeler;
 
 public class Box implements Display {
@@ -51,6 +52,10 @@ public class Box implements Display {
     this.fillBlue = fillBlue == -1 ? -1 : fillBlue % 256;
   }
 
+  @Override
+  public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {}
+  
+  @Override @Deprecated
   public void doubleClick(GC gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
     for (Display display : displays) {
       display.doubleClick(gc, diagram, dx + getX(), dy + getY(), mouseX, mouseY);
@@ -267,6 +272,10 @@ public class Box implements Display {
     if (nestedDiagram != null) nestedDiagram.paint(gc, x + getX(), y + getY());
   }
 
+  @Override
+  public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {}
+  
+  @Override @Deprecated
   public void paintHover(GC gc, int x, int y, int dx, int dy) {
     for (Display display : displays)
       display.paintHover(gc, x, y, dx + getX(), dy + getY());
