@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="build" basedir="." name="Create Runnable Jar for Project GUI-XMF2 with libraries in sub-folder">
+<project default="build" basedir="." name="Create Runnable Jar for Project MosaicFX with libraries in sub-folder">
 
 	<!-- 
         Written by Jens Gulden and Björn Benner. ANT 1.7 is required
@@ -24,9 +24,11 @@
 		<property name="outputArchive" location="${output}/XModeler-${version}.zip" />
 		<property name="prefix" value="XModeler/" />
 
-		<!--property name="homeDir" location="../../XMF/com.ceteva.xmf.system/xmf-src/" /-->
-		<property name="homeDir" location="/home/user/git/XMF/com.ceteva.xmf.system/xmf-src" />
+		<echo message="Building XModeler ${version}."/>
+
+		<property name="homeDir" location="../../XMF/com.ceteva.xmf.system/xmf-src" />
 		<property name="imageDir" location="${homeDir}/../xmf-img/" />
+		<property name="machineDir" location="${homeDir}/../../com.ceteva.xmf.machine/" />
 		<property name="compileAll" location="${homeDir}/bin/compileAll.bat" />
 		<property name="makexmf" location="${homeDir}/bin/makexmf.bat" />
 		<property name="makemosaic" location="${homeDir}/bin/makemosaic.bat" />
@@ -36,13 +38,18 @@
 			</fileset>
 		</move>
 	</target>
-	
-	<target name="compile" depends="compileAll,makexmf,makemosaic">
-		<!--<mkdir dir="../../XMF/com.ceteva.xmf.machine/bin"/>
-		<javac srcdir="../../XMF/com.ceteva.xmf.machine/src" destdir="../../XMF/com.ceteva.xmf.machine/bin">
+
+	<!-- Compile everything -->
+	<target name="compile" depends="compileMachine,compileXMF,makexmf,makemosaic">
+	</target>
+
+	<!-- Compile Java code for machine -->
+	<target name="compileMachine" depends="init">
+		<mkdir dir="${machineDir}/bin"/>
+		<javac srcdir="${machineDir}/src" destdir="${machineDir}/bin" fork="true">
 			<classpath>
 				<path>
-					<fileset dir="../../XMF/com.ceteva.xmf.machine/">
+					<fileset dir="${machineDir}">
 						<include name = "*.jar"/>
 					</fileset>
 				</path>
@@ -55,64 +62,39 @@
 					<fileset dir="../lib/">
 						<include name = "**/*.jar"/>
 					</fileset>
-					<pathelement location="../../XMF/com.ceteva.xmf.machine/bin/"/>
+					<pathelement location="${machineDir}/bin/"/>
 				</path>
 			</classpath>
-		</javac>-->
-		
-		<!--
-		<exec executable="cmd">
-			<arg value="/c" />
-			<arg value="${compileAll}" />
-			<arg value="${homeDir}" />
-		</exec>
-		-->
-		
-		
-		<!--
-		<exec dir="${homeDir}" executable="cmd">
-			<arg value="/c" />
-			<arg value="${makexmf}" />
-			<arg value="." />
-		</exec>
-		
-		<exec dir="${homeDir}" executable="cmd">
-			<arg value="/c" />
-			<arg value="${makemosaic}" />
-			<arg value="." />
-		</exec>
-		-->
+		</javac>
 	</target>
 
-	
-	<target name="compileAll" depends="init">
-		<!--echo message="${java.class.path}"/-->
+	<!-- Run compileAll for XMF code -->
+	<target name="compileXMF" depends="init">
 		<java classname="xos.OperatingSystem" fork="true">
 			<jvmarg value="-Duser.country=UK"/>
 			<arg value="-image"/> <arg value="${imageDir}/compiler.img"/>
 			<arg value="-heapSize"/> <arg value="5000"/>
 			<arg value="-stackSize"/> <arg value="50"/>
 			<arg value="-arg"/> <arg value="filename:${homeDir}/Boot/CompileAll.o"/>
-			<arg value="-arg"/> <arg value="user:&quot;USERNAME&quot;"/>
+			<arg value="-arg"/> <arg value="version:${version}"/>
+			<arg value="-arg"/> <arg value="user:${user.name}"/>
 			<arg value="-arg"/> <arg value="home:${homeDir}"/>
 			<arg value="-arg"/> <arg value="license:license.lic"/>
-			<arg value="-arg"/> <arg value="version:2.2"/>
 			<classpath>
-	           <!--pathelement location="dist/test.jar"/-->
-	           <!--pathelement path="${java.class.path}"/-->
 	           <pathelement path="../../XMF/com.ceteva.xmf.machine/bin"/>
 			</classpath>
 		</java>
 	</target>
 
-	
+	<!-- Run makexmf to build xmf.img -->
 	<target name="makexmf" depends="init">
 		<java classname="xos.OperatingSystem" fork="true" dir="${homeDir}">
 			<jvmarg value="-Duser.country=UK"/>
 			<arg value="-port"/> <arg value="10101"/>
 			<arg value="-initFile"/> <arg value="${homeDir}/Boot/Boot.o"/>
 			<arg value="-heapSize"/> <arg value="5000"/>
-			<arg value="-arg"/> <arg value="version:3.0.1"/> <!-- ? -->
+			<arg value="-arg"/> <arg value="version:${version}"/>
+			<arg value="-arg"/> <arg value="user:${user.name}"/>
 			<arg value="-arg"/> <arg value="home:${homeDir}"/>
 			<arg value="-arg"/> <arg value="license:license.lic"/>
 			<classpath>
@@ -121,18 +103,19 @@
 		</java>
 	</target>
 
-	
+	<!-- Run makemosaic to build mosaic.img -->
 	<target name="makemosaic" depends="init">
 		<java classname="xos.OperatingSystem" fork="true" dir="${homeDir}">
 			<jvmarg value="-Duser.country=UK"/>
 			<arg value="-port"/> <arg value="10101"/>
 			<arg value="-image"/> <arg value="${imageDir}/xmf.img"/>
 			<arg value="-heapSize"/> <arg value="10000"/>
-			<arg value="-arg"/> <arg value="version:3.0.1"/> <!-- ? -->
-			<arg value="-arg"/> <arg value="saveSource:true"/>
+			<arg value="-arg"/> <arg value="image:${imageDir}/compiler.img"/>
 			<arg value="-arg"/> <arg value="filename:${homeDir}/Boot/BootMosaic.o"/>
-			<arg value="-arg"/> <arg value="user:&quot;USERNAME&quot;"/> <!-- was: `whoami` -->
+			<arg value="-arg"/> <arg value="version:${version}"/>
+			<arg value="-arg"/> <arg value="user:${user.name}"/>
 			<arg value="-arg"/> <arg value="home:${homeDir}"/>
+			<arg value="-arg"/> <arg value="saveSource:true"/>
 			<arg value="-arg"/> <arg value="Comms:true"/>
 			<arg value="-arg"/> <arg value="Constraints:true"/>
 			<arg value="-arg"/> <arg value="Java:true"/>
@@ -170,7 +153,6 @@
 			<arg value="-arg"/> <arg value="PPrint:true"/>
 			<arg value="-arg"/> <arg value="Comprehensions:true"/>
 			<arg value="-arg"/> <arg value="Import:true"/>
-			<arg value="-arg"/> <arg value="image:${imageDir}/compiler.img"/>
 			<classpath>
 	           <pathelement path="../../XMF/com.ceteva.xmf.machine/bin"/>
 			</classpath>
@@ -178,6 +160,9 @@
 	</target>	
 
 	
+	<!-- 
+		Main build 
+	-->
 	<target name="build" depends="compile">
 		<!-- If there is a SNAPSHOT, it should be deleted -->
 		<delete file="${outputArchive}" failonerror="no"/> 
@@ -239,6 +224,15 @@
 		<delete file="./output/ini-win.txt" />
 		<delete file="./output/ini-linux.txt" />
 	</target>
+	
+	<!-- 
+		Main build with subsequent refresh of the projetc's build/output directory 
+	-->
+	<target name="buildAndRefresh" depends="build">
+		<!-- ANT must be run with "Run in the same JRE as the workbench" -->
+		<eclipse.refreshLocal resource="MosaicFX/build/output" depth="2" />
+	</target>
+	
 	<!--
 	  TODO deploy on Mac conforming to http://www.eclipse.org/swt/macosx/
 	-->
