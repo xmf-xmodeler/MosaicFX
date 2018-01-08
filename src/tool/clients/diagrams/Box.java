@@ -3,11 +3,9 @@ package tool.clients.diagrams;
 import java.io.PrintStream;
 import java.util.Vector;
 
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 
 import javafx.scene.canvas.GraphicsContext;
-import tool.xmodeler.XModeler;
 
 public class Box implements Display {
   String          id;
@@ -52,8 +50,12 @@ public class Box implements Display {
     this.fillBlue = fillBlue == -1 ? -1 : fillBlue % 256;
   }
 
-  @Override
-  public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {}
+	@Override
+	public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
+		for (Display display : displays) {
+			display.doubleClick(gc, diagram, dx + getX(), dy + getY(), mouseX, mouseY);
+		}
+	}
   
   @Override @Deprecated
   public void doubleClick(GC gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
@@ -253,27 +255,30 @@ public class Box implements Display {
   
   @Override @Deprecated
   public void paint(GC gc, int x, int y) {
-    if (width > 0 && height > 0) {
-      Color fillColor = gc.getBackground();
-      if (getFillRed() != -1 && getFillGreen() != -1 && getFillBlue() != -1) {
-        gc.setBackground(new Color(XModeler.getXModeler().getDisplay(), getFillRed(), getFillGreen(), getFillBlue()));
-        gc.fillRectangle(x + getX(), y + getY(), width, height);
-      }
-      gc.setBackground(fillColor);
-      for (Display display : displays)
-        display.paint(gc, x + getX(), y + getY());
-      if (top || bottom || left || right) { // Bj�rn
-        Color lineColor = gc.getForeground();
-        gc.setForeground(new Color(XModeler.getXModeler().getDisplay(), getLineRed(), getLineGreen(), getLineBlue()));
-        gc.drawRectangle(x + getX(), y + getY(), width, height);
-        gc.setForeground(lineColor);
-      }
-    }
-    if (nestedDiagram != null) nestedDiagram.paint(gc, x + getX(), y + getY());
+//    if (width > 0 && height > 0) {
+//      Color fillColor = gc.getBackground();
+//      if (getFillRed() != -1 && getFillGreen() != -1 && getFillBlue() != -1) {
+//        gc.setBackground(new Color(XModeler.getXModeler().getDisplay(), getFillRed(), getFillGreen(), getFillBlue()));
+//        gc.fillRectangle(x + getX(), y + getY(), width, height);
+//      }
+//      gc.setBackground(fillColor);
+//      for (Display display : displays)
+//        display.paint(gc, x + getX(), y + getY());
+//      if (top || bottom || left || right) { // Bj�rn
+//        Color lineColor = gc.getForeground();
+//        gc.setForeground(new Color(XModeler.getXModeler().getDisplay(), getLineRed(), getLineGreen(), getLineBlue()));
+//        gc.drawRectangle(x + getX(), y + getY(), width, height);
+//        gc.setForeground(lineColor);
+//      }
+//    }
+//    if (nestedDiagram != null) nestedDiagram.paint(gc, x + getX(), y + getY());
   }
 
-  @Override
-  public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {}
+	@Override
+	public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {
+		for (Display display : displays)
+			display.paintHover(gc, x, y, dx + getX(), dy + getY());
+	}
   
   @Override @Deprecated
   public void paintHover(GC gc, int x, int y, int dx, int dy) {

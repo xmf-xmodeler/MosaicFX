@@ -18,6 +18,7 @@ public class Image implements Display {
   int                            width;
   int                            height;
   org.eclipse.swt.graphics.Image image = null;
+  javafx.scene.image.Image imageFX = null;
 
   public Image(String id, String fileName, int x, int y, int width, int height) {
     super();
@@ -70,10 +71,11 @@ public class Image implements Display {
     image = new org.eclipse.swt.graphics.Image(null, data);
   }
 
-  @Override
-  public void paint(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
-	  
-  }
+	@Override
+	public void paint(GraphicsContext gc, int x, int y) {
+		ensureImage();
+		gc.drawImage(imageFX, x + getX(), y + getY());
+	}
   
   @Override @Deprecated
   public void paint(GC gc, int x, int y) {
@@ -118,9 +120,7 @@ public class Image implements Display {
   public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {}
   
   @Override @Deprecated
-  public void paintHover(GC gc, int x, int y, int dx, int dy) {
-
-  }
+  public void paintHover(GC gc, int x, int y, int dx, int dy) {}
 
   public void remove(String id) {
 
@@ -130,9 +130,7 @@ public class Image implements Display {
   public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {}
   
   @Override @Deprecated
-  public void doubleClick(GC gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
-
-  }
+  public void doubleClick(GC gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {}
 
   public void writeXML(PrintStream out) {
     out.print("<Image id='" + id + "'");

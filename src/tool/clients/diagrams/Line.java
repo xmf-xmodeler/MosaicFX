@@ -21,15 +21,10 @@ public class Line implements Display {
   }
 
   @Override
-  public void paint(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
-	  
-  }
+  public void paint(javafx.scene.canvas.GraphicsContext gc, int x, int y) {}
   
   @Override @Deprecated
-  public void paint(GC gc, int x, int y) {
-    // TODO Auto-generated method stub
-
-  }
+  public void paint(GC gc, int x, int y) {}
 
   @Override
   public void newText(String parentId, String id, String text, int x, int y, boolean editable, boolean underline, boolean italicise, int red, int green, int blue) {
@@ -71,10 +66,7 @@ public class Line implements Display {
   public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {}
   
   @Override @Deprecated
-  public void paintHover(GC gc, int x, int y, int dx, int dy) {
-    // TODO Auto-generated method stub
-
-  }
+  public void paintHover(GC gc, int x, int y, int dx, int dy) {}
 
   @Override
   public void remove(String id) {
@@ -86,10 +78,7 @@ public class Line implements Display {
   public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {}
   
   @Override @Deprecated
-  public void doubleClick(GC gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
-    // TODO Auto-generated method stub
-
-  }
+  public void doubleClick(GC gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {}
 
   @Override
   public void writeXML(PrintStream out) {
