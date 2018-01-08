@@ -216,7 +216,7 @@ public class Text implements Display {
 
   @Override
   public void paint(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
-	  System.err.println("paint Text: " + text + "@" + x +","+ y);
+//	  System.err.println("paint Text: " + text + "@" + x +","+ y);
 //	    Font font = gc.getFont();
 //	    Color c = gc.getForeground(); 
 //	    gc.setFont(italicise ? DiagramClient.diagramItalicFont : DiagramClient.diagramFont);

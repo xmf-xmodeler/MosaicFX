@@ -442,14 +442,26 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
 //    } else System.err.println("no menu for " + id);
   }
 
-  public static void popup(String id, javafx.scene.Node anchor, int x, int y) {
-	    if (popupAssignments.containsKey(id)) {
-	      PopupMenu pmenu = popupAssignments.get(id);
-	      ContextMenu contextmenu = pmenu.popup(id);
-	      contextmenu.setAutoHide(true);
-	      contextmenu.show(anchor,x,y);
-	    } else System.err.println("no menu for " + id);
-	  }
+  public static ContextMenu popup(String id, javafx.scene.Node anchor, int x, int y) {
+	  return popup(id, anchor, null, x, y);
+  }
+
+  public static ContextMenu popup(String id, javafx.scene.Node anchor, javafx.geometry.Side side, int x, int y) {
+    if (popupAssignments.containsKey(id)) {
+      PopupMenu pmenu = popupAssignments.get(id);
+      ContextMenu contextmenu = pmenu.popup(id);
+      contextmenu.setAutoHide(true);
+      if(side != null) {
+    	  contextmenu.show(anchor,side, x,y);
+    	  return contextmenu;
+      }
+      else { 
+    	  contextmenu.show(anchor,x,y);
+    	  return contextmenu;
+    	  
+      }
+    } else {System.err.println("no menu for " + id); return null;}
+  }
   
   @Override
 	public void handle(ActionEvent event) {

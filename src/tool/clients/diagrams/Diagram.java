@@ -4,10 +4,11 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Vector;
-import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ScrollPane;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
@@ -16,8 +17,6 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -26,15 +25,16 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
+
+import javafx.geometry.Side;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.ScrollBar;
-
-import javafx.application.Platform;
 import javafx.scene.control.SplitPane;
+import javafx.scene.input.MouseButton;
+import javafx.scene.transform.Affine;
 import tool.clients.EventHandler;
+import tool.clients.diagrams.Diagram.MouseMode;
 import tool.clients.menus.MenuClient;
 import tool.xmodeler.XModeler;
 import xos.Message;
@@ -81,6 +81,7 @@ public class Diagram implements Display {
   Vector<Selectable>                       selection              = new Vector<Selectable>();
   Vector<DiagramError>                     errors                 = new Vector<DiagramError>();
   Transform                                transform              = new Transform(org.eclipse.swt.widgets.Display.getCurrent());
+  Affine         						   transformFX            = new Affine();
   String                                   id;
   Tray                                     tray                   = new Tray();
   ErrorTool                                errorTool              = new ErrorTool();
@@ -238,30 +239,64 @@ public class Diagram implements Display {
   
   /////////////////////////Mouse Listener Start/////////////////////////////
   
-  private void mouseClicked(javafx.scene.input.MouseEvent event) {
-	  System.err.println("mouseClicked");
-	  if(event.getButton() == javafx.scene.input.MouseButton.PRIMARY) {
-		  leftMouseClicked(event);
-	  }
+ 
+  public void mouseDown(javafx.scene.input.MouseEvent event) {
+//	  event.tr
+//    scale(event);
+	  
+	if(currentcontextMenu != null && currentcontextMenu.isShowing()) {
+		currentcontextMenu.hide();
+		currentcontextMenu = null;
+	}
+	  
+    if (isRightClick(event)/* || isCommand(event)*/) {
+      rightClick(event);
+    } else if (event.getClickCount() == 1 && isLeftClick(event)) {
+      leftClick(event);
+    } else if (event.getClickCount() == 2 && isLeftClick(event)) {
+      mode = MouseMode.DOUBLE_CLICK;
+      storeLastXY((int) event.getX(), (int) event.getY());
+      redraw();
+    }
   }
   
-  private void leftMouseClicked(javafx.scene.input.MouseEvent event) {
-	  System.err.println("leftMouseClicked");
-	  if(event.getClickCount() == 1) {
-		  leftMouseClickedOnce(event);
-	  }
-  }  
+  transient ContextMenu currentcontextMenu;
   
-	private void leftMouseClickedOnce(javafx.scene.input.MouseEvent event) {
-		System.err.println("leftMouseClickedOnce");
-		System.err.println("nodeCreationType:" + nodeCreationType);
-		System.err.println("edgeCreationType:" + edgeCreationType);
+  private void rightClick(javafx.scene.input.MouseEvent event) {
+	    if (selection.isEmpty())
+	    	currentcontextMenu = MenuClient.popup(id, scroller, Side.LEFT, (int) event.getX(), (int) event.getY());
+	    else {
+	      if (selection.size() == 1) {
+	    	  currentcontextMenu = selection.elementAt(0).rightClick(scroller, Side.LEFT, (int) event.getX(), (int) event.getY());
+	      }
+	    }
+	  }
+  
+  
+//  private void mouseClicked(javafx.scene.input.MouseEvent event) {
+//	  if(event.getButton() == javafx.scene.input.MouseButton.PRIMARY) {
+//		  leftMouseClicked(event);
+//	  }
+//  }
+  
+//  private void leftMouseClicked(javafx.scene.input.MouseEvent event) {
+//	  if(event.getClickCount() == 1) {
+//		  leftMouseClickedOnce(event);
+//	  } else if(event.getClickCount() > 2) {
+//	      scale(event);
+//	  }
+//  }  
+  
+	private void leftClick(javafx.scene.input.MouseEvent event) {
+//		System.err.println("leftMouseClickedOnce");
+//		System.err.println("nodeCreationType:" + nodeCreationType);
+//		System.err.println("edgeCreationType:" + edgeCreationType);
 		TrayTool tool = null;//selectTool((int) event.getX(), (int) event.getY());
 		if (tool != null)
 			tool.click(Diagram.this);
 		else {
 			if (nodeCreationType == null && edgeCreationType == null) {
-				select(0 /*event state mask*/, (int) event.getX(), (int) event.getY(), false);
+				select(event.isShiftDown(), event.isControlDown(), (int) event.getX(), (int) event.getY(), false);
 				storeLastXY((int) event.getX(), (int) event.getY());
 				redraw();
 			} else if (edgeCreationType != null) {
@@ -297,133 +332,191 @@ public class Diagram implements Display {
 				action(updateID);
 		}
 	}
+	
+	  public void mouseUp(javafx.scene.input.MouseEvent  event) {
+		    for (Diagram nestedDiagram : getNestedDiagrams()) {
+		      nestedDiagram.mouseUp(event);
+		    }
+//		    scale(event);
+		    if (mode == MouseMode.NEW_EDGE) new OutboundMessages().checkEdgeCreation((int) event.getX(), (int) event.getY(), sourcePort);
+		    if (mode == MouseMode.SELECTED) sendMoveSelectedEvents();
+		    if (mode == MouseMode.RESIZE_BOTTOM_RIGHT) resizeBottomRight();
+		    if (mode == MouseMode.RUBBER_BAND) selectRubberBand();
+		    if (movingEdgeEnd()) checkMovedEdge();
+		    mode = MouseMode.NONE;
+		    redraw();
+		  }
+	  
+	    public void mouseMoved(final javafx.scene.input.MouseEvent event) {
+//	        scale(event);
+	        // if (mode == MouseMode.SELECTED) {
+//	          System.err.println("mouseMoved ("+selection.size()+") " + mode);
+//	  		CountDownLatch l = new CountDownLatch(1);
+//	  		Platform.runLater(() -> {	  
+	            int dx = ((int) event.getX()) - lastX;
+	            int dy = ((int) event.getY()) - lastY;
+	            storeLastXY(((int) event.getX()), ((int) event.getY()));
+	            if (mode == MouseMode.SELECTED) for (Selectable selectable : selection)
+	              selectable.moveBy(dx, dy);
+	            for (Diagram nestedDiagram : getNestedDiagrams())
+	              if (nestedDiagram.mode == MouseMode.SELECTED) for (Selectable selectable : nestedDiagram.selection)
+	                selectable.moveBy(dx, dy);
+	            redraw();
+//	  	      l.countDown();
+//	  	    });
+//	  		try {
+//	  			l.await();
+//	  		} catch (InterruptedException e) {
+//	  			e.printStackTrace();
+//	  		}
+	        if (mode == MouseMode.NEW_EDGE) {
+	          storeLastXY((int) event.getX(), (int) event.getY());
+	          redraw();
+	        }
+	        if (movingEdgeEnd()) {
+	          storeLastXY((int) event.getX(), (int) event.getY());
+	          redraw();
+	        }
+	        if (mode == MouseMode.NONE) {
+	          storeLastXY((int) event.getX(), (int) event.getY());
+	          redraw();
+	        }
+	        if (mode == MouseMode.RESIZE_BOTTOM_RIGHT) {
+	          storeLastXY((int) event.getX(), (int) event.getY());
+	          redraw();
+	        }
+	        if (mode == MouseMode.RUBBER_BAND) {
+	          storeLastXY((int) event.getX(), (int) event.getY());
+	          redraw();
+	        }
+	      }
   
   /////////////////////////Mouse Listener End///////////////////////////////
 
-  private class MyMouseListener implements MouseListener {
-
-    private boolean isLeft(MouseEvent event) {
-      return event.button == 1;
-    }
-
-    private void leftClick(MouseEvent event) {
-      TrayTool tool = selectTool(event.x, event.y);
-      if (tool != null)
-        tool.click(Diagram.this);
-      else {
-        if (nodeCreationType == null && edgeCreationType == null) {
-          select(event.stateMask, event.x, event.y, false);
-          storeLastXY(event.x, event.y);
-          redraw();
-        } else if (edgeCreationType != null) {
-          deselectAll();
-          int x = event.x;
-          int y = event.y;
-          PortAndDiagram port = selectPort(x, y);
-          if (port != null) {
-            sourcePort = port;
-            firstX = x;
-            firstY = y;
-            storeFirstXY(x, y);
-            storeLastXY(x, y);
-            mode = MouseMode.NEW_EDGE;
-          }
-          redraw();
-        } else if (nodeCreationType != null) {
-          Object[] diagramData = new Object[] { id, 0, 0 }; // default this
-          // unless any node is hit
-          Object[] nestedDiagramData = getNestedDiagramID(event.x, event.y);
-          if (nestedDiagramData != null) {
-            diagramData = nestedDiagramData;
-            // System.err.println("found diagramID: " + diagramID);
-          }
-          DiagramClient.theClient().newNode(nodeCreationType, (String) diagramData[0], event.x - ((Integer) diagramData[1]), event.y - ((Integer) diagramData[2]));
-          resetPalette();
-        }
-        if (updateID != null) action(updateID);
-      }
-    }
-
-    public void mouseDoubleClick(MouseEvent event) {
-      scale(event);
-    }
-
-    public void mouseDown(MouseEvent event) {
-      scale(event);
-      if (isRightClick(event) || isCommand(event)) {
-        rightClick(event);
-      } else if (event.count == 1 && isLeft(event)) {
-        leftClick(event);
-      } else if (event.count == 2 && isLeft(event)) {
-        mode = MouseMode.DOUBLE_CLICK;
-        storeLastXY(event.x, event.y);
-        redraw();
-      }
-    }
-
-    public void mouseUp(MouseEvent event) {
-      Diagram.this.mouseUp(event);
-    }
-
-    private void rightClick(MouseEvent event) {
-      if (selection.isEmpty())
-        MenuClient.popup(id, event.x, event.y);
-      else {
-        if (selection.size() == 1) {
-          selection.elementAt(0).rightClick(event.x, event.y);
-        }
-      }
-    }
-
-  }
-
-  private class MyMouseMoveListener implements MouseMoveListener {
-
-    @Override
-    public void mouseMove(final MouseEvent event) {
-      scale(event);
-      // if (mode == MouseMode.SELECTED) {
-        System.err.println("mouseMove");
-		CountDownLatch l = new CountDownLatch(1);
-		Platform.runLater(() -> {	  
-          int dx = event.x - lastX;
-          int dy = event.y - lastY;
-          storeLastXY(event.x, event.y);
-          if (mode == MouseMode.SELECTED) for (Selectable selectable : selection)
-            selectable.moveBy(dx, dy);
-          for (Diagram nestedDiagram : getNestedDiagrams())
-            if (nestedDiagram.mode == MouseMode.SELECTED) for (Selectable selectable : nestedDiagram.selection)
-              selectable.moveBy(dx, dy);
-          redraw();
-	      l.countDown();
-	    });
-		try {
-			l.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-      if (mode == MouseMode.NEW_EDGE) {
-        storeLastXY(event.x, event.y);
-        redraw();
-      }
-      if (movingEdgeEnd()) {
-        storeLastXY(event.x, event.y);
-        redraw();
-      }
-      if (mode == MouseMode.NONE) {
-        storeLastXY(event.x, event.y);
-        redraw();
-      }
-      if (mode == MouseMode.RESIZE_BOTTOM_RIGHT) {
-        storeLastXY(event.x, event.y);
-        redraw();
-      }
-      if (mode == MouseMode.RUBBER_BAND) {
-        storeLastXY(event.x, event.y);
-        redraw();
-      }
-    }
-  }
+//  private class MyMouseListener implements MouseListener {
+//
+//    private boolean isLeft(MouseEvent event) {
+//      return event.button == 1;
+//    }
+//
+//    private void leftClick(MouseEvent event) {
+//      TrayTool tool = selectTool(event.x, event.y);
+//      if (tool != null)
+//        tool.click(Diagram.this);
+//      else {
+//        if (nodeCreationType == null && edgeCreationType == null) {
+//          select(event.stateMask, event.x, event.y, false);
+//          storeLastXY(event.x, event.y);
+//          redraw();
+//        } else if (edgeCreationType != null) {
+//          deselectAll();
+//          int x = event.x;
+//          int y = event.y;
+//          PortAndDiagram port = selectPort(x, y);
+//          if (port != null) {
+//            sourcePort = port;
+//            firstX = x;
+//            firstY = y;
+//            storeFirstXY(x, y);
+//            storeLastXY(x, y);
+//            mode = MouseMode.NEW_EDGE;
+//          }
+//          redraw();
+//        } else if (nodeCreationType != null) {
+//          Object[] diagramData = new Object[] { id, 0, 0 }; // default this
+//          // unless any node is hit
+//          Object[] nestedDiagramData = getNestedDiagramID(event.x, event.y);
+//          if (nestedDiagramData != null) {
+//            diagramData = nestedDiagramData;
+//            // System.err.println("found diagramID: " + diagramID);
+//          }
+//          DiagramClient.theClient().newNode(nodeCreationType, (String) diagramData[0], event.x - ((Integer) diagramData[1]), event.y - ((Integer) diagramData[2]));
+//          resetPalette();
+//        }
+//        if (updateID != null) action(updateID);
+//      }
+//    }
+//
+//    public void mouseDoubleClick(MouseEvent event) {
+//      scale(event);
+//    }
+//
+//    public void mouseDown(MouseEvent event) {
+//      scale(event);
+//      if (isRightClick(event) || isCommand(event)) {
+//        rightClick(event);
+//      } else if (event.count == 1 && isLeft(event)) {
+//        leftClick(event);
+//      } else if (event.count == 2 && isLeft(event)) {
+//        mode = MouseMode.DOUBLE_CLICK;
+//        storeLastXY(event.x, event.y);
+//        redraw();
+//      }
+//    }
+//
+//    public void mouseUp(MouseEvent event) {
+//      Diagram.this.mouseUp(event);
+//    }
+//
+//    private void rightClick(MouseEvent event) {
+//      if (selection.isEmpty())
+//        MenuClient.popup(id, event.x, event.y);
+//      else {
+//        if (selection.size() == 1) {
+//          selection.elementAt(0).rightClick(event.x, event.y);
+//        }
+//      }
+//    }
+//
+//  }
+//
+//  private class MyMouseMoveListener implements MouseMoveListener {
+//
+//    @Override
+//    public void mouseMove(final MouseEvent event) {
+//      scale(event);
+//      // if (mode == MouseMode.SELECTED) {
+//        System.err.println("mouseMove");
+//		CountDownLatch l = new CountDownLatch(1);
+//		Platform.runLater(() -> {	  
+//          int dx = event.x - lastX;
+//          int dy = event.y - lastY;
+//          storeLastXY(event.x, event.y);
+//          if (mode == MouseMode.SELECTED) for (Selectable selectable : selection)
+//            selectable.moveBy(dx, dy);
+//          for (Diagram nestedDiagram : getNestedDiagrams())
+//            if (nestedDiagram.mode == MouseMode.SELECTED) for (Selectable selectable : nestedDiagram.selection)
+//              selectable.moveBy(dx, dy);
+//          redraw();
+//	      l.countDown();
+//	    });
+//		try {
+//			l.await();
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+//      if (mode == MouseMode.NEW_EDGE) {
+//        storeLastXY(event.x, event.y);
+//        redraw();
+//      }
+//      if (movingEdgeEnd()) {
+//        storeLastXY(event.x, event.y);
+//        redraw();
+//      }
+//      if (mode == MouseMode.NONE) {
+//        storeLastXY(event.x, event.y);
+//        redraw();
+//      }
+//      if (mode == MouseMode.RESIZE_BOTTOM_RIGHT) {
+//        storeLastXY(event.x, event.y);
+//        redraw();
+//      }
+//      if (mode == MouseMode.RUBBER_BAND) {
+//        storeLastXY(event.x, event.y);
+//        redraw();
+//      }
+//    }
+//  }
 
   private class MyPaintListener implements PaintListener {
     public void paintControl(PaintEvent event) {
@@ -562,10 +655,11 @@ public class Diagram implements Display {
 		palette.init(this);
 		canvas = new Canvas(500,500);
 		scroller = new ScrollPane(canvas);
-		
-        canvas.setOnMouseClicked((event) -> { mouseClicked(event); } );
-//        canvasFX.pref
-//        scene.setOnMouseDragged(mouseHandler);
+
+        canvas.setOnMousePressed((event) -> { mouseDown(event); } );
+        canvas.setOnMouseReleased((event) -> { mouseUp(event); } );
+        canvas.setOnMouseMoved((event) -> { mouseMoved(event); } );
+        canvas.setOnMouseDragged((event) -> { mouseMoved(event); } );
 //        scene.setOnMouseEntered(mouseHandler);
 //        scene.setOnMouseExited(mouseHandler);
 //        scene.setOnMouseMoved(mouseHandler);
@@ -659,7 +753,7 @@ public class Diagram implements Display {
     transform.transform(canvasPoints);
     transform.invert();
     Point canvasRawSize = new Point((int) canvasPoints[0], (int) canvasPoints[1]);
-    System.err.println("canvas Raw Size : " + canvasRawSize);
+//    System.err.println("canvas Raw Size : " + canvasRawSize);
     /* The new size can now be calculated */
     int width = Math.max(canvasRawSize.x, maxRawSize.x);
     int height = Math.max(canvasRawSize.y, maxRawSize.y);
@@ -1095,6 +1189,7 @@ public class Diagram implements Display {
     return false;
   }
 
+  @Deprecated
   private boolean isCommand(MouseEvent event) {
     return (event.stateMask & SWT.COMMAND) != 0;
   }
@@ -1107,9 +1202,13 @@ public class Diagram implements Display {
     return isBetween(x, x1, x2) && isBetween(y, y1, y2);
   }
 
-  private boolean isRightClick(MouseEvent event) {
-    return event.button == RIGHT_BUTTON;
+  private boolean isLeftClick(javafx.scene.input.MouseEvent event) {
+    return event.getButton() == MouseButton.PRIMARY;
   }
+  
+  private boolean isRightClick(javafx.scene.input.MouseEvent event) {
+	    return event.getButton() == MouseButton.SECONDARY;
+	  }
 
   public void italicise(String id, boolean italics) {
     for (Display display : displays)
@@ -1186,19 +1285,7 @@ public class Diagram implements Display {
     return minDistance;
   }
 
-  public void mouseUp(MouseEvent event) {
-    for (Diagram nestedDiagram : getNestedDiagrams()) {
-      nestedDiagram.mouseUp(event);
-    }
-    scale(event);
-    if (mode == MouseMode.NEW_EDGE) new OutboundMessages().checkEdgeCreation(event.x, event.y, sourcePort);
-    if (mode == MouseMode.SELECTED) sendMoveSelectedEvents();
-    if (mode == MouseMode.RESIZE_BOTTOM_RIGHT) resizeBottomRight();
-    if (mode == MouseMode.RUBBER_BAND) selectRubberBand();
-    if (movingEdgeEnd()) checkMovedEdge();
-    mode = MouseMode.NONE;
-    redraw();
-  }
+
 
   public void move(String id, int x, int y) {
     for (Display display : displays)
@@ -1751,6 +1838,7 @@ public class Diagram implements Display {
     return new Point((int) points[0], (int) points[1]);
   }
 
+  @Deprecated
   public void scale(MouseEvent event) {
     Point p = scale(event.x, event.y);
     event.x = p.x;
@@ -1763,13 +1851,13 @@ public class Diagram implements Display {
     return new Point((int) points[0], (int) points[1]);
   }
 
-  private boolean select(int stateMask, int x, int y, boolean isNested) {
+  private boolean select(boolean isShift, boolean isCtrl, int x, int y, boolean isNested) {
     // isNested means, this method has been invoked recursively. false, if invoked by the Listener
     boolean selected = false;
     boolean somethingWasDone = false;
-    boolean isShift = (stateMask & SWT.SHIFT) == SWT.SHIFT;
+//    boolean isShift = (stateMask & SWT.SHIFT) == SWT.SHIFT;
     for (Diagram nestedDiagram : getNestedDiagrams()) {
-      somethingWasDone |= nestedDiagram.select(stateMask, x - getNestedDiagramOffsets(nestedDiagram.id).x, y - getNestedDiagramOffsets(nestedDiagram.id).y, true);
+      somethingWasDone |= nestedDiagram.select(isShift, isCtrl, x - getNestedDiagramOffsets(nestedDiagram.id).x, y - getNestedDiagramOffsets(nestedDiagram.id).y, true);
     }
     if (somethingWasDone) return true;
     if (!selected) {
@@ -1817,6 +1905,7 @@ public class Diagram implements Display {
       }
     }
     for (Node node : nodes) {
+//   System.err.println("Trying to select node");
       if (!selected && node.contains(x, y)) {
         // If all else fails we might be selecting a node.
         // Trying nodes last allows the other elements behind

@@ -9,6 +9,8 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 
+import javafx.geometry.Side;
+import javafx.scene.control.ContextMenu;
 import tool.clients.EventHandler;
 import tool.clients.menus.MenuClient;
 import tool.xmodeler.XModeler;
@@ -409,10 +411,12 @@ public class Node implements Selectable {
     }
   }
 
-  public void rightClick(int x, int y) {
+  @Override
+  public ContextMenu rightClick(javafx.scene.Node anchor, Side side, int x, int y) {
     if (!hidden) {
-      MenuClient.popup(id, x, y);
+      return MenuClient.popup(id, anchor, side, x, y);
     }
+    return null;
   }
 
   public boolean sameLocation(Node other) {

@@ -5,6 +5,8 @@ import java.io.PrintStream;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 
+import javafx.geometry.Side;
+import javafx.scene.control.ContextMenu;
 import tool.clients.EventHandler;
 import tool.clients.menus.MenuClient;
 import xos.Message;
@@ -132,8 +134,8 @@ public class Waypoint implements Selectable {
   }
 
   @Override
-  public void rightClick(int x, int y) {
-    MenuClient.popup(edge.getId(), x, y);
+  public ContextMenu rightClick(javafx.scene.Node anchor, Side side, int x, int y) {
+      return MenuClient.popup(id, anchor, side, x, y);
   }
 
   @Override

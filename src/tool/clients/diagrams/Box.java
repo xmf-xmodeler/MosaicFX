@@ -230,7 +230,6 @@ public class Box implements Display {
 
 	@Override
 	public void paint(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
-        System.err.println("paint " +this+ " width=" + width + " height=" + height);
 		if (width > 0 && height > 0 || true) { // TODO remove
 //			Color fillColor = gc.getBackground();
 			if (getFillRed() != -1 && getFillGreen() != -1 && getFillBlue() != -1) {
@@ -239,7 +238,6 @@ public class Box implements Display {
 			}
 //			gc.setBackground(fillColor);
 			for (Display display : displays){
-				System.err.println("paint box::display:" + display);
 				display.paint(gc, x + getX(), y + getY());
 			}
 			if (top || bottom || left || right) { 

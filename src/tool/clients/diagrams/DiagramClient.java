@@ -116,17 +116,17 @@ public class DiagramClient extends Client {
       }
     });
   }
-
+*/
   private void editText(Message message) {
     final Value id = message.args[0];
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         for (Diagram diagram : diagrams)
           diagram.editText(id.strValue());
-      }
-    });
+//      }
+//    });
   }
-*/
+
   private Diagram getDiagram(String id) {
     for (Diagram diagram : diagrams)
       if (diagram.getId().equals(id)) return diagram;
@@ -548,7 +548,7 @@ public class DiagramClient extends Client {
   public void minimize(CTabFolderEvent event) {
 
   }
-
+*/
   private void move(Message message) {
     Value id = message.args[0];
     Value x = message.args[1];
@@ -557,7 +557,7 @@ public class DiagramClient extends Client {
     for (Diagram diagram : diagrams)
       diagram.move(id.strValue(), x.intValue, y.intValue);
   }
-*/
+
   private void newBox(Message message) {
     final String parentId = message.args[0].strValue();
     final String id = message.args[1].strValue();
@@ -1034,19 +1034,19 @@ public class DiagramClient extends Client {
   public boolean processMessage(Message message) {
     return false;
   }
-
+*/
   private void resize(Message message) {
     final Value id = message.args[0];
     final Value width = message.args[1];
     final Value height = message.args[2];
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         for (Diagram diagram : diagrams)
           diagram.resize(id.strValue(), width.intValue, height.intValue);
-      }
-    });
+//      }
+//    });
   }
-
+/*
   public void restore(CTabFolderEvent event) {
 
   }
@@ -1054,7 +1054,8 @@ public class DiagramClient extends Client {
 */
 
   public void sendMessage(final Message message) {
-	
+
+//  	System.err.println("send message to diagram Client: " + message);
     if (message.hasName("newDiagram"))
       newDiagram(message); 
     /*else if (message.hasName("newGroup"))
@@ -1086,23 +1087,23 @@ public class DiagramClient extends Client {
     else if (message.hasName("newBox"))
       newBox(message);
     else if (message.hasName("newText"))
-      newText(message);/*
+      newText(message);
     else if (message.hasName("resize"))
       resize(message);
     else if (message.hasName("move"))
       move(message);
     else if (message.hasName("editText"))
-      editText(message);
+      editText(message);/*
     else if (message.hasName("setBorder"))
       setBorder(message);
     else if (message.hasName("setFill"))
-      setFill(message);
+      setFill(message);*/
     else if (message.hasName("setText"))
-      setText(message);
+      setText(message);/*
     else if (message.hasName("setTextColor"))
-      setTextColor(message);
+      setTextColor(message);*/
     else if (message.hasName("setName"))
-      setName(message);
+      setName(message);/*
     else if (message.hasName("globalRenderOff"))
       globalRenderOff();
     else if (message.hasName("globalRenderOn"))
@@ -1173,7 +1174,7 @@ public class DiagramClient extends Client {
       setEditable(message); // Bj�rn */
     else 
     	System.err.println("send message to diagram Client: " + message);
-//    else super.sendMessage(message);
+//    super.sendMessage(message);
   }
 
 /*
@@ -1449,20 +1450,29 @@ public class DiagramClient extends Client {
       }
     });
   }
-
-  private void setName(Message message) {
-    final Value id = message.args[0];
-    final Value name = message.args[1];
-    runOnDisplay(new Runnable() {
-      public void run() {
-        for (String diagramId : tabs.keySet())
-          if (id.strValue().equals(diagramId)) {
-            tabs.get(diagramId).setText(name.strValue());
-          }
-      }
-    });
-  }
-
+*/
+	private void setName(Message message) {
+		final Value id = message.args[0];
+		final Value name = message.args[1];
+		// runOnDisplay(new Runnable() {
+		// public void run() {
+		CountDownLatch l = new CountDownLatch(1);
+		Platform.runLater(() -> {
+			for (String diagramId : tabs.keySet())
+				if (id.strValue().equals(diagramId)) {
+					tabs.get(diagramId).setText(name.strValue());
+				}
+			l.countDown();
+		});
+		try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		// }
+		// });
+	}
+/*
   private void setRefPoint(final Message message) {
     runOnDisplay(new Runnable() {
       public void run() {
@@ -1480,14 +1490,14 @@ public class DiagramClient extends Client {
       }
     });
   }
-
+*/
   private void setText(Message message) {
     final Value id = message.args[0];
     final Value text = message.args[1];
     for (Diagram diagram : diagrams)
       diagram.setText(id.strValue(), text.strValue());
   }
-
+/*
   private void setBorder(Message message) {
     final Value id = message.args[0];
     final Value border = message.args[1];

@@ -11,6 +11,8 @@ import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
+import javafx.geometry.Side;
+import javafx.scene.control.ContextMenu;
 import tool.clients.dialogs.notifier.NotificationType;
 import tool.clients.dialogs.notifier.NotifierDialog;
 import tool.clients.menus.MenuClient;
@@ -398,8 +400,11 @@ public class Label implements Selectable {
     }
   }
 
-  public void rightClick(int x, int y) {
-    if(!hidden) MenuClient.popup(id, x, y);
+  public ContextMenu rightClick(javafx.scene.Node anchor, Side side, int x, int y) {
+    if (!hidden) {
+      return MenuClient.popup(id, anchor, side, x, y);
+    }
+    return null;
   }
 
   public void setBorder(String id, boolean border){
