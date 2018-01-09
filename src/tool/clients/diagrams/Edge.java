@@ -4,7 +4,6 @@ import java.io.PrintStream;
 import java.util.Vector;
 
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
 
 import xos.Message;
 import xos.Value;
@@ -55,13 +54,13 @@ public int getBlue() {
 	return blue;
 }
 
-/*PACKAGE ACCESS*/ static Point circleIntersect(int centerx, int centery, double radius, int x, int y) {
+/*PACKAGE ACCESS*/ static EdgePainter.Point circleIntersect(int centerx, int centery, double radius, int x, int y) {
     double dx = x - centerx;
     double dy = y - centery;
     double lineLength = Math.sqrt((dx * dx) + (dy * dy));
     dx = dx / lineLength;
     dy = dy / lineLength;
-    Point p = new Point((int) (centerx + (dx * radius)), (int) (centery + (dy * radius)));
+    EdgePainter.Point p = new EdgePainter.Point((int) (centerx + (dx * radius)), (int) (centery + (dy * radius)));
     return p;
   }
   
@@ -477,16 +476,16 @@ public int getBlue() {
   
   /////// INTERCEPT //////
  
-  /*PACKAGE ACCESS*/ Point targetIntercept() { // used by Label
+  /*PACKAGE ACCESS*/ EdgePainter.Point targetIntercept() { // used by Label
     return intercept(targetNode, false);
   }
   
-  /*PACKAGE ACCESS*/ Point sourceIntercept() { // used by Label
+  /*PACKAGE ACCESS*/ EdgePainter.Point sourceIntercept() { // used by Label
     return intercept(sourceNode, true);
   }
 
-  /*PACKAGE ACCESS*/ Point intercept(Node node, boolean isSourceEnd) {
-    Point p = intercept(node, Position.TOP, isSourceEnd);
+  /*PACKAGE ACCESS*/ EdgePainter.Point intercept(Node node, boolean isSourceEnd) {
+    EdgePainter.Point p = intercept(node, Position.TOP, isSourceEnd);
     p = p == null ? intercept(node, Position.LEFT, isSourceEnd) : p;
     p = p == null ? intercept(node, Position.RIGHT, isSourceEnd) : p;
     p = p == null ? intercept(node, Position.BOTTOM, isSourceEnd) : p;
@@ -495,7 +494,7 @@ public int getBlue() {
   
   enum Position{TOP, BOTTOM, LEFT, RIGHT}
   
-  /*PACKAGE ACCESS*/ Point intercept(Node node, Position position, boolean isSourceEnd) { 
+  /*PACKAGE ACCESS*/ EdgePainter.Point intercept(Node node, Position position, boolean isSourceEnd) { 
 	  /* Find the point where the edge crosses the box's boundary.
 	     If the edge is between two different nodes, there is only one solution.
 	     If the edge is a loop, there are two, distinguishable as source and target
@@ -507,12 +506,12 @@ public int getBlue() {
 	  return intercept(node, firstOrLast, secondOrPenultimate, position);
   }
 
-  /*PACKAGE ACCESS*/ Point intercept(Node node, Waypoint w1, Waypoint w2, Position position) {
+  /*PACKAGE ACCESS*/ EdgePainter.Point intercept(Node node, Waypoint w1, Waypoint w2, Position position) {
 	  	int x2 = node.getX() + (position == Position.RIGHT  ? node.getWidth()  : 0);
 	  	int y2 = node.getY() + (position == Position.BOTTOM ? node.getHeight() : 0);
 	  	int x3 = node.getX() + (position != Position.LEFT   ? node.getWidth()  : 0);
 	  	int y3 = node.getY() + (position != Position.TOP    ? node.getHeight() : 0);
-	  	Point p = intercept(w1.x, w1.y, w2.x, w2.y, x2, y2, x3, y3);
+	  	EdgePainter.Point p = intercept(w1.x, w1.y, w2.x, w2.y, x2, y2, x3, y3);
 	  	if(position == Position.TOP    && (w2.y >= y2 || p.x <= x2 || p.x >= x3)) return null;
 	  	if(position == Position.BOTTOM && (w2.y <= y2 || p.x <= x2 || p.x >= x3)) return null;
 	  	if(position == Position.LEFT   && (w2.x > x2  || p.y <= y2 || p.y >= y3)) return null;
@@ -526,7 +525,7 @@ public int getBlue() {
    * intersect checks where the two lines do actually meet. returns -1/-1 if the lines don't meet
    */
   
-  /*NEW PRIVATE*/private static Point intercept(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
+  /*NEW PRIVATE*/private static EdgePainter.Point intercept(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
 	  // 1 is first (or last) Waypoint
 	  // 2 is next Waypoint
 	  // 3 and 4 are the relevant corners of the node
@@ -537,18 +536,18 @@ public int getBlue() {
 	    float c = x12 * y34 - y12 * x34;
 	    if (Math.abs(c) < 0.01)
 	      // No intersection
-	      return new Point(-1, -1);
+	      return new EdgePainter.Point(-1, -1);
 	    else {
 	      // Intersection
 	      float a = x1 * y2 - y1 * x2;
 	      float b = x3 * y4 - y3 * x4;
 	      float x = (a * x34 - b * x12) / c;
 	      float y = (a * y34 - b * y12) / c;
-	      return new Point((int) x, (int) y);
+	      return new EdgePainter.Point((int) x, (int) y);
 	    }
 	  }
 
-	  /*PACKAGE ACCESS*/ static Point intersect(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
+	  /*PACKAGE ACCESS*/ static EdgePainter.Point intersect(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
 	    float x12 = x1 - x2;
 	    float x34 = x3 - x4;
 	    float y12 = y1 - y2;
@@ -556,7 +555,7 @@ public int getBlue() {
 	    float c = x12 * y34 - y12 * x34;
 	    if (Math.abs(c) < 0.01)
 	      // No intersection
-	      return new Point(-1, -1);
+	      return new EdgePainter.Point(-1, -1);
 	    else {
 	      // Intersection
 	      float a = x1 * y2 - y1 * x2;
@@ -564,8 +563,8 @@ public int getBlue() {
 	      float x = (a * x34 - b * x12) / c;
 	      float y = (a * y34 - b * y12) / c;
 	      if (isOnLine((int) x, (int) y, x1, y1, x2, y2) && isOnLine((int) x, (int) y, x3, y3, x4, y4))
-	        return new Point((int) x, (int) y);
-	      else return new Point(-1, -1);
+	        return new EdgePainter.Point((int) x, (int) y);
+	      else return new EdgePainter.Point(-1, -1);
 	    }
 	  }
   
@@ -579,11 +578,11 @@ public int getBlue() {
 	boolean checkSourceDistance = sourceNode == node;
 	boolean checkTargetDistance = targetNode == node;
 	if(checkSourceDistance) {
-		Point p = intercept(node, true);
+		EdgePainter.Point p = intercept(node, true);
 		if(p != null && distance(p.x, p.y, x, y) < 10) return true;
 	}
 	if(checkTargetDistance) {
-		Point p = intercept(node, false);
+		EdgePainter.Point p = intercept(node, false);
 		if(p != null && distance(p.x, p.y, x, y) < 10) return true;
 	}	
 	return false;

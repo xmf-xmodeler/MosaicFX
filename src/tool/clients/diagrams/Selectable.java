@@ -1,13 +1,12 @@
 package tool.clients.diagrams;
 
-import org.eclipse.swt.graphics.GC;
-
 import javafx.geometry.Side;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 
 public interface Selectable {
 
-  void paintSelected(GC gc, int x, int y);
+  void paintSelected(GraphicsContext gc, int x, int y);
 
   void moveEvent(int minX, int maxX, int minY, int maxY);
 

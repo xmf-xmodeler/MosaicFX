@@ -2,19 +2,15 @@ package tool.clients.diagrams;
 
 import java.io.PrintStream;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Path;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Transform;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 
 import javafx.geometry.Side;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
-import tool.clients.dialogs.notifier.NotificationType;
-import tool.clients.dialogs.notifier.NotifierDialog;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.transform.Affine;
 import tool.clients.menus.MenuClient;
 import tool.xmodeler.XModeler;
 import xos.Message;
@@ -226,80 +222,92 @@ public class Label implements Selectable {
     DiagramClient.theClient().getHandler().raiseEvent(message);
   }
 
-  public void paint(GC gc, int xOffset, int yOffset) { // TODO-OFFSET
-	  if (hidden) return;
+  public void paint(GraphicsContext gc, int xOffset, int yOffset) { // TODO-OFFSET
+	if (hidden) return;
 	paintBackground(gc) ; 
-    gc.setFont(DiagramClient.diagramFont);
-    Color c = gc.getForeground();
+//    gc.setFont(DiagramClient.diagramFont);
+//    Color c = gc.getForeground();
     if(red >= 0 && green >= 0 && blue >= 0 )
-    	gc.setForeground(new Color(org.eclipse.swt.widgets.Display.getCurrent(), red, green, blue));
+    	gc.setStroke(new Color(red/255., green/255., blue/255., 1.));
     
     if(!pos.equals("start") && !pos.equals("end")){
-    	Transform oldTransform = new Transform(org.eclipse.swt.widgets.Display.getCurrent()); 
-    	gc.getTransform(oldTransform); // store old Transform
-    	float[] transform = new float[6]; oldTransform.getElements(transform); float zoomGC = transform[0]; // getZoom
+//    	Transform oldTransform = new Transform(org.eclipse.swt.widgets.Display.getCurrent()); 
+    	Affine oldTransform = gc.getTransform();
+//    	gc.getTransform(oldTransform); // store old Transform
+//    	float[] transform = new float[6]; oldTransform.getElements(transform); 
+    	double zoomGC = oldTransform.getMxx(); // getZoom
     	
-    	Transform tr = new Transform(org.eclipse.swt.widgets.Display.getCurrent());
         double angle = 180/Math.PI*Math.atan2(edge.getTargetNode().getY()-edge.getSourceNode().getY(),edge.getTargetNode().getX()-edge.getSourceNode().getX());
-        tr.scale(zoomGC, zoomGC);
-        tr.translate(getAbsoluteX(), getAbsoluteY());
-//        angle = (angle+450)%180-90;
-        tr.rotate((float)((angle+450)%180-90));
-    	gc.setTransform(tr); // Rotate and move canvas to draw label
+    	Affine newTransform = new Affine();
+    	newTransform.appendScale(zoomGC, zoomGC);
+    	newTransform.appendTranslation(getAbsoluteX(), getAbsoluteY());
+    	newTransform.appendRotation(((angle+450)%180-90), 0, 0); // rotate in a way that text faces up
+    	
+//    	Transform tr = new Transform(org.eclipse.swt.widgets.Display.getCurrent());
+//        tr.scale(zoomGC, zoomGC);
+//        tr.translate(getAbsoluteX(), getAbsoluteY());
+////        angle = (angle+450)%180-90;
+//        tr.rotate((float)((angle+450)%180-90));
+    	gc.setTransform(newTransform); // Rotate and move canvas to draw label
     	Path path = new Path(org.eclipse.swt.widgets.Display.getCurrent());
-        path.addString(text, 0, 0, gc.getFont());
-        gc.fillPath(path);
-        gc.drawPath(path);
+//        path.addString(text, 0, 0, gc.getFont());
+//        gc.fillPath(path);
+//        gc.drawPath(path);
+        gc.fillText(text, 0, 0);
         
-        tr.dispose();
+//        tr.dispose();
         
-        tr = new Transform(org.eclipse.swt.widgets.Display.getCurrent());
-        tr.scale(zoomGC, zoomGC);
-        tr.translate(getAbsoluteX(), getAbsoluteY());
-        tr.rotate((float)(angle)); // Rotate again???
-        gc.setTransform(tr);
+        newTransform = new Affine();
+    	newTransform.appendScale(zoomGC, zoomGC);
+    	newTransform.appendTranslation(getAbsoluteX(), getAbsoluteY());
+    	newTransform.appendRotation(angle, 0, 0);
+    	
+//        tr = new Transform(org.eclipse.swt.widgets.Display.getCurrent());
+//        tr.scale(zoomGC, zoomGC);
+//        tr.translate(getAbsoluteX(), getAbsoluteY());
+//        tr.rotate((float)(angle)); // Rotate again???
+        gc.setTransform(newTransform);
         
-	  	Color cc = gc.getBackground();
+	  	Paint cc = gc.getFill();
 	  	if(red >= 0 && green >= 0 && blue >= 0 ){
-	  	    gc.setBackground(new Color (org.eclipse.swt.widgets.Display.getCurrent(), red, green, blue));
+	  	    gc.setFill(new Color (red/255., green/255., blue/255., 1.));
 	  	}else{  	
-	  	    gc.setBackground(new Color(cc.getDevice(), 0, 0, 0));
+	  	    gc.setFill(Color.BLACK);
 	  	}
 	  	
 	  	int zoom = XModeler.getDeviceZoomPercent();
 	  	
-	  	gc.fillPolygon(new int[]{
-	  			-7*zoom/100,  6*zoom/100, 
-	  			 -20*zoom/100, 10*zoom/100, 
-	  			 -20*zoom/100,  2*zoom/100});
-	  	gc.setBackground(cc);        
+	  	gc.fillPolygon(new double[]{-7*zoom/100.,  -20*zoom/100., -20*zoom/100.},
+	  			       new double[]{6*zoom/100., 10*zoom/100., 2*zoom/100.},
+	  			       3);
+	  	gc.setFill(cc);        
         
         gc.setTransform(oldTransform); // restore to old Transform
-        tr.dispose();
+//        tr.dispose();
     }else{
-    	gc.drawText(text, getAbsoluteX(), getAbsoluteY(), true);
+    	gc.fillText(text, getAbsoluteX(), getAbsoluteY());
     }
-    gc.setForeground(c);
+//    gc.setForeground(c);
     paintBorder(gc);
 //    paintArrow(gc);
   }
 
-  public void paintBackground(GC gc) {
+  public void paintBackground(GraphicsContext gc) {
 	  if(!fill) return;
 	  if(text.length() == 0) return;
-      Color c = gc.getBackground();
-      gc.setBackground(new Color (org.eclipse.swt.widgets.Display.getCurrent(), borderRed, borderGreen, borderBlue));
-      gc.fillRectangle(getAbsoluteX() - 2, getAbsoluteY() - 2, getWidth() + 4, getHeight() + 4);
-      gc.setBackground(c);
+//      Color c = gc.getBackground();
+      gc.setFill(new Color(red/255., green/255., blue/255., 1.));
+      gc.fillRect(getAbsoluteX() - 2, getAbsoluteY() - 2, getWidth() + 4, getHeight() + 4);
+//      gc.setBackground(c);
   }
   
-  public void paintBorder(GC gc) {
+  public void paintBorder(GraphicsContext gc) {
 	  if(!border) return;
 	  if(text.length() == 0) return;
-      Color c = gc.getForeground();
-      gc.setForeground(new Color (org.eclipse.swt.widgets.Display.getCurrent(), borderRed, borderGreen, borderBlue));
-      gc.drawRectangle(getAbsoluteX() - 2, getAbsoluteY() - 2, getWidth() + 4, getHeight() + 4);
-      gc.setForeground(c);
+//      Color c = gc.getForeground();
+      gc.setStroke(new Color(borderRed/255., borderGreen/255., borderBlue/255., 1));
+      gc.strokeRect(getAbsoluteX() - 2, getAbsoluteY() - 2, getWidth() + 4, getHeight() + 4);
+//      gc.setForeground(c);
   }
   
 //  public void paintArrow(GC gc) {
@@ -367,36 +375,37 @@ public class Label implements Selectable {
 //	  gc.setBackground(c);
 //  }
 //  
-  public void paintHover(GC gc, int x, int y) {
+  public void paintHover(GraphicsContext gc, int x, int y) {
 	    if (contains(x, y)) {
-	      Color c = gc.getForeground();
-	      gc.setForeground(Diagram.GREY);
-	      gc.drawRectangle(getAbsoluteX() - 2, getAbsoluteY() - 2, getWidth() + 4, getHeight() + 4);
-	      Point source = edge.sourceIntercept();
-	      Point target = edge.targetIntercept();
+//	      Color c = gc.getForeground();
+	      gc.setStroke(Color.GREY);
+	      gc.strokeRect(getAbsoluteX() - 2, getAbsoluteY() - 2, getWidth() + 4, getHeight() + 4);
+	      EdgePainter.Point source = edge.sourceIntercept();
+	      EdgePainter.Point target = edge.targetIntercept();
 	      if (source != null && target != null) {
 	        int startX = pos.equals("start") ? source.x 
 	        		   : pos.equals("end")   ? target.x 
 	        				                 : (target.x + source.x) / 2;
 	        int startY = pos.equals("start") ? source.y : pos.equals("end") ? target.y : (target.y + source.y) / 2;
-	        gc.drawLine(startX, startY, getAbsoluteX() - 2, getAbsoluteY() - 2);
+	        gc.strokeLine(startX, startY, getAbsoluteX() - 2, getAbsoluteY() - 2);
 	      }
-	      gc.setForeground(c);
+//	      gc.setForeground(c);
 	    }
 	  }
 
-  public void paintSelected(GC gc, int x, int y) { // TODO:ADAPT X/Y
+  @Override
+  public void paintSelected(GraphicsContext gc, int x, int y) { // TODO:ADAPT X/Y
 	  if (hidden) return;
-    Color c = gc.getForeground();
-    gc.setForeground(Diagram.RED);
-    gc.drawRectangle(getAbsoluteX() - 2, getAbsoluteY() - 2, getWidth() + 4, getHeight() + 4);
-    Point source = edge.sourceIntercept();
-    Point target = edge.targetIntercept();
+//    Color c = gc.getForeground();
+    gc.setStroke(Color.RED);
+    gc.strokeRect(getAbsoluteX() - 2, getAbsoluteY() - 2, getWidth() + 4, getHeight() + 4);
+    EdgePainter.Point source = edge.sourceIntercept();
+    EdgePainter.Point target = edge.targetIntercept();
     if (source != null && target != null) {
       int startX = pos.equals("start") ? source.x : pos.equals("end") ? target.x : (target.x + source.x) / 2;
       int startY = pos.equals("start") ? source.y : pos.equals("end") ? target.y : (target.y + source.y) / 2;
-      gc.drawLine(startX, startY, getAbsoluteX() - 2, getAbsoluteY() - 2);
-      gc.setForeground(c);
+      gc.strokeLine(startX, startY, getAbsoluteX() - 2, getAbsoluteY() - 2);
+//      gc.setForeground(c);
     }
   }
 

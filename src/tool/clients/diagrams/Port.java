@@ -3,8 +3,9 @@ package tool.clients.diagrams;
 import java.io.PrintStream;
 import java.util.Vector;
 
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
 public class Port {
 
@@ -95,10 +96,10 @@ public class Port {
     }
   }
 
-  public void paintHover(GC gc, int x, int y, int xOffset, int yOffset) {
-    Color c = gc.getForeground();
-    gc.setForeground(Diagram.RED);
-    gc.drawRectangle(x + getX() + xOffset, y + getY() + yOffset, getWidth(), getHeight());
-    gc.setForeground(c);
+  public void paintHover(GraphicsContext gc, int x, int y, int xOffset, int yOffset) {
+    Paint c = gc.getStroke();
+    gc.setStroke(Color.RED);
+    gc.strokeRect(x + getX() + xOffset, y + getY() + yOffset, getWidth(), getHeight());
+    gc.setStroke(c);
   }
 }

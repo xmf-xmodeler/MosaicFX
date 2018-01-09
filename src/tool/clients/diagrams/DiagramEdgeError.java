@@ -36,7 +36,7 @@ public class DiagramEdgeError extends DiagramError {
     Point p = midPoint();
     drawErrorBox(gc, p.x + DISTANCE, p.y + DISTANCE);
     Color c = gc.getForeground();
-    gc.setForeground(Diagram.RED);
+//    gc.setForeground(Diagram.RED);
     gc.drawLine(p.x, p.y, p.x + DISTANCE, p.y + DISTANCE);
     gc.setForeground(c);
   }

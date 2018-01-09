@@ -5,15 +5,16 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 
 import javafx.geometry.Side;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import tool.clients.EventHandler;
 import tool.clients.menus.MenuClient;
-import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
 
@@ -287,7 +288,7 @@ public class Node implements Selectable {
     }
   }
 
-  public void paintPortHover(GC gc, int x, int y, int xOffset, int yOffset) {
+  public void paintPortHover(GraphicsContext gc, int x, int y, int xOffset, int yOffset) {
     if (!hidden) {
       for (Port port : ports.values()) {
         if (port.contains(x - getX(), y - getY())) {
@@ -297,7 +298,7 @@ public class Node implements Selectable {
     }
   }
 
-  private void paintResizeHover(GC gc, int x, int y, int xOffset, int yOffset) {
+  private void paintResizeHover(GraphicsContext gc, int x, int y, int xOffset, int yOffset) {
     if (!hidden) {
       if (atTopLeftCorner(x, y)) paintResizeTopLeft(gc, xOffset, yOffset);
       if (atTopRightCorner(x, y)) paintResizeTopRight(gc, xOffset, yOffset);
@@ -306,67 +307,68 @@ public class Node implements Selectable {
     }
   }
 
-  private void paintResizeBottomLeft(GC gc, int xOffset, int yOffset) {
+  private void paintResizeBottomLeft(GraphicsContext gc, int xOffset, int yOffset) {
     if (!hidden) {
-      Color c = gc.getForeground();
-      gc.setForeground(Diagram.GREEN);
-      gc.drawLine(xOffset + getX() - EAR_GAP, yOffset + getY() + (getHeight() + EAR_GAP), 
+      Paint c = gc.getStroke();
+      gc.setStroke(Color.GREEN);
+      gc.strokeLine(xOffset + getX() - EAR_GAP, yOffset + getY() + (getHeight() + EAR_GAP), 
     		      xOffset + getX() - EAR_GAP, yOffset + getY() + (getHeight() - EAR_LENGTH));
-      gc.drawLine(xOffset + getX() - EAR_GAP, yOffset + getY() + (getHeight() + EAR_GAP), 
+      gc.strokeLine(xOffset + getX() - EAR_GAP, yOffset + getY() + (getHeight() + EAR_GAP), 
     		      xOffset + getX() + EAR_LENGTH, yOffset + getY() + (getHeight() + EAR_GAP));
-      gc.setForeground(c);
+      gc.setStroke(c);
     }
   }
 
-  private void paintResizeBottomRight(GC gc, int xOffset, int yOffset) {
+  private void paintResizeBottomRight(GraphicsContext gc, int xOffset, int yOffset) {
     if (!hidden) {
-      Color c = gc.getForeground();
-      gc.setForeground(Diagram.GREEN);
-      gc.drawLine(xOffset + getX() + (getWidth() + EAR_GAP), yOffset + getY() + (getHeight() + EAR_GAP), 
+        Paint c = gc.getStroke();
+        gc.setStroke(Color.GREEN);
+      gc.strokeLine(xOffset + getX() + (getWidth() + EAR_GAP), yOffset + getY() + (getHeight() + EAR_GAP), 
     		      xOffset + getX() + (getWidth() + EAR_GAP), yOffset + getY() + (getHeight() - EAR_LENGTH));
-      gc.drawLine(xOffset + getX() + (getWidth() + EAR_GAP), yOffset + getY() + (getHeight() + EAR_GAP), 
+      gc.strokeLine(xOffset + getX() + (getWidth() + EAR_GAP), yOffset + getY() + (getHeight() + EAR_GAP), 
     		      xOffset + getX() + (getWidth() - EAR_LENGTH), yOffset + getY() + (getHeight() + EAR_GAP));
-      gc.setForeground(c);
+      gc.setStroke(c);
     }
   }
 
-  private void paintResizeTopLeft(GC gc, int xOffset, int yOffset) {
+  private void paintResizeTopLeft(GraphicsContext gc, int xOffset, int yOffset) {
     if (!hidden) {
-      Color c = gc.getForeground();
-      gc.setForeground(Diagram.GREEN);
-      gc.drawLine(xOffset + getX() - EAR_GAP, yOffset + getY() - EAR_GAP, 
+        Paint c = gc.getStroke();
+        gc.setStroke(Color.GREEN);
+      gc.strokeLine(xOffset + getX() - EAR_GAP, yOffset + getY() - EAR_GAP, 
     		      xOffset + getX() + EAR_LENGTH, yOffset + getY() - EAR_GAP);
-      gc.drawLine(xOffset + getX() - EAR_GAP, yOffset + getY() - EAR_GAP, 
+      gc.strokeLine(xOffset + getX() - EAR_GAP, yOffset + getY() - EAR_GAP, 
     		      xOffset + getX() - EAR_GAP, yOffset + getY() + EAR_LENGTH);
-      gc.setForeground(c);
+      gc.setStroke(c);
     }
   }
 
-  private void paintResizeTopRight(GC gc, int xOffset, int yOffset) {
+  private void paintResizeTopRight(GraphicsContext gc, int xOffset, int yOffset) {
     if (!hidden) {
-      Color c = gc.getForeground();
-      gc.setForeground(Diagram.GREEN);
-      gc.drawLine(xOffset + getX() + getWidth() + EAR_GAP, yOffset + getY() - EAR_GAP, 
+        Paint c = gc.getStroke();
+        gc.setStroke(Color.GREEN);
+      gc.strokeLine(xOffset + getX() + getWidth() + EAR_GAP, yOffset + getY() - EAR_GAP, 
     		      xOffset + getX() + (getWidth() - EAR_LENGTH), yOffset + getY() - EAR_GAP);
-      gc.drawLine(xOffset + getX() + getWidth() + EAR_GAP, yOffset + getY() - EAR_GAP, 
+      gc.strokeLine(xOffset + getX() + getWidth() + EAR_GAP, yOffset + getY() - EAR_GAP, 
     		      xOffset + getX() + getWidth() + EAR_GAP, yOffset + getY() + EAR_LENGTH);
-      gc.setForeground(c);
+      gc.setStroke(c);
     }
   }
 
-  private void paintSelectableOutline(GC gc, int x, int y) {
+  
+  private void paintSelectableOutline(GraphicsContext gc, int x, int y) {
     if (!hidden) {
-      Color c = gc.getForeground();
-      int width = gc.getLineWidth();
+//      Color c = gc.getForeground();
+//      int width = gc.getLineWidth();
       gc.setLineWidth(1);
-      gc.setForeground(XModeler.getXModeler().getDisplay().getSystemColor(SWT.COLOR_RED));
-      gc.drawRectangle(getX() - SELECTION_GAP + x, getY() - SELECTION_GAP + y, getWidth() + (SELECTION_GAP * 2), getHeight() + (SELECTION_GAP * 2));
-      gc.setForeground(c);
-      gc.setLineWidth(width);
+      gc.setStroke(Color.RED);
+      gc.strokeRect(getX() - SELECTION_GAP + x, getY() - SELECTION_GAP + y, getWidth() + (SELECTION_GAP * 2), getHeight() + (SELECTION_GAP * 2));
+//      gc.setForeground(c);
+//      gc.setLineWidth(width);
     }
   }
 
-  public void paintHover(GC gc, int x, int y, int xOffset, int yOffset, boolean selected) {
+  public void paintHover(GraphicsContext gc, int x, int y, int xOffset, int yOffset, boolean selected) {
     if (!hidden && contains(x, y)) {
       paintSelectableOutline(gc, xOffset, yOffset);
       for (Display display : displays)
@@ -375,15 +377,15 @@ public class Node implements Selectable {
     if (!selected && !contains(x, y) && atCorner(x, y)) paintResizeHover(gc, x, y, xOffset, yOffset);
   }
   
-  public void paintSelected(GC gc, int x, int y) { 
+  public void paintSelected(GraphicsContext gc, int x, int y) { 
     if (!hidden) {
-      Color c = gc.getForeground();
-      int width = gc.getLineWidth();
+//      Color c = gc.getForeground();
+//      int width = gc.getLineWidth();
       gc.setLineWidth(2);
-      gc.setForeground(XModeler.getXModeler().getDisplay().getSystemColor(SWT.COLOR_RED));
-      gc.drawRectangle(getX() - SELECTION_GAP + x , getY() - SELECTION_GAP + y, getWidth() + (SELECTION_GAP * 2), getHeight() + (SELECTION_GAP * 2));
-      gc.setForeground(c);
-      gc.setLineWidth(width);
+      gc.setStroke(Color.RED);
+      gc.strokeRect(getX() - SELECTION_GAP + x , getY() - SELECTION_GAP + y, getWidth() + (SELECTION_GAP * 2), getHeight() + (SELECTION_GAP * 2));
+//      gc.setForeground(c);
+//      gc.setLineWidth(width);
     }
   }
 

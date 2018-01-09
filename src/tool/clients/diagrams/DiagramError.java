@@ -69,8 +69,8 @@ public class DiagramError {
     int lineWidth = gc.getLineWidth();
     int lineJoin = gc.getLineJoin();
     gc.setAlpha(200);
-    gc.setForeground(Diagram.RED);
-    gc.setBackground(Diagram.WHITE);
+//    gc.setForeground(Color.RED);
+//    gc.setBackground(Color.WHITE);
     int height = gc.getFontMetrics().getHeight();
     int boxWidth = getWidth(gc);
     int boxHeight = height * lines.length;
@@ -82,7 +82,7 @@ public class DiagramError {
       x = baseX;
       y += height;
     }
-    gc.setForeground(Diagram.RED);
+//    gc.setForeground(Color.RED);
     gc.setLineWidth(LINE_WIDTH);
     gc.setLineJoin(SWT.JOIN_ROUND);
     gc.drawRectangle(baseX, baseY - boxHeight, boxWidth, boxHeight);

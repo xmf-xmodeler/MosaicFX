@@ -19,7 +19,6 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -32,6 +31,8 @@ import javafx.scene.canvas.GraphicsContext;
 
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseButton;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.transform.Affine;
 import tool.clients.EventHandler;
 import tool.clients.diagrams.Diagram.MouseMode;
@@ -48,7 +49,8 @@ public class Diagram implements Display {
   
   private SplitPane pane;
 
-  static final Color[]     COLOURS                = new Color[] {};// color(SWT.COLOR_RED), color(SWT.COLOR_BLUE), color(SWT.COLOR_DARK_GREEN), color(SWT.COLOR_YELLOW), color(SWT.COLOR_GRAY), color(SWT.COLOR_DARK_RED), color(SWT.COLOR_CYAN), color(SWT.COLOR_DARK_YELLOW), color(SWT.COLOR_MAGENTA) };
+  static final Color[]     COLOURS                = new Color[] {Color.RED, Color.BLUE, Color.DARKGREEN, Color.YELLOW, Color.GRAY, Color.DARKRED, Color.CYAN, Color.DARKKHAKI, Color.MAGENTA};
+  // color(SWT.COLOR_RED), color(SWT.COLOR_BLUE), color(SWT.COLOR_DARK_GREEN), color(SWT.COLOR_YELLOW), color(SWT.COLOR_GRAY), color(SWT.COLOR_DARK_RED), color(SWT.COLOR_CYAN), color(SWT.COLOR_DARK_YELLOW), color(SWT.COLOR_MAGENTA) };
 
   static final Color       BLUE                   = null;//new Color(XModeler.getXModeler().getDisplay(), 0, 0, 255);
   static final Color       RED                    = null;//new Color(XModeler.getXModeler().getDisplay(), 255, 0, 0);
@@ -70,9 +72,9 @@ public class Diagram implements Display {
   private static final int TRAY_PAD               = 5;
   transient static boolean dontSelectNextWaypoint = false;  
   
-  public static Color color(int code) {
-    return XModeler.getXModeler().getDisplay().getSystemColor(code);
-  }
+//  public static Color color(int code) {
+//    return XModeler.getXModeler().getDisplay().getSystemColor(code);
+//  }
 
   Color                                    diagramBackgroundColor = WHITE;
   Vector<Node>                             nodes                  = new Vector<Node>();
@@ -859,7 +861,7 @@ public class Diagram implements Display {
     palette.deselect();
   }
 
-  private int distance(Point p1, Point p2) {
+  private int distance(EdgePainter.Point p1, EdgePainter.Point p2) {
     int dx = p1.x - p2.x;
     int dy = p1.y - p2.y;
     return (int) Math.sqrt((dx * dx) + (dy * dy));
@@ -997,7 +999,7 @@ public class Diagram implements Display {
         // that they are close.
         return COLOURS[edges.indexOf(edge) % COLOURS.length];
       } else if (edge.getRed() >= 0 && edge.getGreen() >= 0 && edge.getBlue() >= 0)
-        return new Color(XModeler.getXModeler().getDisplay(), edge.getRed(), edge.getGreen(), edge.getBlue());
+        return new Color(edge.getRed()/225., edge.getGreen()/225., edge.getBlue()/225., 1.);
       else return Diagram.BLACK;
     } else return Diagram.BLACK;
   }
@@ -1014,13 +1016,13 @@ public class Diagram implements Display {
     return id;
   }
 
-  private Hashtable<Edge, Hashtable<Edge, Vector<Point>>> getIntersectionTable() {
-    Hashtable<Edge, Hashtable<Edge, Vector<Point>>> iTable = new Hashtable<Edge, Hashtable<Edge, Vector<Point>>>();
+  private Hashtable<Edge, Hashtable<Edge, Vector<EdgePainter.Point>>> getIntersectionTable() {
+    Hashtable<Edge, Hashtable<Edge, Vector<EdgePainter.Point>>> iTable = new Hashtable<Edge, Hashtable<Edge, Vector<EdgePainter.Point>>>();
     for (Edge e1 : edges) {
-      iTable.put(e1, new Hashtable<Edge, Vector<Point>>());
+      iTable.put(e1, new Hashtable<Edge, Vector<EdgePainter.Point>>());
       for (Edge e2 : edges) {
         if (e1 != e2) {
-          iTable.get(e1).put(e2, new Vector<Point>());
+          iTable.get(e1).put(e2, new Vector<EdgePainter.Point>());
           for (int i = 1; i < e1.getWaypoints().size(); i++) {
             for (int j = 1; j < e2.getWaypoints().size(); j++) {
               int x1 = e1.getWaypoints().elementAt(i - 1).getX();
@@ -1031,7 +1033,7 @@ public class Diagram implements Display {
               int y3 = e2.getWaypoints().elementAt(j - 1).getY();
               int x4 = e2.getWaypoints().elementAt(j).getX();
               int y4 = e2.getWaypoints().elementAt(j).getY();
-              Point p = Edge.intersect(x1, y1, x2, y2, x3, y3, x4, y4);
+              EdgePainter.Point p = Edge.intersect(x1, y1, x2, y2, x3, y3, x4, y4);
               int x = p.x;
               int y = p.y;
               if (!isAt(x, y, x1, y1) && !isAt(x, y, x2, y2) && !isAt(x, y, x3, y3) && !isAt(x, y, x4, y4) && isOnLine(x, y, x1, y1, x2, y2) && isOnLine(x, y, x3, y3, x4, y4)) {
@@ -1159,11 +1161,11 @@ public class Diagram implements Display {
       edge.hide(id);
   }
 
-  private Vector<Point> intersectionPoints(Edge edge, Hashtable<Edge, Hashtable<Edge, Vector<Point>>> iTable) {
-    Hashtable<Edge, Vector<Point>> eTable = iTable.get(edge);
-    Vector<Point> points = new Vector<Point>();
+  private Vector<EdgePainter.Point> intersectionPoints(Edge edge, Hashtable<Edge, Hashtable<Edge, Vector<EdgePainter.Point>>> iTable) {
+    Hashtable<Edge, Vector<EdgePainter.Point>> eTable = iTable.get(edge);
+    Vector<EdgePainter.Point> points = new Vector<EdgePainter.Point>();
     for (Edge e : eTable.keySet()) {
-      for (Point p : eTable.get(e)) {
+      for (EdgePainter.Point p : eTable.get(e)) {
         points.add(p);
         iTable.get(e).remove(edge);
       }
@@ -1275,10 +1277,10 @@ public class Diagram implements Display {
     Node e1Target = e1.getTargetNode();
     Node e2Source = e2.getSourceNode();
     Node e2Target = e2.getTargetNode();
-    Point source1 = e1.intercept(e1Source, true);
-    Point target1 = e1.intercept(e1Target, false);
-    Point source2 = e2.intercept(e2Source, true);
-    Point target2 = e2.intercept(e2Target, false);
+    EdgePainter. Point source1 = e1.intercept(e1Source, true);
+    EdgePainter.Point target1 = e1.intercept(e1Target, false);
+    EdgePainter.Point source2 = e2.intercept(e2Source, true);
+    EdgePainter.Point target2 = e2.intercept(e2Target, false);
     // Intercepts are degenerately null...
     minDistance = source1 == null || source2 == null ? minDistance : Math.min(minDistance, distance(source1, source2));
     minDistance = target1 == null || target2 == null ? minDistance : Math.min(minDistance, distance(target1, target2));
@@ -1513,7 +1515,7 @@ public class Diagram implements Display {
 //    paintOn(gc, xOffset, yOffset);
   }
 
-  private void paintAlignment(GC gc) {
+  private void paintAlignment(GraphicsContext gc) {
     if (mode == MouseMode.SELECTED) {
       paintNodeAlignment(gc);
       paintEdgeAlignment(gc);
@@ -1526,7 +1528,7 @@ public class Diagram implements Display {
     }
   }
 
-  private void paintEdgeAlignment(GC gc) {
+  private void paintEdgeAlignment(GraphicsContext gc) {
     for (Edge edge1 : edges) {
       for (Edge edge2 : edges) {
         if (edge1 != edge2) {
@@ -1543,8 +1545,8 @@ public class Diagram implements Display {
     }
   }
 
-  private void paintEdges(GC gc, int xOffset, int yOffset) {
-    Hashtable<Edge, Hashtable<Edge, Vector<Point>>> iTable = getIntersectionTable();
+  private void paintEdges(GraphicsContext gc, int xOffset, int yOffset) {
+    Hashtable<Edge, Hashtable<Edge, Vector<EdgePainter.Point>>> iTable = getIntersectionTable();
     for (Edge edge : edges) {
       if ((mode != MouseMode.MOVE_SOURCE && mode != MouseMode.MOVE_TARGET) || (selectedEdge != edge)) {
         Color color = getEdgeColor(edge);
@@ -1562,7 +1564,7 @@ public class Diagram implements Display {
       error.paint(gc, this);
   }
 
-  private void paintHover(GC gc, int xOffset, int yOffset) {
+  private void paintHover(GraphicsContext gc, int xOffset, int yOffset) {
     if (!movingEdgeEnd()) {
       for (Node node : nodes)
         node.paintHover(gc, lastX, lastY, xOffset, yOffset, selection.contains(node));
@@ -1590,26 +1592,27 @@ public class Diagram implements Display {
     }
   }
 
-  private void paintNewNode(GC gc) {
+  private void paintNewNode(GraphicsContext gc) {
     if (nodeCreationType == null) return;
 
     int X = lastX + 21;
     int Y = lastY + 16;
     int A = 2;
     int B = 7;
-    int[] polygon = new int[] { X - A, Y - A, X - A, Y - B, X + A, Y - B, X + A, Y - A, X + B, Y - A, X + B, Y + A, X + A, Y + A, X + A, Y + B, X - A, Y + B, X - A, Y + A, X - B, Y + A, X - B, Y - A, X - A, Y - A };
+    double[] polygonX = new double[] { X - A, X - A, X + A, X + A, X + B, X + B, X + A, X + A, X - A, X - A, X - B, X - B, X - A };
+    double[] polygonY = new double[] { Y - A, Y - B, Y - B, Y - A, Y - A, Y + A, Y + A, Y + B, Y + B, Y + A, Y + A, Y - A, Y - A };
 
-    Color oldFGColor = gc.getForeground();
-    Color oldBGColor = gc.getBackground();
+    Paint oldFGColor = gc.getStroke();
+    Paint oldBGColor = gc.getFill();
 
-    gc.setBackground(new Color(XModeler.getXModeler().getDisplay(), 0, 200, 100));
-    gc.fillPolygon(polygon);
-    gc.setForeground(BLACK);
-    gc.drawPolygon(polygon);
+    gc.setFill(new Color(0., 200./255., 100./255., 1.));
+    gc.fillPolygon(polygonX, polygonY, 13);
+    gc.setStroke(Color.BLACK);
+    gc.strokePolygon(polygonX, polygonY, 13);
 
-    gc.setBackground(oldBGColor);
-    gc.drawText("new " + nodeCreationType, X + 8, Y + 2);
-    gc.setForeground(oldFGColor);
+    gc.setFill(oldBGColor);
+    gc.strokeText("new " + nodeCreationType, X + 8, Y + 2);
+    gc.setStroke(oldFGColor);
 
   }
 
@@ -1617,14 +1620,14 @@ public class Diagram implements Display {
    * The following functions are used to paint edges
    */
 
-  private void paintNodeAlignment(GC gc) {
+  private void paintNodeAlignment(GraphicsContext gc) {
     for (Node node1 : nodes)
       for (Node node2 : nodes)
         if (node1 != node2 && (selection.contains(node1) || selection.contains(node2))) {
-          int[] style = gc.getLineDash();
-          Color c = gc.getForeground();
-          gc.setForeground(RED);
-          gc.setLineDash(new int[] { 1, 2 });
+          double[] lineDashes = gc.getLineDashes();
+          Paint c = gc.getStroke();
+          gc.setStroke(javafx.scene.paint.Color.RED);
+          gc.setLineDashes(new double[] { 1, 2 });
           int x1 = node1.getX();
           int y1 = node1.getY();
           int w1 = node1.getWidth();
@@ -1633,22 +1636,22 @@ public class Diagram implements Display {
           int y2 = node2.getY();
           int w2 = node2.getWidth();
           int h2 = node2.getHeight();
-          if (x1 == x2) gc.drawLine(x1, y1, x2, y2);
-          if (x1 + w1 == x2) gc.drawLine(x1 + w1, y1, x2, y2);
-          if (x1 == x2 + w2) gc.drawLine(x1, y1, x2 + w2, y2);
-          if (x1 + w1 == x2 + w2) gc.drawLine(x1 + w1, y1, x2 + w2, y2);
-          if (y1 == y2) gc.drawLine(x1, y1, x2, y2);
-          if (y1 + h1 == y2) gc.drawLine(x1, y1 + h1, x2, y2);
-          if (y1 == y2 + h2) gc.drawLine(x1, y1, x2, y2 + h2);
-          if (y1 + h1 == y2 + h2) gc.drawLine(x1, y1 + h1, x2, y2 + h2);
-          if (x1 + (w1 / 2) == x2 + (w2 / 2)) gc.drawLine(x1 + (w1 / 2), y1, x2 + (w2 / 2), y2);
-          if (y1 + (h1 / 2) == y2 + (h2 / 2)) gc.drawLine(x1, y1 + (h1 / 2), x2, y2 + (h2 / 2));
-          gc.setForeground(c);
-          gc.setLineDash(style);
+          if (x1 == x2) gc.strokeLine(x1, y1, x2, y2);
+          if (x1 + w1 == x2) gc.strokeLine(x1 + w1, y1, x2, y2);
+          if (x1 == x2 + w2) gc.strokeLine(x1, y1, x2 + w2, y2);
+          if (x1 + w1 == x2 + w2) gc.strokeLine(x1 + w1, y1, x2 + w2, y2);
+          if (y1 == y2) gc.strokeLine(x1, y1, x2, y2);
+          if (y1 + h1 == y2) gc.strokeLine(x1, y1 + h1, x2, y2);
+          if (y1 == y2 + h2) gc.strokeLine(x1, y1, x2, y2 + h2);
+          if (y1 + h1 == y2 + h2) gc.strokeLine(x1, y1 + h1, x2, y2 + h2);
+          if (x1 + (w1 / 2) == x2 + (w2 / 2)) gc.strokeLine(x1 + (w1 / 2), y1, x2 + (w2 / 2), y2);
+          if (y1 + (h1 / 2) == y2 + (h2 / 2)) gc.strokeLine(x1, y1 + (h1 / 2), x2, y2 + (h2 / 2));
+          gc.setStroke(c);
+          gc.setLineDashes(lineDashes);
         }
   }
 
-  private void paintNodes(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
+  private void paintNodes(GraphicsContext gc, int x, int y) {
     for (Node node : nodes)
       node.paint(gc, this, x, y);
   }
@@ -1662,13 +1665,13 @@ public class Diagram implements Display {
 //    clear(gc, xOffset, yOffset);
 //    paintDisplays(gc, xOffset, yOffset);
     paintResizing(gc, xOffset, yOffset);
-    paintEdges(gc, xOffset, yOffset);
-    paintAlignment(gc);
+//    paintEdges(gc, xOffset, yOffset);
+//    paintAlignment(gc);
 //    paintNodes(gc, xOffset, yOffset);
-    paintHover(gc, xOffset, yOffset);
-    paintSelected(gc, xOffset, yOffset);
+//    paintHover(gc, xOffset, yOffset);
+//    paintSelected(gc, xOffset, yOffset);
     paintRubberBand(gc, xOffset, yOffset);
-    paintNewNode(gc);
+//    paintNewNode(gc);
     paintNewEdge(gc);
     paintErrors(gc);
     paintTray(gc);
@@ -1684,13 +1687,13 @@ public class Diagram implements Display {
 	    clear(gc, xOffset, yOffset);
 	    paintDisplays(gc, xOffset, yOffset);
 //	    paintResizing(gc, xOffset, yOffset);
-//	    paintEdges(gc, xOffset, yOffset);
-//	    paintAlignment(gc);
+	    paintEdges(gc, xOffset, yOffset);
+	    paintAlignment(gc);
 	    paintNodes(gc, xOffset, yOffset);
-//	    paintHover(gc, xOffset, yOffset);
-//	    paintSelected(gc, xOffset, yOffset);
+	    paintHover(gc, xOffset, yOffset);
+	    paintSelected(gc, xOffset, yOffset);
 //	    paintRubberBand(gc, xOffset, yOffset);
-//	    paintNewNode(gc);
+	    paintNewNode(gc);
 //	    paintNewEdge(gc);
 //	    paintErrors(gc);
 //	    paintTray(gc);
@@ -1711,7 +1714,7 @@ public class Diagram implements Display {
     }
   }
 
-  private void paintSelected(GC gc, int xOffset, int yOffset) {
+  private void paintSelected(GraphicsContext gc, int xOffset, int yOffset) {
     if (!movingEdgeEnd()) {
       for (Selectable selected : selection)
         selected.paintSelected(gc, xOffset, yOffset);

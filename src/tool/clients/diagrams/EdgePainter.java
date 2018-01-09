@@ -4,15 +4,22 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
-
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import tool.clients.diagrams.Edge.HeadStyle;
 import tool.clients.diagrams.Edge.Position;
 
 public class EdgePainter {
+	
+//	@Deprecated
+	public static class Point {
+		public int x; public int y;
+		public Point(int x, int y) {
+			this.x=x;
+			this.y=y;
+		}
+	}
 	
 	// An empty vector to be used where a list of intersections is required but there is no need in that case
 	private static final Vector<Point> NO_INTERSECTIONS_PLACEHOLDER = new Vector<Point>();
@@ -27,21 +34,24 @@ public class EdgePainter {
 		this.edge = edge;
 	}
 
-	//                           | intersect         | second/penultimate  |
-	private void drawCircle(GC gc, int tipx, int tipy, int tailx, int taily, boolean filled, Color fill, Color line) {
+	//                                        | intersect         | second/penultimate  |
+	private void drawCircle(GraphicsContext gc, int tipx, int tipy, int tailx, int taily, boolean filled, Color fill, Color line) {
 		
 	    double dy = tipy - taily;
 	    double dx = tipx - tailx;
 	    double theta = Math.atan2(dy, dx);
 	    
-	    // store old values
-	    Color oldFG = gc.getForeground();
-	    Color oldBG = gc.getBackground();	    
-	    int width = gc.getLineWidth();
+//	    // store old values
+//	    Color oldFG = gc.getForeground();
+//	    Color oldBG = gc.getBackground();	    
+//	    int width = gc.getLineWidth();
 	    
 	    // set new values for temporary use
-	    gc.setForeground(line);	    
-	    gc.setBackground(fill);	
+	    gc.setFill(fill);
+	    gc.setStroke(line);
+	    
+//	    gc.setForeground(line);	    
+//	    gc.setBackground(fill);	
 	    gc.setLineWidth(1);//LINE_WIDTH + 2);
 
 	    // calculate
@@ -65,14 +75,14 @@ public class EdgePainter {
 	    }
 	    
 	    // draw
-	    gc.drawOval(x, y, CIRCLE_SIZE, CIRCLE_SIZE);
+	    gc.strokeOval(x, y, CIRCLE_SIZE, CIRCLE_SIZE);
 	    gc.fillOval(x+1, y+1, CIRCLE_SIZE-1, CIRCLE_SIZE-1);
 
 	    
-	    //reset old Values
-	    gc.setLineWidth(width);	    
-	    gc.setForeground(oldFG);
-	    gc.setBackground(oldBG);
+//	    //reset old Values
+//	    gc.setLineWidth(width);	    
+//	    gc.setForeground(oldFG);
+//	    gc.setBackground(oldBG);
 	}
 	
 	/* Tries to figure out if the line goes out through the upper or lower side of the box.
@@ -86,48 +96,49 @@ public class EdgePainter {
 		return false;
 	}
 
-	private void drawArrow(GC gc, int tipx, int tipy, int tailx, int taily, boolean filled, Color fill, Color line) {
+	private void drawArrow(GraphicsContext gc, int tipx, int tipy, int tailx, int taily, boolean filled, Color fill, Color line) {
 	    double phi = Math.toRadians(ARROW_ANGLE);
 	    double dy = tipy - taily;
 	    double dx = tipx - tailx;
 	    double theta = Math.atan2(dy, dx);
 	    double x, y, rho = theta + phi;
 	    
-	    Color oldFG = gc.getForeground();
-	    Color oldBG = gc.getBackground();
+//	    Color oldFG = gc.getForeground();
+//	    Color oldBG = gc.getBackground();
 	    
-	    gc.setForeground(line);
+	    gc.setStroke(line);
 	    if (!filled) {
 	      for (int j = 0; j < 2; j++) {
 	        x = tipx - ARROW_HEAD * Math.cos(rho);
 	        y = tipy - ARROW_HEAD * Math.sin(rho);
-	        gc.drawLine(tipx, tipy, (int) x, (int) y);
+	        gc.strokeLine(tipx, tipy, (int) x, (int) y);
 	        rho = theta - phi;
 	      }
 	    } else {
-	      gc.setLineCap(SWT.CAP_ROUND);
-	      int width = gc.getLineWidth();
+//	      gc.setLineCap(SWT.CAP_ROUND);
+//	      int width = gc.getLineWidth();
 	      gc.setLineWidth(LINE_WIDTH + 2);
-	      int[] points = new int[6];
-	      points[0] = tipx;
-	      points[1] = tipy;
+	      double[] xpoints = new double[3];
+	      double[] ypoints = new double[3];
+	      xpoints[0] = tipx;
+	      ypoints[0] = tipy;
 	      for (int j = 0; j < 2; j++) {
-	        points[(j * 2) + 2] = (int) (tipx - ARROW_HEAD * Math.cos(rho));
-	        points[(j * 2) + 3] = (int) (tipy - ARROW_HEAD * Math.sin(rho));
-	        gc.drawLine(tipx, tipy, points[(j * 2) + 2], points[(j * 2) + 3]);
+	        xpoints[j+1] = (int) (tipx - ARROW_HEAD * Math.cos(rho));
+	        ypoints[j+1] = (int) (tipy - ARROW_HEAD * Math.sin(rho));
+	        gc.strokeLine(tipx, tipy, xpoints[j+1], ypoints[j+1]);
 	        rho = theta - phi;
 	      }
-	      gc.drawLine(points[2], points[3], points[4], points[5]);
-	      gc.setBackground(fill);
-	      gc.fillPolygon(points);
-	      gc.setLineWidth(width);
+	      gc.strokeLine(xpoints[1], ypoints[1], xpoints[2], ypoints[2]);
+	      gc.setFill(fill);
+	      gc.fillPolygon(xpoints, ypoints, 3);
+//	      gc.setLineWidth(width);
 	    }
 	    
-	    gc.setForeground(oldFG);
-	    gc.setBackground(oldBG);
+//	    gc.setForeground(oldFG);
+//	    gc.setBackground(oldBG);
 	  }
 
-	  private void drawSourceDecoration(GC gc, Color color, int x, int y, int x2, int y2) {
+	  private void drawSourceDecoration(GraphicsContext gc, Color color, int x, int y, int x2, int y2) {
 	    switch (edge.sourceHead) {
 	    case NO_ARROW:
 	      break;
@@ -135,17 +146,17 @@ public class EdgePainter {
 	      drawArrow(gc, x, y, x2, y2, false, null, color);
 	      break;
 	    case WHITE_ARROW:
-	      drawArrow(gc, x, y, x2, y2, true, Diagram.WHITE, color);
+	      drawArrow(gc, x, y, x2, y2, true, Color.WHITE, color);
 	      break;
 	    case WHITE_CIRCLE:
-	      drawCircle(gc, x, y, x2, y2, true, Diagram.WHITE, color);
+	      drawCircle(gc, x, y, x2, y2, true, Color.WHITE, color);
 	      break;
 	    default:
 	      System.err.println("unknown type of source decoration: " + edge.sourceHead);
 	    }
 	  }
 
-	  private void drawTargetDecoration(GC gc, Color color, int x, int y, int x2, int y2) {
+	  private void drawTargetDecoration(GraphicsContext gc, Color color, int x, int y, int x2, int y2) {
 	    switch (edge.targetHead) {
 	    case NO_ARROW:
 	      break;
@@ -153,24 +164,24 @@ public class EdgePainter {
 	      drawArrow(gc, x, y, x2, y2, false, null, color);
 	      break;
 	    case WHITE_ARROW:
-	      drawArrow(gc, x, y, x2, y2, true, Diagram.WHITE, color);
+	      drawArrow(gc, x, y, x2, y2, true, Color.WHITE, color);
 	      break;
 	    case WHITE_CIRCLE:
-	      drawCircle(gc, x, y, x2, y2, true, Diagram.WHITE, color);
+	      drawCircle(gc, x, y, x2, y2, true, Color.WHITE, color);
 	      break;
 	    default:
 	      System.err.println("unknown type of target decoration: " + edge.targetHead);
 	    }
 	  }  
 	  
-	  public void paint(GC gc, Color color, boolean showWaypoints, Vector<Point> intersections, int xOffset, int yOffset) {
+	  public void paint(GraphicsContext gc, Color color, boolean showWaypoints, Vector<Point> intersections, int xOffset, int yOffset) {
 	    if (!edge.hidden) {
 	      int x = edge.waypoints.elementAt(0).getX();
 	      int y = edge.waypoints.elementAt(0).getY();
-	      int width = gc.getLineWidth();
+//	      int width = gc.getLineWidth();
 	      gc.setLineWidth(LINE_WIDTH);
-	      Color c = gc.getBackground();
-	      gc.setBackground(color);
+//	      Color c = gc.getBackground();
+	      gc.setFill(color);
 	      for (int i = 1; i < edge.waypoints.size(); i++) {
 	        final Waypoint wp0 = edge.waypoints.elementAt(i - 1);
 	        final Waypoint wp1 = edge.waypoints.elementAt(i);
@@ -189,32 +200,32 @@ public class EdgePainter {
 	        x = wp1.getX();
 	        y = wp1.getY();
 	      }
-	      gc.setBackground(c);
+//	      gc.setBackground(c);
 	      for (Label label : edge.labels)
 	        label.paint(gc, xOffset, yOffset);
 	      paintDecorations(gc, color, xOffset, yOffset);
-	      gc.setLineWidth(width);
+//	      gc.setLineWidth(width);
 	    }
 	  }
 
-	  public void paintAligned(GC gc) {
+	  public void paintAligned(GraphicsContext gc) {
 	    if (!edge.hidden) {
 	      int x = edge.waypoints.elementAt(0).getX();
 	      int y = edge.waypoints.elementAt(0).getY();
-	      int width = gc.getLineWidth();
+//	      int width = gc.getLineWidth();
 	      gc.setLineWidth(LINE_WIDTH + 1);
 	      for (int i = 1; i < edge.waypoints.size(); i++) {
 	        Waypoint wp = edge.waypoints.elementAt(i);
-	        paintLine(gc, x, y, wp.getX(), wp.getY(), Diagram.RED, NO_INTERSECTIONS_PLACEHOLDER);
+	        paintLine(gc, x, y, wp.getX(), wp.getY(), Color.RED, NO_INTERSECTIONS_PLACEHOLDER);
 	        if (i < edge.waypoints.size() - 1) gc.fillOval(wp.getX() - 3, wp.getY() - 3, 6, 6);
 	        x = wp.getX();
 	        y = wp.getY();
 	      }
-	      gc.setLineWidth(width);
+//	      gc.setLineWidth(width);
 	    }
 	  }
 
-	  private void paintDecorations(GC gc, Color color, int xOffset, int yOffset) { 
+	  private void paintDecorations(GraphicsContext gc, Color color, int xOffset, int yOffset) { 
 	    if (isSelfEdge())
 	      paintHomogeneousEdgeDecorations(gc, color, xOffset, yOffset);
 	    else paintHeterogeneousEdgeDecorations(gc, color, xOffset, yOffset);
@@ -224,7 +235,7 @@ public class EdgePainter {
 	    return edge.sourceNode == edge.targetNode;
 	  }
 
-	  private void paintHeterogeneousEdgeDecorations(GC gc, Color color, int xOffset, int yOffset) {
+	  private void paintHeterogeneousEdgeDecorations(GraphicsContext gc, Color color, int xOffset, int yOffset) {
 	    Point topIntercept = edge.intercept(edge.targetNode, Position.TOP, false);
 	    if (topIntercept != null && topIntercept.x >= 0 && topIntercept.y >= 0) drawTargetDecoration(gc, color, topIntercept.x + xOffset, topIntercept.y + yOffset, edge.penultimate().x + xOffset, edge.penultimate().y + yOffset);
 	    Point bottomIntercept = edge.intercept(edge.sourceNode, Position.BOTTOM, true);
@@ -243,7 +254,7 @@ public class EdgePainter {
 	    if (rightIntercept != null && rightIntercept.x >= 0 && rightIntercept.y >= 0) drawSourceDecoration(gc, color, rightIntercept.x + xOffset, rightIntercept.y + yOffset, edge.second().x + xOffset, edge.second().y + yOffset);
 	  }
 
-	  /*NEW PRIVATE*/private void paintHomogeneousEdgeDecorations(GC gc, Color color, int xOffset, int yOffset) {
+	  /*NEW PRIVATE*/private void paintHomogeneousEdgeDecorations(GraphicsContext gc, Color color, int xOffset, int yOffset) {
 	    // Ensure that the correct waypoint is used when calculating the intercepts...
 	    Point topIntercept = edge.targetHead == HeadStyle.NO_ARROW ? null : edge.intercept(edge.targetNode, edge.end(), edge.penultimate(), Position.TOP);
 	    if (topIntercept != null && topIntercept.x >= 0 && topIntercept.y >= 0) drawTargetDecoration(gc, color, topIntercept.x + xOffset, topIntercept.y + yOffset, edge.penultimate().x + xOffset, edge.penultimate().y + yOffset);
@@ -263,93 +274,99 @@ public class EdgePainter {
 	    if (rightIntercept != null && rightIntercept.x >= 0 && rightIntercept.y >= 0) drawSourceDecoration(gc, color, rightIntercept.x + xOffset, rightIntercept.y + yOffset, edge.second().x + xOffset, edge.second().y + yOffset);
 	  }
 
-	  public void paintHover(GC gc, int x, int y) {
+	  public void paintHover(GraphicsContext gc, int x, int y) {
 	    for (Label label : edge.labels)
 	      label.paintHover(gc, x, y);
 	  }
 
-	  public void paintLine(GC gc, int x1, int y1, int x2, int y2, Color lineColor, Vector<Point> intersect) {
+	  public void paintLine(GraphicsContext gc, int x1, int y1, int x2, int y2, Color lineColor, Vector<Point> intersect) {
+
 	    // Paint the line in the line style.
-	    int style = gc.getLineStyle();
-	    Color c = gc.getForeground();
-	    gc.setForeground(lineColor);
+//	    int style = gc.getLineStyle();
+//	    Color c = gc.getForeground();
+	    gc.setStroke(lineColor);
 	    switch (edge.lineStyle) {
 	    case Line.DASH_LINE:
-	      gc.setLineStyle(SWT.LINE_DASH);
+	      gc.setLineDashes(12., 3.);
+//	      gc.setLineStyle(SWT.LINE_DASH);
 	      break;
 	    case Line.DOTTED_LINE:
-	      gc.setLineStyle(SWT.LINE_DOT);
+		  gc.setLineDashes(3., 3.);
+//	      gc.setLineStyle(SWT.LINE_DOT);
 	      break;
 	    case Line.DASH_DOTTED_LINE:
-	      gc.setLineStyle(SWT.LINE_DASHDOT);
+          gc.setLineDashes(12., 3., 3., 3.);
+//	      gc.setLineStyle(SWT.LINE_DASHDOT);
 	      break;
 	    case Line.DASH_DOT_DOT_LINE:
-	      gc.setLineStyle(SWT.LINE_DASHDOTDOT);
+	      gc.setLineDashes(12., 3., 3., 3., 3., 3.);
+//	      gc.setLineStyle(SWT.LINE_DASHDOTDOT);
 	      break;
 	    case Line.SOLID_LINE:
 	    default:
-	      gc.setLineStyle(SWT.LINE_SOLID);
+	      gc.setLineDashes(null);
+//	      gc.setLineStyle(SWT.LINE_SOLID);
 	    }
 	    for (Point p : intersect) {
 	      Point p1 = Edge.circleIntersect(p.x, p.y, 3.0, x1, y1);
 	      Point p2 = Edge.circleIntersect(p.x, p.y, 3.0, x2, y2);
-	      gc.drawLine(x1, y1, p1.x, p1.y);
+	      gc.strokeLine(x1, y1, p1.x, p1.y);
 	      x1 = p2.x;
 	      y1 = p2.y;
 	    }
-	    gc.drawLine(x1, y1, x2, y2);
-	    gc.setLineStyle(style);
-	    gc.setForeground(c);
+	    gc.strokeLine(x1, y1, x2, y2);
+//	    gc.setLineStyle(style);
+//	    gc.setForeground(c);
 	  }
 
-	  public void paintMovingSourceOrTarget(GC gc, int startX, int startY, int endX, int endY, int xOffset, int yOffset) {
+	  public void paintMovingSourceOrTarget(GraphicsContext gc, int startX, int startY, int endX, int endY, int xOffset, int yOffset) {
 	    int x = startX;
 	    int y = startY;
-	    int width = gc.getLineWidth();
+//	    int width = gc.getLineWidth();
 	    gc.setLineWidth(LINE_WIDTH);
-	    Color c = gc.getBackground();
-	    gc.setBackground(Diagram.BLACK);
+//	    Color c = gc.getBackground();
+	    gc.setFill(Color.BLACK);
 	    for (int i = 1; i < edge.waypoints.size() - 1; i++) {
 	      Waypoint wp = edge.waypoints.elementAt(i);
-	      paintLine(gc, x + xOffset, y + yOffset, wp.getX() + xOffset, wp.getY() + yOffset, Diagram.BLACK, NO_INTERSECTIONS_PLACEHOLDER);
+	      paintLine(gc, x + xOffset, y + yOffset, wp.getX() + xOffset, wp.getY() + yOffset, Color.BLACK, NO_INTERSECTIONS_PLACEHOLDER);
 	      if (i < edge.waypoints.size() - 1) gc.fillOval(wp.getX() - 3 + xOffset, wp.getY() - 3 + yOffset, 6, 6);
 	      x = wp.getX();
 	      y = wp.getY();
 	    }
-	    paintLine(gc, x + xOffset, y + yOffset, endX + xOffset, endY + yOffset, Diagram.BLACK, NO_INTERSECTIONS_PLACEHOLDER);
-	    gc.setBackground(c);
+	    paintLine(gc, x + xOffset, y + yOffset, endX + xOffset, endY + yOffset, Color.BLACK, NO_INTERSECTIONS_PLACEHOLDER);
+//	    gc.setBackground(c);
 	    for (Label label : edge.labels)
 	      label.paint(gc, xOffset, yOffset);
-	    drawSourceDecoration(gc, Diagram.BLACK, startX + xOffset, startY + yOffset, edge.waypoints.elementAt(1).getX() + xOffset, edge.waypoints.elementAt(1).getY() + yOffset);
-	    drawTargetDecoration(gc, Diagram.BLACK, endX + xOffset, endY + yOffset, edge.waypoints.elementAt(edge.waypoints.size() - 2).getX() + xOffset, edge.waypoints.elementAt(edge.waypoints.size() - 2).getY() + yOffset);
-	    gc.setLineWidth(width);
+	    drawSourceDecoration(gc, Color.BLACK, startX + xOffset, startY + yOffset, edge.waypoints.elementAt(1).getX() + xOffset, edge.waypoints.elementAt(1).getY() + yOffset);
+	    drawTargetDecoration(gc, Color.BLACK, endX + xOffset, endY + yOffset, edge.waypoints.elementAt(edge.waypoints.size() - 2).getX() + xOffset, edge.waypoints.elementAt(edge.waypoints.size() - 2).getY() + yOffset);
+//	    gc.setLineWidth(width);
 	  }
 
-	  public void paintOrthogonal(GC gc, Waypoint waypoint) { // Zielscheibe
+	  public void paintOrthogonal(GraphicsContext gc, Waypoint waypoint) { // Zielscheibe
 	    if (waypoint != edge.start() && waypoint != edge.end()) {
 	      int index = edge.waypoints.indexOf(waypoint);
 	      int length = 30;
 	      Waypoint pre = edge.waypoints.elementAt(index - 1);
 	      Waypoint post = edge.waypoints.elementAt(index + 1);
-	      Color c = gc.getForeground();
-	      gc.setForeground(Diagram.RED);
+//	      Color c = gc.getForeground();
+	      gc.setStroke(Color.RED);
 	      if (pre.getX() == waypoint.getX() || post.getX() == waypoint.getX()) {
-	        gc.drawOval(waypoint.getX() - length / 2, waypoint.getY() - length / 2, length, length);
-	        gc.drawLine(waypoint.getX(), waypoint.getY() - length, waypoint.getX(), waypoint.getY() + length);
+	        gc.strokeOval(waypoint.getX() - length / 2, waypoint.getY() - length / 2, length, length);
+	        gc.strokeLine(waypoint.getX(), waypoint.getY() - length, waypoint.getX(), waypoint.getY() + length);
 	      }
 	      if (pre.getY() == waypoint.getY() || post.getY() == waypoint.getY()) {
-	        gc.drawOval(waypoint.getX() - length / 2, waypoint.getY() - length / 2, length, length);
-	        gc.drawLine(waypoint.getX() - length, waypoint.getY(), waypoint.getX() + length, waypoint.getY());
+	        gc.strokeOval(waypoint.getX() - length / 2, waypoint.getY() - length / 2, length, length);
+	        gc.strokeLine(waypoint.getX() - length, waypoint.getY(), waypoint.getX() + length, waypoint.getY());
 	      }
-	      gc.setForeground(c);
+//	      gc.setForeground(c);
 	    }
 	  }
 
-	  public void paintSourceMoving(GC gc, int x, int y, int xOffset, int yOffset) {
+	  public void paintSourceMoving(GraphicsContext gc, int x, int y, int xOffset, int yOffset) {
 	    paintMovingSourceOrTarget(gc, x, y, edge.end().getX(), edge.end().getY(), xOffset, yOffset);
 	  }
 
-	  public void paintTargetMoving(GC gc, int x, int y, int xOffset, int yOffset) {
+	  public void paintTargetMoving(GraphicsContext gc, int x, int y, int xOffset, int yOffset) {
 	    paintMovingSourceOrTarget(gc, edge.start().getX(), edge.start().getY(), x, y, xOffset, yOffset);
 	  }
 	  

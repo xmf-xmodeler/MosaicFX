@@ -2,11 +2,12 @@ package tool.clients.diagrams;
 
 import java.io.PrintStream;
 
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 
 import javafx.geometry.Side;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.paint.Color;
 import tool.clients.EventHandler;
 import tool.clients.menus.MenuClient;
 import xos.Message;
@@ -125,11 +126,11 @@ public class Waypoint implements Selectable {
 
 
   @Override
-  public void paintSelected(GC gc, int xOffset, int yOffset) { 
-    Color c = gc.getForeground();
-    gc.setForeground(Diagram.RED);
-    gc.drawOval(x - SELECTED_SIZE + xOffset, y - SELECTED_SIZE + yOffset, SELECTED_SIZE * 2, SELECTED_SIZE * 2);
-    gc.setForeground(c);
+  public void paintSelected(GraphicsContext gc, int xOffset, int yOffset) { 
+//    Color c = gc.getForeground();
+    gc.setStroke(Color.RED);
+    gc.strokeOval(x - SELECTED_SIZE + xOffset, y - SELECTED_SIZE + yOffset, SELECTED_SIZE * 2, SELECTED_SIZE * 2);
+//    gc.setForeground(c);
     edge.getPainter().paintOrthogonal(gc, this); // Zielscheibe
   }
 

@@ -633,7 +633,7 @@ public class DiagramClient extends Client {
       diagram.newNestedDiagram(parentId, id, x, y, width, height, null);
     }
   }
-
+*/
   private void newEdge(final Message message) {
     String parentId = message.args[0].strValue();
     String id = message.args[1].strValue();
@@ -662,7 +662,7 @@ public class DiagramClient extends Client {
       }
     }
   }
-
+/*
   private void newEllipse(Message message) {
     String parentId = message.args[0].strValue();
     String id = message.args[1].strValue();
@@ -848,7 +848,7 @@ public class DiagramClient extends Client {
       diagram.newNode(id, x, y, width, height, selectable);
     } else System.err.println("cannot find diagram " + parentId);
   }
-/*
+
   private void newPort(Message message) {
     Value parentId = message.args[0];
     Value id = message.args[1];
@@ -864,7 +864,7 @@ public class DiagramClient extends Client {
       diagram.newPort(parentId, id, x, y, width, height);
     }
   }
-*/
+
   private void newText(Message message) {
     final String parentId = message.args[0].strValue();
     final String id = message.args[1].strValue();
@@ -1081,9 +1081,9 @@ public class DiagramClient extends Client {
     else if (message.hasName("removeAction"))
       removeAny(message);*/
     else if (message.hasName("newNode"))
-      newNode(message);/*
+      newNode(message);
     else if (message.hasName("newPort"))
-      newPort(message);*/
+      newPort(message);
     else if (message.hasName("newBox"))
       newBox(message);
     else if (message.hasName("newText"))
@@ -1113,9 +1113,9 @@ public class DiagramClient extends Client {
     else if (message.hasName("stopRender"))
       stopRender(message);
     else if (message.hasName("setFocus"))
-      setFocus(message);
+      setFocus(message);*/
     else if (message.hasName("newEdge"))
-      newEdge(message);
+      newEdge(message);/*
     else if (message.hasName("setRefPoint"))
       setRefPoint(message);
     else if (message.hasName("setEdgeStyle"))

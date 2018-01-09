@@ -245,18 +245,20 @@ public class Text implements Display {
 	  }
 
   @Override
-  public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {}
+  public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {
+	if (editable && contains(x - dx, y - dy)) paintSelectableOutline(gc, dx, dy);
+  }
   
   @Override @Deprecated
   public void paintHover(GC gc, int x, int y, int dx, int dy) {
-    if (editable && contains(x - dx, y - dy)) paintSelectableOutline(gc, dx, dy);
+//    if (editable && contains(x - dx, y - dy)) paintSelectableOutline(gc, dx, dy);
   }
 
-  private void paintSelectableOutline(GC gc, int dx, int dy) {
-    Color c = gc.getForeground();
-    gc.setForeground(Diagram.GREY);
-    gc.drawRectangle(dx + getX(), dy + getY(), getWidth(), getHeight());
-    gc.setForeground(c);
+  private void paintSelectableOutline(GraphicsContext gc, int dx, int dy) {
+//    Color c = gc.getForeground();
+    gc.setStroke(Diagram.GREY);
+    gc.strokeRect(dx + getX(), dy + getY(), getWidth(), getHeight());
+//    gc.setForeground(c);
   }
 
   public void remove(String id) {
