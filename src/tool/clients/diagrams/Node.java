@@ -273,10 +273,11 @@ public class Node implements Selectable {
   public void paint(javafx.scene.canvas.GraphicsContext gc, Diagram diagram, int xOffset, int yOffset) {
     if (!hidden) {
       // Clear the background of the node...
-      gc.setFill(javafx.scene.paint.Color.WHEAT);
+      gc.setLineWidth(1.);
+      gc.setFill(javafx.scene.paint.Color.WHITE);
       gc.fillRect(x+xOffset, y+yOffset, getWidth(), getHeight());
-//      gc.setStroke(javafx.scene.paint.Color.BLACK);
-//      gc.strokeRect(x+xOffset, y+yOffset, getWidth(), getHeight());
+      gc.setStroke(javafx.scene.paint.Color.BLACK);
+      gc.strokeRect(x+xOffset, y+yOffset, getWidth(), getHeight());
     	
 //      Color background = gc.getBackground();
 //      gc.setBackground(diagram.getDiagramBackgroundColor());

@@ -723,12 +723,12 @@ public class DiagramClient extends Client {
 */
   private void newGroup(final String diagramId, final String name) {
     if (getDiagram(diagramId) != null) {
-      runOnDisplay(new Runnable() {
-        public void run() {
+//      runOnDisplay(new Runnable() {
+//        public void run() {
           Diagram diagram = getDiagram(diagramId);
           diagram.newGroup(name);
-        }
-      });
+//        }
+//      });
     } else System.err.println("cannot find diagram " + diagramId);
   }/*
 
@@ -751,7 +751,7 @@ public class DiagramClient extends Client {
       }
     });
   }
-
+*/
   private void newLabel(final Message message) {
     String parentId = message.args[0].strValue();
     String id = message.args[1].strValue();
@@ -793,7 +793,7 @@ public class DiagramClient extends Client {
       }
     }
   }
-
+/*
   private void newMultilineText(Message message) {
     String parentId = message.args[0].strValue();
     String id = message.args[1].strValue();
@@ -953,34 +953,34 @@ public class DiagramClient extends Client {
 */
   private void newTool(final String diagramId, final String groupId, final String label, final String toolId, final boolean isEdge, final String icon) {
 	  if (getDiagram(diagramId) != null) {
-      runOnDisplay(new Runnable() {
-        public void run() {
+//      runOnDisplay(new Runnable() {
+//        public void run() {
           Diagram diagram = getDiagram(diagramId);
           diagram.newTool(groupId, label, toolId, isEdge, icon);
-        }
-      });
+//        }
+//      });
     } else System.err.println("cannot find diagram " + diagramId);
   }
 
   private void newToggle(final String diagramId, final String groupId, final String label, final String toolId, final boolean state, final String iconTrue, final String iconFalse) {
     if (getDiagram(diagramId) != null) {
-      runOnDisplay(new Runnable() {
-        public void run() {
+//      runOnDisplay(new Runnable() {
+//        public void run() {
           Diagram diagram = getDiagram(diagramId);
           diagram.newToggle(groupId, label, toolId, state, iconTrue, iconFalse);
-        }
-      });
+//        }
+//      });
     } else System.err.println("cannot find diagram " + diagramId);
   }
 
   private void newAction(final String diagramId, final String groupId, final String label, final String toolId, final String icon) {
     if (getDiagram(diagramId) != null) {
-      runOnDisplay(new Runnable() {
-        public void run() {
+//      runOnDisplay(new Runnable() {
+//        public void run() {
           Diagram diagram = getDiagram(diagramId);
           diagram.newAction(groupId, label, toolId, icon);
-        }
-      });
+//        }
+//      });
       if (label.equals("Update")) {
         getDiagram(diagramId).updateID = toolId;
         // addUpdateTimer(diagramId, toolId);
@@ -1121,9 +1121,9 @@ public class DiagramClient extends Client {
     else if (message.hasName("setEdgeStyle"))
       setEdgeStyle(message);
     else if (message.hasName("setColor"))
-      setEdgeColor(message);
+      setEdgeColor(message);*/
     else if (message.hasName("newEdgeText"))
-      newLabel(message);
+      newLabel(message);/*
     else if (message.hasName("newWaypoint"))
       newWaypoint(message);
     else if (message.hasName("delete"))
@@ -1159,7 +1159,7 @@ public class DiagramClient extends Client {
     else if (message.hasName("zoomOne"))
       zoomOne(message);
     else if (message.hasName("nestedZoomTo") || message.hasName("zoomTo"))
-      zoomTo(message);
+      zoomTo(message);*/
     else if (message.hasName("hide"))
       hide(message);
     else if (message.hasName("show"))
@@ -1167,7 +1167,7 @@ public class DiagramClient extends Client {
     else if (message.hasName("resetErrors"))
       resetErrors(message);
     else if (message.hasName("error"))
-      error(message);
+      error(message);/*
     else if (message.hasName("showEdges"))
       showEdges(message); // Bj�rn
     else if (message.hasName("setEditable"))
@@ -1177,30 +1177,30 @@ public class DiagramClient extends Client {
 //    super.sendMessage(message);
   }
 
-/*
+
   private void error(Message message) {
     String id = message.args[0].strValue();
     String error = message.args[1].strValue();
     if (error.length() > 0) {
-      runOnDisplay(new Runnable() {
-        public void run() {
+//      runOnDisplay(new Runnable() {
+//        public void run() {
           for (Diagram diagram : diagrams)
             diagram.error(id, error);
-        }
-      });
+//        }
+//      });
     }
   }
 
   private void resetErrors(Message message) {
     String id = message.args[0].strValue();
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         for (Diagram diagram : diagrams)
           if (diagram.getId().equals(id)) diagram.resetErrors();
-      }
-    });
+//      }
+//    });
   }
-
+/*
   private void setEditable(Message message) { // Bj�rn
     String id = message.args[0].strValue();
     boolean editable = message.args[1].boolValue;
@@ -1241,19 +1241,19 @@ public class DiagramClient extends Client {
     int blue = message.args[3].intValue;
     setTextColor(id, red, green, blue);
   }
-
+*/
   private void hide(final Message message) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         Value id = message.args[0];
         for (Diagram diagram : diagrams) {
           diagram.hide(id.strValue());
           diagram.redraw();
         }
-      }
-    });
+//      }
+//    });
   }
-
+/*
   private void setTextColor(final String id, final int red, final int green, final int blue) {
     runOnDisplay(new Runnable() {
       public void run() {
@@ -1262,18 +1262,18 @@ public class DiagramClient extends Client {
       }
     });
   }
-
+*/
   private void show(final Message message) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         Value id = message.args[0];
         for (Diagram diagram : diagrams) {
           diagram.show(id.strValue());
           diagram.redraw();
         }
-      }
-    });
-  }
+//      }
+//    });
+  }/*
 
   private void zoomIn(final Message message) {
     runOnDisplay(new Runnable() {
@@ -1535,7 +1535,7 @@ public class DiagramClient extends Client {
   public javafx.geometry.Point2D textDimension(String text, javafx.scene.text.Font font) {
 
 	javafx.scene.text.Text t = new javafx.scene.text.Text(text);
-	if(font != null) t.setFont(font); else System.err.println("calculating text dimension without font");
+	if(font != null) t.setFont(font); //else System.err.println("calculating text dimension without font");
 	t.applyCss();
 	
 	final double width = t.getLayoutBounds().getWidth();

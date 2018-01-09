@@ -227,11 +227,18 @@ public class Label implements Selectable {
 	paintBackground(gc) ; 
 //    gc.setFont(DiagramClient.diagramFont);
 //    Color c = gc.getForeground();
-    if(red >= 0 && green >= 0 && blue >= 0 )
-    	gc.setStroke(new Color(red/255., green/255., blue/255., 1.));
+//    if(red >= 0 && green >= 0 && blue >= 0 )
+//    	gc.setStroke(new Color(red/255., green/255., blue/255., 1.));
     
     if(!pos.equals("start") && !pos.equals("end")){
-//    	Transform oldTransform = new Transform(org.eclipse.swt.widgets.Display.getCurrent()); 
+
+	  	Paint cc = gc.getFill();
+	  	if(red >= 0 && green >= 0 && blue >= 0 ){
+	  	    gc.setFill(new Color (red/255., green/255., blue/255., 1.));
+	  	}else{  	
+	  	    gc.setFill(Color.BLACK);
+	  	}
+	  	    //    	Transform oldTransform = new Transform(org.eclipse.swt.widgets.Display.getCurrent()); 
     	Affine oldTransform = gc.getTransform();
 //    	gc.getTransform(oldTransform); // store old Transform
 //    	float[] transform = new float[6]; oldTransform.getElements(transform); 
@@ -249,7 +256,7 @@ public class Label implements Selectable {
 ////        angle = (angle+450)%180-90;
 //        tr.rotate((float)((angle+450)%180-90));
     	gc.setTransform(newTransform); // Rotate and move canvas to draw label
-    	Path path = new Path(org.eclipse.swt.widgets.Display.getCurrent());
+//    	Path path = new Path(org.eclipse.swt.widgets.Display.getCurrent());
 //        path.addString(text, 0, 0, gc.getFont());
 //        gc.fillPath(path);
 //        gc.drawPath(path);
@@ -267,13 +274,6 @@ public class Label implements Selectable {
 //        tr.translate(getAbsoluteX(), getAbsoluteY());
 //        tr.rotate((float)(angle)); // Rotate again???
         gc.setTransform(newTransform);
-        
-	  	Paint cc = gc.getFill();
-	  	if(red >= 0 && green >= 0 && blue >= 0 ){
-	  	    gc.setFill(new Color (red/255., green/255., blue/255., 1.));
-	  	}else{  	
-	  	    gc.setFill(Color.BLACK);
-	  	}
 	  	
 	  	int zoom = XModeler.getDeviceZoomPercent();
 	  	
@@ -285,6 +285,7 @@ public class Label implements Selectable {
         gc.setTransform(oldTransform); // restore to old Transform
 //        tr.dispose();
     }else{
+    	gc.setFill(Color.BLACK);
     	gc.fillText(text, getAbsoluteX(), getAbsoluteY());
     }
 //    gc.setForeground(c);

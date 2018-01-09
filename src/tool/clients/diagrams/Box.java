@@ -167,13 +167,13 @@ public class Box implements Display {
 
   public void newNestedDiagram(String parentId, String id, int x, int y, int width, int height, javafx.scene.canvas.Canvas canvas) {
     if (getId().equals(parentId)) {
-      DiagramClient.theClient().runOnDisplay(new Runnable() {
-        public void run() {
+//      DiagramClient.theClient().runOnDisplay(new Runnable() {
+//        public void run() {
           Diagram diagram = new Diagram(id, canvas, Box.this);
           DiagramClient.newlyCreatedDiagrams.add(diagram);
           Box.this.nestedDiagram = diagram;
-        }
-      });
+//        }
+//      });
     } else {
       for (Display display : displays) {
         display.newNestedDiagram(parentId, id, x, y, width, height, canvas);
@@ -231,6 +231,7 @@ public class Box implements Display {
 	@Override
 	public void paint(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
 		if (width > 0 && height > 0 || true) { // TODO remove
+			gc.setLineWidth(1.);
 //			Color fillColor = gc.getBackground();
 			if (getFillRed() != -1 && getFillGreen() != -1 && getFillBlue() != -1) {
 				gc.setFill(new javafx.scene.paint.Color(getFillRed()/255., getFillGreen()/255., getFillBlue()/255., 1));

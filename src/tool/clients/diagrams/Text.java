@@ -149,7 +149,7 @@ public class Text implements Display {
   }
 
   public int getHeight() {
-	System.err.println("Calculating font size without font");
+//	System.err.println("Calculating font size without font");
 	javafx.geometry.Point2D extent = DiagramClient.theClient().textDimension(text, null/*getFont()*/);
     return (int) extent.getY();// * 100 / XModeler.getDeviceZoomPercent();
   }
@@ -167,7 +167,7 @@ public class Text implements Display {
   }
 
   public int getWidth() {
-	System.err.println("Calculating font size without font");
+//	System.err.println("Calculating font size without font");
 	javafx.geometry.Point2D extent = DiagramClient.theClient().textDimension(text, null/*getFont()*/);
     return (int) extent.getX();// * 100 / XModeler.getDeviceZoomPercent();
   }
@@ -222,10 +222,11 @@ public class Text implements Display {
 //	    gc.setFont(italicise ? DiagramClient.diagramItalicFont : DiagramClient.diagramFont);
 	    //Check if a color is set
 	    if(getRed() >=0 && getGreen() >= 0 && getBlue() >= 0){ 
-	    	gc.setStroke(new javafx.scene.paint.Color(
-	    			getRed()/255., getGreen()/255., getBlue()/255., 1));
+	    	gc.setFill(new javafx.scene.paint.Color(getRed()/255., getGreen()/255., getBlue()/255., 1));
+	    } else {
+	    	gc.setFill(javafx.scene.paint.Color.BLACK);
 	    }
-	    gc.strokeText(text, x + getX(), y + getY());
+	    gc.fillText(text, x + getX(), y + getY());
 //	    gc.setFont(font);
 //	    gc.setForeground(c); 
   }
