@@ -14,12 +14,6 @@ public interface Display {
   void paintHover(GraphicsContext gc, int x, int y, int dx, int dy);
   
   void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY);
-  
-  @Deprecated void paint(GC gc, int x, int y);
-  
-  @Deprecated void paintHover(GC gc, int x, int y, int dx, int dy);
-  
-  @Deprecated  void doubleClick(GC gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY);
 
   void newText(String parentId, String id, String text, int x, int y, boolean editable, boolean underline, boolean italicise, int red, int green, int blue);
 

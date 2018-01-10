@@ -2,10 +2,11 @@ package tool.clients.diagrams;
 
 import java.io.PrintStream;
 
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import tool.xmodeler.XModeler;
 
 public class Ellipse implements Display {
@@ -87,24 +88,20 @@ public class Ellipse implements Display {
     return fillBlue;
   }
 
-  @Override
-  public void paint(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
-	  
-  }
+	@Override
+	public void paint(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
+		if (width > 0 && height > 0) {
+			Paint fillColor = gc.getFill();
+			gc.setFill(new Color(getFillRed()/255., getFillGreen()/255., getFillBlue()/255., 1.));
+			gc.fillOval(x + getX(), y + getY(), width, height);
+			gc.setFill(fillColor);
+			Paint lineColor = gc.getStroke();
+			gc.setStroke(new Color(getLineRed()/255., getLineGreen()/255., getLineBlue()/255., 1.));
+			gc.strokeOval(x + getX(), y + getY(), width, height);
+			gc.setStroke(lineColor);
+		}
+	}
   
-  @Override @Deprecated
-  public void paint(GC gc, int x, int y) {
-    if (width > 0 && height > 0) {
-      Color fillColor = gc.getBackground();
-      gc.setBackground(new Color(XModeler.getXModeler().getDisplay(), getFillRed(), getFillGreen(), getFillBlue()));
-      gc.fillOval(x + getX(), y + getY(), width, height);
-      gc.setBackground(fillColor);
-      Color lineColor = gc.getForeground();
-      gc.setForeground(new Color(XModeler.getXModeler().getDisplay(), getLineRed(), getLineGreen(), getLineBlue()));
-      gc.drawOval(x + getX(), y + getY(), width, height);
-      gc.setForeground(lineColor);
-    }
-  }
 
   public void newText(String parentId, String id, String text, int x, int y, boolean editable, boolean underline, boolean italicise, int red, int green, int blue) {
 
@@ -140,11 +137,6 @@ public class Ellipse implements Display {
 
   @Override
   public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {}
-  
-  @Override @Deprecated
-  public void paintHover(GC gc, int x, int y, int dx, int dy) {
-
-  }
 
   public void remove(String id) {
 
@@ -152,11 +144,6 @@ public class Ellipse implements Display {
 
   @Override
   public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {}
-  
-  @Override @Deprecated
-  public void doubleClick(GC gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
-
-  }
 
   public void writeXML(PrintStream out) {
     out.print("<Ellipse id='" + getId() + "'");

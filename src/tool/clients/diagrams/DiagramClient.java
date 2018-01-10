@@ -5,16 +5,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabFolder2Listener;
-import org.eclipse.swt.custom.CTabFolderEvent;
-import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Text;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -22,6 +12,7 @@ import org.w3c.dom.NodeList;
 import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.text.Font;
 import tool.clients.Client;
 import tool.clients.EventHandler;
 import tool.xmodeler.XModeler;
@@ -43,9 +34,10 @@ public class DiagramClient extends Client {
   private static Hashtable<String, Tab> tabs = new Hashtable<String, Tab>();
   private static Vector<Diagram>             diagrams          = new Vector<Diagram>();
   transient static Vector<Diagram>   newlyCreatedDiagrams;
-  static Font                        diagramFont       ;//= new Font(XModeler.getXModeler().getDisplay(), new FontData("Courier New", 12, SWT.NO));
-  static javafx.scene.text.Font      diagramFontFX       ;//= new Font(XModeler.getXModeler().getDisplay(), new FontData("Courier New", 12, SWT.NO));
-  static Font                        diagramItalicFont ;//= new Font(XModeler.getXModeler().getDisplay(), new FontData("Courier New", 12, SWT.ITALIC)); 
+//  static Font                        diagramFont       ;//= new Font(XModeler.getXModeler().getDisplay(), new FontData("Courier New", 12, SWT.NO));
+  static Font      diagramFontFX       ;//= new Font(XModeler.getXModeler().getDisplay(), new FontData("Courier New", 12, SWT.NO));
+//  static Font                        diagramItalicFont ;//= new Font(XModeler.getXModeler().getDisplay(), new FontData("Courier New", 12, SWT.ITALIC)); 
+  static Font      diagramItalicFontFX       ;//= new Font(XModeler.getXModeler().getDisplay(), new FontData("Courier New", 12, SWT.NO));
   // static java.awt.Font diagramFont_AWT = new java.awt.Font("Courier New", java.awt.Font.PLAIN, 16);
 
   public DiagramClient() {
@@ -63,60 +55,62 @@ public class DiagramClient extends Client {
 //      return getPalette(message);
     else return super.callMessage(message);
   }
-/*
-  public void close(CTabFolderEvent event) {
-    CTabItem item = (CTabItem) event.item;
-    String id = getId(item);
-    Diagram diagram = getDiagram(id);
+
+  public void close(String diagramID) {
+//    CTabItem item = (CTabItem) event.item;
+//    String id = getId(item);
+    Diagram diagram = getDiagram(diagramID);
     if (diagram != null) {
       EventHandler handler = getHandler();
       Message message = handler.newMessage("diagramClosed", 1);
-      message.args[0] = new Value(id);
+      System.err.println("diagramClosed");
+      message.args[0] = new Value(diagramID);
       handler.raiseEvent(message);
       diagrams.remove(diagram);
-      tabs.remove(id);
+      tabs.remove(diagramID);
     }
   }
+  
   private void copyToClipboard(Message message) {
     String id = message.args[0].strValue();
     copyToClipboard(id);
   }
 
   private void copyToClipboard(final String id) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         for (Diagram diagram : diagrams)
           diagram.copyToClipboard(id);
-      }
-    });
+//      }
+//    });
   }
 
   private void delete(final Message message) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         Value id = message.args[0];
         for (Diagram diagram : diagrams) {
           diagram.delete(id.strValue());
         }
-      }
-    });
+//      }
+//    });
   }
 
   private void deleteGroup(Message message) {
     final String id = message.args[0].strValue();
     final String name = message.args[1].strValue();
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         for (Diagram diagram : diagrams) {
           if (diagram.getId().equals(id)) {
             diagram.deleteGroup(name);
             diagram.redraw();
           }
         }
-      }
-    });
+//      }
+//    });
   }
-*/
+
   private void editText(Message message) {
     final Value id = message.args[0];
 //    runOnDisplay(new Runnable() {
@@ -132,19 +126,19 @@ public class DiagramClient extends Client {
       if (diagram.getId().equals(id)) return diagram;
     return null;
   }
-/*
-  private String getId(CTabItem item) {
-    for (String id : tabs.keySet())
-      if (tabs.get(id) == item) return id;
-    return null;
-  }
 
-  private Value getPalette(Message message) {
-    String id = message.args[0].strValue();
-    for (Diagram diagram : diagrams)
-      if (diagram.getId().equals(id)) { return diagram.getPalette().asValue(); }
-    return new Value(new Value[0]);
-  }
+//  private String getId(CTabItem item) {
+//    for (String id : tabs.keySet())
+//      if (tabs.get(id) == item) return id;
+//    return null;
+//  }
+
+//  private Value getPalette(Message message) {
+//    String id = message.args[0].strValue();
+//    for (Diagram diagram : diagrams)
+//      if (diagram.getId().equals(id)) { return diagram.getPalette().asValue(); }
+//    return new Value(new Value[0]);
+//  }
 
   // private Diagram getSelectedDiagram() { UNUSED?
   // CTabItem item = tabFolder.getSelection();
@@ -153,7 +147,7 @@ public class DiagramClient extends Client {
   // }
   // throw new Error("cannot find the current diagram");
   // }
- */
+ 
   /*
    * These functions calculate the size for a String for use in XMF's layouts. Unfortunately, hi-dpi changes the font size, so we need to get that factor out of the dimensions again. The value sent to XMF are those AS IF the font size were at 100%
    */
@@ -187,21 +181,21 @@ public class DiagramClient extends Client {
 //    });
     return result[0];
   }
-  /*
-  private Value getTextDimensionWithFont(final Message message) {
-    final Value[] result = new Value[1];
-    runOnDisplay(new Runnable() {
-      public void run() {
-        Value text = message.args[0];
-        Value fontData = message.args[1];
-        Point extent = textDimension(text.strValue(), new Font(XModeler.getXModeler().getDisplay(), new FontData(fontData.strValue())));
-        Value width = new Value(extent.x * 100 / XModeler.getDeviceZoomPercent());
-        Value height = new Value(extent.y * 100 / XModeler.getDeviceZoomPercent());
-        result[0] = new Value(new Value[] { width, height });
-      }
-    });
-    return result[0];
-  }
+  
+//  private Value getTextDimensionWithFont(final Message message) {
+//    final Value[] result = new Value[1];
+////    runOnDisplay(new Runnable() {
+////      public void run() {
+//        Value text = message.args[0];
+//        Value fontData = message.args[1];
+//        javafx.geometry.Point2D extent = textDimension(text.strValue(), null/*new Font(XModeler.getXModeler().getDisplay(), new FontData(fontData.strValue()))*/);
+//        Value width = new Value((int)(extent.getX() * 100 / XModeler.getDeviceZoomPercent()));
+//        Value height = new Value((int)(extent.getY() * 100 / XModeler.getDeviceZoomPercent()));
+//        result[0] = new Value(new Value[] { width, height });
+////      }
+////    });
+//    return result[0];
+//  }
 
   private void globalRenderOff() {
     for (Diagram diagram : diagrams)
@@ -534,21 +528,18 @@ public class DiagramClient extends Client {
   }
 
   private void italicise(final String id, final boolean italics) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         for (Diagram diagram : diagrams)
           diagram.italicise(id, italics);
-      }
-    });
+//      }
+//    });
   }
 
-  public void maximize(CTabFolderEvent event) {
-  }
+//  public void maximize(CTabFolderEvent event) {}
+//
+//  public void minimize(CTabFolderEvent event) {}
 
-  public void minimize(CTabFolderEvent event) {
-
-  }
-*/
   private void move(Message message) {
     Value id = message.args[0];
     Value x = message.args[1];
@@ -590,7 +581,7 @@ public class DiagramClient extends Client {
     final Value label = message.args[1];
     newDiagram(id.strValue(), label.strValue());
   }
-/*
+
   private void newNestedDiagram(Message message) {
     final Value parentId = message.args[0];
     final Value groupId = message.args[1];
@@ -603,7 +594,7 @@ public class DiagramClient extends Client {
     diagrams.addAll(newlyCreatedDiagrams);
     newlyCreatedDiagrams = null;
   }
-*/
+
 	private void newDiagram(final String id, final String label) {
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
@@ -617,7 +608,11 @@ public class DiagramClient extends Client {
 	        diagrams.add(diagram);
 	        tabPane.getTabs().add(tab);
 	        tabPane.getSelectionModel().selectLast();
-
+	        tab.setOnCloseRequest(new javafx.event.EventHandler<javafx.event.Event>() {
+	            @Override public void handle(javafx.event.Event arg0) {
+	                close(id);
+	            }
+	        });
 	        l.countDown();
 		});
 		try {
@@ -626,14 +621,14 @@ public class DiagramClient extends Client {
 			e.printStackTrace();
 		}
     }
-/*
+
   private void newNestedDiagram(final String parentId, final String id, int x, int y, int width, int height) {
     // System.err.println("diagramClient->newNestedDiagram("+parentId+"->"+id+")");
     for (Diagram diagram : diagrams) {
       diagram.newNestedDiagram(parentId, id, x, y, width, height, null);
     }
   }
-*/
+
   private void newEdge(final Message message) {
     String parentId = message.args[0].strValue();
     String id = message.args[1].strValue();
@@ -662,7 +657,7 @@ public class DiagramClient extends Client {
       }
     }
   }
-/*
+
   private void newEllipse(Message message) {
     String parentId = message.args[0].strValue();
     String id = message.args[1].strValue();
@@ -704,23 +699,23 @@ public class DiagramClient extends Client {
   }
 
   private void newEllipse(final String parentId, final String id, final int x, final int y, final int width, final int height, final boolean showOutline, final int lineRed, final int lineGreen, final int lineBlue, final int fillRed, final int fillGreen, final int fillBlue) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         for (Diagram d : diagrams)
           d.newEllipse(parentId, id, x, y, width, height, showOutline, lineRed, lineGreen, lineBlue, fillRed, fillGreen, fillBlue);
-      }
-    });
+//      }
+//    });
   }
 
   private void newShape(final String parentId, final String id, final int x, final int y, final int width, final int height, final boolean showOutline, final int lineRed, final int lineGreen, final int lineBlue, final int fillRed, final int fillGreen, final int fillBlue, final int[] points) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         for (Diagram d : diagrams)
           d.newShape(parentId, id, x, y, width, height, showOutline, lineRed, lineGreen, lineBlue, fillRed, fillGreen, fillBlue, points);
-      }
-    });
+//      }
+//    });
   }
-*/
+
   private void newGroup(final String diagramId, final String name) {
     if (getDiagram(diagramId) != null) {
 //      runOnDisplay(new Runnable() {
@@ -730,7 +725,7 @@ public class DiagramClient extends Client {
 //        }
 //      });
     } else System.err.println("cannot find diagram " + diagramId);
-  }/*
+  }
 
   private void newImage(Message message) {
     String parentId = message.args[0].strValue();
@@ -744,14 +739,14 @@ public class DiagramClient extends Client {
   }
 
   private void newImage(final String parentId, final String id, final String fileName, final int x, final int y, final int width, final int height) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         for (Diagram diagram : diagrams)
           diagram.newImage(parentId, id, fileName, x, y, width, height);
-      }
-    });
+//      }
+//    });
   }
-*/
+
   private void newLabel(final Message message) {
     String parentId = message.args[0].strValue();
     String id = message.args[1].strValue();
@@ -793,7 +788,7 @@ public class DiagramClient extends Client {
       }
     }
   }
-/*
+
   private void newMultilineText(Message message) {
     String parentId = message.args[0].strValue();
     String id = message.args[1].strValue();
@@ -814,14 +809,14 @@ public class DiagramClient extends Client {
   }
 
   private void newMultilineText(final String parentId, final String id, final String text, final int x, final int y, final int width, final int height, final boolean editable, final int lineRed, final int lineGreen, final int lineBlue, final int fillRed, final int fillGreen, final int fillBlue, final String font) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         for (Diagram d : diagrams)
           d.newMultilineText(parentId, id, text, x, y, width, height, editable, lineRed, lineGreen, lineBlue, fillRed, fillGreen, fillBlue, font);
-      }
-    });
+//      }
+//    });
   }
-*/
+
   private void newNode(Message message) {
     Value parentId = message.args[0];
     Value id = message.args[1];
@@ -885,7 +880,7 @@ public class DiagramClient extends Client {
       diagram.newText(parentId, id, text, x, y, editable, underline, italicise, red, green, blue);
     }
   }
-/*
+
   private void removeAny(Message message) {
     final Value diagramId = message.args[0];
     final Value toolId = message.args[1];
@@ -898,7 +893,7 @@ public class DiagramClient extends Client {
     final Value oldName = message.args[2];
     renameAny(diagramId.strValue(), newName.strValue(), oldName.strValue());
   }
-*/
+
   private void newTool(Message message) {
     final Value diagramId = message.args[0];
     final Value groupId = message.args[1];
@@ -928,29 +923,29 @@ public class DiagramClient extends Client {
     final Value icon = message.args[4];
     newAction(diagramId.strValue(), groupId.strValue(), label.strValue(), toolId.strValue(), icon.strValue());
   }
-/*
+
   private void removeAny(final String diagramId, final String toolId) {
     if (getDiagram(diagramId) != null) {
-      runOnDisplay(new Runnable() {
-        public void run() {
+//      runOnDisplay(new Runnable() {
+//        public void run() {
           Diagram diagram = getDiagram(diagramId);
           diagram.removeAny(toolId);
-        }
-      });
+//        }
+//      });
     } else System.err.println("cannot find diagram " + diagramId);
   }
 
   private void renameAny(final String diagramId, final String newName, final String oldName) {
     if (getDiagram(diagramId) != null) {
-      runOnDisplay(new Runnable() {
-        public void run() {
+//      runOnDisplay(new Runnable() {
+//        public void run() {
           Diagram diagram = getDiagram(diagramId);
           diagram.renameAny(newName, oldName);
-        }
-      });
+//        }
+//      });
     } else System.err.println("cannot find diagram " + diagramId);
   }
-*/
+
   private void newTool(final String diagramId, final String groupId, final String label, final String toolId, final boolean isEdge, final String icon) {
 	  if (getDiagram(diagramId) != null) {
 //      runOnDisplay(new Runnable() {
@@ -1009,7 +1004,7 @@ public class DiagramClient extends Client {
     final Value name = message.args[1];
     newGroup(diagramId.strValue(), name.strValue());
   }
-/*
+
   private void newWaypoint(final Message message) {
     String parentId = message.args[0].strValue();
     String id = message.args[1].strValue();
@@ -1031,10 +1026,10 @@ public class DiagramClient extends Client {
     }
   }
 
-  public boolean processMessage(Message message) {
-    return false;
-  }
-*/
+//  public boolean processMessage(Message message) {
+//    return false;
+//  }
+
   private void resize(Message message) {
     final Value id = message.args[0];
     final Value width = message.args[1];
@@ -1058,28 +1053,28 @@ public class DiagramClient extends Client {
 //  	System.err.println("send message to diagram Client: " + message);
     if (message.hasName("newDiagram"))
       newDiagram(message); 
-    /*else if (message.hasName("newGroup"))
+    else if (message.hasName("newGroup"))
       newNestedDiagram(message);
     else if (message.hasName("removeAny"))
       removeAny(message);
     else if (message.hasName("renameAny"))
-      renameAny(message);*/
+      renameAny(message);
     else if (message.hasName("newToolGroup"))
-      newToolGroup(message);/*
+      newToolGroup(message);
     else if (message.hasName("removeToolGroup"))
-      removeAny(message);*/
+      removeAny(message);
     else if (message.hasName("newTool"))
-      newTool(message);/*
+      newTool(message);
     else if (message.hasName("removeTool"))
-      removeAny(message);*/
+      removeAny(message);
     else if (message.hasName("newToggle"))
-      newToggle(message);/*
+      newToggle(message);
     else if (message.hasName("removeToggle"))
-      removeAny(message);*/
+      removeAny(message);
     else if (message.hasName("newAction"))
-      newAction(message);/*
+      newAction(message);
     else if (message.hasName("removeAction"))
-      removeAny(message);*/
+      removeAny(message);
     else if (message.hasName("newNode"))
       newNode(message);
     else if (message.hasName("newPort"))
@@ -1093,17 +1088,17 @@ public class DiagramClient extends Client {
     else if (message.hasName("move"))
       move(message);
     else if (message.hasName("editText"))
-      editText(message);/*
+      editText(message);
     else if (message.hasName("setBorder"))
       setBorder(message);
     else if (message.hasName("setFill"))
-      setFill(message);*/
+      setFill(message);
     else if (message.hasName("setText"))
-      setText(message);/*
+      setText(message);
     else if (message.hasName("setTextColor"))
-      setTextColor(message);*/
+      setTextColor(message);
     else if (message.hasName("setName"))
-      setName(message);/*
+      setName(message);
     else if (message.hasName("globalRenderOff"))
       globalRenderOff();
     else if (message.hasName("globalRenderOn"))
@@ -1113,17 +1108,17 @@ public class DiagramClient extends Client {
     else if (message.hasName("stopRender"))
       stopRender(message);
     else if (message.hasName("setFocus"))
-      setFocus(message);*/
+      setFocus(message);
     else if (message.hasName("newEdge"))
-      newEdge(message);/*
+      newEdge(message);
     else if (message.hasName("setRefPoint"))
       setRefPoint(message);
     else if (message.hasName("setEdgeStyle"))
       setEdgeStyle(message);
     else if (message.hasName("setColor"))
-      setEdgeColor(message);*/
+      setEdgeColor(message);
     else if (message.hasName("newEdgeText"))
-      newLabel(message);/*
+      newLabel(message);
     else if (message.hasName("newWaypoint"))
       newWaypoint(message);
     else if (message.hasName("delete"))
@@ -1159,7 +1154,7 @@ public class DiagramClient extends Client {
     else if (message.hasName("zoomOne"))
       zoomOne(message);
     else if (message.hasName("nestedZoomTo") || message.hasName("zoomTo"))
-      zoomTo(message);*/
+      zoomTo(message);
     else if (message.hasName("hide"))
       hide(message);
     else if (message.hasName("show"))
@@ -1167,11 +1162,11 @@ public class DiagramClient extends Client {
     else if (message.hasName("resetErrors"))
       resetErrors(message);
     else if (message.hasName("error"))
-      error(message);/*
+      error(message);
     else if (message.hasName("showEdges"))
       showEdges(message); // Bj�rn
     else if (message.hasName("setEditable"))
-      setEditable(message); // Bj�rn */
+      setEditable(message); // Bj�rn 
     else 
     	System.err.println("send message to diagram Client: " + message);
 //    super.sendMessage(message);
@@ -1200,23 +1195,23 @@ public class DiagramClient extends Client {
 //      }
 //    });
   }
-/*
-  private void setEditable(Message message) { // Bj�rn
+
+  private void setEditable(Message message) { 
     String id = message.args[0].strValue();
     boolean editable = message.args[1].boolValue;
     setEditable(id, editable);
   }
 
-  private void setEditable(final String id, final boolean editable) { // Bj�rn
-    runOnDisplay(new Runnable() {
-      public void run() {
+  private void setEditable(final String id, final boolean editable) { 
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         for (Diagram diagram : diagrams)
           diagram.setEditable(id, editable);
-      }
-    });
+//      }
+//    });
   }
 
-  private void showEdges(Message message) { // Bj�rn
+  private void showEdges(Message message) { 
     String id = message.args[0].strValue();
     boolean top = message.args[1].boolValue;
     boolean bottom = message.args[2].boolValue;
@@ -1226,12 +1221,12 @@ public class DiagramClient extends Client {
   }
 
   private void showEdges(final String id, final boolean top, final boolean bottom, final boolean left, final boolean right) { // Bj�rn
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         for (Diagram diagram : diagrams)
           diagram.showEdges(id, top, bottom, left, right);
-      }
-    });
+//      }
+//    });
   }
 
   private void setTextColor(Message message) {
@@ -1241,7 +1236,7 @@ public class DiagramClient extends Client {
     int blue = message.args[3].intValue;
     setTextColor(id, red, green, blue);
   }
-*/
+
   private void hide(final Message message) {
 //    runOnDisplay(new Runnable() {
 //      public void run() {
@@ -1253,16 +1248,16 @@ public class DiagramClient extends Client {
 //      }
 //    });
   }
-/*
+
   private void setTextColor(final String id, final int red, final int green, final int blue) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         for (Diagram diagram : diagrams)
           diagram.setFillColor(id, red, green, blue);
-      }
-    });
+//      }
+//    });
   }
-*/
+
   private void show(final Message message) {
 //    runOnDisplay(new Runnable() {
 //      public void run() {
@@ -1273,11 +1268,11 @@ public class DiagramClient extends Client {
         }
 //      }
 //    });
-  }/*
+  }
 
   private void zoomIn(final Message message) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         Value id = message.args[0];
         for (Diagram diagram : diagrams) {
           if (diagram.getId().equals(id.strValue())) {
@@ -1285,13 +1280,13 @@ public class DiagramClient extends Client {
             diagram.redraw();
           }
         }
-      }
-    });
+//      }
+//    });
   }
 
   private void zoomOut(final Message message) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         Value id = message.args[0];
         for (Diagram diagram : diagrams) {
           if (diagram.getId().equals(id.strValue())) {
@@ -1299,13 +1294,13 @@ public class DiagramClient extends Client {
             diagram.redraw();
           }
         }
-      }
-    });
+//      }
+//    });
   }
 
   private void zoomOne(final Message message) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         Value id = message.args[0];
         for (Diagram diagram : diagrams) {
           if (diagram.getId().equals(id.strValue())) {
@@ -1313,13 +1308,13 @@ public class DiagramClient extends Client {
             diagram.redraw();
           }
         }
-      }
-    });
+//      }
+//    });
   }
 
   private void zoomTo(final Message message) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         Value id = message.args[0];
         for (Diagram diagram : diagrams) {
           if (diagram.getId().equals(id.strValue())) {
@@ -1327,8 +1322,8 @@ public class DiagramClient extends Client {
             diagram.redraw();
           }
         }
-      }
-    });
+//      }
+//    });
   }
 
   private void setMagneticWaypoints(Message message) {
@@ -1340,8 +1335,8 @@ public class DiagramClient extends Client {
   }
 
   private void setEdgeColor(final Message message) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         Value id = message.args[0];
         Value red = message.args[1];
         Value green = message.args[2];
@@ -1359,8 +1354,8 @@ public class DiagramClient extends Client {
           }
           diagram.redraw();
         }
-      }
-    });
+//      }
+//    });
   }
 
   private void setEdgeSource(Message message) {
@@ -1370,18 +1365,18 @@ public class DiagramClient extends Client {
   }
 
   private void setEdgeSource(final String edgeId, final String portId) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         for (Diagram d : diagrams) {
           d.setEdgeSource(edgeId, portId);
         }
-      }
-    });
+//      }
+//    });
   }
 
   private void setEdgeStyle(final Message message) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         Value id = message.args[0];
         Value style = message.args[1];
         for (Diagram diagram : diagrams) {
@@ -1391,8 +1386,8 @@ public class DiagramClient extends Client {
             }
           }
         }
-      }
-    });
+//      }
+//    });
   }
 
   private void setEdgeTarget(Message message) {
@@ -1402,13 +1397,13 @@ public class DiagramClient extends Client {
   }
 
   private void setEdgeTarget(final String edgeId, final String portId) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         for (Diagram d : diagrams) {
           d.setEdgeTarget(edgeId, portId);
         }
-      }
-    });
+//      }
+//    });
   }
 
   private void setFillColor(Message message) {
@@ -1420,37 +1415,37 @@ public class DiagramClient extends Client {
   }
 
   private void setFillColor(final String id, final int red, final int green, final int blue) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         for (Diagram diagram : diagrams)
           diagram.setFillColor(id, red, green, blue);
-      }
-    });
+//      }
+//    });
   }
 
   private void setFocus(final Message message) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         Value id = message.args[0];
         for (String tabId : tabs.keySet()) {
-          if (tabId.equals(id.strValue())) tabFolder.setSelection(tabs.get(tabId));
+          if (tabId.equals(id.strValue())) DiagramClient.tabPane.getSelectionModel().select(tabs.get(tabId));
         }
-      }
-    });
+//      }
+//    });
   }
 
   private void setFont(Message message) {
     final String id = message.args[0].strValue();
     final String fontData = message.args[1].strValue();
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         for (Diagram diagram : diagrams) {
           diagram.setFont(id, fontData);
         }
-      }
-    });
+//      }
+//    });
   }
-*/
+
 	private void setName(Message message) {
 		final Value id = message.args[0];
 		final Value name = message.args[1];
@@ -1472,10 +1467,10 @@ public class DiagramClient extends Client {
 		// }
 		// });
 	}
-/*
+
   private void setRefPoint(final Message message) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         Value id = message.args[0];
         Value refx = message.args[1];
         Value refy = message.args[2];
@@ -1487,17 +1482,17 @@ public class DiagramClient extends Client {
             }
           }
         }
-      }
-    });
+//      }
+//    });
   }
-*/
+
   private void setText(Message message) {
     final Value id = message.args[0];
     final Value text = message.args[1];
     for (Diagram diagram : diagrams)
       diagram.setText(id.strValue(), text.strValue());
   }
-/*
+
   private void setBorder(Message message) {
     final Value id = message.args[0];
     final Value border = message.args[1];
@@ -1512,18 +1507,18 @@ public class DiagramClient extends Client {
       diagram.setFill(id.strValue(), fill.boolValue);
   }
 
-  public void showList(CTabFolderEvent event) {
-
-  }
+//  public void showList(CTabFolderEvent event) {
+//
+//  }
 
   private void startRender(final Message message) {
-    runOnDisplay(new Runnable() {
-      public void run() {
+//    runOnDisplay(new Runnable() {
+//      public void run() {
         Value id = message.args[0];
         for (Diagram diagram : diagrams)
           if (diagram.getId().equals(id.strValue())) diagram.renderOn();
-      }
-    });
+//      }
+//    });
   }
 
   private void stopRender(Message message) {
@@ -1531,7 +1526,7 @@ public class DiagramClient extends Client {
     for (Diagram diagram : diagrams)
       if (diagram.getId().equals(id.strValue())) diagram.renderOff();
   }
-*/
+
   public javafx.geometry.Point2D textDimension(String text, javafx.scene.text.Font font) {
 
 	javafx.scene.text.Text t = new javafx.scene.text.Text(text);
@@ -1544,18 +1539,17 @@ public class DiagramClient extends Client {
 	
     return extent;
   }
-  /*
+  
   public void writeXML(PrintStream out) {
     out.print("<Diagrams>");
     for (Diagram diagram : diagrams)
       diagram.writeXML(tabs.get(diagram.getId()).getText(), out);
     out.print("</Diagrams>");
   }
-  */
 
-@Override
-public boolean processMessage(Message message) {
-	return false;
-}
+	@Override
+	public boolean processMessage(Message message) {
+		return false;
+	}
 
 }

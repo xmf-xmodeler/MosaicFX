@@ -476,7 +476,7 @@ public class Label implements Selectable {
   public void select() {
   }
 
-  public void doubleClick(GC gc, final Diagram diagram, int mouseX, int mouseY) {
+  public void doubleClick(GraphicsContext gc, final Diagram diagram, int mouseX, int mouseY) {
 	  System.err.println("Cannot doubleclick Labels yet");
 //	    if (editable && contains(mouseX, mouseY) && !hidden) {
 //	      final org.eclipse.swt.widgets.Text text = new org.eclipse.swt.widgets.Text(diagram.getCanvas(), SWT.BORDER);

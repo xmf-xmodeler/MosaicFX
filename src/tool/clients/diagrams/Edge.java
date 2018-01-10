@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import org.eclipse.swt.graphics.GC;
 
+import javafx.scene.canvas.GraphicsContext;
 import xos.Message;
 import xos.Value;
 
@@ -465,7 +466,7 @@ public int getBlue() {
 	}
   }
 
-  public void doubleClick(GC gc, Diagram diagram, int x, int y) {
+  public void doubleClick(GraphicsContext gc, Diagram diagram, int x, int y) {
 	for(Label label : labels) {
 		label.doubleClick(gc, diagram, x, y);
 	}

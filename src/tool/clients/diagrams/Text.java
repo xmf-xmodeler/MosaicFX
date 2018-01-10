@@ -5,7 +5,6 @@ import java.io.PrintStream;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
@@ -14,6 +13,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.text.Font;
 import tool.clients.dialogs.notifier.NotificationType;
 import tool.clients.dialogs.notifier.NotifierDialog;
 import tool.xmodeler.XModeler;
@@ -55,15 +55,12 @@ public class Text implements Display {
 
   
   @Override
-  public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {}
-  
-  @Override @Deprecated
-  public void doubleClick(GC gc, final Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
-	  System.err.println("Cannot doubleclick Text yet");
-//    if (editable && contains(mouseX - dx, mouseY - dy)) {
+  public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
+    if (editable && contains(mouseX - dx, mouseY - dy)) {
+   System.err.println("Trying to edit Text");
 //      final org.eclipse.swt.widgets.Text text = new org.eclipse.swt.widgets.Text(diagram.getCanvas(), SWT.BORDER);
 ////      text.setFont(DiagramClient.diagramFont);
-//	  Font baseFont = italicise ? DiagramClient.diagramItalicFont : DiagramClient.diagramFont;
+//	  Font baseFont = italicise ? DiagramClient.diagramItalicFontFX : DiagramClient.diagramFontFX;
 //	  FontDescriptor myDescriptor = FontDescriptor.createFrom(baseFont).setHeight(12);// * 100 / XModeler.getDeviceZoomPercent());
 //	  Font zoomFont = myDescriptor.createFont(XModeler.getXModeler().getDisplay());
 //	  text.setFont(zoomFont);
@@ -122,8 +119,14 @@ public class Text implements Display {
 //          	  text.setFocus();
 //          }
 //      });
-//    }
+    }	  
   }
+  
+//  @Override @Deprecated
+//  public void doubleClick(GC gc, final Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
+//	  System.err.println("Cannot doubleclick Text yet");
+//
+//  }
 
   public void editText(String id) {
     if (id.equals(getId())) editable = true;
@@ -140,9 +143,9 @@ public class Text implements Display {
   public Font getFont() {
     if (font == null) {
       if (fontData.equals("")) {
-        return DiagramClient.diagramFont;
+        return DiagramClient.diagramFontFX;
       } else {
-        font = new Font(XModeler.getXModeler().getDisplay(), new FontData(fontData));
+        font = new Font(fontData,12);
         return font;
       }
     } else return font;
@@ -226,33 +229,14 @@ public class Text implements Display {
 	    } else {
 	    	gc.setFill(javafx.scene.paint.Color.BLACK);
 	    }
-	    gc.fillText(text, x + getX(), y + getY());
+	    gc.fillText(text, x + getX(), y + getY() + getHeight());
 //	    gc.setFont(font);
 //	    gc.setForeground(c); 
   }
-  
-  @Override @Deprecated
-  public void paint(GC gc, int x, int y) {
-//	    Font font = gc.getFont();
-//	    Color c = gc.getForeground(); //Bj�rn
-//	    gc.setFont(italicise ? DiagramClient.diagramItalicFont : DiagramClient.diagramFont);
-//	    //Check if a color is set
-//	    if(getRed() >=0 && getGreen() >= 0 && getBlue() >= 0){ //Bj�rn
-//	    	gc.setForeground(new Color(org.eclipse.swt.widgets.Display.getCurrent(), getRed(), getGreen(), getBlue()));
-//	    }
-//	    gc.drawText(text, x + getX(), y + getY(), true);
-//	    gc.setFont(font);
-//	    gc.setForeground(c); //Bj�rn
-	  }
 
   @Override
   public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {
 	if (editable && contains(x - dx, y - dy)) paintSelectableOutline(gc, dx, dy);
-  }
-  
-  @Override @Deprecated
-  public void paintHover(GC gc, int x, int y, int dx, int dy) {
-//    if (editable && contains(x - dx, y - dy)) paintSelectableOutline(gc, dx, dy);
   }
 
   private void paintSelectableOutline(GraphicsContext gc, int dx, int dy) {

@@ -81,7 +81,7 @@ public class Node implements Selectable {
     return Math.sqrt((dx * dx) + (dy * dy));
   }
 
-  public void doubleClick(GC gc, Diagram diagram, int x, int y) {
+  public void doubleClick(GraphicsContext gc, Diagram diagram, int x, int y) {
     for (Display display : displays) {
       display.doubleClick(gc, diagram, getX(), getY(), x, y);
     }

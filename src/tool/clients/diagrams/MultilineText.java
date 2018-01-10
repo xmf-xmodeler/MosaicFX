@@ -3,14 +3,13 @@ package tool.clients.diagrams;
 import java.io.PrintStream;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.text.Font;
 import tool.clients.dialogs.notifier.NotificationType;
 import tool.clients.dialogs.notifier.NotifierDialog;
 import tool.xmodeler.XModeler;
@@ -58,33 +57,31 @@ public class MultilineText implements Display {
     return "MultilineText(" + x + "," + y + "," + width + "," + height + "," + text + ")";
   }
 
-  @Override
-  public void paint(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
-	  
-  }
-  
-  @Override @Deprecated
-  public void paint(GC gc, int parentX, int parentY) {
-    //FontData fontData = font.equals("") ? DiagramClient.diagramFont.getFontData()[0] : new FontData(font);
-    FontData fontData = DiagramClient.diagramFont.getFontData()[0];
-    Font font = gc.getFont();
-    gc.setFont(DiagramClient.diagramFont);
-    int fontHeight = fontData.getHeight() + 5;
-    int x = this.x + parentX + INDENT;
-    int y = this.y + parentY + INDENT;
-    for (int i = 0; i < text.length(); i++) {
-      char c = text.charAt(i);
-      if (x + gc.getCharWidth(c) > this.x + parentX + width || c == '\n' || c == '\r') {
-        x = this.x + parentX + INDENT;
-        y = y + fontHeight;
-      }
-      if (!(y + fontHeight > this.y + height + parentY) && (c != '\n' || c == '\r')) {
-        gc.drawString(c + "", x, y, true);
-        x += gc.getCharWidth(c);
-      }
-    }
-    gc.setFont(font);
-  }
+	@Override
+	public void paint(javafx.scene.canvas.GraphicsContext gc, int parentX, int parentY) {
+		// FontData fontData = font.equals("") ?
+		// DiagramClient.diagramFont.getFontData()[0] : new FontData(font);
+		String fontName = DiagramClient.diagramFontFX.getName();
+		double fontSize = DiagramClient.diagramFontFX.getSize();
+		Font font = gc.getFont();
+		gc.setFont(DiagramClient.diagramFontFX);
+		int fontHeight = (int) (fontSize + 5);
+		int x = this.x + parentX + INDENT;
+		int y = this.y + parentY + INDENT;
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			double cWidth = DiagramClient.theClient().textDimension(text, font).getX();
+			if (x + cWidth > this.x + parentX + width || c == '\n' || c == '\r') {
+				x = this.x + parentX + INDENT;
+				y = y + fontHeight;
+			}
+			if (!(y + fontHeight > this.y + height + parentY) && (c != '\n' || c == '\r')) {
+				gc.fillText(c + "", x, y);
+				x += cWidth;
+			}
+		}
+		gc.setFont(font);
+	}
 
   public String getId() {
     return id;
@@ -174,19 +171,12 @@ public class MultilineText implements Display {
 
   @Override
   public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {}
-  
-  @Override @Deprecated
-  public void paintHover(GC gc, int x, int y, int dx, int dy) {
-  }
 
   public void remove(String id) {
   }
 
   @Override
-  public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {}
-  
-  @Override @Deprecated
-  public void doubleClick(GC gc, final Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
+  public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
 	  System.err.println("Cannot doubleclick MultiLineText yet");
 //    int x = this.x + dx;
 //    int y = this.y + dy;

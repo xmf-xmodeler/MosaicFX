@@ -2,10 +2,11 @@ package tool.clients.diagrams;
 
 import java.io.PrintStream;
 
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import tool.xmodeler.XModeler;
 
 public class Shape implements Display {
@@ -22,7 +23,8 @@ public class Shape implements Display {
   int     fillRed;
   int     fillGreen;
   int     fillBlue;
-  int[] points;
+  double[] pointsX;
+  double[] pointsY;
 
   public Shape(String id, int x, int y, int width, int height, boolean showOutline, int lineRed, int lineGreen, int lineBlue, int fillRed, int fillGreen, int fillBlue, int[] points) {
     super();
@@ -38,7 +40,15 @@ public class Shape implements Display {
     this.fillRed = fillRed == -1 ? 255 : fillRed % 256;
     this.fillGreen = fillGreen == -1 ? 255 : fillGreen % 256;
     this.fillBlue = fillBlue == -1 ? 255 : fillBlue % 256;
-    this.points = points;
+//    this.points = points;
+    this.pointsX = new double[points.length/2];
+    this.pointsY = new double[points.length/2];
+    for(int i = 0; i < points.length; i++) {
+    	if(i%2 == 0) 
+    		this.pointsX[i/2] = points[i];
+    	else
+    		this.pointsY[(i-1)/2] = points[i];
+    }
   }
 
   public String getId() {
@@ -89,40 +99,56 @@ public class Shape implements Display {
     return fillBlue;
   }
 
-  public int[] getPoints() {
-	    return points;
+  public double[][] getPoints() {
+	    return new double[][] {pointsX,pointsY};
   }
   
   @Override
   public void paint(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
-	  
-  }
-  
-  @Override @Deprecated
-  public void paint(GC gc, int x, int y) {
 //    if (width > 0 && height > 0) {
-	  int[] shiftedPoints = new int[points.length];
+	  double[] shiftedPointsX = new double[pointsX.length];
+	  double[] shiftedPointsY = new double[pointsY.length];
 	  
-	  for (int i = 0; i < points.length; i++) {
-		 if(i%2 == 0){
-			 shiftedPoints[i] = points[i]+x;
-		 }else{
-			 shiftedPoints[i] = points[i]+y;
-		 }
-		 
+	  for (int i = 0; i < pointsX.length; i++) {
+		  shiftedPointsX[i] = pointsX[i]+x;
+		  shiftedPointsY[i] = pointsY[i]+y;
 	  }
 	  
-      Color fillColor = gc.getBackground();
-      gc.setBackground(new Color(XModeler.getXModeler().getDisplay(), getFillRed(), getFillGreen(), getFillBlue()));
-      gc.fillPolygon(shiftedPoints);
-      gc.setBackground(fillColor);
-      Color lineColor = gc.getForeground();
-      gc.setForeground(new Color(XModeler.getXModeler().getDisplay(), getLineRed(), getLineGreen(), getLineBlue()));
-      gc.drawPolygon(shiftedPoints);
-      gc.setForeground(lineColor);
-      
-//    }
+      Paint fillColor = gc.getFill();
+      gc.setFill(new Color(getFillRed()/255., getFillGreen()/255., getFillBlue()/255., 1.));
+      gc.fillPolygon(shiftedPointsX, shiftedPointsY, shiftedPointsX.length);
+      gc.setFill(fillColor);
+      Paint lineColor = gc.getStroke();
+      gc.setStroke(new Color(getLineRed()/255., getLineGreen()/255., getLineBlue()/255., 1.));
+      gc.strokePolygon(shiftedPointsX, shiftedPointsY, shiftedPointsX.length);
+      gc.setStroke(lineColor);	  
   }
+  
+//  @Override @Deprecated
+//  public void paint(GC gc, int x, int y) {
+////    if (width > 0 && height > 0) {
+//	  int[] shiftedPoints = new int[points.length];
+//	  
+//	  for (int i = 0; i < points.length; i++) {
+//		 if(i%2 == 0){
+//			 shiftedPoints[i] = points[i]+x;
+//		 }else{
+//			 shiftedPoints[i] = points[i]+y;
+//		 }
+//		 
+//	  }
+//	  
+//      Color fillColor = gc.getBackground();
+//      gc.setBackground(new Color(XModeler.getXModeler().getDisplay(), getFillRed(), getFillGreen(), getFillBlue()));
+//      gc.fillPolygon(shiftedPoints);
+//      gc.setBackground(fillColor);
+//      Color lineColor = gc.getForeground();
+//      gc.setForeground(new Color(XModeler.getXModeler().getDisplay(), getLineRed(), getLineGreen(), getLineBlue()));
+//      gc.drawPolygon(shiftedPoints);
+//      gc.setForeground(lineColor);
+//      
+////    }
+//  }
 
   public void newText(String parentId, String id, String text, int x, int y, boolean editable, boolean underline, boolean italicise, int red, int green, int blue) {
 
@@ -158,11 +184,6 @@ public class Shape implements Display {
 
   @Override
   public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {}
-  
-  @Override @Deprecated
-  public void paintHover(GC gc, int x, int y, int dx, int dy) {
-
-  }
 
   public void remove(String id) {
 
@@ -171,11 +192,6 @@ public class Shape implements Display {
   @Override
   public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {}
   
-  @Override @Deprecated
-  public void doubleClick(GC gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
-
-  }
-
   public void writeXML(PrintStream out) {
     out.print("<Shape id='" + getId() + "'");
     out.print(" x='" + x + "'");
@@ -189,7 +205,8 @@ public class Shape implements Display {
     out.print(" fillRed='" + fillRed + "'");
     out.print(" fillGreen='" + fillGreen + "'");
     out.print(" fillBlue='" + fillBlue + "'");
-    out.print(" points='" + points + "'/>");
+    out.print(" pointsX='" + pointsX + "'/>");
+    out.print(" pointsY='" + pointsY + "'/>");
   }
 
   public void newMultilineText(String parentId, String id, String text, int x, int y, int width, int height, boolean editable, int lineRed, int lineGreen, int lineBlue, int fillRed, int fillGreen, int fillBlue, String font) {

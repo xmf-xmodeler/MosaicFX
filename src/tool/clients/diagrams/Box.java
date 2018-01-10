@@ -56,13 +56,6 @@ public class Box implements Display {
 			display.doubleClick(gc, diagram, dx + getX(), dy + getY(), mouseX, mouseY);
 		}
 	}
-  
-  @Override @Deprecated
-  public void doubleClick(GC gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
-    for (Display display : displays) {
-      display.doubleClick(gc, diagram, dx + getX(), dy + getY(), mouseX, mouseY);
-    }
-  }
 
   public void editText(String id) {
     for (Display display : displays)
@@ -252,38 +245,14 @@ public class Box implements Display {
 			nestedDiagram.paint(gc, x + getX(), y + getY());
 	}
   
-  @Override @Deprecated
-  public void paint(GC gc, int x, int y) {
-//    if (width > 0 && height > 0) {
-//      Color fillColor = gc.getBackground();
-//      if (getFillRed() != -1 && getFillGreen() != -1 && getFillBlue() != -1) {
-//        gc.setBackground(new Color(XModeler.getXModeler().getDisplay(), getFillRed(), getFillGreen(), getFillBlue()));
-//        gc.fillRectangle(x + getX(), y + getY(), width, height);
-//      }
-//      gc.setBackground(fillColor);
-//      for (Display display : displays)
-//        display.paint(gc, x + getX(), y + getY());
-//      if (top || bottom || left || right) { // Bj�rn
-//        Color lineColor = gc.getForeground();
-//        gc.setForeground(new Color(XModeler.getXModeler().getDisplay(), getLineRed(), getLineGreen(), getLineBlue()));
-//        gc.drawRectangle(x + getX(), y + getY(), width, height);
-//        gc.setForeground(lineColor);
-//      }
-//    }
-//    if (nestedDiagram != null) nestedDiagram.paint(gc, x + getX(), y + getY());
-  }
+
 
 	@Override
 	public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {
 		for (Display display : displays)
 			display.paintHover(gc, x, y, dx + getX(), dy + getY());
 	}
-  
-  @Override @Deprecated
-  public void paintHover(GC gc, int x, int y, int dx, int dy) {
-    for (Display display : displays)
-      display.paintHover(gc, x, y, dx + getX(), dy + getY());
-  }
+
 
   public void remove(String id) {
     Display d = getDisplay(id);

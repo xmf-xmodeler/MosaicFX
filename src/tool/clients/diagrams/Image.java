@@ -77,11 +77,11 @@ public class Image implements Display {
 		gc.drawImage(imageFX, x + getX(), y + getY());
 	}
   
-  @Override @Deprecated
-  public void paint(GC gc, int x, int y) {
-    ensureImage();
-    gc.drawImage(image, x + getX(), y + getY());
-  }
+//  @Override @Deprecated
+//  public void paint(GC gc, int x, int y) {
+//    ensureImage();
+//    gc.drawImage(image, x + getX(), y + getY());
+//  }
 
   public void newText(String parentId, String id, String text, int x, int y, boolean editable, boolean underline, boolean italicise, int red, int green, int blue) {
 
@@ -118,9 +118,6 @@ public class Image implements Display {
 
   @Override
   public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {}
-  
-  @Override @Deprecated
-  public void paintHover(GC gc, int x, int y, int dx, int dy) {}
 
   public void remove(String id) {
 
@@ -128,9 +125,6 @@ public class Image implements Display {
 
   @Override
   public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {}
-  
-  @Override @Deprecated
-  public void doubleClick(GC gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {}
 
   public void writeXML(PrintStream out) {
     out.print("<Image id='" + id + "'");

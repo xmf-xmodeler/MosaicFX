@@ -7,9 +7,6 @@ import java.util.Vector;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.ScrollPane;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.ImageTransfer;
@@ -17,18 +14,17 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
 
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.ScrollPane;
 import javafx.geometry.Side;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
@@ -87,7 +83,7 @@ public class Diagram implements Display {
   String                                   id;
   Tray                                     tray                   = new Tray();
   ErrorTool                                errorTool              = new ErrorTool();
-  SashForm                                 container;
+//  SashForm                                 container;
   final Palette                            palette;
   Canvas                                   canvas;
   ScrollPane		                       scroller;
@@ -113,7 +109,7 @@ public class Diagram implements Display {
   String                                   nodeCreationType       = null;
   public String                            updateID               = null;
   private final Box                        nestedParent;
-  private transient HashMap<String, Point> nestedDiagramOffsets   = new HashMap<String, Point>();
+  private transient HashMap<String, javafx.geometry.Point2D> nestedDiagramOffsets   = new HashMap<String, javafx.geometry.Point2D>();
 
   private class MyKeyListener implements KeyListener {
 
@@ -274,21 +270,6 @@ public class Diagram implements Display {
 	    }
 	  }
   
-  
-//  private void mouseClicked(javafx.scene.input.MouseEvent event) {
-//	  if(event.getButton() == javafx.scene.input.MouseButton.PRIMARY) {
-//		  leftMouseClicked(event);
-//	  }
-//  }
-  
-//  private void leftMouseClicked(javafx.scene.input.MouseEvent event) {
-//	  if(event.getClickCount() == 1) {
-//		  leftMouseClickedOnce(event);
-//	  } else if(event.getClickCount() > 2) {
-//	      scale(event);
-//	  }
-//  }  
-  
 	private void leftClick(javafx.scene.input.MouseEvent event) {
 //		System.err.println("leftMouseClickedOnce");
 //		System.err.println("nodeCreationType:" + nodeCreationType);
@@ -395,139 +376,14 @@ public class Diagram implements Display {
   
   /////////////////////////Mouse Listener End///////////////////////////////
 
-//  private class MyMouseListener implements MouseListener {
-//
-//    private boolean isLeft(MouseEvent event) {
-//      return event.button == 1;
-//    }
-//
-//    private void leftClick(MouseEvent event) {
-//      TrayTool tool = selectTool(event.x, event.y);
-//      if (tool != null)
-//        tool.click(Diagram.this);
-//      else {
-//        if (nodeCreationType == null && edgeCreationType == null) {
-//          select(event.stateMask, event.x, event.y, false);
-//          storeLastXY(event.x, event.y);
-//          redraw();
-//        } else if (edgeCreationType != null) {
-//          deselectAll();
-//          int x = event.x;
-//          int y = event.y;
-//          PortAndDiagram port = selectPort(x, y);
-//          if (port != null) {
-//            sourcePort = port;
-//            firstX = x;
-//            firstY = y;
-//            storeFirstXY(x, y);
-//            storeLastXY(x, y);
-//            mode = MouseMode.NEW_EDGE;
-//          }
-//          redraw();
-//        } else if (nodeCreationType != null) {
-//          Object[] diagramData = new Object[] { id, 0, 0 }; // default this
-//          // unless any node is hit
-//          Object[] nestedDiagramData = getNestedDiagramID(event.x, event.y);
-//          if (nestedDiagramData != null) {
-//            diagramData = nestedDiagramData;
-//            // System.err.println("found diagramID: " + diagramID);
-//          }
-//          DiagramClient.theClient().newNode(nodeCreationType, (String) diagramData[0], event.x - ((Integer) diagramData[1]), event.y - ((Integer) diagramData[2]));
-//          resetPalette();
-//        }
-//        if (updateID != null) action(updateID);
-//      }
-//    }
-//
-//    public void mouseDoubleClick(MouseEvent event) {
-//      scale(event);
-//    }
-//
-//    public void mouseDown(MouseEvent event) {
-//      scale(event);
-//      if (isRightClick(event) || isCommand(event)) {
-//        rightClick(event);
-//      } else if (event.count == 1 && isLeft(event)) {
-//        leftClick(event);
-//      } else if (event.count == 2 && isLeft(event)) {
-//        mode = MouseMode.DOUBLE_CLICK;
-//        storeLastXY(event.x, event.y);
-//        redraw();
-//      }
-//    }
-//
-//    public void mouseUp(MouseEvent event) {
-//      Diagram.this.mouseUp(event);
-//    }
-//
-//    private void rightClick(MouseEvent event) {
-//      if (selection.isEmpty())
-//        MenuClient.popup(id, event.x, event.y);
-//      else {
-//        if (selection.size() == 1) {
-//          selection.elementAt(0).rightClick(event.x, event.y);
-//        }
-//      }
-//    }
-//
-//  }
-//
-//  private class MyMouseMoveListener implements MouseMoveListener {
-//
-//    @Override
-//    public void mouseMove(final MouseEvent event) {
-//      scale(event);
-//      // if (mode == MouseMode.SELECTED) {
-//        System.err.println("mouseMove");
-//		CountDownLatch l = new CountDownLatch(1);
-//		Platform.runLater(() -> {	  
-//          int dx = event.x - lastX;
-//          int dy = event.y - lastY;
-//          storeLastXY(event.x, event.y);
-//          if (mode == MouseMode.SELECTED) for (Selectable selectable : selection)
-//            selectable.moveBy(dx, dy);
-//          for (Diagram nestedDiagram : getNestedDiagrams())
-//            if (nestedDiagram.mode == MouseMode.SELECTED) for (Selectable selectable : nestedDiagram.selection)
-//              selectable.moveBy(dx, dy);
-//          redraw();
-//	      l.countDown();
-//	    });
-//		try {
-//			l.await();
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
-//      if (mode == MouseMode.NEW_EDGE) {
-//        storeLastXY(event.x, event.y);
-//        redraw();
-//      }
-//      if (movingEdgeEnd()) {
-//        storeLastXY(event.x, event.y);
-//        redraw();
-//      }
-//      if (mode == MouseMode.NONE) {
-//        storeLastXY(event.x, event.y);
-//        redraw();
-//      }
-//      if (mode == MouseMode.RESIZE_BOTTOM_RIGHT) {
-//        storeLastXY(event.x, event.y);
-//        redraw();
-//      }
-//      if (mode == MouseMode.RUBBER_BAND) {
-//        storeLastXY(event.x, event.y);
-//        redraw();
+//  private class MyPaintListener implements PaintListener {
+//    public void paintControl(PaintEvent event) {
+//      if (render == 0) {
+//        GC gc = event.gc;
+//        paintOn(gc, 0, 0);
 //      }
 //    }
 //  }
-
-  private class MyPaintListener implements PaintListener {
-    public void paintControl(PaintEvent event) {
-      if (render == 0) {
-        GC gc = event.gc;
-        paintOn(gc, 0, 0);
-      }
-    }
-  }
 
   private class OutboundMessages {
 
@@ -549,10 +405,10 @@ public class Diagram implements Display {
           m.args[0] = new Value(edgeCreationType);
           m.args[1] = new Value(sourceId);
           m.args[2] = new Value(targetId);
-          m.args[3] = new Value(firstX - getNestedDiagramOffsets(sourcePort.diagram.id).x);
-          m.args[4] = new Value(firstY - getNestedDiagramOffsets(sourcePort.diagram.id).y);
-          m.args[5] = new Value(x - getNestedDiagramOffsets(sourcePort.diagram.id).x);
-          m.args[6] = new Value(y - getNestedDiagramOffsets(sourcePort.diagram.id).y);
+          m.args[3] = new Value(firstX - (int) getNestedDiagramOffsets(sourcePort.diagram.id).getX());
+          m.args[4] = new Value(firstY - (int) getNestedDiagramOffsets(sourcePort.diagram.id).getY());
+          m.args[5] = new Value(x - (int) getNestedDiagramOffsets(sourcePort.diagram.id).getX());
+          m.args[6] = new Value(y - (int) getNestedDiagramOffsets(sourcePort.diagram.id).getY());
           DiagramClient.theClient().getHandler().raiseEvent(m);
           resetPalette();
         }
@@ -641,7 +497,7 @@ public class Diagram implements Display {
 //    canvas.addPaintListener(new MyPaintListener());
 //    canvas.addMouseMoveListener(new MyMouseMoveListener());
 //    canvas.addKeyListener(new MyKeyListener());
-    container.setWeights(new int[] { 1, 5 });
+//    container.setWeights(new int[] { 1, 5 });
 //    scroller.setContent(canvas);
     this.id = id;
     this.nestedParent = parentIfNested;
@@ -916,11 +772,11 @@ public class Diagram implements Display {
   @Override
   public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {}
   
-  @Override @Deprecated
-  public void doubleClick(GC gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
-    // Called when a diagram is a display element.
-    // Currently does nothing.
-  }
+//  @Override @Deprecated
+//  public void doubleClick(GC gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
+//    // Called when a diagram is a display element.
+//    // Currently does nothing.
+//  }
 
   public void editText(String id) {
     for (Node node : nodes)
@@ -960,9 +816,9 @@ public class Diagram implements Display {
     return canvas;
   }
 
-  public SashForm getContainer() {
-    return container;
-  }
+//  public SashForm getContainer() {
+//    return container;
+//  }
   
   public SplitPane getView() {
 	return pane;
@@ -1067,9 +923,9 @@ public class Diagram implements Display {
     return null;
   }
 
-  private Point getNestedDiagramOffsets(String id) {
-    Point p = nestedDiagramOffsets.get(id);
-    return p == null ? new Point(0, 0) : p;
+  private javafx.geometry.Point2D getNestedDiagramOffsets(String id) {
+	  javafx.geometry.Point2D p = nestedDiagramOffsets.get(id);
+    return p == null ? new javafx.geometry.Point2D(0, 0) : p;
   }
 
   private Vector<Diagram> getNestedDiagrams() {
@@ -1082,7 +938,7 @@ public class Diagram implements Display {
           Diagram nestedDiagram = box.nestedDiagram;
           if (nestedDiagram != null) {
             nestedDiagrams.add(nestedDiagram);
-            nestedDiagramOffsets.put(nestedDiagram.id, new Point(node.x, node.y));
+            nestedDiagramOffsets.put(nestedDiagram.id, new javafx.geometry.Point2D(node.x, node.y));
           }
         }
       }
@@ -1125,20 +981,7 @@ public class Diagram implements Display {
     return zoom;
   }
 
-  private void handleDoubleClick(GC gc) {
-    if (mode == MouseMode.DOUBLE_CLICK) {
-      mode = MouseMode.NONE;
-      for (Display display : displays) {
-        display.doubleClick(gc, this, 0, 0, lastX, lastY);
-      }
-      for (Node node : nodes) {
-        node.doubleClick(gc, this, lastX, lastY);
-      }
-      for (Edge edge : edges) {
-        edge.doubleClick(gc, this, lastX, lastY);
-      }
-    }
-  }
+
 
   private void help() {
     // Show the current state of the diagram...
@@ -1508,12 +1351,12 @@ public class Diagram implements Display {
 	  
   }
   
-  @Override @Deprecated
-  public void paint(GC gc, int xOffset, int yOffset) {
-//    // This is called when a diagram is a display element. The offsets need to be
-//    // included so that global painting is relative to (0,0).
-//    paintOn(gc, xOffset, yOffset);
-  }
+//  @Override @Deprecated
+//  public void paint(GC gc, int xOffset, int yOffset) {
+////    // This is called when a diagram is a display element. The offsets need to be
+////    // included so that global painting is relative to (0,0).
+////    paintOn(gc, xOffset, yOffset);
+//  }
 
   private void paintAlignment(GraphicsContext gc) {
     if (mode == MouseMode.SELECTED) {
@@ -1578,12 +1421,9 @@ public class Diagram implements Display {
   }
 
   @Override
-  public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {}
-  
-  @Override @Deprecated
-  public void paintHover(GC gc, int x, int y, int dx, int dy) {
-    // Called when a diagram is a display element.
-    // Currently does nothing.
+  public void paintHover(GraphicsContext gc, int x, int y, int dx, int dy) {
+	  // Called when a diagram is a display element.
+      // Currently does nothing.
   }
 
   private void paintNewEdge(GC gc) {
@@ -1675,10 +1515,10 @@ public class Diagram implements Display {
     paintNewEdge(gc);
     paintErrors(gc);
     paintTray(gc);
-    handleDoubleClick(gc);
+//    handleDoubleClick(gc);
   }
   
-  private void paintOn(javafx.scene.canvas.GraphicsContext gc, int xOffset, int yOffset) {
+  private void paintOn(GraphicsContext gc, int xOffset, int yOffset) {
 //	    gc.setAntialias(SWT.ON);
 //	    gc.setTextAntialias(SWT.ON);
 //	    gc.setInterpolation(SWT.HIGH);
@@ -1697,8 +1537,23 @@ public class Diagram implements Display {
 //	    paintNewEdge(gc);
 //	    paintErrors(gc);
 //	    paintTray(gc);
-//	    handleDoubleClick(gc);
+	    handleDoubleClick(gc);
 	  }
+  
+	private void handleDoubleClick(GraphicsContext gc) {
+		if (mode == MouseMode.DOUBLE_CLICK) {
+			mode = MouseMode.NONE;
+			for (Display display : displays) {
+				display.doubleClick(gc, this, 0, 0, lastX, lastY);
+			}
+			for (Node node : nodes) {
+				node.doubleClick(gc, this, lastX, lastY);
+			}
+			for (Edge edge : edges) {
+				edge.doubleClick(gc, this, lastX, lastY);
+			}
+		}
+	}
 
   private void paintResizing(GC gc, int xOffset, int yOffset) {
     if (mode == MouseMode.RESIZE_BOTTOM_RIGHT) {
@@ -1784,12 +1639,12 @@ public class Diagram implements Display {
 
   public void removeAny(String toolId) {
     palette.removeAny(this, toolId);
-    container.layout();
+//    container.layout();
   }
 
   public void renameAny(final String newName, final String oldName) {
     palette.renameAny(this, newName, oldName);
-    container.layout();
+//    container.layout();
   }
 
   public void renderOff() {
@@ -1860,7 +1715,7 @@ public class Diagram implements Display {
     boolean somethingWasDone = false;
 //    boolean isShift = (stateMask & SWT.SHIFT) == SWT.SHIFT;
     for (Diagram nestedDiagram : getNestedDiagrams()) {
-      somethingWasDone |= nestedDiagram.select(isShift, isCtrl, x - getNestedDiagramOffsets(nestedDiagram.id).x, y - getNestedDiagramOffsets(nestedDiagram.id).y, true);
+      somethingWasDone |= nestedDiagram.select(isShift, isCtrl, (int)(x - getNestedDiagramOffsets(nestedDiagram.id).getX()), (int)(y - getNestedDiagramOffsets(nestedDiagram.id).getY()), true);
     }
     if (somethingWasDone) return true;
     if (!selected) {
@@ -2184,8 +2039,8 @@ public class Diagram implements Display {
     bandX = x;
     bandY = y;
     for (Diagram nestedDiagram : getNestedDiagrams()) {
-      nestedDiagram.bandX = bandX - getNestedDiagramOffsets(nestedDiagram.id).x;
-      nestedDiagram.bandY = bandY - getNestedDiagramOffsets(nestedDiagram.id).y;
+      nestedDiagram.bandX = (int)(bandX - getNestedDiagramOffsets(nestedDiagram.id).getX());
+      nestedDiagram.bandY = (int)(bandY - getNestedDiagramOffsets(nestedDiagram.id).getY());
     }
   }
 
@@ -2193,8 +2048,8 @@ public class Diagram implements Display {
     firstX = x;
     firstY = y;
     for (Diagram nestedDiagram : getNestedDiagrams()) {
-      nestedDiagram.firstX = firstX - getNestedDiagramOffsets(nestedDiagram.id).x;
-      nestedDiagram.firstY = firstY - getNestedDiagramOffsets(nestedDiagram.id).y;
+      nestedDiagram.firstX = (int)(firstX - getNestedDiagramOffsets(nestedDiagram.id).getX());
+      nestedDiagram.firstY = (int)(firstY - getNestedDiagramOffsets(nestedDiagram.id).getY());
     }
   }
 
@@ -2202,8 +2057,8 @@ public class Diagram implements Display {
     lastX = x;
     lastY = y;
     for (Diagram nestedDiagram : getNestedDiagrams()) {
-      nestedDiagram.lastX = lastX - getNestedDiagramOffsets(nestedDiagram.id).x;
-      nestedDiagram.lastY = lastY - getNestedDiagramOffsets(nestedDiagram.id).y;
+      nestedDiagram.lastX = (int)(lastX - getNestedDiagramOffsets(nestedDiagram.id).getX());
+      nestedDiagram.lastY = (int)(lastY - getNestedDiagramOffsets(nestedDiagram.id).getY());
     }
   }
 
