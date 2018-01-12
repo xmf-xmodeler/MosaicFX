@@ -2,9 +2,9 @@ package tool.clients.diagrams;
 
 import java.util.Vector;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
 public class DiagramError {
 
@@ -39,14 +39,13 @@ public class DiagramError {
     return id;
   }
 
-  public void paint(GC gc, Diagram diagram) {
-	  System.err.println("Can't paint error yet.");
+  public void paint(GraphicsContext gc, Diagram diagram) {
 //    org.eclipse.swt.graphics.Rectangle r = diagram.scroller.getClientArea();
-//    drawErrorBox(gc, PAD, r.height - PAD);
+    drawErrorBox(gc, PAD, (int)diagram.scroller.getWidth() - PAD);
   }
 
-  protected int getWidth(GC gc) {
-    return gc.stringExtent(getLongestString(getLines())).x + (2 * LINE_WIDTH);
+  protected int getWidth(GraphicsContext gc) {
+    return 200;//gc.stringExtent(getLongestString(getLines())).x + (2 * LINE_WIDTH);
   }
 
   private String[] getLines() {
@@ -61,36 +60,39 @@ public class DiagramError {
     return s.split(":");
   }
 
-  protected void drawErrorBox(GC gc, int baseX, int baseY) {
+  protected void drawErrorBox(GraphicsContext gc, int baseX, int baseY) {
     String[] lines = getLines();
-    Color bg = gc.getBackground();
-    Color fg = gc.getForeground();
-    int alpha = gc.getAlpha();
-    int lineWidth = gc.getLineWidth();
-    int lineJoin = gc.getLineJoin();
-    gc.setAlpha(200);
-//    gc.setForeground(Color.RED);
-//    gc.setBackground(Color.WHITE);
-    int height = gc.getFontMetrics().getHeight();
-    int boxWidth = getWidth(gc);
-    int boxHeight = height * lines.length;
+    Paint bg = gc.getFill();
+    Paint fg = gc.getStroke();
+//    int alpha = gc.getAlpha();
+//    int lineWidth = gc.getLineWidth();
+//    int lineJoin = gc.getLineJoin();
+//    gc.setAlpha(200);
+    gc.setFill(new Color(1.,.7,.7,.7));
+//    int height = gc.getFontMetrics().getHeight();
+//    int boxWidth = getWidth(gc);
+//    int boxHeight = height * lines.length;
+    int boxWidth = 250;
+    int boxHeight = 100;
+    int height = 20;
     int x = baseX;
     int y = baseY - boxHeight;
-    gc.fillRectangle(x, y, boxWidth, boxHeight);
+    gc.fillRect(x, y, boxWidth, boxHeight);
     for (String line : lines) {
-      gc.drawString(line, x + LINE_WIDTH, y);
+      gc.setFill(Color.RED);
+      gc.fillText(line, x + LINE_WIDTH, y);
       x = baseX;
       y += height;
     }
 //    gc.setForeground(Color.RED);
-    gc.setLineWidth(LINE_WIDTH);
-    gc.setLineJoin(SWT.JOIN_ROUND);
-    gc.drawRectangle(baseX, baseY - boxHeight, boxWidth, boxHeight);
-    gc.setForeground(fg);
-    gc.setBackground(bg);
-    gc.setLineWidth(lineWidth);
-    gc.setLineJoin(lineJoin);
-    gc.setAlpha(alpha);
+//    gc.setLineWidth(LINE_WIDTH);
+//    gc.setLineJoin(SWT.JOIN_ROUND);
+    gc.strokeRect(baseX, baseY - boxHeight, boxWidth, boxHeight);
+    gc.setStroke(fg);
+    gc.setFill(bg);
+//    gc.setLineWidth(lineWidth);
+//    gc.setLineJoin(lineJoin);
+//    gc.setAlpha(alpha);
   }
 
   public void addError(String e) {

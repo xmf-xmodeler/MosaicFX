@@ -43,12 +43,9 @@ public class NodeCreationTool extends Tool {
   }
 
   public void widgetSelected(SelectionEvent event) {
-	  System.err.println("NodeCreationTool::widgetSelected");
     diagram.deselectPalette();
     select();
     diagram.setNodeCreationType(getId());
-
-	  System.err.println("NodeCreationTool::widgetSelected done");
   }
 
   public String getType() {

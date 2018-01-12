@@ -1,6 +1,6 @@
 package tool.clients.diagrams;
 
-import org.eclipse.swt.graphics.GC;
+import javafx.scene.canvas.GraphicsContext;
 
 public class DiagramNodeError extends DiagramError {
 
@@ -13,12 +13,12 @@ public class DiagramNodeError extends DiagramError {
     this.node = node;
   }
 
-  public void paint(GC gc, Diagram diagram) {
+  public void paint(GraphicsContext gc, Diagram diagram) {
     int nodeWidth = node.getWidth();
     int boxWidth = getWidth(gc);
     int diff = (boxWidth - nodeWidth) / 2;
     drawErrorBox(gc, node.getX() - diff, node.getY() - LENGTH);
-    gc.drawLine(node.getX() + (nodeWidth / 2), node.getY(), node.getX() + (nodeWidth / 2), node.getY() - LENGTH);
+    gc.strokeLine(node.getX() + (nodeWidth / 2), node.getY(), node.getX() + (nodeWidth / 2), node.getY() - LENGTH);
   }
 
   public Node selectableNode() {

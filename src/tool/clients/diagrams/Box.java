@@ -162,7 +162,7 @@ public class Box implements Display {
     if (getId().equals(parentId)) {
 //      DiagramClient.theClient().runOnDisplay(new Runnable() {
 //        public void run() {
-          Diagram diagram = new Diagram(id, canvas, Box.this);
+          Diagram diagram = new Diagram(id, Box.this);
           DiagramClient.newlyCreatedDiagrams.add(diagram);
           Box.this.nestedDiagram = diagram;
 //        }

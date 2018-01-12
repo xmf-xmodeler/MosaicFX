@@ -1,6 +1,8 @@
 package tool.clients.diagrams;
 
 import java.io.PrintStream;
+import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
@@ -12,7 +14,10 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
+import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.text.Font;
 import tool.clients.dialogs.notifier.NotificationType;
 import tool.clients.dialogs.notifier.NotifierDialog;
@@ -54,10 +59,33 @@ public class Text implements Display {
   }
 
   
-  @Override
-  public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
-    if (editable && contains(mouseX - dx, mouseY - dy)) {
-   System.err.println("Trying to edit Text");
+	@Override
+	public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
+		if (editable && contains(mouseX - dx, mouseY - dy)) {
+		    System.err.println("current Thread: " + Thread.currentThread() + " (in doubleClick)");
+			// TextField inputField = new TextField(this.text);
+			final TextInputDialog input = new TextInputDialog(this.text);
+			input.initOwner(XModeler.getStage());
+			// input.setTitle("");
+			input.setContentText("Enter new Value:");
+			input.setHeaderText(null);
+			Optional<String> result = input.showAndWait();
+			if (result.isPresent()) {
+//				CountDownLatch l = new CountDownLatch(1);
+//				Platform.runLater(() -> {
+					textChangedEvent(result.get());
+//					l.countDown();
+//				});
+//				try {
+//					l.await();
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+			}
+		}
+        
+    	
+//   System.err.println("Trying to edit Text");
 //      final org.eclipse.swt.widgets.Text text = new org.eclipse.swt.widgets.Text(diagram.getCanvas(), SWT.BORDER);
 ////      text.setFont(DiagramClient.diagramFont);
 //	  Font baseFont = italicise ? DiagramClient.diagramItalicFontFX : DiagramClient.diagramFontFX;
@@ -119,7 +147,7 @@ public class Text implements Display {
 //          	  text.setFocus();
 //          }
 //      });
-    }	  
+//    }	  
   }
   
 //  @Override @Deprecated
@@ -274,6 +302,7 @@ public class Text implements Display {
     message.args[0] = new Value(id);
     message.args[1] = new Value(text);
     //System.out.println("textChanged: " + message);
+    System.err.println("current Thread: " + Thread.currentThread() + " (in textChangedEvent)");
     DiagramClient.theClient().getHandler().raiseEvent(message);
   }
 

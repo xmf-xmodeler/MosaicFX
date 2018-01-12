@@ -1,8 +1,9 @@
 package tool.clients.diagrams;
 
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Paint;
 
 public class DiagramEdgeError extends DiagramError {
 
@@ -32,13 +33,13 @@ public class DiagramEdgeError extends DiagramError {
     }
   }
 
-  public void paint(GC gc, Diagram diagram) {
+  public void paint(GraphicsContext gc, Diagram diagram) {
     Point p = midPoint();
     drawErrorBox(gc, p.x + DISTANCE, p.y + DISTANCE);
-    Color c = gc.getForeground();
+    Paint c = gc.getStroke();
 //    gc.setForeground(Diagram.RED);
-    gc.drawLine(p.x, p.y, p.x + DISTANCE, p.y + DISTANCE);
-    gc.setForeground(c);
+    gc.strokeLine(p.x, p.y, p.x + DISTANCE, p.y + DISTANCE);
+    gc.setStroke(c);
   }
 
   public Node selectableNode() {

@@ -1049,8 +1049,6 @@ public class DiagramClient extends Client {
 */
 
   public void sendMessage(final Message message) {
-
-//  	System.err.println("send message to diagram Client: " + message);
     if (message.hasName("newDiagram"))
       newDiagram(message); 
     else if (message.hasName("newGroup"))
@@ -1164,9 +1162,9 @@ public class DiagramClient extends Client {
     else if (message.hasName("error"))
       error(message);
     else if (message.hasName("showEdges"))
-      showEdges(message); // Bj�rn
+      showEdges(message); 
     else if (message.hasName("setEditable"))
-      setEditable(message); // Bj�rn 
+      setEditable(message); 
     else 
     	System.err.println("send message to diagram Client: " + message);
 //    super.sendMessage(message);

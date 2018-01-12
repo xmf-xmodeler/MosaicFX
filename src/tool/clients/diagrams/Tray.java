@@ -4,6 +4,8 @@ import java.util.Vector;
 
 import org.eclipse.swt.graphics.GC;
 
+import javafx.scene.canvas.GraphicsContext;
+
 public class Tray {
 
   private static int TOOL_WIDTH  = 10;
@@ -16,13 +18,13 @@ public class Tray {
     tools.add(tool);
   }
 
-  public void paint(GC gc, int width, int height) {
+  public void paint(GraphicsContext gc, int width, int height) {
     int trayWidth = TOOL_WIDTH * tools.size() + (tools.size() * SEPARATE);
     int x = width - trayWidth;
     int y = height - TOOL_HEIGHT;
     for (TrayTool tool : tools) {
-    	System.err.println("Tray::paint()");
-//      TODO tool.paint(gc, x, y, TOOL_WIDTH, TOOL_HEIGHT);
+//    	System.err.println("Tray::paint()");
+        tool.paint(gc, x, y, TOOL_WIDTH, TOOL_HEIGHT);
       x += TOOL_WIDTH + SEPARATE;
     }
   }
