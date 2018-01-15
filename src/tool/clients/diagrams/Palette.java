@@ -35,10 +35,8 @@ public class Palette {
         		ObservableValue<? extends TreeItem<String>> observable, 
         		TreeItem<String> oldValue,
         		TreeItem<String> newValue) {
-
+        	
 //            TreeItem<String> selectedItem = (TreeItem<String>) newValue;
-            System.out.println("Selected Text : " + newValue.getValue());
-
             // Workaround:
             // if leaf is selected, 
             // then it must be part of a group
@@ -70,12 +68,12 @@ public class Palette {
   }
 
   public void deleteGroup(String name) {
-	  throw new RuntimeException("Can't delete yet.");
-//    Group group = getGroup(name);
-//    if (group != null) {
-//      groups.remove(group);
-//      group.delete();
-//    }
+//	  throw new RuntimeException("Can't delete yet.");
+    Group group = getGroup(name);
+    if (group != null) {
+      groups.remove(group);
+      group.delete();
+    }
   }
 
   private Group getGroup(String name) {
@@ -125,7 +123,8 @@ public class Palette {
 
 
   public void reset() {
-	  System.err.println("Palette.reset called.");
+	  tree.getSelectionModel().clearSelection();
+//	  System.err.println("Palette.reset called.");
 //	    throw new RuntimeException("Not implemented yet");
 //    for (Group group : groups)
 //      group.resetButtons();

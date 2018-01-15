@@ -255,33 +255,44 @@ public class XModeler extends Application {
     setToolTitle();
   }
 
-  public static void saveInflator(final String inflationPath) {
-        try {
-          if (inflationPath != null) {
-            loadedImagePath = inflationPath.substring(0, inflationPath.lastIndexOf('.')) + ".img";
-            setToolTitle();
-            File file = new File(inflationPath);
-            // FileOutputStream fout = new FileOutputStream(file);
-            int x = (new Double(stage.getX())).intValue();
-            int y = (new Double(stage.getY())).intValue();
-            int width = (new Double(stage.getWidth())).intValue();
-            int height = (new Double(stage.getHeight())).intValue();
-            // PrintStream out = new PrintStream(fout);
-            PrintStream out = new PrintStream(file, "UTF-8");
-            out.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?><XModeler x='" + x + "' y='" + y + "' width='" + width + "' height = '" + height + "'>");
-            ModelBrowserClient.theClient().writeXML(out);
-            DiagramClient.theClient().writeXML(out);
-            MenuClient.theClient().writeXML(out);
-            EditorClient.theClient().writeXML(out);
-            ConsoleClient.theConsole().writeXML(out);
-            FormsClient.theClient().writeXML(out);
-            out.print("</XModeler>");
-            out.close();
-          }
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-  }
+	public static void saveInflator(final String inflationPath) {
+		CountDownLatch l = new CountDownLatch(1);
+		Platform.runLater(() -> {
+
+			try {
+				if (inflationPath != null) {
+					loadedImagePath = inflationPath.substring(0, inflationPath.lastIndexOf('.')) + ".img";
+					setToolTitle();
+					File file = new File(inflationPath);
+					// FileOutputStream fout = new FileOutputStream(file);
+					int x = (new Double(stage.getX())).intValue();
+					int y = (new Double(stage.getY())).intValue();
+					int width = (new Double(stage.getWidth())).intValue();
+					int height = (new Double(stage.getHeight())).intValue();
+					// PrintStream out = new PrintStream(fout);
+					PrintStream out = new PrintStream(file, "UTF-8");
+					out.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?><XModeler x='" + x + "' y='" + y + "' width='"
+							+ width + "' height = '" + height + "'>");
+					ModelBrowserClient.theClient().writeXML(out);
+					DiagramClient.theClient().writeXML(out);
+					MenuClient.theClient().writeXML(out);
+					EditorClient.theClient().writeXML(out);
+					ConsoleClient.theConsole().writeXML(out);
+					FormsClient.theClient().writeXML(out);
+					out.print("</XModeler>");
+					out.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			l.countDown();
+		});
+		try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 
   private static void setImage(String[] args) {
     String defaultImage = getImage(args);
@@ -319,10 +330,23 @@ public class XModeler extends Application {
     if (projDir == null) throw new Error("you have not set the project directory in the initialisation arguments:\n" + Arrays.toString(args));
   }
 
-  public static void setToolTitle() {
-	    String path = loadedImagePath == null ? "NO_IMAGE_SET" : loadedImagePath;
-	    stage.setTitle(NAME + " " + version + " [" + path + "]" + busyMessage);
- }
+	public static void setToolTitle() {
+		String path = loadedImagePath == null ? "NO_IMAGE_SET" : loadedImagePath;
+		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
+			stage.setTitle(NAME + " " + version + " [" + path + "]" + busyMessage);
+		} else {
+			CountDownLatch l = new CountDownLatch(1);
+			Platform.runLater(() -> {
+				stage.setTitle(NAME + " " + version + " [" + path + "]" + busyMessage);
+				l.countDown();
+			});
+			try {
+				l.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
   
   public static void showBusyInformation(String info) {
     busyMessage = info;
