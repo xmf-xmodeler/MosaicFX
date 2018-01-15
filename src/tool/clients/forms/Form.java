@@ -25,6 +25,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import tool.clients.EventHandler;
+import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
 
@@ -701,80 +702,101 @@ public void newButton(String parentId, String id, String label, int x, int y, in
 //  }
 
   public void writeXML(PrintStream out, boolean selected, String formLabel) {
-	  iHaventImplementedItYet();
-//    out.print("<Form id='" + getId() + "' selected='" + selected + "' label='" + XModeler.encodeXmlAttribute(formLabel) + "'>");
-//    for (String id : textFields.keySet()) {
-//      Text field = textFields.get(id);
-//      out.print("<TextField id='" + id + "'");
-//      out.print(" string='" + XModeler.encodeXmlAttribute(field.getText()) + "'");
-//      out.print(" x='" + field.getLocation().x + "'");
-//      out.print(" y='" + field.getLocation().y + "'");
-//      out.print(" width='" + field.getSize().x + "'");
-//      out.print(" height='" + field.getSize().y + "'");
-//      out.print(" editable='" + field.getEditable() + "'/>");
-//    }
-//    for (String id : labels.keySet()) {
-//      Text label = labels.get(id);
-//      out.print("<Label id='" + id + "'");
-//      out.print(" string='" + XModeler.encodeXmlAttribute(label.getText()) + "'");
-//      out.print(" x='" + label.getLocation().x + "'");
-//      out.print(" y='" + label.getLocation().y + "'/>");
-//    }
-//    for (List list : lists.values())
-//      list.writeXML(out);
-//    out.print("</Form>");
-//    for (String id : boxes.keySet()) {
-//      StyledText box = boxes.get(id);
-//      out.print("<TextBox id='" + id + "'");
-//      out.print(" string='" + XModeler.encodeXmlAttribute(box.getText()) + "'");
-//      out.print(" x='" + box.getLocation().x + "'");
-//      out.print(" y='" + box.getLocation().y + "'");
-//      out.print(" width='" + box.getSize().x + "'");
-//      out.print(" height='" + box.getSize().y + "'");
-//      out.print(" editable='" + box.getEditable() + "'/>");
-//    }
-//    for (String id : combos.keySet()) {
-//      CCombo combo = combos.get(id);
-//      out.print("<Combo id='" + id + "'");
-//      out.print(" string='" + XModeler.encodeXmlAttribute(combo.getText()) + "'");
-//      out.print(" x='" + combo.getLocation().x + "'");
-//      out.print(" y='" + combo.getLocation().y + "'");
-//      out.print(" width='" + combo.getSize().x + "'");
-//      out.print(" height='" + combo.getSize().y + "'");
-//      out.print(" editable='" + combo.getEditable() + "'>");
-//      for (String value : combo.getItems())
-//        out.print("<Item item='" + XModeler.encodeXmlAttribute(value) + "'/>");
-//      out.print("</Combo>");
-//    }
-//    for (String id : checks.keySet()) {
-//      out.print("<Check id='" + id + "'");
-//      out.print(" checked='" + checks.get(id).getEnabled() + "'");
-//      out.print(" x='" + checks.get(id).getLocation().x + "'");
-//      out.print(" y='" + checks.get(id).getLocation().y + "'");
-//      out.print(" text='" + XModeler.encodeXmlAttribute(checks.get(id).getText()) + "'/>");
-//    }
-//    for (String id : buttons.keySet()) {
-//      out.print("<Button id='" + id + "'");
-//      out.print(" x='" + buttons.get(id).getLocation().x + "'");
-//      out.print(" y='" + buttons.get(id).getLocation().y + "'");
-//      out.print(" width='" + buttons.get(id).getSize().x + "'");
-//      out.print(" height='" + buttons.get(id).getSize().y + "'");
-//      out.print(" text='" + XModeler.encodeXmlAttribute(buttons.get(id).getText()) + "'/>");
-//    }
-//    for (String id : trees.keySet()) {
-//      Tree tree = trees.get(id);
-//      out.print("<Tree id='" + id + "'");
-//      out.print(" x='" + trees.get(id).getLocation().x + "'");
-//      out.print(" y='" + trees.get(id).getLocation().y + "'");
-//      out.print(" width='" + trees.get(id).getSize().x + "'");
-//      out.print(" height='" + trees.get(id).getSize().y + "'");
-//      out.print(" editable='true'>");
-//      writeXMLTreeItems(tree.getItems(), out);
-//      out.print("</Tree>");
-//    }
+//	  iHaventImplementedItYet();
+    out.print("<Form id='" + getId() + "' selected='" + selected + "' label='" + XModeler.encodeXmlAttribute(formLabel) + "'>");
+    for (String id : textFields.keySet()) {
+      TextField field = textFields.get(id);
+      out.print("<TextField id='" + id + "'");
+      out.print(" string='" + XModeler.encodeXmlAttribute(field.getText()) + "'");
+      out.print(" x='" + AnchorPane.getLeftAnchor(field).intValue() + "'");
+      out.print(" y='" + AnchorPane.getTopAnchor(field).intValue() + "'");
+      out.print(" width='" + (int)field.getWidth() + "'");
+      out.print(" height='" + (int)field.getHeight() + "'");
+      out.print(" editable='" + field.isEditable() + "'/>");
+    }
+    for (String id : labels.keySet()) {
+      Label label = labels.get(id);
+      out.print("<Label id='" + id + "'");
+      out.print(" string='" + XModeler.encodeXmlAttribute(label.getText()) + "'");
+      out.print(" x='" + AnchorPane.getLeftAnchor(label).intValue() + "'");
+      out.print(" y='" + AnchorPane.getTopAnchor(label).intValue() + "'/>");
+    }
+    for (List list : lists.values())
+      list.writeXML(out);
+    out.print("</Form>");
+    for (String id : boxes.keySet()) {
+      TextArea box = boxes.get(id);
+      out.print("<TextBox id='" + id + "'");
+      out.print(" string='" + XModeler.encodeXmlAttribute(box.getText()) + "'");
+      out.print(" x='" + AnchorPane.getLeftAnchor(box).intValue() + "'");
+      out.print(" y='" + AnchorPane.getTopAnchor(box).intValue() + "'");
+      out.print(" width='" + (int)box.getWidth() + "'");
+      out.print(" height='" + (int)box.getHeight() + "'");
+      out.print(" editable='" + box.isEditable() + "'/>");
+    }
+    for (String id : combos.keySet()) {
+      ComboBox<String> combo = combos.get(id);
+      out.print("<Combo id='" + id + "'");
+      out.print(" string='" + XModeler.encodeXmlAttribute(combo.getValue()) + "'");
+      out.print(" x='" + AnchorPane.getLeftAnchor(combo).intValue() + "'");
+      out.print(" y='" + AnchorPane.getTopAnchor(combo).intValue() + "'");
+      out.print(" width='" + (int)combo.getWidth() + "'");
+      out.print(" height='" + (int)combo.getHeight() + "'");
+      out.print(" editable='" + combo.isEditable() + "'>");
+      for (String value : combo.getItems())
+        out.print("<Item item='" + XModeler.encodeXmlAttribute(value) + "'/>");
+      out.print("</Combo>");
+    }
+    for (String id : checks.keySet()) {
+      out.print("<Check id='" + id + "'");
+      out.print(" checked='" + checks.get(id).isSelected() + "'");
+      out.print(" x='" + AnchorPane.getLeftAnchor(checks.get(id)).intValue() + "'");
+      out.print(" y='" + AnchorPane.getTopAnchor(checks.get(id)).intValue() + "'");
+      out.print(" text='" + XModeler.encodeXmlAttribute(checks.get(id).getText()) + "'/>");
+    }
+    for (String id : buttons.keySet()) {
+      out.print("<Button id='" + id + "'");
+      out.print(" x='" + AnchorPane.getLeftAnchor(buttons.get(id)).intValue() + "'");
+      out.print(" y='" + AnchorPane.getTopAnchor(buttons.get(id)) + "'");
+      out.print(" width='" + (int)buttons.get(id).getWidth() + "'");
+      out.print(" height='" + (int)buttons.get(id).getHeight() + "'");
+      out.print(" text='" + XModeler.encodeXmlAttribute(buttons.get(id).getText()) + "'/>");
+    }
+    for (String id : trees.keySet()) {
+      TreeView<String> tree = trees.get(id);
+      out.print("<Tree id='" + id + "'");
+      out.print(" x='" + AnchorPane.getLeftAnchor(trees.get(id)).intValue() + "'");
+      out.print(" y='" + AnchorPane.getTopAnchor(trees.get(id)).intValue() + "'");
+      out.print(" width='" + (int)trees.get(id).getWidth() + "'");
+      out.print(" height='" + (int)trees.get(id).getHeight() + "'");
+      out.print(" editable='true'>");
+      writeXMLTreeItem(tree.getRoot(), out);
+      out.print("</Tree>");
+    }
   }
 
-//  private void writeXMLTreeItems(TreeItem[] children, PrintStream out) {
+  private void writeXMLTreeItem(TreeItem<String> item, PrintStream out) {
+	  
+//	    for (TreeItem item : children) {
+	      String id = null;
+	      for (String itemId : items.keySet()) {
+	        if (items.get(itemId) == item) id = itemId;
+	      }
+	      if (id == null) System.err.println("error: cannot find tree item " + item);
+	      String icon = images.get(id);
+	      out.print("<Item id='" + id + "' "
+	      		+ "text='" + XModeler.encodeXmlAttribute(item.getValue()) + "' "
+	      		+ "image='" + icon + "' "
+	      		+ "expanded='" + item.isExpanded() + "'>");
+	      for (TreeItem<String> child : item.getChildren()) {
+	    	  writeXMLTreeItem(child, out);
+	      }
+	      out.print("</Item>");
+//	    }
+	  }
+  
+  
+//  private void writeXMLTreeItems(TreeItem<String> children, PrintStream out) {
 //    for (TreeItem item : children) {
 //      String id = null;
 //      for (String itemId : items.keySet()) {
