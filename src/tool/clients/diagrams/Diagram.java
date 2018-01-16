@@ -7,19 +7,12 @@ import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.dnd.Clipboard;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.ImageTransfer;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.graphics.Transform;
 
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ScrollPane;
@@ -32,6 +25,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.transform.Affine;
+import javafx.scene.transform.NonInvertibleTransformException;
 import tool.clients.EventHandler;
 import tool.clients.diagrams.Diagram.MouseMode;
 import tool.clients.menus.MenuClient;
@@ -80,7 +74,7 @@ public class Diagram implements Display {
   Vector<Display>                          displays               = new Vector<Display>();
   Vector<Selectable>                       selection              = new Vector<Selectable>();
   Vector<DiagramError>                     errors                 = new Vector<DiagramError>();
-  Transform                                transform              = new Transform(org.eclipse.swt.widgets.Display.getCurrent());
+//  Transform                                transform              = new Transform(org.eclipse.swt.widgets.Display.getCurrent());
   Affine         						   transformFX            = new Affine();
   String                                   id;
   Tray                                     tray                   = new Tray();
@@ -243,36 +237,36 @@ public class Diagram implements Display {
   public void mouseDown(javafx.scene.input.MouseEvent event) {
 //	  event.tr
 //    scale(event);
-	  
+	javafx.geometry.Point2D scaledPoint = scale(event);
 	if(currentcontextMenu != null && currentcontextMenu.isShowing()) {
 		currentcontextMenu.hide();
 		currentcontextMenu = null;
 	}
 	  
     if (isRightClick(event)/* || isCommand(event)*/) {
-      rightClick(event);
+      rightClick(event, scaledPoint);
     } else if (event.getClickCount() == 1 && isLeftClick(event)) {
-      leftClick(event);
+      leftClick(event, scaledPoint);
     } else if (event.getClickCount() == 2 && isLeftClick(event)) {
       mode = MouseMode.DOUBLE_CLICK;
-      storeLastXY((int) event.getX(), (int) event.getY());
+      storeLastXY((int) scaledPoint.getX(), (int) scaledPoint.getY());
       redraw();
     }
   }
   
   transient ContextMenu currentcontextMenu;
   
-  private void rightClick(javafx.scene.input.MouseEvent event) {
+  private void rightClick(javafx.scene.input.MouseEvent event, javafx.geometry.Point2D scaledPoint) {
 	    if (selection.isEmpty())
-	    	currentcontextMenu = MenuClient.popup(id, scroller, Side.LEFT, (int) event.getX(), (int) event.getY());
+	    	currentcontextMenu = MenuClient.popup(id, scroller, Side.LEFT, (int) scaledPoint.getX(), (int) scaledPoint.getY());
 	    else {
 	      if (selection.size() == 1) {
-	    	  currentcontextMenu = selection.elementAt(0).rightClick(scroller, Side.LEFT, (int) event.getX(), (int) event.getY());
+	    	  currentcontextMenu = selection.elementAt(0).rightClick(scroller, Side.LEFT, (int) scaledPoint.getX(), (int) scaledPoint.getY());
 	      }
 	    }
 	  }
   
-	private void leftClick(javafx.scene.input.MouseEvent event) {
+	private void leftClick(javafx.scene.input.MouseEvent event, javafx.geometry.Point2D scaledPoint) {
 //		System.err.println("leftMouseClickedOnce");
 //		System.err.println("nodeCreationType:" + nodeCreationType);
 //		System.err.println("edgeCreationType:" + edgeCreationType);
@@ -281,13 +275,13 @@ public class Diagram implements Display {
 			tool.click(Diagram.this);
 		else {
 			if (nodeCreationType == null && edgeCreationType == null) {
-				select(event.isShiftDown(), event.isControlDown(), (int) event.getX(), (int) event.getY(), false);
-				storeLastXY((int) event.getX(), (int) event.getY());
+				select(event.isShiftDown(), event.isControlDown(), (int) scaledPoint.getX(), (int) scaledPoint.getY(), false);
+				storeLastXY((int) scaledPoint.getX(), (int) scaledPoint.getY());
 				redraw();
 			} else if (edgeCreationType != null) {
 				deselectAll();
-				int x = (int) event.getX();
-				int y = (int) event.getY();
+				int x = (int) scaledPoint.getX();
+				int y = (int) scaledPoint.getY();
 				PortAndDiagram port = selectPort(x, y);
 				if (port != null) {
 					sourcePort = port;
@@ -302,14 +296,14 @@ public class Diagram implements Display {
 				Object[] diagramData = new Object[] { id, 0, 0 }; // default
 																	// this
 				// unless any node is hit
-				Object[] nestedDiagramData = getNestedDiagramID((int) event.getX(), (int) event.getY());
+				Object[] nestedDiagramData = getNestedDiagramID((int) scaledPoint.getX(), (int) scaledPoint.getY());
 				if (nestedDiagramData != null) {
 					diagramData = nestedDiagramData;
 					// System.err.println("found diagramID: " + diagramID);
 				}
 				DiagramClient.theClient().newNode(nodeCreationType, (String) diagramData[0],
-						((int) event.getX()) - ((Integer) diagramData[1]), 
-						((int) event.getY()) - ((Integer) diagramData[2]));
+						((int) scaledPoint.getX()) - ((Integer) diagramData[1]), 
+						((int) scaledPoint.getY()) - ((Integer) diagramData[2]));
 				System.err.println("Node creation sent.");
 				resetPalette();
 				redraw();
@@ -319,12 +313,12 @@ public class Diagram implements Display {
 		}
 	}
 	
-	  public void mouseUp(javafx.scene.input.MouseEvent  event) {
+	  public void mouseUp(javafx.scene.input.MouseEvent event) {
 		    for (Diagram nestedDiagram : getNestedDiagrams()) {
 		      nestedDiagram.mouseUp(event);
 		    }
-//		    scale(event);
-		    if (mode == MouseMode.NEW_EDGE) new OutboundMessages().checkEdgeCreation((int) event.getX(), (int) event.getY(), sourcePort);
+		    javafx.geometry.Point2D scaledPoint = scale(event);
+		    if (mode == MouseMode.NEW_EDGE) new OutboundMessages().checkEdgeCreation((int) scaledPoint.getX(), (int) scaledPoint.getY(), sourcePort);
 		    if (mode == MouseMode.SELECTED) sendMoveSelectedEvents();
 		    if (mode == MouseMode.RESIZE_BOTTOM_RIGHT) resizeBottomRight();
 		    if (mode == MouseMode.RUBBER_BAND) selectRubberBand();
@@ -334,14 +328,16 @@ public class Diagram implements Display {
 		  }
 	  
 	    public void mouseMoved(final javafx.scene.input.MouseEvent event) {
-//	        scale(event);
-	        // if (mode == MouseMode.SELECTED) {
+	    	javafx.geometry.Point2D scaledPoint = scale(event);
+
+//	  	  System.err.println(event.getX() + "-->" + scaledPoint.getX());
+	    	// if (mode == MouseMode.SELECTED) {
 //	          System.err.println("mouseMoved ("+selection.size()+") " + mode);
 //	  		CountDownLatch l = new CountDownLatch(1);
 //	  		Platform.runLater(() -> {	  
-	            int dx = ((int) event.getX()) - lastX;
-	            int dy = ((int) event.getY()) - lastY;
-	            storeLastXY(((int) event.getX()), ((int) event.getY()));
+	            int dx = ((int) scaledPoint.getX()) - lastX;
+	            int dy = ((int) scaledPoint.getY()) - lastY;
+	            storeLastXY(((int) scaledPoint.getX()), ((int) scaledPoint.getY()));
 	            if (mode == MouseMode.SELECTED) for (Selectable selectable : selection)
 	              selectable.moveBy(dx, dy);
 	            for (Diagram nestedDiagram : getNestedDiagrams())
@@ -355,26 +351,26 @@ public class Diagram implements Display {
 //	  		} catch (InterruptedException e) {
 //	  			e.printStackTrace();
 //	  		}
-	        if (mode == MouseMode.NEW_EDGE) {
-	          storeLastXY((int) event.getX(), (int) event.getY());
-//	          redraw();
-	        }
-	        if (movingEdgeEnd()) {
-	          storeLastXY((int) event.getX(), (int) event.getY());
-//	          redraw();
-	        }
-	        if (mode == MouseMode.NONE) {
-	          storeLastXY((int) event.getX(), (int) event.getY());
-//	          redraw();
-	        }
-	        if (mode == MouseMode.RESIZE_BOTTOM_RIGHT) {
-	          storeLastXY((int) event.getX(), (int) event.getY());
-//	          redraw();
-	        }
-	        if (mode == MouseMode.RUBBER_BAND) {
-	          storeLastXY((int) event.getX(), (int) event.getY());
-//	          redraw();
-	        }
+//	        if (mode == MouseMode.NEW_EDGE) {
+//	          storeLastXY((int) scaledPoint.getX(), (int) scaledPoint.getY());
+////	          redraw();
+//	        }
+//	        if (movingEdgeEnd()) {
+//	          storeLastXY((int) scaledPoint.getX(), (int) scaledPoint.getY());
+////	          redraw();
+//	        }
+//	        if (mode == MouseMode.NONE) {
+//	          storeLastXY((int) scaledPoint.getX(), (int) scaledPoint.getY());
+////	          redraw();
+//	        }
+//	        if (mode == MouseMode.RESIZE_BOTTOM_RIGHT) {
+//	          storeLastXY((int) scaledPoint.getX(), (int) scaledPoint.getY());
+////	          redraw();
+//	        }
+//	        if (mode == MouseMode.RUBBER_BAND) {
+//	          storeLastXY((int) scaledPoint.getX(), (int) scaledPoint.getY());
+////	          redraw();
+//	        }
             redraw();
 	      }
   
@@ -397,6 +393,9 @@ public class Diagram implements Display {
       message.args[0] = new Value(getId());
       message.args[1] = new Value(id);
       eventHandler.raiseEvent(message);
+//      System.err.println("C2");
+//      resetPalette();
+//      System.err.println("D");
     }
 
     private void checkEdgeCreation(int x, int y, PortAndDiagram sourcePort) {
@@ -592,46 +591,60 @@ public class Diagram implements Display {
   /**
    * This function checks if the canvas has to be resized because it is too small. If it is too small it's resized.
    */
-  private void checkSize() {
-    // System.err.println("\ncheckSize");
-    /*
-     * p is the size of the canvas. The size does not change with the zoom.
-     */
-	
-//    Point p = canvas.getWidth()
-    // System.err.println("canvas Screen Size : " + p);
-    /*
-     * Now it is compared with the needed size. This is calculated as raw positions.
-     */
-    Point maxRawSize = new Point(maxWidth(), maxHeight());
-    // System.err.println("needed Raw Size : " + maxRawSize);
-    /*
-     * Now the canvas' screen size has to be converted to raw size.
-     */
-    float[] canvasPoints = new float[] { (float) canvas.getWidth(), (float) canvas.getHeight() };
-    transform.invert();
-    transform.transform(canvasPoints);
-    transform.invert();
-    Point canvasRawSize = new Point((int) canvasPoints[0], (int) canvasPoints[1]);
+	private void checkSize() {
+//		 System.err.println("\ncheckSize");
+		/*
+		 * p is the size of the canvas. The size does not change with the zoom.
+		 */
+//		 System.err.println("canvas Screen Size : " + canvas.getWidth()+"x"+canvas.getHeight());
+		/*
+		 * Now it is compared with the needed size. This is calculated as raw
+		 * positions.
+		 */
+		 javafx.geometry.Point2D maxRawSize = new javafx.geometry.Point2D(maxWidth(), maxHeight());
+//		 System.err.println("needed Raw Size : " + maxRawSize);
+		/*
+		 * Now the canvas' screen size has to be converted to raw size.
+		 */
+		// float[] canvasPoints = new float[] { (float) canvas.getWidth(),
+		// (float) canvas.getHeight() };
+		// transform.invert();
+		// transform.transform(canvasPoints);
+		// transform.invert();
+		try {
+			Affine transformFXI = transformFX.createInverse();
+			javafx.geometry.Point2D canvasPoints = transformFXI.transform(canvas.getWidth(), canvas.getHeight());
+			/* The new size can now be calculated */
+			double width = Math.max(canvasPoints.getX(), maxRawSize.getX());
+			double height = Math.max(canvasPoints.getY(), maxRawSize.getY());
+			/*
+			 * But the new size is still in Raw size, so it's transformed to
+			 * screen size
+			 */
+//			float[] newSize = new float[] { (float) width, (float) height };
+			// transform.transform(newSize);
+			javafx.geometry.Point2D newSize = transformFX.transform(width, height);
+			width = newSize.getX();
+			height = newSize.getY();
+			/*
+			 * As some rounding errors may have accumulated now, any change
+			 * which is less then 5 is ignored.
+			 */
+			if (Math.abs(width - canvas.getWidth()) < 4.5)
+				width = (int) canvas.getWidth();
+			if (Math.abs(height - canvas.getHeight()) < 4.5)
+				height = (int) canvas.getHeight();
+			/* The new sizes are now set */
+			canvas.setWidth(width);
+			canvas.setHeight(height);
+//			scroller.setMinSize(width, height);
+//			 System.err.println("new canvas Screen Size : " + width+"x"+height);
+		} catch (NonInvertibleTransformException e) {
+			System.err.println("check size fail: " + e.getMessage());
+			return;
+		}
+//    Point canvasRawSize = new Point((int) canvasPoints[0], (int) canvasPoints[1]);
 //    System.err.println("canvas Raw Size : " + canvasRawSize);
-    /* The new size can now be calculated */
-    int width = Math.max(canvasRawSize.x, maxRawSize.x);
-    int height = Math.max(canvasRawSize.y, maxRawSize.y);
-    /*
-     * But the new size is still in Raw size, so it's transformed to screen size
-     */
-    float[] newSize = new float[] { (float) width, (float) height };
-    transform.transform(newSize);
-    width = (int) newSize[0];
-    height = (int) newSize[1];
-    /*
-     * As some rounding errors may have accumulated now, any change which is less then 5 is ignored.
-     */
-    if (Math.abs(width - canvas.getWidth()) < 4.5) width = (int) canvas.getWidth();
-    if (Math.abs(height - canvas.getHeight()) < 4.5) height = (int) canvas.getHeight();
-    /* The new sizes are now set */
-    canvas.setWidth(width); canvas.setHeight(height);
-    scroller.setMinSize(width, height);
   }
 
   private void clear(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
@@ -1431,12 +1444,19 @@ public class Diagram implements Display {
       // Currently does nothing.
   }
 
-  private void paintNewEdge(GraphicsContext gc) {
-    if (mode == MouseMode.NEW_EDGE) {
-   gc.setStroke(Color.DARKGRAY);
-      gc.strokeLine(firstX, firstY, lastX, lastY);
-    }
-  }
+	private void paintNewEdge(GraphicsContext gc) {
+		if (mode == MouseMode.NEW_EDGE) {
+
+//			Affine transform = gc.getTransform();
+//			gc.setTransform(new Affine());
+
+			gc.setStroke(Color.DARKGRAY);
+			gc.strokeLine(firstX, firstY, lastX, lastY);
+
+//			gc.setTransform(transform);
+
+		}
+	}
 
   private void paintNewNode(GraphicsContext gc) {
     if (nodeCreationType == null) return;
@@ -1450,7 +1470,9 @@ public class Diagram implements Display {
 
     Paint oldFGColor = gc.getStroke();
     Paint oldBGColor = gc.getFill();
-
+    Affine transform = gc.getTransform();
+    
+    gc.setTransform(new Affine());
     gc.setFill(new Color(0., 200./255., 100./255., 1.));
     gc.fillPolygon(polygonX, polygonY, 13);
     gc.setStroke(Color.BLACK);
@@ -1459,6 +1481,7 @@ public class Diagram implements Display {
     gc.setFill(oldBGColor);
     gc.strokeText("new " + nodeCreationType, X + 8, Y + 2);
     gc.setStroke(oldFGColor);
+    gc.setTransform(transform);
 
   }
 
@@ -1507,7 +1530,7 @@ public class Diagram implements Display {
     gc.setTextAntialias(SWT.ON);
     gc.setInterpolation(SWT.HIGH);
     gc.setAdvanced(true);
-    gc.setTransform(transform);
+//    gc.setTransform(transform);
 //    clear(gc, xOffset, yOffset);
 //    paintDisplays(gc, xOffset, yOffset);
 //    paintResizing(gc, xOffset, yOffset);
@@ -1534,7 +1557,9 @@ public class Diagram implements Display {
 //	    gc.setTextAntialias(SWT.ON);
 //	    gc.setInterpolation(SWT.HIGH);
 //	    gc.setAdvanced(true);
-//	    gc.setTransform(transform);
+//      	System.err.println("zoom=" + zoom);
+//    	System.err.println("transform=" + transform);
+	    gc.setTransform(transformFX);
 	    clear(gc, xOffset, yOffset);
 	    paintDisplays(gc, xOffset, yOffset);
 	    paintResizing(gc, xOffset, yOffset);
@@ -1546,8 +1571,8 @@ public class Diagram implements Display {
 	    paintRubberBand(gc, xOffset, yOffset);
 	    paintNewNode(gc);
 	    paintNewEdge(gc);
-	    paintErrors(gc);
-	    paintTray(gc);
+//	    paintErrors(gc);
+//	    paintTray(gc);
 	    handleDoubleClick(gc);
       }
       else {
@@ -1677,7 +1702,7 @@ public class Diagram implements Display {
     errorTool.setError(false);
     redraw();
   }
-
+  
   public void resetPalette() {
     edgeCreationType = null;
     nodeCreationType = null;  
@@ -1698,25 +1723,39 @@ public class Diagram implements Display {
     if (width >= 10 && height >= 10) new OutboundMessages().resizeNode(selectedNode, width, height);
   }
 
-  public Point scale(int x, int y) {
-    float[] points = new float[] { (float) x, (float) y };
-    transform.invert();
-    transform.transform(points);
-    transform.invert();
-    return new Point((int) points[0], (int) points[1]);
-  }
+//	public Point scale(int x, int y) {
+//		// double[] points = new float[] { (float) x, (float) y };
+//		try {
+//			transformFX.invert();
+//			javafx.geometry.Point2D points = transformFX.transform(x, y);
+//			transformFX.invert();
+//			return new Point((int) points.getX(), (int) points.getY());
+//		} catch (NonInvertibleTransformException e) {
+//			throw new RuntimeException(e);
+//		}
+//	}
 
-  @Deprecated
-  public void scale(MouseEvent event) {
-    Point p = scale(event.x, event.y);
-    event.x = p.x;
-    event.y = p.y;
+  public javafx.geometry.Point2D scale(javafx.scene.input.MouseEvent event) {
+//	  try{
+	  Affine i;
+	try {
+		i = transformFX.createInverse();
+	  return i.transform(event.getX(), event.getY());
+	} catch (NonInvertibleTransformException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		return new javafx.geometry.Point2D(event.getX(), event.getY());
+	}
+//	  } catch ()
+//    Point p = scale(event.x, event.y);
+//    event.x = p.x;
+//    event.y = p.y;
   }
 
   public Point scaleinv(int x, int y) {
-    float[] points = new float[] { (float) x, (float) y };
-    transform.transform(points);
-    return new Point((int) points[0], (int) points[1]);
+//    float[] points = new float[] { (float) x, (float) y };
+    javafx.geometry.Point2D points = transformFX.transform(x,y);
+    return new Point((int) points.getX(), (int) points.getY());
   }
 
   private boolean select(boolean isShift, boolean isCtrl, int x, int y, boolean isNested) {
@@ -2027,9 +2066,12 @@ public class Diagram implements Display {
   }
 
   public void setZoom(float zoom) {
+	  System.err.println("setZoom: " + zoom);
     this.zoom = zoom;
-    transform = new Transform(org.eclipse.swt.widgets.Display.getCurrent());
-    transform.scale(zoom, zoom);// (float) (zoom / 100.0), (float) (zoom / 100.0));
+    transformFX = new Affine();//.getGraphicsContext2D().getTransform();
+    transformFX.appendScale(zoom, zoom);
+//    transform = new Transform(org.eclipse.swt.widgets.Display.getCurrent());
+//    transform.scale(zoom, zoom);// (float) (zoom / 100.0), (float) (zoom / 100.0));
   }
 
   public void show(String id) {

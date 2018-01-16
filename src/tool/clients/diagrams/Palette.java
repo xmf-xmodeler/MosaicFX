@@ -3,7 +3,9 @@ package tool.clients.diagrams;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.concurrent.CountDownLatch;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ToolBar;
@@ -40,6 +42,7 @@ public class Palette {
             // Workaround:
             // if leaf is selected, 
             // then it must be part of a group
+        	if(newValue == null) return;
             if(newValue.getChildren().isEmpty()) {
             	TreeItem<String> parent = newValue.getParent();
             	if(parent instanceof Group) {
@@ -122,14 +125,32 @@ public class Palette {
 	  
 
 
-  public void reset() {
-	  tree.getSelectionModel().clearSelection();
-//	  System.err.println("Palette.reset called.");
-//	    throw new RuntimeException("Not implemented yet");
-//    for (Group group : groups)
-//      group.resetButtons();
-//    getGroup("Diagram").getToolLabelled("Select").select();
-  }
+	public void reset() {
+		System.err.println("resetPalette("+Thread.currentThread()+")");
+		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
+			// we are on the right Thread already:
+			tree.getSelectionModel().clearSelection();
+//			getGroup("Diagram").getToolLabelled("Select").select();
+		} else { // create a new Thread
+			CountDownLatch l = new CountDownLatch(1);
+			Platform.runLater(() -> {
+				tree.getSelectionModel().clearSelection();
+//				getGroup("Diagram").getToolLabelled("Select").select();
+				l.countDown();
+			});
+			try {
+				l.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		System.err.println("resetPalette done");
+		// System.err.println("Palette.reset called.");
+		// throw new RuntimeException("Not implemented yet");
+		// for (Group group : groups)
+		// group.resetButtons();
+		// getGroup("Diagram").getToolLabelled("Select").select();
+	}
 
   public void writeXML(PrintStream out) {
 	    throw new RuntimeException("Not implemented yet");

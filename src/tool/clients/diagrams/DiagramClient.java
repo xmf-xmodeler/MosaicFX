@@ -1276,6 +1276,7 @@ public class DiagramClient extends Client {
           if (diagram.getId().equals(id.strValue())) {
             diagram.zoomIn();
             diagram.redraw();
+            diagram.resetPalette();
           }
         }
 //      }
@@ -1290,6 +1291,7 @@ public class DiagramClient extends Client {
           if (diagram.getId().equals(id.strValue())) {
             diagram.zoomOut();
             diagram.redraw();
+            diagram.resetPalette();
           }
         }
 //      }
@@ -1304,6 +1306,7 @@ public class DiagramClient extends Client {
           if (diagram.getId().equals(id.strValue())) {
             diagram.zoomOne();
             diagram.redraw();
+            diagram.resetPalette();
           }
         }
 //      }
