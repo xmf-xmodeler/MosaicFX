@@ -255,13 +255,13 @@ public class Diagram implements Display {
   }
   
   transient ContextMenu currentcontextMenu;
-  
+  														       // --------- not used ---------- \\
   private void rightClick(javafx.scene.input.MouseEvent event, javafx.geometry.Point2D scaledPoint) {
 	    if (selection.isEmpty())
-	    	currentcontextMenu = MenuClient.popup(id, scroller, Side.LEFT, (int) scaledPoint.getX(), (int) scaledPoint.getY());
+	    	currentcontextMenu = MenuClient.popup(id, scroller, Side.LEFT, (int) event.getSceneX(), (int) event.getSceneY());
 	    else {
 	      if (selection.size() == 1) {
-	    	  currentcontextMenu = selection.elementAt(0).rightClick(scroller, Side.LEFT, (int) scaledPoint.getX(), (int) scaledPoint.getY());
+	    	  currentcontextMenu = selection.elementAt(0).rightClick(scroller, Side.LEFT, (int) event.getSceneX(), (int) event.getSceneY());
 	      }
 	    }
 	  }

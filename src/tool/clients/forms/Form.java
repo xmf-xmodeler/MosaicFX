@@ -9,6 +9,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.geometry.Side;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -21,10 +22,12 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import tool.clients.EventHandler;
+import tool.clients.menus.MenuClient;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
@@ -280,10 +283,17 @@ public void newButton(String parentId, String id, String label, int x, int y, in
 	      
 	      tree.setOnMouseClicked(new javafx.event.EventHandler<MouseEvent>() {
 	  		@Override public void handle(MouseEvent click) {
-	  		    if (click.getClickCount() == 2) {
+	  		    if (click.getClickCount() == 2 && click.getButton() == MouseButton.PRIMARY) {
 	  		    	doubleClick(tree.getSelectionModel().getSelectedItem());
-	      }}});
-	    }
+	  		    } else if (click.getClickCount() == 1 && click.getButton() == MouseButton.SECONDARY){ 
+	  		    	TreeItem<String> item = tree.getSelectionModel().getSelectedItem();
+	  		    	if(item == null) return;
+	  		    	String itemId = getId(item);
+	  		    	if(itemId == null) return;
+	  		    	MenuClient.popup(itemId, tree, Side.RIGHT, (int)click.getSceneX(), (int)click.getSceneY());
+	  		 }
+	  		}});}
+
 	  }
 	  
   public void addComboItem(String comboId, String value) {
@@ -309,6 +319,7 @@ public void newButton(String parentId, String id, String label, int x, int y, in
       items.put(nodeId, item);
       item.setExpanded(expanded);
       parent.getChildren().add((index == -1) ? parent.getChildren().size() : index, item);
+      
     } //else System.err.println("Cannot find node " + parentId);
   }  
   
@@ -497,103 +508,124 @@ public void newButton(String parentId, String id, String label, int x, int y, in
 //    return event.button == RIGHT_BUTTON;
 //  }
 
-  public void move(String id, int x, int y) {
-    FormsClient.theClient().runOnDisplay(new Runnable() {
+	public void move(String id, int x, int y) {
 
-      public void run() {
+//		  System.err.println("move +");
+//		CountDownLatch l = new CountDownLatch(1);
+//		Platform.runLater(() -> {
+			if (combos.containsKey(id)) {
+				AnchorPane.setLeftAnchor(combos.get(id), 1. * x);
+				AnchorPane.setTopAnchor(combos.get(id), 1. * y);
+				return;
+			}
+			if (textFields.containsKey(id)) {
+				AnchorPane.setLeftAnchor(textFields.get(id), 1. * x);
+				AnchorPane.setTopAnchor(textFields.get(id), 1. * y);
+				return;
+			}
+			if (labels.containsKey(id)) {
+				AnchorPane.setLeftAnchor(labels.get(id), 1. * x);
+				AnchorPane.setTopAnchor(labels.get(id), 1. * y);
+				return;
+			}
+			if (checks.containsKey(id)) {
+				AnchorPane.setLeftAnchor(checks.get(id), 1. * x);
+				AnchorPane.setTopAnchor(checks.get(id), 1. * y);
+				return;
+			}
+			if (buttons.containsKey(id)) {
+				AnchorPane.setLeftAnchor(buttons.get(id), 1. * x);
+				AnchorPane.setTopAnchor(buttons.get(id), 1. * y);
+				return;
+			}
+			if (boxes.containsKey(id)) {
+				AnchorPane.setLeftAnchor(boxes.get(id), 1. * x);
+				AnchorPane.setTopAnchor(boxes.get(id), 1. * y);
+				return;
+			}
+			if (trees.containsKey(id)) {
+				AnchorPane.setLeftAnchor(trees.get(id), 1. * x);
+				AnchorPane.setTopAnchor(trees.get(id), 1. * y);
+				return;
+			}
+			if (lists.containsKey(id))
+				throw new RuntimeException("The move()-operation for List is not yet implemented...");
+			if (items.containsKey(id))
+				throw new RuntimeException("The move()-operation for TreeItem is not yet implemented...");
+			if (images.containsKey(id))
+				throw new RuntimeException("The move()-operation for String/Image is not yet implemented...");
+			System.err.println("move: " + id);
+			// throw new RuntimeException("The move()-operation for this type of
+			// Display is not yet implemented...");
+
+			// These Displays need to be added:
+			// Hashtable<String, List> lists = new Hashtable<String, List>();
+			// Hashtable<String, TreeItem> items = new Hashtable<String,
+			// TreeItem>();
+			// Hashtable<String, String> images = new Hashtable<String,
+			// String>();
+//			l.countDown();
+//		});
+//		try {
+//			l.await();
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+
+//		  System.err.println("move -");
+	}
+
+  public void setSize(String id, double width, double height) {
+//	  System.err.println("setSize +");
+//		CountDownLatch l = new CountDownLatch(1);
+//		Platform.runLater(() -> {
         if (combos.containsKey(id)) {
-            AnchorPane.setLeftAnchor(combos.get(id),1.*x);
-            AnchorPane.setTopAnchor(combos.get(id),1.*y);
+          combos.get(id).setPrefSize(width, height);
           return;
         }
         if (textFields.containsKey(id)) {
-            AnchorPane.setLeftAnchor(textFields.get(id),1.*x);
-            AnchorPane.setTopAnchor(textFields.get(id),1.*y);
+          textFields.get(id).setPrefSize(width, height);
           return;
         }
-        if (labels.containsKey(id)) { 
-        	AnchorPane.setLeftAnchor(labels.get(id),1.*x);
-        	AnchorPane.setTopAnchor(labels.get(id),1.*y);
+        if (labels.containsKey(id)) {
+          labels.get(id).setPrefSize(width, height);
           return;
         }
         if (checks.containsKey(id)) {
-            AnchorPane.setLeftAnchor(checks.get(id),1.*x);
-            AnchorPane.setTopAnchor(checks.get(id),1.*y);
+          checks.get(id).setPrefSize(width, height);
           return;
         }
         if (buttons.containsKey(id)) {
-            AnchorPane.setLeftAnchor(buttons.get(id),1.*x);
-            AnchorPane.setTopAnchor(buttons.get(id),1.*y);
+          buttons.get(id).setPrefSize(width, height);
           return;
         }
         if (boxes.containsKey(id)) {
-            AnchorPane.setLeftAnchor(boxes.get(id),1.*x);
-            AnchorPane.setTopAnchor(boxes.get(id),1.*y);
+          boxes.get(id).setPrefSize(width, height);
           return;
         }
         if (trees.containsKey(id)) {
-            AnchorPane.setLeftAnchor(trees.get(id),1.*x);
-            AnchorPane.setTopAnchor(trees.get(id),1.*y);
+          trees.get(id).setPrefSize(width, height);
           return;
         }
-        if (lists.containsKey(id)) throw new RuntimeException("The move()-operation for List is not yet implemented...");
-        if (items.containsKey(id)) throw new RuntimeException("The move()-operation for TreeItem is not yet implemented...");
-        if (images.containsKey(id)) throw new RuntimeException("The move()-operation for String/Image is not yet implemented...");
-        throw new RuntimeException("The move()-operation for this type of Display is not yet implemented...");
+        if (lists.containsKey(id)) throw new RuntimeException("The setSize()-operation for List is not yet implemented...");
+        if (items.containsKey(id)) throw new RuntimeException("The setSize()-operation for TreeItem is not yet implemented...");
+        if (images.containsKey(id)) throw new RuntimeException("The setSize()-operation for String/Image is not yet implemented...");
+        throw new RuntimeException("The setSize()-operation for this type of Display is not yet implemented...");
 
         // These Displays need to be added:
         // Hashtable<String, List> lists = new Hashtable<String, List>();
         // Hashtable<String, TreeItem> items = new Hashtable<String, TreeItem>();
         // Hashtable<String, String> images = new Hashtable<String, String>();
-      }
-    });
-  }
-
-  public void setSize(String id, int x, int y) {
-	  iHaventImplementedItYet();
-//    FormsClient.theClient().runOnDisplay(new Runnable() {
+//        l.countDown();
+//	    });
+//	    try {
+//	     l.await();
+//	    } catch (InterruptedException e) {
+//	     e.printStackTrace();
+//	    }
 //
-//      public void run() {
-//        if (combos.containsKey(id)) {
-//          combos.get(id).setSize(x, y);
-//          return;
-//        }
-//        if (textFields.containsKey(id)) {
-//          textFields.get(id).setSize(x, y);
-//          return;
-//        }
-//        if (labels.containsKey(id)) {
-//          labels.get(id).setSize(x, y);
-//          return;
-//        }
-//        if (checks.containsKey(id)) {
-//          checks.get(id).setSize(x, y);
-//          return;
-//        }
-//        if (buttons.containsKey(id)) {
-//          buttons.get(id).setSize(x, y);
-//          return;
-//        }
-//        if (boxes.containsKey(id)) {
-//          boxes.get(id).setSize(x, y);
-//          return;
-//        }
-//        if (trees.containsKey(id)) {
-//          trees.get(id).setSize(x, y);
-//          return;
-//        }
-//        if (lists.containsKey(id)) throw new RuntimeException("The setSize()-operation for List is not yet implemented...");
-//        if (items.containsKey(id)) throw new RuntimeException("The setSize()-operation for TreeItem is not yet implemented...");
-//        if (images.containsKey(id)) throw new RuntimeException("The setSize()-operation for String/Image is not yet implemented...");
-//        throw new RuntimeException("The setSize()-operation for this type of Display is not yet implemented...");
-//
-//        // These Displays need to be added:
-//        // Hashtable<String, List> lists = new Hashtable<String, List>();
-//        // Hashtable<String, TreeItem> items = new Hashtable<String, TreeItem>();
-//        // Hashtable<String, String> images = new Hashtable<String, String>();
-//      }
-//    });
-  }
+//		  System.err.println("setSize -");
+	  }
 
 //  public void mouseDoubleClick(MouseEvent event) {
 //    Widget widget = event.widget;
@@ -640,16 +672,21 @@ public void newButton(String parentId, String id, String label, int x, int y, in
   }
 
   public void maximiseToCanvas(String id) {
-	  iHaventImplementedItYet();
-//    Tree tree = trees.get(id);
-//    if (tree != null) {
-//      org.eclipse.swt.graphics.Point parentSize = tree.getParent().getSize();
+    TreeView<String> tree = trees.get(id);
+    if (tree != null) {
+//      org.eclipse.swt.graphics.Point parentSize = tree.getParent().w
 //      tree.setSize(parentSize);
-//    }
+    	double GAP = 2.;
+	      AnchorPane.setLeftAnchor(tree, GAP);
+	      AnchorPane.setTopAnchor(tree, GAP);
+	      AnchorPane.setRightAnchor(tree, GAP);
+	      AnchorPane.setBottomAnchor(tree, GAP);
+
+    }
   }
 //
   public void changesMade(String id, boolean made) {
-	  iHaventImplementedItYet();
+	  System.err.println("changesMade//iHaventImplementedItYet();");
 //    StyledText text = boxes.get(id);
 //    if (text != null) {
 //      text.setBackground(made ? modifiedBackgroundColor : normalBackgroundColor);

@@ -632,8 +632,10 @@ public class FormsClient extends Client {
     newTextField(parentId, id, x, y, width, height, editable);
   }
 
-	private void newTextField(final String parentId, final String id, final int x, final int y, final int width,
-			final int height, final boolean editable) {
+	private void newTextField(final String parentId, final String id, 
+			final int x, final int y, 
+			final int width, final int height, 
+			final boolean editable) {
 		final Form form = getForm(parentId);
 		if (form != null) {
 			CountDownLatch l = new CountDownLatch(1);
@@ -755,7 +757,7 @@ public class FormsClient extends Client {
 	}
 
   public void sendMessage(final Message message) {
-//	  System.err.println("MESSAGE: "+message);
+	  System.err.println("MESSAGE: "+message);
     if (message.hasName("newForm"))
       newForm(message);
     else if (message.hasName("setTool"))

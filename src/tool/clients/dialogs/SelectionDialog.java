@@ -32,7 +32,7 @@ public class SelectionDialog extends Dialog<String[]> {
 				 listView.getSelectionModel().select(s);
 			 }
 		 }else{
-			 listView.getSelectionModel().select(selected[0]);
+			 if(selected.length > 0) listView.getSelectionModel().select(selected[0]);
 		 }
 		 
 		 Label l = new Label(message);

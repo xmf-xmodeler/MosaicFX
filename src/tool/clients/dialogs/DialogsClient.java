@@ -1,6 +1,7 @@
 package tool.clients.dialogs;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
@@ -615,6 +616,11 @@ public class DialogsClient extends Client {
     String[] stringOptions = objectsToStrings(options);
     String[] allOptions = processAllOptions(stringOptions);
     String[] defaultOptions = processDefaultOptions(stringOptions);
+
+    System.err.println("options: " + Arrays.toString(options));
+    System.err.println("stringOptions: " + Arrays.toString(stringOptions));
+    System.err.println("allOptions: " + Arrays.toString(allOptions));
+    System.err.println("defaultOptions: " + Arrays.toString(defaultOptions));
     
 //    runOnDisplay(new Runnable() {
 //      public void run() {
