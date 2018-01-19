@@ -142,17 +142,27 @@ public void newButton(String parentId, String id, String label, int x, int y, in
 	    }
 	  }
 
-	  public void newComboBox(String parentId, String id, int x, int y, int width, int height) {
-	    if (this.id.equals(parentId)) {
-	      ComboBox<String> combo = new ComboBox<String>();
-	      AnchorPane.setLeftAnchor(combo, x*1.);
-	      AnchorPane.setTopAnchor(combo, y*1.);
-//	      combo.setSize(150, 25);
-//	      combo.setFont(FormsClient.formLabelFont);
-	      combos.put(id, combo);
-	      root.getChildren().add(combo);
-	    }
-	  }
+	public void newComboBox(String parentId, String id, int x, int y, int width, int height) {
+		if (this.id.equals(parentId)) {
+			ComboBox<String> combo = new ComboBox<String>();
+			AnchorPane.setLeftAnchor(combo, x * 1.);
+			AnchorPane.setTopAnchor(combo, y * 1.);
+			// combo.setSize(150, 25);
+			// combo.setFont(FormsClient.formLabelFont);
+			combos.put(id, combo);
+			root.getChildren().add(combo);
+
+			combo.getSelectionModel().selectedItemProperty().addListener(new javafx.beans.value.ChangeListener<String>() {
+				public void changed(ObservableValue<? extends String> ov, String old_val, String new_val) {
+				    EventHandler handler = FormsClient.theClient().getHandler();
+				    Message message = handler.newMessage("comboBoxSelection", 2);
+				    message.args[0] = new Value(id);
+				    message.args[1] = new Value(new_val);
+				    handler.raiseEvent(message);
+				}
+			});
+		}
+	}
 
 	public void newList(String parentId, final String id, final int x, final int y, final int width, final int height) {
 		if (this.id.equals(parentId)) {

@@ -522,35 +522,36 @@ public class FormsClient extends Client {
 	System.err.println("NEW FORM done");
   }
 
-  private void newForm(final String id, final String label, final boolean selected) {
-	  CountDownLatch l = new CountDownLatch(1); 
-	  
-	  Platform.runLater(()->{
-		  System.err.println("Platform.runLater START");
-    	Tab tabItem = new Tab(label);
-    	tabFolder.getTabs().add(tabItem);
-//    	tabFolder.toFront();
-        tabs.put(id, tabItem);
-//        CTabItem tabItem = new CTabItem(tabFolder, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-//        tabItem.setText(label);
-//        tabs.put(id, tabItem);
-        Form form = new Form(tabItem, id);
-        // REMOVED // tabItem.setControl(form.getForm());
-        // REMOVED // tabItem.setShowClose(true);
-        forms.add(form);
-        // REMOVED // if (selected) tabFolder.setSelection(tabItem);
-//      }
-        System.err.println("Platform.runLater END");
-        l.countDown();
-	  });
-	  try {
-	   System.err.println("waiting...");
-	   l.await();
-	   System.err.println("waited");
-	  } catch (InterruptedException e) {
-	   e.printStackTrace();
-	  }
-  }
+	private void newForm(final String id, final String label, final boolean selected) {
+		CountDownLatch l = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+//			System.err.println("Platform.runLater START");
+			Tab tabItem = new Tab(label);
+			tabFolder.getTabs().add(tabItem);
+			// tabFolder.toFront();
+			tabs.put(id, tabItem);
+			// CTabItem tabItem = new CTabItem(tabFolder, SWT.BORDER |
+			// SWT.V_SCROLL | SWT.H_SCROLL);
+			// tabItem.setText(label);
+			// tabs.put(id, tabItem);
+			Form form = new Form(tabItem, id);
+			// REMOVED // tabItem.setControl(form.getForm());
+			// REMOVED // tabItem.setShowClose(true);
+			forms.add(form);
+			// REMOVED // if (selected) tabFolder.setSelection(tabItem);
+			// }
+//			System.err.println("Platform.runLater END");
+			l.countDown();
+		});
+		try {
+//			System.err.println("waiting...");
+			l.await();
+//			System.err.println("waited");
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 
   private void newList(Message message) {
     String parentId = message.args[0].strValue();
@@ -685,10 +686,13 @@ public class FormsClient extends Client {
 	private void selectForm(final String id) {
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
-			
-		 if (tabs.containsKey(id))
-		 tabFolder.getSelectionModel().select(tabs.get(id));	
-			
+			if (tabs.containsKey(id)) {
+				Tab tab = tabs.get(id);
+				if (!tabFolder.getTabs().contains(tab)) {
+					tabFolder.getTabs().add(tab);
+				}
+				tabFolder.getSelectionModel().select(tabs.get(id));
+			}
 			l.countDown();
 		});
 		try {
@@ -696,17 +700,6 @@ public class FormsClient extends Client {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-
-//		System.err.println("selectForm not implemented yet");
-		/* REMOVED */
-		// runOnDisplay(new Runnable() {
-		// public void run() {
-		// if (tabs.containsKey(id))
-		// tabFolder.setSelection(tabs.get(id));
-		// else System.err.println("cannot find form: " + id);
-		//// select();
-		// }
-		// });
 	}
   
   private void removeNode(Message message) {

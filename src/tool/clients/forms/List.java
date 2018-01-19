@@ -50,7 +50,9 @@ public class List {
   }
 
   public void clear() {
-    list.getItems().removeAll();
+	System.err.println("Clear List " + id + "(" + list.getItems() + ")");
+    list.getItems().clear();
+	System.err.println("Cleared List " + id + "(" + list.getItems() + ")");
     items.clear();
   }
 
