@@ -3,7 +3,6 @@ package tool.clients.diagrams;
 import java.io.PrintStream;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.ImageData;
 
 import javafx.scene.canvas.GraphicsContext;

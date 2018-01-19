@@ -2,16 +2,8 @@ package tool.clients.diagrams;
 
 import java.io.PrintStream;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.text.Font;
-import tool.clients.dialogs.notifier.NotificationType;
-import tool.clients.dialogs.notifier.NotifierDialog;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
@@ -61,7 +53,7 @@ public class MultilineText implements Display {
 	public void paint(javafx.scene.canvas.GraphicsContext gc, int parentX, int parentY) {
 		// FontData fontData = font.equals("") ?
 		// DiagramClient.diagramFont.getFontData()[0] : new FontData(font);
-		String fontName = DiagramClient.diagramFontFX.getName();
+//		String fontName = DiagramClient.diagramFontFX.getName();
 		double fontSize = DiagramClient.diagramFontFX.getSize();
 		Font font = gc.getFont();
 		gc.setFont(DiagramClient.diagramFontFX);

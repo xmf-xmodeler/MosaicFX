@@ -5,7 +5,6 @@ import java.io.PrintStream;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 
-import javafx.scene.control.Button;
 import javafx.scene.control.TreeItem;
 
 public abstract class Tool implements SelectionListener {

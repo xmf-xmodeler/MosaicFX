@@ -5,10 +5,8 @@ import java.io.PrintStream;
 
 import org.eclipse.swt.events.SelectionEvent;
 
-import javafx.scene.control.Button;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
-import tool.xmodeler.XModeler;
 
 public class ToggleTool extends Tool {
 

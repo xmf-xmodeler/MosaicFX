@@ -27,7 +27,6 @@ import javafx.scene.paint.Paint;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 import tool.clients.EventHandler;
-import tool.clients.diagrams.Diagram.MouseMode;
 import tool.clients.menus.MenuClient;
 import tool.xmodeler.XModeler;
 import xos.Message;
@@ -61,7 +60,7 @@ public class Diagram implements Display {
   static float             MIN_ZOOM               = .20f;
   static float             ZOOM_INC               = .10f;
   static int               MIN_EDGE_DISTANCE      = 5;
-  private static final int TRAY_PAD               = 5;
+//  private static final int TRAY_PAD               = 5;
   transient static boolean dontSelectNextWaypoint = false;  
   
 //  public static Color color(int code) {
@@ -267,9 +266,6 @@ public class Diagram implements Display {
 	  }
   
 	private void leftClick(javafx.scene.input.MouseEvent event, javafx.geometry.Point2D scaledPoint) {
-//		System.err.println("leftMouseClickedOnce");
-//		System.err.println("nodeCreationType:" + nodeCreationType);
-//		System.err.println("edgeCreationType:" + edgeCreationType);
 		TrayTool tool = null;//selectTool((int) event.getX(), (int) event.getY());
 		if (tool != null)
 			tool.click(Diagram.this);
@@ -304,7 +300,6 @@ public class Diagram implements Display {
 				DiagramClient.theClient().newNode(nodeCreationType, (String) diagramData[0],
 						((int) scaledPoint.getX()) - ((Integer) diagramData[1]), 
 						((int) scaledPoint.getY()) - ((Integer) diagramData[2]));
-				System.err.println("Node creation sent.");
 				resetPalette();
 				redraw();
 			}
@@ -1051,10 +1046,10 @@ public class Diagram implements Display {
     return false;
   }
 
-  @Deprecated
-  private boolean isCommand(MouseEvent event) {
-    return (event.stateMask & SWT.COMMAND) != 0;
-  }
+//  @Deprecated
+//  private boolean isCommand(MouseEvent event) {
+//    return (event.stateMask & SWT.COMMAND) != 0;
+//  }
 
   private boolean isNested() {
     return nestedParent != null;
@@ -1525,27 +1520,27 @@ public class Diagram implements Display {
       node.paint(gc, this, x, y);
   }
 
-  private void paintOn(GC gc, int xOffset, int yOffset) {
-    gc.setAntialias(SWT.ON);
-    gc.setTextAntialias(SWT.ON);
-    gc.setInterpolation(SWT.HIGH);
-    gc.setAdvanced(true);
-//    gc.setTransform(transform);
-//    clear(gc, xOffset, yOffset);
-//    paintDisplays(gc, xOffset, yOffset);
-//    paintResizing(gc, xOffset, yOffset);
-//    paintEdges(gc, xOffset, yOffset);
-//    paintAlignment(gc);
-//    paintNodes(gc, xOffset, yOffset);
-//    paintHover(gc, xOffset, yOffset);
-//    paintSelected(gc, xOffset, yOffset);
-//    paintRubberBand(gc, xOffset, yOffset);
-//    paintNewNode(gc);
-//    paintNewEdge(gc);
-//    paintErrors(gc);
-//    paintTray(gc);
-//    handleDoubleClick(gc);
-  }
+//  private void paintOn(GC gc, int xOffset, int yOffset) {
+//    gc.setAntialias(SWT.ON);
+//    gc.setTextAntialias(SWT.ON);
+//    gc.setInterpolation(SWT.HIGH);
+//    gc.setAdvanced(true);
+////    gc.setTransform(transform);
+////    clear(gc, xOffset, yOffset);
+////    paintDisplays(gc, xOffset, yOffset);
+////    paintResizing(gc, xOffset, yOffset);
+////    paintEdges(gc, xOffset, yOffset);
+////    paintAlignment(gc);
+////    paintNodes(gc, xOffset, yOffset);
+////    paintHover(gc, xOffset, yOffset);
+////    paintSelected(gc, xOffset, yOffset);
+////    paintRubberBand(gc, xOffset, yOffset);
+////    paintNewNode(gc);
+////    paintNewEdge(gc);
+////    paintErrors(gc);
+////    paintTray(gc);
+////    handleDoubleClick(gc);
+//  }
   
 //  private transient long _last_paintOn;
   private void paintOn(GraphicsContext gc, int xOffset, int yOffset) {
@@ -2046,7 +2041,6 @@ public class Diagram implements Display {
 
   public void setNodeCreationType(String nodeCreationType) {
     this.nodeCreationType = nodeCreationType;
-    System.err.println("nodeCreationType:" + nodeCreationType);
   }
 
   public void setText(String id, String text) {

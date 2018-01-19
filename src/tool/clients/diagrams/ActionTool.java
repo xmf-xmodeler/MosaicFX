@@ -7,7 +7,6 @@ import org.eclipse.swt.events.SelectionEvent;
 
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
-import tool.xmodeler.XModeler;
 
 public class ActionTool extends Tool {
 

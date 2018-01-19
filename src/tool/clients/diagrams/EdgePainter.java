@@ -6,7 +6,6 @@ import java.util.Vector;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import tool.clients.diagrams.Edge.HeadStyle;
 import tool.clients.diagrams.Edge.Position;
 

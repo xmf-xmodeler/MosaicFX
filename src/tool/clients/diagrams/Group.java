@@ -4,17 +4,13 @@ import java.io.PrintStream;
 import java.util.Vector;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.ExpandBar;
 import org.eclipse.swt.widgets.ExpandItem;
 
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
-import tool.xmodeler.XModeler;
 import xos.Value;
 
 public class Group extends TreeItem<String>{

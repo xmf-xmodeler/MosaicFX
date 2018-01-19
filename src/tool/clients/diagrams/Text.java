@@ -2,25 +2,10 @@ package tool.clients.diagrams;
 
 import java.io.PrintStream;
 import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
 
-import org.eclipse.jface.resource.FontDescriptor;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-
-import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.text.Font;
-import tool.clients.dialogs.notifier.NotificationType;
-import tool.clients.dialogs.notifier.NotifierDialog;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;

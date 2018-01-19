@@ -750,7 +750,7 @@ public class FormsClient extends Client {
 	}
 
   public void sendMessage(final Message message) {
-	  System.err.println("MESSAGE: "+message);
+//	  System.err.println("MESSAGE: "+message);
     if (message.hasName("newForm"))
       newForm(message);
     else if (message.hasName("setTool"))

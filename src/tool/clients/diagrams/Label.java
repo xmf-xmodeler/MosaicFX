@@ -2,9 +2,6 @@ package tool.clients.diagrams;
 
 import java.io.PrintStream;
 
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Path;
-
 import javafx.geometry.Side;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;

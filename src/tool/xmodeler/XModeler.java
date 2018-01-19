@@ -256,6 +256,7 @@ public class XModeler extends Application {
   }
 
 	public static void saveInflator(final String inflationPath) {
+		System.err.println("saveInflator(" + inflationPath +")");
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 
@@ -303,9 +304,11 @@ public class XModeler extends Application {
     if (imageDialog || showLoad) {
     	
     	final FileChooser fileChooser = new FileChooser();
-    	
+
     	fileChooser.setTitle("Select the image file");
-    	fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("*.img", "*.img"));
+    	FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("*.img", "*.img");
+    	fileChooser.getExtensionFilters().add(filter);
+    	fileChooser.setSelectedExtensionFilter(filter);
         
         fileChooser.setInitialFileName(defaultImage);    
     	

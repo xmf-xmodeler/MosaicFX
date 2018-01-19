@@ -1049,6 +1049,7 @@ public class DiagramClient extends Client {
 */
 
   public void sendMessage(final Message message) {
+//  System.err.println("Diagram Client " + message);
     if (message.hasName("newDiagram"))
       newDiagram(message); 
     else if (message.hasName("newGroup"))
@@ -1473,8 +1474,8 @@ public class DiagramClient extends Client {
 //    runOnDisplay(new Runnable() {
 //      public void run() {
         Value id = message.args[0];
-        Value refx = message.args[1];
-        Value refy = message.args[2];
+//        Value refx = message.args[1];
+//        Value refy = message.args[2];
         for (Diagram diagram : diagrams) {
           for (Edge edge : diagram.getEdges()) {
             if (edge.getId().equals(id.strValue())) {

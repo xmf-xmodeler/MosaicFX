@@ -306,7 +306,10 @@ public class DialogsClient extends Client {
           final FileChooser fileChooser = new FileChooser();
       	
 				fileChooser.setTitle("Select the image file");
-				fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter(pattern, pattern));
+				System.err.println("pattern:"  + pattern);
+				FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(pattern, pattern);
+				fileChooser.getExtensionFilters().add(filter);
+				fileChooser.setSelectedExtensionFilter(filter);
 				
 				File initFile = new File(path);
 				fileChooser.setInitialFileName(def);

@@ -4,8 +4,6 @@ import java.io.PrintStream;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 
 import javafx.geometry.Side;

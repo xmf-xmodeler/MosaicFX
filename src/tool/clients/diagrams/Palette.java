@@ -2,13 +2,11 @@ package tool.clients.diagrams;
 
 import java.io.PrintStream;
 import java.util.HashMap;
-import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import xos.Value;
@@ -22,7 +20,7 @@ public class Palette {
 	private TreeView<String> tree;
 //	private HashMap<String,TreeItem<String>> gRoups = new HashMap<>();
 	private HashMap<String,Group> groups = new HashMap<>();
-	private HashMap<String,TreeItem<String>> buttons = new HashMap<>();
+//	private HashMap<String,TreeItem<String>> buttons = new HashMap<>();
 	private TreeItem<String> root;
 
   public Palette(Diagram diagram) {

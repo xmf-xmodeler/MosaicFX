@@ -2,7 +2,6 @@ package tool.clients.diagrams;
 
 import java.io.PrintStream;
 
-import org.eclipse.swt.graphics.GC;
 import javafx.scene.canvas.GraphicsContext;
 
 public interface Display {
