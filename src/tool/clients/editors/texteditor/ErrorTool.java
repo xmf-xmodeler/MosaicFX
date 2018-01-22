@@ -1,27 +1,26 @@
 package tool.clients.editors.texteditor;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
+
+import javafx.scene.canvas.GraphicsContext;
 
 public class ErrorTool extends Tool implements ErrorListener {
 
-  private static final Color ERROR   = Display.getDefault().getSystemColor(SWT.COLOR_RED);
-  private static final Color OK      = Display.getDefault().getSystemColor(SWT.COLOR_GREEN);
-  private static final Color BLACK   = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+//  private static final Color ERROR   = Display.getDefault().getSystemColor(SWT.COLOR_RED);
+//  private static final Color OK      = Display.getDefault().getSystemColor(SWT.COLOR_GREEN);
+//  private static final Color BLACK   = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
 
   boolean                    isError = false;
 
-  public void paint(GC gc, int x, int y, int width, int height) {
-    Color fg = gc.getForeground();
-    Color bg = gc.getBackground();
-    gc.setBackground(isError ? ERROR : OK);
-    gc.setForeground(BLACK);
-    gc.fillOval(x, y, width, height);
-    gc.drawOval(x, y, width, height);
-    gc.setForeground(fg);
-    gc.setBackground(bg);
+  public void paint(GraphicsContext gc, int x, int y, int width, int height) {
+//    Color fg = gc.getForeground();
+//    Color bg = gc.getBackground();
+//    gc.setBackground(isError ? ERROR : OK);
+//    gc.setForeground(BLACK);
+//    gc.fillOval(x, y, width, height);
+//    gc.drawOval(x, y, width, height);
+//    gc.setForeground(fg);
+//    gc.setBackground(bg);
   }
 
   public String toolTip() {
@@ -29,7 +28,7 @@ public class ErrorTool extends Tool implements ErrorListener {
   }
 
   public void click(TextEditor editor) {
-    if (isError) editor.scrollToError();
+//    if (isError) editor.scrollToError();
   }
 
   public void error(TextEditor editor) {

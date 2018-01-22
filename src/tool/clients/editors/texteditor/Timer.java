@@ -1,16 +1,14 @@
 package tool.clients.editors.texteditor;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
+import javafx.scene.canvas.GraphicsContext;
 import tool.xmodeler.XModeler;
 
 public class Timer extends Tool implements Runnable {
 
-  private static final Color GREEN = Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN);
-  private static final Color BLACK = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+//  private static final Color GREEN = Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN);
+//  private static final Color BLACK = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
 
   interface TimerAction {
     public void action();
@@ -67,19 +65,19 @@ public class Timer extends Tool implements Runnable {
     time += increment;
   }
 
-  public void paint(GC gc, int x, int y, int width, int height) {
+  public void paint(GraphicsContext gc, int x, int y, int width, int height) {
     drawPie(gc, x, y, width, height);
   }
 
-  void drawPie(GC g, int x, int y, int width, int height) {
-    double curValue = 0.0D;
-    int startAngle = 0;
-    startAngle = (int) (curValue * 360 / delay);
-    int arcAngle = (int) (time * 360 / delay);
-    g.setBackground(GREEN);
-    g.setForeground(BLACK);
-    g.fillArc(x, y, width, height, startAngle, arcAngle);
-    g.drawOval(x, y, width, height);
+  void drawPie(GraphicsContext g, int x, int y, int width, int height) {
+//    double curValue = 0.0D;
+//    int startAngle = 0;
+//    startAngle = (int) (curValue * 360 / delay);
+//    int arcAngle = (int) (time * 360 / delay);
+//    g.setBackground(GREEN);
+//    g.setForeground(BLACK);
+//    g.fillArc(x, y, width, height, startAngle, arcAngle);
+//    g.drawOval(x, y, width, height);
   }
 
   public String toolTip() {
@@ -93,12 +91,12 @@ public class Timer extends Tool implements Runnable {
   }
 
   public void rightClick(int x,int y) {
-    TimerDialog dialog = new TimerDialog(XModeler.getXModeler(), delay, SWT.DIALOG_TRIM);
-    int newDelay = dialog.open(x,y);
-    if(newDelay >= 0) {
-      delay = newDelay;
-      increment = (int)delay/10;
-      time = delay;
-    }
+//    TimerDialog dialog = new TimerDialog(XModeler.getXModeler(), delay, SWT.DIALOG_TRIM);
+//    int newDelay = dialog.open(x,y);
+//    if(newDelay >= 0) {
+//      delay = newDelay;
+//      increment = (int)delay/10;
+//      time = delay;
+//    }
   }
 }

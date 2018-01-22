@@ -1,15 +1,12 @@
 package tool.clients.editors.texteditor;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.widgets.Display;
+import javafx.scene.canvas.GraphicsContext;
 
 public class CheckSyntax extends Tool {
 
-  private static final Color CHECKING     = Display.getDefault().getSystemColor(SWT.COLOR_YELLOW);
-  private static final Color NOT_CHECKING = Display.getDefault().getSystemColor(SWT.COLOR_BLUE);
-  private static final Color BLACK        = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+//  private static final Color CHECKING     = Display.getDefault().getSystemColor(SWT.COLOR_YELLOW);
+//  private static final Color NOT_CHECKING = Display.getDefault().getSystemColor(SWT.COLOR_BLUE);
+//  private static final Color BLACK        = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
 
   TextEditor              editor;
 
@@ -17,16 +14,16 @@ public class CheckSyntax extends Tool {
     this.editor = editor;
   }
 
-  public void paint(GC gc, int x, int y, int width, int height) {
+  public void paint(GraphicsContext gc, int x, int y, int width, int height) {
 
-    Color fg = gc.getForeground();
-    Color bg = gc.getBackground();
-    gc.setBackground(editor.isCheckingSyntax() ? CHECKING : NOT_CHECKING);
-    gc.setForeground(BLACK);
-    gc.fillOval(x, y, width, height);
-    gc.drawOval(x, y, width, height);
-    gc.setForeground(fg);
-    gc.setBackground(bg);
+//    Color fg = gc.getForeground();
+//    Color bg = gc.getBackground();
+//    gc.setBackground(editor.isCheckingSyntax() ? CHECKING : NOT_CHECKING);
+//    gc.setForeground(BLACK);
+//    gc.fillOval(x, y, width, height);
+//    gc.drawOval(x, y, width, height);
+//    gc.setForeground(fg);
+//    gc.setBackground(bg);
   }
 
   public String toolTip() {

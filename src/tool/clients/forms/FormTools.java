@@ -4,8 +4,6 @@ import java.io.PrintStream;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.swt.widgets.ToolBar;
-
 import javafx.application.Platform;
 
 public class FormTools {
@@ -111,11 +109,11 @@ public class FormTools {
 		}
 	}
 
-	public void populateToolBar(ToolBar toolBar) {
+	public void populateToolBar(Object toolBar) {
 		boolean test = false;
-		for (FormToolDef def : tools)
+//		for (FormToolDef def : tools)
 			// for (FormToolDef def : tools_new.values())
-			def.populateToolBar(toolBar);
+//			def.populateToolBar(toolBar);
 	}
 
 	private String eventName(String toolName) {

@@ -2,17 +2,12 @@ package tool.clients.forms;
 
 import java.io.PrintStream;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import tool.xmodeler.XModeler;
 
-public class FormToolDef implements SelectionListener {
+public class FormToolDef {
 
   String event;
   String id;
@@ -53,48 +48,48 @@ public class FormToolDef implements SelectionListener {
   }
 
   public void populateToolBar(ToolBar toolBar) {
-	item = new ToolItem(toolBar, SWT.PUSH);
-    ImageData imageData = new ImageData(icon);
-    Image image = new Image(XModeler.getXModeler().getDisplay(), imageData);
-    item.setImage(image);
-    ImageData disabledImageData = new ImageData(disabledIcon);
-    Image disabledImage = new Image(XModeler.getXModeler().getDisplay(), disabledImageData);
-    item.setDisabledImage(disabledImage);
-    setEnabled(enabled);
-    item.addSelectionListener(this);
+//	item = new ToolItem(toolBar, SWT.PUSH);
+//    ImageData imageData = new ImageData(icon);
+//    Image image = new Image(XModeler.getXModeler().getDisplay(), imageData);
+//    item.setImage(image);
+//    ImageData disabledImageData = new ImageData(disabledIcon);
+//    Image disabledImage = new Image(XModeler.getXModeler().getDisplay(), disabledImageData);
+//    item.setDisabledImage(disabledImage);
+//    setEnabled(enabled);
+//    item.addSelectionListener(this);
   }
   
   public void setEnabled(boolean enabled){
-	  if(item != null && !item.isDisposed()){
-    	  this.enabled = enabled;
-//		  final boolean enabled_local = enabled;
-//		  FormsClient.theClient().runOnDisplay(new Runnable() {
-//		      public void run() {
-		  		if (event.equals("lockForm")) {
-//		  			System.out.println(enabled);
-		  			if(enabled ){
-		  			    ImageData imageData = new ImageData(disabledIcon);
-		  			    Image image = new Image(XModeler.getXModeler().getDisplay(), imageData);
-		  				item.setImage(image);
-		  			}else{
-		  				ImageData imageData = new ImageData(icon);
-		  			    Image image = new Image(XModeler.getXModeler().getDisplay(), imageData);
-		  				item.setImage(image);
-		  			}
-		  		}else{
-		    	  item.setEnabled(enabled);
-		  		}  
-//		      }
-//		    });
-	  }
+//	  if(item != null && !item.isDisposed()){
+//    	  this.enabled = enabled;
+////		  final boolean enabled_local = enabled;
+////		  FormsClient.theClient().runOnDisplay(new Runnable() {
+////		      public void run() {
+//		  		if (event.equals("lockForm")) {
+////		  			System.out.println(enabled);
+//		  			if(enabled ){
+//		  			    ImageData imageData = new ImageData(disabledIcon);
+//		  			    Image image = new Image(XModeler.getXModeler().getDisplay(), imageData);
+//		  				item.setImage(image);
+//		  			}else{
+//		  				ImageData imageData = new ImageData(icon);
+//		  			    Image image = new Image(XModeler.getXModeler().getDisplay(), imageData);
+//		  				item.setImage(image);
+//		  			}
+//		  		}else{
+//		    	  item.setEnabled(enabled);
+//		  		}  
+////		      }
+////		    });
+//	  }
   }
   
-  public void widgetDefaultSelected(SelectionEvent event) {
-  }
-
-  public void widgetSelected(SelectionEvent event) {
-	 FormsClient.theClient().toolItemEvent(this.event, id,enabled);
-  }
+//  public void widgetDefaultSelected(SelectionEvent event) {
+//  }
+//
+//  public void widgetSelected(SelectionEvent event) {
+//	 FormsClient.theClient().toolItemEvent(this.event, id,enabled);
+//  }
 
   public void writeXML(PrintStream out) {
     out.print("<FormToolDef id='" + getId() + "' event='" + getEvent() + "' icon = '" + getIcon() + "'/>");

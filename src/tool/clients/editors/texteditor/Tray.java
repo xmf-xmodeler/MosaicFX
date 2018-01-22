@@ -2,8 +2,6 @@ package tool.clients.editors.texteditor;
 
 import java.util.Vector;
 
-import org.eclipse.swt.graphics.GC;
-
 public class Tray {
 
   private static int TOOL_WIDTH  = 10;
@@ -16,15 +14,15 @@ public class Tray {
     tools.add(tool);
   }
 
-  public void paint(GC gc, int width, int height) {
-    int trayWidth = TOOL_WIDTH * tools.size() + (tools.size() * SEPARATE);
-    int x = width - trayWidth;
-    int y = height - TOOL_HEIGHT;
-    for (Tool tool : tools) {
-      tool.paint(gc, x, y, TOOL_WIDTH, TOOL_HEIGHT);
-      x += TOOL_WIDTH + SEPARATE;
-    }
-  }
+//  public void paint(GraphicsContext gc, int width, int height) {
+//    int trayWidth = TOOL_WIDTH * tools.size() + (tools.size() * SEPARATE);
+//    int x = width - trayWidth;
+//    int y = height - TOOL_HEIGHT;
+//    for (Tool tool : tools) {
+//      tool.paint(gc, x, y, TOOL_WIDTH, TOOL_HEIGHT);
+//      x += TOOL_WIDTH + SEPARATE;
+//    }
+//  }
 
   public Tool selectTool(int x0, int y0, int width, int height) {
     int trayWidth = TOOL_WIDTH * tools.size() + (tools.size() * SEPARATE);
