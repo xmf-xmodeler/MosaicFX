@@ -1,26 +1,20 @@
 package tool.clients.screenGeneration;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.custom.ScrolledComposite;
-
 import xos.Message;
 import xos.Value;
 
 public class Tab extends Window {
 
-	private CTabItem tab;
-	private ScrolledComposite content;
 	private CommandableScreenElement rootElement;
 
 	public Tab(final String id, final ScreenGenerationClient client, final int type, final String label,
 			final boolean selected) {
-		super(id, client);
+		super(id);
 //		runOnDisplay(new Runnable() {
 //			public void run() {
 
-				tab = new CTabItem(tabFolder, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-				tab.setText(label);
+//				tab = new CTabItem(tabFolder, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+//				tab.setText(label);
 
 //				content = new ScrolledComposite(tabFolder, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 //				content.setVisible(true);
@@ -31,10 +25,10 @@ public class Tab extends Window {
 //				fillLayout1.type = SWT.HORIZONTAL;
 //				content.setLayout(fillLayout1);
 
-				tab.setControl(content);
-				tab.setShowClose(true);
-				if (selected)
-					tabFolder.setSelection(tab);
+//				tab.setControl(content);
+//				tab.setShowClose(true);
+//				if (selected)
+//					tabFolder.setSelection(tab);
 //			}
 //		});
 	}
@@ -42,7 +36,7 @@ public class Tab extends Window {
 	public CommandableScreenElement newFormView(final String id) {
 //		runOnDisplay(new Runnable() {
 //			public void run() {
-				rootElement = new EditContainer(id,tabFolder,tab);
+				rootElement = new EditContainer(id,null,null);
 //			}
 //		});
 				return rootElement;
@@ -51,7 +45,7 @@ public class Tab extends Window {
 	public CommandableScreenElement newMultiView(final String id) {
 //		runOnDisplay(new Runnable() {
 //			public void run() {
-				rootElement = new MultilevelEditContainer(id,tabFolder,tab);
+				rootElement = new MultilevelEditContainer(id,null,null);
 //				content.setContent(rootElement.getContent());
 //				rootElement.getContent().setSize(rootElement.getContent().computeSize(SWT.DEFAULT, SWT.DEFAULT));
 //			}
@@ -70,8 +64,8 @@ public class Tab extends Window {
 	}
 	
 	public void command(String message, Value[] values){
-		if (message.equals("refresh"))
-			refresh();
+		if (message.equals("refresh")) {}
+//			refresh();
 		else if (message.equals("changeText"))
 			changeText(values);
 		else if (message.equals("close"))
@@ -85,11 +79,11 @@ public class Tab extends Window {
 	}
 	
 	public void changeText(String text){
-		tab.setText(text);
+//		tab.setText(text);
 	}
 	
 	public void close(){
-		tab.dispose();
+//		tab.dispose();
 		
 	}
 	
@@ -147,13 +141,13 @@ public class Tab extends Window {
 		return super.callMessage(message);
 	}
 
-	@Override
-	public void refresh() {
-		if( content != null)
-		
-		content.setSize(content.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		tab.setControl(content);
-	}
+//	@Override
+//	public void refresh() {
+//		if( content != null)
+//		
+//		content.setSize(content.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+//		tab.setControl(content);
+//	}
 	
 	
 }

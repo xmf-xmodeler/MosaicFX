@@ -4,38 +4,25 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Vector;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabFolder2Listener;
-import org.eclipse.swt.custom.CTabFolderEvent;
-import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.widgets.Display;
 import tool.clients.Client;
 import tool.clients.EventHandler;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
 
-public class ScreenGenerationClient extends Client implements CTabFolder2Listener {
+public class ScreenGenerationClient extends Client {
 
 	public static final int HIGH_RESOLUTION_FACTOR_OLD = 2;
 	
 	private static HashMap<String, CommandableScreenElement>  elementRegistry;
+
+	private static ScreenGenerationClient theClient;
 	
 	public static int getDeviceZoomPercent() {
 		return XModeler.getDeviceZoomPercent();
 	}
 
-	public static Font getFormLabelFont() {
-		return formLabelFont;
-	}
 
-	public static Font getFormTextFieldFont() {
-		return formLabelFont;
-	}
 
 	public static void select() {
 		// for (ToolItem item : toolBar.getItems())
@@ -52,16 +39,16 @@ public class ScreenGenerationClient extends Client implements CTabFolder2Listene
 		// toolBar.pack();
 	}
 
-	public static void start(CTabFolder tabFolder) {
-		ScreenGenerationClient.tabFolder = tabFolder;
-		tabFolder.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent event) {
-			}
-
-			public void widgetSelected(SelectionEvent event) {
-				select();
-			}
-		});
+	public static void start(Object tabFolder) {
+//		ScreenGenerationClient.tabFolder = tabFolder;
+//		tabFolder.addSelectionListener(new SelectionListener() {
+//			public void widgetDefaultSelected(SelectionEvent event) {
+//			}
+//
+//			public void widgetSelected(SelectionEvent event) {
+//				select();
+//			}
+//		});
 		Window.start(tabFolder);
 	}
 
@@ -80,31 +67,11 @@ public class ScreenGenerationClient extends Client implements CTabFolder2Listene
 
 	public static final int TAB = 1;
 
-	static final Color WHITE = new Color(null, 255, 255, 255);
-	static ScreenGenerationClient theClient;
-	static CTabFolder tabFolder;
-
-	static Hashtable<String, CTabItem> tabs = new Hashtable<String, CTabItem>();
-	static Vector<Window> windows = new Vector<Window>();
-
-	static Font formLabelFont = Display.getDefault().getSystemFont();// new
-																		// Font(Display.getDefault(),
-																		// new
-																		// FontData("Monaco",
-																		// 12,
-																		// SWT.NO));
-	static Font formTextFieldFont = Display.getDefault().getSystemFont();// new
-																			// Font(Display.getDefault(),
-																			// new
-																			// FontData("Monaco",
-																			// 12,
-																			// SWT.NO));
-
 	public ScreenGenerationClient() {
 		super("screenGeneration");
-		theClient = this;
-		tabFolder.addCTabFolder2Listener(this);
-		elementRegistry = new HashMap<String, CommandableScreenElement>(); 
+//		theClient = this;
+//		tabFolder.addCTabFolder2Listener(this);
+//		elementRegistry = new HashMap<String, CommandableScreenElement>(); 
 	}
 
 	public Value callMessage(Message message) {
@@ -117,9 +84,9 @@ public class ScreenGenerationClient extends Client implements CTabFolder2Listene
 	}
 
 	private Window getScreen(String id) {
-		for (Window window : windows)
-			if (window.getId().equals(id))
-				return window;
+//		for (Window window : windows)
+//			if (window.getId().equals(id))
+//				return window;
 		return null;
 	}
 
@@ -178,7 +145,7 @@ public class ScreenGenerationClient extends Client implements CTabFolder2Listene
 				//if(idParent == null){
 					if(deleteMessage.equals("closeWindow")){
 						cse.close();
-						windows.remove((Window)cse);
+//						windows.remove((Window)cse);
 					//}
 				}else{
 					elementRegistry.get(idParent).deleteElement(deleteMessage, cse,values);
@@ -230,18 +197,18 @@ public class ScreenGenerationClient extends Client implements CTabFolder2Listene
 	
 	private CommandableScreenElement newWindow(final String id, final int type, final String label, final boolean selected) {
 		Window w = Window.windowFactory(id, this, type, label, selected);
-		windows.add(w);
+//		windows.add(w);
 		return w;
 	}
 
 	private void messageForward(Message message) {
 		String id = message.args[0].strValue();
 
-		for (Window window : windows) {
-			if (window.getId().equals(id)) {
-				window.sendMessage(extractMessage(message));
-			}
-		}
+//		for (Window window : windows) {
+//			if (window.getId().equals(id)) {
+//				window.sendMessage(extractMessage(message));
+//			}
+//		}
 	}
 
 	//TODO
@@ -263,41 +230,41 @@ public class ScreenGenerationClient extends Client implements CTabFolder2Listene
 		out.print("</ScreenGeneration>");
 	}
 
-	public void close(CTabFolderEvent event) {
-		CTabItem item = (CTabItem) event.item;
-		String id = getId(item);
-		if (id != null && getScreen(id) != null) {
-			EventHandler handler = getHandler();
-			Message message = handler.newMessage("screenClosed", 1);
-			message.args[0] = new Value(id);
-			handler.raiseEvent(message);
-			windows.remove(getScreen(id));
-			tabs.remove(id);
-		}
-	}
-
-	private String getId(CTabItem item) {
-		for (String id : tabs.keySet())
-			if (tabs.get(id).equals(item))
-				return id;
-		return null;
-	}
-
-	public void maximize(CTabFolderEvent event) {
-
-	}
-
-	public void minimize(CTabFolderEvent event) {
-
-	}
-
-	public void restore(CTabFolderEvent event) {
-
-	}
-
-	public void showList(CTabFolderEvent event) {
-
-	}
+//	public void close(CTabFolderEvent event) {
+//		CTabItem item = (CTabItem) event.item;
+//		String id = getId(item);
+//		if (id != null && getScreen(id) != null) {
+//			EventHandler handler = getHandler();
+//			Message message = handler.newMessage("screenClosed", 1);
+//			message.args[0] = new Value(id);
+//			handler.raiseEvent(message);
+//			windows.remove(getScreen(id));
+//			tabs.remove(id);
+//		}
+//	}
+//
+//	private String getId(CTabItem item) {
+//		for (String id : tabs.keySet())
+//			if (tabs.get(id).equals(item))
+//				return id;
+//		return null;
+//	}
+//
+//	public void maximize(CTabFolderEvent event) {
+//
+//	}
+//
+//	public void minimize(CTabFolderEvent event) {
+//
+//	}
+//
+//	public void restore(CTabFolderEvent event) {
+//
+//	}
+//
+//	public void showList(CTabFolderEvent event) {
+//
+//	}
 
 	public void doubleClick(String id) {
 		EventHandler handler = getHandler();

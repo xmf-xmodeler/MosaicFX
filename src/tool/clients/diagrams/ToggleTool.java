@@ -3,8 +3,6 @@ package tool.clients.diagrams;
 import java.io.File;
 import java.io.PrintStream;
 
-import org.eclipse.swt.events.SelectionEvent;
-
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 
@@ -54,12 +52,12 @@ public class ToggleTool extends Tool {
     out.print(" icon2='" + iconFalse + "'/>");
   }
 
-  public void widgetDefaultSelected(SelectionEvent event) {
-  }
-
-  public void widgetSelected(SelectionEvent event) {
+//  public void widgetDefaultSelected(SelectionEvent event) {
+//  }
+//
+  public void widgetSelected() {
     toggle();
-    event.doit = false;
+//    event.doit = false;
     // TODO //diagram.toggle(getId(), button.getSelection());
   }
 

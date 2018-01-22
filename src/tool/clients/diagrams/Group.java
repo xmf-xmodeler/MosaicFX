@@ -3,12 +3,6 @@ package tool.clients.diagrams;
 import java.io.PrintStream;
 import java.util.Vector;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.ExpandItem;
-
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
 import xos.Value;
@@ -20,35 +14,36 @@ public class Group extends TreeItem<String>{
 //  }
 
 //  static FontData defaultFont = new FontData("Monaco", 10, SWT.NORMAL);
-  Composite       buttonContainer;
-  ExpandItem      item;
+//  Composite       buttonContainer;
+//  ExpandItem      item;
   Palette         palette;
   String          name;
   Vector<Tool>    tools       = new Vector<Tool>();
 
   public Group(String name) {
 	  super(name);
+	  this.name = name;
   }
   
-  @Deprecated
-  public Group(Palette palette, ToolBar parent, String name) {
-    this.palette = palette;
-    this.name = name;
-//    buttonContainer = new Composite(parent, SWT.BORDER);
-//    item = new ExpandItem(parent, SWT.NONE);
-    item.setControl(buttonContainer);
-    item.setText(name);
-    GridLayout layout = new GridLayout(1, true);
-    layout.marginHeight = 0;
-    layout.horizontalSpacing = 0;
-    layout.verticalSpacing = 0;
-    layout.marginWidth = 0;
-    buttonContainer.setLayout(layout);
-    GridData buttonData = new GridData(GridData.HORIZONTAL_ALIGN_FILL, GridData.VERTICAL_ALIGN_FILL, true, true);
-    buttonData.horizontalSpan = 2;
-    buttonContainer.setLayoutData(buttonData);
-//    setFont("dejavu/DejaVuSans.ttf", "DejaVu Sans");
-  }
+//  @Deprecated
+//  public Group(Palette palette, ToolBar parent, String name) {
+//    this.palette = palette;
+//    this.name = name;
+////    buttonContainer = new Composite(parent, SWT.BORDER);
+////    item = new ExpandItem(parent, SWT.NONE);
+//    item.setControl(buttonContainer);
+//    item.setText(name);
+//    GridLayout layout = new GridLayout(1, true);
+//    layout.marginHeight = 0;
+//    layout.horizontalSpacing = 0;
+//    layout.verticalSpacing = 0;
+//    layout.marginWidth = 0;
+//    buttonContainer.setLayout(layout);
+//    GridData buttonData = new GridData(GridData.HORIZONTAL_ALIGN_FILL, GridData.VERTICAL_ALIGN_FILL, true, true);
+//    buttonData.horizontalSpan = 2;
+//    buttonContainer.setLayoutData(buttonData);
+////    setFont("dejavu/DejaVuSans.ttf", "DejaVu Sans");
+//  }
 
 //	public final void setFont(String fileName, String name) {
 //		int oldHeight = defaultFont == null ? 13 : defaultFont.getHeight();
@@ -77,8 +72,8 @@ public class Group extends TreeItem<String>{
     for (Tool tool : tools) {
       tool.delete();
     }
-    item.dispose();
-    buttonContainer.dispose();
+//    item.dispose();
+//    buttonContainer.dispose();
   }
 
   public void deselect() {
@@ -87,13 +82,13 @@ public class Group extends TreeItem<String>{
     }
   }
 
-  public Composite getButtonContainer() {
-    return buttonContainer;
-  }
-
-  public ExpandItem getItem() {
-    return item;
-  }
+//  public Composite getButtonContainer() {
+//    return buttonContainer;
+//  }
+//
+//  public ExpandItem getItem() {
+//    return item;
+//  }
 
   public Palette getPalette() {
     return palette;
@@ -133,8 +128,8 @@ public class Group extends TreeItem<String>{
 	    if (tool != null) {
 	      tools.remove(tool);
 	      tool.delete();
-	      item.setHeight(buttonContainer.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
-	      item.setExpanded(true);
+//	      item.setHeight(buttonContainer.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+//	      item.setExpanded(true);
 	    }
 	  }
 
@@ -164,9 +159,9 @@ public class Group extends TreeItem<String>{
     }
   }
 
-  public String toString() {
-    return "Group(" + buttonContainer + "," + item + "," + tools + ")";
-  }
+//  public String toString() {
+//    return "Group(" + buttonContainer + "," + item + "," + tools + ")";
+//  }
 
   public void writeXML(PrintStream out) {
     out.print("<Group name='" + name + "'>");

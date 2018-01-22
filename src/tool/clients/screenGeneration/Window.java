@@ -1,28 +1,21 @@
 package tool.clients.screenGeneration;
 
-import org.eclipse.swt.custom.CTabFolder;
-
 public abstract class Window extends CommandableScreenElement {
 
-	protected static CTabFolder tabFolder;
-
-	public Window(String id, ScreenGenerationClient client) {
+	public Window(String id) {
 		super(id);
+		// TODO Auto-generated constructor stub
 	}
 
-	public static void start(CTabFolder tabFolder) {
-		Window.tabFolder = tabFolder;
+	public static void start(Object tabFolder) {
+		// TODO Auto-generated method stub
+		
 	}
 
-	public static Window windowFactory(final String id, final ScreenGenerationClient client, final int type,
-			final String label, final boolean selected) {
-		if (type == ScreenGenerationClient.TAB) {
-			return new Tab(id, client, type, label, selected);
-		} else {
-			return null;
-		}
+	public static Window windowFactory(String id, ScreenGenerationClient screenGenerationClient, int type, String label,
+			boolean selected) {
+		// TODO Auto-generated method stub
+		return null;
 	}
-	
-	public abstract void refresh();
 
 }

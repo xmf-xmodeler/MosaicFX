@@ -4,7 +4,7 @@ import java.io.PrintStream;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.draw2d.geometry.Point;
 
 import javafx.geometry.Side;
 import javafx.scene.canvas.GraphicsContext;

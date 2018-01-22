@@ -2,12 +2,9 @@ package tool.clients.diagrams;
 
 import java.io.PrintStream;
 
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-
 import javafx.scene.control.TreeItem;
 
-public abstract class Tool implements SelectionListener {
+public abstract class Tool {
 
   // A tool is a button in a palette-group. Tools have labels that are displayed
   // and have identifiers that are used in events sent to XMF. Some tools perform
@@ -60,7 +57,7 @@ public abstract class Tool implements SelectionListener {
 
   public /*abstract*/ void select() {/*throw new RuntimeException("Not implemented yet.");*/}
   
-  public /*abstract*/ void widgetSelected(SelectionEvent event) {System.err.println("widgetSelected");}
+  public /*abstract*/ void widgetSelected() {System.err.println("widgetSelected");}
 
   public void delete() {
 	  new RuntimeException("Button cannot be deleted yet.");

@@ -46,7 +46,7 @@ public class Palette {
             	if(parent instanceof Group) {
             		Group group = (Group) parent;
             		Tool tool = group.getToolLabelled(newValue.getValue());
-            		if(tool != null) tool.widgetSelected(null);
+            		if(tool != null) tool.widgetSelected();
             	}
             }
         }
@@ -151,14 +151,14 @@ public class Palette {
 	}
 
   public void writeXML(PrintStream out) {
-	    throw new RuntimeException("Not implemented yet");
-//    out.print("<Palette>");
-//    for (Group group : groups) {
-//      if (!group.getName().equals("Diagram")) {
-//        group.writeXML(out);
-//      }
-//    }
-//    out.print("</Palette>");
+	System.err.println("Writing palette to XML. Current implementation ignores order.");
+    out.print("<Palette>");
+    for (Group group : groups.values()) {
+      if (!group.getName().equals("Diagram")) {
+        group.writeXML(out);
+      }
+    }
+    out.print("</Palette>");
   }
 
   public void deselect() {

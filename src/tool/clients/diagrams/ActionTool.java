@@ -3,8 +3,6 @@ package tool.clients.diagrams;
 import java.io.File;
 import java.io.PrintStream;
 
-import org.eclipse.swt.events.SelectionEvent;
-
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 
@@ -37,12 +35,12 @@ public class ActionTool extends Tool {
     out.print(" icon='" + icon + "'/>");
   }
 
-  public void widgetDefaultSelected(SelectionEvent event) {
-  }
-
-  public void widgetSelected(SelectionEvent event) {
-    diagram.action(getId());
-  }
+//  public void widgetDefaultSelected(SelectionEvent event) {
+//  }
+//
+//  public void widgetSelected(SelectionEvent event) {
+//    diagram.action(getId());
+//  }
 
   public String getType() {
     return "ACTION";

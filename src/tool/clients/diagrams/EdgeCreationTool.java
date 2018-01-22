@@ -3,8 +3,6 @@ package tool.clients.diagrams;
 import java.io.File;
 import java.io.PrintStream;
 
-import org.eclipse.swt.events.SelectionEvent;
-
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 
@@ -38,10 +36,10 @@ public class EdgeCreationTool extends Tool {
     out.print(" icon='" + icon + "'/>");
   }
 
-  public void widgetDefaultSelected(SelectionEvent event) {
+  public void widgetDefaultSelected() {
   }
 
-  public void widgetSelected(SelectionEvent event) {
+  public void widgetSelected() {
     diagram.deselectPalette();
     select();
     diagram.setEdgeCreationType(getId());

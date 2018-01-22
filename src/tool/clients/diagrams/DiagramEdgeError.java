@@ -1,6 +1,6 @@
 package tool.clients.diagrams;
 
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.draw2d.geometry.Point;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;

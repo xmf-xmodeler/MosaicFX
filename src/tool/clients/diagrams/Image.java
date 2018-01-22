@@ -3,7 +3,6 @@ package tool.clients.diagrams;
 import java.io.PrintStream;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.graphics.ImageData;
 
 import javafx.scene.canvas.GraphicsContext;
 import tool.xmodeler.XModeler;
@@ -16,7 +15,6 @@ public class Image implements Display {
   int                            y;
   int                            width;
   int                            height;
-  org.eclipse.swt.graphics.Image image = null;
   javafx.scene.image.Image imageFX = null;
 
   public Image(String id, String fileName, int x, int y, int width, int height) {
@@ -53,22 +51,24 @@ public class Image implements Display {
     return height;
   }
 
-  public org.eclipse.swt.graphics.Image getImage() {
-    return image;
+  public javafx.scene.image.Image getImage() {
+    return imageFX;
   }
 
   public void ensureImage() {
-    if (image == null) {
-      image = ImageDescriptor.createFromFile(null, fileName).createImage();
-      resizeImage();
+    if (imageFX == null) {
+      imageFX = new javafx.scene.image.Image(fileName);
+//    		  ImageDescriptor.createFromFile(null, fileName).createImage();
+//      resizeImage();
     }
   }
 
-  public void resizeImage() {
-    ImageData data = image.getImageData().scaledTo(width, height);
-    image.dispose();
-    image = new org.eclipse.swt.graphics.Image(null, data);
-  }
+//  public void resizeImage() {
+////	  image = image.
+////    ImageData data = image.getImageData().scaledTo(width, height);
+//////    image.dispose();
+////    image = new org.eclipse.swt.graphics.Image(null, data);
+//  }
 
 	@Override
 	public void paint(GraphicsContext gc, int x, int y) {
@@ -96,7 +96,7 @@ public class Image implements Display {
     if (getId().equals(id)) {
       this.width = width;
       this.height = height;
-      resizeImage();
+//      resizeImage();
     }
   }
 

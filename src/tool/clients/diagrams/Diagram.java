@@ -6,13 +6,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.draw2d.geometry.Rectangle;
 
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ScrollPane;
@@ -106,129 +100,129 @@ public class Diagram implements Display {
   private final Box                        nestedParent;
   private transient HashMap<String, javafx.geometry.Point2D> nestedDiagramOffsets   = new HashMap<String, javafx.geometry.Point2D>();
 
-  private class MyKeyListener implements KeyListener {
-
-    public void keyPressed(KeyEvent e) {
-      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && ((SWT.SHIFT & e.stateMask) != SWT.SHIFT) && (e.keyCode == 'f')) {
-        layout();
-        redraw();
-      }
-      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'a')) {
-        selectAll();
-        redraw();
-      }
-      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'c')) {
-        copyToClipboard();
-        redraw();
-      }
-      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'd')) {
-        disambiguationColors = !disambiguationColors;
-        help();
-        redraw();
-      }
-      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 's')) {
-        straightenEdges();
-        redraw();
-      }
-      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'm')) {
-        magneticWaypoints = !magneticWaypoints;
-        help();
-        redraw();
-      }
-      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'o')) {
-        dogLegs = !dogLegs;
-        help();
-        redraw();
-      }
-      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'w')) {
-        showWaypoints = !showWaypoints;
-        help();
-        redraw();
-      }
-      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == '=')) {
-        zoomIn();
-        help();
-        redraw();
-      }
-      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == '+')) {
-        zoomIn();
-        help();
-        redraw();
-      }
-      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == '1')) {
-        zoomOne();
-        help();
-        redraw();
-      }
-      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == '-')) {
-        zoomOut();
-        help();
-        redraw();
-      }
-      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == '/')) {
-        help();
-        redraw();
-      }
-      if (e.keyCode == SWT.DEL) {
-        sendMessageToDeleteSelection();
-        redraw();
-      }
-    }
-
-    public void keyReleased(KeyEvent event) {
-    }
-
-    private void layout() {
-      Hashtable<Node, Point2D> positions = new Hashtable<Node, Point2D>();
-      for (int i = 0; i < DEFAULT_MAX_ITERATIONS; i++) {
-        for (Node current : nodes) {
-          if (!current.atOrigin() && !selection.contains(current)) {
-            Point2D force = positions.containsKey(current) ? positions.get(current) : Point2D.createRectangular(current.getX(), current.getY());
-            for (Node other : nodes) {
-              if (!current.sameLocation(other)) {
-                force = force.add(nodeRepulsion(current, other));
-              }
-              for (Edge edge : edges) {
-                if (edge.getSourceNode() == other && edge.getTargetNode() == current) {
-                  force = force.add(nodeAttraction(current, other, DEFAULT_SPRING_LENGTH));
-                }
-                if (edge.getTargetNode() == other && edge.getSourceNode() == current) {
-                  force = force.add(nodeAttraction(current, other, DEFAULT_SPRING_LENGTH));
-                }
-              }
-            }
-            positions.put(current, force);
-          }
-        }
-        for (Node current : nodes) {
-          if (positions.containsKey(current)) {
-            Point2D point = positions.get(current);
-            current.move((int) Math.max(0, point.getX()), (int) Math.max(0, point.getY()));
-          }
-        }
-      }
-      for (Node node : positions.keySet())
-        node.moveEvent(0, isNested() ? nestedParent.width : Integer.MAX_VALUE, 0, isNested() ? nestedParent.height : Integer.MAX_VALUE);
-    }
-
-    private Point2D nodeRepulsion(Node target, Node source) {
-      int x1 = target.getX();
-      int y1 = target.getY();
-      int x2 = source.getX();
-      int y2 = source.getY();
-      int dx = x1 - x2;
-      int dy = y1 - y2;
-      double magnitude = Math.sqrt((dx * dx) + (dy * dy));
-      double force = REPULSION_CONSTANT / (magnitude * magnitude);
-      if (magnitude < 0.0001)
-        return Point2D.ZERO;
-      else {
-        double angle = Math.atan2(dy, dx);
-        return Point2D.createPolar(force, angle);
-      }
-    }
-
-  }
+//  private class MyKeyListener implements KeyListener {
+//
+//    public void keyPressed(KeyEvent e) {
+//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && ((SWT.SHIFT & e.stateMask) != SWT.SHIFT) && (e.keyCode == 'f')) {
+//        layout();
+//        redraw();
+//      }
+//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'a')) {
+//        selectAll();
+//        redraw();
+//      }
+//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'c')) {
+//        copyToClipboard();
+//        redraw();
+//      }
+//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'd')) {
+//        disambiguationColors = !disambiguationColors;
+//        help();
+//        redraw();
+//      }
+//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 's')) {
+//        straightenEdges();
+//        redraw();
+//      }
+//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'm')) {
+//        magneticWaypoints = !magneticWaypoints;
+//        help();
+//        redraw();
+//      }
+//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'o')) {
+//        dogLegs = !dogLegs;
+//        help();
+//        redraw();
+//      }
+//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'w')) {
+//        showWaypoints = !showWaypoints;
+//        help();
+//        redraw();
+//      }
+//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == '=')) {
+//        zoomIn();
+//        help();
+//        redraw();
+//      }
+//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == '+')) {
+//        zoomIn();
+//        help();
+//        redraw();
+//      }
+//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == '1')) {
+//        zoomOne();
+//        help();
+//        redraw();
+//      }
+//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == '-')) {
+//        zoomOut();
+//        help();
+//        redraw();
+//      }
+//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == '/')) {
+//        help();
+//        redraw();
+//      }
+//      if (e.keyCode == SWT.DEL) {
+//        sendMessageToDeleteSelection();
+//        redraw();
+//      }
+//    }
+//
+//    public void keyReleased(KeyEvent event) {
+//    }
+//
+//    private void layout() {
+//      Hashtable<Node, Point2D> positions = new Hashtable<Node, Point2D>();
+//      for (int i = 0; i < DEFAULT_MAX_ITERATIONS; i++) {
+//        for (Node current : nodes) {
+//          if (!current.atOrigin() && !selection.contains(current)) {
+//            Point2D force = positions.containsKey(current) ? positions.get(current) : Point2D.createRectangular(current.getX(), current.getY());
+//            for (Node other : nodes) {
+//              if (!current.sameLocation(other)) {
+//                force = force.add(nodeRepulsion(current, other));
+//              }
+//              for (Edge edge : edges) {
+//                if (edge.getSourceNode() == other && edge.getTargetNode() == current) {
+//                  force = force.add(nodeAttraction(current, other, DEFAULT_SPRING_LENGTH));
+//                }
+//                if (edge.getTargetNode() == other && edge.getSourceNode() == current) {
+//                  force = force.add(nodeAttraction(current, other, DEFAULT_SPRING_LENGTH));
+//                }
+//              }
+//            }
+//            positions.put(current, force);
+//          }
+//        }
+//        for (Node current : nodes) {
+//          if (positions.containsKey(current)) {
+//            Point2D point = positions.get(current);
+//            current.move((int) Math.max(0, point.getX()), (int) Math.max(0, point.getY()));
+//          }
+//        }
+//      }
+//      for (Node node : positions.keySet())
+//        node.moveEvent(0, isNested() ? nestedParent.width : Integer.MAX_VALUE, 0, isNested() ? nestedParent.height : Integer.MAX_VALUE);
+//    }
+//
+//    private Point2D nodeRepulsion(Node target, Node source) {
+//      int x1 = target.getX();
+//      int y1 = target.getY();
+//      int x2 = source.getX();
+//      int y2 = source.getY();
+//      int dx = x1 - x2;
+//      int dy = y1 - y2;
+//      double magnitude = Math.sqrt((dx * dx) + (dy * dy));
+//      double force = REPULSION_CONSTANT / (magnitude * magnitude);
+//      if (magnitude < 0.0001)
+//        return Point2D.ZERO;
+//      else {
+//        double angle = Math.atan2(dy, dx);
+//        return Point2D.createPolar(force, angle);
+//      }
+//    }
+//
+//  }
   
   /////////////////////////Mouse Listener Start/////////////////////////////
   
@@ -1747,10 +1741,10 @@ public class Diagram implements Display {
 //    event.y = p.y;
   }
 
-  public Point scaleinv(int x, int y) {
+  public javafx.geometry.Point2D scaleinv(int x, int y) {
 //    float[] points = new float[] { (float) x, (float) y };
     javafx.geometry.Point2D points = transformFX.transform(x,y);
-    return new Point((int) points.getX(), (int) points.getY());
+    return points;//new Point((int) points.getX(), (int) points.getY());
   }
 
   private boolean select(boolean isShift, boolean isCtrl, int x, int y, boolean isNested) {
