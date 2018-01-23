@@ -78,7 +78,7 @@ public class MultiplicityDialog extends Dialog<ButtonType>{
 		
 		getDialogPane().setContent(grid);
 		
-        setValues(min+"", max+"", ordered);
+        setValues(min+"", max<0?"*":(""+max), ordered);
 //		searchField.requestFocus();
 
 		Optional<ButtonType> result = showAndWait();
