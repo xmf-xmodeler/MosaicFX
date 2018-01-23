@@ -102,14 +102,14 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
   int                     errorPosition  = -1;
   String                  errorMessage   = "";
 
-  public TextEditor(String id, String label, Object parent, boolean editable, boolean lineNumbers, String s) {
-    this.id = id;
-//    lineStyler.setLineNumbers(lineNumbers);
-    this.label = label;
-    createTray();
-//    createText(parent, editable, s);
-//    new UndoRedoImpl(text);
-  }
+	public TextEditor(String id, String label, Object parent, boolean editable, boolean lineNumbers, String s) {
+		this.id = id;
+		// lineStyler.setLineNumbers(lineNumbers);
+		this.label = label;
+		createTray();
+		// createText(parent, editable, s);
+		// new UndoRedoImpl(text);
+	}
 
   private void addErrorListener(ErrorListener listener) {
     errorListeners.add(listener);
