@@ -1,9 +1,6 @@
 package tool.clients.editors.texteditor;
 
-import org.eclipse.swt.widgets.Display;
-
 import javafx.scene.canvas.GraphicsContext;
-import tool.xmodeler.XModeler;
 
 public class Timer extends Tool implements Runnable {
 

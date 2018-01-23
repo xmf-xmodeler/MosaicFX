@@ -64,15 +64,15 @@ public abstract class CommandableScreenElement implements SerializableClient {
 	}
 
 	  public void runOnDisplay(final Runnable r) {
-		    XModeler.getXModeler().getDisplay().syncExec(new Runnable() {
-		      public void run() {
-		        try {
-		          r.run();
-		        } catch (Throwable t) {
-		          t.printStackTrace();
-		        }
-		      }
-		    });
+//		    XModeler.getXModeler().getDisplay().syncExec(new Runnable() {
+//		      public void run() {
+//		        try {
+//		          r.run();
+//		        } catch (Throwable t) {
+//		          t.printStackTrace();
+//		        }
+//		      }
+//		    });
 		  }
 	  
 }

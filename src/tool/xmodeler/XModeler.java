@@ -10,7 +10,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -57,7 +56,7 @@ public class XModeler extends Application {
 	
   private static Integer DEVICE_ZOOM_PERCENT = null;
 
-  static XModeler singelton = null;
+  static XModeler singleton = null;
   
   static final String    NAME                = "XModeler";
   static String          busyMessage         = "";
@@ -173,10 +172,10 @@ public class XModeler extends Application {
 	    return stage;
 	  }
 
-  @Deprecated 
-  public static Shell getXModeler() {
-    return null;
-  }
+//  @Deprecated 
+//  public static Shell getXModeler() {
+//    return null;
+//  }
 
   private static String img2xml(String imgString) {
     File img = new File(imgString);
@@ -410,7 +409,7 @@ public class XModeler extends Application {
   
   @Override
   public void start(Stage primaryStage) throws Exception {
-	  singelton = this;
+	  singleton = this;
 	  stage = primaryStage;
 	  startXOS(copyOfArgs[0]);
 	  createXmodeler();
@@ -498,7 +497,7 @@ public class XModeler extends Application {
           	loadedImagePath = null;
           	showLoad = true;
           	try {
-          		singelton.start(stage);
+          		singleton.start(stage);
           	} catch (Exception e) {
           		e.printStackTrace();
           	}

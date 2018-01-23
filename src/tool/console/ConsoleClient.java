@@ -8,11 +8,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import org.eclipse.swt.widgets.Display;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javafx.application.Platform;
 import tool.xmodeler.XModeler;
 import xos.Message;
 
@@ -22,17 +22,12 @@ public class ConsoleClient extends Thread {
   BufferedReader       in;
   PrintStream          out;
   StringBuffer         queuedInput = new StringBuffer();
-  Display              display;
   static ConsoleClient theConsole;
 
   public ConsoleClient(InputStream in, OutputStream out) {
     this.in = new BufferedReader(new InputStreamReader(in));
     this.out = new PrintStream(new BufferedOutputStream(out));
     theConsole = this;
-  }
-
-  public void setDisplay(Display display) {
-    this.display = display;
   }
 
   public void setView(ConsoleView view) {
@@ -75,15 +70,16 @@ public class ConsoleClient extends Thread {
   }
 
   public void sendInput(final String input) {
-    Display.getDefault().syncExec(new Runnable() {
-      public void run() {
-        if (view != null && view.getOutput() != null)
-          view.processInput(input);
-        else if (tryConnecting())
-          view.processInput(input);
-        else queueInput(input);
-      }
-    });
+	  Platform.runLater( new Runnable() {
+  	    @Override
+  	    public void run() {
+  	        if (view != null && view.getOutput() != null)
+  	          view.processInput(input);
+  	        else if (tryConnecting())
+  	          view.processInput(input);
+  	        else queueInput(input);
+  	    }
+  	});
   }
 
   public void queueInput(String input) {

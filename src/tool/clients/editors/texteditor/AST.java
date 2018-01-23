@@ -2,8 +2,6 @@ package tool.clients.editors.texteditor;
 
 import java.util.Vector;
 
-import org.eclipse.swt.widgets.Display;
-
 import javafx.scene.canvas.GraphicsContext;
 
 public class AST {

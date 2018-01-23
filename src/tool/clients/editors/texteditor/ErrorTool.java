@@ -1,7 +1,5 @@
 package tool.clients.editors.texteditor;
 
-import org.eclipse.swt.widgets.Display;
-
 import javafx.scene.canvas.GraphicsContext;
 
 public class ErrorTool extends Tool implements ErrorListener {

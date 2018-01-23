@@ -1,22 +1,22 @@
 package tool.clients.screenGeneration;
 
-import org.eclipse.swt.widgets.Composite;
+//import org.eclipse.swt.widgets.Composite;
 
 public abstract class PlacableCommandableScreenElement extends CommandableScreenElement {
 
-	protected Composite content; 
-	
+	protected Object content; 
+//	
 	public PlacableCommandableScreenElement(String id) {
 		super(id);
 		// TODO Auto-generated constructor stub
 	}
-
-	public Composite getContent() {
-		return content;
-	}
-
-	public void setContent(Composite content) {
-		this.content = content;
-	}
+//
+//	public Composite getContent() {
+//		return content;
+//	}
+//
+//	public void setContent(Composite content) {
+//		this.content = content;
+//	}
 
 }

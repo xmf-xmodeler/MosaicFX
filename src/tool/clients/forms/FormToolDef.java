@@ -2,11 +2,6 @@ package tool.clients.forms;
 
 import java.io.PrintStream;
 
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
-
-import tool.xmodeler.XModeler;
-
 public class FormToolDef {
 
   String event;
@@ -15,7 +10,7 @@ public class FormToolDef {
   String disabledIcon;
   boolean enabled;
 
-  ToolItem item = null;
+  Object /*ToolBar*/ item = null;
   
   public FormToolDef(String event, String id, String icon) {
     super();
@@ -47,7 +42,7 @@ public class FormToolDef {
     return icon;
   }
 
-  public void populateToolBar(ToolBar toolBar) {
+  public void populateToolBar(Object toolBar) {
 //	item = new ToolItem(toolBar, SWT.PUSH);
 //    ImageData imageData = new ImageData(icon);
 //    Image image = new Image(XModeler.getXModeler().getDisplay(), imageData);

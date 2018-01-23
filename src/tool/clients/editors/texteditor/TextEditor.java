@@ -841,15 +841,15 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
   }
 
   private void timerIncrement() {
-    XModeler.getXModeler().getDisplay().syncExec(new Runnable() {
-      public void run() {
-        try {
-//          redraw();
-        } catch (Throwable t) {
-          t.printStackTrace();
-        }
-      }
-    });
+//    XModeler.getXModeler().getDisplay().syncExec(new Runnable() {
+//      public void run() {
+//        try {
+////          redraw();
+//        } catch (Throwable t) {
+//          t.printStackTrace();
+//        }
+//      }
+//    });
   }
 
 //  private void toolTip(int x, int y) {

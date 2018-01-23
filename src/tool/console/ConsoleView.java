@@ -3,9 +3,7 @@ package tool.console;
 import java.io.PrintStream;
 import java.util.concurrent.CountDownLatch;
 
-import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
-
-import org.eclipse.swt.widgets.Composite;
+//import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -357,8 +355,8 @@ public class ConsoleView {
     }
   }
 
-  public void createPartControl(Composite parent) {
-  }
+//  public void createPartControl(Composite parent) {
+//  }
 
   public void dispose() {
     // textFont.dispose();
@@ -408,9 +406,9 @@ public class ConsoleView {
 		}
 	}
 
-  public void propertyChange(PropertyChangeEvent event) {
-    getPreferences();
-  }
+//  public void propertyChange(PropertyChangeEvent event) {
+//    getPreferences();
+//  }
 
   public String pushToHistory(TextArea text) {
 //    StyledTextContent content = text.getText();
