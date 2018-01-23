@@ -35,12 +35,13 @@ public class ActionTool extends Tool {
     out.print(" icon='" + icon + "'/>");
   }
 
-//  public void widgetDefaultSelected(SelectionEvent event) {
-//  }
-//
-//  public void widgetSelected(SelectionEvent event) {
-//    diagram.action(getId());
-//  }
+  public void widgetDefaultSelected() {
+  }
+
+  @Override
+  public void widgetSelected() {
+    diagram.action(getId());
+  }
 
   public String getType() {
     return "ACTION";
