@@ -70,16 +70,16 @@ public class ConsoleClient extends Thread {
   }
 
   public void sendInput(final String input) {
-	  Platform.runLater( new Runnable() {
-  	    @Override
-  	    public void run() {
+//	  Platform.runLater( new Runnable() {
+//  	    @Override
+//  	    public void run() {
   	        if (view != null && view.getOutput() != null)
   	          view.processInput(input);
   	        else if (tryConnecting())
   	          view.processInput(input);
   	        else queueInput(input);
-  	    }
-  	});
+//  	    }
+//  	});
   }
 
   public void queueInput(String input) {
