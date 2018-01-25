@@ -12,7 +12,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javafx.application.Platform;
 import tool.xmodeler.XModeler;
 import xos.Message;
 

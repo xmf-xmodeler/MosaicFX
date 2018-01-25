@@ -1,11 +1,5 @@
 package tool.console;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Vector;
-
 /*******************************************************************************
  * Copyright (c) 2000, 2003 IBM Corporation and others. All rights reserved.
  * This program and the accompanying materials are made available under the

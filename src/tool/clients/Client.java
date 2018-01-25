@@ -6,7 +6,6 @@ import java.util.concurrent.CountDownLatch;
 import org.w3c.dom.Document;
 
 import javafx.application.Platform;
-import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.MessageHandler;
 import xos.MessagePacket;

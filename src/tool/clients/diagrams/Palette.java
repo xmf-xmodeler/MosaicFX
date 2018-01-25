@@ -150,16 +150,18 @@ public class Palette {
 		// getGroup("Diagram").getToolLabelled("Select").select();
 	}
 
-  public void writeXML(PrintStream out) {
-	System.err.println("Writing palette to XML. Current implementation ignores order.");
-    out.print("<Palette>");
-    for (Group group : groups.values()) {
-      if (!group.getName().equals("Diagram")) {
-        group.writeXML(out);
-      }
-    }
-    out.print("</Palette>");
-  }
+	public void writeXML(PrintStream out) {
+		System.err.println("Writing palette to XML. Current implementation ignores order.");
+		out.print("<Palette>");
+		for (TreeItem<String> groupItem : root.getChildren()) {
+			Group group = (Group) groupItem;
+			//// for (Group group : groups.values()) {
+			if (!group.getName().equals("Diagram")) {
+				group.writeXML(out);
+			}
+		}
+		out.print("</Palette>");
+	}
 
   public void deselect() {
 //	    throw new RuntimeException("Not implemented yet");

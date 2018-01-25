@@ -3,7 +3,6 @@ package tool.clients.diagrams;
 import java.io.PrintStream;
 import java.util.Vector;
 
-import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
 import xos.Value;
 

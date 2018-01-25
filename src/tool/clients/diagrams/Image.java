@@ -2,8 +2,6 @@ package tool.clients.diagrams;
 
 import java.io.PrintStream;
 
-import org.eclipse.jface.resource.ImageDescriptor;
-
 import javafx.scene.canvas.GraphicsContext;
 import tool.xmodeler.XModeler;
 

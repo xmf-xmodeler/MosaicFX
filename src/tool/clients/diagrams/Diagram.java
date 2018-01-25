@@ -1594,7 +1594,11 @@ public class Diagram implements Display {
 
   private void paintRubberBand(GraphicsContext gc, int xOffset, int yOffset) {
     if (mode == MouseMode.RUBBER_BAND) {
-      gc.strokeRect(bandX + xOffset, bandY + yOffset, lastX - bandX, lastY - bandY);
+    	double x1 = bandX + xOffset;
+    	double x2 = lastX + xOffset;
+    	double y1 = bandY + yOffset;
+    	double y2 = lastY + yOffset;;
+      gc.strokeRect(x1<x2?y1:x2,y1<y2?y1:y2,Math.abs(x1-x2),Math.abs(y1-y2));
     }
   }
 

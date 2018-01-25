@@ -603,7 +603,7 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
 //    });
   }
 
-  private void selectNode(Message message) {
+  private void selectNode(Message message, boolean select) {
     final Value id = message.args[0];
     Value selected = message.args[1];
     if (selected.boolValue && items.containsKey(id.strValue())) {
@@ -612,7 +612,10 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
     	
     	CountDownLatch l = new CountDownLatch(1);
     	Platform.runLater(()->{
-    		tv.getSelectionModel().select(item);
+    		if(select) 
+    			tv.getSelectionModel().select(item);
+    		else 
+    			tv.getSelectionModel().clearSelection();
     		l.countDown();
     	});
     	try {
@@ -620,18 +623,6 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}      
-//    Display.getDefault().syncExec(new Runnable() {
-//        public void run() {
-//          TreeItem item = items.get(id.strValue());
-//          for (TreeView tree : trees.values()) {
-//            for (TreeItem treeItem : tree.getItems()) {
-//              if (treeItem == item) {
-//                tree.select(treeItem);
-//              }
-//            }
-//          }
-//        }
-//      });
     }
   }
 
@@ -647,7 +638,9 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
     else if (message.hasName("setVisible"))
       setVisible(message);
     else if (message.hasName("selectNode"))
-      selectNode(message);
+        selectNode(message, true);
+    else if (message.hasName("deselectNode"))
+        selectNode(message, false);
     else if (message.hasName("setFocus"))
       setFocus(message);
     else if (message.hasName("setToolTipText"))

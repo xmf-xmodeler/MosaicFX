@@ -195,7 +195,10 @@ public class EdgePainter {
 	          }
 	        });
 	        paintLine(gc, x + xOffset, y + yOffset, wp1.getX() + xOffset, wp1.getY() + yOffset, color, p);
-	        if (showWaypoints && i < edge.waypoints.size() - 1) gc.fillOval(wp1.getX() - 3 + xOffset, wp1.getY() - 3 + yOffset, 6, 6);
+	        if (showWaypoints && i < edge.waypoints.size() - 1) {
+		        gc.setFill(Color.BLACK);
+		        gc.fillOval(wp1.getX() - 3 + xOffset, wp1.getY() - 3 + yOffset, 6, 6);
+	        }
 	        x = wp1.getX();
 	        y = wp1.getY();
 	      }
@@ -216,6 +219,7 @@ public class EdgePainter {
 	      for (int i = 1; i < edge.waypoints.size(); i++) {
 	        Waypoint wp = edge.waypoints.elementAt(i);
 	        paintLine(gc, x, y, wp.getX(), wp.getY(), Color.RED, NO_INTERSECTIONS_PLACEHOLDER);
+	        gc.setFill(Color.BLACK);
 	        if (i < edge.waypoints.size() - 1) gc.fillOval(wp.getX() - 3, wp.getY() - 3, 6, 6);
 	        x = wp.getX();
 	        y = wp.getY();
