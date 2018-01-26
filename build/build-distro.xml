@@ -180,10 +180,6 @@
 				<include name="lib/poi-3.10.1/*.jar" />
 				<include name="lib/poi-3.10.1/LICENSE" />
 				<include name="lib/poi-3.10.1/NOTICE" />
-				<exclude name="lib/swt.jar" />
-				<exclude name="lib/swt-3.7.2*.jar" />
-				<exclude name="lib/swt-4.4.*.jar" />
-				<exclude name="lib/org.eclipse.swt.win32.win32.x86_3.7.2.v3740f.jar" />
 				<include name="Exceptions/**" />
 				<include name="file/**" />
 				<include name="icons/**" />
