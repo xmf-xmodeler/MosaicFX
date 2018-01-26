@@ -1600,7 +1600,7 @@ public class Diagram implements Display {
     	double x2 = lastX + xOffset;
     	double y1 = bandY + yOffset;
     	double y2 = lastY + yOffset;;
-      gc.strokeRect(x1<x2?y1:x2,y1<y2?y1:y2,Math.abs(x1-x2),Math.abs(y1-y2));
+      gc.strokeRect(x1<x2?x1:x2,y1<y2?y1:y2,Math.abs(x1-x2),Math.abs(y1-y2));
     }
   }
 
