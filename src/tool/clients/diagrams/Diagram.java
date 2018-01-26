@@ -1680,7 +1680,6 @@ public class Diagram implements Display {
 
   public void renderOff() {
     render++;
-    System.err.println("+ render = " + render);
   }
 
   /*
@@ -1691,7 +1690,6 @@ public class Diagram implements Display {
 
   public void renderOn() {
     render = Math.max(render - 1, 0);
-    System.err.println("- render = " + render);
     redraw();
   }
 
