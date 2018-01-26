@@ -49,14 +49,14 @@ public class Label implements Selectable {
     this.editable = editable;
     this.underline = underline;
     this.condense = condense;
-    this.red = red;
-    this.green = green;
-    this.blue = blue;
+	this.red = (red+0400)%0400;
+	this.green = (green+0400)%0400;
+	this.blue = (blue+0400)%0400;
     this.font = font;
     this.border = border;
-    this.borderRed = borderRed;
-    this.borderGreen = borderGreen;
-    this.borderBlue = borderBlue;
+    this.borderRed = (borderRed+0400)%0400;
+    this.borderGreen = (borderGreen+0400)%0400;
+    this.borderBlue = (borderBlue+0400)%0400;
     this.arrow = arrow;
     this.hidden = hidden;
     this.fill = fill;
@@ -430,9 +430,9 @@ public class Label implements Selectable {
   
   public void setTextColor(String id, int red, int green, int blue) {
 	    if (getId().equals(id)){
-	    	this.red = red;
-	    	this.green = green;
-	    	this.blue = blue;
+	    	this.red = (red+0400)%0400;
+	    	this.green = (green+0400)%0400;
+	    	this.blue = (blue+0400)%0400;
 	    }
   }
   

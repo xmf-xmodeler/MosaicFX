@@ -124,7 +124,7 @@ public class Palette {
 
 
 	public void reset() {
-		System.err.println("resetPalette("+Thread.currentThread()+")");
+//		System.err.println("resetPalette("+Thread.currentThread()+")");
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
 			// we are on the right Thread already:
 			tree.getSelectionModel().clearSelection();
@@ -142,8 +142,7 @@ public class Palette {
 				e.printStackTrace();
 			}
 		}
-		System.err.println("resetPalette done");
-		// System.err.println("Palette.reset called.");
+//		System.err.println("resetPalette done");
 		// throw new RuntimeException("Not implemented yet");
 		// for (Group group : groups)
 		// group.resetButtons();
