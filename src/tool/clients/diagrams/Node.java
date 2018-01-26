@@ -253,6 +253,7 @@ public class Node implements Selectable {
   private void newText(String id, String s, int x, int y, boolean editable, boolean underline, boolean italicise, int red, int green, int blue) {
     Text text = new Text(id, s, x, y, editable, underline, italicise, red, green, blue);
     displays.add(text);
+    text.getHeight();
   }
   
   public void newNestedDiagram(String parentId, String id, int x, int y, int width, int height, javafx.scene.canvas.Canvas canvas) {

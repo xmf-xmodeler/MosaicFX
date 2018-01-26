@@ -1,5 +1,8 @@
 package tool.console;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.concurrent.CountDownLatch;
 
@@ -22,6 +25,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import tool.clients.consoleInterface.EscapeHandler;
 import tool.clients.dialogs.notifier.NotificationType;
 import tool.clients.dialogs.notifier.NotifierDialog;
@@ -75,6 +79,13 @@ public class ConsoleView {
 	
 	//    setFont("dejavu/DejaVuSansMono.ttf", "DejaVu Sans Mono");
     addVerifyListener(textArea);
+    try {
+		Font f = Font.loadFont(new FileInputStream(new File("dejavu/DejaVuSansMono.ttf")), 12);
+		textArea.setFont(f);
+	} catch (FileNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 //    tabItem.setControl(c1);
 	
 //	textArea.textProperty().addListener(new ChangeListener<String>() {
@@ -392,12 +403,10 @@ public class ConsoleView {
 	public void processInput(String input) {
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
-//			System.err.println("processInput start... (" + input + ")");
 			appendText(input);
 			goToEnd();
 			inputStart = textArea.getText().length();
 			l.countDown();
-//		    System.err.println("processInput done");
 		});
 		try {
 			l.await();

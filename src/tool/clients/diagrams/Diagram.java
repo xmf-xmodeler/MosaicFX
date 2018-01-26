@@ -12,6 +12,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ScrollPane;
 import javafx.application.Platform;
 import javafx.geometry.Side;
+import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.SplitPane;
@@ -1548,6 +1549,7 @@ public class Diagram implements Display {
 //	    gc.setAdvanced(true);
 //      	System.err.println("zoom=" + zoom);
 //    	System.err.println("transform=" + transform);
+    	gc.setTextBaseline(VPos.TOP);
 	    gc.setTransform(transformFX);
 	    clear(gc, xOffset, yOffset);
 	    paintDisplays(gc, xOffset, yOffset);
@@ -1640,6 +1642,7 @@ public class Diagram implements Display {
 //				System.err.println("Calling redraw from " + Thread.currentThread());
 				CountDownLatch l = new CountDownLatch(1);
 				Platform.runLater(() -> {
+//					System.err.println("Doing redraw for " + Thread.currentThread());
 					checkSize();
 					paintOn(canvas.getGraphicsContext2D(), 0, 0);
 		    		l.countDown();
@@ -1677,6 +1680,7 @@ public class Diagram implements Display {
 
   public void renderOff() {
     render++;
+    System.err.println("+ render = " + render);
   }
 
   /*
@@ -1687,6 +1691,7 @@ public class Diagram implements Display {
 
   public void renderOn() {
     render = Math.max(render - 1, 0);
+    System.err.println("- render = " + render);
     redraw();
   }
 

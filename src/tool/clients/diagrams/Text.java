@@ -214,8 +214,10 @@ public class Text implements Display {
 
   public void move(String id, int x, int y) {
     if (getId().equals(id)) {
+//      System.err.println("MOVE TEXT("+id+"): x=" + x + " y=" + y + " text=" + text);
       this.x = x;
       this.y = y;
+      getHeight();
     }
   }
 
@@ -232,7 +234,8 @@ public class Text implements Display {
 
   @Override
   public void paint(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
-//	  System.err.println("paint Text: " + text + "@" + x +","+ y);
+//	  System.err.println("paint Text: " + text + "@" + x +","+ y + "+@" + getX() +","+ getY() + "height=" + getHeight());
+//	  System.err.println("paint Text gc.transform: " + gc.getTransform());
 //	    Font font = gc.getFont();
 //	    Color c = gc.getForeground(); 
 //	    gc.setFont(italicise ? DiagramClient.diagramItalicFont : DiagramClient.diagramFont);
@@ -242,7 +245,7 @@ public class Text implements Display {
 	    } else {
 	    	gc.setFill(javafx.scene.paint.Color.BLACK);
 	    }
-	    gc.fillText(text, x + getX(), y + getY() + getHeight());
+	    gc.fillText(text, x + getX(), y + getY()/* + getHeight()*/);
 //	    gc.setFont(font);
 //	    gc.setForeground(c); 
   }
@@ -266,7 +269,6 @@ public class Text implements Display {
   }
 
   public void setFillColor(String id, int red, int green, int blue) {
-	  //Bj�rn
 	  if (id.equals(getId())){
 		this.red = red;  
 		this.green = green;

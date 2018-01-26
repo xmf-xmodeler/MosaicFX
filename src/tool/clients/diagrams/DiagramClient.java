@@ -10,6 +10,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javafx.application.Platform;
+import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.text.Font;
@@ -173,7 +174,7 @@ public class DiagramClient extends Client {
         // + "\nawt size: " + awtWidth);
         Value width = new Value((int)(extent.getX()+.5));// *100/XModeler.getDeviceZoomPercent());
         Value height = new Value((int)(extent.getY()+.5));// *100/XModeler.getDeviceZoomPercent());
-        System.err.println("getTextDimension -> " + extent.getX() + "x" + extent.getY()); 
+//        System.err.println("Text Dimension of " + text.strValue() + " = " + extent.getX() + "x" + extent.getY()); 
         // Value width = new Value((int)(awtWidth+.5));
         // Value height = new Value((int)(awtHeight+.5));
         result[0] = new Value(new Value[] { width, height });
@@ -1529,12 +1530,33 @@ public class DiagramClient extends Client {
       if (diagram.getId().equals(id.strValue())) diagram.renderOff();
   }
 
+  private transient static javafx.scene.text.Text t;
+  private transient static javafx.scene.text.Font f;
+  
   public javafx.geometry.Point2D textDimension(String text, javafx.scene.text.Font font) {
 
-	javafx.scene.text.Text t = new javafx.scene.text.Text(text);
-	if(font != null) t.setFont(font); //else System.err.println("calculating text dimension without font");
-	t.applyCss();
-	
+
+//	  javafx.scene.Group root = new javafx.scene.Group();
+//	  javafx.scene.Scene scene = new javafx.scene.Scene(root);
+
+	  javafx.scene.text.Text t =  new javafx.scene.text.Text(text);
+	  t.setFont(Font.font("System Regular", 12.0001));
+//	    root.getChildren().add(t);
+
+//	    root.applyCss();
+//	    root.layout();
+
+//	    double width = t.wi
+//	    double height = t.getHeight();
+
+	  
+//	if(t == null) t = new javafx.scene.text.Text();
+//	t.setText(text);
+//	if(font != null) t.setFont(font); //else System.err.println("calculating text dimension without font");
+////	t.applyCss();
+//	System.err.println(text.hashCode() + " font = " + t.getFont() + " t = " + t.hashCode());
+////	System.err.println("font = " + t.getFont());
+//	
 	final double width = t.getLayoutBounds().getWidth();
 	final double height = t.getLayoutBounds().getHeight();
 	javafx.geometry.Point2D extent = new javafx.geometry.Point2D(width, height);

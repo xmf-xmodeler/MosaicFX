@@ -1,9 +1,5 @@
 package tool.clients.dialogs.notifier;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 /**
  * Class for caching colors
  * 

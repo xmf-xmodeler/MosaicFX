@@ -48,13 +48,13 @@ public class Form {
   private Hashtable<String, TextField>        textFields          = new Hashtable<String, TextField>();
   private Hashtable<String, Label>            labels              = new Hashtable<String, Label>();
 //  private Hashtable<String, ListView<String>> lists               = new Hashtable<String, ListView<String>>();
-  private Hashtable<String, List> lists               = new Hashtable<String, List>();
+  private Hashtable<String, List> 			  lists               = new Hashtable<String, List>();
   private Hashtable<String, TextArea>         boxes               = new Hashtable<String, TextArea>();
-  private Hashtable<String, ComboBox<String>>         combos              = new Hashtable<String, ComboBox<String>>();
+  private Hashtable<String, ComboBox<String>> combos              = new Hashtable<String, ComboBox<String>>();
   private Hashtable<String, CheckBox>     	  checks              = new Hashtable<String, CheckBox>();
   private Hashtable<String, Button>           buttons             = new Hashtable<String, Button>();
-  private Hashtable<String, TreeView<String>>         trees               = new Hashtable<String, TreeView<String>>();
-  private Hashtable<String, TreeItem<String>>         items               = new Hashtable<String, TreeItem<String>>();
+  private Hashtable<String, TreeView<String>> trees               = new Hashtable<String, TreeView<String>>();
+  private Hashtable<String, TreeItem<String>> items               = new Hashtable<String, TreeItem<String>>();
   private Hashtable<String, String>           images              = new Hashtable<String, String>();
 
 //  private int                   TEXTFIELDHEIGHT         = 20;

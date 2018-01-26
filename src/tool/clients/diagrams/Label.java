@@ -1,10 +1,12 @@
 package tool.clients.diagrams;
 
 import java.io.PrintStream;
+import java.util.Optional;
 
 import javafx.geometry.Side;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.transform.Affine;
@@ -473,8 +475,33 @@ public class Label implements Selectable {
   public void select() {
   }
 
-  public void doubleClick(GraphicsContext gc, final Diagram diagram, int mouseX, int mouseY) {
-	  System.err.println("Cannot doubleclick Labels yet");
+	public void doubleClick(GraphicsContext gc, final Diagram diagram, int mouseX, int mouseY) {
+		if (editable && contains(mouseX, mouseY) && !hidden) {
+//		    System.err.println("current Thread: " + Thread.currentThread() + " (in doubleClick)");
+			// TextField inputField = new TextField(this.text);
+			final TextInputDialog input = new TextInputDialog(this.text);
+			input.initOwner(XModeler.getStage());
+			// input.setTitle("");
+			input.setContentText("Enter new Value:");
+			input.setHeaderText(null);
+			Optional<String> result = input.showAndWait();
+			if (result.isPresent()) {
+//				CountDownLatch l = new CountDownLatch(1);
+//				Platform.runLater(() -> {
+					textChangedEvent(result.get());
+//					l.countDown();
+//				});
+//				try {
+//					l.await();
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+			}
+		}
+	}
+		
+//  public void doubleClick(GraphicsContext gc, final Diagram diagram, int mouseX, int mouseY) {
+//	  System.err.println("Cannot doubleclick Labels yet");
 //	    if (editable && contains(mouseX, mouseY) && !hidden) {
 //	      final org.eclipse.swt.widgets.Text text = new org.eclipse.swt.widgets.Text(diagram.getCanvas(), SWT.BORDER);
 //	      text.setFont(DiagramClient.diagramFont);
@@ -534,7 +561,7 @@ public class Label implements Selectable {
 //	          }
 //	      });
 //	    }
-	  }
+//	  }
 
     public void textChangedEvent(String text) {
 	    Message message = DiagramClient.theClient().getHandler().newMessage("textChanged", 2);

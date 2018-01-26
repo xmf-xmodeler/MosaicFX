@@ -5,13 +5,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
-//import org.eclipse.draw2d.FigureUtilities;
-//import org.eclipse.draw2d.geometry.Dimension;
-//import org.eclipse.swt.custom.CTabFolderEvent;
-//import org.eclipse.swt.custom.CTabItem;
-//import org.eclipse.swt.graphics.Color;
-//import org.eclipse.swt.graphics.Font;
-//import org.eclipse.swt.widgets.Display;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -980,13 +973,12 @@ public class FormsClient extends Client {
   }
 
   public void writeXML(PrintStream out) {
-		 /*REMOVED*/
-//    out.print("<Forms>");
-//    for (Form form : forms)
-//      form.writeXML(out, tabFolder.getSelection() == tabs.get(form.getId()), tabs.get(form.getId()).getText());
-//    for (FormTools tools : toolDefs.values())
-//      tools.writeXML(out);
-//    out.print("</Forms>");
+    out.print("<Forms>");
+    for (Form form : forms)
+      form.writeXML(out, tabFolder.getSelectionModel().getSelectedItem() == tabs.get(form.getId()), tabs.get(form.getId()).getText());
+    for (FormTools tools : toolDefs.values())
+      tools.writeXML(out);
+    out.print("</Forms>");
   }
 
 //  public void close(CTabFolderEvent event) {
