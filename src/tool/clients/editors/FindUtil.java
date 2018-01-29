@@ -2,6 +2,8 @@ package tool.clients.editors;
 
 import org.fxmisc.richtext.InlineCssTextArea;
 
+import tool.xmodeler.XModeler;
+
 public class FindUtil {
 
   static String     selectedText = "initial xxx";
@@ -10,7 +12,8 @@ public class FindUtil {
 //  static Button     button;
 
   public static void show3(InlineCssTextArea textArea){
-	  
+	  SearchWindow sw = new SearchWindow(textArea, XModeler.getStage());
+	  sw.show();
   }
   
 //  public static void show(Shell shell, final StyledText styledText) {
