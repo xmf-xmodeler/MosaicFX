@@ -47,7 +47,7 @@ public class Text implements Display {
 	@Override
 	public void doubleClick(GraphicsContext gc, Diagram diagram, int dx, int dy, int mouseX, int mouseY) {
 		if (editable && contains(mouseX - dx, mouseY - dy)) {
-		    System.err.println("current Thread: " + Thread.currentThread() + " (in doubleClick)");
+//		    System.err.println("current Thread: " + Thread.currentThread() + " (in doubleClick)");
 			// TextField inputField = new TextField(this.text);
 			final TextInputDialog input = new TextInputDialog(this.text);
 			input.initOwner(XModeler.getStage());
@@ -289,7 +289,7 @@ public class Text implements Display {
     message.args[0] = new Value(id);
     message.args[1] = new Value(text);
     //System.out.println("textChanged: " + message);
-    System.err.println("current Thread: " + Thread.currentThread() + " (in textChangedEvent)");
+//    System.err.println("current Thread: " + Thread.currentThread() + " (in textChangedEvent)");
     DiagramClient.theClient().getHandler().raiseEvent(message);
   }
 

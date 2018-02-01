@@ -19,6 +19,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 import tool.clients.EventHandler;
@@ -498,7 +499,12 @@ public class Diagram implements Display {
 //  }
   
 	public Diagram(String id, Box parentIfNested) {
-		System.err.println("new Diagram()");
+//		System.err.println("new Diagram()");
+		
+		float zoom = guessZoom();
+//		System.err.println("Suggested Zoom=" + zoom);
+		setZoom(zoom);
+		
 		pane = new SplitPane();
 	    this.id = id;
 		this.nestedParent = parentIfNested;
@@ -538,7 +544,13 @@ public class Diagram implements Display {
 		createTray();
 	}
 
-  public void action(String id) {
+  private float guessZoom() {
+	  javafx.scene.text.Text t =  new javafx.scene.text.Text("Blubb");
+	  double fontSize = t.getFont().getSize();
+	return (float) (fontSize/12.);
+}
+
+public void action(String id) {
     new OutboundMessages().action(id);
   }
 
@@ -1541,6 +1553,7 @@ public class Diagram implements Display {
   private void paintOn(GraphicsContext gc, int xOffset, int yOffset) {
 //      System.err.println("current Thread: " + Thread.currentThread() + " (in paintOn)");
       if(Thread.currentThread().getName().equals("JavaFX Application Thread")) {
+    	  gc.setFont(Font.font("System Regular", 12.0001));
 //    	  System.err.println("paintOnDiff= " + (System.currentTimeMillis() -_last_paintOn));
 //    	  _last_paintOn = System.currentTimeMillis();
 //	    gc.setAntialias(SWT.ON);
@@ -2060,8 +2073,8 @@ public class Diagram implements Display {
     redraw();
   }
 
-  public void setZoom(float zoom) {
-	  System.err.println("setZoom: " + zoom);
+  public final void setZoom(float zoom) {
+//	  System.err.println("setZoom: " + zoom);
     this.zoom = zoom;
     transformFX = new Affine();//.getGraphicsContext2D().getTransform();
     transformFX.appendScale(zoom, zoom);

@@ -67,7 +67,7 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
   boolean                            rendering          = true;
   HashSet<TreeItem<String>>                  deferredExpansions = new HashSet<TreeItem<String>>();
   
-  static Font font = Font.loadFont("file:dejavu/DejaVuSans.ttf", 10);
+  static Font font = null;//Font.loadFont("file:dejavu/DejaVuSans.ttf", 10);
   
 //  public static CTabFolder getTabFolder() {
 //    return tabFolder;

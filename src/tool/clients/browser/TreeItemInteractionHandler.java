@@ -26,7 +26,7 @@ public class TreeItemInteractionHandler extends TreeCell<String> {
 //
 //		cm = new ContextMenu();
 //		cm.getItems().addAll(mi1,mi2);
-		this.setFont(ModelBrowserClient.font);
+		if(ModelBrowserClient.font != null) this.setFont(ModelBrowserClient.font);
 //		this.getTreeView().requestFocus();
 	}
 

@@ -1554,11 +1554,11 @@ public class DiagramClient extends Client {
 //	t.setText(text);
 //	if(font != null) t.setFont(font); //else System.err.println("calculating text dimension without font");
 ////	t.applyCss();
-//	System.err.println(text.hashCode() + " font = " + t.getFont() + " t = " + t.hashCode());
 ////	System.err.println("font = " + t.getFont());
 //	
 	final double width = t.getLayoutBounds().getWidth();
 	final double height = t.getLayoutBounds().getHeight();
+//	if("Boolean".equals(text)) System.err.println(text.hashCode() + " font = " + t.getFont() + " t = " + t.hashCode() + "  dim=" + width + "x" + height);
 	javafx.geometry.Point2D extent = new javafx.geometry.Point2D(width, height);
 	
     return extent;
