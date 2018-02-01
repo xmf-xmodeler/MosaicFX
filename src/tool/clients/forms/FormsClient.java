@@ -407,8 +407,8 @@ public class FormsClient extends Client {
   }
 
   public void inflateXML(final Document doc) {
-	CountDownLatch l = new CountDownLatch(1);  
-	Platform.runLater(() ->{
+//	CountDownLatch l = new CountDownLatch(1);
+//	Platform.runLater(() ->{
         try {
           NodeList formClients = doc.getElementsByTagName("Forms");
           if (formClients.getLength() == 1) {
@@ -422,13 +422,13 @@ public class FormsClient extends Client {
         } catch (Throwable t) {
           t.printStackTrace(System.err);
         }
-        l.countDown();
-	});
-	try {
-	 l.await();
-	} catch (InterruptedException e) {
-	 e.printStackTrace();
-	}
+//        l.countDown();
+//	});
+//	try {
+//	 l.await();
+//	} catch (InterruptedException e) {
+//	 e.printStackTrace();
+//	}
   }
 
   private void newButton(Message message) {
