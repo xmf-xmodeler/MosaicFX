@@ -1474,7 +1474,7 @@ public void action(String id) {
     Paint oldBGColor = gc.getFill();
     Affine transform = gc.getTransform();
     
-    gc.setTransform(new Affine());
+//    gc.setTransform(new Affine());
     gc.setFill(new Color(0., 200./255., 100./255., 1.));
     gc.fillPolygon(polygonX, polygonY, 13);
     gc.setStroke(Color.BLACK);
@@ -1483,7 +1483,7 @@ public void action(String id) {
     gc.setFill(oldBGColor);
     gc.strokeText("new " + nodeCreationType, X + 8, Y + 2);
     gc.setStroke(oldFGColor);
-    gc.setTransform(transform);
+//    gc.setTransform(transform);
 
   }
 

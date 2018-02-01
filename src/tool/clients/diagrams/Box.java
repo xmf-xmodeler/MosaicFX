@@ -221,7 +221,7 @@ public class Box implements Display {
 
 	@Override
 	public void paint(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
-		if (width > 0 && height > 0 || true) { // TODO remove
+		if (width > 0 && height > 0) { // TODO remove
 			gc.setLineWidth(1.);
 //			Color fillColor = gc.getBackground();
 			if (getFillRed() != -1 && getFillGreen() != -1 && getFillBlue() != -1) {
