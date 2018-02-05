@@ -13,6 +13,7 @@ import javafx.geometry.Side;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
@@ -227,6 +228,24 @@ public void newButton(String parentId, String id, String label, int x, int y, in
 //	          text.setBackground(modifiedBackgroundColor);
 //	        }
 //	      });
+	      text.setContextMenu(new ContextMenu()); // remove default one
+	      text.setOnMouseClicked(new javafx.event.EventHandler<MouseEvent>() {
+	  		@Override public void handle(MouseEvent click) {
+//	  		    if (click.getClickCount() == 2 && click.getButton() == MouseButton.PRIMARY) {
+//	  		    	doubleClick(tree.getSelectionModel().getSelectedItem());
+//	  		    } else 
+	  		    if (click.getClickCount() == 1 && click.getButton() == MouseButton.SECONDARY){ 
+//	  		    	TreeItem<String> item = tree.getSelectionModel().getSelectedItem();
+//	  		    	if(item == null) return;
+//	  		    	String itemId = getId(item);
+//	  		    	if(itemId == null) return;
+	  		    	MenuClient.popup(id, text, Side.RIGHT, (int)click.getSceneX(), (int)click.getSceneY());
+	  		 }
+	  		}});
+	      
+	      
+	      
+	      
 	      boxes.put(id, text);
 		  root.getChildren().add(text);
 	    }
