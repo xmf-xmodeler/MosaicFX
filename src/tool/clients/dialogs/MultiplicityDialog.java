@@ -21,10 +21,10 @@ public class MultiplicityDialog extends Dialog<ButtonType>{
 	private TextField txtMin;
 	private TextField txtMax;
 	private CheckBox boxOrdered;
-	private CheckBox boxNavigable;
+//	private CheckBox boxNavigable;
 	
 	private int min, max;
-	private boolean ordered, navigable;
+	private boolean ordered;
 
 //	private transient boolean blocked;
 //	private transient boolean finished;
@@ -204,7 +204,7 @@ public class MultiplicityDialog extends Dialog<ButtonType>{
 		this.min = min;
 		this.max = max;
 		this.ordered = ordered;
-		this.navigable = navigable;
+//		this.navigable = navigable;
 		
         getDialogPane().getButtonTypes().add(ButtonType.OK);
         javafx.scene.Node okButton = getDialogPane().lookupButton(ButtonType.OK);
@@ -311,14 +311,17 @@ public class MultiplicityDialog extends Dialog<ButtonType>{
 
 	    boxOrdered = new CheckBox("Ordered"); 
 	    boxOrdered.setSelected(ordered);
-	    boxNavigable = new CheckBox("Navigable"); 
-	    boxNavigable.setSelected(navigable);
+	    
+	    // Navigable not yet supported
+	    
+//	    boxNavigable = new CheckBox("Navigable"); 
+//	    boxNavigable.setSelected(navigable);
 
 	    GridPane.setColumnSpan(boxOrdered, 4);
         grid.add(boxOrdered, 0, 5);
 	    
-	    GridPane.setColumnSpan(boxNavigable, 4);
-        grid.add(boxNavigable, 0, 6);
+//	    GridPane.setColumnSpan(boxNavigable, 4);
+//        grid.add(boxNavigable, 0, 6);
             
 
     }
