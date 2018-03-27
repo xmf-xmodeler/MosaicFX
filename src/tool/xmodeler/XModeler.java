@@ -71,6 +71,7 @@ public class XModeler extends Application {
   static String[]        copyOfArgs          = null;
   static boolean         showLoad            = false;
   public static String   textEditorClass     = "tool.clients.editors.TextEditor";
+  static PropertyManager propertyManager 	 = new PropertyManager("user_properties.xml");
 
   //JavaFX
   static Stage 			 stage 		 		 = null;
@@ -171,6 +172,10 @@ public class XModeler extends Application {
   public static Stage getStage() {
 	    return stage;
 	  }
+  
+  public static PropertyManager getPropertyManager() {
+	  return propertyManager;
+  }
 
 //  @Deprecated 
 //  public static Shell getXModeler() {
