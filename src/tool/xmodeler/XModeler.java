@@ -309,19 +309,20 @@ public class XModeler extends Application {
     	
     	final FileChooser fileChooser = new FileChooser();
 
-
     	fileChooser.setTitle("Select the image file");
     	FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("*.img", "*.img");
     	fileChooser.getExtensionFilters().add(filter);
     	fileChooser.setSelectedExtensionFilter(filter);
         
-    	fileChooser.setInitialDirectory(new File(propertyManager.getStringProperty("lastFolder", "C://")));
+    	String initalDirectory = propertyManager.getStringProperty("loadImageDirectory", null);
+    	if (initalDirectory != null)
+    	fileChooser.setInitialDirectory(new File(initalDirectory));
     	
     	File file = fileChooser.showOpenDialog(stage);
     	
     	if(file != null){
     		selectedImage = file.getAbsolutePath();
-    		propertyManager.setStringProperty("lastFolder",file.getParent());
+    		propertyManager.setStringProperty("loadImageDirectory",file.getParent());
     	}
     	
     }
@@ -469,7 +470,7 @@ public class XModeler extends Application {
 //					  event.doit = false;
 				  }
 		  });
-			propertyManager.getInterface();
+			//propertyManager.getInterface(); //comment out to see the Interface
 			
 //TODO Why timer? Can we intergrate it properly?
 //			XModeler.getDisplay().timerExec(3000, 
