@@ -71,7 +71,7 @@ public class XModeler extends Application {
   static String[]        copyOfArgs          = null;
   static boolean         showLoad            = false;
   public static String   textEditorClass     = "tool.clients.editors.TextEditor";
-  static PropertyManager propertyManager 	 = new PropertyManager("user_properties.xml");
+  public static PropertyManager propertyManager 	 = new PropertyManager("user_properties.xml");
 
   //JavaFX
   static Stage 			 stage 		 		 = null;
@@ -309,17 +309,19 @@ public class XModeler extends Application {
     	
     	final FileChooser fileChooser = new FileChooser();
 
+
     	fileChooser.setTitle("Select the image file");
     	FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("*.img", "*.img");
     	fileChooser.getExtensionFilters().add(filter);
     	fileChooser.setSelectedExtensionFilter(filter);
         
-        fileChooser.setInitialFileName(defaultImage);    
+    	fileChooser.setInitialDirectory(new File(propertyManager.getStringProperty("lastFolder", "C://")));
     	
     	File file = fileChooser.showOpenDialog(stage);
     	
     	if(file != null){
     		selectedImage = file.getAbsolutePath();
+    		propertyManager.setStringProperty("lastFolder",file.getParent());
     	}
     	
     }
@@ -467,6 +469,7 @@ public class XModeler extends Application {
 //					  event.doit = false;
 				  }
 		  });
+			propertyManager.getInterface();
 			
 //TODO Why timer? Can we intergrate it properly?
 //			XModeler.getDisplay().timerExec(3000, 
