@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import tool.clients.Client;
+import tool.xmodeler.PropertyManager;
 //import tool.clients.dialogs.notifier.NotificationType;
 //import tool.clients.dialogs.notifier.NotifierDialog;
 import tool.xmodeler.XModeler;
@@ -224,9 +225,34 @@ public class DialogsClient extends Client {
         return newConfirmDialog(message); 
     else if (message.hasName("newTreeDialog"))
         return simpleTreeDialog(message); 
+    else if (message.hasName("newPropertyDialog")) {
+    	return newPropertyDialog();}
     else return super.callMessage(message);
   }
 
+  private Value newPropertyDialog() {
+
+		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) { 
+			// we are on the right Thread already:
+			XModeler.getPropertyManager().getInterface();
+		} else { // create a new Thread
+//			System.err.println("Calling redraw from " + Thread.currentThread());
+			CountDownLatch l = new CountDownLatch(1);
+			Platform.runLater(() -> {
+//				System.err.println("Doing redraw for " + Thread.currentThread());
+				XModeler.getPropertyManager().getInterface();
+	    		l.countDown();
+			});
+			try {
+				l.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		return new Value("");
+  }
+  
+  
 	private void newBusyDialog(final Message message) {
 		// runOnDisplay(new Runnable() {
 		// public void run() {
@@ -259,6 +285,8 @@ public class DialogsClient extends Client {
     	  String path = message.args[0].strValue();  
     	  
     	  DirectoryChooser directoryChooser = new DirectoryChooser();
+    	  //PropertyManager pm = XModeler.getPropertyManager();
+    	  //String pmPath = pm.getStringProperty("directoryDialogPath", path);
     	  
     	  File initDirectory = new File(path);
     	  if (initDirectory.exists()){
@@ -273,6 +301,7 @@ public class DialogsClient extends Client {
         	  result[0] = new Value("");
           }else{
         	  lastFile = selectedDirectory;
+        	  //pm.setStringProperty("directoryDialogPath", selectedDirectory.getParent());
         	  result[0] = new Value(selectedDirectory.getAbsolutePath());
           }  
         l.countDown();
@@ -303,15 +332,19 @@ public class DialogsClient extends Client {
           String pattern = message.args[2].strValue();
           String def = message.args[3].strValue();
           
+          
           final FileChooser fileChooser = new FileChooser();
       	
-				fileChooser.setTitle("Select the image file");
-				System.err.println("pattern:"  + pattern);
+				fileChooser.setTitle("Select the file");
+				System.err.println("type: "+ type + "; path: " + path+ "; pattern: " + pattern+ "; def: "+ def);
 				FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(pattern, pattern);
 				fileChooser.getExtensionFilters().add(filter);
 				fileChooser.setSelectedExtensionFilter(filter);
 				
-				File initFile = new File(path);
+				PropertyManager pm = XModeler.getPropertyManager();
+				String pmPath = pm.getStringProperty("fileDialogPath", path);
+				
+				File initFile = new File(pmPath);
 				fileChooser.setInitialFileName(def);
 				if (initFile.exists()) {
 					fileChooser.setInitialDirectory(initFile);
@@ -327,6 +360,7 @@ public class DialogsClient extends Client {
 
 				if (file != null) {
 					lastFile = file;
+					pm.setStringProperty("fileDialogPath", file.getParent());
 					result[0] = new Value(file.getAbsolutePath());
 				} else {
 					result[0] = new Value("");

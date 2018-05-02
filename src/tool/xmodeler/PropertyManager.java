@@ -179,7 +179,11 @@ public class PropertyManager {
 					root.appendChild(e);
 
 				}
-				writeXMLFile(doc);
+				//writeXMLFile(doc);
+				if (stage != null)
+				if (stage.isShowing()) {
+					createPropGrid();
+				}
 			}
 
 		} catch (Exception e) {
@@ -241,7 +245,7 @@ public class PropertyManager {
 	/*
 	 * write the content into xml file
 	 */
-	private void writeXMLFile(Document doc) {
+	public void writeXMLFile() {
 		try {
 			// File xmlFile = new File(filePath);
 
@@ -250,8 +254,8 @@ public class PropertyManager {
 			DOMSource source = new DOMSource(doc);
 			StreamResult result = new StreamResult(xmlFile);
 			transformer.transform(source, result);
+			if (stage != null)
 			if (stage.isShowing()) {
-				stage.close();
 				createPropGrid();
 			}
 		} catch (TransformerException e) {
@@ -330,6 +334,7 @@ public class PropertyManager {
 			if (stage != null) {
 				stage.close();
 			}
+			
 			propGrid = new GridPane();
 			createPropGrid();
 			propGrid.setPadding(new Insets(10));
@@ -338,13 +343,13 @@ public class PropertyManager {
 
 			Label lblCaption = new Label("Properties:");
 
-			Button btnOk = new Button("Ok");
+			Button btnOk = new Button("OK");
 			btnOk.setOnAction(new EventHandler<ActionEvent>() {
 
 				@Override
 				public void handle(ActionEvent event) {
 					// TODO Auto-generated method stub
-					writeXMLFile(doc);
+					writeXMLFile();
 					stage.close();
 				}
 			});
@@ -385,7 +390,7 @@ public class PropertyManager {
 			stage.show();
 
 		} catch (Exception e) {
-			// TODO: handle exception
+			System.err.println("Exception: getInterface(): " +e.getMessage());
 		}
 
 	}

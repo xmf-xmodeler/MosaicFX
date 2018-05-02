@@ -456,11 +456,12 @@ public class XModeler extends Application {
 			stage.getIcons().add(new Image("file:icons/shell/mosaic32.gif"));
 			setToolTitle();
 			
-			stage.setX(TOOL_X);
-			stage.setY(TOOL_Y);			
+			stage.setX(propertyManager.getIntProperty("TOOL_X", TOOL_X));
+			stage.setY(propertyManager.getIntProperty("TOOL_Y", TOOL_Y));			
 			stage.setScene(scene);
 			stage.setOnCloseRequest(  new EventHandler<WindowEvent>() {
 				  public void handle(WindowEvent event) {
+					  propertyManager.writeXMLFile();
 					  if (loadedImagePath == null) {
 						  WorkbenchClient.theClient().shutdownEvent();
 					  } else {
