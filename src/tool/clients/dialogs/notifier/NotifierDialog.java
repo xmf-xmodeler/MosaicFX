@@ -1,9 +1,26 @@
 package tool.clients.dialogs.notifier;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.concurrent.CountDownLatch;
+
+
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
+import javafx.scene.Group;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+
 
 import tool.xmodeler.XModeler;
 
@@ -22,16 +39,18 @@ public class NotifierDialog {
   private static final int   FINAL_ALPHA   = 225;
 
 //  // title foreground color
-//  private static Color       _titleFgColor = ColorCache.getColor(40, 73, 97);
+//private static Color       _fgColor = Color.rgb(40, 73, 97);
+ 
 //  // text foreground color
 //  private static Color       _fgColor      = _titleFgColor;
 //
 //  // shell gradient background color - top
-//  private static Color       _bgFgGradient = ColorCache.getColor(226, 239, 249);
+  private static Color       _bgFgGradient = Color.rgb(226, 239, 249);
+
 //  private static Color       _bgFgGradient_warning = ColorCache.getColor(226, 239, 50);
 //  private static Color       _bgFgGradient_error = ColorCache.getColor(255, 150, 150);
 //  // shell gradient background color - bottom
-//  private static Color       _bgBgGradient = ColorCache.getColor(177, 211, 243);
+  private static Color       _bgBgGradient = Color.rgb(177, 211, 243);
 //  private static Color       _bgBgGradient_warning = ColorCache.getColor(200, 220, 50);
 //  private static Color       _bgBgGradient_error = ColorCache.getColor(255, 100, 100);
 //  // shell border color
@@ -45,6 +64,19 @@ public class NotifierDialog {
 //
 //  private static Shell       _shell;
 
+  static int toastDelay = 4500; //3.5 seconds
+  static int fadeInDelay = 500; //0.5 seconds
+  static int fadeOutDelay= 500; //0.5 seconds
+  
+  static int _StageBorderSize = 20; // estimated window border
+  static int _borderSize = 2;
+  static int _titleHeight = 20;
+  static int _textGap = 20;
+  static int _boxWidth = 250;
+  static int _boxHeight = 180;
+  static int _textWidthMax = _boxWidth - _textGap ;
+  static int _textHeightMax = _boxHeight - _textGap - _titleHeight;
+  
   /**
    * Creates and shows a notification dialog with a specific title, message and a
    * 
@@ -53,6 +85,85 @@ public class NotifierDialog {
    * @param type
    */
   public static void notify(String title, String message, final NotificationType type) {
+	  
+	  if (Thread.currentThread().getName().equals("JavaFX Application Thread")) { 
+		  paintNotifier(title,message,type);
+		} else { // create a new Thread
+//			System.err.println("Calling redraw from " + Thread.currentThread());
+			CountDownLatch l = new CountDownLatch(1);
+			Platform.runLater(() -> {
+				// we are on the right Thread already:
+				paintNotifier(title,message,type);
+	    		l.countDown();
+			});
+			try {
+				l.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	  }
+  
+  	private static void paintNotifier(String title, String message, final NotificationType type) {
+  		
+  		Pane notificationPane = XModeler.getNotificationPane();
+  		Stage xModelerStage = XModeler.getStage();
+  		
+  		Rectangle r = new Rectangle(_boxWidth, _boxHeight);
+  		
+  		Stop[] stops = new Stop[] { new Stop(0, _bgFgGradient), new Stop(1, _bgBgGradient)};
+  		LinearGradient lg = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, stops );
+  		r.setFill(lg);
+  		r.setStroke(Color.BLACK);
+  		r.setStrokeWidth(_borderSize);
+  		r.setArcHeight(0.2);
+  		r.setArcWidth(0.2);
+  		
+  		Text titleText = new Text(title);
+  		titleText.setX(_textGap);
+  		titleText.setY(_textGap);
+  		titleText.setWrappingWidth(_boxWidth - 2*_textGap);
+  		titleText.setSmooth(true);
+  		titleText.setFont(Font.font("Arial", FontWeight.BOLD , 14));
+  		
+  		Text messageText = new Text(message);
+  		messageText.setX(_textGap);
+  		messageText.setY(2*_textGap);
+  		messageText.setWrappingWidth(_boxWidth - 2*_textGap);
+  		messageText.setSmooth(true);
+  		messageText.setFont(Font.font("Arial", 14));
+  		
+  		StackPane rectStack = new StackPane(new Group(r, new Pane(titleText), new Pane(messageText)));  		
+  		rectStack.setLayoutX(xModelerStage.getWidth()- _boxWidth - _borderSize - 16);
+  		rectStack.setLayoutY(xModelerStage.getHeight() - _boxHeight - _borderSize - 48);
+  		rectStack.setOpacity(0);
+  		
+  		notificationPane.getChildren().add(rectStack);
+  		
+        Timeline fadeInTimeline = new Timeline();
+        KeyFrame fadeInKey1 = new KeyFrame(Duration.millis(fadeInDelay), new KeyValue (rectStack.opacityProperty(), 1)); 
+        fadeInTimeline.getKeyFrames().add(fadeInKey1);   
+        fadeInTimeline.setOnFinished((ae) -> 
+        {
+            new Thread(() -> {
+                try
+                {
+                    Thread.sleep(toastDelay);
+                }
+                catch (InterruptedException e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                   Timeline fadeOutTimeline = new Timeline();
+                    KeyFrame fadeOutKey1 = new KeyFrame(Duration.millis(fadeOutDelay), new KeyValue (rectStack.opacityProperty(), 0)); 
+                    fadeOutTimeline.getKeyFrames().add(fadeOutKey1);   
+                    fadeOutTimeline.setOnFinished((aeb) -> notificationPane.getChildren().remove(rectStack));
+                    fadeOutTimeline.play();
+            }).start();
+        }); 
+        fadeInTimeline.play();
+  	}
 //    _shell = new Shell(XModeler.getXModeler(), SWT.NO_FOCUS | SWT.NO_TRIM);
 //    _shell.setLayout(new FillLayout());
 //    _shell.setForeground(_fgColor);
@@ -289,5 +400,3 @@ public class NotifierDialog {
 //    Display.getDefault().timerExec(FADE_TIMER, run);
 //
 //  }
-
-}

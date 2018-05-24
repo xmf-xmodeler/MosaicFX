@@ -62,7 +62,7 @@ public class PropertyManager {
 				doc = dBuilder.newDocument();
 				Element rootElement = doc.createElement("properties");
 				doc.appendChild(rootElement);
-				// writeXMLFile(doc);
+				writeXMLFile();
 
 				// setting standard values
 				setIntProperty("TOOL_X", 100);
@@ -179,7 +179,7 @@ public class PropertyManager {
 					root.appendChild(e);
 
 				}
-				//writeXMLFile(doc);
+					writeXMLFile();
 				if (stage != null)
 				if (stage.isShowing()) {
 					createPropGrid();
@@ -231,7 +231,7 @@ public class PropertyManager {
 					if (key.equals(eKey)) {
 						(doc.getDocumentElement()).removeChild(e);
 					}
-					// writeXMLFile(doc);
+					writeXMLFile();
 				}
 
 				return true;

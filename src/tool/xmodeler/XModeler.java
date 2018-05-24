@@ -30,15 +30,23 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import tool.clients.browser.ModelBrowserClient;
 import tool.clients.diagrams.DiagramClient;
 import tool.clients.dialogs.DialogsClient;
+import tool.clients.dialogs.notifier.NotificationType;
+import tool.clients.dialogs.notifier.NotifierDialog;
 import tool.clients.editors.EditorClient;
 import tool.clients.forms.FormsClient;
 import tool.clients.menus.MenuClient;
@@ -82,7 +90,8 @@ public class XModeler extends Application {
   static TabPane 		 browserTab 		 = null;
   static TabPane 		 editorTabs 		 = null;
   static TabPane 		 propertyTabs 		 = null;
-  static MenuBar		 menuBar				 = null;
+  static MenuBar		 menuBar			 = null;
+  static Pane			 notificationPane 	 = null;
   
   public static String attributeValue(Node node, String name) {
     NamedNodeMap attrs = node.getAttributes();
@@ -429,7 +438,7 @@ public class XModeler extends Application {
   public void createXmodeler() throws Exception {
 	  		outerSplitPane = new SplitPane();
 			
-			// Tabs for proejcts
+			// Tabs for projects
 			browserTab = new TabPane();//new Tab("MyProjects",projectTree),new Tab("Project0",new TreeView<String>()));
 			
 			rightSplitPane = new SplitPane();
@@ -443,25 +452,32 @@ public class XModeler extends Application {
 			
 			outerSplitPane.getItems().addAll(browserTab, rightSplitPane);
 			outerSplitPane.setDividerPosition(0, 0.2 );
-						
+			
 			menuBar = new MenuBar(); //MyMenuBar();
 			
 			containingBox = new VBox();
 			containingBox.getChildren().addAll(menuBar, outerSplitPane);
-			VBox.setVgrow(outerSplitPane,Priority.ALWAYS);
 			
-			scene = new Scene(containingBox,TOOL_WIDTH,TOOL_HEIGHT);
+			notificationPane = new Pane();
+			
+			notificationPane.setMouseTransparent(true);
+			// set on top of each other for notifications
+			StackPane stackPane = new StackPane(containingBox, notificationPane);
+			
+			VBox.setVgrow(outerSplitPane,Priority.ALWAYS);
+			scene = new Scene(stackPane, TOOL_WIDTH, TOOL_HEIGHT);
+			//scene = new Scene(containingBox,TOOL_WIDTH,TOOL_HEIGHT);
 			
 			// Set up Stage
 			stage.getIcons().add(new Image("file:icons/shell/mosaic32.gif"));
 			setToolTitle();
 			
-			stage.setX(propertyManager.getIntProperty("TOOL_X", TOOL_X));
+			stage.setX(propertyManager.getIntProperty("TOOL_X", TOOL_X));		
 			stage.setY(propertyManager.getIntProperty("TOOL_Y", TOOL_Y));			
 			stage.setScene(scene);
 			stage.setOnCloseRequest(  new EventHandler<WindowEvent>() {
 				  public void handle(WindowEvent event) {
-					  propertyManager.writeXMLFile();
+					  //propertyManager.writeXMLFile();
 					  if (loadedImagePath == null) {
 						  WorkbenchClient.theClient().shutdownEvent();
 					  } else {
@@ -533,6 +549,9 @@ public class XModeler extends Application {
     t.start();
   }
 
+  static public Pane getNotificationPane() {
+	  return notificationPane;
+  }
 //  private static boolean runLaterDebug = true;
 //  public static void runLater(Runnable runnable, String debugName) {
 //		CountDownLatch l = new CountDownLatch(1);

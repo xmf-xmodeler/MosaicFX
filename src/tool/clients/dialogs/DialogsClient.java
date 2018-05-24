@@ -16,6 +16,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import tool.clients.Client;
+import tool.clients.dialogs.notifier.NotificationType;
+import tool.clients.dialogs.notifier.NotifierDialog;
 import tool.xmodeler.PropertyManager;
 //import tool.clients.dialogs.notifier.NotificationType;
 //import tool.clients.dialogs.notifier.NotifierDialog;
@@ -231,7 +233,10 @@ public class DialogsClient extends Client {
   }
 
   private Value newPropertyDialog() {
-
+	  
+	  // Comment in for new notify test
+	  // NotifierDialog.notify("Edit Text", "Type text then RET to update.\nType ESC to cancel. This is supposed to be a veeeeery long text, so that you can see that the wrapping is working.", null);
+		
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) { 
 			// we are on the right Thread already:
 			XModeler.getPropertyManager().getInterface();
