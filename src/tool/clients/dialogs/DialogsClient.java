@@ -234,9 +234,7 @@ public class DialogsClient extends Client {
 
   private Value newPropertyDialog() {
 	  
-	  // Comment in for new notify test
-	  // NotifierDialog.notify("Edit Text", "Type text then RET to update.\nType ESC to cancel. This is supposed to be a veeeeery long text, so that you can see that the wrapping is working.", null);
-		
+	  		
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) { 
 			// we are on the right Thread already:
 			XModeler.getPropertyManager().getInterface();
@@ -341,7 +339,7 @@ public class DialogsClient extends Client {
           final FileChooser fileChooser = new FileChooser();
       	
 				fileChooser.setTitle("Select the file");
-				System.err.println("type: "+ type + "; path: " + path+ "; pattern: " + pattern+ "; def: "+ def);
+				//System.err.println("type: "+ type + "; path: " + path+ "; pattern: " + pattern+ "; def: "+ def);
 				FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(pattern, pattern);
 				fileChooser.getExtensionFilters().add(filter);
 				fileChooser.setSelectedExtensionFilter(filter);
@@ -410,7 +408,7 @@ public class DialogsClient extends Client {
         Alert alert = new Alert(AlertType.CONFIRMATION, info.strValue(), ButtonType.OK);
         alert.showAndWait();
         l.countDown();
-//        NotifierDialog.notify("Message", info.strValue(), NotificationType.values()[5]);
+        NotifierDialog.notify("Message", info.strValue(), NotificationType.INFO);
 //      }
     });
 	try {
@@ -431,7 +429,7 @@ public class DialogsClient extends Client {
 	        Alert alert = new Alert(AlertType.WARNING, info.strValue(), ButtonType.OK);
 	        alert.showAndWait();
 	        l.countDown();
-//	        NotifierDialog.notify("Warning", info.strValue(), NotificationType.values()[3]);
+	        NotifierDialog.notify("Warning", info.strValue(), NotificationType.WARN);
 //	      }
 	    });
 		try {
@@ -452,7 +450,7 @@ public class DialogsClient extends Client {
 	        Alert alert = new Alert(AlertType.ERROR, info.strValue(), ButtonType.OK);
 	        alert.showAndWait();
 	        l.countDown();
-//	        NotifierDialog.notify("Error", info.strValue(), NotificationType.values()[1]);
+	        NotifierDialog.notify("Error", info.strValue(), NotificationType.ERROR);
 //	      }
 	    });
 		try {

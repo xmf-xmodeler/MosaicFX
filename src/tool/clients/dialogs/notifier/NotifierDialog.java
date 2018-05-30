@@ -27,16 +27,16 @@ import tool.xmodeler.XModeler;
 public class NotifierDialog {
 
   // how long the the tray popup is displayed after fading in (in milliseconds)
-  private static final int   DISPLAY_TIME  = 4500;
+//  private static final int   DISPLAY_TIME  = 4500;
   // how long each tick is when fading in (in ms)
-  private static final int   FADE_TIMER    = 50;
+//  private static final int   FADE_TIMER    = 50;
   // how long each tick is when fading out (in ms)
-  private static final int   FADE_IN_STEP  = 30;
+//  private static final int   FADE_IN_STEP  = 30;
   // how many tick steps we use when fading out
-  private static final int   FADE_OUT_STEP = 8;
+//  private static final int   FADE_OUT_STEP = 8;
 
   // how high the alpha value is when we have finished fading in
-  private static final int   FINAL_ALPHA   = 225;
+//  private static final int   FINAL_ALPHA   = 225;
 
 //  // title foreground color
 //private static Color       _fgColor = Color.rgb(40, 73, 97);
@@ -45,14 +45,18 @@ public class NotifierDialog {
 //  private static Color       _fgColor      = _titleFgColor;
 //
 //  // shell gradient background color - top
-  private static Color       _bgFgGradient = Color.rgb(226, 239, 249);
-
-//  private static Color       _bgFgGradient_warning = ColorCache.getColor(226, 239, 50);
-//  private static Color       _bgFgGradient_error = ColorCache.getColor(255, 150, 150);
+//  private static Color       _bgFgGradientDefault = Color.rgb(226, 239, 249);
+//  private static Color       _bgBgGradientDefault = Color.rgb(177, 211, 243);
+//  
+//  private static Color       _bgFgGradient = Color.rgb(226, 239, 249);
+//
+//  private static Color       _bgFgGradient_warning = Color.rgb(226, 239, 50);
+//  private static Color       _bgBgGradient_warning = Color.rgb(200, 220, 50);
+//  private static Color       _bgFgGradient_error = Color.rgb(255, 150, 150);
 //  // shell gradient background color - bottom
-  private static Color       _bgBgGradient = Color.rgb(177, 211, 243);
-//  private static Color       _bgBgGradient_warning = ColorCache.getColor(200, 220, 50);
-//  private static Color       _bgBgGradient_error = ColorCache.getColor(255, 100, 100);
+//  private static Color       _bgBgGradient = Color.rgb(177, 211, 243);
+//
+//  private static Color       _bgBgGradient_error = Color.rgb(255, 100, 100);
 //  // shell border color
 //  private static Color       _borderColor  = ColorCache.getColor(40, 73, 97);
 //
@@ -72,8 +76,8 @@ public class NotifierDialog {
   static int _borderSize = 2;
   static int _titleHeight = 20;
   static int _textGap = 20;
-  static int _boxWidth = 250;
-  static int _boxHeight = 180;
+  static int _boxWidth = 352;
+  static int _boxHeight = 102;
   static int _textWidthMax = _boxWidth - _textGap ;
   static int _textHeightMax = _boxHeight - _textGap - _titleHeight;
   
@@ -85,6 +89,7 @@ public class NotifierDialog {
    * @param type
    */
   public static void notify(String title, String message, final NotificationType type) {
+	  
 	  
 	  if (Thread.currentThread().getName().equals("JavaFX Application Thread")) { 
 		  paintNotifier(title,message,type);
@@ -110,10 +115,8 @@ public class NotifierDialog {
   		Stage xModelerStage = XModeler.getStage();
   		
   		Rectangle r = new Rectangle(_boxWidth, _boxHeight);
-  		
-  		Stop[] stops = new Stop[] { new Stop(0, _bgFgGradient), new Stop(1, _bgBgGradient)};
-  		LinearGradient lg = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, stops );
-  		r.setFill(lg);
+  		  		
+  		r.setFill(getColor(type));
   		r.setStroke(Color.BLACK);
   		r.setStrokeWidth(_borderSize);
   		r.setArcHeight(0.2);
@@ -135,7 +138,7 @@ public class NotifierDialog {
   		
   		StackPane rectStack = new StackPane(new Group(r, new Pane(titleText), new Pane(messageText)));  		
   		rectStack.setLayoutX(xModelerStage.getWidth()- _boxWidth - _borderSize - 16);
-  		rectStack.setLayoutY(xModelerStage.getHeight() - _boxHeight - _borderSize - 48);
+  		rectStack.setLayoutY(xModelerStage.getHeight() - _boxHeight - _borderSize - 39);
   		rectStack.setOpacity(0);
   		
   		notificationPane.getChildren().add(rectStack);
@@ -152,7 +155,6 @@ public class NotifierDialog {
                 }
                 catch (InterruptedException e)
                 {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                    Timeline fadeOutTimeline = new Timeline();
@@ -163,6 +165,42 @@ public class NotifierDialog {
             }).start();
         }); 
         fadeInTimeline.play();
+  	}
+  	/**
+  	 * Creates and returns the LinearGradient according to NotificationType
+  	 * @param type
+  	 * @return LinearGradient
+  	 */
+  	private static LinearGradient getColor(NotificationType type) {
+  		
+  		Color bgFgGradient;
+  		Color bgBgGradient;
+  		
+  		switch(type) {
+  		
+  		case WARN:
+  			bgFgGradient = Color.rgb(226, 239, 50);
+  			bgBgGradient = Color.rgb(200, 220, 50);
+  		
+  		case ERROR:
+  			bgFgGradient = Color.rgb(255, 150, 150);
+  			bgBgGradient = Color.rgb(255, 100, 100);
+  			break;
+  		
+  		case INFO:
+  			bgFgGradient = Color.rgb(226, 239, 249);
+  			bgBgGradient = Color.rgb(177, 211, 243);
+  			break;
+  		
+  		default:
+  			bgFgGradient = Color.rgb(249, 249, 249);
+  			bgBgGradient = Color.rgb(240, 240, 240);
+  			break;
+  		}
+  		
+  		Stop[] stops = new Stop[] { new Stop(0, bgFgGradient), new Stop(1, bgBgGradient)};
+		LinearGradient lg = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, stops );
+		return lg;
   	}
 //    _shell = new Shell(XModeler.getXModeler(), SWT.NO_FOCUS | SWT.NO_TRIM);
 //    _shell.setLayout(new FillLayout());
