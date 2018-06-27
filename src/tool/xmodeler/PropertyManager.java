@@ -24,9 +24,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -341,7 +343,7 @@ public class PropertyManager {
 			propGrid.setHgap(10);
 			propGrid.setVgap(10);
 
-			Label lblCaption = new Label("Properties:");
+			Label lblCaption = new Label("Preferences:");
 
 			Button btnOk = new Button("OK");
 			btnOk.setOnAction(new EventHandler<ActionEvent>() {
@@ -384,9 +386,10 @@ public class PropertyManager {
 
 			Scene scene = new Scene(vb);
 			stage = new Stage();
-			stage.setTitle("Property Manager");
-
+			stage.setTitle("Preferences");
+			stage.getIcons().add(new Image("file:icons/shell/mosaic32.gif"));
 			stage.setScene(scene);
+			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.show();
 
 		} catch (Exception e) {

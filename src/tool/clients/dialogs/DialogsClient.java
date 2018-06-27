@@ -405,10 +405,11 @@ public class DialogsClient extends Client {
 		   Platform.runLater(()->{
 //        Value id = message.args[0];
         Value info = message.args[1];
-        Alert alert = new Alert(AlertType.CONFIRMATION, info.strValue(), ButtonType.OK);
-        alert.showAndWait();
-        l.countDown();
+//        Alert alert = new Alert(AlertType.CONFIRMATION, info.strValue(), ButtonType.OK);
+//        alert.showAndWait();
         NotifierDialog.notify("Message", info.strValue(), NotificationType.INFO);
+        l.countDown();
+
 //      }
     });
 	try {

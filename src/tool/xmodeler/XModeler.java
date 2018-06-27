@@ -552,6 +552,31 @@ public class XModeler extends Application {
   static public Pane getNotificationPane() {
 	  return notificationPane;
   }
+  
+	public static double getVerticalBorderSize() {
+		if (scene != null) {
+			return scene.getX();
+		} else
+			return 0;
+	}
+
+	/**
+	 * 
+	 * @param	top		set true for top window border, false for bottom window border
+	 * @return			Size of top/bottom window border
+	 */
+
+	public static double getHorizontalBorderSize(Boolean top) {
+		if (scene != null) 
+		{
+			if (top)
+				return scene.getY();
+			else
+				return (scene.getWindow().getHeight() - scene.getHeight());
+		} 
+		else
+			return 0;
+	}
 //  private static boolean runLaterDebug = true;
 //  public static void runLater(Runnable runnable, String debugName) {
 //		CountDownLatch l = new CountDownLatch(1);

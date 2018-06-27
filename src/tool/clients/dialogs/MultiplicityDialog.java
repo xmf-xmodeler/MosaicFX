@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -64,7 +65,7 @@ public class MultiplicityDialog extends Dialog<ButtonType>{
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
 		grid.setVgap(10);
-		grid.setPadding(new Insets(20, 150, 10, 10));
+		grid.setPadding(new Insets(20, 100, 10, 10));
 		
 //		    EXAMPLE
 //        searchField = new TextField();
@@ -198,15 +199,17 @@ public class MultiplicityDialog extends Dialog<ButtonType>{
 
 	protected MultiplicityDialog(Stage owner, int min, int max, boolean ordered, boolean navigable) { 
 		super(); 
-		initModality(Modality.WINDOW_MODAL);
+		initModality(Modality.APPLICATION_MODAL);
 		initOwner(owner);
 		
 		this.min = min;
 		this.max = max;
 		this.ordered = ordered;
 //		this.navigable = navigable;
-		
-        getDialogPane().getButtonTypes().add(ButtonType.OK);
+		Stage stage = (Stage) getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("file:icons/shell/mosaic32.gif"));
+		stage.setTitle("Edit Multiplicity");
+        getDialogPane().getButtonTypes().add(ButtonType.OK);	
         javafx.scene.Node okButton = getDialogPane().lookupButton(ButtonType.OK);
         okButton.managedProperty().bind(okButton.visibleProperty());
         
@@ -222,7 +225,7 @@ public class MultiplicityDialog extends Dialog<ButtonType>{
     	final ToggleGroup group = new ToggleGroup();
 
     	RadioButton defaultR1 = new RadioButton("0..1"); 
-	    GridPane.setColumnSpan(defaultR1, 2);
+	    //GridPane.setColumnSpan(defaultR1, 2);
 	    grid.add(defaultR1, 0, 0);
 	    defaultR1.setToggleGroup(group);
 	    
@@ -230,11 +233,11 @@ public class MultiplicityDialog extends Dialog<ButtonType>{
         	if(newValue && !oldValue) { setValues("0","1",false); } });
 	    
 	    Label label1 = new Label("Zero or one"); 
-	    GridPane.setColumnSpan(label1, 2);
-	    grid.add(label1, 2, 0);
+	    //GridPane.setColumnSpan(label1, 2);
+	    grid.add(label1, 3, 0);
 	    
 	    RadioButton defaultR2 = new RadioButton("1..1"); 
-	    GridPane.setColumnSpan(defaultR2, 2);
+	   // GridPane.setColumnSpan(defaultR2, 2);
 	    grid.add(defaultR2, 0, 1);
 	    defaultR2.setToggleGroup(group);
 	    
@@ -246,11 +249,11 @@ public class MultiplicityDialog extends Dialog<ButtonType>{
 //		});
 	    
 	    Label label2 = new Label("Exactly one"); 
-	    GridPane.setColumnSpan(label2, 2);
-	    grid.add(label2, 2, 1);
+	    //GridPane.setColumnSpan(label2, 2);
+	    grid.add(label2, 3, 1);
 	    
 	    RadioButton defaultR3 = new RadioButton("0..*"); 
-	    GridPane.setColumnSpan(defaultR3, 2);
+	    //GridPane.setColumnSpan(defaultR3, 2);
 	    grid.add(defaultR3, 0, 2);
 	    defaultR3.setToggleGroup(group);
 	    
@@ -262,11 +265,11 @@ public class MultiplicityDialog extends Dialog<ButtonType>{
 //		});
 	    
 	    Label label3 = new Label("Any number including zero"); 
-	    GridPane.setColumnSpan(label3, 2);
-	    grid.add(label3, 2, 2);
+	    //GridPane.setColumnSpan(label3, 2);
+	    grid.add(label3, 3, 2);
 	    
 	    RadioButton defaultR4 = new RadioButton("1..*"); 
-	    GridPane.setColumnSpan(defaultR4, 2);
+	    //GridPane.setColumnSpan(defaultR4, 2);
 	    grid.add(defaultR4, 0, 3);
 	    defaultR4.setToggleGroup(group);
 
@@ -282,8 +285,8 @@ public class MultiplicityDialog extends Dialog<ButtonType>{
 //	    gd = new GridData();
 //	    gd.horizontalSpan=2;
 //	    label4.setLayoutData(gd);
-	    GridPane.setColumnSpan(label4, 2);
-	    grid.add(label4, 2, 3);
+	    //GridPane.setColumnSpan(label4, 2);
+	    grid.add(label4, 3, 3);
 	    
 	    
 	    RadioButton defaultR5 = new RadioButton(""); 
@@ -291,12 +294,14 @@ public class MultiplicityDialog extends Dialog<ButtonType>{
 	    defaultR5.setToggleGroup(group);
 //	    defaultR5.setText("");
 	    txtMin = new TextField(min+"");
+	    txtMin.setMaxWidth(40);
 	    grid.add(txtMin, 1, 4);
 //	    txtMin.setText(min+"");
 	    Label dummy1 = new Label(".."); 
 	    grid.add(dummy1, 2, 4);
 //	    dummy1.setText("..");
         txtMax = new TextField(max<0?"*":(max+""));
+        txtMax.setMaxWidth(40);
         grid.add(txtMax, 3, 4);
 //	    txtMax.setText(max<0?"*":(max+""));
 	    

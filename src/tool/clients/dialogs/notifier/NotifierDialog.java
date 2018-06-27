@@ -7,9 +7,9 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.scene.Group;
+import javafx.geometry.Insets;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -68,18 +68,17 @@ public class NotifierDialog {
 //
 //  private static Shell       _shell;
 
-  static int toastDelay = 4500; //3.5 seconds
-  static int fadeInDelay = 500; //0.5 seconds
-  static int fadeOutDelay= 500; //0.5 seconds
+  final static int TOAST_DELAY = 3500; //3.5 seconds
+  final static int FADE_IN_DELAY = 500; //0.5 seconds
+  final static int FADE_OUT_DELAY= 500; //0.5 seconds
   
-  static int _StageBorderSize = 20; // estimated window border
-  static int _borderSize = 2;
-  static int _titleHeight = 20;
-  static int _textGap = 20;
-  static int _boxWidth = 352;
-  static int _boxHeight = 102;
-  static int _textWidthMax = _boxWidth - _textGap ;
-  static int _textHeightMax = _boxHeight - _textGap - _titleHeight;
+  final static int BORDER_SIZE = 2;
+  final static int TITLE_HEIGHT = 20;
+  final static int TEXT_GAP = 10;
+  final static int BOX_WIDTH = 352;
+  final static int BOX_HEIGHT = 102;
+  final static int TEXT_WIDTH_MAX = BOX_WIDTH - TEXT_GAP ;
+  final static int TEXT_HEIGHT_MAX = BOX_HEIGHT - TEXT_GAP - TITLE_HEIGHT;
   
   /**
    * Creates and shows a notification dialog with a specific title, message and a
@@ -92,13 +91,13 @@ public class NotifierDialog {
 	  
 	  
 	  if (Thread.currentThread().getName().equals("JavaFX Application Thread")) { 
-		  paintNotifier(title,message,type);
+		  createNotifier(title,message,type);
 		} else { // create a new Thread
 //			System.err.println("Calling redraw from " + Thread.currentThread());
 			CountDownLatch l = new CountDownLatch(1);
 			Platform.runLater(() -> {
 				// we are on the right Thread already:
-				paintNotifier(title,message,type);
+				createNotifier(title,message,type);
 	    		l.countDown();
 			});
 			try {
@@ -109,56 +108,64 @@ public class NotifierDialog {
 		}
 	  }
   
-  	private static void paintNotifier(String title, String message, final NotificationType type) {
+  	private static void createNotifier(String title, String message, final NotificationType type) {
   		
   		Pane notificationPane = XModeler.getNotificationPane();
   		Stage xModelerStage = XModeler.getStage();
   		
-  		Rectangle r = new Rectangle(_boxWidth, _boxHeight);
-  		  		
-  		r.setFill(getColor(type));
-  		r.setStroke(Color.BLACK);
-  		r.setStrokeWidth(_borderSize);
-  		r.setArcHeight(0.2);
-  		r.setArcWidth(0.2);
+  		
   		
   		Text titleText = new Text(title);
-  		titleText.setX(_textGap);
-  		titleText.setY(_textGap);
-  		titleText.setWrappingWidth(_boxWidth - 2*_textGap);
+  		//titleText.setText(title + "\nSecond title line\n\n\n\n\n\n\n"); // For testing
+  		titleText.setWrappingWidth(BOX_WIDTH - 2*TEXT_GAP);
   		titleText.setSmooth(true);
   		titleText.setFont(Font.font("Arial", FontWeight.BOLD , 14));
   		
   		Text messageText = new Text(message);
-  		messageText.setX(_textGap);
-  		messageText.setY(2*_textGap);
-  		messageText.setWrappingWidth(_boxWidth - 2*_textGap);
+  		messageText.setWrappingWidth(BOX_WIDTH - 2*TEXT_GAP);
   		messageText.setSmooth(true);
   		messageText.setFont(Font.font("Arial", 14));
   		
-  		StackPane rectStack = new StackPane(new Group(r, new Pane(titleText), new Pane(messageText)));  		
-  		rectStack.setLayoutX(xModelerStage.getWidth()- _boxWidth - _borderSize - 16);
-  		rectStack.setLayoutY(xModelerStage.getHeight() - _boxHeight - _borderSize - 39);
+  		
+  		VBox titleAndMessage = new VBox(titleText, messageText);
+  		titleAndMessage.setLayoutX(TEXT_GAP);
+  		titleAndMessage.setLayoutY(TEXT_GAP);
+  		titleAndMessage.setPadding(new Insets(TEXT_GAP));
+  		titleAndMessage.setSpacing(TEXT_GAP/2);
+  		//titleAndMessage.setMaxHeight(BOX_HEIGHT);
+  		double tAMheight = titleAndMessage.getHeight();
+  		
+  		Rectangle r = new Rectangle(BOX_WIDTH, Math.max(BOX_HEIGHT, tAMheight));
+  		
+  		r.setFill(getColor(type));
+  		r.setStroke(Color.BLACK);
+  		r.setStrokeWidth(BORDER_SIZE);
+  		r.setArcHeight(0.2);
+  		r.setArcWidth(0.2);
+  		
+  		Pane rectStack = new Pane(r, titleAndMessage);  		
+  		rectStack.setLayoutX(xModelerStage.getWidth()- BOX_WIDTH - XModeler.getVerticalBorderSize()*2-BORDER_SIZE);
+  		rectStack.setLayoutY(xModelerStage.getHeight() - r.getHeight()  - XModeler.getHorizontalBorderSize(false)-BORDER_SIZE);
   		rectStack.setOpacity(0);
   		
   		notificationPane.getChildren().add(rectStack);
   		
         Timeline fadeInTimeline = new Timeline();
-        KeyFrame fadeInKey1 = new KeyFrame(Duration.millis(fadeInDelay), new KeyValue (rectStack.opacityProperty(), 1)); 
+        KeyFrame fadeInKey1 = new KeyFrame(Duration.millis(FADE_IN_DELAY), new KeyValue (rectStack.opacityProperty(), 1)); 
         fadeInTimeline.getKeyFrames().add(fadeInKey1);   
         fadeInTimeline.setOnFinished((ae) -> 
         {
             new Thread(() -> {
                 try
                 {
-                    Thread.sleep(toastDelay);
+                    Thread.sleep(TOAST_DELAY);
                 }
                 catch (InterruptedException e)
                 {
                     e.printStackTrace();
                 }
                    Timeline fadeOutTimeline = new Timeline();
-                    KeyFrame fadeOutKey1 = new KeyFrame(Duration.millis(fadeOutDelay), new KeyValue (rectStack.opacityProperty(), 0)); 
+                    KeyFrame fadeOutKey1 = new KeyFrame(Duration.millis(FADE_OUT_DELAY), new KeyValue (rectStack.opacityProperty(), 0)); 
                     fadeOutTimeline.getKeyFrames().add(fadeOutKey1);   
                     fadeOutTimeline.setOnFinished((aeb) -> notificationPane.getChildren().remove(rectStack));
                     fadeOutTimeline.play();
@@ -181,6 +188,7 @@ public class NotifierDialog {
   		case WARN:
   			bgFgGradient = Color.rgb(226, 239, 50);
   			bgBgGradient = Color.rgb(200, 220, 50);
+  			break;
   		
   		case ERROR:
   			bgFgGradient = Color.rgb(255, 150, 150);

@@ -103,7 +103,7 @@ public class TreeItemInteractionHandler extends TreeCell<String> {
         			justSelected = true;
         		});
         		this.setOnContextMenuRequested((e)->{
-        			MenuClient.popup(ModelBrowserClient.theClient().itemId(this.getTreeItem()), this, (new Double(e.getScreenX()).intValue()), (new Double(e.getScreenY()).intValue()));
+        			MenuClient.popup(ModelBrowserClient.theClient().itemId(this.getTreeItem()), this, (new Double(e.getSceneX()).intValue()), (new Double(e.getSceneY()).intValue()));
         		});
 //            }
         }

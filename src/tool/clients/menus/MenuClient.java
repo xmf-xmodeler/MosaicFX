@@ -452,11 +452,16 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
       ContextMenu contextmenu = pmenu.popup(id);
       contextmenu.setAutoHide(true);
       if(side != null) {
-    	  contextmenu.show(anchor,side, x,y);
+    	  //contextmenu.show(anchor,side, x,y);
+    	  contextmenu.show(anchor,
+    			  x + XModeler.getStage().getX() + XModeler.getVerticalBorderSize() ,
+    			  y + XModeler.getStage().getY() + XModeler.getHorizontalBorderSize(true));
     	  return contextmenu;
       }
       else { 
-    	  contextmenu.show(anchor,x,y);
+    	  contextmenu.show(anchor,
+    			  x + XModeler.getStage().getX() + XModeler.getVerticalBorderSize() ,
+    			  y + XModeler.getStage().getY() + XModeler.getHorizontalBorderSize(true));
     	  return contextmenu;
     	  
       }
