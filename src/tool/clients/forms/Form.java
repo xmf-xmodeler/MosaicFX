@@ -239,7 +239,7 @@ public void newButton(String parentId, String id, String label, int x, int y, in
 //	  		    	if(item == null) return;
 //	  		    	String itemId = getId(item);
 //	  		    	if(itemId == null) return;
-	  		    	MenuClient.popup(id, text, Side.RIGHT, (int)click.getSceneX(), (int)click.getSceneY());
+	  		    	MenuClient.popup(id, text, (int)click.getSceneX(), (int)click.getSceneY());
 	  		 }
 	  		}});
 	      
@@ -319,7 +319,7 @@ public void newButton(String parentId, String id, String label, int x, int y, in
 	  		    	if(item == null) return;
 	  		    	String itemId = getId(item);
 	  		    	if(itemId == null) return;
-	  		    	MenuClient.popup(itemId, tree, Side.RIGHT, (int)click.getSceneX(), (int)click.getSceneY());
+	  		    	MenuClient.popup(itemId, tree, (int)click.getSceneX(), (int)click.getSceneY());
 	  		 }
 	  		}});}
 

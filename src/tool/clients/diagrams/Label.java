@@ -411,7 +411,7 @@ public class Label implements Selectable {
 
   public ContextMenu rightClick(javafx.scene.Node anchor, Side side, int x, int y) {
     if (!hidden) {
-      return MenuClient.popup(id, anchor, side, x, y);
+      return MenuClient.popup(id, anchor, x, y);
     }
     return null;
   }

@@ -134,7 +134,7 @@ public class Waypoint implements Selectable {
 
   @Override
   public ContextMenu rightClick(javafx.scene.Node anchor, Side side, int x, int y) {
-      return MenuClient.popup(id, anchor, side, x, y);
+      return MenuClient.popup(id, anchor, x, y);
   }
 
   @Override

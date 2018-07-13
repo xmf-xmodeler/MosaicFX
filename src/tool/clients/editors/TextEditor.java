@@ -89,7 +89,7 @@ public class TextEditor implements ITextEditor{
 //  char                               lastChar      = '\0';
   boolean                               lastCharIsLetter      = false;
   int                                syntaxDirty   = 0;                                       // counter for delaying syntax highlighting update
-
+  private ContextMenu				 currentContextMenu = null;
   private boolean                    syntaxBusy;
 
   public TextEditor(String id, String label, TabPane parent, boolean editable, boolean lineNumbers, String s) {
@@ -134,13 +134,17 @@ public class TextEditor implements ITextEditor{
     });
     
     textArea.setOnMouseClicked(e->{
+    	if (currentContextMenu != null)
+    		currentContextMenu.hide();
     	if(e.isControlDown()){
-    		MenuClient.popup(id, textArea, (new Double(e.getScreenX())).intValue(), (new Double(e.getScreenY())).intValue());
+    		currentContextMenu =  MenuClient.popup(id, textArea, (new Double(e.getSceneX())).intValue(), (new Double(e.getSceneY())).intValue());
     	}
     });
     
     textArea.setOnContextMenuRequested(e->{
-    	MenuClient.popup(id, textArea, (new Double(e.getScreenX())).intValue(), (new Double(e.getScreenY())).intValue());
+    	if (currentContextMenu != null)
+    		currentContextMenu.hide();
+    	currentContextMenu =  MenuClient.popup(id, textArea, (new Double(e.getSceneX())).intValue(), (new Double(e.getSceneY())).intValue());
     });
     
     textArea.addEventFilter(ScrollEvent.ANY, e->{

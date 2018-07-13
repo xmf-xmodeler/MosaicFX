@@ -442,30 +442,24 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
 //    } else System.err.println("no menu for " + id);
   }
 
-  public static ContextMenu popup(String id, javafx.scene.Node anchor, int x, int y) {
-	  return popup(id, anchor, null, x, y);
-  }
-
-  public static ContextMenu popup(String id, javafx.scene.Node anchor, javafx.geometry.Side side, int x, int y) {
-    if (popupAssignments.containsKey(id)) {
+  public static ContextMenu popup(String id, javafx.scene.Node anchor, int x, int y) 
+  {
+	  if (popupAssignments.containsKey(id)) {
       PopupMenu pmenu = popupAssignments.get(id);
       ContextMenu contextmenu = pmenu.popup(id);
       contextmenu.setAutoHide(true);
-      if(side != null) {
-    	  //contextmenu.show(anchor,side, x,y);
-    	  contextmenu.show(anchor,
-    			  x + XModeler.getStage().getX() + XModeler.getVerticalBorderSize() ,
-    			  y + XModeler.getStage().getY() + XModeler.getHorizontalBorderSize(true));
-    	  return contextmenu;
-      }
-      else { 
-    	  contextmenu.show(anchor,
+      
+      contextmenu.show(anchor,
     			  x + XModeler.getStage().getX() + XModeler.getVerticalBorderSize() ,
     			  y + XModeler.getStage().getY() + XModeler.getHorizontalBorderSize(true));
     	  return contextmenu;
     	  
-      }
     } else {System.err.println("no menu for " + id); return null;}
+  }
+  
+  @Deprecated
+  public static ContextMenu popup(String id, javafx.scene.Node anchor, javafx.geometry.Side side, int x, int y) {
+    return popup(id, anchor, x, y);
   }
   
   @Override

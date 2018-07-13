@@ -104,7 +104,7 @@ public class Diagram implements Display {
 
 //  private class MyKeyListener implements KeyListener {
 //
-//    public void keyPressed(KeyEvent e) {
+//    public void keyPressed(Event e) {
 //      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && ((SWT.SHIFT & e.stateMask) != SWT.SHIFT) && (e.keyCode == 'f')) {
 //        layout();
 //        redraw();
@@ -253,7 +253,7 @@ public class Diagram implements Display {
   														       // --------- not used ---------- \\
   private void rightClick(javafx.scene.input.MouseEvent event, javafx.geometry.Point2D scaledPoint) {
 	    if (selection.isEmpty())
-	    	currentcontextMenu = MenuClient.popup(id, scroller, Side.LEFT, (int) event.getSceneX(), (int) event.getSceneY());
+	    	currentcontextMenu = MenuClient.popup(id, scroller, (int) event.getSceneX(), (int) event.getSceneY());
 	    else {
 	      if (selection.size() == 1) {
 	    	  currentcontextMenu = selection.elementAt(0).rightClick(scroller, Side.LEFT, (int) event.getSceneX(), (int) event.getSceneY());
