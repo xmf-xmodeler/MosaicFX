@@ -1,0 +1,33 @@
+parserImport XOCL;
+
+import Clients;
+
+context TrafficLights
+
+  @Class TrafficLightCommandInterpreter extends CommandInterpreter
+  
+    @Operation setRed(state:Boolean)
+	  @SendCommand(self)
+	    setRed(state)
+	  end
+	end
+	
+	@Operation setAmber(state:Boolean)
+	  @SendCommand(self)
+	    setAmber(state)
+	  end
+	end
+	
+	@Operation setGreen(state:Boolean)
+	  @SendCommand(self)
+	    setGreen(state)
+	  end
+	end
+	
+	@Operation getRed()
+	  @CallCommand(self)
+	    getRed()
+	  end
+	end
+  
+  end

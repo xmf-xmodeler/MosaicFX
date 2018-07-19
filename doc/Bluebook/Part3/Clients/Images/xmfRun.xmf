@@ -1,0 +1,14 @@
+parserImport XOCL;
+
+import Comms;
+import IO;
+
+let
+  client = TrafficLights::TrafficLightsClient()
+in
+  xmf.clientManager().add(client);
+  @Fork(TrafficLightEvents)
+    client.start()
+  end;
+  client.runLights()
+end;

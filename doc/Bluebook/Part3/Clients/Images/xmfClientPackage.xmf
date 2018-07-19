@@ -1,0 +1,10 @@
+parserImport XOCL;
+
+context Root;
+
+  @Package TrafficLights
+  
+    // This package defines an interface to an external
+	// client which simulates a traffic light
+  
+  end

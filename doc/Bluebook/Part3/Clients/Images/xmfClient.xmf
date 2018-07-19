@@ -1,0 +1,30 @@
+parserImport XOCL; 
+
+import Clients;
+import TrafficLights;
+
+context TrafficLights
+
+  @Class TrafficLightClient extends Client
+
+	@Constructor()
+	  self.name := "org.myproject.trafficlights"; 
+	  self.setCommandInterpreter(TrafficLightCommandInterpreter()); 
+	  self.setEventHandler(TrafficLightEventHandler()) 
+	end
+	
+	@Operation runLights() 
+	  let c = self.commandInterpreter() 
+	  in
+		@Count i from 1 to 10 do
+		  c.setRed(true);
+		  c.setAmber(true);
+		  c.setRed(false);
+		  c.setAmber(false);
+		  c.setGreen(true);
+		  c.setGreen(false)
+		end
+	  end
+	end
+  
+  end

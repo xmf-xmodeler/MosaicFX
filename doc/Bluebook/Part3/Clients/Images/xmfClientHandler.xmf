@@ -1,0 +1,19 @@
+parserImport XOCL;
+
+import Clients;
+
+context TrafficLights
+
+  @Class TraffLightEventHandler extends EventHandler
+  
+    @Operation dispatchEvent(message,parameters)
+	  @Case message.name of 
+	    "reportCarQueue" do self.readCarQueue(parameters) end
+	  end
+	end
+	
+	@Operation readCarQueue(parameters)
+	  format(stdout,"Number of cars queuing:~S~%",parameters->at(0))
+	end 
+  
+  end
