@@ -3,6 +3,8 @@
 "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"-->
 <chapter id="mappings">
   <title>Constructing and Running Mappings</title>
+  <para><emphasis role="bold"><emphasis role="red">This chapter is not supported by the 
+	  current XModeler version</emphasis></emphasis></para>
 
   <para>Mappings are an essential part of being able to transform models
   written in one language to models written in another language. This part
@@ -31,13 +33,13 @@
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/mappingclasses.jpg" />
+        <imagedata fileref="Images/mappingclasses.jpg" width="100%" />
       </imageobject>
     </mediaobject>
 
     <para>Note, the Route class has been copied from the Airports model. This
     is achieved by right clicking on the class in the Airports model,
-    selecting Drop in Class Diagram and then choosing the Example1
+    selecting <emphasis role="bold">Add to Class Diagram</emphasis> and then choosing the Example1
     package.</para>
 
     <para>Next, a mapping is added to the model. Select the Mapping from the
@@ -46,7 +48,7 @@
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/addingamapping.jpg" />
+        <imagedata fileref="Images/addingamapping.jpg" width="100%"/>
       </imageobject>
     </mediaobject>
 
@@ -56,7 +58,7 @@
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/addingdomainandrange.jpg" />
+        <imagedata fileref="Images/addingdomainandrange.jpg" width="100%"/>
       </imageobject>
     </mediaobject>
 
@@ -191,7 +193,7 @@ end</programlisting>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/runningthesimplemapping.jpg" />
+          <imagedata fileref="Images/runningthesimplemapping.jpg" width="100%"/>
         </imageobject>
       </mediaobject>
 
@@ -277,7 +279,7 @@ end</programlisting>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/mapping.jpg" />
+          <imagedata fileref="Images/mapping.jpg" width="100%"/>
         </imageobject>
       </mediaobject>
 
@@ -325,7 +327,7 @@ end</programlisting></para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/mappingresult.jpg" />
+          <imagedata fileref="Images/mappingresult.jpg" width="100%"/>
         </imageobject>
       </mediaobject>
     </section>
@@ -350,7 +352,7 @@ end</programlisting></para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/mappingexception.jpg" />
+          <imagedata fileref="Images/mappingexception.jpg" width="100%"/>
         </imageobject>
       </mediaobject>
 
@@ -362,7 +364,7 @@ end</programlisting></para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/expandedmappingexception.jpg" />
+          <imagedata fileref="Images/expandedmappingexception.jpg" width="100%"/>
         </imageobject>
       </mediaobject>
 

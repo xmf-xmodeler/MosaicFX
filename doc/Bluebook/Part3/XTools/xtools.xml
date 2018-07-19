@@ -56,7 +56,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image004.jpg" />
+          <imagedata fileref="Images/image004.jpg" width="100%"/>
         </imageobject>
       </mediaobject>
 
@@ -104,7 +104,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image006.jpg" />
+          <imagedata fileref="Images/image006.jpg" width="100%"/>
         </imageobject>
       </mediaobject>
 
@@ -129,7 +129,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image008.jpg" />
+          <imagedata fileref="Images/image008.jpg" width="100%"/>
         </imageobject>
       </mediaobject>
 
@@ -138,7 +138,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image010.jpg" />
+          <imagedata fileref="Images/image010.jpg" width="100%"/>
         </imageobject>
       </mediaobject>
 
@@ -297,7 +297,7 @@ end
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image015.jpg" />
+          <imagedata fileref="Images/image015.jpg" width="100%"/>
         </imageobject>
       </mediaobject>
     </section>
@@ -371,7 +371,7 @@ end
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image017.jpg" />
+          <imagedata fileref="Images/image017.jpg" width="100%"/>
         </imageobject>
       </mediaobject>
     </section>
@@ -492,7 +492,7 @@ end</programlisting></para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image027.jpg" />
+          <imagedata fileref="Images/image027.jpg" width="100%"/>
         </imageobject>
       </mediaobject>
 
@@ -561,7 +561,7 @@ end</programlisting></para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image033.jpg" />
+          <imagedata fileref="Images/image033.jpg" width="100%"/>
         </imageobject>
       </mediaobject>
 
@@ -612,7 +612,7 @@ end</programlisting></para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image035.jpg" />
+          <imagedata fileref="Images/image035.jpg" width="100%"/>
         </imageobject>
       </mediaobject>
     </section>
@@ -693,7 +693,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image043.jpg" />
+            <imagedata fileref="Images/image043.jpg" width="100%"/>
           </imageobject>
         </mediaobject>
 
@@ -716,7 +716,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image045.jpg" />
+            <imagedata fileref="Images/GraphImage01.png" />
           </imageobject>
         </mediaobject>
       </section>
@@ -770,7 +770,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image047.jpg" />
+            <imagedata fileref="Images/GraphImage02.png" />
           </imageobject>
         </mediaobject>
 
@@ -786,7 +786,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image049.jpg" />
+            <imagedata fileref="Images/GraphImage03.png" />
           </imageobject>
         </mediaobject>
 
@@ -805,7 +805,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image051.jpg" />
+            <imagedata fileref="Images/GraphImage04.png" />
           </imageobject>
         </mediaobject>
 
@@ -832,7 +832,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image053.jpg" />
+            <imagedata fileref="Images/GraphImage05.png" />
           </imageobject>
         </mediaobject>
 
@@ -847,7 +847,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image055.jpg" />
+            <imagedata fileref="Images/GraphImage06.png" />
           </imageobject>
         </mediaobject>
 
@@ -870,7 +870,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image057.jpg" />
+            <imagedata fileref="Images/GraphImage07.png" />
           </imageobject>
         </mediaobject>
 
@@ -913,7 +913,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image059.jpg" />
+            <imagedata fileref="Images/GraphImage08.png" />
           </imageobject>
         </mediaobject>
 
@@ -926,7 +926,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image061.jpg" />
+            <imagedata fileref="Images/GraphImage09.png" />
           </imageobject>
         </mediaobject>
 
@@ -949,7 +949,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image063.jpg" />
+            <imagedata fileref="Images/GraphImage10.png" />
           </imageobject>
         </mediaobject>
 
@@ -959,7 +959,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image065.jpg" />
+            <imagedata fileref="Images/GraphImage11.png" />
           </imageobject>
         </mediaobject>
 
@@ -970,7 +970,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image067.jpg" />
+            <imagedata fileref="Images/GraphImage12.png" />
           </imageobject>
         </mediaobject>
       </section>
@@ -994,7 +994,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image069.jpg" />
+            <imagedata fileref="Images/GraphImage13.png" />
           </imageobject>
         </mediaobject>
 
@@ -1012,7 +1012,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image071.jpg" />
+            <imagedata fileref="Images/GraphImage14.png" />
           </imageobject>
         </mediaobject>
 
@@ -1020,7 +1020,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image073.jpg" />
+            <imagedata fileref="Images/GraphImage15.png" />
           </imageobject>
         </mediaobject>
       </section>
@@ -1113,7 +1113,7 @@ end</programlisting>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image078.jpg" />
+            <imagedata fileref="Images/image078.jpg" width="100%"/>
           </imageobject>
         </mediaobject>
 
@@ -1290,7 +1290,7 @@ end</programlisting>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/FormTools.jpg" />
+          <imagedata fileref="Images/FormTools.jpg" width="100%"/>
         </imageobject>
       </mediaobject>
     </section>
@@ -1302,7 +1302,7 @@ end</programlisting>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/FormElements.jpg" />
+          <imagedata fileref="Images/FormElements.jpg" width="100%"/>
         </imageobject>
       </mediaobject>
     </section>
@@ -1320,7 +1320,7 @@ end</programlisting>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/FormEvents.jpg" />
+          <imagedata fileref="Images/FormEvents.jpg" width="100%"/>
         </imageobject>
       </mediaobject>
     </section>
@@ -1340,7 +1340,7 @@ end</programlisting>
 
         <para><mediaobject>
             <imageobject>
-              <imagedata fileref="Images/Airport.jpg" />
+              <imagedata fileref="Images/Airport.jpg" width="100%"/>
             </imageobject>
           </mediaobject></para>
       </section>

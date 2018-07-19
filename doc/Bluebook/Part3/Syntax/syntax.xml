@@ -42,9 +42,9 @@
     produce large amounts of program code from a small amount of text (after
     all this is the point of defining a language). XMF provides technology that
     vastly reduces the amount of work necessary to define the synthesizing
-    actions; the technology is called quasi-quotes.</para>
+    actions; the technology is called <emphasis role="italic">quasi-quotes</emphasis>.</para>
 
-    <para>Quasi-quotes are used to define code templates. A code template is a
+    <para><emphasis role="italic">Quasi-quotes</emphasis> are used to define code templates. A code template is a
     mapping from code fragments to a program by inserting the code fragments
     into a code pattern. The result of applying a template can be supplied as
     an argument to subsequent templates. Very large programs can be
@@ -96,7 +96,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image006.jpg" />
+          <imagedata fileref="Images/table.png" />
         </imageobject>
       </mediaobject>
 
@@ -111,7 +111,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image008.jpg" />
+          <imagedata fileref="Images/Table2Dimage01.png" />
         </imageobject>
       </mediaobject>
 
@@ -134,7 +134,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image010.jpg" />
+          <imagedata fileref="Images/Table2Dimage02.png" />
         </imageobject>
       </mediaobject>
 
@@ -146,7 +146,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image012.jpg" />
+          <imagedata fileref="Images/Table2Dimage03.png" />
         </imageobject>
       </mediaobject>
 
@@ -155,7 +155,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image014.jpg" />
+          <imagedata fileref="Images/Table2Dimage04.png" />
         </imageobject>
       </mediaobject>
 
@@ -168,7 +168,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image016.jpg" />
+          <imagedata fileref="Images/Table2Dimage05.png" />
         </imageobject>
       </mediaobject>
 
@@ -184,7 +184,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image018.jpg" />
+          <imagedata fileref="Images/Table2Dimage06.png" />
         </imageobject>
       </mediaobject>
 
@@ -202,7 +202,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image020.jpg" />
+          <imagedata fileref="Images/Table2Dimage07.png" />
         </imageobject>
       </mediaobject>
 
@@ -210,7 +210,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image022.jpg" />
+          <imagedata fileref="Images/Table2Dimage08.png" />
         </imageobject>
       </mediaobject>
 
@@ -223,7 +223,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image024.jpg" />
+          <imagedata fileref="Images/Table2Dimage09.png" />
         </imageobject>
       </mediaobject>
 
@@ -316,7 +316,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image032.jpg" />
+          <imagedata fileref="Images/image032.jpg" width="100%" />
         </imageobject>
       </mediaobject>
 
@@ -467,28 +467,34 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image034.jpg" />
+          <imagedata fileref="Images/XBNFImage01.png" width="100%"/>
         </imageobject>
       </mediaobject>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image036.jpg" />
+          <imagedata fileref="Images/XBNFImage02.png" width="100%"/>
         </imageobject>
       </mediaobject>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image038.jpg" />
+          <imagedata fileref="Images/XBNFImage03.png" width="100%"/>
         </imageobject>
       </mediaobject>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image040.jpg" />
+          <imagedata fileref="Images/XBNFImage04.png" width="100%"/>
         </imageobject>
       </mediaobject>
-    </section>
+	
+	  <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/XBNFImage05.png" width="100%"/>
+        </imageobject>
+      </mediaobject>
+	</section>
 
     <section>
       <title>Tokens</title>
@@ -561,7 +567,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image042.jpg" />
+          <imagedata fileref="Images/Eval.png" />
         </imageobject>
       </mediaobject>
 
@@ -582,7 +588,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image044.jpg" />
+          <imagedata fileref="Images/Compile.png" />
         </imageobject>
       </mediaobject>
 
@@ -1141,7 +1147,7 @@ end</programlisting>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image046.jpg" />
+            <imagedata fileref="Images/CheckImage01.png" />
           </imageobject>
         </mediaobject>
 
@@ -1150,7 +1156,7 @@ end</programlisting>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image048.jpg" />
+            <imagedata fileref="Images/CheckImage02.png" />
           </imageobject>
         </mediaobject>
       </section>
@@ -1197,19 +1203,25 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image050.jpg" />
+            <imagedata fileref="Images/SpecImage01.png" />
           </imageobject>
         </mediaobject>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image052.jpg" />
+            <imagedata fileref="Images/SpecImage02.png" />
           </imageobject>
         </mediaobject>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image054.jpg" />
+            <imagedata fileref="Images/SpecImage03.png" />
+          </imageobject>
+        </mediaobject>
+		
+		<mediaobject>
+          <imageobject>
+            <imagedata fileref="Images/SpecImage04.png" />
           </imageobject>
         </mediaobject>
       </section>
@@ -1221,7 +1233,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image056.jpg" />
+            <imagedata fileref="Images/For.png" />
           </imageobject>
         </mediaobject>
       </section>
@@ -1376,7 +1388,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image060.jpg" />
+            <imagedata fileref="Images/WhenImage01.png" />
           </imageobject>
         </mediaobject>
 
@@ -1385,7 +1397,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image062.jpg" />
+            <imagedata fileref="Images/WhenImage02.png" />
           </imageobject>
         </mediaobject>
 
@@ -1396,7 +1408,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image064.jpg" />
+            <imagedata fileref="Images/WhenImage03.png" />
           </imageobject>
         </mediaobject>
 
@@ -1406,7 +1418,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image066.jpg" />
+            <imagedata fileref="Images/WhenImage04.png" />
           </imageobject>
         </mediaobject>
       </section>
@@ -1442,13 +1454,13 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image068.jpg" />
+            <imagedata fileref="Images/CondImage01.png" />
           </imageobject>
         </mediaobject>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image070.jpg" />
+            <imagedata fileref="Images/CondImage02.png" />
           </imageobject>
         </mediaobject>
 
@@ -1465,7 +1477,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image072.jpg" />
+            <imagedata fileref="Images/CondImage03.png" />
           </imageobject>
         </mediaobject>
       </section>
@@ -1568,7 +1580,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image076.jpg" />
+            <imagedata fileref="Images/StateMachineTestImage01.png" />
           </imageobject>
         </mediaobject>
 
@@ -1585,7 +1597,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image078.jpg" />
+            <imagedata fileref="Images/StateMachineTestImage02.png" />
           </imageobject>
         </mediaobject>
 
@@ -1620,7 +1632,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image082.jpg" />
+            <imagedata fileref="Images/StateMachineTestImage03.png" />
           </imageobject>
         </mediaobject>
 
@@ -1628,7 +1640,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image084.jpg" />
+            <imagedata fileref="Images/StateMachineTestImage04.png" />
           </imageobject>
         </mediaobject>
 
@@ -1637,7 +1649,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image086.jpg" />
+            <imagedata fileref="Images/StateMachineImage01.png" />
           </imageobject>
         </mediaobject>
 
@@ -1661,7 +1673,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image088.jpg" />
+            <imagedata fileref="Images/StateMachineImage02.png" />
           </imageobject>
         </mediaobject>
 
@@ -1707,7 +1719,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image090.jpg" />
+            <imagedata fileref="Images/StateMachineImage03.png" />
           </imageobject>
         </mediaobject>
 
@@ -1716,7 +1728,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image092.jpg" />
+            <imagedata fileref="Images/StateMachineImage04.png" />
           </imageobject>
         </mediaobject>
 
@@ -1735,7 +1747,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image094.jpg" />
+            <imagedata fileref="Images/StateMachineImage05.png" />
           </imageobject>
         </mediaobject>
 
@@ -1750,7 +1762,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image096.jpg" />
+            <imagedata fileref="Images/StateMachineImage06.png" />
           </imageobject>
         </mediaobject>
 
@@ -1758,7 +1770,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image098.jpg" />
+            <imagedata fileref="Images/StateMachineImage07.png" />
           </imageobject>
         </mediaobject>
 
@@ -1770,7 +1782,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image100.jpg" />
+            <imagedata fileref="Images/StateMachineImage08.png" />
           </imageobject>
         </mediaobject>
 
@@ -1779,7 +1791,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image102.jpg" />
+            <imagedata fileref="Images/StateMachineImage09.png" />
           </imageobject>
         </mediaobject>
 
@@ -1791,7 +1803,7 @@ end</programlisting></para>
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image104.jpg" />
+            <imagedata fileref="Images/StateMachineImage10.png" />
           </imageobject>
         </mediaobject>
       </section>

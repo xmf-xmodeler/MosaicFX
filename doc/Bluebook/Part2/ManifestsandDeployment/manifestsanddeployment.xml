@@ -11,31 +11,47 @@
 
   <para>In version 1.0 of XMF, manifests must be declared in a file. The
   following file imports the Manifest facility and implements a manifest that
-  compiles Airports.xmf file followed by AirportsCons.xmf:</para>
+  compiles <emphasis role="bold">Airports.xmf</emphasis> file followed by <emphasis role="bold">AirportsCons.xmf</emphasis>:</para>
 
   <programlisting>parserImport Manifests;
 
-@Manifest Airports
-  p = @File Airports end
-  @File AirportsCons end
+@Manifest ComponentsModel
+  p = @File ComponentsModel end
+  @File ComponentsGrammar end
 end;</programlisting>
 
   <para>A manifest is declared using @Manifest. A manifest has a name (in this
   case Airports) and contains a list of files.</para>
 
   <para>Save, Compile and Load the Manifest (right click &gt; Save, Compile
-  and Load). A manifest icon will appear in the file browser which contains
-  some additional menu options:</para>
+  and Load). A manifest icon will appear in the file browser which contains 
+  some additional menu options under the menu item <emphasis role="italic">Manifest</emphasis>:</para>
 
-  <para>The two additional options are:</para>
+  <para>The additional options are:</para>
+  
+  <para>Browse: This will list the mentioned xmf files under the Manifest file.</para>
 
-  <para>Build Manifest: This will compile all the files in the
+  <para>Build: This will compile all the files in the
   manifest.</para>
-
-  <para>Load Manifest: This will load the binary of the files.</para>
-
+  
   <para>Compile, Build and Load: Compiles the Manifest, then Builds and Loads
   the files.</para>
+  
+   <para>Delete Binaries: Deletes the Manifests binaries.</para>
+   
+   <para><emphasis role="red">This feature is not supported by the 
+	  current XModeler version</emphasis></para>
+
+  <para>Load &gt; Binaries: This will load the binary of the files.</para>
+  
+  <para>Load &gt; Sources: This will load the source of the files.</para>
+  
+  Kommentar das nicht ausgereift
+  <para>Refresh: </para>
+  
+  <para>Touch &gt; Binaries / Source: </para>
+  
+  <para>Xip: This will save the Manifest as .xip file.</para>
 
   <para>These can be used to compile and load as many files as required in a
   specific development project.</para>
@@ -54,9 +70,9 @@ end;</programlisting>
 
     <programlisting>parserImport Manifests;
 
-@Manifest Networks
-  p = @File Network end
-  @File NetworkCons end do
+@Manifest ComponentsModel
+  p = @File ComponentsModel end
+  @File ComponentsGrammar end do
   p.edit()
 end;</programlisting>
 
@@ -75,7 +91,7 @@ end;</programlisting>
     <para>As an example, let’s imagine we want to generate a manifest and
     associated files for the Airports model:</para>
 
-    <para>First right click on the packageand choose deploy.</para>
+    <para>First right click on the package and choose deploy.</para>
 
     <para>This will offer a number of deployment types.</para>
 
@@ -95,9 +111,7 @@ end;</programlisting>
     <programlisting>parserImport XOCL;
 parserImport Manifests;
 
-// Manifest deployed by Andy on Sat Sep 24 17:22:04 BST 2005
-
-@Manifest Components
+@Manifest ComponentsModel
   p = @File Components end
   @File Component end
   @File ComponentModel end
@@ -108,7 +122,7 @@ do p
 end;
 </programlisting>
 
-    <para>Right click Compile, Build and Load to compile, buld and load the
+    <para>Right click Compile, Build and Load to compile, build and load the
     manifest.</para>
   </section>
 </chapter>

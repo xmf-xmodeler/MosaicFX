@@ -47,7 +47,7 @@ context Root
     
   end</programlisting>
 
-    <para>Note that the class Named extends the class XOCL::Syntax. It is
+    <para>Note that the class <emphasis role="bold">Named</emphasis> extends the class <emphasis role="bold">XOCL::Syntax</emphasis>. It is
     necessary for all classes we want to synthesise to inherit from this
     class.</para>
 
@@ -64,7 +64,7 @@ context EntityModel
   
     EntityModel ::=
       name = Name 
-      entities = Entity*
+      entities = Entity* 'end'
         {EntityModel[name = name, entities = entities]}.
       
     Entity ::= 'entity' name = Name rels = Relationship*
@@ -94,8 +94,8 @@ context EntityModel
 
           <listitem>
             <para>A rule is sequences of pattern declarations followed by an
-            action (in curly brackets} which is called after the parsing has
-            occured.</para>
+            action (in curly brackets) which is called after the parsing has
+            occurred.</para>
           </listitem>
 
           <listitem>
@@ -140,7 +140,7 @@ Root::p :=
 
     <para>Compiling and loading the above three files in order will load the
     model, the parser definition and the example. The result will be stored in
-    the Root variable p, which can be edited in the console using
-    p.edit().</para>
+    the Root variable <emphasis role="bold">p</emphasis>, which can be edited in the console using
+    <emphasis role="bold">p.edit()</emphasis>.</para>
   </section>
 </chapter>

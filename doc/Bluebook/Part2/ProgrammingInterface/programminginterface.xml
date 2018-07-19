@@ -5,34 +5,33 @@
   <title>Using the Programming Interface</title>
 
   <para>This section shows how to use the programming interface to construct
-  some of the models described above. We will add use the programming
+  some of the models described above. We will use the programming
   interface (see Part 1 of this guide) to construct the code.</para>
 
   <section>
     <title>Getting Started</title>
 
-    <para>Select File Browser .. from the File menu. Choose a directory (or
+    <para>Select <emphasis role="bold">Open File Browser...</emphasis> from the File menu. Choose a directory (or
     create one), where you want the code to reside.</para>
 
-    <para>Right click on the directory and choose New XMF File From Template
-    &gt; Package to create an XMF file.</para>
+    <para>Right click on the directory and choose <emphasis role="bold">Add Element &gt; Template &gt; Package</emphasis> to create an XMF file.</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/createafile.jpg" />
+        <imagedata fileref="Images/createafile.png" />
       </imageobject>
     </mediaobject>
 
     <para>The file will contain the default declarations needed to construct
     an XMF package definition. Change the name of the file to
-    Components.xmf.</para>
+    <emphasis role="bold">Components.xmf</emphasis>.</para>
 
     <para>We will be creating a package in the context of the Root package, so
     make sure that the context is set to Root. There are no imports.</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/newfile.jpg" />
+        <imagedata fileref="Images/newfile.png" />
       </imageobject>
     </mediaobject>
 
@@ -43,7 +42,7 @@
     <para>The following code constructs the classes used in the Airports
     model. Note that constructors have been added for each class, and that
     attributes have getters (?) and setters (!), and in the case of Set and
-    Sequence types, updators (+) and removers (-).</para>
+    Sequence types, updaters (+) and removers (-).</para>
 
     <programlisting>parserImport XOCL;
 
@@ -100,8 +99,8 @@ context Root
   <section>
     <title>Compiling and Loading</title>
 
-    <para>At any point, right click on the editor and select Save, Compile and
-    Load to save, compile and load the model.</para>
+    <para>At any point, right click on the editor and select <emphasis role="bold">Save, Compile and
+    Load</emphasis> to save, compile and load the model.</para>
   </section>
 
   <section>
@@ -112,12 +111,12 @@ context Root
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/editingthepackage.jpg" />
+        <imagedata fileref="Images/editingthepackage.png" />
       </imageobject>
     </mediaobject>
 
     <para>To view the package in the browser, enter the package name,
-    Airports, followed by .browse().</para>
+    <emphasis role="bold">Components</emphasis>, followed by <emphasis role="bold">.browse()</emphasis>.</para>
   </section>
 
   <section>
@@ -180,8 +179,8 @@ context Root
       end
 </programlisting>
 
-    <para>Note, this must be declared outside of the Airports package
-    declaration to be syntactically valid.</para>
+    <para>Note, this must be declared outside of the Components package
+    declaration to be syntactically valid (see next section). </para>
 
     <para>In general, any element that has an owner can make use of context,
     including attributes, operations, classes and packages.</para>
@@ -193,7 +192,7 @@ context Root
     <para>Import declarations enable the contents of other packages to be
     imported so that they can be referenced by other elements. For instance,
     let’s say we wanted to separate out the constraints of the Components
-    model from the class. We can create a new file called ComponentsCons.xmf
+    model from the class. We can create a new file called <emphasis role="bold">ComponentsCons.xmf</emphasis>
     that contains the constraints:</para>
 
     <para>Provided that we have loaded the Components package, we can compile

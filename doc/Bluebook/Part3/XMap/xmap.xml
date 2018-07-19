@@ -3,8 +3,8 @@
 "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"-->
 <chapter>
   <title>XMap</title>
-
-  <para></para>
+  <para><emphasis role="bold"><emphasis role="red">This chapter is not supported by the 
+	  current XModeler version</emphasis></emphasis></para>
 
   <section>
     <title>Introduction</title>

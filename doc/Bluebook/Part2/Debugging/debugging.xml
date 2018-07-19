@@ -11,29 +11,29 @@
 
   <itemizedlist>
     <listitem>
-      <para>By right clicking on an operation and selecting Trace from its
-      Debug menu.</para>
+      <para>By right clicking on an operation and selecting <emphasis role="bold">Trace</emphasis> from its
+      <emphasis role="bold">Debug menu</emphasis>.</para>
     </listitem>
 
     <listitem>
       <para>By right clicking on a container, e.g. a Class, and selecting
-      Trace from its Debug menu. All operations belonging to the container
+      <emphasis role="bold">Trace All</emphasis> from its <emphasis role="bold">Debug menu</emphasis>. All operations belonging to the container
       (and transitively belonging to all its containers) will be
       traced.</para>
     </listitem>
 
     <listitem>
       <para>Via the console, by typing the path to the operation or container
-      and calling trace(). Note, calling untrace() will stop the trace.</para>
+      and calling <emphasis role="bold">traceAll()</emphasis>. Note, calling <emphasis role="bold">untraceAll()</emphasis> will stop the trace.</para>
     </listitem>
   </itemizedlist>
 
-  <para>As an example, try tracing the operation, addToComponents() on the
+  <para>As an example, try tracing the operation, <emphasis role="bold">addToComponents()</emphasis> on the
   ComponentModel class:</para>
 
   <mediaobject>
     <imageobject>
-      <imagedata fileref="Images/addingatracetoanop.jpg" />
+      <imagedata fileref="Images/addingatracetoanop.png" />
     </imageobject>
   </mediaobject>
 
@@ -42,7 +42,7 @@
 
   <mediaobject>
     <imageobject>
-      <imagedata fileref="Images/runningthetrace.jpg" />
+      <imagedata fileref="Images/runningthetrace.jpg" width="100%"/>
     </imageobject>
   </mediaobject>
 

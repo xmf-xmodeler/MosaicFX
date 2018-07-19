@@ -17,7 +17,7 @@
     model data. XOCL is based on standard OO programming principles, which
     means it is easy to learn. XOCL can be used in a wide variety of places in
     a model; wherever there is a need to evaluate a property of a model or
-    modify it in some way. This means that once you have learnt XOCL it can be
+    modify it in some way. This means that once you have learned XOCL it can be
     used in many different contexts.</para>
 
     <para>This chapter provides a walkthrough of the key features of XOCL. It
@@ -52,7 +52,7 @@
       </listitem>
     </itemizedlist>
 
-    <para>All the usual operators, e.g. arithimetic operators, are provided
+    <para>All the usual operators, e.g. arithmetic operators, are provided
     (see the Bluebook for a detailed list).</para>
 
     <para>XOCL also provides the inbuilt value "null" for situations when the
@@ -89,7 +89,7 @@
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="../CreatingAModel/Images/model.jpg" />
+        <imagedata fileref="../CreatingAModel/Images/model.png" />
       </imageobject>
     </mediaobject>
 
@@ -123,7 +123,7 @@ context Root
     @Class Connector 
 
       @Attribute target : Port (?,!) end
-      @Attribute source : Port (?,!) en
+      @Attribute source : Port (?,!) end
 
     end
     
@@ -193,8 +193,8 @@ context Port
       on the model element being edited (see the creating a domain model
       walkthrough).</para>
 
-      <para>For example, if we want to add the operation setPortName() to the
-      class Port, we would use the Add Element &gt; Operation menu option on
+      <para>For example, if we want to add the operation <emphasis role="bold">setPortName()</emphasis> to the
+      class <emphasis role="bold">Port</emphasis>, we would use the <emphasis role="bold">Add Element &gt; Operation</emphasis> menu option on
       the class Port:</para>
 
       <mediaobject>
@@ -220,14 +220,14 @@ context Port
 
       <itemizedlist>
         <listitem>
-          <para>Via the text editor (by explicity writing their context or
+          <para>Via the text editor (by explicitly writing their context or
           embedding them in the appropriate context element
           declaration)</para>
         </listitem>
 
         <listitem>
           <para>Via the diagram editor (by selecting the context element and
-          using the appopriate Add Element menu)</para>
+          using the appropriate Add Element menu)</para>
         </listitem>
       </itemizedlist>
     </section>
@@ -363,12 +363,12 @@ context Port
     a let expression is as follows:</para>
 
     <programlisting>let var_name_1 = expression_1;
-    var_name_2 = expression _2 
+    var_name_2 = expression_2 
 in
   body
 end</programlisting>
 
-    <para>Variable declarations are seperated by semicolons. They can be
+    <para>Variable declarations are separated by semicolons. They can be
     referenced by any expression in the body of the let expression. As an
     example, the following let expression introduces three variables x,y,z
     into an expression:</para>
@@ -388,7 +388,7 @@ end</programlisting>
     y = 2 then
       c = x + y
 in
-   c + z
+   c + y
 end</programlisting>
   </section>
 
@@ -396,8 +396,8 @@ end</programlisting>
     <title>Types</title>
 
     <para>XOCL provides full access to the type of an object via the <emphasis
-    role="bold">of()</emphasis> operation. For instance, if the object o is of
-    type Connector, then o.of() will return the class Connector.</para>
+    role="bold">of() operation</emphasis>. For instance, if the object <emphasis role="bold">o</emphasis> is of
+    type Connector, then <emphasis role="bold">o.of()</emphasis> will return the class Connector.</para>
 
     <para>Because XOCL treats all elements as objects, the of() operation can
     be used to determine the type of all model elements. For example,
@@ -409,7 +409,7 @@ end</programlisting>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/type.jpg" />
+        <imagedata fileref="Images/type.png" />
       </imageobject>
     </mediaobject>
 
@@ -418,15 +418,15 @@ end</programlisting>
 
     <para>If p is a port, then the expression</para>
 
-    <programlisting>p.isKindOf(Provides)</programlisting>
+    <programlisting>p.isKindOf(Project0::Provides)</programlisting>
 
-    <para>will return true if p is an instance of the class Provides.</para>
+    <para>will return true if p is an instance of the class Provides asuming the model is in Project0.</para>
   </section>
 
   <section>
     <title>Navigation</title>
 
-    <para>The dot notation “.” is used to navigate down attribute values. It
+    <para>The dot notation "." is used to navigate down attribute values. It
     has the form:</para>
 
     <programlisting>obj.attribute_name</programlisting>
@@ -456,7 +456,7 @@ end</programlisting>
     model:</para>
 
     <programlisting>context ComponentModel
-  @Operation components()
+  @Operation componentsP()
     self.components.ports
   end</programlisting>
   </section>
@@ -560,7 +560,7 @@ Seq{1,2,3,4};</programlisting>
       <section>
         <title>Other Operations</title>
 
-        <para>XOCL many other useful collection operations. Here are a few of
+        <para>XOCL offers many other useful collection operations. Here are a few of
         the most commonly used.</para>
 
         <programlisting>collection-&gt;size() // Returns the number of elements in the collection
@@ -587,25 +587,27 @@ sequence-&gt;asSet // Turns a sequence into a set</programlisting>
     <para>In addition, it provide "exists" and "forAll" for evaluating Boolean
     expressions over collections. Their syntax is as follows:</para>
 
-    <programlisting>collection-&gt;forAll(c | boolean_expression_with_c) // returns true if the expression evaluates to true
-                                                  // for all element of the collection
-collection-&gt;exists(c | boolean_expression_with_c) // returns true if the expression evaluates to true
-                                                  // for at least one element of the collection</programlisting>
+    <programlisting>collection-&gt;forAll(c | boolean_expression_with_c) 
+ // returns true if the expression evaluates to true
+ // for all element of the collection
+collection-&gt;exists(c | boolean_expression_with_c) 
+ // returns true if the expression evaluates to true
+ // for at least one element of the collection</programlisting>
 
     <para>As an example, the following operation returns true if all
     connectors match ports of the same type:</para>
 
     <programlisting>context ComponentModel
-  @Operation validConnections : Boolean
-    connections-&gt;forAll(c | c.source.type = c.target.type)
+  @Operation validConnections() : Boolean
+    connectors-&gt;forAll(c | c.source.type = c.target.type)
   end</programlisting>
 
     <para>The following operation returns true if there is at least one
     invalid connection:</para>
 
     <programlisting>context ComponentModel
-  @Operation invalidConnection : Boolean
-    connections-&gt;exists(c | c.source.type &lt;&gt; c.target.type)
+  @Operation invalidConnection() : Boolean
+    connectors-&gt;exists(c | c.source.type &lt;&gt; c.target.type)
   end</programlisting>
   </section>
 
@@ -614,7 +616,7 @@ collection-&gt;exists(c | boolean_expression_with_c) // returns true if the expr
 
     <para>The standard if and case expressions are provided in XOCL.</para>
 
-    <para>The syntax of an "if" expression is shown below. Note, both the else
+    <para>The syntax of an if expression is shown below. Note, both the else
     and elseif expressions are optional.</para>
 
     <programlisting>if condition then
@@ -625,7 +627,7 @@ else
   expression
 end</programlisting>
 
-    <para>Here is an example that makes use of an "if" expression to determine
+    <para>Here is an example that makes use of an if expression to determine
     whether a new component can be added to a component model.</para>
 
     <programlisting>context ComponentModel
@@ -633,20 +635,21 @@ end</programlisting>
     if components-&gt;exists(c |
       c.name = v.name)
     then
-      self.error("Cant add a component with the same name as an existing component")
+      self.error("Cant add a component with the same name as an 
+        existing component")
     else
       self.components := self.components-&gt;including(v)
     end
   end</programlisting>
 
-    <para>The syntax of a "case" expression is shown below.</para>
+    <para>The syntax of a case expression is shown below.</para>
 
     <programlisting>@Case var of
   [ pattern1 ] do expression end
   [ pattern2 ] do expression end
 end</programlisting>
 
-    <para>Here is an example that makes use of a "case" expression to
+    <para>Here is an example that makes use of a case expression to
     determine the type of a Port and to print out a report.</para>
 
     <programlisting>context Port  
@@ -659,8 +662,9 @@ end</programlisting>
            [ "Complex" ] do
              "A Complex Port".println()
            end
-     end
-   end</programlisting>
+       end
+    end
+  end</programlisting>
 
     <para>An alternative form of a case expression is a @TypeCase. This
     selects a do expression depending on the type of the element being passed
@@ -688,7 +692,7 @@ end</programlisting>
 
       <programlisting>class_name(parameter_values)</programlisting>
 
-      <para>Assumng that the Components model example is in scope, the
+      <para>Assuming that the Components model example is in scope, the
       following can be typed into the console:</para>
 
       <programlisting>Port();</programlisting>
@@ -713,7 +717,7 @@ end</programlisting>
       enables values to be bound to slots using name bindings. The following
       binds the values to the slots by their name:</para>
 
-      <programlisting>Port[name = "x", type = "Integer");</programlisting>
+      <programlisting>Port(name = "x", type = "Integer");</programlisting>
     </section>
 
     <section>
@@ -722,7 +726,8 @@ end</programlisting>
       <para>Values can be assigned to attributes (slot update) using the
       assignment operator.</para>
 
-      <programlisting>var := expression // assigns the result of evaluating the expression to var</programlisting>
+      <programlisting>var := expression 
+ // assigns the result of evaluating the expression to var</programlisting>
 
       <para>The following operation gives an example of setting the owner of a
       Component to be the ComponentModel, c.</para>
@@ -830,7 +835,8 @@ end</programlisting>
     if components-&gt;exists(c |
       c.name = v.name)
     then
-      self.error("Cant add a component with the same name as an existing component")
+      self.error("Cant add a component with the same name as an 
+	       existing component")
     else
       self.components := self.components-&gt;including(v)
     end
@@ -863,8 +869,8 @@ end</programlisting>
       </listitem>
 
       <listitem>
-        <para>SEQOFARGS is a sequence of args consumed by the control string.
-        This is optional if no args are required by the control string.</para>
+        <para>SEQOFARGS is a sequence of arguments consumed by the control string.
+        This is optional if no arguments are required by the control string.</para>
       </listitem>
     </itemizedlist>
 
@@ -879,13 +885,13 @@ end</programlisting>
     <programlisting>format(stdout,"Hello~%World~%")</programlisting>
 
     <para>prints a newline (~% meaning print a newline char) after each word.
-    Control characters can consume args:</para>
+    Control characters can consume arguments:</para>
 
     <programlisting>format(stdout,"Hello ~S, how are you ~S~%",Seq{"Fred","diddling"})</programlisting>
 
-    <para>the ~S control consumes the next arg, turns it to a string using
+    <para>the ~S control consumes the next argument, turns it to a string using
     .toString() and then prints it. Some of the control characters take
-    args:</para>
+    arguments:</para>
 
     <programlisting>format(stdout,"Hello~&lt;?,x&gt;S~%",Seq{10,"Fred"})</programlisting>
 
@@ -904,7 +910,7 @@ end</programlisting>
 
     <programlisting>format(stdout,"~{,~%~;~S~}",Seq{names})</programlisting>
 
-    <para>prints each element iof the sequence names with a ',' followed by a
+    <para>prints each element of the sequence names with a ',' followed by a
     new line char between each pair. The ~; is used to terminate the
     separator. This is particularly useful when generating comma separated
     code in a programming language.</para>

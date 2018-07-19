@@ -17,7 +17,7 @@
   <para>This part describes how to <emphasis>model</emphasis> the concepts in
   a domain. It describes how to capture the domain concepts as class models,
   and how the model can be enriched with constraints, operations and
-  constructors. It then shows how the powerful dynamic capabiltites of
+  constructors. It then shows how the powerful dynamic capabilities of
   XMF-Mosaic can be used to validate the domain model, through the creation of
   model instances and by executing the model.</para>
 
@@ -37,11 +37,12 @@
 
     <para>The first step in creating a model is to create a project.</para>
 
-    <para>From the file menu, select New Project.</para>
+    <para>From the file menu, select <emphasis role="bold">New Project.</emphasis>
+	</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/afilenewproject.jpg" />
+        <imagedata fileref="Images/afilenewproject.jpg"	/>
       </imageobject>
     </mediaobject>
 
@@ -58,24 +59,24 @@
     </mediaobject>
 
     <para>We want the name of the project to reflect what it contains, so the
-    project name is selected and changed to “Components”.</para>
+    project name is selected and changed to <emphasis role="bold">“Components”
+	</emphasis>.</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/unamedproject.png" />
+        <imagedata fileref="Images/renamedproject.png" />
       </imageobject>
     </mediaobject>
 
     <para>By default, a project contains a <emphasis>package</emphasis> - this
     is where the model will reside.</para>
 
-    <para>The package can be viewed by expanding the (Component) project icon
-    by clicking on the cross. By default it has the same name as the
-    project.</para>
+    <para>The package can be viewed by double clicking the (Component) project icon. 
+	By default it has the same name as the project.</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/renamedproject.png" />
+        <imagedata fileref="Images/renamedpackage.png" />
       </imageobject>
     </mediaobject>
   </section>
@@ -91,7 +92,7 @@
     <para>The model can be constructed as follows:</para>
 
     <para>First, right click on the Components package in the browser and
-    select Create Diagram &gt; Class Diagram.</para>
+    select <emphasis role="bold">Create Diagram &gt; Class Diagram</emphasis>.</para>
 
     <mediaobject>
       <imageobject>
@@ -99,7 +100,14 @@
       </imageobject>
     </mediaobject>
 
-    <para>A class diagram editor will be shown.</para>
+    <para>A class diagram editor will be shown. 
+	Open the tree in the diagram editor to visualise its tools.</para>
+	
+	<mediaobject>
+      <imageobject>
+        <imagedata fileref="Images/opendiagramtools.png" />
+      </imageobject>
+    </mediaobject>
 
     <section>
       <title>Adding Classes</title>
@@ -110,25 +118,26 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/unamedclass.jpg" />
+          <imagedata fileref="Images/unnamedclass.png" />
         </imageobject>
       </mediaobject>
 
-      <para>Click on the class name to change or amend it. In this case, we
-      will change the name of Class0 to ComponentModel.</para>
+      <para>Double click on the class name to change or amend it. In this case, we
+      will change the name of <emphasis role="bold">Class0</emphasis> to 
+	  <emphasis role="bold">ComponentModel</emphasis>.</para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/namedclass.jpg" />
+          <imagedata fileref="Images/namedclass.png" />
         </imageobject>
       </mediaobject>
 
       <para>The properties of the class can be edited by right clicking on the
-      class and selecting Edit.</para>
+      class and selecting <emphasis role="bold">Edit</emphasis>.</para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/classpropertyedit.jpg" />
+          <imagedata fileref="Images/classpropertyedit.png" width="100%" />
         </imageobject>
       </mediaobject>
 
@@ -159,22 +168,22 @@
       <para>We can ignore the grammar and default properties for now.</para>
 
       <para>Let's add another class. This time a class called
-      NamedElement.</para>
+      <emphasis role="bold">NamedElement</emphasis>.</para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/namedelement.jpg" />
+          <imagedata fileref="Images/namedelement.png" width="100%"/>
         </imageobject>
       </mediaobject>
 
       <para>We want to make this abstract (i.e. non-instantiable). To do this,
-      right click on the class and select Edit. In the class's property editor
-      tick the isAbstract box. The name of the class will become italicised to
+      right click on the class and select <emphasis role="bold">Edit</emphasis>. In the class's property editor
+      tick the <emphasis role="bold">isAbstract</emphasis> box. The name of the class will become italicised to
       indicate that it is now an abstract class.</para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/changetoabstract.jpg" />
+          <imagedata fileref="Images/changetoabstract.png" width="100%"/>
         </imageobject>
       </mediaobject>
 
@@ -182,7 +191,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/addingmoreclasses.jpg" />
+          <imagedata fileref="Images/addingmoreclasses.png" />
         </imageobject>
       </mediaobject>
     </section>
@@ -193,13 +202,14 @@
       <para>Attributes are variables owned by a class. Attributes are used to
       represent properties of a class. They have a name and a type.</para>
 
-      <para>The class NamedElement requires an attribute 'name' of type
+      <para>The class <emphasis role="bold">NamedElement</emphasis> requires an attribute 'name' of type
       String. This is added by left clicking on the selected class. From the
-      Add Element menu select an Attribute of type String.</para>
+      Add Element menu select an Attribute of type String. Alternatively choose 
+	  <emphasis role="bold">Attribute (String)</emphasis> from the diagram tools.</para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/addinganattribute.jpg" />
+          <imagedata fileref="Images/addinganattribute.png" width="100%" />
         </imageobject>
       </mediaobject>
 
@@ -211,21 +221,22 @@
       class that is its type. Note, this use of attributes are similar to
       uni-directional associations in UML.</para>
 
-      <para>The relationship between a Component and a Port can be described
+      <para>The relationship between a <emphasis role="bold">Component</emphasis> and a 
+	  <emphasis role="bold">Port</emphasis> can be described
       by an attribute "ports" whose owner is a Component, and whose type is a
       Port.</para>
 
       <para>Let's add this attribute to the model. First select the Attribute
       button in the toolbar. Select the Component class and then drag the edge
       to the Port class. Edit the name of the attribute by clicking on it. In
-      this case, we are going to change it to "ports".</para>
+      this case, we are going to change it to <emphasis role="bold">"ports"</emphasis>.</para>
 
       <para>Note, the name of the attribute can be moved by left clicking on
       it and dragging it with the mouse.</para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/addinganattributeedge.jpg" />
+          <imagedata fileref="Images/addinganattributeedge.png" />
         </imageobject>
       </mediaobject>
 
@@ -234,15 +245,15 @@
       edge to the required position. This can also be used to add waypoints to
       the line.</para>
 
-      <para>A default multiplicity of <emphasis role="bold">one</emphasis> is
+      <para>A default multiplicity of <emphasis role="bold">0..1</emphasis> is
       associated with the newly added attribute. Change the multiplicity by
-      right clicking on the attribute line and selecting the appropriate
-      multiplicity. In this case a Component is associated with <emphasis
-      role="bold">many </emphasis>Ports, so select * (many):</para>
+      right clicking on the attribute name and selecting <emphasis role="bold">Set Multiplicity</emphasis> 
+	  then choosing the appropriate multiplicity. In this case a Component is associated with <emphasis
+      role="bold">many </emphasis>Ports, so select <emphasis role="bold">0..*</emphasis> (Any number including zero):</para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/addingmultiplicity.jpg" />
+          <imagedata fileref="Images/addingmultiplicity.png" width="100%"/>
         </imageobject>
       </mediaobject>
     </section>
@@ -256,21 +267,26 @@
       there is a round-trip relationship between the attributes.</para>
 
       <para>As an example, an association is required between the classes
-      ComponentModel and Component.</para>
+      <emphasis role="bold">ComponentModel</emphasis> and <emphasis role="bold">Component</emphasis>.</para>
 
       <para>The relationship we want to capture is that a ComponentModel
       contains many Components, and a Component is owned by a
       ComponentModel.</para>
 
       <para>To create an Association, select the Association tool button and
-      drag the edge from the ComponentModel to the Component. Change the names
-      of the association ends as shown below. The multiplicity of each
-      association end is changed by <emphasis role="bold">right clicking on
-      its role name </emphasis>and selecting Multiplicity.</para>
+      drag the edge from the ComponentModel to the Component. The association name
+	  which we are asked to enter, describes the label. To edit the association roles
+	  we have to edit its properties. Enter for end1 "owner" and for end2 "components"
+	  so that it says "owner:1ComponentModel" and "components:1Component". Now we uncheck "showLabel" and 
+	  check the boxes for showVarName and showInverseVarName to view our roles. The roles
+	  can now also be edited in the diagram editor. The multiplicity of each
+      association end is changed by right clicking on
+      its role name and selecting <emphasis role="bold">Set Multiplicity</emphasis> 
+	  then choosing the appropriate multiplicity.</para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/addinganassociation.jpg" />
+          <imagedata fileref="Images/addinganassociation.png" />
         </imageobject>
       </mediaobject>
     </section>
@@ -282,11 +298,11 @@
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/model.jpg" />
+        <imagedata fileref="Images/model.png" />
       </imageobject>
     </mediaobject>
 
-    <para>Note: right click on an edge and select Straighten to straighten an
+    <para>Note: right click on an edge and select <emphasis role="bold">Straighten</emphasis> to straighten an
     edge.</para>
   </section>
 
@@ -295,17 +311,17 @@
 
     <para>The property editor provides some useful features for viewing and
     managing the properties of model elements. Right clicking and selecting
-    Edit on an element will display a property editor for that element. For
+    <emphasis role="bold">Edit</emphasis> on an element will display a <emphasis role="bold">property editor</emphasis> for that element. For
     example, editing the package Components (in the browser) will show the
     properties of the package:</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/propertyeditpackage.jpg" />
+        <imagedata fileref="Images/propertyeditpackage.png" width="100%" />
       </imageobject>
     </mediaobject>
 
-    <para>Single value properties (slots) are displayed on the left hand of
+    <para>Single value properties (<emphasis role="bold">slots</emphasis>) are displayed on the left hand of
     the property editor. For instance, the package Components has a name slot
     whose value is "Component" and an owned slot whose value is the "Root"
     package. The "of" slot is the class that the element is an instance "of",
@@ -314,24 +330,24 @@
     <para>Double clicking on the value of a slot will display a property
     editor for that element, for example clicking on the Component class in
     the classes list will show the property editor for the class
-    Component..</para>
+    Component.</para>
 
     <para>One of the powerful features of XMF-Mosaic is its uniform
-    representation of its own implementation. To see this, double cllck on the
+    representation of its own implementation. To see this, double click on the
     "of" slot. This will display a property editor for the class Package - the
     class that defines what a package is.</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/packagedit.jpg" />
+        <imagedata fileref="Images/packagedit.png" width="100%" />
       </imageobject>
     </mediaobject>
 
     <para>When navigating through the properties of large models, it is often
     useful to be able to quickly flick back to previous property editors.
     Rather than displaying hundreds of tabs, XMF-Mosaic provides buttons for
-    managing property editor histories. These can be found in the top right
-    hand bar of the property editor. The left and right hand arrows allow you
+    managing property editor histories. These can be found in the top right-
+	hand bar of the property editor. The left and right-hand arrows allow you
     to move between previous and next editors in the history.</para>
 
     <mediaobject>
@@ -340,8 +356,7 @@
       </imageobject>
     </mediaobject>
 
-    <para>A list of all the editors can be seen by clicking on the up and down
-    arrows. A history can be deleted by clicking on the eraser icon. Finally,
+    <para>A history can be deleted by clicking on the eraser icon. Finally,
     property editors can be kept as tabs by clicking on the lock icon - when a
     new property editor is shown, it will be displayed in a new tab. This is
     useful when comparing two or more properties.</para>
@@ -351,7 +366,8 @@
     <title>Saving and Loading</title>
 
     <para>Save the project by right clicking on the project in the browser and
-    selecting Save As or Save. Files are saved in a .xar file.</para>
+    selecting <emphasis role="bold">Save As</emphasis> or <emphasis role="bold">Save</emphasis>. 
+	Files are saved in a <emphasis role="bold">.xar</emphasis> file.</para>
 
     <mediaobject>
       <imageobject>
@@ -367,8 +383,11 @@
 
     <para>A backup (.xar.bak) file is also be saved.</para>
 
-    <para>Projects can be loaded by selecting Open Project ... from the File
-    menu. Choose the project to load from the file chooser.</para>
+    <para>Projects can be loaded by selecting <emphasis role="bold">Open Project...</emphasis> from the File
+    menu. Choose the project to load from the file chooser. 
+	Open your Project and edit the properties of the included diagram. 
+	Here we need to uncheck the box for <emphasis role="bold">isOpen</emphasis>. 
+	Then you can open the diagram editor.</para>
   </section>
 
   <section>
@@ -386,40 +405,32 @@
 
     <para>The following sections describe these facilities in detail.</para>
   </section>
+    
+    <section>
+      <title>Creating Standalone Snapshots</title>
+	  <para><emphasis role="bold"><emphasis role="red">This chapter is not supported by the 
+	  current XModeler version</emphasis></emphasis></para>
 
-  <section>
-    <title>Snapshots</title>
+      <para> The XModeler provides a way of interacting with instances of a model.
+	  Instances can be created within the same diagram but sometimes it is useful to create instances of elements in another
+      package or project, for example, when we want to manage them separately
+      from the model. To do this, first create a new project in the project folder where
+      our Components Model is saved under. Next open the new project and right click its package in the
+      browser <emphasis role="bold">&gt; Set Parents</emphasis>. A list of all available
+      packages will be shown. Select the appropriate package, create a new diagram and it
+      can now be populated with instances of the selected package.</para>
 
-    <para>Snapshots provide a visual way of interacting with instances of a
-    model. A snapshot is a diagram that contains instances of classes in
-    package.</para>
+      <para>As an example, here is a separate project that has been
+      created for the Components model:</para>
 
-    <para>Note, snapshots are intended to provide a simple visual way of
-    viewing instances, but they can become difficult to read if they are
-    applied to large numbers of objects.</para>
-
-    <para>To create a snapshot of a specific package right click on a package
-    in the model browser and select Create Snapshot. Instances of the classes
-    in the package (or its sub-packages) can now be created.</para>
-
-    <mediaobject>
-      <imageobject>
-        <imagedata fileref="Images/creatingasnapshot.png" />
-      </imageobject>
-    </mediaobject>
-
-    <para>Add objects by selecting the Object button and then clicking onto
-    the diagram. The list of object types that can be created will be
-    displayed. Select the appropriate one and it will be added to the
-    snapshot.</para>
-
-    <mediaobject>
-      <imageobject>
-        <imagedata fileref="Images/chooseanobject.png" />
-      </imageobject>
-    </mediaobject>
-
-    <para>For example, a Component can be added to the diagram.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/seperatesnapshotexample.png" />
+        </imageobject>
+      </mediaobject>
+	  
+	  <para>Choose from the toolbar an object to create a instance. 
+	  For example a Component can be added to the diagram.</para>
 
     <mediaobject>
       <imageobject>
@@ -428,18 +439,17 @@
     </mediaobject>
 
     <para>The value of primitive slot (attribute) values can be changed by
-    double clicking on the values in the object.</para>
-
-    <para>It is also possible to change the name of the object by clicking on
-    it.</para>
-
-    <mediaobject>
+    double clicking on the values in the object. If the value for name is changed,
+	 the objects name is updated automatically.</para>
+	 
+	 <mediaobject>
       <imageobject>
         <imagedata fileref="Images/changingobjectname.png" />
       </imageobject>
     </mediaobject>
-
-    <para>Links can be created between objects by selecting the Slot Value
+	
+	<para>Links can be created between objects by selecting the <emphasis role="bold">
+	Slot Value (Assoziationen nicht mit übernommen)</emphasis>
     button and connecting the owning object to the target object. As an
     example, add an instance of the class ComponentModel to the snapshot and
     create a link between the ComponentModel instance and the Component
@@ -454,8 +464,8 @@
     <para>Slot names will be assigned automatically where possible (as shown
     here), but a choice of slot names will be provided if there is more than
     one possible attribute that the slot can be an instance of.</para>
-
-    <para>A complete snapshot of the model can be created as illustrated
+	
+	<para>A complete instantiation of the model can be created as illustrated
     below. This represents a simple Component model, in which two components
     (Displays and Navigation) are connected together. The Displays component
     expects to receive the current position from the Navigation
@@ -469,33 +479,14 @@
 
     <para>Just like other model elements in XMF-Mosaic, objects can be edited
     (using right click &gt; Edit). Here is the result of editing
-    object2.</para>
+    Port.</para>
 
     <mediaobject>
       <imageobject>
         <imagedata fileref="Images/objectedit.jpg" />
       </imageobject>
     </mediaobject>
-
-    <section>
-      <title>Creating Standalone Snapshots</title>
-
-      <para>Sometimes it is useful to create instances of elements in another
-      package or project, for example, when we want to manage them separately
-      from the model. To do this, first create a snapshot in the project which
-      the snapshot is to be saved under. Next select the snapshot in the
-      browser and right click &gt; Set Parents. A list of all available
-      packages will be shown. Select the appropriate package, and the snapshot
-      can now be populated with instances of the selected package.</para>
-
-      <para>As an example, here is a separate snapshot project that has been
-      created for the Components model:</para>
-
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="Images/seperatesnapshotexample.png" />
-        </imageobject>
-      </mediaobject>
+	  
     </section>
 
     <section>
@@ -628,23 +619,23 @@ context Root
 
       <para>To export as XML, select the Deploy &gt; XML option. </para>
     </section>
-  </section>
+  
 
   <section>
     <title>Saving and Loading Diagram Layout</title>
 
     <para>It is possible to save and load the layout of a diagram, so that
-    when it is imported in an un-formatted way, its layout can be
-    reconstructed. This is useful when re-constructing snapshots saved as XML
+    when it is imported in an unformatted way, its layout can be
+    reconstructed. This is useful when reconstructing snapshots saved as XML
     or XOCL (see above), or when working with class models written in
     code.</para>
 
     <para>To save the diagram layout, right click on the diagram and choose
-    Layout &gt; Save Layout:</para>
+    <emphasis role="bold">Layout &gt; Save Layout</emphasis>:</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/savinglayout.png" />
+        <imagedata fileref="Images/savinglayout.png" width="100%" />
       </imageobject>
     </mediaobject>
 
@@ -661,39 +652,39 @@ context Root
     XMF-Mosaic provides a language for conveniently writing constraints and
     operations on models. This language is called <emphasis
     role="bold">XOCL</emphasis> (eXtensible Object Command Language). XOCL is
-    based on OCL (the Object Constraint Language). See the XOCL walkthrough
+    based on OCL (the Object Constraint Language). See the XOCL Walkthrough
     for more details.</para>
 
     <para>To add a constraint, right click on a class in the class diagram or
-    in the browser and choose New&gt;Constraint. A new constraint is added to
+    in the browser and choose <emphasis role="bold">New &gt; Constraint</emphasis>. A new constraint is added to
     the browser under the class. Click on it to show the constraint property
     editor.</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/addingaconstraing.jpg" />
+        <imagedata fileref="Images/addingaconstraint.png" />
       </imageobject>
     </mediaobject>
 
     <para>The constraint property editor provides a text window for entering
-    constraint expressions.</para>
+    constraint expressions for the Connector class: <emphasis role="bold">source.type = target.type</emphasis></para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/constrainteditor.jpg" />
+        <imagedata fileref="Images/constrainteditor.png" width="100%"/>
       </imageobject>
     </mediaobject>
 
     <para>The maximise button can be used to expand the window if
     required.</para>
 
-    <para>The following expression is added to the constraint. Right click
-    &gt; Commit Changes to update the model with the new constraint. Edit self
-    to change the constraint name.</para>
+    <para>The following expression is added to the constraint: <emphasis role="bold">source.type = target.type</emphasis>. Right click
+    &gt; <emphasis role="bold">Commit Changes</emphasis> to update the model with the new constraint. Edit self
+    to change the constraint name to <emphasis role="bold">SamePortType</emphasis>.</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/constraintexample.jpg" />
+        <imagedata fileref="Images/constraintexample.png" width="100%" />
       </imageobject>
     </mediaobject>
 
@@ -712,11 +703,12 @@ context Root
       <para>A reason can be added to a constraint via the reason editor
       (scroll down to view it). Add an XOCL expression that generates an
       appropriate string report. For example, the following report generates a
-      reason for the failure of the SamePortType constraint:</para>
+      reason for the failure of the SamePortType constraint:
+	  <emphasis role="bold">"The source type: " + source.type + " doesn't match the target type: " + target.type</emphasis></para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/reasonexample.jpg" />
+          <imagedata fileref="Images/reasonexample.png" />
         </imageobject>
       </mediaobject>
     </section>
@@ -734,7 +726,7 @@ context Root
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/parseerror.jpg" />
+          <imagedata fileref="Images/parseerror.png" />
         </imageobject>
       </mediaobject>
 
@@ -743,12 +735,18 @@ context Root
       will return the code box to its previous (valid) state.</para>
 
       <para>Many other constraints can be added to the model. As an example,
-      the following constraint on ComponentModel ensures that no two
-      components can have the same name:</para>
+      the following constraint(NoDuplicateNames) on ComponentModel ensures that no two
+      components can have the same name:<emphasis role="bold">
+	  <programlisting>components-&gt;forAll(c1 | 
+			components-&gt;forAll(c2 |
+			c1 &lt;&gt; c2 implies c1.name &lt;&gt; c2.name))
+		</programlisting>
+		</emphasis>
+</para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/secondconstraintexample.jpg" />
+          <imagedata fileref="Images/secondconstraintexample.png" width="100%" />
         </imageobject>
       </mediaobject>
     </section>
@@ -849,7 +847,7 @@ context Root
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/constrainthtmlreport.jpg" />
+            <imagedata fileref="Images/constrainthtmlreport.jpg" width="100%"/>
           </imageobject>
         </mediaobject>
       </section>
@@ -884,8 +882,8 @@ context Root
   <section>
     <title>Adding Queries</title>
 
-    <para>Queries are <emphasis role="bold">operations</emphasis> that do not
-    change the state of the model. They are a very useful means of navigating
+    <para>Queries are operations that do not change the state of the 
+	model. They are a very useful means of navigating
     around a model, filtering and collecting information about its
     properties.</para>
 
@@ -893,13 +891,13 @@ context Root
     constraints and queries.</para>
 
     <para>To add an operation, right click on a class in the class diagram or
-    in the browser and choose Add Element&gt;Operation. A new operation will
+    in the browser and choose <emphasis role="bold">Add Element &gt; Operation</emphasis>. A new operation will
     be added to the browser under the class. Click on it to show the operation
     editor.</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/addinganoperation.jpg" />
+        <imagedata fileref="Images/addinganoperation.png" />
       </imageobject>
     </mediaobject>
 
@@ -907,34 +905,46 @@ context Root
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/blankoperation.jpg" />
+        <imagedata fileref="Images/blankoperation.png" width="100%"/>
       </imageobject>
     </mediaobject>
 
     <para>The name of the operation, its parameters, return type and body can
-    all be entered as part of the code. Right click &gt; Commit Changes to
-    update the model.</para>
+    all be entered as part of the code.<emphasis role="bold">
+	<programlisting>@Operation dontMatch():XCore::Element
+		connectors-&gt;select(c |
+		c.source.type &lt;&gt; c.target.type)
+	end 
+	
+</programlisting>
+
+	Right click &gt; Commit Changes</emphasis> to update the model.</para>
 
     <para>You should not change the "@Operation" and "end" parts of the
     expression.</para>
 
-    <para>An an example, here is a query on the class ComponentModel that
-    returns all the connectros whose source and target port types don't
+    <para>An example, here is a query on the class ComponentModel that
+    returns all the connectors whose source and target port types don't
     match.</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/queriesdontmatch.jpg" />
+        <imagedata fileref="Images/queriesdontmatch.png" width="100%"/>
       </imageobject>
     </mediaobject>
 
     <para>Queries may also take parameter values. Here is a query on the class
     ComponentModel that returns all the connectors that are connected to a
-    port, p.</para>
+    port, p. <emphasis role="bold">
+	<programlisting>@Operation connectedTo(p : Port):XCore::Element
+		connectors-&gt;select(c |
+		c.target = p)
+	end 
+</programlisting></emphasis></para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/queries.jpg" />
+        <imagedata fileref="Images/queries.png" width="100%" />
       </imageobject>
     </mediaobject>
 
@@ -999,17 +1009,17 @@ context Root
 
       <para>First assign any objects that will be used as parameter values to
       global variables. To do this right click on the object in a property
-      editor and then select Assign To Global Variable. Give the object a
+      editor and then select Assign to Global Variable. Give the object a
       name, in this case we are assigning p to a Port.</para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/assigninglobal.jpg" />
+          <imagedata fileref="Images/assigninglobal.png" width="100%"/>
         </imageobject>
       </mediaobject>
 
       <para>Next, select the object that the operation is to be run on, and
-      select right click &gt; Evaluate Expression.</para>
+       <emphasis role="bold">right click &gt; Evaluate Expression</emphasis>.</para>
 
       <para>A simple expression editor will appear. Type the operation in,
       followed by an edit() operation to show the results. Press OK to run the
@@ -1017,7 +1027,7 @@ context Root
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/evaluateexp.jpg" />
+          <imagedata fileref="Images/evaluateexp.png" />
         </imageobject>
       </mediaobject>
     </section>
@@ -1036,28 +1046,44 @@ context Root
     can be found in part 3 of the Bluebook.</para>
 
     <para>As an example, the following operation sets the name of a Port to be
-    the value passed by the parameter of the operation.</para>
+    the value passed by the parameter of the operation.
+	<emphasis role="bold">
+	<programlisting>@Operation setPortName(name:String):XCore::Element
+		self.type := name
+	end
+	</programlisting>
+	</emphasis>
+	</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/operationexample.jpg" />
+        <imagedata fileref="Images/operationexample.png" width="100%"/>
       </imageobject>
     </mediaobject>
 
-    <para>Right click &gt; Commit Changes to update the model with the new
-    operation. Edit self to change the operation name.</para>
+    <para><emphasis role="bold">Right click &gt; Commit Changes</emphasis> to update the model with the new
+    operation.</para>
 
     <para>Again, if the code is not syntactically correct a parse error will
     be raised.</para>
 
     <para>Operations can make use of queries to access properties of a model
-    before they manipulate them. For example, the following operation uses a
+    before they manipulate them. For example, the following operation for <emphasis role="bold">Component</emphasis> uses a
     query to calculate all the connections that target the port, p, and then
-    sets the source port names to tbe the same as p's name:</para>
+    sets the source port names to be the same as p's name:
+	<emphasis role="bold">
+	<programlisting>@Operation setPortName(p:Port):XCore::Element
+		@For i in owner.connectedTo(p) do
+			i.source.name := p.name
+		end
+	end
+	</programlisting>
+	</emphasis>
+	</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/opqueryexample.jpg" />
+        <imagedata fileref="Images/opqueryexample.png" width="100%"/>
       </imageobject>
     </mediaobject>
 
@@ -1085,11 +1111,11 @@ context Root
 
     <para>Getter and Setter operations for specific attributes can be
     conveniently added to a class. Right click on the attribute (in the
-    diagram or browser) and select Create Getter or Creat Setter.</para>
+    diagram or browser) and select <emphasis role="bold">Create Getter</emphasis> or <emphasis role="bold">Create Setter</emphasis>.</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/creatingasetter.jpg" />
+        <imagedata fileref="Images/creatingasetter.png" />
       </imageobject>
     </mediaobject>
 
@@ -1099,7 +1125,7 @@ context Root
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/examplesetter.jpg" />
+        <imagedata fileref="Images/examplesetter.png" />
       </imageobject>
     </mediaobject>
 
@@ -1121,13 +1147,13 @@ context Root
     not be defined.</para>
 
     <para>To add a constructor right click on a class in the class diagram or
-    in the browser and choose New&gt;Constructor. A new constructor will be
+    in the browser and choose <emphasis role="bold">Add Element &gt; Constructor</emphasis>. A new constructor will be
     added to the browser under the class. Click on it to show the constructor
     editor.</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/addingaconstructor.jpg" />
+        <imagedata fileref="Images/addingaconstructor.png" />
       </imageobject>
     </mediaobject>
 
@@ -1138,7 +1164,7 @@ context Root
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/constructorwithparam.jpg" />
+        <imagedata fileref="Images/constructorwithparam.png" />
       </imageobject>
     </mediaobject>
 
@@ -1154,22 +1180,22 @@ context Root
     constructor is called.</para>
 
     <para>Here is an example of an action that sets the name of a Port to be
-    uppercase when it is created.</para>
+    uppercase when it is created. <emphasis role="bold">self.name := self.name.toUpper();</emphasis></para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/constructorwithaction.jpg" />
+        <imagedata fileref="Images/constructorwithaction.png" />
       </imageobject>
     </mediaobject>
 
     <para>After this action is performed, an action to return the object
-    (self) is called. If this were not added the constructor would only return
+    (self) is called. If this were not added, the constructor would only return
     the value of self.name.</para>
 
     <section>
       <title>Exercises</title>
 
-      <para>Try adding a constructor for a Component takes its name as a
+      <para>Try adding a constructor for a Component to take its name as a
       parameter.</para>
     </section>
   </section>
@@ -1186,57 +1212,58 @@ context Root
     property editor. XOCL expressions can be entered that evaluate to create
     instances of models, modify them and invoke operations on them.</para>
 
-    <para>For example, the following shows the use of the console to interact
-    with and test the Components model:</para>
+    <para>For example, the following commands shows the use of the console to interact
+    with and test the Components model:
+	</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/console.jpg" />
+        <imagedata fileref="Images/console.png" />
       </imageobject>
     </mediaobject>
-
+	
     <para>Here is what is happening:</para>
 
     <itemizedlist>
       <listitem>
-        <para>The ?i command is used to import the Components package so that
+        <para><emphasis role="bold">?i + Components</emphasis>: The ?i command is used to import the Components package so that
         all its contents are visible. Note, otherwise we would have to give
         the full path names to each element, e.g.
         Components::Component.</para>
       </listitem>
 
       <listitem>
-        <para>A is the result of creating an instance of the class
+        <para><emphasis role="bold">A := Components::ComponentModel();</emphasis>: A is the result of creating an instance of the class
         ComponentModel In XOCL, the use of brackets after a class name denotes
         the invocation of a constructor. Note, we will have needed to create a
         constructor for Component beforehand.</para>
       </listitem>
 
       <listitem>
-        <para>The result of navigating down the components of A is evaluated.
+        <para><emphasis role="bold">A.components;</emphasis>: The result of navigating down the components of A is evaluated.
         Because no components have been added to A it returns the empty set
         Set{}.</para>
       </listitem>
 
       <listitem>
-        <para>A new Component is added to A by invoking the addToComponents()
-        operation on A. The string “Displays” is passed as a parameter to the
+        <para><emphasis role="bold">A.addToComponents(Component("Display"));</emphasis>: A new Component is added to A by invoking the addToComponents()
+        operation on A. The string “Display” is passed as a parameter to the
         constructor.</para>
       </listitem>
 
       <listitem>
-        <para>We enter "A.components" again and a Set containing the new
+        <para><emphasis role="bold">A.components;</emphasis>: We enter "A.components" again and a Set containing the new
         Component is returned.</para>
       </listitem>
 
       <listitem>
-        <para>The process is repeated by adding a new Component named
+        <para><emphasis role="bold">A.addToComponents(Component("Navigation"));</emphasis>: The process is repeated by adding a new Component named
         'Navigation'.</para>
       </listitem>
 
       <listitem>
-        <para>Finally, the names of the components are returned by perfoming
-        the expression A.components.name</para>
+        <para><emphasis role="bold">A.components.nameString();</emphasis>: Finally, the names of the components are returned by performing
+        the expression A.components.nameString().</para>
       </listitem>
     </itemizedlist>
 
@@ -1252,7 +1279,7 @@ context Root
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/basicvalueconsoleops.jpg" />
+          <imagedata fileref="Images/basicvalueconsoleops.png" />
         </imageobject>
       </mediaobject>
 
@@ -1269,7 +1296,7 @@ context Root
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/instancevalueconsoleassign.jpg" />
+          <imagedata fileref="Images/instancevalueconsoleassign.png" />
         </imageobject>
       </mediaobject>
 
@@ -1277,15 +1304,20 @@ context Root
       move between previous commands.</para>
 
       <para>The console provides a number of "hot keys". These can be accessed
-      by typing ?h (no semi-colon is required).</para>
+      by typing <emphasis role="bold">?h</emphasis> (no semi-colon is required).</para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/hotkeys.jpg" />
+          <imagedata fileref="Images/hotkeys.png" />
+        </imageobject>
+      </mediaobject>
+	  <mediaobject>
+        <imageobject>
+          <imagedata fileref="Images/hotkeys2.png" />
         </imageobject>
       </mediaobject>
 
-      <para>Any operation running in the console can be interupted by pressing
+      <para>Any operation running in the console can be interrupted by pressing
       the escape key.</para>
     </section>
 
@@ -1299,7 +1331,7 @@ context Root
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/consolepropertyedit.jpg" />
+          <imagedata fileref="Images/consolepropertyedit.png" />
         </imageobject>
       </mediaobject>
 
@@ -1308,7 +1340,7 @@ context Root
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/consolecomponentedit.jpg" />
+          <imagedata fileref="Images/consolecomponentedit.png" width="100%"/>
         </imageobject>
       </mediaobject>
     </section>
@@ -1318,7 +1350,7 @@ context Root
 
       <para>Global variables can be assigned to elements which can then be
       used in the console. For example, edit the properties of a Port object,
-      then select right click &gt; Assign to Global Variable. The tool will
+      then select <emphasis role="bold">right click &gt; Assign to Global Variable</emphasis>. The tool will
       prompt for a global variable name for the object.</para>
 
       <mediaobject>
@@ -1331,7 +1363,7 @@ context Root
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/portconsoleedit.jpg" />
+          <imagedata fileref="Images/portconsoleedit.png" />
         </imageobject>
       </mediaobject>
     </section>
@@ -1381,7 +1413,7 @@ context Root
     <title>Adding Package Operations</title>
 
     <para>In XMF-Mosaic, packages have class like features. They can have
-    operations and attributes, can be instantiated and inherit from other
+    operations and attributes and can be instantiated and inherit from other
     packages.</para>
 
     <para>Package operations in particular are useful for capturing global
@@ -1390,19 +1422,31 @@ context Root
     <section>
       <title>Adding and Running Package Operations</title>
 
-      <para>To add an operation to a package, right click New &gt; Operation.
+      <para>To add an operation to a package, <emphasis role="bold">right click New &gt; Operation</emphasis>.
       Edit the operation in the browser. The following operation creates an
-      instance of a ComponentModel and populates it with values.</para>
+      instance of a ComponentModel and populates it with values.
+	  <emphasis role="bold">
+	  <programlisting>@Operation factory():XCore::Element
+		let c1 = Component[name = "Displays"];
+			c2 = Component[name = "Navigation"]
+		in let n1 = Connector[source = "c1",target = "c2"]
+			in ComponentModel[components = Set{c1,c2},connectors = Set{n1}]
+			end
+		end
+	end
+	  </programlisting>
+	  </emphasis>
+	  </para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/packageop.jpg" />
+          <imagedata fileref="Images/packageop.png" />
         </imageobject>
       </mediaobject>
 
       <para>The operation can be invoked via the console using the special
       package operation invocation syntax (Package::Op()). The result of
-      runnning the operation can be edited by adding .edit() after the
+      running the operation can be edited by adding .edit() after the
       operation call.</para>
     </section>
   </section>

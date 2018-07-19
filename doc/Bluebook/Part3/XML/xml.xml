@@ -90,7 +90,7 @@
         <para>The following screen shot shows how the data could be expressed
         in XML:<mediaobject>
             <imageobject>
-              <imagedata fileref="Images/image008.jpg" />
+              <imagedata fileref="Images/TableXML.png" />
             </imageobject>
           </mediaobject></para>
 
@@ -120,7 +120,7 @@
         package so that names can be referenced in code (for example
         ParserChannel in line 40).<mediaobject>
             <imageobject>
-              <imagedata fileref="Images/image010.jpg" />
+              <imagedata fileref="Images/TablesImage01.png" />
             </imageobject>
           </mediaobject></para>
 
@@ -142,7 +142,7 @@
         parse that is used to consume input from the XML source, to run the
         parser and return the synthesized result:<mediaobject>
             <imageobject>
-              <imagedata fileref="Images/image012.jpg" />
+              <imagedata fileref="Images/TablesImage02.png" />
             </imageobject>
           </mediaobject></para>
       </section>
@@ -182,7 +182,7 @@
         using an XML element with the unique tag within the graph element and
         referenced using their identifier via edges:<mediaobject>
             <imageobject>
-              <imagedata fileref="Images/image016.jpg" />
+              <imagedata fileref="Images/GraphXML.png" />
             </imageobject>
           </mediaobject></para>
 
@@ -190,7 +190,7 @@
         grammar. The grammar is defined as a named element in a package as
         shown below:<mediaobject>
             <imageobject>
-              <imagedata fileref="Images/image018.jpg" />
+              <imagedata fileref="Images/XMLGraphImage01.png" />
             </imageobject>
           </mediaobject></para>
 
@@ -200,7 +200,7 @@
         variables in line 31. The clause synthesizes a node which is
         associated with the identifier bound to the variable id:<mediaobject>
             <imageobject>
-              <imagedata fileref="Images/image020.jpg" />
+              <imagedata fileref="Images/XMLGraphImage02.png" />
             </imageobject>
           </mediaobject></para>
 
@@ -212,14 +212,14 @@
         with the associated value that is synthesized elsewhere by including a
         reference in the result of the clause as shown below:<mediaobject>
             <imageobject>
-              <imagedata fileref="Images/image022.jpg" />
+              <imagedata fileref="Images/XMLGraphImage03.png" />
             </imageobject>
           </mediaobject></para>
 
         <para>The following operation shows how the Graph grammar is used to
         parse a file containing a graph encoded in XML.<mediaobject>
             <imageobject>
-              <imagedata fileref="Images/image024.jpg" />
+              <imagedata fileref="Images/XMLGraphImage04.png" />
             </imageobject>
           </mediaobject></para>
       </section>
@@ -239,7 +239,7 @@
         <para>The following XML document shows a simple model
         encoding:<mediaobject>
             <imageobject>
-              <imagedata fileref="Images/image026.jpg" />
+              <imagedata fileref="Images/ModelXML.png" />
             </imageobject>
           </mediaobject></para>
 
@@ -260,7 +260,7 @@
         is shown below. Each identifier is registered against the associated
         model element during the parse using :=:<mediaobject>
             <imageobject>
-              <imagedata fileref="Images/image030.jpg" />
+              <imagedata fileref="Images/ModelsImage01.png" />
             </imageobject>
           </mediaobject></para>
 
@@ -273,7 +273,7 @@
         addParent will fail since it expects a classifier rather than a
         reference).<mediaobject>
             <imageobject>
-              <imagedata fileref="Images/image032.jpg" />
+              <imagedata fileref="Images/ModelsImage02.png" />
             </imageobject>
           </mediaobject></para>
 
@@ -284,21 +284,21 @@
         encoded as an enumerated type that is processed in order to decide
         what the type of the attribute will be.<mediaobject>
             <imageobject>
-              <imagedata fileref="Images/image034.jpg" />
+              <imagedata fileref="Images/ModelsImage03.png" />
             </imageobject>
           </mediaobject></para>
 
         <para>The following ClassRef definition shows how references are
         synthesized:<mediaobject>
             <imageobject>
-              <imagedata fileref="Images/image036.jpg" />
+              <imagedata fileref="Images/ModelsImage04.png" />
             </imageobject>
           </mediaobject></para>
 
         <para>Finally, the following operation can be used to read a file
         containing a model that is encoded in XML:<mediaobject>
             <imageobject>
-              <imagedata fileref="Images/image038.jpg" />
+              <imagedata fileref="Images/ModelsImage05.png" />
             </imageobject>
           </mediaobject></para>
       </section>
@@ -310,7 +310,7 @@
       <para>An XML parser channel has an attribute debug that can be used to
       provide a trace of execution. If the flag is set:<mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image040.jpg" />
+            <imagedata fileref="Images/XMLGraphImage05.png" />
           </imageobject>
         </mediaobject></para>
 
@@ -360,7 +360,7 @@
     data. The following Tree package defines operations that partially
     implement such a database:<mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image046.jpg" />
+          <imagedata fileref="Images/XMLTreeImage01.png" />
         </imageobject>
       </mediaobject></para>
 
@@ -373,7 +373,7 @@
     <para>The following operation uses the print operation of XML::Document to
     write the database to a text file:<mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image048.jpg" />
+          <imagedata fileref="Images/XMLTreeImage02.png" />
         </imageobject>
       </mediaobject></para>
 
@@ -382,14 +382,14 @@
     following operation adds a child to an element in the
     database:<mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image050.jpg" />
+          <imagedata fileref="Images/XMLTreeImage03.png" />
         </imageobject>
       </mediaobject></para>
 
     <para>The following query operation uses pattern matching to select an
     element:<mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image050.jpg" />
+          <imagedata fileref="Images/XMLTreeImage03.png" />
         </imageobject>
       </mediaobject></para>
   </section>
@@ -453,7 +453,7 @@
     nodes as they are read and synthesized by the operations defined
     above:<mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image054.jpg" />
+          <imagedata fileref="Images/DOMInputChannelImage01.png" />
         </imageobject>
       </mediaobject></para>
 
@@ -463,7 +463,7 @@
     Eventually, the root node is left as the single stack element. The parse
     just pops the root node, creates and returns an XML document:<mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image056.jpg" />
+          <imagedata fileref="Images/DOMInputChannelImage04.png" />
         </imageobject>
       </mediaobject></para>
 
@@ -471,7 +471,7 @@
     pushed on the stack. Note how toString is used to copy the text on the
     string buffer:<mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image058.jpg" />
+          <imagedata fileref="Images/DOMInputChannelImage02.png" />
         </imageobject>
       </mediaobject></para>
 
@@ -483,7 +483,7 @@
     pop the child elements from the stack up to the parent element and modify
     the parent by inserting the children:<mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image060.jpg" />
+          <imagedata fileref="Images/DOMInputChannelImage06.png" />
         </imageobject>
       </mediaobject></para>
 
@@ -493,13 +493,13 @@
 
     <para><mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image062.jpg" />
+          <imagedata fileref="Images/DOMInputChannelImage03.png" />
         </imageobject>
       </mediaobject></para>
 
     <para><mediaobject>
         <imageobject>
-          <imagedata fileref="Images/image064.jpg" />
+          <imagedata fileref="Images/DOMInputChannelImage05.png" />
         </imageobject>
       </mediaobject></para>
   </section>
@@ -554,7 +554,7 @@
       element to an XML document. It uses the XML::PrintXML::XML pattern
       language:<mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image066.jpg" />
+            <imagedata fileref="Images/WriteXMLImage01.png" />
           </imageobject>
         </mediaobject></para>
 
@@ -590,7 +590,7 @@
 
       <para>Classes are output as follows:<mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image068.jpg" />
+            <imagedata fileref="Images/WriteXMLImage02.png" />
           </imageobject>
         </mediaobject></para>
 
@@ -603,7 +603,7 @@
       class reference for the type. The multiplicity of the attribute type is
       encoded in the attribute:<mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image070.jpg" />
+            <imagedata fileref="Images/WriteXMLImage03.png" />
           </imageobject>
         </mediaobject></para>
 
@@ -619,7 +619,7 @@
 
       <para><mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image074.jpg" />
+            <imagedata fileref="Images/XMLImage01.png" />
           </imageobject>
         </mediaobject></para>
 
@@ -627,7 +627,7 @@
 
       <para><mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image076.jpg" />
+            <imagedata fileref="Images/XMLImage02.png" />
           </imageobject>
         </mediaobject></para>
 
@@ -635,7 +635,7 @@
 
       <para><mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image078.jpg" />
+            <imagedata fileref="Images/XMLImage03.png" />
           </imageobject>
         </mediaobject></para>
 
@@ -643,17 +643,11 @@
 
       <para><mediaobject>
           <imageobject>
-            <imagedata fileref="Images/image080.jpg" />
+            <imagedata fileref="Images/XMLImage04.png" />
           </imageobject>
         </mediaobject></para>
 
       <para></para>
-
-      <para><mediaobject>
-          <imageobject>
-            <imagedata fileref="Images/image082.jpg" />
-          </imageobject>
-        </mediaobject></para>
     </section>
 
     <section>

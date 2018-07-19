@@ -59,7 +59,7 @@
       <para><programlisting>EmptyClass().isKindOf(EmptyClass)</programlisting></para>
 
       <para>then the result is true since the newly created instance is
-      directly an instance of EmptyClasss. In addition, the expression:</para>
+      directly an instance of EmptyClass. In addition, the expression:</para>
 
       <para><programlisting>EmptyClass().isKindOf(Object) and EmptyClass().isKindOf(Element)</programlisting></para>
 
@@ -112,8 +112,8 @@ EmptyClass.isKindOf(Element)</programlisting></para>
       are automatically provided:</para>
 
       <programlisting>let p = Point(100,200)
-in p.setX(p.getX() - 1);
-   p.setY(p.getY() - 1)
+in p.setX(p.get("x") - 1);
+   p.setY(p.get("y") - 1)
 end</programlisting>
     </section>
 
@@ -126,7 +126,7 @@ end</programlisting>
       parents); if an operation is found then it is invoked otherwise an error
       is reported. Operations may be defined as part of a class or a package
       definition or added to existing classes and packages via a context
-      defintion.</para>
+      definition.</para>
 
       <para>The following defines a class of stacks and adds the definition to
       a package named Stacks. The example shows the complete contents of a
@@ -168,6 +168,8 @@ context Stacks
       else elements-&gt;head
       end
     end
+        
+  end
 </programlisting>
     </section>
 
@@ -184,7 +186,7 @@ context Stacks
       other class. By default a class is a sub-class of XCore::Object. A class
       inherits constructors, attributes, operations and constraints from its
       parent. For example the following class specializes Point with a z
-      co-ordinate:</para>
+      coordinate:</para>
 
       <para><programlisting>context Root
   @Class Point3D extends Point
@@ -288,10 +290,10 @@ end</programlisting>returns true.</para>
       <title>Message Passing</title>
 
       <para>XOCL performs computation in terms of messages between elements. A
-      message consists of a name andsome data. A message is sent from a source
-      element to a target element. The target element receives themessage,
+      message consists of a name and some data. A message is sent from a source
+      element to a target element. The target element receives the message,
       performs appropriate computation and returns a result. Messages between
-      elements aresynchronous: the source element halts computation and waits
+      elements are synchronous: the source element halts computation and waits
       the return value from the target element.</para>
 
       <para>Message passing occurs when the source element performs an
@@ -300,7 +302,7 @@ end</programlisting>returns true.</para>
       message.</para>
 
       <para>Message passing is defined by the MOP component referred to as the
-      massage passing protocol.The protocol is defined by the meta-class of
+      message passing protocol.The protocol is defined by the meta-class of
       the target element and is called sendInstance:</para>
 
       <programlisting>context Element
@@ -332,7 +334,7 @@ end</programlisting>returns true.</para>
       Class that defines a new sendInstance operation will provide a
       specialized message passing protocol for the instances of its instances.
       This can be used to implement specialized operation lookup mechanisms,
-      to facilitiate debugging information and to change the basic message
+      to facilitate debugging information and to change the basic message
       passing mechanisms (for example by defining a class of objects with
       message queues). </para>
     </section>
@@ -351,7 +353,7 @@ end</programlisting>returns true.</para>
   @Operation invoke(target:Element,args:Seq(Element)):Element
     self.new(args)
   end</programlisting>The new operation is defined by the meta-class of the
-      receiving class. It constitutes the instantiation procotol for a
+      receiving class. It constitutes the instantiation protocol for a
       collection of classes. The class Classifier defines the default
       instantiation protocol:<programlisting>context Classifier
   @Operation new(args:Seq(Element)):Element
@@ -379,6 +381,8 @@ end</programlisting>Using the kernel-level operations, you can create a
 
     <section>
       <title>Slot Access</title>
+	  <para><emphasis role="red">This feature is not supported by the 
+	  current XModeler version</emphasis></para>
 
       <para>Objects have internal storage in the form of named slots. Access
       to a slot value is via the object and the name of the slot. Slots are

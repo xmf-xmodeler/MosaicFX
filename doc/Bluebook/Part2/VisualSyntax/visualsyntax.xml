@@ -19,7 +19,7 @@
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/domainmodel.jpg" />
+        <imagedata fileref="Images/domainmodel.png" />
       </imageobject>
     </mediaobject>
 
@@ -50,11 +50,11 @@
       </listitem>
     </itemizedlist>
 
-    <para>In other words, something like the follows:</para>
+    <para>In other words, something like the following:</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/sketch.jpg" />
+        <imagedata fileref="Images/sketch.png" />
       </imageobject>
     </mediaobject>
   </section>
@@ -88,7 +88,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/tooltype.jpg" />
+          <imagedata fileref="Images/tooltype.png" />
         </imageobject>
       </mediaobject>
     </section>
@@ -96,13 +96,13 @@
     <section>
       <title>Adding a Node</title>
 
-      <para>Two main types of diagram element can be added to the tool: nodes
+      <para>Two main types of diagram elements can be added to the tool: nodes
       and edges.</para>
 
       <para>Let's create a node definition that represents a Component.</para>
 
-      <para>To do this, right click on the root type and select New &gt; Root
-      Node.</para>
+      <para>To do this, right click on the root type and select
+	  <emphasis role="bold">New &gt; Node &gt; Root Node</emphasis>.</para>
 
       <mediaobject>
         <imageobject>
@@ -136,18 +136,18 @@
 
       <para>An Entity will be represented as a Box, so we'll add one to the
       Component node. To do this right click on the Component node and create
-      a new box:</para>
+      a new box(filled):</para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/addingabox.jpg" />
+          <imagedata fileref="Images/addingabox.png" />
         </imageobject>
       </mediaobject>
 
       <para>Boxes can be parameterised in a wide variety of ways. In this
       case, we want the box to have a minimum width of 100, a minimum heights
-      of 50 and a corner curve of 30 degrees. To change this, right click on
-      the create box and select Edit. Change the properties as
+      of 50 and a corner curve of 30 degrees. To change its properties, right click on
+      the create box and select <emphasis role="bold">Edit</emphasis>. Change the properties as
       required:</para>
 
       <mediaobject>
@@ -163,7 +163,7 @@
       <para>In order to be able to edit the name of the Component, we need an
       Attribute text field. This can be added to the Box as follows:</para>
 
-      <para>Right click on the box and select New &gt; Attribute. Sele</para>
+      <para>Right click on the box and select <emphasis role="bold">New &gt; Attribute</emphasis>.</para>
 
       <mediaobject>
         <imageobject>
@@ -171,7 +171,7 @@
         </imageobject>
       </mediaobject>
 
-      <para>Select the name attrbute from the drop down list. The new
+      <para>Select the name Attribute from the drop down list. The new
       attribute has been added to the box:</para>
 
       <mediaobject>
@@ -200,8 +200,8 @@
       <para>A Free Node is a node whose class is not directly accessible from
       the root class. In this example, Port is a free node.</para>
 
-      <para>To add a Free node, right cilck on the root element type and
-      select New &gt; Free Node. A list of all the packages available in the
+      <para>To add a Free node, right click on the root element type and
+      select <emphasis role="bold">New &gt; Node &gt; Free Node</emphasis>. A list of all the packages available in the
       system will be displayed. Select the Port class from the package
       Components.</para>
 
@@ -223,8 +223,8 @@
       </mediaobject>
 
       <para>We will need to adjust the size and colour of the ellipse. To
-      change its fill colour, right click and select Colour &gt; Fill
-      Colour.</para>
+      change its fill colour, right click and select <emphasis role="bold">Colour &gt; Fill
+      Colour</emphasis>.</para>
 
       <mediaobject>
         <imageobject>
@@ -233,7 +233,7 @@
       </mediaobject>
 
       <para>The size of the ellipse can be changed by editing the properties
-      of the Ellipse. In thie case, we want its height and width properties to
+      of the Ellipse. In this case, we want its height and width properties to
       be 10 points, however, this is the default size, and we therefore don't
       need to make any changes.</para>
     </section>
@@ -244,7 +244,7 @@
       <para>Toolbar groups and buttons need to be created to enable the
       selection of a creation tool for the element.</para>
 
-      <para>To do this, right click on the Tool Bar node and select New Group.
+      <para>To do this, right click on the Tool Bar node and select <emphasis role="bold">New Group</emphasis>.
       Give the Group a name, e.g. Components:</para>
 
       <mediaobject>
@@ -257,7 +257,7 @@
       buttons can be added.</para>
 
       <para>Let's create a button for adding Component nodes. Right click on
-      the Component group and select New &gt; Node Button. Choose
+      the Component group and select <emphasis role="bold">New &gt; Node Button</emphasis>. Choose
       Root(component:Component) from the list. Change the name of the button
       to be "Component".</para>
 
@@ -283,19 +283,19 @@
       <para>First, Save the XTool (right click on the Root Node and select
       Save) so that it is backed up.</para>
 
-      <para>Next right click on the Object node in the XTool browser (select
+      <para>Next, right click on the Object node in the XTool browser (select
       Browse &gt; XTools Browser if you cannot see it in the browser) and
-      select Add Element &gt; ComponentModel to create an instance of the
+      select <emphasis role="bold">Add Element &gt; ComponentModel</emphasis> to create an instance of the
       ComponentModel class.</para>
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/runningtool.jpg" />
+          <imagedata fileref="Images/runningtool.png" />
         </imageobject>
       </mediaobject>
 
       <para>A ComponentModel object will be created. To show its diagram
-      select it and right click Create Diagram &gt; Component.</para>
+      select it and right click <emphasis role="bold">Create Diagram &gt; Components</emphasis>.</para>
 
       <mediaobject>
         <imageobject>
@@ -345,7 +345,8 @@
       </mediaobject>
 
       <para>A choice of collections that the Association will map to will be
-      displayed. Select the connectors collection.</para>
+      displayed. Select the connectors collection. Next we need to select the source 
+	  and target Attributes, which for our example are named the same.</para>
 
       <para>An Association may define the shape of its ends, and in this case
       we can chose to make its target end an arrowhead by setting the target
@@ -429,7 +430,7 @@
 
       <para>This is just the start of developing a fully blown tool.
       Additional menus and diagram elements can be added very flexibly and
-      tested interatively.</para>
+      tested iteratively.</para>
     </section>
   </section>
 

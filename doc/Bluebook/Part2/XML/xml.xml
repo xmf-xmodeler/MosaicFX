@@ -11,7 +11,7 @@
 
   <para>This section describes how an XML parser and generator can be
   constructed in XMF-Mosaic enabling any format of XML to be parsed and
-  exported to a from an instance of a model. It is based on (XXML) a generic,
+  exported to form an instance of a model. It is based on (XXML) a generic,
   high-level grammar language that can be used to capture XML grammars and the
   rules for mapping them to models.</para>
 
@@ -26,10 +26,10 @@
     create a file to contain the grammar definition. This can be done via the
     file browser (see Part 1 of this guide).</para>
 
-    <para>Open the file browser by right clicking on a project in the browser
-    and selecting Create File Browser.</para>
+    <para>Open the file browser clicking on <emphasis role="bold">Browse</emphasis>
+	in the menu and selecting <emphasis role="bold">Open File Browser...</emphasis>.</para>
 
-    <para>Select the directory that the file will be created in, and create
+    <para>Select the directory that should be openend and create
     the file, e.g. AircraftsGrammar.xmf.</para>
   </section>
 
@@ -85,11 +85,11 @@ import XML::Parser;  // Get ParserChannel and Ref</programlisting>
     successful then the XOCL action occurs and returns a value.</para>
 
     <para>The ComponentModel grammar is defined to be the XML tag
-    &lt;ComponentModel&gt; followed by some child grammars (it has no
+    <emphasis role="bold">&lt;ComponentModel&gt;</emphasis> followed by some child grammars (it has no
     attributes). The child grammars bind the result of parsing a sequence of
     Components followed by a sequence of Connectors.</para>
 
-    <para>The rule is terminated by the tag &lt;/ComponentModel&gt;</para>
+    <para>The rule is terminated by the tag <emphasis role="bold">&lt;/ComponentModel&gt;</emphasis>.</para>
 
     <para>Every time the grammar rule is parsed, its effect is to unify the
     variables with the values that are parsed.</para>
@@ -106,12 +106,12 @@ import XML::Parser;  // Get ParserChannel and Ref</programlisting>
     <para>The grammar for Component is straightforward - it returns a
     Component instance.</para>
 
-    <para>The grammar for a Port illustrates the use of an "id" which is
+    <para>The grammar for a Port illustrates the use of an ID which is
     associated with each new Port instance.</para>
 
-    <para>The grammar for a Connector uses this "id" to look up the values of
+    <para>The grammar for a Connector uses this ID to look up the values of
     the source and target ports of the Connector. This is performed using the
-    Ref() operation. This is how cross-references are managed in XXML.</para>
+    <emphasis role="bold">Ref()</emphasis> operation. This is how cross-references are managed in XXML.</para>
   </section>
 
   <section>
@@ -146,8 +146,8 @@ context Components
     end
   end</programlisting>
 
-    <para>The package operation parseFile() first opens a browser to select
-    the XML to be imported. If the file exists. This calls the parse()
+    <para>The package operation <emphasis role="bold">parseFile()</emphasis> first opens a browser to select
+    the XML to be imported. If the file exists. This calls the <emphasis role="bold">parse()</emphasis>
     operation, which opens an XMLInputChannel and the XML is read into
     variable xin. The result (an instance of the ComponentsModel) is
     returned.</para>
@@ -161,23 +161,28 @@ context Components
 
     <programlisting>&lt;ComponentModel&gt;
   &lt;Component name="Displays"&gt;
-    &lt;Port id="Displays:CurrentPosition" type="Long" name="CurrentPosition" /&gt; 
+    &lt;Port id="Displays:CurrentPosition" 
+			type="Long" name="CurrentPosition" /&gt; 
   &lt;/Component&gt;
   &lt;Component name="Navigation"&gt;
-    &lt;Port id="Navigation:CurrentPosition" type="LatLong" name="CurrentPosition" /&gt; 
+    &lt;Port id="Navigation:CurrentPosition" 
+			type="LatLong" name="CurrentPosition" /&gt; 
   &lt;/Component&gt;
-  &lt;Connector target="Navigation:CurrentPosition" source="Displays:CurrentPosition" /&gt; 
+  &lt;Connector target="Navigation:CurrentPosition" 
+			source="Displays:CurrentPosition" /&gt; 
 &lt;/ComponentModel&gt;</programlisting>
 
     <para>To run the parser, run the parseFile() package operation from the
-    console by typing Components::parseFile();</para>
+    console by typing <emphasis role="bold">Components::parseFile();</emphasis>. Before, as always, we have to compile and load our XMF files. 
+	For calling the operation we need to refer to our Components model. Choose the XMF model description provided in 
+	chapter <xref linkend="xoclintro" /> to create a XMF file and compile and load it before the Grammar file.</para>
 
     <para>The result will be to parse the XML and create an instance of the
     Components model:</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/loadedXML.jpg" />
+        <imagedata fileref="Images/loadedXML.png" width="100%" />
       </imageobject>
     </mediaobject>
   </section>
@@ -193,7 +198,8 @@ context Components
 &lt;ComponentModel&gt;
   &lt;Component name='Displays'&gt;
     BIND n = Displays
-    &lt;Port id='Displays:CurrentPosition' type='Long' name='CurrentPosition'&gt;
+    &lt;Port id='Displays:CurrentPosition' 
+				type='Long' name='CurrentPosition'&gt;
       BIND n = CurrentPosition
       BIND t = Long
       BIND i = Displays:CurrentPosition
@@ -213,7 +219,8 @@ context Components
   BIND x = &lt;Component d6f173&gt;
   &lt;Component name='Navigation'&gt;
     BIND n = Navigation
-    &lt;Port id='Navigation:CurrentPosition' type='LatLong' name='CurrentPosition'&gt;
+    &lt;Port id='Navigation:CurrentPosition' 
+				type='LatLong' name='CurrentPosition'&gt;
       BIND n = CurrentPosition
       BIND t = LatLong
       BIND i = Navigation:CurrentPosition
@@ -231,7 +238,8 @@ context Components
   BIND P = Seq{&lt;Port d76f09&gt;}
   PUSH(&lt;Component d7c2d5&gt;)
   BIND x = &lt;Component d7c2d5&gt;
-  &lt;Connector target='Navigation:CurrentPosition' source='Displays:CurrentPosition'&gt;
+  &lt;Connector target='Navigation:CurrentPosition' 
+			source='Displays:CurrentPosition'&gt;
     PUSH(Seq{})
     BIND xs = Seq{}
     PUSH(Seq{})
@@ -274,8 +282,38 @@ PUSH(&lt;ComponentModel d8a323&gt;)</programlisting>
   <section>
     <title>Generating XML</title>
 
-    <para>A similar approach can be used to construct an XML generator. A
-    simple domain specific language is used to capture the rules for
+    <para>A similar approach can be used to construct an XML generator. 
+	To generate the XML, the following operation is defined in a new file:</para>
+
+    <programlisting>parserImport XOCL;
+parserImport XML::PrintXML;
+
+import Components;
+import IO;
+
+context ComponentModel
+
+  @Operation exportXML()
+    let file = xmf.saveFile(xmf.projDir(),"*.xml")
+    in if file &lt;&gt; ""
+       then
+         if not file.fileExists() orelse xmf.question("Overwrite " + file)
+         then
+           @WithOpenFile(fout -&gt; file)
+              self.exportXML(fout);
+              xmf.message("written " + self.toString() + " to " + file)
+           end
+         else xmf.message("Deployment Cancelled")
+         end
+       else xmf.message("Deployment Cancelled")
+       end
+    end
+  end
+
+//Rest of rules</programlisting>
+
+
+	<para>A simple domain specific language is used to capture the rules for
     generating XML. Here are the rules for generating XML for instances of the
     Component model:</para>
 
@@ -344,44 +382,22 @@ end</programlisting>
     The XML elements and their attributes are then written. The body is XOCL
     code that writes the child elements.</para>
 
-    <para>As an example, the exportXML() operation generats a ComponentModel
+    <para>As an example, the exportXML() operation generates a ComponentModel
     tag, followed by the results of calling the exportXML() operation on the
     ComponentModel's components and connectors.</para>
 
-    <para>To generate the XML, the following operation is defined:</para>
 
-    <programlisting>parserImport XOCL;
-parserImport XML::PrintXML;
-
-import Components;
-import IO;
-
-context ComponentModel
-
-  @Operation exportXML()
-    let file = xmf.saveFile(xmf.projDir(),"*.xml")
-    in if file &lt;&gt; ""
-       then
-         if not file.fileExists() orelse xmf.question("Overwrite " + file)
-         then
-           @WithOpenFile(fout -&gt; file)
-              self.exportXML(fout);
-              xmf.message("written " + self.toString() + " to " + file)
-           end
-         else xmf.message("Deployment Cancelled")
-         end
-       else xmf.message("Deployment Cancelled")
-       end
-    end
-  end
-
-//Rest of rules</programlisting>
-
-    <para>This can be run on any ComponentModel instance, for example:</para>
+    <para>This generator can be run on any ComponentModel instance, for example
+	by typing the following into the Console:
+    First creating an instance of ComponentModel by calling its constructor
+    <emphasis role="bold">c:=Components::ComponentModel();</emphasis>
+    Then calling the method on the ComponentModel instance
+	<emphasis role="bold">c.exportXML();</emphasis>
+    </para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/generateXML.jpg" />
+        <imagedata fileref="Images/generateXML.png" />
       </imageobject>
     </mediaobject>
 
@@ -389,12 +405,15 @@ context ComponentModel
 
     <programlisting>&lt;ComponentModel&gt;
   &lt;Component name="Displays"&gt;
-    &lt;Port id="Displays:CurrentPosition" type="Long" name="CurrentPosition" /&gt; 
+    &lt;Port id="Displays:CurrentPosition" 
+				type="Long" name="CurrentPosition" /&gt; 
   &lt;/Component&gt;
   &lt;Component name="Navigation"&gt;
-    &lt;Port id="Navigation:CurrentPosition" type="LatLong" name="CurrentPosition" /&gt; 
+    &lt;Port id="Navigation:CurrentPosition" 
+				type="LatLong" name="CurrentPosition" /&gt; 
   &lt;/Component&gt;
-  &lt;Connector target="Navigation:CurrentPosition" source="Displays:CurrentPosition" /&gt; 
+  &lt;Connector target="Navigation:CurrentPosition" 
+				source="Displays:CurrentPosition" /&gt; 
 &lt;/ComponentModel&gt;</programlisting>
 
     <para>This can now be parsed back into the tool if required using the XML

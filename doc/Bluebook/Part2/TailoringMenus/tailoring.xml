@@ -5,13 +5,13 @@
   <title>Toolbar Menus and Initialisation Files</title>
 
   <para>This section describes how XMF-Mosaic can support user customised
-  menus and intialisation files.</para>
+  menus and initialisation files.</para>
 
   <section>
     <title>Toolbar menus</title>
 
     <para>XMF-Mosaic provides facilities for rapidly building customised menus
-    that can be used to perform repetitive tasks such as loading projects, or
+    that can be used to perform repetitive tasks such as loading projects or
     running operations.</para>
 
     <para>You can add a new menu, or a new menu item to an existing menu, on
@@ -21,7 +21,8 @@
     that is called when the new menu item is selected. For example, the
     following can be run in the console: </para>
 
-    <programlisting>xmf.addDropDownMenuItem(Seq{"&amp;A","B","&amp;C"},@Operation() "Selected".println() end);</programlisting>
+    <programlisting>xmf.addDropDownMenuItem(Seq{"&amp;A","B","&amp;C"},
+	@Operation() "Selected".println() end);</programlisting>
 
     <para>This will produce the following:</para>
 
@@ -58,7 +59,8 @@
     <programlisting>xmf.addDropDownMenuItem(Seq{"&amp;Demo","Main","Load Model"},
   @Operation()
     @Busy("Loading Model")
-      xmf.projectManager().getElement("MyProjects").loadMosaicProject(xmf.projDir() + "/Dir/File.xar",false)
+      xmf.projectManager().getElement("MyProjects")
+				.loadMosaicProject(xmf.projDir() + "/Dir/File.xar",false)
     end
   end);</programlisting>
 
@@ -68,7 +70,8 @@
     <programlisting>xmf.addDropDownMenuItem(Seq{"&amp;Demo","Main","Load Model"},
   @Operation()
     @Busy("Loading Model")
-      xmf.projectManager().getElement("MyProjects").loadMosaicProject(xmf.projDir() + "/Dir/File.xar",false)
+      xmf.projectManager().getElement("MyProjects")
+				.loadMosaicProject(xmf.projDir() + "/Dir/File.xar",false)
     end
   end); </programlisting>
 
@@ -108,24 +111,23 @@
   <section>
     <title>Initialisation Files</title>
 
-    <para>To make the task of setting up menus and other general-purpose
-    features easier, XMF-Mosaic provides an init file facility. This file,
-    init.o, is automatically loaded on start-up of the tool provided that it
-    is placed in the directory referenced by the MOSAICINIT environment
-    variable.</para>
+    <para>To make the task of setting up menus and other general-purpose features easier, XMF-Mosaic provides an 
+    init file facility. This file, init.o, is automatically loaded on start-up of the tool provided that it is 
+    placed in the directory referenced by the Mosaic init file <emphasis role="bold">init.txt</emphasis>.
+</para>
 
-    <para>The following init file (init.xmf) is an example of a simple init
-    file. To use it, compile the file in the MOSAICINIT directory. It contans
-    a menu item which enables the init.xmf file to be conveniently edited via
-    a File &gt; Edit &gt; Init menu.</para>
+    <para>To use it, compile the file in the Mosaic directory and reference in the system specific init file 
+    temporarily to our example <emphasis role="bold">init.o</emphasis>. It contains a menu item which enables 
+    the <emphasis role="bold">init.xmf</emphasis> file to be conveniently edited via a <emphasis role="bold">File 
+    &gt; Edit &gt; Init</emphasis> menu.</para>
 
-    <programlisting>// The init file is loaded on startup. It is used to automatically add user customised
-// menus and operation to XMF-Mosaic. These can be used for all sorts of
-// purposes, including setting up menus for specific projects, or running
-// any code you wish. To run the init file, it must be saved in the XMFINIT
-// directory (this must be available under your windows system environment 
-// variables). Compile, save and load the init file before launching XMF-Mosaic
-// to run it.
+    <programlisting>// The init file is loaded on startup. It is used to automatically 
+// add user customised menus and operation to XMF-Mosaic. These can 
+// be used for all sorts of purposes, including setting up menus for 
+// specific projects, or running any code you wish. To run the init 
+// file, it must be saved in the XMFINIT directory (this must be 
+// available under your windows system environment variables). Compile, 
+// save and load the init file before launching XMF-Mosaic to run it.
 
 parserImport XOCL;
 
@@ -135,29 +137,31 @@ import IO;
 
 // Add your customised menus and operations here.
 
-// Provides a drop down menu for editing the Init file. Note the sequence
-// elements denotes the menu hierarchy starting with the root File menu.
-// Use &amp; to add shortcut key binding, e.g. Alt-F, Alt-E in this case to
-// get to the Edit menu.
+// Provides a drop down menu for editing the Init file. Note the 
+// sequence elements denotes the menu hierarchy starting with the 
+// root File menu. Use &amp; to add shortcut key binding, e.g. Alt-F, 
+// Alt-E in this case to get to the Edit menu.
 
 xmf.addDropDownMenuItem(Seq{"&amp;File","Extras","&amp;Edit","Main","Init"},
   @Operation()
     XmfFile(null,xmf.initFile()).editText()
   end);
 
-// Provides a drop down menu for browsing the files in your project directory
+// Provides a drop down menu for browsing the files in your project
+// directory
 xmf.addDropDownMenuItem(Seq{"&amp;File","Extras","&amp;Browse","Main","Projects"},
   @Operation()
     Directory(xmf.projDir(),Seq{".*.xmf"}).browse()
   end);
   
-// An example of a menu that is used to load one or more .xar files in your projects directory into
-// MyProjects
+// An example of a menu that is used to load one or more .xar files in 
+// your projects directory into MyProjects
 
 xmf.addDropDownMenuItem(Seq{"&amp;Demo","Main","Load Model"},
   @Operation()
     @Busy("Loading Model")
-      xmf.projectManager().getElement("MyProjects").loadMosaicProject(xmf.projDir() + "/Dir/File.xar",false)
+      xmf.projectManager().getElement("MyProjects")
+				.loadMosaicProject(xmf.projDir() + "/Dir/File.xar",false)
     end
   end); 
   
@@ -170,7 +174,8 @@ xmf.addDropDownMenuItem(Seq{"&amp;Demo","Main","Load File"},
     end
   end);
 
-// An example of defining an operation that will be added automatically to Root
+// An example of defining an operation that will be added 
+// automatically to Root
 context Root
   @Operation hello()
     format(stdout,"HelloWorld")

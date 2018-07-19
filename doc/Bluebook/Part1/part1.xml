@@ -76,7 +76,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/toolarch.jpg" />
+          <imagedata fileref="Images/toolarch.jpg" width="100%" />
         </imageobject>
       </mediaobject>
 
@@ -159,7 +159,7 @@
 
             <listitem>
               <para>Provides many useful tool programming facilities,
-              including patternmatching and model synchronisation
+              including pattern matching and model synchronisation
               primitives.</para>
             </listitem>
 
@@ -225,7 +225,7 @@
             XMF-Mosaic are defined as instances of a meta-data model (XCore),
             they can be extended through class specialisation. Furthermore,
             XMF-Mosaic understands when this extension has taken place and
-            automatically provides new tool buttons etc to support the
+            automatically provides new tool buttons etc. to support the
             extension.</para>
           </listitem>
 
@@ -251,7 +251,7 @@
       general-purpose languages like Java, XMF-Mosaic offers significant
       reduction in construction effort, better extensibility, and a more
       intuitive and integrated solution to tool construction. This also
-      applies to IDE's like Eclipse. XMF-Mosiac provides a next level of
+      applies to IDE's like Eclipse. XMF-Mosaic provides a next level of
       abstraction over typical IDE facilities. For example, XMF-Mosaic
       provides domain specific programming languages for building
       user-interfaces, which are significantly more productive than
@@ -270,7 +270,7 @@
 
           <listitem>
             <para>Code and documentation generators are easier to write as the
-            source of the generators is a precisely targetted domain
+            source of the generators is a precisely targeted domain
             model.</para>
           </listitem>
 
@@ -304,7 +304,7 @@
 
         <listitem>
           <para><emphasis role="bold">Constraint checking</emphasis>: write
-          complex constraints and querys and test them on the fly.</para>
+          complex constraints and queries and test them on the fly.</para>
         </listitem>
 
         <listitem>
@@ -333,7 +333,7 @@
         </listitem>
 
         <listitem>
-          <para><emphasis role="bold">Extensibilit</emphasis><emphasis
+          <para><emphasis role="bold">Extensibility</emphasis><emphasis
           role="bold">y</emphasis>: new languages and tools can be created by
           extending and reusing existing language and tool definitions.</para>
         </listitem>
@@ -353,14 +353,14 @@
 
         <listitem>
           <para><emphasis role="bold">Key meta-data standards</emphasis>. This
-          means that the toolset accessible to developers and is very open.
-          Customers do not worry that their data is going to be ‘locked’ into
+          means that the tool set accessible to developers and is very open.
+          Customers do not worry that their data is going to be 'locked' into
           the tool.</para>
         </listitem>
 
         <listitem>
           <para><emphasis role="bold">Fully interactive
-          executio</emphasis><emphasis role="bold">n</emphasis>: no
+          execution</emphasis>: no
           compilation phase is required to run XMF-Mosaic models:
           interactively test tools and models before deploying them to
           code.</para>
@@ -397,7 +397,7 @@
 
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/arch.jpg" />
+          <imagedata fileref="Images/arch.jpg" width="100%"/>
         </imageobject>
       </mediaobject>
 
@@ -503,7 +503,7 @@
             programming. Since Element is available, user defined tools can
             add system-wide aspects. For example this can be used to add the
             ability to export any XMF data in any required format (binary
-            encoded, XML, text etc).</para>
+            encoded, XML, text etc.).</para>
           </listitem>
 
           <listitem>
@@ -576,7 +576,7 @@
       </section>
 
       <section>
-        <title>Base Toolset</title>
+        <title>Base Tool Set</title>
 
         <para>XMF provides a basic collection of languages and tools defined
         in XOCL. These include the following:</para>
@@ -692,7 +692,7 @@
       <section>
         <title>Tool Definition</title>
 
-        <para>The base toolset provides a powerful collection of tools for the
+        <para>The base tool set provides a powerful collection of tools for the
         rapid construction of new development tools. Everything from small
         tools that analyse data to full scale modelling and/or programming
         language environments can be defined in an open, flexible and

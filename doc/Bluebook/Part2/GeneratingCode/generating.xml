@@ -5,44 +5,121 @@
   <title>Generating Code</title>
 
   <para>XMF-Mosaic provides a number of off the shelf routes for generating
-  code from models. These are available off the right click Deploy menu on a
+  code from models. These are available at the right click Deploy menu on a
   package.</para>
 
   <section>
     <title>Generating Java</title>
 
     <para>Selecting Java from the Deploy menu will generate a new directory
-    containing a Java classes for each of the model classes. The Java classes
-    include the attributes and appropriate accessor and updator operations. In
+    containing a Java class for each of the model classes. The Java classes
+    include the attributes and appropriate accessor and updater operations. In
     addition, a toXML operation is provided for serialising instances of Java
     classes as XML.</para>
 
     <para>The following Java code was generated from the Components
-    model.</para>
+    model. Here as example the file ComponentModel.java:</para>
 
-    <programlisting>package Components1;
+    <programlisting>package Components;
 
 public class ComponentModel {
 
  // Attributes...
 
+  private java.util.Vector constraints;
+  private java.util.Vector constructors;
+  private String resourceName;
+  private Object default;
+  private java.util.Vector operations;
+  private Object delegatesTo;
+  private boolean isAbstract;
+  private boolean isFinal;
+  private java.util.Vector parents;
+  private java.util.Vector bindings;
+  private java.util.Vector attributes;
+  private java.util.Hashtable contents;
+  private int level;
+  private java.util.Vector imports;
+  private int created;
+  private Object documentation;
+  private int level;
+  private String name;
+  private java.util.Vector instances;
+  private Object roleFiller;
   private java.util.Vector components;
+  private Object owner;
   private java.util.Vector connectors;
 
  // Accessors...
 
+  public java.util.Vector constraints() { return constraints; }
+  public java.util.Vector constructors() { return constructors; }
+  public String resourceName(){ return resourceName; }
+  public Object default(){ return default; }
+  public java.util.Vector operations() { return operations; }
+  public Object delegatesTo(){ return delegatesTo; }
+  public boolean isAbstract(){ return isAbstract; }
+  public boolean isFinal(){ return isFinal; }
+  public java.util.Vector parents() { return parents; }
+  public java.util.Vector bindings() { return bindings; }
+  public java.util.Vector attributes() { return attributes; }
+  public java.util.Hashtable contents(){ return contents; }
+  public int level(){ return level; }
+  public java.util.Vector imports() { return imports; }
+  public int created(){ return created; }
+  public Object documentation(){ return documentation; }
+  public int level(){ return level; }
+  public String name(){ return name; }
+  public java.util.Vector instances() { return instances; }
+  public Object roleFiller(){ return roleFiller; }
   public java.util.Vector components() { return components; }
+  public Object owner(){ return owner; }
   public java.util.Vector connectors() { return connectors; }
 
  // Updaters...
 
+  public void setConstraints(java.util.Vector value) { this.constraints = value; }
+  public void setConstructors(java.util.Vector value) { this.constructors = value; }
+  public void setResourceName(String value){ this.resourceName = value; }
+  public void setDefault(Object value){ this.default = value; }
+  public void setOperations(java.util.Vector value) { this.operations = value; }
+  public void setDelegatesTo(Object value){ this.delegatesTo = value; }
+  public void setIsAbstract(boolean value){ this.isAbstract = value; }
+  public void setIsFinal(boolean value){ this.isFinal = value; }
+  public void setParents(java.util.Vector value) { this.parents = value; }
+  public void setBindings(java.util.Vector value) { this.bindings = value; }
+  public void setAttributes(java.util.Vector value) { this.attributes = value; }
+  public void setContents(java.util.Hashtable value){ this.contents = value; }
+  public void setLevel(int value){ this.level = value; }
+  public void setImports(java.util.Vector value) { this.imports = value; }
+  public void setCreated(int value){ this.created = value; }
+  public void setDocumentation(Object value){ this.documentation = value; }
+  public void setLevel(int value){ this.level = value; }
+  public void setName(String value){ this.name = value; }
+  public void setInstances(java.util.Vector value) { this.instances = value; }
+  public void setRoleFiller(Object value){ this.roleFiller = value; }
   public void setComponents(java.util.Vector value) { this.components = value; }
+  public void setOwner(Object value){ this.owner = value; }
   public void setConnectors(java.util.Vector value) { this.connectors = value; }
 
  // Display...
 
   public String toString() {
     String s = "ComponentModel[";
+    s = s + "name=" + name();
+    s = s + ",";
+    s = s + "resourceName=" + resourceName();
+    s = s + ",";
+    s = s + "isAbstract=" + isAbstract();
+    s = s + ",";
+    s = s + "level=" + level();
+    s = s + ",";
+    s = s + "level=" + level();
+    s = s + ",";
+    s = s + "created=" + created();
+    s = s + ",";
+    s = s + "isFinal=" + isFinal();
+    s = s + ",";
     return s + "]";
   }
 
@@ -59,48 +136,140 @@ public class ComponentModel {
   public int connectedTo(int p) {
     return null;
   }
-
-  public int dontMatch() {
-    return null;
-  }
-
-  public int componentForPort(int p) {
-    return null;
-  }
-
-  public int addToConnectors(int v) {
-    return null;
-  }
-
-  public int deleteFromConnectors(int v) {
-    return null;
-  }
  // XML Serialization...
 
   public void writeXML(java.io.PrintStream out,java.util.Hashtable idTable) {
     if(idTable.containsKey(this))
-      out.print("&lt;Ref id='" + idTable.get(this) + "'/&gt;");
+      out.print("&lt;Ref id='" + idTable.get(this) + "'/>");
     else {
       String id = Integer.toHexString(this.hashCode()).toUpperCase();
       out.print("&lt;Object id='" + id + "'");
-      out.print("&gt;");
-      out.print("&lt;Slot name='components'&gt;");
-      out.print("&lt;Set&gt;");
+      out.print(" name='S:" + this.name + "'");
+      out.print(" resourceName='S:" + this.resourceName + "'");
+      out.print(" isAbstract='B:" + this.isAbstract + "'");
+      out.print(" level='I:" + this.level + "'");
+      out.print(" level='I:" + this.level + "'");
+      out.print(" created='I:" + this.created + "'");
+      out.print(" isFinal='B:" + this.isFinal + "'");
+      out.print(">");
+      out.print("&lt;Slot name='attributes'>");
+      out.print("&lt;Set>");
+      for(int i = 0; i &lt; attributes.size(); i++) {
+         Attribute o = (Attribute)attributes.elementAt(i);
+         o.writeXML(out,idTable);
+      }
+      out.print("&lt;/Set>");
+      out.print("&lt;/Slot>");
+      out.print("&lt;Slot name='bindings'>");
+      out.print("&lt;Set>");
+      for(int i = 0; i &lt; bindings.size(); i++) {
+         Bind o = (Bind)bindings.elementAt(i);
+         o.writeXML(out,idTable);
+      }
+      out.print("&lt;/Set>");
+      out.print("&lt;/Slot>");
+      out.print("&lt;Slot name='components'>");
+      out.print("&lt;Set>");
       for(int i = 0; i &lt; components.size(); i++) {
          Component o = (Component)components.elementAt(i);
          o.writeXML(out,idTable);
       }
-      out.print("&lt;/Set&gt;");
-      out.print("&lt;/Slot&gt;");
-      out.print("&lt;Slot name='connectors'&gt;");
-      out.print("&lt;Set&gt;");
+      out.print("&lt;/Set>");
+      out.print("&lt;/Slot>");
+      out.print("&lt;Slot name='connectors'>");
+      out.print("&lt;Set>");
       for(int i = 0; i &lt; connectors.size(); i++) {
          Connector o = (Connector)connectors.elementAt(i);
          o.writeXML(out,idTable);
       }
-      out.print("&lt;/Set&gt;");
-      out.print("&lt;/Slot&gt;");
-      out.print("&lt;/Object&gt;");
+      out.print("&lt;/Set>");
+      out.print("&lt;/Slot>");
+      out.print("&lt;Slot name='constraints'>");
+      out.print("&lt;Set>");
+      for(int i = 0; i &lt; constraints.size(); i++) {
+         Constraint o = (Constraint)constraints.elementAt(i);
+         o.writeXML(out,idTable);
+      }
+      out.print("&lt;/Set>");
+      out.print("&lt;/Slot>");
+      out.print("&lt;Slot name='constructors'>");
+      out.print("&lt;List>");
+      for(int i = 0; i &lt; constructors.size(); i++) {
+         Constructor o = (Constructor)constructors.elementAt(i);
+         o.writeXML(out,idTable);
+      }
+      out.print("&lt;/List>");
+      out.print("&lt;/Slot>");
+      out.print("&lt;Slot name='contents'>");
+         if(contents == null) out.print("&lt;Null/>"); else contents.writeXML(out,idTable);
+      out.print("&lt;/Slot>");
+      out.print("&lt;Slot name='default'>");
+         if(default == null) out.print("&lt;Null/>"); else default.writeXML(out,idTable);
+      out.print("&lt;/Slot>");
+      out.print("&lt;Slot name='delegatesTo'>");
+         if(delegatesTo == null) out.print("&lt;Null/>"); else delegatesTo.writeXML(out,idTable);
+      out.print("&lt;/Slot>");
+      out.print("&lt;Slot name='documentation'>");
+         if(documentation == null) out.print("&lt;Null/>"); else documentation.writeXML(out,idTable);
+      out.print("&lt;/Slot>");
+      out.print("&lt;Slot name='grammar'>");
+         if(grammar == null) out.print("&lt;Null/>"); else grammar.writeXML(out,idTable);
+      out.print("&lt;/Slot>");
+      out.print("&lt;Slot name='imports'>");
+      out.print("&lt;List>");
+      for(int i = 0; i &lt; imports.size(); i++) {
+         NameSpace o = (NameSpace)imports.elementAt(i);
+         o.writeXML(out,idTable);
+      }
+      out.print("&lt;/List>");
+      out.print("&lt;/Slot>");
+      out.print("&lt;Slot name='instances'>");
+      out.print("&lt;Set>");
+      for(int i = 0; i &lt; instances.size(); i++) {
+         Element o = (Element)instances.elementAt(i);
+         o.writeXML(out,idTable);
+      }
+      out.print("&lt;/Set>");
+      out.print("&lt;/Slot>");
+      out.print("&lt;Slot name='metaClass'>");
+      out.print("&lt;Set>");
+      for(int i = 0; i &lt; metaClass.size(); i++) {
+         MetaClass o = (MetaClass)metaClass.elementAt(i);
+         o.writeXML(out,idTable);
+      }
+      out.print("&lt;/Set>");
+      out.print("&lt;/Slot>");
+      out.print("&lt;Slot name='model'>");
+      out.print("&lt;Set>");
+      for(int i = 0; i &lt; model.size(); i++) {
+         Model o = (Model)model.elementAt(i);
+         o.writeXML(out,idTable);
+      }
+      out.print("&lt;/Set>");
+      out.print("&lt;/Slot>");
+      out.print("&lt;Slot name='operations'>");
+      out.print("&lt;Set>");
+      for(int i = 0; i &lt; operations.size(); i++) {
+         Operation o = (Operation)operations.elementAt(i);
+         o.writeXML(out,idTable);
+      }
+      out.print("&lt;/Set>");
+      out.print("&lt;/Slot>");
+      out.print("&lt;Slot name='owner'>");
+         if(owner == null) out.print("&lt;Null/>"); else owner.writeXML(out,idTable);
+      out.print("&lt;/Slot>");
+      out.print("&lt;Slot name='parents'>");
+      out.print("&lt;Set>");
+      for(int i = 0; i &lt; parents.size(); i++) {
+         Classifier o = (Classifier)parents.elementAt(i);
+         o.writeXML(out,idTable);
+      }
+      out.print("&lt;/Set>");
+      out.print("&lt;/Slot>");
+      out.print("&lt;Slot name='roleFiller'>");
+         if(roleFiller == null) out.print("&lt;Null/>"); else roleFiller.writeXML(out,idTable);
+      out.print("&lt;/Slot>");
+      out.print("&lt;/Object>");
     }
   }
 }

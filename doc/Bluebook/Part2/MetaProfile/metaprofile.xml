@@ -8,7 +8,7 @@
   specific modelling domain. This typically involves specialising modelling
   concepts already provided by the tool using stereotypes and tagged values.
   The advantage of doing this is that the tool’s existing editing and drawing
-  capabilities, etc, do not need to be physically changed. By combining a
+  capabilities, etc., do not need to be physically changed. By combining a
   number of different stereotypes together, a “profile” can be constructed for
   a specific modelling requirement.</para>
 
@@ -45,7 +45,7 @@
     language used to describe class models.</para>
 
     <para>Right click on the DBProfile package and select Set Parents, and
-    tick the package XCore from the list.</para>
+    tick the package FMML from the list for accessing the XCore features.</para>
 
     <mediaobject>
       <imageobject>
@@ -55,23 +55,25 @@
 
     <para>At this point we can open the DBProfile package and begin
     constructing the profile. We want to be able to extend existing modelling
-    elements so that we can reuse their editing capabilities. Here is the
+    elements so that we can reuse their editing capabilities. We model the classes 
+	<emphasis role="bold"> Entity</emphasis>,<emphasis role="bold"> Key</emphasis>
+	 and <emphasis role="bold"> DataModel</emphasis>.Here is the
     model for the DBProfile:</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/profile.jpg" />
+        <imagedata fileref="Images/profile.png" />
       </imageobject>
     </mediaobject>
 
-    <para>Here a DataModel specialises the class Package, so we can now model
-    with DataModels rather than Packages. A Key is a specialisation of an
-    Attribute, and an Entity specialises a Class. Finally, an additional
+    <para>Here a <emphasis role="bold">DataModel</emphasis> specialises the class <emphasis role="bold">Package</emphasis>, so we can now model
+    with DataModels rather than Packages. A <emphasis role="bold">Key</emphasis> is a specialisation of an
+    <emphasis role="bold">Attribute</emphasis>, and an <emphasis role="bold">Entity</emphasis> specialises a <emphasis role="bold">Class</emphasis>. Finally, an additional
     attribute is added to Entity to denote that some Entities are also
     containers.</para>
 
     <para>Note that in order to specialise the XCore classes, we simply right
-    clicked on each class and selected Inheritance &gt; Add Parent.</para>
+    clicked on each class and selected <emphasis role="bold">Inheritance &gt; Add Parent</emphasis>.</para>
 
     <para>We can now create a model that makes use of this profile.</para>
 
@@ -80,12 +82,12 @@
     <para>Rather than editing this package as an XCore package, we want to
     edit it as an instance of the profile.</para>
 
-    <para>To do this, right click on the model package and select Set
-    MetaPackage.</para>
+    <para>To do this, right click on the model package and select <emphasis role="bold">Set
+    MetaPackage</emphasis>.</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/settingthemetapackage.jpg" />
+        <imagedata fileref="Images/settingthemetapackage.png" />
       </imageobject>
     </mediaobject>
 
@@ -93,12 +95,11 @@
 
     <para>Choose DBProfile.</para>
 
-    <para>Now, open the diagram for the model package using right click
-    ShowDiagram.</para>
+    <para>Now, create a new diagram for the model package.</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/newmodel.jpg" />
+        <imagedata fileref="Images/newmodel.png" />
       </imageobject>
     </mediaobject>
 
@@ -106,14 +107,14 @@
     of buttons is displayed at the bottom.</para>
 
     <para>We can select these elements and start creating models using the new
-    model elements that are provide the by profile.</para>
+    model elements that are provided by the profile.</para>
 
     <para>For instance, a new DataModel can be created, called
     Accounts.</para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/accountsdatamodel.jpg" />
+        <imagedata fileref="Images/accountsdatamodel.png" />
       </imageobject>
     </mediaobject>
 
@@ -128,10 +129,15 @@
     is done as follows:</para>
 
     <para>Right click on the class and add an init() operation.</para>
+	<para><programlisting>@Operation init(args : XCore::Element):XCore::Element
+  super();
+  self.metaPackage := DBProfile
+end
+</programlisting></para>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/setmetapackageoperation.jpg" />
+        <imagedata fileref="Images/setmetapackageoperation.png" />
       </imageobject>
     </mediaobject>
 
