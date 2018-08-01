@@ -16,6 +16,8 @@ import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.SplitPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -104,75 +106,76 @@ public class Diagram implements Display {
 
 //  private class MyKeyListener implements KeyListener {
 //
-//    public void keyPressed(Event e) {
-//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && ((SWT.SHIFT & e.stateMask) != SWT.SHIFT) && (e.keyCode == 'f')) {
-//        layout();
-//        redraw();
+    public void keyPressed(KeyEvent e) {
+    	
+//      if (e.isControlDown() && e.isShiftDown() && (e.getCode() == KeyCode.F)) {
+//        //layout(); 
+//        redraw(); 
 //      }
-//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'a')) {
-//        selectAll();
-//        redraw();
-//      }
-//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'c')) {
+      if (e.isControlDown() && (e.getCode() == KeyCode.A)) {
+        selectAll();
+        redraw();
+      }
+//      if (e.isControlDown() && (e.getCode() == KeyCode.C)) {
 //        copyToClipboard();
 //        redraw();
 //      }
-//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'd')) {
-//        disambiguationColors = !disambiguationColors;
-//        help();
-//        redraw();
-//      }
-//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 's')) {
-//        straightenEdges();
-//        redraw();
-//      }
-//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'm')) {
-//        magneticWaypoints = !magneticWaypoints;
-//        help();
-//        redraw();
-//      }
-//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'o')) {
-//        dogLegs = !dogLegs;
-//        help();
-//        redraw();
-//      }
-//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'w')) {
-//        showWaypoints = !showWaypoints;
-//        help();
-//        redraw();
-//      }
-//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == '=')) {
+      if (e.isControlDown() && (e.getCode() == KeyCode.D)) {
+        disambiguationColors = !disambiguationColors;
+        //help();
+        redraw();
+      }
+      if (e.isControlDown() && (e.getCode() == KeyCode.S)) {
+        straightenEdges();
+        redraw();
+      }
+      if (e.isControlDown() && (e.getCode() == KeyCode.M)) {
+        magneticWaypoints = !magneticWaypoints;
+        //help();
+        redraw();
+      }
+      if (e.isControlDown() && (e.getCode() == KeyCode.O)) {
+        dogLegs = !dogLegs;
+        //help();
+        redraw();
+      }
+      if (e.isControlDown() && (e.getCode() == KeyCode.W)) {
+        showWaypoints = !showWaypoints;
+        //help();
+        redraw();
+      }
+//      if (e.isControlDown() && (e.getCode() == KeyCode.EQUALS)) {
 //        zoomIn();
-//        help();
+//        //help();
 //        redraw();
 //      }
-//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == '+')) {
-//        zoomIn();
-//        help();
+      if (e.isControlDown() && (e.getCode() == KeyCode.PLUS)) {
+        zoomIn();
+        //help();
+        redraw();
+      }
+      if (e.isControlDown() && (e.getCode() == KeyCode.NUMPAD1)) {
+        zoomOne();
+        //help();
+        redraw();
+      }
+      if (e.isControlDown() && (e.getCode() == KeyCode.MINUS)) {
+        zoomOut();
+        //help();
+        redraw();
+      }
+//      if (e.isControlDown() && (e.getCode() == KeyCode.SLASH)) {
+//        //help();
 //        redraw();
 //      }
-//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == '1')) {
-//        zoomOne();
-//        help();
-//        redraw();
-//      }
-//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == '-')) {
-//        zoomOut();
-//        help();
-//        redraw();
-//      }
-//      if (((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == '/')) {
-//        help();
-//        redraw();
-//      }
-//      if (e.keyCode == SWT.DEL) {
-//        sendMessageToDeleteSelection();
-//        redraw();
-//      }
-//    }
-//
-//    public void keyReleased(KeyEvent event) {
-//    }
+      if (e.getCode() == KeyCode.DELETE) {
+        sendMessageToDeleteSelection();
+        redraw();
+      }
+    }
+
+    public void keyReleased(KeyEvent event) {
+    }
 //
 //    private void layout() {
 //      Hashtable<Node, Point2D> positions = new Hashtable<Node, Point2D>();
@@ -523,7 +526,8 @@ public class Diagram implements Display {
 //        scene.setOnMousePressed(mouseHandler);
 //        scene.setOnMouseReleased(mouseHandler);		
 		
-		
+		scroller.setOnKeyPressed((event) -> {keyPressed(event);} );
+		scroller.setOnKeyReleased((event) -> {keyReleased(event);} );
 		
 //		pane.getChildren().add(palette.getToolBar());
 //		scroller = new ScrolledComposite(container, SWT.V_SCROLL | SWT.H_SCROLL);
