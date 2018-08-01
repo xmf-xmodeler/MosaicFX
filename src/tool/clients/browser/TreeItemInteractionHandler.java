@@ -95,7 +95,7 @@ public class TreeItemInteractionHandler extends TreeCell<String> {
         				//Second Click
         				interrupted = false;
         				showEditThread = new Thread(() -> {try {
-							Thread.sleep(1000); //time waiting for double click
+							Thread.sleep(250); //time waiting for double click
 							
 							if (!interrupted)
 							Platform.runLater(new Runnable() {
