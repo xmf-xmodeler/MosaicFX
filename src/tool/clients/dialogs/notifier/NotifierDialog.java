@@ -128,12 +128,12 @@ public class NotifierDialog {
   		
   		
   		VBox titleAndMessage = new VBox(titleText, messageText);
-  		titleAndMessage.setLayoutX(TEXT_GAP);
-  		titleAndMessage.setLayoutY(TEXT_GAP);
+  		titleAndMessage.setLayoutX(TEXT_GAP/2);
+  		titleAndMessage.setLayoutY(TEXT_GAP/2);
   		titleAndMessage.setPadding(new Insets(TEXT_GAP));
   		titleAndMessage.setSpacing(TEXT_GAP/2);
   		//titleAndMessage.setMaxHeight(BOX_HEIGHT);
-  		double tAMheight = titleAndMessage.getHeight();
+  		double tAMheight = titleAndMessage.getBoundsInLocal().getHeight();
   		
   		Rectangle r = new Rectangle(BOX_WIDTH, Math.max(BOX_HEIGHT, tAMheight));
   		
