@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import tool.clients.diagrams.Edge.HeadStyle;
 import tool.clients.diagrams.Edge.Position;
 
@@ -286,7 +287,8 @@ public class EdgePainter {
 
 	    // Paint the line in the line style.
 //	    int style = gc.getLineStyle();
-//	    Color c = gc.getForeground();
+	    Paint c = gc.getStroke();
+        double[] lineDashes = gc.getLineDashes();
 	    gc.setStroke(lineColor);
 	    switch (edge.lineStyle) {
 	    case Line.DASH_LINE:
@@ -319,7 +321,8 @@ public class EdgePainter {
 	    }
 	    gc.strokeLine(x1, y1, x2, y2);
 //	    gc.setLineStyle(style);
-//	    gc.setForeground(c);
+	    gc.setStroke(c);
+        gc.setLineDashes(lineDashes);
 	  }
 
 	  public void paintMovingSourceOrTarget(GraphicsContext gc, int startX, int startY, int endX, int endY, int xOffset, int yOffset) {

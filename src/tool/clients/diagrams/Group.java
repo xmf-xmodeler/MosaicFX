@@ -139,6 +139,11 @@ public class Group extends TreeItem<String>{
   }
 
   public void newTool(Diagram diagram, String label, String toolId, boolean isEdge, String icon) {
+	  
+	for(Tool tool : tools) { // Quickfix for Copenhagen/MULTI2018, prevent repeated creation of tools
+		if(tool.label.equals(label)) return;
+	}
+	  
     if (isEdge) {
     	Tool edge = new EdgeCreationTool(diagram, label, toolId, icon);
         tools.add(edge); 
