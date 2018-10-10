@@ -243,11 +243,13 @@ public class Label implements Selectable {
 //    	float[] transform = new float[6]; oldTransform.getElements(transform); 
     	double zoomGC = oldTransform.getMxx(); // getZoom
     	
-        double angle = 180/Math.PI*Math.atan2(edge.getTargetNode().getY()-edge.getSourceNode().getY(),edge.getTargetNode().getX()-edge.getSourceNode().getX());
+//        double angle = 180/Math.PI*Math.atan2(edge.getTargetNode().getY()-edge.getSourceNode().getY(),edge.getTargetNode().getX()-edge.getSourceNode().getX());
+    	
+    	double angle = 0; 
     	Affine newTransform = new Affine();
     	newTransform.appendScale(zoomGC, zoomGC);
     	newTransform.appendTranslation(getAbsoluteX(), getAbsoluteY());
-    	newTransform.appendRotation(((angle+450)%180-90), 0, 0); // rotate in a way that text faces up
+//    	newTransform.appendRotation(((angle+450)%180-90), 0, 0); // rotate in a way that text faces up
     	
 //    	Transform tr = new Transform(org.eclipse.swt.widgets.Display.getCurrent());
 //        tr.scale(zoomGC, zoomGC);
@@ -276,9 +278,30 @@ public class Label implements Selectable {
 	  	
 	  	int zoom = XModeler.getDeviceZoomPercent();
 	  	
-	  	gc.fillPolygon(new double[]{-7*zoom/100.,  -20*zoom/100., -20*zoom/100.},
-	  			       new double[]{6*zoom/100., 10*zoom/100., 2*zoom/100.},
-	  			       3);
+        double arrowAngle = 180/Math.PI*Math.atan2(edge.getTargetNode().getY()-edge.getSourceNode().getY(),edge.getTargetNode().getX()-edge.getSourceNode().getX());
+//        arrowAngle = ((arrowAngle+450)%180-90);
+        arrowAngle = (arrowAngle+360)%360;
+//        System.err.println(arrowAngle);
+        
+        if(arrowAngle<45 || arrowAngle> 315) {
+        	int xPos = 11 * text.length() / 2;
+        	gc.fillPolygon(new double[]{xPos+20*zoom/100.,  xPos+7*zoom/100., xPos+7*zoom/100.},
+	  			           new double[]{6*zoom/100., 10*zoom/100., 2*zoom/100.},
+	  			           3);}   
+        else if(arrowAngle>=45 && arrowAngle<= 135) {
+        	gc.fillPolygon(new double[]{6*zoom/100., 10*zoom/100., 2*zoom/100.},
+	  			           new double[]{30*zoom/100.,  17*zoom/100., 17*zoom/100.},
+	  			           3);
+        	}   
+        else if(arrowAngle>135 && arrowAngle< 225) {
+        	gc.fillPolygon(new double[]{-20*zoom/100.,  -7*zoom/100., -7*zoom/100.},
+			               new double[]{6*zoom/100., 10*zoom/100., 2*zoom/100.},
+			               3);}
+        else if(arrowAngle>=225 && arrowAngle<= 315) {
+        	gc.fillPolygon(new double[]{6*zoom/100., 10*zoom/100., 2*zoom/100.},
+	  			           new double[]{-20*zoom/100.,  -7*zoom/100., -7*zoom/100.},
+	  			           3);
+        	}      
 	  	gc.setFill(cc);        
         
         gc.setTransform(oldTransform); // restore to old Transform

@@ -954,7 +954,8 @@ public void action(String id) {
   private Vector<Diagram> getNestedDiagrams() {
     nestedDiagramOffsets.clear();
     Vector<Diagram> nestedDiagrams = new Vector<Diagram>();
-    for (Node node : nodes) {
+    Vector<Node> tempNodes = new Vector<Node>(nodes);
+    for (Node node : tempNodes) {
       for (Display display : node.displays) {
         if (display instanceof Box) {
           Box box = (Box) display;
