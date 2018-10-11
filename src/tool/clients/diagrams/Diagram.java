@@ -19,6 +19,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
@@ -90,6 +91,9 @@ public class Diagram implements Display {
   int                                      bandY                  = 0;
   int                                      lastX                  = 0;
   int                                      lastY                  = 0;
+  
+  double                                   canvasDragStartX       = 0;
+  double                                   canvasDragStartY       = 0;
 
   PortAndDiagram                           sourcePort;
   MouseMode                                mode                   = MouseMode.NONE;
@@ -249,7 +253,11 @@ public class Diagram implements Display {
       mode = MouseMode.DOUBLE_CLICK;
       storeLastXY((int) scaledPoint.getX(), (int) scaledPoint.getY());
       redraw();
+    } else if (event.getButton().equals(MouseButton.MIDDLE)) {
+    	canvasDragStartX = event.getX();
+    	canvasDragStartY = event.getY();
     }
+    
   }
   
   transient ContextMenu currentcontextMenu;
@@ -308,6 +316,8 @@ public class Diagram implements Display {
 	}
 	
 	  public void mouseUp(javafx.scene.input.MouseEvent event) {
+		  	
+		  if (event.getButton().equals(MouseButton.MIDDLE))		  
 		    for (Diagram nestedDiagram : getNestedDiagrams()) {
 		      nestedDiagram.mouseUp(event);
 		    }
@@ -332,12 +342,17 @@ public class Diagram implements Display {
 	            int dx = ((int) scaledPoint.getX()) - lastX;
 	            int dy = ((int) scaledPoint.getY()) - lastY;
 	            storeLastXY(((int) scaledPoint.getX()), ((int) scaledPoint.getY()));
+	            if(event.getButton().equals(MouseButton.MIDDLE)) {
+	            	canvas.setTranslateX(canvas.getTranslateX()+ event.getX() - canvasDragStartX);
+	            	canvas.setTranslateY(canvas.getTranslateY()+ event.getY() - canvasDragStartY);
+	            }
+	            else {
 	            if (mode == MouseMode.SELECTED) for (Selectable selectable : selection)
 	              selectable.moveBy(dx, dy);
 	            for (Diagram nestedDiagram : getNestedDiagrams())
 	              if (nestedDiagram.mode == MouseMode.SELECTED) for (Selectable selectable : nestedDiagram.selection)
 	                selectable.moveBy(dx, dy);
-
+	            }
 //	  	      l.countDown();
 //	  	    });
 //	  		try {
@@ -528,7 +543,34 @@ public class Diagram implements Display {
 		
 		scroller.setOnKeyPressed((event) -> {keyPressed(event);} );
 		scroller.setOnKeyReleased((event) -> {keyReleased(event);} );
-		
+
+		scroller.addEventFilter(ScrollEvent.ANY, new javafx.event.EventHandler<ScrollEvent>() {
+
+			@Override
+			public void handle(ScrollEvent event) {
+
+				double scrollSpeed = 0.01;
+
+				if (event.isControlDown()) {
+					if (event.getDeltaY() > 0) {
+						zoomIn();
+					} else if (event.getDeltaY() < 0) {
+						zoomOut();
+					}
+				} else {
+					if (event.isShiftDown()) {
+						scroller.setHvalue(scroller.getHvalue() - event.getDeltaY() * scrollSpeed);
+					} else {
+						scroller.setVvalue(scroller.getVvalue() - event.getDeltaY() * scrollSpeed);
+					}
+				}
+				redraw();
+				event.consume();
+			}
+		}
+
+		);
+
 //		pane.getChildren().add(palette.getToolBar());
 //		scroller = new ScrolledComposite(container, SWT.V_SCROLL | SWT.H_SCROLL);
 //		scroller.setExpandHorizontal(true);
