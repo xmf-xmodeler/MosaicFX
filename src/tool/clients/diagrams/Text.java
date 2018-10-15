@@ -6,6 +6,7 @@ import java.util.Optional;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
@@ -244,6 +245,9 @@ public class Text implements Display {
 	    	gc.setFill(new javafx.scene.paint.Color(getRed()/255., getGreen()/255., getBlue()/255., 1));
 	    } else {
 	    	gc.setFill(javafx.scene.paint.Color.BLACK);
+	    }
+	    if(italicise) {
+	    	gc.setFont(Font.font("System Regular", FontPosture.ITALIC, 12.0001));
 	    }
 	    gc.fillText(text, x + getX(), y + getY()/* + getHeight()*/);
 //	    gc.setFont(font);
