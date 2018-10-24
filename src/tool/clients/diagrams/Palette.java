@@ -68,7 +68,7 @@ public class Palette {
 //    return new Value(g);
   }
 
-  public void deleteGroup(String name) {
+public void deleteGroup(String name) {
 //	  throw new RuntimeException("Can't delete yet.");
     Group group = getGroup(name);
     if (group != null) {
@@ -90,6 +90,9 @@ public class Palette {
 
   public void newGroup(String name) {
 	  Group group = new Group(name);
+	  if(name.equals("Diagram") || name.equals("XCore")) {
+		  group.setExpanded(true);
+	  }
 	  root.getChildren().add(group);
 	  groups.put(name, group);
 	  
