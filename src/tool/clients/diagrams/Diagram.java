@@ -16,6 +16,7 @@ import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -607,9 +608,11 @@ public class Diagram implements Display {
 //		canvas.addMouseMoveListener(new MyMouseMoveListener());
 //		canvas.addKeyListener(new MyKeyListener());
 //		container.setWeights(new int[] { 1, 5 });
+		
+		scroller.autosize();
 		pane.getItems().addAll(palette.getToolBar(), scroller);
 		pane.setDividerPosition(0, 0.2);
-
+		
 		redraw();
 //		scroller.setContent(canvas);
 		createTray();

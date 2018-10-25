@@ -10,7 +10,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javafx.application.Platform;
-import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.text.Font;
@@ -1115,9 +1114,7 @@ public class DiagramClient extends Client {
 	public void sendMessage(final Message message) { //
 		System.err.println("Diagram Client " + message);
 
-		String value = message.toString();
-		String search = value.substring(0, value.indexOf("("));
-		System.out.println("****** " + search);
+
 		if (message.hasName("newDiagram"))
 			newDiagram(message);
 		else if (message.hasName("newGroup"))

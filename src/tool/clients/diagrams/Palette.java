@@ -27,6 +27,7 @@ public class Palette {
 	  tree = new TreeView<String>();
 	  root = new TreeItem<String>("Root");
 	  tree.setRoot(root);
+	  root.setExpanded(true);
 	  
 	  tree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<String>>() {
 
@@ -90,7 +91,7 @@ public void deleteGroup(String name) {
 
   public void newGroup(String name) {
 	  Group group = new Group(name);
-	  if(name.equals("Diagram") || name.equals("XCore")) {
+	  if(root.getChildren().size() <= 1 ) {
 		  group.setExpanded(true);
 	  }
 	  root.getChildren().add(group);
