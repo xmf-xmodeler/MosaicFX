@@ -41,6 +41,7 @@ public class FmmlxDiagramCommunicator {
 	
 	public void sendPackageToJava(Object o) {
 		if(o instanceof java.util.Vector){
+			@SuppressWarnings("rawtypes")
 			java.util.Vector v = (java.util.Vector) o;
 //			if(v.type == Value.VECTOR) {
 				if(v.get(0).equals("fibo")) {
