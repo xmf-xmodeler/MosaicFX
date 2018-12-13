@@ -2,7 +2,10 @@ package tool.clients.fmmlxdiagrams;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Vector;
 
+import javax.management.RuntimeErrorException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -14,6 +17,8 @@ public class FmmlxDiagramCommunicator {
 	private int handler;
 	private JButton button;
 	public String test() {return "Test works!";}
+	int idCounter = 0;
+	private HashMap<Integer, Vector<Object>> results = new HashMap<>();
 	
 	public void setHandle(final int handler) {
 		this.handler = handler;
@@ -32,28 +37,76 @@ public class FmmlxDiagramCommunicator {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				buttonvalue++;
-			    WorkbenchClient.theClient().send(handler, "fibo", new Value(buttonvalue));
+//			    WorkbenchClient.theClient().send(handler, "fibo", new Value(buttonvalue));
+				Vector<Object> o = xmlRequest(handler, "fibo", new Value(buttonvalue));
+				Vector<FMMLxObject> o2 = getAllObjects();
+			    Integer i = (Integer) (o.firstElement());
+			    button.setText(i+" "+o2.size());
 			}
 		});	
 	}
 	
 	int buttonvalue = 0;
 	
+	@SuppressWarnings("unchecked")
 	public void sendPackageToJava(Object o) {
 		if(o instanceof java.util.Vector){
-			@SuppressWarnings("rawtypes")
-			java.util.Vector v = (java.util.Vector) o;
-//			if(v.type == Value.VECTOR) {
-				if(v.get(0).equals("fibo")) {
-					button.setText(v.get(1)+"");
-				}
-//			} 
+			java.util.Vector<Object> v = (java.util.Vector<Object>) o;
+			int requestID = (Integer) (v.get(0));
+			v.remove(0);
+			results.put(requestID, v);
 		}
 		System.err.println("o: " + o + "(" + o.getClass() + ")");
 	}
 	
-//	private void paintPackage(String packageId) {
-//		String name = client.getPackageName(packageId);
+//	public void sendPackageToJava(Object o) {
+//		if(o instanceof java.util.Vector){
+//			@SuppressWarnings("rawtypes")
+//			java.util.Vector v = (java.util.Vector) o;
+//			if(v.get(0).equals("fibo")) {
+//				button.setText(v.get(1)+"");
+//			}
+//		}
+//		System.err.println("o: " + o + "(" + o.getClass() + ")");
 //	}
+	
+	private Vector<Object> xmlRequest(int targetHandle, String message, Value... args) {
+		Value[] args2 = new Value[args.length+1];
+		int requestID = idCounter++;
+		for(int i = 0; i < args.length; i++) {
+			args2[i+1] = args[i];
+		}
+		args2[0] = new Value(requestID);
+		boolean waiting = true;
+		WorkbenchClient.theClient().send(targetHandle, message, args2);
+		int attempts = 0;
+		while(waiting && attempts < 20) {
+			System.err.println(attempts + ". attempt");
+			attempts++;
+			try {Thread.sleep(20);
+			} catch (InterruptedException e) { e.printStackTrace(); }
+			if(results.containsKey(requestID)) {
+				waiting = false;
+			}
+		}
+		
+		if(waiting) throw new RuntimeException("Did not receive answer in time!");
+		return results.remove(requestID);
+		//throw new RuntimeException("Not yet finished implementing");
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	public Vector<FMMLxObject> getAllObjects() {
+		Vector<Object> response = xmlRequest(handler, "getAllObjects", new Value[]{});
+		Vector<Object> response0 = (Vector<Object>) (response.get(0));
+		Vector<FMMLxObject> result = new Vector<>();
+		System.err.println(response0);
+		for(Object o : response0) {
+			System.err.println("Class/Object " + o + " found");
+		}
+		return result;
+	}
+
 }
  
