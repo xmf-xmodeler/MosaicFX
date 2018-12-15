@@ -29,76 +29,13 @@ public class FormsClient extends Client {
 
 	public static void start(TabPane tabFolder) {
 		FormsClient.tabFolder = tabFolder;
-
-//		tab.setOnClosed(new javafx.event.EventHandler<Event>() {
-//			@Override
-//			public void handle(Event t) {
-//				close(t);
-//				t.consume();
-//			}
-//		});
 	}
 
-//	public static boolean HIGH_RESOLUTION = false;
 	public static final int HIGH_RESOLUTION_FACTOR_OLD = 2;
-
-//	  private Value getTextDimension(final Message message) {
-//
-////		  runOnDisplay( )
-//		  
-////		  XModeler.getXModeler().getDisplay().syncExec(
-//		  class calcTextDimension implements Runnable{ 
-//			  public Value value = null;
-//			  //calcTextDimension(){ 
-//	 			public void run() {
-//	 				System.err.println("calcTextDimension");
-//  					try {
-//  						Value[] values = new Value[2];
-//		        	Font f = XModeler.getXModeler().getDisplay().getSystemFont();
-//		  			Dimension d = FigureUtilities.getTextExtents(message.args[0].strValue(), f);
-//		  			
-//  						values[0] = new Value(d.width);
-//  						values[1] = new Value(d.height);
-//  						value = new Value(values);
-//  					} catch (Throwable t) {
-//  						t.printStackTrace();
-//  					}
-//  				}
-//	  		};
-////			  				);
-//	  		calcTextDimension r = new calcTextDimension();
-//	  		//CountDownLatch l = new CountDownLatch(1);  //TODO
-//	  		Platform.runLater(r);
-//
-//			return r.value;
-//	  }
 
 	public static int getDeviceZoomPercent() {
 		return XModeler.getDeviceZoomPercent();
 	}
-
-//  public static Font getFormLabelFont() {
-//    return formLabelFont;
-//  }
-//
-//  public static Font getFormTextFieldFont() {
-//    return formLabelFont;
-//  }
-
-//  public static void select() {
-//	for (ToolItem item : toolBar.getItems())
-//          item.dispose();
-//	CTabItem selectedItem = tabFolder.getSelection();
-//	for (String id : tabs.keySet()) {
-//      if (tabs.get(id) == selectedItem) {
-////        for (ToolItem item : toolBar.getItems())
-////          item.dispose();
-//    	  FormTools formTools = FormsClient.theClient().getFormTools(id);
-//    	  formTools.populateToolBar(toolBar);
-//      }
-//    }
-//	toolBar.pack();
-//  }
 
 	public static FormsClient theClient() {
 		return theClient;
@@ -112,8 +49,6 @@ public class FormsClient extends Client {
 	static Hashtable<String, Tab> tabs = new Hashtable<String, Tab>();
 	static Vector<Form> forms = new Vector<Form>();
 	static Hashtable<String, FormTools> toolDefs = new Hashtable<String, FormTools>();
-//  static Font                         formLabelFont     = Display.getDefault().getSystemFont();//new Font(Display.getDefault(), new FontData("Monaco", 12, SWT.NO));
-//  static Font                         formTextFieldFont = Display.getDefault().getSystemFont();//new Font(Display.getDefault(), new FontData("Monaco", 12, SWT.NO));
 
 	private void addComboItem(Message message) {
 		String parentId = message.args[0].strValue();
@@ -434,13 +369,6 @@ public class FormsClient extends Client {
 		} catch (Throwable t) {
 			t.printStackTrace(System.err);
 		}
-//        l.countDown();
-//	});
-//	try {
-//	 l.await();
-//	} catch (InterruptedException e) {
-//	 e.printStackTrace();
-//	}
 	}
 
 	private void newButton(Message message) {
@@ -481,7 +409,8 @@ public class FormsClient extends Client {
 		newCheckBox(parentId, id, x, y, checked, labelText);
 	}
 
-	private void newCheckBox(final String parentId, final String id, final int x, final int y, final boolean checked, final String labelText) {
+	private void newCheckBox(final String parentId, final String id, final int x, final int y, final boolean checked,
+			final String labelText) {
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			for (Form form : forms)
@@ -534,28 +463,17 @@ public class FormsClient extends Client {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-//			System.err.println("Platform.runLater START");
 			Tab tabItem = new Tab(label);
 			tabFolder.getTabs().add(tabItem);
-			// tabFolder.toFront();
 			tabs.put(id, tabItem);
-			// CTabItem tabItem = new CTabItem(tabFolder, SWT.BORDER |
-			// SWT.V_SCROLL | SWT.H_SCROLL);
-			// tabItem.setText(label);
-			// tabs.put(id, tabItem);
 			Form form = new Form(tabItem, id);
-			// REMOVED // tabItem.setControl(form.getForm());
-			// REMOVED // tabItem.setShowClose(true);
+
 			forms.add(form);
-			// REMOVED // if (selected) tabFolder.setSelection(tabItem);
-			// }
-//			System.err.println("Platform.runLater END");
+
 			l.countDown();
 		});
 		try {
-//			System.err.println("waiting...");
 			l.await();
-//			System.err.println("waited");
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -995,10 +913,6 @@ public class FormsClient extends Client {
 	}
 
 	public void toolItemEvent(String event, String id) {
-//    Message m = getHandler().newMessage(event, 1);
-//    Value v = new Value(id);
-//    m.args[0] = v;
-//    getHandler().raiseEvent(m);
 		toolItemEvent(event, id, false);
 	}
 
@@ -1011,41 +925,6 @@ public class FormsClient extends Client {
 			tools.writeXML(out);
 		out.print("</Forms>");
 	}
-
-//  public void close(CTabFolderEvent event) {
-//    CTabItem item = (CTabItem) event.item;
-//    String id = getId(item);
-//    if (id != null && getForm(id) != null) {
-//      EventHandler handler = getHandler();
-//      Message message = handler.newMessage("formClosed", 1);
-//      message.args[0] = new Value(id);
-//      handler.raiseEvent(message);
-//      forms.remove(getForm(id));
-//      tabs.remove(id);
-//    }
-//  }
-//
-//  private String getId(CTabItem item) {
-//    for (String id : tabs.keySet())
-//      if (tabs.get(id).equals(item)) return id;
-//    return null;
-//  }
-
-//  public void maximize(CTabFolderEvent event) {
-//
-//  }
-//
-//  public void minimize(CTabFolderEvent event) {
-//
-//  }
-//
-//  public void restore(CTabFolderEvent event) {
-//
-//  }
-//
-//  public void showList(CTabFolderEvent event) {
-//
-//  }
 
 	public void doubleClick(String id) {
 		EventHandler handler = getHandler();

@@ -43,12 +43,6 @@ import xos.Value;
 
 public class Form {
 
-//  static Font                   labelFont               = new Font(XModeler.getXModeler().getDisplay(), new FontData("Courier New", 12, SWT.NONE));
-//  final static Color            normalBackgroundColor   = new Color(org.eclipse.swt.widgets.Display.getCurrent(), 255, 255, 255);
-//  final static Color            disabledBackgroundColor = new Color(org.eclipse.swt.widgets.Display.getCurrent(), 222, 221, 220);
-//  final static Color            modifiedBackgroundColor = new Color(org.eclipse.swt.widgets.Display.getCurrent(), 255, 205, 194);                                           // RGB(221,171,160)
-//  final static int              RIGHT_BUTTON            = 3;
-
 	private String id;
 
 	private ScrollPane form;
@@ -62,7 +56,6 @@ public class Form {
 
 	private Hashtable<String, TextField> textFields = new Hashtable<String, TextField>();
 	private Hashtable<String, Label> labels = new Hashtable<String, Label>();
-//  private Hashtable<String, ListView<String>> lists               = new Hashtable<String, ListView<String>>();
 	private Hashtable<String, List> lists = new Hashtable<String, List>();
 	private Hashtable<String, TextArea> boxes = new Hashtable<String, TextArea>();
 	private Hashtable<String, ComboBox<String>> combos = new Hashtable<String, ComboBox<String>>();
@@ -71,8 +64,6 @@ public class Form {
 	private Hashtable<String, TreeView<String>> trees = new Hashtable<String, TreeView<String>>();
 	private Hashtable<String, TreeItem<String>> items = new Hashtable<String, TreeItem<String>>();
 	private Hashtable<String, String> images = new Hashtable<String, String>();
-
-//  private int                   TEXTFIELDHEIGHT         = 20;
 
 	public Form(Tab parent, String id) {
 		System.err.println("new Form(): " + id + " on " + parent);
@@ -209,12 +200,9 @@ public class Form {
 			
 			CountDownLatch l = new CountDownLatch(1);
 			Platform.runLater(() -> {
-//				ListView<String> list = new ListView<String>();
 				List list = new List(id, gridRight, rowRight-2, labelText);
 				lists.put(id, list);
-//			    AnchorPane.setLeftAnchor(list, x*1.);
-//			    AnchorPane.setTopAnchor(list, y*1.);
-//				root.getChildren().add(list);
+
 				l.countDown();
 			});
 			try {
@@ -243,7 +231,6 @@ public class Form {
 
 	public void newTextBox(String parentId, String id, int x, int y, int width, int height, boolean editable,
 			String labelText) {
-		System.out.println("New TextBox called: " + labelText + " bool: " + editable + "!");
 		if (this.id.equals(parentId)) {
 			final TextArea textBox = new TextArea();
 			final Label label = new Label(labelText);
@@ -272,7 +259,6 @@ public class Form {
 	}
 
 	public void newTextField(final String id, int x, int y, int width, int height, boolean editable, String labelText) {
-		System.out.println("NEW TEXTFIELD CALLED: " + labelText + "!");
 		final TextField textField = new TextField();
 		final Label label = new Label(labelText);
 		textField.setEditable(editable);
@@ -303,26 +289,6 @@ public class Form {
 				}
 			}
 		});
-
-//	    Listener listener = new Listener() {
-//	      public void handleEvent(Event event) {
-//	        switch (event.type) {
-//	          case SWT.FocusOut:
-//	            textChangedEvent(id, text.getText());
-//	            break;
-//	          case SWT.Traverse:
-//	            switch (event.detail) {
-//	              case SWT.TRAVERSE_RETURN:
-//	              case SWT.TRAVERSE_ESCAPE:
-//	                textChangedEvent(id, text.getText());
-//	                break;
-//	            }
-//	        }
-//	      }
-//	    };
-//	    text.addListener(SWT.FocusOut, listener);
-//	    text.addListener(SWT.Verify, listener);
-//	    text.addListener(SWT.Traverse, listener);
 	}
 
 	public void newTree(String parentId, String id, int x, int y, int width, int height, boolean editable) {
@@ -365,7 +331,6 @@ public class Form {
 		for (String listId : lists.keySet()) {
 			if (listId.equals(parentId))
 				lists.get(listId).add(id, value);
-//        if (listId.equals(parentId)) lists.get(listId).add(id, value);
 		}
 	}
 
@@ -381,7 +346,7 @@ public class Form {
 			item.setExpanded(expanded);
 			parent.getChildren().add((index == -1) ? parent.getChildren().size() : index, item);
 
-		} // else System.err.println("Cannot find node " + parentId);
+		}
 	}
 
 	private void addRootNodeWithIcon(final String parentId, final String nodeId, final String text, boolean editable,
@@ -426,8 +391,6 @@ public class Form {
 		if (boxes.containsKey(id)) {
 			TextArea text = boxes.get(id);
 			text.setText(string);
-//      text.setBackground(normalBackgroundColor);
-			// text.pack();
 		}
 		if (items.containsKey(id)) {
 			TreeItem<String> item = items.get(id);
@@ -453,8 +416,6 @@ public class Form {
 		rowLeft = 0;
 
 		gridLeft.getChildren().clear();
-//    for (Control child : content_OLD.getChildren())
-//      child.dispose();
 	}
 
 	public void clear(String id) {
@@ -506,11 +467,6 @@ public class Form {
 		return combos;
 	}
 
-//
-//  public ScrolledComposite getForm() {
-//    return form_OLD;
-//  }
-//
 	public String getId() {
 		return id;
 	}
@@ -522,19 +478,6 @@ public class Form {
 		return null;
 	}
 
-//
-//  private String getId(ComboBox<String> c) {
-//    for (String id : combos.keySet())
-//      if (combos.get(id) == c) return id;
-//    return null;
-//  }
-//
-//  private String getId(TextArea item) {
-//    for (String id : boxes.keySet())
-//      if (boxes.get(id) == item) return id;
-//    return null;
-//  }
-//
 	private String getId(TextField item) {
 		for (String id : textFields.keySet())
 			if (textFields.get(id) == item)
@@ -568,20 +511,9 @@ public class Form {
 	public Hashtable<String, TreeView<String>> getTrees() {
 		return trees;
 	}
-//
-//  private boolean isCommand(MouseEvent event) {
-//    return (event.stateMask & SWT.COMMAND) != 0;
-//  }
-//
-//  private boolean isRightClick(MouseEvent event) {
-//    return event.button == RIGHT_BUTTON;
-//  }
 
 	public void move(String id, int x, int y) {
 
-//		  System.err.println("move +");
-//		CountDownLatch l = new CountDownLatch(1);
-//		Platform.runLater(() -> {
 		if (combos.containsKey(id)) {
 			AnchorPane.setLeftAnchor(combos.get(id), 1. * x);
 			AnchorPane.setTopAnchor(combos.get(id), 1. * y);
@@ -624,30 +556,9 @@ public class Form {
 		if (images.containsKey(id))
 			throw new RuntimeException("The move()-operation for String/Image is not yet implemented...");
 		System.err.println("move: " + id);
-		// throw new RuntimeException("The move()-operation for this type of
-		// Display is not yet implemented...");
-
-		// These Displays need to be added:
-		// Hashtable<String, List> lists = new Hashtable<String, List>();
-		// Hashtable<String, TreeItem> items = new Hashtable<String,
-		// TreeItem>();
-		// Hashtable<String, String> images = new Hashtable<String,
-		// String>();
-//			l.countDown();
-//		});
-//		try {
-//			l.await();
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
-
-//		  System.err.println("move -");
 	}
 
 	public void setSize(String id, double width, double height) {
-//	  System.err.println("setSize +");
-//		CountDownLatch l = new CountDownLatch(1);
-//		Platform.runLater(() -> {
 		if (combos.containsKey(id)) {
 			combos.get(id).setPrefSize(width, height);
 			return;
@@ -683,58 +594,7 @@ public class Form {
 		if (images.containsKey(id))
 			throw new RuntimeException("The setSize()-operation for String/Image is not yet implemented...");
 		throw new RuntimeException("The setSize()-operation for this type of Display is not yet implemented...");
-
-		// These Displays need to be added:
-		// Hashtable<String, List> lists = new Hashtable<String, List>();
-		// Hashtable<String, TreeItem> items = new Hashtable<String, TreeItem>();
-		// Hashtable<String, String> images = new Hashtable<String, String>();
-//        l.countDown();
-//	    });
-//	    try {
-//	     l.await();
-//	    } catch (InterruptedException e) {
-//	     e.printStackTrace();
-//	    }
-//
-//		  System.err.println("setSize -");
 	}
-
-//  public void mouseDoubleClick(MouseEvent event) {
-//    Widget widget = event.widget;
-//    if (widget instanceof Tree) {
-//      Tree tree = (Tree) widget;
-//      if (tree.getSelectionCount() == 1) {
-//        TreeItem item = tree.getSelection()[0];
-//        doubleClick(item);
-//      }
-//    }
-//    if (widget instanceof Text) {
-//      Text text = (Text) widget;
-//      doubleClick(text);
-//    }
-//  }
-
-//  public void mouseDown(MouseEvent event) {
-//    String id = null;
-//    boolean isRightClick = isRightClick(event);
-//    boolean isCommand = isCommand(event);
-//
-//    Widget w = event.widget;
-//    if (w instanceof StyledText) id = getId((StyledText) w);
-//    if (w instanceof Text) id = getId((Text) w);
-//    if (w instanceof Tree) {
-//      Tree tree = (Tree) w;
-//      if (tree.getSelectionCount() == 1) {
-//        TreeItem item = tree.getSelection()[0];
-//        id = getId(item);
-//      }
-//    }
-//    if (id != null) {
-//      if (isRightClick || isCommand)
-//        MenuClient.popup(id, event.x, event.y);
-//      else select(id);
-//    }
-//  }
 
 	private void select(String id) {
 		EventHandler handler = FormsClient.theClient().getHandler();
@@ -760,29 +620,8 @@ public class Form {
 //
 	public void changesMade(String id, boolean made) {
 		System.err.println("changesMade//iHaventImplementedItYet();");
-//    StyledText text = boxes.get(id);
-//    if (text != null) {
-//      text.setBackground(made ? modifiedBackgroundColor : normalBackgroundColor);
-//    }
 	}
 
-//  private void selected(Button b) {
-//    String id = getId(b);
-//    EventHandler handler = FormsClient.theClient().getHandler();
-//    Message message = handler.newMessage("buttonPressed", 1);
-//    message.args[0] = new Value(id);
-//    handler.raiseEvent(message);
-//  }
-//
-//  private void selected(CCombo c) {
-//    String id = getId(c);
-//    EventHandler handler = FormsClient.theClient().getHandler();
-//    Message message = handler.newMessage("comboBoxSelection", 2);
-//    message.args[0] = new Value(id);
-//    message.args[1] = new Value(c.getItem(c.getSelectionIndex()));
-//    handler.raiseEvent(message);
-//  }
-//
 	private void xmf_setSelection(String id, boolean state) {
 		EventHandler handler = FormsClient.theClient().getHandler();
 		Message message = handler.newMessage("setBoolean", 2);
@@ -797,18 +636,6 @@ public class Form {
 		message.args[1] = new Value(text);
 		FormsClient.theClient().getHandler().raiseEvent(message);
 	}
-
-//  public void widgetSelected(SelectionEvent event) {
-//    Widget w = event.widget;
-//    if (w instanceof Button) {
-//      Button b = (Button) w;
-//      selected(b);
-//    }
-//    if (w instanceof CCombo) {
-//      CCombo c = (CCombo) w;
-//      selected(c);
-//    }
-//  }
 
 	public void writeXML(PrintStream out, boolean selected, String formLabel) {
 //	  iHaventImplementedItYet();
@@ -905,20 +732,6 @@ public class Form {
 //	    }
 	}
 
-//  private void writeXMLTreeItems(TreeItem<String> children, PrintStream out) {
-//    for (TreeItem item : children) {
-//      String id = null;
-//      for (String itemId : items.keySet()) {
-//        if (items.get(itemId) == item) id = itemId;
-//      }
-//      if (id == null) System.err.println("error: cannot find tree item " + item);
-//      String icon = images.get(id);
-//      out.print("<Item id='" + id + "' text='" + XModeler.encodeXmlAttribute(item.getText()) + "' image='" + icon + "' expanded='" + item.getExpanded() + "'>");
-//      writeXMLTreeItems(item.getItems(), out);
-//      out.print("</Item>");
-//    }
-//  }
-
 	public String getText(String id) {
 		if (boxes.containsKey(id))
 			return boxes.get(id).getText();
@@ -928,10 +741,6 @@ public class Form {
 
 	public void removeItem(String id) {
 		iHaventImplementedItYet();
-//    if (items.containsKey(id)) {
-//      TreeItem ti = items.get(id);
-//      ti.dispose();
-//    }
 	}
 
 	public void delete(String id) {
