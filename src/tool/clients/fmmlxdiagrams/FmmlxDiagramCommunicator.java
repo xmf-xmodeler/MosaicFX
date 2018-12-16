@@ -40,30 +40,30 @@ public class FmmlxDiagramCommunicator {
 	public void setHandle(final int handler) {
 		this.handler = handler;
 		System.err.println("handler="+handler);
-		JFrame f = new JFrame("TestFrame");
-		f.setSize(300, 300);
-		f.setLocation(800, 100);
-		JPanel p = new JPanel();
-		button = new JButton("Test");
-		p.add(button);
-		f.setContentPane(p);
-		f.setVisible(true);
-		
-		button.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				buttonvalue++;
-//			    WorkbenchClient.theClient().send(handler, "fibo", new Value(buttonvalue));
-				Vector<Object> o = xmfRequest(handler, "fibo", new Value(buttonvalue));
-				Vector<FmmlxObject2> o2 = getAllObjects();
-			    Integer i = (Integer) (o.firstElement());
-			    button.setText(i+" "+o2.size());
-			}
-		});	
+//		JFrame f = new JFrame("TestFrame");
+//		f.setSize(300, 300);
+//		f.setLocation(800, 100);
+//		JPanel p = new JPanel();
+//		button = new JButton("Test");
+//		p.add(button);
+//		f.setContentPane(p);
+//		f.setVisible(true);
+//		
+//		button.addActionListener(new ActionListener() {
+//			
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				buttonvalue++;
+////			    WorkbenchClient.theClient().send(handler, "fibo", new Value(buttonvalue));
+//				Vector<Object> o = xmfRequest(handler, "fibo", new Value(buttonvalue));
+//				Vector<FmmlxObject> o2 = getAllObjects();
+//			    Integer i = (Integer) (o.firstElement());
+//			    button.setText(i+" "+o2.size());
+//			}
+//		});	
 	}
 	
-	int buttonvalue = 0;
+//	int buttonvalue = 0;
 	
 	@SuppressWarnings("unchecked")
 	public void sendPackageToJava(Object o) {
@@ -76,6 +76,16 @@ public class FmmlxDiagramCommunicator {
 		System.err.println("o: " + o + "(" + o.getClass() + ")");
 	}
 	
+	@SuppressWarnings("unchecked")
+	public void sendMessageToJava(Object o) {
+		if(o instanceof java.util.Vector){
+			java.util.Vector<Object> v = (java.util.Vector<Object>) o;
+			int requestID = (Integer) (v.get(0));
+			v.remove(0);
+			results.put(requestID, v);
+		}
+		System.err.println("o: " + o + "(" + o.getClass() + ")");
+	}	
 //	public void sendPackageToJava(Object o) {
 //		if(o instanceof java.util.Vector){
 //			@SuppressWarnings("rawtypes")
@@ -95,6 +105,7 @@ public class FmmlxDiagramCommunicator {
 		}
 		args2[0] = new Value(requestID);
 		boolean waiting = true;
+		System.err.println("send:" + targetHandle +"-"+ message +"-"+ args2);
 		WorkbenchClient.theClient().send(targetHandle, message, args2);
 		int attempts = 0;
 		while(waiting && attempts < 20) {
@@ -114,13 +125,15 @@ public class FmmlxDiagramCommunicator {
 	
 	
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxObject2> getAllObjects() {
+	public Vector<FmmlxObject> getAllObjects() {
 		Vector<Object> response = xmfRequest(handler, "getAllObjects", new Value[]{});
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));
-		Vector<FmmlxObject2> result = new Vector<>();
+		Vector<FmmlxObject> result = new Vector<>();
 		System.err.println(response0);
 		for(Object o : response0) {
 			System.err.println("Class/Object " + o + " found");
+			FmmlxObject object = new FmmlxObject((String) o);
+			result.add(object);
 		}
 		return result;
 	}

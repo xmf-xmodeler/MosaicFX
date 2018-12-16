@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams;
 
+import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
 import javafx.application.Platform;
@@ -13,6 +14,7 @@ public class FmmlxDiagram {
 	SplitPane mainView;
 	final FmmlxDiagramCommunicator comm;
 	private Canvas canvas;
+	private Vector<FmmlxObject> objects = new Vector<>();
 
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, String label) {
 		this.comm = comm;
@@ -23,8 +25,19 @@ public class FmmlxDiagram {
 //		scroller = new ScrollPane(canvas);
 		mainView.getItems().addAll(new Canvas(200, 600), canvas);
 		mainView.setDividerPosition(0, 0.2);
+		
+//		Runnable task = () -> { fetchDiagramData(); };
+		new Thread(() -> { fetchDiagramData(); }).start();
+
 		redraw();
 		}
+
+	private void fetchDiagramData() {
+		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
+		objects.clear(); // to be replaced when updating instead of loading form scratch
+		objects.addAll(fetchedObjects);
+		redraw();
+	}
 
 	public SplitPane getView() {
 		return mainView;
@@ -56,10 +69,14 @@ public class FmmlxDiagram {
 	}
 
 	private void paintOn(GraphicsContext g, int x, int y) {
-		g.setStroke(Color.BLACK);
-		g.strokeText("text", x+50, y+50);
+		g.setFill(Color.BLACK);
+		int Y = 0;
+		for(FmmlxObject o : objects) {
+			Y += 17;
+			g.fillText(o.name, 10, Y);
+		}
+//		g.strokeText("text", x+50, y+50);
 		g.strokeRect(0, 0, 300, 300);
-		
 	}
 
 }
