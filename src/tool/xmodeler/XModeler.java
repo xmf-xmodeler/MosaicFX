@@ -48,6 +48,7 @@ import tool.clients.dialogs.DialogsClient;
 import tool.clients.dialogs.notifier.NotificationType;
 import tool.clients.dialogs.notifier.NotifierDialog;
 import tool.clients.editors.EditorClient;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.forms.FormsClient;
 import tool.clients.menus.MenuClient;
 import tool.clients.oleBridge.OleBridgeClient;
@@ -417,6 +418,7 @@ public class XModeler extends Application {
 	  FormsClient.start(propertyTabs);
 	  Console.start(propertyTabs); // only one which does more
 	  DiagramClient.start(editorTabs);
+	  FmmlxDiagramCommunicator.start(editorTabs);
   }
   
   

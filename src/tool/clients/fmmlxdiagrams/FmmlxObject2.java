@@ -1,5 +1,5 @@
 package tool.clients.fmmlxdiagrams;
 
-public class FMMLxObject {
+public class FmmlxObject2 {
 
 }

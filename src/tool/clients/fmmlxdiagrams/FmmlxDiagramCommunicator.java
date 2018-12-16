@@ -3,13 +3,17 @@ package tool.clients.fmmlxdiagrams;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Vector;
+import java.util.concurrent.CountDownLatch;
 
-import javax.management.RuntimeErrorException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import javafx.application.Platform;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import tool.clients.workbench.WorkbenchClient;
 import xos.Value;
 
@@ -18,7 +22,20 @@ public class FmmlxDiagramCommunicator {
 	private JButton button;
 	public String test() {return "Test works!";}
 	int idCounter = 0;
-	private HashMap<Integer, Vector<Object>> results = new HashMap<>();
+	private HashMap<Integer, Vector<Object>> results = new HashMap<>();	
+	private static Hashtable<Integer, Tab> tabs = new Hashtable<Integer, Tab>();
+	private static Vector<FmmlxDiagram> diagrams = new Vector<FmmlxDiagram>();
+	private static Vector<FmmlxDiagramCommunicator> communicators = new Vector<FmmlxDiagramCommunicator>();
+	static TabPane tabPane;
+	FmmlxDiagram diagram;
+	
+	public FmmlxDiagramCommunicator() {
+		communicators.add(this);
+	}
+	
+	public static void start(TabPane tabPane) {
+		FmmlxDiagramCommunicator.tabPane = tabPane;
+	}	
 	
 	public void setHandle(final int handler) {
 		this.handler = handler;
@@ -38,8 +55,8 @@ public class FmmlxDiagramCommunicator {
 			public void actionPerformed(ActionEvent e) {
 				buttonvalue++;
 //			    WorkbenchClient.theClient().send(handler, "fibo", new Value(buttonvalue));
-				Vector<Object> o = xmlRequest(handler, "fibo", new Value(buttonvalue));
-				Vector<FMMLxObject> o2 = getAllObjects();
+				Vector<Object> o = xmfRequest(handler, "fibo", new Value(buttonvalue));
+				Vector<FmmlxObject2> o2 = getAllObjects();
 			    Integer i = (Integer) (o.firstElement());
 			    button.setText(i+" "+o2.size());
 			}
@@ -70,7 +87,7 @@ public class FmmlxDiagramCommunicator {
 //		System.err.println("o: " + o + "(" + o.getClass() + ")");
 //	}
 	
-	private Vector<Object> xmlRequest(int targetHandle, String message, Value... args) {
+	private Vector<Object> xmfRequest(int targetHandle, String message, Value... args) {
 		Value[] args2 = new Value[args.length+1];
 		int requestID = idCounter++;
 		for(int i = 0; i < args.length; i++) {
@@ -97,16 +114,54 @@ public class FmmlxDiagramCommunicator {
 	
 	
 	@SuppressWarnings("unchecked")
-	public Vector<FMMLxObject> getAllObjects() {
-		Vector<Object> response = xmlRequest(handler, "getAllObjects", new Value[]{});
+	public Vector<FmmlxObject2> getAllObjects() {
+		Vector<Object> response = xmfRequest(handler, "getAllObjects", new Value[]{});
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));
-		Vector<FMMLxObject> result = new Vector<>();
+		Vector<FmmlxObject2> result = new Vector<>();
 		System.err.println(response0);
 		for(Object o : response0) {
 			System.err.println("Class/Object " + o + " found");
 		}
 		return result;
 	}
+	
+	public void newDiagram() {
+		CountDownLatch l = new CountDownLatch(1);
+		final String label = "getPackageName();";
+		Platform.runLater(() -> {
+			System.err.println("Create FMMLx-Diagram...");
+
+			diagram = new FmmlxDiagram(this, label);
+			Tab tab = new Tab(label);
+			tab.setContent(diagram.getView());
+			tab.setClosable(true);
+			tabs.put(this.handler, tab);
+			diagrams.add(diagram);
+			tabPane.getTabs().add(tab);
+			tabPane.getSelectionModel().selectLast();
+			tab.setOnCloseRequest(new javafx.event.EventHandler<javafx.event.Event>() {
+				@Override
+				public void handle(javafx.event.Event arg0) {
+					close(FmmlxDiagramCommunicator.this.handler);
+				}
+
+			});
+			l.countDown();
+		});
+		try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void close(int handler) {
+		diagrams.remove(diagram);
+		tabs.remove(this.handler);
+//		throw new RuntimeException("Not yet implemented");		
+	}
+	
+
 
 }
  
