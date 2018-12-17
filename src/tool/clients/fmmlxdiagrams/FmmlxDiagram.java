@@ -36,6 +36,10 @@ public class FmmlxDiagram {
 		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
 		objects.clear(); // to be replaced when updating instead of loading form scratch
 		objects.addAll(fetchedObjects);
+		for(FmmlxObject o : objects) {
+//			comm.fetchAttributes(o);
+			o.fetchData(comm);
+		}
 		redraw();
 	}
 
@@ -68,15 +72,12 @@ public class FmmlxDiagram {
 		}
 	}
 
-	private void paintOn(GraphicsContext g, int x, int y) {
+	private void paintOn(GraphicsContext g, int xOffset, int yOffset) {
 		g.setFill(Color.BLACK);
-		int Y = 0;
 		for(FmmlxObject o : objects) {
-			Y += 17;
-			g.fillText(o.name, 10, Y);
+			o.paintOn(g, xOffset, yOffset);
 		}
-//		g.strokeText("text", x+50, y+50);
-		g.strokeRect(0, 0, 300, 300);
+		g.strokeRect(0, 0, 5, 5);
 	}
 
 }
