@@ -193,32 +193,19 @@ public class FormsClient extends Client {
 	private void inflateButton(String parentId, Node button) {
 		String id = XModeler.attributeValue(button, "id");
 		String text = XModeler.attributeValue(button, "text");
-		int x = Integer.parseInt(XModeler.attributeValue(button, "x"));
-		int y = Integer.parseInt(XModeler.attributeValue(button, "y"));
-		int width = Integer.parseInt(XModeler.attributeValue(button, "width"));
-		int height = Integer.parseInt(XModeler.attributeValue(button, "height"));
-		newButton(parentId, id, text, x, y, width, height);
+		newButton(parentId, id, text);
 	}
 
 	private void inflateCheck(String parentId, Node check) {
 		String id = XModeler.attributeValue(check, "id");
-//    String text = XModeler.attributeValue(check, "text");
-		int x = Integer.parseInt(XModeler.attributeValue(check, "x"));
-		int y = Integer.parseInt(XModeler.attributeValue(check, "y"));
 		boolean checked = XModeler.attributeValue(check, "checked").equals("true");
 		String labelText = XModeler.attributeValue(check, "labelText");
-		newCheckBox(parentId, id, x, y, checked, labelText);
+		newCheckBox(parentId, id, checked, labelText);
 	}
 
 	private void inflateCombo(String parentId, Node combo) {
 		String id = XModeler.attributeValue(combo, "id");
-//    String string = XModeler.attributeValue(combo, "string");
-		int x = Integer.parseInt(XModeler.attributeValue(combo, "x"));
-		int y = Integer.parseInt(XModeler.attributeValue(combo, "y"));
-		int width = Integer.parseInt(XModeler.attributeValue(combo, "width"));
-		int height = Integer.parseInt(XModeler.attributeValue(combo, "height"));
-//    boolean editable = XModeler.attributeValue(combo, "editable").equals("true");
-		newComboBox(parentId, id, x, y, width, height);
+		newComboBox(parentId, id);
 		NodeList items = combo.getChildNodes();
 		for (int i = 0; i < items.getLength(); i++) {
 			Node item = items.item(i);
@@ -280,20 +267,14 @@ public class FormsClient extends Client {
 	private void inflateLabel(String parentId, Node label) {
 		String id = XModeler.attributeValue(label, "id");
 		String string = XModeler.attributeValue(label, "string");
-		int x = Integer.parseInt(XModeler.attributeValue(label, "x"));
-		int y = Integer.parseInt(XModeler.attributeValue(label, "y"));
-		newText(parentId, id, string, x, y);
+		newText(parentId, id, string);
 		getForm(parentId).getLabels().get(id).setText(string);
 	}
 
 	private void inflateList(String parentId, Node list) {
 		String id = XModeler.attributeValue(list, "id");
-		int x = Integer.parseInt(XModeler.attributeValue(list, "x"));
-		int y = Integer.parseInt(XModeler.attributeValue(list, "y"));
-		int width = Integer.parseInt(XModeler.attributeValue(list, "width"));
-		int height = Integer.parseInt(XModeler.attributeValue(list, "height"));
 		String labelText = XModeler.attributeValue(list, "labelText");
-		newList(parentId, id, x, y, width, height, labelText);
+		newList(parentId, id, labelText);
 		NodeList items = list.getChildNodes();
 		for (int i = 0; i < items.getLength(); i++) {
 			String itemId = XModeler.attributeValue(items.item(i), "id");
@@ -305,36 +286,24 @@ public class FormsClient extends Client {
 	private void inflateTextBox(String parentId, Node textBox) {
 		String id = XModeler.attributeValue(textBox, "id");
 		String string = XModeler.attributeValue(textBox, "string");
-		int x = Integer.parseInt(XModeler.attributeValue(textBox, "x"));
-		int y = Integer.parseInt(XModeler.attributeValue(textBox, "y"));
-		int width = Integer.parseInt(XModeler.attributeValue(textBox, "width"));
-		int height = Integer.parseInt(XModeler.attributeValue(textBox, "height"));
 		boolean editable = XModeler.attributeValue(textBox, "editable").equals("true");
 		String labelText = XModeler.attributeValue(textBox, "labelText");
-		newTextBox(parentId, id, x, y, width, height, editable, labelText);
+		newTextBox(parentId, id,editable, labelText);
 		getForm(parentId).getBoxes().get(id).setText(string);
 	}
 
 	private void inflateTextField(String parentId, Node textField) {
 		String id = XModeler.attributeValue(textField, "id");
 		String string = XModeler.attributeValue(textField, "string");
-		int x = Integer.parseInt(XModeler.attributeValue(textField, "x"));
-		int y = Integer.parseInt(XModeler.attributeValue(textField, "y"));
-		int width = Integer.parseInt(XModeler.attributeValue(textField, "width"));
-		int height = Integer.parseInt(XModeler.attributeValue(textField, "height"));
 		boolean editable = XModeler.attributeValue(textField, "editable").equals("true");
 		String labelText = XModeler.attributeValue(textField, "labelText");
-		newTextField(parentId, id, x, y, width, height, editable, labelText);
+		newTextField(parentId, id, editable, labelText);
 		getForm(parentId).getTextFields().get(id).setText(string);
 	}
 
 	private void inflateTree(String parentId, Node tree) {
 		String id = XModeler.attributeValue(tree, "id");
-		int x = Integer.parseInt(XModeler.attributeValue(tree, "x"));
-		int y = Integer.parseInt(XModeler.attributeValue(tree, "y"));
-		int width = Integer.parseInt(XModeler.attributeValue(tree, "width"));
-		int height = Integer.parseInt(XModeler.attributeValue(tree, "height"));
-		newTree(parentId, id, x, y, width, height, true);
+		newTree(parentId, id, true);
 		inflateTreeItems(tree);
 	}
 
@@ -376,19 +345,14 @@ public class FormsClient extends Client {
 		String id = message.args[1].strValue();
 		String label = message.args[2].strValue();
 		int zoom = getDeviceZoomPercent();
-		int x = zoom * message.args[3].intValue / 100;
-		int y = zoom * message.args[4].intValue / 100;
-		int width = zoom * message.args[5].intValue / 100;
-		int height = zoom * message.args[6].intValue / 100;
-		newButton(parentId, id, label, x, y, width, height);
+		newButton(parentId, id, label);
 	}
 
-	private void newButton(final String parentId, final String id, final String label, final int x, final int y,
-			final int width, final int height) {
+	private void newButton(final String parentId, final String id, final String label) {
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			for (Form form : forms)
-				form.newButton(parentId, id, label, x, y, width, height);
+				form.newButton(parentId, id, label);
 			l.countDown();
 		});
 		try {
@@ -402,19 +366,17 @@ public class FormsClient extends Client {
 		String parentId = message.args[0].strValue();
 		String id = message.args[1].strValue();
 		int zoom = getDeviceZoomPercent();
-		int x = zoom * message.args[2].intValue / 100;
-		int y = zoom * message.args[3].intValue / 100;
 		boolean checked = message.args[4].boolValue;
 		String labelText = message.args[5].strValue();
-		newCheckBox(parentId, id, x, y, checked, labelText);
+		newCheckBox(parentId, id, checked, labelText);
 	}
 
-	private void newCheckBox(final String parentId, final String id, final int x, final int y, final boolean checked,
+	private void newCheckBox(final String parentId, final String id, final boolean checked,
 			final String labelText) {
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			for (Form form : forms)
-				form.newCheckBox(parentId, id, x, y, checked, labelText);
+				form.newCheckBox(parentId, id, checked, labelText);
 			l.countDown();
 		});
 		try {
@@ -428,19 +390,14 @@ public class FormsClient extends Client {
 		String parentId = message.args[0].strValue();
 		String id = message.args[1].strValue();
 		int zoom = getDeviceZoomPercent();
-		int x = zoom * message.args[2].intValue / 100;
-		int y = zoom * message.args[3].intValue / 100;
-		int width = zoom * message.args[4].intValue / 100;
-		int height = zoom * message.args[5].intValue / 100;
-		newComboBox(parentId, id, x, y, width, height);
+		newComboBox(parentId, id);
 	}
 
-	private void newComboBox(final String parentId, final String id, final int x, final int y, final int width,
-			final int height) {
+	private void newComboBox(final String parentId, final String id) {
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			for (Form form : forms)
-				form.newComboBox(parentId, id, x, y, width, height);
+				form.newComboBox(parentId, id);
 			l.countDown();
 		});
 		try {
@@ -483,36 +440,28 @@ public class FormsClient extends Client {
 		String parentId = message.args[0].strValue();
 		String id = message.args[1].strValue();
 		int zoom = getDeviceZoomPercent();
-		int x = zoom * message.args[2].intValue / 100;
-		int y = zoom * message.args[3].intValue / 100;
-		int width = zoom * message.args[4].intValue / 100;
-		int height = zoom * message.args[5].intValue / 100;
 		String labelText = message.args[6].strValue();
-		newList(parentId, id, x, y, width, height, labelText);
+		newList(parentId, id, labelText);
 	}
 
-	private void newList(String parentId, String id, int x, int y, int width, int height, String labelText) {
+	private void newList(String parentId, String id,String labelText) {
 		for (Form form : forms)
-			form.newList(parentId, id, x, y, width, height, labelText);
+			form.newList(parentId, id, labelText);
 	}
 
 	private void newText(Message message) {
 		String parentId = message.args[0].strValue();
 		String id = message.args[1].strValue();
 		String string = message.args[2].strValue();
-		int zoom = getDeviceZoomPercent();
-		int x = zoom * message.args[3].intValue / 100;
-		int y = zoom * message.args[4].intValue / 100;
-		System.out.println("NEWTEXT: " + string);
-		newText(parentId, id, string, x, y);
+		newText(parentId, id, string);
 	}
 
-	private void newText(final String parentId, final String id, final String string, final int x, final int y) {
+	private void newText(final String parentId, final String id, final String string) {
 		final Form form = getForm(parentId);
 		if (form != null) {
 			CountDownLatch l = new CountDownLatch(1);
 			Platform.runLater(() -> {
-				form.newText(id, string, x, y);
+				form.newText(id, string);
 				l.countDown();
 			});
 			try {
@@ -528,21 +477,16 @@ public class FormsClient extends Client {
 		String parentId = message.args[0].strValue();
 		String id = message.args[1].strValue();
 		int zoom = getDeviceZoomPercent();
-		int x = zoom * message.args[2].intValue / 100;
-		int y = zoom * message.args[3].intValue / 100;
-		int width = zoom * message.args[4].intValue / 100;
-		int height = zoom * message.args[5].intValue / 100;
 		boolean editable = message.args[6].boolValue;
 		String labelText = message.args[7].strValue();
-		newTextBox(parentId, id, x, y, width, height, editable, labelText);
+		newTextBox(parentId, id, editable, labelText);
 	}
 
-	private void newTextBox(final String parentId, final String id, final int x, final int y, final int width,
-			final int height, final boolean editable, final String labelText) {
+	private void newTextBox(final String parentId, final String id, final boolean editable, final String labelText) {
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			for (Form form : forms)
-				form.newTextBox(parentId, id, x, y, width, height, editable, labelText);
+				form.newTextBox(parentId, id, editable, labelText);
 			l.countDown();
 		});
 		try {
@@ -556,22 +500,17 @@ public class FormsClient extends Client {
 		String parentId = message.args[0].strValue();
 		String id = message.args[1].strValue();
 		int zoom = getDeviceZoomPercent();
-		int x = zoom * message.args[2].intValue / 100;
-		int y = zoom * message.args[3].intValue / 100;
-		int width = zoom * message.args[4].intValue / 100;
-		int height = zoom * message.args[5].intValue / 100;
 		boolean editable = message.args[6].boolValue;
 		String labelText = message.args[7].strValue();
-		newTextField(parentId, id, x, y, width, height, editable, labelText);
+		newTextField(parentId, id, editable, labelText);
 	}
 
-	private void newTextField(final String parentId, final String id, final int x, final int y, final int width,
-			final int height, final boolean editable, final String labelText) {
+	private void newTextField(final String parentId, final String id, final boolean editable, final String labelText) {
 		final Form form = getForm(parentId);
 		if (form != null) {
 			CountDownLatch l = new CountDownLatch(1);
 			Platform.runLater(() -> {
-				form.newTextField(id, x, y, width, height, editable, labelText);
+				form.newTextField(id, editable, labelText);
 				l.countDown();
 			});
 			try {
@@ -587,20 +526,15 @@ public class FormsClient extends Client {
 		String parentId = message.args[0].strValue();
 		String id = message.args[1].strValue();
 		int zoom = getDeviceZoomPercent();
-		int x = zoom * message.args[2].intValue / 100;
-		int y = zoom * message.args[3].intValue / 100;
-		int width = zoom * message.args[4].intValue / 100;
-		int height = zoom * message.args[5].intValue / 100;
 		boolean editable = message.args[6].boolValue;
-		newTree(parentId, id, x, y, width, height, editable);
+		newTree(parentId, id, editable);
 	}
 
-	private void newTree(final String parentId, final String id, final int x, final int y, final int width,
-			final int height, final boolean editable) {
+	private void newTree(final String parentId, final String id, final boolean editable) {
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			for (Form form : forms)
-				form.newTree(parentId, id, x, y, width, height, editable);
+				form.newTree(parentId, id, editable);
 			l.countDown();
 		});
 		try {

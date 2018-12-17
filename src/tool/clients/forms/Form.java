@@ -46,9 +46,9 @@ public class Form {
 	private String id;
 
 	private ScrollPane form;
-	private GridPane gridLeft;
+	private GridPane gridTextFields;
+	private GridPane gridBoxes;
 	private FlowPane root;
-	private GridPane gridRight;
 	
 	private int rowLeft;
 	private int rowRight;
@@ -73,14 +73,14 @@ public class Form {
 		root = new FlowPane();
 		root.setOrientation(Orientation.HORIZONTAL);
 
-		gridLeft = initializeGrid(2, gridWidth);
-		gridRight = initializeGrid(1, gridWidth * 2);
+		gridTextFields = initializeGrid(2, gridWidth);
+		gridBoxes = initializeGrid(1, gridWidth * 2);
 
 		rowLeft = 0;
 		rowRight = 0;
 
-		root.getChildren().add(gridLeft);
-		root.getChildren().add(gridRight);
+		root.getChildren().add(gridTextFields);
+		root.getChildren().add(gridBoxes);
 
 		form.setContent(root);
 		form.setFitToHeight(true);
@@ -109,12 +109,12 @@ public class Form {
 
 	@Override
 	public String toString() {
-		return "Form [id=" + id + " " + gridLeft.getHeight() + " of " + form.getHeight() + "]";
+		return "Form [id=" + id + " " + gridTextFields.getHeight() + " of " + form.getHeight() + "]";
 	}
 
 	///////////////////////// SETUP ( ADD NEW ELEMENTS) //////////////////////////
 
-	public void newButton(String parentId, String id, String label, int x, int y, int width, int height) {
+	public void newButton(String parentId, String id, String label) {
 		if (this.id.equals(parentId)) {
 			Button button = new Button();
 
@@ -139,12 +139,12 @@ public class Form {
 
 			button.setText(label);
 			buttons.put(id, button);
-			gridRight.add(button, 0, rowRight);
+			gridBoxes.add(button, 0, rowRight);
 			rowRight++;
 		}
 	}
 
-	public void newCheckBox(String parentId, final String id, int x, int y, boolean checked, String labelText) {
+	public void newCheckBox(String parentId, final String id, boolean checked, String labelText) {
 		if (this.id.equals(parentId)) {
 			final CheckBox checkBox = new CheckBox();
 			final Label label = new Label(labelText);
@@ -158,7 +158,7 @@ public class Form {
 							xmf_setSelection(id, chk.isSelected());
 						}
 					}
-				}
+				} 
 			};
 
 			checkBox.setOnAction(eh);
@@ -167,18 +167,18 @@ public class Form {
 			checks.put(id, checkBox);
 			labels.put(id, label);
 
-			gridLeft.add(label, 0, rowLeft);
-			gridLeft.add(checkBox, 1, rowLeft);
+			gridTextFields.add(label, 0, rowLeft);
+			gridTextFields.add(checkBox, 1, rowLeft);
 			rowLeft++;
 		}
 	}
 
-	public void newComboBox(String parentId, String id, int x, int y, int width, int height) {
+	public void newComboBox(String parentId, String id) {
 		if (this.id.equals(parentId)) {
 			ComboBox<String> comboBox = new ComboBox<String>();
 
 			combos.put(id, comboBox);
-			gridRight.add(comboBox, 0, rowRight);
+			gridBoxes.add(comboBox, 0, rowRight);
 			rowRight++;
 
 			comboBox.getSelectionModel().selectedItemProperty()
@@ -194,13 +194,12 @@ public class Form {
 		}
 	}
 
-	public void newList(String parentId, final String id, final int x, final int y, final int width, final int height,
-			final String labelText) {
+	public void newList(String parentId, final String id, final String labelText) {
 		if (this.id.equals(parentId)) {
 			
 			CountDownLatch l = new CountDownLatch(1);
 			Platform.runLater(() -> {
-				List list = new List(id, gridRight, rowRight-2, labelText);
+				List list = new List(id, gridBoxes, rowRight-2, labelText);
 				lists.put(id, list);
 
 				l.countDown();
@@ -220,17 +219,16 @@ public class Form {
 			addNodeWithIcon(parentId, nodeId, text, editable, false, icon, index);
 	}
 
-	public void newText(String id, String string, int x, int y) {
+	public void newText(String id, String string) {
 		if (string.isEmpty() || string.equals(" "))
 			return;
 		Label text = new Label(string);
 		labels.put(id, text);
-		gridRight.add(text, 0, rowRight);
+		gridBoxes.add(text, 0, rowRight);
 		rowRight++;
 	}
 
-	public void newTextBox(String parentId, String id, int x, int y, int width, int height, boolean editable,
-			String labelText) {
+	public void newTextBox(String parentId, String id, boolean editable, String labelText) {
 		if (this.id.equals(parentId)) {
 			final TextArea textBox = new TextArea();
 			final Label label = new Label(labelText);
@@ -247,18 +245,17 @@ public class Form {
 					}
 				}
 			});
-
 			boxes.put(id, textBox);
 			labels.put(id, label);
 
-			gridRight.add(label, 0, rowRight);
+			gridBoxes.add(label, 0, rowRight);
 			rowRight++;
-			gridRight.add(textBox, 0, rowRight++);
+			gridBoxes.add(textBox, 0, rowRight++);
 			rowRight++;
 		}
 	}
 
-	public void newTextField(final String id, int x, int y, int width, int height, boolean editable, String labelText) {
+	public void newTextField(final String id,boolean editable, String labelText) {
 		final TextField textField = new TextField();
 		final Label label = new Label(labelText);
 		textField.setEditable(editable);
@@ -266,8 +263,8 @@ public class Form {
 		textFields.put(id, textField);
 		labels.put(id, label);
 
-		gridLeft.add(label, 0, rowLeft);
-		gridLeft.add(textField, 1, rowLeft);
+		gridTextFields.add(label, 0, rowLeft);
+		gridTextFields.add(textField, 1, rowLeft);
 		rowLeft++;
 
 		textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
@@ -291,14 +288,14 @@ public class Form {
 		});
 	}
 
-	public void newTree(String parentId, String id, int x, int y, int width, int height, boolean editable) {
+	public void newTree(String parentId, String id, boolean editable) {
 		if (this.id.equals(parentId)) {
 			TreeView<String> treeView = new TreeView<String>();
 			treeView.setMinHeight(200);
 			treeView.setMinWidth(300);
 
 			trees.put(id, treeView);
-			gridRight.add(treeView, 0, rowRight);
+			gridBoxes.add(treeView, 0, rowRight);
 			rowRight++;
 
 			treeView.setOnMouseClicked(new javafx.event.EventHandler<MouseEvent>() {
@@ -415,7 +412,7 @@ public class Form {
 		rowLeft = 0;
 		rowLeft = 0;
 
-		gridLeft.getChildren().clear();
+		gridTextFields.getChildren().clear();
 	}
 
 	public void clear(String id) {
