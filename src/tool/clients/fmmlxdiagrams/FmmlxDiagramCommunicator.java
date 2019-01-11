@@ -85,7 +85,7 @@ public class FmmlxDiagramCommunicator {
 		return result;
 	}
 	
-	public Vector<FmmlxAttribute> fetchAttributes(String name) {
+	public Vector<FmmlxAttribute> fetchAttributes(String className) {
 //		Vector<Object> response = xmfRequest(handler, "getAttributes", new Value[]{new Value(name)});
 //		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxAttribute> result = new Vector<>();
@@ -103,6 +103,31 @@ public class FmmlxDiagramCommunicator {
 		
 		return result;
 	}
+	
+	public Vector<FmmlxSlot> fetchSlots(String objectName) {
+		Vector<FmmlxSlot> result = new Vector<>();
+		return result;
+	}	
+	
+	public Vector<FmmlxOperation> fetchOperations(String className) {
+		Vector<FmmlxOperation> result = new Vector<>();
+		return result;
+	}
+	
+	public Vector<FmmlxOperationValue> fetchOperationValues(String objectName) {
+		Vector<FmmlxOperationValue> result = new Vector<>();
+		return result;
+	}	
+	
+	public Vector<FmmlxObject> fetchParentClasses(String objectName) {
+		Vector<FmmlxObject> result = new Vector<>();
+		return result;
+	}		
+	
+	public FmmlxObject fetchOf(String objectName) {
+		FmmlxObject result = null;
+		return result;
+	}	
 	
 	public void newDiagram() {
 		CountDownLatch l = new CountDownLatch(1);

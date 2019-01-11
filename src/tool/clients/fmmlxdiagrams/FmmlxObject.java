@@ -10,6 +10,7 @@ public class FmmlxObject {
 	String name;
 	int x; 
 	int y;
+	int level;
 	int width;
 	int height;
 	static int testDiff = 10;
@@ -22,6 +23,7 @@ public class FmmlxObject {
 		testDiff += 100;
 		width = 150;
 		height = 80;
+		level = name.hashCode()%5;
 	}
 
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset) {
