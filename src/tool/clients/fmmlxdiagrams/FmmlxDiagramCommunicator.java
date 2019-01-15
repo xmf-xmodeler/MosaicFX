@@ -78,7 +78,7 @@ public class FmmlxDiagramCommunicator {
 		Vector<FmmlxObject> result = new Vector<>();
 		System.err.println(response0);
 		for(Object o : response0) {
-			System.err.println("Class/Object " + o + " found");
+//			System.err.println("Class/Object " + o + " found");
 			FmmlxObject object = new FmmlxObject((String) o);
 			result.add(object);
 		}
@@ -86,20 +86,20 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	public Vector<FmmlxAttribute> fetchAttributes(String className) {
-//		Vector<Object> response = xmfRequest(handler, "getAttributes", new Value[]{new Value(name)});
-//		Vector<Object> response0 = (Vector<Object>) (response.get(0));
+		Vector<Object> response = xmfRequest(handler, "getOwnAttributes", new Value[]{new Value(className)});
+		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxAttribute> result = new Vector<>();
-//		System.err.println(response0);
-//		for(Object o : response0) {
-//			System.err.println("Class/Object " + o + " found");
-//			FmmlxObject object = new FmmlxObject((String) o);
-//			result.add(object);
-//		}
+		System.err.println(response0);
+		for(Object o : response0) {
+			System.err.println("Attribute " + o + " found");
+			FmmlxAttribute object = new FmmlxAttribute((String) o, 1, "Integer");
+			result.add(object);
+		}
 //		return result;
 		
 		result.add(new FmmlxAttribute("att0", 1, "Integer"));
-		result.add(new FmmlxAttribute("att1", 3, "Object"));
-		result.add(new FmmlxAttribute("att2", 2, "Foo"));
+//		result.add(new FmmlxAttribute("att1", 3, "Object"));
+//		result.add(new FmmlxAttribute("att2", 2, "Foo"));
 		
 		return result;
 	}
