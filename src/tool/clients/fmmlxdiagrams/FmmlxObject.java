@@ -15,6 +15,9 @@ public class FmmlxObject {
 	int height;
 	static int testDiff = 10;
 	Vector<FmmlxAttribute> attributes;
+	Vector<FmmlxSlot> slots;
+	Vector<FmmlxOperation> operations;
+	Vector<FmmlxOperationValue> operationValues;
 	
 	public FmmlxObject(String name) {
 		this.name = name;
@@ -45,6 +48,9 @@ public class FmmlxObject {
 
 	public void fetchData(FmmlxDiagramCommunicator comm) {
 		attributes = comm.fetchAttributes(this.name);
+		slots = comm.fetchSlots(this.name);
+		operations = comm.fetchOperations(this.name);
+		operationValues = comm.fetchOperationValues(this.name);
 		
 	}
 

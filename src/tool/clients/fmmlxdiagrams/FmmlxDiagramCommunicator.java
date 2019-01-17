@@ -85,32 +85,41 @@ public class FmmlxDiagramCommunicator {
 		return result;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Vector<FmmlxAttribute> fetchAttributes(String className) {
 		Vector<Object> response = xmfRequest(handler, "getOwnAttributes", new Value[]{new Value(className)});
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxAttribute> result = new Vector<>();
-		System.err.println(response0);
+//		System.err.println(response0);
 		for(Object o : response0) {
-			System.err.println("Attribute " + o + " found");
-			FmmlxAttribute object = new FmmlxAttribute((String) o, 1, "Integer");
+			Vector<Object> attInfo =  (Vector<Object>) o;
+//			System.err.println("Attribute " + o + " found");
+			FmmlxAttribute object = new FmmlxAttribute(
+					(String) attInfo.get(0), 
+					(Integer) attInfo.get(2), 
+					(String) attInfo.get(1));
 			result.add(object);
-		}
-//		return result;
-		
+		}		
 		result.add(new FmmlxAttribute("att0", 1, "Integer"));
-//		result.add(new FmmlxAttribute("att1", 3, "Object"));
-//		result.add(new FmmlxAttribute("att2", 2, "Foo"));
-		
 		return result;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Vector<FmmlxSlot> fetchSlots(String objectName) {
+		Vector<Object> response = xmfRequest(handler, "getSlots", new Value[]{new Value(objectName)});
+		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxSlot> result = new Vector<>();
+		System.err.println("slots: " + response0);
+		
 		return result;
 	}	
 	
 	public Vector<FmmlxOperation> fetchOperations(String className) {
+		Vector<Object> response = xmfRequest(handler, "getOwnOperations", new Value[]{new Value(className)});
+		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxOperation> result = new Vector<>();
+
+        System.err.println("operations: " + response0);
 		return result;
 	}
 	
