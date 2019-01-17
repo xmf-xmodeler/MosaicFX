@@ -7,3 +7,5 @@
 /ini-Jens-win.txt
 /user_properties.xml
 /ini3.txt
+.idea
+*.iml
