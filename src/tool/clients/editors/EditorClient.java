@@ -232,7 +232,7 @@ public class EditorClient extends Client {
       URL location = EditorClient.class.getProtectionDomain().getCodeSource().getLocation();
       String path = location.toString();
       path = path.substring(0, path.length() - 4); // delete "/bin" from string
-      path += "web/index.html";
+      path += "src/ressources/webroot/index.html";
       // System.err.println("getWelcomePage: >" + path + "<");
       return new Value(path);
     }
