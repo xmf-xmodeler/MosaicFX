@@ -81,8 +81,7 @@ public class ConsoleView {
     addVerifyListener(textArea);
     try {
     	Font defaultFont = textArea.getFont();
-        System.out.println(getClass());
-        Font f = Font.loadFont(new FileInputStream(new File(getClass().getResource("/fonts/DejaVuSansMono.ttf").toString())), defaultFont.getSize());
+        Font f = Font.loadFont(new FileInputStream(new File("src/ressources/fonts/DejaVuSansMono.ttf")), defaultFont.getSize());
 		textArea.setFont(f);
 	} catch (FileNotFoundException e) {
 		// TODO Auto-generated catch block
