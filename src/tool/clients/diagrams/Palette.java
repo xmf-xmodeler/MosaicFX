@@ -186,14 +186,29 @@ public void deleteGroup(String name) {
   }
 
   public void renameAny(Diagram diagram, final String newName, final String oldName) {
-	    throw new RuntimeException("Not implemented yet");
-//	for (Group group : groups) {
-//	  for(Tool tool : group.tools) {
-//		if(tool.id.equals(oldName)) {
-//			tool.setID(newName);
-//		}
-//	  }
-//	}
+	   
+		for (HashMap.Entry<String, Group> group : groups.entrySet()) {
+			if (!group.getValue().getName().equals("Top Level")) 
+			{
+				for (Tool tool : group.getValue().tools) 
+				{
+					if (tool.getId().equals(oldName)) 
+					{
+						tool.setID(newName);
+						break;
+					}
+				}
+			}
+		}
+		
+		// throw new RuntimeException("Not implemented yet")
+		//for(Group group : groups){
+		  //for(Tool tool : group.tools) {
+			//if(tool.id.equals(oldName)) {
+			//	tool.setID(newName);
+			//}
+		  //}
+		//}
   }
   
   public TreeView<String> getToolBar() {
