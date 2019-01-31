@@ -1,5 +1,12 @@
+# java
 /bin/
 *.log
+
+# idea
+.idea
+*.iml
+
+# user
 /ini_Bjoern_win_multi.txt
 /ini_Bjoern_win.txt
 /classpath-jens
@@ -7,5 +14,14 @@
 /ini-Jens-win.txt
 /user_properties.xml
 /ini3.txt
-.idea
-*.iml
+
+# /doc/old/RequirementsAndSpecifications/.gitignore
+*.aux
+*.out
+*.toc
+*.bbl
+*.blg
+*.dvi
+
+# /build/.gitignore
+/output/
