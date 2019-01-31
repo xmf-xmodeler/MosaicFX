@@ -625,35 +625,35 @@ public class Diagram implements Display {
 //			}
 //		});
 		
-//		scroller.addEventFilter(ScrollEvent.ANY, new javafx.event.EventHandler<ScrollEvent>() {
-//
-//			@Override
-//			public void handle(ScrollEvent event) {
-//
-//				double scrollSpeedModificator = 1; 
-//				
-//				if (event.isControlDown()) {
-//					if (event.getDeltaY() > 0) {
-//						zoomIn();
-//					} else if (event.getDeltaY() < 0) {
-//						zoomOut();
-//					}
-//				} else {
-//					if (event.isShiftDown()) {						
-//						scroller.setHvalue(scroller.getHvalue() - event.getDeltaY() / scroller.getWidth() * scrollSpeedModificator);
-//					} else {
-//						if (scroller.getHeight() < canvas.getHeight()) {
-//						scroller.setVvalue(scroller.getVvalue() - event.getDeltaY() / scroller.getHeight() * scrollSpeedModificator);
-//						System.out.println("scroller: " + scroller.getHeight() + " ; canvas: "+ canvas.getHeight());
-//						}
-//					}
-//				}
-//				redraw();
-//				event.consume();
-//			}
-//		}
-//
-//		);
+		scroller.addEventFilter(ScrollEvent.ANY, new javafx.event.EventHandler<ScrollEvent>() {
+
+			@Override
+			public void handle(ScrollEvent event) {
+
+				double scrollSpeedModificator = 1; 
+				
+				if (event.isControlDown()) {
+					if (event.getDeltaY() > 0) {
+						zoomIn();
+					} else if (event.getDeltaY() < 0) {
+						zoomOut();
+					}
+				} else {
+					if (event.isShiftDown()) {						
+						scroller.setHvalue(scroller.getHvalue() - event.getDeltaY() / scroller.getWidth() * scrollSpeedModificator);
+					} else {
+						if (scroller.getHeight() < canvas.getHeight()) {
+						scroller.setVvalue(scroller.getVvalue() - event.getDeltaY() / scroller.getHeight() * scrollSpeedModificator);
+						System.out.println("scroller: " + scroller.getHeight() + " ; canvas: "+ canvas.getHeight());
+						}
+					}
+				}
+				redraw();
+				event.consume();
+			}
+		}
+
+		);
 
 //		pane.getChildren().add(palette.getToolBar());
 //		scroller = new ScrolledComposite(container, SWT.V_SCROLL | SWT.H_SCROLL);
