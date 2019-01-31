@@ -132,8 +132,8 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
 		            if (text.trim().length() != 0) deferredExpansions.add(parent);
 		      }
 			  
-			  ImageView iconView = new ImageView(new Image((new File("icons/" + icon + ".gif").toURI().toString())));
-//			  ImageView iconView = new ImageView(new Image(getClass().getResourceAsStream("icons/" + icon + ".gif")))	;
+			  ImageView iconView = new ImageView(new Image((new File("src/resources/gif/" + icon + ".gif").toURI().toString())));
+//			  ImageView iconView = new ImageView(new Image(getClass().getResourceAsStream("icons/" + icon + ".gif")));
 	          TreeItem<String> item = new TreeItem<String>(text, iconView);
 	          parent.getChildren().add((index == -1) ? parent.getChildren().size() : index, item);
 	          images.put(nodeId, icon);
@@ -208,7 +208,7 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
 		  TreeView<String> parent = trees.get(parentId);
 		  
 //		  ImageView iconView = new ImageView(new Image(getClass().getResourceAsStream("icons/" + icon + ".gif")));
-		  ImageView iconView = new ImageView(new Image((new File("icons/" + icon + ".gif").toURI().toString())));
+		  ImageView iconView = new ImageView(new Image((new File("src/resources/gif/" + icon + ".gif").toURI().toString())));
           TreeItem<String> item = new TreeItem<String>(text, iconView);
           
           parent.setRoot(item);

@@ -43,7 +43,7 @@ public class SearchWindow extends Stage {
 			}
 		});
 		this.parent = parent;
-		getIcons().add(new Image("file:icons/shell/mosaic32.gif"));
+		getIcons().add(new Image("file:src/resources/gif/shell/mosaic32.gif"));
 		setTitle("Find");
 		resultLabel = new Label("Result: 0 of 0");
 		this.textArea = textArea;

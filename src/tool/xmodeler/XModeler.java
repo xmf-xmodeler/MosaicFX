@@ -469,7 +469,7 @@ public class XModeler extends Application {
 			//scene = new Scene(containingBox,TOOL_WIDTH,TOOL_HEIGHT);
 			
 			// Set up Stage
-			stage.getIcons().add(new Image("file:icons/shell/mosaic32.gif"));
+			stage.getIcons().add(new Image("file:src/resources/gif/mosaic32.gif"));
 			setToolTitle();
 			
 			stage.setX(propertyManager.getIntProperty("TOOL_X", TOOL_X));		

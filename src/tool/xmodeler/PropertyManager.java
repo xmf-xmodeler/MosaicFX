@@ -387,7 +387,7 @@ public class PropertyManager {
 			Scene scene = new Scene(vb);
 			stage = new Stage();
 			stage.setTitle("Preferences");
-			stage.getIcons().add(new Image("file:icons/shell/mosaic32.gif"));
+			stage.getIcons().add(new Image("file:src/resources/gif/shell/mosaic32.gif"));
 			stage.setScene(scene);
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.show();

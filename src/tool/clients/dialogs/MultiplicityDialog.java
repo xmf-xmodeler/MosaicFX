@@ -207,7 +207,7 @@ public class MultiplicityDialog extends Dialog<ButtonType>{
 		this.ordered = ordered;
 //		this.navigable = navigable;
 		Stage stage = (Stage) getDialogPane().getScene().getWindow();
-		stage.getIcons().add(new Image("file:icons/shell/mosaic32.gif"));
+		stage.getIcons().add(new Image("file:src/resources/gif/shell/mosaic32.gif"));
 		stage.setTitle("Edit Multiplicity");
         getDialogPane().getButtonTypes().add(ButtonType.OK);	
         javafx.scene.Node okButton = getDialogPane().lookupButton(ButtonType.OK);

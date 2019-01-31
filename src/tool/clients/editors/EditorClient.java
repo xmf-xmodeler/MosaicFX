@@ -232,7 +232,7 @@ public class EditorClient extends Client {
       URL location = EditorClient.class.getProtectionDomain().getCodeSource().getLocation();
       String path = location.toString();
       path = path.substring(0, path.length() - 4); // delete "/bin" from string
-      path += "src/ressources/webroot/index.html";
+      path += "src/resources/webroot/index.html";
       // System.err.println("getWelcomePage: >" + path + "<");
       return new Value(path);
     }
@@ -456,13 +456,13 @@ public class EditorClient extends Client {
         decreaseZoom.setOnAction((e)->{
         	browser.setZoom(browser.getZoom()-0.1);
         });
-        Button back = new Button("", new ImageView(new Image((new File("icons/User/Arrow4Left.gif").toURI().toString()))));
+        Button back = new Button("", new ImageView(new Image((new File("src/resources/gif/User/Arrow4Left.gif").toURI().toString()))));
         back.setOnAction((e)->{
         	if( browser.getEngine().getHistory().getCurrentIndex()>0){
         		browser.getEngine().getHistory().go(-1);
         	}
         });
-        Button forward = new Button("", new ImageView(new Image((new File("icons/User/Arrow4Right.gif").toURI().toString()))));
+        Button forward = new Button("", new ImageView(new Image((new File("src/resources/gif/User/Arrow4Right.gif").toURI().toString()))));
         forward.setOnAction((e)->{
         	if( browser.getEngine().getHistory().getCurrentIndex()<browser.getEngine().getHistory().getEntries().size()-1){
         		browser.getEngine().getHistory().go(1);
