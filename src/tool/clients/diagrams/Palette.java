@@ -207,8 +207,7 @@ public void deleteGroup(String name) {
 							}
 						}
 					}
-			}
-			
+			}	
 		}
 		
 		//throw new RuntimeException("Not implemented yet")
@@ -220,6 +219,7 @@ public void deleteGroup(String name) {
 		  //}
 		//}
   }
+  
   
   public TreeView<String> getToolBar() {
 	  return tree;
