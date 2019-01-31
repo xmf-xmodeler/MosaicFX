@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
 public class FmmlxObject {
 
@@ -13,7 +14,21 @@ public class FmmlxObject {
 	int level;
 	int width;
 	int height;
+	
+	
+	boolean usePreferrefWidth = false; //not implemented yet
+	
+	int preferredWidth = 0;
+	int minWidth = 100;
+	
+	boolean showOperations = true;
+	boolean showOperationValues = true;
+	boolean showSlots = true;
+	
 	static int testDiff = 10;
+	
+	static int gap = 5;
+	
 	Vector<FmmlxAttribute> attributes;
 	Vector<FmmlxSlot> slots;
 	Vector<FmmlxOperation> operations;
@@ -21,29 +36,147 @@ public class FmmlxObject {
 	
 	public FmmlxObject(String name) {
 		this.name = name;
-		x = 10;
-		y = testDiff;
-		testDiff += 100;
+		x = testDiff;
+		y = 10;
+		testDiff += 150;
 		width = 150;
 		height = 80;
 		level = name.hashCode()%5;
 	}
 
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset) {
-		// check Size?
-		// draw border
-		g.strokeRect(x, y, width, height);
-		// draw title bar
-		g.setFill(Color.RED);
-		g.fillRect(x, y, width, 20);
-		g.setFill(Color.BLACK);
-		g.fillText(name, 10, y + 20);
 		
-		int Y = 40+y;		
+
+		double calculatedHeight = 0;
+		double calculatedWidth = 0;
+			
+		//determine attributes to paint
+		Vector<FmmlxAttribute> attributesToPaint = new Vector<FmmlxAttribute>();
+		
 		for(FmmlxAttribute att : attributes) {
-			g.fillText("[" + att.level + "] " + att.name + ":" + att.type, 10, Y);
-			Y += 20;
+			if (passReqs(att)) {
+				attributesToPaint.add(att);
+				// determine maximal width
+				Text text = new Text("[" + att.level + "] " + att.name + ":" + att.type);
+				calculatedWidth = Math.max(text.getLayoutBounds().getWidth(), calculatedWidth);
+			}
 		}
+		
+		//determine maximal width of operations
+		if (showOperations) {
+			for (FmmlxOperation operation : operations) {
+				Text text = new Text(operation.name);
+				calculatedWidth = Math.max(text.getLayoutBounds().getWidth(), calculatedWidth);
+			}
+		}
+		//determine maximal width of slots
+		if (showSlots) {
+			for (FmmlxSlot slot : slots) {
+				Text text = new Text(slot.name + " = " + slot.value);
+				calculatedWidth = Math.max(text.getLayoutBounds().getWidth(), calculatedWidth);
+			}
+		}
+		
+		//determine maximal width of operation values
+		if (showOperationValues) {
+			for (FmmlxOperationValue operationValue : operationValues) {
+				Text text = new Text(operationValue.name + " = "+ operationValue.value);
+				calculatedWidth = Math.max(text.getLayoutBounds().getWidth(), calculatedWidth);
+			}
+		}
+		
+		//if minimum width is not reached just paint minimum
+		calculatedWidth = Math.max(calculatedWidth + 2*gap, minWidth);
+		
+		//calculating header height 
+		Text header = new Text(name);
+		double headerheight = header.getLayoutBounds().getHeight() + 2*gap;
+		
+		//determine text height
+		double textheight = new Text(attributesToPaint.get(0).name).getLayoutBounds().getHeight();
+		
+		//calculate starting position for text
+		double Y = y + headerheight + 2*gap;		
+		calculatedHeight = Y + (attributesToPaint.size() -1) *(textheight + gap) + gap;
+		
+		if (showOperations)
+			calculatedHeight += (operations.size()-1) * (textheight + gap) + textheight + 2*gap ;
+		
+		if (showOperationValues)
+			calculatedHeight += (operationValues.size()-1) * (textheight + gap) + textheight + 2*gap;
+		
+		if (showSlots)
+			calculatedHeight += (slots.size()-1) * (textheight + gap) + textheight + 2*gap;
+		
+		//set background
+		g.setFill(Color.WHITE);
+		g.fillRect(x, y, calculatedWidth  , calculatedHeight);
+		g.setFill(Color.BLACK);
+		
+		//write attributes
+		for (FmmlxAttribute att : attributesToPaint) {
+			Text text = new Text("[" + att.level + "] " + att.name + ":" + att.type);
+			g.fillText(text.getText(),x + gap,Y + gap);
+			if (!att.equals(attributesToPaint.lastElement()))
+			Y += text.getLayoutBounds().getHeight() + gap;
+		}
+		
+		//write operations
+		if (showOperations) {
+			
+			//draw divider
+			g.strokeLine(x, Y + textheight, x + calculatedWidth, Y + textheight);
+			Y += textheight + 2*gap;
+			
+			//write operations
+			for (FmmlxOperation op : operations) {
+				Text text = new Text(op.name);
+				g.fillText(text.getText(),x + gap,Y + gap);
+				if (!op.equals(operations.lastElement()))
+				Y += text.getLayoutBounds().getHeight() + gap;
+			}
+		}
+		
+		//write slots
+		if (showSlots) {
+			
+			//draw divider
+			g.strokeLine(x, Y + textheight, x + calculatedWidth, Y + textheight);
+			Y += textheight + 2*gap;
+			
+			//write operations
+			for (FmmlxSlot slot : slots) {
+				Text text = new Text(slot.name + " = " + slot.value);
+				g.fillText(text.getText(),x + gap,Y + gap);
+				if (!slot.equals(slots.lastElement()))
+				Y += text.getLayoutBounds().getHeight() + gap;
+			}
+		}
+		
+		//write slots
+				if (showOperationValues) {
+					
+					//draw divider
+					g.strokeLine(x, Y + textheight, x + calculatedWidth, Y + textheight);
+					Y += textheight + 2*gap;
+					
+					//write operations
+					for (FmmlxOperationValue opValue : operationValues) {
+						Text text = new Text(opValue.name + " = " + opValue.value);
+						g.fillText(text.getText(),x + gap,Y + gap);
+						if (!opValue.equals(operationValues.lastElement()))
+						Y += text.getLayoutBounds().getHeight() + gap;
+					}
+				}
+		
+		//drawing the rectangle
+		
+		g.setFill(Color.RED);
+		g.fillRect(x, y, calculatedWidth , headerheight);
+		g.setFill(Color.BLACK);
+		g.fillText(name, x + gap, y + headerheight/2 + gap);
+		g.strokeRect(x, y, calculatedWidth  , calculatedHeight);
+
 	}
 
 	public void fetchData(FmmlxDiagramCommunicator comm) {
@@ -53,5 +186,10 @@ public class FmmlxObject {
 		operationValues = comm.fetchOperationValues(this.name);
 		
 	}
-
+	
+	private boolean passReqs (FmmlxAttribute att) {
+		
+		return true;
+	}
+	
 }

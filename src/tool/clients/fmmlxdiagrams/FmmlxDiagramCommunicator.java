@@ -109,6 +109,7 @@ public class FmmlxDiagramCommunicator {
 		Vector<Object> response = xmfRequest(handler, "getSlots", new Value[]{new Value(objectName)});
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxSlot> result = new Vector<>();
+		result.add(new FmmlxSlot()); //Added for test purposes
 		System.err.println("slots: " + response0);
 		
 		return result;
@@ -118,13 +119,14 @@ public class FmmlxDiagramCommunicator {
 		Vector<Object> response = xmfRequest(handler, "getOwnOperations", new Value[]{new Value(className)});
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxOperation> result = new Vector<>();
-
+		result.add(new FmmlxOperation()); //Added for test purposes
         System.err.println("operations: " + response0);
 		return result;
 	}
 	
 	public Vector<FmmlxOperationValue> fetchOperationValues(String objectName) {
 		Vector<FmmlxOperationValue> result = new Vector<>();
+		result.add(new FmmlxOperationValue()); //Added for test purposes
 		return result;
 	}	
 	
