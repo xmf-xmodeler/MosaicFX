@@ -14,6 +14,7 @@ public class List {
 	String id;
 	Hashtable<String, String> items = new Hashtable<String, String>();
 	ListView<String> listView;
+	Label label;
 
 	public List(String id, GridPane parent, int rowIndex, String labelText) {
 		if(rowIndex<0) {
@@ -24,7 +25,7 @@ public class List {
 		listView = new ListView<String>();
 		listView.setMaxHeight(200);
 		
-		Label label = new Label(labelText);
+		label = new Label(labelText);
 		
 		listView.setOnMouseClicked(new javafx.event.EventHandler<MouseEvent>() {
 			@Override
@@ -50,9 +51,7 @@ public class List {
 
 	public void writeXML(PrintStream out) {
 		out.print("<List id='" + getId() + "'");
-		out.print(" x='" + (int) (listView.getLayoutX()) + "'");
-		out.print(" y='" + (int) (listView.getLayoutY()) + "'");
-		out.print(" width='" + (int) (listView.getWidth()) + "'");
+		out.print(" label='" + label.getText() + "'" );
 		out.print(" height='" + (int) (listView.getHeight()) + "'>");
 		for (String id : items.keySet())
 			out.print("<Item id='" + id + "' value='" + XModeler.encodeXmlAttribute(items.get(id)) + "'/>");
@@ -72,5 +71,4 @@ public class List {
 				return id;
 		return null;
 	}
-
 }

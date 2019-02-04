@@ -41,10 +41,8 @@ public class FormsClient extends Client {
 		return theClient;
 	}
 
-//  static final Color                  WHITE             = new Color(null, 255, 255, 255);
 	static FormsClient theClient;
 	static TabPane tabFolder;
-//  static ToolBar                      toolBar;
 
 	static Hashtable<String, Tab> tabs = new Hashtable<String, Tab>();
 	static Vector<Form> forms = new Vector<Form>();
@@ -199,7 +197,7 @@ public class FormsClient extends Client {
 	private void inflateCheck(String parentId, Node check) {
 		String id = XModeler.attributeValue(check, "id");
 		boolean checked = XModeler.attributeValue(check, "checked").equals("true");
-		String labelText = XModeler.attributeValue(check, "labelText");
+		String labelText = XModeler.attributeValue(check, "label");
 		newCheckBox(parentId, id, checked, labelText);
 	}
 
@@ -267,13 +265,14 @@ public class FormsClient extends Client {
 	private void inflateLabel(String parentId, Node label) {
 		String id = XModeler.attributeValue(label, "id");
 		String string = XModeler.attributeValue(label, "string");
+		System.out.println("InflateLabel: " + string);
 		newText(parentId, id, string);
 		getForm(parentId).getLabels().get(id).setText(string);
 	}
 
 	private void inflateList(String parentId, Node list) {
 		String id = XModeler.attributeValue(list, "id");
-		String labelText = XModeler.attributeValue(list, "labelText");
+		String labelText = XModeler.attributeValue(list, "label");
 		newList(parentId, id, labelText);
 		NodeList items = list.getChildNodes();
 		for (int i = 0; i < items.getLength(); i++) {
@@ -287,8 +286,8 @@ public class FormsClient extends Client {
 		String id = XModeler.attributeValue(textBox, "id");
 		String string = XModeler.attributeValue(textBox, "string");
 		boolean editable = XModeler.attributeValue(textBox, "editable").equals("true");
-		String labelText = XModeler.attributeValue(textBox, "labelText");
-		newTextBox(parentId, id,editable, labelText);
+		String labelText = XModeler.attributeValue(textBox, "label");
+		newTextBox(parentId, id, editable, labelText);
 		getForm(parentId).getBoxes().get(id).setText(string);
 	}
 
@@ -296,7 +295,7 @@ public class FormsClient extends Client {
 		String id = XModeler.attributeValue(textField, "id");
 		String string = XModeler.attributeValue(textField, "string");
 		boolean editable = XModeler.attributeValue(textField, "editable").equals("true");
-		String labelText = XModeler.attributeValue(textField, "labelText");
+		String labelText = XModeler.attributeValue(textField, "label");
 		newTextField(parentId, id, editable, labelText);
 		getForm(parentId).getTextFields().get(id).setText(string);
 	}
@@ -366,13 +365,12 @@ public class FormsClient extends Client {
 		String parentId = message.args[0].strValue();
 		String id = message.args[1].strValue();
 		int zoom = getDeviceZoomPercent();
-		boolean checked = message.args[4].boolValue;
-		String labelText = message.args[5].strValue();
+		boolean checked = message.args[2].boolValue;
+		String labelText = message.args[3].strValue();
 		newCheckBox(parentId, id, checked, labelText);
 	}
 
-	private void newCheckBox(final String parentId, final String id, final boolean checked,
-			final String labelText) {
+	private void newCheckBox(final String parentId, final String id, final boolean checked, final String labelText) {
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			for (Form form : forms)
@@ -440,11 +438,11 @@ public class FormsClient extends Client {
 		String parentId = message.args[0].strValue();
 		String id = message.args[1].strValue();
 		int zoom = getDeviceZoomPercent();
-		String labelText = message.args[6].strValue();
+		String labelText = message.args[2].strValue();
 		newList(parentId, id, labelText);
 	}
 
-	private void newList(String parentId, String id,String labelText) {
+	private void newList(String parentId, String id, String labelText) {
 		for (Form form : forms)
 			form.newList(parentId, id, labelText);
 	}
@@ -474,11 +472,12 @@ public class FormsClient extends Client {
 	}
 
 	private void newTextBox(Message message) {
-		String parentId = message.args[0].strValue();
+		String parentId = message.args
+				[0].strValue();
 		String id = message.args[1].strValue();
 		int zoom = getDeviceZoomPercent();
-		boolean editable = message.args[6].boolValue;
-		String labelText = message.args[7].strValue();
+		boolean editable = message.args[2].boolValue;
+		String labelText = message.args[3].strValue();
 		newTextBox(parentId, id, editable, labelText);
 	}
 
@@ -500,8 +499,8 @@ public class FormsClient extends Client {
 		String parentId = message.args[0].strValue();
 		String id = message.args[1].strValue();
 		int zoom = getDeviceZoomPercent();
-		boolean editable = message.args[6].boolValue;
-		String labelText = message.args[7].strValue();
+		boolean editable = message.args[2].boolValue;
+		String labelText = message.args[3].strValue();
 		newTextField(parentId, id, editable, labelText);
 	}
 
@@ -673,7 +672,6 @@ public class FormsClient extends Client {
 		else if (message.hasName("delete"))
 			delete(message);
 		else {
-//System.out.println("------- UNKNOWN");    	
 			super.sendMessage(message);
 		}
 	}

@@ -5,15 +5,12 @@ import java.io.PrintStream;
 import java.util.Hashtable;
 import java.util.concurrent.CountDownLatch;
 
-import com.sun.xml.internal.ws.util.StringUtils;
-
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.geometry.Side;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -33,8 +30,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.RowConstraints;
 import tool.clients.EventHandler;
 import tool.clients.menus.MenuClient;
 import tool.xmodeler.XModeler;
@@ -49,17 +44,17 @@ public class Form {
 	private GridPane gridTextFields;
 	private GridPane gridBoxes;
 	private FlowPane root;
-	
+
 	private int rowLeft;
 	private int rowRight;
 	private int gridWidth = 150;
 
-	private Hashtable<String, TextField> textFields = new Hashtable<String, TextField>();
+	private Hashtable<String, FormTextField> textFields = new Hashtable<String, FormTextField>();
 	private Hashtable<String, Label> labels = new Hashtable<String, Label>();
 	private Hashtable<String, List> lists = new Hashtable<String, List>();
 	private Hashtable<String, TextArea> boxes = new Hashtable<String, TextArea>();
 	private Hashtable<String, ComboBox<String>> combos = new Hashtable<String, ComboBox<String>>();
-	private Hashtable<String, CheckBox> checks = new Hashtable<String, CheckBox>();
+	private Hashtable<String, FormCheckBox> checks = new Hashtable<String, FormCheckBox>();
 	private Hashtable<String, Button> buttons = new Hashtable<String, Button>();
 	private Hashtable<String, TreeView<String>> trees = new Hashtable<String, TreeView<String>>();
 	private Hashtable<String, TreeItem<String>> items = new Hashtable<String, TreeItem<String>>();
@@ -74,7 +69,7 @@ public class Form {
 		root.setOrientation(Orientation.HORIZONTAL);
 
 		gridTextFields = initializeGrid(2, gridWidth);
-		gridBoxes = initializeGrid(1, gridWidth * 2);
+		gridBoxes = initializeGrid(1, gridWidth * 4);
 
 		rowLeft = 0;
 		rowRight = 0;
@@ -146,8 +141,7 @@ public class Form {
 
 	public void newCheckBox(String parentId, final String id, boolean checked, String labelText) {
 		if (this.id.equals(parentId)) {
-			final CheckBox checkBox = new CheckBox();
-			final Label label = new Label(labelText);
+			final FormCheckBox checkBox = new FormCheckBox(labelText);
 
 			javafx.event.EventHandler<ActionEvent> eh = new javafx.event.EventHandler<ActionEvent>() {
 				@Override
@@ -158,16 +152,15 @@ public class Form {
 							xmf_setSelection(id, chk.isSelected());
 						}
 					}
-				} 
+				}
 			};
 
 			checkBox.setOnAction(eh);
 			checkBox.setSelected(checked);
 
 			checks.put(id, checkBox);
-			labels.put(id, label);
 
-			gridTextFields.add(label, 0, rowLeft);
+			gridTextFields.add(checkBox.getLabel(), 0, rowLeft);
 			gridTextFields.add(checkBox, 1, rowLeft);
 			rowLeft++;
 		}
@@ -196,10 +189,10 @@ public class Form {
 
 	public void newList(String parentId, final String id, final String labelText) {
 		if (this.id.equals(parentId)) {
-			
+
 			CountDownLatch l = new CountDownLatch(1);
 			Platform.runLater(() -> {
-				List list = new List(id, gridBoxes, rowRight-2, labelText);
+				List list = new List(id, gridBoxes, rowRight - 2, labelText);
 				lists.put(id, list);
 
 				l.countDown();
@@ -255,15 +248,14 @@ public class Form {
 		}
 	}
 
-	public void newTextField(final String id,boolean editable, String labelText) {
-		final TextField textField = new TextField();
-		final Label label = new Label(labelText);
+	public void newTextField(final String id, boolean editable, String labelText) {
+		final FormTextField textField = new FormTextField(labelText);
 		textField.setEditable(editable);
+		textField.setDisable(!editable);
 
 		textFields.put(id, textField);
-		labels.put(id, label);
 
-		gridTextFields.add(label, 0, rowLeft);
+		gridTextFields.add(textField.getLabel(), 0, rowLeft);
 		gridTextFields.add(textField, 1, rowLeft);
 		rowLeft++;
 
@@ -410,8 +402,9 @@ public class Form {
 		items.clear();
 		images.clear();
 		rowLeft = 0;
-		rowLeft = 0;
+		rowRight = 0;
 
+		gridBoxes.getChildren().clear();
 		gridTextFields.getChildren().clear();
 	}
 
@@ -456,7 +449,7 @@ public class Form {
 		return buttons;
 	}
 
-	public Hashtable<String, CheckBox> getChecks() {
+	public Hashtable<String, FormCheckBox> getChecks() {
 		return checks;
 	}
 
@@ -501,7 +494,7 @@ public class Form {
 		return lists;
 	}
 
-	public Hashtable<String, TextField> getTextFields() {
+	public Hashtable<String, FormTextField> getTextFields() {
 		return textFields;
 	}
 
@@ -639,21 +632,16 @@ public class Form {
 		out.print("<Form id='" + getId() + "' selected='" + selected + "' label='"
 				+ XModeler.encodeXmlAttribute(formLabel) + "'>");
 		for (String id : textFields.keySet()) {
-			TextField field = textFields.get(id);
+			FormTextField field = textFields.get(id);
 			out.print("<TextField id='" + id + "'");
 			out.print(" string='" + XModeler.encodeXmlAttribute(field.getText()) + "'");
-			out.print(" x='" + AnchorPane.getLeftAnchor(field).intValue() + "'");
-			out.print(" y='" + AnchorPane.getTopAnchor(field).intValue() + "'");
-			out.print(" width='" + (int) field.getWidth() + "'");
-			out.print(" height='" + (int) field.getHeight() + "'");
+			out.print(" label='" + XModeler.encodeXmlAttribute(field.getLabel().getText()) + "'");
 			out.print(" editable='" + field.isEditable() + "'/>");
 		}
 		for (String id : labels.keySet()) {
 			Label label = labels.get(id);
 			out.print("<Label id='" + id + "'");
-			out.print(" string='" + XModeler.encodeXmlAttribute(label.getText()) + "'");
-			out.print(" x='" + AnchorPane.getLeftAnchor(label).intValue() + "'");
-			out.print(" y='" + AnchorPane.getTopAnchor(label).intValue() + "'/>");
+			out.print(" string='" + XModeler.encodeXmlAttribute(label.getText()) + "'/>");
 		}
 		for (List list : lists.values())
 			list.writeXML(out);
@@ -662,47 +650,31 @@ public class Form {
 			TextArea box = boxes.get(id);
 			out.print("<TextBox id='" + id + "'");
 			out.print(" string='" + XModeler.encodeXmlAttribute(box.getText()) + "'");
-			out.print(" x='" + AnchorPane.getLeftAnchor(box).intValue() + "'");
-			out.print(" y='" + AnchorPane.getTopAnchor(box).intValue() + "'");
-			out.print(" width='" + (int) box.getWidth() + "'");
-			out.print(" height='" + (int) box.getHeight() + "'");
 			out.print(" editable='" + box.isEditable() + "'/>");
 		}
 		for (String id : combos.keySet()) {
 			ComboBox<String> combo = combos.get(id);
 			out.print("<Combo id='" + id + "'");
 			out.print(" string='" + XModeler.encodeXmlAttribute(combo.getValue()) + "'");
-			out.print(" x='" + AnchorPane.getLeftAnchor(combo).intValue() + "'");
-			out.print(" y='" + AnchorPane.getTopAnchor(combo).intValue() + "'");
-			out.print(" width='" + (int) combo.getWidth() + "'");
-			out.print(" height='" + (int) combo.getHeight() + "'");
 			out.print(" editable='" + combo.isEditable() + "'>");
 			for (String value : combo.getItems())
 				out.print("<Item item='" + XModeler.encodeXmlAttribute(value) + "'/>");
 			out.print("</Combo>");
 		}
 		for (String id : checks.keySet()) {
+			FormCheckBox checkBox = checks.get(id);
 			out.print("<Check id='" + id + "'");
-			out.print(" checked='" + checks.get(id).isSelected() + "'");
-			out.print(" x='" + AnchorPane.getLeftAnchor(checks.get(id)).intValue() + "'");
-			out.print(" y='" + AnchorPane.getTopAnchor(checks.get(id)).intValue() + "'");
+			out.print(" checked='" + checkBox.isSelected() + "'");
+			out.print(" label='" + checkBox.getLabel().getText() + "'");
 			out.print(" text='" + XModeler.encodeXmlAttribute(checks.get(id).getText()) + "'/>");
 		}
 		for (String id : buttons.keySet()) {
 			out.print("<Button id='" + id + "'");
-			out.print(" x='" + AnchorPane.getLeftAnchor(buttons.get(id)).intValue() + "'");
-			out.print(" y='" + AnchorPane.getTopAnchor(buttons.get(id)) + "'");
-			out.print(" width='" + (int) buttons.get(id).getWidth() + "'");
-			out.print(" height='" + (int) buttons.get(id).getHeight() + "'");
 			out.print(" text='" + XModeler.encodeXmlAttribute(buttons.get(id).getText()) + "'/>");
 		}
 		for (String id : trees.keySet()) {
 			TreeView<String> tree = trees.get(id);
 			out.print("<Tree id='" + id + "'");
-			out.print(" x='" + AnchorPane.getLeftAnchor(trees.get(id)).intValue() + "'");
-			out.print(" y='" + AnchorPane.getTopAnchor(trees.get(id)).intValue() + "'");
-			out.print(" width='" + (int) trees.get(id).getWidth() + "'");
-			out.print(" height='" + (int) trees.get(id).getHeight() + "'");
 			out.print(" editable='true'>");
 			writeXMLTreeItem(tree.getRoot(), out);
 			out.print("</Tree>");
