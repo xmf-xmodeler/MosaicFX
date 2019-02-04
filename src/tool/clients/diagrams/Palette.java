@@ -3,7 +3,6 @@ package tool.clients.diagrams;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
-
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -186,15 +185,41 @@ public void deleteGroup(String name) {
   }
 
   public void renameAny(Diagram diagram, final String newName, final String oldName) {
-	    throw new RuntimeException("Not implemented yet");
-//	for (Group group : groups) {
-//	  for(Tool tool : group.tools) {
-//		if(tool.id.equals(oldName)) {
-//			tool.setID(newName);
-//		}
-//	  }
-//	}
+	   
+		for (HashMap.Entry<String, Group> group : groups.entrySet()) {
+			switch (group.getValue().getName()){
+				case "Diagram": continue;
+				case "XCore":continue;
+				case "XMap":continue;
+				case "Toggles":continue;
+				case "Actions":continue;
+				case "Meta Elements":continue;
+				case "Top Level":continue;
+				default:
+					if (!group.getValue().getName().equals("Top Level")) 
+					{
+						for (Tool tool : group.getValue().tools) 
+						{
+							if (tool.getId().equals(oldName)) 
+							{
+								tool.setID(newName);
+								break;
+							}
+						}
+					}
+			}	
+		}
+		
+		//throw new RuntimeException("Not implemented yet")
+		//for(Group group : groups){
+		  //for(Tool tool : group.tools) {
+			//if(tool.id.equals(oldName)) {
+			//	tool.setID(newName);
+			//}
+		  //}
+		//}
   }
+  
   
   public TreeView<String> getToolBar() {
 	  return tree;
