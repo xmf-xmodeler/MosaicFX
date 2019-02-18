@@ -9,14 +9,16 @@ import javafx.scene.text.Text;
 public class FmmlxObject {
 
 	String name;
+	int id;
 	int x; 
 	int y;
 	int level;
 	int width;
 	int height;
-	
-	
-	boolean usePreferrefWidth = false; //not implemented yet
+	public transient double mouseMoveOffsetX;
+	public transient double mouseMoveOffsetY;
+		
+	boolean usePreferredWidth = false; //not implemented yet
 	
 	int preferredWidth = 0;
 	int minWidth = 100;
@@ -44,8 +46,10 @@ public class FmmlxObject {
 		level = name.hashCode()%5;
 	}
 
-	public void paintOn(GraphicsContext g, int xOffset, int yOffset) {
-		
+	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram diagram) {
+
+		boolean selected = diagram.isSelected(this);
+		g.setStroke(selected?Color.GREEN:Color.BLACK);
 
 		double calculatedHeight = 0;
 		double calculatedWidth = 0;
@@ -96,7 +100,7 @@ public class FmmlxObject {
 		double textheight = new Text(attributesToPaint.get(0).name).getLayoutBounds().getHeight();
 		
 		//calculate starting position for text
-		double Y = y + headerheight + 2*gap;		
+		double Y = 0 + headerheight + 2*gap;	// just a guess
 		calculatedHeight = Y + (attributesToPaint.size() -1) *(textheight + gap) + gap;
 		
 		if (showOperations)
@@ -108,9 +112,13 @@ public class FmmlxObject {
 		if (showSlots)
 			calculatedHeight += (slots.size()-1) * (textheight + gap) + textheight + 2*gap;
 		
+		calculatedHeight += 10;// just a guess
+		
+		Y += y;
+		
 		//set background
 		g.setFill(Color.WHITE);
-		g.fillRect(x, y, calculatedWidth  , calculatedHeight);
+		g.fillRect(x, y, calculatedWidth, calculatedHeight);
 		g.setFill(Color.BLACK);
 		
 		//write attributes
@@ -177,6 +185,9 @@ public class FmmlxObject {
 		g.fillText(name, x + gap, y + headerheight/2 + gap);
 		g.strokeRect(x, y, calculatedWidth  , calculatedHeight);
 
+		this.height = (int) calculatedHeight;
+		this.width = (int) calculatedWidth;
+
 	}
 
 	public void fetchData(FmmlxDiagramCommunicator comm) {
@@ -190,6 +201,14 @@ public class FmmlxObject {
 	private boolean passReqs (FmmlxAttribute att) {
 		
 		return true;
+	}
+
+	public boolean isHit(double mouseX, double mouseY) {
+		return 
+				mouseX > x &&
+				mouseY > y &&
+				mouseX < x + width &&
+				mouseY < y + height;
 	}
 	
 }

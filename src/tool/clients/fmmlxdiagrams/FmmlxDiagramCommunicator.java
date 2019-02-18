@@ -41,7 +41,7 @@ public class FmmlxDiagramCommunicator {
 			v.remove(0);
 			results.put(requestID, v);
 		}
-		System.err.println("o: " + o + "(" + o.getClass() + ")");
+//		System.err.println("o: " + o + "(" + o.getClass() + ")");
 	}	
 	
 	private Vector<Object> xmfRequest(int targetHandle, String message, Value... args) {
@@ -56,7 +56,7 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(targetHandle, message, args2);
 		int attempts = 0;
 		while(waiting && attempts < 20) {
-			System.err.println(attempts + ". attempt");
+//			System.err.println(attempts + ". attempt");
 			attempts++;
 			try {Thread.sleep(20);
 			} catch (InterruptedException e) { e.printStackTrace(); }
