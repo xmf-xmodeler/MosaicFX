@@ -55,7 +55,7 @@ public class FmmlxDiagramCommunicator {
 		System.err.println("send:" + targetHandle +"-"+ message +"-"+ args2);
 		WorkbenchClient.theClient().send(targetHandle, message, args2);
 		int attempts = 0;
-		while(waiting && attempts < 20) {
+		while(waiting && attempts < 40) {
 //			System.err.println(attempts + ". attempt");
 			attempts++;
 			try {Thread.sleep(20);
