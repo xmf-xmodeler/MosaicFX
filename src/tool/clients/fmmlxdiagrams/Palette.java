@@ -11,6 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import tool.clients.fmmlxdiagrams.dialogs.AddInstanceDialog;
 import tool.clients.fmmlxdiagrams.dialogs.CreateMetaClassDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MetaClassDialogResult;
 
@@ -26,8 +27,8 @@ public class Palette extends GridPane {
 		setVgap(5);
 		setHgap(5);
 
-		addButton("Add MetaClass", 0, e -> newMetaClassDialog());
-		addButton("Add Instance", 1, e -> System.out.println("Button 1"));
+		addButton("Add MetaClass", 0, e -> addMetaClassDialog());
+		addButton("Add Instance", 1, e -> addInstanceDialog());
 		addButton("Remove MetaClass/Instance", 2, e -> System.out.println("Button 2"));
 		addButton("Add Attribute", 3, e -> System.out.println("Button 3"));
 		addButton("Edit Attribute", 4, e -> System.out.println("Button 4"));
@@ -54,7 +55,7 @@ public class Palette extends GridPane {
 		return diagram.comm;
 	}
 
-	private void newMetaClassDialog() {
+	private void addMetaClassDialog() {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
@@ -69,7 +70,17 @@ public class Palette extends GridPane {
 			diagram.updateDiagram();
 			l.countDown();
 		});
-
+	}
+	
+	private void addInstanceDialog() {
+		CountDownLatch l = new CountDownLatch(1);
+		
+		Platform.runLater(() -> {
+			AddInstanceDialog dlg = new AddInstanceDialog("");
+			dlg.showAndWait();
+			
+			l.countDown();
+		});
 	}
 
 

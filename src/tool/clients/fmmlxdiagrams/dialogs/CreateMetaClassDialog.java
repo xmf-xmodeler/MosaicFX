@@ -3,26 +3,18 @@ package tool.clients.fmmlxdiagrams.dialogs;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
 
-public class CreateMetaClassDialog extends Dialog<MetaClassDialogResult> {
+public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 
-	private final int COLUMN_WIDTH = 150;
-
-	private final ObservableList<String> levelsList = FXCollections.observableArrayList("1", "2", "3", "4", "5");
 	private final ObservableList<String> parentList = FXCollections.observableArrayList();
 
 	private GridPane grid;
@@ -44,8 +36,8 @@ public class CreateMetaClassDialog extends Dialog<MetaClassDialogResult> {
 
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-		initializeGrid();
-		createContent();
+		grid = initializeGrid();
+		layoutContent();
 
 		dialog.setContent(grid);
 
@@ -65,31 +57,14 @@ public class CreateMetaClassDialog extends Dialog<MetaClassDialogResult> {
 		});
 	}
 
-	private void initializeGrid() {
-		grid = new GridPane();
-		grid.setHgap(3);
-		grid.setVgap(3);
-		grid.setPadding(new Insets(10, 10, 10, 10));
-
-		ColumnConstraints cc;
-		for (int i = 0; i < 2; i++) {
-			cc = new ColumnConstraints();
-			cc.setMaxWidth(COLUMN_WIDTH);
-			cc.setMinWidth(COLUMN_WIDTH);
-			cc.setFillWidth(true);
-			grid.getColumnConstraints().add(cc);
-		}
-
-	}
-
-	private void createContent() {
+	private void layoutContent() {
 		nameLabel = new Label("Name");
 		levelLabel = new Label("Level");
 		abstractLabel = new Label("Abstract");
 		parentLabel = new Label("Parent");
 
 		nameTextField = new TextField();
-		levelComboBox = new ComboBox<>(levelsList);
+		levelComboBox = new ComboBox<>(LevelList.levelList);
 		parentComboBox = new ComboBox<>(parentList);
 		abstractCheckbox = new CheckBox();
 
@@ -114,7 +89,6 @@ public class CreateMetaClassDialog extends Dialog<MetaClassDialogResult> {
 		if (!name.isEmpty() && !level.isEmpty()) {
 			return true;
 		}
-
 		return false;
 	}
 
