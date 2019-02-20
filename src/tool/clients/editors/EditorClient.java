@@ -53,6 +53,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
 import tool.clients.Client;
 import tool.clients.EventHandler;
+import tool.helper.IconGenerator;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
@@ -232,7 +233,7 @@ public class EditorClient extends Client {
       URL location = EditorClient.class.getProtectionDomain().getCodeSource().getLocation();
       String path = location.toString();
       path = path.substring(0, path.length() - 4); // delete "/bin" from string
-      path += "src/resources/webroot/index.html";
+      path += "resources/webroot/index.html";
       // System.err.println("getWelcomePage: >" + path + "<");
       return new Value(path);
     }
@@ -456,13 +457,13 @@ public class EditorClient extends Client {
         decreaseZoom.setOnAction((e)->{
         	browser.setZoom(browser.getZoom()-0.1);
         });
-        Button back = new Button("", new ImageView(new Image((new File("src/resources/gif/User/Arrow4Left.gif").toURI().toString()))));
+        Button back = new Button("", IconGenerator.getImageView("User/Arrow4Left"));
         back.setOnAction((e)->{
         	if( browser.getEngine().getHistory().getCurrentIndex()>0){
         		browser.getEngine().getHistory().go(-1);
         	}
         });
-        Button forward = new Button("", new ImageView(new Image((new File("src/resources/gif/User/Arrow4Right.gif").toURI().toString()))));
+        Button forward = new Button("", IconGenerator.getImageView("User/Arrow4Right"));
         forward.setOnAction((e)->{
         	if( browser.getEngine().getHistory().getCurrentIndex()<browser.getEngine().getHistory().getEntries().size()-1){
         		browser.getEngine().getHistory().go(1);

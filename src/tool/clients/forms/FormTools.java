@@ -81,31 +81,31 @@ public class FormTools {
 
 	private String iconFile(String toolName) {
 		if (toolName.equals("browseAndClearHistory"))
-			return "src/resources/gif/Clear.gif";
+			return "resources/gif/Clear.gif";
 		else if (toolName.equals("previousInHistory"))
-			return "src/resources/gif/Back.gif";
+			return "resources/gif/Back.gif";
 		else if (toolName.equals("nextInHistory"))
-			return "src/resources/gif/Forward.gif";
+			return "resources/gif/Forward.gif";
 		else if (toolName.equals("lock"))
-			return "src/resources/gif/Unlocked.gif";
+			return "resources/gif/Unlocked.gif";
 		else {
 			System.err.println("Unknown tool icon file for " + toolName);
-			return "src/resources/gif/Object.gif";
+			return "resources/gif/Object.gif";
 		}
 	}
 
 	private String disabledIconFile(String toolName) {
 		if (toolName.equals("browseAndClearHistory"))
-			return "src/resources/gif/Clear.gif";
+			return "resources/gif/Clear.gif";
 		else if (toolName.equals("previousInHistory"))
-			return "src/resources/gif/BackDisabled.gif";
+			return "resources/gif/BackDisabled.gif";
 		else if (toolName.equals("nextInHistory"))
-			return "src/resources/gif/ForwardDisabled.gif";
+			return "resources/gif/ForwardDisabled.gif";
 		else if (toolName.equals("lock"))
-			return "src/resources/gif/Locked.gif";
+			return "resources/gif/Locked.gif";
 		else {
 			System.err.println("Unknown tool icon file for " + toolName);
-			return "src/resources/gif/Object.gif";
+			return "resources/gif/Object.gif";
 		}
 	}
 

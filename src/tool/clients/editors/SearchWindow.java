@@ -18,6 +18,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import tool.helper.IconGenerator;
 
 public class SearchWindow extends Stage {
 	InlineCssTextArea textArea;
@@ -43,7 +44,7 @@ public class SearchWindow extends Stage {
 			}
 		});
 		this.parent = parent;
-		getIcons().add(new Image("file:src/resources/gif/shell/mosaic32.gif"));
+		getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		setTitle("Find");
 		resultLabel = new Label("Result: 0 of 0");
 		this.textArea = textArea;

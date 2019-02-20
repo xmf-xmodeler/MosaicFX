@@ -48,6 +48,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Font;
 import tool.clients.Client;
 import tool.clients.menus.MenuClient;
+import tool.helper.IconGenerator;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
@@ -132,7 +133,7 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
 		            if (text.trim().length() != 0) deferredExpansions.add(parent);
 		      }
 			  
-			  ImageView iconView = new ImageView(new Image((new File("src/resources/gif/" + icon + ".gif").toURI().toString())));
+			  ImageView iconView = IconGenerator.getImageView(icon);
 //			  ImageView iconView = new ImageView(new Image(getClass().getResourceAsStream("icons/" + icon + ".gif")));
 	          TreeItem<String> item = new TreeItem<String>(text, iconView);
 	          parent.getChildren().add((index == -1) ? parent.getChildren().size() : index, item);
@@ -208,7 +209,7 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
 		  TreeView<String> parent = trees.get(parentId);
 		  
 //		  ImageView iconView = new ImageView(new Image(getClass().getResourceAsStream("icons/" + icon + ".gif")));
-		  ImageView iconView = new ImageView(new Image((new File("src/resources/gif/" + icon + ".gif").toURI().toString())));
+		  ImageView iconView = IconGenerator.getImageView(icon);
           TreeItem<String> item = new TreeItem<String>(text, iconView);
           
           parent.setRoot(item);
