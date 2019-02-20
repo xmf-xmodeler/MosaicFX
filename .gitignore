@@ -24,4 +24,4 @@
 *.dvi
 
 # /build/.gitignore
-/output/
+/build/output/
