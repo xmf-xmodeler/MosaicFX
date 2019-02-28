@@ -190,6 +190,7 @@
 				<include name="User/**" />
 				<include name="web/**" />
 				<exclude name="**/.DS_Store" />
+				<include name="resources/**" />
 			</zipfileset>
 			<zipfileset dir="./output/" prefix="${prefix}">
 				<!-- ini files -->
