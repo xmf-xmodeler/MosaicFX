@@ -36,11 +36,21 @@ public class FmmlxObject {
 	Vector<FmmlxOperation> operations;
 	Vector<FmmlxOperationValue> operationValues;
 	
-	public FmmlxObject(String name) {
+	public FmmlxObject(Integer id, String name, Integer lastKnownX, Integer lastKnownY) {
 		this.name = name;
-		x = testDiff;
-		y = 10;
-		testDiff += 150;
+		this.id = id;
+		if(lastKnownX != null && lastKnownX != 0) {
+			x = lastKnownX;
+		} else {
+			x = testDiff;
+			testDiff += 150;
+		}
+		if(lastKnownY != null && lastKnownY != 0) {
+			y = lastKnownY;
+		} else {
+			y = 10;
+		}
+
 		width = 150;
 		height = 80;
 		level = name.hashCode()%5;

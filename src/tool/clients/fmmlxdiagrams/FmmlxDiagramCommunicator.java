@@ -38,6 +38,7 @@ public class FmmlxDiagramCommunicator {
 		if(o instanceof java.util.Vector){
 			java.util.Vector<Object> v = (java.util.Vector<Object>) o;
 			int requestID = (Integer) (v.get(0));
+//			System.err.println("Receiving request " + requestID);
 			v.remove(0);
 			results.put(requestID, v);
 		}
@@ -47,12 +48,13 @@ public class FmmlxDiagramCommunicator {
 	private Vector<Object> xmfRequest(int targetHandle, String message, Value... args) {
 		Value[] args2 = new Value[args.length+1];
 		int requestID = idCounter++;
+//		System.err.println("Sending request " + requestID);
 		for(int i = 0; i < args.length; i++) {
 			args2[i+1] = args[i];
 		}
 		args2[0] = new Value(requestID);
 		boolean waiting = true;
-		System.err.println("send:" + targetHandle +"-"+ message +"-"+ args2);
+//		System.err.println("send:" + targetHandle +"-"+ message +"-"+ args2);
 		WorkbenchClient.theClient().send(targetHandle, message, args2);
 		int attempts = 0;
 		while(waiting && attempts < 20) {
@@ -74,13 +76,21 @@ public class FmmlxDiagramCommunicator {
 	@SuppressWarnings("unchecked")
 	public Vector<FmmlxObject> getAllObjects() {
 		Vector<Object> response = xmfRequest(handler, "getAllObjects", new Value[]{});
-		Vector<Object> response0 = (Vector<Object>) (response.get(0));
+		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<FmmlxObject> result = new Vector<>();
-		System.err.println(response0);
-		for(Object o : response0) {
+//		System.err.println(responseContent);
+		for(Object responseObject : responseContent) {
+			Vector<Object> responseObjectList = (Vector<Object>) (responseObject);
+			
 //			System.err.println("Class/Object " + o + " found");
-			FmmlxObject object = new FmmlxObject((String) o);
+			FmmlxObject object = new FmmlxObject(
+					(Integer) responseObjectList.get(0),
+					(String) responseObjectList.get(1), 
+					(Integer) responseObjectList.get(2), 
+					(Integer) responseObjectList.get(3));
 			result.add(object);
+			
+			sendCurrentPosition(object); // make sure to store position if newly created 
 		}
 		return result;
 	}
@@ -110,7 +120,7 @@ public class FmmlxDiagramCommunicator {
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxSlot> result = new Vector<>();
 		result.add(new FmmlxSlot()); //Added for test purposes
-		System.err.println("slots: " + response0);
+//		System.err.println("slots: " + response0);
 		
 		return result;
 	}	
@@ -120,7 +130,7 @@ public class FmmlxDiagramCommunicator {
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxOperation> result = new Vector<>();
 		result.add(new FmmlxOperation()); //Added for test purposes
-        System.err.println("operations: " + response0);
+//        System.err.println("operations: " + response0);
 		return result;
 	}
 	
@@ -174,6 +184,10 @@ public class FmmlxDiagramCommunicator {
 		diagrams.remove(diagram);
 		tabs.remove(this.handler);
 //		throw new RuntimeException("Not yet implemented");		
+	}
+
+	public void sendCurrentPosition(FmmlxObject o) {
+		Vector<Object> response = xmfRequest(handler, "sendNewPosition", new Value[]{new Value(o.id), new Value(o.x), new Value(o.y)});
 	}
 
 	
