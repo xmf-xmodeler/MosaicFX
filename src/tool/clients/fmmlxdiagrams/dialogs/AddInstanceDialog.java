@@ -9,52 +9,69 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.layout.GridPane;
+import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 
-public class AddInstanceDialog extends CustomDialog<MetaClassDialogResult> {
-		
-	private GridPane grid;
-	
+public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
+
+	// TODO:
+	// set "of" correct
+
 	private TextField nameTextField;
 	private ComboBox<String> levelComboBox;
-	private ComboBox<String> parentComboBox;
+	private ListView<String> parentListView;
 	private ComboBox<String> ofComboBox;
 	private CheckBox abstractCheckBox;
-	
+
+	// For testing:
+	ObservableList<String> parentList = FXCollections.observableArrayList("Comparable", "Cloneable", "Readable",
+			"Callable", "Joinable");
+
 	public AddInstanceDialog(String of) {
 		super();
-		
+
 		DialogPane dialog = getDialogPane();
 		dialog.setHeaderText("Add Instance");
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		
-		grid = initializeGrid();
+
 		layoutContent();
-		
-		dialog.setContent(grid);
-		
+
+		dialog.setContent(flow);
+
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
 			if (!validateUserInput()) {
 				e.consume();
 			}
-		});		
-		
+		});
+
+		setResultConverter(dlgBtn -> {
+			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
+				return new AddInstanceDialogResult(nameTextField.getText(),
+						levelComboBox.getSelectionModel().getSelectedItem(),
+						parentListView.getSelectionModel().getSelectedItems(),
+						ofComboBox.getSelectionModel().getSelectedItem(), abstractCheckBox.isSelected());
+			}
+			return null;
+		});
+
 	}
-	
+
 	private void layoutContent() {
 		nameTextField = new TextField();
 		levelComboBox = new ComboBox<>(LevelList.levelList);
-		parentComboBox = new ComboBox<>();
 		ofComboBox = new ComboBox<>();
 		abstractCheckBox = new CheckBox();
-		
+
+		initializeListView();
+
 		levelComboBox.setPrefWidth(COLUMN_WIDTH);
-		parentComboBox.setPrefWidth(COLUMN_WIDTH);
 		ofComboBox.setPrefWidth(COLUMN_WIDTH);
-		
+
 		grid.add(new Label("Name"), 0, 0);
 		grid.add(nameTextField, 1, 0);
 		grid.add(new Label("Of"), 0, 1);
@@ -64,13 +81,20 @@ public class AddInstanceDialog extends CustomDialog<MetaClassDialogResult> {
 		grid.add(new Label("Abstract"), 0, 3);
 		grid.add(abstractCheckBox, 1, 3);
 		grid.add(new Label("Parent"), 0, 4);
-		grid.add(parentComboBox, 1, 4);		
+		grid.add(parentListView, 1, 4);
 	}
-	
+
 	private boolean validateUserInput() {
-		//TODO: Validate input
+		// TODO: Validate input
 		return true;
 	}
-	
 
+	private void initializeListView() {
+		parentListView = new ListView<>(parentList);
+
+		parentListView.setPrefHeight(75);
+		parentListView.setPrefWidth(COLUMN_WIDTH);
+
+		parentListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+	}
 }

@@ -11,19 +11,16 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
+import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 
 public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 
 	private final ObservableList<String> parentList = FXCollections.observableArrayList();
 
-	private GridPane grid;
-
 	private Label nameLabel;
 	private Label levelLabel;
 	private Label abstractLabel;
 	private Label parentLabel;
-
 	private TextField nameTextField;
 	private ComboBox<String> levelComboBox;
 	private ComboBox<String> parentComboBox;
@@ -31,15 +28,15 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 
 	public CreateMetaClassDialog() {
 		super();
+
 		DialogPane dialog = getDialogPane();
 		dialog.setHeaderText("New MetaClass");
 
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-		grid = initializeGrid();
 		layoutContent();
 
-		dialog.setContent(grid);
+		dialog.setContent(flow);
 
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
@@ -82,18 +79,21 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 	}
 
 	private boolean validateUserInput() {
-
 		String name = nameTextField.getText();
 		String level = levelComboBox.getSelectionModel().getSelectedItem();
+		Label errorLabel = getErrorLabel();
 
-		if (!name.isEmpty() && !level.isEmpty()) {
-			return true;
+		if (isNullOrEmpty(name) && isNullOrEmpty(level)) {
+			errorLabel.setText("Enter name and set level!");
+			return false;
+		} else if (isNullOrEmpty(name)) {
+			errorLabel.setText("Enter name!");
+			return false;
+		} else if (isNullOrEmpty(level)) {
+			errorLabel.setText("Enter level!");
+			return false;
 		}
-		return false;
-	}
-
-	public GridPane getGrid() {
-		return grid;
+		return true;
 	}
 
 	public TextField getNameTextField() {
@@ -111,5 +111,4 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 	public CheckBox getAbstractCheckbox() {
 		return abstractCheckbox;
 	}
-
 }

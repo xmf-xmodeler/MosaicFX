@@ -16,6 +16,10 @@ import javafx.scene.paint.Color;
 
 public class FmmlxDiagram {
 	
+	enum MouseMode{
+		DROP_MODE, TEST
+	};
+	
 	SplitPane mainView;
 	final FmmlxDiagramCommunicator comm;
 	private Canvas canvas;

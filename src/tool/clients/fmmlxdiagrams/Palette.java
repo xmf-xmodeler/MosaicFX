@@ -7,13 +7,14 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import tool.clients.fmmlxdiagrams.dialogs.AddInstanceDialog;
 import tool.clients.fmmlxdiagrams.dialogs.CreateMetaClassDialog;
-import tool.clients.fmmlxdiagrams.dialogs.MetaClassDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 
 public class Palette extends GridPane {
 
@@ -56,32 +57,34 @@ public class Palette extends GridPane {
 	}
 
 	private void addMetaClassDialog() {
-		CountDownLatch l = new CountDownLatch(1);
+		CountDownLatch l = new CountDownLatch(2);
 
 		Platform.runLater(() -> {
 			CreateMetaClassDialog dlg = new CreateMetaClassDialog();
-			Optional<MetaClassDialogResult> opt = dlg.showAndWait();
-			
-			if(opt.isPresent()) {
-				MetaClassDialogResult test = opt.get();
-				System.out.println("!!!!!!!!!!!!! " + test.getName() + " " + test.getLevel());
+			Optional<MetaClassDialogResult> result = dlg.showAndWait();
+
+			if (result.isPresent()) {
+				MetaClassDialogResult mcdResult = result.get();
+				System.out.println("!!!!!!!!!!!!! " + mcdResult.getName() + " " + mcdResult.getLevel());
 			}
 			
-			diagram.updateDiagram();
-			l.countDown();
-		});
-	}
-	
-	private void addInstanceDialog() {
-		CountDownLatch l = new CountDownLatch(1);
-		
-		Platform.runLater(() -> {
-			AddInstanceDialog dlg = new AddInstanceDialog("");
-			dlg.showAndWait();
+			setCursor(Cursor.CROSSHAIR);
 			
+
+			// diagram.updateDiagram();
 			l.countDown();
 		});
 	}
 
+	private void addInstanceDialog() {
+		CountDownLatch l = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			AddInstanceDialog dlg = new AddInstanceDialog("");
+			dlg.showAndWait();
+
+			l.countDown();
+		});
+	}
 
 }
