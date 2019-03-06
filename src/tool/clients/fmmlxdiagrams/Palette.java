@@ -14,6 +14,7 @@ import javafx.scene.layout.Priority;
 import tool.clients.fmmlxdiagrams.dialogs.AddAttributeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AddInstanceDialog;
 import tool.clients.fmmlxdiagrams.dialogs.CreateMetaClassDialog;
+import tool.clients.fmmlxdiagrams.dialogs.EditAttributDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MetaClassDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.RemoveAttributDialog;
 
@@ -33,7 +34,7 @@ public class Palette extends GridPane {
 		addButton("Add Instance", 1, e -> addInstanceDialog());
 		addButton("Remove MetaClass/Instance", 2, e -> System.out.println("Button 2"));
 		addButton("Add Attribute", 3, e -> addAttributeDialog());
-		addButton("Edit Attribute", 4, e -> System.out.println("Button 4"));
+		addButton("Edit Attribute", 4, e -> editAttributeDialog());
 		addButton("Remove Attribute", 5, e -> removeAttributDialog());
 		addButton("Change Slot Value", 6, e -> System.out.println("Button 6"));
 
@@ -44,8 +45,25 @@ public class Palette extends GridPane {
 
 	}
 
+	private void editAttributeDialog() {
+		CountDownLatch l = new CountDownLatch(1);
+		
+		Platform.runLater(() -> {
+			EditAttributDialog dlg = new EditAttributDialog();
+			Optional<MetaClassDialogResult> opt = dlg.showAndWait();
+			
+			if(opt.isPresent()) {
+				MetaClassDialogResult test = opt.get();
+				System.out.println("!!!!!!!!!!!!! " + test.getName() + " " + test.getLevel());
+			}
+			
+			diagram.updateDiagram();
+			l.countDown();
+		});
+	}
+
 	private void removeAttributDialog() {
-CountDownLatch l = new CountDownLatch(1);
+		CountDownLatch l = new CountDownLatch(1);
 		
 		Platform.runLater(() -> {
 			RemoveAttributDialog dlg = new RemoveAttributDialog();

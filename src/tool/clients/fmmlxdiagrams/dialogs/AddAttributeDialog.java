@@ -21,10 +21,10 @@ public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
 	private Label multiplicityLabel;
 	
 	private TextField nameTextField;
-	private ComboBox<String> classCombobox; //TODO Type has to be changed
-	private ComboBox<String> levelComboBox; //TODO type has to be changed
-	private ComboBox<String> typeComboBox; //TODO type has to be changed
-	private ComboBox<String> multiplicityComboBox; //TODO type has to be changed
+	private ComboBox<String> classCombobox; 
+	private ComboBox<String> levelComboBox; 
+	private ComboBox<String> typeComboBox; 
+	private ComboBox<String> multiplicityComboBox; 
 	
 	
 	public AddAttributeDialog() {
