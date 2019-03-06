@@ -26,6 +26,7 @@ public class FmmlxDiagram {
 	private Vector<FmmlxObject> objects = new Vector<>();
 	private transient Vector<FmmlxObject> selectedObjects = new Vector<>();
 	private final Palette palette;
+	private transient boolean objectsMoved = false;
 
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, String label) {
 		this.comm = comm;
@@ -41,6 +42,7 @@ public class FmmlxDiagram {
 
 		canvas.setOnMousePressed((e) -> {mousePressed(e);});
 		canvas.setOnMouseDragged((e) -> {mouseDragged(e);});
+		canvas.setOnMouseReleased((e) -> {mouseReleased(e);});
 		
 //		Runnable task = () -> { fetchDiagramData(); };
 		new Thread(() -> { fetchDiagramData(); }).start();
@@ -52,9 +54,6 @@ public class FmmlxDiagram {
 		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
 		objects.clear(); // to be replaced when updating instead of loading form scratch
 		objects.addAll(fetchedObjects);
-		System.err.println(objects.size());
-		System.err.println(objects.firstElement().x);
-		System.err.println(objects.firstElement().width);
 		for(FmmlxObject o : objects) {
 //			comm.fetchAttributes(o);
 			o.fetchData(comm);
@@ -122,11 +121,21 @@ public class FmmlxDiagram {
 	}
 	
 	private void mouseDragged(MouseEvent e) {
-	for(FmmlxObject o : selectedObjects) {
+		for(FmmlxObject o : selectedObjects) {
 			o.x = (int) (e.getX() - o.mouseMoveOffsetX);
 			o.y = (int) (e.getY() - o.mouseMoveOffsetY);
 		}
+		objectsMoved = true;
 		redraw();
+	}
+	
+	private void mouseReleased(MouseEvent e) {
+		if(objectsMoved) {
+			for(FmmlxObject o : selectedObjects) {
+			comm.sendCurrentPosition(o);
+			}
+		}
+		objectsMoved = false;
 	}
 
 	private FmmlxObject getElementAt(double x, double y) {
@@ -140,13 +149,13 @@ public class FmmlxDiagram {
 	}
 
 	public void updateDiagram() {
-		System.err.println("updateDiagram start");
-		
 		new Thread(() -> { 
 			fetchDiagramData();	
         }).start();
+	}
 
-		System.err.println("updateDiagram done");
+	public void addNewMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
+		comm.addNewMetaClass("TestClass", 5, new Vector<Integer>(), false, 1,1);
 	}
 
 }

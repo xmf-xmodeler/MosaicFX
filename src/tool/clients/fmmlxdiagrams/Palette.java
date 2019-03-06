@@ -16,17 +16,17 @@ import tool.clients.fmmlxdiagrams.dialogs.AddInstanceDialog;
 import tool.clients.fmmlxdiagrams.dialogs.CreateMetaClassDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 
-public class Palette extends GridPane {
-
+public class Palette extends GridPane{
+	
 	private final FmmlxDiagram diagram;
 
 	public Palette(FmmlxDiagram diagram) {
 		this.diagram = diagram;
 		setMinSize(200, 600);
 		setPrefSize(200, 600);
-		setPadding(new Insets(10, 10, 10, 10));
-		setVgap(5);
-		setHgap(5);
+		setPadding(new Insets(10, 10, 10, 10)); 
+	    setVgap(5); 
+	    setHgap(5);    
 
 		addButton("Add MetaClass", 0, e -> addMetaClassDialog());
 		addButton("Add Instance", 1, e -> addInstanceDialog());
