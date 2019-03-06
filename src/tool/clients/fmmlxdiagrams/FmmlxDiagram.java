@@ -150,4 +150,8 @@ public class FmmlxDiagram {
         }).start();
 	}
 
+	public void addNewMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
+		comm.addNewMetaClass("TestClass", 5, new Vector<Integer>(), false, 1,1);
+	}
+
 }

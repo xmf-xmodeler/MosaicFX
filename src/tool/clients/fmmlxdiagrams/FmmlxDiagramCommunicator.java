@@ -5,6 +5,8 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
+
 import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -38,7 +40,7 @@ public class FmmlxDiagramCommunicator {
 		if(o instanceof java.util.Vector){
 			java.util.Vector<Object> v = (java.util.Vector<Object>) o;
 			int requestID = (Integer) (v.get(0));
-//			System.err.println("Receiving request " + requestID);
+			System.err.println("Receiving request " + requestID);
 			v.remove(0);
 			results.put(requestID, v);
 		}
@@ -48,7 +50,7 @@ public class FmmlxDiagramCommunicator {
 	private Vector<Object> xmfRequest(int targetHandle, String message, Value... args) {
 		Value[] args2 = new Value[args.length+1];
 		int requestID = idCounter++;
-//		System.err.println("Sending request " + requestID);
+		System.err.println("Sending request " + message + "(" + requestID + ")");
 		for(int i = 0; i < args.length; i++) {
 			args2[i+1] = args[i];
 		}
@@ -57,10 +59,11 @@ public class FmmlxDiagramCommunicator {
 //		System.err.println("send:" + targetHandle +"-"+ message +"-"+ args2);
 		WorkbenchClient.theClient().send(targetHandle, message, args2);
 		int attempts = 0;
+		int sleep = 10;
 		while(waiting && attempts < 20) {
-//			System.err.println(attempts + ". attempt");
+			System.err.println(attempts + ". attempt");
 			attempts++;
-			try {Thread.sleep(20);
+			try {Thread.sleep(sleep); sleep += 50;
 			} catch (InterruptedException e) { e.printStackTrace(); }
 			if(results.containsKey(requestID)) {
 				waiting = false;
@@ -188,6 +191,39 @@ public class FmmlxDiagramCommunicator {
 
 	public void sendCurrentPosition(FmmlxObject o) {
 		Vector<Object> response = xmfRequest(handler, "sendNewPosition", new Value[]{new Value(o.id), new Value(o.x), new Value(o.y)});
+	}
+
+	public void addNewMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
+		Value[] parentsArray = createValueArray(parents);
+
+		Value[] message = new  Value[]{
+				new Value(-1),
+				new Value(name),
+				new Value(level),
+				new Value(parentsArray),
+				new Value(isAbstract),
+				new Value(x),
+				new Value(y)
+				};
+		WorkbenchClient.theClient().send(handler, "addNewMetaClass", message);
+		
+//		Vector<Object> response = xmfRequest(handler, "addNewMetaClass", new Value[]{
+//				new Value(name),
+//				new Value(level),
+//				new Value(parentsArray),
+//				new Value(isAbstract),
+//				new Value(x),
+//				new Value(y)
+//				});
+//		System.err.println("addNewMetaClassResponse: " + response);
+	}
+
+	private Value[] createValueArray(Vector<Integer> vector) { // todo: make more generic
+		Value[] result = new Value[vector.size()];
+		for(int i = 0; i < result.length; i++) {
+			result[i] = new Value(vector.get(i));
+		}
+		return result;
 	}
 
 	

@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams;
 
+import java.util.Vector;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -24,7 +26,7 @@ public class Palette extends GridPane{
 	    addButton("Add Instance", 1, e -> System.out.println("Button 1"));
 	    addButton("Remove MetaClass/Instance", 2, e -> System.out.println("Button 2"));
 	    addButton("Add Attribute", 3, e -> System.out.println("Button 3"));
-	    addButton("Edit Attribute", 4, e -> System.out.println("Button 4"));
+	    addButton("Edit Attribute", 4, e -> test());
 	    addButton("Remove Attribute", 5, e -> System.out.println("Button 5"));
 	    addButton("Change Slot Value", 6, e -> System.out.println("Button 6"));
 	    
@@ -49,6 +51,7 @@ public class Palette extends GridPane{
 	}
 	
 	private void test() {
+		diagram.addNewMetaClass("TestClass", 5, new Vector<Integer>(), false, 1,1);
 		diagram.updateDiagram();
 	}
 
