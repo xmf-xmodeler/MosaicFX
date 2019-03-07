@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams;
 
 import java.util.Optional;
+import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
 import javafx.application.Platform;
@@ -62,16 +63,15 @@ public class Palette extends GridPane{
 		Platform.runLater(() -> {
 			CreateMetaClassDialog dlg = new CreateMetaClassDialog();
 			Optional<MetaClassDialogResult> result = dlg.showAndWait();
+			MetaClassDialogResult mcdResult = null;
 
 			if (result.isPresent()) {
-				MetaClassDialogResult mcdResult = result.get();
-				System.out.println("!!!!!!!!!!!!! " + mcdResult.getName() + " " + mcdResult.getLevel());
+				mcdResult = result.get();
+				
+				diagram.addNewMetaClass(mcdResult.getName(), mcdResult.getLevel(), new Vector<Integer>(mcdResult.getParent()), false, 1, 1);
+				diagram.updateDiagram();
 			}
-			
-			setCursor(Cursor.CROSSHAIR);
-			
 
-			// diagram.updateDiagram();
 			l.countDown();
 		});
 	}

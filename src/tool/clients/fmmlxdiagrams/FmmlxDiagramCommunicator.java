@@ -61,7 +61,7 @@ public class FmmlxDiagramCommunicator {
 		int attempts = 0;
 		int sleep = 10;
 		while(waiting && attempts < 20) {
-//			System.err.println(attempts + ". attempt");
+			System.err.println(attempts + ". attempt");
 			attempts++;
 			try {Thread.sleep(sleep); sleep += 50;
 			} catch (InterruptedException e) { e.printStackTrace(); }
@@ -79,14 +79,18 @@ public class FmmlxDiagramCommunicator {
 	@SuppressWarnings("unchecked")
 	public Vector<FmmlxObject> getAllObjects() {
 		Vector<Object> response = xmfRequest(handler, "getAllObjects", new Value[]{});
-		Vector<Object> response0 = (Vector<Object>) (response.get(0));
+		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<FmmlxObject> result = new Vector<>();
 //		System.err.println(responseContent);
 		for(Object responseObject : responseContent) {
 			Vector<Object> responseObjectList = (Vector<Object>) (responseObject);
 			
 //			System.err.println("Class/Object " + o + " found");
-			FmmlxObject object = new FmmlxObject((String) o);
+			FmmlxObject object = new FmmlxObject(
+					(Integer) responseObjectList.get(0),
+					(String) responseObjectList.get(1), 
+					(Integer) responseObjectList.get(2), 
+					(Integer) responseObjectList.get(3));
 			result.add(object);
 			
 			sendCurrentPosition(object); // make sure to store position if newly created 
@@ -119,7 +123,7 @@ public class FmmlxDiagramCommunicator {
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxSlot> result = new Vector<>();
 		result.add(new FmmlxSlot()); //Added for test purposes
-		System.err.println("slots: " + response0);
+//		System.err.println("slots: " + response0);
 		
 		return result;
 	}	
@@ -221,9 +225,5 @@ public class FmmlxDiagramCommunicator {
 		}
 		return result;
 	}
-
-	
-
-
 }
  

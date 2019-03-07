@@ -5,12 +5,12 @@ import javafx.collections.ObservableList;
 public class AddInstanceDialogResult extends DialogResult {
 
 	private String name;
-	private String level;
+	private int level;
 	private ObservableList<String> parents;
 	private String of;
 	private boolean isAbstract;
 
-	public AddInstanceDialogResult(String name, String level, ObservableList<String> parents, String of,
+	public AddInstanceDialogResult(String name, int level, ObservableList<String> parents, String of,
 			boolean isAbstract) {
 		this.name = name;
 		this.level = level;
@@ -23,7 +23,7 @@ public class AddInstanceDialogResult extends DialogResult {
 		return name;
 	}
 
-	public String getLevel() {
+	public int getLevel() {
 		return level;
 	}
 

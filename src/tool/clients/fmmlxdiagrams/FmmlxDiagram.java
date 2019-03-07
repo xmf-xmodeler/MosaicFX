@@ -16,10 +16,6 @@ import javafx.scene.paint.Color;
 
 public class FmmlxDiagram {
 	
-	enum MouseMode{
-		DROP_MODE, TEST
-	};
-	
 	SplitPane mainView;
 	final FmmlxDiagramCommunicator comm;
 	private Canvas canvas;
@@ -155,7 +151,7 @@ public class FmmlxDiagram {
 	}
 
 	public void addNewMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
-		comm.addNewMetaClass("TestClass", 5, new Vector<Integer>(), false, 1,1);
+		comm.addNewMetaClass(name, level, parents, isAbstract, x, y);
 	}
 
 }

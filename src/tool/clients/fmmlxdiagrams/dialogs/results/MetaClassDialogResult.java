@@ -3,13 +3,13 @@ package tool.clients.fmmlxdiagrams.dialogs.results;
 public class MetaClassDialogResult extends DialogResult {
 
 	private String name;
-	private String level;
+	private int level;
 	private boolean isAbstract;
 
 	// TODO: change TYPE!!!!
-	String parent;
+	int parent;
 
-	public MetaClassDialogResult(String name, String level, boolean isAbstract, String parent) {
+	public MetaClassDialogResult(String name, int level, boolean isAbstract, int parent) {
 		this.name = name;
 		this.level = level;
 		this.isAbstract = isAbstract;
@@ -20,7 +20,7 @@ public class MetaClassDialogResult extends DialogResult {
 		return name;
 	}
 
-	public String getLevel() {
+	public int getLevel() {
 		return level;
 	}
 
@@ -28,7 +28,7 @@ public class MetaClassDialogResult extends DialogResult {
 		return isAbstract;
 	}
 
-	public String getParent() {
+	public int getParent() {
 		return parent;
 	}
 

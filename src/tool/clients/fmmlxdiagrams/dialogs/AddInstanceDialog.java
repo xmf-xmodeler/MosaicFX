@@ -22,7 +22,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	// set "of" correct
 
 	private TextField nameTextField;
-	private ComboBox<String> levelComboBox;
+	private ComboBox<Integer> levelComboBox;
 	private ListView<String> parentListView;
 	private ComboBox<String> ofComboBox;
 	private CheckBox abstractCheckBox;

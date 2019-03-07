@@ -22,7 +22,7 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 	private Label abstractLabel;
 	private Label parentLabel;
 	private TextField nameTextField;
-	private ComboBox<String> levelComboBox;
+	private ComboBox<Integer> levelComboBox;
 	private ComboBox<String> parentComboBox;
 	private CheckBox abstractCheckbox;
 
@@ -48,7 +48,7 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				return new MetaClassDialogResult(nameTextField.getText(),
-						levelComboBox.getSelectionModel().getSelectedItem(), abstractCheckbox.isSelected(), "");
+						levelComboBox.getSelectionModel().getSelectedItem(), abstractCheckbox.isSelected(), 0);
 			}
 			return null;
 		});
@@ -80,16 +80,16 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 
 	private boolean validateUserInput() {
 		String name = nameTextField.getText();
-		String level = levelComboBox.getSelectionModel().getSelectedItem();
+
 		Label errorLabel = getErrorLabel();
 
-		if (isNullOrEmpty(name) && isNullOrEmpty(level)) {
+		if (isNullOrEmpty(name) && levelComboBox.getSelectionModel().isEmpty()) {
 			errorLabel.setText("Enter name and set level!");
 			return false;
 		} else if (isNullOrEmpty(name)) {
 			errorLabel.setText("Enter name!");
 			return false;
-		} else if (isNullOrEmpty(level)) {
+		} else if (levelComboBox.getSelectionModel().isEmpty()) {
 			errorLabel.setText("Enter level!");
 			return false;
 		}
@@ -100,7 +100,7 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 		return nameTextField;
 	}
 
-	public ComboBox<String> getLevelComboBox() {
+	public ComboBox<Integer> getLevelComboBox() {
 		return levelComboBox;
 	}
 
