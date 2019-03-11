@@ -23,7 +23,7 @@ public class Palette extends GridPane{
 	    setHgap(5);    
 
 	    addButton("Add MetaClass", 0, e -> test());
-	    addButton("Add Instance", 1, e -> System.out.println("Button 1"));
+	    addButton("Add Instance", 1, e -> test2());
 	    addButton("Remove MetaClass/Instance", 2, e -> System.out.println("Button 2"));
 	    addButton("Add Attribute", 3, e -> System.out.println("Button 3"));
 	    addButton("Edit Attribute", 4, e -> test());
@@ -51,8 +51,12 @@ public class Palette extends GridPane{
 	}
 	
 	private void test() {
-		diagram.addNewMetaClass("TestClass", 5, new Vector<Integer>(), false, 1,1);
+		diagram.addMetaClass("TestClass", 5, new Vector<Integer>(), false, 1,1);
 		diagram.updateDiagram();
 	}
 
+	private void test2() {
+		diagram.addInstance(diagram.getTestClassId(), "TestInstance", new Vector<Integer>(), false, 1,1);
+		diagram.updateDiagram();
+	}
 }

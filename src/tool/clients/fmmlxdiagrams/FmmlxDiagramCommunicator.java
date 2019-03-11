@@ -193,7 +193,7 @@ public class FmmlxDiagramCommunicator {
 		Vector<Object> response = xmfRequest(handler, "sendNewPosition", new Value[]{new Value(o.id), new Value(o.x), new Value(o.y)});
 	}
 
-	public void addNewMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
+	public void addMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
 		Value[] parentsArray = createValueArray(parents);
 
 		Value[] message = new  Value[]{
@@ -205,7 +205,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(x),
 				new Value(y)
 				};
-		WorkbenchClient.theClient().send(handler, "addNewMetaClass", message);
+		WorkbenchClient.theClient().send(handler, "addMetaClass", message);
 		
 //		Vector<Object> response = xmfRequest(handler, "addNewMetaClass", new Value[]{
 //				new Value(name),
@@ -216,6 +216,22 @@ public class FmmlxDiagramCommunicator {
 //				new Value(y)
 //				});
 //		System.err.println("addNewMetaClassResponse: " + response);
+	}
+	
+	public void addInstance(int testClassId, String name, Vector<Integer> parents, boolean isAbstract, int x, int y) {
+		Value[] parentsArray = createValueArray(parents);
+		
+		Value[] message = new  Value[]{
+				new Value(-1),
+				new Value(testClassId),
+				new Value(name),
+				new Value(parentsArray),
+				new Value(isAbstract),
+				new Value(x),
+				new Value(y)
+				};
+		
+		WorkbenchClient.theClient().send(handler, "addInstance", message);
 	}
 
 	private Value[] createValueArray(Vector<Integer> vector) { // todo: make more generic

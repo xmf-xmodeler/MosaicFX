@@ -150,8 +150,16 @@ public class FmmlxDiagram {
         }).start();
 	}
 
-	public void addNewMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
-		comm.addNewMetaClass("TestClass", 5, new Vector<Integer>(), false, 1,1);
+	public void addMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
+		comm.addMetaClass(name, level, parents, isAbstract, x,y);
+	}
+
+	public int getTestClassId() {
+		return objects.firstElement().id;
+	}
+
+	public void addInstance(int testClassId, String name, Vector<Integer> parents, boolean isAbstract, int x, int y) {
+		comm.addInstance(testClassId, name, parents, isAbstract, x,y);
 	}
 
 }
