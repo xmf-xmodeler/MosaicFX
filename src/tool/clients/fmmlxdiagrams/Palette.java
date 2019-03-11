@@ -9,7 +9,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -17,17 +19,17 @@ import tool.clients.fmmlxdiagrams.dialogs.AddInstanceDialog;
 import tool.clients.fmmlxdiagrams.dialogs.CreateMetaClassDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 
-public class Palette extends GridPane{
-	
+public class Palette extends GridPane {
+
 	private final FmmlxDiagram diagram;
 
 	public Palette(FmmlxDiagram diagram) {
 		this.diagram = diagram;
 		setMinSize(200, 600);
 		setPrefSize(200, 600);
-		setPadding(new Insets(10, 10, 10, 10)); 
-	    setVgap(5); 
-	    setHgap(5);    
+		setPadding(new Insets(10, 10, 10, 10));
+		setVgap(5);
+		setHgap(5);
 
 		addButton("Add MetaClass", 0, e -> addMetaClassDialog());
 		addButton("Add Instance", 1, e -> addInstanceDialog());
@@ -63,16 +65,33 @@ public class Palette extends GridPane{
 		Platform.runLater(() -> {
 			CreateMetaClassDialog dlg = new CreateMetaClassDialog();
 			Optional<MetaClassDialogResult> result = dlg.showAndWait();
-			MetaClassDialogResult mcdResult = null;
 
 			if (result.isPresent()) {
-				mcdResult = result.get();
-				
-				diagram.addNewMetaClass(mcdResult.getName(), mcdResult.getLevel(), new Vector<Integer>(mcdResult.getParent()), false, 1, 1);
-				diagram.updateDiagram();
-			}
+				final MetaClassDialogResult mcdResult = result.get();
 
-			l.countDown();
+				Canvas canvas = diagram.getCanvas();
+				canvas.setCursor(Cursor.CROSSHAIR);
+
+				EventHandler<MouseEvent> chooseLocation = new EventHandler<MouseEvent>() {
+					public void handle(MouseEvent e) {
+
+						int x = (int) e.getX();
+						int y = (int) e.getY();
+
+						if (x > 0 && y > 0) {
+							diagram.addNewMetaClass(mcdResult.getName(), mcdResult.getLevel(),
+									new Vector<Integer>(mcdResult.getParent()), false, x, y);
+
+							canvas.setCursor(Cursor.DEFAULT);
+							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
+
+							diagram.updateDiagram();
+							l.countDown();
+						}
+					};
+				};
+				canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
+			}
 		});
 	}
 

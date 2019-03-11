@@ -307,6 +307,7 @@ public class Diagram implements Display {
 				Object[] diagramData = new Object[] { id, 0, 0 }; // default
 																	// this
 				// unless any node is hit
+				System.out.println(scaledPoint);
 				Object[] nestedDiagramData = getNestedDiagramID((int) scaledPoint.getX(), (int) scaledPoint.getY());
 				if (nestedDiagramData != null) {
 					diagramData = nestedDiagramData;

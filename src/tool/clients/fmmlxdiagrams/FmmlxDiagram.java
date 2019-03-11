@@ -16,6 +16,10 @@ import javafx.scene.paint.Color;
 
 public class FmmlxDiagram {
 	
+	enum MouseMode {
+		NONE, DROP_MODE
+	};
+	
 	SplitPane mainView;
 	final FmmlxDiagramCommunicator comm;
 	private Canvas canvas;
@@ -23,6 +27,7 @@ public class FmmlxDiagram {
 	private transient Vector<FmmlxObject> selectedObjects = new Vector<>();
 	private final Palette palette;
 	private transient boolean objectsMoved = false;
+	MouseMode mouseMode = MouseMode.NONE;
 
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, String label) {
 		this.comm = comm;
@@ -44,6 +49,10 @@ public class FmmlxDiagram {
 		new Thread(() -> { fetchDiagramData(); }).start();
 
 		redraw();
+	}
+	
+	public Canvas getCanvas() {
+		return canvas;
 	}
 
 	private void fetchDiagramData() {
@@ -98,7 +107,10 @@ public class FmmlxDiagram {
 	}
 	
 	private void mousePressed(MouseEvent e) {
-		if(e.getButton() == MouseButton.MIDDLE) {
+		if(isLeftClick(e) && mouseMode == MouseMode.DROP_MODE) {
+			
+		}
+		if(isMiddleClick(e)) {
 			selectedObjects.addAll(objects);
 		} else {
 			FmmlxObject hitObject = getElementAt(e.getX(), e.getY());
@@ -132,6 +144,18 @@ public class FmmlxDiagram {
 			}
 		}
 		objectsMoved = false;
+	}
+	
+	private boolean isLeftClick(MouseEvent e) {
+		 return e.getButton() == MouseButton.PRIMARY;
+	}
+	
+	private boolean isRightClick(MouseEvent e) {
+		return e.getButton() == MouseButton.SECONDARY;
+	}
+	
+	private boolean isMiddleClick(MouseEvent e) {
+		return e.getButton() == MouseButton.MIDDLE;
 	}
 
 	private FmmlxObject getElementAt(double x, double y) {

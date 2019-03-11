@@ -205,7 +205,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(x),
 				new Value(y)
 				};
-		WorkbenchClient.theClient().send(handler, "addNewMetaClass", message);
+		WorkbenchClient.theClient().send(handler, "addMetaClass", message);
 		
 //		Vector<Object> response = xmfRequest(handler, "addNewMetaClass", new Value[]{
 //				new Value(name),
