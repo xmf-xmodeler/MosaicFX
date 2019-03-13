@@ -1,10 +1,13 @@
 package tool.clients.fmmlxdiagrams;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import tool.clients.workbench.WorkbenchClient;
@@ -16,6 +19,11 @@ public class FmmlxDiagramCommunicator {
 	private HashMap<Integer, Vector<Object>> results = new HashMap<>();	
 	private static Hashtable<Integer, Tab> tabs = new Hashtable<Integer, Tab>();
 	private static Vector<FmmlxDiagram> diagrams = new Vector<FmmlxDiagram>();
+	
+	public static Vector<FmmlxDiagram> getDiagrams() {
+		return diagrams;
+	}
+
 	private static Vector<FmmlxDiagramCommunicator> communicators = new Vector<FmmlxDiagramCommunicator>();
 	static TabPane tabPane;
 	FmmlxDiagram diagram;
@@ -140,14 +148,23 @@ public class FmmlxDiagramCommunicator {
 		return result;
 	}	
 	
-	public Vector<FmmlxObject> fetchParentClasses(String objectName) {
-		Vector<FmmlxObject> result = new Vector<>();
-		return result;
+	public static Vector<FmmlxObject> fetchParentClasses(String objectName) {
+		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
+		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
+		return objects;
 	}		
 	
-	public FmmlxObject fetchOf(String objectName) {
-		FmmlxObject result = null;
-		return result;
+	public static FmmlxObject fetchOf(String objectName) {
+		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
+		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
+		
+		for (FmmlxObject object :objects) {
+			if (object.getName().equals(objectName)) {
+				return object;
+			}
+		}
+		return null;
+	
 	}	
 	
 	public void newDiagram() {

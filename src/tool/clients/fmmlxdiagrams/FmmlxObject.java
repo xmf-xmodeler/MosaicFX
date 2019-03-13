@@ -8,7 +8,7 @@ import javafx.scene.text.Text;
 
 public class FmmlxObject {
 
-	String name;
+	private String name;
 	int id;
 	int x; 
 	int y;
@@ -35,6 +35,13 @@ public class FmmlxObject {
 	Vector<FmmlxSlot> slots;
 	Vector<FmmlxOperation> operations;
 	Vector<FmmlxOperationValue> operationValues;
+	
+	public String getName() {
+		return name;
+	}
+	public int getLevel() {
+		return level;
+	}
 	
 	public FmmlxObject(Integer id, String name, Integer lastKnownX, Integer lastKnownY) {
 		this.name = name;

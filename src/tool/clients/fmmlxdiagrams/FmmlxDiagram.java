@@ -24,10 +24,15 @@ public class FmmlxDiagram {
 	final FmmlxDiagramCommunicator comm;
 	private Canvas canvas;
 	private Vector<FmmlxObject> objects = new Vector<>();
+
 	private transient Vector<FmmlxObject> selectedObjects = new Vector<>();
 	private final Palette palette;
 	private transient boolean objectsMoved = false;
 	MouseMode mouseMode = MouseMode.NONE;
+	
+	public Vector<FmmlxObject> getObjects() {
+		return objects;
+	}
 
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, String label) {
 		this.comm = comm;

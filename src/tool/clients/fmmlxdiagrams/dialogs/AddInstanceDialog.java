@@ -1,5 +1,8 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import java.util.ArrayList;
+import java.util.Vector;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,6 +16,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
 
 public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
@@ -54,21 +60,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 			return null;
 		});
 	}
-
-	private ObservableList<String> getAllOfList() {
-		ObservableList<String> result = null;
-		// TODO Auto-generated method stub
-		result= FXCollections.observableArrayList("Of1", "Of2", "Of2","Of3", "Of4"); //For Test
-		return result;
-	}
-
-	private ObservableList<String> getAllParentList() {
-		ObservableList<String> result = null;	
-		// TODO Auto-generated method stub
-		result = FXCollections.observableArrayList("Comparable", "Cloneable", "Readable","Callable", "Joinable"); //For Test
-		return result;
-	}
-
+	
 	private void layoutContent() {
 		nameTextField = new TextField();
 		levelComboBox = new ComboBox<>(LevelList.levelList);
@@ -92,18 +84,53 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		grid.add(parentListView, 1, 4);
 	}
 
-	private boolean validateUserInput() {
-		boolean nameValid = validateName();
-		boolean ofSelected = ofSelected();
-		boolean levelValid = validateLevel();
-		boolean noCircularDependecies = validateCircularDependecies();
+
+	private ObservableList<String> getAllOfList() {
+		ArrayList<String> resultStrings = new ArrayList<String>();
+		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
+		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
 		
-		return nameValid && ofSelected && levelValid && noCircularDependecies;
+		for (FmmlxObject object :objects) {
+			resultStrings.add(object.getName());
+		}
+		ObservableList<String> result = FXCollections.observableArrayList( resultStrings);
+		return result;
+	}
+
+	private ObservableList<String> getAllParentList() {
+		ArrayList<String> resultStrings = new ArrayList<String>();
+		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
+		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
+		
+		for (FmmlxObject object :objects) {
+			resultStrings.add(object.getName());
+		}
+		ObservableList<String> result = FXCollections.observableArrayList( resultStrings);
+		return result;
+	}
+
+	
+	private boolean validateUserInput() {
+		if (!validateName()) {
+			return false;
+		}
+		if (!ofSelected()) {
+			return false;
+		}
+		if (!validateLevel()) {
+			return false;
+		}
+		if (!validateCircularDependecies()) {
+			return false;
+		}
+		if (!validateName()) {
+			return false;
+		}
+		return true;
 	}
 
 	private boolean validateName() {
 		Label errorLabel = getErrorLabel();
-		errorLabel.setText("");
 		String name = nameTextField.getText();
 		
 		if (isNullOrEmpty(name)) {
@@ -113,43 +140,63 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 			errorLabel.setText("Name already used");
 			return false;
 		}else {
+			errorLabel.setText("");
 			return true;
 		}
 	}
 	
 	private boolean nameAlreadyUsed() {
-		// TODO Auto-generated method stub
+		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
+		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
+		
+		for (FmmlxObject object :objects) {
+			if(nameTextField.getText().equals(object.getName())) {
+				return true;
+			}
+		}
 		return false;
 	}
 	
 	private boolean ofSelected() {
 		Label errorLabel = getErrorLabel();
-		errorLabel.setText("");
 		
-		if (ofComboBox.getSelectionModel().getSelectedItem().isEmpty()) {
+		if (ofComboBox.getSelectionModel().getSelectedIndex()==-1) {
 			errorLabel.setText("Select Of!");
 			return false;
 		}
+		errorLabel.setText("");
 		return true;
 	}
 	
 	private boolean validateLevel() {
 		Label errorLabel = getErrorLabel();
-		errorLabel.setText("");
+		FmmlxObject selectedOf = null;
+		
+		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
+		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
+		
+		for(FmmlxObject object : objects) {
+			System.out.println("class name : "+object.getName() );
+			System.out.println("level :"+object.getLevel() );
+			System.out.println("-------------------------");
+		}
 		
 		if (levelComboBox.getSelectionModel().isEmpty()) {
 			errorLabel.setText("Select Level!");
 			return false;
-		}else if(levelIsNotValid(levelComboBox.getSelectionModel().getSelectedItem())) {
+		}else if(levelIsNotValid(1, 1)) {
 			errorLabel.setText("Selected Level is not allowed");
 			return false;
 		}else {
+			errorLabel.setText("");
 			return true;
 		}
 	}
 
-	private boolean levelIsNotValid(int level) {
-		// TODO Auto-generated method stub
+	private boolean levelIsNotValid(int parentLevel, int choosenLevel) {
+		if(parentLevel-1!=choosenLevel) {
+			return true;
+		}
 		return false;
 	}
 	
