@@ -17,9 +17,6 @@ import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
 
 public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
-	// TODO:
-	// set "of" correct
-
 	private TextField nameTextField;
 	private ComboBox<Integer> levelComboBox;
 	private ListView<String> parentListView;
@@ -96,8 +93,70 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	}
 
 	private boolean validateUserInput() {
-		// TODO: Validate input
+		boolean nameValid = validateName();
+		boolean ofSelected = ofSelected();
+		boolean levelValid = validateLevel();
+		boolean noCircularDependecies = validateCircularDependecies();
+		
+		return nameValid && ofSelected && levelValid && noCircularDependecies;
+	}
+
+	private boolean validateName() {
+		Label errorLabel = getErrorLabel();
+		errorLabel.setText("");
+		String name = nameTextField.getText();
+		
+		if (isNullOrEmpty(name)) {
+			errorLabel.setText("Enter valid name!");
+			return false;
+		} else if (nameAlreadyUsed()) {
+			errorLabel.setText("Name already used");
+			return false;
+		}else {
+			return true;
+		}
+	}
+	
+	private boolean nameAlreadyUsed() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	private boolean ofSelected() {
+		Label errorLabel = getErrorLabel();
+		errorLabel.setText("");
+		
+		if (ofComboBox.getSelectionModel().getSelectedItem().isEmpty()) {
+			errorLabel.setText("Select Of!");
+			return false;
+		}
 		return true;
+	}
+	
+	private boolean validateLevel() {
+		Label errorLabel = getErrorLabel();
+		errorLabel.setText("");
+		
+		if (levelComboBox.getSelectionModel().isEmpty()) {
+			errorLabel.setText("Select Level!");
+			return false;
+		}else if(levelIsNotValid(levelComboBox.getSelectionModel().getSelectedItem())) {
+			errorLabel.setText("Selected Level is not allowed");
+			return false;
+		}else {
+			return true;
+		}
+	}
+
+	private boolean levelIsNotValid(int level) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	private boolean validateCircularDependecies() {
+		// TODO Auto-generated method stub
+		
+		return false;
 	}
 
 	private void initializeListView() {
