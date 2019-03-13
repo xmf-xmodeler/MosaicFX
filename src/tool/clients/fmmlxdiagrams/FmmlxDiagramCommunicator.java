@@ -148,23 +148,14 @@ public class FmmlxDiagramCommunicator {
 		return result;
 	}	
 	
-	public static Vector<FmmlxObject> fetchParentClasses(String objectName) {
-		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
-		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
-		return objects;
+	public Vector<FmmlxObject> fetchParentClasses(String objectName) {
+		Vector<FmmlxObject> result = new Vector<>();
+		return result;
 	}		
 	
-	public static FmmlxObject fetchOf(String objectName) {
-		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
-		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
-		
-		for (FmmlxObject object :objects) {
-			if (object.getName().equals(objectName)) {
-				return object;
-			}
-		}
-		return null;
-	
+	public FmmlxObject fetchOf(String objectName) {
+		FmmlxObject result = null;
+		return result;
 	}	
 	
 	public void newDiagram() {

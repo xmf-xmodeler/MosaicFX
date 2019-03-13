@@ -170,21 +170,23 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	
 	private boolean validateLevel() {
 		Label errorLabel = getErrorLabel();
-		FmmlxObject selectedOf = null;
 		
 		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
 		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
+		
+		//-----------------------------------------------------------
 		
 		for(FmmlxObject object : objects) {
 			System.out.println("class name : "+object.getName() );
 			System.out.println("level :"+object.getLevel() );
 			System.out.println("-------------------------");
 		}
+		//-----------------------------------------------------------
 		
 		if (levelComboBox.getSelectionModel().isEmpty()) {
 			errorLabel.setText("Select Level!");
 			return false;
-		}else if(levelIsNotValid(1, 1)) {
+		}else if(levelIsNotValid(1, 1)) { //TODO just for test
 			errorLabel.setText("Selected Level is not allowed");
 			return false;
 		}else {
