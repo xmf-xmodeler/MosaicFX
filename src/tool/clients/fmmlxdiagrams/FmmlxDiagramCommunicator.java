@@ -4,9 +4,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
-
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
-
 import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -224,6 +221,29 @@ public class FmmlxDiagramCommunicator {
 			result[i] = new Value(vector.get(i));
 		}
 		return result;
+	}
+	
+	private Value[] createValueArrayString(Vector<String> vector) {
+		Value[] result = new Value[vector.size()];
+		for(int i = 0; i<result.length;i++) {
+			result[i]= new Value(vector.get(i));
+		}
+		return result ;	
+	}
+
+	public void addNewInstance(String of, String name, int level, Vector<String> parents, boolean isAbstract, int x,
+			int y) {
+		Value[] parentsArray = createValueArrayString(parents);
+		
+		Value[] message = new Value[] {
+				new Value(-1),
+				new Value(name),
+				new Value(level),
+				new Value(parentsArray),
+				new Value(isAbstract),
+				new Value(x),
+				new Value(y),};
+		WorkbenchClient.theClient().send(handler, "addInstance", message);
 	}
 }
  

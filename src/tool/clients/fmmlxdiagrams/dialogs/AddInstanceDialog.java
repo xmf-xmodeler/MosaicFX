@@ -14,7 +14,6 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 
 public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
@@ -26,10 +25,9 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	private ListView<String> parentListView;
 	private ComboBox<String> ofComboBox;
 	private CheckBox abstractCheckBox;
-
-	// For testing:
-	ObservableList<String> parentList = FXCollections.observableArrayList("Comparable", "Cloneable", "Readable",
-			"Callable", "Joinable");
+	
+	ObservableList<String> parentList= getAllParentList();
+	ObservableList<String> ofList = getAllOfList();
 
 	public AddInstanceDialog(String of) {
 		super();
@@ -58,13 +56,26 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 			}
 			return null;
 		});
+	}
 
+	private ObservableList<String> getAllOfList() {
+		ObservableList<String> result = null;
+		// TODO Auto-generated method stub
+		result= FXCollections.observableArrayList("Of1", "Of2", "Of2","Of3", "Of4"); //For Test
+		return result;
+	}
+
+	private ObservableList<String> getAllParentList() {
+		ObservableList<String> result = null;	
+		// TODO Auto-generated method stub
+		result = FXCollections.observableArrayList("Comparable", "Cloneable", "Readable","Callable", "Joinable"); //For Test
+		return result;
 	}
 
 	private void layoutContent() {
 		nameTextField = new TextField();
 		levelComboBox = new ComboBox<>(LevelList.levelList);
-		ofComboBox = new ComboBox<>();
+		ofComboBox = new ComboBox<>(ofList);
 		abstractCheckBox = new CheckBox();
 
 		initializeListView();
@@ -91,10 +102,8 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
 	private void initializeListView() {
 		parentListView = new ListView<>(parentList);
-
 		parentListView.setPrefHeight(75);
 		parentListView.setPrefWidth(COLUMN_WIDTH);
-
 		parentListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 	}
 }

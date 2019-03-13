@@ -178,4 +178,10 @@ public class FmmlxDiagram {
 		comm.addNewMetaClass(name, level, parents, isAbstract, x, y);
 	}
 
+	public void addNewInstance(String of, String name, int level, Vector<String> parents, boolean isAbstract, int x, int y) {
+		comm.addNewInstance(of, name, level, parents, isAbstract, x, y);
+		
+		
+	}
+
 }

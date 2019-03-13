@@ -17,6 +17,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import tool.clients.fmmlxdiagrams.dialogs.AddInstanceDialog;
 import tool.clients.fmmlxdiagrams.dialogs.CreateMetaClassDialog;
+import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 
 public class Palette extends GridPane {
@@ -100,7 +101,36 @@ public class Palette extends GridPane {
 
 		Platform.runLater(() -> {
 			AddInstanceDialog dlg = new AddInstanceDialog("");
-			dlg.showAndWait();
+			Optional<AddInstanceDialogResult> result = dlg.showAndWait();
+			
+			if(result.isPresent()) {
+				final AddInstanceDialogResult aidResult = result.get();
+				
+				Canvas canvas = diagram.getCanvas();
+				canvas.setCursor(Cursor.CROSSHAIR);
+				
+				EventHandler<MouseEvent> chooseLocation = new EventHandler<MouseEvent>() {
+					public void handle(MouseEvent e) {
+
+						int x = (int) e.getX();
+						int y = (int) e.getY();
+
+						if (x > 0 && y > 0) {
+							diagram.addNewInstance(aidResult.getOf(), aidResult.getName(), aidResult.getLevel(), 
+									new Vector<String>(aidResult.getParents()),false,x,y);
+							
+
+							canvas.setCursor(Cursor.DEFAULT);
+							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
+
+							diagram.updateDiagram();
+							l.countDown();
+						}
+					};
+				};
+				canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
+				
+			}
 
 			l.countDown();
 		});
