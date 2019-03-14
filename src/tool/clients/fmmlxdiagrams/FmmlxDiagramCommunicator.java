@@ -1,13 +1,10 @@
 package tool.clients.fmmlxdiagrams;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import tool.clients.workbench.WorkbenchClient;

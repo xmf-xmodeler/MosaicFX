@@ -196,6 +196,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	}
 
 	private boolean levelIsNotValid(int parentLevel, int choosenLevel) {
+		//TODO
 		if(parentLevel-1!=choosenLevel) {
 			return true;
 		}
