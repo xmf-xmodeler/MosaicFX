@@ -56,7 +56,7 @@ public class Palette {
 
   public void init(Diagram diagram) {
       diagram.newGroup("Diagram");
-      newTool(diagram, "Diagram", "Select", "Select", false, "Select.gif");
+      newTool(diagram, "Diagram", "Select", "Select", false, "resources/gif/Select.gif");
   }
 
   public Value asValue() {
