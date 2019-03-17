@@ -174,7 +174,8 @@ public class Diagram implements Display {
 			// help();
 			redraw();
 		}
-		if (e.isControlDown() && (e.getCode() == KeyCode.NUMPAD1)) {
+		// zoom-to-one also via Ctrl-0, as in Firefox (Jens)
+		if (e.isControlDown() && ( (e.getCode() == KeyCode.NUMPAD1) || (e.getCode() == KeyCode.DIGIT0) )) {
 			zoomOne();
 			// help();
 			redraw();
