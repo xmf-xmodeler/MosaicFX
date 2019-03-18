@@ -106,4 +106,8 @@ public class Palette extends GridPane {
 		});
 	}
 
+	private void test2() {
+		diagram.addInstance(diagram.getTestClassId(), "TestInstance", new Vector<Integer>(), false, 1,1);
+		diagram.updateDiagram();
+	}
 }
