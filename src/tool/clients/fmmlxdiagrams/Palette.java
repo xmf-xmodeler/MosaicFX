@@ -79,7 +79,7 @@ public class Palette extends GridPane {
 						int y = (int) e.getY();
 
 						if (x > 0 && y > 0) {
-							diagram.addNewMetaClass(mcdResult.getName(), mcdResult.getLevel(),
+							diagram.addMetaClass(mcdResult.getName(), mcdResult.getLevel(),
 									new Vector<Integer>(mcdResult.getParent()), false, x, y);
 
 							canvas.setCursor(Cursor.DEFAULT);
