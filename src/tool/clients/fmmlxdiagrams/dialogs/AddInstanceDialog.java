@@ -49,13 +49,28 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 				e.consume();
 			}
 		});
+		
+		//ofComboBox.getSelectionModel().getSelectedItem()
+		
+		
+		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
+		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
+		
+	
 
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
+				int idSelectedItem = 0;
+				for (FmmlxObject object : objects) {
+					if (object.getName().equals(ofComboBox.getSelectionModel().getSelectedItem())) {
+						idSelectedItem= object.getId();
+					}
+				}
+				System.out.println(idSelectedItem+ " id selected item");
 				return new AddInstanceDialogResult(nameTextField.getText(),
 						levelComboBox.getSelectionModel().getSelectedItem(),
 						parentListView.getSelectionModel().getSelectedItems(),
-						ofComboBox.getSelectionModel().getSelectedItem(), abstractCheckBox.isSelected());
+						idSelectedItem, abstractCheckBox.isSelected());
 			}
 			return null;
 		});
@@ -123,9 +138,6 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		if (!validateCircularDependecies()) {
 			return false;
 		}
-		if (!validateName()) {
-			return false;
-		}
 		return true;
 	}
 
@@ -169,10 +181,25 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	}
 	
 	private boolean validateLevel() {
-		Label errorLabel = getErrorLabel();
+	/*	Label errorLabel = getErrorLabel();
 		
-		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
+		if (levelComboBox.getSelectionModel().isEmpty()) {
+			errorLabel.setText("Select Level!");
+			return false;
+		}else if(levelIsNotValid()) { 
+			errorLabel.setText("Selected Level is not allowed");
+			return false;
+		}else {
+			errorLabel.setText("");
+			return true;
+		}*/
+		return true;
+	}
+
+	private boolean levelIsNotValid() {
+		/*Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
 		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
+		int selectedLevel = levelComboBox.getSelectionModel().getSelectedItem();
 		
 		//-----------------------------------------------------------
 		
@@ -183,30 +210,20 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		}
 		//-----------------------------------------------------------
 		
-		if (levelComboBox.getSelectionModel().isEmpty()) {
-			errorLabel.setText("Select Level!");
-			return false;
-		}else if(levelIsNotValid(1, 1)) { //TODO just for test
-			errorLabel.setText("Selected Level is not allowed");
-			return false;
-		}else {
-			errorLabel.setText("");
-			return true;
-		}
-	}
-
-	private boolean levelIsNotValid(int parentLevel, int choosenLevel) {
-		//TODO
-		if(parentLevel-1!=choosenLevel) {
-			return true;
-		}
+		for (FmmlxObject object : objects) {
+			if(object.getName().equals(ofComboBox.getSelectionModel().getSelectedItem())) {
+				if(object.getLevel()-1!=selectedLevel) {
+					return true;
+				}
+			}
+		}*/
 		return false;
 	}
 	
 	private boolean validateCircularDependecies() {
 		// TODO Auto-generated method stub
 		
-		return false;
+		return true;
 	}
 
 	private void initializeListView() {

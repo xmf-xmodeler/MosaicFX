@@ -36,11 +36,15 @@ public class FmmlxObject {
 	Vector<FmmlxOperation> operations;
 	Vector<FmmlxOperationValue> operationValues;
 	
-	public String getName() {
+	public String getName() { 
 		return name;
 	}
-	public int getLevel() {
+	public int getLevel() { 
 		return level;
+	}
+	
+	public int getId() {
+		return id;
 	}
 	
 	public FmmlxObject(Integer id, String name, Integer lastKnownX, Integer lastKnownY) {
@@ -60,7 +64,7 @@ public class FmmlxObject {
 
 		width = 150;
 		height = 80;
-		level = name.hashCode()%5;
+		level = name.hashCode()%5; //TODO
 	}
 
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram diagram) {
@@ -227,5 +231,6 @@ public class FmmlxObject {
 				mouseX < x + width &&
 				mouseY < y + height;
 	}
+	
 	
 }

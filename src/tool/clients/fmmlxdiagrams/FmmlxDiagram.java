@@ -30,7 +30,7 @@ public class FmmlxDiagram {
 	private transient boolean objectsMoved = false;
 	MouseMode mouseMode = MouseMode.NONE;
 	
-	public Vector<FmmlxObject> getObjects() {
+	public Vector<FmmlxObject> getObjects() { //TODO Ask
 		return objects;
 	}
 
@@ -183,7 +183,7 @@ public class FmmlxDiagram {
 		comm.addNewMetaClass(name, level, parents, isAbstract, x, y);
 	}
 
-	public void addNewInstance(String of, String name, int level, Vector<String> parents, boolean isAbstract, int x, int y) {
+	public void addNewInstance(int of, String name, int level, Vector<String> parents, boolean isAbstract, int x, int y) {
 		comm.addNewInstance(of, name, level, parents, isAbstract, x, y);
 		
 		

@@ -116,6 +116,7 @@ public class Palette extends GridPane {
 						int y = (int) e.getY();
 
 						if (x > 0 && y > 0) {
+							
 							diagram.addNewInstance(aidResult.getOf(), aidResult.getName(), aidResult.getLevel(), 
 									new Vector<String>(aidResult.getParents()),false,x,y);
 							

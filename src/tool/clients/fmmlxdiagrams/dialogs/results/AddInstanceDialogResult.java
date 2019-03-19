@@ -7,10 +7,10 @@ public class AddInstanceDialogResult extends DialogResult {
 	private String name;
 	private int level;
 	private ObservableList<String> parents;
-	private String of;
+	private int of;
 	private boolean isAbstract;
 
-	public AddInstanceDialogResult(String name, int level, ObservableList<String> parents, String of,
+	public AddInstanceDialogResult(String name, int level, ObservableList<String> parents, int of,
 			boolean isAbstract) {
 		this.name = name;
 		this.level = level;
@@ -31,7 +31,7 @@ public class AddInstanceDialogResult extends DialogResult {
 		return parents;
 	}
 
-	public String getOf() {
+	public int getOf() {
 		return of;
 	}
 

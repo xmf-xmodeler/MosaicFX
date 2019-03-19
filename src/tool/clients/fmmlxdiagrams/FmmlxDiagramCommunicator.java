@@ -17,9 +17,6 @@ public class FmmlxDiagramCommunicator {
 	private static Hashtable<Integer, Tab> tabs = new Hashtable<Integer, Tab>();
 	private static Vector<FmmlxDiagram> diagrams = new Vector<FmmlxDiagram>();
 	
-	public static Vector<FmmlxDiagram> getDiagrams() {
-		return diagrams;
-	}
 
 	private static Vector<FmmlxDiagramCommunicator> communicators = new Vector<FmmlxDiagramCommunicator>();
 	static TabPane tabPane;
@@ -27,6 +24,10 @@ public class FmmlxDiagramCommunicator {
 	
 	public FmmlxDiagramCommunicator() {
 		communicators.add(this);
+	}
+	
+	public static Vector<FmmlxDiagram> getDiagrams() { //TODO Ask
+		return diagrams;
 	}
 	
 	public static void start(TabPane tabPane) {
@@ -76,7 +77,6 @@ public class FmmlxDiagramCommunicator {
 		return results.remove(requestID);
 		//throw new RuntimeException("Not yet finished implementing");
 	}
-	
 	
 	@SuppressWarnings("unchecked")
 	public Vector<FmmlxObject> getAllObjects() {
@@ -236,13 +236,14 @@ public class FmmlxDiagramCommunicator {
 		return result ;	
 	}
 
-	public void addNewInstance(String of, String name, int level, Vector<String> parents, boolean isAbstract, int x,
+	public void addNewInstance(int of, String name, int level, Vector<String> parents, boolean isAbstract, int x,
 			int y) {
 		Value[] parentsArray = createValueArrayString(parents);
 		
 		Value[] message = new Value[] {
 				new Value(-1),
 				new Value(name),
+				new Value(of),
 				new Value(level),
 				new Value(parentsArray),
 				new Value(isAbstract),
