@@ -64,6 +64,7 @@ public class Palette extends GridPane {
 
 		Platform.runLater(() -> {
 			CreateMetaClassDialog dlg = new CreateMetaClassDialog();
+			dlg.setTitle("Add metaclass");
 			Optional<MetaClassDialogResult> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
@@ -100,6 +101,7 @@ public class Palette extends GridPane {
 
 		Platform.runLater(() -> {
 			AddInstanceDialog dlg = new AddInstanceDialog("");
+			dlg.setTitle("Add instance");
 			dlg.showAndWait();
 
 			l.countDown();
