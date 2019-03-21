@@ -42,6 +42,25 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		layoutContent();
 
 		dialog.setContent(flow);
+		
+		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
+		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
+		
+		
+		ofComboBox.setOnAction((e) -> {
+            
+            System.out.println("The button not it!");
+            
+            for (FmmlxObject object : objects) {
+            	if (object.getName().equals(ofComboBox.getSelectionModel().getSelectedItem())) {
+                	if(object.getLevel()==0) {
+                		abstractCheckBox.setVisible(false);
+                		levelComboBox.setVisible(false);
+                		break;
+                	}
+                }
+            }
+        });
 
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
@@ -50,14 +69,6 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 			}
 		});
 		
-		//ofComboBox.getSelectionModel().getSelectedItem()
-		
-		
-		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
-		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
-		
-	
-
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				int idSelectedItem = 0;
