@@ -1,8 +1,10 @@
-=== Version 1.1.7 ===== 07.03.2019
+=== Version 1.1.7 ===== 28.03.2019
 - welcome page updated
 - properties form layout cleaned up 
 - diagram zoom with mouse-wheel and keyboard shortcuts
 - automatic resize of diagram surface
+- PDF documentation included
+- bug fixes
 
 === Version 1.1.6 ===== 15.11.2018
 - first two tool groups automatically expanded
@@ -22,13 +24,13 @@
 - search window 
 
 === Version 1.1.1 ===== 01.02.2018
-- bugfixes 
+- bug fixes 
 
 === Version 1.1.0 ===== 24.01.2018
 - migration to JavaFX 
 
 === Version 1.0.9 ===== 29.11.2017
-- bugfixes
+- bug fixes
 
 === Version 1.0.8 ===== 30.10.2017
 - new prototypical texteditor
