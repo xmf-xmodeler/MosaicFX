@@ -1,0 +1,71 @@
+/*General*/
+
+a {
+    color: #222;
+}
+
+h3 {
+    text-align: center;
+}
+
+h5 {
+    text-align: center;
+}
+
+.container {
+    padding: 5em 1em;
+}
+
+/*Hero*/
+
+.hero {
+    background: rgb(134,175,255);
+    background: linear-gradient(90deg, rgba(134,175,255,1) 0%, rgba(51,119,255,1) 50%, rgba(0,65,195,1) 100%);
+    color: #ffffff;
+}
+
+.hero-logo {
+    height: 3em;
+    margin-top: -15em;
+}
+
+.hero > .container {
+    padding: 15em 1em;
+    /*background: rgb(0,0,0);*/
+    /*background: radial-gradient(circle, rgba(0,0,0,0) 0%, rgba(0,0,0,0.1) 100%);*/
+}
+
+/*Featured*/
+
+.featured {
+    background-color: #f9f9f9;
+}
+
+.featured h5 {
+    text-align: left;
+}
+
+/*Team*/
+
+.team {
+    text-align: center;
+}
+
+.team .row {
+    margin-bottom: 2em;
+}
+
+.team .row:last-of-type {
+    margin-bottom: 0;
+}
+
+/*Footer*/
+
+.footer {
+    background-color: #ababab;
+    padding: 2em 1em;
+}
+
+.footer > .container {
+    margin: auto;
+}

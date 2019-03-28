@@ -24,10 +24,8 @@ public class ToggleTool extends Tool {
 //    else unselect();
   }
 
-  public TreeItem<String> createButton() {
-
-		String iconFile = "icons/" + icon;
-		ImageView image = new ImageView(new javafx.scene.image.Image(new File(iconFile).toURI().toString()));
+  public TreeItem<String> createButton() { //TODO: all of this is pretty bad and redundant. I assume all extend Tool classes look like this
+	    ImageView image = new ImageView(new javafx.scene.image.Image(new File(icon).toURI().toString()));
 		button = new TreeItem<String>(label, image);	  
 	  
 //	  imageTrue = new Image(XModeler.getXModeler().getDisplay(), new ImageData("icons/" + iconTrue));

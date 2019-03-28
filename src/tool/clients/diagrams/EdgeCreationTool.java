@@ -6,16 +6,14 @@ import java.io.PrintStream;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 
-public class EdgeCreationTool extends Tool {
+public class EdgeCreationTool extends Tool { //TODO: why is this an abstract class when you end up with redundant code?
 
   public EdgeCreationTool(Diagram diagram, String label, String id, String icon) {
     super(diagram, label, id, icon);
   }
 
   public TreeItem<String> createButton() {
-
-	String iconFile = "icons/" + icon;
-	ImageView image = new ImageView(new javafx.scene.image.Image(new File(iconFile).toURI().toString()));
+    ImageView image = new ImageView(new javafx.scene.image.Image(new File(icon).toURI().toString()));
 	button = new TreeItem<String>(label, image);
 		
 //    Image image = new Image(XModeler.getXModeler().getDisplay(), new ImageData("icons/" + icon));

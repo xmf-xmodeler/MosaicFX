@@ -13,8 +13,7 @@ public class NodeCreationTool extends Tool {
   }
 
   public TreeItem<String> createButton() {
-	String iconFile = "icons/" + icon;
-	ImageView image = new ImageView(new javafx.scene.image.Image(new File(iconFile).toURI().toString()));
+    ImageView image = new ImageView(new javafx.scene.image.Image(new File(icon).toURI().toString()));
 	button = new TreeItem<String>(label, image);
 	
 //    Image image = new Image(XModeler.getXModeler().getDisplay(), new ImageData("icons/" + icon));
