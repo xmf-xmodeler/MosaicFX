@@ -327,8 +327,9 @@ public class Form {
 			final boolean expanded, final String icon, final int index) {
 		if (items.containsKey(parentId)) {
 			TreeItem<String> parent = items.get(parentId);
-			String iconFile = "icons/" + icon;
-			ImageView image = new ImageView(new Image(new File(iconFile).toURI().toString()));
+			System.out.println(icon);
+//			String iconFile = "icons/" + icon;
+			ImageView image = new ImageView(new Image(new File(icon).toURI().toString()));
 			TreeItem<String> item = new TreeItem<String>(text, image);
 			images.put(nodeId, icon);
 			items.put(nodeId, item);
@@ -340,8 +341,9 @@ public class Form {
 
 	private void addRootNodeWithIcon(final String parentId, final String nodeId, final String text, boolean editable,
 			final boolean expanded, final String icon, final int index) {
-		String iconFile = "icons/" + icon;
-		ImageView image = new ImageView(new Image(new File(iconFile).toURI().toString()));
+//		String iconFile = "icons/" + icon;
+		System.out.println(icon);
+		ImageView image = new ImageView(new Image(new File(icon).toURI().toString()));
 		TreeView<String> tree = trees.get(parentId);
 		TreeItem<String> item = new TreeItem<String>(text, image);
 		images.put(nodeId, icon);

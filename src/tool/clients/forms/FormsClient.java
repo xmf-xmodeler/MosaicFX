@@ -697,7 +697,7 @@ public class FormsClient extends Client {
 		final Value width = message.args[1];
 		final Value height = message.args[2];
 		for (Form form : forms)
-			form.setSize(id.strValue(), width.intValue, height.intValue);
+			form.setSize(id.strValue(), width.intValue, height.intValue); //TODO: java.lang.RuntimeException: The setSize()-operation for this type of Display is not yet implemented...
 	}
 
 	private void delete(Message message) {
