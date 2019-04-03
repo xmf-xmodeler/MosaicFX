@@ -18,14 +18,11 @@ import javafx.scene.layout.Priority;
 import tool.clients.fmmlxdiagrams.dialogs.AddAttributeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AddInstanceDialog;
 import tool.clients.fmmlxdiagrams.dialogs.CreateMetaClassDialog;
-<<<<<<< HEAD
 import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
-=======
 import tool.clients.fmmlxdiagrams.dialogs.EditAttributDialog;
-import tool.clients.fmmlxdiagrams.dialogs.MetaClassDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.RemoveAttributDialog;
->>>>>>> refs/heads/fmmlxDialog2
+
 
 public class Palette extends GridPane {
 

@@ -8,6 +8,7 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.GridPane;
+import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 
 public class RemoveAttributDialog extends CustomDialog<MetaClassDialogResult>{
 	
