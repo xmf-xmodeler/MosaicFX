@@ -267,7 +267,6 @@ public class Diagram implements Display {
 
 	transient ContextMenu currentcontextMenu;
 
-	// --------- not used ---------- \\
 	private void rightClick(javafx.scene.input.MouseEvent event, javafx.geometry.Point2D scaledPoint) {
 		if (selection.isEmpty())
 			currentcontextMenu = MenuClient.popup(id, scroller, (int) event.getSceneX(), (int) event.getSceneY());

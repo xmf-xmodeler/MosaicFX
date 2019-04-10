@@ -158,10 +158,18 @@ public class FmmlxDiagram {
 			selectedObjects.addAll(objects);
 		} else {
 			FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
-
-			selectedObjects.clear();
-			if (hitObject != null)
-				selectedObjects.add(hitObject);
+			if(e.isControlDown()) {
+				if(selectedObjects.contains(selectedObjects)) {
+					selectedObjects.remove(hitObject);
+				} else {
+					selectedObjects.add(hitObject);
+				}
+			} else {
+				if(!selectedObjects.contains(hitObject)) {
+					selectedObjects.clear();
+					if(hitObject != null)selectedObjects.add(hitObject);
+				}
+			}
 		}
 //		if(hitObject != null) {
 //			selectedObjects 

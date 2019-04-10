@@ -88,9 +88,12 @@ public class FmmlxDiagramCommunicator {
 //			System.err.println("Class/Object " + o + " found");
 			FmmlxObject object = new FmmlxObject(
 					(Integer) responseObjectList.get(0),
-					(String) responseObjectList.get(1), 
+					(String)  responseObjectList.get(1), 
 					(Integer) responseObjectList.get(2), 
-					(Integer) responseObjectList.get(3));
+					(Integer) responseObjectList.get(3), 
+					null, 
+					(Integer) responseObjectList.get(5), 
+					(Integer) responseObjectList.get(6));
 			result.add(object);
 			
 			sendCurrentPosition(object); // make sure to store position if newly created 
