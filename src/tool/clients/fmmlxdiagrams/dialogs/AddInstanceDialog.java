@@ -14,7 +14,6 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 
 public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
