@@ -22,6 +22,8 @@ import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 public class Palette extends GridPane {
 
 	private final FmmlxDiagram diagram;
+	
+	private final double zoomLevel = 1.25f;
 
 	public Palette(FmmlxDiagram diagram) {
 		this.diagram = diagram;
@@ -38,6 +40,8 @@ public class Palette extends GridPane {
 		addButton("Edit Attribute", 4, e -> System.out.println("Button 4"));
 		addButton("Remove Attribute", 5, e -> System.out.println("Button 5"));
 		addButton("Change Slot Value", 6, e -> System.out.println("Button 6"));
+		addButton("Zoom +", 7, e -> zoomIn());
+		addButton("Zoom -", 8, e -> zoomOut());
 
 		ColumnConstraints cc = new ColumnConstraints();
 		cc.setFillWidth(true);
@@ -106,6 +110,16 @@ public class Palette extends GridPane {
 
 			l.countDown();
 		});
+	}
+	
+	private void zoomIn() {
+		diagram.setZoom(diagram.getZoom() * zoomLevel);
+		diagram.redraw();
+		}
+	
+	private void zoomOut() {
+		diagram.setZoom(diagram.getZoom() / zoomLevel);
+		diagram.redraw();
 	}
 
 	private void test2() {

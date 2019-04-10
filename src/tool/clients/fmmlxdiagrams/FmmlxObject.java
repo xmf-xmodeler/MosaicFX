@@ -220,5 +220,13 @@ public class FmmlxObject {
 				mouseX < x + width &&
 				mouseY < y + height;
 	}
+
+	public double getMaxBottom() {
+		return y + height;
+	}
+
+	public double getMaxRight() {
+		return x + width;
+	}
 	
 }
