@@ -23,7 +23,7 @@ public class Palette extends GridPane {
 
 	private final FmmlxDiagram diagram;
 	
-	private final double zoomLevel = 1.25f;
+	private final double zoomLevel = Math.sqrt(2);
 
 	public Palette(FmmlxDiagram diagram) {
 		this.diagram = diagram;
@@ -42,6 +42,7 @@ public class Palette extends GridPane {
 		addButton("Change Slot Value", 6, e -> System.out.println("Button 6"));
 		addButton("Zoom +", 7, e -> zoomIn());
 		addButton("Zoom -", 8, e -> zoomOut());
+		addButton("Zoom 100%", 9, e -> zoomOne());
 
 		ColumnConstraints cc = new ColumnConstraints();
 		cc.setFillWidth(true);
@@ -119,6 +120,11 @@ public class Palette extends GridPane {
 	
 	private void zoomOut() {
 		diagram.setZoom(diagram.getZoom() / zoomLevel);
+		diagram.redraw();
+	}
+	
+	private void zoomOne() {
+		diagram.setZoom(1.);
 		diagram.redraw();
 	}
 

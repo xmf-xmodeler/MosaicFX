@@ -8,6 +8,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -31,7 +32,7 @@ public class FmmlxDiagram {
 	MouseMode mouseMode = MouseMode.NONE;
 
 	Point2D canvasRawSize = new Point2D(1200, 800);
-	double zoom = 1.00f;
+	double zoom = 1.;
 	Affine transformFX;
 
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, String label) {
@@ -42,12 +43,15 @@ public class FmmlxDiagram {
 		canvas = new Canvas(canvasRawSize.getX(), canvasRawSize.getY());
 		palette = new Palette(this);
 		ScrollPane scroller = new ScrollPane(palette);
-		scroller.setMinWidth(200);
+		// scroller.setMinWidth(200);
+		scroller.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		scroller.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		ScrollPane scrollerCanvas = new ScrollPane(canvas);
 
 		mainView.getItems().addAll(scroller, scrollerCanvas);
-		mainView.setDividerPosition(0, 0.2);
+		mainView.setDividerPosition(0, 0.23);
 		transformFX = new Affine();
+		
 //		mainView.setDividerPosition(0, 0.2);
 
 		canvas.setOnMousePressed((e) -> {
@@ -247,7 +251,8 @@ public class FmmlxDiagram {
 	}
 
 	public void setZoom(double zoom) {
-		this.zoom = zoom;
+		this.zoom = Math.min(4, Math.max(zoom, 1./8));
+		
 		transformFX = new Affine();
 		transformFX.appendScale(zoom, zoom);
 		resizeCanvas();
