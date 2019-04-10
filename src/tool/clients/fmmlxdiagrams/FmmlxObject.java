@@ -13,8 +13,11 @@ public class FmmlxObject {
 	int x; 
 	int y;
 	int level;
+	int of;
+	Vector<Integer> parents;
 	int width;
 	int height;
+	
 	public transient double mouseMoveOffsetX;
 	public transient double mouseMoveOffsetY;
 		
@@ -36,7 +39,7 @@ public class FmmlxObject {
 	Vector<FmmlxOperation> operations;
 	Vector<FmmlxOperationValue> operationValues;
 	
-	public FmmlxObject(Integer id, String name, Integer lastKnownX, Integer lastKnownY) {
+	public FmmlxObject(Integer id, String name, int level, int of, Vector<Integer> parents, Integer lastKnownX, Integer lastKnownY) {
 		this.name = name;
 		this.id = id;
 		if(lastKnownX != null && lastKnownX != 0) {
@@ -53,7 +56,9 @@ public class FmmlxObject {
 
 		width = 150;
 		height = 80;
-		level = name.hashCode()%5;
+		this.level = level;
+		this.of = of;
+		this.parents = parents;
 	}
 
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram diagram) {
@@ -103,7 +108,7 @@ public class FmmlxObject {
 		calculatedWidth = Math.max(calculatedWidth + 2*gap, minWidth);
 		
 		//calculating header height 
-		Text header = new Text(name);
+		Text header = new Text("["+level+"]"+name);
 		double headerheight = header.getLayoutBounds().getHeight() + 2*gap;
 		
 		//determine text height
@@ -192,7 +197,7 @@ public class FmmlxObject {
 		g.setFill(Color.RED);
 		g.fillRect(x, y, calculatedWidth , headerheight);
 		g.setFill(Color.BLACK);
-		g.fillText(name, x + gap, y + headerheight/2 + gap);
+		g.fillText("["+level+"]"+name, x + gap, y + headerheight/2 + gap);
 		g.strokeRect(x, y, calculatedWidth  , calculatedHeight);
 
 		this.height = (int) calculatedHeight;
