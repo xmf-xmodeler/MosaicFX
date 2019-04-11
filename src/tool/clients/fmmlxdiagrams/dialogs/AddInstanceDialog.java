@@ -35,7 +35,6 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		super();
 
 		DialogPane dialog = getDialogPane();
-		dialog.setHeaderText("Add Instance");
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
 		layoutContent();

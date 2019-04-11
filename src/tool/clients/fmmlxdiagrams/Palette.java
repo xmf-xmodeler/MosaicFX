@@ -27,6 +27,8 @@ import tool.clients.fmmlxdiagrams.dialogs.RemoveAttributDialog;
 public class Palette extends GridPane {
 
 	private final FmmlxDiagram diagram;
+	
+	private final double zoomLevel = Math.sqrt(2);
 
 	public Palette(FmmlxDiagram diagram) {
 		this.diagram = diagram;
@@ -43,6 +45,9 @@ public class Palette extends GridPane {
 		addButton("Edit Attribute", 4, e -> editAttributeDialog());
 		addButton("Remove Attribute", 5, e -> removeAttributDialog());
 		addButton("Change Slot Value", 6, e -> System.out.println("Button 6"));
+		addButton("Zoom +", 7, e -> zoomIn());
+		addButton("Zoom -", 8, e -> zoomOut());
+		addButton("Zoom 100%", 9, e -> zoomOne());
 
 		ColumnConstraints cc = new ColumnConstraints();
 		cc.setFillWidth(true);
@@ -121,6 +126,7 @@ public class Palette extends GridPane {
 
 		Platform.runLater(() -> {
 			CreateMetaClassDialog dlg = new CreateMetaClassDialog();
+			dlg.setTitle("Add metaclass");
 			Optional<MetaClassDialogResult> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
@@ -157,6 +163,7 @@ public class Palette extends GridPane {
 
 		Platform.runLater(() -> {
 			AddInstanceDialog dlg = new AddInstanceDialog("");
+
 			Optional<AddInstanceDialogResult> result = dlg.showAndWait();
 			
 			if(result.isPresent()) {
@@ -189,8 +196,26 @@ public class Palette extends GridPane {
 				
 			}
 
+			dlg.setTitle("Add instance");
+			dlg.showAndWait();
+
 			l.countDown();
 		});
+	}
+	
+	private void zoomIn() {
+		diagram.setZoom(diagram.getZoom() * zoomLevel);
+		diagram.redraw();
+		}
+	
+	private void zoomOut() {
+		diagram.setZoom(diagram.getZoom() / zoomLevel);
+		diagram.redraw();
+	}
+	
+	private void zoomOne() {
+		diagram.setZoom(1.);
+		diagram.redraw();
 	}
 
 	private void test2() {

@@ -38,7 +38,7 @@ public class CustomDialog<R> extends Dialog<R> {
 		grid = new GridPane();
 		grid.setHgap(3);
 		grid.setVgap(3);
-		grid.setPadding(new Insets(10, 10, 10, 10));
+		grid.setPadding(new Insets(3, 3, 3, 3));
 
 		ColumnConstraints cc;
 		for (int i = 0; i < 2; i++) {
