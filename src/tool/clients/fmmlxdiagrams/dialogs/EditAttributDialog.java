@@ -75,7 +75,7 @@ public class EditAttributDialog extends CustomDialog<MetaClassDialogResult> {
 		newNameTextField = new TextField();
 		newValueTextField = new TextField();
 		
-		classLabel.setPrefWidth(50);;
+		
 		classComboBox.setPrefWidth(COLUMN_WIDTH);
 		selectAttributeComboBox.setPrefWidth(COLUMN_WIDTH);
 		

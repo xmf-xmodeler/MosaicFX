@@ -33,7 +33,9 @@ public class FmmlxObject {
 
 	Vector<FmmlxSlot> slots;
 	Vector<FmmlxOperation> operations;
-	Vector<FmmlxOperationValue> operationValues;	
+	Vector<FmmlxOperationValue> operationValues;
+
+	
 	Vector<FmmlxAttribute> attributes;
 	
 	public String getName() { 
