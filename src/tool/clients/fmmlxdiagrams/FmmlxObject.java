@@ -30,11 +30,11 @@ public class FmmlxObject {
 	static int testDiff = 10;
 	
 	static int gap = 5;
-	
-	Vector<FmmlxAttribute> attributes;
+
 	Vector<FmmlxSlot> slots;
 	Vector<FmmlxOperation> operations;
-	Vector<FmmlxOperationValue> operationValues;
+	Vector<FmmlxOperationValue> operationValues;	
+	Vector<FmmlxAttribute> attributes;
 	
 	public String getName() { 
 		return name;
@@ -45,6 +45,14 @@ public class FmmlxObject {
 	
 	public int getId() {
 		return id;
+	}
+	
+	public Vector<FmmlxAttribute> getAttributes() {
+		return attributes;
+	}
+	
+	public void setAttributes(Vector<FmmlxAttribute> attributes) {
+		this.attributes = attributes;
 	}
 	
 	public FmmlxObject(Integer id, String name, Integer lastKnownX, Integer lastKnownY) {

@@ -8,12 +8,10 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.layout.GridPane;
 import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 
 public class EditAttributDialog extends CustomDialog<MetaClassDialogResult> {
-	
-	private GridPane gridPane= new GridPane();
+
 	
 	private Label classLabel;
 	private Label selectAttributLabel;
@@ -37,10 +35,8 @@ public class EditAttributDialog extends CustomDialog<MetaClassDialogResult> {
 		
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		
-		gridPane = initializeGrid();
-		
 		addElementToGrid();
-		dialogPane.setContent(grid);
+		dialogPane.setContent(flow);
 		
 		
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
@@ -79,21 +75,21 @@ public class EditAttributDialog extends CustomDialog<MetaClassDialogResult> {
 		newNameTextField = new TextField();
 		newValueTextField = new TextField();
 		
-		
+		classLabel.setPrefWidth(50);;
 		classComboBox.setPrefWidth(COLUMN_WIDTH);
 		selectAttributeComboBox.setPrefWidth(COLUMN_WIDTH);
 		
 		
-		gridPane.add(classLabel, 0, 0);
-		gridPane.add(classComboBox, 1, 0);
-		gridPane.add(selectAttributLabel, 0, 1);
-		gridPane.add(selectAttributeComboBox, 1, 1);
-		gridPane.add(currentValueLabel, 0, 2);
-		gridPane.add(currentValue, 1, 2);
-		gridPane.add(newNameLabel, 0, 3);
-		gridPane.add(newNameTextField, 1, 3);
-		gridPane.add(newValueLabel, 0, 4);
-		gridPane.add(newValueTextField, 1, 4);
+		grid.add(classLabel, 0, 0);
+		grid.add(classComboBox, 1, 0);
+		grid.add(selectAttributLabel, 0, 1);
+		grid.add(selectAttributeComboBox, 1, 1);
+		grid.add(currentValueLabel, 0, 2);
+		grid.add(currentValue, 1, 2);
+		grid.add(newNameLabel, 0, 3);
+		grid.add(newNameTextField, 1, 3);
+		grid.add(newValueLabel, 0, 4);
+		grid.add(newValueTextField, 1, 4);
 	}
 
 

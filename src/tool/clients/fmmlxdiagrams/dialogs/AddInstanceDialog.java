@@ -2,7 +2,6 @@ package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.ArrayList;
 import java.util.Vector;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -30,7 +29,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	private Label abstractLabel;
 	
 	ObservableList<String> parentList= getAllParentList();
-	ObservableList<String> ofList = getAllOfList();
+	ObservableList<String> ofList;
 
 	public AddInstanceDialog(String of) {
 		super();
@@ -40,7 +39,6 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
 		layoutContent();
-
 		dialog.setContent(flow);
 		
 		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
@@ -93,6 +91,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	}
 	
 	private void layoutContent() {
+		ofList = getAllOfList();
 		nameTextField = new TextField();
 		ofComboBox = new ComboBox<>(ofList);
 		abstractCheckBox = new CheckBox();
@@ -120,8 +119,11 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
 		
 		for (FmmlxObject object :objects) {
-			resultStrings.add(object.getName());
+			if (object.getLevel()!=0) {
+				resultStrings.add(object.getName());
+			}
 		}
+		
 		ObservableList<String> result = FXCollections.observableArrayList( resultStrings);
 		return result;
 	}

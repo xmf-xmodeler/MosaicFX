@@ -3,6 +3,14 @@ package tool.clients.fmmlxdiagrams;
 public class FmmlxAttribute {
 	
 	String name;
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	int level;
 	String type;
 
