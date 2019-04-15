@@ -261,13 +261,13 @@ public class FmmlxDiagramCommunicator {
 		
 		Value[] message = new Value[] {
 				new Value(-1),
-				new Value(name),
 				new Value(of),
-				new Value(level),
+				new Value(name),
+				//new Value(level),
 				new Value(parentsArray),
 				new Value(isAbstract),
 				new Value(x),
-				new Value(y),};
+				new Value(y)};
 		WorkbenchClient.theClient().send(handler, "addInstance", message);
 	}
 }

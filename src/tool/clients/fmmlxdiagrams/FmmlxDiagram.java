@@ -33,6 +33,13 @@ public class FmmlxDiagram {
 	MouseMode mouseMode = MouseMode.NONE;
 	
 	public Vector<FmmlxObject> getObjects() { //TODO Ask
+		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
+		objects.clear(); // to be replaced when updating instead of loading form scratch
+		objects.addAll(fetchedObjects);
+		for (FmmlxObject o : objects) {
+//			comm.fetchAttributes(o);
+			o.fetchData(comm);
+		}
 		return objects;
 	}
 
