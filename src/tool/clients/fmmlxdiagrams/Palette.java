@@ -160,9 +160,11 @@ public class Palette extends GridPane {
 
 	private void addInstanceDialog() {
 		CountDownLatch l = new CountDownLatch(1);
+		System.out.println("Debug 1");
 
 		Platform.runLater(() -> {
 			AddInstanceDialog dlg = new AddInstanceDialog("");
+			System.out.println("Debug 2");
 
 			Optional<AddInstanceDialogResult> result = dlg.showAndWait();
 			
@@ -195,7 +197,6 @@ public class Palette extends GridPane {
 				canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
 				
 			}
-
 			dlg.setTitle("Add instance");
 			dlg.showAndWait();
 

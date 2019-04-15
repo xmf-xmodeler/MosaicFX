@@ -28,7 +28,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	private CheckBox abstractCheckBox;
 	private Label abstractLabel;
 	
-	ObservableList<String> parentList= getAllParentList();
+	ObservableList<String> parentList;
 	ObservableList<String> ofList;
 
 	public AddInstanceDialog(String of) {
@@ -75,14 +75,13 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 				int idSelectedItem = 0;
 				for (FmmlxObject object : objects) {
 					if (object.getName().equals(ofComboBox.getSelectionModel().getSelectedItem())) {
-						idSelectedItem= object.getId();
+						idSelectedItem= object.getId()+1;
 						level=object.getLevel()-1;
 					}
 				}
 				System.out.println(idSelectedItem+ " id selected item");
 				return new AddInstanceDialogResult(nameTextField.getText(),
-						level,
-						parentListView.getSelectionModel().getSelectedItems(),
+						level, parentListView.getSelectionModel().getSelectedItems(),
 						idSelectedItem, abstractCheckBox.isSelected());
 			}
 			return null;
@@ -91,6 +90,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	
 	private void layoutContent() {
 		ofList = getAllOfList();
+		parentList = getAllParentList();
 		nameTextField = new TextField();
 		ofComboBox = new ComboBox<>(ofList);
 		abstractCheckBox = new CheckBox();

@@ -87,7 +87,7 @@ public class FmmlxDiagramCommunicator {
 		for(Object responseObject : responseContent) {
 			Vector<Object> responseObjectList = (Vector<Object>) (responseObject);
 			
-//			System.err.println("Class/Object " + o + " found");
+			System.out.println("Class/Object " + responseObjectList.get(1)+ " found" + ": "+"Level : "+ (Integer) responseObjectList.get(2));
 			FmmlxObject object = new FmmlxObject(
 					(Integer) responseObjectList.get(0),
 					(String)  responseObjectList.get(1), 
