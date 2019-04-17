@@ -70,7 +70,7 @@ public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
 	private ObservableList<String> getAllClassList() {
 		ArrayList<String> resultStrings = new ArrayList<String>();
 		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
-		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
+		Vector<FmmlxObject> objects = diagrams.get(0).fetchObjects();
 		
 		for (FmmlxObject object :objects) {
 			resultStrings.add(object.getName());
@@ -159,7 +159,7 @@ public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
 	
 	private boolean nameAlreadyUsed() {
 		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
-		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
+		Vector<FmmlxObject> objects = diagrams.get(0).fetchObjects();
 		
 		for (FmmlxObject object :objects) {
 			if(classCombobox.getSelectionModel().getSelectedItem().equals(object.getName())) {

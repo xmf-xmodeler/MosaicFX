@@ -163,10 +163,11 @@ public class Palette extends GridPane {
 		System.out.println("Debug 1");
 
 		Platform.runLater(() -> {
-			AddInstanceDialog dlg = new AddInstanceDialog("");
+			AddInstanceDialog dialog = new AddInstanceDialog(diagram, null);
 			System.out.println("Debug 2");
-
-			Optional<AddInstanceDialogResult> result = dlg.showAndWait();
+			
+			dialog.setTitle("Add instance");
+			Optional<AddInstanceDialogResult> result = dialog.showAndWait();
 			
 			if(result.isPresent()) {
 				final AddInstanceDialogResult aidResult = result.get();
@@ -178,18 +179,20 @@ public class Palette extends GridPane {
 					public void handle(MouseEvent e) {
 
 						int x = (int) e.getX();
-						int y = (int) e.getY();
+						int y = (int) e.getY(); // todo: zoom
 
 						if (x > 0 && y > 0) {
-							
+							System.err.println("Add Instance Start");
 							diagram.addNewInstance(aidResult.getOf(), aidResult.getName(), aidResult.getLevel(), 
 									new Vector<String>(aidResult.getParents()),false,x,y);
-							
+
+							System.err.println("Add Instance End");
 
 							canvas.setCursor(Cursor.DEFAULT);
 							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
 
 							diagram.updateDiagram();
+							System.err.println("Diagram Updated");
 							l.countDown();
 						}
 					};
@@ -197,8 +200,8 @@ public class Palette extends GridPane {
 				canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
 				
 			}
-			dlg.setTitle("Add instance");
-			dlg.showAndWait();
+//			dlg.setTitle("Add instance");
+//			dlg.showAndWait();
 
 			l.countDown();
 		});
