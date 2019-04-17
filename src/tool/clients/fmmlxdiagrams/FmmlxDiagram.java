@@ -34,10 +34,11 @@ public class FmmlxDiagram {
 	private final Palette palette;
 	private DefaultContextMenu defaultContextMenu;
 	private ObjectContextMenu objectContextMenu;
+	private DiagramActions actions;
 	private transient boolean objectsMoved = false;
 	MouseMode mouseMode = MouseMode.NONE;
-	
-	public Vector<FmmlxObject> fetchObjects() { //TODO Ask
+
+	public Vector<FmmlxObject> fetchObjects() { // TODO Ask
 		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
 		objects.clear(); // to be replaced when updating instead of loading form scratch
 		objects.addAll(fetchedObjects);
@@ -48,14 +49,22 @@ public class FmmlxDiagram {
 		return objects;
 	}
 
-	public Vector<FmmlxObject> getObjects() { 
+	public Vector<FmmlxObject> getObjects() {
 		return new Vector<FmmlxObject>(objects); // read-only
 	}
 	
+	public FmmlxObject getObjectById(int id) {
+		for(FmmlxObject object : objects) {
+			if(object.getId() == id)
+				return object;
+		}
+		return null;
+	}
+
 	Point2D canvasRawSize = new Point2D(1200, 800);
 	double zoom = 1.;
 	Affine transformFX;
-	
+
 	private ScrollPane scrollerCanvas;
 	private ScrollPane scroller;
 
@@ -65,7 +74,7 @@ public class FmmlxDiagram {
 //		palette = new Palette(this);
 //		palette.init(this);
 		canvas = new Canvas(canvasRawSize.getX(), canvasRawSize.getY());
-		DiagramActions actions = new DiagramActions(this);
+		actions = new DiagramActions(this);
 		palette = new Palette(actions);
 		scroller = new ScrollPane(palette);
 		// scroller.setMinWidth(200);
@@ -76,10 +85,10 @@ public class FmmlxDiagram {
 		mainView.getItems().addAll(scroller, scrollerCanvas);
 		mainView.setDividerPosition(0, 0.23);
 		transformFX = new Affine();
-		
+
 //		mainView.setDividerPosition(0, 0.2);
-		
-		defaultContextMenu = new DefaultContextMenu();
+
+		defaultContextMenu = new DefaultContextMenu(actions);
 
 		canvas.setOnMousePressed((e) -> {
 			mousePressed(e);
@@ -177,37 +186,38 @@ public class FmmlxDiagram {
 
 	private void mousePressed(MouseEvent e) {
 		Point2D p = scale(e);
-		
-		if(objectContextMenu != null && objectContextMenu.isShowing()) {
+
+		if (objectContextMenu != null && objectContextMenu.isShowing()) {
 			objectContextMenu.hide();
 		}
-		if(defaultContextMenu != null && defaultContextMenu.isShowing()) {
+		if (defaultContextMenu != null && defaultContextMenu.isShowing()) {
 			defaultContextMenu.hide();
 		}
-		
+
 		if (isMiddleClick(e)) {
 			selectedObjects.addAll(objects);
 		} else {
 			FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
-			if(e.isControlDown()) {
-				if(selectedObjects.contains(selectedObjects)) {
+			if (e.isControlDown()) {
+				if (selectedObjects.contains(selectedObjects)) {
 					selectedObjects.remove(hitObject);
 				} else {
 					selectedObjects.add(hitObject);
 				}
 			} else {
-				if(!selectedObjects.contains(hitObject)) {
+				if (!selectedObjects.contains(hitObject)) {
 					selectedObjects.clear();
-					if(hitObject != null)selectedObjects.add(hitObject);
+					if (hitObject != null)
+						selectedObjects.add(hitObject);
 				}
 			}
 		}
-		
+
 		if (isRightClick(e)) {
 			FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
-			
-			if(hitObject != null) {
-				objectContextMenu = hitObject.getContextMenu();
+
+			if (hitObject != null) {
+				objectContextMenu = new ObjectContextMenu(hitObject, actions);
 				objectContextMenu.show(scrollerCanvas, Side.LEFT, p.getX(), p.getY());
 			} else {
 				defaultContextMenu.show(scrollerCanvas, Side.LEFT, p.getX(), p.getY());
@@ -285,10 +295,10 @@ public class FmmlxDiagram {
 		comm.addInstance(testClassId, name, parents, isAbstract, x, y);
 	}
 
-	public void addNewInstance(int of, String name, int level, Vector<String> parents, boolean isAbstract, int x, int y) {
+	public void addNewInstance(int of, String name, int level, Vector<String> parents, boolean isAbstract, int x,
+			int y) {
 		comm.addNewInstance(of, name, level, parents, isAbstract, x, y);
 	}
-
 
 	public javafx.geometry.Point2D scale(javafx.scene.input.MouseEvent event) {
 		Affine i;
@@ -306,8 +316,8 @@ public class FmmlxDiagram {
 	}
 
 	public void setZoom(double zoom) {
-		this.zoom = Math.min(4, Math.max(zoom, 1./8));
-		
+		this.zoom = Math.min(4, Math.max(zoom, 1. / 8));
+
 		transformFX = new Affine();
 		transformFX.appendScale(zoom, zoom);
 		resizeCanvas();
