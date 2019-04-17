@@ -22,6 +22,8 @@ import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
 
 public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
+	private FmmlxDiagram diagram;
+	
 	private TextField nameTextField;
 	private ListView<String> parentListView;
 	private ComboBox<String> ofComboBox;
@@ -31,8 +33,10 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	ObservableList<String> parentList;
 	ObservableList<String> ofList;
 
-	public AddInstanceDialog(String of) {
+	public AddInstanceDialog(final FmmlxDiagram diagram, Integer ofId) {
 		super();
+		
+		this.diagram = diagram;
 
 		DialogPane dialog = getDialogPane();
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -40,8 +44,8 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		layoutContent();
 		dialog.setContent(flow);
 		
-		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
-		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
+//		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
+		Vector<FmmlxObject> objects = diagram.getObjects();
 
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
@@ -56,7 +60,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 				int idSelectedItem = 0;
 				for (FmmlxObject object : objects) {
 					if (object.getName().equals(ofComboBox.getSelectionModel().getSelectedItem())) {
-						idSelectedItem= object.getId();
+						idSelectedItem = object.getId();
 						level=object.getLevel()-1;
 					}
 				}
@@ -95,8 +99,8 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
 	private ObservableList<String> getAllOfList() {
 		ArrayList<String> resultStrings = new ArrayList<String>();
-		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
-		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
+//		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
+		Vector<FmmlxObject> objects = diagram.getObjects();
 		
 		for (FmmlxObject object :objects) {
 			if (object.getLevel()!=0) {
@@ -110,8 +114,8 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
 	private ObservableList<String> getAllParentList() {
 		ArrayList<String> resultStrings = new ArrayList<String>();
-		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
-		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
+//		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
+		Vector<FmmlxObject> objects = diagram.getObjects();
 		
 		for (FmmlxObject object :objects) {
 			if (object.getLevel()!=0) {
@@ -153,8 +157,8 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	}
 	
 	private boolean nameAlreadyUsed() {
-		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
-		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
+//		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
+		Vector<FmmlxObject> objects = diagram.getObjects();
 		
 		for (FmmlxObject object :objects) {
 			if(nameTextField.getText().equals(object.getName())) {

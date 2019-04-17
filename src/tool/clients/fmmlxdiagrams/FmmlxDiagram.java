@@ -32,7 +32,7 @@ public class FmmlxDiagram {
 	private transient boolean objectsMoved = false;
 	MouseMode mouseMode = MouseMode.NONE;
 	
-	public Vector<FmmlxObject> getObjects() { //TODO Ask
+	public Vector<FmmlxObject> fetchObjects() { //TODO Ask
 		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
 		objects.clear(); // to be replaced when updating instead of loading form scratch
 		objects.addAll(fetchedObjects);
@@ -43,6 +43,10 @@ public class FmmlxDiagram {
 		return objects;
 	}
 
+	public Vector<FmmlxObject> getObjects() { 
+		return new Vector<FmmlxObject>(objects); // read-only
+	}
+	
 	Point2D canvasRawSize = new Point2D(1200, 800);
 	double zoom = 1.;
 	Affine transformFX;
