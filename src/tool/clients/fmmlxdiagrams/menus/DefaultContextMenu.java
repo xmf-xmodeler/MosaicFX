@@ -9,16 +9,15 @@ public class DefaultContextMenu extends ContextMenu {
 
 	public DefaultContextMenu() {
 		setAutoHide(true);
-		MenuItem item1 = new MenuItem("Test unselected");
+		MenuItem item1 = new MenuItem("Add Class");
 		item1.setOnAction(new EventHandler<ActionEvent>() {
 			
 			@Override
 			public void handle(ActionEvent event) {
-				System.out.println("UNSELECTEDCONTEXTMENU ITEM1");
 				
 			}
 		});
-		MenuItem item2 = new MenuItem("Test2");
+		MenuItem item2 = new MenuItem("Add Instance");
 		
 		getItems().addAll(item1, item2);
 	}

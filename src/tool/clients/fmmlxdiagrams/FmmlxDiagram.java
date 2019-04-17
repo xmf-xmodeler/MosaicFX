@@ -49,7 +49,8 @@ public class FmmlxDiagram {
 //		palette = new Palette(this);
 //		palette.init(this);
 		canvas = new Canvas(canvasRawSize.getX(), canvasRawSize.getY());
-		palette = new Palette(this);
+		DiagramActions actions = new DiagramActions(this);
+		palette = new Palette(actions);
 		scroller = new ScrollPane(palette);
 		// scroller.setMinWidth(200);
 		scroller.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
