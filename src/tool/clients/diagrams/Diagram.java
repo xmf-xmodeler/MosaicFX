@@ -1622,10 +1622,11 @@ public class Diagram implements Display {
 		gc.setFill(new Color(0., 200. / 255., 100. / 255., 1.));
 		gc.fillPolygon(polygonX, polygonY, 13);
 		gc.setStroke(Color.BLACK);
+		gc.setLineWidth(1);
 		gc.strokePolygon(polygonX, polygonY, 13);
 
 		gc.setFill(oldBGColor);
-		gc.strokeText("new " + nodeCreationType, X + 8, Y + 2);
+		gc.fillText("new " + nodeCreationType, X + 8, Y + 2);
 		gc.setStroke(oldFGColor);
 //    gc.setTransform(transform);
 

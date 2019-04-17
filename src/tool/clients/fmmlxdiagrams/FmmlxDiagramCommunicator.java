@@ -4,9 +4,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
-
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
-
 import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -19,12 +16,18 @@ public class FmmlxDiagramCommunicator {
 	private HashMap<Integer, Vector<Object>> results = new HashMap<>();	
 	private static Hashtable<Integer, Tab> tabs = new Hashtable<Integer, Tab>();
 	private static Vector<FmmlxDiagram> diagrams = new Vector<FmmlxDiagram>();
+	
+
 	private static Vector<FmmlxDiagramCommunicator> communicators = new Vector<FmmlxDiagramCommunicator>();
 	static TabPane tabPane;
 	FmmlxDiagram diagram;
 	
 	public FmmlxDiagramCommunicator() {
 		communicators.add(this);
+	}
+	
+	public static Vector<FmmlxDiagram> getDiagrams() { //TODO Ask
+		return diagrams;
 	}
 	
 	public static void start(TabPane tabPane) {
@@ -75,7 +78,6 @@ public class FmmlxDiagramCommunicator {
 		//throw new RuntimeException("Not yet finished implementing");
 	}
 	
-	
 	@SuppressWarnings("unchecked")
 	public Vector<FmmlxObject> getAllObjects() {
 		Vector<Object> response = xmfRequest(handler, "getAllObjects", new Value[]{});
@@ -85,7 +87,7 @@ public class FmmlxDiagramCommunicator {
 		for(Object responseObject : responseContent) {
 			Vector<Object> responseObjectList = (Vector<Object>) (responseObject);
 			
-//			System.err.println("Class/Object " + o + " found");
+			System.out.println("Class/Object " + responseObjectList.get(1)+ " found" + ": "+"Level : "+ (Integer) responseObjectList.get(2));
 			FmmlxObject object = new FmmlxObject(
 					(Integer) responseObjectList.get(0),
 					(String)  responseObjectList.get(1), 
@@ -243,6 +245,30 @@ public class FmmlxDiagramCommunicator {
 			result[i] = new Value(vector.get(i));
 		}
 		return result;
+	}
+	
+	private Value[] createValueArrayString(Vector<String> vector) {
+		Value[] result = new Value[vector.size()];
+		for(int i = 0; i<result.length;i++) {
+			result[i]= new Value(vector.get(i));
+		}
+		return result ;	
+	}
+
+	public void addNewInstance(int of, String name, int level, Vector<String> parents, boolean isAbstract, int x,
+			int y) {
+		Value[] parentsArray = createValueArrayString(parents);
+		
+		Value[] message = new Value[] {
+				new Value(-1),
+				new Value(of),
+				new Value(name),
+				//new Value(level),
+				new Value(parentsArray),
+				new Value(isAbstract),
+				new Value(x),
+				new Value(y)};
+		WorkbenchClient.theClient().send(handler, "addInstance", message);
 	}
 }
  

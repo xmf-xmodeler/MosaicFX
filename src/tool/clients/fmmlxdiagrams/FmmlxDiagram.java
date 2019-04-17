@@ -29,13 +29,29 @@ public class FmmlxDiagram {
 	final FmmlxDiagramCommunicator comm;
 	private Canvas canvas;
 	private Vector<FmmlxObject> objects = new Vector<>();
+
 	private transient Vector<FmmlxObject> selectedObjects = new Vector<>();
 	private final Palette palette;
 	private DefaultContextMenu defaultContextMenu;
 	private ObjectContextMenu objectContextMenu;
 	private transient boolean objectsMoved = false;
 	MouseMode mouseMode = MouseMode.NONE;
+	
+	public Vector<FmmlxObject> fetchObjects() { //TODO Ask
+		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
+		objects.clear(); // to be replaced when updating instead of loading form scratch
+		objects.addAll(fetchedObjects);
+		for (FmmlxObject o : objects) {
+//			comm.fetchAttributes(o);
+			o.fetchData(comm);
+		}
+		return objects;
+	}
 
+	public Vector<FmmlxObject> getObjects() { 
+		return new Vector<FmmlxObject>(objects); // read-only
+	}
+	
 	Point2D canvasRawSize = new Point2D(1200, 800);
 	double zoom = 1.;
 	Affine transformFX;
@@ -268,6 +284,11 @@ public class FmmlxDiagram {
 	public void addInstance(int testClassId, String name, Vector<Integer> parents, boolean isAbstract, int x, int y) {
 		comm.addInstance(testClassId, name, parents, isAbstract, x, y);
 	}
+
+	public void addNewInstance(int of, String name, int level, Vector<String> parents, boolean isAbstract, int x, int y) {
+		comm.addNewInstance(of, name, level, parents, isAbstract, x, y);
+	}
+
 
 	public javafx.geometry.Point2D scale(javafx.scene.input.MouseEvent event) {
 		Affine i;

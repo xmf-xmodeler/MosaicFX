@@ -9,7 +9,7 @@ import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 
 public class FmmlxObject {
 
-	String name;
+	private String name;
 	int id;
 	int x; 
 	int y;
@@ -34,11 +34,32 @@ public class FmmlxObject {
 	static int testDiff = 10;
 	
 	static int gap = 5;
-	
-	Vector<FmmlxAttribute> attributes;
+
 	Vector<FmmlxSlot> slots;
 	Vector<FmmlxOperation> operations;
 	Vector<FmmlxOperationValue> operationValues;
+
+	
+	Vector<FmmlxAttribute> attributes;
+	
+	public String getName() { 
+		return name;
+	}
+	public int getLevel() { 
+		return level;
+	}
+	
+	public int getId() {
+		return id;
+	}
+	
+	public Vector<FmmlxAttribute> getAttributes() {
+		return attributes;
+	}
+	
+	public void setAttributes(Vector<FmmlxAttribute> attributes) {
+		this.attributes = attributes;
+	}
 	
 	ObjectContextMenu contextMenu;
 	
