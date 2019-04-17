@@ -5,6 +5,7 @@ import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
+import javafx.geometry.Side;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
@@ -15,6 +16,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
+import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
+import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
 public class FmmlxDiagram {
 
@@ -28,12 +31,17 @@ public class FmmlxDiagram {
 	private Vector<FmmlxObject> objects = new Vector<>();
 	private transient Vector<FmmlxObject> selectedObjects = new Vector<>();
 	private final Palette palette;
+	private DefaultContextMenu defaultContextMenu;
+	private ObjectContextMenu objectContextMenu;
 	private transient boolean objectsMoved = false;
 	MouseMode mouseMode = MouseMode.NONE;
 
 	Point2D canvasRawSize = new Point2D(1200, 800);
 	double zoom = 1.;
 	Affine transformFX;
+	
+	private ScrollPane scrollerCanvas;
+	private ScrollPane scroller;
 
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, String label) {
 		this.comm = comm;
@@ -42,17 +50,19 @@ public class FmmlxDiagram {
 //		palette.init(this);
 		canvas = new Canvas(canvasRawSize.getX(), canvasRawSize.getY());
 		palette = new Palette(this);
-		ScrollPane scroller = new ScrollPane(palette);
+		scroller = new ScrollPane(palette);
 		// scroller.setMinWidth(200);
 		scroller.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		scroller.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-		ScrollPane scrollerCanvas = new ScrollPane(canvas);
+		scrollerCanvas = new ScrollPane(canvas);
 
 		mainView.getItems().addAll(scroller, scrollerCanvas);
 		mainView.setDividerPosition(0, 0.23);
 		transformFX = new Affine();
 		
 //		mainView.setDividerPosition(0, 0.2);
+		
+		defaultContextMenu = new DefaultContextMenu();
 
 		canvas.setOnMousePressed((e) -> {
 			mousePressed(e);
@@ -101,7 +111,6 @@ public class FmmlxDiagram {
 			Point2D canvasScreenSize = transformFX.transform(canvasRawSize);
 			canvas.setWidth(canvasScreenSize.getX() + 5);
 			canvas.setHeight(canvasScreenSize.getY() + 5);
-			//System.out.println("++++++" + canvasRawSize);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -151,9 +160,14 @@ public class FmmlxDiagram {
 
 	private void mousePressed(MouseEvent e) {
 		Point2D p = scale(e);
-		if (isLeftClick(e) && mouseMode == MouseMode.DROP_MODE) {
-
+		
+		if(objectContextMenu != null && objectContextMenu.isShowing()) {
+			objectContextMenu.hide();
 		}
+		if(defaultContextMenu != null && defaultContextMenu.isShowing()) {
+			defaultContextMenu.hide();
+		}
+		
 		if (isMiddleClick(e)) {
 			selectedObjects.addAll(objects);
 		} else {
@@ -169,6 +183,17 @@ public class FmmlxDiagram {
 					selectedObjects.clear();
 					if(hitObject != null)selectedObjects.add(hitObject);
 				}
+			}
+		}
+		
+		if (isRightClick(e)) {
+			FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
+			
+			if(hitObject != null) {
+				objectContextMenu = hitObject.getContextMenu();
+				objectContextMenu.show(scrollerCanvas, Side.LEFT, p.getX(), p.getY());
+			} else {
+				defaultContextMenu.show(scrollerCanvas, Side.LEFT, p.getX(), p.getY());
 			}
 		}
 //		if(hitObject != null) {

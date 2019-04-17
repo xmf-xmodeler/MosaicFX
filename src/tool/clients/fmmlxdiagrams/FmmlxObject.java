@@ -5,6 +5,7 @@ import java.util.Vector;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 
 public class FmmlxObject {
 
@@ -39,6 +40,8 @@ public class FmmlxObject {
 	Vector<FmmlxOperation> operations;
 	Vector<FmmlxOperationValue> operationValues;
 	
+	ObjectContextMenu contextMenu;
+	
 	public FmmlxObject(Integer id, String name, int level, int of, Vector<Integer> parents, Integer lastKnownX, Integer lastKnownY) {
 		this.name = name;
 		this.id = id;
@@ -59,6 +62,7 @@ public class FmmlxObject {
 		this.level = level;
 		this.of = of;
 		this.parents = parents;
+		this.contextMenu = new ObjectContextMenu(this);
 	}
 
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram diagram) {
@@ -232,6 +236,10 @@ public class FmmlxObject {
 
 	public double getMaxRight() {
 		return x + width;
+	}
+	
+	public ObjectContextMenu getContextMenu() {
+		return contextMenu;
 	}
 	
 }
