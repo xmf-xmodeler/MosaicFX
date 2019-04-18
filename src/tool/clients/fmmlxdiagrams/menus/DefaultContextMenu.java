@@ -14,7 +14,7 @@ public class DefaultContextMenu extends ContextMenu {
 		addClassItem.setOnAction(e -> actions.addMetaClassDialog());
 		
 		MenuItem addInstanceItem = new MenuItem("Add Instance");
-		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(0));
+		addInstanceItem.setOnAction(e -> actions.addInstanceDialog());
 		
 		// Submenu for association
 		Menu associationMenu = new Menu("Association");

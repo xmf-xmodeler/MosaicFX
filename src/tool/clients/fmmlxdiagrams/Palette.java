@@ -18,7 +18,7 @@ public class Palette extends GridPane {
 		setHgap(5);
 
 		addButton("Add MetaClass", 0, e -> actions.addMetaClassDialog());
-		addButton("Add Instance", 1, e -> actions.addInstanceDialog(0));
+		addButton("Add Instance", 1, e -> actions.addInstanceDialog());
 		addButton("Remove MetaClass/Instance", 2, e -> System.out.println("Button 2"));
 		addButton("Add Attribute", 3, e -> actions.addAttributeDialog());
 		addButton("Edit Attribute", 4, e -> actions.editAttributeDialog());

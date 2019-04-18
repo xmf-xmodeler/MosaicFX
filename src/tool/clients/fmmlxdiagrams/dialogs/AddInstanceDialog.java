@@ -80,16 +80,15 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		ofList = getAllOfList();
 		parentList = getAllParentList();
 		nameTextField = new TextField();
+		ofComboBox = new ComboBox<>(ofList);
 
-		if (ofId == 0) {
-			ofComboBox = new ComboBox<>(ofList);
-		} else {
-			FmmlxObject object = diagram.getObjectById(ofId);
+		if (ofId > 0) {
+			FmmlxObject ofObject = diagram.getObjectById(ofId);
 
-			ofComboBox = new ComboBox<>();
-			ofComboBox.setValue(object.getName());
+			ofComboBox.setValue(ofObject.getName());
 			ofComboBox.setEditable(false);
 		}
+		
 		abstractCheckBox = new CheckBox();
 
 		abstractLabel = new Label("Abstract");

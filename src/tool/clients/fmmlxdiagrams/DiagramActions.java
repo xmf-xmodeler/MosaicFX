@@ -63,7 +63,11 @@ public class DiagramActions {
 			}
 		});
 	}
-
+	
+	public void addInstanceDialog() {
+		addInstanceDialog(0);
+	}
+	
 	public void addInstanceDialog(int ofId) {
 		CountDownLatch l = new CountDownLatch(1);
 
