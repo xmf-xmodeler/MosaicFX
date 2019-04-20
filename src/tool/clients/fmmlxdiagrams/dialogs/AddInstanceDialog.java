@@ -30,8 +30,6 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	private CheckBox abstractCheckBox;
 	private Label abstractLabel;
 	private Vector<FmmlxDiagram> diagrams;
-	private Vector<FmmlxObject> objects;
-
 	ObservableList<String> parentList;
 	ObservableList<String> ofList;
 
@@ -42,7 +40,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
 		DialogPane dialog = getDialogPane();
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		
+
 		layoutContent(ofId);
 		dialog.setContent(flow);
 
@@ -76,21 +74,17 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
 	private void layoutContent(Integer ofId) {
 		diagrams = FmmlxDiagramCommunicator.getDiagrams();
-		objects = diagrams.get(0).getObjects();
+		diagrams.get(0).getObjects();
 		ofList = getAllOfList();
 		parentList = getAllParentList();
 		nameTextField = new TextField();
 		ofComboBox = new ComboBox<>(ofList);
 
 		if (ofId > 0) {
-			FmmlxObject ofObject = diagram.getObjectById(ofId);
-
-			ofComboBox.setValue(ofObject.getName());
-			ofComboBox.setEditable(false);
+			setOf(ofId);
 		}
-		
-		abstractCheckBox = new CheckBox();
 
+		abstractCheckBox = new CheckBox();
 		abstractLabel = new Label("Abstract");
 
 		initializeListView();
@@ -186,6 +180,13 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		}
 		errorLabel.setText("");
 		return true;
+	}
+
+	private void setOf(int ofId) {
+		FmmlxObject ofObject = diagram.getObjectById(ofId);
+
+		ofComboBox.setValue(ofObject.getName());
+		ofComboBox.setEditable(false);
 	}
 
 	private boolean validateCircularDependecies() {
