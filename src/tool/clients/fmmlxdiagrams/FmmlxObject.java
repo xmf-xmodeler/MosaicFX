@@ -4,9 +4,12 @@ import java.util.Vector;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 
 public class FmmlxObject {
+	
+	private String[] levelColors = {"#2124c4", "#17892c", "#bcb912", "#bc5112", "#bc1226", "#444444" };
 
 	private String name;
 	int id;
@@ -215,7 +218,7 @@ public class FmmlxObject {
 		
 		//drawing the rectangle
 		
-		g.setFill(Color.RED);
+		g.setFill(Paint.valueOf(getColor()));
 		g.fillRect(x, y, calculatedWidth , headerheight);
 		g.setFill(Color.BLACK);
 		g.fillText("["+level+"]"+name, x + gap, y + headerheight/2 + gap);
@@ -253,5 +256,9 @@ public class FmmlxObject {
 
 	public double getMaxRight() {
 		return x + width;
+	}
+	
+	public String getColor() {
+		return levelColors[level];
 	}
 }
