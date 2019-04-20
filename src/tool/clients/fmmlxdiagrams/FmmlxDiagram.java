@@ -300,7 +300,7 @@ public class FmmlxDiagram {
 		comm.addNewInstance(of, name, level, parents, isAbstract, x, y);
 	}
 
-	public javafx.geometry.Point2D scale(javafx.scene.input.MouseEvent event) {
+	public Point2D scale(MouseEvent event) {
 		Affine i;
 		try {
 			i = transformFX.createInverse();
