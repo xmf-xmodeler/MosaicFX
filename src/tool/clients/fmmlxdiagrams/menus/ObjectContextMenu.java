@@ -81,7 +81,7 @@ public class ObjectContextMenu extends ContextMenu {
 
 		associationMenu.getItems().addAll(addItem, removeItem, changeTargetItem, changeNameItem, changeTypeItem,
 				changeMultiplicityItem, changeLevelItem);
-		
+
 		return associationMenu;
 	}
 
@@ -94,12 +94,29 @@ public class ObjectContextMenu extends ContextMenu {
 	private Menu createSlotSubMenu() {
 		Menu slotMenu = new Menu("Slot");
 
+		MenuItem addValueItem = new MenuItem("Add value");
+		addValueItem.setOnAction(e -> System.out.println("OCM: add slot value called"));
+		MenuItem removeValueItem = new MenuItem("Remove value");
+		removeValueItem.setOnAction(e -> System.out.println("OCM: remove slot value called"));
+		MenuItem changeValueItem = new MenuItem("Change value");
+		changeValueItem.setOnAction(e -> System.out.println("OCM: change slot value called"));
+
+		slotMenu.getItems().addAll(addValueItem, removeValueItem, changeValueItem);
+			
 		return slotMenu;
 	}
 
 	private Menu createAssociationInstanceSubMenu() {
 		Menu associationInstanceMenu = new Menu("Association instance");
+		
+		MenuItem addValueItem = new MenuItem("Add instance");
+		addValueItem.setOnAction(e -> System.out.println("OCM: add association instance value called"));
+		MenuItem removeValueItem = new MenuItem("Remove instance");
+		removeValueItem.setOnAction(e -> System.out.println("OCM: remove association instance value called"));
+		MenuItem changeValueItem = new MenuItem("Change instance");
+		changeValueItem.setOnAction(e -> System.out.println("OCM: change association instance value called"));
 
+		associationInstanceMenu.getItems().addAll(addValueItem, removeValueItem, changeValueItem);
 		return associationInstanceMenu;
 	}
 }
