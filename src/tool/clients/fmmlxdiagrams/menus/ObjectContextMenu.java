@@ -86,9 +86,27 @@ public class ObjectContextMenu extends ContextMenu {
 	}
 
 	private Menu createOperationSubMenu() {
-		Menu operatioMenu = new Menu("Operation");
+		Menu operationMenu = new Menu("Operation");
+		
+		MenuItem addItem = new MenuItem("Add");
+		addItem.setOnAction(e -> System.out.println("OCM: add operation called"));
+		MenuItem removeItem = new MenuItem("Remove");
+		removeItem.setOnAction(e -> System.out.println("OCM: remove operation called"));
+		MenuItem changeNameItem = new MenuItem("Change name");
+		changeNameItem.setOnAction(e -> System.out.println("OCM: change operation name called"));
+		MenuItem changeOwnerItem = new MenuItem("Change owner");
+		changeOwnerItem.setOnAction(e -> System.out.println("OCM: change operation owner called"));
+		MenuItem changeTypeItem = new MenuItem("Change type");
+		changeTypeItem.setOnAction(e -> System.out.println("OCM: change operation type called"));
+		MenuItem changeBodyItem = new MenuItem("Change body");
+		changeBodyItem.setOnAction(e -> System.out.println("OCM: change operation body called"));
+		MenuItem changeLevelItem = new MenuItem("Change level");
+		changeLevelItem.setOnAction(e -> System.out.println("OCM: change operation level"));
 
-		return operatioMenu;
+		operationMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeOwnerItem, changeTypeItem,
+				changeBodyItem, changeLevelItem);
+
+		return operationMenu;
 	}
 
 	private Menu createSlotSubMenu() {
