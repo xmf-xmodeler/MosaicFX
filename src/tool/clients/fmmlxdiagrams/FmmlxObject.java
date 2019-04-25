@@ -97,7 +97,7 @@ public class FmmlxObject {
 			if (passReqs(att)) {
 				attributesToPaint.add(att);
 				// determine maximal width
-				Text text = new Text("[" + att.level + "] " + att.name + ":" + att.type);
+				Text text = new Text("[" + att.getLevel() + "] " + att.getName() + ":" + att.getType());
 				calculatedWidth = Math.max(text.getLayoutBounds().getWidth(), calculatedWidth);
 			}
 		}
@@ -133,7 +133,7 @@ public class FmmlxObject {
 		double headerheight = header.getLayoutBounds().getHeight() + 2*gap;
 		
 		//determine text height
-		double textheight = new Text(attributesToPaint.get(0).name).getLayoutBounds().getHeight();
+		double textheight = new Text(attributesToPaint.get(0).getName()).getLayoutBounds().getHeight();
 		
 		//calculate starting position for text
 		double Y = 0 + headerheight + 2*gap;	// just a guess
@@ -159,7 +159,7 @@ public class FmmlxObject {
 		
 		//write attributes
 		for (FmmlxAttribute att : attributesToPaint) {
-			Text text = new Text("[" + att.level + "] " + att.name + ":" + att.type);
+			Text text = new Text("[" + att.getLevel() + "] " + att.getName() + ":" + att.getType());
 			g.fillText(text.getText(),x + gap,Y + gap);
 			if (!att.equals(attributesToPaint.lastElement()))
 			Y += text.getLayoutBounds().getHeight() + gap;
