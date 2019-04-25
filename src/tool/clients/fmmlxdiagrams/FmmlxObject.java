@@ -59,7 +59,7 @@ public class FmmlxObject {
 	public void setAttributes(Vector<FmmlxAttribute> attributes) {
 		this.attributes = attributes;
 	}
-	
+		
 	public FmmlxObject(Integer id, String name, int level, int of, Vector<Integer> parents, Integer lastKnownX, Integer lastKnownY) {
 		this.name = name;
 		this.id = id;
@@ -254,6 +254,4 @@ public class FmmlxObject {
 	public double getMaxRight() {
 		return x + width;
 	}
-	
-	
 }
