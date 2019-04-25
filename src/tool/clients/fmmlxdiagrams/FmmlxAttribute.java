@@ -2,9 +2,9 @@ package tool.clients.fmmlxdiagrams;
 
 public class FmmlxAttribute {
 	
-	String name;
-	int level;
-	String type;
+	private String name;
+	private int level;
+	private String type;
 	
 	
 	public String getType() {
