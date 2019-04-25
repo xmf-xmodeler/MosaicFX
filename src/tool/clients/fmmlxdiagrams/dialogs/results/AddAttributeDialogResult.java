@@ -6,7 +6,7 @@ public class AddAttributeDialogResult extends DialogResult {
 	private String type;
 	private int level;
 	
-	public AddAttributeDialogResult(String name, int level, String type) {
+	public AddAttributeDialogResult(int classID, String name, int level, String type) {
 		this.name = name;
 		this.level = level;
 		this.type =type;

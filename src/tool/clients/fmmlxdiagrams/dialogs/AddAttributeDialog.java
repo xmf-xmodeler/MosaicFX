@@ -18,6 +18,7 @@ import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 
 public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
@@ -31,7 +32,7 @@ public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
 	
 	private TextField nameTextField;
 	private ComboBox<String> classCombobox; 
-	private ComboBox<String> levelComboBox; 
+	private ComboBox<Integer> levelComboBox; 
 	private ComboBox<String> typeComboBox; 
 	private ComboBox<String> multiplicityComboBox; 
 	ObservableList<String> classList;
@@ -60,7 +61,12 @@ public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
 
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				//TODO
+				int classID;
+				
+				
+				return null;
+				
+				//return AddAttributeDialogResult();
 			}
 			return null;
 		});
@@ -188,7 +194,7 @@ public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
 		
 		nameTextField = new TextField();
 		classCombobox = new ComboBox<>(classList);
-		levelComboBox = new ComboBox<>();
+		levelComboBox = new ComboBox<>(LevelList.levelList);
 		typeComboBox = new ComboBox<>(typeList);
 		multiplicityComboBox = new ComboBox<>();
 		
