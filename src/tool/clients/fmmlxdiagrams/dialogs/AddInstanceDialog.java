@@ -47,7 +47,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		dialog.setContent(flow);
 		
 
-		Vector<FmmlxObject> objects = diagram.getObjects();
+		objects = diagram.getObjects();
 
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
@@ -104,7 +104,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	private ObservableList<String> getAllOfList() {
 		ArrayList<String> resultStrings = new ArrayList<String>();
 
-		Vector<FmmlxObject> objects = diagram.getObjects();
+		objects = diagram.getObjects();
 		
 		for (FmmlxObject object :objects) {
 			if (object.getLevel()!=0) {
@@ -119,7 +119,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	private ObservableList<String> getAllParentList() {
 		ArrayList<String> resultStrings = new ArrayList<String>();
 
-		Vector<FmmlxObject> objects = diagram.getObjects();
+		objects = diagram.getObjects();
 		
 		for (FmmlxObject object :objects) {
 			if (object.getLevel()!=0) {
@@ -162,7 +162,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	
 	private boolean nameAlreadyUsed() {
 
-		Vector<FmmlxObject> objects = diagram.getObjects();
+		objects = diagram.getObjects();
 		
 		for (FmmlxObject object :objects) {
 			if(nameTextField.getText().equals(object.getName())) {
@@ -182,8 +182,6 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		errorLabel.setText("");
 		return true;
 	}
-
-
 	
 	private boolean validateCircularDependecies() {
 		// TODO Auto-generated method stub
