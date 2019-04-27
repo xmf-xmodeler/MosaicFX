@@ -244,7 +244,7 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
 //    Color bg = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
 //    FontData[] fontData = Display.getDefault().getSystemFont().getFontData();
 //    this.fontData = fontData[0];
-//    XModeler.getXModeler().getDisplay().loadFont("dejavu/DejaVuSansMono.ttf");
+//    XModeler.getXModeler().getDisplay().loadFont("fonts/DejaVuSansMono.ttf");
 //    this.fontData.setName("DejaVu Sans Mono");
 //    text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
 //    GC gc = new GC(text);

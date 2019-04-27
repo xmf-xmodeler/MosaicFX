@@ -41,7 +41,7 @@ public class Group extends TreeItem<String>{
 //    GridData buttonData = new GridData(GridData.HORIZONTAL_ALIGN_FILL, GridData.VERTICAL_ALIGN_FILL, true, true);
 //    buttonData.horizontalSpan = 2;
 //    buttonContainer.setLayoutData(buttonData);
-////    setFont("dejavu/DejaVuSans.ttf", "DejaVu Sans");
+////    setFont("fonts/DejaVuSans.ttf", "DejaVu Sans");
 //  }
 
 //	public final void setFont(String fileName, String name) {

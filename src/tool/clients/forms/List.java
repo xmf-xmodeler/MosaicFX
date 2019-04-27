@@ -3,63 +3,72 @@ package tool.clients.forms;
 import java.io.PrintStream;
 import java.util.Hashtable;
 
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import tool.xmodeler.XModeler;
 
 public class List {
 
-  String                       id;
-  Hashtable<String, String>    items = new Hashtable<String, String>();
-  ListView<String>             list; 
+	String id;
+	Hashtable<String, String> items = new Hashtable<String, String>();
+	ListView<String> listView;
+	Label label;
 
-  public List(String id, AnchorPane parent, int x, int y, int width, int height) {
+	public List(String id, GridPane parent, int rowIndex, String labelText) {
+		if(rowIndex<0) {
+			rowIndex = 0;
+		}
 
-    this.id = id;
-    list = new ListView<String>();
-    AnchorPane.setLeftAnchor(list, x*1.);
-    AnchorPane.setTopAnchor(list, y*1.);
-    list.setOnMouseClicked(new javafx.event.EventHandler<MouseEvent>() {
-		@Override
-		public void handle(MouseEvent click) {
-		    if (click.getClickCount() == 2) {
-		    	FormsClient.theClient().doubleClick(getId(list.getSelectionModel().getSelectedItem()));}}});
-    parent.getChildren().add(list);
+		this.id = id;
+		listView = new ListView<String>();
+		listView.setMaxHeight(200);
+		
+		label = new Label(labelText);
+		
+		listView.setOnMouseClicked(new javafx.event.EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent click) {
+				if (click.getClickCount() == 2) {
+					FormsClient.theClient().doubleClick(getId(listView.getSelectionModel().getSelectedItem()));
+				}
+			}
+		});
+		// TODO: add label Collection Slots
+		parent.add(label, 0, rowIndex);
+		parent.add(listView, 0, rowIndex+1);
+	}
 
-  }
+	public void add(String id, String value) {
+		listView.getItems().add(value);
+		items.put(id, value);
+	}
 
-  public void add(String id, String value) {
-    list.getItems().add(value);
-    items.put(id, value);
-  }
+	public String getId() {
+		return id;
+	}
 
-  public String getId() {
-    return id;
-  }
+	public void writeXML(PrintStream out) {
+		out.print("<List id='" + getId() + "'");
+		out.print(" label='" + label.getText() + "'" );
+		out.print(" height='" + (int) (listView.getHeight()) + "'>");
+		for (String id : items.keySet())
+			out.print("<Item id='" + id + "' value='" + XModeler.encodeXmlAttribute(items.get(id)) + "'/>");
+		out.print("</List>");
+	}
 
-  public void writeXML(PrintStream out) {
-    out.print("<List id='" + getId() + "'");
-    out.print(" x='" + (int)(list.getLayoutX()) + "'");
-    out.print(" y='" + (int)(list.getLayoutY()) + "'");
-    out.print(" width='" + (int)(list.getWidth()) + "'");
-    out.print(" height='" + (int)(list.getHeight()) + "'>");
-    for (String id : items.keySet())
-      out.print("<Item id='" + id + "' value='" + XModeler.encodeXmlAttribute(items.get(id)) + "'/>");
-    out.print("</List>");
-  }
+	public void clear() {
+		System.err.println("Clear List " + id + "(" + listView.getItems() + ")");
+		listView.getItems().clear();
+		System.err.println("Cleared List " + id + "(" + listView.getItems() + ")");
+		items.clear();
+	}
 
-  public void clear() {
-	System.err.println("Clear List " + id + "(" + list.getItems() + ")");
-    list.getItems().clear();
-	System.err.println("Cleared List " + id + "(" + list.getItems() + ")");
-    items.clear();
-  }
-
-  private String getId(String string) {
-    for (String id : items.keySet())
-      if (items.get(id).equals(string)) return id;
-    return null;
-  }
-
+	private String getId(String string) {
+		for (String id : items.keySet())
+			if (items.get(id).equals(string))
+				return id;
+		return null;
+	}
 }
