@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 import javafx.application.Platform;
+import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.canvas.Canvas;
@@ -21,10 +22,6 @@ import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
 public class FmmlxDiagram {
 
-	enum MouseMode {
-		NONE, DROP_MODE
-	};
-
 	SplitPane mainView;
 	final FmmlxDiagramCommunicator comm;
 	private Canvas canvas;
@@ -36,7 +33,6 @@ public class FmmlxDiagram {
 	private ObjectContextMenu objectContextMenu;
 	private DiagramActions actions;
 	private transient boolean objectsMoved = false;
-	MouseMode mouseMode = MouseMode.NONE;
 
 	public Vector<FmmlxObject> fetchObjects() { // TODO Ask
 		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
@@ -66,27 +62,17 @@ public class FmmlxDiagram {
 	Affine transformFX;
 
 	private ScrollPane scrollerCanvas;
-	private ScrollPane scroller;
 
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, String label) {
 		this.comm = comm;
 		mainView = new SplitPane();
-//		palette = new Palette(this);
-//		palette.init(this);
 		canvas = new Canvas(canvasRawSize.getX(), canvasRawSize.getY());
 		actions = new DiagramActions(this);
 		palette = new Palette(actions);
-		scroller = new ScrollPane(palette);
-		// scroller.setMinWidth(200);
-		scroller.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
-		scroller.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		scrollerCanvas = new ScrollPane(canvas);
-
-		mainView.getItems().addAll(scroller, scrollerCanvas);
-		mainView.setDividerPosition(0, 0.23);
+		mainView.setOrientation(Orientation.VERTICAL);
+		mainView.getItems().addAll(palette, scrollerCanvas);
 		transformFX = new Affine();
-
-//		mainView.setDividerPosition(0, 0.2);
 
 		defaultContextMenu = new DefaultContextMenu(actions);
 
