@@ -57,9 +57,9 @@ public class FmmlxDiagram {
 		return null;
 	}
 
-	Point2D canvasRawSize = new Point2D(1200, 800);
-	double zoom = 1.;
-	Affine transformFX;
+	private Point2D canvasRawSize = new Point2D(1200, 800);
+	private double zoom = 1.;
+	private Affine transformFX;
 
 	private ScrollPane scrollerCanvas;
 
