@@ -73,7 +73,6 @@ public class DiagramActions {
 
 		Platform.runLater(() -> {
 			AddInstanceDialog dialog = new AddInstanceDialog(diagram, ofId);
-
 			dialog.setTitle("Add instance");
 			Optional<AddInstanceDialogResult> result = dialog.showAndWait();
 
@@ -105,6 +104,26 @@ public class DiagramActions {
 
 			}
 
+			l.countDown();
+		});
+	}
+	
+	public void addAttributeDialog() {
+
+		CountDownLatch l = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			AddAttributeDialog dlg = new AddAttributeDialog(diagram);
+			dlg.setTitle("Add Attribute");
+			Optional<AddAttributeDialogResult> result = dlg.showAndWait();
+
+			if (result.isPresent()) {
+				AddAttributeDialogResult aad = result.get();
+				System.out.println("!!!!!!!!!!!!! " + aad.getName() + " " + aad.getLevel());
+				diagram.addAttribute(aad.getClassID(),aad.getName(), aad.getLevel(), aad.getType());
+			}
+
+			diagram.updateDiagram();
 			l.countDown();
 		});
 	}
@@ -143,24 +162,6 @@ public class DiagramActions {
 		});
 	}
 
-	public void addAttributeDialog() {
-
-		CountDownLatch l = new CountDownLatch(1);
-
-		Platform.runLater(() -> {
-			AddAttributeDialog dlg = new AddAttributeDialog(diagram);
-			Optional<AddAttributeDialogResult> opt = dlg.showAndWait();
-
-			if (opt.isPresent()) {
-				AddAttributeDialogResult result = opt.get();
-				System.out.println("!!!!!!!!!!!!! " + result.getName() + " " + result.getLevel());
-				diagram.addAttribute(result.getClassID(),result.getName(), result.getLevel(), result.getType());
-			}
-
-			diagram.updateDiagram();
-			l.countDown();
-		});
-	}
 
 	public void zoomIn() {
 		diagram.setZoom(diagram.getZoom() * zoomLevel);

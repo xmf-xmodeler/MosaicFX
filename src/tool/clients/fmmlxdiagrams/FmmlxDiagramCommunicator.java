@@ -255,5 +255,7 @@ public class FmmlxDiagramCommunicator {
 	public void addAttribute(int classID, String name, int level, String type) {
 		Value[] message = new Value[] {new Value(classID),new Value(name),new Value(level),new Value(type)};
 		
+		WorkbenchClient.theClient().send(handler, "addAttribute", message);
+		
 	}
 }

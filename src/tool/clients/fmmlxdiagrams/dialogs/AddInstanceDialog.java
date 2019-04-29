@@ -30,22 +30,20 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	private CheckBox abstractCheckBox;
 	private Label abstractLabel;
 	private Vector<FmmlxDiagram> diagrams;
-	ObservableList<String> parentList;
-	ObservableList<String> ofList;
-	Vector<FmmlxObject> objects;
+	private ObservableList<String> parentList;
+	private ObservableList<String> ofList;
+	private Vector<FmmlxObject> objects;
 
 	public AddInstanceDialog(final FmmlxDiagram diagram, int ofId) {
 		super();
 
-		this.diagram = diagram;
-
 		DialogPane dialog = getDialogPane();
+		this.objects=diagram.getObjects();
+
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
 		layoutContent(ofId);
 		dialog.setContent(flow);
-
-		objects = diagram.getObjects();
 
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
@@ -74,8 +72,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	}
 
 	private void layoutContent(Integer ofId) {
-		diagrams = FmmlxDiagramCommunicator.getDiagrams();
-		diagrams.get(0).getObjects();
+		
 		ofList = getAllOfList();
 		parentList = getAllParentList();
 		nameTextField = new TextField();
@@ -104,12 +101,11 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
 	private ObservableList<String> getAllOfList() {
 		ArrayList<String> resultStrings = new ArrayList<String>();
-
-		objects = diagram.getObjects();
-		
-		for (FmmlxObject object :objects) {
-			if (object.getLevel()!=0) {
-				resultStrings.add(object.getName());
+		if (!objects.isEmpty()) {
+			for (FmmlxObject object :objects) {
+				if (object.getLevel()!=0) {
+					resultStrings.add(object.getName());
+				}
 			}
 		}
 
@@ -119,13 +115,12 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
 	private ObservableList<String> getAllParentList() {
 		ArrayList<String> resultStrings = new ArrayList<String>();
-
-		objects = diagram.getObjects();
 		
-		for (FmmlxObject object :objects) {
-			if (object.getLevel()!=0) {
-
-				resultStrings.add(object.getName());
+		if (!objects.isEmpty()) {
+			for (FmmlxObject object :objects) {
+				if (object.getLevel()!=0) {
+					resultStrings.add(object.getName());
+				}
 			}
 		}
 		ObservableList<String> result = FXCollections.observableArrayList(resultStrings);
@@ -162,14 +157,11 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	}
 
 	private boolean nameAlreadyUsed() {
-
-
-		objects = diagram.getObjects();
-		
-		for (FmmlxObject object :objects) {
-			if(nameTextField.getText().equals(object.getName())) {
-
-				return true;
+		if (!objects.isEmpty()) {
+			for (FmmlxObject object :objects) {
+				if(nameTextField.getText().equals(object.getName())) {
+					return true;
+				}
 			}
 		}
 		return false;

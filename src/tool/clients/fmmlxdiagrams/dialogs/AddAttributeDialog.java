@@ -42,8 +42,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		super();
 		
 		DialogPane dialogPane = getDialogPane();
-		dialogPane.setHeaderText("Add Attribute");
-		
 		this.objects = diagram.getObjects();
 		
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -81,11 +79,12 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 	}
 	private ObservableList<String> getAllClassList() {
 		ArrayList<String> resultStrings = new ArrayList<String>();
-		
-		for (FmmlxObject object :objects) {
-			resultStrings.add(object.getName());
+	
+		if (!objects.isEmpty()) {
+			for (FmmlxObject object :objects) {
+				resultStrings.add(object.getName());
+			}
 		}
-		
 		ObservableList<String> result = FXCollections.observableArrayList( resultStrings);
 		return result;
 	}
@@ -146,7 +145,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 	
 	private boolean validateMultiplicity() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 	
 	private boolean validateName() {
@@ -166,15 +165,16 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 	}
 	
 	private boolean nameAlreadyUsed() {
-		
-		for (FmmlxObject object :objects) {
-			if(classCombobox.getSelectionModel().getSelectedItem().equals(object.getName())) {
-				for (FmmlxAttribute attribute : object.getAttributes()) {
-					if(nameTextField.getText().equals(attribute.getName())) {
-					return true;
+		if (!objects.isEmpty()) {
+			for (FmmlxObject object :objects) {
+				if(classCombobox.getSelectionModel().getSelectedItem().equals(object.getName())) {
+					for (FmmlxAttribute attribute : object.getAttributes()) {
+						if(nameTextField.getText().equals(attribute.getName())) {
+						return true;
+						}
 					}
+					break;
 				}
-				break;
 			}
 		}
 		return false;
