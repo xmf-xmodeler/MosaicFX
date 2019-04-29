@@ -16,7 +16,6 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
 
@@ -29,7 +28,6 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	private ComboBox<String> ofComboBox;
 	private CheckBox abstractCheckBox;
 	private Label abstractLabel;
-	private Vector<FmmlxDiagram> diagrams;
 	private ObservableList<String> parentList;
 	private ObservableList<String> ofList;
 	private Vector<FmmlxObject> objects;

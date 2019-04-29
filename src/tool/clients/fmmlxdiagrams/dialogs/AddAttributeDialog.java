@@ -21,7 +21,6 @@ import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
 
 public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 	
-	
 	private Label nameLabel ;
 	private Label classLabel;
 	private Label levelLabel;
@@ -36,7 +35,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 	private ObservableList<String> classList;
 	private List<String> typesArray;
 	private Vector<FmmlxObject> objects;
-	
 
 	public AddAttributeDialog(final FmmlxDiagram diagram) {
 		super();
@@ -213,7 +211,5 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		grid.add(typeComboBox, 1, 3);
 		grid.add(multiplicityLabel, 0, 4);
 		grid.add(multiplicityComboBox, 1, 4);
-		
 	}
-
 }
