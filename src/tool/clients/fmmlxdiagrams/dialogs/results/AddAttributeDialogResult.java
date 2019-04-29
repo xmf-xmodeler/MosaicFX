@@ -5,11 +5,21 @@ public class AddAttributeDialogResult extends DialogResult {
 	private String name;
 	private String type;
 	private int level;
-	
+	private int classID;
+
 	public AddAttributeDialogResult(int classID, String name, int level, String type) {
+		this.classID= classID;
 		this.name = name;
 		this.level = level;
 		this.type =type;
+	}
+	
+	public int getClassID() {
+		return classID;
+	}
+
+	public void setClassID(int classID) {
+		this.classID = classID;
 	}
 	
 	public String getName() {

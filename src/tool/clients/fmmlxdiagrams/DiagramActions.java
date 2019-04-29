@@ -13,6 +13,7 @@ import tool.clients.fmmlxdiagrams.dialogs.AddInstanceDialog;
 import tool.clients.fmmlxdiagrams.dialogs.CreateMetaClassDialog;
 import tool.clients.fmmlxdiagrams.dialogs.EditAttributDialog;
 import tool.clients.fmmlxdiagrams.dialogs.RemoveAttributDialog;
+import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 
@@ -147,12 +148,13 @@ public class DiagramActions {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			AddAttributeDialog dlg = new AddAttributeDialog();
-			Optional<MetaClassDialogResult> opt = dlg.showAndWait();
+			AddAttributeDialog dlg = new AddAttributeDialog(diagram);
+			Optional<AddAttributeDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
-				MetaClassDialogResult test = opt.get();
-				System.out.println("!!!!!!!!!!!!! " + test.getName() + " " + test.getLevel());
+				AddAttributeDialogResult result = opt.get();
+				System.out.println("!!!!!!!!!!!!! " + result.getName() + " " + result.getLevel());
+				diagram.addAttribute(result.getClassID(),result.getName(), result.getLevel(), result.getType());
 			}
 
 			diagram.updateDiagram();

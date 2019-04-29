@@ -16,12 +16,10 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 
-public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
+public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 	
 	
 	private Label nameLabel ;
@@ -35,17 +33,18 @@ public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
 	private ComboBox<Integer> levelComboBox; 
 	private ComboBox<String> typeComboBox; 
 	private ComboBox<String> multiplicityComboBox; 
-	ObservableList<String> classList;
-	List<String> typesArray;
+	private ObservableList<String> classList;
+	private List<String> typesArray;
+	private Vector<FmmlxObject> objects;
 	
 
-	
-	
-	public AddAttributeDialog() {
+	public AddAttributeDialog(final FmmlxDiagram diagram) {
 		super();
 		
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.setHeaderText("Add Attribute");
+		
+		this.objects = diagram.getObjects();
 		
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		
@@ -61,22 +60,27 @@ public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
 
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				int classID;
+				int classId = 0;
+				for (FmmlxObject object : objects) {
+					if(classCombobox.getSelectionModel().getSelectedItem().equals(object.getName())) {
+						classId = object.getId();
+					}
+				}
 				
-				
-				return null;
-				
-				//return AddAttributeDialogResult();
+				return new AddAttributeDialogResult(
+						classId,
+						nameTextField.getText(), 
+						levelComboBox.getSelectionModel().getSelectedItem(),
+						typeComboBox.getSelectionModel().getSelectedItem());
 			}
 			return null;
 		});
 		
 		
+
 	}
 	private ObservableList<String> getAllClassList() {
 		ArrayList<String> resultStrings = new ArrayList<String>();
-		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
-		Vector<FmmlxObject> objects = diagrams.get(0).fetchObjects();
 		
 		for (FmmlxObject object :objects) {
 			resultStrings.add(object.getName());
@@ -136,10 +140,8 @@ public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
 			errorLabel.setText("Select Level!");
 			return false;
 		}
-		
-		//TODO
-		
-		return false;
+		errorLabel.setText("");
+		return true;
 	}
 	
 	private boolean validateMultiplicity() {
@@ -164,8 +166,6 @@ public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
 	}
 	
 	private boolean nameAlreadyUsed() {
-		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
-		Vector<FmmlxObject> objects = diagrams.get(0).fetchObjects();
 		
 		for (FmmlxObject object :objects) {
 			if(classCombobox.getSelectionModel().getSelectedItem().equals(object.getName())) {

@@ -7,6 +7,7 @@ import java.util.concurrent.CountDownLatch;
 import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
 import tool.clients.workbench.WorkbenchClient;
 import xos.Value;
 
@@ -249,5 +250,10 @@ public class FmmlxDiagramCommunicator {
 				// new Value(level),
 				new Value(parentsArray), new Value(isAbstract), new Value(x), new Value(y) };
 		WorkbenchClient.theClient().send(handler, "addInstance", message);
+	}
+
+	public void addAttribute(int classID, String name, int level, String type) {
+		Value[] message = new Value[] {new Value(classID),new Value(name),new Value(level),new Value(type)};
+		
 	}
 }

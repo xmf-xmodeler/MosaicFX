@@ -17,6 +17,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
+import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
 public class FmmlxDiagram {
@@ -299,6 +300,11 @@ public class FmmlxDiagram {
 			int y) {
 		comm.addNewInstance(of, name, level, parents, isAbstract, x, y);
 	}
+	
+	public void addAttribute(int classID, String name, int level, String type) {
+		comm.addAttribute(classID, name, level, type);
+		
+	}
 
 	public Point2D scale(MouseEvent event) {
 		Affine i;
@@ -322,4 +328,6 @@ public class FmmlxDiagram {
 		transformFX.appendScale(zoom, zoom);
 		resizeCanvas();
 	}
+
+	
 }
