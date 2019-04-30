@@ -25,7 +25,6 @@ public class Palette extends ToolBar {
     private void addButton(String string, EventHandler<ActionEvent> eventHandler) {
         Button button = new Button(string);
         button.setOnAction(eventHandler);
-        button.setPrefSize(75, 25);
         getItems().add(button);
     }
 }

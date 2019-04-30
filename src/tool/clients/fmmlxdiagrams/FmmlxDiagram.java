@@ -10,7 +10,6 @@ import javafx.geometry.Side;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
