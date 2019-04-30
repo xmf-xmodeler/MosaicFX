@@ -953,7 +953,7 @@ public class DiagramClient extends Client {
 		renameAny(diagramId.strValue(), newName.strValue(), oldName.strValue());
 	}
 
-	private void newTool(Message message) {
+	private void newTool(Message message) {  //TODO: all of this is redundant and terrible
 		final Value diagramId = message.args[0];
 		final Value groupId = message.args[1];
 		final Value label = message.args[2];

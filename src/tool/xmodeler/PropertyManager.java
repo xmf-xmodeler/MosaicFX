@@ -30,6 +30,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import tool.helper.IconGenerator;
 
 import java.io.File;
 
@@ -387,7 +388,7 @@ public class PropertyManager {
 			Scene scene = new Scene(vb);
 			stage = new Stage();
 			stage.setTitle("Preferences");
-			stage.getIcons().add(new Image("file:icons/shell/mosaic32.gif"));
+			stage.getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 			stage.setScene(scene);
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.show();

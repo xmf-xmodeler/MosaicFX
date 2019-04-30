@@ -4,12 +4,12 @@ import java.util.Collections;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 import javafx.application.Platform;
+import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -20,10 +20,6 @@ import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
 public class FmmlxDiagram {
-
-	enum MouseMode {
-		NONE, DROP_MODE
-	};
 
 	SplitPane mainView;
 	final FmmlxDiagramCommunicator comm;
@@ -36,7 +32,6 @@ public class FmmlxDiagram {
 	private ObjectContextMenu objectContextMenu;
 	private DiagramActions actions;
 	private transient boolean objectsMoved = false;
-	MouseMode mouseMode = MouseMode.NONE;
 
 	public Vector<FmmlxObject> fetchObjects() { // TODO Ask
 		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
@@ -61,32 +56,22 @@ public class FmmlxDiagram {
 		return null;
 	}
 
-	Point2D canvasRawSize = new Point2D(1200, 800);
-	double zoom = 1.;
-	Affine transformFX;
+	private Point2D canvasRawSize = new Point2D(1200, 800);
+	private double zoom = 1.;
+	private Affine transformFX;
 
 	private ScrollPane scrollerCanvas;
-	private ScrollPane scroller;
 
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, String label) {
 		this.comm = comm;
 		mainView = new SplitPane();
-//		palette = new Palette(this);
-//		palette.init(this);
 		canvas = new Canvas(canvasRawSize.getX(), canvasRawSize.getY());
 		actions = new DiagramActions(this);
 		palette = new Palette(actions);
-		scroller = new ScrollPane(palette);
-		// scroller.setMinWidth(200);
-		scroller.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
-		scroller.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		scrollerCanvas = new ScrollPane(canvas);
-
-		mainView.getItems().addAll(scroller, scrollerCanvas);
-		mainView.setDividerPosition(0, 0.23);
+		mainView.setOrientation(Orientation.VERTICAL);
+		mainView.getItems().addAll(palette, scrollerCanvas);
 		transformFX = new Affine();
-
-//		mainView.setDividerPosition(0, 0.2);
 
 		defaultContextMenu = new DefaultContextMenu(actions);
 
@@ -300,7 +285,7 @@ public class FmmlxDiagram {
 		comm.addNewInstance(of, name, level, parents, isAbstract, x, y);
 	}
 
-	public javafx.geometry.Point2D scale(javafx.scene.input.MouseEvent event) {
+	public Point2D scale(MouseEvent event) {
 		Affine i;
 		try {
 			i = transformFX.createInverse();

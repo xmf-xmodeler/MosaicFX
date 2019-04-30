@@ -3,7 +3,6 @@ package tool.clients.fmmlxdiagrams;
 import java.util.Optional;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
-
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;

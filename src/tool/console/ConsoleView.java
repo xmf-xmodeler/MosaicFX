@@ -77,11 +77,11 @@ public class ConsoleView {
 //	System.err.println(node);
 //	node.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
 	
-	//    setFont("dejavu/DejaVuSansMono.ttf", "DejaVu Sans Mono");
+	//    setFont("fonts/DejaVuSansMono.ttf", "DejaVu Sans Mono");
     addVerifyListener(textArea);
     try {
     	Font defaultFont = textArea.getFont();
-		Font f = Font.loadFont(new FileInputStream(new File("dejavu/DejaVuSansMono.ttf")), defaultFont.getSize());
+        Font f = Font.loadFont(new FileInputStream(new File("resources/fonts/DejaVuSansMono.ttf")), defaultFont.getSize());
 		textArea.setFont(f);
 	} catch (FileNotFoundException e) {
 		// TODO Auto-generated catch block
@@ -247,8 +247,8 @@ public class ConsoleView {
 //        } else if (e.keyCode == 't' && ((e.stateMask & SWT.CTRL) == SWT.CTRL)) {
 //          fontToggleTest = !fontToggleTest;
 //          if (fontToggleTest)
-//            setFont("dejavu/DejaVuSans.ttf", "DejaVu Sans");
-//          else setFont("dejavu/DejaVuSansMono.ttf", "DejaVu Sans Mono");
+//            setFont("fonts/DejaVuSans.ttf", "DejaVu Sans");
+//          else setFont("fonts/DejaVuSansMono.ttf", "DejaVu Sans Mono");
 //          revertInput();
 //        } else if (e.keyCode == 'a' && ((e.stateMask & SWT.CTRL) == SWT.CTRL)) {
 //          autoComplete.toggleMainSwitch();
