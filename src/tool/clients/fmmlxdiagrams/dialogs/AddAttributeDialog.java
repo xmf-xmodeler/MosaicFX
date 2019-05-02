@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
+
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -33,7 +35,7 @@ public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
 	private ComboBox<String> classCombobox; 
 	private ComboBox<String> levelComboBox; 
 	private ComboBox<String> typeComboBox; 
-	private ComboBox<String> multiplicityComboBox; 
+	private Button multiplicityButton; 
 	ObservableList<String> classList;
 	List<String> typesArray;
 	
@@ -94,9 +96,7 @@ public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
 		if (!validateType()) {
 			return false;
 		}
-		if (!validateMultiplicity()) {
-			return false;
-		}
+		
 		return true;
 	}
 	
@@ -136,10 +136,7 @@ public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
 		return false;
 	}
 	
-	private boolean validateMultiplicity() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	
 	
 	private boolean validateName() {
 		Label errorLabel = getErrorLabel();
@@ -190,12 +187,13 @@ public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
 		classCombobox = new ComboBox<>(classList);
 		levelComboBox = new ComboBox<>();
 		typeComboBox = new ComboBox<>(typeList);
-		multiplicityComboBox = new ComboBox<>();
-		
+		multiplicityButton = new Button();
+		multiplicityButton.setText("Add / Edit Multiplicity");
+		multiplicityButton.setOnAction(e -> new MultiplicityDialog().showAndWait());
 		classCombobox.setPrefWidth(COLUMN_WIDTH);
 		levelComboBox.setPrefWidth(COLUMN_WIDTH);
 		typeComboBox.setPrefWidth(COLUMN_WIDTH);
-		multiplicityComboBox.setPrefWidth(COLUMN_WIDTH);
+		multiplicityButton.setPrefWidth(COLUMN_WIDTH);
 		
 		grid.add(nameLabel, 0, 1);
 		grid.add(nameTextField, 1, 1);
@@ -206,8 +204,9 @@ public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
 		grid.add(typeLabel, 0, 3);
 		grid.add(typeComboBox, 1, 3);
 		grid.add(multiplicityLabel, 0, 4);
-		grid.add(multiplicityComboBox, 1, 4);
+		grid.add(multiplicityButton, 1, 4);
 		
 	}
 
+	
 }
