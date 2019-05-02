@@ -132,7 +132,7 @@ public class DiagramActions {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			EditAttributDialog dlg = new EditAttributDialog();
+			EditAttributDialog dlg = new EditAttributDialog(diagram);
 			Optional<MetaClassDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
