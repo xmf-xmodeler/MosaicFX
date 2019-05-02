@@ -1,7 +1,10 @@
 package tool.clients.fmmlxdiagrams;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -56,8 +59,8 @@ public class FmmlxObject {
 		return id;
 	}
 
-	public Vector<FmmlxAttribute> getAttributes() {
-		return attributes;
+	public ObservableList<String> getAttributes() {
+		return FXCollections.observableList(new ArrayList(attributes));
 	}
 
 	public void setAttributes(Vector<FmmlxAttribute> attributes) {

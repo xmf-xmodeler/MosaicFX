@@ -13,6 +13,7 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
+import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
@@ -27,7 +28,7 @@ public class EditAttributDialog extends CustomDialog<MetaClassDialogResult> {
 	private Label newValueLabel;
 	private ObservableList<String> classList;
 	private ObservableList<String> attributeList;
-	
+	private Vector<FmmlxAttribute> attributes;
 	private ComboBox<String> classComboBox;
 	private ComboBox<String> selectAttributeComboBox;
 	private Label currentValue;
@@ -71,7 +72,7 @@ public class EditAttributDialog extends CustomDialog<MetaClassDialogResult> {
 		if (classComboBox.getSelectionModel().getSelectedIndex() == -1) {
 			for (FmmlxObject object : objects) {
 				if (classComboBox.getSelectionModel().getSelectedItem().equals(object.getName())) {
-					//classList = object.getAttributes();
+					attributeList = object.getAttributes();
 				}
 			}
 			
@@ -107,7 +108,7 @@ public class EditAttributDialog extends CustomDialog<MetaClassDialogResult> {
 		newValueLabel = new Label("new Value");
 		
 		classComboBox = new ComboBox<>(classList);
-		selectAttributeComboBox = new ComboBox<>();
+		selectAttributeComboBox = new ComboBox<>(attributeList);
 		currentValue = new Label(getCurrentValue());
 		newNameTextField = new TextField();
 		newValueTextField = new TextField();

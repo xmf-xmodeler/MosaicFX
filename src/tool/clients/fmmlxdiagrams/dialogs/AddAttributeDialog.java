@@ -166,12 +166,12 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		if (!objects.isEmpty()) {
 			for (FmmlxObject object :objects) {
 				if(classCombobox.getSelectionModel().getSelectedItem().equals(object.getName())) {
-					for (FmmlxAttribute attribute : object.getAttributes()) {
+					/*for (FmmlxAttribute attributes : object.getAttributes()) {
 						if(nameTextField.getText().equals(attribute.getName())) {
 						return true;
 						}
 					}
-					break;
+					break;*/
 				}
 			}
 		}
