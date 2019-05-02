@@ -20,6 +20,7 @@ import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 
 public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
@@ -39,6 +40,7 @@ public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
 	ObservableList<String> classList;
 	List<String> typesArray;
 	
+	private Multiplicity multiplicity = Multiplicity.OPTIONAL;
 
 	
 	
@@ -188,8 +190,12 @@ public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
 		levelComboBox = new ComboBox<>();
 		typeComboBox = new ComboBox<>(typeList);
 		multiplicityButton = new Button();
-		multiplicityButton.setText("Add / Edit Multiplicity");
-		multiplicityButton.setOnAction(e -> new MultiplicityDialog().showAndWait());
+//		multiplicityButton.setText("Add / Edit Multiplicity");
+		multiplicityButton.setText(multiplicity.toString());
+		multiplicityButton.setOnAction(e -> {
+			new MultiplicityDialog(multiplicity).showAndWait(); 
+			/*if successful multiplicity = result;
+			 *multiplicityButton.setText(multiplicity.toString());*/ });
 		classCombobox.setPrefWidth(COLUMN_WIDTH);
 		levelComboBox.setPrefWidth(COLUMN_WIDTH);
 		typeComboBox.setPrefWidth(COLUMN_WIDTH);
