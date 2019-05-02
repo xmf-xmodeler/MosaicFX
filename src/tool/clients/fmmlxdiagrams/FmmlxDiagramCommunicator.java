@@ -252,9 +252,9 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "addInstance", message);
 	}
 
-	public void addAttribute(int classID, String name, int level, String type) {
+	public void addAttribute(int classID, String name, int level, String type) { 
+		//Value[] multiplicity = new Value[] {new Value(min),new Value(max),new Value(unlimited),new Value(sorted),new Value(duplicate)}; /ordered
 		Value[] message = new Value[] {new Value(classID),new Value(name),new Value(level),new Value(type)};
-		
 		WorkbenchClient.theClient().send(handler, "addAttribute", message);
 		
 	}

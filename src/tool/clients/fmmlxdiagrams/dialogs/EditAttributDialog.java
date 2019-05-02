@@ -68,6 +68,15 @@ public class EditAttributDialog extends CustomDialog<MetaClassDialogResult> {
 	
 	private ObservableList<String> getClassAttributeList() {
 		// TODO Auto-generated method stub
+		if (classComboBox.getSelectionModel().getSelectedIndex() == -1) {
+			for (FmmlxObject object : objects) {
+				if (classComboBox.getSelectionModel().getSelectedItem().equals(object.getName())) {
+					//classList = object.getAttributes();
+				}
+			}
+			
+		}
+		
 		return null;
 	}
 
@@ -90,7 +99,7 @@ public class EditAttributDialog extends CustomDialog<MetaClassDialogResult> {
 
 	private void addElementToGrid() {
 		classList = getAllClassList();
-		attributeList = getClassAttributeList();
+		//attributeList = getClassAttributeList();
 		classLabel = new Label("Select Class");
 		selectAttributLabel = new Label("Select Attribute");
 		currentValueLabel = new Label("Value");
