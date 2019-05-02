@@ -8,24 +8,34 @@ import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.draw2d.geometry.Rectangle;
 
+import com.sun.glass.events.MouseEvent;
+
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.application.Platform;
+import javafx.geometry.Bounds;
 import javafx.geometry.Side;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
+import javafx.scene.transform.Scale;
 import tool.clients.EventHandler;
 import tool.clients.menus.MenuClient;
 import tool.xmodeler.XModeler;
@@ -164,7 +174,8 @@ public class Diagram implements Display {
 			// help();
 			redraw();
 		}
-		if (e.isControlDown() && (e.getCode() == KeyCode.NUMPAD1)) {
+		// zoom-to-one also via Ctrl-0, as in Firefox (Jens)
+		if (e.isControlDown() && ( (e.getCode() == KeyCode.NUMPAD1) || (e.getCode() == KeyCode.DIGIT0) )) {
 			zoomOne();
 			// help();
 			redraw();
@@ -258,9 +269,10 @@ public class Diagram implements Display {
 			mode = MouseMode.DOUBLE_CLICK;
 			storeLastXY((int) scaledPoint.getX(), (int) scaledPoint.getY());
 			redraw();
-		} else if (event.getButton().equals(MouseButton.MIDDLE)) {
-			canvasDragStartX = event.getX();
-			canvasDragStartY = event.getY();
+		} 
+		else if (event.getButton().equals(MouseButton.MIDDLE)) {
+			canvasDragStartX = event.getScreenX();
+			canvasDragStartY = event.getScreenY();
 		}
 
 	}
@@ -280,7 +292,7 @@ public class Diagram implements Display {
 
 	private void leftClick(javafx.scene.input.MouseEvent event, javafx.geometry.Point2D scaledPoint) {
 		TrayTool tool = null;// selectTool((int) event.getX(), (int) event.getY());
-		if (tool != null)
+		if (tool != null) 
 			tool.click(Diagram.this);
 		else {
 			if (nodeCreationType == null && edgeCreationType == null) {
@@ -344,9 +356,12 @@ public class Diagram implements Display {
 		redraw();
 	}
 
+	private double scrollModificator = 1;
+	
 	public void mouseMoved(final javafx.scene.input.MouseEvent event) {
 		javafx.geometry.Point2D scaledPoint = scale(event);
 
+		//System.out.println("scroller vvalue: " + scroller.getVvalue());
 //	  	  System.err.println(event.getX() + "-->" + scaledPoint.getX());
 		// if (mode == MouseMode.SELECTED) {
 //	          System.err.println("mouseMoved ("+selection.size()+") " + mode);
@@ -355,10 +370,26 @@ public class Diagram implements Display {
 		int dx = ((int) scaledPoint.getX()) - lastX;
 		int dy = ((int) scaledPoint.getY()) - lastY;
 		storeLastXY(((int) scaledPoint.getX()), ((int) scaledPoint.getY()));
+		//TODO
 		if (event.getButton().equals(MouseButton.MIDDLE)) {
-			canvas.setTranslateX(canvas.getTranslateX() + event.getX() - canvasDragStartX);
-			canvas.setTranslateY(canvas.getTranslateY() + event.getY() - canvasDragStartY);
+			
+			//determine moved amount
+			double deltaY = event.getScreenY() - canvasDragStartY ;
+			double deltaX = event.getScreenX() - canvasDragStartX ;
+			
+			//calculate needed movement amount
+			double calculatedHeight = canvas.getHeight() / scroller.getHeight();
+			double calculatedWidth = canvas.getWidth() / scroller.getWidth();
+			
+			//move scrollbar with modificator
+			scroller.setVvalue(scroller.getVvalue() - deltaY  /100);// / calculatedHeight * scrollModificator);
+			scroller.setHvalue(scroller.getHvalue() - deltaX  /100);// / calculatedWidth * scrollModificator);
+
+			//update saved coordinates for next event
+			canvasDragStartX = event.getScreenX();
+			canvasDragStartY = event.getScreenY();
 		} else {
+			
 			if (mode == MouseMode.SELECTED)
 				for (Selectable selectable : selection)
 					selectable.moveBy(dx, dy);
@@ -544,7 +575,9 @@ public class Diagram implements Display {
 		palette.init(this);
 		canvas = new Canvas(800, 600);
 		scroller = new ScrollPane(canvas);
-
+		scroller.setStyle("-fx-background: #FFFFFF");
+		
+			
 		canvas.setOnMousePressed((event) -> {
 			mouseDown(event);
 		});
@@ -569,14 +602,37 @@ public class Diagram implements Display {
 		scroller.setOnKeyReleased((event) -> {
 			keyReleased(event);
 		});
-
+		
+		//TODO: 
+		// Setting MouseWheel dragging
+//		scroller.setOnMousePressed((event) -> {
+//			System.out.println("MousePressedEntered");
+//			 if (event.getButton().equals(MouseButton.MIDDLE)) {
+//				canvasDragStartX = event.getX();
+//				canvasDragStartY = event.getY();
+//			}
+//		});
+//		
+//		scroller.setOnMouseDragged((event) -> {
+//			System.out.println("MouseMovedEntered");
+//			if (event.getButton().equals(MouseButton.MIDDLE)) {
+//			//canvas.setTranslateX(canvas.getTranslateX() + event.getX() - canvasDragStartX);
+//			//canvas.setTranslateY(canvas.getTranslateY() + event.getY() - canvasDragStartY);
+//			scroller.setVvalue(scroller.getVvalue() - (event.getY()-canvasDragStartY)  * scrollModificator);
+//			scroller.setHvalue(scroller.getHvalue() - (event.getX()-canvasDragStartX) * scrollModificator);
+//			System.out.println("Scroller.getVValue(): " + scroller.getVvalue() + " ; event - canvas: " + (event.getY() - canvasDragStartY));
+//			canvasDragStartX = event.getX();
+//			canvasDragStartY = event.getY();
+//			}
+//		});
+		
 		scroller.addEventFilter(ScrollEvent.ANY, new javafx.event.EventHandler<ScrollEvent>() {
 
 			@Override
 			public void handle(ScrollEvent event) {
 
-				double scrollSpeed = 0.01;
-
+				double scrollSpeedModificator = 1; 
+				
 				if (event.isControlDown()) {
 					if (event.getDeltaY() > 0) {
 						zoomIn();
@@ -584,10 +640,13 @@ public class Diagram implements Display {
 						zoomOut();
 					}
 				} else {
-					if (event.isShiftDown()) {
-						scroller.setHvalue(scroller.getHvalue() - event.getDeltaY() * scrollSpeed);
+					if (event.isShiftDown()) {						
+						scroller.setHvalue(scroller.getHvalue() - event.getDeltaY() / scroller.getWidth() * scrollSpeedModificator);
 					} else {
-						scroller.setVvalue(scroller.getVvalue() - event.getDeltaY() * scrollSpeed);
+						if (scroller.getHeight() < canvas.getHeight()) {
+						scroller.setVvalue(scroller.getVvalue() - event.getDeltaY() / scroller.getHeight() * scrollSpeedModificator);
+						System.out.println("scroller: " + scroller.getHeight() + " ; canvas: "+ canvas.getHeight());
+						}
 					}
 				}
 				redraw();
@@ -611,6 +670,7 @@ public class Diagram implements Display {
 		
 		scroller.autosize();
 		pane.getItems().addAll(palette.getToolBar(), scroller);
+		
 		pane.setDividerPosition(0, 0.2);
 		
 		redraw();
@@ -715,6 +775,13 @@ public class Diagram implements Display {
 			canvas.setHeight(height);
 //			scroller.setMinSize(width, height);
 //			 System.err.println("new canvas Screen Size : " + width+"x"+height);
+			
+			//TEST: resizing canvas with scrollersize and zoom
+			//TODO:
+			canvas.setWidth(Math.max(canvas.getWidth(), scroller.getWidth()));
+			canvas.setHeight(Math.max(canvas.getHeight(), scroller.getHeight()));
+			//
+			
 		} catch (NonInvertibleTransformException e) {
 			System.err.println("check size fail: " + e.getMessage());
 			return;
@@ -725,7 +792,7 @@ public class Diagram implements Display {
 
 	private void clear(javafx.scene.canvas.GraphicsContext gc, int x, int y) {
 		gc.setFill(javafx.scene.paint.Color.WHITE);
-		gc.fillRect(x, y, (int) (canvas.getWidth()), (int) (canvas.getHeight()));
+		gc.fillRect(x, y, canvas.getWidth(), canvas.getHeight());
 //      gc.fillRect(x + 1, y + 1, (int)(canvas.getWidth() - 2), (int)(canvas.getHeight() - 2)); // TODO: Problem with box border
 	}
 
@@ -1201,13 +1268,16 @@ public class Diagram implements Display {
 		}
 	}
 
+	//estimated edge size for resizing calculation, otherwise the red outline stays on the scrollpane
+	int edgeSize = 16;
+	
 	private int maxHeight() {
 		int maxHeight = 0;
 		for (Node node : nodes)
 			maxHeight = Math.max(maxHeight, node.maxY());
 		for (Edge edge : edges)
 			maxHeight = Math.max(maxHeight, edge.maxY());
-		return maxHeight;
+		return (int)(maxHeight)+ edgeSize;
 	}
 
 	private int maxWidth() {
@@ -1216,7 +1286,7 @@ public class Diagram implements Display {
 			maxWidth = Math.max(maxWidth, node.maxX());
 		for (Edge edge : edges)
 			maxWidth = Math.max(maxWidth, edge.maxX());
-		return maxWidth;
+		return (int)(maxWidth) + edgeSize;
 	}
 
 	private double minDistance(Edge e1, Edge e2) {
@@ -1624,9 +1694,11 @@ public class Diagram implements Display {
 		gc.setStroke(Color.BLACK);
 		gc.setLineWidth(1);
 		gc.strokePolygon(polygonX, polygonY, 13);
-
-		gc.setFill(oldBGColor);
+		
+		gc.setFill(Color.BLACK);
 		gc.fillText("new " + nodeCreationType, X + 8, Y + 2);
+		gc.setFill(oldBGColor);
+
 		gc.setStroke(oldFGColor);
 //    gc.setTransform(transform);
 
@@ -1707,6 +1779,7 @@ public class Diagram implements Display {
 //  private transient long _last_paintOn;
 	private void paintOn(GraphicsContext gc, int xOffset, int yOffset) {
 //      System.err.println("current Thread: " + Thread.currentThread() + " (in paintOn)");
+		canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth()/zoom, canvas.getHeight()/zoom);
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
 			gc.setFont(Font.font("System Regular", 12.0001));
 //    	  System.err.println("paintOnDiff= " + (System.currentTimeMillis() -_last_paintOn));
@@ -2249,6 +2322,25 @@ public class Diagram implements Display {
 
 	public final void setZoom(float zoom) {
 //	  System.err.println("setZoom: " + zoom);
+		if (scroller != null && canvas != null) {
+//		double previousHValue = scroller.getHvalue();
+//		double previousVValue = scroller.getVvalue();
+//		
+//		scroller.setHvalue(0);
+//		scroller.setVvalue(0);
+//		
+//		scroller.setHmax(zoom);
+//		scroller.setVmax(zoom);
+//		
+//		scroller.setHvalue(previousHValue);
+//		scroller.setVvalue(previousVValue);
+//
+//			if (scroller.getHeight() > canvas.getHeight()*zoom){
+//				scroller.setVbarPolicy(ScrollBarPolicy.NEVER);
+//			}
+//			else
+//				scroller.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		}
 		this.zoom = zoom;
 		transformFX = new Affine();// .getGraphicsContext2D().getTransform();
 		transformFX.appendScale(zoom, zoom);

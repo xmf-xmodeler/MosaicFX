@@ -175,7 +175,7 @@
 		<zip destfile="${outputArchive}" compress="yes" duplicate="fail">
 			<zipfileset dir=".." prefix="${prefix}">
 				<include name="bin/**" />
-				<include name="doc/**" />
+				<!--include name="doc/**" /-->
 				<include name="lib/*.jar" />
 				<include name="lib/poi-3.10.1/*.jar" />
 				<include name="lib/poi-3.10.1/LICENSE" />
@@ -190,6 +190,7 @@
 				<include name="User/**" />
 				<include name="web/**" />
 				<exclude name="**/.DS_Store" />
+				<include name="resources/**" />
 			</zipfileset>
 			<zipfileset dir="./output/" prefix="${prefix}">
 				<!-- ini files -->
@@ -215,6 +216,19 @@
 				<include name="xmf-img/xmf.img" />
 				<include name="xmf-img/mosaic.img" />
 				<exclude name="**/.DS_Store" />
+			</zipfileset>
+			<!-- doc/ -->
+			<zipfileset dir="../../XMF/com.ceteva.xmf.system/xmf-doc/xmf-books" prefix="${prefix}doc/">
+				<include name="Bluebook.pdf" />
+			</zipfileset>
+			<mappedresources>
+				<zipfileset dir="../../XMF/com.ceteva.xmf.system/xmf-doc/xmf-books/SuperLanguages" prefix="${prefix}doc/">
+					<include name="book.pdf" />
+				</zipfileset>
+				<globmapper from="book.pdf" to="${prefix}doc/Super Languages.pdf" />
+			</mappedresources>
+			<zipfileset dir="../../XMF/com.ceteva.xmf.system/xmf-doc/xmf-books/AppliedMetamodelling" prefix="${prefix}doc/">
+				<include name="Applied Metamodelling (Second Edition).pdf" />
 			</zipfileset>
 		</zip>
 		<delete file="./output/ini-win.txt" />

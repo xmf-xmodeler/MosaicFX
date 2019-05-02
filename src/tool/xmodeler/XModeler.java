@@ -56,6 +56,7 @@ import tool.clients.undo.UndoClient;
 import tool.clients.workbench.WorkbenchClient;
 import tool.console.Console;
 import tool.console.ConsoleClient;
+import tool.helper.IconGenerator;
 import xos.OperatingSystem;
 
 public class XModeler extends Application {
@@ -471,7 +472,7 @@ public class XModeler extends Application {
 			//scene = new Scene(containingBox,TOOL_WIDTH,TOOL_HEIGHT);
 			
 			// Set up Stage
-			stage.getIcons().add(new Image("file:icons/shell/mosaic32.gif"));
+			stage.getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 			setToolTitle();
 			
 			stage.setX(propertyManager.getIntProperty("TOOL_X", TOOL_X));		
