@@ -25,6 +25,7 @@ public class FmmlxDiagram {
 	final FmmlxDiagramCommunicator comm;
 	private Canvas canvas;
 	private Vector<FmmlxObject> objects = new Vector<>();
+	private Vector<Edge> edges = new Vector<>();
 
 	private transient Vector<FmmlxObject> selectedObjects = new Vector<>();
 	private final Palette palette;
@@ -105,6 +106,10 @@ public class FmmlxDiagram {
 //			comm.fetchAttributes(o);
 			o.fetchData(comm);
 		}
+		if(objects.size() >= 2) {
+			Edge e = new Edge(objects.get(0), objects.get(1));
+			edges.add(e);
+		}
 		resizeCanvas();
 		redraw();
 	}
@@ -161,9 +166,11 @@ public class FmmlxDiagram {
 		g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 		g.setFill(Color.BLACK);
 		g.setTransform(transformFX);
-		Vector<FmmlxObject> objectsToBePainted = new Vector<>(objects);
+		Vector<CanvasElement> objectsToBePainted = new Vector<>();
+		objectsToBePainted.addAll(objects);
+		objectsToBePainted.addAll(edges);
 		Collections.reverse(objectsToBePainted);
-		for (FmmlxObject o : objectsToBePainted) {
+		for (CanvasElement o : objectsToBePainted) {
 			o.paintOn(g, xOffset, yOffset, this);
 		}
 		g.strokeRect(0, 0, 5, 5);
