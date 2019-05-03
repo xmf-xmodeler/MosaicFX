@@ -12,7 +12,7 @@ import javafx.scene.paint.Color;
 
 public class CustomDialog<R> extends Dialog<R> {
 
-	protected int COLUMN_WIDTH = 75;
+	protected int COLUMN_WIDTH = 100;
 
 	FlowPane flow;
 	GridPane grid;
