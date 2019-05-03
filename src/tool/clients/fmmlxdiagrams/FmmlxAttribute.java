@@ -1,8 +1,9 @@
 package tool.clients.fmmlxdiagrams;
 
 public class FmmlxAttribute {
-	
+
 	String name;
+
 	public String getName() {
 		return name;
 	}

@@ -11,20 +11,20 @@ import javafx.scene.control.ToolBar;
 
 public class Palette extends ToolBar {
 
-    public Palette(DiagramActions actions) {
-        setPadding(new Insets(10, 10, 10, 10));
-        setOrientation(Orientation.HORIZONTAL);
+	public Palette(DiagramActions actions) {
+		setPadding(new Insets(10, 10, 10, 10));
+		setOrientation(Orientation.HORIZONTAL);
 
-        getItems().add(new Label("Zoom"));
-        addButton("+", e -> actions.zoomIn());
-        addButton("100%", e -> actions.zoomOne());
-        addButton("-", e -> actions.zoomOut());
-        getItems().add(new Separator());
-    }
+		getItems().add(new Label("Zoom"));
+		addButton("+", e -> actions.zoomIn());
+		addButton("100%", e -> actions.zoomOne());
+		addButton("-", e -> actions.zoomOut());
+		getItems().add(new Separator());
+	}
 
-    private void addButton(String string, EventHandler<ActionEvent> eventHandler) {
-        Button button = new Button(string);
-        button.setOnAction(eventHandler);
-        getItems().add(button);
-    }
+	private void addButton(String string, EventHandler<ActionEvent> eventHandler) {
+		Button button = new Button(string);
+		button.setOnAction(eventHandler);
+		getItems().add(button);
+	}
 }
