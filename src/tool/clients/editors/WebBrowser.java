@@ -42,11 +42,20 @@ public class WebBrowser {
         return result;
     }
 
-    protected void setUrl(String url) { //TODO: we should consider not putting HTML docs into strings... ¯\_(ツ)_/¯
+    protected void setUrl(String url) {
         if (startUrl != null) { url = startUrl; startUrl = null; }
-        if (url != null && !url.isEmpty()) { //&&isURL(url)
-            if (webView != null) webView.getEngine().load(url); //TODO this doesnt work with strings that contain an html doc
-            else startUrl = url;
+        if (url != null && !url.isEmpty()) { //&&isURL(url) TODO: this doesnt work with strings that contain an html doc, why was it there in the first plac?
+            if (webView != null) {
+                String content = url;
+                if (isLikelyToBeHTML(content)) {
+                    Platform.runLater(() -> { webView.getEngine().loadContent(content); }); //TODO: we should consider not putting HTML docs into strings... ¯\_(ツ)_/¯
+                } else {
+                    Platform.runLater(() -> { webView.getEngine().load(content); });
+                }
+            }
+            else {
+                startUrl = url;
+            }
         }
     }
 
@@ -73,8 +82,14 @@ public class WebBrowser {
 
         Button back = new Button("", IconGenerator.getImageView("User/Arrow4Left"));
         back.setOnAction((e)->{
+            System.err.println("loc: "+webView.getEngine().getLocation());
+            System.err.println(webView.getEngine().getHistory().getEntries());
+            System.err.println(webView.getEngine().getHistory().getCurrentIndex());
+
             if( webView.getEngine().getHistory().getCurrentIndex()>0){
                 webView.getEngine().getHistory().go(-1);
+            } else {
+                setUrl(webView.getEngine().getHistory().getEntries().get(0).getUrl());
             }
         });
 
@@ -100,16 +115,24 @@ public class WebBrowser {
         loadingSpinner.setPadding(new Insets(0, 10, 0, 0));
 
         //webEngine settings
-        webView.getEngine().locationProperty().addListener(karl -> {
-            locationChanged(webView.getEngine().getLocation(), urlField.getText());
+
+        webView.getEngine().locationProperty().addListener((observable, oldLocation, newLocation) -> {
+            System.err.println("old: " + oldLocation + ", new: " + newLocation+", rep: ");
+
+            if (newLocation.contains("http://snippet/")) {
+                String replaced = newLocation.replace("http://snippet/", "snippet:/");
+                setUrl(replaced);
+            } else {
+                locationChanged(webView.getEngine().getLocation(), urlField.getText());
+            }
         });
 
-        webView.getEngine().getLoadWorker().stateProperty().addListener(listener->{
+        webView.getEngine().getLoadWorker().stateProperty().addListener(listener -> {
             //TODO: what was dis supposed to do?
         });
 
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldState, newState) -> {
-            if (newState == Worker.State.SUCCEEDED) {
+            if (newState == Worker.State.SUCCEEDED || (webView.getEngine().getLocation()!=null && webView.getEngine().getLocation().contains("snippet:/")) ) {
                 loadingSpinner.setVisible(false);
             } else {
                 loadingSpinner.setVisible(true);
@@ -140,7 +163,7 @@ public class WebBrowser {
 
         browserVBox.getChildren().addAll(navBar, webView);
 
-        setUrl(url);
+        setUrl(url); //TODO: move this off the ui thread
 
         //browserLocked = false;
 //        URL.setURLStreamHandlerFactory(protocol -> "snippets:/".equals(protocol) ? new URLStreamHandler() { //TODO: this can be used to map xmodeler internal urls properly

@@ -882,8 +882,8 @@ public class EditorClient extends Client {
     if (browsers.containsKey(id)) {
       Platform.runLater(()->{
         tabPane.getSelectionModel().select(tabs.get(id));
-        browsers.get(id).setUrl(url);
       });
+      browsers.get(id).setUrl(url);
     } else {
       System.err.println("cannot find browser " + id);
     }
