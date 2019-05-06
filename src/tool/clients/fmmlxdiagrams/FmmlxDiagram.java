@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams;
 import java.util.Collections;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
+
 import javafx.application.Platform;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
@@ -14,12 +15,17 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
 public class FmmlxDiagram {
+
+	enum MouseMode {
+		STANDARD, MULTISELECT
+	}
 
 	SplitPane mainView;
 	final FmmlxDiagramCommunicator comm;
@@ -32,6 +38,9 @@ public class FmmlxDiagram {
 	private ObjectContextMenu objectContextMenu;
 	private DiagramActions actions;
 	private transient boolean objectsMoved = false;
+	private Point2D lastPoint;
+	private Point2D actualPoint;
+	private MouseMode mode = MouseMode.STANDARD;
 
 	public Vector<FmmlxObject> fetchObjects() { // TODO Ask
 		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
@@ -47,10 +56,10 @@ public class FmmlxDiagram {
 	public Vector<FmmlxObject> getObjects() {
 		return new Vector<FmmlxObject>(objects); // read-only
 	}
-	
+
 	public FmmlxObject getObjectById(int id) {
-		for(FmmlxObject object : objects) {
-			if(object.getId() == id)
+		for (FmmlxObject object : objects) {
+			if (object.getId() == id)
 				return object;
 		}
 		return null;
@@ -167,6 +176,17 @@ public class FmmlxDiagram {
 			o.paintOn(g, xOffset, yOffset, this);
 		}
 		g.strokeRect(0, 0, 5, 5);
+
+		drawMultiSelectRect(g);
+	}
+
+	private void drawMultiSelectRect(GraphicsContext g) {
+		if (mode == MouseMode.MULTISELECT) {
+			double x = Math.min(lastPoint.getX(), actualPoint.getX());
+			double y = Math.min(lastPoint.getY(), actualPoint.getY());
+
+			g.strokeRect(x, y, Math.abs(actualPoint.getX() - lastPoint.getX()), Math.abs(actualPoint.getY() - lastPoint.getY()));
+		}
 	}
 
 	private void mousePressed(MouseEvent e) {
@@ -181,20 +201,26 @@ public class FmmlxDiagram {
 
 		if (isMiddleClick(e)) {
 			selectedObjects.addAll(objects);
-		} else {
+		}
+
+		if (isLeftClick(e)) {
 			FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
-			if (e.isControlDown()) {
-				if (selectedObjects.contains(selectedObjects)) {
-					selectedObjects.remove(hitObject);
+			if (hitObject != null) {
+				if (e.isControlDown()) {
+					if (selectedObjects.contains(hitObject)) {
+						selectedObjects.remove(hitObject);
+					} else {
+						selectedObjects.add(hitObject);
+					}
 				} else {
-					selectedObjects.add(hitObject);
+					if (!selectedObjects.contains(hitObject)) {
+						selectedObjects.clear();
+						if (hitObject != null)
+							selectedObjects.add(hitObject);
+					}
 				}
 			} else {
-				if (!selectedObjects.contains(hitObject)) {
-					selectedObjects.clear();
-					if (hitObject != null)
-						selectedObjects.add(hitObject);
-				}
+				deselectAll();
 			}
 		}
 
@@ -212,29 +238,50 @@ public class FmmlxDiagram {
 //			selectedObjects 
 //		}
 		for (FmmlxObject o : selectedObjects) {
-			o.mouseMoveOffsetX = p.getX() - o.x;
-			o.mouseMoveOffsetY = p.getY() - o.y;
+			o.mouseMoveOffsetX = p.getX() - o.getX();
+			o.mouseMoveOffsetY = p.getY() - o.getY();
 		}
 		redraw();
 	}
 
 	private void mouseDragged(MouseEvent e) {
 		Point2D p = scale(e);
-		for (FmmlxObject o : selectedObjects) {
-			o.x = (int) (p.getX() - o.mouseMoveOffsetX);
-			o.y = (int) (p.getY() - o.mouseMoveOffsetY);
+		FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
+
+		if (mode == MouseMode.MULTISELECT) {
+			storeActualPoint(p.getX(), p.getY());
+			redraw();
 		}
-		objectsMoved = true;
-		redraw();
+
+		if (mode == MouseMode.STANDARD) {
+			if (hitObject != null) {
+				for (FmmlxObject o : selectedObjects) {
+					o.setX((int) (p.getX() - o.mouseMoveOffsetX));
+					o.setY((int) (p.getY() - o.mouseMoveOffsetY));
+				}
+				objectsMoved = true;
+				redraw();
+			} else {
+				mode = MouseMode.MULTISELECT;
+				storeLastClick(p.getX(), p.getY());
+			}
+		}
 	}
 
 	private void mouseReleased(MouseEvent e) {
-		if (objectsMoved) {
-			for (FmmlxObject o : selectedObjects) {
-				comm.sendCurrentPosition(o);
-			}
+		if (mode == MouseMode.MULTISELECT) {
+			handleMultiSelect();
 		}
-		objectsMoved = false;
+
+		if (mode == MouseMode.STANDARD) {
+			if (objectsMoved) {
+				for (FmmlxObject o : selectedObjects) {
+					comm.sendCurrentPosition(o);
+				}
+			}
+			objectsMoved = false;
+		}
+		mode = MouseMode.STANDARD;
 		resizeCanvas();
 		redraw();
 	}
@@ -258,14 +305,48 @@ public class FmmlxDiagram {
 		return null;
 	}
 
+	private void storeLastClick(double x, double y) {
+		lastPoint = new Point2D(x, y);
+	}
+
+	private void storeActualPoint(double x, double y) {
+		actualPoint = new Point2D(x, y);
+	}
+
+
 	public boolean isSelected(FmmlxObject fmmlxObject) {
 		return selectedObjects.contains(fmmlxObject);
+	}
+
+	private void deselectAll() {
+		selectedObjects.clear();
+	}
+
+	private void select(FmmlxObject o) {
+		if (!selectedObjects.contains(o)) {
+			selectedObjects.add(o);
+		}
 	}
 
 	public void updateDiagram() {
 		new Thread(() -> {
 			fetchDiagramData();
 		}).start();
+	}
+
+	private void handleMultiSelect() {
+		double x = Math.min(lastPoint.getX(), actualPoint.getX());
+		double y = Math.min(lastPoint.getY(), actualPoint.getY());
+		double w = Math.abs(actualPoint.getX() - lastPoint.getX());
+		double h = Math.abs(actualPoint.getY() - lastPoint.getY());
+
+		Rectangle rec = new Rectangle(x, y, w, h);
+		deselectAll();
+		for (FmmlxObject o : objects) {
+			if (rec.contains(o.getX(), o.getY())) {
+				select(o);
+			}
+		}
 	}
 
 	public void addMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
@@ -281,7 +362,7 @@ public class FmmlxDiagram {
 	}
 
 	public void addNewInstance(int of, String name, int level, Vector<String> parents, boolean isAbstract, int x,
-			int y) {
+							   int y) {
 		comm.addNewInstance(of, name, level, parents, isAbstract, x, y);
 	}
 

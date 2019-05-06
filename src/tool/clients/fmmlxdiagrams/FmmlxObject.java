@@ -13,8 +13,8 @@ public class FmmlxObject {
 
 	private String name;
 	int id;
-	int x;
-	int y;
+	private int x;
+	private int y;
 	int level;
 	int of;
 	Vector<Integer> parents;
@@ -54,6 +54,18 @@ public class FmmlxObject {
 
 	public int getId() {
 		return id;
+	}
+
+	public int getX() { return x;}
+
+	public int getY() { return y;}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public void setY(int y) {
+		this.y = y;
 	}
 
 	public Vector<FmmlxAttribute> getAttributes() {

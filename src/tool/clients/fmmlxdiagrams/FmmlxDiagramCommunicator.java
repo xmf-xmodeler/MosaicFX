@@ -195,7 +195,7 @@ public class FmmlxDiagramCommunicator {
 
 	public void sendCurrentPosition(FmmlxObject o) {
 		Vector<Object> response = xmfRequest(handler, "sendNewPosition",
-				new Value[] { new Value(o.id), new Value(o.x), new Value(o.y) });
+				new Value[] { new Value(o.id), new Value(o.getX()), new Value(o.getY()) });
 	}
 
 	public void addMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
