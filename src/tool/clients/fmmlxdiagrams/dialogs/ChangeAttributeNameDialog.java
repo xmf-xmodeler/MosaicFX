@@ -75,8 +75,23 @@ public class ChangeAttributeNameDialog extends CustomDialog<ChangeAttributeNameD
 	}
 	
 	private boolean validateUserInput() {
-		
+		if (!attributeIsChoosen()) {
+			return false;
+		}
+		if (!nameIsValid()) {
+			return false;
+		}
 		return true;
+	}
+
+	private boolean nameIsValid() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private boolean attributeIsChoosen() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
