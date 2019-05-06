@@ -7,8 +7,6 @@ import java.util.concurrent.CountDownLatch;
 import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeAttributeNameDialogResult;
 import tool.clients.workbench.WorkbenchClient;
 import xos.Value;
 
