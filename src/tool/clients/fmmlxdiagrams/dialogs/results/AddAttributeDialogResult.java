@@ -1,17 +1,21 @@
 package tool.clients.fmmlxdiagrams.dialogs.results;
 
+import tool.clients.fmmlxdiagrams.Multiplicity;
+
 public class AddAttributeDialogResult extends DialogResult {
 	
 	private String name;
 	private String type;
 	private int level;
 	private int classID;
+	private Multiplicity multi;
 
-	public AddAttributeDialogResult(int classID, String name, int level, String type) {
+	public AddAttributeDialogResult(int classID, String name, int level, String type, Multiplicity multi) {
 		this.classID= classID;
 		this.name = name;
 		this.level = level;
 		this.type =type;
+		this.multi=multi;
 	}
 	
 	public int getClassID() {
@@ -45,7 +49,12 @@ public class AddAttributeDialogResult extends DialogResult {
 	public void setType(String type) {
 		this.type = type;
 	}
-	
-	
 
+	public Multiplicity getMultiplicity() {
+		return multi;
+	}
+	
+	public void setMulti(Multiplicity multi) {
+		this.multi = multi;
+	}
 }

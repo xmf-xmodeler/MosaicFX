@@ -8,6 +8,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
+import tool.clients.dialogs.ChangeAttributeNameDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AddAttributeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AddInstanceDialog;
 import tool.clients.fmmlxdiagrams.dialogs.CreateMetaClassDialog;
@@ -15,6 +16,7 @@ import tool.clients.fmmlxdiagrams.dialogs.EditAttributDialog;
 import tool.clients.fmmlxdiagrams.dialogs.RemoveAttributDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeAttributeNameDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 
 public class DiagramActions {
@@ -120,7 +122,7 @@ public class DiagramActions {
 			if (result.isPresent()) {
 				AddAttributeDialogResult aad = result.get();
 				System.out.println("!!!!!!!!!!!!! " + aad.getName() + " " + aad.getLevel());
-				diagram.addAttribute(aad.getClassID(),aad.getName(), aad.getLevel(), aad.getType());
+				diagram.addAttribute(aad.getClassID(),aad.getName(), aad.getLevel(), aad.getType(), aad.getMultiplicity());
 			}
 
 			diagram.updateDiagram();
@@ -145,6 +147,24 @@ public class DiagramActions {
 		});
 	}
 
+	public void changeAttributeNameDialog() {
+		CountDownLatch l = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			ChangeAttributeNameDialog dlg = new ChangeAttributeNameDialog(diagram, 0); // TODO change 0 into id of selected class 
+			Optional<ChangeAttributeNameDialogResult> result = dlg.showAndWait();
+
+			if (result.isPresent()) {
+				ChangeAttributeNameDialogResult cad = result.get();
+				diagram.changeAttributeName(cad.getClassID(), cad.getOldName(), cad.getNewName());
+			}
+
+			diagram.updateDiagram();
+			l.countDown();
+		});
+	}
+	
+	
 	public void removeAttributDialog() {
 		CountDownLatch l = new CountDownLatch(1);
 
@@ -177,5 +197,7 @@ public class DiagramActions {
 		diagram.setZoom(1.);
 		diagram.redraw();
 	}
+
+	
 
 }

@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeAttributeNameDialogResult;
 import tool.clients.workbench.WorkbenchClient;
 import xos.Value;
 
@@ -252,10 +253,15 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "addInstance", message);
 	}
 
-	public void addAttribute(int classID, String name, int level, String type) { 
-		//Value[] multiplicity = new Value[] {new Value(min),new Value(max),new Value(unlimited),new Value(sorted),new Value(duplicate)}; /ordered
-		Value[] message = new Value[] {new Value(classID),new Value(name),new Value(level),new Value(type)};
+	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) { 
+		Value[] multiplicity = new Value[] {new Value(multi.getMin()),new Value(multi.getMax()),new Value(multi.isUnlimited()),new Value(multi.isSorted()),new Value(multi.hasDuplicate())}; 
+		Value[] message = new Value[] {new Value(classID),new Value(name),new Value(level),new Value(type), new Value(multiplicity)};
 		WorkbenchClient.theClient().send(handler, "addAttribute", message);
 		
+	}
+
+	public void changeAttributeName(int classID, String oldName, String newName) {
+		Value[] message = new Value[] {new Value(classID),new Value(oldName),new Value(newName)};
+		WorkbenchClient.theClient().send(handler, "changeAttributeName", message);
 	}
 }

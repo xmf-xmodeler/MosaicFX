@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -16,7 +15,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
-import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
@@ -50,7 +48,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		
 		addElementToGrid();
-		dialogPane.setContent(flow);
+		dialogPane.setContent(grid);
 		
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
@@ -68,11 +66,12 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 					}
 				}
 				
-				return new AddAttributeDialogResult(
+				//TODO AddAttributeDialogResult and Multiplicity Result
+				/*return new AddAttributeDialogResult(
 						classId,
 						nameTextField.getText(), 
 						levelComboBox.getSelectionModel().getSelectedItem(),
-						typeComboBox.getSelectionModel().getSelectedItem());
+						typeComboBox.getSelectionModel().getSelectedItem(), multiplicityResult);*/
 			}
 			return null;
 		});

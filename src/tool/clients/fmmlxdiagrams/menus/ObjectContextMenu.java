@@ -45,7 +45,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeAttributDialog());
 		MenuItem changeNameItem = new MenuItem("Change name");
-		changeNameItem.setOnAction(e -> System.out.println("OCM: change attribute name called"));
+		changeNameItem.setOnAction(e -> actions.changeAttributeNameDialog());
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
 		changeOwnerItem.setOnAction(e -> System.out.println("OCM: change attribute owner called"));
 		MenuItem changeTypeItem = new MenuItem("Change type");

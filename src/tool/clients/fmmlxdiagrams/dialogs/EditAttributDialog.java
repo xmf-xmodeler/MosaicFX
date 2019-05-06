@@ -28,7 +28,6 @@ public class EditAttributDialog extends CustomDialog<MetaClassDialogResult> {
 	private Label newValueLabel;
 	private ObservableList<String> classList;
 	private ObservableList<String> attributeList;
-	private Vector<FmmlxAttribute> attributes;
 	private ComboBox<String> classComboBox;
 	private ComboBox<String> selectAttributeComboBox;
 	private Label currentValue;

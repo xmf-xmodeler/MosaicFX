@@ -2,7 +2,6 @@ package tool.clients.fmmlxdiagrams.dialogs;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.FlowPane;
@@ -12,10 +11,10 @@ import javafx.scene.paint.Color;
 
 public class CustomDialog<R> extends Dialog<R> {
 
-	protected int COLUMN_WIDTH = 100;
+	protected int COLUMN_WIDTH = 150;
 
-	FlowPane flow;
-	GridPane grid;
+	protected FlowPane flow;
+	protected GridPane grid;
 	Label errorLabel;
 
 	public CustomDialog() {

@@ -60,7 +60,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 						level = object.getLevel() - 1;
 					}
 				}
-				System.out.println(level + " level instance");
+				
 				return new AddInstanceDialogResult(nameTextField.getText(), level,
 						parentListView.getSelectionModel().getSelectedItems(), idSelectedItem,
 						abstractCheckBox.isSelected());

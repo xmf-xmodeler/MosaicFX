@@ -18,6 +18,7 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeAttributeNameDialogResult;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
 public class FmmlxDiagram {
@@ -286,8 +287,13 @@ public class FmmlxDiagram {
 		comm.addNewInstance(of, name, level, parents, isAbstract, x, y);
 	}
 	
-	public void addAttribute(int classID, String name, int level, String type) {
-		comm.addAttribute(classID, name, level, type);
+	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) {
+		comm.addAttribute(classID, name, level, type, multi);
+		
+	}
+	
+	public void changeAttributeName(int classID, String oldName, String newName) {
+		comm.changeAttributeName(classID, oldName, newName);
 		
 	}
 
@@ -313,6 +319,5 @@ public class FmmlxDiagram {
 		transformFX.appendScale(zoom, zoom);
 		resizeCanvas();
 	}
-
 	
 }
