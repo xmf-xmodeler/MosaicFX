@@ -30,14 +30,14 @@ public class Edge implements CanvasElement {
 		g.setLineWidth(isSelected()?3:1);
 		double[] xPoints = new double[points.size()+2];
 		double[] yPoints = new double[points.size()+2];
-		xPoints[0] = startNode.x + startNode.width / 2;
-		yPoints[0] = startNode.y + startNode.height / 2;
+		xPoints[0] = startNode.getX() + startNode.width / 2;
+		yPoints[0] = startNode.getY() + startNode.height / 2;
 		for(int i = 1; i < points.size()+1; i++) {
 			xPoints[i] = points.get(i).getX();
 			yPoints[i] = points.get(i).getY();
 		}
-		xPoints[points.size()+1] = endNode.x + endNode.width / 2;
-		yPoints[points.size()+1] = endNode.y + endNode.height / 2;
+		xPoints[points.size()+1] = endNode.getX() + endNode.width / 2;
+		yPoints[points.size()+1] = endNode.getY() + endNode.height / 2;
 		
 		g.strokePolyline(xPoints, yPoints, xPoints.length);
 	}
