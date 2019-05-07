@@ -18,6 +18,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
+import tool.clients.diagrams.EdgePainter;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
@@ -27,13 +28,12 @@ public class FmmlxDiagram {
 		STANDARD, MULTISELECT
 	}
 
-	SplitPane mainView;
-	final FmmlxDiagramCommunicator comm;
+	private SplitPane mainView;
+	private final FmmlxDiagramCommunicator comm;
 	private Canvas canvas;
 	private Vector<FmmlxObject> objects = new Vector<>();
 
 	private transient Vector<FmmlxObject> selectedObjects = new Vector<>();
-	private final Palette palette;
 	private DefaultContextMenu defaultContextMenu;
 	private ObjectContextMenu objectContextMenu;
 	private DiagramActions actions;
@@ -42,7 +42,7 @@ public class FmmlxDiagram {
 	private Point2D actualPoint;
 	private MouseMode mode = MouseMode.STANDARD;
 
-	public Vector<FmmlxObject> fetchObjects() { // TODO Ask
+	public Vector<FmmlxObject> fetchObjects() {
 		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
 		objects.clear(); // to be replaced when updating instead of loading form scratch
 		objects.addAll(fetchedObjects);
@@ -71,12 +71,12 @@ public class FmmlxDiagram {
 
 	private ScrollPane scrollerCanvas;
 
-	public FmmlxDiagram(FmmlxDiagramCommunicator comm, String label) {
+	FmmlxDiagram(FmmlxDiagramCommunicator comm, String label) {
 		this.comm = comm;
 		mainView = new SplitPane();
 		canvas = new Canvas(canvasRawSize.getX(), canvasRawSize.getY());
 		actions = new DiagramActions(this);
-		palette = new Palette(actions);
+		Palette palette = new Palette(actions);
 		scrollerCanvas = new ScrollPane(canvas);
 		mainView.setOrientation(Orientation.VERTICAL);
 		mainView.getItems().addAll(palette, scrollerCanvas);
@@ -84,20 +84,11 @@ public class FmmlxDiagram {
 
 		defaultContextMenu = new DefaultContextMenu(actions);
 
-		canvas.setOnMousePressed((e) -> {
-			mousePressed(e);
-		});
-		canvas.setOnMouseDragged((e) -> {
-			mouseDragged(e);
-		});
-		canvas.setOnMouseReleased((e) -> {
-			mouseReleased(e);
-		});
+		canvas.setOnMousePressed(this::mousePressed);
+		canvas.setOnMouseDragged(this::mouseDragged);
+		canvas.setOnMouseReleased(this::mouseReleased);
 
-//		Runnable task = () -> { fetchDiagramData(); };
-		new Thread(() -> {
-			fetchDiagramData();
-		}).start();
+		new Thread(this::fetchDiagramData).start();
 
 		redraw();
 	}
@@ -140,27 +131,22 @@ public class FmmlxDiagram {
 		return mainView;
 	}
 
-	// temp:
-	int render = 0;
-
 	public void redraw() {
-		if (render == 0) {
-			if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
-				// we are on the right Thread already:
+		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
+			// we are on the right Thread already:
 //				checkSize();
-				paintOn(canvas.getGraphicsContext2D(), 0, 0);
-			} else { // create a new Thread
-				CountDownLatch l = new CountDownLatch(1);
-				Platform.runLater(() -> {
+			paintOn(canvas.getGraphicsContext2D(), 0, 0);
+		} else { // create a new Thread
+			CountDownLatch l = new CountDownLatch(1);
+			Platform.runLater(() -> {
 //					checkSize();
-					paintOn(canvas.getGraphicsContext2D(), 0, 0);
-					l.countDown();
-				});
-				try {
-					l.await();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+				paintOn(canvas.getGraphicsContext2D(), 0, 0);
+				l.countDown();
+			});
+			try {
+				l.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -189,58 +175,24 @@ public class FmmlxDiagram {
 		}
 	}
 
+	////////////////////////////////////////////////////////////////////
+	////						MouseListener						////
+	////////////////////////////////////////////////////////////////////
+
 	private void mousePressed(MouseEvent e) {
 		Point2D p = scale(e);
-
-		if (objectContextMenu != null && objectContextMenu.isShowing()) {
-			objectContextMenu.hide();
-		}
-		if (defaultContextMenu != null && defaultContextMenu.isShowing()) {
-			defaultContextMenu.hide();
-		}
+		clearContextMenus();
 
 		if (isMiddleClick(e)) {
 			selectedObjects.addAll(objects);
 		}
-
 		if (isLeftClick(e)) {
-			FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
-			if (hitObject != null) {
-				if (e.isControlDown()) {
-					if (selectedObjects.contains(hitObject)) {
-						selectedObjects.remove(hitObject);
-					} else {
-						selectedObjects.add(hitObject);
-					}
-				} else {
-					if (!selectedObjects.contains(hitObject)) {
-						selectedObjects.clear();
-						if (hitObject != null)
-							selectedObjects.add(hitObject);
-					}
-				}
-			} else {
-				deselectAll();
-			}
+			handleLeftClick(e);
 		}
-
 		if (isRightClick(e)) {
-			FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
-
-			if (hitObject != null) {
-				objectContextMenu = new ObjectContextMenu(hitObject, actions);
-				objectContextMenu.show(scrollerCanvas, Side.LEFT, p.getX(), p.getY());
-			} else {
-				defaultContextMenu.show(scrollerCanvas, Side.LEFT, p.getX(), p.getY());
-			}
+			handleRightClick(e);
 		}
-//		if(hitObject != null) {
-//			selectedObjects 
-//		}
-		for (FmmlxObject o : selectedObjects) {
-			o.mouseMoveOffsetX = p.getX() - o.getX();
-			o.mouseMoveOffsetY = p.getY() - o.getY();
-		}
+		setMouseOffset(p);
 		redraw();
 	}
 
@@ -252,19 +204,22 @@ public class FmmlxDiagram {
 			storeActualPoint(p.getX(), p.getY());
 			redraw();
 		}
-
 		if (mode == MouseMode.STANDARD) {
-			if (hitObject != null) {
-				for (FmmlxObject o : selectedObjects) {
-					o.setX((int) (p.getX() - o.mouseMoveOffsetX));
-					o.setY((int) (p.getY() - o.mouseMoveOffsetY));
-				}
-				objectsMoved = true;
-				redraw();
-			} else {
-				mode = MouseMode.MULTISELECT;
-				storeLastClick(p.getX(), p.getY());
+			mouseDraggedStandard(p, hitObject);
+		}
+	}
+
+	private void mouseDraggedStandard(Point2D p, FmmlxObject hitObject) {
+		if (hitObject != null) {
+			for (FmmlxObject o : selectedObjects) {
+				o.setX((int) (p.getX() - o.mouseMoveOffsetX));
+				o.setY((int) (p.getY() - o.mouseMoveOffsetY));
 			}
+			objectsMoved = true;
+			redraw();
+		} else {
+			mode = MouseMode.MULTISELECT;
+			storeLastClick(p.getX(), p.getY());
 		}
 	}
 
@@ -272,18 +227,21 @@ public class FmmlxDiagram {
 		if (mode == MouseMode.MULTISELECT) {
 			handleMultiSelect();
 		}
-
 		if (mode == MouseMode.STANDARD) {
-			if (objectsMoved) {
-				for (FmmlxObject o : selectedObjects) {
-					comm.sendCurrentPosition(o);
-				}
-			}
-			objectsMoved = false;
+			mouseReleasedStandard();
 		}
 		mode = MouseMode.STANDARD;
 		resizeCanvas();
 		redraw();
+	}
+
+	private void mouseReleasedStandard() {
+		if (objectsMoved) {
+			for (FmmlxObject o : selectedObjects) {
+				comm.sendCurrentPosition(o);
+			}
+		}
+		objectsMoved = false;
 	}
 
 	private boolean isLeftClick(MouseEvent e) {
@@ -305,12 +263,64 @@ public class FmmlxDiagram {
 		return null;
 	}
 
+	private void handleLeftClick(MouseEvent e) {
+		Point2D p = scale(e);
+
+		FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
+		if (hitObject != null) {
+			if (e.isControlDown()) {
+				if (selectedObjects.contains(hitObject)) {
+					selectedObjects.remove(hitObject);
+				} else {
+					selectedObjects.add(hitObject);
+				}
+			} else {
+				if (!selectedObjects.contains(hitObject)) {
+					selectedObjects.clear();
+					selectedObjects.add(hitObject);
+				}
+			}
+		} else {
+			deselectAll();
+		}
+	}
+
+	private void handleRightClick(MouseEvent e) {
+		Point2D p = scale(e);
+
+		FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
+		if (hitObject != null) {
+			objectContextMenu = new ObjectContextMenu(hitObject, actions);
+			objectContextMenu.show(scrollerCanvas, Side.LEFT, p.getX(), p.getY());
+		} else {
+			defaultContextMenu.show(scrollerCanvas, Side.LEFT, p.getX(), p.getY());
+		}
+	}
+
+	////////////////////////////////////////////////////////////////////
+
+	private void clearContextMenus() {
+		if (objectContextMenu != null && objectContextMenu.isShowing()) {
+			objectContextMenu.hide();
+		}
+		if (defaultContextMenu != null && defaultContextMenu.isShowing()) {
+			defaultContextMenu.hide();
+		}
+	}
+
 	private void storeLastClick(double x, double y) {
 		lastPoint = new Point2D(x, y);
 	}
 
 	private void storeActualPoint(double x, double y) {
 		actualPoint = new Point2D(x, y);
+	}
+
+	private void setMouseOffset(Point2D p) {
+		for (FmmlxObject o : selectedObjects) {
+			o.mouseMoveOffsetX = p.getX() - o.getX();
+			o.mouseMoveOffsetY = p.getY() - o.getY();
+		}
 	}
 
 
@@ -329,9 +339,7 @@ public class FmmlxDiagram {
 	}
 
 	public void updateDiagram() {
-		new Thread(() -> {
-			fetchDiagramData();
-		}).start();
+		new Thread(this::fetchDiagramData).start();
 	}
 
 	private void handleMultiSelect() {
@@ -357,7 +365,8 @@ public class FmmlxDiagram {
 		return objects.firstElement().id;
 	}
 
-	public void addInstance(int testClassId, String name, Vector<Integer> parents, boolean isAbstract, int x, int y) {
+	public void addInstance(int testClassId, String name, Vector<Integer> parents, boolean isAbstract, int x,
+							int y) {
 		comm.addInstance(testClassId, name, parents, isAbstract, x, y);
 	}
 
