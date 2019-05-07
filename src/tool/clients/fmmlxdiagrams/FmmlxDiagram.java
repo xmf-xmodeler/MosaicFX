@@ -18,7 +18,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
-import tool.clients.diagrams.EdgePainter;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
@@ -134,12 +133,10 @@ public class FmmlxDiagram {
 	public void redraw() {
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
 			// we are on the right Thread already:
-//				checkSize();
 			paintOn(canvas.getGraphicsContext2D(), 0, 0);
 		} else { // create a new Thread
 			CountDownLatch l = new CountDownLatch(1);
 			Platform.runLater(() -> {
-//					checkSize();
 				paintOn(canvas.getGraphicsContext2D(), 0, 0);
 				l.countDown();
 			});
@@ -322,7 +319,6 @@ public class FmmlxDiagram {
 			o.mouseMoveOffsetY = p.getY() - o.getY();
 		}
 	}
-
 
 	public boolean isSelected(FmmlxObject fmmlxObject) {
 		return selectedObjects.contains(fmmlxObject);
