@@ -20,9 +20,9 @@ public class DiagramActions {
 
 	private final double zoomLevel = Math.sqrt(2);
 
-	FmmlxDiagram diagram;
+	private FmmlxDiagram diagram;
 
-	public DiagramActions(FmmlxDiagram diagram) {
+	DiagramActions(FmmlxDiagram diagram) {
 		this.diagram = diagram;
 	}
 
@@ -56,7 +56,7 @@ public class DiagramActions {
 							diagram.updateDiagram();
 							l.countDown();
 						}
-					};
+					}
 				};
 				canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
 			}
@@ -86,7 +86,7 @@ public class DiagramActions {
 					public void handle(MouseEvent e) {
 
 						int x = (int) e.getX();
-						int y = (int) e.getY(); // todo: zoom
+						int y = (int) e.getY();
 
 						if (x > 0 && y > 0) {
 							diagram.addNewInstance(aidResult.getOf(), aidResult.getName(), aidResult.getLevel(),
@@ -98,7 +98,7 @@ public class DiagramActions {
 							diagram.updateDiagram();
 							l.countDown();
 						}
-					};
+					}
 				};
 				canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
 

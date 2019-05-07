@@ -56,9 +56,21 @@ public class FmmlxObject implements CanvasElement{
 		return id;
 	}
 
-	public int getX() { return x;}
+	public int getX() {
+		return x;
+	}
 
-	public int getY() { return y;}
+	public int getY() {
+		return y;
+	}
+
+	public int getRightBorder() {
+		return y + width;
+	}
+
+	public int getBottomBorder() {
+		return x + height;
+	}
 
 	public void setX(int x) {
 		this.x = x;
