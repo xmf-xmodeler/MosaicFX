@@ -47,6 +47,8 @@ public class Edge implements CanvasElement {
 		return false;
 	}
 	
+	
+	
 	public boolean isHit(Point2D p, Double tolerance) {
 		for(int i = 0; i < points.size() - 1; i++) {
 			if(distance(p, points.get(i), points.get(i+1)) < (tolerance==null?DEFAULT_TOLERANCE :tolerance)) {
