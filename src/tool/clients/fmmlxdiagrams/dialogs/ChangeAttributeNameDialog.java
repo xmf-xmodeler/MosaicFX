@@ -9,6 +9,7 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
+import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeAttributeNameDialogResult;
@@ -22,7 +23,7 @@ public class ChangeAttributeNameDialog extends CustomDialog<ChangeAttributeNameD
 	private ComboBox<String> attributeComboBox; 
 	private TextField newAttributeNameTextField;
 	private Vector<FmmlxObject> objects;
-	private ObservableList<String> attributes;
+	private Vector<FmmlxAttribute> attributes;
 	
 	public ChangeAttributeNameDialog(FmmlxDiagram diagram, Integer classID) {
 		super();
@@ -33,7 +34,7 @@ public class ChangeAttributeNameDialog extends CustomDialog<ChangeAttributeNameD
 		
 		for (FmmlxObject object : objects) {
 			if (object.getId()==classID) {
-				this.attributes = (ObservableList<String>) object.getAttributes();
+				this.attributes = object.getAttributes();
 			}
 		}
 		
@@ -59,7 +60,7 @@ public class ChangeAttributeNameDialog extends CustomDialog<ChangeAttributeNameD
 	
 	private void addElementToGrid(int classID) {
 		attributeNameLabel = new Label("choose Attribute");
-		attributeComboBox = new ComboBox<String>(attributes);
+		attributeComboBox = new ComboBox<String>();
 		
 		newAttributeNameLabel = new Label("New Name");
 		newAttributeNameTextField = new TextField();

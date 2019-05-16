@@ -27,7 +27,7 @@ public class EditAttributDialog extends CustomDialog<MetaClassDialogResult> {
 	private Label newNameLabel;
 	private Label newValueLabel;
 	private ObservableList<String> classList;
-	private ObservableList<String> attributeList;
+	private Vector<FmmlxAttribute> attributeList;
 	private ComboBox<String> classComboBox;
 	private ComboBox<String> selectAttributeComboBox;
 	private Label currentValue;
@@ -107,7 +107,7 @@ public class EditAttributDialog extends CustomDialog<MetaClassDialogResult> {
 		newValueLabel = new Label("new Value");
 		
 		classComboBox = new ComboBox<>(classList);
-		selectAttributeComboBox = new ComboBox<>(attributeList);
+		selectAttributeComboBox = new ComboBox<>();
 		currentValue = new Label(getCurrentValue());
 		newNameTextField = new TextField();
 		newValueTextField = new TextField();

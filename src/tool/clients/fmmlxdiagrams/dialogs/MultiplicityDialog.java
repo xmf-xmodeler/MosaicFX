@@ -11,8 +11,10 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
+import tool.clients.fmmlxdiagrams.Multiplicity;
 
 public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 
@@ -28,9 +30,12 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 	List<String> minArray;
 	List<String> maxArray;
 
-	public MultiplicityDialog() {
+	Multiplicity oldMultiplicity;
+	
+	public MultiplicityDialog(Multiplicity oldMultiplicity) {
 		super();
 
+		this.oldMultiplicity = oldMultiplicity;
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.setHeaderText("Add / Edit Multiplicity");
 
@@ -69,6 +74,7 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 		String[] min = new String[] { "0", "1" };
 		minArray = Arrays.asList(min);
 		ObservableList<String> minList = FXCollections.observableArrayList(minArray);
+//		minList.setValue(oldMultiplicity.min);
 
 		String[] max = new String[] { "1", "unlimited" };
 		maxArray = Arrays.asList(max);

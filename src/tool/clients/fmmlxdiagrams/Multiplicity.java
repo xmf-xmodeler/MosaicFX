@@ -1,42 +1,46 @@
 package tool.clients.fmmlxdiagrams;
 
 public class Multiplicity {
+	public final int min;
+	public final int max;
+	public final boolean upperLimit;
+	public final boolean ordered;
+	public final boolean duplicates;
 	
-	private int min;
-	private boolean unlimited;
-	private boolean sorted;
-	private boolean duplicate;
-	
-	public int getMin() {
-		return min;
-	}
-	public void setMin(int min) {
+	/**
+	 * @param min
+	 * @param max
+	 * @param upperLimit: false if unlimited
+	 * @param ordered: true if order matters
+	 * @param duplicates: true if duplicates are allowed
+	 */
+	public Multiplicity(int min, int max, boolean upperLimit, boolean ordered, boolean duplicates) {
+		super();
 		this.min = min;
-	}
-	public int getMax() {
-		return max;
-	}
-	public void setMax(int max) {
 		this.max = max;
+		this.upperLimit = upperLimit;
+		this.ordered = ordered;
+		this.duplicates = duplicates;
 	}
-	public boolean isUnlimited() {
-		return unlimited;
+	
+	public Multiplicity(Multiplicity old) {
+		super();
+		this.min = old.min;
+		this.max = old.max;
+		this.upperLimit = old.upperLimit;
+		this.ordered = old.ordered;
+		this.duplicates = old.duplicates;
 	}
-	public void setUnlimited(boolean unlimited) {
-		this.unlimited = unlimited;
-	}
-	public boolean isSorted() {
-		return sorted;
-	}
-	public void setSorted(boolean sorted) {
-		this.sorted = sorted;
-	}
-	public boolean hasDuplicate() {
-		return duplicate;
-	}
-	public void setDuplicate(boolean duplicate) {
-		this.duplicate = duplicate;
-	}
-	private int max;
+	
+	public static Multiplicity OPTIONAL = new Multiplicity(0,1,true,true,true);	
+	public static Multiplicity MANDATORY = new Multiplicity(1,1,true,true,true);
 
+	@Override
+	public String toString() {
+		return (duplicates?"{":"") + (ordered?"$":"") + min + ".." + (upperLimit?max:"*") + (duplicates?"}":"");
+	}
+	
+	
+	 
 }
+

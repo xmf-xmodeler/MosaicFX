@@ -195,7 +195,7 @@ public class FmmlxDiagramCommunicator {
 
 	public void sendCurrentPosition(FmmlxObject o) {
 		Vector<Object> response = xmfRequest(handler, "sendNewPosition",
-				new Value[] { new Value(o.id), new Value(o.x), new Value(o.y) });
+				new Value[] { new Value(o.id), new Value(o.getX()), new Value(o.getY()) });
 	}
 
 	public void addMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
@@ -252,7 +252,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) { 
-		Value[] multiplicity = new Value[] {new Value(multi.getMin()),new Value(multi.getMax()),new Value(multi.isUnlimited()),new Value(multi.isSorted()),new Value(multi.hasDuplicate())}; 
+		Value[] multiplicity = new Value[] {new Value(multi.min),new Value(multi.max),new Value(multi.upperLimit),new Value(multi.ordered),new Value(multi.duplicates)}; 
 		Value[] message = new Value[] {new Value(classID),new Value(name),new Value(level),new Value(type), new Value(multiplicity)};
 		WorkbenchClient.theClient().send(handler, "addAttribute", message);
 		

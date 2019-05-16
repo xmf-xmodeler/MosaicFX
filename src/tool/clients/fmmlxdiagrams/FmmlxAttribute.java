@@ -1,7 +1,7 @@
 package tool.clients.fmmlxdiagrams;
 
 public class FmmlxAttribute {
-	
+
 	String name;
 	int level;
 	String type;
@@ -14,6 +14,7 @@ public class FmmlxAttribute {
 	public void setType(String type) {
 		this.type = type;
 	}
+
 
 	public String getName() {
 		return name;

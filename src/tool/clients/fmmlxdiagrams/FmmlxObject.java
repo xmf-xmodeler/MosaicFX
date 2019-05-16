@@ -10,14 +10,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 
-public class FmmlxObject {
+public class FmmlxObject implements CanvasElement{
 
 	private String[] levelColors = {"#8C8C8C", "#FFFFFF", "#000000", "#3111DB", "#F2041D", "#2E9500"};
 
 	private String name;
 	int id;
-	int x;
-	int y;
+	private int x;
+	private int y;
 	int level;
 	int of;
 	Vector<Integer> parents;
@@ -59,8 +59,32 @@ public class FmmlxObject {
 		return id;
 	}
 
-	public ObservableList<String> getAttributes() {
-		return FXCollections.observableList(new ArrayList(attributes));
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public int getRightBorder() {
+		return y + width;
+	}
+
+	public int getBottomBorder() {
+		return x + height;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
+	public Vector<FmmlxAttribute> getAttributes() {
+		return attributes;
 	}
 
 	public void setAttributes(Vector<FmmlxAttribute> attributes) {
