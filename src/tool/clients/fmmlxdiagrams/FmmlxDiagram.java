@@ -15,6 +15,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Affine;
@@ -88,6 +89,7 @@ public class FmmlxDiagram {
 		canvas.setOnMousePressed(this::mousePressed);
 		canvas.setOnMouseDragged(this::mouseDragged);
 		canvas.setOnMouseReleased(this::mouseReleased);
+		canvas.addEventFilter(ScrollEvent.ANY, this::handleScroll);
 
 		new Thread(this::fetchDiagramData).start();
 
@@ -324,6 +326,17 @@ public class FmmlxDiagram {
 		} else {
 			activeContextMenu = new DefaultContextMenu(actions);
 			activeContextMenu.show(scrollerCanvas, Side.LEFT, p.getX(), p.getY());
+		}
+	}
+
+	private void handleScroll(ScrollEvent e) {
+		if(e.isControlDown()) {
+			double delta = e.getDeltaY();
+			if (delta > 0) {
+				actions.zoomIn();
+			} else {
+				actions.zoomOut();
+			}
 		}
 	}
 
