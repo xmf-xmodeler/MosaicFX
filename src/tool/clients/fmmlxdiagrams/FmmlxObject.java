@@ -300,4 +300,14 @@ public class FmmlxObject implements CanvasElement, Selectable{
 	public ObjectContextMenu getContextMenu(DiagramActions actions) {
 		return new ObjectContextMenu(this, actions);
 	}
+
+	@Override
+	public void moveTo(double x, double y, FmmlxDiagram diagram) {
+		setX((int) x);
+		setY((int) y);
+		for(Edge edge : diagram.getEdges()) {
+			if(edge.isStartNode(this)) edge.moveStartPoint();
+			if(edge.isEndNode(this)) edge.moveEndPoint();
+		}
+	}
 }

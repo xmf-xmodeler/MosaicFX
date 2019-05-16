@@ -210,7 +210,10 @@ public class FmmlxDiagram {
 			redraw();
 		}
 		if (mode == MouseMode.STANDARD) {
-//			if(selectedObjects.size() == 1)
+			if(selectedObjects.size() == 1 && selectedObjects.firstElement() instanceof Edge) {
+				((Edge) selectedObjects.firstElement()).setPointAtToBeMoved(p);
+				
+			}
 			mouseDraggedStandard(p);
 		}
 	}
@@ -219,8 +222,11 @@ public class FmmlxDiagram {
 //		if (hitObject != null) {
 			for (Selectable s : selectedObjects) if(s instanceof FmmlxObject) {
 				FmmlxObject o = (FmmlxObject) s;
-				o.setX((int) (p.getX() - o.mouseMoveOffsetX));
-				o.setY((int) (p.getY() - o.mouseMoveOffsetY));
+//				o.setX((int) (p.getX() - o.mouseMoveOffsetX));
+//				o.setY((int) (p.getY() - o.mouseMoveOffsetY));
+				s.moveTo(p.getX() - o.mouseMoveOffsetX, p.getY() - o.mouseMoveOffsetY, this);
+			} else { // must be edge
+				s.moveTo(p.getX(), p.getY(), this);
 			}
 			objectsMoved = true;
 			redraw();
@@ -238,6 +244,7 @@ public class FmmlxDiagram {
 			mouseReleasedStandard();
 		}
 		mode = MouseMode.STANDARD;
+		for(Edge edge : edges) {edge.dropPoint();}
 		resizeCanvas();
 		redraw();
 	}
@@ -269,8 +276,10 @@ public class FmmlxDiagram {
 			if (o.isHit(x, y))
 				return o;
 		for (Edge e : edges)
+			{ System.err.println("Checking Edge " + e);
 			if (e.isHit(x, y))
 				return e;
+			}
 		return null;
 	}
 
@@ -414,5 +423,9 @@ public class FmmlxDiagram {
 		transformFX = new Affine();
 		transformFX.appendScale(zoom, zoom);
 		resizeCanvas();
+	}
+
+	public Vector<Edge> getEdges() {
+		return edges;
 	}
 }
