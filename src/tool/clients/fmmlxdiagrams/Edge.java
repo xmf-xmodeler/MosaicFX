@@ -4,9 +4,11 @@ import java.util.Vector;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
+import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
-public class Edge implements CanvasElement {
+public class Edge implements CanvasElement, Selectable {
 
 	private Vector<Point2D> points = new Vector<>();
 	private FmmlxObject startNode;
@@ -25,7 +27,7 @@ public class Edge implements CanvasElement {
 	@Override
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
 		for(EdgeLabel label : labels) label.paintOn(g, xOffset, yOffset, fmmlxDiagram);
-		g.setStroke(Color.BLACK);
+		g.setStroke(fmmlxDiagram.isSelected(this)?Color.RED:Color.BLACK);
 //		g.setLineDashes(dashes);
 		g.setLineWidth(isSelected()?3:1);
 		double[] xPoints = new double[points.size()+2];
@@ -48,7 +50,9 @@ public class Edge implements CanvasElement {
 	}
 	
 	
-	
+	public boolean isHit(double x, double y) {
+		return isHit(new Point2D(x, y), 5.);
+	}
 	public boolean isHit(Point2D p, Double tolerance) {
 		for(int i = 0; i < points.size() - 1; i++) {
 			if(distance(p, points.get(i), points.get(i+1)) < (tolerance==null?DEFAULT_TOLERANCE :tolerance)) {
@@ -70,6 +74,13 @@ public class Edge implements CanvasElement {
 	public Point2D getAnchorPosition(EdgeLabel.Anchor anchor) {
 		return null;
 	}
+
+	@Override
+	public ContextMenu getContextMenu(DiagramActions actions) {
+		return new DefaultContextMenu(actions); //temporary
+	}
+
+
 	
 
 }

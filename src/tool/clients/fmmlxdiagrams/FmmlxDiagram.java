@@ -10,6 +10,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseButton;
@@ -18,7 +19,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
-import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
 public class FmmlxDiagram {
@@ -33,9 +33,10 @@ public class FmmlxDiagram {
 	private Vector<FmmlxObject> objects = new Vector<>();
 	private Vector<Edge> edges = new Vector<>();
 
-	private transient Vector<FmmlxObject> selectedObjects = new Vector<>();
-	private DefaultContextMenu defaultContextMenu;
-	private ObjectContextMenu objectContextMenu;
+	private transient Vector<Selectable> selectedObjects = new Vector<>();
+//	private DefaultContextMenu defaultContextMenu;
+//	private ObjectContextMenu objectContextMenu;
+	private ContextMenu activeContextMenu;
 	private DiagramActions actions;
 	private transient boolean objectsMoved = false;
 	private Point2D lastPoint;
@@ -82,7 +83,7 @@ public class FmmlxDiagram {
 		mainView.getItems().addAll(palette, scrollerCanvas);
 		transformFX = new Affine();
 
-		defaultContextMenu = new DefaultContextMenu(actions);
+//		defaultContextMenu = new DefaultContextMenu(actions);
 
 		canvas.setOnMousePressed(this::mousePressed);
 		canvas.setOnMouseDragged(this::mouseDragged);
@@ -191,7 +192,7 @@ public class FmmlxDiagram {
 			selectedObjects.addAll(objects);
 		}
 		if (isLeftClick(e)) {
-			handleLeftClick(e);
+			handleLeftPressed(e);
 		}
 		if (isRightClick(e)) {
 			handleRightClick(e);
@@ -202,29 +203,31 @@ public class FmmlxDiagram {
 
 	private void mouseDragged(MouseEvent e) {
 		Point2D p = scale(e);
-		FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
+//		FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
 
 		if (mode == MouseMode.MULTISELECT) {
 			storeActualPoint(p.getX(), p.getY());
 			redraw();
 		}
 		if (mode == MouseMode.STANDARD) {
-			mouseDraggedStandard(p, hitObject);
+//			if(selectedObjects.size() == 1)
+			mouseDraggedStandard(p);
 		}
 	}
 
-	private void mouseDraggedStandard(Point2D p, FmmlxObject hitObject) {
-		if (hitObject != null) {
-			for (FmmlxObject o : selectedObjects) {
+	private void mouseDraggedStandard(Point2D p) {
+//		if (hitObject != null) {
+			for (Selectable s : selectedObjects) if(s instanceof FmmlxObject) {
+				FmmlxObject o = (FmmlxObject) s;
 				o.setX((int) (p.getX() - o.mouseMoveOffsetX));
 				o.setY((int) (p.getY() - o.mouseMoveOffsetY));
 			}
 			objectsMoved = true;
 			redraw();
-		} else {
-			mode = MouseMode.MULTISELECT;
-			storeLastClick(p.getX(), p.getY());
-		}
+//		} else {
+//			mode = MouseMode.MULTISELECT;
+//			storeLastClick(p.getX(), p.getY());
+//		}
 	}
 
 	private void mouseReleased(MouseEvent e) {
@@ -241,7 +244,8 @@ public class FmmlxDiagram {
 
 	private void mouseReleasedStandard() {
 		if (objectsMoved) {
-			for (FmmlxObject o : selectedObjects) {
+			for (Selectable s : selectedObjects) if(s instanceof FmmlxObject) {
+				FmmlxObject o = (FmmlxObject) s;
 				comm.sendCurrentPosition(o);
 			}
 		}
@@ -260,17 +264,21 @@ public class FmmlxDiagram {
 		return e.getButton() == MouseButton.MIDDLE;
 	}
 
-	private FmmlxObject getElementAt(double x, double y) {
+	private Selectable getElementAt(double x, double y) {
 		for (FmmlxObject o : objects)
 			if (o.isHit(x, y))
 				return o;
+		for (Edge e : edges)
+			if (e.isHit(x, y))
+				return e;
 		return null;
 	}
 
-	private void handleLeftClick(MouseEvent e) {
+	private void handleLeftPressed(MouseEvent e) {
 		Point2D p = scale(e);
 
-		FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
+//		FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
+		Selectable hitObject = getElementAt(p.getX(), p.getY());
 		if (hitObject != null) {
 			if (e.isControlDown()) {
 				if (selectedObjects.contains(hitObject)) {
@@ -287,28 +295,34 @@ public class FmmlxDiagram {
 		} else {
 			deselectAll();
 		}
+		
+		if(selectedObjects.contains(hitObject)) {
+			mode = MouseMode.STANDARD;
+		} else{
+			mode = MouseMode.MULTISELECT;
+			storeLastClick(p.getX(), p.getY());
+			storeActualPoint(p.getX(), p.getY());
+		}
 	}
 
 	private void handleRightClick(MouseEvent e) {
 		Point2D p = scale(e);
 
-		FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
+		Selectable hitObject = getElementAt(p.getX(), p.getY());
 		if (hitObject != null) {
-			objectContextMenu = new ObjectContextMenu(hitObject, actions);
-			objectContextMenu.show(scrollerCanvas, Side.LEFT, p.getX(), p.getY());
+			activeContextMenu = hitObject.getContextMenu(actions);
+			activeContextMenu.show(scrollerCanvas, Side.LEFT, p.getX(), p.getY());
 		} else {
-			defaultContextMenu.show(scrollerCanvas, Side.LEFT, p.getX(), p.getY());
+			activeContextMenu = new DefaultContextMenu(actions);
+			activeContextMenu.show(scrollerCanvas, Side.LEFT, p.getX(), p.getY());
 		}
 	}
 
 	////////////////////////////////////////////////////////////////////
 
 	private void clearContextMenus() {
-		if (objectContextMenu != null && objectContextMenu.isShowing()) {
-			objectContextMenu.hide();
-		}
-		if (defaultContextMenu != null && defaultContextMenu.isShowing()) {
-			defaultContextMenu.hide();
+		if (activeContextMenu != null && activeContextMenu.isShowing()) {
+			activeContextMenu.hide();
 		}
 	}
 
@@ -321,14 +335,15 @@ public class FmmlxDiagram {
 	}
 
 	private void setMouseOffset(Point2D p) {
-		for (FmmlxObject o : selectedObjects) {
+		for (Selectable s : selectedObjects) if(s instanceof FmmlxObject) {
+			FmmlxObject o = (FmmlxObject) s;
 			o.mouseMoveOffsetX = p.getX() - o.getX();
 			o.mouseMoveOffsetY = p.getY() - o.getY();
 		}
 	}
 
-	public boolean isSelected(FmmlxObject fmmlxObject) {
-		return selectedObjects.contains(fmmlxObject);
+	public boolean isSelected(Selectable element) {
+		return selectedObjects.contains(element);
 	}
 
 	private void deselectAll() {
