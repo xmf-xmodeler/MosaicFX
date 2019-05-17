@@ -41,6 +41,14 @@ public class Edge implements CanvasElement, Selectable {
 //		yPoints[points.size()+1] = endNode.getY() + endNode.height / 2;
 		
 		g.strokePolyline(xPoints, yPoints, xPoints.length);
+		
+		if(pointToBeMoved != -1) {
+			final double R = 1.5;
+			g.fillOval(points.get(pointToBeMoved).getX()-R, 
+					   points.get(pointToBeMoved).getY()-R, 
+					   2 * R, 
+					   2 * R);
+		}
 	}
 
 	private boolean isSelected() {
@@ -106,7 +114,7 @@ public class Edge implements CanvasElement, Selectable {
 		points.setElementAt(endPoint, points.size()-1);
 	}
 
-	private transient int pointToBeMoved;
+	private transient int pointToBeMoved = -1;
 	
 	public void setPointAtToBeMoved(Point2D mousePoint) {
 		// An edge has been dragged on at Point p.
@@ -144,8 +152,14 @@ public class Edge implements CanvasElement, Selectable {
 	}
 
 	public void dropPoint() {
-		pointToBeMoved = -1;
+		if(pointToBeMoved != -1) {
 		// if point very close to other point, remove it.
+			if(distance(points.get(pointToBeMoved), points.get(pointToBeMoved + 1)) < DEFAULT_TOLERANCE 
+		    || distance(points.get(pointToBeMoved), points.get(pointToBeMoved - 1)) < DEFAULT_TOLERANCE) {
+				points.remove(pointToBeMoved);
+		}}
+		// in any case no point to be moved anymore
+		pointToBeMoved = -1;
 	}
 
 }
