@@ -1,13 +1,13 @@
 package tool.clients.fmmlxdiagrams;
 
-import java.util.Vector;
-
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 
-public class FmmlxObject implements CanvasElement{
+import java.util.Vector;
+
+public class FmmlxObject implements CanvasElement {
 
 	private String[] levelColors = {"#8C8C8C", "#FFFFFF", "#000000", "#3111DB", "#F2041D", "#2E9500"};
 
@@ -38,6 +38,7 @@ public class FmmlxObject implements CanvasElement{
 	static int gap = 5;
 
 	Vector<FmmlxSlot> slots;
+
 	Vector<FmmlxOperation> operations;
 	Vector<FmmlxOperationValue> operationValues;
 
@@ -86,6 +87,10 @@ public class FmmlxObject implements CanvasElement{
 
 	public void setAttributes(Vector<FmmlxAttribute> attributes) {
 		this.attributes = attributes;
+	}
+
+	public Vector<FmmlxOperation> getOperations() {
+		return operations;
 	}
 
 	public FmmlxObject(Integer id, String name, int level, int of, Vector<Integer> parents, Integer lastKnownX, Integer lastKnownY) {

@@ -1,9 +1,5 @@
 package tool.clients.fmmlxdiagrams;
 
-import java.util.Collections;
-import java.util.Vector;
-import java.util.concurrent.CountDownLatch;
-
 import javafx.application.Platform;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
@@ -19,8 +15,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
-import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
+import org.jetbrains.annotations.NotNull;
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
+import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
+
+import java.util.Collections;
+import java.util.Vector;
+import java.util.concurrent.CountDownLatch;
 
 public class FmmlxDiagram {
 
@@ -107,7 +109,7 @@ public class FmmlxDiagram {
 //			comm.fetchAttributes(o);
 			o.fetchData(comm);
 		}
-		if(objects.size() >= 2) {
+		if (objects.size() >= 2) {
 			Edge e = new Edge(objects.get(0), objects.get(1));
 			edges.add(e);
 		}
@@ -304,7 +306,7 @@ public class FmmlxDiagram {
 	}
 
 	private void handleScroll(ScrollEvent e) {
-		if(e.isControlDown()) {
+		if (e.isControlDown()) {
 			double delta = e.getDeltaY();
 			if (delta > 0) {
 				actions.zoomIn();
@@ -373,24 +375,6 @@ public class FmmlxDiagram {
 		}
 	}
 
-	public void addMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
-		comm.addMetaClass(name, level, parents, isAbstract, x, y);
-	}
-
-	public int getTestClassId() {
-		return objects.firstElement().id;
-	}
-
-	public void addInstance(int testClassId, String name, Vector<Integer> parents, boolean isAbstract, int x,
-							int y) {
-		comm.addInstance(testClassId, name, parents, isAbstract, x, y);
-	}
-
-	public void addNewInstance(int of, String name, int level, Vector<String> parents, boolean isAbstract, int x,
-							   int y) {
-		comm.addNewInstance(of, name, level, parents, isAbstract, x, y);
-	}
-
 	public Point2D scale(MouseEvent event) {
 		Affine i;
 		try {
@@ -412,5 +396,28 @@ public class FmmlxDiagram {
 		transformFX = new Affine();
 		transformFX.appendScale(zoom, zoom);
 		resizeCanvas();
+	}
+
+	// Messages DiagramActions to XMF
+
+	public void addMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
+		comm.addMetaClass(name, level, parents, isAbstract, x, y);
+	}
+
+	public void addNewInstance(int of, String name, int level, Vector<String> parents, boolean isAbstract, int x,
+							   int y) {
+		comm.addNewInstance(of, name, level, parents, isAbstract, x, y);
+	}
+
+	public void changeClassName(@NotNull ChangeNameDialogResult res) {
+		comm.changeClassName(res.getObjectId(), res.getNewName());
+	}
+
+	public void changeOperationName(@NotNull ChangeNameDialogResult res) {
+		comm.changeOperationName(res.getObjectId(), res.getOldName(), res.getNewName());
+	}
+
+	public void changeAttributeName(@NotNull ChangeNameDialogResult res) {
+		comm.changeAttributeName(res.getObjectId(), res.getOldName(), res.getNewName());
 	}
 }

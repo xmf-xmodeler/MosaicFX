@@ -8,10 +8,12 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 public class ObjectContextMenu extends ContextMenu {
 
+	private final FmmlxObject object;
 	private DiagramActions actions;
 
 	public ObjectContextMenu(FmmlxObject object, DiagramActions actions) {
 		this.actions = actions;
+		this.object = object;
 		setAutoHide(true);
 
 		MenuItem addInstanceItem = new MenuItem("Add instance");
@@ -19,7 +21,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> System.out.println("OCM: Remove object called"));
 		MenuItem changeNameItem = new MenuItem("Change name");
-		changeNameItem.setOnAction(e -> System.out.println("OCM: Change name called!"));
+		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, "class"));
 		MenuItem changeOfItem = new MenuItem("Change of");
 		changeOfItem.setOnAction(e -> System.out.println("OCM: Change of called"));
 		MenuItem changeParentItem = new MenuItem("Change parent");
@@ -43,9 +45,9 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem addItem = new MenuItem("Add");
 		addItem.setOnAction(e -> actions.addAttributeDialog());
 		MenuItem removeItem = new MenuItem("Remove");
-		removeItem.setOnAction(e -> actions.removeAttributDialog());
+		removeItem.setOnAction(e -> actions.removeAttributeDialog());
 		MenuItem changeNameItem = new MenuItem("Change name");
-		changeNameItem.setOnAction(e -> System.out.println("OCM: change attribute name called"));
+		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, "attribute"));
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
 		changeOwnerItem.setOnAction(e -> System.out.println("OCM: change attribute owner called"));
 		MenuItem changeTypeItem = new MenuItem("Change type");
@@ -87,13 +89,13 @@ public class ObjectContextMenu extends ContextMenu {
 
 	private Menu createOperationSubMenu() {
 		Menu operationMenu = new Menu("Operation");
-		
+
 		MenuItem addItem = new MenuItem("Add");
 		addItem.setOnAction(e -> System.out.println("OCM: add operation called"));
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> System.out.println("OCM: remove operation called"));
 		MenuItem changeNameItem = new MenuItem("Change name");
-		changeNameItem.setOnAction(e -> System.out.println("OCM: change operation name called"));
+		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, "operation"));
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
 		changeOwnerItem.setOnAction(e -> System.out.println("OCM: change operation owner called"));
 		MenuItem changeTypeItem = new MenuItem("Change type");
@@ -120,13 +122,13 @@ public class ObjectContextMenu extends ContextMenu {
 		changeValueItem.setOnAction(e -> System.out.println("OCM: change slot value called"));
 
 		slotMenu.getItems().addAll(addValueItem, removeValueItem, changeValueItem);
-			
+
 		return slotMenu;
 	}
 
 	private Menu createAssociationInstanceSubMenu() {
 		Menu associationInstanceMenu = new Menu("Association instance");
-		
+
 		MenuItem addValueItem = new MenuItem("Add instance");
 		addValueItem.setOnAction(e -> System.out.println("OCM: add association instance value called"));
 		MenuItem removeValueItem = new MenuItem("Remove instance");
