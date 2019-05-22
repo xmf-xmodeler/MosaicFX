@@ -15,7 +15,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
-import org.jetbrains.annotations.NotNull;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
@@ -409,15 +408,15 @@ public class FmmlxDiagram {
 		comm.addNewInstance(of, name, level, parents, isAbstract, x, y);
 	}
 
-	public void changeClassName(@NotNull ChangeNameDialogResult res) {
+	public void changeClassName(ChangeNameDialogResult res) {
 		comm.changeClassName(res.getObjectId(), res.getNewName());
 	}
 
-	public void changeOperationName(@NotNull ChangeNameDialogResult res) {
+	public void changeOperationName(ChangeNameDialogResult res) {
 		comm.changeOperationName(res.getObjectId(), res.getOldName(), res.getNewName());
 	}
 
-	public void changeAttributeName(@NotNull ChangeNameDialogResult res) {
+	public void changeAttributeName(ChangeNameDialogResult res) {
 		comm.changeAttributeName(res.getObjectId(), res.getOldName(), res.getNewName());
 	}
 }

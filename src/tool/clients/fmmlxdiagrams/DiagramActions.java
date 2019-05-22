@@ -177,7 +177,7 @@ public class DiagramActions {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			ChangeNameDialog dlg = new ChangeNameDialog(object, type);
+			ChangeNameDialog dlg = new ChangeNameDialog(diagram, object, type);
 			Optional<ChangeNameDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {

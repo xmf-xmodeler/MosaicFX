@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams.dialogs;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
@@ -13,18 +14,22 @@ import java.util.Vector;
 public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 
 	private final String type;
-
+	private final FmmlxDiagram diagram;
 	private FmmlxObject object;
 
 	private TextField classNameTextfield;
 	private ComboBox<String> comboBox;
 	private TextField objectNameTextfield;
 
+	private Vector<FmmlxAttribute> attributes;
+	private Vector<FmmlxOperation> operations;
+
 	// Used for combobox -> displays strings
 	private ArrayList<String> list;
 
-	public ChangeNameDialog(FmmlxObject object, String type) {
+	public ChangeNameDialog(final FmmlxDiagram diagram, FmmlxObject object, String type) {
 		super();
+		this.diagram = diagram;
 		this.type = type;
 		this.object = object;
 
@@ -42,11 +47,9 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				//TODO: old class name should be saved
 				if (type.equals("class")) {
 					return new ChangeNameDialogResult(type, object, classNameTextfield.getText());
 				} else if (type.equals("attribute") || type.equals("operation")) {
-					// TODO: set result for attribute and operation
 					return new ChangeNameDialogResult(type, object, comboBox.getSelectionModel().getSelectedItem(), objectNameTextfield.getText());
 				}
 			}
@@ -91,7 +94,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 
 	private void changeAttribute() {
 		// TODO: Add association
-		Vector<FmmlxAttribute> attributes = object.getAttributes();
+		attributes = object.getAttributes();
 		for (FmmlxAttribute att : attributes) {
 			list.add(att.getName());
 		}
@@ -99,7 +102,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	}
 
 	private void changeOperation() {
-		Vector<FmmlxOperation> operations = object.getOperations();
+		operations = object.getOperations();
 		for (FmmlxOperation op : operations) {
 			list.add(op.getName());
 		}
@@ -125,7 +128,56 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		grid.add(objectNameTextfield, 1, 2);
 	}
 
+	/*
+	 * Validation of user input -> check if new name is already used
+	 */
+
 	private boolean validateInput() {
+		switch (type) {
+			case "class":
+				return validateClassName();
+			case "attribute":
+				return validateAttributeName();
+			case "operation":
+				return validateOperationName();
+		}
 		return true;
+	}
+
+	private boolean validateClassName() {
+		String newName = classNameTextfield.getText();
+		for (FmmlxObject object : diagram.getObjects()) {
+			if (object.getName().equals(newName)) {
+				showNameUsedError();
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean validateOperationName() {
+		String newName = objectNameTextfield.getText();
+		for (FmmlxOperation operation : operations) {
+			if (operation.getName().equals(newName)) {
+				showNameUsedError();
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean validateAttributeName() {
+		String newName = objectNameTextfield.getText();
+		for (FmmlxAttribute attribute : attributes) {
+			if (attribute.getName().equals(newName)) {
+				showNameUsedError();
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private void showNameUsedError() {
+		errorLabel.setText("Name already used");
 	}
 }

@@ -138,7 +138,7 @@ public class FmmlxDiagramCommunicator {
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxOperation> result = new Vector<>();
 		result.add(new FmmlxOperation()); // Added for test purposes
-//        System.err.println("operations: " + response0);
+//        System.err.println("operations: " + response0);y
 		return result;
 	}
 
