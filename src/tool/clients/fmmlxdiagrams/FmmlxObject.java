@@ -9,8 +9,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
+import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 
-public class FmmlxObject implements CanvasElement{
+public class FmmlxObject implements CanvasElement, Selectable{
 
 	private String[] levelColors = {"#8C8C8C", "#FFFFFF", "#000000", "#3111DB", "#F2041D", "#2E9500"};
 
@@ -299,5 +300,20 @@ public class FmmlxObject implements CanvasElement{
 
 	public String getColor() {
 		return levelColors[level];
+	}
+
+	@Override
+	public ObjectContextMenu getContextMenu(DiagramActions actions) {
+		return new ObjectContextMenu(this, actions);
+	}
+
+	@Override
+	public void moveTo(double x, double y, FmmlxDiagram diagram) {
+		setX((int) x);
+		setY((int) y);
+		for(Edge edge : diagram.getEdges()) {
+			if(edge.isStartNode(this)) edge.moveStartPoint();
+			if(edge.isEndNode(this)) edge.moveEndPoint();
+		}
 	}
 }
