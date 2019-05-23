@@ -5,6 +5,8 @@ import javafx.concurrent.Worker;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.web.WebView;
@@ -13,6 +15,8 @@ import tool.helper.IconGenerator;
 import xos.Message;
 import xos.Value;
 
+import java.awt.Desktop;
+import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 
 public class WebBrowser {
@@ -124,6 +128,10 @@ public class WebBrowser {
             if (newLocation.contains("http://snippet/")) {
                 String replaced = newLocation.replace("http://snippet/", "snippet:/");
                 setUrl(replaced);
+            } else if (newLocation.contains("http://external/")) {
+                String replaced = newLocation.replace("http://external/", "http://");
+                openExternalBrowser(replaced);
+                setUrl(oldLocation); //TODO: maybe better solution, to not reload current page
             } else {
                 locationChanged(webView.getEngine().getLocation(), urlField.getText());
             }
@@ -196,6 +204,16 @@ public class WebBrowser {
         urlField.setText(newLocation);
         if ( newLocation == null || newLocation.isEmpty() || newLocation.equals("about:blank")) return;
         if (!newLocation.equals(oldLocation)) sendUrlRequest(newLocation);
+    }
+
+    private void openExternalBrowser(String url) {
+        try {
+            URI uri = new URI(url);
+//            System.err.println("openExternalBrowser: " + url);
+            Desktop.getDesktop().browse(uri);
+        } catch (Exception e) {
+            //TODO: handle error
+        }
     }
 
     //xos
