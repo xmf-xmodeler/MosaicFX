@@ -43,6 +43,8 @@ public class WebBrowser {
     }
 
     protected void setUrl(String url) {
+//        System.err.println(url);
+
         if (startUrl != null) { url = startUrl; startUrl = null; }
         if (url != null && !url.isEmpty()) { //&&isURL(url) TODO: this doesnt work with strings that contain an html doc, why was it there in the first plac?
             if (webView != null) {
