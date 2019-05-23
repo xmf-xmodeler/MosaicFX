@@ -106,19 +106,41 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
+<<<<<<< HEAD
 	public Vector<FmmlxAttribute> fetchAttributes(String className) {
 		Vector<Object> response = xmfRequest(handler, "getOwnAttributes", new Value[]{new Value(className)});
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxAttribute> result = new Vector<>();
 //		System.err.println(response0);
 		for (Object o : response0) {
+=======
+	public Vector<Vector<FmmlxAttribute>> fetchAttributes(String className) {
+		Vector<Object> response = xmfRequest(handler, "getAllAttributes", new Value[] { new Value(className) });
+		Vector<Object> twoLists = (Vector<Object>) (response.get(0));
+		Vector<FmmlxAttribute> resultOwn = new Vector<>();
+		Vector<FmmlxAttribute> resultOther = new Vector<>();
+
+		Vector<Object> ownAttList = (Vector<Object>) twoLists.get(0);
+		Vector<Object> otherAttList = (Vector<Object>) twoLists.get(1);
+		for (Object o : ownAttList) {
+>>>>>>> 00ed574c3592b82bf988318cefc6237238df321f
 			Vector<Object> attInfo = (Vector<Object>) o;
 //			System.err.println("Attribute " + o + " found");
 			FmmlxAttribute object = new FmmlxAttribute((String) attInfo.get(0), (Integer) attInfo.get(2),
-					(String) attInfo.get(1));
-			result.add(object);
+					(String) attInfo.get(1), (String) attInfo.get(3));
+			resultOwn.add(object);
 		}
-		result.add(new FmmlxAttribute("att0", 1, "Integer"));
+		for (Object o : otherAttList) {
+			Vector<Object> attInfo = (Vector<Object>) o;
+//			System.err.println("Attribute " + o + " found");
+			FmmlxAttribute object = new FmmlxAttribute((String) attInfo.get(0), (Integer) attInfo.get(2),
+					(String) attInfo.get(1), (String) attInfo.get(3));
+			resultOther.add(object);
+		}
+//		result.add(new FmmlxAttribute("att0", 1, "Integer"));
+		Vector<Vector<FmmlxAttribute>> result = new Vector<>();
+		result.addElement(resultOwn);
+		result.addElement(resultOther);
 		return result;
 	}
 

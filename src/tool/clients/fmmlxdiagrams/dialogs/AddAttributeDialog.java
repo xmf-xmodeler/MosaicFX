@@ -162,10 +162,11 @@ public class AddAttributeDialog extends CustomDialog<MetaClassDialogResult> {
 		
 		for (FmmlxObject object :objects) {
 			if(classCombobox.getSelectionModel().getSelectedItem().equals(object.getName())) {
-				for (FmmlxAttribute attribute : object.getAttributes()) {
-					if(nameTextField.getText().equals(attribute.getName())) {
-					return true;
-					}
+				for (FmmlxAttribute attribute : object.getOwnAttributes()) {
+					if(nameTextField.getText().equals(attribute.getName())) return true; 
+				}
+				for (FmmlxAttribute attribute : object.getOtherAttributes()) {
+					if(nameTextField.getText().equals(attribute.getName())) return true; 
 				}
 				break;
 			}
