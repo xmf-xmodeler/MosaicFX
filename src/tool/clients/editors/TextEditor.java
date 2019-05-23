@@ -39,7 +39,6 @@ import java.util.Vector;
 //import org.eclipse.swt.widgets.Display;
 //import org.eclipse.swt.widgets.Menu;
 //import org.eclipse.swt.widgets.MenuItem;
-import javafx.scene.input.MouseButton;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.InlineCssTextArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -133,15 +132,19 @@ public class TextEditor implements ITextEditor{
         });
     
     });
-
-    textArea.setOnMouseReleased(event -> {
-      if (currentContextMenu != null && currentContextMenu.isShowing()) {
-        currentContextMenu.hide();
-      }
-      System.err.println(event.getButton());
-      if (event.isControlDown() || (event.getButton().compareTo(MouseButton.SECONDARY) == 0)) {
-        currentContextMenu =  MenuClient.popup(id, textArea, (new Double(event.getSceneX())).intValue(), (new Double(event.getSceneY())).intValue());
-      }
+    
+    textArea.setOnMouseClicked(e->{
+    	if (currentContextMenu != null)
+    		currentContextMenu.hide();
+    	if(e.isControlDown()){
+    		currentContextMenu =  MenuClient.popup(id, textArea, (new Double(e.getSceneX())).intValue(), (new Double(e.getSceneY())).intValue());
+    	}
+    });
+    
+    textArea.setOnContextMenuRequested(e->{
+    	if (currentContextMenu != null)
+    		currentContextMenu.hide();
+    	currentContextMenu =  MenuClient.popup(id, textArea, (new Double(e.getSceneX())).intValue(), (new Double(e.getSceneY())).intValue());
     });
     
     textArea.addEventFilter(ScrollEvent.ANY, e->{
