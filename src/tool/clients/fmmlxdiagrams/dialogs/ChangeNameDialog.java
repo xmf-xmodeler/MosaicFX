@@ -114,6 +114,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		classNameTextfield.setDisable(true);
 		Label objectLabel = new Label("Select");
 		comboBox = new ComboBox<>();
+		comboBox.setPrefWidth(COLUMN_WIDTH);
 		comboBox.getItems().setAll(list);
 		Label nameLabel = new Label("Name");
 		objectNameTextfield = new TextField();
