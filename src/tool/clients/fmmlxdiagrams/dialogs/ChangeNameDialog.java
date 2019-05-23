@@ -94,7 +94,9 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 
 	private void changeAttribute() {
 		// TODO: Add association
-		attributes = object.getAttributes();
+
+		attributes = object.getOwnAttributes();
+		attributes.addAll(object.getOtherAttributes());
 		for (FmmlxAttribute att : attributes) {
 			list.add(att.getName());
 		}

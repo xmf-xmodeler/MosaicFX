@@ -18,7 +18,6 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
-import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 
 import java.util.Collections;
 import java.util.Vector;
@@ -37,13 +36,13 @@ public class FmmlxDiagram {
 	private Vector<Edge> edges = new Vector<>();
 
 	private transient Vector<Selectable> selectedObjects = new Vector<>();
-//	private DefaultContextMenu defaultContextMenu;
+	//	private DefaultContextMenu defaultContextMenu;
 //	private ObjectContextMenu objectContextMenu;
 	private ContextMenu activeContextMenu;
 	private DiagramActions actions;
 	private transient boolean objectsMoved = false;
 	private Point2D lastPoint;
-	private Point2D actualPoint;
+	private Point2D currentPoint;
 	private MouseMode mode = MouseMode.STANDARD;
 
 	public Vector<FmmlxObject> fetchObjects() {
@@ -177,10 +176,10 @@ public class FmmlxDiagram {
 
 	private void drawMultiSelectRect(GraphicsContext g) {
 		if (mode == MouseMode.MULTISELECT) {
-			double x = Math.min(lastPoint.getX(), actualPoint.getX());
-			double y = Math.min(lastPoint.getY(), actualPoint.getY());
+			double x = Math.min(lastPoint.getX(), currentPoint.getX());
+			double y = Math.min(lastPoint.getY(), currentPoint.getY());
 
-			g.strokeRect(x, y, Math.abs(actualPoint.getX() - lastPoint.getX()), Math.abs(actualPoint.getY() - lastPoint.getY()));
+			g.strokeRect(x, y, Math.abs(currentPoint.getX() - lastPoint.getX()), Math.abs(currentPoint.getY() - lastPoint.getY()));
 		}
 	}
 
@@ -210,13 +209,13 @@ public class FmmlxDiagram {
 //		FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
 
 		if (mode == MouseMode.MULTISELECT) {
-			storeActualPoint(p.getX(), p.getY());
+			storeCurrentPoint(p.getX(), p.getY());
 			redraw();
 		}
 		if (mode == MouseMode.STANDARD) {
-			if(selectedObjects.size() == 1 && selectedObjects.firstElement() instanceof Edge) {
+			if (selectedObjects.size() == 1 && selectedObjects.firstElement() instanceof Edge) {
 				((Edge) selectedObjects.firstElement()).setPointAtToBeMoved(p);
-				
+
 			}
 			mouseDraggedStandard(p);
 		}
@@ -224,7 +223,8 @@ public class FmmlxDiagram {
 
 	private void mouseDraggedStandard(Point2D p) {
 //		if (hitObject != null) {
-			for (Selectable s : selectedObjects) if(s instanceof FmmlxObject) {
+		for (Selectable s : selectedObjects)
+			if (s instanceof FmmlxObject) {
 				FmmlxObject o = (FmmlxObject) s;
 //				o.setX((int) (p.getX() - o.mouseMoveOffsetX));
 //				o.setY((int) (p.getY() - o.mouseMoveOffsetY));
@@ -232,8 +232,8 @@ public class FmmlxDiagram {
 			} else { // must be edge
 				s.moveTo(p.getX(), p.getY(), this);
 			}
-			objectsMoved = true;
-			redraw();
+		objectsMoved = true;
+		redraw();
 //		} else {
 //			mode = MouseMode.MULTISELECT;
 //			storeLastClick(p.getX(), p.getY());
@@ -248,17 +248,20 @@ public class FmmlxDiagram {
 			mouseReleasedStandard();
 		}
 		mode = MouseMode.STANDARD;
-		for(Edge edge : edges) {edge.dropPoint();}
+		for (Edge edge : edges) {
+			edge.dropPoint();
+		}
 		resizeCanvas();
 		redraw();
 	}
 
 	private void mouseReleasedStandard() {
 		if (objectsMoved) {
-			for (Selectable s : selectedObjects) if(s instanceof FmmlxObject) {
-				FmmlxObject o = (FmmlxObject) s;
-				comm.sendCurrentPosition(o);
-			}
+			for (Selectable s : selectedObjects)
+				if (s instanceof FmmlxObject) {
+					FmmlxObject o = (FmmlxObject) s;
+					comm.sendCurrentPosition(o);
+				}
 		}
 		objectsMoved = false;
 	}
@@ -279,11 +282,11 @@ public class FmmlxDiagram {
 		for (FmmlxObject o : objects)
 			if (o.isHit(x, y))
 				return o;
-		for (Edge e : edges)
-			{ System.err.println("Checking Edge " + e);
+		for (Edge e : edges) {
+			System.err.println("Checking Edge " + e);
 			if (e.isHit(x, y))
 				return e;
-			}
+		}
 		return null;
 	}
 
@@ -308,13 +311,13 @@ public class FmmlxDiagram {
 		} else {
 			deselectAll();
 		}
-		
-		if(selectedObjects.contains(hitObject)) {
+
+		if (selectedObjects.contains(hitObject)) {
 			mode = MouseMode.STANDARD;
-		} else{
+		} else {
 			mode = MouseMode.MULTISELECT;
 			storeLastClick(p.getX(), p.getY());
-			storeActualPoint(p.getX(), p.getY());
+			storeCurrentPoint(p.getX(), p.getY());
 		}
 	}
 
@@ -354,16 +357,17 @@ public class FmmlxDiagram {
 		lastPoint = new Point2D(x, y);
 	}
 
-	private void storeActualPoint(double x, double y) {
-		actualPoint = new Point2D(x, y);
+	private void storeCurrentPoint(double x, double y) {
+		currentPoint = new Point2D(x, y);
 	}
 
 	private void setMouseOffset(Point2D p) {
-		for (Selectable s : selectedObjects) if(s instanceof FmmlxObject) {
-			FmmlxObject o = (FmmlxObject) s;
-			o.mouseMoveOffsetX = p.getX() - o.getX();
-			o.mouseMoveOffsetY = p.getY() - o.getY();
-		}
+		for (Selectable s : selectedObjects)
+			if (s instanceof FmmlxObject) {
+				FmmlxObject o = (FmmlxObject) s;
+				o.mouseMoveOffsetX = p.getX() - o.getX();
+				o.mouseMoveOffsetY = p.getY() - o.getY();
+			}
 	}
 
 	public boolean isSelected(Selectable element) {
@@ -385,10 +389,10 @@ public class FmmlxDiagram {
 	}
 
 	private void handleMultiSelect() {
-		double x = Math.min(lastPoint.getX(), actualPoint.getX());
-		double y = Math.min(lastPoint.getY(), actualPoint.getY());
-		double w = Math.abs(actualPoint.getX() - lastPoint.getX());
-		double h = Math.abs(actualPoint.getY() - lastPoint.getY());
+		double x = Math.min(lastPoint.getX(), currentPoint.getX());
+		double y = Math.min(lastPoint.getY(), currentPoint.getY());
+		double w = Math.abs(currentPoint.getX() - lastPoint.getX());
+		double h = Math.abs(currentPoint.getY() - lastPoint.getY());
 
 		Rectangle rec = new Rectangle(x, y, w, h);
 		deselectAll();

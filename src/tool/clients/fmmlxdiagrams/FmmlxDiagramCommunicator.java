@@ -106,16 +106,8 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-<<<<<<< HEAD
-	public Vector<FmmlxAttribute> fetchAttributes(String className) {
-		Vector<Object> response = xmfRequest(handler, "getOwnAttributes", new Value[]{new Value(className)});
-		Vector<Object> response0 = (Vector<Object>) (response.get(0));
-		Vector<FmmlxAttribute> result = new Vector<>();
-//		System.err.println(response0);
-		for (Object o : response0) {
-=======
 	public Vector<Vector<FmmlxAttribute>> fetchAttributes(String className) {
-		Vector<Object> response = xmfRequest(handler, "getAllAttributes", new Value[] { new Value(className) });
+		Vector<Object> response = xmfRequest(handler, "getAllAttributes", new Value[]{new Value(className)});
 		Vector<Object> twoLists = (Vector<Object>) (response.get(0));
 		Vector<FmmlxAttribute> resultOwn = new Vector<>();
 		Vector<FmmlxAttribute> resultOther = new Vector<>();
@@ -123,7 +115,6 @@ public class FmmlxDiagramCommunicator {
 		Vector<Object> ownAttList = (Vector<Object>) twoLists.get(0);
 		Vector<Object> otherAttList = (Vector<Object>) twoLists.get(1);
 		for (Object o : ownAttList) {
->>>>>>> 00ed574c3592b82bf988318cefc6237238df321f
 			Vector<Object> attInfo = (Vector<Object>) o;
 //			System.err.println("Attribute " + o + " found");
 			FmmlxAttribute object = new FmmlxAttribute((String) attInfo.get(0), (Integer) attInfo.get(2),
@@ -160,7 +151,7 @@ public class FmmlxDiagramCommunicator {
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxOperation> result = new Vector<>();
 		result.add(new FmmlxOperation()); // Added for test purposes
-//        System.err.println("operations: " + response0);y
+//        System.err.println("operations: " + response0);
 		return result;
 	}
 
@@ -213,7 +204,7 @@ public class FmmlxDiagramCommunicator {
 	private void close(int handler) {
 		diagrams.remove(diagram);
 		tabs.remove(this.handler);
-//		throw new RuntimeException("Not yet implemented");		
+//		throw new RuntimeException("Not yet implemented");
 	}
 
 	public void sendCurrentPosition(FmmlxObject o) {

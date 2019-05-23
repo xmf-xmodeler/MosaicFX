@@ -6,13 +6,9 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 
-<<<<<<< HEAD
 import java.util.Vector;
 
-public class FmmlxObject implements CanvasElement {
-=======
-public class FmmlxObject implements CanvasElement, Selectable{
->>>>>>> 00ed574c3592b82bf988318cefc6237238df321f
+public class FmmlxObject implements CanvasElement, Selectable {
 
 	private String[] levelColors = {"#8C8C8C", "#FFFFFF", "#000000", "#3111DB", "#F2041D", "#2E9500"};
 
@@ -43,10 +39,9 @@ public class FmmlxObject implements CanvasElement, Selectable{
 	static int gap = 5;
 
 	Vector<FmmlxSlot> slots;
-
 	Vector<FmmlxOperation> operations;
 	Vector<FmmlxOperationValue> operationValues;
-	
+
 	Vector<FmmlxAttribute> ownAttributes;
 	Vector<FmmlxAttribute> otherAttributes;
 
@@ -89,17 +84,18 @@ public class FmmlxObject implements CanvasElement, Selectable{
 	public Vector<FmmlxAttribute> getOwnAttributes() {
 		return ownAttributes;
 	}
+
 	public Vector<FmmlxAttribute> getOtherAttributes() {
 		return otherAttributes;
+	}
+
+	public Vector<FmmlxOperation> getOperations() {
+		return operations;
 	}
 	//
 //	public void setAttributes(Vector<FmmlxAttribute> attributes) {
 //		this.attributes = attributes;
 //	}
-
-	public Vector<FmmlxOperation> getOperations() {
-		return operations;
-	}
 
 	public FmmlxObject(Integer id, String name, int level, int of, Vector<Integer> parents, Integer lastKnownX, Integer lastKnownY) {
 		this.name = name;
@@ -143,7 +139,7 @@ public class FmmlxObject implements CanvasElement, Selectable{
 				calculatedWidth = Math.max(text.getLayoutBounds().getWidth(), calculatedWidth);
 			}
 		}
-		
+
 		for (FmmlxAttribute att : otherAttributes) {
 			if (passReqs(att)) {
 				otherAttributesToPaint.add(att);
@@ -213,7 +209,7 @@ public class FmmlxObject implements CanvasElement, Selectable{
 			Text text = new Text("[" + att.level + "] " + att.name + ":" + att.type);
 			g.fillText(text.getText(), x + gap, Y + gap);
 //			if (!att.equals(ownAttributesToPaint.lastElement()))
-				Y += text.getLayoutBounds().getHeight() + gap;
+			Y += text.getLayoutBounds().getHeight() + gap;
 		}
 
 		g.setFill(Color.GRAY);
@@ -221,7 +217,7 @@ public class FmmlxObject implements CanvasElement, Selectable{
 			Text text = new Text("[" + att.level + "] " + att.name + ":" + att.type);
 			g.fillText(text.getText(), x + gap, Y + gap);
 //			if (!att.equals(otherAttributesToPaint.lastElement()))
-				Y += text.getLayoutBounds().getHeight() + gap;
+			Y += text.getLayoutBounds().getHeight() + gap;
 		}
 		g.setFill(Color.BLACK);
 
@@ -338,9 +334,9 @@ public class FmmlxObject implements CanvasElement, Selectable{
 	public void moveTo(double x, double y, FmmlxDiagram diagram) {
 		setX((int) x);
 		setY((int) y);
-		for(Edge edge : diagram.getEdges()) {
-			if(edge.isStartNode(this)) edge.moveStartPoint();
-			if(edge.isEndNode(this)) edge.moveEndPoint();
+		for (Edge edge : diagram.getEdges()) {
+			if (edge.isStartNode(this)) edge.moveStartPoint();
+			if (edge.isEndNode(this)) edge.moveEndPoint();
 		}
 	}
 }
