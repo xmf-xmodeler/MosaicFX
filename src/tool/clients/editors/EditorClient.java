@@ -1,13 +1,10 @@
 package tool.clients.editors;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.concurrent.CountDownLatch;
@@ -36,11 +33,7 @@ import java.util.concurrent.CountDownLatch;
 //import org.eclipse.swt.widgets.Text;
 //import org.eclipse.swt.widgets.ToolBar;
 //import org.eclipse.swt.widgets.ToolItem;
-import javafx.beans.Observable;
-import javafx.event.EventTarget;
-import org.eclipse.osgi.framework.internal.protocol.StreamHandlerFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -76,12 +69,20 @@ public class EditorClient extends Client {
 
   static EditorClient                   theClient;
   static TabPane   						tabPane;
+  
 
-  static Hashtable<String, Tab>    tabs           = new Hashtable<String, Tab>(); //TODO: rewrite completely and introduce Browser object
+  static Hashtable<String, Tab>    tabs           = new Hashtable<String, Tab>();
+  static Hashtable<String, WebView>     browsers       = new Hashtable<String, WebView>();
   static Hashtable<String, ITextEditor> editors        = new Hashtable<String, ITextEditor>();
-  static Hashtable<String, WebBrowser> browsers        = new Hashtable<String, WebBrowser>();
-
-
+  static Hashtable<String, TextField>     urlFields       = new Hashtable<String, TextField>();
+  
+  
+//  boolean browserLocked = true;
+  
+//  Hashtable<Browser, Stack<String>> backQueues     = new Hashtable<Browser, Stack<String>>();
+//  Hashtable<Browser, String>        browserCurrent = new Hashtable<Browser, String>();
+//  Hashtable<Browser, Stack<String>> forwardQueues  = new Hashtable<Browser, Stack<String>>(); 
+  
   public static void start(TabPane tabPane) {
     EditorClient.tabPane = tabPane;
   }
@@ -148,6 +149,41 @@ public class EditorClient extends Client {
       editor.addMultilineRule(id, start, end, red, green, blue);
   }
 
+//  private void addToolBar(CTabFolder parent, Browser browser) {
+//    ToolBar toolbar = new ToolBar(parent, SWT.NONE);
+//    FormData data = new FormData();
+//    data.top = new FormAttachment(0, 5);
+//    toolbar.setLayoutData(data);
+//    ToolItem itemBack = new ToolItem(toolbar, SWT.PUSH);
+//    itemBack.setText(("Back"));
+//    ToolItem itemForward = new ToolItem(toolbar, SWT.PUSH);
+//    itemForward.setText(("Forward"));
+//    final ToolItem itemStop = new ToolItem(toolbar, SWT.PUSH);
+//    itemStop.setText(("Stop"));
+//    final ToolItem itemRefresh = new ToolItem(toolbar, SWT.PUSH);
+//    itemRefresh.setText(("Refresh"));
+//    final ToolItem itemGo = new ToolItem(toolbar, SWT.PUSH);
+//    itemGo.setText(("Go"));
+//
+//    itemBack.setEnabled(browser.isBackEnabled());
+//    itemForward.setEnabled(browser.isForwardEnabled());
+//    // Listener listener = new Listener() {
+//    // public void handleEvent(Event event) {
+//    // ToolItem item = (ToolItem) event.widget;
+//    // if (item == itemBack)
+//    // browser.back();
+//    // else if (item == itemForward)
+//    // browser.forward();
+//    // else if (item == itemStop)
+//    // browser.stop();
+//    // else if (item == itemRefresh)
+//    // browser.refresh();
+//    // else if (item == itemGo)
+//    // browser.setUrl(locationBar.getText());
+//    // }
+//    // };
+//  }
+
   private void addWordRule(Message message) {
     if (message.arity == 3)
       addWordRuleNamedColor(message);
@@ -207,9 +243,21 @@ public class EditorClient extends Client {
 
 //  public void changed(LocationEvent event) {
 //  }
-
-
-
+//  public void changing(LocationEvent event) {
+//    if (browserLocked) {
+//      event.doit = false;
+//      Browser browser = (Browser) event.widget;
+//      EventHandler handler = getHandler();
+//      Message message = handler.newMessage("urlRequest", 2);
+//      message.args[0] = new Value(getId(browser));
+//      message.args[1] = new Value(event.location);
+//      // Can be used to push on an undo stack?
+//      // System.err.println("FROM: " + browser.getText());
+//      handler.raiseEvent(message);
+//    } else {
+//      browserLocked = true;
+//    }
+//  }
 
   private void clearHighlights(Message message) {
     String id = message.args[0].strValue();
@@ -251,6 +299,11 @@ public class EditorClient extends Client {
 //    }
 //  }
 
+//  private String getId(WebView browser) {
+//    for (String id : browsers.keySet())
+//      if (browsers.get(id) == browser) return id;
+//    return null;
+//  }
 //
 //  private String getId(Tab item) {
 //    for (String id : tabs.keySet())
@@ -283,7 +336,20 @@ public class EditorClient extends Client {
     else return result[0];
   }
 
-
+  private void inflateBrowser(Node browser) {
+    String id = XModeler.attributeValue(browser, "id");
+    String label = XModeler.attributeValue(browser, "label");
+    String tooltip = XModeler.attributeValue(browser, "toolTip");
+    String url = XModeler.attributeValue(browser, "url");
+    if (url.equals("welcome")) {
+      URL location = EditorClient.class.getProtectionDomain().getCodeSource().getLocation();
+      url = location.toString();
+      url = url.substring(0, url.length() - 4); // delete "/bin" from string
+      url += "web/index.html";
+    }
+    String text = XModeler.attributeValue(browser, "text");
+    newBrowser(id, label, tooltip, url, text);
+  }
 
   private void inflateEditorElement(Node editor) {
     if (editor.getNodeName().equals("NewTextEditor")) inflateNewTextEditor(editor);
@@ -328,6 +394,234 @@ public class EditorClient extends Client {
         inflateEditorElement(editor);
       }
     } else System.err.println("expecting exactly 1 editor client got: " + editorClients.getLength());
+  }
+
+  private boolean isURL(String url) {
+    return url.startsWith("http://") || url.startsWith("file:/");
+  }
+
+//  private boolean isLikelyToBeHTML(String s) {
+//      s = s.trim();
+//      s = s.toLowerCase();
+//      if (s.startsWith("<html>")) return true;
+//      if (s.startsWith("<!doctype html")) return true;
+//      return false;
+//    }
+  
+  private void newBrowser(Message message) {
+    String id = message.args[0].strValue();
+    String label = message.args[1].strValue();
+    String tooltip = message.args[2].strValue();
+    String url = message.args[3].strValue();
+    newBrowser(id, label, tooltip, url, "");
+  }
+
+  private void newBrowser(final String id, final String label, String tooltip, final String url, final String text) {
+	CountDownLatch l = new CountDownLatch(1);
+	Platform.runLater(()->{
+		Tab tab = new Tab(label);
+		tab.setClosable(true);
+		tab.setOnCloseRequest((e)->{
+			// Careful because the diagrams and files share the same tab folder...
+		    if (id != null && (editors.containsKey(id) || browsers.containsKey(id))) {
+		      EventHandler handler = getHandler();
+		      Message message = handler.newMessage("textClosed", 1);
+		      message.args[0] = new Value(id);
+		      handler.raiseEvent(message);
+		      editors.remove(id);
+		      browsers.remove(id);
+		      tabs.remove(id);
+		    }
+		});
+		tab.setTooltip(new Tooltip(tooltip));
+		tabs.put(id, tab);
+		
+        WebView browser = new WebView();
+		browser.getEngine().setJavaScriptEnabled(true);
+		browser.getEngine().loadContent(text);
+        if (isURL(url)) {
+        	browser.getEngine().load(url);
+          };
+//        browserLocked = false;
+        browsers.put(id, browser);
+        
+        browser.setOnZoom(e->{
+        	browser.setZoom(browser.getZoom()*e.getZoomFactor());
+        });
+        
+        Button increaseZoom = new Button("+");
+        increaseZoom.setOnAction((e)->{
+        	browser.setZoom(browser.getZoom()+0.1);
+        });
+        Button decreaseZoom = new Button("-");
+        decreaseZoom.setOnAction((e)->{
+        	browser.setZoom(browser.getZoom()-0.1);
+        });
+        Button back = new Button("", IconGenerator.getImageView("User/Arrow4Left"));
+        back.setOnAction((e)->{
+        	if( browser.getEngine().getHistory().getCurrentIndex()>0){
+        		browser.getEngine().getHistory().go(-1);
+        	}
+        });
+        Button forward = new Button("", IconGenerator.getImageView("User/Arrow4Right"));
+        forward.setOnAction((e)->{
+        	if( browser.getEngine().getHistory().getCurrentIndex()<browser.getEngine().getHistory().getEntries().size()-1){
+        		browser.getEngine().getHistory().go(1);
+        	}
+        });
+        Label urlLabel = new Label("URL:");
+        TextField urlField = new TextField("Enter URL here...");
+        urlField.setOnKeyReleased(e->{
+        	if(e.getCode() == KeyCode.ENTER){
+        		EventHandler handler = getHandler();
+    	        Message message = handler.newMessage("urlRequest", 2);
+    	        message.args[0] = new Value(id);
+    	        message.args[1] = new Value(urlField.getText());
+    	        handler.raiseEvent(message);
+        	}
+        });
+        urlFields.put(id, urlField);
+        Button go = new Button("Go");
+        go.setOnAction((e)->{
+        	        EventHandler handler = getHandler();
+        	        Message message = handler.newMessage("urlRequest", 2);
+        	        message.args[0] = new Value(id);
+        	        message.args[1] = new Value(urlField.getText());
+        	        handler.raiseEvent(message);
+        });
+        
+        browser.getEngine().locationProperty().addListener(c->{
+        	urlField.setText(browser.getEngine().getLocation());
+        });
+        
+        HBox hbox = new HBox();
+		hbox.getChildren().addAll(increaseZoom,decreaseZoom,back,forward,urlLabel,urlField,go);
+                
+        VBox vbox = new VBox();
+        vbox.getChildren().addAll(hbox,browser);
+        
+        tab.setContent(vbox);
+        
+        tabPane.getTabs().add(tab);
+        tabPane.getSelectionModel().select(tab);
+        
+		l.countDown();
+	});
+	try {
+		l.await();
+	} catch (InterruptedException e1) {
+		e1.printStackTrace();
+	}  
+	  
+	  
+//    runOnDisplay(new Runnable() {
+//      public void run() {
+//        CTabItem tabItem = new CTabItem(tabFolder, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+//        tabItem.setText(label);
+//        tabItem.setShowClose(true);
+//        tabs.put(id, tabItem);
+//        Composite browserParent = new Composite(tabFolder, SWT.NONE);
+//        //Vector<Object> buttons = new Vector<Object>();
+//        Button up = new Button(browserParent, SWT.PUSH);
+//        up.setText("+");
+//        buttons.add(up);
+//        Button down = new Button(browserParent, SWT.PUSH);
+//        down.setText("-");
+//        buttons.add(down);
+//        Button b1a = new Button(browserParent, SWT.PUSH);
+//        b1a.setImage(new Image(tabItem.getDisplay(), new ImageData("icons/User/Arrow4Left.gif")));
+//        buttons.addElement(b1a);
+//        Button b1b = new Button(browserParent, SWT.PUSH);
+//        b1b.setImage(new Image(tabItem.getDisplay(), new ImageData("icons/User/Arrow4Right.gif")));
+//        buttons.addElement(b1b);
+//        Label b2 = new Label(browserParent, SWT.NONE);
+//        b2.setText("URL:");
+//        buttons.addElement(b2);
+//        final Text b3 = new Text(browserParent, SWT.BORDER);
+//        b3.setText("Enter URL here...");
+//        buttons.addElement(b3);
+//        final Browser browser = new Browser(browserParent, SWT.BORDER);
+//        final int defaultZoom = 100;// XModeler.getDeviceZoomPercent();
+//        final int[] zoom = new int[] { defaultZoom };
+//        up.addListener(SWT.Selection, new Listener() {
+//          public void handleEvent(Event arg0) {
+//            zoom[0] += defaultZoom / 10;
+//            browser.execute("document.body.style.zoom = \"" + zoom[0] + "%\"");
+//            browser.redraw();
+//          }
+//        });
+//        down.addListener(SWT.Selection, new Listener() {
+//          public void handleEvent(Event arg0) {
+//            if (zoom[0] > defaultZoom / 10) {
+//              zoom[0] -= defaultZoom / 10;
+//              browser.execute("document.body.style.zoom = \"" + zoom[0] + "%\"");
+//              browser.redraw();
+//            }
+//          }
+//        });
+//        b1a.addListener(SWT.Selection, new Listener() {
+//          public void handleEvent(Event arg0) {
+//            // browser.back();
+//            if (!getBackQueue(browser).isEmpty()) {
+//              if (browserCurrent.containsKey(browser)) {
+//                getForwardQueue(browser).push(browserCurrent.get(browser));
+//              }
+//              setUrl(id, getBackQueue(browser).pop(), false);
+//            }
+//          }
+//        });
+//        b1b.addListener(SWT.Selection, new Listener() {
+//          public void handleEvent(Event arg0) {
+//            // browser.forward();
+//            if (!getForwardQueue(browser).isEmpty()) {
+//              if (browserCurrent.containsKey(browser)) {
+//                getBackQueue(browser).push(browserCurrent.get(browser));
+//              }
+//              setUrl(id, getForwardQueue(browser).pop(), false);
+//            }
+//          }
+//        });
+//        b3.addListener(SWT.DefaultSelection, new Listener() {
+//          public void handleEvent(Event e) {
+//            browser.setUrl(b3.getText());
+//          }
+//        });
+//        browser.addLocationListener(new LocationListener() {
+//          public void changed(LocationEvent event) {
+//            if (event.top) b3.setText(event.location);
+//          }
+//
+//          public void changing(LocationEvent event) {
+//          }
+//        });
+//        tabItem.setControl(browserParent);
+//        browser.setText(text);
+//        browser.setJavascriptEnabled(true);
+//        int buttonCount = buttons.size();
+//        GridLayout gridLayout = new GridLayout();
+//        gridLayout.numColumns = buttonCount;
+//        browserParent.setLayout(gridLayout);
+//        GridData gd = new GridData();
+//        gd.grabExcessHorizontalSpace = true;
+//        gd.grabExcessVerticalSpace = true;
+//        gd.horizontalAlignment = GridData.FILL;
+//        gd.verticalAlignment = GridData.FILL;
+//        gd.horizontalSpan = buttonCount;
+//        browser.setLayoutData(gd);
+//        gd = new GridData();
+//        gd.grabExcessHorizontalSpace = true;
+//        gd.horizontalAlignment = GridData.FILL;
+//        b3.setLayoutData(gd);
+//        browserLocked = false;
+//        if (isURL(url)) {
+//          browser.setUrl(url);
+//        }
+//        browsers.put(id, browser);
+//        browser.setVisible(true);
+//        browser.addLocationListener(EditorClient.this);
+//        tabFolder.setSelection(tabItem);
+//      }
+//    });
   }
 
   private void newNewTextEditor(Message message) {
@@ -765,6 +1059,74 @@ public class EditorClient extends Client {
     } else System.err.println("cannot find text editor " + id);
   }
 
+    private void setUrl(Message message) {
+    final Value id = message.args[0];
+    final Value url = message.args[1];
+    setUrl(id.strValue(), url.strValue(), true);
+  }
+
+//  private Stack<String> getBackQueue(Browser browser) {
+//    if (!backQueues.containsKey(browser)) backQueues.put(browser, new Stack<String>());
+//    return backQueues.get(browser);
+//  }
+//
+//  private Stack<String> getForwardQueue(Browser browser) {
+//    if (!forwardQueues.containsKey(browser)) forwardQueues.put(browser, new Stack<String>());
+//    return forwardQueues.get(browser);
+//  }
+
+  private void setUrl(final String id, final String url, final boolean addToHistory) {
+    if (browsers.containsKey(id)) {
+      final WebView browser = browsers.get(id);
+      CountDownLatch l = new CountDownLatch(1);
+      Platform.runLater(()->{
+//    	  browserLocked = false;
+          if (!addToHistory) {
+            //currently not implemented 
+          }
+//          if (isLikelyToBeHTML(url)){
+          System.out.println(url);
+            browser.getEngine().load(url);
+          	urlFields.get(id).setText(url);
+//          }	
+//          else browser.getEngine().loadContent(url);
+
+          tabPane.getSelectionModel().select(tabs.get(id));
+    	  l.countDown();
+      });
+      try {
+		l.await();
+	} catch (InterruptedException e) {
+		e.printStackTrace();
+	}
+//      Display.getDefault().syncExec(new Runnable() {
+//        private boolean isLikelyToBeHTML(String s) {
+//          s = s.trim();
+//          s = s.toLowerCase();
+//          if (s.startsWith("<html>")) return true;
+//          if (s.startsWith("<!doctype html")) return true;
+//          return false;
+//        }
+//
+//        public void run() {
+//          browserLocked = false;
+//          if (addToHistory) {
+//            if (browserCurrent.containsKey(browser)) {
+//              getBackQueue(browser).push(browserCurrent.get(browser));
+//            }
+//          }
+//          browserCurrent.put(browser, url);
+//          if (isLikelyToBeHTML(url))
+//            browser.setText(url);
+//          else browser.setUrl(url);
+//
+//          tabFolder.setFocus();
+//          tabFolder.setSelection(tabs.get(id));
+//        }
+//      });
+    } else System.err.println("cannot find browser " + id);
+  }
+
   private void showLine(Message message) {
     String id = message.args[0].strValue();
     int line = message.args[1].intValue;
@@ -803,140 +1165,16 @@ public class EditorClient extends Client {
       Tab tab = tabs.get(id);
       String label = tab.getText();
       String tooltip = tab.getTooltip().getText();
-//      WebView browser = browsers.get(id); //TODO:
-//      String url = browser.getEngine().getLocation();
-//      if (url.startsWith("file:") && url.endsWith("/web/index.html")) {
-//        url = "welcome";
-//      }
-//      String text = browser.getEngine().getDocument().toString();
-//      out.print("<Browser id='" + id + "' label='" + label + "' tooltip='" + tooltip + "' url='" + url + "' text='" + XModeler.encodeXmlAttribute(text) + "'/>");
+      WebView browser = browsers.get(id);
+      String url = browser.getEngine().getLocation();
+      if (url.startsWith("file:") && url.endsWith("/web/index.html")) {
+        url = "welcome";
+      }
+      String text = browser.getEngine().getDocument().toString();
+      out.print("<Browser id='" + id + "' label='" + label + "' tooltip='" + tooltip + "' url='" + url + "' text='" + XModeler.encodeXmlAttribute(text) + "'/>");
     }
     out.print("</Editors>");
   }
-
-  //WebBrowser
-
-  //xos
-  private void setUrl(Message message) {
-    final Value id = message.args[0];
-    final String url = message.args[1].strValue();
-    setUrl(id.strValue(), url, true);
-  }
-
-  private void newBrowser(Message message) { //TODO: raus
-    String id = message.args[0].strValue();
-    String label = message.args[1].strValue();
-    String tooltip = message.args[2].strValue();
-    String url = message.args[3].strValue();
-    addBrowser(id, label, tooltip, url, "");
-  }
-
-  //management
-  private void addBrowser(final String id, final String label, String tooltip, final String url, final String text) {
-    System.out.println("addBrowser, id: " + id + ", url: " + url);
-    WebBrowser browser = new WebBrowser(id, getHandler());
-    browsers.put(id, browser);
-
-    browser.getBrowserVBox(url, text)
-            .thenAccept(browserVbox -> {
-              Platform.runLater(() -> {
-                HBox hbox = new HBox();
-                VBox vbox = new VBox();
-                Tab tab = createBrowserTab(id, label, tooltip);
-
-                vbox.getChildren().addAll(hbox, browserVbox);
-                tab.setContent(vbox);
-
-                tabPane.getTabs().add(tab);
-                tabPane.getSelectionModel().select(tab);
-              });
-            })
-            .exceptionally(throwable -> {
-              System.err.println("Error creating new Browser: "+throwable);
-              return null;
-            });
-  }
-
-  private Tab createBrowserTab(String id, String label, String tooltip) {
-    Tab tab = new Tab(label);
-    tab.setClosable(true);
-    tab.setTooltip(new Tooltip(tooltip));
-
-    tab.setOnCloseRequest((e)->{
-      // Careful because the diagrams and files share the same tab folder...
-      if (id != null && (editors.containsKey(id) || browsers.containsKey(id))) {
-        EventHandler handler = getHandler();
-        Message message = handler.newMessage("textClosed", 1);
-        message.args[0] = new Value(id);
-        handler.raiseEvent(message);
-        editors.remove(id);
-        browsers.remove(id);
-        tabs.remove(id);
-      }
-    });
-
-    return tab;
-  }
-
-  private void setUrl(final String id, final String url, final boolean addToHistory) {
-    if (browsers.containsKey(id)) {
-      Platform.runLater(()->{
-        tabPane.getSelectionModel().select(tabs.get(id));
-      });
-      browsers.get(id).setUrl(url);
-    } else {
-      System.err.println("cannot find browser " + id);
-    }
-
-//      Display.getDefault().syncExec(new Runnable() {
-//        private boolean isLikelyToBeHTML(String s) {
-//          s = s.trim();
-//          s = s.toLowerCase();
-//          if (s.startsWith("<html>")) return true;
-//          if (s.startsWith("<!doctype html")) return true;
-//          return false;
-//        }
-//
-//        public void run() {
-//          browserLocked = false;
-//          if (addToHistory) {
-//            if (browserCurrent.containsKey(browser)) {
-//              getBackQueue(browser).push(browserCurrent.get(browser));
-//            }
-//          }
-//          browserCurrent.put(browser, url);
-//          if (isLikelyToBeHTML(url))
-//            browser.setText(url);
-//          else browser.setUrl(url);
-//
-//          tabFolder.setFocus();
-//          tabFolder.setSelection(tabs.get(id));
-//        }
-//      });
-  }
-
-  private void inflateBrowser(Node browser) {
-    String id = XModeler.attributeValue(browser, "id");
-    String label = XModeler.attributeValue(browser, "label");
-    String tooltip = XModeler.attributeValue(browser, "toolTip");
-    String url = XModeler.attributeValue(browser, "url");
-
-    if (url.equals("welcome")) { //TODO: move into dedicated protocol
-      URL location = EditorClient.class.getProtectionDomain().getCodeSource().getLocation();
-      url = location.toString();
-      url = url.substring(0, url.length() - 4); // delete "/bin" from string
-      url += "web/index.html";
-    }
-    String text = XModeler.attributeValue(browser, "text");
-    addBrowser(id, label, tooltip, url, text);
-  }
-
-//  private String getId(WebView browser) { TODO:
-//    for (String id : browsers.keySet())
-//      if (browsers.get(id) == browser) return id;
-//    return null;
-//  }
-
 
 
 @Override
