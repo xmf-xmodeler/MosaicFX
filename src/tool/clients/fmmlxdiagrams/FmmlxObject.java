@@ -1,26 +1,24 @@
 package tool.clients.fmmlxdiagrams;
 
-import java.security.KeyStore.Entry.Attribute;
 import java.util.Arrays;
 import java.util.Vector;
 
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 
 public class FmmlxObject implements CanvasElement, Selectable{
 
-	private String[] levelBackgroundColors = {"#8C8C8C", "#FFFFFF", "#000000", "#3111DB", "#bb192a", "#00954d"};
+	private String[] levelBackgroundColors = {"#8C8C8C", "#FFFFFF", "#000000", "#3111DB", "#dd2244", "#119955"};
 
 	private String name;
 	int id;
 	private int x;
 	private int y;
 	int level;
-	int of;
+	Integer of;
 	Vector<Integer> parents;
 	int width;
 	int height;
@@ -95,7 +93,7 @@ public class FmmlxObject implements CanvasElement, Selectable{
 //		this.attributes = attributes;
 //	}
 
-	public FmmlxObject(Integer id, String name, int level, int of, Vector<Integer> parents, Integer lastKnownX, Integer lastKnownY) {
+	public FmmlxObject(Integer id, String name, int level, Integer of, Vector<Integer> parents, Integer lastKnownX, Integer lastKnownY) {
 		this.name = name;
 		this.id = id;
 		if (lastKnownX != null && lastKnownX != 0) {
@@ -122,10 +120,10 @@ public class FmmlxObject implements CanvasElement, Selectable{
 	final int EXTRA_Y_PER_LINE = 3;
 	Vector<NodeElement> nodeElements = new Vector<>();
 
-	private void layout() {
+	private void layout(FmmlxDiagram diagram) {
 		nodeElements = new Vector<>();
 //		double neededHeight = 0;
-		double neededWidth = calculatedNeededWidth();	
+		double neededWidth = calculateNeededWidth(diagram);	
 		
 		//determine text height
 		double textHeight = new Text("TextForLayout").getLayoutBounds().getHeight();
@@ -133,7 +131,13 @@ public class FmmlxObject implements CanvasElement, Selectable{
 		
 		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight*2, Color.valueOf(getLevelBackgroundColor()), Color.BLACK);
 		nodeElements.addElement(header);
-		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth/2, textHeight, Color.valueOf(getLevelFontColor()+"75"), null, this, "^ of ^");
+		String ofName = "ClassNotFound";
+		try{
+			ofName = diagram.getObjectById(of).name;
+		} catch (Exception e) {
+			ofName = e.getMessage();
+		}
+		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth/2, textHeight, Color.valueOf(getLevelFontColor()+"75"), null, this, "^" + ofName + "^");
 		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth/2, textHeight*2,Color.valueOf(getLevelFontColor()), null, this, name);
 		header.nodeElements.add(metaclassLabel);
 		header.nodeElements.add(nameLabel);
@@ -156,7 +160,7 @@ public class FmmlxObject implements CanvasElement, Selectable{
 		}
 		for(FmmlxAttribute att : otherAttributes) {
 			attY += lineHeight;
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, att.getName() + ":" + att.type);
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, att.getName() + ":" + att.type + " (from " + diagram.getObjectById(att.owner).name + ")");
 			attBox.nodeElements.add(attLabel);
 			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.GRAY, att, att.level+"");
 			attBox.nodeElements.add(attLevelLabel);
@@ -168,7 +172,7 @@ public class FmmlxObject implements CanvasElement, Selectable{
 		this.height = (int) currentY;
 	}
 	
-	private double calculatedNeededWidth() {
+	private double calculateNeededWidth(FmmlxDiagram diagram) {
 		double neededWidth = 0;
 		
 		//determine maximal width of attributes
@@ -177,7 +181,7 @@ public class FmmlxObject implements CanvasElement, Selectable{
 			neededWidth = Math.max(text.getLayoutBounds().getWidth() + INST_LEVEL_WIDTH, neededWidth);
 		}
 		for (FmmlxAttribute att : otherAttributes) {
-			Text text = new Text(att.name + ":" + att.type);
+			Text text = new Text(att.name + ":" + att.type + " (from " + diagram.getObjectById(att.owner).name + ")");
 			neededWidth = Math.max(text.getLayoutBounds().getWidth() + INST_LEVEL_WIDTH, neededWidth);
 		}
 //		//determine maximal width of operations
@@ -210,7 +214,7 @@ public class FmmlxObject implements CanvasElement, Selectable{
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram diagram) {
 		
 		boolean selected = diagram.isSelected(this);
-		layout();
+		layout(diagram);
 		for(NodeElement e : nodeElements) {
 			e.paintOn(g, x + xOffset, y + yOffset, diagram);
 		}

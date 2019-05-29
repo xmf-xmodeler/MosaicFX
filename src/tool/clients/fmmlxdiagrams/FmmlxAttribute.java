@@ -3,6 +3,10 @@ package tool.clients.fmmlxdiagrams;
 public class FmmlxAttribute {
 
 	String name;
+	Multiplicity multiplicity;
+	Integer owner;
+	int level;
+	String type;
 
 	public String getName() {
 		return name;
@@ -12,14 +16,11 @@ public class FmmlxAttribute {
 		this.name = name;
 	}
 
-	int level;
-	String type;
-
-	public FmmlxAttribute(String name, int level, String type, String multiplicity) {
+	public FmmlxAttribute(String name, int level, String type, Integer owner, String multiplicity) {
 		this.name = name;
 		this.level = level;
 		this.type = type;
-//		this.multiplicity = multiplicity;
+		this.multiplicity = Multiplicity.parseMultiplicity(multiplicity);
+		this.owner = owner;
 	}
-
 }

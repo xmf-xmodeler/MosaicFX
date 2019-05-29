@@ -39,6 +39,11 @@ public class Multiplicity {
 	public String toString() {
 		return (max>2?duplicates?"[":"{":"") + (ordered?"$":"") + min + ".." + (upperLimit?max:"*") + (max>2?duplicates?"]":"}":"");
 	}
+
+	public static Multiplicity parseMultiplicity(String multiplicity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	
 	 
