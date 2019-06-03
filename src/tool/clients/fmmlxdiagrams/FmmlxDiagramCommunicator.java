@@ -153,7 +153,20 @@ public class FmmlxDiagramCommunicator {
 		Vector<Object> response = xmfRequest(handler, "getOwnOperations", new Value[] { new Value(className) });
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxOperation> result = new Vector<>();
-		result.add(new FmmlxOperation()); // Added for test purposes
+		for (Object o : response0) {
+			Vector<Object> opInfo = (Vector<Object>) o;
+			System.err.println(opInfo);
+			FmmlxOperation op = 
+					new FmmlxOperation(
+							(String)  opInfo.get(0), // name
+							(Integer) opInfo.get(1), // level
+							(String)  opInfo.get(2), // type
+							(Integer) opInfo.get(3), // owner
+							(String)  opInfo.get(4) // multiplicity
+							);
+			result.add(op);
+		}
+//		result.add(new FmmlxOperation("test", 0, "Blub", -1, null)); // Added for test purposes
 //        System.err.println("operations: " + response0);
 		return result;
 	}

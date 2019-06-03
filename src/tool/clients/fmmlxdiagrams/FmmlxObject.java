@@ -40,11 +40,13 @@ public class FmmlxObject implements CanvasElement, Selectable{
 	static int gap = 5;
 
 	Vector<FmmlxSlot> slots;
-	Vector<FmmlxOperation> operations;
+	@Deprecated Vector<FmmlxOperation> operations;
 	Vector<FmmlxOperationValue> operationValues;
 	
 	Vector<FmmlxAttribute> ownAttributes;
 	Vector<FmmlxAttribute> otherAttributes;
+	Vector<FmmlxOperation> ownOperations = new Vector<>();
+	Vector<FmmlxOperation> otherOperations = new Vector<>();
 
 	public String getName() {
 		return name;
@@ -143,8 +145,9 @@ public class FmmlxObject implements CanvasElement, Selectable{
 		header.nodeElements.add(nameLabel);
 		currentY += 2*textHeight;
 		
-		int attSize = ownAttributes.size() + otherAttributes.size();
 		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
+		
+		int attSize = ownAttributes.size() + otherAttributes.size();
 		double attBoxHeight = Math.max(lineHeight * attSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
 		double yAfterAttBox = currentY + attBoxHeight;
 		double attY = 0;
@@ -167,6 +170,30 @@ public class FmmlxObject implements CanvasElement, Selectable{
 		}
 		currentY = yAfterAttBox;
 		
+		int opsSize = ownOperations.size() + otherOperations.size();
+//		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
+		double opsBoxHeight = Math.max(lineHeight * opsSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
+		double yAfterOpsBox = currentY + opsBoxHeight;
+		double opsY = 0;
+		NodeBox opsBox = new NodeBox(0, currentY, neededWidth, opsBoxHeight, Color.WHITE, Color.BLACK);
+		nodeElements.addElement(opsBox);
+		
+		for(FmmlxOperation o : ownOperations) {
+			opsY += lineHeight;
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.BLACK, null, o, o.getName() + "():" + o.getType());
+			opsBox.nodeElements.add(attLabel);
+			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.BLACK, o, o.getLevel()+"");
+			opsBox.nodeElements.add(attLevelLabel);
+		}
+		for(FmmlxOperation o : otherOperations) {
+			opsY += lineHeight;
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, o.getName() + ":" + o.getType() + " (from " + diagram.getObjectById(o.getOwner()).name + ")");
+			opsBox.nodeElements.add(attLabel);
+			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, o.getLevel()+"");
+			opsBox.nodeElements.add(attLevelLabel);
+		}		
+		
+		currentY = yAfterOpsBox;
 		
 		this.width = (int) neededWidth;
 		this.height = (int) currentY;
@@ -389,11 +416,11 @@ public class FmmlxObject implements CanvasElement, Selectable{
 	}
 
 	public void fetchData(FmmlxDiagramCommunicator comm) {
-		Vector<Vector<FmmlxAttribute>> temp = comm.fetchAttributes(this.name);
-		ownAttributes = temp.get(0);
-		otherAttributes = temp.get(1);
+		Vector<Vector<FmmlxAttribute>> attributeList = comm.fetchAttributes(this.name);
+		ownAttributes = attributeList.get(0);
+		otherAttributes = attributeList.get(1);
 		slots = comm.fetchSlots(this.name);
-		operations = comm.fetchOperations(this.name);
+		ownOperations = comm.fetchOperations(this.name);
 		operationValues = comm.fetchOperationValues(this.name);
 
 	}
