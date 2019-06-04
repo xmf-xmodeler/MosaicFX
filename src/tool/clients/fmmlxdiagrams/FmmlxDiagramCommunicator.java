@@ -92,11 +92,15 @@ public class FmmlxDiagramCommunicator {
 			Vector<Object> responseObjectList = (Vector<Object>) (responseObject);
 
 			System.out.println("Class/Object " + responseObjectList.get(1) + " found" + ": " + "Level : "
-					+ (Integer) responseObjectList.get(2));
-			FmmlxObject object = new FmmlxObject((Integer) responseObjectList.get(0),
-					(String) responseObjectList.get(1), (Integer) responseObjectList.get(2),
-					(Integer) responseObjectList.get(3), null, (Integer) responseObjectList.get(5),
-					(Integer) responseObjectList.get(6));
+					+ (Integer) responseObjectList.get(2) + " of " + (Integer) responseObjectList.get(3));
+			FmmlxObject object = new FmmlxObject(
+					(Integer) responseObjectList.get(0), // id
+					(String) responseObjectList.get(1), // name
+					(Integer) responseObjectList.get(2), // level
+					(Integer) responseObjectList.get(3), // of
+					null, // parents
+					(Integer) responseObjectList.get(5), // x-Position
+					(Integer) responseObjectList.get(6));// y-Position
 			result.add(object);
 
 			sendCurrentPosition(object); // make sure to store position if newly created
@@ -105,19 +109,32 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxAttribute> fetchAttributes(String className) {
-		Vector<Object> response = xmfRequest(handler, "getOwnAttributes", new Value[] { new Value(className) });
-		Vector<Object> response0 = (Vector<Object>) (response.get(0));
-		Vector<FmmlxAttribute> result = new Vector<>();
-//		System.err.println(response0);
-		for (Object o : response0) {
+	public Vector<Vector<FmmlxAttribute>> fetchAttributes(String className) {
+		Vector<Object> response = xmfRequest(handler, "getAllAttributes", new Value[] { new Value(className) });
+		Vector<Object> twoLists = (Vector<Object>) (response.get(0));
+		Vector<FmmlxAttribute> resultOwn = new Vector<>();
+		Vector<FmmlxAttribute> resultOther = new Vector<>();
+
+		Vector<Object> ownAttList = (Vector<Object>) twoLists.get(0);
+		Vector<Object> otherAttList = (Vector<Object>) twoLists.get(1);
+		for (Object o : ownAttList) {
 			Vector<Object> attInfo = (Vector<Object>) o;
 //			System.err.println("Attribute " + o + " found");
 			FmmlxAttribute object = new FmmlxAttribute((String) attInfo.get(0), (Integer) attInfo.get(2),
-					(String) attInfo.get(1));
-			result.add(object);
+					(String) attInfo.get(1), (Integer) attInfo.get(4), (String) attInfo.get(3));
+			resultOwn.add(object);
 		}
-		result.add(new FmmlxAttribute("att0", 1, "Integer"));
+		for (Object o : otherAttList) {
+			Vector<Object> attInfo = (Vector<Object>) o;
+//			System.err.println("Attribute " + o + " found");
+			FmmlxAttribute object = new FmmlxAttribute((String) attInfo.get(0), (Integer) attInfo.get(2),
+					(String) attInfo.get(1), (Integer) attInfo.get(4), (String) attInfo.get(3));
+			resultOther.add(object);
+		}
+//		result.add(new FmmlxAttribute("att0", 1, "Integer"));
+		Vector<Vector<FmmlxAttribute>> result = new Vector<>();
+		result.addElement(resultOwn);
+		result.addElement(resultOther);
 		return result;
 	}
 
@@ -132,11 +149,25 @@ public class FmmlxDiagramCommunicator {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Vector<FmmlxOperation> fetchOperations(String className) {
 		Vector<Object> response = xmfRequest(handler, "getOwnOperations", new Value[] { new Value(className) });
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxOperation> result = new Vector<>();
-		result.add(new FmmlxOperation()); // Added for test purposes
+		for (Object o : response0) {
+			Vector<Object> opInfo = (Vector<Object>) o;
+			System.err.println(opInfo);
+			FmmlxOperation op = 
+					new FmmlxOperation(
+							(String)  opInfo.get(0), // name
+							(Integer) opInfo.get(1), // level
+							(String)  opInfo.get(2), // type
+							(Integer) opInfo.get(3), // owner
+							(String)  opInfo.get(4) // multiplicity
+							);
+			result.add(op);
+		}
+//		result.add(new FmmlxOperation("test", 0, "Blub", -1, null)); // Added for test purposes
 //        System.err.println("operations: " + response0);
 		return result;
 	}
