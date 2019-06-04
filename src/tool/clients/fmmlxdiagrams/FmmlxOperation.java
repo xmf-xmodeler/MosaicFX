@@ -27,6 +27,6 @@ public class FmmlxOperation {
 	}
 
 	public Integer getOwner() {
-		return -1;
+		return owner;
 	}
 }
