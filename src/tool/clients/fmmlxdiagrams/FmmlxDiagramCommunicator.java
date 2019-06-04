@@ -149,6 +149,7 @@ public class FmmlxDiagramCommunicator {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Vector<FmmlxOperation> fetchOperations(String className) {
 		Vector<Object> response = xmfRequest(handler, "getOwnOperations", new Value[] { new Value(className) });
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));

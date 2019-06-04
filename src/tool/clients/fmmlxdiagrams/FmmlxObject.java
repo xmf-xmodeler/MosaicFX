@@ -204,12 +204,12 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		}
 		for (FmmlxOperation o : otherOperations) {
 			opsY += lineHeight;
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, o.getName() + ":" + o.getType() + " (from " + diagram.getObjectById(o.getOwner()).name + ")");
-			opsBox.nodeElements.add(attLabel);
-			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, o.getLevel() + "");
-			opsBox.nodeElements.add(attLevelLabel);
-		}
-
+			NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, o.getName() + ":" + o.getType() + " (from " + diagram.getObjectById(o.getOwner()).name + ")");
+			opsBox.nodeElements.add(oLabel);
+			NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, o.getLevel()+"");
+			opsBox.nodeElements.add(oLevelLabel);
+		}		
+		
 		currentY = yAfterOpsBox;
 
 		this.width = (int) neededWidth;
@@ -242,10 +242,14 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		}
 //		//determine maximal width of operations
 //		if (showOperations) {
-//			for (FmmlxOperation operation : operations) {
-//				Text text = new Text(operation.name);
-//				neededWidth = Math.max(text.getLayoutBounds().getWidth() + INST_LEVEL_WIDTH, neededWidth);
-//			}
+		for (FmmlxOperation o : ownOperations) {
+			Text text = new Text(o.name + ":" + o.type);
+			neededWidth = Math.max(text.getLayoutBounds().getWidth() + INST_LEVEL_WIDTH, neededWidth);
+		}
+		for (FmmlxOperation o : otherOperations) {
+			Text text = new Text(o.name + ":" + o.type + " (from " + diagram.getObjectById(o.owner).name + ")");
+			neededWidth = Math.max(text.getLayoutBounds().getWidth() + INST_LEVEL_WIDTH, neededWidth);
+		}
 //		}
 //		//determine maximal width of slots
 //		if (showSlots) {
@@ -451,7 +455,16 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		ownAttributes = attributeList.get(0);
 		otherAttributes = attributeList.get(1);
 		slots = comm.fetchSlots(this.name);
-		ownOperations = comm.fetchOperations(this.name);
+		Vector<FmmlxOperation> operations = comm.fetchOperations(this.name);
+		ownOperations = new Vector<FmmlxOperation>();
+		otherOperations = new Vector<FmmlxOperation>();
+		for(FmmlxOperation o : operations) {
+			if(o.owner == this.id) {
+				ownOperations.add(o); 
+			} else {
+				otherOperations.add(o);
+			}
+		}
 		operationValues = comm.fetchOperationValues(this.name);
 
 	}
