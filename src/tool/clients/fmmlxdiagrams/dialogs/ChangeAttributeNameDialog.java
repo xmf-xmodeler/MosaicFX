@@ -34,7 +34,7 @@ public class ChangeAttributeNameDialog extends CustomDialog<ChangeAttributeNameD
 		
 		for (FmmlxObject object : objects) {
 			if (object.getId()==classID) {
-				this.attributes = object.getAttributes();
+				this.attributes = object.getOwnAttributes();
 			}
 		}
 		

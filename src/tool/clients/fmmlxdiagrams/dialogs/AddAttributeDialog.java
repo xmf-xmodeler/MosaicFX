@@ -15,7 +15,9 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
 
@@ -167,15 +169,18 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 	}
 	
 	private boolean nameAlreadyUsed() {
-		if (!objects.isEmpty()) {
-			for (FmmlxObject object :objects) {
-				if(classCombobox.getSelectionModel().getSelectedItem().equals(object.getName())) {
-					/*for (FmmlxAttribute attributes : object.getAttributes()) {
-						if(nameTextField.getText().equals(attribute.getName())) {
-						return true;
-						}
-					}
-					break;*/
+
+		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
+		Vector<FmmlxObject> objects = diagrams.get(0).fetchObjects();
+		
+		for (FmmlxObject object :objects) {
+			if(classCombobox.getSelectionModel().getSelectedItem().equals(object.getName())) {
+				for (FmmlxAttribute attribute : object.getOwnAttributes()) {
+					if(nameTextField.getText().equals(attribute.getName())) return true; 
+				}
+				for (FmmlxAttribute attribute : object.getOtherAttributes()) {
+					if(nameTextField.getText().equals(attribute.getName())) return true; 
+
 				}
 			}
 		}

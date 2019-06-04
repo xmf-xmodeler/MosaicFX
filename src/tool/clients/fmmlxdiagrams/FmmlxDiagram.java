@@ -1,9 +1,5 @@
 package tool.clients.fmmlxdiagrams;
 
-import java.util.Collections;
-import java.util.Vector;
-import java.util.concurrent.CountDownLatch;
-
 import javafx.application.Platform;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
@@ -19,8 +15,15 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Affine;
+
 import javafx.scene.transform.NonInvertibleTransformException;
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
+
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
+
+import java.util.Collections;
+import java.util.Vector;
+import java.util.concurrent.CountDownLatch;
 
 public class FmmlxDiagram {
 
@@ -35,13 +38,13 @@ public class FmmlxDiagram {
 	private Vector<Edge> edges = new Vector<>();
 
 	private transient Vector<Selectable> selectedObjects = new Vector<>();
-//	private DefaultContextMenu defaultContextMenu;
+	//	private DefaultContextMenu defaultContextMenu;
 //	private ObjectContextMenu objectContextMenu;
 	private ContextMenu activeContextMenu;
 	private DiagramActions actions;
 	private transient boolean objectsMoved = false;
 	private Point2D lastPoint;
-	private Point2D actualPoint;
+	private Point2D currentPoint;
 	private MouseMode mode = MouseMode.STANDARD;
 
 	public Vector<FmmlxObject> fetchObjects() {
@@ -108,7 +111,7 @@ public class FmmlxDiagram {
 //			comm.fetchAttributes(o);
 			o.fetchData(comm);
 		}
-		if(objects.size() >= 2) {
+		if (objects.size() >= 2) {
 			Edge e = new Edge(objects.get(0), objects.get(1));
 			edges.add(e);
 		}
@@ -175,10 +178,10 @@ public class FmmlxDiagram {
 
 	private void drawMultiSelectRect(GraphicsContext g) {
 		if (mode == MouseMode.MULTISELECT) {
-			double x = Math.min(lastPoint.getX(), actualPoint.getX());
-			double y = Math.min(lastPoint.getY(), actualPoint.getY());
+			double x = Math.min(lastPoint.getX(), currentPoint.getX());
+			double y = Math.min(lastPoint.getY(), currentPoint.getY());
 
-			g.strokeRect(x, y, Math.abs(actualPoint.getX() - lastPoint.getX()), Math.abs(actualPoint.getY() - lastPoint.getY()));
+			g.strokeRect(x, y, Math.abs(currentPoint.getX() - lastPoint.getX()), Math.abs(currentPoint.getY() - lastPoint.getY()));
 		}
 	}
 
@@ -208,13 +211,13 @@ public class FmmlxDiagram {
 //		FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
 
 		if (mode == MouseMode.MULTISELECT) {
-			storeActualPoint(p.getX(), p.getY());
+			storeCurrentPoint(p.getX(), p.getY());
 			redraw();
 		}
 		if (mode == MouseMode.STANDARD) {
-			if(selectedObjects.size() == 1 && selectedObjects.firstElement() instanceof Edge) {
+			if (selectedObjects.size() == 1 && selectedObjects.firstElement() instanceof Edge) {
 				((Edge) selectedObjects.firstElement()).setPointAtToBeMoved(p);
-				
+
 			}
 			mouseDraggedStandard(p);
 		}
@@ -222,7 +225,8 @@ public class FmmlxDiagram {
 
 	private void mouseDraggedStandard(Point2D p) {
 //		if (hitObject != null) {
-			for (Selectable s : selectedObjects) if(s instanceof FmmlxObject) {
+		for (Selectable s : selectedObjects)
+			if (s instanceof FmmlxObject) {
 				FmmlxObject o = (FmmlxObject) s;
 //				o.setX((int) (p.getX() - o.mouseMoveOffsetX));
 //				o.setY((int) (p.getY() - o.mouseMoveOffsetY));
@@ -230,8 +234,8 @@ public class FmmlxDiagram {
 			} else { // must be edge
 				s.moveTo(p.getX(), p.getY(), this);
 			}
-			objectsMoved = true;
-			redraw();
+		objectsMoved = true;
+		redraw();
 //		} else {
 //			mode = MouseMode.MULTISELECT;
 //			storeLastClick(p.getX(), p.getY());
@@ -246,17 +250,20 @@ public class FmmlxDiagram {
 			mouseReleasedStandard();
 		}
 		mode = MouseMode.STANDARD;
-		for(Edge edge : edges) {edge.dropPoint();}
+		for (Edge edge : edges) {
+			edge.dropPoint();
+		}
 		resizeCanvas();
 		redraw();
 	}
 
 	private void mouseReleasedStandard() {
 		if (objectsMoved) {
-			for (Selectable s : selectedObjects) if(s instanceof FmmlxObject) {
-				FmmlxObject o = (FmmlxObject) s;
-				comm.sendCurrentPosition(o);
-			}
+			for (Selectable s : selectedObjects)
+				if (s instanceof FmmlxObject) {
+					FmmlxObject o = (FmmlxObject) s;
+					comm.sendCurrentPosition(o);
+				}
 		}
 		objectsMoved = false;
 	}
@@ -277,11 +284,11 @@ public class FmmlxDiagram {
 		for (FmmlxObject o : objects)
 			if (o.isHit(x, y))
 				return o;
-		for (Edge e : edges)
-			{ System.err.println("Checking Edge " + e);
+		for (Edge e : edges) {
+			System.err.println("Checking Edge " + e);
 			if (e.isHit(x, y))
 				return e;
-			}
+		}
 		return null;
 	}
 
@@ -306,13 +313,13 @@ public class FmmlxDiagram {
 		} else {
 			deselectAll();
 		}
-		
-		if(selectedObjects.contains(hitObject)) {
+
+		if (selectedObjects.contains(hitObject)) {
 			mode = MouseMode.STANDARD;
-		} else{
+		} else {
 			mode = MouseMode.MULTISELECT;
 			storeLastClick(p.getX(), p.getY());
-			storeActualPoint(p.getX(), p.getY());
+			storeCurrentPoint(p.getX(), p.getY());
 		}
 	}
 
@@ -330,7 +337,7 @@ public class FmmlxDiagram {
 	}
 
 	private void handleScroll(ScrollEvent e) {
-		if(e.isControlDown()) {
+		if (e.isControlDown()) {
 			double delta = e.getDeltaY();
 			if (delta > 0) {
 				actions.zoomIn();
@@ -352,16 +359,17 @@ public class FmmlxDiagram {
 		lastPoint = new Point2D(x, y);
 	}
 
-	private void storeActualPoint(double x, double y) {
-		actualPoint = new Point2D(x, y);
+	private void storeCurrentPoint(double x, double y) {
+		currentPoint = new Point2D(x, y);
 	}
 
 	private void setMouseOffset(Point2D p) {
-		for (Selectable s : selectedObjects) if(s instanceof FmmlxObject) {
-			FmmlxObject o = (FmmlxObject) s;
-			o.mouseMoveOffsetX = p.getX() - o.getX();
-			o.mouseMoveOffsetY = p.getY() - o.getY();
-		}
+		for (Selectable s : selectedObjects)
+			if (s instanceof FmmlxObject) {
+				FmmlxObject o = (FmmlxObject) s;
+				o.mouseMoveOffsetX = p.getX() - o.getX();
+				o.mouseMoveOffsetY = p.getY() - o.getY();
+			}
 	}
 
 	public boolean isSelected(Selectable element) {
@@ -383,10 +391,10 @@ public class FmmlxDiagram {
 	}
 
 	private void handleMultiSelect() {
-		double x = Math.min(lastPoint.getX(), actualPoint.getX());
-		double y = Math.min(lastPoint.getY(), actualPoint.getY());
-		double w = Math.abs(actualPoint.getX() - lastPoint.getX());
-		double h = Math.abs(actualPoint.getY() - lastPoint.getY());
+		double x = Math.min(lastPoint.getX(), currentPoint.getX());
+		double y = Math.min(lastPoint.getY(), currentPoint.getY());
+		double w = Math.abs(currentPoint.getX() - lastPoint.getX());
+		double h = Math.abs(currentPoint.getY() - lastPoint.getY());
 
 		Rectangle rec = new Rectangle(x, y, w, h);
 		deselectAll();
@@ -395,35 +403,7 @@ public class FmmlxDiagram {
 				select(o);
 			}
 		}
-	}
-
-	public void addMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
-		comm.addMetaClass(name, level, parents, isAbstract, x, y);
-	}
-
-	public int getTestClassId() {
-		return objects.firstElement().id;
-	}
-
-	public void addInstance(int testClassId, String name, Vector<Integer> parents, boolean isAbstract, int x,
-							int y) {
-		comm.addInstance(testClassId, name, parents, isAbstract, x, y);
-	}
-
-	public void addNewInstance(int of, String name, int level, Vector<String> parents, boolean isAbstract, int x,
-							   int y) {
-		comm.addNewInstance(of, name, level, parents, isAbstract, x, y);
-	}
-	
-	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) {
-		comm.addAttribute(classID, name, level, type, multi);
-		
-	}
-	
-	public void changeAttributeName(int classID, String oldName, String newName) {
-		comm.changeAttributeName(classID, oldName, newName);
-		
-	}
+	}	
 
 	public Point2D scale(MouseEvent event) {
 		Affine i;
@@ -448,6 +428,34 @@ public class FmmlxDiagram {
 		resizeCanvas();
 	}
 
+
+	// Messages DiagramActions to XMF
+	
+	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) {
+		comm.addAttribute(classID, name, level, type, multi);
+		
+	}
+
+	public void addMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
+		comm.addMetaClass(name, level, parents, isAbstract, x, y);
+	}
+
+	public void addNewInstance(int of, String name, int level, Vector<String> parents, boolean isAbstract, int x,
+							   int y) {
+		comm.addNewInstance(of, name, level, parents, isAbstract, x, y);
+	}
+
+	public void changeClassName(ChangeNameDialogResult res) {
+		comm.changeClassName(res.getObjectId(), res.getNewName());
+	}
+
+	public void changeOperationName(ChangeNameDialogResult res) {
+		comm.changeOperationName(res.getObjectId(), res.getOldName(), res.getNewName());
+	}
+
+	public void changeAttributeName(ChangeNameDialogResult res) {
+		comm.changeAttributeName(res.getObjectId(), res.getOldName(), res.getNewName());
+	}
 
 	public Vector<Edge> getEdges() {
 		return edges;

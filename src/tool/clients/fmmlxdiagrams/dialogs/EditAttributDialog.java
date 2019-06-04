@@ -71,7 +71,7 @@ public class EditAttributDialog extends CustomDialog<MetaClassDialogResult> {
 		if (classComboBox.getSelectionModel().getSelectedIndex() == -1) {
 			for (FmmlxObject object : objects) {
 				if (classComboBox.getSelectionModel().getSelectedItem().equals(object.getName())) {
-					attributeList = object.getAttributes();
+					attributeList = object.getOwnAttributes();
 				}
 			}
 			

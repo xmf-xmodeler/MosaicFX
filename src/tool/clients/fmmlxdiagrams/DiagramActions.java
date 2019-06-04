@@ -1,23 +1,23 @@
 package tool.clients.fmmlxdiagrams;
 
-import java.util.Optional;
-import java.util.Vector;
-import java.util.concurrent.CountDownLatch;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
-import tool.clients.fmmlxdiagrams.dialogs.AddAttributeDialog;
-import tool.clients.fmmlxdiagrams.dialogs.AddInstanceDialog;
-import tool.clients.fmmlxdiagrams.dialogs.ChangeAttributeNameDialog;
-import tool.clients.fmmlxdiagrams.dialogs.CreateMetaClassDialog;
-import tool.clients.fmmlxdiagrams.dialogs.EditAttributDialog;
-import tool.clients.fmmlxdiagrams.dialogs.RemoveAttributDialog;
+
+import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeAttributeNameDialogResult;
+
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
+
 import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
+
+import java.util.Optional;
+import java.util.Vector;
+import java.util.concurrent.CountDownLatch;
 
 public class DiagramActions {
 
@@ -147,25 +147,8 @@ public class DiagramActions {
 		});
 	}
 
-	public void changeAttributeNameDialog() {
-		CountDownLatch l = new CountDownLatch(1);
 
-		Platform.runLater(() -> {
-			ChangeAttributeNameDialog dlg = new ChangeAttributeNameDialog(diagram, 0); // TODO change 0 into id of selected class 
-			Optional<ChangeAttributeNameDialogResult> result = dlg.showAndWait();
-
-			if (result.isPresent()) {
-				ChangeAttributeNameDialogResult cad = result.get();
-				diagram.changeAttributeName(cad.getClassID(), cad.getOldName(), cad.getNewName());
-			}
-
-			diagram.updateDiagram();
-			l.countDown();
-		});
-	}
-	
-	
-	public void removeAttributDialog() {
+	public void removeAttributeDialog() {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
@@ -198,6 +181,33 @@ public class DiagramActions {
 		diagram.redraw();
 	}
 
-	
+
+	public void changeNameDialog(FmmlxObject object, String type) {
+		CountDownLatch latch = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			ChangeNameDialog dlg = new ChangeNameDialog(diagram, object, type);
+			Optional<ChangeNameDialogResult> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final ChangeNameDialogResult result = opt.get();
+				System.err.println(result.toString());
+				switch (result.getType()) {
+					case "class":
+						diagram.changeClassName(result);
+						break;
+					case "operation":
+						diagram.changeOperationName(result);
+						break;
+					case "attribute":
+						diagram.changeAttributeName(result);
+						break;
+				}
+			}
+
+			diagram.updateDiagram();
+			latch.countDown();
+		});
+	}
 
 }
