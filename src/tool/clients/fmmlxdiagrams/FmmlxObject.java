@@ -52,6 +52,8 @@ public class FmmlxObject implements CanvasElement, Selectable {
 	Vector<FmmlxOperation> ownOperations = new Vector<>();
 	Vector<FmmlxOperation> otherOperations = new Vector<>();
 
+	private Font font;
+
 	public String getName() {
 		return name;
 	}
@@ -100,7 +102,6 @@ public class FmmlxObject implements CanvasElement, Selectable {
 //	public void setAttributes(Vector<FmmlxAttribute> attributes) {
 //		this.attributes = attributes;
 //	}
-	Font font;
 
 	public FmmlxObject(Integer id, String name, int level, Integer of, Vector<Integer> parents, Integer lastKnownX, Integer lastKnownY) {
 		this.name = name;
@@ -122,13 +123,12 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		this.level = level;
 		this.of = of;
 		this.parents = parents;
+
 		try {
 			font = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono.ttf"), 14);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-
-
 	}
 
 	final int INST_LEVEL_WIDTH = 7;
@@ -143,7 +143,7 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		double neededWidth = calculateNeededWidth(diagram);
 
 		//determine text height
-		double textHeight = new Text("TextForLayout").getLayoutBounds().getHeight();
+		double textHeight = calculateTextHeight();
 		double currentY = 0;
 
 		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * 2, Color.valueOf(getLevelBackgroundColor()), Color.BLACK);
@@ -216,6 +216,18 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		this.height = (int) currentY;
 	}
 
+	private double calculateTextHeight() {
+		Text t = new Text("TestText");
+		t.setFont(font);
+		return t.getLayoutBounds().getHeight();
+	}
+
+	private double calculateTextWidth(String text) {
+		Text t = new Text(text);
+		t.setFont(font);
+		return t.getLayoutBounds().getWidth();
+	}
+
 	private double calculateNeededWidth(FmmlxDiagram diagram) {
 		double neededWidth = 0;
 
@@ -259,9 +271,9 @@ public class FmmlxObject implements CanvasElement, Selectable {
 
 		boolean selected = diagram.isSelected(this);
 		layout(diagram);
+		g.setFont(font);
 
 		for (NodeElement e : nodeElements) {
-			g.setFont(font);
 			e.paintOn(g, x + xOffset, y + yOffset, diagram);
 		}
 
