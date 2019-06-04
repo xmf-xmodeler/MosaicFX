@@ -10,7 +10,7 @@ import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeAttributeNameDialogResult;
-
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
 
 import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
@@ -208,6 +208,39 @@ public class DiagramActions {
 			diagram.updateDiagram();
 			latch.countDown();
 		});
+	}
+
+	public void changeLevelDialog(FmmlxObject object, String type) {
+		// TODO Auto-generated method stub
+		CountDownLatch latch = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			ChangeLevelDialog dlg = new ChangeLevelDialog(diagram, object, type);
+			Optional<ChangeLevelDialogResult> opt= dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final ChangeLevelDialogResult result = opt.get();
+				System.err.println(result.toString());
+				switch (result.getType()) {
+					case "class":
+						diagram.changeClassLevel(result);
+						break;
+					case "attribute":
+						diagram.changeAttributeLevel(result);
+						break;
+					case "operation":
+						diagram.changeOperationLevel(result);
+						break;
+					case "association":
+						diagram.changeAssociationLevel(result);
+						break;
+				}
+			}
+
+			diagram.updateDiagram();
+			latch.countDown();
+		});
+		
 	}
 
 }

@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.Label;
+
+import javafx.scene.control.*;
+
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
@@ -24,7 +22,7 @@ public class RemoveDialog extends CustomDialog<MetaClassDialogResult>{
 	private final FmmlxDiagram diagram;
 	private Label selectObjectLabel;
 	private Label selectionForStrategies;
-	private javafx.scene.control.TextField selectObjectLabelTextField;
+	private TextField selectObjectLabelTextField;
 	private ComboBox<String> selectionForStrategiesComboBox;
 	
 	private Vector<FmmlxAttribute> attributes;
@@ -86,6 +84,14 @@ public class RemoveDialog extends CustomDialog<MetaClassDialogResult>{
 
 	private void removeAssoiation() {
 		// TODO Auto-generated method stub
+		dialogPane.setHeaderText("Remove Association");
+		selectObjectLabel = new Label("Selected Object");
+		selectObjectLabelTextField = new TextField();
+		selectObjectLabelTextField.setText(object.getName());
+		selectObjectLabelTextField.setDisable(true);
+		
+		grid.add(selectObjectLabel, 0, 0);
+		grid.add(selectObjectLabelTextField, 1, 0);
 		
 	}
 
@@ -98,7 +104,7 @@ public class RemoveDialog extends CustomDialog<MetaClassDialogResult>{
 		selectObjectLabel = new Label("Selected Object");
 		Label selectOperation = new Label ("Select Operation");
 		selectionForStrategies = new Label("Selection for Strategies");
-		selectObjectLabelTextField = new javafx.scene.control.TextField();
+		selectObjectLabelTextField = new TextField();
 		ComboBox<String> selectOperationComboBox = new ComboBox<String>();
 		selectionForStrategiesComboBox = new ComboBox<>();
 		

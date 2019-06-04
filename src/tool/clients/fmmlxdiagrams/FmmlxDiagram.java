@@ -17,6 +17,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Affine;
 
 import javafx.scene.transform.NonInvertibleTransformException;
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
 
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
@@ -459,5 +460,25 @@ public class FmmlxDiagram {
 
 	public Vector<Edge> getEdges() {
 		return edges;
+	}
+
+	public void changeClassLevel(ChangeLevelDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void changeAttributeLevel(ChangeLevelDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void changeAssociationLevel(ChangeLevelDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void changeOperationLevel(ChangeLevelDialogResult result) {
+		// TODO Auto-generated method stub
+		
 	}
 }
