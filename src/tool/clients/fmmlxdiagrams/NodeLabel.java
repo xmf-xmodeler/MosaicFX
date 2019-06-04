@@ -14,9 +14,9 @@ public class NodeLabel implements NodeElement {
 	Object actionObject; // Change to interface ~ HasContextMenu
 	String text;
 
-	private final static int Y_BASELINE_DIFF = 5;
+	private final static int Y_BASELINE_DIFF = 3;
 	private final static int BOX_GAP = 1;
-	
+
 
 	@Override
 	public void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram) {
@@ -24,22 +24,22 @@ public class NodeLabel implements NodeElement {
 		Text testText = new Text(text);
 		double textWidth = testText.getLayoutBounds().getWidth();
 		double textHeight = testText.getLayoutBounds().getHeight();
-		
-		if(alignment != Pos.BASELINE_LEFT) {
-			hAlign = (alignment==Pos.BASELINE_CENTER?0.5:1)*textWidth;
+
+		if (alignment != Pos.BASELINE_LEFT) {
+			hAlign = (alignment == Pos.BASELINE_CENTER ? 0.5 : 1) * textWidth;
 		}
-		if(bgColor != null) {
+		if (bgColor != null) {
 			g.setFill(bgColor);
-			g.fillRect(x - hAlign + xOffset - BOX_GAP, y + yOffset - BOX_GAP - textHeight, textWidth + 2*BOX_GAP, textHeight+2*BOX_GAP);
+			g.fillRect(x - hAlign + xOffset - BOX_GAP, y + yOffset - BOX_GAP - textHeight, textWidth + 2 * BOX_GAP, textHeight + 2 * BOX_GAP);
 		}
-		
+
 		g.setFill(fgColor);
 		g.fillText(text, x - hAlign + xOffset, y + yOffset - Y_BASELINE_DIFF);
 
 	}
 
 	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, Object actionObject,
-			String text) {
+					 String text) {
 		super();
 		this.alignment = alignment;
 		this.x = x;
