@@ -56,6 +56,8 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		
+
+		
 		addElementToGrid();
 		dialogPane.setContent(grid);
 		

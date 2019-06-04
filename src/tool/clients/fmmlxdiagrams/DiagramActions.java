@@ -148,11 +148,11 @@ public class DiagramActions {
 	}
 
 
-	public void removeAttributeDialog() {
+	public void removeDialog(FmmlxObject object,String type) {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			RemoveAttributDialog dlg = new RemoveAttributDialog();
+			RemoveDialog dlg = new RemoveDialog(diagram, object,type);
 			Optional<MetaClassDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {

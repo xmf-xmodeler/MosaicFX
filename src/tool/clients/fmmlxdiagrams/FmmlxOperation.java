@@ -4,6 +4,6 @@ public class FmmlxOperation {
 	String name = "TestOperation()";
 
 	public String getName() {
-		return name;
+		return "TestOperation()";
 	}
 }

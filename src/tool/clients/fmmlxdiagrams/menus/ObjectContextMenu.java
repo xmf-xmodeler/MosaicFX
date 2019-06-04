@@ -19,7 +19,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem addInstanceItem = new MenuItem("Add instance");
 		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object.getId()));
 		MenuItem removeItem = new MenuItem("Remove");
-		removeItem.setOnAction(e -> System.out.println("OCM: Remove object called"));
+		removeItem.setOnAction(e -> actions.removeDialog(object,"class"));
 		MenuItem changeNameItem = new MenuItem("Change name");
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, "class"));
 		MenuItem changeOfItem = new MenuItem("Change of");
@@ -45,7 +45,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem addItem = new MenuItem("Add");
 		addItem.setOnAction(e -> actions.addAttributeDialog());
 		MenuItem removeItem = new MenuItem("Remove");
-		removeItem.setOnAction(e -> actions.removeAttributeDialog());
+		removeItem.setOnAction(e -> actions.removeDialog(object, "attribute"));
 		MenuItem changeNameItem = new MenuItem("Change name");
 
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, "attribute"));
@@ -94,7 +94,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem addItem = new MenuItem("Add");
 		addItem.setOnAction(e -> System.out.println("OCM: add operation called"));
 		MenuItem removeItem = new MenuItem("Remove");
-		removeItem.setOnAction(e -> System.out.println("OCM: remove operation called"));
+		removeItem.setOnAction(e -> actions.removeDialog(object, "operation"));
 		MenuItem changeNameItem = new MenuItem("Change name");
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, "operation"));
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
