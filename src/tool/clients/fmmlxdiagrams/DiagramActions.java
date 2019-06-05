@@ -9,11 +9,11 @@ import javafx.scene.input.MouseEvent;
 import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeAttributeNameDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
-
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOfDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.RemoveDialogResult;
 
 import java.util.Optional;
 import java.util.Vector;
@@ -130,34 +130,17 @@ public class DiagramActions {
 		});
 	}
 
-	public void editAttributeDialog() {
-		CountDownLatch l = new CountDownLatch(1);
-
-		Platform.runLater(() -> {
-			EditAttributDialog dlg = new EditAttributDialog(diagram);
-			Optional<MetaClassDialogResult> opt = dlg.showAndWait();
-
-			if (opt.isPresent()) {
-				MetaClassDialogResult test = opt.get();
-				System.out.println("!!!!!!!!!!!!! " + test.getName() + " " + test.getLevel());
-			}
-
-			diagram.updateDiagram();
-			l.countDown();
-		});
-	}
-
 
 	public void removeDialog(FmmlxObject object,String type) {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			RemoveDialog dlg = new RemoveDialog(diagram, object,type);
-			Optional<MetaClassDialogResult> opt = dlg.showAndWait();
+			Optional<RemoveDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
-				MetaClassDialogResult test = opt.get();
-				System.out.println("!!!!!!!!!!!!! " + test.getName() + " " + test.getLevel());
+				RemoveDialogResult test = opt.get();
+				System.out.println("!!!!!!!!!!!!! ");
 			}
 
 			diagram.updateDiagram();
@@ -240,6 +223,26 @@ public class DiagramActions {
 			diagram.updateDiagram();
 			latch.countDown();
 		});
+		
+	}
+
+	public void changeOfDialog(FmmlxObject object) {
+		
+		CountDownLatch l = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			ChangeOfDialog dlg = new ChangeOfDialog(diagram, object);
+			dlg.setTitle("Change Of");
+			Optional<ChangeOfDialogResult> result = dlg.showAndWait();
+
+			if (result.isPresent()) {
+				ChangeOfDialogResult cod = result.get();
+			}
+
+			diagram.updateDiagram();
+			l.countDown();
+		});
+		// TODO Auto-generated method stub
 		
 	}
 

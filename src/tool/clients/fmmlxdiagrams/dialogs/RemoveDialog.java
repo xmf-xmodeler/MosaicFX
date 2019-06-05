@@ -12,14 +12,15 @@ import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
-import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.RemoveDialogResult;
 
-public class RemoveDialog extends CustomDialog<MetaClassDialogResult>{
+public class RemoveDialog extends CustomDialog<RemoveDialogResult>{
 	
 	private DialogPane dialogPane;
 	private final String type;
 	private FmmlxObject object;
 	private final FmmlxDiagram diagram;
+	
 	private Label selectObjectLabel;
 	private Label selectionForStrategies;
 	private TextField selectObjectLabelTextField;
@@ -45,7 +46,6 @@ public class RemoveDialog extends CustomDialog<MetaClassDialogResult>{
 
 		dialogPane.setContent(grid);
 		
-		validateUserInput();
 		
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
@@ -191,6 +191,41 @@ public class RemoveDialog extends CustomDialog<MetaClassDialogResult>{
 
 
 	private boolean validateUserInput() {
+		
+		switch (type) {
+		case "class":
+			return validateRemoveClass();
+		case "attribute":
+			return validateRemoveAttribute();
+		case "operation":
+			return validateRemoveOperation();
+		case "association":
+			return validateRemoveAssociation();
+		}
+		return true;
+	
+	}
+
+
+	private boolean validateRemoveAssociation() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	private boolean validateRemoveOperation() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	private boolean validateRemoveAttribute() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	private boolean validateRemoveClass() {
 		// TODO Auto-generated method stub
 		return false;
 	}

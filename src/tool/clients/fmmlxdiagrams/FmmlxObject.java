@@ -344,4 +344,9 @@ public class FmmlxObject implements CanvasElement, Selectable {
 			if (edge.isEndNode(this)) edge.moveEndPoint();
 		}
 	}
+
+	public int getOf() {
+		// TODO Auto-generated method stub
+		return of;
+	}
 }

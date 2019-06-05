@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import javafx.scene.control.*;
-import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
 
 
 public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
@@ -39,18 +39,51 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 		layoutContent();
 		dialogPane.setContent(flow);
 		
-		validateUserInput();
-		setResult();
+		setResult(validateUserInput());
 	}
 
-	private void setResult() {
-		// TODO Auto-generated method stub
-		
+	private void setResult(boolean userInputIsValid) {
+		setResultConverter(dlgBtn -> {
+			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+				// TODO Auto-generated method stub
+			}
+			return null;
+		});
 	}
 
-	private void validateUserInput() {
-		// TODO Auto-generated method stub
+	private boolean validateUserInput() {
 		
+		switch (type) {
+			case "class":
+				return validateClassLevelChange();
+			case "attribute":
+				return validateAttributeLevelChange();
+			case "operation":
+				return validateOperationLevelChange();
+			case "association":
+				return validateAssociationLevelChange();
+		}
+		return true;
+	}
+
+	private boolean validateAssociationLevelChange() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private boolean validateOperationLevelChange() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private boolean validateAttributeLevelChange() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private boolean validateClassLevelChange() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	private void layoutContent() {
