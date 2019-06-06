@@ -4,12 +4,8 @@ package tool.clients.fmmlxdiagrams;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -41,19 +37,44 @@ public class FmmlxObject implements CanvasElement, Selectable {
 
 	static int testDiff = 10;
 
-	static int gap = 5;
+	static int GAP = 5;
+
+	final int INST_LEVEL_WIDTH = 7;
+	final int MIN_BOX_HEIGHT = 4;
+	final int EXTRA_Y_PER_LINE = 3;
+	Vector<NodeElement> nodeElements = new Vector<>();
 
 	Vector<FmmlxSlot> slots;
 	@Deprecated
 	Vector<FmmlxOperation> operations;
 	Vector<FmmlxOperationValue> operationValues;
 
-	Vector<FmmlxAttribute> ownAttributes;
-	Vector<FmmlxAttribute> otherAttributes;
-	Vector<FmmlxOperation> ownOperations = new Vector<>();
-	Vector<FmmlxOperation> otherOperations = new Vector<>();
+	private Vector<FmmlxAttribute> ownAttributes;
+	private Vector<FmmlxAttribute> otherAttributes;
+	private Vector<FmmlxOperation> ownOperations = new Vector<>();
+	private Vector<FmmlxOperation> otherOperations = new Vector<>();
 
-	private Font font;
+	public FmmlxObject(Integer id, String name, int level, Integer of, Vector<Integer> parents, Integer lastKnownX, Integer lastKnownY) {
+		this.name = name;
+		this.id = id;
+		if (lastKnownX != null && lastKnownX != 0) {
+			x = lastKnownX;
+		} else {
+			x = testDiff;
+			testDiff += 150;
+		}
+		if (lastKnownY != null && lastKnownY != 0) {
+			y = lastKnownY;
+		} else {
+			y = 10;
+		}
+
+		width = 150;
+		height = 80;
+		this.level = level;
+		this.of = of;
+		this.parents = parents;
+	}
 
 	public String getName() {
 		return name;
@@ -91,19 +112,22 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		this.y = y;
 	}
 
+	public int getOf() {
+		return of;
+	}
+
 
 	public Vector<FmmlxAttribute> getOwnAttributes() {
 		return ownAttributes;
-
 	}
 
 	public Vector<FmmlxAttribute> getOtherAttributes() {
 		return otherAttributes;
 	}
-
 	//
 //	public void setAttributes(Vector<FmmlxAttribute> attributes) {
 //		this.attributes = attributes;
+
 //	}
 
 	public Vector<FmmlxOperation> getOwnOperations() {
@@ -118,48 +142,29 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		this.parents = parents;
 	}
 
-
-	public FmmlxObject(Integer id, String name, int level, Integer of, Vector<Integer> parents, Integer lastKnownX, Integer lastKnownY) {
-		this.name = name;
-		this.id = id;
-		if (lastKnownX != null && lastKnownX != 0) {
-			x = lastKnownX;
-		} else {
-			x = testDiff;
-			testDiff += 150;
-		}
-		if (lastKnownY != null && lastKnownY != 0) {
-			y = lastKnownY;
-		} else {
-			y = 10;
-		}
-
-		width = 150;
-		height = 80;
-		this.level = level;
-		this.of = of;
-		this.parents = parents;
-
-		try {
-			font = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono.ttf"), 14);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+	public double getMaxBottom() {
+		return y + height;
 	}
 
-	final int INST_LEVEL_WIDTH = 7;
-	final int MIN_BOX_HEIGHT = 4;
-	final int EXTRA_Y_PER_LINE = 3;
-	Vector<NodeElement> nodeElements = new Vector<>();
+	public double getMaxRight() {
+		return x + width;
+	}
+
+	public String getLevelBackgroundColor() {
+		return level < 6 ? levelBackgroundColors[level] : "#ffaa00";
+	}
+
+	public String getLevelFontColor() {
+		return new Vector<Integer>(Arrays.asList(2, 3)).contains(level) ? "#ffffff" : "000000";
+	}
 
 	private void layout(FmmlxDiagram diagram) {
 
 		nodeElements = new Vector<>();
 //		double neededHeight = 0;
 		double neededWidth = calculateNeededWidth(diagram);
-
 		//determine text height
-		double textHeight = calculateTextHeight();
+		double textHeight = diagram.calculateTextHeight();
 		double currentY = 0;
 
 		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * 2, Color.valueOf(getLevelBackgroundColor()), Color.BLACK);
@@ -176,6 +181,7 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		header.nodeElements.add(metaclassLabel);
 		header.nodeElements.add(levelLabel);
 		header.nodeElements.add(nameLabel);
+
 		currentY += 2 * textHeight;
 
 		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
@@ -232,32 +238,24 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		this.height = (int) currentY;
 	}
 
-	private double calculateTextHeight() {
-		Text t = new Text("TestText");
-		t.setFont(font);
-		return t.getLayoutBounds().getHeight();
-	}
-
 	private double calculateNeededWidth(FmmlxDiagram diagram) {
 		double neededWidth = 0;
 
 		//determine maximal width of attributes
 		for (FmmlxAttribute att : ownAttributes) {
-			neededWidth = Math.max(calculateTextWidth(att.name + ":" + att.type) + INST_LEVEL_WIDTH, neededWidth);
+			neededWidth = Math.max(diagram.calculateTextWidth(att.name + ":" + att.type) + INST_LEVEL_WIDTH, neededWidth);
 		}
 		for (FmmlxAttribute att : otherAttributes) {
-			neededWidth = Math.max(calculateTextWidth(att.name + ":" + att.type + " (from " + diagram.getObjectById(att.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
+			neededWidth = Math.max(diagram.calculateTextWidth(att.name + ":" + att.type + " (from " + diagram.getObjectById(att.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
 		}
 //		//determine maximal width of operations
 //		if (showOperations) {
 		for (FmmlxOperation o : ownOperations) {
-			neededWidth = Math.max(calculateTextWidth(o.name + ":" + o.type), neededWidth);
-			System.err.println("WIDHT: " + o.name + " " + neededWidth);
+			String text = o.name + "():" + o.type;
+			neededWidth = Math.max(diagram.calculateTextWidth(text) + INST_LEVEL_WIDTH, neededWidth);
 		}
 		for (FmmlxOperation o : otherOperations) {
-			neededWidth = Math.max(calculateTextWidth(o.name + ":" + o.type + " (from " + diagram.getObjectById(o.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
-			System.err.println("WIDHT2: " + o.name + " " + neededWidth);
-
+			neededWidth = Math.max(diagram.calculateTextWidth(o.name + "():" + o.type + " (from " + diagram.getObjectById(o.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
 		}
 //		}
 //		//determine maximal width of slots
@@ -277,20 +275,14 @@ public class FmmlxObject implements CanvasElement, Selectable {
 //		}
 
 		//if minimum width is not reached just paint minimum
-		return Math.max(neededWidth + 2 * gap, minWidth);
-	}
-
-	private double calculateTextWidth(String text) {
-		Text t = new Text(text);
-		t.setFont(font);
-		return t.getLayoutBounds().getWidth();
+		return Math.max(neededWidth + 2 * GAP, minWidth);
 	}
 
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram diagram) {
 
 		boolean selected = diagram.isSelected(this);
 		layout(diagram);
-		g.setFont(font);
+		g.setFont(diagram.getFont());
 
 		for (NodeElement e : nodeElements) {
 			e.paintOn(g, x + xOffset, y + yOffset, diagram);
@@ -347,27 +339,27 @@ public class FmmlxObject implements CanvasElement, Selectable {
 //		}
 //
 //		//if minimum width is not reached just paint minimum
-//		calculatedWidth = Math.max(calculatedWidth + 2 * gap, minWidth);
+//		calculatedWidth = Math.max(calculatedWidth + 2 * GAP, minWidth);
 //
 //		//calculating header height
 //		Text header = new Text("[" + level + "]" + name);
-//		double headerheight = header.getLayoutBounds().getHeight() + 2 * gap;
+//		double headerheight = header.getLayoutBounds().getHeight() + 2 * GAP;
 //
 //		//determine text height
 //		double textheight = new Text("TextForLayout").getLayoutBounds().getHeight();
 //
 //		//calculate starting position for text
-//		double Y = 0 + headerheight + 2 * gap;    // just a guess
-//		calculatedHeight = Y + (ownAttributesToPaint.size() + otherAttributesToPaint.size() - 1) * (textheight + gap) + gap;
+//		double Y = 0 + headerheight + 2 * GAP;    // just a guess
+//		calculatedHeight = Y + (ownAttributesToPaint.size() + otherAttributesToPaint.size() - 1) * (textheight + GAP) + GAP;
 //
 //		if (showOperations)
-//			calculatedHeight += (operations.size() - 1) * (textheight + gap) + textheight + 2 * gap;
+//			calculatedHeight += (operations.size() - 1) * (textheight + GAP) + textheight + 2 * GAP;
 //
 //		if (showOperationValues)
-//			calculatedHeight += (operationValues.size() - 1) * (textheight + gap) + textheight + 2 * gap;
+//			calculatedHeight += (operationValues.size() - 1) * (textheight + GAP) + textheight + 2 * GAP;
 //
 //		if (showSlots)
-//			calculatedHeight += (slots.size() - 1) * (textheight + gap) + textheight + 2 * gap;
+//			calculatedHeight += (slots.size() - 1) * (textheight + GAP) + textheight + 2 * GAP;
 //
 //		calculatedHeight += 10;// just a guess
 //
@@ -381,17 +373,17 @@ public class FmmlxObject implements CanvasElement, Selectable {
 //		//write attributes
 //		for (FmmlxAttribute att : ownAttributesToPaint) {
 //			Text text = new Text("[" + att.level + "] " + att.name + ":" + att.type);
-//			g.fillText(text.getText(), x + gap, Y + gap);
+//			g.fillText(text.getText(), x + GAP, Y + GAP);
 ////			if (!att.equals(ownAttributesToPaint.lastElement()))
-//				Y += text.getLayoutBounds().getHeight() + gap;
+//				Y += text.getLayoutBounds().getHeight() + GAP;
 //		}
 //
 //		g.setFill(Color.GRAY);
 //		for (FmmlxAttribute att : otherAttributesToPaint) {
 //			Text text = new Text("[" + att.level + "] " + att.name + ":" + att.type);
-//			g.fillText(text.getText(), x + gap, Y + gap);
+//			g.fillText(text.getText(), x + GAP, Y + GAP);
 ////			if (!att.equals(otherAttributesToPaint.lastElement()))
-//				Y += text.getLayoutBounds().getHeight() + gap;
+//				Y += text.getLayoutBounds().getHeight() + GAP;
 //		}
 //		g.setFill(Color.BLACK);
 //
@@ -400,14 +392,14 @@ public class FmmlxObject implements CanvasElement, Selectable {
 //
 //			//draw divider
 //			g.strokeLine(x, Y + textheight, x + calculatedWidth, Y + textheight);
-//			Y += textheight + 2 * gap;
+//			Y += textheight + 2 * GAP;
 //
 //			//write operations
 //			for (FmmlxOperation op : operations) {
 //				Text text = new Text(op.name);
-//				g.fillText(text.getText(), x + gap, Y + gap);
+//				g.fillText(text.getText(), x + GAP, Y + GAP);
 //				if (!op.equals(operations.lastElement()))
-//					Y += text.getLayoutBounds().getHeight() + gap;
+//					Y += text.getLayoutBounds().getHeight() + GAP;
 //			}
 //		}
 //
@@ -416,14 +408,14 @@ public class FmmlxObject implements CanvasElement, Selectable {
 //
 //			//draw divider
 //			g.strokeLine(x, Y + textheight, x + calculatedWidth, Y + textheight);
-//			Y += textheight + 2 * gap;
+//			Y += textheight + 2 * GAP;
 //
 //			//write operations
 //			for (FmmlxSlot slot : slots) {
 //				Text text = new Text(slot.name + " = " + slot.value);
-//				g.fillText(text.getText(), x + gap, Y + gap);
+//				g.fillText(text.getText(), x + GAP, Y + GAP);
 //				if (!slot.equals(slots.lastElement()))
-//					Y += text.getLayoutBounds().getHeight() + gap;
+//					Y += text.getLayoutBounds().getHeight() + GAP;
 //			}
 //		}
 //
@@ -432,14 +424,14 @@ public class FmmlxObject implements CanvasElement, Selectable {
 //
 //			//draw divider
 //			g.strokeLine(x, Y + textheight, x + calculatedWidth, Y + textheight);
-//			Y += textheight + 2 * gap;
+//			Y += textheight + 2 * GAP;
 //
 //			//write operations
 //			for (FmmlxOperationValue opValue : operationValues) {
 //				Text text = new Text(opValue.name + " = " + opValue.value);
-//				g.fillText(text.getText(), x + gap, Y + gap);
+//				g.fillText(text.getText(), x + GAP, Y + GAP);
 //				if (!opValue.equals(operationValues.lastElement()))
-//					Y += text.getLayoutBounds().getHeight() + gap;
+//					Y += text.getLayoutBounds().getHeight() + GAP;
 //			}
 //		}
 //
@@ -454,7 +446,7 @@ public class FmmlxObject implements CanvasElement, Selectable {
 //		} else {
 //			g.setFill(Color.BLACK);
 //		}
-//		g.fillText("[" + level + "]" + name, x + gap, y + headerheight / 2 + gap);
+//		g.fillText("[" + level + "]" + name, x + GAP, y + headerheight / 2 + GAP);
 //
 //		// draw divider between class name and attributes
 //		g.strokeLine(x, y + headerheight, x + calculatedWidth, y + headerheight);
@@ -496,22 +488,6 @@ public class FmmlxObject implements CanvasElement, Selectable {
 						mouseY < y + height;
 	}
 
-	public double getMaxBottom() {
-		return y + height;
-	}
-
-	public double getMaxRight() {
-		return x + width;
-	}
-
-	public String getLevelBackgroundColor() {
-		return level < 6 ? levelBackgroundColors[level] : "#ffaa00";
-	}
-
-	public String getLevelFontColor() {
-		return new Vector<Integer>(Arrays.asList(2, 3)).contains(level) ? "#ffffff" : "000000";
-	}
-
 	@Override
 	public ObjectContextMenu getContextMenu(DiagramActions actions) {
 		return new ObjectContextMenu(this, actions);
@@ -526,11 +502,4 @@ public class FmmlxObject implements CanvasElement, Selectable {
 			if (edge.isEndNode(this)) edge.moveEndPoint();
 		}
 	}
-
-	public int getOf() {
-		// TODO Auto-generated method stub
-		return of;
-	}
-
-
 }
