@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams;
 
+
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -90,8 +91,10 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		this.y = y;
 	}
 
+
 	public Vector<FmmlxAttribute> getOwnAttributes() {
 		return ownAttributes;
+
 	}
 
 	public Vector<FmmlxAttribute> getOtherAttributes() {
@@ -102,6 +105,19 @@ public class FmmlxObject implements CanvasElement, Selectable {
 //	public void setAttributes(Vector<FmmlxAttribute> attributes) {
 //		this.attributes = attributes;
 //	}
+
+	public Vector<FmmlxOperation> getOwnOperations() {
+		return ownOperations;
+	}
+
+	public Vector<Integer> getParents() {
+		return parents;
+	}
+
+	public void setParents(Vector<Integer> parents) {
+		this.parents = parents;
+	}
+
 
 	public FmmlxObject(Integer id, String name, int level, Integer of, Vector<Integer> parents, Integer lastKnownX, Integer lastKnownY) {
 		this.name = name;
@@ -510,4 +526,11 @@ public class FmmlxObject implements CanvasElement, Selectable {
 			if (edge.isEndNode(this)) edge.moveEndPoint();
 		}
 	}
+
+	public int getOf() {
+		// TODO Auto-generated method stub
+		return of;
+	}
+
+
 }

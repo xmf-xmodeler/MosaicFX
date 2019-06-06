@@ -11,9 +11,12 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+
+import javafx.scene.control.ButtonBar.ButtonData;
+import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 
-public class MultiplicityDialog extends CustomDialog<AddAttributeDialog> {
+public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 
 	private Label labelMin;
 	private Label labelMax;
@@ -46,6 +49,18 @@ public class MultiplicityDialog extends CustomDialog<AddAttributeDialog> {
 			if (!validateInput()) {
 				e.consume();
 			}
+		});
+		
+		setResultConverter(dlgBtn -> {
+			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
+				
+				/*return new MultiplicityDialogResult(
+						classId,
+						nameTextField.getText(), 
+						levelComboBox.getSelectionModel().getSelectedItem(),
+						typeComboBox.getSelectionModel().getSelectedItem(), multiplicityResult);*/
+			}
+			return null;
 		});
 
 	}

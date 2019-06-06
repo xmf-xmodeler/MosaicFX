@@ -1,24 +1,16 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
-import java.util.ArrayList;
-import java.util.Vector;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
+
+import java.util.ArrayList;
+import java.util.Vector;
 
 public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
@@ -29,22 +21,21 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	private ComboBox<String> ofComboBox;
 	private CheckBox abstractCheckBox;
 	private Label abstractLabel;
-	private Vector<FmmlxDiagram> diagrams;
-	ObservableList<String> parentList;
-	ObservableList<String> ofList;
+	private ObservableList<String> parentList;
+	private ObservableList<String> ofList;
+	private Vector<FmmlxObject> objects;
 
 	public AddInstanceDialog(final FmmlxDiagram diagram, int ofId) {
 		super();
 
-		this.diagram = diagram;
-
 		DialogPane dialog = getDialogPane();
+		this.diagram=diagram;
+		this.objects=diagram.getObjects();
+
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
 		layoutContent(ofId);
 		dialog.setContent(flow);
-
-		Vector<FmmlxObject> objects = diagram.getObjects();
 
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
@@ -63,7 +54,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 						level = object.getLevel() - 1;
 					}
 				}
-				System.out.println(level + " level instance");
+				
 				return new AddInstanceDialogResult(nameTextField.getText(), level,
 						parentListView.getSelectionModel().getSelectedItems(), idSelectedItem,
 						abstractCheckBox.isSelected());
@@ -73,10 +64,9 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	}
 
 	private void layoutContent(Integer ofId) {
-		diagrams = FmmlxDiagramCommunicator.getDiagrams();
-		diagrams.get(0).getObjects();
+		
 		ofList = getAllOfList();
-		parentList = getAllParentList();
+		parentList = diagram.getAllPossibleParentList();
 		nameTextField = new TextField();
 		ofComboBox = new ComboBox<>(ofList);
 
@@ -103,12 +93,11 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
 	private ObservableList<String> getAllOfList() {
 		ArrayList<String> resultStrings = new ArrayList<String>();
-
-		Vector<FmmlxObject> objects = diagram.getObjects();
-
-		for (FmmlxObject object : objects) {
-			if (object.getLevel() != 0) {
-				resultStrings.add(object.getName());
+		if (!objects.isEmpty()) {
+			for (FmmlxObject object :objects) {
+				if (object.getLevel()!=0) {
+					resultStrings.add(object.getName());
+				}
 			}
 		}
 
@@ -116,19 +105,6 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		return result;
 	}
 
-	private ObservableList<String> getAllParentList() {
-		ArrayList<String> resultStrings = new ArrayList<String>();
-
-		Vector<FmmlxObject> objects = diagram.getObjects();
-
-		for (FmmlxObject object : objects) {
-			if (object.getLevel() != 0) {
-				resultStrings.add(object.getName());
-			}
-		}
-		ObservableList<String> result = FXCollections.observableArrayList(resultStrings);
-		return result;
-	}
 
 	private boolean validateUserInput() {
 		if (!validateName()) {
@@ -160,12 +136,11 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	}
 
 	private boolean nameAlreadyUsed() {
-
-		Vector<FmmlxObject> objects = diagram.getObjects();
-
-		for (FmmlxObject object : objects) {
-			if (nameTextField.getText().equals(object.getName())) {
-				return true;
+		if (!objects.isEmpty()) {
+			for (FmmlxObject object :objects) {
+				if(nameTextField.getText().equals(object.getName())) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -182,12 +157,15 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		return true;
 	}
 
-	private void setOf(int ofId) {
-		FmmlxObject ofObject = diagram.getObjectById(ofId);
 
+	private void setOf(int ofId) {
+		
+		FmmlxObject ofObject = diagram.getObjectById(ofId);
 		ofComboBox.setValue(ofObject.getName());
+		
 		ofComboBox.setEditable(false);
 	}
+
 
 	private boolean validateCircularDependecies() {
 		// TODO Auto-generated method stub

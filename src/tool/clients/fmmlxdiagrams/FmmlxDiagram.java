@@ -1,6 +1,8 @@
 package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
@@ -15,9 +17,14 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Affine;
+
 import javafx.scene.transform.NonInvertibleTransformException;
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
+
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
@@ -41,7 +48,7 @@ public class FmmlxDiagram {
 	private DiagramActions actions;
 	private transient boolean objectsMoved = false;
 	private Point2D lastPoint;
-	private Point2D actualPoint;
+	private Point2D currentPoint;
 	private MouseMode mode = MouseMode.STANDARD;
 
 	public Vector<FmmlxObject> fetchObjects() {
@@ -60,6 +67,7 @@ public class FmmlxDiagram {
 	}
 
 	public FmmlxObject getObjectById(int id) {
+		System.out.println(objects.get(0).getName());
 		for (FmmlxObject object : objects) {
 			if (object.getId() == id)
 				return object;
@@ -175,10 +183,10 @@ public class FmmlxDiagram {
 
 	private void drawMultiSelectRect(GraphicsContext g) {
 		if (mode == MouseMode.MULTISELECT) {
-			double x = Math.min(lastPoint.getX(), actualPoint.getX());
-			double y = Math.min(lastPoint.getY(), actualPoint.getY());
+			double x = Math.min(lastPoint.getX(), currentPoint.getX());
+			double y = Math.min(lastPoint.getY(), currentPoint.getY());
 
-			g.strokeRect(x, y, Math.abs(actualPoint.getX() - lastPoint.getX()), Math.abs(actualPoint.getY() - lastPoint.getY()));
+			g.strokeRect(x, y, Math.abs(currentPoint.getX() - lastPoint.getX()), Math.abs(currentPoint.getY() - lastPoint.getY()));
 		}
 	}
 
@@ -208,7 +216,7 @@ public class FmmlxDiagram {
 //		FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
 
 		if (mode == MouseMode.MULTISELECT) {
-			storeActualPoint(p.getX(), p.getY());
+			storeCurrentPoint(p.getX(), p.getY());
 			redraw();
 		}
 		if (mode == MouseMode.STANDARD) {
@@ -316,7 +324,7 @@ public class FmmlxDiagram {
 		} else {
 			mode = MouseMode.MULTISELECT;
 			storeLastClick(p.getX(), p.getY());
-			storeActualPoint(p.getX(), p.getY());
+			storeCurrentPoint(p.getX(), p.getY());
 		}
 	}
 
@@ -356,8 +364,8 @@ public class FmmlxDiagram {
 		lastPoint = new Point2D(x, y);
 	}
 
-	private void storeActualPoint(double x, double y) {
-		actualPoint = new Point2D(x, y);
+	private void storeCurrentPoint(double x, double y) {
+		currentPoint = new Point2D(x, y);
 	}
 
 	private void setMouseOffset(Point2D p) {
@@ -388,10 +396,10 @@ public class FmmlxDiagram {
 	}
 
 	private void handleMultiSelect() {
-		double x = Math.min(lastPoint.getX(), actualPoint.getX());
-		double y = Math.min(lastPoint.getY(), actualPoint.getY());
-		double w = Math.abs(actualPoint.getX() - lastPoint.getX());
-		double h = Math.abs(actualPoint.getY() - lastPoint.getY());
+		double x = Math.min(lastPoint.getX(), currentPoint.getX());
+		double y = Math.min(lastPoint.getY(), currentPoint.getY());
+		double w = Math.abs(currentPoint.getX() - lastPoint.getX());
+		double h = Math.abs(currentPoint.getY() - lastPoint.getY());
 
 		Rectangle rec = new Rectangle(x, y, w, h);
 		deselectAll();
@@ -400,25 +408,7 @@ public class FmmlxDiagram {
 				select(o);
 			}
 		}
-	}
-
-	public void addMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
-		comm.addMetaClass(name, level, parents, isAbstract, x, y);
-	}
-
-	public int getTestClassId() {
-		return objects.firstElement().id;
-	}
-
-	public void addInstance(int testClassId, String name, Vector<Integer> parents, boolean isAbstract, int x,
-							int y) {
-		comm.addInstance(testClassId, name, parents, isAbstract, x, y);
-	}
-
-	public void addNewInstance(int of, String name, int level, Vector<String> parents, boolean isAbstract, int x,
-							   int y) {
-		comm.addNewInstance(of, name, level, parents, isAbstract, x, y);
-	}
+	}	
 
 	public Point2D scale(MouseEvent event) {
 		Affine i;
@@ -443,7 +433,70 @@ public class FmmlxDiagram {
 		resizeCanvas();
 	}
 
+
+	// Messages DiagramActions to XMF
+	
+	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) {
+		comm.addAttribute(classID, name, level, type, multi);
+		
+	}
+
+	public void addMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
+		comm.addMetaClass(name, level, parents, isAbstract, x, y);
+	}
+
+	public void addNewInstance(int of, String name, int level, Vector<String> parents, boolean isAbstract, int x,
+							   int y) {
+		comm.addNewInstance(of, name, level, parents, isAbstract, x, y);
+	}
+
+	public void changeClassName(ChangeNameDialogResult res) {
+		comm.changeClassName(res.getObjectId(), res.getNewName());
+	}
+
+	public void changeOperationName(ChangeNameDialogResult res) {
+		comm.changeOperationName(res.getObjectId(), res.getOldName(), res.getNewName());
+	}
+
+	public void changeAttributeName(ChangeNameDialogResult res) {
+		comm.changeAttributeName(res.getObjectId(), res.getOldName(), res.getNewName());
+	}
+
 	public Vector<Edge> getEdges() {
 		return edges;
+	}
+
+	public void changeClassLevel(ChangeLevelDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void changeAttributeLevel(ChangeLevelDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void changeAssociationLevel(ChangeLevelDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void changeOperationLevel(ChangeLevelDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public ObservableList<String> getAllPossibleParentList() {
+		ArrayList<String> resultStrings = new ArrayList<String>();
+		
+		if (!objects.isEmpty()) {
+			for (FmmlxObject object :objects) {
+				if (object.getLevel()!=0) {
+					resultStrings.add(object.getName());
+				}
+			}
+		}
+		ObservableList<String> result = FXCollections.observableArrayList(resultStrings);
+		return result;
 	}
 }
