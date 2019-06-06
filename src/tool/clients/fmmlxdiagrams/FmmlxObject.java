@@ -206,10 +206,10 @@ public class FmmlxObject implements CanvasElement, Selectable {
 			opsY += lineHeight;
 			NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, o.getName() + ":" + o.getType() + " (from " + diagram.getObjectById(o.getOwner()).name + ")");
 			opsBox.nodeElements.add(oLabel);
-			NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, o.getLevel()+"");
+			NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, o.getLevel() + "");
 			opsBox.nodeElements.add(oLevelLabel);
-		}		
-		
+		}
+
 		currentY = yAfterOpsBox;
 
 		this.width = (int) neededWidth;
@@ -222,33 +222,26 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		return t.getLayoutBounds().getHeight();
 	}
 
-	private double calculateTextWidth(String text) {
-		Text t = new Text(text);
-		t.setFont(font);
-		return t.getLayoutBounds().getWidth();
-	}
-
 	private double calculateNeededWidth(FmmlxDiagram diagram) {
 		double neededWidth = 0;
 
 		//determine maximal width of attributes
 		for (FmmlxAttribute att : ownAttributes) {
-			Text text = new Text(att.name + ":" + att.type);
-			neededWidth = Math.max(text.getLayoutBounds().getWidth() + INST_LEVEL_WIDTH, neededWidth);
+			neededWidth = Math.max(calculateTextWidth(att.name + ":" + att.type) + INST_LEVEL_WIDTH, neededWidth);
 		}
 		for (FmmlxAttribute att : otherAttributes) {
-			Text text = new Text(att.name + ":" + att.type + " (from " + diagram.getObjectById(att.owner).name + ")");
-			neededWidth = Math.max(text.getLayoutBounds().getWidth() + INST_LEVEL_WIDTH, neededWidth);
+			neededWidth = Math.max(calculateTextWidth(att.name + ":" + att.type + " (from " + diagram.getObjectById(att.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
 		}
 //		//determine maximal width of operations
 //		if (showOperations) {
 		for (FmmlxOperation o : ownOperations) {
-			Text text = new Text(o.name + ":" + o.type);
-			neededWidth = Math.max(text.getLayoutBounds().getWidth() + INST_LEVEL_WIDTH, neededWidth);
+			neededWidth = Math.max(calculateTextWidth(o.name + ":" + o.type), neededWidth);
+			System.err.println("WIDHT: " + o.name + " " + neededWidth);
 		}
 		for (FmmlxOperation o : otherOperations) {
-			Text text = new Text(o.name + ":" + o.type + " (from " + diagram.getObjectById(o.owner).name + ")");
-			neededWidth = Math.max(text.getLayoutBounds().getWidth() + INST_LEVEL_WIDTH, neededWidth);
+			neededWidth = Math.max(calculateTextWidth(o.name + ":" + o.type + " (from " + diagram.getObjectById(o.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
+			System.err.println("WIDHT2: " + o.name + " " + neededWidth);
+
 		}
 //		}
 //		//determine maximal width of slots
@@ -269,6 +262,12 @@ public class FmmlxObject implements CanvasElement, Selectable {
 
 		//if minimum width is not reached just paint minimum
 		return Math.max(neededWidth + 2 * gap, minWidth);
+	}
+
+	private double calculateTextWidth(String text) {
+		Text t = new Text(text);
+		t.setFont(font);
+		return t.getLayoutBounds().getWidth();
 	}
 
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram diagram) {
@@ -458,9 +457,9 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		Vector<FmmlxOperation> operations = comm.fetchOperations(this.name);
 		ownOperations = new Vector<FmmlxOperation>();
 		otherOperations = new Vector<FmmlxOperation>();
-		for(FmmlxOperation o : operations) {
-			if(o.owner == this.id) {
-				ownOperations.add(o); 
+		for (FmmlxOperation o : operations) {
+			if (o.owner == this.id) {
+				ownOperations.add(o);
 			} else {
 				otherOperations.add(o);
 			}
