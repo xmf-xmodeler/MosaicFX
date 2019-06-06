@@ -25,7 +25,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeOfItem = new MenuItem("Change of");
 		changeOfItem.setOnAction(e -> actions.changeOfDialog(object));
 		MenuItem changeParentItem = new MenuItem("Change parent");
-		changeParentItem.setOnAction(e -> System.out.println("OCM: Change parent called"));
+		changeParentItem.setOnAction(e -> actions.changeParentsDialog(object));
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, "class"));
 

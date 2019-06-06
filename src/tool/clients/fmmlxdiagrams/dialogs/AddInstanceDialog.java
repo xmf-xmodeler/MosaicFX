@@ -29,6 +29,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		super();
 
 		DialogPane dialog = getDialogPane();
+		this.diagram=diagram;
 		this.objects=diagram.getObjects();
 
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -65,7 +66,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	private void layoutContent(Integer ofId) {
 		
 		ofList = getAllOfList();
-		parentList = getAllParentList();
+		parentList = diagram.getAllPossibleParentList();
 		nameTextField = new TextField();
 		ofComboBox = new ComboBox<>(ofList);
 
@@ -104,19 +105,6 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		return result;
 	}
 
-	private ObservableList<String> getAllParentList() {
-		ArrayList<String> resultStrings = new ArrayList<String>();
-		
-		if (!objects.isEmpty()) {
-			for (FmmlxObject object :objects) {
-				if (object.getLevel()!=0) {
-					resultStrings.add(object.getName());
-				}
-			}
-		}
-		ObservableList<String> result = FXCollections.observableArrayList(resultStrings);
-		return result;
-	}
 
 	private boolean validateUserInput() {
 		if (!validateName()) {
@@ -171,9 +159,10 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
 
 	private void setOf(int ofId) {
+		
 		FmmlxObject ofObject = diagram.getObjectById(ofId);
-
 		ofComboBox.setValue(ofObject.getName());
+		
 		ofComboBox.setEditable(false);
 	}
 

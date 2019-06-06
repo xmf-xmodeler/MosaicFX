@@ -12,6 +12,7 @@ import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOfDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeParentDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.RemoveDialogResult;
 
@@ -140,7 +141,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				RemoveDialogResult test = opt.get();
-				System.out.println("!!!!!!!!!!!!! ");
+				// TODO 
 			}
 
 			diagram.updateDiagram();
@@ -231,19 +232,40 @@ public class DiagramActions {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			ChangeOfDialog dlg = new ChangeOfDialog(diagram, object);
+			ChangeParentDialog dlg = new ChangeParentDialog(diagram, object);
 			dlg.setTitle("Change Of");
-			Optional<ChangeOfDialogResult> result = dlg.showAndWait();
+			Optional<ChangeParentDialogResult> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
-				ChangeOfDialogResult cod = result.get();
+				ChangeParentDialogResult cod = result.get();
+				// TODO 
 			}
 
 			diagram.updateDiagram();
 			l.countDown();
 		});
-		// TODO Auto-generated method stub
+		
 		
 	}
+
+	public void changeParentsDialog(FmmlxObject object) {
+		
+		CountDownLatch l = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			ChangeParentDialog dlg = new ChangeParentDialog(diagram, object);
+			Optional<ChangeParentDialogResult> result = dlg.showAndWait();
+
+			if (result.isPresent()) {
+				ChangeParentDialogResult cod = result.get();
+				// TODO 
+			}
+
+			diagram.updateDiagram();
+			l.countDown();
+		});
+		
+	}
+
 
 }

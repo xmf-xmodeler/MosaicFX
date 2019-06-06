@@ -95,10 +95,21 @@ public class FmmlxObject implements CanvasElement, Selectable {
 	public Vector<FmmlxOperation> getOperations() {
 		return operations;
 	}
+	
 	//
 //	public void setAttributes(Vector<FmmlxAttribute> attributes) {
 //		this.attributes = attributes;
 //	}
+	
+	public Vector<Integer> getParents() {
+		return parents;
+	}
+
+	public void setParents(Vector<Integer> parents) {
+		this.parents = parents;
+	}
+
+	
 
 	public FmmlxObject(Integer id, String name, int level, int of, Vector<Integer> parents, Integer lastKnownX, Integer lastKnownY) {
 		this.name = name;
@@ -349,4 +360,6 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		// TODO Auto-generated method stub
 		return of;
 	}
+
+ 
 }

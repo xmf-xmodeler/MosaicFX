@@ -1,6 +1,8 @@
 package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
@@ -22,6 +24,7 @@ import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
 
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
@@ -64,6 +67,7 @@ public class FmmlxDiagram {
 	}
 
 	public FmmlxObject getObjectById(int id) {
+		System.out.println(objects.get(0).getName());
 		for (FmmlxObject object : objects) {
 			if (object.getId() == id)
 				return object;
@@ -480,5 +484,19 @@ public class FmmlxDiagram {
 	public void changeOperationLevel(ChangeLevelDialogResult result) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public ObservableList<String> getAllPossibleParentList() {
+		ArrayList<String> resultStrings = new ArrayList<String>();
+		
+		if (!objects.isEmpty()) {
+			for (FmmlxObject object :objects) {
+				if (object.getLevel()!=0) {
+					resultStrings.add(object.getName());
+				}
+			}
+		}
+		ObservableList<String> result = FXCollections.observableArrayList(resultStrings);
+		return result;
 	}
 }
