@@ -128,10 +128,10 @@ public class WebBrowser {
             if (newLocation.contains("http://snippet/")) {
                 String replaced = newLocation.replace("http://snippet/", "snippet:/");
                 setUrl(replaced);
-            } else if (newLocation.contains("http://external/")) {
-                String replaced = newLocation.replace("http://external/", "http://");
+            } else if (newLocation.contains("//external/")) {
+                String replaced = newLocation.replace("//external/", "//");
                 openExternalBrowser(replaced);
-                setUrl(oldLocation); //TODO: maybe better solution, to not reload current page
+                setUrl(oldLocation); //TODO: maybe better solution, to not reload current page //TODO: close browser window if no oldlocation
             } else {
                 locationChanged(webView.getEngine().getLocation(), urlField.getText());
             }
