@@ -54,6 +54,28 @@ public class FmmlxObject implements CanvasElement, Selectable {
 	private Vector<FmmlxOperation> ownOperations = new Vector<>();
 	private Vector<FmmlxOperation> otherOperations = new Vector<>();
 
+	public FmmlxObject(Integer id, String name, int level, Integer of, Vector<Integer> parents, Integer lastKnownX, Integer lastKnownY) {
+		this.name = name;
+		this.id = id;
+		if (lastKnownX != null && lastKnownX != 0) {
+			x = lastKnownX;
+		} else {
+			x = testDiff;
+			testDiff += 150;
+		}
+		if (lastKnownY != null && lastKnownY != 0) {
+			y = lastKnownY;
+		} else {
+			y = 10;
+		}
+
+		width = 150;
+		height = 80;
+		this.level = level;
+		this.of = of;
+		this.parents = parents;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -90,19 +112,22 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		this.y = y;
 	}
 
+	public int getOf() {
+		return of;
+	}
+
 
 	public Vector<FmmlxAttribute> getOwnAttributes() {
 		return ownAttributes;
-
 	}
 
 	public Vector<FmmlxAttribute> getOtherAttributes() {
 		return otherAttributes;
 	}
-
 	//
 //	public void setAttributes(Vector<FmmlxAttribute> attributes) {
 //		this.attributes = attributes;
+
 //	}
 
 	public Vector<FmmlxOperation> getOwnOperations() {
@@ -117,27 +142,20 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		this.parents = parents;
 	}
 
+	public double getMaxBottom() {
+		return y + height;
+	}
 
-	public FmmlxObject(Integer id, String name, int level, Integer of, Vector<Integer> parents, Integer lastKnownX, Integer lastKnownY) {
-		this.name = name;
-		this.id = id;
-		if (lastKnownX != null && lastKnownX != 0) {
-			x = lastKnownX;
-		} else {
-			x = testDiff;
-			testDiff += 150;
-		}
-		if (lastKnownY != null && lastKnownY != 0) {
-			y = lastKnownY;
-		} else {
-			y = 10;
-		}
+	public double getMaxRight() {
+		return x + width;
+	}
 
-		width = 150;
-		height = 80;
-		this.level = level;
-		this.of = of;
-		this.parents = parents;
+	public String getLevelBackgroundColor() {
+		return level < 6 ? levelBackgroundColors[level] : "#ffaa00";
+	}
+
+	public String getLevelFontColor() {
+		return new Vector<Integer>(Arrays.asList(2, 3)).contains(level) ? "#ffffff" : "000000";
 	}
 
 	private void layout(FmmlxDiagram diagram) {
@@ -470,22 +488,6 @@ public class FmmlxObject implements CanvasElement, Selectable {
 						mouseY < y + height;
 	}
 
-	public double getMaxBottom() {
-		return y + height;
-	}
-
-	public double getMaxRight() {
-		return x + width;
-	}
-
-	public String getLevelBackgroundColor() {
-		return level < 6 ? levelBackgroundColors[level] : "#ffaa00";
-	}
-
-	public String getLevelFontColor() {
-		return new Vector<Integer>(Arrays.asList(2, 3)).contains(level) ? "#ffffff" : "000000";
-	}
-
 	@Override
 	public ObjectContextMenu getContextMenu(DiagramActions actions) {
 		return new ObjectContextMenu(this, actions);
@@ -500,11 +502,4 @@ public class FmmlxObject implements CanvasElement, Selectable {
 			if (edge.isEndNode(this)) edge.moveEndPoint();
 		}
 	}
-
-	public int getOf() {
-		// TODO Auto-generated method stub
-		return of;
-	}
-
-
 }

@@ -441,8 +441,45 @@ public class FmmlxDiagram {
 		resizeCanvas();
 	}
 
+	public Font getFont() {
+		return font;
+	}
 
-	// Messages DiagramActions to XMF
+	public Vector<Edge> getEdges() {
+		return edges;
+	}
+
+	public double calculateTextHeight() {
+		Text t = new Text("TestText");
+		t.setFont(font);
+		return t.getLayoutBounds().getHeight();
+	}
+
+	public double calculateTextWidth(String text) {
+		Text t = new Text(text);
+		t.setFont(font);
+		return t.getLayoutBounds().getWidth();
+	}
+
+	public ObservableList<String> getAllPossibleParentList() {
+		ArrayList<String> resultStrings = new ArrayList<String>();
+
+		if (!objects.isEmpty()) {
+			for (FmmlxObject object : objects) {
+				if (object.getLevel() != 0) {
+					resultStrings.add(object.getName());
+				}
+			}
+		}
+		ObservableList<String> result = FXCollections.observableArrayList(resultStrings);
+		return result;
+	}
+
+
+	////////////////////////////////////////////////////////////////////
+	////					Messages to XMF							////
+	////////////////////////////////////////////////////////////////////
+
 
 	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) {
 		comm.addAttribute(classID, name, level, type, multi);
@@ -488,39 +525,5 @@ public class FmmlxDiagram {
 	public void changeOperationLevel(ChangeLevelDialogResult result) {
 		// TODO Auto-generated method stub
 
-	}
-
-	public Font getFont() {
-		return font;
-	}
-
-	public Vector<Edge> getEdges() {
-		return edges;
-	}
-
-	public double calculateTextHeight() {
-		Text t = new Text("TestText");
-		t.setFont(font);
-		return t.getLayoutBounds().getHeight();
-	}
-
-	public double calculateTextWidth(String text) {
-		Text t = new Text(text);
-		t.setFont(font);
-		return t.getLayoutBounds().getWidth();
-	}
-
-	public ObservableList<String> getAllPossibleParentList() {
-		ArrayList<String> resultStrings = new ArrayList<String>();
-
-		if (!objects.isEmpty()) {
-			for (FmmlxObject object : objects) {
-				if (object.getLevel() != 0) {
-					resultStrings.add(object.getName());
-				}
-			}
-		}
-		ObservableList<String> result = FXCollections.observableArrayList(resultStrings);
-		return result;
 	}
 }
