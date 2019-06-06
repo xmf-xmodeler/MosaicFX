@@ -3,7 +3,6 @@ package tool.clients.fmmlxdiagrams;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 
 public class NodeLabel implements NodeElement {
 	Pos alignment;
@@ -21,9 +20,8 @@ public class NodeLabel implements NodeElement {
 	@Override
 	public void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram) {
 		double hAlign = 0;
-		Text testText = new Text(text);
-		double textWidth = testText.getLayoutBounds().getWidth();
-		double textHeight = testText.getLayoutBounds().getHeight();
+		double textWidth = diagram.calculateTextWidth(text);
+		double textHeight = diagram.calculateTextHeight();
 
 		if (alignment != Pos.BASELINE_LEFT) {
 			hAlign = (alignment == Pos.BASELINE_CENTER ? 0.5 : 1) * textWidth;

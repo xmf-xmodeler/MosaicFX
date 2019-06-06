@@ -16,14 +16,16 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
-
 import javafx.scene.transform.NonInvertibleTransformException;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
-
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
@@ -50,6 +52,7 @@ public class FmmlxDiagram {
 	private Point2D lastPoint;
 	private Point2D currentPoint;
 	private MouseMode mode = MouseMode.STANDARD;
+	private Font font;
 
 	public Vector<FmmlxObject> fetchObjects() {
 		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
@@ -67,7 +70,6 @@ public class FmmlxDiagram {
 	}
 
 	public FmmlxObject getObjectById(int id) {
-		System.out.println(objects.get(0).getName());
 		for (FmmlxObject object : objects) {
 			if (object.getId() == id)
 				return object;
@@ -100,6 +102,12 @@ public class FmmlxDiagram {
 		canvas.addEventFilter(ScrollEvent.ANY, this::handleScroll);
 
 		new Thread(this::fetchDiagramData).start();
+
+		try {
+			font = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono.ttf"), 14);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 
 		redraw();
 	}
@@ -408,7 +416,7 @@ public class FmmlxDiagram {
 				select(o);
 			}
 		}
-	}	
+	}
 
 	public Point2D scale(MouseEvent event) {
 		Affine i;
@@ -435,10 +443,10 @@ public class FmmlxDiagram {
 
 
 	// Messages DiagramActions to XMF
-	
+
 	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) {
 		comm.addAttribute(classID, name, level, type, multi);
-		
+
 	}
 
 	public void addMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
@@ -462,36 +470,52 @@ public class FmmlxDiagram {
 		comm.changeAttributeName(res.getObjectId(), res.getOldName(), res.getNewName());
 	}
 
-	public Vector<Edge> getEdges() {
-		return edges;
-	}
-
 	public void changeClassLevel(ChangeLevelDialogResult result) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void changeAttributeLevel(ChangeLevelDialogResult result) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void changeAssociationLevel(ChangeLevelDialogResult result) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void changeOperationLevel(ChangeLevelDialogResult result) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	public Font getFont() {
+		return font;
+	}
+
+	public Vector<Edge> getEdges() {
+		return edges;
+	}
+
+	public double calculateTextHeight() {
+		Text t = new Text("TestText");
+		t.setFont(font);
+		return t.getLayoutBounds().getHeight();
+	}
+
+	public double calculateTextWidth(String text) {
+		Text t = new Text(text);
+		t.setFont(font);
+		return t.getLayoutBounds().getWidth();
 	}
 
 	public ObservableList<String> getAllPossibleParentList() {
 		ArrayList<String> resultStrings = new ArrayList<String>();
-		
+
 		if (!objects.isEmpty()) {
-			for (FmmlxObject object :objects) {
-				if (object.getLevel()!=0) {
+			for (FmmlxObject object : objects) {
+				if (object.getLevel() != 0) {
 					resultStrings.add(object.getName());
 				}
 			}
