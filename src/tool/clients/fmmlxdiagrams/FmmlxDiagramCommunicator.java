@@ -1,14 +1,15 @@
 package tool.clients.fmmlxdiagrams;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Vector;
-import java.util.concurrent.CountDownLatch;
 import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import tool.clients.workbench.WorkbenchClient;
 import xos.Value;
+
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Vector;
+import java.util.concurrent.CountDownLatch;
 
 public class FmmlxDiagramCommunicator {
 	private int handler;
@@ -84,7 +85,7 @@ public class FmmlxDiagramCommunicator {
 
 	@SuppressWarnings("unchecked")
 	public Vector<FmmlxObject> getAllObjects() {
-		Vector<Object> response = xmfRequest(handler, "getAllObjects", new Value[] {});
+		Vector<Object> response = xmfRequest(handler, "getAllObjects", new Value[]{});
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<FmmlxObject> result = new Vector<>();
 //		System.err.println(responseContent);
@@ -110,7 +111,7 @@ public class FmmlxDiagramCommunicator {
 
 	@SuppressWarnings("unchecked")
 	public Vector<Vector<FmmlxAttribute>> fetchAttributes(String className) {
-		Vector<Object> response = xmfRequest(handler, "getAllAttributes", new Value[] { new Value(className) });
+		Vector<Object> response = xmfRequest(handler, "getAllAttributes", new Value[]{new Value(className)});
 		Vector<Object> twoLists = (Vector<Object>) (response.get(0));
 		Vector<FmmlxAttribute> resultOwn = new Vector<>();
 		Vector<FmmlxAttribute> resultOther = new Vector<>();
@@ -140,7 +141,7 @@ public class FmmlxDiagramCommunicator {
 
 	@SuppressWarnings("unchecked")
 	public Vector<FmmlxSlot> fetchSlots(String objectName) {
-		Vector<Object> response = xmfRequest(handler, "getSlots", new Value[] { new Value(objectName) });
+		Vector<Object> response = xmfRequest(handler, "getSlots", new Value[]{new Value(objectName)});
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxSlot> result = new Vector<>();
 		result.add(new FmmlxSlot()); // Added for test purposes
@@ -151,7 +152,7 @@ public class FmmlxDiagramCommunicator {
 
 	@SuppressWarnings("unchecked")
 	public Vector<FmmlxOperation> fetchOperations(String className) {
-		Vector<Object> response = xmfRequest(handler, "getOwnOperations", new Value[] { new Value(className) });
+		Vector<Object> response = xmfRequest(handler, "getOwnOperations", new Value[]{new Value(className)});
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxOperation> result = new Vector<>();
 		for (Object o : response0) {
@@ -221,19 +222,19 @@ public class FmmlxDiagramCommunicator {
 	private void close(int handler) {
 		diagrams.remove(diagram);
 		tabs.remove(this.handler);
-//		throw new RuntimeException("Not yet implemented");		
+//		throw new RuntimeException("Not yet implemented");
 	}
 
 	public void sendCurrentPosition(FmmlxObject o) {
 		Vector<Object> response = xmfRequest(handler, "sendNewPosition",
-				new Value[] { new Value(o.id), new Value(o.getX()), new Value(o.getY()) });
+				new Value[]{new Value(o.id), new Value(o.getX()), new Value(o.getY())});
 	}
 
 	public void addMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
 		Value[] parentsArray = createValueArray(parents);
 
-		Value[] message = new Value[] { new Value(-1), new Value(name), new Value(level), new Value(parentsArray),
-				new Value(isAbstract), new Value(x), new Value(y) };
+		Value[] message = new Value[]{new Value(-1), new Value(name), new Value(level), new Value(parentsArray),
+				new Value(isAbstract), new Value(x), new Value(y)};
 		WorkbenchClient.theClient().send(handler, "addMetaClass", message);
 
 //		Vector<Object> response = xmfRequest(handler, "addNewMetaClass", new Value[]{
@@ -250,8 +251,8 @@ public class FmmlxDiagramCommunicator {
 	public void addInstance(int testClassId, String name, Vector<Integer> parents, boolean isAbstract, int x, int y) {
 		Value[] parentsArray = createValueArray(parents);
 
-		Value[] message = new Value[] { new Value(-1), new Value(testClassId), new Value(name), new Value(parentsArray),
-				new Value(isAbstract), new Value(x), new Value(y) };
+		Value[] message = new Value[]{new Value(-1), new Value(testClassId), new Value(name), new Value(parentsArray),
+				new Value(isAbstract), new Value(x), new Value(y)};
 
 		WorkbenchClient.theClient().send(handler, "addInstance", message);
 	}
@@ -273,12 +274,40 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void addNewInstance(int of, String name, int level, Vector<String> parents, boolean isAbstract, int x,
-			int y) {
+							   int y) {
 		Value[] parentsArray = createValueArrayString(parents);
 
-		Value[] message = new Value[] { new Value(-1), new Value(of), new Value(name),
+		Value[] message = new Value[]{new Value(-1), new Value(of), new Value(name),
 				// new Value(level),
-				new Value(parentsArray), new Value(isAbstract), new Value(x), new Value(y) };
+				new Value(parentsArray), new Value(isAbstract), new Value(x), new Value(y)};
 		WorkbenchClient.theClient().send(handler, "addInstance", message);
+	}
+
+
+	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) { 
+		Value[] multiplicity = new Value[] {new Value(multi.min),new Value(multi.max),new Value(multi.upperLimit),new Value(multi.ordered),new Value(multi.duplicates)}; 
+		Value[] message = new Value[] {new Value(classID),new Value(name),new Value(level),new Value(type), new Value(multiplicity)};
+		WorkbenchClient.theClient().send(handler, "addAttribute", message);
+		
+	}
+
+
+	public void changeClassName(int id, String newName) {
+		Value[] message = new Value[]{new Value(id), new Value(newName)};
+		//TODO: Implement in XMF
+		//WorkbenchClient.theClient().send(handler, "changeClassName", message);
+	}
+
+	public void changeOperationName(int id, String oldName, String newName) {
+		Value[] message = new Value[]{new Value(id), new Value(oldName), new Value((newName))};
+		//TODO: Implement in XMF
+		//WorkbenchClient.theClient().send(handler, "changeOperationName", message);
+	}
+
+	public void changeAttributeName(int id, String oldName, String newName) {
+		Value[] message = new Value[]{new Value(id), new Value(oldName), new Value((newName))};
+		//TODO: Implement in XMF
+		//WorkbenchClient.theClient().send(handler, "changeAttributeName", message);
+
 	}
 }

@@ -11,7 +11,7 @@ public class AddInstanceDialogResult extends DialogResult {
 	private boolean isAbstract;
 
 	public AddInstanceDialogResult(String name, int level, ObservableList<String> parents, int of,
-			boolean isAbstract) {
+								   boolean isAbstract) {
 		this.name = name;
 		this.level = level;
 		this.parents = parents;
