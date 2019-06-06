@@ -1,8 +1,6 @@
 package tool.clients.fmmlxdiagrams;
 
 
-
-import java.util.Vector;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -107,7 +105,11 @@ public class FmmlxObject implements CanvasElement, Selectable {
 //	public void setAttributes(Vector<FmmlxAttribute> attributes) {
 //		this.attributes = attributes;
 //	}
-	
+
+	public Vector<FmmlxOperation> getOwnOperations() {
+		return ownOperations;
+	}
+
 	public Vector<Integer> getParents() {
 		return parents;
 	}
@@ -116,7 +118,6 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		this.parents = parents;
 	}
 
-	
 
 	public FmmlxObject(Integer id, String name, int level, Integer of, Vector<Integer> parents, Integer lastKnownX, Integer lastKnownY) {
 		this.name = name;
@@ -221,10 +222,10 @@ public class FmmlxObject implements CanvasElement, Selectable {
 			opsY += lineHeight;
 			NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, o.getName() + ":" + o.getType() + " (from " + diagram.getObjectById(o.getOwner()).name + ")");
 			opsBox.nodeElements.add(oLabel);
-			NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, o.getLevel()+"");
+			NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, o.getLevel() + "");
 			opsBox.nodeElements.add(oLevelLabel);
-		}		
-		
+		}
+
 		currentY = yAfterOpsBox;
 
 		this.width = (int) neededWidth;
@@ -473,9 +474,9 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		Vector<FmmlxOperation> operations = comm.fetchOperations(this.name);
 		ownOperations = new Vector<FmmlxOperation>();
 		otherOperations = new Vector<FmmlxOperation>();
-		for(FmmlxOperation o : operations) {
-			if(o.owner == this.id) {
-				ownOperations.add(o); 
+		for (FmmlxOperation o : operations) {
+			if (o.owner == this.id) {
+				ownOperations.add(o);
 			} else {
 				otherOperations.add(o);
 			}
@@ -532,5 +533,5 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		return of;
 	}
 
- 
+
 }

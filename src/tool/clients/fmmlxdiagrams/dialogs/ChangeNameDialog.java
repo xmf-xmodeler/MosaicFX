@@ -104,7 +104,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	}
 
 	private void changeOperation() {
-		operations = object.getOperations();
+		operations = object.getOwnOperations();
 		for (FmmlxOperation op : operations) {
 			list.add(op.getName());
 		}
