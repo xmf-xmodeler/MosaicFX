@@ -108,12 +108,12 @@ public class WebBrowser {
 
         urlField.setText("Enter URL here...");
         urlField.setOnKeyReleased(keyEvent -> {
-            if(keyEvent.getCode() == KeyCode.ENTER) locationChanged(urlField.getText(), webView.getEngine().getLocation());
+            if(keyEvent.getCode() == KeyCode.ENTER) locationChanged(urlField.getText(), webView.getEngine().getLocation(), false);
         });
 
         Button go = new Button("", IconGenerator.getImageView("User/Arrow2Right"));
         go.setOnAction(actionEvent -> {
-            locationChanged(urlField.getText(), webView.getEngine().getLocation());
+            locationChanged(urlField.getText(), webView.getEngine().getLocation(), false);
         });
 
         ProgressIndicator loadingSpinner = new ProgressIndicator(-1); //-1 = indeterminate mode
@@ -131,9 +131,12 @@ public class WebBrowser {
             } else if (newLocation.contains("//external/")) {
                 String replaced = newLocation.replace("//external/", "//");
                 openExternalBrowser(replaced);
-                setUrl(oldLocation); //TODO: maybe better solution, to not reload current page //TODO: close browser window if no oldlocation
+                if (oldLocation.contains("xmodeler_doc")) setUrl(webView.getEngine().getHistory().getEntries().get(0).getUrl());
+                else setUrl(oldLocation); //TODO: maybe better solution, to not reload current page
+            } else if (newLocation.contains("webroot/index.html")) {
+                locationChanged(webView.getEngine().getLocation(), urlField.getText(), true);
             } else {
-                locationChanged(webView.getEngine().getLocation(), urlField.getText());
+                locationChanged(webView.getEngine().getLocation(), urlField.getText(), false);
             }
         });
 
@@ -142,7 +145,8 @@ public class WebBrowser {
         });
 
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldState, newState) -> {
-            if (newState == Worker.State.SUCCEEDED || (webView.getEngine().getLocation()!=null && webView.getEngine().getLocation().contains("snippet:/")) ) {
+//            if (newState == Worker.State.SUCCEEDED || (webView.getEngine().getLocation()!=null && (webView.getEngine().getLocation().contains("snippet:/") || webView.getEngine().getLocation().contains("/webroot/index.html")))  ) {
+            if (newState == Worker.State.SUCCEEDED || (webView.getEngine().getLocation()!=null && (webView.getEngine().getLocation().contains("snippet:/")))  ) {
                 loadingSpinner.setVisible(false);
             } else {
                 loadingSpinner.setVisible(true);
@@ -174,17 +178,6 @@ public class WebBrowser {
         browserVBox.getChildren().addAll(navBar, webView);
 
         setUrl(url); //TODO: move this off the ui thread
-
-        //browserLocked = false;
-//        URL.setURLStreamHandlerFactory(protocol -> "snippets:/".equals(protocol) ? new URLStreamHandler() { //TODO: this can be used to map xmodeler internal urls properly
-//          protected URLConnection openConnection(URL url) throws IOException {
-//            return new URLConnection(url) {
-//              public void connect() throws IOException {
-//                System.out.println("Connected!");
-//              }
-//            };
-//          }
-//        } : null);
     }
 
     //internal
@@ -200,10 +193,10 @@ public class WebBrowser {
         return false;
     }
 
-    private void locationChanged(String newLocation, String oldLocation) { //TODO: this needs to be triggered on every address change
+    private void locationChanged(String newLocation, String oldLocation, boolean reset) { //TODO: this needs to be triggered on every address change
         urlField.setText(newLocation);
         if ( newLocation == null || newLocation.isEmpty() || newLocation.equals("about:blank")) return;
-        if (!newLocation.equals(oldLocation)) sendUrlRequest(newLocation);
+        if (!newLocation.equals(oldLocation) || reset) sendUrlRequest(newLocation);
     }
 
     private void openExternalBrowser(String url) {
