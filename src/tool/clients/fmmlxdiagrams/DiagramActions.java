@@ -5,16 +5,8 @@ import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
-
 import tool.clients.fmmlxdiagrams.dialogs.*;
-import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOfDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeParentDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.results.RemoveDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.*;
 
 import java.util.Optional;
 import java.util.Vector;
@@ -26,8 +18,11 @@ public class DiagramActions {
 
 	private FmmlxDiagram diagram;
 
+	private boolean showOperations;
+
 	DiagramActions(FmmlxDiagram diagram) {
 		this.diagram = diagram;
+		showOperations = false;
 	}
 
 	public void addMetaClassDialog() {
@@ -110,7 +105,7 @@ public class DiagramActions {
 			l.countDown();
 		});
 	}
-	
+
 	public void addAttributeDialog() {
 
 		CountDownLatch l = new CountDownLatch(1);
@@ -123,7 +118,7 @@ public class DiagramActions {
 			if (result.isPresent()) {
 				AddAttributeDialogResult aad = result.get();
 				System.out.println("!!!!!!!!!!!!! " + aad.getName() + " " + aad.getLevel());
-				diagram.addAttribute(aad.getClassID(),aad.getName(), aad.getLevel(), aad.getType(), aad.getMultiplicity());
+				diagram.addAttribute(aad.getClassID(), aad.getName(), aad.getLevel(), aad.getType(), aad.getMultiplicity());
 			}
 
 			diagram.updateDiagram();
@@ -132,11 +127,11 @@ public class DiagramActions {
 	}
 
 
-	public void removeDialog(FmmlxObject object,String type) {
+	public void removeDialog(FmmlxObject object, String type) {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			RemoveDialog dlg = new RemoveDialog(diagram, object,type);
+			RemoveDialog dlg = new RemoveDialog(diagram, object, type);
 			Optional<RemoveDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
@@ -195,12 +190,11 @@ public class DiagramActions {
 	}
 
 	public void changeLevelDialog(FmmlxObject object, String type) {
-		// TODO Auto-generated method stub
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			ChangeLevelDialog dlg = new ChangeLevelDialog(diagram, object, type);
-			Optional<ChangeLevelDialogResult> opt= dlg.showAndWait();
+			Optional<ChangeLevelDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
 				final ChangeLevelDialogResult result = opt.get();
@@ -224,11 +218,11 @@ public class DiagramActions {
 			diagram.updateDiagram();
 			latch.countDown();
 		});
-		
+
 	}
 
 	public void changeOfDialog(FmmlxObject object) {
-		
+
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
@@ -244,12 +238,12 @@ public class DiagramActions {
 			diagram.updateDiagram();
 			l.countDown();
 		});
-		
-		
+
+
 	}
 
 	public void changeParentsDialog(FmmlxObject object) {
-		
+
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
@@ -264,8 +258,16 @@ public class DiagramActions {
 			diagram.updateDiagram();
 			l.countDown();
 		});
-		
+
 	}
 
-
+	public void toogleShowOperations() {
+		for (FmmlxObject o : diagram.getObjects()) {
+			if (o.getShowOperations() == showOperations) {
+				o.toogleShowOperations();
+			}
+		}
+		showOperations = !showOperations;
+		diagram.redraw();
+	}
 }

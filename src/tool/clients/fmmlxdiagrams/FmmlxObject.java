@@ -31,7 +31,7 @@ public class FmmlxObject implements CanvasElement, Selectable {
 	int preferredWidth = 0;
 	int minWidth = 100;
 
-	boolean showOperations = true;
+	private boolean showOperations = false;
 	boolean showOperationValues = true;
 	boolean showSlots = true;
 
@@ -158,6 +158,14 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		return new Vector<Integer>(Arrays.asList(2, 3)).contains(level) ? "#ffffff" : "000000";
 	}
 
+	public boolean getShowOperations() {
+		return showOperations;
+	}
+
+	public void toogleShowOperations() {
+		showOperations = !showOperations;
+	}
+
 	private void layout(FmmlxDiagram diagram) {
 
 		nodeElements = new Vector<>();
@@ -209,27 +217,31 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		}
 		currentY = yAfterAttBox;
 
-		int opsSize = ownOperations.size() + otherOperations.size();
-//		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
-		double opsBoxHeight = Math.max(lineHeight * opsSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
-		double yAfterOpsBox = currentY + opsBoxHeight;
-		double opsY = 0;
-		NodeBox opsBox = new NodeBox(0, currentY, neededWidth, opsBoxHeight, Color.WHITE, Color.BLACK);
-		nodeElements.addElement(opsBox);
+		double yAfterOpsBox = 0;
 
-		for (FmmlxOperation o : ownOperations) {
-			opsY += lineHeight;
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.BLACK, null, o, o.getName() + "():" + o.getType());
-			opsBox.nodeElements.add(attLabel);
-			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.BLACK, o, o.getLevel() + "");
-			opsBox.nodeElements.add(attLevelLabel);
-		}
-		for (FmmlxOperation o : otherOperations) {
-			opsY += lineHeight;
-			NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, o.getName() + ":" + o.getType() + " (from " + diagram.getObjectById(o.getOwner()).name + ")");
-			opsBox.nodeElements.add(oLabel);
-			NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, o.getLevel() + "");
-			opsBox.nodeElements.add(oLevelLabel);
+		int opsSize = ownOperations.size() + otherOperations.size();
+		if (showOperations && opsSize > 0) {
+//		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
+			double opsBoxHeight = Math.max(lineHeight * opsSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
+			yAfterOpsBox = currentY + opsBoxHeight;
+			double opsY = 0;
+			NodeBox opsBox = new NodeBox(0, currentY, neededWidth, opsBoxHeight, Color.WHITE, Color.BLACK);
+			nodeElements.addElement(opsBox);
+
+			for (FmmlxOperation o : ownOperations) {
+				opsY += lineHeight;
+				NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.BLACK, null, o, o.getName() + "():" + o.getType());
+				opsBox.nodeElements.add(attLabel);
+				NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.BLACK, o, o.getLevel() + "");
+				opsBox.nodeElements.add(attLevelLabel);
+			}
+			for (FmmlxOperation o : otherOperations) {
+				opsY += lineHeight;
+				NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, o.getName() + ":" + o.getType() + " (from " + diagram.getObjectById(o.getOwner()).name + ")");
+				opsBox.nodeElements.add(oLabel);
+				NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, o.getLevel() + "");
+				opsBox.nodeElements.add(oLevelLabel);
+			}
 		}
 
 		currentY = yAfterOpsBox;

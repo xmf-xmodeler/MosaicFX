@@ -20,6 +20,7 @@ public class Palette extends ToolBar {
 		addButton("100%", e -> actions.zoomOne());
 		addButton("-", e -> actions.zoomOut());
 		getItems().add(new Separator());
+		addButton("Show Operations", e -> actions.toogleShowOperations());
 	}
 
 	private void addButton(String string, EventHandler<ActionEvent> eventHandler) {
