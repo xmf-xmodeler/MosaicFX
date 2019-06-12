@@ -25,6 +25,10 @@ public class DiagramActions {
 		showOperations = false;
 	}
 
+	public void redrawDiagram() {
+		diagram.redraw();
+	}
+
 	public void addMetaClassDialog() {
 		CountDownLatch l = new CountDownLatch(2);
 

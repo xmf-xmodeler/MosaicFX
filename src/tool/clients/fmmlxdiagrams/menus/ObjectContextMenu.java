@@ -146,7 +146,10 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu showSubMenu = new Menu("Show");
 
 		MenuItem operationsItem = new MenuItem("Operations");
-		operationsItem.setOnAction(e -> object.toogleShowOperations());
+		operationsItem.setOnAction(e -> {
+			object.toogleShowOperations();
+			actions.redrawDiagram();
+		});
 
 		showSubMenu.getItems().addAll(operationsItem);
 		return showSubMenu;
