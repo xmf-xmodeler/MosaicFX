@@ -220,14 +220,13 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		double yAfterOpsBox = 0;
 
 		int opsSize = ownOperations.size() + otherOperations.size();
-		if (showOperations && opsSize > 0) {
 //		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
-			double opsBoxHeight = Math.max(lineHeight * opsSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
-			yAfterOpsBox = currentY + opsBoxHeight;
-			double opsY = 0;
-			NodeBox opsBox = new NodeBox(0, currentY, neededWidth, opsBoxHeight, Color.WHITE, Color.BLACK);
+		double opsBoxHeight = Math.max(lineHeight * opsSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
+		yAfterOpsBox = currentY + opsBoxHeight;
+		double opsY = 0;
+		NodeBox opsBox = new NodeBox(0, currentY, neededWidth, opsBoxHeight, Color.WHITE, Color.BLACK);
+		if (showOperations && opsSize > 0) {
 			nodeElements.addElement(opsBox);
-
 			for (FmmlxOperation o : ownOperations) {
 				opsY += lineHeight;
 				NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.BLACK, null, o, o.getName() + "():" + o.getType());
@@ -244,6 +243,7 @@ public class FmmlxObject implements CanvasElement, Selectable {
 			}
 		}
 
+
 		currentY = yAfterOpsBox;
 
 		this.width = (int) neededWidth;
@@ -251,7 +251,11 @@ public class FmmlxObject implements CanvasElement, Selectable {
 	}
 
 	private double calculateNeededWidth(FmmlxDiagram diagram) {
-		double neededWidth = 0;
+		double neededWidth = diagram.calculateTextWidth(name);
+
+		if (of >= 0) {
+			neededWidth = Math.max(neededWidth, diagram.calculateTextWidth("^" + diagram.getObjectById(of).name + "^"));
+		}
 
 		//determine maximal width of attributes
 		for (FmmlxAttribute att : ownAttributes) {
