@@ -327,6 +327,7 @@ public class FmmlxDiagram {
 			deselectAll();
 		}
 
+
 		if (selectedObjects.contains(hitObject)) {
 			mode = MouseMode.STANDARD;
 		} else {

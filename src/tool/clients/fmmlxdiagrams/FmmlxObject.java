@@ -31,7 +31,7 @@ public class FmmlxObject implements CanvasElement, Selectable {
 	int preferredWidth = 0;
 	int minWidth = 100;
 
-	boolean showOperations = true;
+	private boolean showOperations = false;
 	boolean showOperationValues = true;
 	boolean showSlots = true;
 
@@ -124,11 +124,6 @@ public class FmmlxObject implements CanvasElement, Selectable {
 	public Vector<FmmlxAttribute> getOtherAttributes() {
 		return otherAttributes;
 	}
-	//
-//	public void setAttributes(Vector<FmmlxAttribute> attributes) {
-//		this.attributes = attributes;
-
-//	}
 
 	public Vector<FmmlxOperation> getOwnOperations() {
 		return ownOperations;
@@ -156,6 +151,14 @@ public class FmmlxObject implements CanvasElement, Selectable {
 
 	public String getLevelFontColor() {
 		return new Vector<Integer>(Arrays.asList(2, 3)).contains(level) ? "#ffffff" : "000000";
+	}
+
+	public boolean getShowOperations() {
+		return showOperations;
+	}
+
+	public void toogleShowOperations() {
+		showOperations = !showOperations;
 	}
 
 	private void layout(FmmlxDiagram diagram) {
@@ -209,28 +212,32 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		}
 		currentY = yAfterAttBox;
 
+		double yAfterOpsBox = 0;
+
 		int opsSize = ownOperations.size() + otherOperations.size();
 //		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
 		double opsBoxHeight = Math.max(lineHeight * opsSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
-		double yAfterOpsBox = currentY + opsBoxHeight;
+		yAfterOpsBox = currentY + opsBoxHeight;
 		double opsY = 0;
 		NodeBox opsBox = new NodeBox(0, currentY, neededWidth, opsBoxHeight, Color.WHITE, Color.BLACK);
-		nodeElements.addElement(opsBox);
+		if (showOperations && opsSize > 0) {
+			nodeElements.addElement(opsBox);
+			for (FmmlxOperation o : ownOperations) {
+				opsY += lineHeight;
+				NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.BLACK, null, o, o.getName() + "():" + o.getType());
+				opsBox.nodeElements.add(attLabel);
+				NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.BLACK, o, o.getLevel() + "");
+				opsBox.nodeElements.add(attLevelLabel);
+			}
+			for (FmmlxOperation o : otherOperations) {
+				opsY += lineHeight;
+				NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, o.getName() + ":" + o.getType() + " (from " + diagram.getObjectById(o.getOwner()).name + ")");
+				opsBox.nodeElements.add(oLabel);
+				NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, o.getLevel() + "");
+				opsBox.nodeElements.add(oLevelLabel);
+			}
+		}
 
-		for (FmmlxOperation o : ownOperations) {
-			opsY += lineHeight;
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.BLACK, null, o, o.getName() + "():" + o.getType());
-			opsBox.nodeElements.add(attLabel);
-			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.BLACK, o, o.getLevel() + "");
-			opsBox.nodeElements.add(attLevelLabel);
-		}
-		for (FmmlxOperation o : otherOperations) {
-			opsY += lineHeight;
-			NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, o.getName() + ":" + o.getType() + " (from " + diagram.getObjectById(o.getOwner()).name + ")");
-			opsBox.nodeElements.add(oLabel);
-			NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, o.getLevel() + "");
-			opsBox.nodeElements.add(oLevelLabel);
-		}
 
 		currentY = yAfterOpsBox;
 
@@ -239,7 +246,11 @@ public class FmmlxObject implements CanvasElement, Selectable {
 	}
 
 	private double calculateNeededWidth(FmmlxDiagram diagram) {
-		double neededWidth = 0;
+		double neededWidth = diagram.calculateTextWidth(name);
+
+		if (of >= 0) {
+			neededWidth = Math.max(neededWidth, diagram.calculateTextWidth("^" + diagram.getObjectById(of).name + "^"));
+		}
 
 		//determine maximal width of attributes
 		for (FmmlxAttribute att : ownAttributes) {
@@ -249,15 +260,15 @@ public class FmmlxObject implements CanvasElement, Selectable {
 			neededWidth = Math.max(diagram.calculateTextWidth(att.name + ":" + att.type + " (from " + diagram.getObjectById(att.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
 		}
 //		//determine maximal width of operations
-//		if (showOperations) {
-		for (FmmlxOperation o : ownOperations) {
-			String text = o.name + "():" + o.type;
-			neededWidth = Math.max(diagram.calculateTextWidth(text) + INST_LEVEL_WIDTH, neededWidth);
+		if (showOperations) {
+			for (FmmlxOperation o : ownOperations) {
+				String text = o.name + "():" + o.type;
+				neededWidth = Math.max(diagram.calculateTextWidth(text) + INST_LEVEL_WIDTH, neededWidth);
+			}
+			for (FmmlxOperation o : otherOperations) {
+				neededWidth = Math.max(diagram.calculateTextWidth(o.name + "():" + o.type + " (from " + diagram.getObjectById(o.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
+			}
 		}
-		for (FmmlxOperation o : otherOperations) {
-			neededWidth = Math.max(diagram.calculateTextWidth(o.name + "():" + o.type + " (from " + diagram.getObjectById(o.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
-		}
-//		}
 //		//determine maximal width of slots
 //		if (showSlots) {
 //			for (FmmlxSlot slot : slots) {

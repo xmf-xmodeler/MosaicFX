@@ -19,7 +19,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem addInstanceItem = new MenuItem("Add instance");
 		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object.getId()));
 		MenuItem removeItem = new MenuItem("Remove");
-		removeItem.setOnAction(e -> actions.removeDialog(object,"class"));
+		removeItem.setOnAction(e -> actions.removeDialog(object, "class"));
 		MenuItem changeNameItem = new MenuItem("Change name");
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, "class"));
 		MenuItem changeOfItem = new MenuItem("Change of");
@@ -34,9 +34,10 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu operationMenu = createOperationSubMenu();
 		Menu slotMenu = createSlotSubMenu();
 		Menu associationInstanceMenu = createAssociationInstanceSubMenu();
+		Menu showMenu = createShowSubMenu();
 
 		getItems().addAll(addInstanceItem, removeItem, changeNameItem, changeOfItem, changeParentItem, changeLevelItem,
-				attributeMenu, associationMenu, operationMenu, slotMenu, associationInstanceMenu);
+				attributeMenu, associationMenu, operationMenu, slotMenu, associationInstanceMenu, showMenu);
 	}
 
 	private Menu createAttributeSubMenu() {
@@ -139,5 +140,18 @@ public class ObjectContextMenu extends ContextMenu {
 
 		associationInstanceMenu.getItems().addAll(addValueItem, removeValueItem, changeValueItem);
 		return associationInstanceMenu;
+	}
+
+	private Menu createShowSubMenu() {
+		Menu showSubMenu = new Menu("Show");
+
+		MenuItem operationsItem = new MenuItem("Operations");
+		operationsItem.setOnAction(e -> {
+			object.toogleShowOperations();
+			actions.redrawDiagram();
+		});
+
+		showSubMenu.getItems().addAll(operationsItem);
+		return showSubMenu;
 	}
 }
