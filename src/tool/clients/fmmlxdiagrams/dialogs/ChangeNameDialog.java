@@ -13,7 +13,7 @@ import java.util.Vector;
 
 public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 
-	private final String type;
+	private final DialogType type;
 	private final FmmlxDiagram diagram;
 	private FmmlxObject object;
 
@@ -27,7 +27,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	// Used for combobox -> displays strings
 	private ArrayList<String> list;
 
-	public ChangeNameDialog(final FmmlxDiagram diagram, FmmlxObject object, String type) {
+	public ChangeNameDialog(final FmmlxDiagram diagram, FmmlxObject object, DialogType type) {
 		super();
 		this.diagram = diagram;
 		this.type = type;
@@ -74,13 +74,13 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		list = new ArrayList<String>();
 
 		switch (type) {
-			case "class":
+			case Class:
 				changeClass();
 				break;
-			case "attribute":
+			case Attribute:
 				changeAttribute();
 				break;
-			case "operation":
+			case Operation:
 				changeOperation();
 				break;
 			default:
@@ -137,11 +137,11 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 
 	private boolean validateInput() {
 		switch (type) {
-			case "class":
+			case Class:
 				return validateClassName();
-			case "attribute":
+			case Attribute:
 				return validateAttributeName();
-			case "operation":
+			case Operation:
 				return validateOperationName();
 		}
 		return true;
