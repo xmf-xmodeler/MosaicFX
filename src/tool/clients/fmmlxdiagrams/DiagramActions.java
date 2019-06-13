@@ -273,4 +273,36 @@ public class DiagramActions {
 		showOperations = !showOperations;
 		diagram.redraw();
 	}
+
+	public Object addDialog(FmmlxObject object, String type) {
+		CountDownLatch latch = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			AddDialog dlg = new AddDialog(diagram, object, type);
+			Optional<AddDialogResult> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final AddDialogResult result = opt.get();
+				System.err.println(result.toString());
+				switch (result.getType()) {
+					case "class":
+						diagram.addMetaClass(result);
+						break;
+					case "attribute":
+						diagram.addAttribute(result);
+						break;
+					case "operation":
+						diagram.addOperation(result);
+						break;
+					case "association":
+						diagram.addAssociation(result);
+						break;
+				}
+			}
+
+			diagram.updateDiagram();
+			latch.countDown();
+		});
+		return null;
+	}
 }

@@ -20,6 +20,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
+import tool.clients.fmmlxdiagrams.dialogs.results.AddDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
@@ -526,5 +527,27 @@ public class FmmlxDiagram {
 	public void changeOperationLevel(ChangeLevelDialogResult result) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	//the methods below is for refine add meta class etc ------------------------------------- //bei conflict, please considered as important.
+	
+	public void addMetaClass(AddDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void addAttribute(AddDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void addOperation(AddDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void addAssociation(AddDialogResult result) {
+		// TODO Auto-generated method stub
+		
 	}
 }
