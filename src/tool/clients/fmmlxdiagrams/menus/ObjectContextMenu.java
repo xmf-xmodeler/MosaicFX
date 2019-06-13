@@ -5,6 +5,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.dialogs.DialogType;
 
 public class ObjectContextMenu extends ContextMenu {
 
@@ -21,7 +22,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, "class"));
 		MenuItem changeNameItem = new MenuItem("Change name");
-		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, "class"));
+		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, DialogType.Class));
 		MenuItem changeOfItem = new MenuItem("Change of");
 		changeOfItem.setOnAction(e -> actions.changeOfDialog(object));
 		MenuItem changeParentItem = new MenuItem("Change parent");
@@ -49,7 +50,7 @@ public class ObjectContextMenu extends ContextMenu {
 		removeItem.setOnAction(e -> actions.removeDialog(object, "attribute"));
 		MenuItem changeNameItem = new MenuItem("Change name");
 
-		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, "attribute"));
+		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, DialogType.Attribute));
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
 		changeOwnerItem.setOnAction(e -> System.out.println("OCM: change attribute owner called"));
 		MenuItem changeTypeItem = new MenuItem("Change type");
@@ -97,7 +98,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, "operation"));
 		MenuItem changeNameItem = new MenuItem("Change name");
-		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, "operation"));
+		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, DialogType.Operation));
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
 		changeOwnerItem.setOnAction(e -> System.out.println("OCM: change operation owner called"));
 		MenuItem changeTypeItem = new MenuItem("Change type");
