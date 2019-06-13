@@ -165,7 +165,7 @@ public class DiagramActions {
 	}
 
 
-	public void changeNameDialog(FmmlxObject object, String type) {
+	public void changeNameDialog(FmmlxObject object, DialogType type) {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
@@ -176,13 +176,13 @@ public class DiagramActions {
 				final ChangeNameDialogResult result = opt.get();
 				System.err.println(result.toString());
 				switch (result.getType()) {
-					case "class":
+					case Class:
 						diagram.changeClassName(result);
 						break;
-					case "operation":
+					case Operation:
 						diagram.changeOperationName(result);
 						break;
-					case "attribute":
+					case Attribute:
 						diagram.changeAttributeName(result);
 						break;
 				}

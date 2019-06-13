@@ -6,6 +6,7 @@ public class FmmlxOperation {
 	String type;
 	Integer owner;
 
+
 	public FmmlxOperation(String name, Integer level, String type, Integer owner, String multiplicity) {
 		this.name = name;
 		this.level = level;
