@@ -230,12 +230,11 @@ public class DiagramActions {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			ChangeParentDialog dlg = new ChangeParentDialog(diagram, object);
-			dlg.setTitle("Change Of");
-			Optional<ChangeParentDialogResult> result = dlg.showAndWait();
+			ChangeOfDialog dlg = new ChangeOfDialog(diagram, object);
+			Optional<ChangeOfDialogResult> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
-				ChangeParentDialogResult cod = result.get();
+				ChangeOfDialogResult cod = result.get();
 				// TODO 
 			}
 
@@ -255,7 +254,7 @@ public class DiagramActions {
 			Optional<ChangeParentDialogResult> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
-				ChangeParentDialogResult cod = result.get();
+				ChangeParentDialogResult cpd = result.get();
 				// TODO 
 			}
 

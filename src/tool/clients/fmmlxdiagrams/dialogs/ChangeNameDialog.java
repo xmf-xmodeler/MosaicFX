@@ -20,7 +20,8 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	private TextField classNameTextfield;
 	private ComboBox<String> comboBox;
 	private TextField objectNameTextfield;
-
+	private TextField newClassNameTextField = new TextField();
+	
 	private Vector<FmmlxAttribute> attributes;
 	private Vector<FmmlxOperation> operations;
 
@@ -90,6 +91,14 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 
 	private void changeClass() {
 		classNameTextfield.setText(object.getName());
+		classNameTextfield.setDisable(true);
+		
+		Label newClassNameLabel = new Label("New Name");
+		newClassNameTextField = new TextField();
+		
+		grid.add(newClassNameLabel, 0, 1);
+		grid.add(newClassNameTextField, 1, 1);
+		
 	}
 
 	private void changeAttribute() {
@@ -148,12 +157,17 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	}
 
 	private boolean validateClassName() {
-		String newName = classNameTextfield.getText();
-		for (FmmlxObject object : diagram.getObjects()) {
-			if (object.getName().equals(newName)) {
-				showNameUsedError();
-				return false;
-			}
+		String newName = newClassNameTextField.getText();
+		
+		if (isNullOrEmpty(newName) ) {
+			errorLabel.setText("Enter new name!");
+			return false;
+		} 
+		
+		for (FmmlxObject object : diagram.getObjects()) { 
+			if (object.getName().equals(newName)) { 
+				showNameUsedError(); return false; 
+			} 
 		}
 		return true;
 	}
