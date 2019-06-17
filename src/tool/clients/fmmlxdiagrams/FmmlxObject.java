@@ -17,6 +17,7 @@ public class FmmlxObject implements CanvasElement, Selectable {
 	int id;
 	private int x;
 	private int y;
+	private boolean isAbstract;
 	int level;
 	Integer of;
 	Vector<Integer> parents;
@@ -54,7 +55,7 @@ public class FmmlxObject implements CanvasElement, Selectable {
 	private Vector<FmmlxOperation> ownOperations = new Vector<>();
 	private Vector<FmmlxOperation> otherOperations = new Vector<>();
 
-	public FmmlxObject(Integer id, String name, int level, Integer of, Vector<Integer> parents, Integer lastKnownX, Integer lastKnownY) {
+	public FmmlxObject(Integer id, String name, int level, Integer of, Vector<Integer> parents, Boolean isAbstract, Integer lastKnownX, Integer lastKnownY) {
 		this.name = name;
 		this.id = id;
 		if (lastKnownX != null && lastKnownX != 0) {
@@ -72,6 +73,7 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		width = 150;
 		height = 80;
 		this.level = level;
+		this.isAbstract = isAbstract;
 		this.of = of;
 		this.parents = parents;
 	}
@@ -180,7 +182,7 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		}
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, Color.valueOf(getLevelFontColor() + "75"), null, this, "^" + ofName + "^");
 		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight, Color.valueOf(getLevelFontColor() + "75"), null, this, "" + level);
-		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, Color.valueOf(getLevelFontColor()), null, this, name);
+		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, Color.valueOf(getLevelFontColor()), null, this, name, isAbstract);
 		header.nodeElements.add(metaclassLabel);
 		header.nodeElements.add(levelLabel);
 		header.nodeElements.add(nameLabel);
@@ -512,5 +514,9 @@ public class FmmlxObject implements CanvasElement, Selectable {
 			if (edge.isStartNode(this)) edge.moveStartPoint();
 			if (edge.isEndNode(this)) edge.moveEndPoint();
 		}
+	}
+
+	public void toogleIsAbstract() {
+		isAbstract = !isAbstract;
 	}
 }
