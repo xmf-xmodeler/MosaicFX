@@ -13,7 +13,7 @@ import java.util.Vector;
 
 public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
-	private final String type;
+	private final DialogType type;
 	private final FmmlxDiagram diagram;
 	private FmmlxObject object;
 
@@ -25,7 +25,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	private TextField objectLevelTextField;
 
 
-	public ChangeLevelDialog(FmmlxDiagram diagram, FmmlxObject object, String type) {
+	public ChangeLevelDialog(FmmlxDiagram diagram, FmmlxObject object, DialogType type) {
 		// TODO Auto-generated constructor stub
 		super();
 		this.diagram = diagram;
@@ -52,13 +52,13 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	private boolean validateUserInput() {
 
 		switch (type) {
-			case "class":
+			case Class:
 				return validateClassLevelChange();
-			case "attribute":
+			case Attribute:
 				return validateAttributeLevelChange();
-			case "operation":
+			case Operation:
 				return validateOperationLevelChange();
-			case "association":
+			case Association:
 				return validateAssociationLevelChange();
 		}
 		return true;
@@ -85,7 +85,6 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	}
 
 	private void layoutContent() {
-		// TODO Auto-generated method stub
 		objectLabel = new Label("Class");
 		objectNameTextField = new TextField();
 		objectLevelLabel = new Label("Current Level");
@@ -99,16 +98,16 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
 
 		switch (type) {
-			case "class":
+			case Class:
 				changeClassLevel();
 				break;
-			case "attribute":
+			case Attribute:
 				changeAttributeLevel();
 				break;
-			case "operation":
+			case Operation:
 				changeOperationLevel();
 				break;
-			case "association":
+			case Association:
 				changeAssociationLevel();
 			default:
 				System.err.println("ChangeNameDialog: No matching content type!");
@@ -148,9 +147,6 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
 		Vector<FmmlxOperation> operations;
 		operations = object.getOwnOperations();
-
-		// TODO Auto-generated method stub
-
 	}
 
 	private void changeAttributeLevel() {
@@ -185,8 +181,6 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 		for (FmmlxAttribute fmmlxAttribute : attributes) {
 			attributeList.add(fmmlxAttribute.getName());
 		}
-		// TODO Auto-generated method stub
-
 	}
 
 	private void changeClassLevel() {
@@ -204,8 +198,5 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 		grid.add(objectLevelTextField, 1, 1);
 		grid.add(selectLevelLabel, 0, 2);
 		grid.add(newLevelComboBox, 1, 2);
-
-		// TODO Auto-generated method stub
 	}
-
 }

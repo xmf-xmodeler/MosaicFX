@@ -52,7 +52,7 @@ public class DiagramActions {
 						if (x > 0 && y > 0) {
 							System.err.println("MCD: " + mcdResult.isAbstract());
 							diagram.addMetaClass(mcdResult.getName(), mcdResult.getLevel(),
-									new Vector<Integer>(mcdResult.getParent()), mcdResult.isAbstract(), x, y);
+									new Vector<>(mcdResult.getParent()), mcdResult.isAbstract(), x, y);
 
 							canvas.setCursor(Cursor.DEFAULT);
 							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
@@ -132,7 +132,7 @@ public class DiagramActions {
 	}
 
 
-	public void removeDialog(FmmlxObject object, String type) {
+	public void removeDialog(FmmlxObject object, DialogType type) {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
@@ -194,7 +194,7 @@ public class DiagramActions {
 		});
 	}
 
-	public void changeLevelDialog(FmmlxObject object, String type) {
+	public void changeLevelDialog(FmmlxObject object, DialogType type) {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
@@ -205,16 +205,16 @@ public class DiagramActions {
 				final ChangeLevelDialogResult result = opt.get();
 				System.err.println(result.toString());
 				switch (result.getType()) {
-					case "class":
+					case Class:
 						diagram.changeClassLevel(result);
 						break;
-					case "attribute":
+					case Attribute:
 						diagram.changeAttributeLevel(result);
 						break;
-					case "operation":
+					case Operation:
 						diagram.changeOperationLevel(result);
 						break;
-					case "association":
+					case Association:
 						diagram.changeAssociationLevel(result);
 						break;
 				}

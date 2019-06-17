@@ -9,14 +9,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 public class NodeLabel implements NodeElement {
-	Pos alignment;
-	double x;
-	double y;
-	boolean isAbstract;
-	Color fgColor = Color.BLACK;
-	Color bgColor = null;
-	Object actionObject; // Change to interface ~ HasContextMenu
-	String text;
+	private Pos alignment;
+	private double x;
+	private double y;
+	private boolean isAbstract;
+	private Color fgColor = Color.BLACK;
+	private Color bgColor = null;
+	private Object actionObject; // Change to interface ~ HasContextMenu
+	private String text;
 
 	private final static int Y_BASELINE_DIFF = 3;
 	private final static int BOX_GAP = 1;
