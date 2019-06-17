@@ -50,8 +50,9 @@ public class DiagramActions {
 						int y = (int) e.getY();
 
 						if (x > 0 && y > 0) {
+							System.err.println("MCD: " + mcdResult.isAbstract());
 							diagram.addMetaClass(mcdResult.getName(), mcdResult.getLevel(),
-									new Vector<Integer>(mcdResult.getParent()), false, x, y);
+									new Vector<Integer>(mcdResult.getParent()), mcdResult.isAbstract(), x, y);
 
 							canvas.setCursor(Cursor.DEFAULT);
 							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
@@ -263,6 +264,11 @@ public class DiagramActions {
 			l.countDown();
 		});
 
+	}
+
+	public void toogleIsAbstract(FmmlxObject object) {
+		object.toogleIsAbstract();
+		diagram.redraw();
 	}
 
 	public void toogleShowOperations() {

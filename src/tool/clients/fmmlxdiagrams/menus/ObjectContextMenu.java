@@ -29,6 +29,8 @@ public class ObjectContextMenu extends ContextMenu {
 		changeParentItem.setOnAction(e -> actions.changeParentsDialog(object));
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, "class"));
+		MenuItem abstractClassItem = new MenuItem("Change abstract");
+		abstractClassItem.setOnAction(e -> actions.toogleIsAbstract(object));
 
 		Menu attributeMenu = createAttributeSubMenu();
 		Menu associationMenu = createAssociationSubMenu();
@@ -37,7 +39,7 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu associationInstanceMenu = createAssociationInstanceSubMenu();
 		Menu showMenu = createShowSubMenu();
 
-		getItems().addAll(addInstanceItem, removeItem, changeNameItem, changeOfItem, changeParentItem, changeLevelItem,
+		getItems().addAll(addInstanceItem, removeItem, changeNameItem, changeOfItem, changeParentItem, changeLevelItem, abstractClassItem,
 				attributeMenu, associationMenu, operationMenu, slotMenu, associationInstanceMenu, showMenu);
 	}
 

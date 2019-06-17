@@ -92,16 +92,18 @@ public class FmmlxDiagramCommunicator {
 		for (Object responseObject : responseContent) {
 			Vector<Object> responseObjectList = (Vector<Object>) (responseObject);
 
+
 			System.out.println("Class/Object " + responseObjectList.get(1) + " found" + ": " + "Level : "
-					+ (Integer) responseObjectList.get(2) + " of " + (Integer) responseObjectList.get(3));
+					+ (Integer) responseObjectList.get(2) + " of " + (Integer) responseObjectList.get(3) + " isAbstract: " + (Boolean) responseObjectList.get(5));
 			FmmlxObject object = new FmmlxObject(
 					(Integer) responseObjectList.get(0), // id
 					(String) responseObjectList.get(1), // name
 					(Integer) responseObjectList.get(2), // level
 					(Integer) responseObjectList.get(3), // of
 					null, // parents
-					(Integer) responseObjectList.get(5), // x-Position
-					(Integer) responseObjectList.get(6));// y-Position
+					(Boolean) responseObjectList.get(5),
+					(Integer) responseObjectList.get(6), // x-Position
+					(Integer) responseObjectList.get(7));// y-Position
 			result.add(object);
 
 			sendCurrentPosition(object); // make sure to store position if newly created
@@ -158,14 +160,14 @@ public class FmmlxDiagramCommunicator {
 		for (Object o : response0) {
 			Vector<Object> opInfo = (Vector<Object>) o;
 			System.err.println(opInfo);
-			FmmlxOperation op = 
+			FmmlxOperation op =
 					new FmmlxOperation(
-							(String)  opInfo.get(0), // name
+							(String) opInfo.get(0), // name
 							(Integer) opInfo.get(1), // level
-							(String)  opInfo.get(2), // type
+							(String) opInfo.get(2), // type
 							(Integer) opInfo.get(3), // owner
-							(String)  opInfo.get(4) // multiplicity
-							);
+							(String) opInfo.get(4) // multiplicity
+					);
 			result.add(op);
 		}
 //		result.add(new FmmlxOperation("test", 0, "Blub", -1, null)); // Added for test purposes
@@ -284,11 +286,11 @@ public class FmmlxDiagramCommunicator {
 	}
 
 
-	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) { 
-		Value[] multiplicity = new Value[] {new Value(multi.min),new Value(multi.max),new Value(multi.upperLimit),new Value(multi.ordered),new Value(multi.duplicates)}; 
-		Value[] message = new Value[] {new Value(classID),new Value(name),new Value(level),new Value(type), new Value(multiplicity)};
+	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) {
+		Value[] multiplicity = new Value[]{new Value(multi.min), new Value(multi.max), new Value(multi.upperLimit), new Value(multi.ordered), new Value(multi.duplicates)};
+		Value[] message = new Value[]{new Value(classID), new Value(name), new Value(level), new Value(type), new Value(multiplicity)};
 		WorkbenchClient.theClient().send(handler, "addAttribute", message);
-		
+
 	}
 
 
