@@ -1,28 +1,17 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
-import javafx.scene.control.TextField;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
+import tool.clients.fmmlxdiagrams.*;
+import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.Label;
-import tool.clients.fmmlxdiagrams.FmmlxAttribute;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
-import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
-
-import tool.clients.fmmlxdiagrams.Multiplicity;
-import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 
 
 public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {

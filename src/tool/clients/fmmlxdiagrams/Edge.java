@@ -1,12 +1,12 @@
 package tool.clients.fmmlxdiagrams;
 
-import java.util.Vector;
-
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
+
+import java.util.Vector;
 
 public class Edge implements CanvasElement, Selectable {
 

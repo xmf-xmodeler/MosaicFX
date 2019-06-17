@@ -1,18 +1,14 @@
 package tool.clients.fmmlxdiagrams.dialogs;
-import java.util.ArrayList;
-import java.util.Vector;
 
 import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOfDialogResult;
+
+import java.util.ArrayList;
+import java.util.Vector;
 
 
 public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult>{

@@ -1,8 +1,8 @@
 package tool.clients.fmmlxdiagrams.menus;
 
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 
 public class DefaultContextMenu extends ContextMenu {
