@@ -147,24 +147,6 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxSlot> fetchSlots(String objectName, Vector<String> slotNames) {
-		Value[] slotNameArray = createValueArrayString(slotNames);
-		Vector<Object> response = xmfRequest(handler, "getSlots", new Value[]{new Value(objectName), new Value(slotNameArray)});
-		Vector<Object> slotList = (Vector<Object>) (response.get(0));
-		Vector<FmmlxSlot> result = new Vector<>();
-		for(Object slotO : slotList) { 
-			Vector<Object> slot = (Vector<Object>) (slotO);
-			String name =  (String)(slot.get(0));
-			String value = (String)(slot.get(1));
-		    result.add(new FmmlxSlot(name, value));
-		}
-		 // Added for test purposes
-//		System.err.println("slots: " + response0);
-
-		return result;
-	}
-
-	@SuppressWarnings("unchecked")
 	public Vector<FmmlxOperation> fetchOperations(String className) {
 		Vector<Object> response = xmfRequest(handler, "getOwnOperations", new Value[]{new Value(className)});
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));
@@ -177,18 +159,43 @@ public class FmmlxDiagramCommunicator {
 							(Integer) opInfo.get(1), // level
 							(String) opInfo.get(2), // type
 							(Integer) opInfo.get(3), // owner
-							(String) opInfo.get(4) // multiplicity
+							(String) opInfo.get(4), // multiplicity
+							(Boolean) opInfo.get(5), // isMonitored
+					        null // args
+
 					);
 			result.add(op);
 		}
-//		result.add(new FmmlxOperation("test", 0, "Blub", -1, null)); // Added for test purposes
-//        System.err.println("operations: " + response0);
 		return result;
 	}
 
-	public Vector<FmmlxOperationValue> fetchOperationValues(String objectName) {
+	@SuppressWarnings("unchecked")
+	public Vector<FmmlxSlot> fetchSlots(String objectName, Vector<String> slotNames) {
+		Value[] slotNameArray = createValueArrayString(slotNames);
+		Vector<Object> response = xmfRequest(handler, "getSlots", new Value[]{new Value(objectName), new Value(slotNameArray)});
+		Vector<Object> slotList = (Vector<Object>) (response.get(0));
+		Vector<FmmlxSlot> result = new Vector<>();
+		for(Object slotO : slotList) { 
+			Vector<Object> slot = (Vector<Object>) (slotO);
+			String name =  (String)(slot.get(0));
+			String value = (String)(slot.get(1));
+		    result.add(new FmmlxSlot(name, value));
+		}
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Vector<FmmlxOperationValue> fetchOperationValues(String objectName, Vector<String> monitoredOperationsNames) {
+		Value[] monitoredOperationsNameArray = createValueArrayString(monitoredOperationsNames);
+		Vector<Object> response = xmfRequest(handler, "getOperationValues", new Value[]{new Value(objectName), new Value(monitoredOperationsNameArray)});
+		Vector<Object> returnValuesList = (Vector<Object>) (response.get(0));
 		Vector<FmmlxOperationValue> result = new Vector<>();
-		result.add(new FmmlxOperationValue()); // Added for test purposes
+		for(Object returnValueO : returnValuesList) { 
+			Vector<Object> returnValue = (Vector<Object>) (returnValueO);
+			String name =  (String)(returnValue.get(0));
+			String value = (String)(returnValue.get(1));
+		    result.add(new FmmlxOperationValue(name, value));
+		}
 		return result;
 	}
 
@@ -238,6 +245,7 @@ public class FmmlxDiagramCommunicator {
 //		throw new RuntimeException("Not yet implemented");
 	}
 
+	@SuppressWarnings("unused")
 	public void sendCurrentPosition(FmmlxObject o) {
 		Vector<Object> response = xmfRequest(handler, "sendNewPosition",
 				new Value[]{new Value(o.id), new Value(o.getX()), new Value(o.getY())});

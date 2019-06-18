@@ -59,8 +59,10 @@ public class FmmlxDiagram {
 		objects.clear(); // to be replaced when updating instead of loading form scratch
 		objects.addAll(fetchedObjects);
 		for (FmmlxObject o : objects) {
-//			comm.fetchAttributes(o);
-			o.fetchData(comm);
+			o.fetchDataDefinitions(comm);
+		}
+		for (FmmlxObject o : objects) {
+			o.fetchDataValues(comm);
 		}
 		return objects;
 	}
@@ -121,9 +123,11 @@ public class FmmlxDiagram {
 		objects.clear(); // to be replaced when updating instead of loading form scratch
 		objects.addAll(fetchedObjects);
 		for (FmmlxObject o : objects) {
-//			comm.fetchAttributes(o);
-			o.fetchData(comm);
+			o.fetchDataDefinitions(comm);
 		}
+		for (FmmlxObject o : objects) {
+			o.fetchDataValues(comm);
+		}		
 		if (objects.size() >= 2) {
 			Edge e = new Edge(objects.get(0), objects.get(1));
 			edges.add(e);

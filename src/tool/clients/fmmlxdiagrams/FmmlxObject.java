@@ -32,9 +32,9 @@ public class FmmlxObject implements CanvasElement, Selectable {
 	int preferredWidth = 0;
 	int minWidth = 100;
 
-	private boolean showOperations = false;
-	boolean showOperationValues = true;
-	boolean showSlots = true;
+	private boolean showOperations = true;
+	private boolean showOperationValues = true;
+	private boolean showSlots = true;
 
 	static int testDiff = 10;
 
@@ -46,8 +46,6 @@ public class FmmlxObject implements CanvasElement, Selectable {
 	Vector<NodeElement> nodeElements = new Vector<>();
 
 	Vector<FmmlxSlot> slots;
-	@Deprecated
-	Vector<FmmlxOperation> operations;
 	Vector<FmmlxOperationValue> operationValues;
 
 	private Vector<FmmlxAttribute> ownAttributes;
@@ -143,9 +141,29 @@ public class FmmlxObject implements CanvasElement, Selectable {
 		return otherAttributes;
 	}
 
+
+	private Vector<FmmlxAttribute> getAllAttributes() {
+		Vector<FmmlxAttribute> result = new Vector<FmmlxAttribute>();
+		result.addAll(ownAttributes);
+		result.addAll(otherAttributes);
+		return result;
+	}
+	
 	public Vector<FmmlxOperation> getOwnOperations() {
 		return ownOperations;
+	}	
+	
+	public Vector<FmmlxOperation> getOtherOperations() {
+		return otherOperations;
 	}
+	
+	private Vector<FmmlxOperation> getAllOperations() {
+		Vector<FmmlxOperation> result = new Vector<FmmlxOperation>();
+		result.addAll(ownOperations);
+		result.addAll(otherOperations);
+		return result;
+	}
+	
 
 	public Vector<Integer> getParents() {
 		return parents;
@@ -260,8 +278,7 @@ public class FmmlxObject implements CanvasElement, Selectable {
 				NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, o.getLevelString() + "");
 				opsBox.nodeElements.add(oLevelLabel);
 			}
-		}
-		
+		}		
 		currentY = yAfterOpsBox;
 
 		double yAfterSlotBox = currentY;
@@ -278,9 +295,25 @@ public class FmmlxObject implements CanvasElement, Selectable {
 				NodeLabel slotLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, slotsY, Color.BLACK, null, s, s.getName() + " = " + s.getValue());
 				slotsBox.nodeElements.add(slotLabel);
 			}
-		}
-		
+		}		
 		currentY = yAfterSlotBox;
+		
+		double yAfterOPVBox = currentY;
+		int opvSize = operationValues.size();
+//		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
+		double opvBoxHeight = Math.max(lineHeight * opvSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
+		double opvY = 0;
+		NodeBox opvBox = new NodeBox(0, currentY, neededWidth, opvBoxHeight, Color.WHITE, Color.BLACK,1);
+		if (showOperationValues && opvSize > 0) {
+			yAfterOPVBox = currentY + opvBoxHeight;
+			nodeElements.addElement(opvBox);
+			for (FmmlxOperationValue opv : operationValues) {
+				opvY += lineHeight;
+				NodeLabel opvLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, opvY, Color.BLACK, null, opv, opv.getName() + " = " + opv.getValue());
+				opvBox.nodeElements.add(opvLabel);
+			}
+		}		
+		currentY = yAfterOPVBox;
 		
 		this.width = (int) neededWidth;
 		this.height = (int) currentY;
@@ -523,11 +556,10 @@ public class FmmlxObject implements CanvasElement, Selectable {
 
 	}
 
-	public void fetchData(FmmlxDiagramCommunicator comm) {
+	public void fetchDataDefinitions(FmmlxDiagramCommunicator comm) {
 		Vector<Vector<FmmlxAttribute>> attributeList = comm.fetchAttributes(this.name);
 		ownAttributes = attributeList.get(0);
 		otherAttributes = attributeList.get(1);
-		slots = comm.fetchSlots(this.name, this.getSlotNameList());
 		Vector<FmmlxOperation> operations = comm.fetchOperations(this.name);
 		ownOperations = new Vector<FmmlxOperation>();
 		otherOperations = new Vector<FmmlxOperation>();
@@ -538,16 +570,15 @@ public class FmmlxObject implements CanvasElement, Selectable {
 				otherOperations.add(o);
 			}
 		}
-		operationValues = comm.fetchOperationValues(this.name);
-
 	}
 
-	private Vector<String> getSlotNameList() {
-		Vector<String> list = new Vector<String>();
-		list.addElement("name");
-		return list;
+	public void fetchDataValues(FmmlxDiagramCommunicator comm) {
+		System.err.println(this.name+"'s slots: "+this.getSlotNames());
+		slots = comm.fetchSlots(this.name, this.getSlotNames());
+		operationValues = comm.fetchOperationValues(this.name, this.getMonitoredOperationsNames());
+		System.err.println(operationValues.size() + " opv found");
 	}
-
+	
 	private boolean passReqs(FmmlxAttribute att) {
 		return true;
 	}
@@ -577,5 +608,43 @@ public class FmmlxObject implements CanvasElement, Selectable {
 
 	public void toogleIsAbstract() {
 		isAbstract = !isAbstract;
+	}
+	
+	private Vector<String> getSlotNames() {
+		Vector<String> slotNames = new Vector<String>();
+		for(FmmlxObject ancestor : getAllAncestors()) {
+			for(FmmlxAttribute attribute : ancestor.getAllAttributes()) {
+				if(attribute.level == this.level && !slotNames.contains(attribute.name)) {
+					slotNames.add(attribute.name);
+				}
+			}
+		}
+		return slotNames;
+	}
+	
+	private Vector<String> getMonitoredOperationsNames(){
+		Vector<String> monitorNames = new Vector<String>();
+		for(FmmlxObject ancestor : getAllAncestors()) {
+			for(FmmlxOperation operation : ancestor.getAllOperations()) {
+				if(operation.level == this.level && operation.isMonitored() && !monitorNames.contains(operation.name)) {
+					monitorNames.add(operation.name);
+				}
+			}
+		}
+		return monitorNames;
+	}
+	
+	private Vector<FmmlxObject> getAllAncestors() {
+		Vector<FmmlxObject> result1 = new Vector<FmmlxObject>();
+		Vector<FmmlxObject> result2 = new Vector<FmmlxObject>();
+		if(of != null && of >= 0) 
+			result1.add(diagram.getObjectById(of));
+		for(Integer p : parents) 
+			result1.add(diagram.getObjectById(p));
+		result2.addAll(result1);
+		for(FmmlxObject o : result1) {
+			result2.addAll(o.getAllAncestors());
+		}
+		return result2;
 	}
 }
