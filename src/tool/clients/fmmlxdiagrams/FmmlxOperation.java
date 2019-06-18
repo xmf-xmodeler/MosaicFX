@@ -22,7 +22,10 @@ public class FmmlxOperation {
 	public Integer getLevel() {
 		return level;
 	}
-
+	
+	public String getLevelString() {
+		return level>=0?(""+level):" ";
+	}
 	public String getType() {
 		return type;
 	}

@@ -95,15 +95,20 @@ public class FmmlxDiagramCommunicator {
 
 			System.out.println("Class/Object " + responseObjectList.get(1) + " found" + ": " + "Level : "
 					+ (Integer) responseObjectList.get(2) + " of " + (Integer) responseObjectList.get(3) + " isAbstract: " + (Boolean) responseObjectList.get(5));
+			Vector<Object> parentListO = (Vector<Object>) responseObjectList.get(4);
+			Vector<Integer> parentListI = new Vector<Integer>();
+			for(Object o : parentListO) {parentListI.add((Integer) o);}
+			
 			FmmlxObject object = new FmmlxObject(
 					(Integer) responseObjectList.get(0), // id
-					(String) responseObjectList.get(1), // name
+					(String)  responseObjectList.get(1), // name
 					(Integer) responseObjectList.get(2), // level
 					(Integer) responseObjectList.get(3), // of
-					null, // parents
+					parentListI, // parents
 					(Boolean) responseObjectList.get(5),
 					(Integer) responseObjectList.get(6), // x-Position
-					(Integer) responseObjectList.get(7));// y-Position
+					(Integer) responseObjectList.get(7),
+					diagram);// y-Position
 			result.add(object);
 
 			sendCurrentPosition(object); // make sure to store position if newly created
@@ -142,11 +147,18 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxSlot> fetchSlots(String objectName) {
-		Vector<Object> response = xmfRequest(handler, "getSlots", new Value[]{new Value(objectName)});
-		Vector<Object> response0 = (Vector<Object>) (response.get(0));
+	public Vector<FmmlxSlot> fetchSlots(String objectName, Vector<String> slotNames) {
+		Value[] slotNameArray = createValueArrayString(slotNames);
+		Vector<Object> response = xmfRequest(handler, "getSlots", new Value[]{new Value(objectName), new Value(slotNameArray)});
+		Vector<Object> slotList = (Vector<Object>) (response.get(0));
 		Vector<FmmlxSlot> result = new Vector<>();
-		result.add(new FmmlxSlot()); // Added for test purposes
+		for(Object slotO : slotList) { 
+			Vector<Object> slot = (Vector<Object>) (slotO);
+			String name =  (String)(slot.get(0));
+			String value = (String)(slot.get(1));
+		    result.add(new FmmlxSlot(name, value));
+		}
+		 // Added for test purposes
 //		System.err.println("slots: " + response0);
 
 		return result;
@@ -159,7 +171,6 @@ public class FmmlxDiagramCommunicator {
 		Vector<FmmlxOperation> result = new Vector<>();
 		for (Object o : response0) {
 			Vector<Object> opInfo = (Vector<Object>) o;
-			System.err.println(opInfo);
 			FmmlxOperation op =
 					new FmmlxOperation(
 							(String) opInfo.get(0), // name

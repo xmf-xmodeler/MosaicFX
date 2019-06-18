@@ -12,9 +12,10 @@ public class NodeBox implements NodeElement {
 	double height;
 	Paint bgColor;
 	Paint fgColor;
+	double lineWidth = 1;
 	Vector<NodeElement> nodeElements = new Vector<>();
 
-	public NodeBox(double x, double y, double width, double height, Paint bgColor, Paint fgColor) {
+	public NodeBox(double x, double y, double width, double height, Paint bgColor, Paint fgColor, double lineWidth) {
 		super();
 		this.x = x;
 		this.y = y;
@@ -22,6 +23,7 @@ public class NodeBox implements NodeElement {
 		this.height = height;
 		this.bgColor = bgColor;
 		this.fgColor = fgColor;
+		this.lineWidth = lineWidth;
 	}
 
 	@Override
@@ -29,6 +31,7 @@ public class NodeBox implements NodeElement {
 		g.setFill(bgColor);
 		g.fillRect(x + xOffset, y + yOffset, width, height);
 		g.setStroke(fgColor);
+		g.setLineWidth(lineWidth);
 		g.strokeRect(x + xOffset, y + yOffset, width, height);
 		for (NodeElement e : nodeElements) {
 			e.paintOn(g, x + xOffset, y + yOffset, diagram);
