@@ -54,18 +54,18 @@ public class FmmlxDiagram {
 	private MouseMode mode = MouseMode.STANDARD;
 	private Font font;
 
-	public Vector<FmmlxObject> fetchObjects() {
-		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
-		objects.clear(); // to be replaced when updating instead of loading form scratch
-		objects.addAll(fetchedObjects);
-		for (FmmlxObject o : objects) {
-			o.fetchDataDefinitions(comm);
-		}
-		for (FmmlxObject o : objects) {
-			o.fetchDataValues(comm);
-		}
-		return objects;
-	}
+//	public Vector<FmmlxObject> fetchObjects() {
+//		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
+//		objects.clear(); // to be replaced when updating instead of loading form scratch
+//		objects.addAll(fetchedObjects);
+//		for (FmmlxObject o : objects) {
+//			o.fetchDataDefinitions(comm);
+//		}
+//		for (FmmlxObject o : objects) {
+//			o.fetchDataValues(comm);
+//		}
+//		return objects;
+//	}
 
 	public Vector<FmmlxObject> getObjects() {
 		return new Vector<FmmlxObject>(objects); // read-only
@@ -122,16 +122,19 @@ public class FmmlxDiagram {
 		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
 		objects.clear(); // to be replaced when updating instead of loading form scratch
 		objects.addAll(fetchedObjects);
+		Vector<Edge> fetchedEdges = comm.getAllAssociations();
+		edges.clear(); // to be replaced when updating instead of loading form scratch
+		edges.addAll(fetchedEdges);
 		for (FmmlxObject o : objects) {
 			o.fetchDataDefinitions(comm);
 		}
 		for (FmmlxObject o : objects) {
 			o.fetchDataValues(comm);
 		}		
-		if (objects.size() >= 2) {
-			Edge e = new Edge(objects.get(0), objects.get(1));
-			edges.add(e);
-		}
+//		if (objects.size() >= 2) {
+//			Edge e = new Edge(-1, objects.get(0), objects.get(1), null, this);
+//			edges.add(e);
+//		}
 		resizeCanvas();
 		redraw();
 	}
@@ -280,6 +283,9 @@ public class FmmlxDiagram {
 				if (s instanceof FmmlxObject) {
 					FmmlxObject o = (FmmlxObject) s;
 					comm.sendCurrentPosition(o);
+				} else if (s instanceof FmmlxAssociation) {
+					FmmlxAssociation a = (FmmlxAssociation) s;
+					comm.sendCurrentPositions(a);
 				}
 		}
 		objectsMoved = false;

@@ -573,10 +573,8 @@ public class FmmlxObject implements CanvasElement, Selectable {
 	}
 
 	public void fetchDataValues(FmmlxDiagramCommunicator comm) {
-		System.err.println(this.name+"'s slots: "+this.getSlotNames());
 		slots = comm.fetchSlots(this.name, this.getSlotNames());
 		operationValues = comm.fetchOperationValues(this.name, this.getMonitoredOperationsNames());
-		System.err.println(operationValues.size() + " opv found");
 	}
 	
 	private boolean passReqs(FmmlxAttribute att) {
