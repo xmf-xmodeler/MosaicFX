@@ -10,13 +10,13 @@ import java.util.Vector;
 
 public class Edge implements CanvasElement, Selectable {
 
-	private Vector<Point2D> points = new Vector<>();
-	private FmmlxObject startNode;
-	private FmmlxObject endNode;
-	public int id;
-	private FmmlxDiagram diagram;
-	private Vector<EdgeLabel> labels = new Vector<>();
-	private final Double DEFAULT_TOLERANCE = 3.;
+	final public int id;
+	protected Vector<Point2D> points = new Vector<>();
+	protected FmmlxObject startNode;
+	protected FmmlxObject endNode;
+	protected FmmlxDiagram diagram;
+	protected Vector<EdgeLabel> labels = new Vector<>();
+	protected final Double DEFAULT_TOLERANCE = 3.;
 	
 	public Edge(int id, FmmlxObject startNode, FmmlxObject endNode, Vector<Point2D> points, FmmlxDiagram diagram) {
 		this.id = id;
@@ -171,5 +171,12 @@ public class Edge implements CanvasElement, Selectable {
 	
 	public Vector<Point2D> getPoints() {
 		return new Vector<Point2D>(points);
+	}
+	
+	protected Point2D getCentreAnchor() {
+		int n = points.size()/2;
+		return new Point2D(
+			(points.get(n).getX() + points.get(n-1).getX())/2, 
+			(points.get(n).getY() + points.get(n-1).getY())/2);
 	}
 }

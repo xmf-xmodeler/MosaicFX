@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams;
 import java.util.Vector;
 
 import javafx.geometry.Point2D;
+import javafx.scene.canvas.GraphicsContext;
 
 public class FmmlxAssociation extends Edge{
 
@@ -40,6 +41,15 @@ public class FmmlxAssociation extends Edge{
 	private String accessNameEndToStart;
 	private Multiplicity multiplicityStartToEnd;
 	private Multiplicity multiplicityEndToStart;
+
+	@Override
+	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
+		super.paintOn(g, xOffset, yOffset, fmmlxDiagram);
+		if(name != null) {
+			Point2D centreAnchor = getCentreAnchor();
+			g.fillText(name, centreAnchor.getX(), centreAnchor.getY() - 10);
+		}
+	}
 
 
 }
