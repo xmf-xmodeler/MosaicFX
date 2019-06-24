@@ -12,15 +12,15 @@ import tool.clients.fmmlxdiagrams.dialogs.results.AddDialogResult;
 
 public class AddDialog extends CustomDialog<AddDialogResult>{
 	
-	private final String type;
+	private final DialogType type;
 	private final FmmlxDiagram diagram;
 	private FmmlxObject object;
 
-	public AddDialog(FmmlxDiagram diagram, FmmlxObject object, String type) {
+	public AddDialog(FmmlxDiagram diagram, FmmlxObject object, DialogType type2) {
 		super();
 		this.diagram = diagram;
 		this.object = object;
-		this.type = type;
+		this.type = type2;
 		
 		DialogPane dialogPane = getDialogPane();
 		
@@ -55,16 +55,16 @@ public class AddDialog extends CustomDialog<AddDialogResult>{
 
 	private void layoutContent() {
 		switch (type) {
-			case "class":
+			case Class:
 				addMetaClass();
 				break;
-			case "attribute":
+			case Attribute:
 				addAttribute();
 				break;
-			case "operation":
+			case Operation:
 				addOperation();
 				break;
-			case "association":
+			case Association:
 				addAssociation();
 				break;
 			default:

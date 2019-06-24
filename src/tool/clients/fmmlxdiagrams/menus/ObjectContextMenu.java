@@ -94,7 +94,7 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu operationMenu = new Menu("Operation");
 
 		MenuItem addItem = new MenuItem("Add");
-		addItem.setOnAction(e -> actions.addDialog(object, "operation"));
+		addItem.setOnAction(e -> actions.addDialog(object, DialogType.Operation));
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, "operation"));
 		MenuItem changeNameItem = new MenuItem("Change name");

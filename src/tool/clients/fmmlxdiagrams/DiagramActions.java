@@ -274,7 +274,7 @@ public class DiagramActions {
 		diagram.redraw();
 	}
 
-	public Object addDialog(FmmlxObject object, String type) {
+	public Object addDialog(FmmlxObject object, DialogType type) {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
