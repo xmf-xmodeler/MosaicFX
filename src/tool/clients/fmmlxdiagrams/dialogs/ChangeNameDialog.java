@@ -38,21 +38,24 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		dialog.setHeaderText("Change name");
 
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		layoutContent();
+		layoutContent(type);
 		dialog.setContent(flow);
 
 		setValidation();
-		setResult();
+		setResult(type);
 	}
 
-	private void setResult() {
+	private void setResult(DialogType type) {
 		setResultConverter(dlgBtn -> {
-			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				if (type.equals("class")) {
-					return new ChangeNameDialogResult(type, object, classNameTextfield.getText());
-				} else if (type.equals("attribute") || type.equals("operation")) {
-					return new ChangeNameDialogResult(type, object, comboBox.getSelectionModel().getSelectedItem(), objectNameTextfield.getText());
-				}
+			switch (type) {
+			case Class:
+				return new ChangeNameDialogResult(type, object, classNameTextfield.getText());
+			case Attribute:
+				return new ChangeNameDialogResult(type, object, comboBox.getSelectionModel().getSelectedItem(), objectNameTextfield.getText());
+			case Operation:
+				return new ChangeNameDialogResult(type, object, comboBox.getSelectionModel().getSelectedItem(), objectNameTextfield.getText());
+			default:
+			System.err.println("ChangeNameDialog: No matching content type!");
 			}
 			return null;
 		});
@@ -67,7 +70,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		});
 	}
 
-	private void layoutContent() {
+	private void layoutContent(DialogType type) {
 		Label classLabel = new Label("Class");
 		classNameTextfield = new TextField();
 		grid.add(classLabel, 0, 0);
@@ -152,6 +155,8 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 				return validateAttributeName();
 			case Operation:
 				return validateOperationName();
+			default:System.err.println("AddDialog: No matching content type!");	
+			break;
 		}
 		return true;
 	}

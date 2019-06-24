@@ -16,11 +16,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
-import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddDialogResult;
 
 public class AddDialog extends CustomDialog<AddDialogResult>{
@@ -78,7 +75,7 @@ public class AddDialog extends CustomDialog<AddDialogResult>{
 					setResultAddMetaClass(dlgBtn);
 					break;
 				case Attribute:
-					setResultGenerateLayoutAddAttribute(dlgBtn);
+					setResultAddAttribute(dlgBtn);
 					break;
 				case Operation:
 					SetResultAddOperation(dlgBtn);
@@ -94,11 +91,6 @@ public class AddDialog extends CustomDialog<AddDialogResult>{
 		});
 	}
 	
-
-	private void setResultGenerateLayoutAddAttribute(ButtonType dlgBtn) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	private void setResultAddAssociation(ButtonType dlgBtn) {
 		// TODO Auto-generated method stub

@@ -1,6 +1,5 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 import java.util.Vector;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
