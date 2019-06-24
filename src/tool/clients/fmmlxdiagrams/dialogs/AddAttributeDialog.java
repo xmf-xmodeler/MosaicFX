@@ -162,7 +162,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 	private boolean nameAlreadyUsed() {
 
 		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
-		Vector<FmmlxObject> objects = diagrams.get(0).fetchObjects();
+		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();		
 		
 		for (FmmlxObject object :objects) {
 			if(classCombobox.getSelectionModel().getSelectedItem().equals(object.getName())) {

@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
+import javafx.geometry.Point2D;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import tool.clients.workbench.WorkbenchClient;
@@ -95,21 +96,73 @@ public class FmmlxDiagramCommunicator {
 
 			System.out.println("Class/Object " + responseObjectList.get(1) + " found" + ": " + "Level : "
 					+ (Integer) responseObjectList.get(2) + " of " + (Integer) responseObjectList.get(3) + " isAbstract: " + (Boolean) responseObjectList.get(5));
+			Vector<Object> parentListO = (Vector<Object>) responseObjectList.get(4);
+			Vector<Integer> parentListI = new Vector<Integer>();
+			for(Object o : parentListO) {parentListI.add((Integer) o);}
+			
 			FmmlxObject object = new FmmlxObject(
 					(Integer) responseObjectList.get(0), // id
-					(String) responseObjectList.get(1), // name
+					(String)  responseObjectList.get(1), // name
 					(Integer) responseObjectList.get(2), // level
 					(Integer) responseObjectList.get(3), // of
-					null, // parents
+					parentListI, // parents
 					(Boolean) responseObjectList.get(5),
 					(Integer) responseObjectList.get(6), // x-Position
-					(Integer) responseObjectList.get(7));// y-Position
+					(Integer) responseObjectList.get(7), // y-Position
+					diagram);
 			result.add(object);
 
 			sendCurrentPosition(object); // make sure to store position if newly created
 		}
 		return result;
 	}
+	
+
+	@SuppressWarnings("unchecked")
+	public Vector<Edge> getAllAssociations() {
+		Vector<Object> response = xmfRequest(handler, "getAllAssociations", new Value[]{});
+		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+		Vector<Edge> result = new Vector<>();
+		
+//		System.err.println(responseContent);
+		for (Object edgeInfo : responseContent) {
+			Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
+
+//			Vector<Object> parentListO = (Vector<Object>) edgeInfoAsList.get(4);
+//			Vector<Integer> parentListI = new Vector<Integer>();
+//			for(Object o : parentListO) {parentListI.add((Integer) o);}
+			
+			Vector<Point2D> listOfPoints = null;
+			Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(4);
+			if(pointsListO != null) {
+				listOfPoints = new Vector<Point2D>();
+				for(Object pointO : pointsListO) {
+					Vector<Object> pointV = (Vector<Object>) pointO;
+					Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); // leaving 0 free for future use as tag
+					listOfPoints.addElement(pointP);
+				}
+			}
+			
+			Edge object = new FmmlxAssociation(
+					(Integer) edgeInfoAsList.get(0), // id
+					(Integer) edgeInfoAsList.get(1), // startId
+					(Integer) edgeInfoAsList.get(2), // endId
+					(Integer) edgeInfoAsList.get(3), // parentId
+					listOfPoints, // points
+					(String) edgeInfoAsList.get(5), // name 1
+					(String) edgeInfoAsList.get(6), // name 2
+					(String) edgeInfoAsList.get(7), // name 3
+					(String) edgeInfoAsList.get(8), // name 4
+					(Integer) edgeInfoAsList.get(9), // level s->e
+					(Integer) edgeInfoAsList.get(10), // level e->s
+					null, //mul s->e
+					null, //mul e->e
+					diagram);// y-Position
+			result.add(object);
+
+//			sendCurrentPosition(object); // make sure to store position if newly created
+		}
+		return result;	}
 
 	@SuppressWarnings("unchecked")
 	public Vector<Vector<FmmlxAttribute>> fetchAttributes(String className) {
@@ -122,33 +175,19 @@ public class FmmlxDiagramCommunicator {
 		Vector<Object> otherAttList = (Vector<Object>) twoLists.get(1);
 		for (Object o : ownAttList) {
 			Vector<Object> attInfo = (Vector<Object>) o;
-//			System.err.println("Attribute " + o + " found");
 			FmmlxAttribute object = new FmmlxAttribute((String) attInfo.get(0), (Integer) attInfo.get(2),
 					(String) attInfo.get(1), (Integer) attInfo.get(4), (String) attInfo.get(3));
 			resultOwn.add(object);
 		}
 		for (Object o : otherAttList) {
 			Vector<Object> attInfo = (Vector<Object>) o;
-//			System.err.println("Attribute " + o + " found");
 			FmmlxAttribute object = new FmmlxAttribute((String) attInfo.get(0), (Integer) attInfo.get(2),
 					(String) attInfo.get(1), (Integer) attInfo.get(4), (String) attInfo.get(3));
 			resultOther.add(object);
 		}
-//		result.add(new FmmlxAttribute("att0", 1, "Integer"));
 		Vector<Vector<FmmlxAttribute>> result = new Vector<>();
 		result.addElement(resultOwn);
 		result.addElement(resultOther);
-		return result;
-	}
-
-	@SuppressWarnings("unchecked")
-	public Vector<FmmlxSlot> fetchSlots(String objectName) {
-		Vector<Object> response = xmfRequest(handler, "getSlots", new Value[]{new Value(objectName)});
-		Vector<Object> response0 = (Vector<Object>) (response.get(0));
-		Vector<FmmlxSlot> result = new Vector<>();
-		result.add(new FmmlxSlot()); // Added for test purposes
-//		System.err.println("slots: " + response0);
-
 		return result;
 	}
 
@@ -159,25 +198,49 @@ public class FmmlxDiagramCommunicator {
 		Vector<FmmlxOperation> result = new Vector<>();
 		for (Object o : response0) {
 			Vector<Object> opInfo = (Vector<Object>) o;
-			System.err.println(opInfo);
 			FmmlxOperation op =
 					new FmmlxOperation(
 							(String) opInfo.get(0), // name
 							(Integer) opInfo.get(1), // level
 							(String) opInfo.get(2), // type
 							(Integer) opInfo.get(3), // owner
-							(String) opInfo.get(4) // multiplicity
+							(String) opInfo.get(4), // multiplicity
+							(Boolean) opInfo.get(5), // isMonitored
+					        null // args
+
 					);
 			result.add(op);
 		}
-//		result.add(new FmmlxOperation("test", 0, "Blub", -1, null)); // Added for test purposes
-//        System.err.println("operations: " + response0);
 		return result;
 	}
 
-	public Vector<FmmlxOperationValue> fetchOperationValues(String objectName) {
+	@SuppressWarnings("unchecked")
+	public Vector<FmmlxSlot> fetchSlots(String objectName, Vector<String> slotNames) {
+		Value[] slotNameArray = createValueArrayString(slotNames);
+		Vector<Object> response = xmfRequest(handler, "getSlots", new Value[]{new Value(objectName), new Value(slotNameArray)});
+		Vector<Object> slotList = (Vector<Object>) (response.get(0));
+		Vector<FmmlxSlot> result = new Vector<>();
+		for(Object slotO : slotList) { 
+			Vector<Object> slot = (Vector<Object>) (slotO);
+			String name =  (String)(slot.get(0));
+			String value = (String)(slot.get(1));
+		    result.add(new FmmlxSlot(name, value));
+		}
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Vector<FmmlxOperationValue> fetchOperationValues(String objectName, Vector<String> monitoredOperationsNames) {
+		Value[] monitoredOperationsNameArray = createValueArrayString(monitoredOperationsNames);
+		Vector<Object> response = xmfRequest(handler, "getOperationValues", new Value[]{new Value(objectName), new Value(monitoredOperationsNameArray)});
+		Vector<Object> returnValuesList = (Vector<Object>) (response.get(0));
 		Vector<FmmlxOperationValue> result = new Vector<>();
-		result.add(new FmmlxOperationValue()); // Added for test purposes
+		for(Object returnValueO : returnValuesList) { 
+			Vector<Object> returnValue = (Vector<Object>) (returnValueO);
+			String name =  (String)(returnValue.get(0));
+			String value = (String)(returnValue.get(1));
+		    result.add(new FmmlxOperationValue(name, value));
+		}
 		return result;
 	}
 
@@ -227,9 +290,28 @@ public class FmmlxDiagramCommunicator {
 //		throw new RuntimeException("Not yet implemented");
 	}
 
+	@SuppressWarnings("unused")
 	public void sendCurrentPosition(FmmlxObject o) {
 		Vector<Object> response = xmfRequest(handler, "sendNewPosition",
 				new Value[]{new Value(o.id), new Value(o.getX()), new Value(o.getY())});
+	}
+	
+
+	public void sendCurrentPositions(FmmlxAssociation a) {
+		Vector<Point2D> points = a.getPoints();
+		
+		Value[] listOfPoints = new Value[points.size()];
+		for (int i = 0; i < listOfPoints.length; i++) {
+			Value[] point = new Value[3];
+			point[0] = new Value("defaultPoint");
+			point[1] = new Value((float) (points.get(i).getX()));
+			point[2] = new Value((float) (points.get(i).getY()));
+			listOfPoints[i] = new Value(point);
+		}
+		
+		//Vector<Object> response = 
+		xmfRequest(handler, "sendNewPositions",
+				new Value[]{new Value(a.id), new Value(listOfPoints)});
 	}
 
 	public void addMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
@@ -312,4 +394,6 @@ public class FmmlxDiagramCommunicator {
 		//WorkbenchClient.theClient().send(handler, "changeAttributeName", message);
 
 	}
+
+
 }

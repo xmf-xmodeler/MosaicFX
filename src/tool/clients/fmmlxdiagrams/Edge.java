@@ -10,18 +10,25 @@ import java.util.Vector;
 
 public class Edge implements CanvasElement, Selectable {
 
-	private Vector<Point2D> points = new Vector<>();
-	private FmmlxObject startNode;
-	private FmmlxObject endNode;
+	final public int id;
+	protected Vector<Point2D> points = new Vector<>();
+	protected FmmlxObject startNode;
+	protected FmmlxObject endNode;
+	protected FmmlxDiagram diagram;
+	protected Vector<EdgeLabel> labels = new Vector<>();
+	protected final Double DEFAULT_TOLERANCE = 3.;
 	
-	private Vector<EdgeLabel> labels = new Vector<>();
-	private final Double DEFAULT_TOLERANCE = 3.;
-	
-	public Edge(FmmlxObject startNode, FmmlxObject endNode) {
+	public Edge(int id, FmmlxObject startNode, FmmlxObject endNode, Vector<Point2D> points, FmmlxDiagram diagram) {
+		this.id = id;
+		this.diagram = diagram;
 		this.startNode = startNode;
 		this.endNode = endNode;
-		points.add(new Point2D(startNode.getX() + startNode.width / 2, startNode.getY() + startNode.height / 2));
-		points.add(new Point2D(endNode.getX() + endNode.width / 2, endNode.getY() + endNode.height / 2));
+		if(points == null || points.size() < 1) {
+			this.points.add(new Point2D(startNode.getX() + startNode.width / 2, startNode.getY() + startNode.height / 2));
+			this.points.add(new Point2D(endNode.getX() + endNode.width / 2, endNode.getY() + endNode.height / 2));
+		} else {
+			this.points.addAll(points);
+		}
 	}
 	
 	@Override
@@ -62,7 +69,7 @@ public class Edge implements CanvasElement, Selectable {
 	}
 	public boolean isHit(Point2D p, Double tolerance) {
 		for(int i = 0; i < points.size() - 1; i++) {
-			System.err.println("distance=" + distance(p, points.get(i), points.get(i+1)));
+//			System.err.println("distance=" + distance(p, points.get(i), points.get(i+1)));
 			if(distance(p, points.get(i), points.get(i+1)) < (tolerance==null?DEFAULT_TOLERANCE :tolerance)) {
 				return true;
 			}
@@ -161,5 +168,15 @@ public class Edge implements CanvasElement, Selectable {
 		// in any case no point to be moved anymore
 		pointToBeMoved = -1;
 	}
-
+	
+	public Vector<Point2D> getPoints() {
+		return new Vector<Point2D>(points);
+	}
+	
+	protected Point2D getCentreAnchor() {
+		int n = points.size()/2;
+		return new Point2D(
+			(points.get(n).getX() + points.get(n-1).getX())/2, 
+			(points.get(n).getY() + points.get(n-1).getY())/2);
+	}
 }
