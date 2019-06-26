@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -32,15 +31,16 @@ public class AddDialog extends CustomDialog<AddDialogResult>{
 	private Label nameLabel ;
 	private Label typeLabel;
 	private Label levelLabel;
+	private Label multiplicityLabel; //just for add attribute and association
+	
+	private TextField classTextField; //except add class
 	private TextField nameTextField;
 	private ComboBox<String> typeComboBox;
 	private ComboBox<Integer> levelComboBox; 
+	private Button multiplicityButton; //just for add attribute and association
+	
 	
 	//For add Attribute
-	private Label multiplicityLabel;
-	private TextField classTextField; 
-	
-	private Button multiplicityButton; 
 	ObservableList<String> classList;
 	private List<String> typesArray;
 	
@@ -51,7 +51,9 @@ public class AddDialog extends CustomDialog<AddDialogResult>{
 	private ComboBox<String> ownerComboBox; 
 	private TextField bodyTextField;
 	
-	
+	//For add Association
+	private Label targetLabel;
+	private ComboBox<String> targetComboBox;
 	
 
 	private Multiplicity multiplicity = Multiplicity.OPTIONAL;
@@ -135,16 +137,16 @@ public class AddDialog extends CustomDialog<AddDialogResult>{
 	private void layoutContent() {
 		switch (type) {
 			case Class:
-				addMetaClass();
+				generateLayoutAddMetaClass();
 				break;
 			case Attribute:
 				generateLayoutAddAttribute();
 				break;
 			case Operation:
-				addOperation();
+				generateLayoutAddOperation();
 				break;
 			case Association:
-				addAssociation();
+				generateLayoutAddAssociation();
 				break;
 			default:
 				System.err.println("AddDialog: No matching content type!");	
@@ -154,17 +156,50 @@ public class AddDialog extends CustomDialog<AddDialogResult>{
 	
 	//generate Layout Content
 
-	private void addMetaClass() {
+	private void generateLayoutAddMetaClass() {
 		// TODO Auto-generated method stub
 		
 	}
 	
-	private void addAssociation() {
-			// TODO Auto-generated method stub
+	private void generateLayoutAddAssociation() {
+		dialogPane.setHeaderText("Add Association");
+		classLabel = new Label("Class");
+		nameLabel = new Label("Name");
+		typeLabel = new Label("Type");
+		targetLabel =  new Label("Target");
+		levelLabel = new Label("Level");
+		multiplicityLabel= new Label("Multiplicity"); 
+		
+		classTextField = new TextField();
+		classTextField.setText(object.getName());
+		classTextField.setDisable(true);
+		nameTextField = new TextField();
+		typeComboBox = new ComboBox<>();
+		targetComboBox = new ComboBox<String>();
+		levelComboBox = new ComboBox<>(LevelList.levelList);
+		multiplicityButton = new Button();
+		multiplicityButton.setText(multiplicity.getClass().getSimpleName().toString());
+		
+		targetComboBox.setPrefWidth(COLUMN_WIDTH);
+		typeComboBox.setPrefWidth(COLUMN_WIDTH);	
+		levelComboBox.setPrefWidth(COLUMN_WIDTH);
+		
+		grid.add(classLabel, 0, 0);
+		grid.add(classTextField, 1, 0);
+		grid.add(nameLabel, 0, 1);
+		grid.add(nameTextField, 1, 1);
+		grid.add(typeLabel, 0, 2);
+		grid.add(typeComboBox, 1, 2);
+		grid.add(targetLabel, 0, 3);
+		grid.add(targetComboBox, 1, 3);
+		grid.add(levelLabel, 0, 4);
+		grid.add(levelComboBox, 1, 4);
+		grid.add(multiplicityLabel, 0, 5);
+		grid.add(multiplicityButton, 1, 5);
 			
 	}
 
-	private void addOperation() {
+	private void generateLayoutAddOperation() {
 		dialogPane.setHeaderText("Add Operation");
 		classLabel = new Label("Class");
 		nameLabel = new Label("Name");

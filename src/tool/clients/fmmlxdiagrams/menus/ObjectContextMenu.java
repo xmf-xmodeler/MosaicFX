@@ -70,7 +70,7 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu associationMenu = new Menu("Association");
 
 		MenuItem addItem = new MenuItem("Add");
-		addItem.setOnAction(e -> System.out.println("OCM: add association called"));
+		addItem.setOnAction(e -> actions.addDialog(object, DialogType.Association));
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e_ -> actions.removeDialog(object, "association"));
 		MenuItem changeTargetItem = new MenuItem("Change target");
