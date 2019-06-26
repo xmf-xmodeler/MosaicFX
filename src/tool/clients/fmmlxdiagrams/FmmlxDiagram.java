@@ -574,9 +574,4 @@ public class FmmlxDiagram {
 	public void changeSlotValue(ChangeSlotValueDialogResult result) {
 		comm.changeSlotValue(result.getObject().getId(), result.getSlot().getName(), result.getNewValue());
 	}
-
-	public void changeSlotValue(String string) {
-		comm.changeSlotValue(1, "name", string);
-		
-	}
 }
