@@ -22,7 +22,6 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
 
 import tool.clients.fmmlxdiagrams.Multiplicity;
-import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 
 
 public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {

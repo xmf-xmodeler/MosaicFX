@@ -21,27 +21,38 @@ import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddDialogResult;
 
 public class AddDialog extends CustomDialog<AddDialogResult>{
-	
+	private DialogPane dialogPane;
 	private final DialogType type;
 	private FmmlxObject object;
 	private Vector<FmmlxObject> objects;
 	
-	//For add Attribute
+	
+	//For All
+	private Label classLabel; //except add class
 	private Label nameLabel ;
-	private Label classLabel;
-	private Label levelLabel;
 	private Label typeLabel;
-	private Label multiplicityLabel;
-	
+	private Label levelLabel;
 	private TextField nameTextField;
-	private TextField classTextField; 
-	private ComboBox<Integer> levelComboBox; 
 	private ComboBox<String> typeComboBox;
+	private ComboBox<Integer> levelComboBox; 
 	
-
+	//For add Attribute
+	private Label multiplicityLabel;
+	private TextField classTextField; 
+	
 	private Button multiplicityButton; 
 	ObservableList<String> classList;
-	List<String> typesArray;
+	private List<String> typesArray;
+	
+	//For add operation
+	private Label ownerLabel;
+	private Label bodyLabel;
+	
+	private ComboBox<String> ownerComboBox; 
+	private TextField bodyTextField;
+	
+	
+	
 
 	private Multiplicity multiplicity = Multiplicity.OPTIONAL;
 
@@ -50,8 +61,7 @@ public class AddDialog extends CustomDialog<AddDialogResult>{
 		this.object = object;
 		this.type = type2;
 		
-		DialogPane dialogPane = getDialogPane();
-		
+		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		layoutContent();
 		dialogPane.setContent(flow);
@@ -84,7 +94,7 @@ public class AddDialog extends CustomDialog<AddDialogResult>{
 					setResultAddAssociation(dlgBtn);
 					break;
 				default:
-					System.err.println("AddDialog: No matching content type!");	
+					System.err.println("AddDialogResult: No matching content type!");	
 				}
 			}
 			return null;
@@ -93,33 +103,33 @@ public class AddDialog extends CustomDialog<AddDialogResult>{
 	
 
 	private void setResultAddAssociation(ButtonType dlgBtn) {
-		// TODO Auto-generated method stub
+		if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
+			//TODO
+		}
 		
 	}
 
 	private void SetResultAddOperation(ButtonType dlgBtn) {
-		// TODO Auto-generated method stub
-		
+		if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
+			//TODO
+		}	
 	}
 
 	private void setResultAddAttribute(ButtonType dlgBtn) {
 		if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-
-			
 			//TODO AddAttributeDialogResult and Multiplicity Result
 			/*return new AddAttributeDialogResult(
 					classId,
 					nameTextField.getText(), 
 					levelComboBox.getSelectionModel().getSelectedItem(),
 					typeComboBox.getSelectionModel().getSelectedItem(), multiplicityResult);*/
-		}
-		
-		
+		}		
 	}
 
 	private void setResultAddMetaClass(ButtonType dlgBtn) {
-		// TODO Auto-generated method stub
-		
+		if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
+			//TODO
+		}
 	}
 
 	private void layoutContent() {
@@ -155,49 +165,81 @@ public class AddDialog extends CustomDialog<AddDialogResult>{
 	}
 
 	private void addOperation() {
-			// TODO Auto-generated method stub
-			
+		dialogPane.setHeaderText("Add Operation");
+		classLabel = new Label("Class");
+		nameLabel = new Label("Name");
+		ownerLabel = new Label("Owner");
+		typeLabel = new Label("Type");
+		levelLabel = new Label("Level");
+		bodyLabel = new Label("Body");
+		
+		classTextField = new TextField();
+		classTextField.setText(object.getName());
+		classTextField.setDisable(true);
+		nameTextField = new TextField();
+		ownerComboBox = new ComboBox<String>();
+		typeComboBox = new ComboBox<>();
+		levelComboBox = new ComboBox<>(LevelList.levelList);
+		bodyTextField = new TextField();
+		
+		ownerComboBox.setPrefWidth(COLUMN_WIDTH);
+		levelComboBox.setPrefWidth(COLUMN_WIDTH);
+		typeComboBox.setPrefWidth(COLUMN_WIDTH);
+		
+		grid.add(classLabel, 0, 0);
+		grid.add(classTextField, 1, 0);
+		grid.add(nameLabel, 0, 1);
+		grid.add(nameTextField, 1, 1);
+		grid.add(ownerLabel, 0, 2);
+		grid.add(ownerComboBox, 1, 2);
+		grid.add(typeLabel, 0, 3);
+		grid.add(typeComboBox, 1, 3);
+		grid.add(levelLabel, 0, 4);
+		grid.add(levelComboBox, 1, 4);
+		grid.add(bodyLabel, 0, 5);
+		grid.add(bodyTextField, 1, 5);
 	}
 
 	private void generateLayoutAddAttribute() {
-			nameLabel = new Label("Name");
-			classLabel = new Label("Class");
-			levelLabel = new Label("Level");
-			typeLabel = new Label("Type");
-			multiplicityLabel = new Label("Multiplicity");
-			classList = getAllClassList();
+		dialogPane.setHeaderText("Add Attribute");
+		nameLabel = new Label("Name");
+		classLabel = new Label("Class");
+		levelLabel = new Label("Level");
+		typeLabel = new Label("Type");
+		multiplicityLabel = new Label("Multiplicity");
+		//classList = getAllClassList();
 			
-			String[] types = new String[] { "Integer", "String", "Boolean","Double","Float"};
-			typesArray = Arrays.asList(types);
-			ObservableList<String> typeList= FXCollections.observableArrayList(typesArray);
+		String[] types = new String[] { "Integer", "String", "Boolean","Double","Float"};
+		typesArray = Arrays.asList(types);
+		ObservableList<String> typeList= FXCollections.observableArrayList(typesArray);
+		
+		nameTextField = new TextField();
+		classTextField = new TextField();
+		classTextField.setText(object.getName());
+		classTextField.setDisable(true);
+		levelComboBox = new ComboBox<>(LevelList.levelList);
+		typeComboBox = new ComboBox<>(typeList);
+		multiplicityButton = new Button();
+		//multiplicityButton.setText("Add / Edit Multiplicity");
+		multiplicityButton.setText(multiplicity.getClass().getSimpleName().toString());
+		multiplicityButton.setOnAction(e -> {
+			new MultiplicityDialog(multiplicity).showAndWait(); 
+			/*if successful multiplicity = result;
+			 *multiplicityButton.setText(multiplicity.toString());*/ });
+		levelComboBox.setPrefWidth(COLUMN_WIDTH);
+		typeComboBox.setPrefWidth(COLUMN_WIDTH);
+		multiplicityButton.setPrefWidth(COLUMN_WIDTH);
 			
-			nameTextField = new TextField();
-			classTextField = new TextField();
-			classTextField.setText(object.getName());
-			classTextField.setDisable(true);
-			levelComboBox = new ComboBox<>(LevelList.levelList);
-			typeComboBox = new ComboBox<>(typeList);
-			multiplicityButton = new Button();
-			//multiplicityButton.setText("Add / Edit Multiplicity");
-			multiplicityButton.setText(multiplicity.getClass().getSimpleName().toString());
-			multiplicityButton.setOnAction(e -> {
-				new MultiplicityDialog(multiplicity).showAndWait(); 
-				/*if successful multiplicity = result;
-				 *multiplicityButton.setText(multiplicity.toString());*/ });
-			levelComboBox.setPrefWidth(COLUMN_WIDTH);
-			typeComboBox.setPrefWidth(COLUMN_WIDTH);
-			multiplicityButton.setPrefWidth(COLUMN_WIDTH);
-			
-			grid.add(nameLabel, 0, 1);
-			grid.add(nameTextField, 1, 1);
-			grid.add(classLabel, 0, 0);
-			grid.add(classTextField, 1, 0);
-			grid.add(levelLabel, 0, 2);
-			grid.add(levelComboBox, 1, 2);
-			grid.add(typeLabel, 0, 3);
-			grid.add(typeComboBox, 1, 3);
-			grid.add(multiplicityLabel, 0, 4);
-			grid.add(multiplicityButton, 1, 4);
+		grid.add(nameLabel, 0, 1);
+		grid.add(nameTextField, 1, 1);
+		grid.add(classLabel, 0, 0);
+		grid.add(classTextField, 1, 0);
+		grid.add(levelLabel, 0, 2);
+		grid.add(levelComboBox, 1, 2);
+		grid.add(typeLabel, 0, 3);
+		grid.add(typeComboBox, 1, 3);
+		grid.add(multiplicityLabel, 0, 4);
+		grid.add(multiplicityButton, 1, 4);
 	}
 		
 	private ObservableList<String> getAllClassList() {
