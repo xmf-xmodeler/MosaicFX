@@ -270,6 +270,21 @@ public class DiagramActions {
 
 	}
 
+	public void changeSlotValue(FmmlxObject hitObject, FmmlxSlot hitProperty) {
+
+		CountDownLatch l = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			ChangeSlotValueDialog dlg = new ChangeSlotValueDialog(hitObject, hitProperty);
+			Optional<ChangeSlotValueDialogResult> result = dlg.showAndWait();
+
+			if (result.isPresent()) {
+				ChangeSlotValueDialogResult slotValueDialogResult = result.get();
+				diagram.changeSlotValue(slotValueDialogResult);
+			}
+		});
+	}
+
 	public void toogleIsAbstract(FmmlxObject object) {
 		object.toogleIsAbstract();
 		diagram.redraw();
