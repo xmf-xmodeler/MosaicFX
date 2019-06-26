@@ -34,9 +34,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 	List<String> typesArray;
 
 	private Multiplicity multiplicity = Multiplicity.OPTIONAL;
-
-
-
+	
 	public AddAttributeDialog(final FmmlxDiagram diagram) {
 		super();
 		
@@ -44,8 +42,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		this.objects = diagram.getObjects();
 		
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		
-
 		
 		addElementToGrid();
 		dialogPane.setContent(grid);
@@ -71,7 +67,8 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 						classId,
 						nameTextField.getText(), 
 						levelComboBox.getSelectionModel().getSelectedItem(),
-						typeComboBox.getSelectionModel().getSelectedItem(), new Multiplicity(0, 1, true, false, false));
+						getComboBoxStringValue(typeComboBox), 
+						new Multiplicity(0, 1, true, false, false));
 			}
 			return null;
 		});
@@ -93,7 +90,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 	
 	
 	private boolean validateUserInput() {
-		if (!classChoosen()) {
+		if (!classChosen()) {
 			return false;
 		}
 		if (!validateName()) {
@@ -113,7 +110,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 	private boolean validateType() {
 		Label errorLabel = getErrorLabel();
 		
-		if (typeComboBox.getSelectionModel().getSelectedIndex()==-1) {
+		if (getComboBoxStringValue(typeComboBox) == null || getComboBoxStringValue(typeComboBox).length() < 1) {
 			errorLabel.setText("Select Type!");
 			return false;
 		}
@@ -121,7 +118,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		return true;
 	}
 	
-	private boolean classChoosen() {
+	private boolean classChosen() {
 		Label errorLabel = getErrorLabel();
 		
 		if (classCombobox.getSelectionModel().getSelectedIndex()==-1) {
@@ -194,6 +191,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		classCombobox = new ComboBox<>(classList);
 		levelComboBox = new ComboBox<>(LevelList.levelList);
 		typeComboBox = new ComboBox<>(typeList);
+		typeComboBox.setEditable(true);
 		multiplicityButton = new Button();
 		//multiplicityButton.setText("Add / Edit Multiplicity");
 		multiplicityButton.setText(multiplicity.getClass().getSimpleName().toString());

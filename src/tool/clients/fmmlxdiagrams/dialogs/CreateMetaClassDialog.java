@@ -91,14 +91,6 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 		return true;
 	}
 
-	private Integer getComboBoxIntegerValue(ComboBox<Integer> box) {
-		Integer result = null;
-		try{
-			result = Integer.parseInt(box.getEditor().getText());
-		} catch (NumberFormatException nfe) {}
-		return result;
-	}
-
 	public TextField getNameTextField() {
 		return nameTextField;
 	}
