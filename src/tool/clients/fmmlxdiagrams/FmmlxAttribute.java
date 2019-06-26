@@ -1,12 +1,15 @@
 package tool.clients.fmmlxdiagrams;
 
-public class FmmlxAttribute {
+import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+
+public class FmmlxAttribute implements FmmlxProperty {
 
 	String name;
 	Multiplicity multiplicity;
 	Integer owner;
 	int level;
 	String type;
+	private PropertyType propertyType = PropertyType.Attribute;
 
 	public String getName() {
 		return name;
@@ -22,5 +25,10 @@ public class FmmlxAttribute {
 		this.type = type;
 		this.multiplicity = Multiplicity.parseMultiplicity(multiplicity);
 		this.owner = owner;
+	}
+
+	@Override
+	public PropertyType getPropertyType() {
+		return propertyType;
 	}
 }

@@ -1,8 +1,10 @@
 package tool.clients.fmmlxdiagrams;
 
+import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+
 import java.util.Vector;
 
-public class FmmlxOperation {
+public class FmmlxOperation implements FmmlxProperty{
 	String name;
 	Integer level;
 	String type;
@@ -41,5 +43,10 @@ public class FmmlxOperation {
 
 	public boolean isMonitored() {
 		return isMonitored;
+	}
+
+	@Override
+	public PropertyType getPropertyType() {
+		return null;
 	}
 }

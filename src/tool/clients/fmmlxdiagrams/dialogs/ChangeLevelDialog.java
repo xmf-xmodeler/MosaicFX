@@ -13,7 +13,7 @@ import java.util.Vector;
 
 public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
-	private final DialogType type;
+	private final PropertyType type;
 	private final FmmlxDiagram diagram;
 	private FmmlxObject object;
 
@@ -25,7 +25,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	private TextField objectLevelTextField;
 
 
-	public ChangeLevelDialog(FmmlxDiagram diagram, FmmlxObject object, DialogType type) {
+	public ChangeLevelDialog(FmmlxDiagram diagram, FmmlxObject object, PropertyType type) {
 		// TODO Auto-generated constructor stub
 		super();
 		this.diagram = diagram;

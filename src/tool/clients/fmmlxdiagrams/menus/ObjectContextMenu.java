@@ -5,7 +5,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.dialogs.DialogType;
+import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
 public class ObjectContextMenu extends ContextMenu {
 
@@ -20,15 +20,15 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem addInstanceItem = new MenuItem("Add instance");
 		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object.getId()));
 		MenuItem removeItem = new MenuItem("Remove");
-		removeItem.setOnAction(e -> actions.removeDialog(object, DialogType.Class));
+		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Class));
 		MenuItem changeNameItem = new MenuItem("Change name");
-		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, DialogType.Class));
+		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Class));
 		MenuItem changeOfItem = new MenuItem("Change of");
 		changeOfItem.setOnAction(e -> actions.changeOfDialog(object));
 		MenuItem changeParentItem = new MenuItem("Change parent");
 		changeParentItem.setOnAction(e -> actions.changeParentsDialog(object));
 		MenuItem changeLevelItem = new MenuItem("Change level");
-		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, DialogType.Class));
+		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Class));
 		MenuItem abstractClassItem = new MenuItem("Change abstract");
 		abstractClassItem.setOnAction(e -> actions.toogleIsAbstract(object));
 
@@ -49,10 +49,10 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem addItem = new MenuItem("Add");
 		addItem.setOnAction(e -> actions.addAttributeDialog());
 		MenuItem removeItem = new MenuItem("Remove");
-		removeItem.setOnAction(e -> actions.removeDialog(object, DialogType.Attribute));
+		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Attribute));
 		MenuItem changeNameItem = new MenuItem("Change name");
 
-		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, DialogType.Attribute));
+		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Attribute));
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
 		changeOwnerItem.setOnAction(e -> System.out.println("OCM: change attribute owner called"));
 		MenuItem changeTypeItem = new MenuItem("Change type");
@@ -60,7 +60,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeMultiplicityItem = new MenuItem("Change multiplicity");
 		changeMultiplicityItem.setOnAction(e -> System.out.println("OCM: change attribute mulitplicity called"));
 		MenuItem changeLevelItem = new MenuItem("Change level");
-		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, DialogType.Attribute));
+		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Attribute));
 
 		attributeMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeOwnerItem, changeTypeItem,
 				changeMultiplicityItem, changeLevelItem);
@@ -74,7 +74,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem addItem = new MenuItem("Add");
 		addItem.setOnAction(e -> System.out.println("OCM: add association called"));
 		MenuItem removeItem = new MenuItem("Remove");
-		removeItem.setOnAction(e_ -> actions.removeDialog(object, DialogType.Association));
+		removeItem.setOnAction(e_ -> actions.removeDialog(object, PropertyType.Association));
 		MenuItem changeTargetItem = new MenuItem("Change target");
 		changeTargetItem.setOnAction(e -> System.out.println("OCM: change association target called"));
 		MenuItem changeNameItem = new MenuItem("Change name");
@@ -84,7 +84,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeMultiplicityItem = new MenuItem("Change multiplicity");
 		changeMultiplicityItem.setOnAction(e -> System.out.println("OCM: change association multiplicity called"));
 		MenuItem changeLevelItem = new MenuItem("Change level");
-		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, DialogType.Association));
+		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Association));
 
 		associationMenu.getItems().addAll(addItem, removeItem, changeTargetItem, changeNameItem, changeTypeItem,
 				changeMultiplicityItem, changeLevelItem);
@@ -98,9 +98,9 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem addItem = new MenuItem("Add");
 		addItem.setOnAction(e -> System.out.println("OCM: add operation called"));
 		MenuItem removeItem = new MenuItem("Remove");
-		removeItem.setOnAction(e -> actions.removeDialog(object, DialogType.Operation));
+		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Operation));
 		MenuItem changeNameItem = new MenuItem("Change name");
-		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, DialogType.Operation));
+		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Operation));
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
 		changeOwnerItem.setOnAction(e -> System.out.println("OCM: change operation owner called"));
 		MenuItem changeTypeItem = new MenuItem("Change type");
@@ -108,7 +108,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeBodyItem = new MenuItem("Change body");
 		changeBodyItem.setOnAction(e -> System.out.println("OCM: change operation body called"));
 		MenuItem changeLevelItem = new MenuItem("Change level");
-		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, DialogType.Operation));
+		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Operation));
 
 		operationMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeOwnerItem, changeTypeItem,
 				changeBodyItem, changeLevelItem);

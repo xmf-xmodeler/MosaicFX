@@ -20,6 +20,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
+import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
@@ -130,7 +131,7 @@ public class FmmlxDiagram {
 		}
 		for (FmmlxObject o : objects) {
 			o.fetchDataValues(comm);
-		}		
+		}
 //		if (objects.size() >= 2) {
 //			Edge e = new Edge(-1, objects.get(0), objects.get(1), null, this);
 //			edges.add(e);
@@ -289,6 +290,7 @@ public class FmmlxDiagram {
 				}
 		}
 		objectsMoved = false;
+
 	}
 
 	private boolean isLeftClick(MouseEvent e) {
@@ -318,7 +320,6 @@ public class FmmlxDiagram {
 	private void handleLeftPressed(MouseEvent e) {
 		Point2D p = scale(e);
 
-//		FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
 		Selectable hitObject = getElementAt(p.getX(), p.getY());
 		if (hitObject != null) {
 			if (e.isControlDown()) {
@@ -333,6 +334,9 @@ public class FmmlxDiagram {
 					selectedObjects.add(hitObject);
 				}
 			}
+			if (e.getClickCount() == 2) {
+				handleClickOnNodeElement(p, hitObject);
+			}
 		} else {
 			deselectAll();
 		}
@@ -344,6 +348,31 @@ public class FmmlxDiagram {
 			mode = MouseMode.MULTISELECT;
 			storeLastClick(p.getX(), p.getY());
 			storeCurrentPoint(p.getX(), p.getY());
+		}
+
+	}
+
+	private void handleClickOnNodeElement(Point2D p, Selectable hitObject) {
+		NodeBox hitNodeBox = null;
+		Point2D relativePoint = new Point2D(
+				p.getX() - ((FmmlxObject) hitObject).getX(),
+				p.getY() - ((FmmlxObject) hitObject).getY());
+
+		// Checking NodeBoxes
+		for (NodeElement element : ((FmmlxObject) hitObject).getNodes()) {
+			if (element.isHit(relativePoint.getX(), relativePoint.getY()) && element instanceof NodeBox) {
+				if (((NodeBox) element).getElementType() != PropertyType.Selection && ((NodeBox) element).getElementType() != PropertyType.OperationValue) {
+					hitNodeBox = (NodeBox) element;
+				}
+			}
+		}
+		if (hitNodeBox != null) {
+			for (NodeElement nodeLabel : hitNodeBox.nodeElements) {
+				if (nodeLabel.isHit(relativePoint.getX(), relativePoint.getY() - hitNodeBox.y) && nodeLabel instanceof NodeLabel) {
+					FmmlxProperty hitProperty = ((NodeLabel) nodeLabel).getActionObject();
+					actions.changeNameDialog((FmmlxObject) hitObject, hitNodeBox.getElementType(), hitProperty);
+				}
+			}
 		}
 	}
 
