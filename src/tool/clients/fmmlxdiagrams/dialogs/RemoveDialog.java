@@ -15,7 +15,7 @@ import java.util.Vector;
 public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 
 	private DialogPane dialogPane;
-	private final DialogType type;
+	private final PropertyType type;
 	private FmmlxObject object;
 	private final FmmlxDiagram diagram;
 
@@ -31,7 +31,7 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 	private ArrayList<String> operationList;
 
 
-	public RemoveDialog(final FmmlxDiagram diagram, FmmlxObject object, DialogType type) {
+	public RemoveDialog(final FmmlxDiagram diagram, FmmlxObject object, PropertyType type) {
 		super();
 		this.type = type;
 		this.diagram = diagram;

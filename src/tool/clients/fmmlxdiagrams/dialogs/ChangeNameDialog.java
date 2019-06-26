@@ -13,7 +13,7 @@ import java.util.Vector;
 
 public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 
-	private final DialogType type;
+	private final PropertyType type;
 	private final FmmlxDiagram diagram;
 	private FmmlxObject object;
 
@@ -27,7 +27,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	// Used for combobox -> displays strings
 	private ArrayList<String> list;
 
-	public ChangeNameDialog(final FmmlxDiagram diagram, FmmlxObject object, DialogType type) {
+	public ChangeNameDialog(final FmmlxDiagram diagram, FmmlxObject object, PropertyType type) {
 		super();
 		this.diagram = diagram;
 		this.type = type;
@@ -47,9 +47,9 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				if (type.equals("class")) {
+				if (type == PropertyType.Class) {
 					return new ChangeNameDialogResult(type, object, classNameTextfield.getText());
-				} else if (type.equals("attribute") || type.equals("operation")) {
+				} else if (type == PropertyType.Attribute || type == PropertyType.Operation) {
 					return new ChangeNameDialogResult(type, object, comboBox.getSelectionModel().getSelectedItem(), objectNameTextfield.getText());
 				}
 			}

@@ -1,19 +1,22 @@
 package tool.clients.fmmlxdiagrams;
 
-import java.util.Vector;
-
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
-public class FmmlxAssociation extends Edge{
+import java.util.Vector;
+
+public class FmmlxAssociation extends Edge implements FmmlxProperty {
+
+	private PropertyType propertyType = PropertyType.Association;
 
 	public FmmlxAssociation(
-			Integer id, 
+			Integer id,
 			Integer startId,
 			Integer endId,
 			Integer parentAssociationId,
 //			FmmlxObject startNode, FmmlxObject endNode, 
-			Vector<Point2D> points, 
+			Vector<Point2D> points,
 			String name,
 			String reverseName,
 			String accessNameStartToEnd,
@@ -23,16 +26,16 @@ public class FmmlxAssociation extends Edge{
 			Multiplicity multiplicityStartToEnd,
 			Multiplicity multiplicityEndToStart,
 			FmmlxDiagram diagram) {
-		
+
 		super(id, diagram.getObjectById(startId), diagram.getObjectById(endId), points, diagram);
-		
+
 		this.name = name;
 		this.reverseName = reverseName;
 		this.accessNameStartToEnd = accessNameStartToEnd;
 		this.accessNameEndToStart = accessNameEndToStart;
 		this.multiplicityStartToEnd = multiplicityStartToEnd;
 		this.multiplicityEndToStart = multiplicityEndToStart;
-		
+
 	}
 
 	private String name;
@@ -45,11 +48,15 @@ public class FmmlxAssociation extends Edge{
 	@Override
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
 		super.paintOn(g, xOffset, yOffset, fmmlxDiagram);
-		if(name != null) {
+		if (name != null) {
 			Point2D centreAnchor = getCentreAnchor();
 			g.fillText(name, centreAnchor.getX(), centreAnchor.getY() - 10);
 		}
 	}
 
 
+	@Override
+	public PropertyType getPropertyType() {
+		return propertyType;
+	}
 }

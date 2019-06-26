@@ -132,7 +132,7 @@ public class DiagramActions {
 	}
 
 
-	public void removeDialog(FmmlxObject object, DialogType type) {
+	public void removeDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
@@ -166,7 +166,7 @@ public class DiagramActions {
 	}
 
 
-	public void changeNameDialog(FmmlxObject object, DialogType type) {
+	public void changeNameDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
@@ -194,7 +194,7 @@ public class DiagramActions {
 		});
 	}
 
-	public void changeLevelDialog(FmmlxObject object, DialogType type) {
+	public void changeLevelDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
