@@ -16,7 +16,7 @@ import com.sun.glass.ui.Window.Level;
 
 public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
-	private final String type;
+	private final DialogType type;
 	private final FmmlxDiagram diagram;
 	private FmmlxObject object;
 
@@ -30,7 +30,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	private ComboBox<Integer> newLevelComboBox;
 
 
-	public ChangeLevelDialog(FmmlxDiagram diagram, FmmlxObject object, String type) {
+	public ChangeLevelDialog(FmmlxDiagram diagram, FmmlxObject object, DialogType type) {
 		// TODO Auto-generated constructor stub
 		super();
 		this.diagram = diagram;
@@ -57,14 +57,14 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	private boolean validateUserInput() {
 
 		switch (type) {
-			case "class":
+			case Class:
 				return validateClassLevelChange();	
-			case "attribute":
+			case Attribute:
 				return validateAttributeLevelChange();
 				
-			case "operation":
+			case Operation:
 				return validateOperationLevelChange();
-			case "association":
+			case Association:
 				return validateAssociationLevelChange();
 		}
 		return true;
@@ -112,16 +112,16 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
 
 		switch (type) {
-			case "class":
+			case Class:
 				changeClassLevel();
 				break;
-			case "attribute":
+			case Attribute:
 				changeAttributeLevel();
 				break;
-			case "operation":
+			case Operation:
 				changeOperationLevel();
 				break;
-			case "association":
+			case Association:
 				changeAssociationLevel();
 			default:
 				System.err.println("ChangeNameDialog: No matching content type!");

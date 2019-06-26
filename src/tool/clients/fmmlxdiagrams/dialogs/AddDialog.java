@@ -25,7 +25,6 @@ public class AddDialog extends CustomDialog<AddDialogResult>{
 	private FmmlxObject object;
 	private Vector<FmmlxObject> objects;
 	
-	
 	//For All
 	private Label classLabel; //except add class
 	private Label nameLabel ;
@@ -203,7 +202,6 @@ public class AddDialog extends CustomDialog<AddDialogResult>{
 		dialogPane.setHeaderText("Add Operation");
 		classLabel = new Label("Class");
 		nameLabel = new Label("Name");
-		ownerLabel = new Label("Owner");
 		typeLabel = new Label("Type");
 		levelLabel = new Label("Level");
 		bodyLabel = new Label("Body");
@@ -212,12 +210,10 @@ public class AddDialog extends CustomDialog<AddDialogResult>{
 		classTextField.setText(object.getName());
 		classTextField.setDisable(true);
 		nameTextField = new TextField();
-		ownerComboBox = new ComboBox<String>();
 		typeComboBox = new ComboBox<>();
 		levelComboBox = new ComboBox<>(LevelList.levelList);
 		bodyTextField = new TextField();
 		
-		ownerComboBox.setPrefWidth(COLUMN_WIDTH);
 		levelComboBox.setPrefWidth(COLUMN_WIDTH);
 		typeComboBox.setPrefWidth(COLUMN_WIDTH);
 		
@@ -225,14 +221,12 @@ public class AddDialog extends CustomDialog<AddDialogResult>{
 		grid.add(classTextField, 1, 0);
 		grid.add(nameLabel, 0, 1);
 		grid.add(nameTextField, 1, 1);
-		grid.add(ownerLabel, 0, 2);
-		grid.add(ownerComboBox, 1, 2);
-		grid.add(typeLabel, 0, 3);
-		grid.add(typeComboBox, 1, 3);
-		grid.add(levelLabel, 0, 4);
-		grid.add(levelComboBox, 1, 4);
-		grid.add(bodyLabel, 0, 5);
-		grid.add(bodyTextField, 1, 5);
+		grid.add(typeLabel, 0, 2);
+		grid.add(typeComboBox, 1, 2);
+		grid.add(levelLabel, 0, 3);
+		grid.add(levelComboBox, 1, 3);
+		grid.add(bodyLabel, 0, 4);
+		grid.add(bodyTextField, 1, 4);
 	}
 
 	private void generateLayoutAddAttribute() {

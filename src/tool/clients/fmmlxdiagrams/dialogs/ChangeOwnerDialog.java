@@ -1,5 +1,10 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import java.util.ArrayList;
+import java.util.Vector;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -16,8 +21,9 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult>{
 	
 	private DialogPane dialogPane;
 	private final DialogType type;
-	private final FmmlxDiagram diagram;
 	private FmmlxObject object;
+	private Vector<FmmlxObject> objects;
+	private ObservableList<String> ownerList;
 	
 	private Label classLabel;
 	private Label currentOwneLabel;
@@ -30,9 +36,9 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult>{
 	
 	public ChangeOwnerDialog(FmmlxDiagram diagram, FmmlxObject object, DialogType type) {
 		super();
-		this.diagram= diagram;
 		this.object = object;
 		this.type = type;
+		this.objects=diagram.getObjects();
 		
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -112,6 +118,7 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult>{
 
 
 	private void layoutContent() {
+		ownerList =getAllOwnerList();
 		classLabel = new Label("Class");
 		currentOwneLabel = new Label("Current Owner");
 		newOwnerLabel = new Label("New Owner");
@@ -122,27 +129,52 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult>{
 		currentOwnerTextField =  new TextField();
 		currentOwnerTextField.setText(object.getName());
 		currentOwnerTextField.setDisable(true);
-		newOwnerComboBox = new ComboBox<String>();
+		newOwnerComboBox = new ComboBox<String>(ownerList);
 		
 		newOwnerComboBox.setPrefWidth(COLUMN_WIDTH);
 		
 		grid.add(classLabel, 0, 0);
 		grid.add(classNameTextfield, 1, 0);
-		grid.add(currentOwneLabel, 0, 1);
-		grid.add(currentOwnerTextField, 1, 1);
-		grid.add(newOwnerLabel, 0, 2);
-		grid.add(newOwnerComboBox, 1, 2);
+		grid.add(currentOwneLabel, 0, 2);
+		grid.add(currentOwnerTextField, 1, 2);
+		grid.add(newOwnerLabel, 0, 3);
+		grid.add(newOwnerComboBox, 1, 3);
 		switch (type) {		
 		case Attribute:
 			dialogPane.setHeaderText("Change Attribute Owner");
+			Label selectAttribute= new Label("Select Attribute");
+			ComboBox<String> selectAttributeComboBox = new ComboBox<String>();
+			selectAttributeComboBox.setPrefWidth(COLUMN_WIDTH);
+			grid.add(selectAttribute, 0, 1);
+			grid.add(selectAttributeComboBox, 1, 1);
 			break;
 		case Operation:
 			dialogPane.setHeaderText("Change Operation Owner");
+			Label selectOperation= new Label("Select Operation");
+			ComboBox<String> selectOperationComboBox = new ComboBox<String>();
+			selectOperationComboBox.setPrefWidth(COLUMN_WIDTH);
+			grid.add(selectOperation, 0, 1);
+			grid.add(selectOperationComboBox, 1, 1);
 			break;
 		default:
 			System.err.println("AddDialog: No matching content type!");	
 		}
 		
+	}
+
+
+	private ObservableList<String> getAllOwnerList() {
+		ArrayList<String> resultStrings = new ArrayList<String>();
+		if (!objects.isEmpty()) {
+			for (FmmlxObject object :objects) {
+				if (object.getLevel()!=0) {
+					resultStrings.add(object.getName());
+				}
+			}
+		}
+
+		ObservableList<String> result = FXCollections.observableArrayList(resultStrings);
+		return result;
 	}
 
 }
