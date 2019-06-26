@@ -2,6 +2,9 @@ package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import tool.clients.workbench.WorkbenchClient;
@@ -18,7 +21,7 @@ public class FmmlxDiagramCommunicator {
 	private HashMap<Integer, Vector<Object>> results = new HashMap<>();
 	private static Hashtable<Integer, Tab> tabs = new Hashtable<Integer, Tab>();
 	private static Vector<FmmlxDiagram> diagrams = new Vector<FmmlxDiagram>();
-
+	private static final boolean DEBUG = false;
 	private static Vector<FmmlxDiagramCommunicator> communicators = new Vector<FmmlxDiagramCommunicator>();
 	static TabPane tabPane;
 	FmmlxDiagram diagram;
@@ -44,9 +47,22 @@ public class FmmlxDiagramCommunicator {
 		if (o instanceof java.util.Vector) {
 			java.util.Vector<Object> v = (java.util.Vector<Object>) o;
 			int requestID = (Integer) (v.get(0));
-			System.err.println("Receiving request " + requestID);
+			if(DEBUG) System.err.println("Receiving request " + requestID);
 			v.remove(0);
-			results.put(requestID, v);
+			if(requestID == -1) {
+				System.err.println(v.get(0));
+				java.util.Vector<Object> err = (java.util.Vector<Object>) v.get(0);
+				if(err.size() > 0 && err.get(0) != null) {
+					CountDownLatch l = new CountDownLatch(1);
+					Platform.runLater(() -> {
+						Alert alert = new Alert(AlertType.ERROR, err.get(0)+"", new ButtonType("Och nö..."));
+						alert.showAndWait();
+						l.countDown();
+					});
+				}
+			} else {
+				results.put(requestID, v);
+			}
 		}
 //		System.err.println("o: " + o + "(" + o.getClass() + ")");
 	}
@@ -54,7 +70,7 @@ public class FmmlxDiagramCommunicator {
 	private Vector<Object> xmfRequest(int targetHandle, String message, Value... args) {
 		Value[] args2 = new Value[args.length + 1];
 		int requestID = idCounter++;
-		System.err.println("Sending request " + message + "(" + requestID + ")");
+		if(DEBUG) System.err.println("Sending request " + message + "(" + requestID + ")");
 		for (int i = 0; i < args.length; i++) {
 			args2[i + 1] = args[i];
 		}
@@ -65,7 +81,7 @@ public class FmmlxDiagramCommunicator {
 		int attempts = 0;
 		int sleep = 10;
 		while (waiting && attempts < 20) {
-			System.err.println(attempts + ". attempt");
+			if(DEBUG) System.err.println(attempts + ". attempt");
 			attempts++;
 			try {
 				Thread.sleep(sleep);
@@ -81,7 +97,6 @@ public class FmmlxDiagramCommunicator {
 		if (waiting)
 			throw new RuntimeException("Did not receive answer in time!");
 		return results.remove(requestID);
-		// throw new RuntimeException("Not yet finished implementing");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -89,13 +104,11 @@ public class FmmlxDiagramCommunicator {
 		Vector<Object> response = xmfRequest(handler, "getAllObjects", new Value[]{});
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<FmmlxObject> result = new Vector<>();
-//		System.err.println(responseContent);
 		for (Object responseObject : responseContent) {
 			Vector<Object> responseObjectList = (Vector<Object>) (responseObject);
 
-
-			System.out.println("Class/Object " + responseObjectList.get(1) + " found" + ": " + "Level : "
-					+ (Integer) responseObjectList.get(2) + " of " + (Integer) responseObjectList.get(3) + " isAbstract: " + (Boolean) responseObjectList.get(5));
+//			System.out.println("Class/Object " + responseObjectList.get(1) + " found" + ": " + "Level : "
+//					+ (Integer) responseObjectList.get(2) + " of " + (Integer) responseObjectList.get(3) + " isAbstract: " + (Boolean) responseObjectList.get(5));
 			Vector<Object> parentListO = (Vector<Object>) responseObjectList.get(4);
 			Vector<Integer> parentListI = new Vector<Integer>();
 			for (Object o : parentListO) {
@@ -125,14 +138,9 @@ public class FmmlxDiagramCommunicator {
 		Vector<Object> response = xmfRequest(handler, "getAllAssociations", new Value[]{});
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
-
-//		System.err.println(responseContent);
+		
 		for (Object edgeInfo : responseContent) {
 			Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
-
-//			Vector<Object> parentListO = (Vector<Object>) edgeInfoAsList.get(4);
-//			Vector<Integer> parentListI = new Vector<Integer>();
-//			for(Object o : parentListO) {parentListI.add((Integer) o);}
 
 			Vector<Point2D> listOfPoints = null;
 			Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(4);
@@ -161,8 +169,6 @@ public class FmmlxDiagramCommunicator {
 					null, //mul e->e
 					diagram);// y-Position
 			result.add(object);
-
-//			sendCurrentPosition(object); // make sure to store position if newly created
 		}
 		return result;
 	}
@@ -290,7 +296,6 @@ public class FmmlxDiagramCommunicator {
 	private void close(int handler) {
 		diagrams.remove(diagram);
 		tabs.remove(this.handler);
-//		throw new RuntimeException("Not yet implemented");
 	}
 
 	@SuppressWarnings("unused")
@@ -311,8 +316,7 @@ public class FmmlxDiagramCommunicator {
 			point[2] = new Value((float) (points.get(i).getY()));
 			listOfPoints[i] = new Value(point);
 		}
-
-		//Vector<Object> response = 
+		
 		xmfRequest(handler, "sendNewPositions",
 				new Value[]{new Value(a.id), new Value(listOfPoints)});
 	}
@@ -320,28 +324,14 @@ public class FmmlxDiagramCommunicator {
 	public void addMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
 		Value[] parentsArray = createValueArray(parents);
 
-		Value[] message = new Value[]{new Value(-1), new Value(name), new Value(level), new Value(parentsArray),
-				new Value(isAbstract), new Value(x), new Value(y)};
+		Value[] message = new Value[]{
+				new Value(-1), 
+				new Value(name), 
+				new Value(level), 
+				new Value(parentsArray),
+				new Value(isAbstract), 
+				new Value(x), new Value(y)};
 		WorkbenchClient.theClient().send(handler, "addMetaClass", message);
-
-//		Vector<Object> response = xmfRequest(handler, "addNewMetaClass", new Value[]{
-//				new Value(name),
-//				new Value(level),
-//				new Value(parentsArray),
-//				new Value(isAbstract),
-//				new Value(x),
-//				new Value(y)
-//				});
-//		System.err.println("addNewMetaClassResponse: " + response);
-	}
-
-	public void addInstance(int testClassId, String name, Vector<Integer> parents, boolean isAbstract, int x, int y) {
-		Value[] parentsArray = createValueArray(parents);
-
-		Value[] message = new Value[]{new Value(-1), new Value(testClassId), new Value(name), new Value(parentsArray),
-				new Value(isAbstract), new Value(x), new Value(y)};
-
-		WorkbenchClient.theClient().send(handler, "addInstance", message);
 	}
 
 	private Value[] createValueArray(Vector<Integer> vector) { // todo: make more generic
@@ -372,33 +362,48 @@ public class FmmlxDiagramCommunicator {
 
 
 	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) {
-		Value[] multiplicity = new Value[]{new Value(multi.min), new Value(multi.max), new Value(multi.upperLimit), new Value(multi.ordered), new Value(multi.duplicates)};
-		Value[] message = new Value[]{new Value(classID), new Value(name), new Value(level), new Value(type), new Value(multiplicity)};
+		Value[] multiplicity = new Value[]{
+				new Value(multi.min), 
+				new Value(multi.max), 
+				new Value(multi.upperLimit), 
+				new Value(multi.ordered), 
+				new Value(multi.duplicates)}; // unused in XMF
+		Value[] message = new Value[]{new Value(-1),
+				new Value(classID), 
+				new Value(name), 
+				new Value(level), 
+				new Value(type),
+				new Value(multiplicity)};
 		WorkbenchClient.theClient().send(handler, "addAttribute", message);
-
 	}
 
-
 	public void changeClassName(int id, String newName) {
-		Value[] message = new Value[]{new Value(id), new Value(newName)};
+		//Value[] message = new Value[]{new Value(id), new Value(newName)};
 		//TODO: Implement in XMF
 		//WorkbenchClient.theClient().send(handler, "changeClassName", message);
+		throw new RuntimeException("Not yet implemented!");
 	}
 
 	public void changeOperationName(int id, String oldName, String newName) {
-		Value[] message = new Value[]{new Value(id), new Value(oldName), new Value((newName))};
+		//Value[] message = new Value[]{new Value(id), new Value(oldName), new Value((newName))};
 		//TODO: Implement in XMF
 		//WorkbenchClient.theClient().send(handler, "changeOperationName", message);
+		throw new RuntimeException("Not yet implemented!");
 	}
 
 	public void changeAttributeName(int id, String oldName, String newName) {
-		Value[] message = new Value[]{new Value(id), new Value(oldName), new Value((newName))};
+		//Value[] message = new Value[]{new Value(id), new Value(oldName), new Value((newName))};
 		//TODO: Implement in XMF
 		//WorkbenchClient.theClient().send(handler, "changeAttributeName", message);
-
+		throw new RuntimeException("Not yet implemented!");
 	}
 
-	public void changeSlotValue(int id, String slotName, String newValue) {
-		Value[] message = new Value[]{new Value(id), new Value(slotName), new Value(newValue)};
+	public void changeSlotValue(int id, String slotName, String aParsableText) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(id), 
+				new Value(slotName), 
+				new Value(aParsableText)};
+		WorkbenchClient.theClient().send(handler, "changeSlotValue", message);
 	}
 }
