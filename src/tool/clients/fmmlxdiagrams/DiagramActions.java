@@ -122,10 +122,8 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				AddAttributeDialogResult aad = result.get();
-				System.err.println("AddAttributeDialog: " + aad.getName() + " " + aad.getLevel());
+				System.out.println("!!!!!!!!!!!!! " + aad.getName() + " " + aad.getLevel());
 				diagram.addAttribute(aad.getClassID(), aad.getName(), aad.getLevel(), aad.getType(), aad.getMultiplicity());
-			} else {
-				System.err.println("AddAttributeDialog: no result");
 			}
 
 			diagram.updateDiagram();
@@ -143,7 +141,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				RemoveDialogResult test = opt.get();
-				// TODO 
+				// TODO
 			}
 
 			diagram.updateDiagram();
@@ -243,7 +241,7 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				ChangeParentDialogResult cod = result.get();
-				// TODO 
+				// TODO
 			}
 
 			diagram.updateDiagram();
@@ -263,7 +261,7 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				ChangeParentDialogResult cod = result.get();
-				// TODO 
+				// TODO
 			}
 
 			diagram.updateDiagram();
@@ -300,10 +298,5 @@ public class DiagramActions {
 		}
 		showOperations = !showOperations;
 		diagram.redraw();
-	}
-
-	public void changeSlotValue(String string) {
-		diagram.changeSlotValue(string);
-		
 	}
 }

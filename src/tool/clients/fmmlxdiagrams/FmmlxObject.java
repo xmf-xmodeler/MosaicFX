@@ -3,13 +3,8 @@ package tool.clients.fmmlxdiagrams;
 
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
+import javafx.scene.paint.*;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Paint;
-import javafx.scene.paint.Stop;
-import javafx.scene.shape.SVGPath;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 
 import java.util.Arrays;
@@ -18,7 +13,7 @@ import java.util.Vector;
 
 public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 
-//	private String[] levelBackgroundColors = {"#8C8C8C", "#FFFFFF", "#000000", "#3111DB", "#dd2244", "#119955"};
+	//	private String[] levelBackgroundColors = {"#8C8C8C", "#FFFFFF", "#000000", "#3111DB", "#dd2244", "#119955"};
 	private static HashMap<Integer, Paint> colors = null;
 	private String name;
 	int id;
@@ -61,32 +56,32 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 	private Vector<FmmlxOperation> otherOperations = new Vector<>();
 	private FmmlxDiagram diagram;
 	private PropertyType propertyType = PropertyType.Class;
-	
-	static{
+
+	static {
 		colors = new HashMap<>();
 //		private String[] levelBackgroundColors = {"#8C8C8C", "#FFFFFF", "#000000", "#3111DB", "#dd2244", "#119955"};
-        colors.put(0, Color.valueOf("#8C8C8C"));
-        colors.put(1, Color.valueOf("#FFFFFF"));
-        colors.put(2, Color.valueOf("#000000"));
-        colors.put(3, Color.valueOf("#3111DB"));
-        colors.put(4, Color.valueOf("#dd2244"));
-        colors.put(5, Color.valueOf("#119955"));
-        colors.put(6, new LinearGradient(0, 0, 20, 10, false, CycleMethod.REPEAT, 
-        		new Stop(.24, Color.valueOf("#22cc55")),
-        		new Stop(.26, Color.valueOf("#ffdd00")),
-        		new Stop(.74, Color.valueOf("#ffdd00")),
-        		new Stop(.76, Color.valueOf("#22cc55"))));
-        colors.put(7, new LinearGradient(0, 0, 60, 25, false, CycleMethod.REPEAT, 
-        		new Stop(0./6,  Color.valueOf("#ff4444")),
-        		new Stop(0.8/6, Color.valueOf("#ffff00")),
-        		new Stop(1.2/6, Color.valueOf("#ffff00")),
-        		new Stop(2./6,  Color.valueOf("#44ff44")),
-        		new Stop(2.8/6, Color.valueOf("#00ffff")),
-        		new Stop(3.2/6, Color.valueOf("#00ffff")),
-        		new Stop(4./6,  Color.valueOf("#6666ff")),
-        		new Stop(4.8/6, Color.valueOf("#ff22ff")),
-        		new Stop(5.2/6, Color.valueOf("#ff22ff")),
-        		new Stop(6./6,  Color.valueOf("#ff4444"))));
+		colors.put(0, Color.valueOf("#8C8C8C"));
+		colors.put(1, Color.valueOf("#FFFFFF"));
+		colors.put(2, Color.valueOf("#000000"));
+		colors.put(3, Color.valueOf("#3111DB"));
+		colors.put(4, Color.valueOf("#dd2244"));
+		colors.put(5, Color.valueOf("#119955"));
+		colors.put(6, new LinearGradient(0, 0, 20, 10, false, CycleMethod.REPEAT,
+				new Stop(.24, Color.valueOf("#22cc55")),
+				new Stop(.26, Color.valueOf("#ffdd00")),
+				new Stop(.74, Color.valueOf("#ffdd00")),
+				new Stop(.76, Color.valueOf("#22cc55"))));
+		colors.put(7, new LinearGradient(0, 0, 60, 25, false, CycleMethod.REPEAT,
+				new Stop(0. / 6, Color.valueOf("#ff4444")),
+				new Stop(0.8 / 6, Color.valueOf("#ffff00")),
+				new Stop(1.2 / 6, Color.valueOf("#ffff00")),
+				new Stop(2. / 6, Color.valueOf("#44ff44")),
+				new Stop(2.8 / 6, Color.valueOf("#00ffff")),
+				new Stop(3.2 / 6, Color.valueOf("#00ffff")),
+				new Stop(4. / 6, Color.valueOf("#6666ff")),
+				new Stop(4.8 / 6, Color.valueOf("#ff22ff")),
+				new Stop(5.2 / 6, Color.valueOf("#ff22ff")),
+				new Stop(6. / 6, Color.valueOf("#ff4444"))));
 	}
 
 	public FmmlxObject(Integer id, String name, int level, Integer of, Vector<Integer> parents, Boolean isAbstract, Integer lastKnownX, Integer lastKnownY, FmmlxDiagram diagram) {
@@ -425,7 +420,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		for (NodeElement e : nodeElements) {
 			e.paintOn(g, x + xOffset, y + yOffset, diagram);
 		}
-		
+
 //		SVGPath svg = new SVGPath();
 //		svg.setContent("M 0.47191648,941.54515 C 11.039886,971.73191 21.635686,1021.7519 16.900486,1050.1166 c 39.51702,-15.8746 62.62572,-4.3286 79.28572,1.4286 -12.15706,-33.0303 4.538784,-79.57167 17.857144,-107.1429 l -32.056204,32.77048 -10.45771,-38.42674 -15.38655,38.20521 -12.97218,-39.6037 -13.96148,41.72298 z");
 

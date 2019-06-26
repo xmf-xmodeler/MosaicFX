@@ -1,11 +1,8 @@
 package tool.clients.fmmlxdiagrams.menus;
 
-import java.util.Optional;
-
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextInputDialog;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 
 public class DefaultContextMenu extends ContextMenu {
@@ -23,21 +20,7 @@ public class DefaultContextMenu extends ContextMenu {
 		// TODO: add DiagramAction
 		addAssociationItem.setOnAction(e -> System.out.println("Add association called!"));
 		associationMenu.getItems().add(addAssociationItem);
-		
 
-		MenuItem myItem = new MenuItem("ChangeSlotValue");
-		myItem.setOnAction(e -> {
-			TextInputDialog dialog = new TextInputDialog("null");
-			 
-			dialog.setTitle("ChangeSlotValue");
-			dialog.setHeaderText("Enter Value:");
-			dialog.setContentText("ChangeSlotValue");
-			 
-			Optional<String> result = dialog.showAndWait();
-			 
-			if(result.isPresent()) actions.changeSlotValue(result.get());
-		});
-
-		getItems().addAll(addClassItem, addInstanceItem, associationMenu, myItem);
+		getItems().addAll(addClassItem, addInstanceItem, associationMenu);
 	}
 }
