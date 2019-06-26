@@ -282,4 +282,9 @@ public class DiagramActions {
 		showOperations = !showOperations;
 		diagram.redraw();
 	}
+
+	public void changeSlotValue(String string) {
+		diagram.changeSlotValue(string);
+		
+	}
 }

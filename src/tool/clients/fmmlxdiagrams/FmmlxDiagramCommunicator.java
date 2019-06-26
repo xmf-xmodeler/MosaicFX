@@ -396,5 +396,12 @@ public class FmmlxDiagramCommunicator {
 		throw new RuntimeException("Not yet implemented!");
 	}
 
-
+	public void changeSlotValue(int id, String slotName, String aParsableText) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(id), 
+				new Value(slotName), 
+				new Value(aParsableText)};
+		WorkbenchClient.theClient().send(handler, "changeSlotValue", message);
+	}
 }

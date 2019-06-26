@@ -537,4 +537,9 @@ public class FmmlxDiagram {
 		// TODO Auto-generated method stub
 
 	}
+
+	public void changeSlotValue(String string) {
+		comm.changeSlotValue(1, "name", string);
+		
+	}
 }
