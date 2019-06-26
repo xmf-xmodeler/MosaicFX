@@ -2,6 +2,9 @@ package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import tool.clients.workbench.WorkbenchClient;
@@ -46,7 +49,20 @@ public class FmmlxDiagramCommunicator {
 			int requestID = (Integer) (v.get(0));
 			System.err.println("Receiving request " + requestID);
 			v.remove(0);
-			results.put(requestID, v);
+			if(requestID == -1) {
+				System.err.println(v.get(0));
+				java.util.Vector<Object> err = (java.util.Vector<Object>) v.get(0);
+				if(err.size() > 0 && err.get(0) != null) {
+					CountDownLatch l = new CountDownLatch(1);
+					Platform.runLater(() -> {
+						Alert alert = new Alert(AlertType.ERROR, err.get(0)+"", new ButtonType("Och nö..."));
+						alert.showAndWait();
+						l.countDown();
+					});
+				}
+			} else {
+				results.put(requestID, v);
+			}
 		}
 //		System.err.println("o: " + o + "(" + o.getClass() + ")");
 	}
@@ -332,14 +348,14 @@ public class FmmlxDiagramCommunicator {
 //		System.err.println("addNewMetaClassResponse: " + response);
 	}
 
-	public void addInstance(int testClassId, String name, Vector<Integer> parents, boolean isAbstract, int x, int y) {
-		Value[] parentsArray = createValueArray(parents);
-
-		Value[] message = new Value[]{new Value(-1), new Value(testClassId), new Value(name), new Value(parentsArray),
-				new Value(isAbstract), new Value(x), new Value(y)};
-
-		WorkbenchClient.theClient().send(handler, "addInstance", message);
-	}
+//	public void addInstance(int testClassId, String name, Vector<Integer> parents, boolean isAbstract, int x, int y) {
+//		Value[] parentsArray = createValueArray(parents);
+//
+//		Value[] message = new Value[]{new Value(-1), new Value(testClassId), new Value(name), new Value(parentsArray),
+//				new Value(isAbstract), new Value(x), new Value(y)};
+//
+//		WorkbenchClient.theClient().send(handler, "addInstance", message);
+//	}
 
 	private Value[] createValueArray(Vector<Integer> vector) { // todo: make more generic
 		Value[] result = new Value[vector.size()];
@@ -369,8 +385,18 @@ public class FmmlxDiagramCommunicator {
 
 
 	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) {
-		Value[] multiplicity = new Value[]{new Value(multi.min), new Value(multi.max), new Value(multi.upperLimit), new Value(multi.ordered), new Value(multi.duplicates)};
-		Value[] message = new Value[]{new Value(classID), new Value(name), new Value(level), new Value(type), new Value(multiplicity)};
+		Value[] multiplicity = new Value[]{
+				new Value(multi.min), 
+				new Value(multi.max), 
+				new Value(multi.upperLimit), 
+				new Value(multi.ordered), 
+				new Value(multi.duplicates)}; // unused in XMF
+		Value[] message = new Value[]{new Value(-1),
+				new Value(classID), 
+				new Value(name), 
+				new Value(level), 
+				new Value(type),
+				new Value(multiplicity)};
 		WorkbenchClient.theClient().send(handler, "addAttribute", message);
 
 	}

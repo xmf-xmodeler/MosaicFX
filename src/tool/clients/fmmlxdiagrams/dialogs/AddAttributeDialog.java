@@ -67,11 +67,11 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 				}
 				
 				//TODO AddAttributeDialogResult and Multiplicity Result
-				/*return new AddAttributeDialogResult(
+				return new AddAttributeDialogResult(
 						classId,
 						nameTextField.getText(), 
 						levelComboBox.getSelectionModel().getSelectedItem(),
-						typeComboBox.getSelectionModel().getSelectedItem(), multiplicityResult);*/
+						typeComboBox.getSelectionModel().getSelectedItem(), new Multiplicity(0, 1, true, false, false));
 			}
 			return null;
 		});
@@ -186,7 +186,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		multiplicityLabel = new Label("Multiplicity");
 		classList = getAllClassList();
 		
-		String[] types = new String[] { "Integer", "String", "Boolean","Double","Float"};
+		String[] types = new String[] { "Integer", "String", "Boolean", "Float"};
 		typesArray = Arrays.asList(types);
 		ObservableList<String> typeList= FXCollections.observableArrayList(typesArray);
 		

@@ -122,8 +122,10 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				AddAttributeDialogResult aad = result.get();
-				System.out.println("!!!!!!!!!!!!! " + aad.getName() + " " + aad.getLevel());
+				System.err.println("AddAttributeDialog: " + aad.getName() + " " + aad.getLevel());
 				diagram.addAttribute(aad.getClassID(), aad.getName(), aad.getLevel(), aad.getType(), aad.getMultiplicity());
+			} else {
+				System.err.println("AddAttributeDialog: no result");
 			}
 
 			diagram.updateDiagram();
