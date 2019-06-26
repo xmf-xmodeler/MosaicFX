@@ -202,18 +202,18 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final ChangeLevelDialogResult result = opt.get();
-				System.err.println(result.toString());
+				System.err.println(result);
 				switch (result.getType()) {
-					case "class":
+					case Class:
 						diagram.changeClassLevel(result);
 						break;
-					case "attribute":
+					case Attribute:
 						diagram.changeAttributeLevel(result);
 						break;
-					case "operation":
+					case Operation:
 						diagram.changeOperationLevel(result);
 						break;
-					case "association":
+					case Association:
 						diagram.changeAssociationLevel(result);
 						break;
 				}
@@ -231,11 +231,11 @@ public class DiagramActions {
 
 		Platform.runLater(() -> {
 			ChangeOfDialog dlg = new ChangeOfDialog(diagram, object);
-			Optional<ChangeOfDialogResult> result = dlg.showAndWait();
+			Optional<ChangeOfDialogResult> cod = dlg.showAndWait();
 
-			if (result.isPresent()) {
-				ChangeOfDialogResult cod = result.get();
-				// TODO 
+			if (cod.isPresent()) {
+				ChangeOfDialogResult result = cod.get();
+				diagram.changeAttributeOf(result);
 			}
 
 			diagram.updateDiagram();
@@ -244,6 +244,32 @@ public class DiagramActions {
 
 
 	}
+	
+	public void changeOwnerDialog(FmmlxObject object, DialogType type) {
+		CountDownLatch l = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			ChangeOwnerDialog dlg = new ChangeOwnerDialog(diagram, object, type);
+			Optional<ChangeOwnerDialogResult> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final ChangeOwnerDialogResult result = opt.get();
+				System.err.println(result);
+				switch (result.getType()) {
+					
+					case Attribute:
+						diagram.changeAttributeOwner(result);
+						break;
+					case Operation:
+						diagram.changeOperationOwner(result);
+						break;
+				}
+			}
+
+			diagram.updateDiagram();
+			l.countDown();
+		});
+	}
 
 	public void changeParentsDialog(FmmlxObject object) {
 
@@ -251,11 +277,11 @@ public class DiagramActions {
 
 		Platform.runLater(() -> {
 			ChangeParentDialog dlg = new ChangeParentDialog(diagram, object);
-			Optional<ChangeParentDialogResult> result = dlg.showAndWait();
+			Optional<ChangeParentDialogResult> cpd = dlg.showAndWait();
 
-			if (result.isPresent()) {
-				ChangeParentDialogResult cpd = result.get();
-				// TODO 
+			if (cpd.isPresent()) {
+				ChangeParentDialogResult result = cpd.get();
+				diagram.changeParentAttribute(result);
 			}
 
 			diagram.updateDiagram();
@@ -283,18 +309,18 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final AddDialogResult result = opt.get();
-				System.err.println(result.toString());
+				System.err.println(result);
 				switch (result.getType()) {
-					case "class":
+					case Class:
 						diagram.addMetaClass(result);
 						break;
-					case "attribute":
+					case Attribute:
 						diagram.addAttribute(result);
 						break;
-					case "operation":
+					case Operation:
 						diagram.addOperation(result);
 						break;
-					case "association":
+					case Association:
 						diagram.addAssociation(result);
 						break;
 				}
@@ -305,4 +331,6 @@ public class DiagramActions {
 		});
 		return null;
 	}
+
+	
 }

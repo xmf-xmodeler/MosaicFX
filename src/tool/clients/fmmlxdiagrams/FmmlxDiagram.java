@@ -23,6 +23,9 @@ import javafx.scene.transform.NonInvertibleTransformException;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOfDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOwnerDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeParentDialogResult;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
 import java.io.FileInputStream;
@@ -547,6 +550,26 @@ public class FmmlxDiagram {
 	}
 
 	public void addAssociation(AddDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void changeAttributeOwner(ChangeOwnerDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void changeOperationOwner(ChangeOwnerDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void changeAttributeOf(ChangeOfDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void changeParentAttribute(ChangeParentDialogResult result) {
 		// TODO Auto-generated method stub
 		
 	}

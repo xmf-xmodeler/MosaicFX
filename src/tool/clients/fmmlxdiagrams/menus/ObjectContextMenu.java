@@ -49,10 +49,9 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, DialogType.Attribute));
 		MenuItem changeNameItem = new MenuItem("Change name");
-
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, DialogType.Attribute));
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
-		changeOwnerItem.setOnAction(e -> System.out.println("OCM: change attribute owner called"));
+		changeOwnerItem.setOnAction(e -> actions.changeOwnerDialog(object, DialogType.Attribute));
 		MenuItem changeTypeItem = new MenuItem("Change type");
 		changeTypeItem.setOnAction(e -> System.out.println("OCM: change attribute type called"));
 		MenuItem changeMultiplicityItem = new MenuItem("Change multiplicity");
@@ -99,7 +98,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeNameItem = new MenuItem("Change name");
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, DialogType.Operation));
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
-		changeOwnerItem.setOnAction(e -> System.out.println("OCM: change operation owner called"));
+		changeOwnerItem.setOnAction(e -> actions.changeOwnerDialog(object, DialogType.Operation));
 		MenuItem changeTypeItem = new MenuItem("Change type");
 		changeTypeItem.setOnAction(e -> System.out.println("OCM: change operation type called"));
 		MenuItem changeBodyItem = new MenuItem("Change body");
