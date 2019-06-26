@@ -18,9 +18,16 @@ h5 {
 
 /*Hero*/
 
-.hero {
-    background: rgb(134,175,255);
-    background: linear-gradient(90deg, rgba(134,175,255,1) 0%, rgba(51,119,255,1) 50%, rgba(0,65,195,1) 100%);
+.hero-bg { /* hero */
+    /*background-color: rgba(0, 0, 0, 0.25);*/
+    color: #ffffff;
+}
+
+.hero { /* hero-bg */
+    background: url(../img/Terrace_Large_compressedd.jpg) rgba(0, 0, 0, 0.25);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-blend-mode: multiply;
     color: #ffffff;
 }
 
