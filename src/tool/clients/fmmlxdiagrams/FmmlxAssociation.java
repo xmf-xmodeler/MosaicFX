@@ -56,6 +56,11 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 
 
 	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
 	public PropertyType getPropertyType() {
 		return propertyType;
 	}

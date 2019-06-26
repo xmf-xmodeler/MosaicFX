@@ -370,7 +370,7 @@ public class FmmlxDiagram {
 			for (NodeElement nodeLabel : hitNodeBox.nodeElements) {
 				if (nodeLabel.isHit(relativePoint.getX(), relativePoint.getY() - hitNodeBox.y) && nodeLabel instanceof NodeLabel) {
 					FmmlxProperty hitProperty = ((NodeLabel) nodeLabel).getActionObject();
-					actions.changeNameDialog((FmmlxObject) hitObject, hitNodeBox.getElementType());
+					actions.changeNameDialog((FmmlxObject) hitObject, hitNodeBox.getElementType(), hitProperty);
 				}
 			}
 		}

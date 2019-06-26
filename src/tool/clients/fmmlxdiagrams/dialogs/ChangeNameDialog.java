@@ -2,10 +2,7 @@ package tool.clients.fmmlxdiagrams.dialogs;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
-import tool.clients.fmmlxdiagrams.FmmlxAttribute;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.FmmlxOperation;
+import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
 
 import java.util.ArrayList;
@@ -16,6 +13,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	private final PropertyType type;
 	private final FmmlxDiagram diagram;
 	private FmmlxObject object;
+	private FmmlxProperty selectedProperty;
 
 	private TextField classNameTextfield;
 	private ComboBox<String> comboBox;
@@ -27,21 +25,28 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	// Used for combobox -> displays strings
 	private ArrayList<String> list;
 
-	public ChangeNameDialog(final FmmlxDiagram diagram, FmmlxObject object, PropertyType type) {
+	public ChangeNameDialog(final FmmlxDiagram diagram, FmmlxObject object, PropertyType type, FmmlxProperty selectedProperty) {
 		super();
 		this.diagram = diagram;
 		this.type = type;
 		this.object = object;
+		this.selectedProperty = selectedProperty;
 
 		DialogPane dialog = getDialogPane();
 		dialog.setHeaderText("Change name");
 
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		layoutContent();
+		if (selectedProperty != null && type != PropertyType.Class) {
+			setSelectedProperty();
+		}
 		dialog.setContent(flow);
-
 		setValidation();
 		setResult();
+	}
+
+	public ChangeNameDialog(final FmmlxDiagram diagram, FmmlxObject object, PropertyType type) {
+		this(diagram, object, type, null);
 	}
 
 	private void setResult() {
@@ -88,6 +93,10 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		}
 	}
 
+	private void setSelectedProperty() {
+		comboBox.getSelectionModel().select(selectedProperty.getName());
+	}
+
 	private void changeClass() {
 		classNameTextfield.setText(object.getName());
 	}
@@ -114,11 +123,11 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	private void layoutComboBox(ArrayList<String> list) {
 		classNameTextfield.setText(object.getName());
 		classNameTextfield.setDisable(true);
-		Label objectLabel = new Label("Select");
+		Label objectLabel = new Label("Name");
 		comboBox = new ComboBox<>();
 		comboBox.setPrefWidth(COLUMN_WIDTH);
 		comboBox.getItems().setAll(list);
-		Label nameLabel = new Label("Name");
+		Label nameLabel = new Label("New name");
 		objectNameTextfield = new TextField();
 
 		comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {

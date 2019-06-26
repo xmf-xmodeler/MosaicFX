@@ -5,4 +5,6 @@ import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 public interface FmmlxProperty {
 
 	PropertyType getPropertyType();
+
+	String getName();
 }
