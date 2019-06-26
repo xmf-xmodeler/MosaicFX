@@ -131,7 +131,7 @@ public class DiagramActions {
 	}
 
 
-	public void removeDialog(FmmlxObject object, String type) {
+	public void removeDialog(FmmlxObject object, DialogType type) {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {

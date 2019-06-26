@@ -15,7 +15,7 @@ import java.util.Vector;
 public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 
 	private DialogPane dialogPane;
-	private final String type;
+	private final DialogType type;
 	private FmmlxObject object;
 	private final FmmlxDiagram diagram;
 
@@ -31,7 +31,7 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 	private ArrayList<String> operationList;
 
 
-	public RemoveDialog(final FmmlxDiagram diagram, FmmlxObject object, String type) {
+	public RemoveDialog(final FmmlxDiagram diagram, FmmlxObject object, DialogType type) {
 		super();
 		this.type = type;
 		this.diagram = diagram;
@@ -64,16 +64,16 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 	private void addElementToGrid() {
 
 		switch (type) {
-			case "class":
+			case Class:
 				removeClass();
 				break;
-			case "attribute":
+			case Attribute:
 				removeAttribute();
 				break;
-			case "association":
+			case Association:
 				removeAssoiation();
 				break;
-			case "operation":
+			case Operation:
 				removeOperation();
 			default:
 				break;
@@ -190,13 +190,13 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 	private boolean validateUserInput() {
 
 		switch (type) {
-			case "class":
+			case Class:
 				return validateRemoveClass();
-			case "attribute":
+			case Attribute:
 				return validateRemoveAttribute();
-			case "operation":
+			case Operation:
 				return validateRemoveOperation();
-			case "association":
+			case Association:
 				return validateRemoveAssociation();
 		}
 		return true;
