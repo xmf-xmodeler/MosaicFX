@@ -262,7 +262,7 @@ public class DiagramActions {
 
 	}
 	
-	public void changeOwnerDialog(FmmlxObject object, DialogType type) {
+	public void changeOwnerDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
@@ -341,7 +341,7 @@ public class DiagramActions {
 		diagram.redraw();
 	}
 
-	public Object addDialog(FmmlxObject object, DialogType type) {
+	public Object addDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {

@@ -1,12 +1,12 @@
 package tool.clients.fmmlxdiagrams.dialogs.results;
 
-import tool.clients.fmmlxdiagrams.dialogs.DialogType;
+import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
 public class ChangeOwnerDialogResult extends DialogResult{
 	
-	private DialogType type;
+	private PropertyType type;
 
-	public DialogType getType() {
+	public PropertyType getType() {
 		// TODO Auto-generated method stub
 		return type;
 	}

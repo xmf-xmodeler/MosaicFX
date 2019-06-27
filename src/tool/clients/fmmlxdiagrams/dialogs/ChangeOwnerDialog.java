@@ -20,7 +20,7 @@ import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOwnerDialogResult;
 public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult>{
 	
 	private DialogPane dialogPane;
-	private final DialogType type;
+	private final PropertyType type;
 	private FmmlxObject object;
 	private Vector<FmmlxObject> objects;
 	private ObservableList<String> ownerList;
@@ -34,7 +34,7 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult>{
 	private ComboBox<String> newOwnerComboBox;
 	
 	
-	public ChangeOwnerDialog(FmmlxDiagram diagram, FmmlxObject object, DialogType type) {
+	public ChangeOwnerDialog(FmmlxDiagram diagram, FmmlxObject object, PropertyType type) {
 		super();
 		this.object = object;
 		this.type = type;

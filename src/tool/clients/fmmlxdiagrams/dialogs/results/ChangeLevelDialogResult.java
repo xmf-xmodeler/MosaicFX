@@ -10,7 +10,7 @@ public class ChangeLevelDialogResult extends DialogResult {
 	private int currentlevel;
 	private int newLevel;
 	
-	public ChangeLevelDialogResult(FmmlxObject object, Integer currentLevel, Integer newLevel, DialogType type) {
+	public ChangeLevelDialogResult(FmmlxObject object, Integer currentLevel, Integer newLevel, PropertyType type) {
 		// TODO Auto-generated constructor stub
 		this.type = type;
 		this.object = object;

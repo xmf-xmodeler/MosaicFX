@@ -21,9 +21,9 @@ import tool.clients.fmmlxdiagrams.dialogs.results.AddDialogResult;
 
 public class AddDialog extends CustomDialog<AddDialogResult>{
 	private DialogPane dialogPane;
-	private final DialogType type;
 	private FmmlxObject object;
 	private Vector<FmmlxObject> objects;
+	private PropertyType type;
 	
 	//For All
 	private Label classLabel; //except add class
@@ -57,7 +57,7 @@ public class AddDialog extends CustomDialog<AddDialogResult>{
 
 	private Multiplicity multiplicity = Multiplicity.OPTIONAL;
 
-	public AddDialog(FmmlxObject object, DialogType type2) {
+	public AddDialog(FmmlxObject object, PropertyType type2) {
 		super();
 		this.object = object;
 		this.type = type2;

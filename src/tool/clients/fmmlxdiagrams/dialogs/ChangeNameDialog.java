@@ -37,7 +37,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		dialog = getDialogPane();
 
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		layoutContent();
+		layoutContent(type);
 		if (selectedProperty != null && type != PropertyType.Class) {
 			setSelectedProperty();
 		}
@@ -50,7 +50,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		this(diagram, object, type, null);
 	}
 
-	private void setResult() {
+	private void setResult(PropertyType type) {
 		setResultConverter(dlgBtn -> {
 			switch (type) {
 			case Class:
@@ -75,7 +75,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		});
 	}
 
-	private void layoutContent(DialogType type) {
+	private void layoutContent(PropertyType type) {
 		Label classLabel = new Label("Class");
 		classNameTextfield = new TextField();
 		grid.add(classLabel, 0, 0);
@@ -107,7 +107,6 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		comboBox.getSelectionModel().select(selectedProperty.getName());
 	}
 
-	private void changeClass() {
 	private void changeAssociationName() {
 		classNameTextfield.setText(object.getName());
 		classNameTextfield.setDisable(true);
