@@ -24,6 +24,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
 	private Label objectLabel;
 	private Label objectLevelLabel;
+	
 	private TextField objectNameTextField;
 	private TextField objectLevelTextField;
 	
@@ -131,7 +132,25 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
 	private void changeAssociationLevel() {
 		dialogPane.setHeaderText("Change Association Level");
-		// TODO Auto-generated method stub
+		
+		Label selectAssociationLabel = new Label("Select Association");
+		Label currentLevelLabel = new Label("Current Level");
+		Label newLevelLabel = new Label("Select New Level");
+		
+		ComboBox<String> selectAssociationComboBox = new ComboBox<String>();
+		TextField currentLevelTextField = new TextField();
+		currentLevelTextField.setDisable(true);
+		ComboBox<Integer> newLevelComboBox = new ComboBox<>(LevelList.levelList);
+
+		selectAssociationComboBox.setPrefWidth(COLUMN_WIDTH);
+		newLevelComboBox.setPrefWidth(COLUMN_WIDTH);
+		
+		grid.add(selectAssociationLabel, 0, 1);
+		grid.add(selectAssociationComboBox, 1, 1);
+		grid.add(currentLevelLabel, 0, 2);
+		grid.add(currentLevelTextField, 1, 2);
+		grid.add(newLevelLabel, 0, 3);
+		grid.add(newLevelComboBox, 1, 3);
 
 	}
 

@@ -16,6 +16,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	private final DialogType type;
 	private final FmmlxDiagram diagram;
 	private FmmlxObject object;
+	private DialogPane dialog;
 
 	private TextField classNameTextfield;
 	private ComboBox<String> comboBox;
@@ -34,8 +35,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		this.type = type;
 		this.object = object;
 
-		DialogPane dialog = getDialogPane();
-		dialog.setHeaderText("Change name");
+		dialog = getDialogPane();
 
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		layoutContent(type);
@@ -79,20 +79,45 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 
 		switch (type) {
 			case Class:
-				changeClass();
+				dialog.setHeaderText("Change Class Name");
+				changeClassName();
 				break;
 			case Attribute:
-				changeAttribute();
+				dialog.setHeaderText("Change Attribute Name");
+				changeAttributeName();
 				break;
 			case Operation:
-				changeOperation();
+				dialog.setHeaderText("Change Operation Name");
+				changeOperationName();
 				break;
+			case Association:
+				dialog.setHeaderText("Change Association Name");
+				changeAssociationName();
 			default:
 				System.err.println("ChangeNameDialog: No matching content type!");
 		}
 	}
 
-	private void changeClass() {
+	private void changeAssociationName() {
+		classNameTextfield.setText(object.getName());
+		classNameTextfield.setDisable(true);
+		
+		Label selectAssociationNameLabel = new Label("Select Association");
+		Label newAssociationNameLabel = new Label ("New Name");
+		
+		ComboBox<String> selectAssociationBox = new ComboBox<String>();
+		TextField newAssociationNameTextField = new TextField();
+		
+		selectAssociationBox.setPrefWidth(COLUMN_WIDTH);
+		
+		grid.add(selectAssociationNameLabel, 0, 1);
+		grid.add(selectAssociationBox, 1, 1);
+		grid.add(newAssociationNameLabel, 0, 2);
+		grid.add(newAssociationNameTextField, 1, 2);
+		
+	}
+
+	private void changeClassName() {
 		classNameTextfield.setText(object.getName());
 		classNameTextfield.setDisable(true);
 		
@@ -104,7 +129,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		
 	}
 
-	private void changeAttribute() {
+	private void changeAttributeName() {
 		// TODO: Add association
 
 		attributes = object.getOwnAttributes();
@@ -115,7 +140,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		layoutComboBox(list);
 	}
 
-	private void changeOperation() {
+	private void changeOperationName() {
 		operations = object.getOwnOperations();
 		for (FmmlxOperation op : operations) {
 			list.add(op.getName());

@@ -12,17 +12,26 @@ import tool.clients.fmmlxdiagrams.dialogs.results.RemoveDialogResult;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import com.ibm.icu.text.SelectFormat;
+
 public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 
 	private DialogPane dialogPane;
 	private final DialogType type;
 	private FmmlxObject object;
 	private final FmmlxDiagram diagram;
+	
+	//For All
 
 	private Label selectObjectLabel;
 	private Label selectionForStrategies;
 	private TextField selectObjectLabelTextField;
 	private ComboBox<String> selectionForStrategiesComboBox;
+	
+	//For Association
+	private Label selectAssociationLabel;
+	private ComboBox<String> selectAssociationComboBox;
+	
 
 	private Vector<FmmlxAttribute> attributes;
 	private Vector<FmmlxOperation> operations;
@@ -84,12 +93,24 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 		// TODO Auto-generated method stub
 		dialogPane.setHeaderText("Remove Association");
 		selectObjectLabel = new Label("Selected Object");
+		selectAssociationLabel = new Label("Select Association");
+		selectionForStrategies = new Label("Selection for Strategies");
+		
 		selectObjectLabelTextField = new TextField();
 		selectObjectLabelTextField.setText(object.getName());
 		selectObjectLabelTextField.setDisable(true);
+		selectAssociationComboBox = new ComboBox<String>();
+		selectionForStrategiesComboBox = new ComboBox<String>();
+		
+		selectAssociationComboBox.setPrefWidth(COLUMN_WIDTH);
+		selectionForStrategiesComboBox.setPrefWidth(COLUMN_WIDTH);
 
 		grid.add(selectObjectLabel, 0, 0);
 		grid.add(selectObjectLabelTextField, 1, 0);
+		grid.add(selectAssociationLabel, 0, 1);
+		grid.add(selectAssociationComboBox, 1, 1);
+		grid.add(selectionForStrategies, 0, 2);
+		grid.add(selectionForStrategiesComboBox, 1, 2);
 
 	}
 

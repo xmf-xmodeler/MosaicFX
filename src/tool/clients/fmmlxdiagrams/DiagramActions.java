@@ -185,6 +185,7 @@ public class DiagramActions {
 					case Attribute:
 						diagram.changeAttributeName(result);
 						break;
+					default: System.err.println("ChangeNameDialogResult: No matching content type!");
 				}
 			}
 
@@ -193,7 +194,7 @@ public class DiagramActions {
 		});
 	}
 
-	public void changeLevelDialog(FmmlxObject object, String type) {
+	public void changeLevelDialog(FmmlxObject object, DialogType type) {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
@@ -216,6 +217,8 @@ public class DiagramActions {
 					case Association:
 						diagram.changeAssociationLevel(result);
 						break;
+					default: System.err.println("ChangeLevelDialogResult: No matching content type!");
+						
 				}
 			}
 
@@ -234,7 +237,7 @@ public class DiagramActions {
 			Optional<ChangeOfDialogResult> cod = dlg.showAndWait();
 
 			if (cod.isPresent()) {
-				ChangeOfDialogResult result = cod.get();
+				final ChangeOfDialogResult result = cod.get();
 				diagram.changeAttributeOf(result);
 			}
 
@@ -256,13 +259,14 @@ public class DiagramActions {
 				final ChangeOwnerDialogResult result = opt.get();
 				System.err.println(result);
 				switch (result.getType()) {
-					
 					case Attribute:
 						diagram.changeAttributeOwner(result);
 						break;
 					case Operation:
 						diagram.changeOperationOwner(result);
 						break;
+					default: System.err.println("ChangeOwnerDialogResult: No matching content type!");
+					break;
 				}
 			}
 
@@ -323,6 +327,7 @@ public class DiagramActions {
 					case Association:
 						diagram.addAssociation(result);
 						break;
+					default: System.err.println("AddDialogResult: No matching content type!");
 				}
 			}
 

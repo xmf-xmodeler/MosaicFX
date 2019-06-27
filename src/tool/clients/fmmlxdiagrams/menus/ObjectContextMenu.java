@@ -28,7 +28,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeParentItem = new MenuItem("Change parent");
 		changeParentItem.setOnAction(e -> actions.changeParentsDialog(object));
 		MenuItem changeLevelItem = new MenuItem("Change level");
-		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, "class"));
+		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, DialogType.Class));
 
 		Menu attributeMenu = createAttributeSubMenu();
 		Menu associationMenu = createAssociationSubMenu();
@@ -57,7 +57,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeMultiplicityItem = new MenuItem("Change multiplicity");
 		changeMultiplicityItem.setOnAction(e -> System.out.println("OCM: change attribute mulitplicity called"));
 		MenuItem changeLevelItem = new MenuItem("Change level");
-		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, "attribute"));
+		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, DialogType.Attribute));
 
 		attributeMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeOwnerItem, changeTypeItem,
 				changeMultiplicityItem, changeLevelItem);
@@ -75,13 +75,13 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeTargetItem = new MenuItem("Change target");
 		changeTargetItem.setOnAction(e -> System.out.println("OCM: change association target called"));
 		MenuItem changeNameItem = new MenuItem("Change name");
-		changeNameItem.setOnAction(e -> System.out.println("OCM: change association name called"));
+		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, DialogType.Association));
 		MenuItem changeTypeItem = new MenuItem("Change type");
 		changeTypeItem.setOnAction(e -> System.out.println("OCM: change association type called"));
 		MenuItem changeMultiplicityItem = new MenuItem("Change multiplicity");
 		changeMultiplicityItem.setOnAction(e -> System.out.println("OCM: change association multiplicity called"));
 		MenuItem changeLevelItem = new MenuItem("Change level");
-		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, "association"));
+		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, DialogType.Association));
 
 		associationMenu.getItems().addAll(addItem, removeItem, changeTargetItem, changeNameItem, changeTypeItem,
 				changeMultiplicityItem, changeLevelItem);
@@ -104,7 +104,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeBodyItem = new MenuItem("Change body");
 		changeBodyItem.setOnAction(e -> System.out.println("OCM: change operation body called"));
 		MenuItem changeLevelItem = new MenuItem("Change level");
-		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, "operation"));
+		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, DialogType.Operation));
 
 		operationMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeOwnerItem, changeTypeItem,
 				changeBodyItem, changeLevelItem);
