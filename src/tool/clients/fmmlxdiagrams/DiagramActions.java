@@ -195,6 +195,7 @@ public class DiagramActions {
 					case Attribute:
 						diagram.changeAttributeName(result);
 						break;
+					default: System.err.println("ChangeNameDialogResult: No matching content type!");
 				}
 			}
 
@@ -216,7 +217,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final ChangeLevelDialogResult result = opt.get();
-				System.err.println(result.toString());
+				System.err.println(result);
 				switch (result.getType()) {
 					case Class:
 						diagram.changeClassLevel(result);
@@ -230,6 +231,8 @@ public class DiagramActions {
 					case Association:
 						diagram.changeAssociationLevel(result);
 						break;
+					default: System.err.println("ChangeLevelDialogResult: No matching content type!");
+						
 				}
 			}
 
@@ -244,13 +247,12 @@ public class DiagramActions {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			ChangeParentDialog dlg = new ChangeParentDialog(diagram, object);
-			dlg.setTitle("Change Of");
-			Optional<ChangeParentDialogResult> result = dlg.showAndWait();
+			ChangeOfDialog dlg = new ChangeOfDialog(diagram, object);
+			Optional<ChangeOfDialogResult> cod = dlg.showAndWait();
 
-			if (result.isPresent()) {
-				ChangeParentDialogResult cod = result.get();
-				// TODO
+			if (cod.isPresent()) {
+				final ChangeOfDialogResult result = cod.get();
+				diagram.changeAttributeOf(result);
 			}
 
 			diagram.updateDiagram();
@@ -259,6 +261,33 @@ public class DiagramActions {
 
 
 	}
+	
+	public void changeOwnerDialog(FmmlxObject object, PropertyType type) {
+		CountDownLatch l = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			ChangeOwnerDialog dlg = new ChangeOwnerDialog(diagram, object, type);
+			Optional<ChangeOwnerDialogResult> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final ChangeOwnerDialogResult result = opt.get();
+				System.err.println(result);
+				switch (result.getType()) {
+					case Attribute:
+						diagram.changeAttributeOwner(result);
+						break;
+					case Operation:
+						diagram.changeOperationOwner(result);
+						break;
+					default: System.err.println("ChangeOwnerDialogResult: No matching content type!");
+					break;
+				}
+			}
+
+			diagram.updateDiagram();
+			l.countDown();
+		});
+	}
 
 	public void changeParentsDialog(FmmlxObject object) {
 
@@ -266,11 +295,11 @@ public class DiagramActions {
 
 		Platform.runLater(() -> {
 			ChangeParentDialog dlg = new ChangeParentDialog(diagram, object);
-			Optional<ChangeParentDialogResult> result = dlg.showAndWait();
+			Optional<ChangeParentDialogResult> cpd = dlg.showAndWait();
 
-			if (result.isPresent()) {
-				ChangeParentDialogResult cod = result.get();
-				// TODO
+			if (cpd.isPresent()) {
+				ChangeParentDialogResult result = cpd.get();
+				diagram.changeParentAttribute(result);
 			}
 
 			diagram.updateDiagram();
@@ -311,4 +340,39 @@ public class DiagramActions {
 		showOperations = !showOperations;
 		diagram.redraw();
 	}
+
+	public Object addDialog(FmmlxObject object, PropertyType type) {
+		CountDownLatch latch = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			AddDialog dlg = new AddDialog(object, type);
+			Optional<AddDialogResult> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final AddDialogResult result = opt.get();
+				System.err.println(result);
+				switch (result.getType()) {
+					case Class:
+						diagram.addMetaClass(result);
+						break;
+					case Attribute:
+						diagram.addAttribute(result);
+						break;
+					case Operation:
+						diagram.addOperation(result);
+						break;
+					case Association:
+						diagram.addAssociation(result);
+						break;
+					default: System.err.println("AddDialogResult: No matching content type!");
+				}
+			}
+
+			diagram.updateDiagram();
+			latch.countDown();
+		});
+		return null;
+	}
+
+	
 }

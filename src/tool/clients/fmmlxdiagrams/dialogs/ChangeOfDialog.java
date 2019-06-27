@@ -20,6 +20,7 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult>{
 	private Label selectedObjectLabel;
 	private Label currentOf;
 	private Label newOf;
+	private Label errorLabel;
 	private TextField selectedObjectTextField;
 	private TextField currentOfTextField;
 	private ComboBox<String>newOfComboBox;
@@ -63,8 +64,13 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult>{
 
 
 	private boolean validateUserInput() {
-		// TODO Auto-generated method stub
-		return false;
+		
+		if (newOfComboBox.getSelectionModel().isEmpty()) {
+			errorLabel.setText("Select new Of");
+			return false;
+		}
+		
+		return true;
 	}
 
 
@@ -75,6 +81,7 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult>{
 		selectedObjectLabel = new Label("Selected Object");
 		currentOf = new Label("Current Of");
 		newOf = new Label("New Of");
+		errorLabel = getErrorLabel();
 		
 		selectedObjectTextField= new TextField();
 		selectedObjectTextField.setText(object.getName());
@@ -98,6 +105,7 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult>{
 		grid.add(currentOfTextField, 1, 1);
 		grid.add(newOf, 0, 2);
 		grid.add(newOfComboBox, 1, 2);
+		grid.add(errorLabel,0,3);
 		// TODO Auto-generated method stub
 		
 	}
