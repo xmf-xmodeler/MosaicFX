@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
 import javafx.geometry.Insets;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
@@ -59,6 +60,18 @@ public class CustomDialog<R> extends Dialog<R> {
 
 	public boolean isNullOrEmpty(String string) {
 		return string == null || string.length() == 0;
+	}
+	
+	protected Integer getComboBoxIntegerValue(ComboBox<Integer> box) {
+		Integer result = null;
+		try{
+			result = Integer.parseInt(box.getEditor().getText());
+		} catch (NumberFormatException nfe) {}
+		return result;
+	}
+	
+	protected String getComboBoxStringValue(ComboBox<String> box) {
+		return box.getEditor().getText();
 	}
 
 }

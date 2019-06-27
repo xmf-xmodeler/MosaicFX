@@ -23,6 +23,7 @@ import javafx.scene.transform.NonInvertibleTransformException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeSlotValueDialogResult;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
 import java.io.FileInputStream;
@@ -370,7 +371,11 @@ public class FmmlxDiagram {
 			for (NodeElement nodeLabel : hitNodeBox.nodeElements) {
 				if (nodeLabel.isHit(relativePoint.getX(), relativePoint.getY() - hitNodeBox.y) && nodeLabel instanceof NodeLabel) {
 					FmmlxProperty hitProperty = ((NodeLabel) nodeLabel).getActionObject();
-					actions.changeNameDialog((FmmlxObject) hitObject, hitNodeBox.getElementType(), hitProperty);
+					if (hitNodeBox.getElementType() == PropertyType.Slot) {
+						actions.changeSlotValue((FmmlxObject) hitObject, (FmmlxSlot) hitProperty);
+					} else {
+						actions.changeNameDialog((FmmlxObject) hitObject, hitNodeBox.getElementType(), hitProperty);
+					}
 				}
 			}
 		}
@@ -564,6 +569,9 @@ public class FmmlxDiagram {
 
 	public void changeOperationLevel(ChangeLevelDialogResult result) {
 		// TODO Auto-generated method stub
+	}
 
+	public void changeSlotValue(ChangeSlotValueDialogResult result) {
+		comm.changeSlotValue(result.getObject().getId(), result.getSlot().getName(), result.getNewValue());
 	}
 }

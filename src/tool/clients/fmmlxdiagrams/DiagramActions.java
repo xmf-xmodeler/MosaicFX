@@ -112,17 +112,26 @@ public class DiagramActions {
 	}
 
 	public void addAttributeDialog() {
+		addAttributeDialog(null);
+	}
+
+	public void addAttributeDialog(FmmlxObject object) {
 
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			AddAttributeDialog dlg = new AddAttributeDialog(diagram);
+			AddAttributeDialog dlg;
+			if (object != null) {
+				dlg = new AddAttributeDialog(diagram, object);
+			} else {
+				dlg = new AddAttributeDialog(diagram);
+			}
+
 			dlg.setTitle("Add Attribute");
 			Optional<AddAttributeDialogResult> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
 				AddAttributeDialogResult aad = result.get();
-				System.out.println("!!!!!!!!!!!!! " + aad.getName() + " " + aad.getLevel());
 				diagram.addAttribute(aad.getClassID(), aad.getName(), aad.getLevel(), aad.getType(), aad.getMultiplicity());
 			}
 
@@ -141,7 +150,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				RemoveDialogResult test = opt.get();
-				// TODO 
+				// TODO
 			}
 
 			diagram.updateDiagram();
@@ -241,7 +250,7 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				ChangeParentDialogResult cod = result.get();
-				// TODO 
+				// TODO
 			}
 
 			diagram.updateDiagram();
@@ -261,13 +270,31 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				ChangeParentDialogResult cod = result.get();
-				// TODO 
+				// TODO
 			}
 
 			diagram.updateDiagram();
 			l.countDown();
 		});
 
+	}
+
+	public void changeSlotValue(FmmlxObject hitObject, FmmlxSlot hitProperty) {
+
+		CountDownLatch l = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			ChangeSlotValueDialog dlg = new ChangeSlotValueDialog(hitObject, hitProperty);
+			Optional<ChangeSlotValueDialogResult> result = dlg.showAndWait();
+
+			if (result.isPresent()) {
+				ChangeSlotValueDialogResult slotValueDialogResult = result.get();
+				diagram.changeSlotValue(slotValueDialogResult);
+			}
+
+			diagram.updateDiagram();
+			l.countDown();
+		});
 	}
 
 	public void toogleIsAbstract(FmmlxObject object) {
