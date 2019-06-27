@@ -291,6 +291,9 @@ public class DiagramActions {
 				ChangeSlotValueDialogResult slotValueDialogResult = result.get();
 				diagram.changeSlotValue(slotValueDialogResult);
 			}
+
+			diagram.updateDiagram();
+			l.countDown();
 		});
 	}
 

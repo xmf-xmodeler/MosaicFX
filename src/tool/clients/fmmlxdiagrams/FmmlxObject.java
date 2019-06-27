@@ -394,6 +394,11 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 
 			}
 		}
+		if (showOperations) {
+			for (FmmlxOperationValue opValue : operationValues) {
+				neededWidth = Math.max(diagram.calculateTextWidth(opValue.getName() + " = " + opValue.getValue()), neededWidth);
+			}
+		}
 
 		if (hasParents()) {
 			neededWidth = Math.max(diagram.calculateTextWidth(getParentsListString(diagram)), neededWidth);
