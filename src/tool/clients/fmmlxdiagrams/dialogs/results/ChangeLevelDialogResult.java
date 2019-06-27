@@ -1,11 +1,11 @@
 package tool.clients.fmmlxdiagrams.dialogs.results;
 
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.dialogs.DialogType;
+import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
-public class ChangeLevelDialogResult extends DialogResult{
-	
-	private final DialogType type;
+public class ChangeLevelDialogResult extends DialogResult {
+
+	private PropertyType type;
 	private FmmlxObject object;
 	private int currentlevel;
 	private int newLevel;
@@ -18,7 +18,7 @@ public class ChangeLevelDialogResult extends DialogResult{
 		this.newLevel= newLevel;
 	}
 
-	public DialogType getType() {
+	public PropertyType getType() {
 		// TODO Auto-generated method stub
 		return type;
 	}

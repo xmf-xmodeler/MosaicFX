@@ -20,9 +20,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
+import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeSlotValueDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOfDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOwnerDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeParentDialogResult;
@@ -58,16 +60,18 @@ public class FmmlxDiagram {
 	private MouseMode mode = MouseMode.STANDARD;
 	private Font font;
 
-	public Vector<FmmlxObject> fetchObjects() {
-		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
-		objects.clear(); // to be replaced when updating instead of loading form scratch
-		objects.addAll(fetchedObjects);
-		for (FmmlxObject o : objects) {
-//			comm.fetchAttributes(o);
-			o.fetchData(comm);
-		}
-		return objects;
-	}
+//	public Vector<FmmlxObject> fetchObjects() {
+//		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
+//		objects.clear(); // to be replaced when updating instead of loading form scratch
+//		objects.addAll(fetchedObjects);
+//		for (FmmlxObject o : objects) {
+//			o.fetchDataDefinitions(comm);
+//		}
+//		for (FmmlxObject o : objects) {
+//			o.fetchDataValues(comm);
+//		}
+//		return objects;
+//	}
 
 	public Vector<FmmlxObject> getObjects() {
 		return new Vector<FmmlxObject>(objects); // read-only
@@ -124,14 +128,19 @@ public class FmmlxDiagram {
 		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
 		objects.clear(); // to be replaced when updating instead of loading form scratch
 		objects.addAll(fetchedObjects);
+		Vector<Edge> fetchedEdges = comm.getAllAssociations();
+		edges.clear(); // to be replaced when updating instead of loading form scratch
+		edges.addAll(fetchedEdges);
 		for (FmmlxObject o : objects) {
-//			comm.fetchAttributes(o);
-			o.fetchData(comm);
+			o.fetchDataDefinitions(comm);
 		}
-		if (objects.size() >= 2) {
-			Edge e = new Edge(objects.get(0), objects.get(1));
-			edges.add(e);
+		for (FmmlxObject o : objects) {
+			o.fetchDataValues(comm);
 		}
+//		if (objects.size() >= 2) {
+//			Edge e = new Edge(-1, objects.get(0), objects.get(1), null, this);
+//			edges.add(e);
+//		}
 		resizeCanvas();
 		redraw();
 	}
@@ -280,9 +289,13 @@ public class FmmlxDiagram {
 				if (s instanceof FmmlxObject) {
 					FmmlxObject o = (FmmlxObject) s;
 					comm.sendCurrentPosition(o);
+				} else if (s instanceof FmmlxAssociation) {
+					FmmlxAssociation a = (FmmlxAssociation) s;
+					comm.sendCurrentPositions(a);
 				}
 		}
 		objectsMoved = false;
+
 	}
 
 	private boolean isLeftClick(MouseEvent e) {
@@ -312,7 +325,6 @@ public class FmmlxDiagram {
 	private void handleLeftPressed(MouseEvent e) {
 		Point2D p = scale(e);
 
-//		FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
 		Selectable hitObject = getElementAt(p.getX(), p.getY());
 		if (hitObject != null) {
 			if (e.isControlDown()) {
@@ -327,6 +339,9 @@ public class FmmlxDiagram {
 					selectedObjects.add(hitObject);
 				}
 			}
+			if (e.getClickCount() == 2) {
+				handleClickOnNodeElement(p, hitObject);
+			}
 		} else {
 			deselectAll();
 		}
@@ -338,6 +353,35 @@ public class FmmlxDiagram {
 			mode = MouseMode.MULTISELECT;
 			storeLastClick(p.getX(), p.getY());
 			storeCurrentPoint(p.getX(), p.getY());
+		}
+
+	}
+
+	private void handleClickOnNodeElement(Point2D p, Selectable hitObject) {
+		NodeBox hitNodeBox = null;
+		Point2D relativePoint = new Point2D(
+				p.getX() - ((FmmlxObject) hitObject).getX(),
+				p.getY() - ((FmmlxObject) hitObject).getY());
+
+		// Checking NodeBoxes
+		for (NodeElement element : ((FmmlxObject) hitObject).getNodes()) {
+			if (element.isHit(relativePoint.getX(), relativePoint.getY()) && element instanceof NodeBox) {
+				if (((NodeBox) element).getElementType() != PropertyType.Selection && ((NodeBox) element).getElementType() != PropertyType.OperationValue) {
+					hitNodeBox = (NodeBox) element;
+				}
+			}
+		}
+		if (hitNodeBox != null) {
+			for (NodeElement nodeLabel : hitNodeBox.nodeElements) {
+				if (nodeLabel.isHit(relativePoint.getX(), relativePoint.getY() - hitNodeBox.y) && nodeLabel instanceof NodeLabel) {
+					FmmlxProperty hitProperty = ((NodeLabel) nodeLabel).getActionObject();
+					if (hitNodeBox.getElementType() == PropertyType.Slot) {
+						actions.changeSlotValue((FmmlxObject) hitObject, (FmmlxSlot) hitProperty);
+					} else {
+						actions.changeNameDialog((FmmlxObject) hitObject, hitNodeBox.getElementType(), hitProperty);
+					}
+				}
+			}
 		}
 	}
 
@@ -529,7 +573,10 @@ public class FmmlxDiagram {
 
 	public void changeOperationLevel(ChangeLevelDialogResult result) {
 		// TODO Auto-generated method stub
+	}
 
+	public void changeSlotValue(ChangeSlotValueDialogResult result) {
+		comm.changeSlotValue(result.getObject().getId(), result.getSlot().getName(), result.getNewValue());
 	}
 	
 	//the methods below is for refine add meta class etc ------------------------------------- //bei conflict, please considered as important.

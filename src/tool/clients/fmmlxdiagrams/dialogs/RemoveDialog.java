@@ -17,7 +17,7 @@ import com.ibm.icu.text.SelectFormat;
 public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 
 	private DialogPane dialogPane;
-	private final DialogType type;
+	private final PropertyType type;
 	private FmmlxObject object;
 	private final FmmlxDiagram diagram;
 	
@@ -40,7 +40,7 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 	private ArrayList<String> operationList;
 
 
-	public RemoveDialog(final FmmlxDiagram diagram, FmmlxObject object, DialogType type) {
+	public RemoveDialog(final FmmlxDiagram diagram, FmmlxObject object, PropertyType type) {
 		super();
 		this.type = type;
 		this.diagram = diagram;
@@ -146,7 +146,6 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 			//TODO operationList.add(fmmlxOperation.getName());
 		}
 		//selectOperationComboBox.getItems().setAll(operationList);
-
 	}
 
 
@@ -183,9 +182,7 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 			attributeList.add(fmmlxAttribute.getName());
 		}
 		selectAttributeComboBox.getItems().setAll(attributeList);
-
 	}
-
 
 	private void removeClass() {
 		dialogPane.setHeaderText("Remove Class");
@@ -204,9 +201,7 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 
 		selectObjectLabelTextField.setText(object.getName());
 		selectObjectLabelTextField.setDisable(true);
-
 	}
-
 
 	private boolean validateUserInput() {
 
@@ -221,9 +216,7 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 				return validateRemoveAssociation();
 		}
 		return true;
-
 	}
-
 
 	private boolean validateRemoveAssociation() {
 		// TODO Auto-generated method stub
@@ -247,6 +240,4 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-
 }

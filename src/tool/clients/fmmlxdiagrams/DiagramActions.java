@@ -50,8 +50,9 @@ public class DiagramActions {
 						int y = (int) e.getY();
 
 						if (x > 0 && y > 0) {
+							System.err.println("MCD: " + mcdResult.isAbstract());
 							diagram.addMetaClass(mcdResult.getName(), mcdResult.getLevel(),
-									new Vector<Integer>(mcdResult.getParent()), false, x, y);
+									new Vector<>(mcdResult.getParent()), mcdResult.isAbstract(), x, y);
 
 							canvas.setCursor(Cursor.DEFAULT);
 							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
@@ -111,17 +112,26 @@ public class DiagramActions {
 	}
 
 	public void addAttributeDialog() {
+		addAttributeDialog(null);
+	}
+
+	public void addAttributeDialog(FmmlxObject object) {
 
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			AddAttributeDialog dlg = new AddAttributeDialog(diagram);
+			AddAttributeDialog dlg;
+			if (object != null) {
+				dlg = new AddAttributeDialog(diagram, object);
+			} else {
+				dlg = new AddAttributeDialog(diagram);
+			}
+
 			dlg.setTitle("Add Attribute");
 			Optional<AddAttributeDialogResult> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
 				AddAttributeDialogResult aad = result.get();
-				System.out.println("!!!!!!!!!!!!! " + aad.getName() + " " + aad.getLevel());
 				diagram.addAttribute(aad.getClassID(), aad.getName(), aad.getLevel(), aad.getType(), aad.getMultiplicity());
 			}
 
@@ -131,7 +141,7 @@ public class DiagramActions {
 	}
 
 
-	public void removeDialog(FmmlxObject object, DialogType type) {
+	public void removeDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
@@ -140,7 +150,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				RemoveDialogResult test = opt.get();
-				// TODO 
+				// TODO
 			}
 
 			diagram.updateDiagram();
@@ -164,12 +174,12 @@ public class DiagramActions {
 		diagram.redraw();
 	}
 
-
-	public void changeNameDialog(FmmlxObject object, DialogType type) {
+	public void changeNameDialog(FmmlxObject object, PropertyType type, FmmlxProperty selectedProperty) {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			ChangeNameDialog dlg = new ChangeNameDialog(diagram, object, type);
+			ChangeNameDialog dlg = new ChangeNameDialog(diagram, object, type, selectedProperty);
+
 			Optional<ChangeNameDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
@@ -194,7 +204,11 @@ public class DiagramActions {
 		});
 	}
 
-	public void changeLevelDialog(FmmlxObject object, DialogType type) {
+	public void changeNameDialog(FmmlxObject object, PropertyType type) {
+		changeNameDialog(object, type, null);
+	}
+
+	public void changeLevelDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
@@ -292,6 +306,29 @@ public class DiagramActions {
 			l.countDown();
 		});
 
+	}
+
+	public void changeSlotValue(FmmlxObject hitObject, FmmlxSlot hitProperty) {
+
+		CountDownLatch l = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			ChangeSlotValueDialog dlg = new ChangeSlotValueDialog(hitObject, hitProperty);
+			Optional<ChangeSlotValueDialogResult> result = dlg.showAndWait();
+
+			if (result.isPresent()) {
+				ChangeSlotValueDialogResult slotValueDialogResult = result.get();
+				diagram.changeSlotValue(slotValueDialogResult);
+			}
+
+			diagram.updateDiagram();
+			l.countDown();
+		});
+	}
+
+	public void toogleIsAbstract(FmmlxObject object) {
+		object.toogleIsAbstract();
+		diagram.redraw();
 	}
 
 	public void toogleShowOperations() {

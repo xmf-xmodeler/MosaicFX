@@ -3,14 +3,8 @@ package tool.clients.fmmlxdiagrams.dialogs;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 
 public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
@@ -48,7 +42,7 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				return new MetaClassDialogResult(nameTextField.getText(),
-						levelComboBox.getSelectionModel().getSelectedItem(), abstractCheckbox.isSelected(), 0);
+						getComboBoxIntegerValue(levelComboBox), abstractCheckbox.isSelected(), 0);
 			}
 			return null;
 		});
@@ -62,6 +56,7 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 
 		nameTextField = new TextField();
 		levelComboBox = new ComboBox<>(LevelList.levelList);
+		levelComboBox.setEditable(true);
 		parentComboBox = new ComboBox<>(parentList);
 		abstractCheckbox = new CheckBox();
 
@@ -83,13 +78,13 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 
 		Label errorLabel = getErrorLabel();
 
-		if (isNullOrEmpty(name) && levelComboBox.getSelectionModel().isEmpty()) {
+		if (isNullOrEmpty(name) && getComboBoxIntegerValue(levelComboBox)==null) {
 			errorLabel.setText("Enter name and set level!");
 			return false;
 		} else if (isNullOrEmpty(name)) {
 			errorLabel.setText("Enter name!");
 			return false;
-		} else if (levelComboBox.getSelectionModel().isEmpty()) {
+		} else if (getComboBoxIntegerValue(levelComboBox) == null) {//levelComboBox.getSelectionModel().isEmpty()) {
 			errorLabel.setText("Enter level!");
 			return false;
 		}
