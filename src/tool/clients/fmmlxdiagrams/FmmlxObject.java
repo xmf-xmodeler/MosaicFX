@@ -388,7 +388,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 			}
 		}
 		//determine maximal width of slots
-		if (showSlots) {
+		if (showSlots && slots.size() > 0) {
 			for (FmmlxSlot slot : slots) {
 				neededWidth = Math.max(diagram.calculateTextWidth(slot.getName() + " = " + slot.getValue()), neededWidth);
 

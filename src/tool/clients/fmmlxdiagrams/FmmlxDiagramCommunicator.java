@@ -47,15 +47,15 @@ public class FmmlxDiagramCommunicator {
 		if (o instanceof java.util.Vector) {
 			java.util.Vector<Object> v = (java.util.Vector<Object>) o;
 			int requestID = (Integer) (v.get(0));
-			if(DEBUG) System.err.println("Receiving request " + requestID);
+			if (DEBUG) System.err.println("Receiving request " + requestID);
 			v.remove(0);
-			if(requestID == -1) {
+			if (requestID == -1) {
 				System.err.println(v.get(0));
 				java.util.Vector<Object> err = (java.util.Vector<Object>) v.get(0);
-				if(err.size() > 0 && err.get(0) != null) {
+				if (err.size() > 0 && err.get(0) != null) {
 					CountDownLatch l = new CountDownLatch(1);
 					Platform.runLater(() -> {
-						Alert alert = new Alert(AlertType.ERROR, err.get(0)+"", new ButtonType("Och nö..."));
+						Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", new ButtonType("Och nï¿½..."));
 						alert.showAndWait();
 						l.countDown();
 					});
@@ -70,7 +70,7 @@ public class FmmlxDiagramCommunicator {
 	private Vector<Object> xmfRequest(int targetHandle, String message, Value... args) {
 		Value[] args2 = new Value[args.length + 1];
 		int requestID = idCounter++;
-		if(DEBUG) System.err.println("Sending request " + message + "(" + requestID + ")");
+		if (DEBUG) System.err.println("Sending request " + message + "(" + requestID + ")");
 		for (int i = 0; i < args.length; i++) {
 			args2[i + 1] = args[i];
 		}
@@ -81,7 +81,7 @@ public class FmmlxDiagramCommunicator {
 		int attempts = 0;
 		int sleep = 10;
 		while (waiting && attempts < 20) {
-			if(DEBUG) System.err.println(attempts + ". attempt");
+			if (DEBUG) System.err.println(attempts + ". attempt");
 			attempts++;
 			try {
 				Thread.sleep(sleep);
@@ -138,7 +138,7 @@ public class FmmlxDiagramCommunicator {
 		Vector<Object> response = xmfRequest(handler, "getAllAssociations", new Value[]{});
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
-		
+
 		for (Object edgeInfo : responseContent) {
 			Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
 
@@ -316,7 +316,7 @@ public class FmmlxDiagramCommunicator {
 			point[2] = new Value((float) (points.get(i).getY()));
 			listOfPoints[i] = new Value(point);
 		}
-		
+
 		xmfRequest(handler, "sendNewPositions",
 				new Value[]{new Value(a.id), new Value(listOfPoints)});
 	}
@@ -325,11 +325,11 @@ public class FmmlxDiagramCommunicator {
 		Value[] parentsArray = createValueArray(parents);
 
 		Value[] message = new Value[]{
-				new Value(-1), 
-				new Value(name), 
-				new Value(level), 
+				new Value(-1),
+				new Value(name),
+				new Value(level),
 				new Value(parentsArray),
-				new Value(isAbstract), 
+				new Value(isAbstract),
 				new Value(x), new Value(y)};
 		WorkbenchClient.theClient().send(handler, "addMetaClass", message);
 	}
@@ -363,15 +363,15 @@ public class FmmlxDiagramCommunicator {
 
 	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) {
 		Value[] multiplicity = new Value[]{
-				new Value(multi.min), 
-				new Value(multi.max), 
-				new Value(multi.upperLimit), 
-				new Value(multi.ordered), 
+				new Value(multi.min),
+				new Value(multi.max),
+				new Value(multi.upperLimit),
+				new Value(multi.ordered),
 				new Value(multi.duplicates)}; // unused in XMF
 		Value[] message = new Value[]{new Value(-1),
-				new Value(classID), 
-				new Value(name), 
-				new Value(level), 
+				new Value(classID),
+				new Value(name),
+				new Value(level),
 				new Value(type),
 				new Value(multiplicity)};
 		WorkbenchClient.theClient().send(handler, "addAttribute", message);
@@ -401,8 +401,8 @@ public class FmmlxDiagramCommunicator {
 	public void changeSlotValue(int id, String slotName, String aParsableText) {
 		Value[] message = new Value[]{
 				new Value(-1),
-				new Value(id), 
-				new Value(slotName), 
+				new Value(id),
+				new Value(slotName),
 				new Value(aParsableText)};
 		WorkbenchClient.theClient().send(handler, "changeSlotValue", message);
 	}
