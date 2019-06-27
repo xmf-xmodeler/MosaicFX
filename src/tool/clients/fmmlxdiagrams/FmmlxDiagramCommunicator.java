@@ -21,7 +21,7 @@ public class FmmlxDiagramCommunicator {
 	private HashMap<Integer, Vector<Object>> results = new HashMap<>();
 	private static Hashtable<Integer, Tab> tabs = new Hashtable<Integer, Tab>();
 	private static Vector<FmmlxDiagram> diagrams = new Vector<FmmlxDiagram>();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	private static Vector<FmmlxDiagramCommunicator> communicators = new Vector<FmmlxDiagramCommunicator>();
 	static TabPane tabPane;
 	FmmlxDiagram diagram;
@@ -50,9 +50,9 @@ public class FmmlxDiagramCommunicator {
 			if(DEBUG) System.err.println("Receiving request " + requestID);
 			v.remove(0);
 			if(requestID == -1) {
-				System.err.println(v.get(0));
+				System.err.println("v.get(0)= " + v.get(0));
 				java.util.Vector<Object> err = (java.util.Vector<Object>) v.get(0);
-				if(err.size() > 0 && err.get(0) != null) {
+				if(err != null && err.size() > 0 && err.get(0) != null) {
 					CountDownLatch l = new CountDownLatch(1);
 					Platform.runLater(() -> {
 						Alert alert = new Alert(AlertType.ERROR, err.get(0)+"", new ButtonType("Och nö..."));

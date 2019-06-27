@@ -539,7 +539,7 @@ public class FmmlxDiagram {
 	}
 
 	public void changeSlotValue(String string) {
-		comm.changeSlotValue(1, "name", string);
+		comm.changeSlotValue(getObjects().firstElement().id, "level", string);
 		
 	}
 }
