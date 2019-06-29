@@ -17,11 +17,11 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	private FmmlxDiagram diagram;
 
 	private TextField nameTextField;
-	private ListView<String> parentListView;
+	private ListView<FmmlxObject> parentListView;
 	private ComboBox<String> ofComboBox;
 	private CheckBox abstractCheckBox;
 	private Label abstractLabel;
-	private ObservableList<String> parentList;
+	private ObservableList<FmmlxObject> parentList;
 	private ObservableList<String> ofList;
 	private Vector<FmmlxObject> objects;
 
@@ -29,8 +29,8 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		super();
 
 		DialogPane dialog = getDialogPane();
-		this.diagram=diagram;
-		this.objects=diagram.getObjects();
+		this.diagram = diagram;
+		this.objects = diagram.getObjects();
 
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
@@ -54,7 +54,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 						level = object.getLevel() - 1;
 					}
 				}
-				
+
 				return new AddInstanceDialogResult(nameTextField.getText(), level,
 						parentListView.getSelectionModel().getSelectedItems(), idSelectedItem,
 						abstractCheckBox.isSelected());
@@ -64,7 +64,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	}
 
 	private void layoutContent(Integer ofId) {
-		
+
 		ofList = getAllOfList();
 		parentList = diagram.getAllPossibleParentList();
 		nameTextField = new TextField();
@@ -77,7 +77,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		abstractCheckBox = new CheckBox();
 		abstractLabel = new Label("Abstract");
 
-		initializeListView();
+		parentListView = initializeListView(parentList, SelectionMode.MULTIPLE);
 
 		ofComboBox.setPrefWidth(COLUMN_WIDTH);
 
@@ -94,8 +94,8 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	private ObservableList<String> getAllOfList() {
 		ArrayList<String> resultStrings = new ArrayList<String>();
 		if (!objects.isEmpty()) {
-			for (FmmlxObject object :objects) {
-				if (object.getLevel()!=0) {
+			for (FmmlxObject object : objects) {
+				if (object.getLevel() != 0) {
 					resultStrings.add(object.getName());
 				}
 			}
@@ -137,8 +137,8 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
 	private boolean nameAlreadyUsed() {
 		if (!objects.isEmpty()) {
-			for (FmmlxObject object :objects) {
-				if(nameTextField.getText().equals(object.getName())) {
+			for (FmmlxObject object : objects) {
+				if (nameTextField.getText().equals(object.getName())) {
 					return true;
 				}
 			}
@@ -159,10 +159,10 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
 
 	private void setOf(int ofId) {
-		
+
 		FmmlxObject ofObject = diagram.getObjectById(ofId);
 		ofComboBox.setValue(ofObject.getName());
-		
+
 		ofComboBox.setEditable(false);
 	}
 
@@ -170,12 +170,5 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	private boolean validateCircularDependecies() {
 		// TODO Auto-generated method stub
 		return true;
-	}
-
-	private void initializeListView() {
-		parentListView = new ListView<>(parentList);
-		parentListView.setPrefHeight(75);
-		parentListView.setPrefWidth(COLUMN_WIDTH);
-		parentListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 	}
 }
