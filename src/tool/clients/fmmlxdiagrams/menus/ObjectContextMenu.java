@@ -58,7 +58,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeTypeItem = new MenuItem("Change type");
 		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Attribute));
 		MenuItem changeMultiplicityItem = new MenuItem("Change multiplicity");
-		changeMultiplicityItem.setOnAction(e -> System.out.println("OCM: change attribute mulitplicity called"));
+		changeMultiplicityItem.setOnAction(e -> actions.changeMultiplicityDialog(object, PropertyType.Attribute));
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Attribute));
 
@@ -76,13 +76,13 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e_ -> actions.removeDialog(object, PropertyType.Association));
 		MenuItem changeTargetItem = new MenuItem("Change target");
-		changeTargetItem.setOnAction(e -> System.out.println("OCM: change association target called"));
+		changeTargetItem.setOnAction(e -> actions.changeTargetDialog(object, PropertyType.Association));
 		MenuItem changeNameItem = new MenuItem("Change name");
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Association));
 		MenuItem changeTypeItem = new MenuItem("Change type");
 		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Association));
 		MenuItem changeMultiplicityItem = new MenuItem("Change multiplicity");
-		changeMultiplicityItem.setOnAction(e -> System.out.println("OCM: change association multiplicity called"));
+		changeMultiplicityItem.setOnAction(e -> actions.changeMultiplicityDialog(object, PropertyType.Association));
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Association));
 
@@ -105,7 +105,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeTypeItem = new MenuItem("Change type");
 		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Operation));
 		MenuItem changeBodyItem = new MenuItem("Change body");
-		changeBodyItem.setOnAction(e -> System.out.println("OCM: change operation body called"));
+		changeBodyItem.setOnAction(e -> actions.changeBodyDialog(object, PropertyType.Operation));
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Operation));
 

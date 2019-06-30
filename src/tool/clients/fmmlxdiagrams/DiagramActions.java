@@ -403,5 +403,32 @@ public class DiagramActions {
 		
 	}
 
+	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type) {
+		// TODO Auto-generated method stub
+	}
+
+	public void changeTargetDialog(FmmlxObject object, PropertyType type) {
+		CountDownLatch latch = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			ChangeTargetDialog dlg = new ChangeTargetDialog(diagram, object, type);
+			Optional<ChangeTargetDialogResult> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final ChangeTargetDialogResult result = opt.get();
+				System.err.println(result);
+				diagram.changeTargetAssociation(result);	
+			}
+
+			diagram.updateDiagram();
+			latch.countDown();
+		});
+	}
+
+	public Object changeBodyDialog(FmmlxObject object, PropertyType operation) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	
 }
