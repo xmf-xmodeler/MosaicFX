@@ -341,7 +341,7 @@ public class DiagramActions {
 		diagram.redraw();
 	}
 
-	public Object addDialog(FmmlxObject object, PropertyType type) {
+	public void addDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
@@ -371,7 +371,36 @@ public class DiagramActions {
 			diagram.updateDiagram();
 			latch.countDown();
 		});
-		return null;
+	}
+
+	public void changeTypeDialog(FmmlxObject object, PropertyType type) {
+		CountDownLatch latch = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			ChangeTypeDialog dlg = new ChangeTypeDialog(object, type);
+			Optional<ChangeTypeDialogResult> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final ChangeTypeDialogResult result = opt.get();
+				System.err.println(result);
+				switch (result.getType()) {
+					case Attribute:
+						diagram.changeTypeAttribute(result);
+						break;
+					case Operation:
+						diagram.changeTypeOperation(result);
+						break;
+					case Association:
+						diagram.changeTypeAssociation(result);
+						break;
+					default: System.err.println("AddDialogResult: No matching content type!");
+				}
+			}
+
+			diagram.updateDiagram();
+			latch.countDown();
+		});
+		
 	}
 
 	

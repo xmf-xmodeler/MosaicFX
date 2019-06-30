@@ -56,7 +56,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
 		changeOwnerItem.setOnAction(e -> actions.changeOwnerDialog(object, PropertyType.Attribute));
 		MenuItem changeTypeItem = new MenuItem("Change type");
-		changeTypeItem.setOnAction(e -> System.out.println("OCM: change attribute type called"));
+		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Attribute));
 		MenuItem changeMultiplicityItem = new MenuItem("Change multiplicity");
 		changeMultiplicityItem.setOnAction(e -> System.out.println("OCM: change attribute mulitplicity called"));
 		MenuItem changeLevelItem = new MenuItem("Change level");
@@ -80,7 +80,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeNameItem = new MenuItem("Change name");
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Association));
 		MenuItem changeTypeItem = new MenuItem("Change type");
-		changeTypeItem.setOnAction(e -> System.out.println("OCM: change association type called"));
+		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Association));
 		MenuItem changeMultiplicityItem = new MenuItem("Change multiplicity");
 		changeMultiplicityItem.setOnAction(e -> System.out.println("OCM: change association multiplicity called"));
 		MenuItem changeLevelItem = new MenuItem("Change level");
@@ -103,7 +103,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
 		changeOwnerItem.setOnAction(e -> actions.changeOwnerDialog(object, PropertyType.Operation));
 		MenuItem changeTypeItem = new MenuItem("Change type");
-		changeTypeItem.setOnAction(e -> System.out.println("OCM: change operation type called"));
+		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Operation));
 		MenuItem changeBodyItem = new MenuItem("Change body");
 		changeBodyItem.setOnAction(e -> System.out.println("OCM: change operation body called"));
 		MenuItem changeLevelItem = new MenuItem("Change level");

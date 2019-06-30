@@ -25,6 +25,7 @@ import tool.clients.fmmlxdiagrams.dialogs.results.AddDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeSlotValueDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeTypeDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOfDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOwnerDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeParentDialogResult;
@@ -617,6 +618,21 @@ public class FmmlxDiagram {
 	}
 
 	public void changeParentAttribute(ChangeParentDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void changeTypeAttribute(ChangeTypeDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void changeTypeOperation(ChangeTypeDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void changeTypeAssociation(ChangeTypeDialogResult result) {
 		// TODO Auto-generated method stub
 		
 	}
