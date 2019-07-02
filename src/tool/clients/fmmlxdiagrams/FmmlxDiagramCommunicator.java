@@ -382,7 +382,7 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "addMetaClass", message);
 	}
 
-	public void addNewInstance(int of, String name, int level, Vector<String> parents, boolean isAbstract, int x,
+	public void addNewInstance(int of, String name, int level, Vector<Integer> parents, boolean isAbstract, int x,
 							   int y) {
 		Value[] parentsArray = createValueArray(parents);
 
