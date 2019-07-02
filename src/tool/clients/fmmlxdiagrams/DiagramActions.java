@@ -93,7 +93,7 @@ public class DiagramActions {
 
 						if (x > 0 && y > 0) {
 							diagram.addNewInstance(aidResult.getOf(), aidResult.getName(), aidResult.getLevel(),
-									new Vector<String>(aidResult.getParents()), false, x, y);
+									aidResult.getParentId(), false, x, y);
 
 							canvas.setCursor(Cursor.DEFAULT);
 							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
@@ -195,7 +195,8 @@ public class DiagramActions {
 					case Attribute:
 						diagram.changeAttributeName(result);
 						break;
-					default: System.err.println("ChangeNameDialogResult: No matching content type!");
+					default:
+						System.err.println("ChangeNameDialogResult: No matching content type!");
 				}
 			}
 
@@ -231,8 +232,9 @@ public class DiagramActions {
 					case Association:
 						diagram.changeAssociationLevel(result);
 						break;
-					default: System.err.println("ChangeLevelDialogResult: No matching content type!");
-						
+					default:
+						System.err.println("ChangeLevelDialogResult: No matching content type!");
+
 				}
 			}
 
@@ -261,7 +263,7 @@ public class DiagramActions {
 
 
 	}
-	
+
 	public void changeOwnerDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch l = new CountDownLatch(1);
 
@@ -279,8 +281,9 @@ public class DiagramActions {
 					case Operation:
 						diagram.changeOperationOwner(result);
 						break;
-					default: System.err.println("ChangeOwnerDialogResult: No matching content type!");
-					break;
+					default:
+						System.err.println("ChangeOwnerDialogResult: No matching content type!");
+						break;
 				}
 			}
 
@@ -364,7 +367,8 @@ public class DiagramActions {
 					case Association:
 						diagram.addAssociation(result);
 						break;
-					default: System.err.println("AddDialogResult: No matching content type!");
+					default:
+						System.err.println("AddDialogResult: No matching content type!");
 				}
 			}
 
@@ -374,5 +378,5 @@ public class DiagramActions {
 		return null;
 	}
 
-	
+
 }

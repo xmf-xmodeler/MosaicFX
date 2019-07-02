@@ -49,10 +49,10 @@ public class FmmlxDiagramCommunicator {
 			int requestID = (Integer) (v.get(0));
 			if (DEBUG) System.err.println("Receiving request " + requestID);
 			v.remove(0);
-			if(requestID == -1) {
+			if (requestID == -1) {
 				System.err.println("v.get(0)= " + v.get(0));
 				java.util.Vector<Object> err = (java.util.Vector<Object>) v.get(0);
-				if(err != null && err.size() > 0 && err.get(0) != null) {
+				if (err != null && err.size() > 0 && err.get(0) != null) {
 					CountDownLatch l = new CountDownLatch(1);
 					Platform.runLater(() -> {
 						Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", new ButtonType("Och n�..."));
@@ -350,9 +350,9 @@ public class FmmlxDiagramCommunicator {
 		return result;
 	}
 
-	public void addNewInstance(int of, String name, int level, Vector<String> parents, boolean isAbstract, int x,
+	public void addNewInstance(int of, String name, int level, Vector<Integer> parents, boolean isAbstract, int x,
 							   int y) {
-		Value[] parentsArray = createValueArrayString(parents);
+		Value[] parentsArray = createValueArray(parents);
 
 		Value[] message = new Value[]{new Value(-1), new Value(of), new Value(name),
 				// new Value(level),
