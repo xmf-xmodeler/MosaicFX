@@ -21,6 +21,8 @@ public class DefaultContextMenu extends ContextMenu {
 		addAssociationItem.setOnAction(e -> System.out.println("Add association called!"));
 		associationMenu.getItems().add(addAssociationItem);
 
-		getItems().addAll(addClassItem, addInstanceItem, associationMenu);
+		MenuItem myMenuItem = new MenuItem("Surprise");
+		myMenuItem.setOnAction(e -> actions.surpriseDialog());
+		getItems().addAll(addClassItem, addInstanceItem, associationMenu, myMenuItem);
 	}
 }

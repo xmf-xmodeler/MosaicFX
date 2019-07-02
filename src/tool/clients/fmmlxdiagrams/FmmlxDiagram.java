@@ -589,6 +589,11 @@ public class FmmlxDiagram {
 		comm.changeSlotValue(result.getObject().getId(), result.getSlot().getName(), result.getNewValue());
 	}
 
+	public void removeAttribute(FmmlxObject c, FmmlxAttribute a, Integer strategy) {
+		comm.removeAttribute(c.getId(), a.getName(), 0);
+		
+	}
+
 	//the methods below is for refine add meta class etc ------------------------------------- //bei conflict, please considered as important.
 
 	public void addMetaClass(AddDialogResult result) {

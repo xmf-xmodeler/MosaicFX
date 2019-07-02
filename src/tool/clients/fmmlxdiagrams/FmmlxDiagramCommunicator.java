@@ -42,6 +42,65 @@ public class FmmlxDiagramCommunicator {
 		this.handler = handler;
 	}
 
+	public void newDiagram() {
+		CountDownLatch l = new CountDownLatch(1);
+		final String label = "getPackageName();";
+		Platform.runLater(() -> {
+			System.err.println("Create FMMLx-Diagram...");
+
+			diagram = new FmmlxDiagram(this, label);
+			Tab tab = new Tab(label);
+			tab.setContent(diagram.getView());
+			tab.setClosable(true);
+			tabs.put(this.handler, tab);
+			diagrams.add(diagram);
+			tabPane.getTabs().add(tab);
+			tabPane.getSelectionModel().selectLast();
+			tab.setOnCloseRequest(new javafx.event.EventHandler<javafx.event.Event>() {
+				@Override
+				public void handle(javafx.event.Event arg0) {
+					close(FmmlxDiagramCommunicator.this.handler);
+				}
+
+			});
+			l.countDown();
+		});
+		try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void close(int handler) {
+		diagrams.remove(diagram);
+		tabs.remove(this.handler);
+	}
+	
+
+	private Value[] createValueArray(Vector<Integer> vector) { // todo: make more generic
+		Value[] result = new Value[vector.size()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = new Value(vector.get(i));
+		}
+		return result;
+	}
+
+	private Value[] createValueArrayString(Vector<String> vector) {
+		Value[] result = new Value[vector.size()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = new Value(vector.get(i));
+		}
+		return result;
+	}
+	
+	/**
+	 * This operations is called by xmf, usually after a request from java.
+	 * @param o contains the data from the xmf, which is supposed to be a vector, where the first element may identify a specific request which may be waiting for a response
+	 * 
+	 * If the response has an id != -1, it is put in a list of responses, which is checked regularly by the operation which sent the request.
+	 * Otherwise it is dropped, as no operation is waiting for a response.
+	 */
 	@SuppressWarnings("unchecked")
 	public void sendMessageToJava(Object o) {
 		if (o instanceof java.util.Vector) {
@@ -55,10 +114,15 @@ public class FmmlxDiagramCommunicator {
 				if (err != null && err.size() > 0 && err.get(0) != null) {
 					CountDownLatch l = new CountDownLatch(1);
 					Platform.runLater(() -> {
-						Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", new ButtonType("Och n�..."));
+						Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
 						alert.showAndWait();
 						l.countDown();
 					});
+					try {
+						l.await();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			} else {
 				results.put(requestID, v);
@@ -66,7 +130,15 @@ public class FmmlxDiagramCommunicator {
 		}
 //		System.err.println("o: " + o + "(" + o.getClass() + ")");
 	}
-
+	
+	/**
+	 * This operation wraps a request, adds an identifier and waits for the response
+	 * 
+	 * @param targetHandle an int identifying the handler
+	 * @param message the name of the operation in xmf (FmmlxDiagramClient)
+	 * @param args the arguments of that operation
+	 * @return
+	 */
 	private Vector<Object> xmfRequest(int targetHandle, String message, Value... args) {
 		Value[] args2 = new Value[args.length + 1];
 		int requestID = idCounter++;
@@ -98,7 +170,11 @@ public class FmmlxDiagramCommunicator {
 			throw new RuntimeException("Did not receive answer in time!");
 		return results.remove(requestID);
 	}
-
+	
+	/////////////////////////////////////////
+	/// Operations asking for information ///
+	/////////////////////////////////////////
+	
 	@SuppressWarnings("unchecked")
 	public Vector<FmmlxObject> getAllObjects() {
 		Vector<Object> response = xmfRequest(handler, "getAllObjects", new Value[]{});
@@ -262,48 +338,16 @@ public class FmmlxDiagramCommunicator {
 		FmmlxObject result = null;
 		return result;
 	}
-
-	public void newDiagram() {
-		CountDownLatch l = new CountDownLatch(1);
-		final String label = "getPackageName();";
-		Platform.runLater(() -> {
-			System.err.println("Create FMMLx-Diagram...");
-
-			diagram = new FmmlxDiagram(this, label);
-			Tab tab = new Tab(label);
-			tab.setContent(diagram.getView());
-			tab.setClosable(true);
-			tabs.put(this.handler, tab);
-			diagrams.add(diagram);
-			tabPane.getTabs().add(tab);
-			tabPane.getSelectionModel().selectLast();
-			tab.setOnCloseRequest(new javafx.event.EventHandler<javafx.event.Event>() {
-				@Override
-				public void handle(javafx.event.Event arg0) {
-					close(FmmlxDiagramCommunicator.this.handler);
-				}
-
-			});
-			l.countDown();
-		});
-		try {
-			l.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void close(int handler) {
-		diagrams.remove(diagram);
-		tabs.remove(this.handler);
-	}
+	
+	////////////////////////////////////////////////
+	/// Operations storing graphical info to xmf ///
+	////////////////////////////////////////////////
 
 	@SuppressWarnings("unused")
 	public void sendCurrentPosition(FmmlxObject o) {
 		Vector<Object> response = xmfRequest(handler, "sendNewPosition",
 				new Value[]{new Value(o.id), new Value(o.getX()), new Value(o.getY())});
 	}
-
 
 	public void sendCurrentPositions(FmmlxAssociation a) {
 		Vector<Point2D> points = a.getPoints();
@@ -321,6 +365,10 @@ public class FmmlxDiagramCommunicator {
 				new Value[]{new Value(a.id), new Value(listOfPoints)});
 	}
 
+	////////////////////////////////////////////////////
+	/// Operations requesting data to be manipulated ///
+	////////////////////////////////////////////////////
+	
 	public void addMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
 		Value[] parentsArray = createValueArray(parents);
 
@@ -334,22 +382,6 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "addMetaClass", message);
 	}
 
-	private Value[] createValueArray(Vector<Integer> vector) { // todo: make more generic
-		Value[] result = new Value[vector.size()];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = new Value(vector.get(i));
-		}
-		return result;
-	}
-
-	private Value[] createValueArrayString(Vector<String> vector) {
-		Value[] result = new Value[vector.size()];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = new Value(vector.get(i));
-		}
-		return result;
-	}
-
 	public void addNewInstance(int of, String name, int level, Vector<Integer> parents, boolean isAbstract, int x,
 							   int y) {
 		Value[] parentsArray = createValueArray(parents);
@@ -360,6 +392,12 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "addInstance", message);
 	}
 
+	public void removeClass(int id, int strategy) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(id)};
+		WorkbenchClient.theClient().send(handler, "removeClass", message);
+	}
 
 	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) {
 		Value[] multiplicity = new Value[]{
@@ -375,6 +413,15 @@ public class FmmlxDiagramCommunicator {
 				new Value(type),
 				new Value(multiplicity)};
 		WorkbenchClient.theClient().send(handler, "addAttribute", message);
+	}
+
+	public void removeAttribute(int id, String name, int strategy) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(id),
+				new Value(name),
+				new Value(strategy)};
+		WorkbenchClient.theClient().send(handler, "removeAttribute", message);
 	}
 
 	public void changeClassName(int id, String newName) {
