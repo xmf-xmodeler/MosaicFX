@@ -385,10 +385,10 @@ public class FmmlxDiagram {
 		Selectable hitObject = getElementAt(p.getX(), p.getY());
 		if (hitObject != null) {
 			activeContextMenu = hitObject.getContextMenu(actions);
-			activeContextMenu.show(scrollerCanvas, Side.LEFT, p.getX(), p.getY());
+			activeContextMenu.show(scrollerCanvas, Side.LEFT, e.getX(), e.getY());
 		} else {
 			activeContextMenu = new DefaultContextMenu(actions);
-			activeContextMenu.show(scrollerCanvas, Side.LEFT, p.getX(), p.getY());
+			activeContextMenu.show(scrollerCanvas, Side.LEFT, e.getX(), e.getY());
 		}
 	}
 
