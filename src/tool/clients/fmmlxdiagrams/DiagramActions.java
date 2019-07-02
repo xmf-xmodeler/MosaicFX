@@ -5,10 +5,10 @@ import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseEvent;
 import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
@@ -71,14 +71,14 @@ public class DiagramActions {
 	}
 
 	public void addInstanceDialog() {
-		addInstanceDialog(0);
+		addInstanceDialog(null);
 	}
 
-	public void addInstanceDialog(int ofId) {
+	public void addInstanceDialog(FmmlxObject object) {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			AddInstanceDialog dialog = new AddInstanceDialog(diagram, ofId);
+			AddInstanceDialog dialog = new AddInstanceDialog(diagram, object);
 			dialog.setTitle("Add instance");
 			Optional<AddInstanceDialogResult> result = dialog.showAndWait();
 
@@ -379,37 +379,5 @@ public class DiagramActions {
 			latch.countDown();
 		});
 		return null;
-	}
-
-
-
-	public void surpriseDialog() {
-		System.err.println("surpriseDialog");
-			Alert alert = new Alert(AlertType.CONFIRMATION, "Surprise?", ButtonType.YES, ButtonType.NO);
-			ButtonBar bb = (ButtonBar) alert.getDialogPane().getChildren().get(2);
-			Button b0 = (Button) bb.getButtons().get(0);
-			Button b1 = (Button) bb.getButtons().get(1);
-			String yes = b0.getText();
-			String no = b1.getText();
-			b0.setOnMouseEntered(e -> {b0.setText(no);b1.setText(yes);});
-			b1.setOnMouseEntered(e -> {b1.setText(no);b0.setText(yes);});
-			
-			alert.showAndWait();
-			
-			boolean found = false;
-			FmmlxObject C = null;
-			FmmlxAttribute A = null;
-			for(FmmlxObject c : diagram.getObjects()) {
-				for(FmmlxAttribute a : c.getOwnAttributes()) {
-					if((!found) && c.getName().equals("Component") && a.getName().equals("foo")) {
-						found = true;
-						C = c;
-						A = a;
-					}
-				}
-			}
-			if(found) System.err.println("att :" + A);
-			diagram.removeAttribute(C,A,null);
-			
 	}
 }

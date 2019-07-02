@@ -36,7 +36,7 @@ public class AddInstanceDialogResult extends DialogResult {
 
 	public Vector<Integer> getParentId() {
 		Vector<Integer> parentIds = new Vector<>();
-		
+
 		if (!parents.isEmpty()) {
 			for (FmmlxObject o : parents) {
 				parentIds.add(o.getId());

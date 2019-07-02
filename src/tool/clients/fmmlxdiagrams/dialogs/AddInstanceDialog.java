@@ -15,26 +15,28 @@ import java.util.Vector;
 public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
 	private FmmlxDiagram diagram;
+	private FmmlxObject selectedObject;
 
 	private TextField nameTextField;
 	private ListView<FmmlxObject> parentListView;
-	private ComboBox<String> ofComboBox;
+	private ComboBox<FmmlxObject> ofComboBox;
 	private CheckBox abstractCheckBox;
 	private Label abstractLabel;
 	private ObservableList<FmmlxObject> parentList;
-	private ObservableList<String> ofList;
+	private ObservableList<FmmlxObject> ofList;
 	private Vector<FmmlxObject> objects;
 
-	public AddInstanceDialog(final FmmlxDiagram diagram, int ofId) {
+	public AddInstanceDialog(final FmmlxDiagram diagram, FmmlxObject object) {
 		super();
 
 		DialogPane dialog = getDialogPane();
 		this.diagram = diagram;
+		this.selectedObject = object;
 		this.objects = diagram.getObjects();
 
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-		layoutContent(ofId);
+		layoutContent(object);
 		dialog.setContent(flow);
 
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
@@ -47,21 +49,29 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		setResult();
 	}
 
-	private void layoutContent(Integer ofId) {
+	private void layoutContent(FmmlxObject selectedObject) {
 
 		ofList = getAllOfList();
-		parentList = diagram.getAllPossibleParentList();
 		nameTextField = new TextField();
-		ofComboBox = new ComboBox<>(ofList);
+		parentListView = initializeListView(parentList, SelectionMode.MULTIPLE);
 
-		if (ofId > 0) {
-			setOf(ofId);
+		ofComboBox = initializeComboBox(ofList);
+		ofComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue != null) {
+				this.selectedObject = newValue;
+				createAndSetParentList();
+			}
+		});
+
+		if (selectedObject != null) {
+			setOf(selectedObject);
+			createAndSetParentList();
+			ofComboBox.setDisable(true);
 		}
 
 		abstractCheckBox = new CheckBox();
 		abstractLabel = new Label("Abstract");
 
-		parentListView = initializeListView(parentList, SelectionMode.MULTIPLE);
 
 		ofComboBox.setPrefWidth(COLUMN_WIDTH);
 
@@ -75,37 +85,35 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		grid.add(parentListView, 1, 4);
 	}
 
+	private void createAndSetParentList() {
+		parentList = diagram.getAllPossibleParents(selectedObject.getLevel());
+		parentList.remove(selectedObject);
+		parentListView.setItems(parentList);
+	}
+
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			int level = 0;
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				int idSelectedItem = 0;
-				for (FmmlxObject object : objects) {
-					if (object.getName().equals(ofComboBox.getSelectionModel().getSelectedItem())) {
-						idSelectedItem = object.getId();
-						level = object.getLevel() - 1;
-					}
-				}
-
-				return new AddInstanceDialogResult(nameTextField.getText(), level,
-						parentListView.getSelectionModel().getSelectedItems(), idSelectedItem,
+				return new AddInstanceDialogResult(nameTextField.getText(), selectedObject.getLevel() - 1,
+						parentListView.getSelectionModel().getSelectedItems(), selectedObject.getId(),
 						abstractCheckBox.isSelected());
 			}
 			return null;
 		});
 	}
 
-	private ObservableList<String> getAllOfList() {
-		ArrayList<String> resultStrings = new ArrayList<String>();
+	private ObservableList<FmmlxObject> getAllOfList() {
+		ArrayList<FmmlxObject> resultOf = new ArrayList<>();
 		if (!objects.isEmpty()) {
 			for (FmmlxObject object : objects) {
 				if (object.getLevel() != 0) {
-					resultStrings.add(object.getName());
+					resultOf.add(object);
 				}
 			}
 		}
 
-		ObservableList<String> result = FXCollections.observableArrayList(resultStrings);
+		ObservableList<FmmlxObject> result = FXCollections.observableArrayList(resultOf);
 		return result;
 	}
 
@@ -162,10 +170,9 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	}
 
 
-	private void setOf(int ofId) {
+	private void setOf(FmmlxObject selectedObject) {
 
-		FmmlxObject ofObject = diagram.getObjectById(ofId);
-		ofComboBox.setValue(ofObject.getName());
+		ofComboBox.setValue(selectedObject);
 
 		ofComboBox.setEditable(false);
 	}
