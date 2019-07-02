@@ -1,15 +1,18 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.util.converter.IntegerStringConverter;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 
 public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 
-	private final ObservableList<String> parentList = FXCollections.observableArrayList();
+	private FmmlxDiagram diagram;
+	private ObservableList<FmmlxObject> possibleParents;
 
 	private Label nameLabel;
 	private Label levelLabel;
@@ -17,11 +20,12 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 	private Label parentLabel;
 	private TextField nameTextField;
 	private ComboBox<Integer> levelComboBox;
-	private ComboBox<String> parentComboBox;
+	private ListView<FmmlxObject> parentListView;
 	private CheckBox abstractCheckbox;
 
-	public CreateMetaClassDialog() {
+	public CreateMetaClassDialog(FmmlxDiagram diagram) {
 		super();
+		this.diagram = diagram;
 
 		DialogPane dialog = getDialogPane();
 		dialog.setHeaderText("New MetaClass");
@@ -39,13 +43,7 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 			}
 		});
 
-		setResultConverter(dlgBtn -> {
-			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				return new MetaClassDialogResult(nameTextField.getText(),
-						getComboBoxIntegerValue(levelComboBox), abstractCheckbox.isSelected(), 0);
-			}
-			return null;
-		});
+		setResult();
 	}
 
 	private void layoutContent() {
@@ -55,13 +53,23 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 		parentLabel = new Label("Parent");
 
 		nameTextField = new TextField();
+		parentListView = initializeListView(possibleParents, SelectionMode.MULTIPLE);
 		levelComboBox = new ComboBox<>(LevelList.levelList);
+		levelComboBox.setConverter(new IntegerStringConverter());
 		levelComboBox.setEditable(true);
-		parentComboBox = new ComboBox<>(parentList);
+		levelComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue != null) {
+				possibleParents = diagram.getAllPossibleParents(newValue);
+				parentListView.setItems(possibleParents);
+				parentListView.setDisable(false);
+				if (possibleParents.size() == 0) {
+					parentListView.setDisable(true);
+				}
+			}
+		});
 		abstractCheckbox = new CheckBox();
 
 		levelComboBox.setPrefWidth(COLUMN_WIDTH);
-		parentComboBox.setPrefWidth(COLUMN_WIDTH);
 
 		grid.add(nameLabel, 0, 0);
 		grid.add(nameTextField, 1, 0);
@@ -70,7 +78,17 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 		grid.add(abstractLabel, 0, 2);
 		grid.add(abstractCheckbox, 1, 2);
 		grid.add(parentLabel, 0, 3);
-		grid.add(parentComboBox, 1, 3);
+		grid.add(parentListView, 1, 3);
+	}
+
+	private void setResult() {
+		setResultConverter(dlgBtn -> {
+			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
+				return new MetaClassDialogResult(nameTextField.getText(),
+						getComboBoxIntegerValue(levelComboBox), abstractCheckbox.isSelected(), parentListView.getSelectionModel().getSelectedItems());
+			}
+			return null;
+		});
 	}
 
 	private boolean validateUserInput() {
@@ -78,32 +96,16 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 
 		Label errorLabel = getErrorLabel();
 
-		if (isNullOrEmpty(name) && getComboBoxIntegerValue(levelComboBox)==null) {
+		if (isNullOrEmpty(name) && getComboBoxIntegerValue(levelComboBox) == null) {
 			errorLabel.setText("Enter name and set level!");
 			return false;
 		} else if (isNullOrEmpty(name)) {
 			errorLabel.setText("Enter name!");
 			return false;
-		} else if (getComboBoxIntegerValue(levelComboBox) == null) {//levelComboBox.getSelectionModel().isEmpty()) {
+		} else if (getComboBoxIntegerValue(levelComboBox) == null) {
 			errorLabel.setText("Enter level!");
 			return false;
 		}
 		return true;
-	}
-
-	public TextField getNameTextField() {
-		return nameTextField;
-	}
-
-	public ComboBox<Integer> getLevelComboBox() {
-		return levelComboBox;
-	}
-
-	public ComboBox<String> getParentComboBox() {
-		return parentComboBox;
-	}
-
-	public CheckBox getAbstractCheckbox() {
-		return abstractCheckbox;
 	}
 }

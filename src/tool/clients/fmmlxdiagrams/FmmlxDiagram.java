@@ -33,8 +33,9 @@ import java.util.concurrent.CountDownLatch;
 
 public class FmmlxDiagram {
 
+
 	enum MouseMode {
-		STANDARD, MULTISELECT
+		STANDARD, MULTISELECT;
 	}
 
 	private SplitPane mainView;
@@ -80,9 +81,9 @@ public class FmmlxDiagram {
 	}
 
 	private Point2D canvasRawSize = new Point2D(1200, 800);
+
 	private double zoom = 1.;
 	private Affine transformFX;
-
 	private ScrollPane scrollerCanvas;
 
 	FmmlxDiagram(FmmlxDiagramCommunicator comm, String label) {
@@ -205,10 +206,10 @@ public class FmmlxDiagram {
 		}
 	}
 
+
 	////////////////////////////////////////////////////////////////////
 	////						MouseListener						////
 	////////////////////////////////////////////////////////////////////
-
 	private void mousePressed(MouseEvent e) {
 		Point2D p = scale(e);
 		clearContextMenus();
@@ -403,8 +404,8 @@ public class FmmlxDiagram {
 		}
 	}
 
-	////////////////////////////////////////////////////////////////////
 
+	////////////////////////////////////////////////////////////////////
 	private void clearContextMenus() {
 		if (activeContextMenu != null && activeContextMenu.isShowing()) {
 			activeContextMenu.hide();
@@ -504,6 +505,7 @@ public class FmmlxDiagram {
 		return t.getLayoutBounds().getWidth();
 	}
 
+	// TODO: delete and use method with level
 	public ObservableList<FmmlxObject> getAllPossibleParentList() {
 		ArrayList<FmmlxObject> objectList = new ArrayList<FmmlxObject>();
 
@@ -518,11 +520,25 @@ public class FmmlxDiagram {
 		return result;
 	}
 
+	public ObservableList<FmmlxObject> getAllPossibleParents(Integer level) {
+		ArrayList<FmmlxObject> objectList = new ArrayList<>();
+
+		if (!objects.isEmpty()) {
+			for (FmmlxObject object : objects) {
+				if (level != 0 && object.getLevel() == level) {
+					objectList.add(object);
+				}
+			}
+		}
+		ObservableList<FmmlxObject> result = FXCollections.observableArrayList(objectList);
+		return result;
+	}
+
 
 	////////////////////////////////////////////////////////////////////
+
 	////					Messages to XMF							////
 	////////////////////////////////////////////////////////////////////
-
 
 	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) {
 		comm.addAttribute(classID, name, level, type, multi);

@@ -9,7 +9,6 @@ import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
 
 import java.util.Optional;
-import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
 public class DiagramActions {
@@ -33,7 +32,7 @@ public class DiagramActions {
 		CountDownLatch l = new CountDownLatch(2);
 
 		Platform.runLater(() -> {
-			CreateMetaClassDialog dlg = new CreateMetaClassDialog();
+			CreateMetaClassDialog dlg = new CreateMetaClassDialog(diagram);
 			dlg.setTitle("Add metaclass");
 			Optional<MetaClassDialogResult> result = dlg.showAndWait();
 
@@ -51,8 +50,7 @@ public class DiagramActions {
 
 						if (x > 0 && y > 0) {
 							System.err.println("MCD: " + mcdResult.isAbstract());
-							diagram.addMetaClass(mcdResult.getName(), mcdResult.getLevel(),
-									new Vector<>(mcdResult.getParent()), mcdResult.isAbstract(), x, y);
+							diagram.addMetaClass(mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentIds(), mcdResult.isAbstract(), x, y);
 
 							canvas.setCursor(Cursor.DEFAULT);
 							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);

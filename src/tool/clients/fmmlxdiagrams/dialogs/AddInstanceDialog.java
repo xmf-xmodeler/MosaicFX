@@ -44,23 +44,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 			}
 		});
 
-		setResultConverter(dlgBtn -> {
-			int level = 0;
-			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				int idSelectedItem = 0;
-				for (FmmlxObject object : objects) {
-					if (object.getName().equals(ofComboBox.getSelectionModel().getSelectedItem())) {
-						idSelectedItem = object.getId();
-						level = object.getLevel() - 1;
-					}
-				}
-
-				return new AddInstanceDialogResult(nameTextField.getText(), level,
-						parentListView.getSelectionModel().getSelectedItems(), idSelectedItem,
-						abstractCheckBox.isSelected());
-			}
-			return null;
-		});
+		setResult();
 	}
 
 	private void layoutContent(Integer ofId) {
@@ -89,6 +73,26 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		grid.add(abstractCheckBox, 1, 3);
 		grid.add(new Label("Parent"), 0, 4);
 		grid.add(parentListView, 1, 4);
+	}
+
+	private void setResult() {
+		setResultConverter(dlgBtn -> {
+			int level = 0;
+			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
+				int idSelectedItem = 0;
+				for (FmmlxObject object : objects) {
+					if (object.getName().equals(ofComboBox.getSelectionModel().getSelectedItem())) {
+						idSelectedItem = object.getId();
+						level = object.getLevel() - 1;
+					}
+				}
+
+				return new AddInstanceDialogResult(nameTextField.getText(), level,
+						parentListView.getSelectionModel().getSelectedItems(), idSelectedItem,
+						abstractCheckBox.isSelected());
+			}
+			return null;
+		});
 	}
 
 	private ObservableList<String> getAllOfList() {
