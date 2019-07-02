@@ -12,36 +12,36 @@ import tool.clients.fmmlxdiagrams.dialogs.results.ChangeParentDialogResult;
 import java.util.ArrayList;
 import java.util.Vector;
 
-public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult>{
+public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 
 	private final FmmlxDiagram diagram;
 	private FmmlxObject object;
-	
-	private ObservableList<String> currentParentList;
-	private ObservableList<String> newParentList;
-	
+
+	private ObservableList<FmmlxObject> currentParentList;
+	private ObservableList<FmmlxObject> newParentList;
+
 	private Label selectedObjectLabel;
 	private Label currentParentsLabel;
 	private Label newParentLabel;
-	
+
 	private TextField selectedObjectTextField;
-	private ListView<String> currentParentsListView;
-	private ListView<String> newParentListView;
-	
+	private ListView<FmmlxObject> currentParentsListView;
+	private ListView<FmmlxObject> newParentListView;
+
 
 	public ChangeParentDialog(FmmlxDiagram diagram, FmmlxObject object) {
 		// TODO Auto-generated constructor stub
 		super();
-		
-		this.diagram=diagram;
-		this.object=object;
-		
+
+		this.diagram = diagram;
+		this.object = object;
+
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.setHeaderText("Change Parent");
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		
+
 		setLayoutContent();
-		
+
 		dialogPane.setContent(flow);
 
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
@@ -50,14 +50,14 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult>{
 				e.consume();
 			}
 		});
-		
+
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				//TODO
 			}
 			return null;
 		});
-		
+
 	}
 
 
@@ -68,66 +68,45 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult>{
 
 
 	private void setLayoutContent() {
-		
+
 		selectedObjectLabel = new Label("Selected Object");
 		currentParentsLabel = new Label("Current Parent");
-		
+
 		selectedObjectTextField = new TextField();
 		selectedObjectTextField.setText(object.getName());
 		selectedObjectTextField.setDisable(true);
-		
+
 		newParentLabel = new Label("Select New Parent");
-		
-		initializeListView();
-		
+
+		currentParentsListView = initializeListView(currentParentList, SelectionMode.MULTIPLE);
+		currentParentsListView.setDisable(true);
+		newParentListView = initializeListView(newParentList, SelectionMode.MULTIPLE);
+		//initializeListView();
+
 		grid.add(selectedObjectLabel, 0, 0);
 		grid.add(selectedObjectTextField, 1, 0);
 		grid.add(currentParentsLabel, 0, 1);
 		grid.add(currentParentsListView, 1, 1);
 		grid.add(newParentLabel, 0, 2);
 		grid.add(newParentListView, 1, 2);
-		
-		
+
+
 		// TODO Auto-generated method stub
-		
+
 	}
 
+	private ObservableList<FmmlxObject> getCurrentParent() {
+		ArrayList<FmmlxObject> resultList = new ArrayList<>();
+		Vector<Integer> parentIds = object.getParents();
 
-	private void initializeListView() {
-		// TODO Auto-generated method stub
-		
-		currentParentList=getCurrentParent(object.getParents());
-		newParentList = diagram.getAllPossibleParentList();
-		
-		currentParentsListView = new ListView<String>(currentParentList);
-		currentParentsListView.setPrefHeight(75);
-		currentParentsListView.setPrefWidth(COLUMN_WIDTH);
-		currentParentsListView.setDisable(true);
-		
-		newParentListView = new ListView<String>(newParentList);
-		newParentListView.setPrefHeight(75);
-		newParentListView.setPrefWidth(COLUMN_WIDTH);
-		newParentListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		
-	}
+		if (!parentIds.isEmpty()) {
+			for (Integer id : parentIds) {
+				FmmlxObject o = diagram.getObjectById(id);
+				resultList.add(o);
+			}
+		}
 
-
-	private ObservableList<String> getCurrentParent(Vector<Integer> parentsID) {
-		ArrayList<String> resutlStrings= new ArrayList<String>();
-		
-		/* TODO
-		 * if(parentsID.size()>0) { for(int i = 0; i < parentsID.size(); i++) { for
-		 * (FmmlxObject object : diagram.getObjects()) {
-		 * if(parentsID.get(i)==object.getId()) { resutlStrings.add(object.getName()); }
-		 * } }
-		 * 
-		 * }
-		 */
-		
-		ObservableList<String> result = FXCollections.observableArrayList(resutlStrings);
+		ObservableList<FmmlxObject> result = FXCollections.observableArrayList(resultList);
 		return result;
 	}
-	
-	
-
 }

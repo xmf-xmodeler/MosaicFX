@@ -21,9 +21,7 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeSlotValueDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.*;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
 import java.io.FileInputStream;
@@ -506,17 +504,17 @@ public class FmmlxDiagram {
 		return t.getLayoutBounds().getWidth();
 	}
 
-	public ObservableList<String> getAllPossibleParentList() {
-		ArrayList<String> resultStrings = new ArrayList<String>();
+	public ObservableList<FmmlxObject> getAllPossibleParentList() {
+		ArrayList<FmmlxObject> objectList = new ArrayList<FmmlxObject>();
 
 		if (!objects.isEmpty()) {
 			for (FmmlxObject object : objects) {
 				if (object.getLevel() != 0) {
-					resultStrings.add(object.getName());
+					objectList.add(object);
 				}
 			}
 		}
-		ObservableList<String> result = FXCollections.observableArrayList(resultStrings);
+		ObservableList<FmmlxObject> result = FXCollections.observableArrayList(objectList);
 		return result;
 	}
 
@@ -535,7 +533,7 @@ public class FmmlxDiagram {
 		comm.addMetaClass(name, level, parents, isAbstract, x, y);
 	}
 
-	public void addNewInstance(int of, String name, int level, Vector<String> parents, boolean isAbstract, int x,
+	public void addNewInstance(int of, String name, int level, Vector<Integer> parents, boolean isAbstract, int x,
 							   int y) {
 		comm.addNewInstance(of, name, level, parents, isAbstract, x, y);
 	}
@@ -578,5 +576,47 @@ public class FmmlxDiagram {
 	public void removeAttribute(FmmlxObject c, FmmlxAttribute a, Integer strategy) {
 		comm.removeAttribute(c.getId(), a.getName(), 0);
 		
+	}
+
+	//the methods below is for refine add meta class etc ------------------------------------- //bei conflict, please considered as important.
+
+	public void addMetaClass(AddDialogResult result) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void addAttribute(AddDialogResult result) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void addOperation(AddDialogResult result) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void addAssociation(AddDialogResult result) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void changeAttributeOwner(ChangeOwnerDialogResult result) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void changeOperationOwner(ChangeOwnerDialogResult result) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void changeAttributeOf(ChangeOfDialogResult result) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void changeParentAttribute(ChangeParentDialogResult result) {
+		// TODO Auto-generated method stub
+
 	}
 }

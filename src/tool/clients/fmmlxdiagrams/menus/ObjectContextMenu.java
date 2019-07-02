@@ -54,7 +54,7 @@ public class ObjectContextMenu extends ContextMenu {
 
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Attribute));
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
-		changeOwnerItem.setOnAction(e -> System.out.println("OCM: change attribute owner called"));
+		changeOwnerItem.setOnAction(e -> actions.changeOwnerDialog(object, PropertyType.Attribute));
 		MenuItem changeTypeItem = new MenuItem("Change type");
 		changeTypeItem.setOnAction(e -> System.out.println("OCM: change attribute type called"));
 		MenuItem changeMultiplicityItem = new MenuItem("Change multiplicity");
@@ -72,13 +72,13 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu associationMenu = new Menu("Association");
 
 		MenuItem addItem = new MenuItem("Add");
-		addItem.setOnAction(e -> System.out.println("OCM: add association called"));
+		addItem.setOnAction(e -> actions.addDialog(object, PropertyType.Association));
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e_ -> actions.removeDialog(object, PropertyType.Association));
 		MenuItem changeTargetItem = new MenuItem("Change target");
 		changeTargetItem.setOnAction(e -> System.out.println("OCM: change association target called"));
 		MenuItem changeNameItem = new MenuItem("Change name");
-		changeNameItem.setOnAction(e -> System.out.println("OCM: change association name called"));
+		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Association));
 		MenuItem changeTypeItem = new MenuItem("Change type");
 		changeTypeItem.setOnAction(e -> System.out.println("OCM: change association type called"));
 		MenuItem changeMultiplicityItem = new MenuItem("Change multiplicity");
@@ -94,15 +94,14 @@ public class ObjectContextMenu extends ContextMenu {
 
 	private Menu createOperationSubMenu() {
 		Menu operationMenu = new Menu("Operation");
-
 		MenuItem addItem = new MenuItem("Add");
-		addItem.setOnAction(e -> System.out.println("OCM: add operation called"));
+		addItem.setOnAction(e -> actions.addDialog(object, PropertyType.Operation));
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Operation));
 		MenuItem changeNameItem = new MenuItem("Change name");
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Operation));
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
-		changeOwnerItem.setOnAction(e -> System.out.println("OCM: change operation owner called"));
+		changeOwnerItem.setOnAction(e -> actions.changeOwnerDialog(object, PropertyType.Operation));
 		MenuItem changeTypeItem = new MenuItem("Change type");
 		changeTypeItem.setOnAction(e -> System.out.println("OCM: change operation type called"));
 		MenuItem changeBodyItem = new MenuItem("Change body");

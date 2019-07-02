@@ -8,6 +8,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
 
+import tool.clients.fmmlxdiagrams.Multiplicity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
