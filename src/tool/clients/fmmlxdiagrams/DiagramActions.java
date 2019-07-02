@@ -4,12 +4,16 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseEvent;
 import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
 
 import java.util.Optional;
-import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
 public class DiagramActions {
@@ -33,7 +37,7 @@ public class DiagramActions {
 		CountDownLatch l = new CountDownLatch(2);
 
 		Platform.runLater(() -> {
-			CreateMetaClassDialog dlg = new CreateMetaClassDialog();
+			CreateMetaClassDialog dlg = new CreateMetaClassDialog(diagram);
 			dlg.setTitle("Add metaclass");
 			Optional<MetaClassDialogResult> result = dlg.showAndWait();
 
@@ -51,8 +55,7 @@ public class DiagramActions {
 
 						if (x > 0 && y > 0) {
 							System.err.println("MCD: " + mcdResult.isAbstract());
-							diagram.addMetaClass(mcdResult.getName(), mcdResult.getLevel(),
-									new Vector<>(mcdResult.getParent()), mcdResult.isAbstract(), x, y);
+							diagram.addMetaClass(mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentIds(), mcdResult.isAbstract(), x, y);
 
 							canvas.setCursor(Cursor.DEFAULT);
 							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
@@ -68,14 +71,14 @@ public class DiagramActions {
 	}
 
 	public void addInstanceDialog() {
-		addInstanceDialog(0);
+		addInstanceDialog(null);
 	}
 
-	public void addInstanceDialog(int ofId) {
+	public void addInstanceDialog(FmmlxObject object) {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			AddInstanceDialog dialog = new AddInstanceDialog(diagram, ofId);
+			AddInstanceDialog dialog = new AddInstanceDialog(diagram, object);
 			dialog.setTitle("Add instance");
 			Optional<AddInstanceDialogResult> result = dialog.showAndWait();
 
@@ -377,6 +380,4 @@ public class DiagramActions {
 		});
 		return null;
 	}
-
-
 }

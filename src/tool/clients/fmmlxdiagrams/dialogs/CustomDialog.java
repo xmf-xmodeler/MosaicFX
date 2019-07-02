@@ -8,6 +8,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
+import javafx.util.StringConverter;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 public class CustomDialog<R> extends Dialog<R> {
@@ -96,6 +97,39 @@ public class CustomDialog<R> extends Dialog<R> {
 
 		listView.getSelectionModel().setSelectionMode(selectionMode);
 		return listView;
+	}
+
+	public ComboBox<FmmlxObject> initializeComboBox(ObservableList<FmmlxObject> list) {
+		ComboBox<FmmlxObject> comboBox = new ComboBox<>(list);
+
+		comboBox.setCellFactory(param -> new ListCell<FmmlxObject>() {
+			@Override
+			protected void updateItem(FmmlxObject object, boolean empty) {
+				super.updateItem(object, empty);
+
+				if (empty || object == null || object.getName() == null) {
+					setText(null);
+				} else {
+					setText(object.getName());
+				}
+			}
+		});
+		comboBox.setConverter(new StringConverter<FmmlxObject>() {
+			@Override
+			public String toString(FmmlxObject object) {
+				if (object == null) {
+					return null;
+				} else {
+					return object.getName();
+				}
+			}
+
+			@Override
+			public FmmlxObject fromString(String string) {
+				return null;
+			}
+		});
+		return comboBox;
 	}
 
 }
