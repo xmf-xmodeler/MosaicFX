@@ -320,6 +320,7 @@ public class DiagramActions {
 			if (result.isPresent()) {
 				ChangeSlotValueDialogResult slotValueDialogResult = result.get();
 				diagram.changeSlotValue(slotValueDialogResult);
+				diagram.changeSlotValue(slotValueDialogResult);
 			}
 
 			diagram.updateDiagram();
