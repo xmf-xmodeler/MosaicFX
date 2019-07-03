@@ -26,7 +26,7 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult>{
 	private ObservableList<String> ownerList;
 	
 	private Label classLabel;
-	private Label currentOwneLabel;
+	private Label currentOwnerLabel;
 	private Label newOwnerLabel;
 	
 	private TextField classNameTextfield;
@@ -78,16 +78,12 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult>{
 
 
 	private void SetResultAddOperation(ButtonType dlgBtn) {
-		if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-			//TODO
-		}
+		//TODO
 	}
 
 
 	private void setResultAddAttribute(ButtonType dlgBtn) {
-		if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-			//TODO
-		}
+		//TODO
 		
 	}
 
@@ -120,7 +116,7 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult>{
 	private void layoutContent() {
 		ownerList =getAllOwnerList();
 		classLabel = new Label("Class");
-		currentOwneLabel = new Label("Current Owner");
+		currentOwnerLabel = new Label("Current Owner");
 		newOwnerLabel = new Label("New Owner");
 		
 		classNameTextfield = new TextField();
@@ -135,7 +131,7 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult>{
 		
 		grid.add(classLabel, 0, 0);
 		grid.add(classNameTextfield, 1, 0);
-		grid.add(currentOwneLabel, 0, 2);
+		grid.add(currentOwnerLabel, 0, 2);
 		grid.add(currentOwnerTextField, 1, 2);
 		grid.add(newOwnerLabel, 0, 3);
 		grid.add(newOwnerComboBox, 1, 3);

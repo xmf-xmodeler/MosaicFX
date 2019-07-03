@@ -342,7 +342,7 @@ public class DiagramActions {
 		diagram.redraw();
 	}
 
-	public Object addDialog(FmmlxObject object, PropertyType type) {
+	public void addDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
@@ -373,6 +373,75 @@ public class DiagramActions {
 			diagram.updateDiagram();
 			latch.countDown();
 		});
+	}
+
+	public void changeTypeDialog(FmmlxObject object, PropertyType type) {
+		CountDownLatch latch = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			ChangeTypeDialog dlg = new ChangeTypeDialog(object, type);
+			Optional<ChangeTypeDialogResult> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final ChangeTypeDialogResult result = opt.get();
+				System.err.println(result);
+				switch (result.getType()) {
+					case Attribute:
+						diagram.changeTypeAttribute(result);
+						break;
+					case Operation:
+						diagram.changeTypeOperation(result);
+						break;
+					case Association:
+						diagram.changeTypeAssociation(result);
+						break;
+					default: System.err.println("AddDialogResult: No matching content type!");
+				}
+			}
+
+			diagram.updateDiagram();
+			latch.countDown();
+		});
+	}
+
+	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type) {
+		CountDownLatch latch = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			ChangeMultiplicityDialog dlg = new ChangeMultiplicityDialog(diagram, object, type);
+			Optional<ChangeMultiplicityDialogResult> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final ChangeMultiplicityDialogResult result = opt.get();
+				System.err.println(result);
+				diagram.changeMulitiplicityAttribute(result);	
+			}
+
+			diagram.updateDiagram();
+			latch.countDown();
+		});
+	}
+
+	public void changeTargetDialog(FmmlxObject object, PropertyType type) {
+		CountDownLatch latch = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			ChangeTargetDialog dlg = new ChangeTargetDialog(diagram, object, type);
+			Optional<ChangeTargetDialogResult> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final ChangeTargetDialogResult result = opt.get();
+				System.err.println(result);
+				diagram.changeTargetAssociation(result);	
+			}
+
+			diagram.updateDiagram();
+			latch.countDown();
+		});
+	}
+
+	public Object changeBodyDialog(FmmlxObject object, PropertyType operation) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }
