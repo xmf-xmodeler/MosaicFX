@@ -101,10 +101,10 @@ public class TextEditor implements ITextEditor{
     textArea = new InlineCssTextArea(s);
     virtualizedScrollPane = new VirtualizedScrollPane<InlineCssTextArea>(textArea);
     textArea.setEditable(editable);    
-    //font currently not supported
+    //textArea.setFont is not supported, font-family css works, but font needs to be imported first. In our case the ConsoleView tries importing it
     textArea.setStyle("-fx-font-size:"+fontsize+"pt;");
-    
-    
+    textArea.setStyle("-fx-font-family: 'DejaVu Sans Mono'");
+
     textArea.plainTextChanges().filter(ch -> !ch.getInserted().equals(ch.getRemoved())) 
     .subscribe(change -> {
         if (!dirty) {
