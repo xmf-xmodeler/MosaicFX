@@ -11,8 +11,8 @@ public class ChangeNameDialogResult extends DialogResult {
 	private String newName;
 
 	// Result to change class name
-	public ChangeNameDialogResult(PropertyType type, FmmlxObject object, String newName) {
-		this.type = type;
+	public ChangeNameDialogResult(FmmlxObject object, String newName) {
+		this.type = PropertyType.Class;
 		this.object = object;
 		this.newName = newName;
 	}

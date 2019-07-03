@@ -11,8 +11,6 @@ import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import com.sun.glass.ui.Window.Level;
-
 
 public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 

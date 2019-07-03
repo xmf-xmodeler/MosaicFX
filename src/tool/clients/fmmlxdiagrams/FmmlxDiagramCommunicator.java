@@ -76,7 +76,7 @@ public class FmmlxDiagramCommunicator {
 		diagrams.remove(diagram);
 		tabs.remove(this.handler);
 	}
-	
+
 
 	private Value[] createValueArray(Vector<Integer> vector) { // todo: make more generic
 		Value[] result = new Value[vector.size()];
@@ -93,13 +93,14 @@ public class FmmlxDiagramCommunicator {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * This operations is called by xmf, usually after a request from java.
+	 *
 	 * @param o contains the data from the xmf, which is supposed to be a vector, where the first element may identify a specific request which may be waiting for a response
-	 * 
-	 * If the response has an id != -1, it is put in a list of responses, which is checked regularly by the operation which sent the request.
-	 * Otherwise it is dropped, as no operation is waiting for a response.
+	 *          <p>
+	 *          If the response has an id != -1, it is put in a list of responses, which is checked regularly by the operation which sent the request.
+	 *          Otherwise it is dropped, as no operation is waiting for a response.
 	 */
 	@SuppressWarnings("unchecked")
 	public void sendMessageToJava(Object o) {
@@ -130,13 +131,13 @@ public class FmmlxDiagramCommunicator {
 		}
 //		System.err.println("o: " + o + "(" + o.getClass() + ")");
 	}
-	
+
 	/**
 	 * This operation wraps a request, adds an identifier and waits for the response
-	 * 
+	 *
 	 * @param targetHandle an int identifying the handler
-	 * @param message the name of the operation in xmf (FmmlxDiagramClient)
-	 * @param args the arguments of that operation
+	 * @param message      the name of the operation in xmf (FmmlxDiagramClient)
+	 * @param args         the arguments of that operation
 	 * @return
 	 */
 	private Vector<Object> xmfRequest(int targetHandle, String message, Value... args) {
@@ -170,11 +171,11 @@ public class FmmlxDiagramCommunicator {
 			throw new RuntimeException("Did not receive answer in time!");
 		return results.remove(requestID);
 	}
-	
+
 	/////////////////////////////////////////
 	/// Operations asking for information ///
 	/////////////////////////////////////////
-	
+
 	@SuppressWarnings("unchecked")
 	public Vector<FmmlxObject> getAllObjects() {
 		Vector<Object> response = xmfRequest(handler, "getAllObjects", new Value[]{});
@@ -338,7 +339,7 @@ public class FmmlxDiagramCommunicator {
 		FmmlxObject result = null;
 		return result;
 	}
-	
+
 	////////////////////////////////////////////////
 	/// Operations storing graphical info to xmf ///
 	////////////////////////////////////////////////
@@ -368,7 +369,7 @@ public class FmmlxDiagramCommunicator {
 	////////////////////////////////////////////////////
 	/// Operations requesting data to be manipulated ///
 	////////////////////////////////////////////////////
-	
+
 	public void addMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
 		Value[] parentsArray = createValueArray(parents);
 
@@ -425,24 +426,29 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void changeClassName(int id, String newName) {
-		//Value[] message = new Value[]{new Value(id), new Value(newName)};
-		//TODO: Implement in XMF
-		//WorkbenchClient.theClient().send(handler, "changeClassName", message);
-		throw new RuntimeException("Not yet implemented!");
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(id),
+				new Value(newName)};
+		WorkbenchClient.theClient().send(handler, "changeClassName", message);
 	}
 
 	public void changeOperationName(int id, String oldName, String newName) {
-		//Value[] message = new Value[]{new Value(id), new Value(oldName), new Value((newName))};
-		//TODO: Implement in XMF
-		//WorkbenchClient.theClient().send(handler, "changeOperationName", message);
-		throw new RuntimeException("Not yet implemented!");
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(id),
+				new Value(oldName),
+				new Value(newName)};
+		WorkbenchClient.theClient().send(handler, "changeOperationName", message);
 	}
 
 	public void changeAttributeName(int id, String oldName, String newName) {
-		//Value[] message = new Value[]{new Value(id), new Value(oldName), new Value((newName))};
-		//TODO: Implement in XMF
-		//WorkbenchClient.theClient().send(handler, "changeAttributeName", message);
-		throw new RuntimeException("Not yet implemented!");
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(id),
+				new Value(oldName),
+				new Value(newName)};
+		WorkbenchClient.theClient().send(handler, "changeAttributeName", message);
 	}
 
 	public void changeSlotValue(int id, String slotName, String aParsableText) {
