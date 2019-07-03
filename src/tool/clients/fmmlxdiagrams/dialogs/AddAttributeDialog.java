@@ -53,7 +53,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
 		addElementToGrid();
 
-		dialogPane.setContent(grid);
+		dialogPane.setContent(flow);
 
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
@@ -125,48 +125,35 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
 	private boolean validateLevel() {
 		Label errorLabel = getErrorLabel();
+		Integer selectedLevel= getComboBoxIntegerValue(levelComboBox);
+		Integer maxLevel = selectedObject.getLevel();
 
 		if (levelComboBox.getSelectionModel().getSelectedIndex() == -1) {
 			errorLabel.setText("Select Level!");
+			return false;
+		} else if (!InputChecker.getInstance().levelIsValid(selectedLevel, maxLevel)) {
+			errorLabel.setText("Please seledt allowed Level !. maximum allowed level is "+ maxLevel);
 			return false;
 		}
 		errorLabel.setText("");
 		return true;
 	}
 
+
 	private boolean validateName() {
 		Label errorLabel = getErrorLabel();
 		String name = nameTextField.getText();
 
-		if (isNullOrEmpty(name)) {
+		if (!InputChecker.getInstance().validateName(name)) {	
 			errorLabel.setText("Enter valid name!");
 			return false;
-		} else if (nameAlreadyUsed()) {
+		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, selectedObject)) {
 			errorLabel.setText("Name already used");
 			return false;
 		} else {
 			errorLabel.setText("");
 			return true;
 		}
-	}
-
-	private boolean nameAlreadyUsed() {
-
-		Vector<FmmlxDiagram> diagrams = FmmlxDiagramCommunicator.getDiagrams();
-		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
-
-		for (FmmlxObject object : objects) {
-			if (classTextField.getText().equals(object.getName())) {
-				for (FmmlxAttribute attribute : object.getOwnAttributes()) {
-					if (nameTextField.getText().equals(attribute.getName())) return true;
-				}
-				for (FmmlxAttribute attribute : object.getOtherAttributes()) {
-					if (nameTextField.getText().equals(attribute.getName())) return true;
-
-				}
-			}
-		}
-		return false;
 	}
 
 	private void addElementToGrid() {
