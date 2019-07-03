@@ -95,12 +95,12 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 		String name = nameTextField.getText();
 
 		Label errorLabel = getErrorLabel();
-
-		if (isNullOrEmpty(name) && getComboBoxIntegerValue(levelComboBox) == null) {
-			errorLabel.setText("Enter name and set level!");
+		
+		if (!InputChecker.getInstance().validateName(name)) {	
+			errorLabel.setText("Enter valid name!");
 			return false;
-		} else if (isNullOrEmpty(name)) {
-			errorLabel.setText("Enter name!");
+		} else if (!InputChecker.getInstance().classNameIsAvailable(name, diagram)) {
+			errorLabel.setText("Name already used");
 			return false;
 		} else if (getComboBoxIntegerValue(levelComboBox) == null) {
 			errorLabel.setText("Enter level!");
