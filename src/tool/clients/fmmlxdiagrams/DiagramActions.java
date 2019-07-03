@@ -404,7 +404,21 @@ public class DiagramActions {
 	}
 
 	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type) {
-		// TODO Auto-generated method stub
+		CountDownLatch latch = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			ChangeMultiplicityDialog dlg = new ChangeMultiplicityDialog(diagram, object, type);
+			Optional<ChangeMultiplicityDialogResult> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final ChangeMultiplicityDialogResult result = opt.get();
+				System.err.println(result);
+				diagram.changeMulitiplicityAttribute(result);	
+			}
+
+			diagram.updateDiagram();
+			latch.countDown();
+		});
 	}
 
 	public void changeTargetDialog(FmmlxObject object, PropertyType type) {
