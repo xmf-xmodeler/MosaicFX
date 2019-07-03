@@ -20,6 +20,14 @@ public class AddDialogResult extends DialogResult{
 		// TODO Auto-generated method stub
 		return type;
 	}
+
+	public FmmlxDiagram getDiagram() {
+		return diagram;
+	}
+
+	public FmmlxObject getObject() {
+		return object;
+	}
 	
 	
 

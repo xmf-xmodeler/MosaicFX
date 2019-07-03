@@ -634,5 +634,31 @@ public class FmmlxDiagram {
 	public void changeParentAttribute(ChangeParentDialogResult result) {
 		// TODO Auto-generated method stub
 
+
+	}
+
+	public void changeTypeAttribute(ChangeTypeDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void changeTypeOperation(ChangeTypeDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void changeTypeAssociation(ChangeTypeDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void changeTargetAssociation(ChangeTargetDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void changeMulitiplicityAttribute(ChangeMultiplicityDialogResult result) {
+		// TODO Auto-generated method stub
+		
 	}
 }
