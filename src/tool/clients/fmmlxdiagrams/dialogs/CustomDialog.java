@@ -35,7 +35,7 @@ public class CustomDialog<R> extends Dialog<R> {
 		flow.getChildren().add(errorLabel);
 	}
 
-	public GridPane initializeGrid() {
+	public void initializeGrid() {
 		grid = new GridPane();
 		grid.setHgap(3);
 		grid.setVgap(3);
@@ -52,7 +52,6 @@ public class CustomDialog<R> extends Dialog<R> {
 			COLUMN_WIDTH = COLUMN_WIDTH * 2;
 			grid.getColumnConstraints().add(cc);
 		}
-		return grid;
 	}
 
 	public Label getErrorLabel() {
@@ -129,6 +128,7 @@ public class CustomDialog<R> extends Dialog<R> {
 				return null;
 			}
 		});
+		comboBox.setPrefWidth(COLUMN_WIDTH);
 		return comboBox;
 	}
 

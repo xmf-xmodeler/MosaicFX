@@ -21,9 +21,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	private ListView<FmmlxObject> parentListView;
 	private ComboBox<FmmlxObject> ofComboBox;
 	private CheckBox abstractCheckBox;
-	private Label abstractLabel;
 	private ObservableList<FmmlxObject> parentList;
-	private ObservableList<FmmlxObject> ofList;
 	private Vector<FmmlxObject> objects;
 
 	public AddInstanceDialog(final FmmlxDiagram diagram, FmmlxObject object) {
@@ -51,8 +49,9 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
 	private void layoutContent(FmmlxObject selectedObject) {
 
-		ofList = getAllOfList();
+		ObservableList<FmmlxObject> ofList = getAllOfList();
 		nameTextField = new TextField();
+		abstractCheckBox = new CheckBox();
 		parentListView = initializeListView(parentList, SelectionMode.MULTIPLE);
 
 		ofComboBox = initializeComboBox(ofList);
@@ -68,32 +67,27 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 			createAndSetParentList();
 			ofComboBox.setDisable(true);
 		}
-
-		abstractCheckBox = new CheckBox();
-		abstractLabel = new Label("Abstract");
-
-
 		ofComboBox.setPrefWidth(COLUMN_WIDTH);
 
 		grid.add(new Label("Name"), 0, 0);
 		grid.add(nameTextField, 1, 0);
 		grid.add(new Label("Of"), 0, 1);
 		grid.add(ofComboBox, 1, 1);
-		grid.add(abstractLabel, 0, 3);
+		grid.add(new Label("Abstract"), 0, 3);
 		grid.add(abstractCheckBox, 1, 3);
 		grid.add(new Label("Parent"), 0, 4);
 		grid.add(parentListView, 1, 4);
 	}
 
 	private void createAndSetParentList() {
-		parentList = diagram.getAllPossibleParents(selectedObject.getLevel());
-		parentList.remove(selectedObject);
-		parentListView.setItems(parentList);
+		if (selectedObject != null) {
+			parentList = diagram.getAllPossibleParents(selectedObject.getLevel() - 1);
+			parentListView.setItems(parentList);
+		}
 	}
 
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
-			int level = 0;
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				return new AddInstanceDialogResult(nameTextField.getText(), selectedObject.getLevel() - 1,
 						parentListView.getSelectionModel().getSelectedItems(), selectedObject.getId(),
@@ -113,8 +107,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 			}
 		}
 
-		ObservableList<FmmlxObject> result = FXCollections.observableArrayList(resultOf);
-		return result;
+		return FXCollections.observableArrayList(resultOf);
 	}
 
 
@@ -125,10 +118,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		if (!ofSelected()) {
 			return false;
 		}
-		if (!validateCircularDependecies()) {
-			return false;
-		}
-		return true;
+		return validateCircularDependecies();
 	}
 
 	private boolean validateName() {
