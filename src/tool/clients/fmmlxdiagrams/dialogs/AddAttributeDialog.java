@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
 
@@ -24,7 +25,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 	private Label multiplicityLabel;
 
 	private TextField nameTextField;
-	private ComboBox<String> classCombobox;
+	private TextField classTextField;
 	private ComboBox<Integer> levelComboBox;
 	private ComboBox<String> typeComboBox;
 
@@ -46,15 +47,11 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
 		DialogPane dialogPane = getDialogPane();
 		this.objects = diagram.getObjects();
+		this.selectedObject = selectedObject;	
 
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
 		addElementToGrid();
-
-		if (selectedObject != null) {
-			this.selectedObject = selectedObject;
-			setSelectedObject();
-		}
 
 		dialogPane.setContent(grid);
 
@@ -69,7 +66,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				int classId = 0;
 				for (FmmlxObject object : objects) {
-					if (classCombobox.getSelectionModel().getSelectedItem().equals(object.getName())) {
+					if (classTextField.getText().equals(object.getName())) {
 						classId = object.getId();
 					}
 				}
@@ -88,10 +85,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
 	}
 
-	private void setSelectedObject() {
-		classCombobox.getSelectionModel().select(selectedObject.getName());
-	}
-
 	private ObservableList<String> getAllClassList() {
 		ArrayList<String> resultStrings = new ArrayList<String>();
 
@@ -106,9 +99,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
 
 	private boolean validateUserInput() {
-		if (!classChosen()) {
-			return false;
-		}
 		if (!validateName()) {
 			return false;
 		}
@@ -118,7 +108,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		if (!validateType()) {
 			return false;
 		}
-
 		return true;
 	}
 
@@ -134,21 +123,10 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		return true;
 	}
 
-	private boolean classChosen() {
-		Label errorLabel = getErrorLabel();
-
-		if (classCombobox.getSelectionModel().getSelectedIndex() == -1) {
-			errorLabel.setText("Select Class!");
-			return false;
-		}
-		errorLabel.setText("");
-		return true;
-	}
-
 	private boolean validateLevel() {
 		Label errorLabel = getErrorLabel();
 
-		if (classCombobox.getSelectionModel().getSelectedIndex() == -1) {
+		if (levelComboBox.getSelectionModel().getSelectedIndex() == -1) {
 			errorLabel.setText("Select Level!");
 			return false;
 		}
@@ -178,7 +156,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		Vector<FmmlxObject> objects = diagrams.get(0).getObjects();
 
 		for (FmmlxObject object : objects) {
-			if (classCombobox.getSelectionModel().getSelectedItem().equals(object.getName())) {
+			if (classTextField.getText().equals(object.getName())) {
 				for (FmmlxAttribute attribute : object.getOwnAttributes()) {
 					if (nameTextField.getText().equals(attribute.getName())) return true;
 				}
@@ -204,8 +182,12 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		ObservableList<String> typeList = FXCollections.observableArrayList(typesArray);
 
 		nameTextField = new TextField();
-		classCombobox = new ComboBox<>(classList);
+		classTextField = new TextField();
+		classTextField.setText(selectedObject.getName());
+		classTextField.setDisable(true);
 		levelComboBox = new ComboBox<>(LevelList.levelList);
+		levelComboBox.setConverter(new IntegerStringConverter());
+		levelComboBox.setEditable(true);
 		typeComboBox = new ComboBox<>(typeList);
 		typeComboBox.setEditable(true);
 		multiplicityButton = new Button();
@@ -216,7 +198,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 			/*if successful multiplicity = result;
 			 *multiplicityButton.setText(multiplicity.toString());*/
 		});
-		classCombobox.setPrefWidth(COLUMN_WIDTH);
+		classTextField.setPrefWidth(COLUMN_WIDTH);
 		levelComboBox.setPrefWidth(COLUMN_WIDTH);
 		typeComboBox.setPrefWidth(COLUMN_WIDTH);
 		multiplicityButton.setPrefWidth(COLUMN_WIDTH);
@@ -224,7 +206,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		grid.add(nameLabel, 0, 1);
 		grid.add(nameTextField, 1, 1);
 		grid.add(classLabel, 0, 0);
-		grid.add(classCombobox, 1, 0);
+		grid.add(classTextField, 1, 0);
 		grid.add(levelLabel, 0, 2);
 		grid.add(levelComboBox, 1, 2);
 		grid.add(typeLabel, 0, 3);
