@@ -425,24 +425,29 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void changeClassName(int id, String newName) {
-		//Value[] message = new Value[]{new Value(id), new Value(newName)};
-		//TODO: Implement in XMF
-		//WorkbenchClient.theClient().send(handler, "changeClassName", message);
-		throw new RuntimeException("Not yet implemented!");
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(id),
+				new Value(newName)};
+		WorkbenchClient.theClient().send(handler, "changeClassName", message);
 	}
 
 	public void changeOperationName(int id, String oldName, String newName) {
-		//Value[] message = new Value[]{new Value(id), new Value(oldName), new Value((newName))};
-		//TODO: Implement in XMF
-		//WorkbenchClient.theClient().send(handler, "changeOperationName", message);
-		throw new RuntimeException("Not yet implemented!");
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(id),
+				new Value(oldName),
+				new Value(newName)};
+		WorkbenchClient.theClient().send(handler, "changeOperationName", message);
 	}
 
 	public void changeAttributeName(int id, String oldName, String newName) {
-		//Value[] message = new Value[]{new Value(id), new Value(oldName), new Value((newName))};
-		//TODO: Implement in XMF
-		//WorkbenchClient.theClient().send(handler, "changeAttributeName", message);
-		throw new RuntimeException("Not yet implemented!");
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(id),
+				new Value(oldName),
+				new Value(newName)};
+		WorkbenchClient.theClient().send(handler, "changeAttributeName", message);
 	}
 
 	public void changeSlotValue(int id, String slotName, String aParsableText) {
