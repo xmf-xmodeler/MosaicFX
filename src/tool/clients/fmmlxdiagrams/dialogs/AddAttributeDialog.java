@@ -8,7 +8,6 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
 
-import tool.clients.fmmlxdiagrams.Multiplicity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,24 +16,20 @@ import java.util.Vector;
 
 public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
+	ObservableList<String> classList;
+	List<String> typesArray;
 	private Label nameLabel;
 	private Label classLabel;
 	private Label levelLabel;
 	private Label typeLabel;
 	private Label multiplicityLabel;
-
 	private TextField nameTextField;
 	private ComboBox<String> classCombobox;
 	private ComboBox<Integer> levelComboBox;
 	private ComboBox<String> typeComboBox;
-
 	private Vector<FmmlxObject> objects;
 	private FmmlxObject selectedObject;
-
 	private Button multiplicityButton;
-	ObservableList<String> classList;
-	List<String> typesArray;
-
 	private Multiplicity multiplicity = Multiplicity.OPTIONAL;
 
 	public AddAttributeDialog(final FmmlxDiagram diagram) {
@@ -115,11 +110,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		if (!validateLevel()) {
 			return false;
 		}
-		if (!validateType()) {
-			return false;
-		}
-
-		return true;
+		return validateType();
 	}
 
 
@@ -210,7 +201,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		typeComboBox.setEditable(true);
 		multiplicityButton = new Button();
 		//multiplicityButton.setText("Add / Edit Multiplicity");
-		multiplicityButton.setText(multiplicity.getClass().getSimpleName().toString());
+		multiplicityButton.setText(multiplicity.getClass().getSimpleName());
 		multiplicityButton.setOnAction(e -> {
 			new MultiplicityDialog(multiplicity).showAndWait();
 			/*if successful multiplicity = result;

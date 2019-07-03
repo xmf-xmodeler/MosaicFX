@@ -52,14 +52,16 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 
 	private void setResult(PropertyType type) {
 		setResultConverter(dlgBtn -> {
-			switch (type) {
-				case Class:
-					return new ChangeNameDialogResult(object, newClassNameTextField.getText());
-				case Attribute:
-				case Operation:
-					return new ChangeNameDialogResult(type, object, comboBox.getSelectionModel().getSelectedItem(), objectNameTextfield.getText());
-				default:
-					System.err.println("ChangeNameDialog: No matching content type!");
+			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+				switch (type) {
+					case Class:
+						return new ChangeNameDialogResult(object, newClassNameTextField.getText());
+					case Attribute:
+					case Operation:
+						return new ChangeNameDialogResult(type, object, comboBox.getSelectionModel().getSelectedItem(), objectNameTextfield.getText());
+					default:
+						System.err.println("ChangeNameDialog: No matching content type!");
+				}
 			}
 			return null;
 		});
