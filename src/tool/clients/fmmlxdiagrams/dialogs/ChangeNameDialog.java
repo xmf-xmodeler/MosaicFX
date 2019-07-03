@@ -20,7 +20,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	private ComboBox<String> comboBox;
 	private TextField objectNameTextfield;
 	private TextField newClassNameTextField = new TextField();
-	
+
 	private Vector<FmmlxAttribute> attributes;
 	private Vector<FmmlxOperation> operations;
 
@@ -52,15 +52,16 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 
 	private void setResult(PropertyType type) {
 		setResultConverter(dlgBtn -> {
-			switch (type) {
-			case Class:
-				return new ChangeNameDialogResult(type, object, classNameTextfield.getText());
-			case Attribute:
-				return new ChangeNameDialogResult(type, object, comboBox.getSelectionModel().getSelectedItem(), objectNameTextfield.getText());
-			case Operation:
-				return new ChangeNameDialogResult(type, object, comboBox.getSelectionModel().getSelectedItem(), objectNameTextfield.getText());
-			default:
-			System.err.println("ChangeNameDialog: No matching content type!");
+			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+				switch (type) {
+					case Class:
+						return new ChangeNameDialogResult(object, newClassNameTextField.getText());
+					case Attribute:
+					case Operation:
+						return new ChangeNameDialogResult(type, object, comboBox.getSelectionModel().getSelectedItem(), objectNameTextfield.getText());
+					default:
+						System.err.println("ChangeNameDialog: No matching content type!");
+				}
 			}
 			return null;
 		});
@@ -110,32 +111,32 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	private void changeAssociationName() {
 		classNameTextfield.setText(object.getName());
 		classNameTextfield.setDisable(true);
-		
+
 		Label selectAssociationNameLabel = new Label("Select Association");
-		Label newAssociationNameLabel = new Label ("New Name");
-		
+		Label newAssociationNameLabel = new Label("New Name");
+
 		ComboBox<String> selectAssociationBox = new ComboBox<String>();
 		TextField newAssociationNameTextField = new TextField();
-		
+
 		selectAssociationBox.setPrefWidth(COLUMN_WIDTH);
-		
+
 		grid.add(selectAssociationNameLabel, 0, 1);
 		grid.add(selectAssociationBox, 1, 1);
 		grid.add(newAssociationNameLabel, 0, 2);
 		grid.add(newAssociationNameTextField, 1, 2);
-		
+
 	}
 
 	private void changeClassName() {
 		classNameTextfield.setText(object.getName());
 		classNameTextfield.setDisable(true);
-		
+
 		Label newClassNameLabel = new Label("New Name");
 		newClassNameTextField = new TextField();
-		
+
 		grid.add(newClassNameLabel, 0, 1);
 		grid.add(newClassNameTextField, 1, 1);
-		
+
 	}
 
 	private void changeAttributeName() {
@@ -189,24 +190,26 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 				return validateAttributeName();
 			case Operation:
 				return validateOperationName();
-			default:System.err.println("AddDialog: No matching content type!");	
-			break;
+			default:
+				System.err.println("AddDialog: No matching content type!");
+				break;
 		}
 		return true;
 	}
 
 	private boolean validateClassName() {
 		String newName = newClassNameTextField.getText();
-		
-		if (isNullOrEmpty(newName) ) {
+
+		if (isNullOrEmpty(newName)) {
 			errorLabel.setText("Enter new name!");
 			return false;
-		} 
-		
-		for (FmmlxObject object : diagram.getObjects()) { 
-			if (object.getName().equals(newName)) { 
-				showNameUsedError(); return false; 
-			} 
+		}
+
+		for (FmmlxObject object : diagram.getObjects()) {
+			if (object.getName().equals(newName)) {
+				showNameUsedError();
+				return false;
+			}
 		}
 		return true;
 	}

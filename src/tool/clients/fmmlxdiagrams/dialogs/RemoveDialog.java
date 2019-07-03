@@ -12,8 +12,6 @@ import tool.clients.fmmlxdiagrams.dialogs.results.RemoveDialogResult;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import com.ibm.icu.text.SelectFormat;
-
 public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 
 	private DialogPane dialogPane;
