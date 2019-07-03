@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 public class InputChecker {
@@ -50,6 +51,13 @@ public class InputChecker {
 		for (FmmlxAttribute attribute : object.getOtherAttributes()) {
 			if (name.equals(attribute.getName())) return false;
 		}	
+		return true;
+	}
+
+	public boolean classNameIsAvailable(String name, FmmlxDiagram diagram) {
+		for (FmmlxObject object : diagram.getObjects()) {
+			if(name.equals(object.getName())) return false;
+		}
 		return true;
 	}
 
