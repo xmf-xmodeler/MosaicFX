@@ -9,7 +9,6 @@ import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
 
 import java.util.Optional;
-import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
 public class DiagramActions {
@@ -22,7 +21,7 @@ public class DiagramActions {
 
 	DiagramActions(FmmlxDiagram diagram) {
 		this.diagram = diagram;
-		showOperations = false;
+		showOperations = true;
 	}
 
 	public void redrawDiagram() {
@@ -33,7 +32,7 @@ public class DiagramActions {
 		CountDownLatch l = new CountDownLatch(2);
 
 		Platform.runLater(() -> {
-			CreateMetaClassDialog dlg = new CreateMetaClassDialog();
+			CreateMetaClassDialog dlg = new CreateMetaClassDialog(diagram);
 			dlg.setTitle("Add metaclass");
 			Optional<MetaClassDialogResult> result = dlg.showAndWait();
 
@@ -51,8 +50,7 @@ public class DiagramActions {
 
 						if (x > 0 && y > 0) {
 							System.err.println("MCD: " + mcdResult.isAbstract());
-							diagram.addMetaClass(mcdResult.getName(), mcdResult.getLevel(),
-									new Vector<>(mcdResult.getParent()), mcdResult.isAbstract(), x, y);
+							diagram.addMetaClass(mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentIds(), mcdResult.isAbstract(), x, y);
 
 							canvas.setCursor(Cursor.DEFAULT);
 							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
@@ -68,14 +66,14 @@ public class DiagramActions {
 	}
 
 	public void addInstanceDialog() {
-		addInstanceDialog(0);
+		addInstanceDialog(null);
 	}
 
-	public void addInstanceDialog(int ofId) {
+	public void addInstanceDialog(FmmlxObject object) {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			AddInstanceDialog dialog = new AddInstanceDialog(diagram, ofId);
+			AddInstanceDialog dialog = new AddInstanceDialog(diagram, object);
 			dialog.setTitle("Add instance");
 			Optional<AddInstanceDialogResult> result = dialog.showAndWait();
 
@@ -93,7 +91,7 @@ public class DiagramActions {
 
 						if (x > 0 && y > 0) {
 							diagram.addNewInstance(aidResult.getOf(), aidResult.getName(), aidResult.getLevel(),
-									new Vector<String>(aidResult.getParents()), false, x, y);
+									aidResult.getParentId(), false, x, y);
 
 							canvas.setCursor(Cursor.DEFAULT);
 							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
@@ -195,7 +193,8 @@ public class DiagramActions {
 					case Attribute:
 						diagram.changeAttributeName(result);
 						break;
-					default: System.err.println("ChangeNameDialogResult: No matching content type!");
+					default:
+						System.err.println("ChangeNameDialogResult: No matching content type!");
 				}
 			}
 
@@ -231,8 +230,9 @@ public class DiagramActions {
 					case Association:
 						diagram.changeAssociationLevel(result);
 						break;
-					default: System.err.println("ChangeLevelDialogResult: No matching content type!");
-						
+					default:
+						System.err.println("ChangeLevelDialogResult: No matching content type!");
+
 				}
 			}
 
@@ -261,7 +261,7 @@ public class DiagramActions {
 
 
 	}
-	
+
 	public void changeOwnerDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch l = new CountDownLatch(1);
 
@@ -279,8 +279,9 @@ public class DiagramActions {
 					case Operation:
 						diagram.changeOperationOwner(result);
 						break;
-					default: System.err.println("ChangeOwnerDialogResult: No matching content type!");
-					break;
+					default:
+						System.err.println("ChangeOwnerDialogResult: No matching content type!");
+						break;
 				}
 			}
 
@@ -364,7 +365,8 @@ public class DiagramActions {
 					case Association:
 						diagram.addAssociation(result);
 						break;
-					default: System.err.println("AddDialogResult: No matching content type!");
+					default:
+						System.err.println("AddDialogResult: No matching content type!");
 				}
 			}
 
@@ -443,6 +445,4 @@ public class DiagramActions {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	
 }

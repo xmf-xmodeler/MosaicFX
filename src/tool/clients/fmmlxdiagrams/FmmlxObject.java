@@ -47,11 +47,11 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 	final int EXTRA_Y_PER_LINE = 3;
 	private Vector<NodeElement> nodeElements = new Vector<>();
 
-	Vector<FmmlxSlot> slots;
-	Vector<FmmlxOperationValue> operationValues;
+	Vector<FmmlxSlot> slots = new Vector<>();
+	Vector<FmmlxOperationValue> operationValues = new Vector<>();
 
-	private Vector<FmmlxAttribute> ownAttributes;
-	private Vector<FmmlxAttribute> otherAttributes;
+	private Vector<FmmlxAttribute> ownAttributes = new Vector<>();
+	private Vector<FmmlxAttribute> otherAttributes = new Vector<>();
 	private Vector<FmmlxOperation> ownOperations = new Vector<>();
 	private Vector<FmmlxOperation> otherOperations = new Vector<>();
 	private FmmlxDiagram diagram;
@@ -367,7 +367,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		double neededWidth = diagram.calculateTextWidth(name);
 
 		if (of >= 0) {
-			neededWidth = Math.max(neededWidth, diagram.calculateTextWidth("^" + diagram.getObjectById(of).name + "^"));
+			neededWidth = Math.max(neededWidth, diagram.calculateTextWidth(getLevel() + "^" + diagram.getObjectById(of).name + "^") + 16);
 		}
 
 		//determine maximal width of attributes
@@ -394,7 +394,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 
 			}
 		}
-		if (showOperations) {
+		if (showOperationValues) {
 			for (FmmlxOperationValue opValue : operationValues) {
 				neededWidth = Math.max(diagram.calculateTextWidth(opValue.getName() + " = " + opValue.getValue()), neededWidth);
 			}

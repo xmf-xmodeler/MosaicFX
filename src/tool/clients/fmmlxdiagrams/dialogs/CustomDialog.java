@@ -1,14 +1,15 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
+import javafx.util.StringConverter;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 public class CustomDialog<R> extends Dialog<R> {
 
@@ -34,7 +35,7 @@ public class CustomDialog<R> extends Dialog<R> {
 		flow.getChildren().add(errorLabel);
 	}
 
-	public GridPane initializeGrid() {
+	public void initializeGrid() {
 		grid = new GridPane();
 		grid.setHgap(3);
 		grid.setVgap(3);
@@ -51,7 +52,6 @@ public class CustomDialog<R> extends Dialog<R> {
 			COLUMN_WIDTH = COLUMN_WIDTH * 2;
 			grid.getColumnConstraints().add(cc);
 		}
-		return grid;
 	}
 
 	public Label getErrorLabel() {
@@ -61,17 +61,75 @@ public class CustomDialog<R> extends Dialog<R> {
 	public boolean isNullOrEmpty(String string) {
 		return string == null || string.length() == 0;
 	}
-	
+
 	protected Integer getComboBoxIntegerValue(ComboBox<Integer> box) {
 		Integer result = null;
-		try{
+		try {
 			result = Integer.parseInt(box.getEditor().getText());
-		} catch (NumberFormatException nfe) {}
+		} catch (NumberFormatException nfe) {
+		}
 		return result;
 	}
-	
+
 	protected String getComboBoxStringValue(ComboBox<String> box) {
 		return box.getEditor().getText();
+	}
+
+	public ListView<FmmlxObject> initializeListView(ObservableList<FmmlxObject> list, SelectionMode selectionMode) {
+
+		ListView<FmmlxObject> listView = new ListView<>(list);
+		listView.setPrefHeight(75);
+		listView.setPrefWidth(COLUMN_WIDTH);
+
+		listView.setCellFactory(param -> new ListCell<FmmlxObject>() {
+			@Override
+			protected void updateItem(FmmlxObject object, boolean empty) {
+				super.updateItem(object, empty);
+
+				if (empty || object == null || object.getName() == null) {
+					setText(null);
+				} else {
+					setText(object.getName());
+				}
+			}
+		});
+
+		listView.getSelectionModel().setSelectionMode(selectionMode);
+		return listView;
+	}
+
+	public ComboBox<FmmlxObject> initializeComboBox(ObservableList<FmmlxObject> list) {
+		ComboBox<FmmlxObject> comboBox = new ComboBox<>(list);
+
+		comboBox.setCellFactory(param -> new ListCell<FmmlxObject>() {
+			@Override
+			protected void updateItem(FmmlxObject object, boolean empty) {
+				super.updateItem(object, empty);
+
+				if (empty || object == null || object.getName() == null) {
+					setText(null);
+				} else {
+					setText(object.getName());
+				}
+			}
+		});
+		comboBox.setConverter(new StringConverter<FmmlxObject>() {
+			@Override
+			public String toString(FmmlxObject object) {
+				if (object == null) {
+					return null;
+				} else {
+					return object.getName();
+				}
+			}
+
+			@Override
+			public FmmlxObject fromString(String string) {
+				return null;
+			}
+		});
+		comboBox.setPrefWidth(COLUMN_WIDTH);
+		return comboBox;
 	}
 
 }

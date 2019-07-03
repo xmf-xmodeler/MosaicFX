@@ -15,26 +15,26 @@ import java.util.Vector;
 public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
 	private FmmlxDiagram diagram;
+	private FmmlxObject selectedObject;
 
 	private TextField nameTextField;
-	private ListView<String> parentListView;
-	private ComboBox<String> ofComboBox;
+	private ListView<FmmlxObject> parentListView;
+	private ComboBox<FmmlxObject> ofComboBox;
 	private CheckBox abstractCheckBox;
-	private Label abstractLabel;
-	private ObservableList<String> parentList;
-	private ObservableList<String> ofList;
+	private ObservableList<FmmlxObject> parentList;
 	private Vector<FmmlxObject> objects;
 
-	public AddInstanceDialog(final FmmlxDiagram diagram, int ofId) {
+	public AddInstanceDialog(final FmmlxDiagram diagram, FmmlxObject object) {
 		super();
 
 		DialogPane dialog = getDialogPane();
-		this.diagram=diagram;
-		this.objects=diagram.getObjects();
+		this.diagram = diagram;
+		this.selectedObject = object;
+		this.objects = diagram.getObjects();
 
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-		layoutContent(ofId);
+		layoutContent(object);
 		dialog.setContent(flow);
 
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
@@ -44,65 +44,70 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 			}
 		});
 
-		setResultConverter(dlgBtn -> {
-			int level = 0;
-			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				int idSelectedItem = 0;
-				for (FmmlxObject object : objects) {
-					if (object.getName().equals(ofComboBox.getSelectionModel().getSelectedItem())) {
-						idSelectedItem = object.getId();
-						level = object.getLevel() - 1;
-					}
-				}
-				
-				return new AddInstanceDialogResult(nameTextField.getText(), level,
-						parentListView.getSelectionModel().getSelectedItems(), idSelectedItem,
-						abstractCheckBox.isSelected());
-			}
-			return null;
-		});
+		setResult();
 	}
 
-	private void layoutContent(Integer ofId) {
-		
-		ofList = getAllOfList();
-		parentList = diagram.getAllPossibleParentList();
+	private void layoutContent(FmmlxObject selectedObject) {
+
+		ObservableList<FmmlxObject> ofList = getAllOfList();
 		nameTextField = new TextField();
-		ofComboBox = new ComboBox<>(ofList);
-
-		if (ofId > 0) {
-			setOf(ofId);
-		}
-
 		abstractCheckBox = new CheckBox();
-		abstractLabel = new Label("Abstract");
+		parentListView = initializeListView(parentList, SelectionMode.MULTIPLE);
 
-		initializeListView();
+		ofComboBox = initializeComboBox(ofList);
+		ofComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue != null) {
+				this.selectedObject = newValue;
+				createAndSetParentList();
+			}
+		});
 
+		if (selectedObject != null) {
+			setOf(selectedObject);
+			createAndSetParentList();
+			ofComboBox.setDisable(true);
+		}
 		ofComboBox.setPrefWidth(COLUMN_WIDTH);
 
 		grid.add(new Label("Name"), 0, 0);
 		grid.add(nameTextField, 1, 0);
 		grid.add(new Label("Of"), 0, 1);
 		grid.add(ofComboBox, 1, 1);
-		grid.add(abstractLabel, 0, 3);
+		grid.add(new Label("Abstract"), 0, 3);
 		grid.add(abstractCheckBox, 1, 3);
 		grid.add(new Label("Parent"), 0, 4);
 		grid.add(parentListView, 1, 4);
 	}
 
-	private ObservableList<String> getAllOfList() {
-		ArrayList<String> resultStrings = new ArrayList<String>();
+	private void createAndSetParentList() {
+		if (selectedObject != null) {
+			parentList = diagram.getAllPossibleParents(selectedObject.getLevel() - 1);
+			parentListView.setItems(parentList);
+		}
+	}
+
+	private void setResult() {
+		setResultConverter(dlgBtn -> {
+			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
+				return new AddInstanceDialogResult(nameTextField.getText(), selectedObject.getLevel() - 1,
+						parentListView.getSelectionModel().getSelectedItems(), selectedObject.getId(),
+						abstractCheckBox.isSelected());
+			}
+			return null;
+		});
+	}
+
+	private ObservableList<FmmlxObject> getAllOfList() {
+		ArrayList<FmmlxObject> resultOf = new ArrayList<>();
 		if (!objects.isEmpty()) {
-			for (FmmlxObject object :objects) {
-				if (object.getLevel()!=0) {
-					resultStrings.add(object.getName());
+			for (FmmlxObject object : objects) {
+				if (object.getLevel() != 0) {
+					resultOf.add(object);
 				}
 			}
 		}
 
-		ObservableList<String> result = FXCollections.observableArrayList(resultStrings);
-		return result;
+		return FXCollections.observableArrayList(resultOf);
 	}
 
 
@@ -113,10 +118,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		if (!ofSelected()) {
 			return false;
 		}
-		if (!validateCircularDependecies()) {
-			return false;
-		}
-		return true;
+		return validateCircularDependecies();
 	}
 
 	private boolean validateName() {
@@ -137,8 +139,8 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
 	private boolean nameAlreadyUsed() {
 		if (!objects.isEmpty()) {
-			for (FmmlxObject object :objects) {
-				if(nameTextField.getText().equals(object.getName())) {
+			for (FmmlxObject object : objects) {
+				if (nameTextField.getText().equals(object.getName())) {
 					return true;
 				}
 			}
@@ -158,11 +160,10 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	}
 
 
-	private void setOf(int ofId) {
-		
-		FmmlxObject ofObject = diagram.getObjectById(ofId);
-		ofComboBox.setValue(ofObject.getName());
-		
+	private void setOf(FmmlxObject selectedObject) {
+
+		ofComboBox.setValue(selectedObject);
+
 		ofComboBox.setEditable(false);
 	}
 
@@ -170,12 +171,5 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	private boolean validateCircularDependecies() {
 		// TODO Auto-generated method stub
 		return true;
-	}
-
-	private void initializeListView() {
-		parentListView = new ListView<>(parentList);
-		parentListView.setPrefHeight(75);
-		parentListView.setPrefWidth(COLUMN_WIDTH);
-		parentListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 	}
 }

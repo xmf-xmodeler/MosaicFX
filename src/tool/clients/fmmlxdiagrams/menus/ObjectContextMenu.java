@@ -18,7 +18,7 @@ public class ObjectContextMenu extends ContextMenu {
 		setAutoHide(true);
 
 		MenuItem addInstanceItem = new MenuItem("Add instance");
-		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object.getId()));
+		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object));
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Class));
 		MenuItem changeNameItem = new MenuItem("Change name");
