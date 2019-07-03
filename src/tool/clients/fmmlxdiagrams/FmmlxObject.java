@@ -367,7 +367,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		double neededWidth = diagram.calculateTextWidth(name);
 
 		if (of >= 0) {
-			neededWidth = Math.max(neededWidth, diagram.calculateTextWidth("^" + diagram.getObjectById(of).name + "^"));
+			neededWidth = Math.max(neededWidth, diagram.calculateTextWidth(getLevel() + "^" + diagram.getObjectById(of).name + "^") + 16);
 		}
 
 		//determine maximal width of attributes
@@ -394,7 +394,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 
 			}
 		}
-		if (showOperations) {
+		if (showOperationValues) {
 			for (FmmlxOperationValue opValue : operationValues) {
 				neededWidth = Math.max(diagram.calculateTextWidth(opValue.getName() + " = " + opValue.getValue()), neededWidth);
 			}

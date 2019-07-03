@@ -4,11 +4,6 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseEvent;
 import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
@@ -26,7 +21,7 @@ public class DiagramActions {
 
 	DiagramActions(FmmlxDiagram diagram) {
 		this.diagram = diagram;
-		showOperations = false;
+		showOperations = true;
 	}
 
 	public void redrawDiagram() {
