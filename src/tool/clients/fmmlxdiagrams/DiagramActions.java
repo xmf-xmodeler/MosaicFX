@@ -402,7 +402,6 @@ public class DiagramActions {
 			diagram.updateDiagram();
 			latch.countDown();
 		});
-		
 	}
 
 	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type) {

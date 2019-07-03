@@ -634,6 +634,7 @@ public class FmmlxDiagram {
 	public void changeParentAttribute(ChangeParentDialogResult result) {
 		// TODO Auto-generated method stub
 
+
 	}
 
 	public void changeTypeAttribute(ChangeTypeDialogResult result) {
