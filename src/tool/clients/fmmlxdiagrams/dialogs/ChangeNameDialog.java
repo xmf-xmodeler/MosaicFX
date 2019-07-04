@@ -16,10 +16,24 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	private FmmlxProperty selectedProperty;
 	private DialogPane dialog;
 
+	//For All
+	private Label classLabel;
 	private TextField classNameTextfield;
-	private ComboBox<String> comboBox;
-	private TextField objectNameTextfield;
-	private TextField newClassNameTextField = new TextField();
+	private Label newNameLabel;
+	private TextField newNameTextField = new TextField();
+	
+	//For Attribute
+	private Label selectAttributeLabel;
+	private ComboBox<String> selectAttributeComboBox;
+	
+	//For Operation
+	private Label selectOperationLabel;
+	private ComboBox<String> selectOperationComboBox;
+	
+	//For Association
+	private Label selectAssociationNameLabel;
+	private ComboBox<String> selectAssociationBox;
+	
 
 	private Vector<FmmlxAttribute> attributes;
 	private Vector<FmmlxOperation> operations;
@@ -55,10 +69,11 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
 				switch (type) {
 					case Class:
-						return new ChangeNameDialogResult(object, newClassNameTextField.getText());
+						return new ChangeNameDialogResult(object, newNameTextField.getText());
 					case Attribute:
+						return new ChangeNameDialogResult(type, object, selectAttributeComboBox.getSelectionModel().getSelectedItem(), newNameTextField.getText());
 					case Operation:
-						return new ChangeNameDialogResult(type, object, comboBox.getSelectionModel().getSelectedItem(), objectNameTextfield.getText());
+						return new ChangeNameDialogResult(type, object, selectOperationComboBox.getSelectionModel().getSelectedItem(), newNameTextField.getText());
 					default:
 						System.err.println("ChangeNameDialog: No matching content type!");
 				}
@@ -77,7 +92,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	}
 
 	private void layoutContent(PropertyType type) {
-		Label classLabel = new Label("Class");
+		classLabel = new Label("Class");
 		classNameTextfield = new TextField();
 		grid.add(classLabel, 0, 0);
 		grid.add(classNameTextfield, 1, 0);
@@ -105,25 +120,28 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	}
 
 	private void setSelectedProperty() {
-		comboBox.getSelectionModel().select(selectedProperty.getName());
+		if (type==PropertyType.Attribute) {
+			selectAttributeComboBox.getSelectionModel().select(selectedProperty.getName());
+		} else if (type==PropertyType.Operation) {
+			selectOperationComboBox.getSelectionModel().select(selectedProperty.getName());
+		} else if (type==PropertyType.Association) {
+			selectAssociationBox.getSelectionModel().select(selectedProperty.getName());
+		}
 	}
 
 	private void changeAssociationName() {
 		classNameTextfield.setText(object.getName());
 		classNameTextfield.setDisable(true);
 
-		Label selectAssociationNameLabel = new Label("Select Association");
-		Label newAssociationNameLabel = new Label("New Name");
-
-		ComboBox<String> selectAssociationBox = new ComboBox<String>();
-		TextField newAssociationNameTextField = new TextField();
+		selectAssociationNameLabel = new Label("Select Association");
+		selectAssociationBox = new ComboBox<String>();
 
 		selectAssociationBox.setPrefWidth(COLUMN_WIDTH);
 
 		grid.add(selectAssociationNameLabel, 0, 1);
 		grid.add(selectAssociationBox, 1, 1);
-		grid.add(newAssociationNameLabel, 0, 2);
-		grid.add(newAssociationNameTextField, 1, 2);
+		grid.add(newNameTextField, 0, 2);
+		grid.add(newNameTextField, 1, 2);
 
 	}
 
@@ -132,10 +150,10 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		classNameTextfield.setDisable(true);
 
 		Label newClassNameLabel = new Label("New Name");
-		newClassNameTextField = new TextField();
+		newNameTextField = new TextField();
 
 		grid.add(newClassNameLabel, 0, 1);
-		grid.add(newClassNameTextField, 1, 1);
+		grid.add(newNameTextField, 1, 1);
 
 	}
 
@@ -159,23 +177,19 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	}
 
 	private void layoutComboBox(ArrayList<String> list) {
-		classNameTextfield.setText(object.getName());
-		classNameTextfield.setDisable(true);
-		Label objectLabel = new Label("Name");
-		comboBox = new ComboBox<>();
-		comboBox.setPrefWidth(COLUMN_WIDTH);
-		comboBox.getItems().setAll(list);
-		Label nameLabel = new Label("New name");
-		objectNameTextfield = new TextField();
-
-		comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			objectNameTextfield.setText(newValue);
-		});
-
-		grid.add(objectLabel, 0, 1);
-		grid.add(comboBox, 1, 1);
-		grid.add(nameLabel, 0, 2);
-		grid.add(objectNameTextfield, 1, 2);
+		/*
+		 * classNameTextfield.setText(object.getName());
+		 * classNameTextfield.setDisable(true); selectAttributeLabel = new
+		 * Label("Select Attribute"); comboBox = new ComboBox<>();
+		 * comboBox.setPrefWidth(COLUMN_WIDTH); comboBox.getItems().setAll(list); Label
+		 * newNameLabel = new Label("New name"); newNameTextField = new TextField();
+		 * 
+		 * comboBox.getSelectionModel().selectedItemProperty().addListener((observable,
+		 * oldValue, newValue) -> { newNameTextField.setText(newValue); });
+		 * 
+		 * grid.add(selectAttributeLabel, 0, 1); grid.add(comboBox, 1, 1);
+		 * grid.add(newNameLabel, 0, 2); grid.add(newNameTextField, 1, 2);
+		 */
 	}
 
 	/*
@@ -198,24 +212,23 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	}
 
 	private boolean validateClassName() {
-		String newName = newClassNameTextField.getText();
+		Label errorLabel = getErrorLabel();
+		String name = newNameTextField.getText();
 
-		if (isNullOrEmpty(newName)) {
-			errorLabel.setText("Enter new name!");
+		if (!InputChecker.getInstance().validateName(name)) {	
+			errorLabel.setText("Enter valid name!");
 			return false;
+		} else if (!InputChecker.getInstance().classNameIsAvailable(name, diagram)) {
+			errorLabel.setText("Name already used");
+			return false;
+		} else {
+			errorLabel.setText("");
+			return true;
 		}
-
-		for (FmmlxObject object : diagram.getObjects()) {
-			if (object.getName().equals(newName)) {
-				showNameUsedError();
-				return false;
-			}
-		}
-		return true;
 	}
 
 	private boolean validateOperationName() {
-		String newName = objectNameTextfield.getText();
+		String newName = newNameTextField.getText();
 		for (FmmlxOperation operation : operations) {
 			if (operation.getName().equals(newName)) {
 				showNameUsedError();
@@ -226,14 +239,19 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	}
 
 	private boolean validateAttributeName() {
-		String newName = objectNameTextfield.getText();
-		for (FmmlxAttribute attribute : attributes) {
-			if (attribute.getName().equals(newName)) {
-				showNameUsedError();
-				return false;
-			}
+		Label errorLabel = getErrorLabel();
+		String name = newNameTextField.getText();
+
+		if (!InputChecker.getInstance().validateName(name)) {	
+			errorLabel.setText("Enter valid name!");
+			return false;
+		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, object)) {
+			errorLabel.setText("Name already used");
+			return false;
+		} else {
+			errorLabel.setText("");
+			return true;
 		}
-		return true;
 	}
 
 	private void showNameUsedError() {
