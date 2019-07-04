@@ -125,27 +125,16 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		Label errorLabel = getErrorLabel();
 		String name = nameTextField.getText();
 
-		if (isNullOrEmpty(name)) {
+		if (!InputChecker.getInstance().validateName(name)) {	
 			errorLabel.setText("Enter valid name!");
 			return false;
-		} else if (nameAlreadyUsed()) {
+		} else if (!InputChecker.getInstance().classNameIsAvailable(name, diagram)) {
 			errorLabel.setText("Name already used");
 			return false;
 		} else {
 			errorLabel.setText("");
 			return true;
 		}
-	}
-
-	private boolean nameAlreadyUsed() {
-		if (!objects.isEmpty()) {
-			for (FmmlxObject object : objects) {
-				if (nameTextField.getText().equals(object.getName())) {
-					return true;
-				}
-			}
-		}
-		return false;
 	}
 
 	private boolean ofSelected() {
