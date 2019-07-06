@@ -253,7 +253,7 @@ public class DiagramActions {
 
 			if (cod.isPresent()) {
 				final ChangeOfDialogResult result = cod.get();
-				diagram.changeAttributeOf(result);
+				diagram.changeOf(result);
 			}
 
 			diagram.updateDiagram();
@@ -442,8 +442,21 @@ public class DiagramActions {
 		});
 	}
 
-	public Object changeBodyDialog(FmmlxObject object, PropertyType operation) {
-		// TODO Auto-generated method stub
-		return null;
+	public void changeBodyDialog(FmmlxObject object) {
+		CountDownLatch latch = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			ChangeBodyDialog dlg = new ChangeBodyDialog(diagram, object);
+			Optional<ChangeBodyDialogResult> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final ChangeBodyDialogResult result = opt.get();
+				System.err.println(result);
+				diagram.changeBody(result);	
+			}
+
+			diagram.updateDiagram();
+			latch.countDown();
+		});
 	}
 }

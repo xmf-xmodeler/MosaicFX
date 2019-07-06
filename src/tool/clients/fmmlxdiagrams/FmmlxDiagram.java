@@ -636,10 +636,6 @@ public class FmmlxDiagram {
 
 	}
 
-	public void changeAttributeOf(ChangeOfDialogResult result) {
-		// TODO Auto-generated method stub
-
-	}
 
 	public void changeParentAttribute(ChangeParentDialogResult result) {
 		// TODO Auto-generated method stub
@@ -671,10 +667,11 @@ public class FmmlxDiagram {
 		// TODO Auto-generated method stub
 		
 	}
-	
 
-
-	
+	public void changeBody(ChangeBodyDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	
 }
