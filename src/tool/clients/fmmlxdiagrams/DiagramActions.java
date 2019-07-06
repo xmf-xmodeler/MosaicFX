@@ -359,7 +359,7 @@ public class DiagramActions {
 						diagram.addMetaClass(result);
 						break;
 					case Attribute:
-						diagram.addAttribute(result);
+						//diagram.addAttribute(result);
 						break;
 					case Operation:
 						diagram.addOperation(result);

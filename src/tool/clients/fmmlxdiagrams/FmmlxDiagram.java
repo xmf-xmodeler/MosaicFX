@@ -611,11 +611,6 @@ public class FmmlxDiagram {
 
 	}
 
-	public void addAttribute(AddDialogResult result) {
-		// TODO Auto-generated method stub
-
-	}
-
 	public void addOperation(AddDialogResult result) {
 		// TODO Auto-generated method stub
 
