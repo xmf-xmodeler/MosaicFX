@@ -47,7 +47,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	
 	//For Operation
 	private Label selectOperationLabel;
-	private ComboBox<String> selectOperationComboBox;
+	private ComboBox<FmmlxOperation> selectOperationComboBox;
 
 
 	public ChangeLevelDialog(FmmlxDiagram diagram, FmmlxObject object, PropertyType type) {
@@ -91,22 +91,42 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	}
 
 	private boolean validateAssociationLevelChange() {
-		// TODO Auto-generated method stub
-		return false;
+		if (newLevelComboBox.getSelectionModel().getSelectedIndex() == -1) {
+			errorLabel.setText("Select new Level!");
+			return false;
+		} else if (newLevelComboBox.getSelectionModel().getSelectedItem().toString().equals(currentLevelTextField.getText())) {
+			errorLabel.setText("Please select another level!");
+			return false;
+		}
+		errorLabel.setText("");
+		return true;
 	}
 
 	private boolean validateOperationLevelChange() {
-		// TODO Auto-generated method stub
-		return false;
+		if (newLevelComboBox.getSelectionModel().getSelectedIndex() == -1) {
+			errorLabel.setText("Select new Level!");
+			return false;
+		} else if (newLevelComboBox.getSelectionModel().getSelectedItem().toString().equals(currentLevelTextField.getText())) {
+			errorLabel.setText("Please select another level!");
+			return false;
+		}
+		errorLabel.setText("");
+		return true;
 	}
 
 	private boolean validateAttributeLevelChange() {
-		// TODO Auto-generated method stub
+		if (newLevelComboBox.getSelectionModel().getSelectedIndex() == -1) {
+			errorLabel.setText("Select new Level!");
+			return false;
+		} else if (newLevelComboBox.getSelectionModel().getSelectedItem().toString().equals(currentLevelTextField.getText())) {
+			errorLabel.setText("Please select another level!");
+			return false;
+		}
+		errorLabel.setText("");
 		return true;
 	}
 
 	private boolean validateClassLevelChange() {
-
 		if (newLevelComboBox.getSelectionModel().getSelectedIndex() == -1) {
 			errorLabel.setText("Select new Level!");
 			return false;
@@ -160,7 +180,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 		selectAssociationComboBox = new ComboBox<String>();
 		currentLevelTextField = new TextField();
 		currentLevelTextField.setDisable(true);
-		newLevelComboBox = new ComboBox<>(LevelList.levelList);
+		newLevelComboBox = new ComboBox<Integer>(LevelList.getLevelInterval(object));
 
 		selectAssociationComboBox.setPrefWidth(COLUMN_WIDTH);
 		newLevelComboBox.setPrefWidth(COLUMN_WIDTH);
@@ -175,7 +195,12 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	}
 
 	private void changeOperationLevel() {
-		//TODO Put list of Association to combobox
+		
+		operations = object.getOwnOperations();
+		operations.addAll(object.getOtherOperations());
+		
+		ObservableList<FmmlxOperation> operationList;
+		operationList =  FXCollections.observableList(operations);
 		
 		dialogPane.setHeaderText("Change Operation Level");
 
@@ -183,10 +208,18 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 		currentLevelLabel = new Label("Current Level");
 		newLevelLabel = new Label("Select New Level");
 
-		selectOperationComboBox = new ComboBox<String>();
+		selectOperationComboBox = initializeOperationComboBox(operationList);
+		selectOperationComboBox.valueProperty().addListener(new ChangeListener<FmmlxOperation>() {
+			@Override
+			public void changed(ObservableValue<? extends FmmlxOperation> observable, FmmlxOperation oldValue,
+					FmmlxOperation newValue) {
+				currentLevelTextField.setText(newValue.getLevel()+"");
+			}
+		});
 		currentLevelTextField = new TextField();
 		currentLevelTextField.setDisable(true);
-		newLevelComboBox = new ComboBox<Integer>();
+		newLevelComboBox = new ComboBox<Integer>(LevelList.getLevelInterval(object));
+
 
 		selectOperationComboBox.setPrefWidth(COLUMN_WIDTH);
 		newLevelComboBox.setPrefWidth(COLUMN_WIDTH);
@@ -222,7 +255,6 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 			public void changed(ObservableValue<? extends FmmlxAttribute> observable, FmmlxAttribute oldValue,
 					FmmlxAttribute newValue) {
 				currentLevelTextField.setText(newValue.getLevel()+"");
-				
 			}
 		});
 		
