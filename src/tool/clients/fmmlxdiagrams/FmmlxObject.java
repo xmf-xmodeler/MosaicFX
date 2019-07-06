@@ -193,11 +193,6 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		result.addAll(otherOperations);
 		return result;
 	}
-	
-	public Object getOwnAssociation() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 
 	public Vector<Integer> getParents() {
@@ -697,6 +692,4 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 	public PropertyType getPropertyType() {
 		return propertyType;
 	}
-
-
 }

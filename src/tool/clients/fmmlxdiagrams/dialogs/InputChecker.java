@@ -61,4 +61,9 @@ public class InputChecker {
 		return true;
 	}
 
+	public boolean associationNameIsAvailable(String name, FmmlxObject object) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

@@ -7,7 +7,6 @@ import javafx.scene.control.*;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
 
-import java.util.ArrayList;
 import java.util.Vector;
 
 public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
@@ -39,6 +38,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 
 	private Vector<FmmlxAttribute> attributes;
 	private Vector<FmmlxOperation> operations;
+	private Vector<FmmlxAssociation> associations;
 
 	// Used for combobox -> displays strings
 
@@ -122,6 +122,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	}
 
 	private void changeAssociationName() {
+		//insert Association List to Combobox;
 		
 		classNameTextfield.setText(object.getName());
 		classNameTextfield.setDisable(true);
@@ -203,9 +204,30 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 				return validateAttributeName();
 			case Operation:
 				return validateOperationName();
+			case Association:
+				return validateAssociationName();
 			default:
 				System.err.println("AddDialog: No matching content type!");
 				break;
+		}
+		return true;
+	}
+
+	private boolean validateAssociationName() {
+		Label errorLabel = getErrorLabel();
+		String name = newNameTextField.getText();
+		
+		if (selectOperationComboBox.getSelectionModel().getSelectedItem()==null) {
+			errorLabel.setText("Select Association!");
+			return false;
+		}
+		
+		if (!InputChecker.getInstance().validateName(name)) {	
+			errorLabel.setText("Enter valid name!");
+			return false;
+		} else if (!InputChecker.getInstance().associationNameIsAvailable(name, object)) {
+			errorLabel.setText("Name already used");
+			return false;
 		}
 		return true;
 	}
@@ -227,12 +249,20 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	}
 
 	private boolean validateOperationName() {
-		String newName = newNameTextField.getText();
-		for (FmmlxOperation operation : operations) {
-			if (operation.getName().equals(newName)) {
-				showNameUsedError();
-				return false;
-			}
+		Label errorLabel = getErrorLabel();
+		String name = newNameTextField.getText();
+		
+		if (selectOperationComboBox.getSelectionModel().getSelectedItem()==null) {
+			errorLabel.setText("Select Operation!");
+			return false;
+		}
+		
+		if (!InputChecker.getInstance().validateName(name)) {	
+			errorLabel.setText("Enter valid name!");
+			return false;
+		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, object)) {
+			errorLabel.setText("Name already used");
+			return false;
 		}
 		return true;
 	}

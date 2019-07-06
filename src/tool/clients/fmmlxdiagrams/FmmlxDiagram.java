@@ -565,24 +565,30 @@ public class FmmlxDiagram {
 	public void changeAttributeName(ChangeNameDialogResult res) {
 		comm.changeAttributeName(res.getObjectId(), res.getOldName(), res.getNewName());
 	}
+	
+	public void changeAssociationName(ChangeNameDialogResult result) {
+		comm.changeAssociationName(result.getObjectId(), result.getOldName(), result.getNewName());
+		
+	}
 
 	public void changeClassLevel(ChangeLevelDialogResult result) {
-		// TODO Auto-generated method stub
+		comm.changeClassLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());
 
 	}
 
 	public void changeAttributeLevel(ChangeLevelDialogResult result) {
-		// TODO Auto-generated method stub
+		comm.changeAttributeLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());
 
 	}
 
 	public void changeAssociationLevel(ChangeLevelDialogResult result) {
-		// TODO Auto-generated method stub
+		comm.changeAssociationLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());
 
 	}
 
 	public void changeOperationLevel(ChangeLevelDialogResult result) {
-		// TODO Auto-generated method stub
+		comm.changeOperationLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());
+
 	}
 
 	public void changeSlotValue(ChangeSlotValueDialogResult result) {
@@ -661,4 +667,6 @@ public class FmmlxDiagram {
 		// TODO Auto-generated method stub
 		
 	}
+
+	
 }

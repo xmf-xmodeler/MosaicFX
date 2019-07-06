@@ -450,6 +450,15 @@ public class FmmlxDiagramCommunicator {
 				new Value(newName)};
 		WorkbenchClient.theClient().send(handler, "changeAttributeName", message);
 	}
+	
+	public void changeAssociationName(int objectId, String oldName, String newName) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(objectId),
+				new Value(oldName),
+				new Value(newName)};
+		WorkbenchClient.theClient().send(handler, "changeAssociationName", message);
+	}
 
 	public void changeSlotValue(int id, String slotName, String aParsableText) {
 		Value[] message = new Value[]{
@@ -459,4 +468,45 @@ public class FmmlxDiagramCommunicator {
 				new Value(aParsableText)};
 		WorkbenchClient.theClient().send(handler, "changeSlotValue", message);
 	}
+
+	public void changeClassLevel(int objectId, int oldLevel, int newLevel) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(objectId),
+				new Value(oldLevel),
+				new Value(newLevel)};
+		WorkbenchClient.theClient().send(handler, "changeClassLevel", message);
+		
+	}
+
+	public void changeAttributeLevel(int objectId, int oldLevel, int newLevel) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(objectId),
+				new Value(oldLevel),
+				new Value(newLevel)};
+		WorkbenchClient.theClient().send(handler, "changeAttributeLevel", message);
+		
+	}
+
+	public void changeAssociationLevel(int objectId, int oldLevel, int newLevel) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(objectId),
+				new Value(oldLevel),
+				new Value(newLevel)};
+		WorkbenchClient.theClient().send(handler, "changeAssociationLevel", message);
+	}
+
+	public void changeOperationLevel(int objectId, int oldLevel, int newLevel) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(objectId),
+				new Value(oldLevel),
+				new Value(newLevel)};
+		WorkbenchClient.theClient().send(handler, "changeOperationLevel", message);
+		
+	}
+
+	
 }

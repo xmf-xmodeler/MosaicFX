@@ -31,6 +31,12 @@ public class FmmlxAttribute implements FmmlxProperty {
 	public PropertyType getPropertyType() {
 		return propertyType;
 	}
+
+	public int getLevel() {
+		return level;
+	}
+	
+	
 	
 	
 }

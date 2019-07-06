@@ -11,7 +11,6 @@ public class ChangeLevelDialogResult extends DialogResult {
 	private int newLevel;
 	
 	public ChangeLevelDialogResult(FmmlxObject object, Integer currentLevel, Integer newLevel, PropertyType type) {
-		// TODO Auto-generated constructor stub
 		this.type = type;
 		this.object = object;
 		this.currentlevel= currentlevel;
@@ -19,8 +18,21 @@ public class ChangeLevelDialogResult extends DialogResult {
 	}
 
 	public PropertyType getType() {
-		// TODO Auto-generated method stub
 		return type;
 	}
+
+	public int getObjectId() {
+		return object.getId();
+	}
+
+	public int getNewLevel() {
+		return newLevel;
+	}
+	
+	public int getOldLevel() {
+		return currentlevel;
+	}
+	
+	
 
 }
