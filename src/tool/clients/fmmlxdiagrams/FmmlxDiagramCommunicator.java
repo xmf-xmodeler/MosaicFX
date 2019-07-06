@@ -508,5 +508,15 @@ public class FmmlxDiagramCommunicator {
 		
 	}
 
+	public void changeOf(int objectId, int oldOfId, int newOfId) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(objectId),
+				new Value(oldOfId),
+				new Value(newOfId)};
+		WorkbenchClient.theClient().send(handler, "changOf", message);
+		
+	}
+
 	
 }

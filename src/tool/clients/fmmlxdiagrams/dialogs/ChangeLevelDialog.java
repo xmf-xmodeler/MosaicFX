@@ -36,6 +36,8 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 		private Label newLevelLabel;
 		private TextField currentLevelTextField;
 		private ComboBox<Integer> newLevelComboBox;
+		private int currentLevel;
+		private int newLevel;
 	
 	//For Attribute
 	private Label selectAttributeLabel;
@@ -62,15 +64,22 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 		layoutContent(type);
 		dialogPane.setContent(flow);
 
-		setResult();
-	}
-
-	private void setResult() {
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
 			if (!validateUserInput(type)) {
 				e.consume();
 			}
+		});
+		
+		setResult();
+	}
+
+	private void setResult() {
+		setResultConverter(dlgBtn -> {
+			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+				return new ChangeLevelDialogResult(object, currentLevel, newLevel, type);
+			}
+			return null;
 		});
 	}
 
@@ -214,6 +223,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 			public void changed(ObservableValue<? extends FmmlxOperation> observable, FmmlxOperation oldValue,
 					FmmlxOperation newValue) {
 				currentLevelTextField.setText(newValue.getLevel()+"");
+				currentLevel=newValue.getLevel();
 			}
 		});
 		currentLevelTextField = new TextField();
@@ -255,6 +265,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 			public void changed(ObservableValue<? extends FmmlxAttribute> observable, FmmlxAttribute oldValue,
 					FmmlxAttribute newValue) {
 				currentLevelTextField.setText(newValue.getLevel()+"");
+				currentLevel=newValue.getLevel();
 			}
 		});
 		

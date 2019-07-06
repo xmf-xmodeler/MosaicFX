@@ -599,6 +599,10 @@ public class FmmlxDiagram {
 		comm.removeAttribute(c.getId(), a.getName(), 0);
 		
 	}
+	
+	public void changeOf(ChangeOfDialogResult result) {
+		comm.changeOf(result.getObjectId(), result.getOldOfId(), result.getNewOfId());
+	}
 
 	//the methods below is for refine add meta class etc ------------------------------------- //bei conflict, please considered as important.
 
@@ -667,6 +671,10 @@ public class FmmlxDiagram {
 		// TODO Auto-generated method stub
 		
 	}
+	
+
+
+	
 
 	
 }
