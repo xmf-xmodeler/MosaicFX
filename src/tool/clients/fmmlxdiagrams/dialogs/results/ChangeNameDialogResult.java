@@ -1,6 +1,8 @@
 package tool.clients.fmmlxdiagrams.dialogs.results;
 
+import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
 public class ChangeNameDialogResult extends DialogResult {
@@ -17,11 +19,19 @@ public class ChangeNameDialogResult extends DialogResult {
 		this.newName = newName;
 	}
 
-	// Result to change attribute or operation name
-	public ChangeNameDialogResult(PropertyType type, FmmlxObject object, String oldName, String newName) {
+	// Result to change attribute
+	public ChangeNameDialogResult(PropertyType type, FmmlxObject object, FmmlxAttribute fmmlxAttribute, String newName) {
 		this.type = type;
 		this.object = object;
-		this.oldName = oldName;
+		this.oldName = fmmlxAttribute.getName();
+		this.newName = newName;
+	}
+	
+	//Result to change operation
+	public ChangeNameDialogResult(PropertyType type2, FmmlxObject object2, FmmlxOperation fmmlxOperation, String newName) {
+		this.type = type2;
+		this.object = object2;
+		this.oldName = fmmlxOperation.getName();
 		this.newName = newName;
 	}
 

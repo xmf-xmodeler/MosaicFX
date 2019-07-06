@@ -9,7 +9,7 @@ public class InputChecker {
 	private static InputChecker instance;
 	
 	public InputChecker() {
-		// TODO Auto-generated constructor stub
+		// Blank Constructor needed
 	}
 
 	public static InputChecker getInstance() {

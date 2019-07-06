@@ -9,7 +9,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
+import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.FmmlxOperation;
 
 public class CustomDialog<R> extends Dialog<R> {
 
@@ -125,6 +127,74 @@ public class CustomDialog<R> extends Dialog<R> {
 
 			@Override
 			public FmmlxObject fromString(String string) {
+				return null;
+			}
+		});
+		comboBox.setPrefWidth(COLUMN_WIDTH);
+		return comboBox;
+	}
+	
+	public ComboBox<FmmlxAttribute> initializeAttributeComboBox(ObservableList<FmmlxAttribute> list) {
+		ComboBox<FmmlxAttribute> comboBox = new ComboBox<>(list);
+
+		comboBox.setCellFactory(param -> new ListCell<FmmlxAttribute>() {
+			@Override
+			protected void updateItem(FmmlxAttribute object, boolean empty) {
+				super.updateItem(object, empty);
+
+				if (empty || object == null || object.getName() == null) {
+					setText(null);
+				} else {
+					setText(object.getName());
+				}
+			}
+		});
+		comboBox.setConverter(new StringConverter<FmmlxAttribute>() {
+			@Override
+			public String toString(FmmlxAttribute object) {
+				if (object == null) {
+					return null;
+				} else {
+					return object.getName();
+				}
+			}
+
+			@Override
+			public FmmlxAttribute fromString(String string) {
+				return null;
+			}
+		});
+		comboBox.setPrefWidth(COLUMN_WIDTH);
+		return comboBox;
+	}
+	
+	public ComboBox<FmmlxOperation> initializeOperationComboBox(ObservableList<FmmlxOperation> list) {
+		ComboBox<FmmlxOperation> comboBox = new ComboBox<>(list);
+
+		comboBox.setCellFactory(param -> new ListCell<FmmlxOperation>() {
+			@Override
+			protected void updateItem(FmmlxOperation object, boolean empty) {
+				super.updateItem(object, empty);
+
+				if (empty || object == null || object.getName() == null) {
+					setText(null);
+				} else {
+					setText(object.getName());
+				}
+			}
+		});
+		comboBox.setConverter(new StringConverter<FmmlxOperation>() {
+			@Override
+			public String toString(FmmlxOperation object) {
+				if (object == null) {
+					return null;
+				} else {
+					return object.getName();
+				}
+			}
+
+			@Override
+			public FmmlxOperation fromString(String string) {
 				return null;
 			}
 		});
