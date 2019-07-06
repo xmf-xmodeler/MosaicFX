@@ -12,8 +12,6 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 
@@ -61,7 +59,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		layoutContent();
+		layoutContent(type);
 		dialogPane.setContent(flow);
 
 		setResult();
@@ -70,13 +68,13 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	private void setResult() {
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
-			if (!validateUserInput()) {
+			if (!validateUserInput(type)) {
 				e.consume();
 			}
 		});
 	}
 
-	private boolean validateUserInput() {
+	private boolean validateUserInput(PropertyType type) {
 		switch (type) {
 			case Class:
 				return validateClassLevelChange();
@@ -86,6 +84,8 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 				return validateOperationLevelChange();
 			case Association:
 				return validateAssociationLevelChange();
+		default: System.err.println("ChangeLevelDialog : No matching content type!");	
+			break;
 		}
 		return true;
 	}
@@ -118,7 +118,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 		return true;
 	}
 
-	private void layoutContent() {
+	private void layoutContent(PropertyType type) {
 		objectLabel = new Label("Class");
 		objectNameTextField = new TextField();
 		objectLevelLabel = new Label("Current Level");

@@ -157,6 +157,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		
 		ObservableList<FmmlxAttribute> attributeList;
 		attributeList =  FXCollections.observableList(attributes);
+		
 		selectAttributeLabel = new Label("Select Attribute");
 		selectAttributeComboBox = initializeAttributeComboBox(attributeList);
 		
