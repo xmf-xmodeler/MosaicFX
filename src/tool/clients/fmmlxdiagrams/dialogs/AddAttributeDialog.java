@@ -117,16 +117,11 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
 	private boolean validateLevel() {
 		Label errorLabel = getErrorLabel();
-		Integer selectedLevel= getComboBoxIntegerValue(levelComboBox);
-		Integer maxLevel = selectedObject.getLevel();
 
 		if (levelComboBox.getSelectionModel().getSelectedIndex() == -1) {
 			errorLabel.setText("Select Level!");
 			return false;
-		} else if (!InputChecker.getInstance().levelIsValid(selectedLevel, maxLevel)) {
-			errorLabel.setText("Please seledt allowed Level !. maximum allowed level is "+ maxLevel);
-			return false;
-		}
+		} 
 		errorLabel.setText("");
 		return true;
 	}
@@ -164,9 +159,8 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		classTextField = new TextField();
 		classTextField.setText(selectedObject.getName());
 		classTextField.setDisable(true);
-		levelComboBox = new ComboBox<>(LevelList.levelList);
+		levelComboBox = new ComboBox<>(LevelList.getLevelInterval(selectedObject));
 		levelComboBox.setConverter(new IntegerStringConverter());
-		levelComboBox.setEditable(true);
 		typeComboBox = new ComboBox<>(typeList);
 		typeComboBox.setEditable(true);
 		multiplicityButton = new Button();

@@ -193,6 +193,8 @@ public class DiagramActions {
 					case Attribute:
 						diagram.changeAttributeName(result);
 						break;
+					case Association:
+						diagram.changeAssociationName(result);
 					default:
 						System.err.println("ChangeNameDialogResult: No matching content type!");
 				}
@@ -216,7 +218,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final ChangeLevelDialogResult result = opt.get();
-				System.err.println(result);
+				System.err.println(result.toString());
 				switch (result.getType()) {
 					case Class:
 						diagram.changeClassLevel(result);
@@ -232,7 +234,6 @@ public class DiagramActions {
 						break;
 					default:
 						System.err.println("ChangeLevelDialogResult: No matching content type!");
-
 				}
 			}
 

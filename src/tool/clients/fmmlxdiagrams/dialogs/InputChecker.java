@@ -9,7 +9,7 @@ public class InputChecker {
 	private static InputChecker instance;
 	
 	public InputChecker() {
-		// TODO Auto-generated constructor stub
+		// Blank Constructor needed
 	}
 
 	public static InputChecker getInstance() {
@@ -59,6 +59,11 @@ public class InputChecker {
 			if(name.equals(object.getName())) return false;
 		}
 		return true;
+	}
+
+	public boolean associationNameIsAvailable(String name, FmmlxObject object) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
