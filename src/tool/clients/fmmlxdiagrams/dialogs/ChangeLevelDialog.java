@@ -149,7 +149,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	}
 
 	private void layoutContent(PropertyType type) {
-		objectLabel = new Label(StringValue.LabelAndHeaderTitle.object);
+		objectLabel = new Label(StringValue.LabelAndHeaderTitle.selectedObject);
 		objectNameTextField = new TextField();
 		objectLevelLabel = new Label(StringValue.LabelAndHeaderTitle.currentLevel);
 		objectLevelTextField = new TextField();

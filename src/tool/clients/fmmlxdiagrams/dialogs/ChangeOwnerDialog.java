@@ -119,7 +119,7 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult>{
 
 
 	private void layoutContent() {
-		classLabel = new Label(StringValue.LabelAndHeaderTitle.object);
+		classLabel = new Label(StringValue.LabelAndHeaderTitle.selectedObject);
 		currentOwnerLabel = new Label(StringValue.LabelAndHeaderTitle.currentOwner);
 		newOwnerLabel = new Label(StringValue.LabelAndHeaderTitle.newOwner);
 		

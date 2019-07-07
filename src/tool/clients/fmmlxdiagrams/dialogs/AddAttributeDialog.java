@@ -108,7 +108,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		Label errorLabel = getErrorLabel();
 
 		if (getComboBoxStringValue(typeComboBox) == null || getComboBoxStringValue(typeComboBox).length() < 1) {
-			errorLabel.setText("Select Type!");
+			errorLabel.setText(StringValue.ErrorMessage.selectType);
 			return false;
 		}
 		errorLabel.setText("");
@@ -119,7 +119,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		Label errorLabel = getErrorLabel();
 
 		if (levelComboBox.getSelectionModel().getSelectedIndex() == -1) {
-			errorLabel.setText("Select Level!");
+			errorLabel.setText(StringValue.ErrorMessage.selectLevel);
 			return false;
 		} 
 		errorLabel.setText("");
@@ -132,10 +132,10 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		String name = nameTextField.getText();
 
 		if (!InputChecker.getInstance().validateName(name)) {	
-			errorLabel.setText("Enter valid name!");
+			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, selectedObject)) {
-			errorLabel.setText("Name already used");
+			errorLabel.setText(StringValue.ErrorMessage.nameAlreadyUsed);
 			return false;
 		} else {
 			errorLabel.setText("");
@@ -144,11 +144,11 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 	}
 
 	private void addElementToGrid() {
-		nameLabel = new Label("Name");
-		classLabel = new Label("Class");
-		levelLabel = new Label("Level");
-		typeLabel = new Label("Type");
-		multiplicityLabel = new Label("Multiplicity");
+		nameLabel = new Label(StringValue.LabelAndHeaderTitle.name);
+		classLabel = new Label(StringValue.LabelAndHeaderTitle.selectedObject);
+		levelLabel = new Label(StringValue.LabelAndHeaderTitle.level);
+		typeLabel = new Label(StringValue.LabelAndHeaderTitle.type);
+		multiplicityLabel = new Label(StringValue.LabelAndHeaderTitle.Multiplicity);
 		classList = getAllClassList();
 
 		String[] types = new String[]{"Integer", "String", "Boolean", "Float"};
