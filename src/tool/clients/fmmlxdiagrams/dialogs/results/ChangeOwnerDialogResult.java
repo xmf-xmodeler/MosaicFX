@@ -1,20 +1,31 @@
 package tool.clients.fmmlxdiagrams.dialogs.results;
 
+import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
 public class ChangeOwnerDialogResult extends DialogResult{
 	
 	private final PropertyType type;
 	private FmmlxObject object;
-	private Integer oldOwnerID;
+	private FmmlxAttribute attribute;
+	private FmmlxOperation operation;
 	private Integer newOwnerID;
 
-	public ChangeOwnerDialogResult(FmmlxObject object, PropertyType type, Integer oldOwnerID, Integer newOwnerID) {
+	public ChangeOwnerDialogResult(PropertyType type, FmmlxObject object, FmmlxAttribute fmmlxAttribute, FmmlxObject newOwner) {
 		this.type = type;
 		this.object = object;
-		this.oldOwnerID= oldOwnerID;
-		this.newOwnerID= newOwnerID;
+		this.attribute = fmmlxAttribute;
+		this.newOwnerID= newOwner.getId();
+	}
+
+	public ChangeOwnerDialogResult(PropertyType type, FmmlxObject object, FmmlxOperation selectedItem,
+			FmmlxObject newOwner) {
+		this.type = type;
+		this.object = object;
+		this.operation = selectedItem;
+		this.newOwnerID= newOwner.getId();
 	}
 	public PropertyType getType() {
 		return type;
@@ -22,11 +33,14 @@ public class ChangeOwnerDialogResult extends DialogResult{
 	public FmmlxObject getObject() {
 		return object;
 	}
-	public Integer getOldOwnerID() {
-		return oldOwnerID;
-	}
 	public Integer getNewOwnerID() {
 		return newOwnerID;
+	}
+	public FmmlxAttribute getAttribute() {
+		return attribute;
+	}
+	public FmmlxOperation getOperation() {
+		return operation;
 	}
 	
 	

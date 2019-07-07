@@ -399,7 +399,34 @@ public class FmmlxDiagramCommunicator {
 				new Value(id)};
 		WorkbenchClient.theClient().send(handler, "removeClass", message);
 	}
+	
+	public void removeAttribute(int id, String name, int strategy) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(id),
+				new Value(name),
+				new Value(strategy)};
+		WorkbenchClient.theClient().send(handler, "removeAttribute", message);
+	}
+	
+	public void removeOperation(int id, String name, int strategy) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(id),
+				new Value(name),
+				new Value(strategy)};
+		WorkbenchClient.theClient().send(handler, "removeOperation", message);
+	}
 
+	public void removeAssociation(int id, String name, int strategy) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(id),
+				new Value(name),
+				new Value(strategy)};
+		WorkbenchClient.theClient().send(handler, "removeAssociation", message);
+	}
+	
 	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) {
 		Value[] multiplicity = new Value[]{
 				new Value(multi.min),
@@ -414,15 +441,6 @@ public class FmmlxDiagramCommunicator {
 				new Value(type),
 				new Value(multiplicity)};
 		WorkbenchClient.theClient().send(handler, "addAttribute", message);
-	}
-
-	public void removeAttribute(int id, String name, int strategy) {
-		Value[] message = new Value[]{
-				new Value(-1),
-				new Value(id),
-				new Value(name),
-				new Value(strategy)};
-		WorkbenchClient.theClient().send(handler, "removeAttribute", message);
 	}
 
 	public void changeClassName(int id, String newName) {
@@ -507,6 +525,25 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "changeOperationLevel", message);
 		
 	}
+
+	public void changeOf(int objectId, int oldOfId, int newOfId) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(objectId),
+				new Value(oldOfId),
+				new Value(newOfId)};
+		WorkbenchClient.theClient().send(handler, "changOf", message);	
+	}
+
+	public void changeAttributeOwner(int objectId, Integer newOwnerID) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(objectId),
+				new Value(newOwnerID)};
+		WorkbenchClient.theClient().send(handler, "changOf", message);
+		
+	}
+
 
 	
 }

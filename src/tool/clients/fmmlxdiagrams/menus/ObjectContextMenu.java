@@ -105,7 +105,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeTypeItem = new MenuItem("Change type");
 		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Operation));
 		MenuItem changeBodyItem = new MenuItem("Change body");
-		changeBodyItem.setOnAction(e -> actions.changeBodyDialog(object, PropertyType.Operation));
+		changeBodyItem.setOnAction(e -> actions.changeBodyDialog(object));
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Operation));
 

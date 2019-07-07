@@ -7,9 +7,6 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOfDialogResult;
 
-import java.util.ArrayList;
-import java.util.Vector;
-
 
 public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult>{
 	
@@ -23,10 +20,7 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult>{
 	private Label errorLabel;
 	private TextField selectedObjectTextField;
 	private TextField currentOfTextField;
-	private ComboBox<String>newOfComboBox;
-	
-	private Vector<FmmlxObject> ofList;
-	private ArrayList<String> newOfList;
+	private ComboBox<FmmlxObject>newOfComboBox;
 	
 
 	public ChangeOfDialog(FmmlxDiagram diagram, FmmlxObject object) {
@@ -52,14 +46,10 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult>{
 
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				//TODO
+				return new ChangeOfDialogResult(object, object.getOf(), newOfComboBox.getSelectionModel().getSelectedItem());
 			}
 			return null;
 		});
-		
-		
-		
-		// TODO Auto-generated constructor stub
 	}
 
 
@@ -95,7 +85,11 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult>{
 		}
 		
 		currentOfTextField.setDisable(true);
-		newOfComboBox = new ComboBox<String>();
+		
+		newOfComboBox = new ComboBox<FmmlxObject>();
+		//TODO make a method getAllPossibleOfList in FmmlxDiagram.class
+		//ObservableList<FmmlxObject> allPossibleOf = diagram.getAllPossibleOfList();
+		//newOfComboBox = initializeComboBox(allPossibleOf);
 		
 		newOfComboBox.setPrefWidth(COLUMN_WIDTH);
 		
@@ -106,8 +100,6 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult>{
 		grid.add(newOf, 0, 2);
 		grid.add(newOfComboBox, 1, 2);
 		grid.add(errorLabel,0,3);
-		// TODO Auto-generated method stub
-		
 	}
 
 }
