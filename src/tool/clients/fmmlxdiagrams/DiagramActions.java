@@ -147,8 +147,23 @@ public class DiagramActions {
 			Optional<RemoveDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
-				RemoveDialogResult test = opt.get();
-				// TODO
+				final RemoveDialogResult result = opt.get();
+				System.err.println(result.toString());
+				switch (result.getType()) {
+					case Class:
+						diagram.removeClass(result);
+						break;
+					case Operation:
+						diagram.removeOperation(result);
+						break;
+					case Attribute:
+						diagram.removeAttribute(result);
+						break;
+					case Association:
+						diagram.removeAssociation(result);
+					default:
+						System.err.println("ChangeNameDialogResult: No matching content type!");
+				}
 			}
 
 			diagram.updateDiagram();
@@ -356,10 +371,10 @@ public class DiagramActions {
 				System.err.println(result);
 				switch (result.getType()) {
 					case Class:
-						diagram.addMetaClass(result);
+						//TODO diagram.addMetaClass(result);
 						break;
 					case Attribute:
-						//diagram.addAttribute(result);
+						//TODO diagram.addAttribute(result);
 						break;
 					case Operation:
 						diagram.addOperation(result);

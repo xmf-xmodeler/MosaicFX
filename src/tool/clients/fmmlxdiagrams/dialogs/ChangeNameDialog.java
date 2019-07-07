@@ -33,7 +33,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	
 	//For Association
 	private Label selectAssociationNameLabel;
-	private ComboBox<String> selectAssociationBox;
+	private ComboBox<FmmlxAssociation> selectAssociationBox;
 	
 
 	private Vector<FmmlxAttribute> attributes;
@@ -128,7 +128,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		classNameTextfield.setDisable(true);
 
 		selectAssociationNameLabel = new Label("Select Association");
-		selectAssociationBox = new ComboBox<String>();
+		selectAssociationBox = new ComboBox<FmmlxAssociation>();
 
 		selectAssociationBox.setPrefWidth(COLUMN_WIDTH);
 

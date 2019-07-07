@@ -1,15 +1,15 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
-import javafx.scene.control.ButtonBar.ButtonData;
+import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.dialogs.results.RemoveDialogResult;
-
-import java.util.ArrayList;
 import java.util.Vector;
 
 public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
@@ -25,17 +25,25 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 	private Label selectionForStrategies;
 	private TextField selectObjectLabelTextField;
 	private ComboBox<String> selectionForStrategiesComboBox;
+	private Label errorLabel;
 	
 	//For Association
 	private Label selectAssociationLabel;
-	private ComboBox<String> selectAssociationComboBox;
+	private ComboBox<FmmlxAssociation> selectAssociationComboBox;
 	
-
+	//For Attribute
+	private Label selectAttribute;
+	private ComboBox<FmmlxAttribute> selectAttributeComboBox;
+	
+	//For Operation
+	private Label selectOperation;
+	private ComboBox<FmmlxOperation> selectOperationComboBox;
+	
+	
 	private Vector<FmmlxAttribute> attributes;
 	private Vector<FmmlxOperation> operations;
+	private Vector<FmmlxAssociation> associations;
 
-	private ArrayList<String> attributeList;
-	private ArrayList<String> operationList;
 
 
 	public RemoveDialog(final FmmlxDiagram diagram, FmmlxObject object, PropertyType type) {
@@ -44,10 +52,11 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 		this.diagram = diagram;
 		this.object = object;
 		dialogPane = getDialogPane();
+		errorLabel = getErrorLabel();
 
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-		addElementToGrid();
+		addElementToGrid(type);
 
 		dialogPane.setContent(grid);
 
@@ -60,15 +69,24 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 		});
 
 		setResultConverter(dlgBtn -> {
-			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				//TODO
+			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+				switch (type) {
+					case Class:
+						return new RemoveDialogResult(type, object);
+					case Attribute:
+						return new RemoveDialogResult(type, object, selectAttributeComboBox.getSelectionModel().getSelectedItem());
+					case Operation:
+						return new RemoveDialogResult(type, object, selectOperationComboBox.getSelectionModel().getSelectedItem());
+					default:
+						System.err.println("ChangeNameDialog: No matching content type!");
+				}
 			}
 			return null;
 		});
 	}
 
 
-	private void addElementToGrid() {
+	private void addElementToGrid(PropertyType type) {
 
 		switch (type) {
 			case Class:
@@ -88,7 +106,8 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 	}
 
 	private void removeAssoiation() {
-		// TODO Auto-generated method stub
+		//insert Association List to Combobox;
+		
 		dialogPane.setHeaderText("Remove Association");
 		selectObjectLabel = new Label("Selected Object");
 		selectAssociationLabel = new Label("Select Association");
@@ -97,7 +116,7 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 		selectObjectLabelTextField = new TextField();
 		selectObjectLabelTextField.setText(object.getName());
 		selectObjectLabelTextField.setDisable(true);
-		selectAssociationComboBox = new ComboBox<String>();
+		selectAssociationComboBox = new ComboBox<FmmlxAssociation>();
 		selectionForStrategiesComboBox = new ComboBox<String>();
 		
 		selectAssociationComboBox.setPrefWidth(COLUMN_WIDTH);
@@ -116,13 +135,17 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 	private void removeOperation() {
 		dialogPane.setHeaderText("Remove Operation");
 
-		attributeList = new ArrayList<String>();
+		operations = object.getOwnOperations();
+		operations.addAll(object.getOtherOperations());
+		
+		ObservableList<FmmlxOperation> operationList;
+		operationList =  FXCollections.observableList(operations);
 
 		selectObjectLabel = new Label("Selected Object");
-		Label selectOperation = new Label("Select Operation");
+		selectOperation = new Label("Select Operation");
 		selectionForStrategies = new Label("Selection for Strategies");
 		selectObjectLabelTextField = new TextField();
-		ComboBox<String> selectOperationComboBox = new ComboBox<String>();
+		selectOperationComboBox = initializeOperationComboBox(operationList);
 		selectionForStrategiesComboBox = new ComboBox<>();
 
 		grid.add(selectObjectLabel, 0, 0);
@@ -139,24 +162,24 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 
 		selectObjectLabelTextField.setText(object.getName());
 		selectObjectLabelTextField.setDisable(true);
-
-		for (FmmlxOperation fmmlxOperation : operations) {
-			//TODO operationList.add(fmmlxOperation.getName());
-		}
-		//selectOperationComboBox.getItems().setAll(operationList);
 	}
 
 
 	private void removeAttribute() {
 		dialogPane.setHeaderText("Remove Attribute");
+		
+		attributes = object.getOwnAttributes();
+		attributes.addAll(object.getOtherAttributes());
+		
+		ObservableList<FmmlxAttribute> attributeList;
+		attributeList =  FXCollections.observableList(attributes);
 
-		attributeList = new ArrayList<String>();
 
 		selectObjectLabel = new Label("Selected Object");
-		Label selectAttribute = new Label("Select Attribute");
+		selectAttribute = new Label("Select Attribute");
 		selectionForStrategies = new Label("Selection for Strategies");
 		selectObjectLabelTextField = new javafx.scene.control.TextField();
-		ComboBox<String> selectAttributeComboBox = new ComboBox<String>();
+		selectAttributeComboBox = initializeAttributeComboBox(attributeList);
 		selectionForStrategiesComboBox = new ComboBox<>();
 
 		grid.add(selectObjectLabel, 0, 0);
@@ -172,14 +195,8 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 		attributes = object.getOwnAttributes();
 		attributes.addAll(object.getOtherAttributes());
 
-
 		selectObjectLabelTextField.setText(object.getName());
 		selectObjectLabelTextField.setDisable(true);
-
-		for (FmmlxAttribute fmmlxAttribute : attributes) {
-			attributeList.add(fmmlxAttribute.getName());
-		}
-		selectAttributeComboBox.getItems().setAll(attributeList);
 	}
 
 	private void removeClass() {
@@ -212,30 +229,42 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 				return validateRemoveOperation();
 			case Association:
 				return validateRemoveAssociation();
+			default:
+				System.err.println("RemoveDialog: No matching content type!");
+				break;
 		}
 		return true;
 	}
 
 	private boolean validateRemoveAssociation() {
-		// TODO Auto-generated method stub
-		return false;
+		if (selectAssociationComboBox.getSelectionModel().getSelectedItem()==null) {
+			errorLabel.setText("Select Operation!");
+			return false;
+		}
+		return true;
 	}
 
 
 	private boolean validateRemoveOperation() {
-		// TODO Auto-generated method stub
-		return false;
+		if (selectOperationComboBox.getSelectionModel().getSelectedItem()==null) {
+			errorLabel.setText("Select Operation!");
+			return false;
+		}
+		return true;
 	}
 
 
 	private boolean validateRemoveAttribute() {
-		// TODO Auto-generated method stub
-		return false;
+		if (selectAttributeComboBox.getSelectionModel().getSelectedItem()==null) {
+			errorLabel.setText("Select Operation!");
+			return false;
+		}
+		return true;
 	}
 
 
 	private boolean validateRemoveClass() {
-		// TODO Auto-generated method stub
-		return false;
+		//not sure 
+		return true;
 	}
 }

@@ -604,11 +604,24 @@ public class FmmlxDiagram {
 		comm.changeOf(result.getObjectId(), result.getOldOfId(), result.getNewOfId());
 	}
 
-	//the methods below is for refine add meta class etc ------------------------------------- //bei conflict, please considered as important.
+	public void removeClass(RemoveDialogResult result) {
+		comm.removeClass(result.getObject().getId(), 0);
+		
+	}
 
-	public void addMetaClass(AddDialogResult result) {
-		// TODO Auto-generated method stub
+	public void removeOperation(RemoveDialogResult result) {
+		comm.removeOperation(result.getObject().getId(), result.getOperation().getName(), 0);
+		
+	}
 
+	public void removeAttribute(RemoveDialogResult result) {
+		comm.removeAttribute(result.getObject().getId(), result.getAttribute().getName(), 0);
+		
+	}
+
+	public void removeAssociation(RemoveDialogResult result) {
+		comm.removeAttribute(result.getObject().getId(), result.getAssociation().getName(), 0);
+		
 	}
 
 	public void addOperation(AddDialogResult result) {
@@ -634,8 +647,7 @@ public class FmmlxDiagram {
 
 	public void changeParentAttribute(ChangeParentDialogResult result) {
 		// TODO Auto-generated method stub
-
-
+		
 	}
 
 	public void changeTypeAttribute(ChangeTypeDialogResult result) {
@@ -667,6 +679,5 @@ public class FmmlxDiagram {
 		// TODO Auto-generated method stub
 		
 	}
-
 	
 }

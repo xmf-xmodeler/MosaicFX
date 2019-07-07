@@ -399,6 +399,24 @@ public class FmmlxDiagramCommunicator {
 				new Value(id)};
 		WorkbenchClient.theClient().send(handler, "removeClass", message);
 	}
+	
+	public void removeAttribute(int id, String name, int strategy) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(id),
+				new Value(name),
+				new Value(strategy)};
+		WorkbenchClient.theClient().send(handler, "removeAttribute", message);
+	}
+	
+	public void removeOperation(int id, String name, int strategy) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(id),
+				new Value(name),
+				new Value(strategy)};
+		WorkbenchClient.theClient().send(handler, "removeAttribute", message);
+	}
 
 	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) {
 		Value[] multiplicity = new Value[]{
@@ -414,15 +432,6 @@ public class FmmlxDiagramCommunicator {
 				new Value(type),
 				new Value(multiplicity)};
 		WorkbenchClient.theClient().send(handler, "addAttribute", message);
-	}
-
-	public void removeAttribute(int id, String name, int strategy) {
-		Value[] message = new Value[]{
-				new Value(-1),
-				new Value(id),
-				new Value(name),
-				new Value(strategy)};
-		WorkbenchClient.theClient().send(handler, "removeAttribute", message);
 	}
 
 	public void changeClassName(int id, String newName) {
@@ -514,9 +523,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(objectId),
 				new Value(oldOfId),
 				new Value(newOfId)};
-		WorkbenchClient.theClient().send(handler, "changOf", message);
-		
+		WorkbenchClient.theClient().send(handler, "changOf", message);	
 	}
-
 	
 }
