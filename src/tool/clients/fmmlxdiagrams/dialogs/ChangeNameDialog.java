@@ -215,33 +215,30 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	}
 
 	private boolean validateAssociationName() {
-		Label errorLabel = getErrorLabel();
 		String name = newNameTextField.getText();
 		
 		if (selectOperationComboBox.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText("Select Association!");
+			errorLabel.setText(StringValue.ErrorMessage.selectOperation);
 			return false;
 		}
-		
 		if (!InputChecker.getInstance().validateName(name)) {	
-			errorLabel.setText("Enter valid name!");
+			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else if (!InputChecker.getInstance().associationNameIsAvailable(name, object)) {
-			errorLabel.setText("Name already used");
+			errorLabel.setText(StringValue.ErrorMessage.nameAlreadyUsed);
 			return false;
 		}
 		return true;
 	}
 
 	private boolean validateClassName() {
-		Label errorLabel = getErrorLabel();
 		String name = newNameTextField.getText();
 
 		if (!InputChecker.getInstance().validateName(name)) {	
-			errorLabel.setText("Enter valid name!");
+			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else if (!InputChecker.getInstance().classNameIsAvailable(name, diagram)) {
-			errorLabel.setText("Name already used");
+			errorLabel.setText(StringValue.ErrorMessage.nameAlreadyUsed);
 			return false;
 		} else {
 			errorLabel.setText("");
@@ -250,37 +247,35 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	}
 
 	private boolean validateOperationName() {
-		Label errorLabel = getErrorLabel();
 		String name = newNameTextField.getText();
 		
 		if (selectOperationComboBox.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText("Select Operation!");
+			errorLabel.setText(StringValue.ErrorMessage.selectOperation);
 			return false;
 		}
 		
 		if (!InputChecker.getInstance().validateName(name)) {	
-			errorLabel.setText("Enter valid name!");
+			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, object)) {
-			errorLabel.setText("Name already used");
+			errorLabel.setText(StringValue.ErrorMessage.nameAlreadyUsed);
 			return false;
 		}
 		return true;
 	}
 
 	private boolean validateAttributeName() {
-		Label errorLabel = getErrorLabel();
 		String name = newNameTextField.getText();
 		
 		if (selectAttributeComboBox.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText("Select Attribute!");
+			errorLabel.setText(StringValue.ErrorMessage.selectAttribute);
 			return false;
 		}
 		if (!InputChecker.getInstance().validateName(name)) {	
-			errorLabel.setText("Enter valid name!");
+			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, object)) {
-			errorLabel.setText("Name already used");
+			errorLabel.setText(StringValue.ErrorMessage.nameAlreadyUsed);
 			return false;
 		} else {
 			errorLabel.setText("");

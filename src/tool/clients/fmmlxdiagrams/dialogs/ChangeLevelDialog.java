@@ -10,6 +10,7 @@ import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
+import tool.clients.fmmlxdiagrams.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
 
 import java.util.Vector;
@@ -101,10 +102,10 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
 	private boolean validateAssociationLevelChange() {
 		if (newLevelComboBox.getSelectionModel().getSelectedIndex() == -1) {
-			errorLabel.setText("Select new Level!");
+			errorLabel.setText(StringValue.ErrorMessage.selectNewLevel);
 			return false;
 		} else if (newLevelComboBox.getSelectionModel().getSelectedItem().toString().equals(currentLevelTextField.getText())) {
-			errorLabel.setText("Please select another level!");
+			errorLabel.setText(StringValue.ErrorMessage.pleaseSelectAnotherLevel);
 			return false;
 		}
 		errorLabel.setText("");
@@ -113,10 +114,10 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
 	private boolean validateOperationLevelChange() {
 		if (newLevelComboBox.getSelectionModel().getSelectedIndex() == -1) {
-			errorLabel.setText("Select new Level!");
+			errorLabel.setText(StringValue.ErrorMessage.selectNewLevel);
 			return false;
 		} else if (newLevelComboBox.getSelectionModel().getSelectedItem().toString().equals(currentLevelTextField.getText())) {
-			errorLabel.setText("Please select another level!");
+			errorLabel.setText(StringValue.ErrorMessage.pleaseSelectAnotherLevel);
 			return false;
 		}
 		errorLabel.setText("");
@@ -125,10 +126,10 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
 	private boolean validateAttributeLevelChange() {
 		if (newLevelComboBox.getSelectionModel().getSelectedIndex() == -1) {
-			errorLabel.setText("Select new Level!");
+			errorLabel.setText(StringValue.ErrorMessage.selectNewLevel);
 			return false;
 		} else if (newLevelComboBox.getSelectionModel().getSelectedItem().toString().equals(currentLevelTextField.getText())) {
-			errorLabel.setText("Please select another level!");
+			errorLabel.setText(StringValue.ErrorMessage.pleaseSelectAnotherLevel);
 			return false;
 		}
 		errorLabel.setText("");
@@ -137,10 +138,10 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
 	private boolean validateClassLevelChange() {
 		if (newLevelComboBox.getSelectionModel().getSelectedIndex() == -1) {
-			errorLabel.setText("Select new Level!");
+			errorLabel.setText(StringValue.ErrorMessage.selectNewLevel);
 			return false;
 		} else if (newLevelComboBox.getSelectionModel().getSelectedItem().toString().equals(objectLevelTextField.getText())) {
-			errorLabel.setText("Please select another level!");
+			errorLabel.setText(StringValue.ErrorMessage.pleaseSelectAnotherLevel);
 			return false;
 		}
 		errorLabel.setText("");
@@ -193,6 +194,14 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
 		selectAssociationComboBox.setPrefWidth(COLUMN_WIDTH);
 		newLevelComboBox.setPrefWidth(COLUMN_WIDTH);
+		newLevelComboBox.valueProperty().addListener(new ChangeListener<Integer>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
+				newLevel= newValue;
+			}
+			
+		});
 		
 		grid.add(selectAssociationLabel, 0, 1);
 		grid.add(selectAssociationComboBox, 1, 1);
@@ -233,6 +242,14 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
 		selectOperationComboBox.setPrefWidth(COLUMN_WIDTH);
 		newLevelComboBox.setPrefWidth(COLUMN_WIDTH);
+		newLevelComboBox.valueProperty().addListener(new ChangeListener<Integer>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
+				newLevel= newValue;
+			}
+			
+		});
 
 		grid.add(selectOperationLabel, 0, 1);
 		grid.add(selectOperationComboBox, 1, 1);
@@ -270,6 +287,14 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 		});
 		
 		newLevelComboBox = new ComboBox<Integer>(LevelList.getLevelInterval(object));
+		newLevelComboBox.valueProperty().addListener(new ChangeListener<Integer>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
+				newLevel= newValue;
+			}
+			
+		});
 
 		selectAttributeComboBox.setPrefWidth(COLUMN_WIDTH);
 		newLevelComboBox.setPrefWidth(COLUMN_WIDTH);
@@ -288,10 +313,19 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 		objectLevelTextField.setDisable(true);
 
 		newLevelLabel = new Label("Select New Level");
+		currentLevel=object.getLevel();
 
 		newLevelComboBox = new ComboBox<Integer>(LevelList.levelList);
 
 		newLevelComboBox.setPrefWidth(COLUMN_WIDTH);
+		newLevelComboBox.valueProperty().addListener(new ChangeListener<Integer>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
+				newLevel= newValue;
+			}
+			
+		});
 
 		grid.add(objectLevelLabel, 0, 1);
 		grid.add(objectLevelTextField, 1, 1);

@@ -9,6 +9,7 @@ import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
+import tool.clients.fmmlxdiagrams.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.results.RemoveDialogResult;
 import java.util.Vector;
 
@@ -25,7 +26,7 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 	private Label selectionForStrategies;
 	private TextField selectObjectLabelTextField;
 	private ComboBox<String> selectionForStrategiesComboBox;
-	private Label errorLabel;
+	
 	
 	//For Association
 	private Label selectAssociationLabel;
@@ -52,13 +53,12 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 		this.diagram = diagram;
 		this.object = object;
 		dialogPane = getDialogPane();
-		errorLabel = getErrorLabel();
 
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
 		addElementToGrid(type);
 
-		dialogPane.setContent(grid);
+		dialogPane.setContent(flow);
 
 
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
@@ -238,7 +238,7 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 
 	private boolean validateRemoveAssociation() {
 		if (selectAssociationComboBox.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText("Select Operation!");
+			errorLabel.setText(StringValue.ErrorMessage.selectAssociation);
 			return false;
 		}
 		return true;
@@ -247,7 +247,7 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 
 	private boolean validateRemoveOperation() {
 		if (selectOperationComboBox.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText("Select Operation!");
+			errorLabel.setText(StringValue.ErrorMessage.selectOperation);
 			return false;
 		}
 		return true;
@@ -256,7 +256,7 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 
 	private boolean validateRemoveAttribute() {
 		if (selectAttributeComboBox.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText("Select Operation!");
+			errorLabel.setText(StringValue.ErrorMessage.selectAttribute);
 			return false;
 		}
 		return true;

@@ -415,9 +415,18 @@ public class FmmlxDiagramCommunicator {
 				new Value(id),
 				new Value(name),
 				new Value(strategy)};
-		WorkbenchClient.theClient().send(handler, "removeAttribute", message);
+		WorkbenchClient.theClient().send(handler, "removeOperation", message);
 	}
 
+	public void removeAssociation(int id, String name, int strategy) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(id),
+				new Value(name),
+				new Value(strategy)};
+		WorkbenchClient.theClient().send(handler, "removeAssociation", message);
+	}
+	
 	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) {
 		Value[] multiplicity = new Value[]{
 				new Value(multi.min),
@@ -525,5 +534,16 @@ public class FmmlxDiagramCommunicator {
 				new Value(newOfId)};
 		WorkbenchClient.theClient().send(handler, "changOf", message);	
 	}
+
+	public void changeAttributeOwner(int objectId, Integer newOwnerID) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(objectId),
+				new Value(newOwnerID)};
+		WorkbenchClient.theClient().send(handler, "changOf", message);
+		
+	}
+
+
 	
 }

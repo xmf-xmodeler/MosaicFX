@@ -620,7 +620,7 @@ public class FmmlxDiagram {
 	}
 
 	public void removeAssociation(RemoveDialogResult result) {
-		comm.removeAttribute(result.getObject().getId(), result.getAssociation().getName(), 0);
+		comm.removeAssociation(result.getObject().getId(), result.getAssociation().getName(), 0);
 		
 	}
 
@@ -635,7 +635,7 @@ public class FmmlxDiagram {
 	}
 
 	public void changeAttributeOwner(ChangeOwnerDialogResult result) {
-		// TODO Auto-generated method stub
+		comm.changeAttributeOwner(result.getObject().getId(), result.getNewOwnerID());
 
 	}
 

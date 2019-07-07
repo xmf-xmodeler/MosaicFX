@@ -35,6 +35,11 @@ public class FmmlxAttribute implements FmmlxProperty {
 	public int getLevel() {
 		return level;
 	}
+
+	public int getOwnerId() {
+		// TODO Auto-generated method stub
+		return owner;
+	}
 	
 	
 	
