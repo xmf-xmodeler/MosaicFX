@@ -149,9 +149,9 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	}
 
 	private void layoutContent(PropertyType type) {
-		objectLabel = new Label("Class");
+		objectLabel = new Label(StringValue.LabelAndHeaderTitle.object);
 		objectNameTextField = new TextField();
-		objectLevelLabel = new Label("Current Level");
+		objectLevelLabel = new Label(StringValue.LabelAndHeaderTitle.currentLevel);
 		objectLevelTextField = new TextField();
 		objectNameTextField.setText(object.getName());
 		objectNameTextField.setDisable(true);
@@ -181,11 +181,11 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	private void changeAssociationLevel() {
 		//TODO Put list of Association to combobox
 		
-		dialogPane.setHeaderText("Change Association Level");
+		dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeAssociationLevel);
 		
-		selectAssociationLabel = new Label("Select Association");
-		currentLevelLabel = new Label("Current Level");
-		newLevelLabel = new Label("Select New Level");
+		selectAssociationLabel = new Label(StringValue.LabelAndHeaderTitle.selectAssociation);
+		currentLevelLabel = new Label(StringValue.LabelAndHeaderTitle.currentLevel);
+		newLevelLabel = new Label(StringValue.LabelAndHeaderTitle.newLevel);
 		
 		selectAssociationComboBox = new ComboBox<String>();
 		currentLevelTextField = new TextField();
@@ -220,11 +220,11 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 		ObservableList<FmmlxOperation> operationList;
 		operationList =  FXCollections.observableList(operations);
 		
-		dialogPane.setHeaderText("Change Operation Level");
+		dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeOperationLevel);
 
-		selectOperationLabel = new Label("Select Operation");
-		currentLevelLabel = new Label("Current Level");
-		newLevelLabel = new Label("Select New Level");
+		selectOperationLabel = new Label(StringValue.LabelAndHeaderTitle.selectOperation);
+		currentLevelLabel = new Label(StringValue.LabelAndHeaderTitle.currentLevel);
+		newLevelLabel = new Label(StringValue.LabelAndHeaderTitle.selectNewLevel);
 
 		selectOperationComboBox = initializeOperationComboBox(operationList);
 		selectOperationComboBox.valueProperty().addListener(new ChangeListener<FmmlxOperation>() {
@@ -260,7 +260,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	}
 
 	private void changeAttributeLevel() {
-		dialogPane.setHeaderText("Change Attribute Level");
+		dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeAttributeLevel);
 		
 		attributes = object.getOwnAttributes();
 		attributes.addAll(object.getOtherAttributes());
@@ -268,9 +268,9 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 		ObservableList<FmmlxAttribute> attributeList;
 		attributeList =  FXCollections.observableList(attributes);
 
-		selectAttributeLabel = new Label("Select Attribute");
-		currentLevelLabel = new Label("Current Level");
-		newLevelLabel = new Label("select New Level");
+		selectAttributeLabel = new Label(StringValue.LabelAndHeaderTitle.selectAttribute);
+		currentLevelLabel = new Label(StringValue.LabelAndHeaderTitle.currentLevel);
+		newLevelLabel = new Label(StringValue.LabelAndHeaderTitle.selectNewLevel);
 		
 		currentLevelTextField = new TextField();
 		currentLevelTextField.setDisable(true);
@@ -308,11 +308,11 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	}
 
 	private void changeClassLevel() {
-		dialogPane.setHeaderText("Change Class Level");
+		dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeClassLevel);
 		objectLevelTextField.setText(object.getLevel() + "");
 		objectLevelTextField.setDisable(true);
 
-		newLevelLabel = new Label("Select New Level");
+		newLevelLabel = new Label(StringValue.LabelAndHeaderTitle.selectNewLevel);
 		currentLevel=object.getLevel();
 
 		newLevelComboBox = new ComboBox<Integer>(LevelList.levelList);
