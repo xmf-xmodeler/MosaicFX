@@ -3,16 +3,19 @@ package tool.clients.fmmlxdiagrams;
 public class StringValue {
 	
 	public static class ErrorMessage{
+		//Select
 		public static final String selectNewOwner = "Select New Owner";
 		public static final String selectAttribute = "Select Attribute!";
 		public static final String selectOperation = "Select Operation!";
 		public static final String selectAssociation = "Select Association!";
+		public static final String selectLevel = "Select Level!";
+		public static final String selectType = "Select Type";
+		
 		public static final String enterValidName = "Type Valid Name!";
 		public static final String nameAlreadyUsed = "Name Already Used.";
 		public static final String selectNewLevel = "Select new Level!";
 		public static final String pleaseSelectAnotherLevel = "Please select another level!";
-		public static final String selectLevel = "Select Level!";
-		public static final String selectType = "Select Type";
+		
 	}
 	
 	public static class LabelAndHeaderTitle{
@@ -51,7 +54,7 @@ public class StringValue {
 		public static final String selectOperation = "Select Operation";
 		public static final String selectAssociation = "Select Association";
 		public static final String selectNewLevel = "Select New Level";
-		public static final String selectNewOf = "SelectNewOf";
+		public static final String selectNewOf = "Select New Of";
 		public static final String selectType = "Select Type";
 		public static final String selectLevel = "Select Level";
 	}
