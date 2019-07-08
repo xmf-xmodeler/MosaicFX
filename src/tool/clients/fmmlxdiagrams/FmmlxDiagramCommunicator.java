@@ -523,7 +523,6 @@ public class FmmlxDiagramCommunicator {
 				new Value(oldLevel),
 				new Value(newLevel)};
 		WorkbenchClient.theClient().send(handler, "changeOperationLevel", message);
-		
 	}
 
 	public void changeOf(int objectId, int oldOfId, int newOfId) {
@@ -540,8 +539,15 @@ public class FmmlxDiagramCommunicator {
 				new Value(-1),
 				new Value(objectId),
 				new Value(newOwnerID)};
-		WorkbenchClient.theClient().send(handler, "changOf", message);
-		
+		WorkbenchClient.theClient().send(handler, "changOf", message);	
+	}
+
+	public void changeOperationOwner(int objectId, Integer newOwnerID) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(objectId),
+				new Value(newOwnerID)};
+		WorkbenchClient.theClient().send(handler, "changOwner", message);	
 	}
 
 

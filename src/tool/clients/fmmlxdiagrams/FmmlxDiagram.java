@@ -640,15 +640,14 @@ public class FmmlxDiagram {
 	}
 
 	public void changeOperationOwner(ChangeOwnerDialogResult result) {
-		// TODO Auto-generated method stub
+		comm.changeOperationOwner(result.getObject().getId(), result.getNewOwnerID());
 
 	}
 
 
-	public void changeParentAttribute(ChangeParentDialogResult result) {
-		// TODO Auto-generated method stub
+	public void changeParent(ChangeParentDialogResult result) {
 		
-	}
+		}
 
 	public void changeTypeAttribute(ChangeTypeDialogResult result) {
 		// TODO Auto-generated method stub
