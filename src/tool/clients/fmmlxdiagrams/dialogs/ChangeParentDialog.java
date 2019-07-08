@@ -30,7 +30,6 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 
 
 	public ChangeParentDialog(FmmlxDiagram diagram, FmmlxObject object) {
-		// TODO Auto-generated constructor stub
 		super();
 
 		this.diagram = diagram;
@@ -53,7 +52,7 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				//TODO
+				return new ChangeParentDialogResult(object, newParentListView.getSelectionModel().getSelectedItems());
 			}
 			return null;
 		});

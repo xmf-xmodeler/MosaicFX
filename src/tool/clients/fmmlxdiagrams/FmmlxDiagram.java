@@ -646,7 +646,7 @@ public class FmmlxDiagram {
 
 
 	public void changeParent(ChangeParentDialogResult result) {
-		
+		comm.changeParent(result.getObject().getId(), result.getCurrentParentIds(), result.getNewParentIds());
 		}
 
 	public void changeTypeAttribute(ChangeTypeDialogResult result) {

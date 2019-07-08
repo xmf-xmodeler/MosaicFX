@@ -550,6 +550,11 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "changOwner", message);	
 	}
 
+	public void changeParent(int id, Vector<Integer> currentParents, Vector<Integer> newParents) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 	
 }
