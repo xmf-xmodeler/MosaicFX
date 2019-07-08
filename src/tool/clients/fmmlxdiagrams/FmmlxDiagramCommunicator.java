@@ -550,11 +550,49 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "changOwner", message);	
 	}
 
-	public void changeParent(int id, Vector<Integer> currentParents, Vector<Integer> newParents) {
-		// TODO Auto-generated method stub
+	public void changeParent(int objectId, Vector<Integer> currentParents, Vector<Integer> newParents) {
+		Value[] parentsArray = createValueArray(currentParents);
+		Value[] newParentsArray = createValueArray(newParents);
+
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(objectId),
+				new Value(parentsArray),
+				new Value(newParentsArray)};
+		WorkbenchClient.theClient().send(handler, "changeParent", message);
 		
 	}
 
+	public void changeAttributeType(int objectId, String attributeName, String oldType, String newType) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(objectId),
+				new Value(attributeName),
+				new Value(oldType),
+				new Value(newType)};
+		WorkbenchClient.theClient().send(handler, "changeAttributeType", message);
+		
+	}
 
+	public void changeOperationType(int objectId, String operationName, String oldType, String newType) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(objectId),
+				new Value(operationName),
+				new Value(oldType),
+				new Value(newType)};
+		WorkbenchClient.theClient().send(handler, "changeOperationType", message);
+		
+	}
 	
+	public void changeAssociationType(int objectId, String associationName, String oldType, String newType) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(objectId),
+				new Value(associationName),
+				new Value(oldType),
+				new Value(newType)};
+		WorkbenchClient.theClient().send(handler, "changeAssociationType", message);
+		
+	}
 }

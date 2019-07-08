@@ -1,6 +1,6 @@
-package tool.clients.fmmlxdiagrams;
+package tool.clients.fmmlxdiagrams.stringvalue;
 
-public class StringValue {
+public class StringValueDialog {
 	
 	public static class ErrorMessage{
 		//Select
@@ -9,15 +9,16 @@ public class StringValue {
 		public static final String selectOperation = "Select Operation!";
 		public static final String selectAssociation = "Select Association!";
 		public static final String selectLevel = "Select Level!";
-		public static final String selectType = "Select Type";
+		public static final String selectNewLevel = "Select new Level!";
+		public static final String selectType = "Select Type!";
+		public static final String selectNewType = "Select New Type!";
+		public static final String selectAnotherType = "Select Another Type!";
 		public static final String selectNewParent = "Select New Parent!";
 		
 		public static final String enterValidName = "Type Valid Name!";
 		public static final String nameAlreadyUsed = "Name Already Used.";
-		public static final String selectNewLevel = "Select new Level!";
-		
+
 		public static final String pleaseSelectAnotherLevel = "Please select another level!";
-		
 	}
 	
 	public static class LabelAndHeaderTitle{
@@ -46,9 +47,12 @@ public class StringValue {
 		public static final String changeOf = "Change Of";
 		public static final String changeAttributeOwner = "Change Attribute Owner";
 		public static final String changeAttributeLevel = "Change Attribute Level";
+		public static final String changeAttributeType = "Change Attribute Type";
 		public static final String changeOperationOwner = "Change Operation Owner";
 		public static final String changeOperationLevel = "Change Operation Level";
+		public static final String changeOperationType = "Change Operation Type";
 		public static final String changeAssociationLevel = "Change Association Level";
+		public static final String changeAssociationType = "Change Association Type";
 		public static final String changeParent= "Change Parent";
 			
 		//Select

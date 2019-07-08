@@ -8,6 +8,8 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
+import tool.clients.fmmlxdiagrams.stringvalue.StringValueDialog;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -107,7 +109,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		Label errorLabel = getErrorLabel();
 
 		if (getComboBoxStringValue(typeComboBox) == null || getComboBoxStringValue(typeComboBox).length() < 1) {
-			errorLabel.setText(StringValue.ErrorMessage.selectType);
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectType);
 			return false;
 		}
 		errorLabel.setText("");
@@ -118,7 +120,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		Label errorLabel = getErrorLabel();
 
 		if (levelComboBox.getSelectionModel().getSelectedIndex() == -1) {
-			errorLabel.setText(StringValue.ErrorMessage.selectLevel);
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectLevel);
 			return false;
 		} 
 		errorLabel.setText("");
@@ -131,10 +133,10 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		String name = nameTextField.getText();
 
 		if (!InputChecker.getInstance().validateName(name)) {	
-			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
+			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
 			return false;
 		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, selectedObject)) {
-			errorLabel.setText(StringValue.ErrorMessage.nameAlreadyUsed);
+			errorLabel.setText(StringValueDialog.ErrorMessage.nameAlreadyUsed);
 			return false;
 		} else {
 			errorLabel.setText("");
@@ -143,11 +145,11 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 	}
 
 	private void addElementToGrid() {
-		nameLabel = new Label(StringValue.LabelAndHeaderTitle.name);
-		classLabel = new Label(StringValue.LabelAndHeaderTitle.selectedObject);
-		levelLabel = new Label(StringValue.LabelAndHeaderTitle.level);
-		typeLabel = new Label(StringValue.LabelAndHeaderTitle.type);
-		multiplicityLabel = new Label(StringValue.LabelAndHeaderTitle.Multiplicity);
+		nameLabel = new Label(StringValueDialog.LabelAndHeaderTitle.name);
+		classLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectedObject);
+		levelLabel = new Label(StringValueDialog.LabelAndHeaderTitle.level);
+		typeLabel = new Label(StringValueDialog.LabelAndHeaderTitle.type);
+		multiplicityLabel = new Label(StringValueDialog.LabelAndHeaderTitle.Multiplicity);
 		classList = getAllClassList();
 
 		String[] types = new String[]{"Integer", "String", "Boolean", "Float"};
