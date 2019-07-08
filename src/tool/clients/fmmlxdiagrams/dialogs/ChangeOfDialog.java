@@ -6,6 +6,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOfDialogResult;
+import tool.clients.fmmlxdiagrams.stringvalue.StringValueDialog;
 
 
 public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult>{
@@ -56,7 +57,7 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult>{
 	private boolean validateUserInput() {
 		
 		if (newOfComboBox.getSelectionModel().isEmpty()) {
-			errorLabel.setText("Select new Of");
+			errorLabel.setText(StringValueDialog.LabelAndHeaderTitle.selectNewOf);
 			return false;
 		}
 		
@@ -66,9 +67,9 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult>{
 
 	private void addElementToLayout() {
 		
-		dialogPane.setHeaderText("Change Of");
+		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.changeOf);
 		
-		selectedObjectLabel = new Label("Selected Object");
+		selectedObjectLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectedObject);
 		currentOf = new Label("Current Of");
 		newOf = new Label("New Of");
 		errorLabel = getErrorLabel();

@@ -40,8 +40,10 @@ public class FmmlxAttribute implements FmmlxProperty {
 		// TODO Auto-generated method stub
 		return owner;
 	}
-	
-	
-	
+
+	public String getType() {
+		// TODO Auto-generated method stub
+		return type;
+	}
 	
 }

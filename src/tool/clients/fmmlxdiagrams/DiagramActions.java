@@ -316,7 +316,7 @@ public class DiagramActions {
 
 			if (cpd.isPresent()) {
 				ChangeParentDialogResult result = cpd.get();
-				diagram.changeParentAttribute(result);
+				diagram.changeParent(result);
 			}
 
 			diagram.updateDiagram();

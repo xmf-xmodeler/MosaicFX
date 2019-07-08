@@ -636,48 +636,41 @@ public class FmmlxDiagram {
 
 	public void changeAttributeOwner(ChangeOwnerDialogResult result) {
 		comm.changeAttributeOwner(result.getObject().getId(), result.getNewOwnerID());
-
 	}
 
 	public void changeOperationOwner(ChangeOwnerDialogResult result) {
-		// TODO Auto-generated method stub
-
+		comm.changeOperationOwner(result.getObject().getId(), result.getNewOwnerID());
 	}
 
-
-	public void changeParentAttribute(ChangeParentDialogResult result) {
-		// TODO Auto-generated method stub
-		
+	public void changeParent(ChangeParentDialogResult result) {
+		comm.changeParent(result.getObject().getId(), result.getCurrentParentIds(), result.getNewParentIds());
 	}
 
 	public void changeTypeAttribute(ChangeTypeDialogResult result) {
-		// TODO Auto-generated method stub
-		
+		comm.changeAttributeType(result.getObject().getId(), result.getAttribute().getName(),
+				result.getOldType(), result.getNewType());
 	}
 
 	public void changeTypeOperation(ChangeTypeDialogResult result) {
-		// TODO Auto-generated method stub
-		
+		comm.changeOperationType(result.getObject().getId(), result.getOperation().getName(),
+				result.getOldType(), result.getNewType());
 	}
 
 	public void changeTypeAssociation(ChangeTypeDialogResult result) {
-		// TODO Auto-generated method stub
-		
+		comm.changeAssociationType(result.getObject().getId(), result.getAssociation().getName(),
+				result.getOldType(), result.getNewType());
 	}
 
 	public void changeTargetAssociation(ChangeTargetDialogResult result) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public void changeMulitiplicityAttribute(ChangeMultiplicityDialogResult result) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public void changeBody(ChangeBodyDialogResult result) {
 		// TODO Auto-generated method stub
-		
 	}
 	
 }
