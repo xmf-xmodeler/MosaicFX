@@ -10,10 +10,12 @@ public class StringValue {
 		public static final String selectAssociation = "Select Association!";
 		public static final String selectLevel = "Select Level!";
 		public static final String selectType = "Select Type";
+		public static final String selectNewParent = "Select New Parent!";
 		
 		public static final String enterValidName = "Type Valid Name!";
 		public static final String nameAlreadyUsed = "Name Already Used.";
 		public static final String selectNewLevel = "Select new Level!";
+		
 		public static final String pleaseSelectAnotherLevel = "Please select another level!";
 		
 	}
@@ -28,8 +30,7 @@ public class StringValue {
 		public static final String type = "Type";
 		public static final String Multiplicity = "Multiplicity";
 		public static final String body = "Body";
-		
-		
+				
 		//Current
 		public static final String currentOwner = "Current Owner";
 		public static final String currentLevel = "Current Level";
@@ -48,7 +49,8 @@ public class StringValue {
 		public static final String changeOperationOwner = "Change Operation Owner";
 		public static final String changeOperationLevel = "Change Operation Level";
 		public static final String changeAssociationLevel = "Change Association Level";
-		
+		public static final String changeParent= "Change Parent";
+			
 		//Select
 		public static final String selectAttribute = "Select Attribute";
 		public static final String selectOperation = "Select Operation";
@@ -57,6 +59,7 @@ public class StringValue {
 		public static final String selectNewOf = "Select New Of";
 		public static final String selectType = "Select Type";
 		public static final String selectLevel = "Select Level";
+		public static final String selectNewParent = "Select New Parent";
 	}
 
 }

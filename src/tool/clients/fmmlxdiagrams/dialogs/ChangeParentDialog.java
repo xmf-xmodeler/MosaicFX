@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeParentDialogResult;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 	private FmmlxObject object;
 
 	private ObservableList<FmmlxObject> currentParentList;
-	private ObservableList<FmmlxObject> newParentList;
+	private ObservableList<FmmlxObject> possibleParents;
 
 	private Label selectedObjectLabel;
 	private Label currentParentsLabel;
@@ -36,7 +37,7 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 		this.object = object;
 
 		DialogPane dialogPane = getDialogPane();
-		dialogPane.setHeaderText("Change Parent");
+		dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeParent);
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
 		setLayoutContent();
@@ -56,31 +57,42 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 			}
 			return null;
 		});
-
 	}
 
 
 	private boolean validateUserInput() {
-		// TODO Auto-generated method stub
-		return false;
+		if (possibleParents.size()>=1) {
+			if(newParentListView.getSelectionModel().getSelectedItems().size()==0) {
+				errorLabel.setText(StringValue.ErrorMessage.selectNewParent);
+				return false;
+			}
+		}
+		return true;
 	}
-
 
 	private void setLayoutContent() {
 
-		selectedObjectLabel = new Label("Selected Object");
-		currentParentsLabel = new Label("Current Parent");
+		selectedObjectLabel = new Label(StringValue.LabelAndHeaderTitle.selectedObject);
+		currentParentsLabel = new Label(StringValue.LabelAndHeaderTitle.currentParent);
+	
 
 		selectedObjectTextField = new TextField();
 		selectedObjectTextField.setText(object.getName());
 		selectedObjectTextField.setDisable(true);
 
-		newParentLabel = new Label("Select New Parent");
+		newParentLabel = new Label(StringValue.LabelAndHeaderTitle.selectNewParent);
 
+		currentParentList = getCurrentParent();
 		currentParentsListView = initializeListView(currentParentList, SelectionMode.MULTIPLE);
 		currentParentsListView.setDisable(true);
-		newParentListView = initializeListView(newParentList, SelectionMode.MULTIPLE);
-		//initializeListView();
+		newParentListView = initializeListView(possibleParents, SelectionMode.MULTIPLE);
+		possibleParents = diagram.getAllPossibleParents(object.getLevel());
+		newParentListView.setItems(possibleParents);
+		newParentListView.setDisable(false);
+		if (possibleParents.size() == 0) {
+			newParentListView.setDisable(true);
+		}
+		
 
 		grid.add(selectedObjectLabel, 0, 0);
 		grid.add(selectedObjectTextField, 1, 0);
@@ -88,10 +100,6 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 		grid.add(currentParentsListView, 1, 1);
 		grid.add(newParentLabel, 0, 2);
 		grid.add(newParentListView, 1, 2);
-
-
-		// TODO Auto-generated method stub
-
 	}
 
 	private ObservableList<FmmlxObject> getCurrentParent() {
