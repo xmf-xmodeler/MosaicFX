@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import java.util.Vector;
+
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
@@ -77,7 +79,7 @@ public class InputChecker {
 
 	public boolean associationNameIsAvailable(String name, FmmlxObject object) {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 }

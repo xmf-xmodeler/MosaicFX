@@ -1,7 +1,11 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -9,9 +13,11 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
+import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeMultiplicityDialogResult;
+import tool.clients.fmmlxdiagrams.stringvalue.StringValueDialog;
 
 public class ChangeMultiplicityDialog extends CustomDialog<ChangeMultiplicityDialogResult> {
 	
@@ -30,11 +36,16 @@ public class ChangeMultiplicityDialog extends CustomDialog<ChangeMultiplicityDia
 	
 	
 	private TextField objectTextField;
-	private ComboBox<String> selectAttributeComboBox;
-	private ComboBox<Integer> minimumComboBox;
-	private ComboBox<Integer> maximumComboBox;
+	private ComboBox<FmmlxAttribute> selectAttributeComboBox;
+	private ComboBox<String> minimumComboBox;
+	private ComboBox<String> maximumComboBox;
 	private CheckBox orderedCheckBox;
 	private CheckBox allowDuplicatesCheckBox;
+	
+	private Vector<FmmlxAttribute> attributes;
+	private List<String> minArray;
+	private List<String> maxArray;
+
 	
 	public ChangeMultiplicityDialog(FmmlxDiagram diagram, FmmlxObject object, PropertyType type) {
 		this.type=type;
@@ -46,6 +57,7 @@ public class ChangeMultiplicityDialog extends CustomDialog<ChangeMultiplicityDia
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		layoutContent();
 		dialogPane.setContent(flow);
+		validateUserInput();
 
 		setResult();
 		
@@ -61,32 +73,45 @@ public class ChangeMultiplicityDialog extends CustomDialog<ChangeMultiplicityDia
 	}
 
 	private boolean validateUserInput() {
-		// TODO Auto-generated method stub
+		errorLabel.setText("Not implemented yet");
 		return false;
 	}
 
 	private void layoutContent() {
-		dialogPane.setHeaderText("Change Multiplicity");
+		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.changeMultiplicity);
 		
-		objectLabel = new Label("Class");
-		selectAttributeLabel = new Label("Select Attribute");
+		objectLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectedObject);
+		selectAttributeLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectAttribute);
 		objectTextField = new TextField();
 		objectTextField.setText(object.getName());
 		objectTextField.setDisable(true);
 		
-		selectAttributeLabel= new Label("Select Attribute");
-		selectAttributeComboBox = new ComboBox<String>();
+		String[] min = new String[] { "0", "1" };
+		minArray = Arrays.asList(min);
+		ObservableList<String> minList = FXCollections.observableArrayList(minArray);
+
+		String[] max = new String[] { "1", "unlimited" };
+		maxArray = Arrays.asList(max);
+		ObservableList<String> maxList = FXCollections.observableArrayList(maxArray);
 		
-		minimumLabel = new Label("Minimum");
-		minimumComboBox = new ComboBox<Integer>();
+		attributes = object.getOwnAttributes();
+		attributes.addAll(object.getOtherAttributes());
 		
-		maximumLabel = new Label("Maximum");
-		maximumComboBox = new ComboBox<Integer>();
+		ObservableList<FmmlxAttribute> attributeList;
+		attributeList =  FXCollections.observableList(attributes);
 		
-		orderedLabel = new Label("Ordered");
+		selectAttributeComboBox = initializeAttributeComboBox(attributeList);
+		
+		minimumLabel = new Label(StringValueDialog.LabelAndHeaderTitle.minimum);
+		minimumComboBox = new ComboBox<>(minList);
+		
+		maximumLabel = new Label(StringValueDialog.LabelAndHeaderTitle.maximum);
+		maximumComboBox = new ComboBox<>(maxList);
+		
+		orderedLabel = new Label(StringValueDialog.LabelAndHeaderTitle.ordered);
 		orderedCheckBox = new CheckBox();
 		
-		allowDuplicatesLabel = new Label("Allow Duplicates");
+		allowDuplicatesLabel = new Label(StringValueDialog.LabelAndHeaderTitle.allowDuplicates);
 		allowDuplicatesCheckBox = new CheckBox();
 		
 		selectAttributeComboBox.setPrefWidth(COLUMN_WIDTH);

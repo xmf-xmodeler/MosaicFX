@@ -532,6 +532,11 @@ public class FmmlxDiagram {
 		ObservableList<FmmlxObject> result = FXCollections.observableArrayList(objectList);
 		return result;
 	}
+	
+	public ObservableList<FmmlxObject> getAllPossibleOf() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 
 	////////////////////////////////////////////////////////////////////

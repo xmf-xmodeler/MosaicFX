@@ -6,7 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.stringvalue.StringValueDialog;
 
 import java.util.Vector;
 
@@ -130,10 +130,12 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		selectAssociationBox = new ComboBox<FmmlxAssociation>();
 
 		selectAssociationBox.setPrefWidth(COLUMN_WIDTH);
+		newNameLabel = new Label("New Attribute Name");
+		newNameTextField= new TextField();
 
 		grid.add(selectAssociationNameLabel, 0, 1);
 		grid.add(selectAssociationBox, 1, 1);
-		grid.add(newNameTextField, 0, 2);
+		grid.add(newNameLabel, 0, 2);
 		grid.add(newNameTextField, 1, 2);
 
 	}
@@ -215,9 +217,9 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 
 	private boolean validateAssociationName() {
 		String name = newNameTextField.getText();
-
-		if (selectOperationComboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectOperation);
+		
+		if (selectAssociationBox.getSelectionModel().getSelectedItem()==null) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociation);
 			return false;
 		}
 		if (!InputChecker.getInstance().validateName(name)) {

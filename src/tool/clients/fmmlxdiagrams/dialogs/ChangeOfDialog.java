@@ -1,12 +1,13 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOfDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.stringvalue.StringValueDialog;
 
 
 public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult>{
@@ -23,6 +24,8 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult>{
 	private TextField currentOfTextField;
 	private ComboBox<FmmlxObject>newOfComboBox;
 	
+	private ObservableList<FmmlxObject> allPossibleOf;
+	
 
 	public ChangeOfDialog(FmmlxDiagram diagram, FmmlxObject object) {
 		super();
@@ -35,7 +38,7 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult>{
 		
 		addElementToLayout();
 
-		dialogPane.setContent(grid);
+		dialogPane.setContent(flow);
 		
 		
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
@@ -55,6 +58,11 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult>{
 
 
 	private boolean validateUserInput() {
+		
+		if (allPossibleOf==null) {
+			errorLabel.setText("Implement getAllPossibleOf() in FmmlxDiagram.java!");
+			return false;
+		}
 		
 		if (newOfComboBox.getSelectionModel().isEmpty()) {
 			errorLabel.setText(StringValueDialog.LabelAndHeaderTitle.selectNewOf);
@@ -87,10 +95,9 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult>{
 		
 		currentOfTextField.setDisable(true);
 		
-		newOfComboBox = new ComboBox<FmmlxObject>();
-		//TODO make a method getAllPossibleOfList in FmmlxDiagram.class
-		//ObservableList<FmmlxObject> allPossibleOf = diagram.getAllPossibleOfList();
-		//newOfComboBox = initializeComboBox(allPossibleOf);
+		
+		allPossibleOf = diagram.getAllPossibleOf();
+		newOfComboBox = initializeComboBox(allPossibleOf);
 		
 		newOfComboBox.setPrefWidth(COLUMN_WIDTH);
 		
