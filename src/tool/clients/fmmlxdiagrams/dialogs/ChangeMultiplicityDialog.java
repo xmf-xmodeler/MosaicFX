@@ -100,7 +100,7 @@ public class ChangeMultiplicityDialog extends CustomDialog<ChangeMultiplicityDia
 		ObservableList<FmmlxAttribute> attributeList;
 		attributeList =  FXCollections.observableList(attributes);
 		
-		selectAttributeComboBox = initializeAttributeComboBox(attributeList);
+		selectAttributeComboBox = (ComboBox<FmmlxAttribute>) initializeComboBox(attributeList);
 		
 		minimumLabel = new Label(StringValueDialog.LabelAndHeaderTitle.minimum);
 		minimumComboBox = new ComboBox<>(minList);

@@ -5,13 +5,11 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
-import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddDialogResult;
 import tool.clients.fmmlxdiagrams.stringvalue.StringValueDialog;
-
 
 import java.util.Arrays;
 import java.util.List;
@@ -50,7 +48,7 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 	//For add Association
 	private Label targetLabel;
 	private ComboBox<FmmlxObject> targetComboBox;
-	
+
 
 	private Multiplicity multiplicity = Multiplicity.OPTIONAL;
 
@@ -83,14 +81,14 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				switch (type) {
-				case Operation:
-					setResultAddOperation(dlgBtn);
-					break;
-				case Association:
-					setResultAddAssociation(dlgBtn);
-					break;
-				default:
-					System.err.println("AddDialogResult: No matching content type!");	
+					case Operation:
+						setResultAddOperation(dlgBtn);
+						break;
+					case Association:
+						setResultAddAssociation(dlgBtn);
+						break;
+					default:
+						System.err.println("AddDialogResult: No matching content type!");
 				}
 			}
 			return null;
@@ -100,7 +98,7 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 
 	private void setResultAddOperation(ButtonType dlgBtn) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private void setResultAddAssociation(ButtonType dlgBtn) {
@@ -127,32 +125,32 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 
 	//generate Layout Content
 
-	
+
 	private void generateLayoutAddAssociation() {
-		objects= diagram.getObjects();
-		
+		objects = diagram.getObjects();
+
 		ObservableList<FmmlxObject> targetList;
-		targetList =  FXCollections.observableList(objects);
-		
+		targetList = FXCollections.observableList(objects);
+
 		dialogPane.setHeaderText("Add Association");
 		classLabel = new Label("Class");
 		nameLabel = new Label("Name");
 		typeLabel = new Label("Type");
 		targetLabel = new Label("Target");
 		levelLabel = new Label("Level");
-		multiplicityLabel= new Label("Multiplicity"); 
-		
-		String[] types = new String[] { "Integer", "String", "Boolean","Double","Float"};
+		multiplicityLabel = new Label("Multiplicity");
+
+		String[] types = new String[]{"Integer", "String", "Boolean", "Double", "Float"};
 		typesArray = Arrays.asList(types);
-		ObservableList<String> typeList= FXCollections.observableArrayList(typesArray);
-		
+		ObservableList<String> typeList = FXCollections.observableArrayList(typesArray);
+
 		classTextField = new TextField();
 		classTextField.setText(object.getName());
 		classTextField.setDisable(true);
 		nameTextField = new TextField();
 		typeComboBox = new ComboBox<>(typeList);
 		typeComboBox.setEditable(true);
-		targetComboBox = initializeComboBox(targetList);
+		targetComboBox = (ComboBox<FmmlxObject>) initializeComboBox(targetList);
 		levelComboBox = new ComboBox<>(LevelList.getLevelInterval(object));
 		multiplicityButton = new Button();
 		multiplicityButton.setText(multiplicity.getClass().getSimpleName().toString());
@@ -222,17 +220,17 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 	private void resetOperationBody() {
 		bodyTextArea.setText(StringValueDialog.OperationStringValues.emptyOperation);
 	}
-		
+
 
 	private boolean validateUserInput() {
 
 		switch (type) {
-		case Operation:
-			return validateAddOperation();
-		case Association:
-			return validateAddAssociation();
-		default:
-			System.err.println("AddDialog: No matching content type!");	
+			case Operation:
+				return validateAddOperation();
+			case Association:
+				return validateAddAssociation();
+			default:
+				System.err.println("AddDialog: No matching content type!");
 		}
 		return false;
 	}
@@ -248,7 +246,7 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 
 		String name = nameTextField.getText();
 
-		if (!InputChecker.getInstance().validateName(name)) {	
+		if (!InputChecker.getInstance().validateName(name)) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
 			return false;
 		} else if (!InputChecker.getInstance().operationNameIsAvailable(name, object)) {
@@ -257,10 +255,10 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 		} else if (getComboBoxStringValue(typeComboBox) == null || getComboBoxStringValue(typeComboBox).length() < 1) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectType);
 			return false;
-		} else if (levelComboBox.getSelectionModel().getSelectedIndex()==-1) {
+		} else if (levelComboBox.getSelectionModel().getSelectedIndex() == -1) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectLevel);
 			return false;
-		} else if (bodyTextArea.getText()=="") {
+		} else if (bodyTextArea.getText() == "") {
 			errorLabel.setText(StringValueDialog.ErrorMessage.inputBody);
 			return false;
 		}
@@ -268,5 +266,5 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 		return false;
 
 	}
-	
+
 }

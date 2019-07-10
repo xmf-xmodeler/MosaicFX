@@ -140,7 +140,7 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 
 		ObservableList<FmmlxObject> objectList = FXCollections.observableList(objects);
 		objectList.remove(object);
-		newOwnerComboBox = initializeComboBox(objectList);
+		newOwnerComboBox = (ComboBox<FmmlxObject>) initializeComboBox(objectList);
 		
 		newOwnerComboBox.setPrefWidth(COLUMN_WIDTH);
 
