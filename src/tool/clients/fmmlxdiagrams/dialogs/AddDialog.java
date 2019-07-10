@@ -148,7 +148,7 @@ public class AddDialog extends CustomDialog<AddDialogResult>{
 		nameTextField = new TextField();
 		typeComboBox = new ComboBox<>(typeList);
 		typeComboBox.setEditable(true);
-		targetComboBox = new ComboBox<>(targetList);
+		targetComboBox = initializeComboBox(targetList);
 		levelComboBox = new ComboBox<>(LevelList.getLevelInterval(object));
 		multiplicityButton = new Button();
 		multiplicityButton.setText(multiplicity.getClass().getSimpleName().toString());
@@ -231,6 +231,12 @@ public class AddDialog extends CustomDialog<AddDialogResult>{
 			return false;
 		} else if (!InputChecker.getInstance().associationNameIsAvailable(name, object)) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.nameAlreadyUsed);
+			return false;
+		} else if (typeComboBox.getSelectionModel().getSelectedIndex()==-1) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectType);
+			return false;
+		} else if (targetComboBox.getSelectionModel().getSelectedIndex()==-1) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectTarget);
 			return false;
 		} else if (levelComboBox.getSelectionModel().getSelectedIndex()==-1) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectLevel);

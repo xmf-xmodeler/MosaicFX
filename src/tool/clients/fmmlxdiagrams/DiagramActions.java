@@ -363,7 +363,7 @@ public class DiagramActions {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			AddDialog dlg = new AddDialog(object, type);
+			AddDialog dlg = new AddDialog(diagram, object, type);
 			Optional<AddDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
