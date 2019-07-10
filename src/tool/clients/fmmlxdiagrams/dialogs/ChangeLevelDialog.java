@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
+import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
@@ -311,12 +312,14 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.changeClassLevel);
 		objectLevelTextField.setText(object.getLevel() + "");
 		objectLevelTextField.setDisable(true);
-
+		
 		newLevelLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectNewLevel);
 		currentLevel=object.getLevel();
 
 		newLevelComboBox = new ComboBox<Integer>(LevelList.levelList);
-
+		newLevelComboBox.setEditable(true);
+		newLevelComboBox.setConverter(new IntegerStringConverter());
+ 
 		newLevelComboBox.setPrefWidth(COLUMN_WIDTH);
 		newLevelComboBox.valueProperty().addListener(new ChangeListener<Integer>() {
 

@@ -14,11 +14,13 @@ public class StringValueDialog {
 		public static final String selectNewType = "Select New Type!";
 		public static final String selectAnotherType = "Select Another Type!";
 		public static final String selectNewParent = "Select New Parent!";
+		public static final String selectAnotherClass = "Select Another Class";
 		
 		public static final String enterValidName = "Type Valid Name!";
 		public static final String nameAlreadyUsed = "Name Already Used.";
 
 		public static final String pleaseSelectAnotherLevel = "Please select another level!";
+		
 	}
 	
 	public static class LabelAndHeaderTitle{
@@ -31,6 +33,8 @@ public class StringValueDialog {
 		public static final String type = "Type";
 		public static final String Multiplicity = "Multiplicity";
 		public static final String body = "Body";
+		public static final String minimum= "Minimum";
+		public static final String maximum= "Maximum";
 				
 		//Current
 		public static final String currentOwner = "Current Owner";
@@ -54,6 +58,7 @@ public class StringValueDialog {
 		public static final String changeAssociationLevel = "Change Association Level";
 		public static final String changeAssociationType = "Change Association Type";
 		public static final String changeParent= "Change Parent";
+		public static final String changeMultiplicity = "Change Multiplicity";
 			
 		//Select
 		public static final String selectAttribute = "Select Attribute";
@@ -64,6 +69,10 @@ public class StringValueDialog {
 		public static final String selectType = "Select Type";
 		public static final String selectLevel = "Select Level";
 		public static final String selectNewParent = "Select New Parent";
+		public static final String ordered = "Ordered";
+		public static final String allowDuplicates = "Allow Duplicates";
+		
+		
 	}
 
 }

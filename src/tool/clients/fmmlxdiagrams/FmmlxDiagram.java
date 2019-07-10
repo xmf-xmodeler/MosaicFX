@@ -533,6 +533,11 @@ public class FmmlxDiagram {
 		ObservableList<FmmlxObject> result = FXCollections.observableArrayList(objectList);
 		return result;
 	}
+	
+	public ObservableList<FmmlxObject> getAllPossibleOf() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 
 	////////////////////////////////////////////////////////////////////
@@ -672,5 +677,7 @@ public class FmmlxDiagram {
 	public void changeBody(ChangeBodyDialogResult result) {
 		// TODO Auto-generated method stub
 	}
+
+	
 	
 }
