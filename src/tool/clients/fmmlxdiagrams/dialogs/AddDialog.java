@@ -10,20 +10,19 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.stringvalue.StringValueDialog;
 
-import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
 public class AddDialog extends CustomDialog<AddDialogResult> {
 	private DialogPane dialogPane;
-	private FmmlxObject object;
 	private FmmlxDiagram diagram;
+	private FmmlxObject object;
 	private Vector<FmmlxObject> objects;
 	private PropertyType type;
-
 	//For All
 	private Label classLabel; //except add class
 	private Label nameLabel;
@@ -43,7 +42,6 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 	private List<String> typesArray;
 
 	//For add operation
-	private Label ownerLabel;
 	private Label bodyLabel;
 
 	private ComboBox<String> ownerComboBox;
@@ -51,8 +49,8 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 
 	//For add Association
 	private Label targetLabel;
-	private ComboBox<String> targetComboBox;
-
+	private ComboBox<FmmlxObject> targetComboBox;
+	
 
 	private Multiplicity multiplicity = Multiplicity.OPTIONAL;
 
@@ -85,28 +83,25 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				switch (type) {
-					case Class:
-						setResultAddMetaClass(dlgBtn);
-						break;
-					case Attribute:
-						setResultAddAttribute(dlgBtn);
-						break;
-					case Operation:
-						return new AddDialogResult(object, nameTextField.getText(),
-								levelComboBox.getSelectionModel().getSelectedItem(),
-								typeComboBox.getSelectionModel().getSelectedItem(),
-								bodyTextArea.getText());
-					case Association:
-						setResultAddAssociation(dlgBtn);
-						break;
-					default:
-						System.err.println("AddDialogResult: No matching content type!");
+				case Operation:
+					setResultAddOperation(dlgBtn);
+					break;
+				case Association:
+					setResultAddAssociation(dlgBtn);
+					break;
+				default:
+					System.err.println("AddDialogResult: No matching content type!");	
 				}
 			}
 			return null;
 		});
 	}
 
+
+	private void setResultAddOperation(ButtonType dlgBtn) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	private void setResultAddAssociation(ButtonType dlgBtn) {
 		if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
@@ -115,31 +110,9 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 
 	}
 
-	private void setResultAddAttribute(ButtonType dlgBtn) {
-		if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-			//TODO AddAttributeDialogResult and Multiplicity Result
-			/*return new AddAttributeDialogResult(
-					classId,
-					nameTextField.getText(), 
-					levelComboBox.getSelectionModel().getSelectedItem(),
-					typeComboBox.getSelectionModel().getSelectedItem(), multiplicityResult);*/
-		}
-	}
-
-	private void setResultAddMetaClass(ButtonType dlgBtn) {
-		if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-			//TODO
-		}
-	}
 
 	private void layoutContent() {
 		switch (type) {
-			case Class:
-				generateLayoutAddMetaClass();
-				break;
-			case Attribute:
-				generateLayoutAddAttribute();
-				break;
 			case Operation:
 				generateLayoutAddOperation();
 				break;
@@ -154,27 +127,33 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 
 	//generate Layout Content
 
-	private void generateLayoutAddMetaClass() {
-		// TODO Auto-generated method stub
-
-	}
-
+	
 	private void generateLayoutAddAssociation() {
+		objects= diagram.getObjects();
+		
+		ObservableList<FmmlxObject> targetList;
+		targetList =  FXCollections.observableList(objects);
+		
 		dialogPane.setHeaderText("Add Association");
 		classLabel = new Label("Class");
 		nameLabel = new Label("Name");
 		typeLabel = new Label("Type");
 		targetLabel = new Label("Target");
 		levelLabel = new Label("Level");
-		multiplicityLabel = new Label("Multiplicity");
-
+		multiplicityLabel= new Label("Multiplicity"); 
+		
+		String[] types = new String[] { "Integer", "String", "Boolean","Double","Float"};
+		typesArray = Arrays.asList(types);
+		ObservableList<String> typeList= FXCollections.observableArrayList(typesArray);
+		
 		classTextField = new TextField();
 		classTextField.setText(object.getName());
 		classTextField.setDisable(true);
 		nameTextField = new TextField();
-		typeComboBox = new ComboBox<>();
-		targetComboBox = new ComboBox<String>();
-		levelComboBox = new ComboBox<>(LevelList.levelList);
+		typeComboBox = new ComboBox<>(typeList);
+		typeComboBox.setEditable(true);
+		targetComboBox = initializeComboBox(targetList);
+		levelComboBox = new ComboBox<>(LevelList.getLevelInterval(object));
 		multiplicityButton = new Button();
 		multiplicityButton.setText(multiplicity.getClass().getSimpleName().toString());
 
@@ -243,76 +222,17 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 	private void resetOperationBody() {
 		bodyTextArea.setText(StringValueDialog.OperationStringValues.emptyOperation);
 	}
-
-	private void generateLayoutAddAttribute() {
-		dialogPane.setHeaderText("Add Attribute");
-		nameLabel = new Label("Name");
-		classLabel = new Label("Class");
-		levelLabel = new Label("Level");
-		typeLabel = new Label("Type");
-		multiplicityLabel = new Label("Multiplicity");
-		//classList = getAllClassList();
-
-		String[] types = new String[]{"Integer", "String", "Boolean", "Double", "Float"};
-		typesArray = Arrays.asList(types);
-		ObservableList<String> typeList = FXCollections.observableArrayList(typesArray);
-
-		nameTextField = new TextField();
-		classTextField = new TextField();
-		classTextField.setText(object.getName());
-		classTextField.setDisable(true);
-		levelComboBox = new ComboBox<>(LevelList.levelList);
-		typeComboBox = new ComboBox<>(typeList);
-		multiplicityButton = new Button();
-		//multiplicityButton.setText("Add / Edit Multiplicity");
-		multiplicityButton.setText(multiplicity.getClass().getSimpleName().toString());
-		multiplicityButton.setOnAction(e -> {
-			new MultiplicityDialog(multiplicity).showAndWait();
-			/*if successful multiplicity = result;
-			 *multiplicityButton.setText(multiplicity.toString());*/
-		});
-		levelComboBox.setPrefWidth(COLUMN_WIDTH);
-		typeComboBox.setPrefWidth(COLUMN_WIDTH);
-		multiplicityButton.setPrefWidth(COLUMN_WIDTH);
-
-		grid.add(nameLabel, 0, 1);
-		grid.add(nameTextField, 1, 1);
-		grid.add(classLabel, 0, 0);
-		grid.add(classTextField, 1, 0);
-		grid.add(levelLabel, 0, 2);
-		grid.add(levelComboBox, 1, 2);
-		grid.add(typeLabel, 0, 3);
-		grid.add(typeComboBox, 1, 3);
-		grid.add(multiplicityLabel, 0, 4);
-		grid.add(multiplicityButton, 1, 4);
-	}
-
-	private ObservableList<String> getAllClassList() {
-		ArrayList<String> resultStrings = new ArrayList<String>();
-
-		if (!objects.isEmpty()) {
-			for (FmmlxObject object : objects) {
-				resultStrings.add(object.getName());
-			}
-		}
-		ObservableList<String> result = FXCollections.observableArrayList(resultStrings);
-		return result;
-	}
-
+		
 
 	private boolean validateUserInput() {
 
 		switch (type) {
-			case Class:
-				return validateAddMetaClass();
-			case Attribute:
-				return validateAddAttribute();
-			case Operation:
-				return validateAddOperation();
-			case Association:
-				return validateAddAssociation();
-			default:
-				System.err.println("AddDialog: No matching content type!");
+		case Operation:
+			return validateAddOperation();
+		case Association:
+			return validateAddAssociation();
+		default:
+			System.err.println("AddDialog: No matching content type!");	
 		}
 		return false;
 	}
@@ -325,72 +245,28 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 	}
 
 	private boolean validateAddOperation() {
-		if (!InputChecker.getInstance().validateName(nameTextField.getText())) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
-			return false;
-		} else if (!InputChecker.getInstance().operationNameIsAvailable(nameTextField.getText(), object)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.nameAlreadyUsed);
-			return false;
-		} else if (levelComboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectLevel);
-			return false;
-		} else if (!InputChecker.getInstance().levelIsValid(levelComboBox.getSelectionModel().getSelectedItem(), object.getLevel() - 1)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.pleaseSelectAnotherLevel);
-			return false;
-		} else if (typeComboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectType);
-			return false;
-		} else if (isNullOrEmpty(bodyTextArea.getText())) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.operationBodyEmpty);
-			return false;
-		}
-		return true;
-	}
-
-	private boolean validateAddAttribute() {
-		Label errorLabel = getErrorLabel();
 
 		String name = nameTextField.getText();
 
-		if (isNullOrEmpty(name)) {
-			errorLabel.setText("Enter valid name!");
+		if (!InputChecker.getInstance().validateName(name)) {	
+			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
 			return false;
-		} else if (nameAlreadyUsed()) {
-			errorLabel.setText("Name already used");
+		} else if (!InputChecker.getInstance().operationNameIsAvailable(name, object)) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.nameAlreadyUsed);
+			return false;
+		} else if (getComboBoxStringValue(typeComboBox) == null || getComboBoxStringValue(typeComboBox).length() < 1) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectType);
+			return false;
+		} else if (levelComboBox.getSelectionModel().getSelectedIndex()==-1) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectLevel);
+			return false;
+		} else if (bodyTextArea.getText()=="") {
+			errorLabel.setText(StringValueDialog.ErrorMessage.inputBody);
 			return false;
 		}
-		errorLabel.setText("");
-		if (levelComboBox.getSelectionModel().getSelectedIndex() == -1) {
-			errorLabel.setText("Select Level!");
-			return false;
-		}
-		errorLabel.setText("");
-		if (typeComboBox.getSelectionModel().getSelectedIndex() == -1) {
-			errorLabel.setText("Select Type!");
-			return false;
-		}
-		errorLabel.setText("");
-
-		return true;
-
-	}
-
-	private boolean nameAlreadyUsed() {
-		for (FmmlxAttribute attribute : object.getOwnAttributes()) {
-			if (nameTextField.getText().equals(attribute.getName())) return true;
-		}
-		for (FmmlxAttribute attribute : object.getOtherAttributes()) {
-			if (nameTextField.getText().equals(attribute.getName())) return true;
-
-		}
+		errorLabel.setText("Not Implemented yet");
 		return false;
+
 	}
-
-
-	private boolean validateAddMetaClass() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
+	
 }

@@ -10,7 +10,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOwnerDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.stringvalue.StringValueDialog;
 
 import java.util.Vector;
 
@@ -31,11 +31,9 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 
 	//For All
 	private Label classLabel;
-	private Label currentOwnerLabel;
 	private Label newOwnerLabel;
 
 	private TextField classNameTextfield;
-	private TextField currentOwnerTextField;
 	private ComboBox<FmmlxObject> newOwnerComboBox;
 
 	private Vector<FmmlxAttribute> attributes;
@@ -85,9 +83,9 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 	private boolean validateUserInput() {
 		switch (type) {
 			case Attribute:
-				return validateAddAttribute();
+				return validateChangeOwnerAttribute();
 			case Operation:
-				return validateAddOperation();
+				return validateChangeOwnerOperation();
 			default:
 				System.err.println("ChangeOwnerDialog: No matching content type!");
 		}
@@ -95,24 +93,30 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 	}
 
 
-	private boolean validateAddOperation() {
-		if (selectOperationComboBox.getSelectionModel().getSelectedItem() == null) {
+	private boolean validateChangeOwnerOperation() {
+		if (selectOperationComboBox.getSelectionModel().getSelectedItem()==null) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectOperation);
 			return false;
 		} else if (newOwnerComboBox.getSelectionModel().getSelectedItem() == null) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectNewOwner);
+			return false;
+		} else if(newOwnerComboBox.getSelectionModel().getSelectedItem()==object) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectAnotherClass);
 			return false;
 		}
 		return true;
 	}
 
 
-	private boolean validateAddAttribute() {
-		if (selectAttributeComboBox.getSelectionModel().getSelectedItem() == null) {
+	private boolean validateChangeOwnerAttribute() {
+		if (selectAttributeComboBox.getSelectionModel().getSelectedItem()==null) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectAttribute);
 			return false;
 		} else if (newOwnerComboBox.getSelectionModel().getSelectedItem() == null) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectNewOwner);
+			return false;
+		} else if(newOwnerComboBox.getSelectionModel().getSelectedItem()==object) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectAnotherClass);
 			return false;
 		}
 		return true;
@@ -121,23 +125,28 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 
 	private void layoutContent() {
 		classLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectedObject);
-		currentOwnerLabel = new Label(StringValueDialog.LabelAndHeaderTitle.currentOwner);
+		
 		newOwnerLabel = new Label(StringValueDialog.LabelAndHeaderTitle.newOwner);
 
 		classNameTextfield = new TextField();
 		classNameTextfield.setText(object.getName());
 		classNameTextfield.setDisable(true);
-		currentOwnerTextField = new TextField();
-		currentOwnerTextField.setText(object.getName());
-		currentOwnerTextField.setDisable(true);
-		newOwnerComboBox = new ComboBox<FmmlxObject>();
+		
+		
+		
+		attributes = object.getOwnAttributes();
+		attributes.addAll(object.getOtherAttributes());
+		
 
+		ObservableList<FmmlxObject> objectList = FXCollections.observableList(objects);
+		objectList.remove(object);
+		newOwnerComboBox = initializeComboBox(objectList);
+		
 		newOwnerComboBox.setPrefWidth(COLUMN_WIDTH);
 
 		grid.add(classLabel, 0, 0);
 		grid.add(classNameTextfield, 1, 0);
-		grid.add(currentOwnerLabel, 0, 2);
-		grid.add(currentOwnerTextField, 1, 2);
+
 		grid.add(newOwnerLabel, 0, 3);
 		grid.add(newOwnerComboBox, 1, 3);
 		switch (type) {

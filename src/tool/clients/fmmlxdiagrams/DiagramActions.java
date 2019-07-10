@@ -97,7 +97,6 @@ public class DiagramActions {
 							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
 
 							diagram.updateDiagram();
-							l.countDown();
 						}
 					}
 				};
@@ -131,10 +130,11 @@ public class DiagramActions {
 			if (result.isPresent()) {
 				AddAttributeDialogResult aad = result.get();
 				diagram.addAttribute(aad.getClassID(), aad.getName(), aad.getLevel(), aad.getType(), aad.getMultiplicity());
+				diagram.updateDiagram();
 			}
-
-			diagram.updateDiagram();
 			l.countDown();
+
+			
 		});
 	}
 
@@ -164,9 +164,9 @@ public class DiagramActions {
 					default:
 						System.err.println("ChangeNameDialogResult: No matching content type!");
 				}
+				diagram.updateDiagram();
 			}
-
-			diagram.updateDiagram();
+			
 			l.countDown();
 		});
 	}
@@ -213,9 +213,9 @@ public class DiagramActions {
 					default:
 						System.err.println("ChangeNameDialogResult: No matching content type!");
 				}
+				diagram.updateDiagram();
 			}
 
-			diagram.updateDiagram();
 			latch.countDown();
 		});
 	}
@@ -250,9 +250,9 @@ public class DiagramActions {
 					default:
 						System.err.println("ChangeLevelDialogResult: No matching content type!");
 				}
+				diagram.updateDiagram();
 			}
 
-			diagram.updateDiagram();
 			latch.countDown();
 		});
 
@@ -269,9 +269,8 @@ public class DiagramActions {
 			if (cod.isPresent()) {
 				final ChangeOfDialogResult result = cod.get();
 				diagram.changeOf(result);
+				diagram.updateDiagram();
 			}
-
-			diagram.updateDiagram();
 			l.countDown();
 		});
 
@@ -299,9 +298,9 @@ public class DiagramActions {
 						System.err.println("ChangeOwnerDialogResult: No matching content type!");
 						break;
 				}
+				diagram.updateDiagram();
 			}
 
-			diagram.updateDiagram();
 			l.countDown();
 		});
 	}
@@ -317,9 +316,9 @@ public class DiagramActions {
 			if (cpd.isPresent()) {
 				ChangeParentDialogResult result = cpd.get();
 				diagram.changeParent(result);
+				diagram.updateDiagram();
 			}
 
-			diagram.updateDiagram();
 			l.countDown();
 		});
 
@@ -337,9 +336,9 @@ public class DiagramActions {
 				ChangeSlotValueDialogResult slotValueDialogResult = result.get();
 				diagram.changeSlotValue(slotValueDialogResult);
 				diagram.changeSlotValue(slotValueDialogResult);
+				diagram.updateDiagram();
 			}
 
-			diagram.updateDiagram();
 			l.countDown();
 		});
 	}
@@ -385,9 +384,8 @@ public class DiagramActions {
 					default:
 						System.err.println("AddDialogResult: No matching content type!");
 				}
+				diagram.updateDiagram();
 			}
-
-			diagram.updateDiagram();
 			latch.countDown();
 		});
 	}
@@ -415,9 +413,9 @@ public class DiagramActions {
 					default:
 						System.err.println("AddDialogResult: No matching content type!");
 				}
+				diagram.updateDiagram();
 			}
 
-			diagram.updateDiagram();
 			latch.countDown();
 		});
 	}
@@ -433,9 +431,8 @@ public class DiagramActions {
 				final ChangeMultiplicityDialogResult result = opt.get();
 				System.err.println(result);
 				diagram.changeMulitiplicityAttribute(result);
+				diagram.updateDiagram();
 			}
-
-			diagram.updateDiagram();
 			latch.countDown();
 		});
 	}
@@ -451,9 +448,9 @@ public class DiagramActions {
 				final ChangeTargetDialogResult result = opt.get();
 				System.err.println(result);
 				diagram.changeTargetAssociation(result);
+				diagram.updateDiagram();
 			}
 
-			diagram.updateDiagram();
 			latch.countDown();
 		});
 	}
@@ -469,9 +466,8 @@ public class DiagramActions {
 				final ChangeBodyDialogResult result = opt.get();
 				System.err.println(result);
 				diagram.changeBody(result);
+				diagram.updateDiagram();
 			}
-
-			diagram.updateDiagram();
 			latch.countDown();
 		});
 	}
