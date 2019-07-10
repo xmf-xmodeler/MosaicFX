@@ -19,7 +19,7 @@ import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeTypeDialogResult;
-import tool.clients.fmmlxdiagrams.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
 
 
 public class ChangeTypeDialog extends CustomDialog<ChangeTypeDialogResult>{

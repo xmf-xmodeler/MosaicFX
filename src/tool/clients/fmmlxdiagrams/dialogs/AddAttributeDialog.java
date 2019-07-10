@@ -6,9 +6,11 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.util.converter.IntegerStringConverter;
-import tool.clients.fmmlxdiagrams.*;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
-import tool.clients.fmmlxdiagrams.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,7 +45,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
 		DialogPane dialogPane = getDialogPane();
 		this.objects = diagram.getObjects();
-		this.selectedObject = selectedObject;	
+		this.selectedObject = selectedObject;
 
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
@@ -122,7 +124,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		if (levelComboBox.getSelectionModel().getSelectedIndex() == -1) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectLevel);
 			return false;
-		} 
+		}
 		errorLabel.setText("");
 		return true;
 	}
@@ -132,7 +134,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		Label errorLabel = getErrorLabel();
 		String name = nameTextField.getText();
 
-		if (!InputChecker.getInstance().validateName(name)) {	
+		if (!InputChecker.getInstance().validateName(name)) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
 			return false;
 		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, selectedObject)) {
