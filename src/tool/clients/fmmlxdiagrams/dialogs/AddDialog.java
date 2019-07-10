@@ -62,19 +62,16 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		layoutContent();
 		dialogPane.setContent(flow);
-
-		setValidation();
-		setResult();
-
-	}
-
-	private void setValidation() {
+		
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
 			if (!validateUserInput()) {
 				e.consume();
 			}
 		});
+
+		setResult();
+
 	}
 
 	private void setResult() {
@@ -102,10 +99,7 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 	}
 
 	private void setResultAddAssociation(ButtonType dlgBtn) {
-		if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-			//TODO
-		}
-
+		// TODO Auto-generated method stub
 	}
 
 
