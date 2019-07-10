@@ -20,6 +20,7 @@ public class StringValueDialog {
 		public static final String nameAlreadyUsed = "Name Already Used.";
 
 		public static final String pleaseSelectAnotherLevel = "Please select another level!";
+		public static final String inputBody = "Input Body!";
 		
 	}
 	

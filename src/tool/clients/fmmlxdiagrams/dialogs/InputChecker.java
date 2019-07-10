@@ -1,8 +1,11 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import java.util.Vector;
+
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.FmmlxOperation;
 
 public class InputChecker {
 	
@@ -64,6 +67,15 @@ public class InputChecker {
 	public boolean associationNameIsAvailable(String name, FmmlxObject object) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	public boolean operationNameIsAvailable(String name, FmmlxObject object) {
+		Vector<FmmlxOperation> operations = object.getOwnOperations();
+		operations.addAll(object.getOtherOperations());
+		for (FmmlxOperation operation : operations) {
+			if(name.equals(operation.getName())) return false;
+		}
+		return true;
 	}
 
 }

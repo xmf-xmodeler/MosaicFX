@@ -18,8 +18,8 @@ import java.util.Vector;
 
 public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
-	ObservableList<String> classList;
-	List<String> typesArray;
+	private ObservableList<String> classList;
+	private List<String> typesArray;
 	private Label nameLabel;
 	private Label classLabel;
 	private Label levelLabel;
