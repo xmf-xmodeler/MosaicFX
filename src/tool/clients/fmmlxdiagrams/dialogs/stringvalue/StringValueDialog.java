@@ -19,6 +19,8 @@ public class StringValueDialog {
 		public static final String nameAlreadyUsed = "Name Already Used.";
 
 		public static final String pleaseSelectAnotherLevel = "Please select another level!";
+
+		public static final String operationBodyEmpty = "Operation Body is empty!";
 	}
 
 	public static class LabelAndHeaderTitle {
@@ -69,6 +71,7 @@ public class StringValueDialog {
 		public static final String selectNewParent = "Select New Parent";
 
 		public static final String checkSyntax = "Check Syntax";
+		public static final String defaultOperation = "Reset Body";
 	}
 
 	public static class OperationStringValues {

@@ -3,7 +3,6 @@ package tool.clients.fmmlxdiagrams.dialogs;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
@@ -49,7 +48,6 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 
 	private ComboBox<String> ownerComboBox;
 	private TextArea bodyTextArea;
-	private Button checkSyntaxButton;
 
 	//For add Association
 	private Label targetLabel;
@@ -69,15 +67,18 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 		layoutContent();
 		dialogPane.setContent(flow);
 
+		setValidation();
+		setResult();
+
+	}
+
+	private void setValidation() {
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
 			if (!validateUserInput()) {
 				e.consume();
 			}
 		});
-
-		setResult();
-
 	}
 
 	private void setResult() {
@@ -208,14 +209,12 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 		typeComboBox.getSelectionModel().select("Element");
 		levelComboBox = new ComboBox<>(LevelList.generateLevelListToThreshold(0, object.getLevel()));
 		bodyTextArea = new TextArea(StringValueDialog.OperationStringValues.emptyOperation);
-		checkSyntaxButton = new Button(StringValueDialog.LabelAndHeaderTitle.checkSyntax);
-		checkSyntaxButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				//Send msg to XMF to check if method body is parsable
-				diagram.checkOperationBody(bodyTextArea.getText());
-			}
-		});
+		Button checkSyntaxButton = new Button(StringValueDialog.LabelAndHeaderTitle.checkSyntax);
+		checkSyntaxButton.setOnAction(event -> AddDialog.this.checkBodySyntax());
+		checkSyntaxButton.setPrefWidth(COLUMN_WIDTH * 0.5);
+		Button defaultOperationButton = new Button(StringValueDialog.LabelAndHeaderTitle.defaultOperation);
+		defaultOperationButton.setOnAction(event -> AddDialog.this.resetOperationBody());
+		defaultOperationButton.setPrefWidth(COLUMN_WIDTH * 0.5);
 
 		levelComboBox.setPrefWidth(COLUMN_WIDTH);
 		typeComboBox.setPrefWidth(COLUMN_WIDTH);
@@ -231,7 +230,18 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 		grid.add(levelComboBox, 1, 3);
 		grid.add(new Label(StringValueDialog.LabelAndHeaderTitle.body), 0, 4);
 		grid.add(bodyTextArea, 1, 4, 1, 4);
-		grid.add(checkSyntaxButton, 2, 4);
+		grid.add(checkSyntaxButton, 0, 4);
+		grid.add(defaultOperationButton, 0, 5);
+	}
+
+	private void checkBodySyntax() {
+		if (!isNullOrEmpty(bodyTextArea.getText()) && !bodyTextArea.getText().contentEquals(StringValueDialog.OperationStringValues.emptyOperation)) {
+			diagram.checkOperationBody(bodyTextArea.getText());
+		}
+	}
+
+	private void resetOperationBody() {
+		bodyTextArea.setText(StringValueDialog.OperationStringValues.emptyOperation);
 	}
 
 	private void generateLayoutAddAttribute() {
@@ -315,8 +325,26 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 	}
 
 	private boolean validateAddOperation() {
-		// TODO Auto-generated method stub
-		return false;
+		if (!InputChecker.getInstance().validateName(nameTextField.getText())) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
+			return false;
+		} else if (!InputChecker.getInstance().operationNameIsAvailable(nameTextField.getText(), object)) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.nameAlreadyUsed);
+			return false;
+		} else if (levelComboBox.getSelectionModel().getSelectedItem() == null) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectLevel);
+			return false;
+		} else if (!InputChecker.getInstance().levelIsValid(levelComboBox.getSelectionModel().getSelectedItem(), object.getLevel() - 1)) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.pleaseSelectAnotherLevel);
+			return false;
+		} else if (typeComboBox.getSelectionModel().getSelectedItem() == null) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectType);
+			return false;
+		} else if (isNullOrEmpty(bodyTextArea.getText())) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.operationBodyEmpty);
+			return false;
+		}
+		return true;
 	}
 
 	private boolean validateAddAttribute() {
