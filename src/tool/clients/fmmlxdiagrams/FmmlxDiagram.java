@@ -33,7 +33,6 @@ import java.util.concurrent.CountDownLatch;
 
 public class FmmlxDiagram {
 
-
 	enum MouseMode {
 		STANDARD, MULTISELECT;
 	}
@@ -570,10 +569,10 @@ public class FmmlxDiagram {
 	public void changeAttributeName(ChangeNameDialogResult res) {
 		comm.changeAttributeName(res.getObjectId(), res.getOldName(), res.getNewName());
 	}
-	
+
 	public void changeAssociationName(ChangeNameDialogResult result) {
 		comm.changeAssociationName(result.getObjectId(), result.getOldName(), result.getNewName());
-		
+
 	}
 
 	public void changeClassLevel(ChangeLevelDialogResult result) {
@@ -602,34 +601,35 @@ public class FmmlxDiagram {
 
 	public void removeAttribute(FmmlxObject c, FmmlxAttribute a, Integer strategy) {
 		comm.removeAttribute(c.getId(), a.getName(), 0);
-		
+
 	}
-	
+
 	public void changeOf(ChangeOfDialogResult result) {
 		comm.changeOf(result.getObjectId(), result.getOldOfId(), result.getNewOfId());
 	}
 
 	public void removeClass(RemoveDialogResult result) {
 		comm.removeClass(result.getObject().getId(), 0);
-		
+
 	}
 
 	public void removeOperation(RemoveDialogResult result) {
 		comm.removeOperation(result.getObject().getId(), result.getOperation().getName(), 0);
-		
+
 	}
 
 	public void removeAttribute(RemoveDialogResult result) {
 		comm.removeAttribute(result.getObject().getId(), result.getAttribute().getName(), 0);
-		
+
 	}
 
 	public void removeAssociation(RemoveDialogResult result) {
 		comm.removeAssociation(result.getObject().getId(), result.getAssociation().getName(), 0);
-		
+
 	}
 
 	public void addOperation(AddDialogResult result) {
+		comm.addOperation(result.getObjectId(), result.getOperationName(), result.getLevel(), result.getOperationType(), result.getBody());
 		// TODO Auto-generated method stub
 
 	}
@@ -678,6 +678,8 @@ public class FmmlxDiagram {
 		// TODO Auto-generated method stub
 	}
 
-	
-	
+	public void checkOperationBody(String text) {
+		comm.checkOperationBody(text);
+	}
+
 }

@@ -412,7 +412,8 @@ public class DiagramActions {
 					case Association:
 						diagram.changeTypeAssociation(result);
 						break;
-					default: System.err.println("AddDialogResult: No matching content type!");
+					default:
+						System.err.println("AddDialogResult: No matching content type!");
 				}
 			}
 
@@ -431,7 +432,7 @@ public class DiagramActions {
 			if (opt.isPresent()) {
 				final ChangeMultiplicityDialogResult result = opt.get();
 				System.err.println(result);
-				diagram.changeMulitiplicityAttribute(result);	
+				diagram.changeMulitiplicityAttribute(result);
 			}
 
 			diagram.updateDiagram();
@@ -449,7 +450,7 @@ public class DiagramActions {
 			if (opt.isPresent()) {
 				final ChangeTargetDialogResult result = opt.get();
 				System.err.println(result);
-				diagram.changeTargetAssociation(result);	
+				diagram.changeTargetAssociation(result);
 			}
 
 			diagram.updateDiagram();
@@ -467,7 +468,7 @@ public class DiagramActions {
 			if (opt.isPresent()) {
 				final ChangeBodyDialogResult result = opt.get();
 				System.err.println(result);
-				diagram.changeBody(result);	
+				diagram.changeBody(result);
 			}
 
 			diagram.updateDiagram();

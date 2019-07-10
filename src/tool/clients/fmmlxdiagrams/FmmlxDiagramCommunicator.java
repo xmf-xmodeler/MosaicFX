@@ -399,7 +399,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(id)};
 		WorkbenchClient.theClient().send(handler, "removeClass", message);
 	}
-	
+
 	public void removeAttribute(int id, String name, int strategy) {
 		Value[] message = new Value[]{
 				new Value(-1),
@@ -408,7 +408,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(strategy)};
 		WorkbenchClient.theClient().send(handler, "removeAttribute", message);
 	}
-	
+
 	public void removeOperation(int id, String name, int strategy) {
 		Value[] message = new Value[]{
 				new Value(-1),
@@ -426,7 +426,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(strategy)};
 		WorkbenchClient.theClient().send(handler, "removeAssociation", message);
 	}
-	
+
 	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) {
 		Value[] multiplicity = new Value[]{
 				new Value(multi.min),
@@ -441,6 +441,17 @@ public class FmmlxDiagramCommunicator {
 				new Value(type),
 				new Value(multiplicity)};
 		WorkbenchClient.theClient().send(handler, "addAttribute", message);
+	}
+
+	public void addOperation(int objectId, String operationName, int level, String operationType, String body) {
+		Value[] message = new Value[]{
+				new Value(objectId),
+				new Value(operationName),
+				new Value(level),
+				new Value(operationType),
+				new Value(body)
+		};
+		WorkbenchClient.theClient().send(handler, "addOperation", message);
 	}
 
 	public void changeClassName(int id, String newName) {
@@ -468,7 +479,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(newName)};
 		WorkbenchClient.theClient().send(handler, "changeAttributeName", message);
 	}
-	
+
 	public void changeAssociationName(int objectId, String oldName, String newName) {
 		Value[] message = new Value[]{
 				new Value(-1),
@@ -494,7 +505,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(oldLevel),
 				new Value(newLevel)};
 		WorkbenchClient.theClient().send(handler, "changeClassLevel", message);
-		
+
 	}
 
 	public void changeAttributeLevel(int objectId, int oldLevel, int newLevel) {
@@ -504,7 +515,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(oldLevel),
 				new Value(newLevel)};
 		WorkbenchClient.theClient().send(handler, "changeAttributeLevel", message);
-		
+
 	}
 
 	public void changeAssociationLevel(int objectId, int oldLevel, int newLevel) {
@@ -531,7 +542,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(objectId),
 				new Value(oldOfId),
 				new Value(newOfId)};
-		WorkbenchClient.theClient().send(handler, "changOf", message);	
+		WorkbenchClient.theClient().send(handler, "changOf", message);
 	}
 
 	public void changeAttributeOwner(int objectId, Integer newOwnerID) {
@@ -539,7 +550,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(-1),
 				new Value(objectId),
 				new Value(newOwnerID)};
-		WorkbenchClient.theClient().send(handler, "changOf", message);	
+		WorkbenchClient.theClient().send(handler, "changOf", message);
 	}
 
 	public void changeOperationOwner(int objectId, Integer newOwnerID) {
@@ -547,7 +558,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(-1),
 				new Value(objectId),
 				new Value(newOwnerID)};
-		WorkbenchClient.theClient().send(handler, "changOwner", message);	
+		WorkbenchClient.theClient().send(handler, "changOwner", message);
 	}
 
 	public void changeParent(int objectId, Vector<Integer> currentParents, Vector<Integer> newParents) {
@@ -560,7 +571,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(parentsArray),
 				new Value(newParentsArray)};
 		WorkbenchClient.theClient().send(handler, "changeParent", message);
-		
+
 	}
 
 	public void changeAttributeType(int objectId, String attributeName, String oldType, String newType) {
@@ -571,7 +582,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(oldType),
 				new Value(newType)};
 		WorkbenchClient.theClient().send(handler, "changeAttributeType", message);
-		
+
 	}
 
 	public void changeOperationType(int objectId, String operationName, String oldType, String newType) {
@@ -582,9 +593,9 @@ public class FmmlxDiagramCommunicator {
 				new Value(oldType),
 				new Value(newType)};
 		WorkbenchClient.theClient().send(handler, "changeOperationType", message);
-		
+
 	}
-	
+
 	public void changeAssociationType(int objectId, String associationName, String oldType, String newType) {
 		Value[] message = new Value[]{
 				new Value(-1),
@@ -593,6 +604,13 @@ public class FmmlxDiagramCommunicator {
 				new Value(oldType),
 				new Value(newType)};
 		WorkbenchClient.theClient().send(handler, "changeAssociationType", message);
-		
+
+	}
+
+	public void checkOperationBody(String body) {
+		Value[] message = new Value[]{
+				new Value(body)
+		};
+		WorkbenchClient.theClient().send(handler, "checkOperationBody", message);
 	}
 }
