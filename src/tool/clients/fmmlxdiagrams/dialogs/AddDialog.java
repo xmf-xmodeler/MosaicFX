@@ -11,7 +11,7 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddDialogResult;
 import tool.clients.fmmlxdiagrams.stringvalue.StringValueDialog;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +21,6 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 	private DialogPane dialogPane;
 	private FmmlxDiagram diagram;
 	private FmmlxObject object;
-	private FmmlxDiagram diagram;
 	private Vector<FmmlxObject> objects;
 	private PropertyType type;
 	//For All
@@ -85,7 +84,7 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				switch (type) {
 				case Operation:
-					SetResultAddOperation(dlgBtn);
+					setResultAddOperation(dlgBtn);
 					break;
 				case Association:
 					setResultAddAssociation(dlgBtn);
@@ -98,6 +97,11 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 		});
 	}
 
+
+	private void setResultAddOperation(ButtonType dlgBtn) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	private void setResultAddAssociation(ButtonType dlgBtn) {
 		if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
@@ -236,24 +240,13 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 	//Validate user Input to each Add Dialog
 
 	private boolean validateAddAssociation() {
-
-		String name = nameTextField.getText();
-
-			return false;
-		} else if (!InputChecker.getInstance().associationNameIsAvailable(name, object)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.nameAlreadyUsed);
-			return false;
-
-			return false;
-
-			return false;
-		}
-
+		// TODO Auto-generated method stub
+		return false;
 	}
 
+	private boolean validateAddOperation() {
 
-
-
+		String name = nameTextField.getText();
 
 		if (!InputChecker.getInstance().validateName(name)) {	
 			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
@@ -267,11 +260,13 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 		} else if (levelComboBox.getSelectionModel().getSelectedIndex()==-1) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectLevel);
 			return false;
-		} else if (bodyTextField.getText()=="") {
+		} else if (bodyTextArea.getText()=="") {
 			errorLabel.setText(StringValueDialog.ErrorMessage.inputBody);
 			return false;
 		}
 		errorLabel.setText("Not Implemented yet");
 		return false;
 
+	}
+	
 }

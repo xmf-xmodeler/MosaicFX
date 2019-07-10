@@ -10,7 +10,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.stringvalue.StringValueDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,14 +60,13 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 			}
 		});
 
+		setResult();
+	}
+
+	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				int classId = 0;
-				for (FmmlxObject object : objects) {
-					if (classTextField.getText().equals(object.getName())) {
-						classId = object.getId();
-					}
-				}
+				int classId = selectedObject.getId();
 
 				//TODO AddAttributeDialogResult and Multiplicity Result
 				return new AddAttributeDialogResult(
@@ -79,8 +78,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 			}
 			return null;
 		});
-
-
+		
 	}
 
 	private ObservableList<String> getAllClassList() {

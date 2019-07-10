@@ -27,6 +27,7 @@ public class StringValueDialog {
 	
 	public static class LabelAndHeaderTitle{
 		public static final String selectedObject = "Selected Object";
+		public static final String aClass = "Class";
 		public static final String name = "Name";
 		public static final String level ="Level";
 		public static final String owner = "Owner";
@@ -47,6 +48,7 @@ public class StringValueDialog {
 		//New
 		public static final String newOwner = "New Owner";
 		public static final String newLevel = "New Level";
+		public static final String newOperation = "New Operation";
 		
 		//Change
 		public static final String changeClassLevel = "Change Class Level";
@@ -74,7 +76,18 @@ public class StringValueDialog {
 		public static final String ordered = "Ordered";
 		public static final String allowDuplicates = "Allow Duplicates";
 		
+		public static final String checkSyntax = "Check Syntax";
+		public static final String defaultOperation = "Reset Body";
 		
+	}
+	
+	public static class OperationStringValues {
+		public static final String emptyOperation =
+				"@Operation op0():XCore::Element\n" +
+						"  null\n" +
+						"end";
+
+
 	}
 
 }

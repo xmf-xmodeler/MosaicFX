@@ -82,13 +82,4 @@ public class InputChecker {
 		return true;
 	}
 
-	public boolean operationNameIsAvailable(String name, FmmlxObject object) {
-		Vector<FmmlxOperation> operations = object.getOwnOperations();
-		operations.addAll(object.getOtherOperations());
-		for (FmmlxOperation operation : operations) {
-			if(name.equals(operation.getName())) return false;
-		}
-		return true;
-	}
-
 }
