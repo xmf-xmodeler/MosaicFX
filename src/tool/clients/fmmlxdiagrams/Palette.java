@@ -21,6 +21,10 @@ public class Palette extends ToolBar {
 		addButton("-", e -> actions.zoomOut());
 		getItems().add(new Separator());
 		addButton("Show Operations", e -> actions.toogleShowOperations());
+		addButton("Show Operation Values", e -> actions.toogleShowOperationValues());
+		addButton("Show Slots", e -> actions.toogleShowSlots());
+		getItems().add(new Separator());
+		addButton("Update Diagram", e -> actions.updateDiagram());
 	}
 
 	private void addButton(String string, EventHandler<ActionEvent> eventHandler) {

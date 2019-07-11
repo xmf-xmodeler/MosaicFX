@@ -18,10 +18,14 @@ public class DiagramActions {
 	private FmmlxDiagram diagram;
 
 	private boolean showOperations;
+	private boolean showOperationValues;
+	private boolean showSlots;
 
 	DiagramActions(FmmlxDiagram diagram) {
 		this.diagram = diagram;
 		showOperations = true;
+		showOperationValues = true;
+		showSlots = true;
 	}
 
 	public void redrawDiagram() {
@@ -134,7 +138,7 @@ public class DiagramActions {
 			diagram.updateDiagram();
 			l.countDown();
 
-			
+
 		});
 	}
 
@@ -341,6 +345,10 @@ public class DiagramActions {
 		});
 	}
 
+	public void updateDiagram() {
+		diagram.updateDiagram();
+	}
+
 	public void toogleIsAbstract(FmmlxObject object) {
 		object.toogleIsAbstract();
 		diagram.redraw();
@@ -353,6 +361,26 @@ public class DiagramActions {
 			}
 		}
 		showOperations = !showOperations;
+		diagram.redraw();
+	}
+
+	public void toogleShowOperationValues() {
+		for (FmmlxObject o : diagram.getObjects()) {
+			if (o.getShowOperationValues() == showOperationValues) {
+				o.toogleShowOperationValues();
+			}
+		}
+		showOperationValues = !showOperationValues;
+		diagram.redraw();
+	}
+
+	public void toogleShowSlots() {
+		for (FmmlxObject o : diagram.getObjects()) {
+			if (o.getShowSlots() == showSlots) {
+				o.toogleShowSlots();
+			}
+		}
+		showSlots = !showSlots;
 		diagram.redraw();
 	}
 
