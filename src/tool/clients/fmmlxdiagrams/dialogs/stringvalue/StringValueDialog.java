@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.stringvalue;
+package tool.clients.fmmlxdiagrams.dialogs.stringvalue;
 
 public class StringValueDialog {
 	

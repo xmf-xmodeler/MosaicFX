@@ -17,7 +17,7 @@ import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeMultiplicityDialogResult;
-import tool.clients.fmmlxdiagrams.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
 
 public class ChangeMultiplicityDialog extends CustomDialog<ChangeMultiplicityDialogResult> {
 	
@@ -100,7 +100,7 @@ public class ChangeMultiplicityDialog extends CustomDialog<ChangeMultiplicityDia
 		ObservableList<FmmlxAttribute> attributeList;
 		attributeList =  FXCollections.observableList(attributes);
 		
-		selectAttributeComboBox = initializeAttributeComboBox(attributeList);
+		selectAttributeComboBox = (ComboBox<FmmlxAttribute>) initializeComboBox(attributeList);
 		
 		minimumLabel = new Label(StringValueDialog.LabelAndHeaderTitle.minimum);
 		minimumComboBox = new ComboBox<>(minList);

@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
 
 import java.util.ArrayList;
@@ -49,15 +50,15 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
 	private void layoutContent(FmmlxObject selectedObject) {
 
-		ObservableList<FmmlxObject> ofList = getAllOfList();
+		ObservableList<FmmlxProperty> ofList = getAllOfList();
 		nameTextField = new TextField();
 		abstractCheckBox = new CheckBox();
 		parentListView = initializeListView(parentList, SelectionMode.MULTIPLE);
 
-		ofComboBox = initializeComboBox(ofList);
+		ofComboBox = (ComboBox<FmmlxObject>) initializeComboBox(ofList);
 		ofComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue != null) {
-				this.selectedObject = newValue;
+				this.selectedObject = (FmmlxObject) newValue;
 				createAndSetParentList();
 			}
 		});
@@ -97,7 +98,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		});
 	}
 
-	private ObservableList<FmmlxObject> getAllOfList() {
+	private ObservableList<FmmlxProperty> getAllOfList() {
 		ArrayList<FmmlxObject> resultOf = new ArrayList<>();
 		if (!objects.isEmpty()) {
 			for (FmmlxObject object : objects) {
@@ -125,7 +126,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		Label errorLabel = getErrorLabel();
 		String name = nameTextField.getText();
 
-		if (!InputChecker.getInstance().validateName(name)) {	
+		if (!InputChecker.getInstance().validateName(name)) {
 			errorLabel.setText("Enter valid name!");
 			return false;
 		} else if (!InputChecker.getInstance().classNameIsAvailable(name, diagram)) {
