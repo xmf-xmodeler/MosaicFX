@@ -223,12 +223,28 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		return showOperations;
 	}
 
+	public boolean getShowOperationValues() {
+		return showOperationValues;
+	}
+
+	public boolean getShowSlots() {
+		return showSlots;
+	}
+
 	public Vector<NodeElement> getNodes() {
 		return nodeElements;
 	}
 
 	public void toogleShowOperations() {
 		showOperations = !showOperations;
+	}
+
+	public void toogleShowOperationValues() {
+		showOperationValues = !showOperationValues;
+	}
+
+	public void toogleShowSlots() {
+		showSlots = !showSlots;
 	}
 
 	private void layout(FmmlxDiagram diagram, boolean selected) {
