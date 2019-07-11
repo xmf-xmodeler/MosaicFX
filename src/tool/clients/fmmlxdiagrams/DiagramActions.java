@@ -130,8 +130,8 @@ public class DiagramActions {
 			if (result.isPresent()) {
 				AddAttributeDialogResult aad = result.get();
 				diagram.addAttribute(aad.getClassID(), aad.getName(), aad.getLevel(), aad.getType(), aad.getMultiplicity());
-				diagram.updateDiagram();
 			}
+			diagram.updateDiagram();
 			l.countDown();
 
 			
@@ -164,9 +164,8 @@ public class DiagramActions {
 					default:
 						System.err.println("ChangeNameDialogResult: No matching content type!");
 				}
-				diagram.updateDiagram();
 			}
-			
+			diagram.updateDiagram();
 			l.countDown();
 		});
 	}
@@ -213,9 +212,8 @@ public class DiagramActions {
 					default:
 						System.err.println("ChangeNameDialogResult: No matching content type!");
 				}
-				diagram.updateDiagram();
 			}
-
+			diagram.updateDiagram();
 			latch.countDown();
 		});
 	}
