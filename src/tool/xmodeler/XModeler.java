@@ -479,11 +479,12 @@ public class XModeler extends Application {
 			stage.setOnCloseRequest(  new EventHandler<WindowEvent>() {
 				  public void handle(WindowEvent event) {
 					  //propertyManager.writeXMLFile();
-					  if (loadedImagePath == null) {
-						  WorkbenchClient.theClient().shutdownEvent();
-					  } else {
-						  WorkbenchClient.theClient().shutdownAndSaveEvent(loadedImagePath, inflationPath());
-					  }
+                      if (propertyManager.getProperty("IGNORE_SAVE_IMAGE", false)) {
+                          System.exit(0);
+                      } else {
+                          if (loadedImagePath == null) WorkbenchClient.theClient().shutdownEvent();
+                          else WorkbenchClient.theClient().shutdownAndSaveEvent(loadedImagePath, inflationPath());
+                      }
 					  event.consume();
 //					  event.doit = false;
 				  }

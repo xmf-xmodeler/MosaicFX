@@ -204,6 +204,7 @@ public class PropertyManager {
 	}
 
 	private void fillDebugGrid() {
+		addRow(debugGrid, "IGNORE_SAVE_IMAGE", getProperty("IGNORE_SAVE_IMAGE", false));
 	}
 
 	private GridPane addRow(GridPane pane, String key, String value) {
