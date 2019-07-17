@@ -30,6 +30,7 @@ import tool.clients.consoleInterface.EscapeHandler;
 import tool.clients.dialogs.notifier.NotificationType;
 import tool.clients.dialogs.notifier.NotifierDialog;
 import tool.clients.workbench.WorkbenchClient;
+import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
@@ -343,7 +344,8 @@ public class ConsoleView {
   }
 
   public void appendText(String string) {
-    synchronized (overflowLock) {
+      synchronized (overflowLock) {
+        if (PropertyManager.getProperty("LOG_XMF_OUTPUT", false)) System.err.println(string);
     	textArea.appendText(string);
 //    	textArea.setText(textArea.getText() + string);
     }
