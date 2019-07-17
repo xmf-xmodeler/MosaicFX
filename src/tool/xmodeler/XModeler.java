@@ -80,7 +80,7 @@ public class XModeler extends Application {
   static String[]        copyOfArgs          = null;
   static boolean         showLoad            = false;
   public static String   textEditorClass     = "tool.clients.editors.TextEditor";
-  public static PropertyManager propertyManager 	 = new PropertyManager("user_properties.xml");
+  public static PropertyManager propertyManager 	 = new PropertyManager("user.properties");
 
   //JavaFX
   static Stage 			 stage 		 		 = null;
@@ -324,15 +324,15 @@ public class XModeler extends Application {
     	fileChooser.getExtensionFilters().add(filter);
     	fileChooser.setSelectedExtensionFilter(filter);
         
-    	String initalDirectory = propertyManager.getStringProperty("loadImageDirectory", null);
-    	if (initalDirectory != null)
+    	String initalDirectory = propertyManager.getProperty("loadImageDirectory", "");
+    	if (!initalDirectory.equals(""))
     	fileChooser.setInitialDirectory(new File(initalDirectory));
     	
     	File file = fileChooser.showOpenDialog(stage);
     	
     	if(file != null){
     		selectedImage = file.getAbsolutePath();
-    		propertyManager.setStringProperty("loadImageDirectory",file.getParent());
+    		propertyManager.setProperty("loadImageDirectory", file.getParent());
     	}
     	
     }
@@ -473,8 +473,8 @@ public class XModeler extends Application {
 			stage.getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 			setToolTitle();
 			
-			stage.setX(propertyManager.getIntProperty("TOOL_X", TOOL_X));		
-			stage.setY(propertyManager.getIntProperty("TOOL_Y", TOOL_Y));			
+			stage.setX(propertyManager.getProperty("TOOL_X", TOOL_X));
+			stage.setY(propertyManager.getProperty("TOOL_Y", TOOL_Y));
 			stage.setScene(scene);
 			stage.setOnCloseRequest(  new EventHandler<WindowEvent>() {
 				  public void handle(WindowEvent event) {
@@ -488,7 +488,7 @@ public class XModeler extends Application {
 //					  event.doit = false;
 				  }
 		  });
-			//propertyManager.getInterface(); //comment out to see the Interface
+			//propertyManager.getUserInterface(); //comment out to see the Interface
 			
 //TODO Why timer? Can we intergrate it properly?
 //			XModeler.getDisplay().timerExec(3000, 
