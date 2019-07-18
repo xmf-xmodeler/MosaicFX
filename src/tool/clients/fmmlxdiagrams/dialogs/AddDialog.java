@@ -62,7 +62,7 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		layoutContent();
 		dialogPane.setContent(flow);
-		
+
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
 			if (!validateUserInput()) {
@@ -79,8 +79,10 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				switch (type) {
 					case Operation:
-						setResultAddOperation(dlgBtn);
-						break;
+						return new AddDialogResult(object, nameTextField.getText(),
+								levelComboBox.getSelectionModel().getSelectedItem(),
+								typeComboBox.getSelectionModel().getSelectedItem(),
+								bodyTextArea.getText());
 					case Association:
 						setResultAddAssociation(dlgBtn);
 						break;
@@ -90,12 +92,6 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 			}
 			return null;
 		});
-	}
-
-
-	private void setResultAddOperation(ButtonType dlgBtn) {
-		// TODO Auto-generated method stub
-
 	}
 
 	private void setResultAddAssociation(ButtonType dlgBtn) {
@@ -246,7 +242,7 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 		} else if (!InputChecker.getInstance().operationNameIsAvailable(name, object)) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.nameAlreadyUsed);
 			return false;
-		} else if (getComboBoxStringValue(typeComboBox) == null || getComboBoxStringValue(typeComboBox).length() < 1) {
+		} else if (getComboBoxStringValue(typeComboBox) == null) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectType);
 			return false;
 		} else if (levelComboBox.getSelectionModel().getSelectedIndex() == -1) {

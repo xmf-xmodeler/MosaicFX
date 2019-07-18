@@ -446,15 +446,18 @@ public class DiagramActions {
 		});
 	}
 
+	//TODO: needs to be fixed -> dialog for different types > only type of comboBox changes according to type
+	//		result needs to be extended to save the changed property
+
 	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			ChangeMultiplicityDialog dlg = new ChangeMultiplicityDialog(diagram, object, type);
-			Optional<ChangeMultiplicityDialogResult> opt = dlg.showAndWait();
+			ChangeMultiplicityDialog dlg = new ChangeMultiplicityDialog(object);
+			Optional<MultiplicityDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
-				final ChangeMultiplicityDialogResult result = opt.get();
+				final MultiplicityDialogResult result = opt.get();
 				System.err.println(result);
 				diagram.changeMulitiplicityAttribute(result);
 				diagram.updateDiagram();

@@ -532,7 +532,7 @@ public class FmmlxDiagram {
 		ObservableList<FmmlxObject> result = FXCollections.observableArrayList(objectList);
 		return result;
 	}
-	
+
 	public ObservableList<FmmlxObject> getAllPossibleOf() {
 		// TODO Auto-generated method stub
 		return null;
@@ -540,7 +540,6 @@ public class FmmlxDiagram {
 
 
 	////////////////////////////////////////////////////////////////////
-
 	////					Messages to XMF							////
 	////////////////////////////////////////////////////////////////////
 
@@ -670,7 +669,7 @@ public class FmmlxDiagram {
 		// TODO Auto-generated method stub
 	}
 
-	public void changeMulitiplicityAttribute(ChangeMultiplicityDialogResult result) {
+	public void changeMulitiplicityAttribute(MultiplicityDialogResult result) {
 		// TODO Auto-generated method stub
 	}
 
