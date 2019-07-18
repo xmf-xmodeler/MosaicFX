@@ -18,10 +18,14 @@ public class DiagramActions {
 	private FmmlxDiagram diagram;
 
 	private boolean showOperations;
+	private boolean showOperationValues;
+	private boolean showSlots;
 
 	DiagramActions(FmmlxDiagram diagram) {
 		this.diagram = diagram;
 		showOperations = true;
+		showOperationValues = true;
+		showSlots = true;
 	}
 
 	public void redrawDiagram() {
@@ -97,7 +101,6 @@ public class DiagramActions {
 							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
 
 							diagram.updateDiagram();
-							l.countDown();
 						}
 					}
 				};
@@ -132,9 +135,10 @@ public class DiagramActions {
 				AddAttributeDialogResult aad = result.get();
 				diagram.addAttribute(aad.getClassID(), aad.getName(), aad.getLevel(), aad.getType(), aad.getMultiplicity());
 			}
-
 			diagram.updateDiagram();
 			l.countDown();
+
+
 		});
 	}
 
@@ -165,7 +169,6 @@ public class DiagramActions {
 						System.err.println("ChangeNameDialogResult: No matching content type!");
 				}
 			}
-
 			diagram.updateDiagram();
 			l.countDown();
 		});
@@ -214,7 +217,6 @@ public class DiagramActions {
 						System.err.println("ChangeNameDialogResult: No matching content type!");
 				}
 			}
-
 			diagram.updateDiagram();
 			latch.countDown();
 		});
@@ -250,9 +252,9 @@ public class DiagramActions {
 					default:
 						System.err.println("ChangeLevelDialogResult: No matching content type!");
 				}
+				diagram.updateDiagram();
 			}
 
-			diagram.updateDiagram();
 			latch.countDown();
 		});
 
@@ -269,9 +271,8 @@ public class DiagramActions {
 			if (cod.isPresent()) {
 				final ChangeOfDialogResult result = cod.get();
 				diagram.changeOf(result);
+				diagram.updateDiagram();
 			}
-
-			diagram.updateDiagram();
 			l.countDown();
 		});
 
@@ -299,9 +300,9 @@ public class DiagramActions {
 						System.err.println("ChangeOwnerDialogResult: No matching content type!");
 						break;
 				}
+				diagram.updateDiagram();
 			}
 
-			diagram.updateDiagram();
 			l.countDown();
 		});
 	}
@@ -317,9 +318,9 @@ public class DiagramActions {
 			if (cpd.isPresent()) {
 				ChangeParentDialogResult result = cpd.get();
 				diagram.changeParent(result);
+				diagram.updateDiagram();
 			}
 
-			diagram.updateDiagram();
 			l.countDown();
 		});
 
@@ -336,11 +337,15 @@ public class DiagramActions {
 			if (result.isPresent()) {
 				ChangeSlotValueDialogResult slotValueDialogResult = result.get();
 				diagram.changeSlotValue(slotValueDialogResult);
+				diagram.updateDiagram();
 			}
 
-			diagram.updateDiagram();
 			l.countDown();
 		});
+	}
+
+	public void updateDiagram() {
+		diagram.updateDiagram();
 	}
 
 	public void toogleIsAbstract(FmmlxObject object) {
@@ -358,11 +363,31 @@ public class DiagramActions {
 		diagram.redraw();
 	}
 
+	public void toogleShowOperationValues() {
+		for (FmmlxObject o : diagram.getObjects()) {
+			if (o.getShowOperationValues() == showOperationValues) {
+				o.toogleShowOperationValues();
+			}
+		}
+		showOperationValues = !showOperationValues;
+		diagram.redraw();
+	}
+
+	public void toogleShowSlots() {
+		for (FmmlxObject o : diagram.getObjects()) {
+			if (o.getShowSlots() == showSlots) {
+				o.toogleShowSlots();
+			}
+		}
+		showSlots = !showSlots;
+		diagram.redraw();
+	}
+
 	public void addDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			AddDialog dlg = new AddDialog(object, type);
+			AddDialog dlg = new AddDialog(diagram, object, type);
 			Optional<AddDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
@@ -384,9 +409,8 @@ public class DiagramActions {
 					default:
 						System.err.println("AddDialogResult: No matching content type!");
 				}
+				diagram.updateDiagram();
 			}
-
-			diagram.updateDiagram();
 			latch.countDown();
 		});
 	}
@@ -411,29 +435,32 @@ public class DiagramActions {
 					case Association:
 						diagram.changeTypeAssociation(result);
 						break;
-					default: System.err.println("AddDialogResult: No matching content type!");
+					default:
+						System.err.println("AddDialogResult: No matching content type!");
 				}
+				diagram.updateDiagram();
 			}
 
-			diagram.updateDiagram();
 			latch.countDown();
 		});
 	}
+
+	//TODO: needs to be fixed -> dialog for different types > only type of comboBox changes according to type
+	//		result needs to be extended to save the changed property
 
 	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			ChangeMultiplicityDialog dlg = new ChangeMultiplicityDialog(diagram, object, type);
-			Optional<ChangeMultiplicityDialogResult> opt = dlg.showAndWait();
+			ChangeMultiplicityDialog dlg = new ChangeMultiplicityDialog(object);
+			Optional<MultiplicityDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
-				final ChangeMultiplicityDialogResult result = opt.get();
+				final MultiplicityDialogResult result = opt.get();
 				System.err.println(result);
-				diagram.changeMulitiplicityAttribute(result);	
+				diagram.changeMulitiplicityAttribute(result);
+				diagram.updateDiagram();
 			}
-
-			diagram.updateDiagram();
 			latch.countDown();
 		});
 	}
@@ -448,10 +475,10 @@ public class DiagramActions {
 			if (opt.isPresent()) {
 				final ChangeTargetDialogResult result = opt.get();
 				System.err.println(result);
-				diagram.changeTargetAssociation(result);	
+				diagram.changeTargetAssociation(result);
+				diagram.updateDiagram();
 			}
 
-			diagram.updateDiagram();
 			latch.countDown();
 		});
 	}
@@ -466,10 +493,9 @@ public class DiagramActions {
 			if (opt.isPresent()) {
 				final ChangeBodyDialogResult result = opt.get();
 				System.err.println(result);
-				diagram.changeBody(result);	
+				diagram.changeBody(result);
+				diagram.updateDiagram();
 			}
-
-			diagram.updateDiagram();
 			latch.countDown();
 		});
 	}

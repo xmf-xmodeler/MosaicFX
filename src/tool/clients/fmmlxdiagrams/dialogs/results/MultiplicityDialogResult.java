@@ -1,50 +1,35 @@
 package tool.clients.fmmlxdiagrams.dialogs.results;
 
-public class MultiplicityDialogResult extends DialogResult{
-	
-	private int min;
-	private int max;
-	private boolean ordered;
-	private boolean duplicates;
-	
-	public MultiplicityDialogResult(int min, int max, boolean ordered, boolean duplicates) {
-		this.min = min;
-		this.max = max;
-		this.ordered = ordered;
-		this.duplicates=duplicates;
-	}
-	
-	public int getMin() {
-		return min;
-	}
+import tool.clients.fmmlxdiagrams.Multiplicity;
 
-	public void setMin(int min) {
-		this.min = min;
-	}
+public class MultiplicityDialogResult extends DialogResult {
 
-	public int getMax() {
-		return max;
+	private final String minimum;
+	private final String maximum;
+	private final boolean isOrdered;
+	private final boolean allowDuplicates;
+	private boolean upperLimit = true;
+
+	public MultiplicityDialogResult(String minimum, String maximum, boolean isOrdered, boolean allowDuplicates) {
+		this.minimum = minimum;
+		this.maximum = maximum;
+		this.isOrdered = isOrdered;
+		this.allowDuplicates = allowDuplicates;
+
+		if (maximum.equals("*")) {
+			upperLimit = false;
+		}
 	}
 
-	public void setMax(int max) {
-		this.max = max;
+	public Multiplicity convertToMultiplicity() {
+		int min = Integer.parseInt(minimum);
+		int max = -1;
+		if (maximum.equals("*")) {
+			max = 2;
+		} else {
+			max = Integer.parseInt(maximum);
+		}
+
+		return new Multiplicity(min, max, upperLimit, isOrdered, allowDuplicates);
 	}
-
-	public boolean isOrdered() {
-		return ordered;
-	}
-
-	public void setOrdered(boolean ordered) {
-		this.ordered = ordered;
-	}
-
-	public boolean isDuplicates() {
-		return duplicates;
-	}
-
-	public void setDuplicates(boolean duplicates) {
-		this.duplicates = duplicates;
-	}
-
-
 }

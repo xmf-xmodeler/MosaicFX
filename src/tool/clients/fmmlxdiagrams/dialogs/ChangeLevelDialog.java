@@ -6,12 +6,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
+import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
-import tool.clients.fmmlxdiagrams.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
 
 import java.util.Vector;
 
@@ -28,33 +29,33 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
 	private Label objectLabel;
 	private Label objectLevelLabel;
-	
+
 	private TextField objectNameTextField;
 	private TextField objectLevelTextField;
-	
+
 	//For All
-		private Label currentLevelLabel;
-		private Label newLevelLabel;
-		private TextField currentLevelTextField;
-		private ComboBox<Integer> newLevelComboBox;
-		private int currentLevel;
-		private int newLevel;
-	
+	private Label currentLevelLabel;
+	private Label newLevelLabel;
+	private TextField currentLevelTextField;
+	private ComboBox<Integer> newLevelComboBox;
+	private int currentLevel;
+	private int newLevel;
+
 	//For Attribute
 	private Label selectAttributeLabel;
-	private ComboBox<FmmlxAttribute> selectAttributeComboBox; 
-	
+	private ComboBox<FmmlxAttribute> selectAttributeComboBox;
+
 	//For Association
 	private Label selectAssociationLabel;
 	private ComboBox<String> selectAssociationComboBox;
-	
+
 	//For Operation
 	private Label selectOperationLabel;
 	private ComboBox<FmmlxOperation> selectOperationComboBox;
 
 
 	public ChangeLevelDialog(FmmlxDiagram diagram, FmmlxObject object, PropertyType type) {
-		
+
 		super();
 		//this.diagram = diagram;
 		this.type = type;
@@ -71,7 +72,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 				e.consume();
 			}
 		});
-		
+
 		setResult();
 	}
 
@@ -94,14 +95,18 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 				return validateOperationLevelChange();
 			case Association:
 				return validateAssociationLevelChange();
-		default: System.err.println("ChangeLevelDialog : No matching content type!");	
-			break;
+			default:
+				System.err.println("ChangeLevelDialog : No matching content type!");
+				break;
 		}
 		return true;
 	}
 
 	private boolean validateAssociationLevelChange() {
-		if (newLevelComboBox.getSelectionModel().getSelectedIndex() == -1) {
+		if (selectAssociationComboBox.getSelectionModel().getSelectedItem()==null) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociation);
+			return false;
+		} else if (newLevelComboBox.getSelectionModel().getSelectedIndex() == -1) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectNewLevel);
 			return false;
 		} else if (newLevelComboBox.getSelectionModel().getSelectedItem().toString().equals(currentLevelTextField.getText())) {
@@ -113,7 +118,10 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	}
 
 	private boolean validateOperationLevelChange() {
-		if (newLevelComboBox.getSelectionModel().getSelectedIndex() == -1) {
+		if (selectOperationComboBox.getSelectionModel().getSelectedItem()==null) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectOperation);
+			return false;
+		} else if (newLevelComboBox.getSelectionModel().getSelectedIndex() == -1) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectNewLevel);
 			return false;
 		} else if (newLevelComboBox.getSelectionModel().getSelectedItem().toString().equals(currentLevelTextField.getText())) {
@@ -125,7 +133,10 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	}
 
 	private boolean validateAttributeLevelChange() {
-		if (newLevelComboBox.getSelectionModel().getSelectedIndex() == -1) {
+		if (selectAttributeComboBox.getSelectionModel().getSelectedItem()==null) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectAttribute);
+			return false;
+		} else if (newLevelComboBox.getSelectionModel().getSelectedIndex() == -1) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectNewLevel);
 			return false;
 		} else if (newLevelComboBox.getSelectionModel().getSelectedItem().toString().equals(currentLevelTextField.getText())) {
@@ -180,13 +191,13 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
 	private void changeAssociationLevel() {
 		//TODO Put list of Association to combobox
-		
+
 		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.changeAssociationLevel);
-		
+
 		selectAssociationLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectAssociation);
 		currentLevelLabel = new Label(StringValueDialog.LabelAndHeaderTitle.currentLevel);
 		newLevelLabel = new Label(StringValueDialog.LabelAndHeaderTitle.newLevel);
-		
+
 		selectAssociationComboBox = new ComboBox<String>();
 		currentLevelTextField = new TextField();
 		currentLevelTextField.setDisable(true);
@@ -198,11 +209,11 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
 			@Override
 			public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
-				newLevel= newValue;
+				newLevel = newValue;
 			}
-			
+
 		});
-		
+
 		grid.add(selectAssociationLabel, 0, 1);
 		grid.add(selectAssociationComboBox, 1, 1);
 		grid.add(currentLevelLabel, 0, 2);
@@ -213,26 +224,26 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	}
 
 	private void changeOperationLevel() {
-		
+
 		operations = object.getOwnOperations();
 		operations.addAll(object.getOtherOperations());
-		
+
 		ObservableList<FmmlxOperation> operationList;
-		operationList =  FXCollections.observableList(operations);
-		
+		operationList = FXCollections.observableList(operations);
+
 		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.changeOperationLevel);
 
 		selectOperationLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectOperation);
 		currentLevelLabel = new Label(StringValueDialog.LabelAndHeaderTitle.currentLevel);
 		newLevelLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectNewLevel);
 
-		selectOperationComboBox = initializeOperationComboBox(operationList);
+		selectOperationComboBox = (ComboBox<FmmlxOperation>) initializeComboBox(operationList);
 		selectOperationComboBox.valueProperty().addListener(new ChangeListener<FmmlxOperation>() {
 			@Override
 			public void changed(ObservableValue<? extends FmmlxOperation> observable, FmmlxOperation oldValue,
-					FmmlxOperation newValue) {
-				currentLevelTextField.setText(newValue.getLevel()+"");
-				currentLevel=newValue.getLevel();
+								FmmlxOperation newValue) {
+				currentLevelTextField.setText(newValue.getLevel() + "");
+				currentLevel = newValue.getLevel();
 			}
 		});
 		currentLevelTextField = new TextField();
@@ -246,9 +257,9 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
 			@Override
 			public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
-				newLevel= newValue;
+				newLevel = newValue;
 			}
-			
+
 		});
 
 		grid.add(selectOperationLabel, 0, 1);
@@ -261,39 +272,39 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
 	private void changeAttributeLevel() {
 		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.changeAttributeLevel);
-		
+
 		attributes = object.getOwnAttributes();
 		attributes.addAll(object.getOtherAttributes());
-		
+
 		ObservableList<FmmlxAttribute> attributeList;
-		attributeList =  FXCollections.observableList(attributes);
+		attributeList = FXCollections.observableList(attributes);
 
 		selectAttributeLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectAttribute);
 		currentLevelLabel = new Label(StringValueDialog.LabelAndHeaderTitle.currentLevel);
 		newLevelLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectNewLevel);
-		
+
 		currentLevelTextField = new TextField();
 		currentLevelTextField.setDisable(true);
 
-		selectAttributeComboBox = initializeAttributeComboBox(attributeList);
+		selectAttributeComboBox = (ComboBox<FmmlxAttribute>) initializeComboBox(attributeList);
 		selectAttributeComboBox.valueProperty().addListener(new ChangeListener<FmmlxAttribute>() {
 
 			@Override
 			public void changed(ObservableValue<? extends FmmlxAttribute> observable, FmmlxAttribute oldValue,
-					FmmlxAttribute newValue) {
-				currentLevelTextField.setText(newValue.getLevel()+"");
-				currentLevel=newValue.getLevel();
+								FmmlxAttribute newValue) {
+				currentLevelTextField.setText(newValue.getLevel() + "");
+				currentLevel = newValue.getLevel();
 			}
 		});
-		
+
 		newLevelComboBox = new ComboBox<Integer>(LevelList.getLevelInterval(object));
 		newLevelComboBox.valueProperty().addListener(new ChangeListener<Integer>() {
 
 			@Override
 			public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
-				newLevel= newValue;
+				newLevel = newValue;
 			}
-			
+
 		});
 
 		selectAttributeComboBox.setPrefWidth(COLUMN_WIDTH);
@@ -311,20 +322,22 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.changeClassLevel);
 		objectLevelTextField.setText(object.getLevel() + "");
 		objectLevelTextField.setDisable(true);
-
+		
 		newLevelLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectNewLevel);
-		currentLevel=object.getLevel();
+		currentLevel = object.getLevel();
 
 		newLevelComboBox = new ComboBox<Integer>(LevelList.levelList);
-
+		newLevelComboBox.setEditable(true);
+		newLevelComboBox.setConverter(new IntegerStringConverter());
+ 
 		newLevelComboBox.setPrefWidth(COLUMN_WIDTH);
 		newLevelComboBox.valueProperty().addListener(new ChangeListener<Integer>() {
 
 			@Override
 			public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
-				newLevel= newValue;
+				newLevel = newValue;
 			}
-			
+
 		});
 
 		grid.add(objectLevelLabel, 0, 1);

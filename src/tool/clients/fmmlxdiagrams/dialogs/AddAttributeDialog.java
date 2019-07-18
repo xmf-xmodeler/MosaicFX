@@ -6,25 +6,27 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.util.converter.IntegerStringConverter;
-import tool.clients.fmmlxdiagrams.*;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
-import tool.clients.fmmlxdiagrams.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 
 public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
-	ObservableList<String> classList;
-	List<String> typesArray;
+	private ObservableList<String> classList;
+	private List<String> typesArray;
 	private Label nameLabel;
 	private Label classLabel;
 	private Label levelLabel;
 	private Label typeLabel;
 	private Label multiplicityLabel;
+	private Label displayMultiplicityLabel;
+
 	private TextField nameTextField;
 	private TextField classTextField;
 	private ComboBox<Integer> levelComboBox;
@@ -43,7 +45,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
 		DialogPane dialogPane = getDialogPane();
 		this.objects = diagram.getObjects();
-		this.selectedObject = selectedObject;	
+		this.selectedObject = selectedObject;
 
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
@@ -58,14 +60,13 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 			}
 		});
 
+		setResult();
+	}
+
+	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				int classId = 0;
-				for (FmmlxObject object : objects) {
-					if (classTextField.getText().equals(object.getName())) {
-						classId = object.getId();
-					}
-				}
+				int classId = selectedObject.getId();
 
 				//TODO AddAttributeDialogResult and Multiplicity Result
 				return new AddAttributeDialogResult(
@@ -73,11 +74,10 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 						nameTextField.getText(),
 						levelComboBox.getSelectionModel().getSelectedItem(),
 						getComboBoxStringValue(typeComboBox),
-						new Multiplicity(0, 1, true, false, false));
+						multiplicity);
 			}
 			return null;
 		});
-
 
 	}
 
@@ -122,7 +122,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		if (levelComboBox.getSelectionModel().getSelectedIndex() == -1) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectLevel);
 			return false;
-		} 
+		}
 		errorLabel.setText("");
 		return true;
 	}
@@ -132,7 +132,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		Label errorLabel = getErrorLabel();
 		String name = nameTextField.getText();
 
-		if (!InputChecker.getInstance().validateName(name)) {	
+		if (!InputChecker.getInstance().validateName(name)) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
 			return false;
 		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, selectedObject)) {
@@ -168,10 +168,10 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		//multiplicityButton.setText("Add / Edit Multiplicity");
 		multiplicityButton.setText(multiplicity.getClass().getSimpleName());
 		multiplicityButton.setOnAction(e -> {
-			new MultiplicityDialog(multiplicity).showAndWait();
-			/*if successful multiplicity = result;
-			 *multiplicityButton.setText(multiplicity.toString());*/
+			showMultiplicityDialog();
 		});
+		displayMultiplicityLabel = new Label(multiplicity.toString());
+
 		classTextField.setPrefWidth(COLUMN_WIDTH);
 		levelComboBox.setPrefWidth(COLUMN_WIDTH);
 		typeComboBox.setPrefWidth(COLUMN_WIDTH);
@@ -187,6 +187,19 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		grid.add(typeComboBox, 1, 3);
 		grid.add(multiplicityLabel, 0, 4);
 		grid.add(multiplicityButton, 1, 4);
+		grid.add(displayMultiplicityLabel, 1, 5);
 
+	}
+
+	private void showMultiplicityDialog() {
+		MultiplicityDialog dlg = new MultiplicityDialog(multiplicity);
+		Optional<MultiplicityDialogResult> opt = dlg.showAndWait();
+
+		if (opt.isPresent()) {
+			MultiplicityDialogResult result = opt.get();
+
+			multiplicity = result.convertToMultiplicity();
+			displayMultiplicityLabel.setText(multiplicity.toString());
+		}
 	}
 }

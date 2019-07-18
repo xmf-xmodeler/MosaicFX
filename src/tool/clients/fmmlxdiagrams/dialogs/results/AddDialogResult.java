@@ -1,19 +1,33 @@
 package tool.clients.fmmlxdiagrams.dialogs.results;
 
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
-public class AddDialogResult extends DialogResult{
-	
+public class AddDialogResult extends DialogResult {
+
+	// General fields used for all types
 	private final PropertyType type;
-	private final FmmlxDiagram diagram;
-	private FmmlxObject object;
-	
-	public AddDialogResult(FmmlxDiagram diagram, FmmlxObject object, PropertyType type) {
+	private final FmmlxObject object;
+
+	//Used for operation
+	private String operationName;
+	private int level;
+	private String operationType;
+	private String body;
+
+	public AddDialogResult(FmmlxObject object, PropertyType type) {
 		this.type = type;
-		this.diagram = diagram;
-		this.object = object; 
+		this.object = object;
+	}
+
+	//Constructor for type = operation
+	public AddDialogResult(FmmlxObject object, String name, int level, String operationType, String body) {
+		this.object = object;
+		this.type = PropertyType.Operation;
+		this.operationName = name;
+		this.level = level;
+		this.operationType = operationType;
+		this.body = body;
 	}
 
 	public PropertyType getType() {
@@ -21,14 +35,28 @@ public class AddDialogResult extends DialogResult{
 		return type;
 	}
 
-	public FmmlxDiagram getDiagram() {
-		return diagram;
-	}
-
 	public FmmlxObject getObject() {
 		return object;
 	}
-	
-	
 
+	public int getObjectId() {
+		return object.getId();
+	}
+
+
+	public String getOperationName() {
+		return operationName;
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public String getOperationType() {
+		return operationType;
+	}
+
+	public String getBody() {
+		return body;
+	}
 }

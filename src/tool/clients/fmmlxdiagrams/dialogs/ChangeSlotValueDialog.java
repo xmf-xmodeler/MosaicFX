@@ -13,6 +13,7 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 	private TextField classNameTextField;
 	private TextField slotNameTextField;
 	private TextField slotValueTextField;
+	private CheckBox isExpressionCheckBox;
 
 	public ChangeSlotValueDialog(FmmlxObject object, FmmlxSlot slot) {
 		super();
@@ -37,6 +38,7 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 		slotNameTextField = new TextField(slot.getName());
 		slotNameTextField.setDisable(true);
 		slotValueTextField = new TextField(slot.getValue());
+		isExpressionCheckBox = new CheckBox();
 
 		grid.add(new Label("Class"), 0, 0);
 		grid.add(classNameTextField, 1, 0);
@@ -44,6 +46,8 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 		grid.add(slotNameTextField, 1, 1);
 		grid.add(new Label("Value"), 0, 2);
 		grid.add(slotValueTextField, 1, 2);
+		grid.add(new Label("is Expression"), 0, 3);
+		grid.add(isExpressionCheckBox, 1, 3);
 
 
 	}
@@ -51,7 +55,13 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				return new ChangeSlotValueDialogResult(object, slot, slotValueTextField.getText());
+
+				if (isExpressionCheckBox.isSelected()) {
+					return new ChangeSlotValueDialogResult(object, slot, slotValueTextField.getText());
+				} else {
+					String slotValue = "\"" + slotValueTextField.getText() + "\"";
+					return new ChangeSlotValueDialogResult(object, slot, slotValue);
+				}
 			}
 			return null;
 		});
