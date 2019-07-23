@@ -38,7 +38,11 @@ public class StringValueDialog {
 		public static final String body = "Body";
 		public static final String minimum = "Minimum";
 		public static final String maximum = "Maximum";
-		public static final String upperLimit= "";
+		public static final String upperLimit = "";
+		public static final String instLevel = "InstLevel";
+		public static final String displayName = "Display Name";
+		public static final String identifier = "Identifier";
+		public static final String multiplicity = "Multiplicity";
 
 		//Current
 		public static final String currentOwner = "Current Owner";
@@ -52,6 +56,7 @@ public class StringValueDialog {
 		public static final String newOperation = "New Operation";
 
 		//Change
+		public static final String change = "Change";
 		public static final String changeClassLevel = "Change Class Level";
 		public static final String changeOf = "Change Of";
 		public static final String changeAttributeOwner = "Change Attribute Owner";

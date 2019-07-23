@@ -50,7 +50,7 @@ public class CustomDialog<R> extends Dialog<R> {
 			cc.setFillWidth(true);
 			cc.setHgrow(Priority.ALWAYS);
 			// double size for second column
-			COLUMN_WIDTH = COLUMN_WIDTH * 2;
+			if (COLUMN_WIDTH == 150) COLUMN_WIDTH = 300;
 			grid.getColumnConstraints().add(cc);
 		}
 	}

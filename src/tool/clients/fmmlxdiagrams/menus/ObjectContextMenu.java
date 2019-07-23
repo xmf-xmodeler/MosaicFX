@@ -72,7 +72,7 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu associationMenu = new Menu("Association");
 
 		MenuItem addItem = new MenuItem("Add");
-		addItem.setOnAction(e -> actions.addDialog(object, PropertyType.Association));
+		addItem.setOnAction(e -> actions.addAssociationDialog(object));
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e_ -> actions.removeDialog(object, PropertyType.Association));
 		MenuItem changeTargetItem = new MenuItem("Change target");

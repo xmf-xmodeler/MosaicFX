@@ -500,4 +500,13 @@ public class DiagramActions {
 			latch.countDown();
 		});
 	}
+
+	public void addAssociationDialog(FmmlxObject object) {
+		CountDownLatch latch = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			AddAssociationDialog dlg = new AddAssociationDialog(diagram, object, null);
+			dlg.showAndWait();
+		});
+	}
 }
