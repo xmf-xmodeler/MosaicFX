@@ -9,12 +9,14 @@ public class ChangeLevelDialogResult extends DialogResult {
 	private FmmlxObject object;
 	private int currentlevel;
 	private int newLevel;
+	private String name;
 	
-	public ChangeLevelDialogResult(FmmlxObject object, Integer currentLevel, Integer newLevel, PropertyType type) {
+	public ChangeLevelDialogResult(FmmlxObject object, String name, Integer currentLevel, Integer newLevel, PropertyType type) {
 		this.type = type;
 		this.object = object;
-		this.currentlevel= currentlevel;
+		this.currentlevel = currentLevel;
 		this.newLevel= newLevel;
+		this.name= name;
 	}
 
 	public PropertyType getType() {
@@ -27,6 +29,10 @@ public class ChangeLevelDialogResult extends DialogResult {
 
 	public int getNewLevel() {
 		return newLevel;
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	public int getOldLevel() {

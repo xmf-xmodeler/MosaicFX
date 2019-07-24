@@ -422,9 +422,11 @@ public class DiagramActions {
 			ChangeTypeDialog dlg = new ChangeTypeDialog(object, type);
 			Optional<ChangeTypeDialogResult> opt = dlg.showAndWait();
 
+			System.err.println("changeTypeDialog: " + opt);
+			
 			if (opt.isPresent()) {
 				final ChangeTypeDialogResult result = opt.get();
-				System.err.println(result);
+				
 				switch (result.getType()) {
 					case Attribute:
 						diagram.changeTypeAttribute(result);

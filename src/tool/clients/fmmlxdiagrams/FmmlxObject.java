@@ -162,15 +162,13 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		return of;
 	}
 
-
 	public Vector<FmmlxAttribute> getOwnAttributes() {
-		return ownAttributes;
+		return new Vector<FmmlxAttribute>(ownAttributes);
 	}
 
 	public Vector<FmmlxAttribute> getOtherAttributes() {
-		return otherAttributes;
+		return new Vector<FmmlxAttribute>(otherAttributes);
 	}
-
 
 	private Vector<FmmlxAttribute> getAllAttributes() {
 		Vector<FmmlxAttribute> result = new Vector<FmmlxAttribute>();
