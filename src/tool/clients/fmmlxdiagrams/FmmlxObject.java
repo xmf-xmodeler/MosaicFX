@@ -162,15 +162,13 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		return of;
 	}
 
-
 	public Vector<FmmlxAttribute> getOwnAttributes() {
-		return ownAttributes;
+		return new Vector<FmmlxAttribute>(ownAttributes);
 	}
 
 	public Vector<FmmlxAttribute> getOtherAttributes() {
-		return otherAttributes;
+		return new Vector<FmmlxAttribute>(otherAttributes);
 	}
-
 
 	private Vector<FmmlxAttribute> getAllAttributes() {
 		Vector<FmmlxAttribute> result = new Vector<FmmlxAttribute>();
@@ -259,11 +257,16 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		int headerLines = hasParents() ? 3 : 2;
 		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * headerLines, getLevelBackgroundColor(), Color.BLACK, 1, PropertyType.Class);
 		nodeElements.addElement(header);
-		String ofName = "ClassNotFound";
+		String ofName;
 		try {
 			ofName = diagram.getObjectById(of).name;
 		} catch (Exception e) {
 			ofName = e.getMessage();
+		}
+		if(ofName != null) {
+//			ofName = "^" + ofName + "^";
+		} else {
+			ofName = "MetaClass";
 		}
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, Color.valueOf(getLevelFontColor() + "75"), null, this, "^" + ofName + "^");
 		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight, Color.valueOf(getLevelFontColor() + "75"), null, this, "" + level);
@@ -384,7 +387,10 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 
 		if (of >= 0) {
 			neededWidth = Math.max(neededWidth, diagram.calculateTextWidth(getLevel() + "^" + diagram.getObjectById(of).name + "^") + 16);
+		} else {
+			neededWidth = Math.max(neededWidth, diagram.calculateTextWidth(getLevel() + "^MetaClass^") + 16);
 		}
+			
 
 		//determine maximal width of attributes
 		for (FmmlxAttribute att : ownAttributes) {

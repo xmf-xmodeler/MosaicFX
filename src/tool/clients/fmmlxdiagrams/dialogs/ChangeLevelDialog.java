@@ -40,6 +40,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	private ComboBox<Integer> newLevelComboBox;
 	private int currentLevel;
 	private int newLevel;
+	private String name;
 
 	//For Attribute
 	private Label selectAttributeLabel;
@@ -79,7 +80,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				return new ChangeLevelDialogResult(object, currentLevel, newLevel, type);
+				return new ChangeLevelDialogResult(object, name, currentLevel, newLevel, type);
 			}
 			return null;
 		});
@@ -244,6 +245,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 								FmmlxOperation newValue) {
 				currentLevelTextField.setText(newValue.getLevel() + "");
 				currentLevel = newValue.getLevel();
+				name = selectOperationComboBox.getSelectionModel().getSelectedItem().getName();
 			}
 		});
 		currentLevelTextField = new TextField();
@@ -294,6 +296,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 								FmmlxAttribute newValue) {
 				currentLevelTextField.setText(newValue.getLevel() + "");
 				currentLevel = newValue.getLevel();
+				name = selectAttributeComboBox.getSelectionModel().getSelectedItem().getName();
 			}
 		});
 

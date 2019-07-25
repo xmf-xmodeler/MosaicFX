@@ -580,7 +580,7 @@ public class FmmlxDiagram {
 	}
 
 	public void changeAttributeLevel(ChangeLevelDialogResult result) {
-		comm.changeAttributeLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());
+		comm.changeAttributeLevel(result.getObjectId(), result.getName(), result.getOldLevel(), result.getNewLevel());
 
 	}
 
@@ -590,7 +590,7 @@ public class FmmlxDiagram {
 	}
 
 	public void changeOperationLevel(ChangeLevelDialogResult result) {
-		comm.changeOperationLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());
+		comm.changeOperationLevel(result.getObjectId(), result.getName(), result.getOldLevel(), result.getNewLevel());
 
 	}
 
