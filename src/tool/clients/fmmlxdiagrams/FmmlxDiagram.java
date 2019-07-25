@@ -683,8 +683,8 @@ public class FmmlxDiagram {
 	}
 
 	public void addAssociation(AddAssociationDialogResult result) {
-		// TODO Auto-generated method stub
-
+		// TODO: add parameters
+		comm.addAssociation();
 	}
 
 	public void changeAttributeOwner(ChangeOwnerDialogResult result) {
