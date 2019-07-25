@@ -508,14 +508,14 @@ public class FmmlxDiagramCommunicator {
 
 	}
 
-	public void changeAttributeLevel(int objectId, int oldLevel, int newLevel) {
+	public void changeAttributeLevel(int objectId, String attName, int oldLevel, int newLevel) {
 		Value[] message = new Value[]{
 				new Value(-1),
 				new Value(objectId),
+				new Value(attName),
 				new Value(oldLevel),
 				new Value(newLevel)};
 		WorkbenchClient.theClient().send(handler, "changeAttributeLevel", message);
-
 	}
 
 	public void changeAssociationLevel(int objectId, int oldLevel, int newLevel) {
@@ -527,10 +527,11 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "changeAssociationLevel", message);
 	}
 
-	public void changeOperationLevel(int objectId, int oldLevel, int newLevel) {
+	public void changeOperationLevel(int objectId, String opName, int oldLevel, int newLevel) {
 		Value[] message = new Value[]{
 				new Value(-1),
 				new Value(objectId),
+				new Value(opName),
 				new Value(oldLevel),
 				new Value(newLevel)};
 		WorkbenchClient.theClient().send(handler, "changeOperationLevel", message);

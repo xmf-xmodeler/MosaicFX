@@ -337,7 +337,6 @@ public class DiagramActions {
 			if (result.isPresent()) {
 				ChangeSlotValueDialogResult slotValueDialogResult = result.get();
 				diagram.changeSlotValue(slotValueDialogResult);
-				diagram.changeSlotValue(slotValueDialogResult);
 				diagram.updateDiagram();
 			}
 
@@ -422,9 +421,11 @@ public class DiagramActions {
 			ChangeTypeDialog dlg = new ChangeTypeDialog(object, type);
 			Optional<ChangeTypeDialogResult> opt = dlg.showAndWait();
 
+			System.err.println("changeTypeDialog: " + opt);
+			
 			if (opt.isPresent()) {
 				final ChangeTypeDialogResult result = opt.get();
-				System.err.println("Change type result " + result);
+				
 				switch (result.getType()) {
 					case Attribute:
 						diagram.changeTypeAttribute(result);
