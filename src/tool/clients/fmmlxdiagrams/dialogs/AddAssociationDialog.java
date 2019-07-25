@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog.ErrorMessage;
 import static tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog.LabelAndHeaderTitle;
 
 
@@ -23,9 +24,6 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 	private FmmlxDiagram diagram;
 	private FmmlxObject source;
 	private FmmlxObject target;
-
-	private FmmlxObject selectedTypeSource;
-	private FmmlxObject selectedTypeTarget;
 
 	private Multiplicity multiplicitySource;
 	private Multiplicity multiplicityTarget;
@@ -53,19 +51,10 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 		dialogPane.setHeaderText("Add Association");
 
 		layoutContent();
-
+		setClasses();
 		dialogPane.setContent(flow);
-
-		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
-		okButton.addEventFilter(ActionEvent.ACTION, e -> {
-			if (!validateUserInput()) {
-				e.consume();
-			}
-		});
-	}
-
-	private boolean validateUserInput() {
-		return true;
+		setValidation();
+		setResult();
 	}
 
 	private void layoutContent() {
@@ -82,8 +71,8 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 
 		typeSource.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue != null) {
-				this.selectedTypeSource = newValue;
-				setLevelList(instLevelSource, selectedTypeSource);
+				this.source = newValue;
+				setLevelList(instLevelSource, source);
 			}
 		});
 
@@ -104,8 +93,8 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 		typeTarget = (ComboBox<FmmlxObject>) initializeComboBox(diagram.getAllPossibleParentList());
 		typeTarget.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue != null) {
-				this.selectedTypeTarget = newValue;
-				setLevelList(instLevelTarget, selectedTypeTarget);
+				this.target = newValue;
+				setLevelList(instLevelTarget, target);
 			}
 		});
 		instLevelTarget = new ComboBox<>(LevelList.generateLevelListToThreshold(0, 5));
@@ -129,7 +118,7 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 		HBox multiplicityBox = new HBox();
 		multiplicityBox.setPrefWidth(COLUMN_WIDTH);
 		TextField textField = new TextField(multiplicity.toString());
-
+		textField.setDisable(true);
 		Button sourceMultiplicityButton = new Button(LabelAndHeaderTitle.change);
 		sourceMultiplicityButton.setOnAction(e -> showMultiplicityDialog(multiplicity, textField));
 
@@ -165,4 +154,62 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 			counter++;
 		}
 	}
+
+	private void setClasses() {
+		if (source != null) {
+			typeSource.getSelectionModel().select(source);
+		}
+		if (target != null) {
+			typeTarget.getSelectionModel().select(target);
+		}
+	}
+
+	private void setValidation() {
+		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
+		okButton.addEventFilter(ActionEvent.ACTION, e -> {
+			if (!validateUserInput()) {
+				e.consume();
+			}
+		});
+	}
+
+	private boolean validateUserInput() {
+		InputChecker inputChecker = InputChecker.getInstance();
+		if (inputChecker.isComboBoxItemNull(typeSource) || inputChecker.isComboBoxItemNull(typeTarget)) {
+			errorLabel.setText(ErrorMessage.selectType);
+			return false;
+		}
+		if (inputChecker.isComboBoxItemNull(instLevelSource) || inputChecker.isComboBoxItemNull(instLevelTarget)) {
+			errorLabel.setText(ErrorMessage.selectLevel);
+			return false;
+		}
+		if (inputChecker.isTextfieldEmpty(displayNameSource)) {
+			errorLabel.setText(ErrorMessage.setDisplayName);
+			return false;
+		}
+
+		return true;
+	}
+
+	private void setResult() {
+		setResultConverter(dlgBtn -> {
+			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+				return new AddAssociationDialogResult(
+						source,
+						target,
+						getComboBoxIntegerValue(instLevelSource),
+						getComboBoxIntegerValue(instLevelTarget),
+						displayNameSource.getText(),
+						displayNameTarget.getText(),
+						identifierSource.getText(),
+						identifierTarget.getText(),
+						multiplicitySource,
+						multiplicityTarget
+				);
+			}
+			return null;
+		});
+	}
+
+
 }

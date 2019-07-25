@@ -1,7 +1,7 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
-import java.util.Vector;
-
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
@@ -80,6 +80,15 @@ public class InputChecker {
 	public boolean associationNameIsAvailable(String name, FmmlxObject object) {
 		// TODO Auto-generated method stub
 		return true;
+	}
+
+	public boolean isComboBoxItemNull(ComboBox comboBox) {
+		return comboBox.getSelectionModel().getSelectedItem() == null;
+	}
+
+	public boolean isTextfieldEmpty(TextField textField) {
+		return textField.getText() == null
+				|| textField.getText().length() == 0;
 	}
 
 }

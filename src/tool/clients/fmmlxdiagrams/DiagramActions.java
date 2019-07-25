@@ -349,12 +349,12 @@ public class DiagramActions {
 		diagram.updateDiagram();
 	}
 
-	public void toogleIsAbstract(FmmlxObject object) {
+	public void toggleIsAbstract(FmmlxObject object) {
 		object.toogleIsAbstract();
 		diagram.redraw();
 	}
 
-	public void toogleShowOperations() {
+	public void toggleShowOperations() {
 		for (FmmlxObject o : diagram.getObjects()) {
 			if (o.getShowOperations() == showOperations) {
 				o.toogleShowOperations();
@@ -364,7 +364,7 @@ public class DiagramActions {
 		diagram.redraw();
 	}
 
-	public void toogleShowOperationValues() {
+	public void toggleShowOperationValues() {
 		for (FmmlxObject o : diagram.getObjects()) {
 			if (o.getShowOperationValues() == showOperationValues) {
 				o.toogleShowOperationValues();
@@ -374,7 +374,7 @@ public class DiagramActions {
 		diagram.redraw();
 	}
 
-	public void toogleShowSlots() {
+	public void toggleShowSlots() {
 		for (FmmlxObject o : diagram.getObjects()) {
 			if (o.getShowSlots() == showSlots) {
 				o.toogleShowSlots();
@@ -405,7 +405,6 @@ public class DiagramActions {
 						diagram.addOperation(result);
 						break;
 					case Association:
-						diagram.addAssociation(result);
 						break;
 					default:
 						System.err.println("AddDialogResult: No matching content type!");
@@ -425,7 +424,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final ChangeTypeDialogResult result = opt.get();
-				System.err.println(result);
+				System.err.println("Change type result " + result);
 				switch (result.getType()) {
 					case Attribute:
 						diagram.changeTypeAttribute(result);
@@ -501,12 +500,25 @@ public class DiagramActions {
 		});
 	}
 
-	public void addAssociationDialog(FmmlxObject object) {
+	public void setAssociationMode(FmmlxObject source) {
+		diagram.setSelectedObject(source);
+		diagram.setAssociationMouseMode();
+		diagram.storeLastClick(source.getCenterX(), source.getCenterY());
+	}
+
+	public void addAssociationDialog(FmmlxObject source, FmmlxObject target) {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			AddAssociationDialog dlg = new AddAssociationDialog(diagram, object, null);
-			dlg.showAndWait();
+			AddAssociationDialog dlg = new AddAssociationDialog(diagram, source, target);
+			Optional<AddAssociationDialogResult> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final AddAssociationDialogResult result = opt.get();
+				diagram.addAssociation(result);
+				diagram.updateDiagram();
+			}
+			latch.countDown();
 		});
 	}
 }

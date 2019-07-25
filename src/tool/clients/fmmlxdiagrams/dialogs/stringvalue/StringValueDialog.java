@@ -23,6 +23,7 @@ public class StringValueDialog {
 		public static final String inputBody = "Input Body!";
 		public static final String selectTarget = "Select Target";
 
+		public static final String setDisplayName = "Set display name for source";
 	}
 
 	public static class LabelAndHeaderTitle {

@@ -20,9 +20,9 @@ public class Palette extends ToolBar {
 		addButton("100%", e -> actions.zoomOne());
 		addButton("-", e -> actions.zoomOut());
 		getItems().add(new Separator());
-		addButton("Show Operations", e -> actions.toogleShowOperations());
-		addButton("Show Operation Values", e -> actions.toogleShowOperationValues());
-		addButton("Show Slots", e -> actions.toogleShowSlots());
+		addButton("Show Operations", e -> actions.toggleShowOperations());
+		addButton("Show Operation Values", e -> actions.toggleShowOperationValues());
+		addButton("Show Slots", e -> actions.toggleShowSlots());
 		getItems().add(new Separator());
 		addButton("Update Diagram", e -> actions.updateDiagram());
 	}
