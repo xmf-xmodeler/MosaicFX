@@ -205,6 +205,14 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		return y + height;
 	}
 
+	public double getCenterX() {
+		return x + width / 2;
+	}
+
+	public double getCenterY() {
+		return y + height / 2;
+	}
+
 	public double getMaxRight() {
 		return x + width;
 	}

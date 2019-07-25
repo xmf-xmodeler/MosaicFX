@@ -614,4 +614,8 @@ public class FmmlxDiagramCommunicator {
 		};
 		WorkbenchClient.theClient().send(handler, "checkOperationBody", message);
 	}
+
+	public void addAssociation() {
+		// TODO:create msg and value[]
+	}
 }

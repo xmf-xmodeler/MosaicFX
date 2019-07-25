@@ -34,7 +34,7 @@ import java.util.concurrent.CountDownLatch;
 public class FmmlxDiagram {
 
 	enum MouseMode {
-		STANDARD, MULTISELECT;
+		ASSOCIATION, MULTISELECT, STANDARD
 	}
 
 	private SplitPane mainView;
@@ -54,6 +54,14 @@ public class FmmlxDiagram {
 	private MouseMode mode = MouseMode.STANDARD;
 	private Font font;
 
+	private Point2D canvasRawSize = new Point2D(1200, 800);
+	private double zoom = 1.;
+	private Affine transformFX;
+
+	private ScrollPane scrollerCanvas;
+
+	private FmmlxObject associationTarget;
+
 //	public Vector<FmmlxObject> fetchObjects() {
 //		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
 //		objects.clear(); // to be replaced when updating instead of loading form scratch
@@ -65,25 +73,6 @@ public class FmmlxDiagram {
 //			o.fetchDataValues(comm);
 //		}
 //		return objects;
-//	}
-
-	public Vector<FmmlxObject> getObjects() {
-		return new Vector<FmmlxObject>(objects); // read-only
-	}
-
-	public FmmlxObject getObjectById(int id) {
-		for (FmmlxObject object : objects) {
-			if (object.getId() == id)
-				return object;
-		}
-		return null;
-	}
-
-	private Point2D canvasRawSize = new Point2D(1200, 800);
-
-	private double zoom = 1.;
-	private Affine transformFX;
-	private ScrollPane scrollerCanvas;
 
 	FmmlxDiagram(FmmlxDiagramCommunicator comm, String label) {
 		this.comm = comm;
@@ -101,6 +90,7 @@ public class FmmlxDiagram {
 		canvas.setOnMousePressed(this::mousePressed);
 		canvas.setOnMouseDragged(this::mouseDragged);
 		canvas.setOnMouseReleased(this::mouseReleased);
+		canvas.setOnMouseMoved(this::mouseMoved);
 		canvas.addEventFilter(ScrollEvent.ANY, this::handleScroll);
 
 		new Thread(this::fetchDiagramData).start();
@@ -112,6 +102,19 @@ public class FmmlxDiagram {
 		}
 
 		redraw();
+	}
+
+	//	}
+	public Vector<FmmlxObject> getObjects() {
+		return new Vector<FmmlxObject>(objects); // read-only
+	}
+
+	public FmmlxObject getObjectById(int id) {
+		for (FmmlxObject object : objects) {
+			if (object.getId() == id)
+				return object;
+		}
+		return null;
 	}
 
 	public Canvas getCanvas() {
@@ -194,6 +197,7 @@ public class FmmlxDiagram {
 		g.strokeRect(0, 0, 5, 5);
 
 		drawMultiSelectRect(g);
+		drawAssociationLine(g);
 	}
 
 	private void drawMultiSelectRect(GraphicsContext g) {
@@ -202,6 +206,13 @@ public class FmmlxDiagram {
 			double y = Math.min(lastPoint.getY(), currentPoint.getY());
 
 			g.strokeRect(x, y, Math.abs(currentPoint.getX() - lastPoint.getX()), Math.abs(currentPoint.getY() - lastPoint.getY()));
+		}
+	}
+
+	private void drawAssociationLine(GraphicsContext g) {
+		if (mode == MouseMode.ASSOCIATION) {
+			g.strokeLine(lastPoint.getX(), lastPoint.getY(), currentPoint.getX(), currentPoint.getY());
+
 		}
 	}
 
@@ -243,6 +254,23 @@ public class FmmlxDiagram {
 		}
 	}
 
+	private void mouseMoved(MouseEvent e) {
+		Point2D p = scale(e);
+
+		if (mode == MouseMode.STANDARD) {
+			Selectable hitObject = getElementAt(p.getX(), p.getY());
+			if (selectedObjects.isEmpty() && hitObject instanceof FmmlxObject) {
+				select((FmmlxObject) hitObject);
+			}
+		}
+		if (mode == MouseMode.ASSOCIATION) {
+			storeCurrentPoint(p.getX(), p.getY());
+			redraw();
+		}
+
+
+	}
+
 	private void mouseDraggedStandard(Point2D p) {
 //		if (hitObject != null) {
 		for (Selectable s : selectedObjects)
@@ -269,6 +297,7 @@ public class FmmlxDiagram {
 		if (mode == MouseMode.STANDARD) {
 			mouseReleasedStandard();
 		}
+
 		mode = MouseMode.STANDARD;
 		for (Edge edge : edges) {
 			edge.dropPoint();
@@ -276,6 +305,7 @@ public class FmmlxDiagram {
 		resizeCanvas();
 		redraw();
 	}
+
 
 	private void mouseReleasedStandard() {
 		if (objectsMoved) {
@@ -321,6 +351,13 @@ public class FmmlxDiagram {
 
 		Selectable hitObject = getElementAt(p.getX(), p.getY());
 		if (hitObject != null) {
+			if (mode == MouseMode.ASSOCIATION && associationTarget == null) {
+				associationTarget = hitObject instanceof FmmlxObject ? (FmmlxObject) hitObject : null;
+				actions.addAssociationDialog((FmmlxObject) selectedObjects.get(0), associationTarget);
+				associationTarget = null;
+				deselectAll();
+			}
+
 			if (e.isControlDown()) {
 				if (selectedObjects.contains(hitObject)) {
 					selectedObjects.remove(hitObject);
@@ -337,6 +374,9 @@ public class FmmlxDiagram {
 				handleClickOnNodeElement(p, hitObject);
 			}
 		} else {
+			if (mode == MouseMode.ASSOCIATION) {
+				actions.addAssociationDialog((FmmlxObject) selectedObjects.get(0), null);
+			}
 			deselectAll();
 		}
 
@@ -348,7 +388,6 @@ public class FmmlxDiagram {
 			storeLastClick(p.getX(), p.getY());
 			storeCurrentPoint(p.getX(), p.getY());
 		}
-
 	}
 
 	private void handleClickOnNodeElement(Point2D p, Selectable hitObject) {
@@ -403,6 +442,11 @@ public class FmmlxDiagram {
 		}
 	}
 
+	/* Setters for MouseMode */
+
+	public void setAssociationMouseMode() {
+		mode = MouseMode.ASSOCIATION;
+	}
 
 	////////////////////////////////////////////////////////////////////
 	private void clearContextMenus() {
@@ -411,7 +455,7 @@ public class FmmlxDiagram {
 		}
 	}
 
-	private void storeLastClick(double x, double y) {
+	public void storeLastClick(double x, double y) {
 		lastPoint = new Point2D(x, y);
 	}
 
@@ -432,8 +476,13 @@ public class FmmlxDiagram {
 		return selectedObjects.contains(element);
 	}
 
-	private void deselectAll() {
+	void deselectAll() {
 		selectedObjects.clear();
+	}
+
+	public void setSelectedObject(FmmlxObject source) {
+		deselectAll();
+		selectedObjects.add(source);
 	}
 
 	private void select(FmmlxObject o) {
@@ -633,9 +682,9 @@ public class FmmlxDiagram {
 
 	}
 
-	public void addAssociation(AddDialogResult result) {
-		// TODO Auto-generated method stub
-
+	public void addAssociation(AddAssociationDialogResult result) {
+		// TODO: add parameters
+		comm.addAssociation();
 	}
 
 	public void changeAttributeOwner(ChangeOwnerDialogResult result) {

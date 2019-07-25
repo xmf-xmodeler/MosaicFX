@@ -248,13 +248,10 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 		} else if (levelComboBox.getSelectionModel().getSelectedIndex() == -1) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectLevel);
 			return false;
-		} else if (bodyTextArea.getText() == "") {
+		} else if (bodyTextArea.getText().equals("")) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.inputBody);
 			return false;
 		}
-		errorLabel.setText("Not Implemented yet");
-		return false;
-
+		return true;
 	}
-
 }

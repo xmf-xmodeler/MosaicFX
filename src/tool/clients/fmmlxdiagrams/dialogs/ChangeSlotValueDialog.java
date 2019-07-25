@@ -14,7 +14,7 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 	private TextField slotNameTextField;
 	private TextField slotValueTextField;
 	private CheckBox isExpressionCheckBox;
-
+	
 	public ChangeSlotValueDialog(FmmlxObject object, FmmlxSlot slot) {
 		super();
 		this.object = object;
