@@ -422,10 +422,10 @@ public class DiagramActions {
 			Optional<ChangeTypeDialogResult> opt = dlg.showAndWait();
 
 			System.err.println("changeTypeDialog: " + opt);
-			
+
 			if (opt.isPresent()) {
 				final ChangeTypeDialogResult result = opt.get();
-				
+
 				switch (result.getType()) {
 					case Attribute:
 						diagram.changeTypeAttribute(result);
@@ -453,7 +453,7 @@ public class DiagramActions {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			ChangeMultiplicityDialog dlg = new ChangeMultiplicityDialog(object);
+			ChangeMultiplicityDialog dlg = new ChangeMultiplicityDialog(object, type);
 			Optional<MultiplicityDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {

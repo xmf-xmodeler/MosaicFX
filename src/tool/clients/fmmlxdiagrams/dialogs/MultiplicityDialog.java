@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -8,30 +9,32 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
 
+import static tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog.LabelAndHeaderTitle;
+
 public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 
-	private Label labelMin;
-	private Label labelMax;
-	private Label labelOrdered;
-	private Label labelDuplicates;
-
-	private ComboBox<String> minimumComboBox;
-	private ComboBox<String> maximumComboBox;
+	private ComboBox<Integer> minimumComboBox;
+	private ComboBox<Integer> maximumComboBox;
+	private CheckBox isUpperLimitCheckBox;
 	private CheckBox orderedCheckBox;
 	private CheckBox duplicatesCheckBox;
-	private ObservableList<String> minList = FXCollections.observableArrayList("0", "1");
-	private ObservableList<String> maxList = FXCollections.observableArrayList("0", "*");
+	private ObservableList<Integer> valueList = FXCollections.observableArrayList(0, 1, 2, 3, 4);
 
-	Multiplicity oldMultiplicity;
+	private Multiplicity oldMultiplicity;
 
 	public MultiplicityDialog() {
 		this(Multiplicity.OPTIONAL);
 	}
 
-	public MultiplicityDialog(Multiplicity multiplicity) {
+	MultiplicityDialog(Multiplicity multiplicity) {
 		super();
 
-		this.oldMultiplicity = multiplicity;
+
+		if (multiplicity != null) {
+			this.oldMultiplicity = multiplicity;
+		} else {
+			this.oldMultiplicity = Multiplicity.MANDATORY;
+		}
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.setHeaderText("Add / Edit Multiplicity");
 
@@ -49,8 +52,10 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				return new MultiplicityDialogResult(minimumComboBox.getSelectionModel().getSelectedItem(),
-						maximumComboBox.getSelectionModel().getSelectedItem(),
+				return new MultiplicityDialogResult(
+						getComboBoxIntegerValue(minimumComboBox),
+						getComboBoxIntegerValue(maximumComboBox),
+						isUpperLimitCheckBox.isSelected(),
 						orderedCheckBox.isSelected(),
 						duplicatesCheckBox.isSelected());
 			}
@@ -59,43 +64,44 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 	}
 
 	public void addElementToGrid() {
-		labelMin = new Label("Minimum");
-		labelMax = new Label("Maximum");
-		labelOrdered = new Label("Ordered");
-		labelDuplicates = new Label("Allow Duplicates");
+		Label labelMin = new Label(LabelAndHeaderTitle.minimum);
+		Label labelMax = new Label(LabelAndHeaderTitle.maximum);
+		Label labelOrdered = new Label(LabelAndHeaderTitle.ordered);
+		Label labelDuplicates = new Label(LabelAndHeaderTitle.allowDuplicates);
+		Label labelUpperLimit = new Label(LabelAndHeaderTitle.upperLimit);
+
+		minimumComboBox = new ComboBox<>(valueList);
+		minimumComboBox.setValue(oldMultiplicity.min);
+		minimumComboBox.setEditable(true);
+		maximumComboBox = new ComboBox<>(valueList);
+		maximumComboBox.setValue(oldMultiplicity.max);
+		maximumComboBox.setEditable(true);
 
 		orderedCheckBox = new CheckBox();
 		orderedCheckBox.setSelected(oldMultiplicity.ordered);
 		duplicatesCheckBox = new CheckBox();
 		duplicatesCheckBox.setSelected(oldMultiplicity.duplicates);
+		isUpperLimitCheckBox = new CheckBox();
+		isUpperLimitCheckBox.setSelected(oldMultiplicity.upperLimit);
 
-		minimumComboBox = new ComboBox<>(minList);
-		minimumComboBox.setValue(String.valueOf(oldMultiplicity.min));
-		maximumComboBox = new ComboBox<>(maxList);
-
-		setMaximumComboBox();
 		minimumComboBox.setPrefWidth(COLUMN_WIDTH);
 		maximumComboBox.setPrefWidth(COLUMN_WIDTH);
+
+		isUpperLimitCheckBox.selectedProperty().addListener(this::changedUpperLimit);
 
 		grid.add(labelMin, 0, 0);
 		grid.add(minimumComboBox, 1, 0);
 		grid.add(labelMax, 0, 1);
 		grid.add(maximumComboBox, 1, 1);
-		grid.add(labelOrdered, 0, 2);
-		grid.add(orderedCheckBox, 1, 2);
-		grid.add(labelDuplicates, 0, 3);
-		grid.add(duplicatesCheckBox, 1, 3);
+		grid.add(labelUpperLimit, 0, 2);
+		grid.add(isUpperLimitCheckBox, 1, 2);
+		grid.add(labelOrdered, 0, 3);
+		grid.add(orderedCheckBox, 1, 3);
+		grid.add(labelDuplicates, 0, 4);
+		grid.add(duplicatesCheckBox, 1, 4);
 	}
 
-	private void setMaximumComboBox() {
-		if (oldMultiplicity.max == 2) {
-			maximumComboBox.setValue("*");
-		} else {
-			maximumComboBox.setValue("1");
-		}
-	}
-
-	public boolean validateInput() {
+	private boolean validateInput() {
 		if (!validateMax()) {
 			return false;
 		}
@@ -105,31 +111,39 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 		return true;
 	}
 
-	public boolean validateMin() {
+	private boolean validateMin() {
 		Label errorLabel = getErrorLabel();
-		String min = minimumComboBox.getSelectionModel().getSelectedItem();
+		int min = getComboBoxIntegerValue(minimumComboBox);
 
-		if (isNullOrEmpty(min)) {
+		if ((min < 0)) {
 			errorLabel.setText("Enter valid Minimum for this Multiplicity!");
 			return false;
-		} else {
-			errorLabel.setText("");
-			return true;
 		}
+		return true;
 	}
 
-	public boolean validateMax() {
+	private boolean validateMax() {
 		Label errorLabel = getErrorLabel();
-		String max = maximumComboBox.getSelectionModel().getSelectedItem();
+		int min = getComboBoxIntegerValue(minimumComboBox);
+		int max = getComboBoxIntegerValue(maximumComboBox);
 
-		if (isNullOrEmpty(max)) {
-			errorLabel.setText("Enter valid Maximum for this Multiplicity!");
+		if (max < 0) {
+			errorLabel.setText("Enter valid maximum for this Multiplicity!");
 			return false;
-		} else {
-			errorLabel.setText("");
-			return true;
+		} else if (min > max) {
+			errorLabel.setText("Enter valid maximum for this Multiplicity!");
+			return false;
 		}
+
+		return true;
 	}
 
-
+	private void changedUpperLimit(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+		if (!newValue) {
+			maximumComboBox.setValue(MultiplicityDialog.this.getComboBoxIntegerValue(minimumComboBox) + 1);
+			maximumComboBox.setDisable(true);
+		} else {
+			maximumComboBox.setDisable(false);
+		}
+	}
 }

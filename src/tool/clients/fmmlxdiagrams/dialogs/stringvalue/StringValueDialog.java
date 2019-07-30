@@ -27,6 +27,7 @@ public class StringValueDialog {
 	}
 
 	public static class LabelAndHeaderTitle {
+
 		public static final String selectedObject = "Selected Object";
 		public static final String aClass = "Class";
 		public static final String name = "Name";
@@ -39,7 +40,7 @@ public class StringValueDialog {
 		public static final String body = "Body";
 		public static final String minimum = "Minimum";
 		public static final String maximum = "Maximum";
-		public static final String upperLimit = "";
+		public static final String upperLimit = "Upper limit";
 		public static final String instLevel = "InstLevel";
 		public static final String displayName = "Display Name";
 		public static final String identifier = "Identifier";
@@ -72,6 +73,7 @@ public class StringValueDialog {
 		public static final String changeMultiplicity = "Change Multiplicity";
 
 		//Select
+		public static final String select = "Select ";
 		public static final String selectAttribute = "Select Attribute";
 		public static final String selectOperation = "Select Operation";
 		public static final String selectAssociation = "Select Association";
@@ -93,8 +95,10 @@ public class StringValueDialog {
 				"@Operation op0():XCore::Element\n" +
 						"  null\n" +
 						"end";
+	}
+
+	public static class ToolTip {
 
 
 	}
-
 }

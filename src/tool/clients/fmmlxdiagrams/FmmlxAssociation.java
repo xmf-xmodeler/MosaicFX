@@ -8,9 +8,15 @@ import java.util.Vector;
 
 public class FmmlxAssociation extends Edge implements FmmlxProperty {
 
-	private PropertyType propertyType = PropertyType.Association;
+	private final PropertyType propertyType = PropertyType.Association;
+	private String name;
+	private String reverseName;
+	private String accessNameStartToEnd;
+	private String accessNameEndToStart;
+	private Multiplicity multiplicityStartToEnd;
+	private Multiplicity multiplicityEndToStart;
 
-	public FmmlxAssociation(
+	FmmlxAssociation(
 			Integer id,
 			Integer startId,
 			Integer endId,
@@ -38,12 +44,6 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 
 	}
 
-	private String name;
-	private String reverseName;
-	private String accessNameStartToEnd;
-	private String accessNameEndToStart;
-	private Multiplicity multiplicityStartToEnd;
-	private Multiplicity multiplicityEndToStart;
 
 	@Override
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {

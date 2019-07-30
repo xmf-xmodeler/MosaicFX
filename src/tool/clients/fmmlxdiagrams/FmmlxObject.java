@@ -1,6 +1,8 @@
 package tool.clients.fmmlxdiagrams;
 
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.*;
@@ -170,10 +172,15 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		return new Vector<FmmlxAttribute>(otherAttributes);
 	}
 
-	private Vector<FmmlxAttribute> getAllAttributes() {
+	public Vector<FmmlxAttribute> getAllAttributes() {
 		Vector<FmmlxAttribute> result = new Vector<FmmlxAttribute>();
 		result.addAll(ownAttributes);
 		result.addAll(otherAttributes);
+		return result;
+	}
+
+	public ObservableList<FmmlxAttribute> getAllAttributesAsList() {
+		ObservableList<FmmlxAttribute> result = FXCollections.observableArrayList(getAllAttributes());
 		return result;
 	}
 
@@ -271,7 +278,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		} catch (Exception e) {
 			ofName = e.getMessage();
 		}
-		if(ofName != null) {
+		if (ofName != null) {
 //			ofName = "^" + ofName + "^";
 		} else {
 			ofName = "MetaClass";
@@ -398,7 +405,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		} else {
 			neededWidth = Math.max(neededWidth, diagram.calculateTextWidth(getLevel() + "^MetaClass^") + 16);
 		}
-			
+
 
 		//determine maximal width of attributes
 		for (FmmlxAttribute att : ownAttributes) {
