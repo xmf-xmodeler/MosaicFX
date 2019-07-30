@@ -615,7 +615,19 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "checkOperationBody", message);
 	}
 
-	public void addAssociation() {
-		// TODO:create msg and value[]
+	public void addAssociation(
+			Integer class1Id, Integer class2Id, 
+			String ref1, String ref2, 
+			String fwName, String reverseName,
+			Multiplicity mul1, Multiplicity mul2, 
+			Integer instLevel1, Integer instLevel2) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(class1Id), new Value(class2Id),
+				new Value(ref1), new Value(ref2),
+				new Value(fwName), reverseName == null?new Value(-1):new Value(reverseName),
+				new Value(-1), new Value(-1), // multiplicity,
+				new Value(instLevel1), new Value(instLevel2)};
+		WorkbenchClient.theClient().send(handler, "addAssociation", message);
 	}
 }
