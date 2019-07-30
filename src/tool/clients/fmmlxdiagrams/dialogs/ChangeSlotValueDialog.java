@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import javafx.application.Platform;
 import javafx.scene.control.*;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
@@ -14,7 +15,7 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 	private TextField slotNameTextField;
 	private TextField slotValueTextField;
 	private CheckBox isExpressionCheckBox;
-	
+
 	public ChangeSlotValueDialog(FmmlxObject object, FmmlxSlot slot) {
 		super();
 		this.object = object;
@@ -28,8 +29,7 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 		dialog.setContent(flow);
 		setResult();
 
-		// TODO: set Validation
-
+		Platform.runLater(() -> slotValueTextField.requestFocus());
 	}
 
 	private void layoutContent() {
@@ -38,6 +38,7 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 		slotNameTextField = new TextField(slot.getName());
 		slotNameTextField.setDisable(true);
 		slotValueTextField = new TextField(slot.getValue());
+		slotValueTextField.requestFocus();
 		isExpressionCheckBox = new CheckBox();
 
 		grid.add(new Label("Class"), 0, 0);

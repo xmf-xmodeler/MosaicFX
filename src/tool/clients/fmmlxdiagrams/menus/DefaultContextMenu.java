@@ -7,8 +7,11 @@ import tool.clients.fmmlxdiagrams.DiagramActions;
 
 public class DefaultContextMenu extends ContextMenu {
 
+	private final DiagramActions actions;
+
 	public DefaultContextMenu(DiagramActions actions) {
 		setAutoHide(true);
+		this.actions = actions;
 
 		MenuItem addClassItem = new MenuItem("Add Class");
 		addClassItem.setOnAction(e -> actions.addMetaClassDialog());
@@ -18,7 +21,7 @@ public class DefaultContextMenu extends ContextMenu {
 		Menu associationMenu = new Menu("Association");
 		MenuItem addAssociationItem = new MenuItem("Add Association");
 		// TODO: add DiagramAction
-		addAssociationItem.setOnAction(e -> System.out.println("Add association called!"));
+		addAssociationItem.setOnAction(e -> actions.addAssociationDialog(null, null));
 		associationMenu.getItems().add(addAssociationItem);
 
 		getItems().addAll(addClassItem, addInstanceItem, associationMenu);

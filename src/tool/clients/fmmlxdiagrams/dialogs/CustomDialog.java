@@ -2,6 +2,7 @@ package tool.clients.fmmlxdiagrams.dialogs;
 
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.FlowPane;
@@ -11,6 +12,8 @@ import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
+
+import java.util.List;
 
 public class CustomDialog<R> extends Dialog<R> {
 
@@ -36,7 +39,7 @@ public class CustomDialog<R> extends Dialog<R> {
 		flow.getChildren().add(errorLabel);
 	}
 
-	public void initializeGrid() {
+	void initializeGrid() {
 		grid = new GridPane();
 		grid.setHgap(3);
 		grid.setVgap(3);
@@ -55,15 +58,23 @@ public class CustomDialog<R> extends Dialog<R> {
 		}
 	}
 
+	void addNodesToGrid(List<Node> nodes, int columnIndex) {
+		int counter = 0;
+		for (Node node : nodes) {
+			grid.add(node, columnIndex, counter);
+			counter++;
+		}
+	}
+
 	public Label getErrorLabel() {
 		return errorLabel;
 	}
 
-	public boolean isNullOrEmpty(String string) {
+	boolean isNullOrEmpty(String string) {
 		return string == null || string.length() == 0;
 	}
 
-	protected Integer getComboBoxIntegerValue(ComboBox<Integer> box) {
+	Integer getComboBoxIntegerValue(ComboBox<Integer> box) {
 		Integer result = null;
 		try {
 			result = Integer.parseInt(box.getEditor().getText());
