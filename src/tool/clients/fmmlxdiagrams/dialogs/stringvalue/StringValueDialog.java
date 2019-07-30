@@ -88,6 +88,8 @@ public class StringValueDialog {
 		public static final String checkSyntax = "Check Syntax";
 		public static final String defaultOperation = "Reset Body";
 
+		public static final String start = "Start";
+		public static final String end = "End";
 	}
 
 	public static class OperationStringValues {
@@ -98,6 +100,8 @@ public class StringValueDialog {
 	}
 
 	public static class ToolTip {
+
+		public static final String displayNameSource = "The second display name is optional.\n Leave the field empty if necessary.";
 
 
 	}
