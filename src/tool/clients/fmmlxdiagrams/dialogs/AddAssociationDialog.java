@@ -15,8 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog.ErrorMessage;
-import static tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog.LabelAndHeaderTitle;
+import static tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog.*;
 
 
 public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResult> {
@@ -59,6 +58,7 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 
 	private void layoutContent() {
 		ArrayList<Node> labels = new ArrayList<>();
+		labels.add(new Label());
 		labels.add(new Label(LabelAndHeaderTitle.type));
 		labels.add(new Label(LabelAndHeaderTitle.instLevel));
 		labels.add(new Label(LabelAndHeaderTitle.displayName));
@@ -73,15 +73,18 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 			if (newValue != null) {
 				this.source = newValue;
 				setLevelList(instLevelSource, source);
+				setIdentifier(identifierSource, source.getName());
 			}
 		});
 
+		Label startLabel = new Label(LabelAndHeaderTitle.start);
 		instLevelSource = new ComboBox<>(LevelList.generateLevelListToThreshold(0, 5));
 		instLevelSource.setPrefWidth(COLUMN_WIDTH);
 		instLevelSource.setEditable(true);
+		instLevelSource.getSelectionModel().select(0);
 		displayNameSource = new TextField();
 		identifierSource = new TextField();
-
+		sourceNodes.add(startLabel);
 		sourceNodes.add(typeSource);
 		sourceNodes.add(instLevelSource);
 		sourceNodes.add(displayNameSource);
@@ -95,13 +98,17 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 			if (newValue != null) {
 				this.target = newValue;
 				setLevelList(instLevelTarget, target);
+				setIdentifier(identifierTarget, newValue.getName());
 			}
 		});
 		instLevelTarget = new ComboBox<>(LevelList.generateLevelListToThreshold(0, 5));
 		instLevelTarget.setPrefWidth(COLUMN_WIDTH);
 		instLevelTarget.setEditable(true);
+		instLevelTarget.getSelectionModel().select(0);
 		displayNameTarget = new TextField();
+		displayNameTarget.setTooltip(new Tooltip(ToolTip.displayNameSource));
 		identifierTarget = new TextField();
+		targetNodes.add(new Label(LabelAndHeaderTitle.end));
 		targetNodes.add(typeTarget);
 		targetNodes.add(instLevelTarget);
 		targetNodes.add(displayNameTarget);
@@ -119,8 +126,10 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 		multiplicityBox.setPrefWidth(COLUMN_WIDTH);
 		TextField textField = new TextField(multiplicity.toString());
 		textField.setDisable(true);
+		textField.setPrefWidth(COLUMN_WIDTH * 0.7);
 		Button sourceMultiplicityButton = new Button(LabelAndHeaderTitle.change);
 		sourceMultiplicityButton.setOnAction(e -> showMultiplicityDialog(multiplicity, textField));
+		sourceMultiplicityButton.setPrefWidth(COLUMN_WIDTH * 0.3);
 
 		multiplicityBox.getChildren().addAll(textField, sourceMultiplicityButton);
 
@@ -144,15 +153,10 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 		if (refObject != null) {
 			comboBox.setItems(LevelList.generateLevelListToThreshold(0, refObject.getLevel()));
 		}
-
 	}
 
-	private void addNodesToGrid(List<Node> nodes, int columnIndex) {
-		int counter = 0;
-		for (Node node : nodes) {
-			grid.add(node, columnIndex, counter);
-			counter++;
-		}
+	private void setIdentifier(TextField textField, String name) {
+		textField.setText(name.toLowerCase());
 	}
 
 	private void setClasses() {
@@ -210,6 +214,4 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 			return null;
 		});
 	}
-
-
 }

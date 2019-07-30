@@ -257,18 +257,10 @@ public class FmmlxDiagram {
 	private void mouseMoved(MouseEvent e) {
 		Point2D p = scale(e);
 
-		if (mode == MouseMode.STANDARD) {
-			Selectable hitObject = getElementAt(p.getX(), p.getY());
-			if (selectedObjects.isEmpty() && hitObject instanceof FmmlxObject) {
-				select((FmmlxObject) hitObject);
-			}
-		}
 		if (mode == MouseMode.ASSOCIATION) {
 			storeCurrentPoint(p.getX(), p.getY());
 			redraw();
 		}
-
-
 	}
 
 	private void mouseDraggedStandard(Point2D p) {
@@ -339,7 +331,6 @@ public class FmmlxDiagram {
 			if (o.isHit(x, y))
 				return o;
 		for (Edge e : edges) {
-			System.err.println("Checking Edge " + e);
 			if (e.isHit(x, y))
 				return e;
 		}

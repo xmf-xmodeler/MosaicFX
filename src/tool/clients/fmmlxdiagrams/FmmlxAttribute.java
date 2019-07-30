@@ -5,7 +5,7 @@ import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 public class FmmlxAttribute implements FmmlxProperty {
 
 	String name;
-	Multiplicity multiplicity;
+	private Multiplicity multiplicity;
 	Integer owner;
 	int level;
 	String type;
@@ -45,5 +45,12 @@ public class FmmlxAttribute implements FmmlxProperty {
 		// TODO Auto-generated method stub
 		return type;
 	}
-	
+
+	public Multiplicity getMultiplicity() {
+		return multiplicity;
+	}
+
+	public void setMultiplicity(Multiplicity multiplicity) {
+		this.multiplicity = multiplicity;
+	}
 }

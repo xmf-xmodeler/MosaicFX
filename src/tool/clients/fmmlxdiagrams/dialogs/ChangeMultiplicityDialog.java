@@ -1,129 +1,155 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.layout.HBox;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
+import java.util.Optional;
+
+import static tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog.LabelAndHeaderTitle;
 
 public class ChangeMultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 
-	private FmmlxObject object;
+	private final PropertyType type;
+	private final FmmlxObject object;
+	private Multiplicity multiplicity;
 
-	private DialogPane dialogPane;
+	private ComboBox<FmmlxAttribute> propertyComboBox;
+	private ObservableList<FmmlxAttribute> attributes;
 
-	private Label objectLabel;
-	private Label selectAttributeLabel;
-	private Label minimumLabel;
-	private Label maximumLabel;
-	private Label orderedLabel;
-	private Label allowDuplicatesLabel;
-
-
-	private TextField objectTextField;
-	private ComboBox<FmmlxAttribute> selectAttributeComboBox;
-	private ComboBox<String> minimumComboBox;
-	private ComboBox<String> maximumComboBox;
-	private CheckBox orderedCheckBox;
-	private CheckBox allowDuplicatesCheckBox;
-
-	private Vector<FmmlxAttribute> attributes;
-	private List<String> minArray;
-	private List<String> maxArray;
+	private TextField multiplicityTextField;
+	private List<Node> labelList;
+	private List<Node> inputsList;
 
 
-	public ChangeMultiplicityDialog(FmmlxObject object) {
+	public ChangeMultiplicityDialog(FmmlxObject object, PropertyType type) {
 		this.object = object;
+		this.type = type;
 
-		dialogPane = getDialogPane();
+		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+		dialogPane.setHeaderText(LabelAndHeaderTitle.changeMultiplicity + " of " + type.toString());
 
 		layoutContent();
 		dialogPane.setContent(flow);
-		validateUserInput();
-
+		setValidation();
 		setResult();
-
 	}
 
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				return new MultiplicityDialogResult(minimumComboBox.getSelectionModel().getSelectedItem(),
-						maximumComboBox.getSelectionModel().getSelectedItem(),
-						orderedCheckBox.isSelected(),
-						allowDuplicatesCheckBox.isSelected());
+				return null;
 			}
 			return null;
 		});
 	}
 
-	private boolean validateUserInput() {
-		errorLabel.setText("Not implemented yet");
-		return false;
+	private boolean validateInput() {
+		// TODO: What kind of validation is needed?
+		return true;
 	}
 
 	private void layoutContent() {
-		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.changeMultiplicity);
+		labelList = new ArrayList<>();
+		inputsList = new ArrayList<>();
 
-		objectLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectedObject);
-		selectAttributeLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectAttribute);
-		objectTextField = new TextField();
-		objectTextField.setText(object.getName());
-		objectTextField.setDisable(true);
+		Label classLabel = new Label(LabelAndHeaderTitle.aClass);
+		labelList.add(classLabel);
 
-		String[] min = new String[]{"0", "1"};
-		minArray = Arrays.asList(min);
-		ObservableList<String> minList = FXCollections.observableArrayList(minArray);
+		TextField className = new TextField(object.getName());
+		className.setDisable(true);
+		inputsList.add(className);
 
-		String[] max = new String[]{"1", "unlimited"};
-		maxArray = Arrays.asList(max);
-		ObservableList<String> maxList = FXCollections.observableArrayList(maxArray);
+		Label propertyLabel = new Label(LabelAndHeaderTitle.select + type.toString());
+		labelList.add(propertyLabel);
 
-		attributes = object.getOwnAttributes();
-		attributes.addAll(object.getOtherAttributes());
+		switch (type) {
+			case Association:
+				layoutAssociation();
+				break;
+			case Attribute:
+				layoutAttribute();
+				break;
+			default:
+				errorLabel.setText("Invalid property type");
+				break;
+		}
 
-		ObservableList<FmmlxAttribute> attributeList;
-		attributeList = FXCollections.observableList(attributes);
+		addNodesToGrid(labelList, 0);
+		addNodesToGrid(inputsList, 1);
+	}
 
-		selectAttributeComboBox = (ComboBox<FmmlxAttribute>) initializeComboBox(attributeList);
+	private void setValidation() {
+		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
+		okButton.addEventFilter(ActionEvent.ACTION, e -> {
+			if (!validateInput()) {
+				e.consume();
+			}
+		});
+	}
 
-		minimumLabel = new Label(StringValueDialog.LabelAndHeaderTitle.minimum);
-		minimumComboBox = new ComboBox<>(minList);
+	private void layoutAssociation() {
+		errorLabel.setText("Association not implemented yet.");
 
-		maximumLabel = new Label(StringValueDialog.LabelAndHeaderTitle.maximum);
-		maximumComboBox = new ComboBox<>(maxList);
+		// TODO: implement layout
+	}
 
-		orderedLabel = new Label(StringValueDialog.LabelAndHeaderTitle.ordered);
-		orderedCheckBox = new CheckBox();
+	private void layoutAttribute() {
+		attributes = object.getAllAttributesAsList();
+		propertyComboBox = (ComboBox<FmmlxAttribute>) initializeComboBox(attributes);
+		propertyComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue != null) {
+				setMultiplicityTextField(newValue);
+			}
+		});
+		inputsList.add(propertyComboBox);
 
-		allowDuplicatesLabel = new Label(StringValueDialog.LabelAndHeaderTitle.allowDuplicates);
-		allowDuplicatesCheckBox = new CheckBox();
+		Label multiplicityLabel = new Label(LabelAndHeaderTitle.multiplicity);
+		labelList.add(multiplicityLabel);
 
-		selectAttributeComboBox.setPrefWidth(COLUMN_WIDTH);
-		minimumComboBox.setPrefWidth(COLUMN_WIDTH);
-		maximumComboBox.setPrefWidth(COLUMN_WIDTH);
+		Button changeButton = new Button(LabelAndHeaderTitle.change);
+		changeButton.setOnAction(e -> showMultiplicityDialog());
+		changeButton.setPrefWidth(COLUMN_WIDTH * 0.3);
 
-		grid.add(objectLabel, 0, 0);
-		grid.add(objectTextField, 1, 0);
-		grid.add(selectAttributeLabel, 0, 1);
-		grid.add(selectAttributeComboBox, 1, 1);
-		grid.add(minimumLabel, 0, 2);
-		grid.add(minimumComboBox, 1, 2);
-		grid.add(maximumLabel, 0, 3);
-		grid.add(maximumComboBox, 1, 3);
-		grid.add(orderedLabel, 0, 4);
-		grid.add(orderedCheckBox, 1, 4);
-		grid.add(allowDuplicatesLabel, 0, 5);
-		grid.add(allowDuplicatesCheckBox, 1, 5);
+		multiplicityTextField = new TextField();
+		multiplicityTextField.setDisable(true);
+		multiplicityTextField.setPrefWidth(COLUMN_WIDTH * 0.7);
+
+		HBox multiplicityHBox = new HBox();
+		multiplicityHBox.setMaxWidth(COLUMN_WIDTH);
+		multiplicityHBox.getChildren().addAll(multiplicityTextField, changeButton);
+		inputsList.add(multiplicityHBox);
 
 	}
 
+	private void showMultiplicityDialog() {
+		MultiplicityDialog dlg = new MultiplicityDialog(multiplicity);
+		Optional<MultiplicityDialogResult> opt = dlg.showAndWait();
+
+		if (opt.isPresent()) {
+			MultiplicityDialogResult result = opt.get();
+
+			this.multiplicity = result.convertToMultiplicity();
+			multiplicityTextField.setText(multiplicity.toString());
+		}
+	}
+
+	private void setMultiplicityTextField(FmmlxAttribute attribute) {
+		if (attribute.getMultiplicity() != null) {
+			this.multiplicity = attribute.getMultiplicity();
+
+			multiplicityTextField.setText(this.multiplicity.toString());
+		}
+	}
 }
+
