@@ -15,6 +15,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import tool.clients.menus.MenuClient;
 import tool.helper.IconGenerator;
 
 import java.io.FileInputStream;
@@ -50,6 +51,7 @@ public class PropertyManager {
 	}
 
 	private void storeProperties() {
+        setXmfDebugging();
 		try {
 			properties.store(new FileOutputStream(filePath), null);
 		} catch (IOException e) {
@@ -146,7 +148,8 @@ public class PropertyManager {
 			// get value field
 			String value = getNodeValue(gridPaneNodes[1][row]);
 			System.out.println(("key: " + key + ", val: " + value));
-			properties.setProperty(key, value);
+			if (value.isEmpty()) properties.remove(key);
+			else properties.setProperty(key, value);
 		}
 
 		storeProperties();
@@ -204,8 +207,16 @@ public class PropertyManager {
 	}
 
 	private void fillDebugGrid() {
+		addRow(debugGrid, "MONITOR_CLIENT_COMMUNICATION", getProperty("MONITOR_CLIENT_COMMUNICATION", false));
+		addRow(debugGrid, "MONITOR_DAEMON_FIRING", getProperty("MONITOR_DAEMON_FIRING", false));
 		addRow(debugGrid, "IGNORE_SAVE_IMAGE", getProperty("IGNORE_SAVE_IMAGE", false));
 		addRow(debugGrid, "LOG_XMF_OUTPUT", getProperty("LOG_XMF_OUTPUT", false));
+		addRow(debugGrid, "MONITOR_CALLS", "Open", actionEvent -> {
+			MenuClient.openCallMonitor();
+		});
+		addRow(debugGrid, "PERFORMANCE_MONITOR", "Open", actionEvent -> {
+			MenuClient.openPerformanceMonitor();
+		});
 	}
 
 	private GridPane addRow(GridPane pane, String key, String value) {
@@ -272,4 +283,14 @@ public class PropertyManager {
 		}
 		return rows;
 	}
+
+    //set xmf debugging values
+    private static void setXmfDebugging() {
+        MenuClient.setClientCommunicationMonitoring(getProperty("MONITOR_CLIENT_COMMUNICATION", false));
+        MenuClient.setDaemonMonitoring(getProperty("MONITOR_DAEMON_FIRING", false));
+    }
+
+    public static void setXmfSettings() {
+	    if (properties != null) setXmfDebugging();
+    }
 }
