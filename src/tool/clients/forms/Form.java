@@ -342,7 +342,7 @@ public class Form {
 	private void addRootNodeWithIcon(final String parentId, final String nodeId, final String text, boolean editable,
 			final boolean expanded, final String icon, final int index) {
 //		String iconFile = "icons/" + icon;
-		System.out.println(icon);
+//		System.out.println(icon);
 		ImageView image = new ImageView(new Image(new File(icon).toURI().toString()));
 		TreeView<String> tree = trees.get(parentId);
 		TreeItem<String> item = new TreeItem<String>(text, image);
