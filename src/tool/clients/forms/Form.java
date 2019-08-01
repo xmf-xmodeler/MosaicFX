@@ -327,7 +327,7 @@ public class Form {
 			final boolean expanded, final String icon, final int index) {
 		if (items.containsKey(parentId)) {
 			TreeItem<String> parent = items.get(parentId);
-			System.out.println(icon);
+//			System.out.println(icon);
 //			String iconFile = "icons/" + icon;
 			ImageView image = new ImageView(new Image(new File(icon).toURI().toString()));
 			TreeItem<String> item = new TreeItem<String>(text, image);
