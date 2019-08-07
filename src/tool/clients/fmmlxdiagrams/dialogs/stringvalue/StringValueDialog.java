@@ -24,6 +24,7 @@ public class StringValueDialog {
 		public static final String selectTarget = "Select Target";
 
 		public static final String setDisplayName = "Set display name for source";
+		public static final String inputNewMultiplicity = "Input new Multiplicity";
 	}
 
 	public static class LabelAndHeaderTitle {

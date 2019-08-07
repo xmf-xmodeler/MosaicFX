@@ -710,6 +710,8 @@ public class FmmlxDiagram {
 	}
 
 	public void changeMulitiplicityAttribute(MultiplicityDialogResult result) {
+		comm.changeMultiplicityAttribute(result.getObject().getId(), result.convertToMultiplicity());
+		
 		// TODO Auto-generated method stub
 	}
 
