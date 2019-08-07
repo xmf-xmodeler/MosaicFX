@@ -618,4 +618,17 @@ public class FmmlxDiagramCommunicator {
 	public void addAssociation() {
 		// TODO:create msg and value[]
 	}
+
+	public void changeMultiplicityAttribute(int objectId, Multiplicity multi) {
+		Value[] multiplicity = new Value[]{
+				new Value(multi.min),
+				new Value(multi.max),
+				new Value(multi.upperLimit),
+				new Value(multi.ordered),
+				new Value(multi.duplicates)};
+		Value[] message = new Value[]{new Value(-1),
+				new Value(objectId),
+				new Value(multiplicity)};
+		WorkbenchClient.theClient().send(handler, "changeMultiplicity", message);
+	}
 }

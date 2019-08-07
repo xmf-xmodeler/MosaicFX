@@ -52,7 +52,7 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				return new MultiplicityDialogResult(
+				return new MultiplicityDialogResult(						
 						getComboBoxIntegerValue(minimumComboBox),
 						getComboBoxIntegerValue(maximumComboBox),
 						isUpperLimitCheckBox.isSelected(),
@@ -102,6 +102,10 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 	}
 
 	private boolean validateInput() {
+		if (minimumComboBox.getSelectionModel().getSelectedItem()==null || maximumComboBox.getSelectionModel().getSelectedItem()==null) {
+			errorLabel.setText("Minimum and Maximum cannot be blank.");
+			return false;
+		}
 		if (!validateMax()) {
 			return false;
 		}
@@ -112,7 +116,6 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 	}
 
 	private boolean validateMin() {
-		Label errorLabel = getErrorLabel();
 		int min = getComboBoxIntegerValue(minimumComboBox);
 
 		if ((min < 0)) {
@@ -123,10 +126,8 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 	}
 
 	private boolean validateMax() {
-		Label errorLabel = getErrorLabel();
 		int min = getComboBoxIntegerValue(minimumComboBox);
 		int max = getComboBoxIntegerValue(maximumComboBox);
-
 		if (max < 0) {
 			errorLabel.setText("Enter valid maximum for this Multiplicity!");
 			return false;
@@ -134,7 +135,6 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 			errorLabel.setText("Enter valid maximum for this Multiplicity!");
 			return false;
 		}
-
 		return true;
 	}
 
