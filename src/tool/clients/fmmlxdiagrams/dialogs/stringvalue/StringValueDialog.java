@@ -72,6 +72,7 @@ public class StringValueDialog {
 		public static final String changeAssociationType = "Change Association Type";
 		public static final String changeParent = "Change Parent";
 		public static final String changeMultiplicity = "Change Multiplicity";
+		public static final String changeOperationsBody = "Change Body";
 
 		//Select
 		public static final String select = "Select ";
@@ -91,6 +92,7 @@ public class StringValueDialog {
 
 		public static final String start = "Start";
 		public static final String end = "End";
+		
 	}
 
 	public static class OperationStringValues {

@@ -619,7 +619,7 @@ public class FmmlxDiagramCommunicator {
 		// TODO:create msg and value[]
 	}
 
-	public void changeMultiplicityAttribute(int objectId, Multiplicity multi) {
+	public void changeMultiplicityAttribute(int objectId, String attributeName, Multiplicity multi) {
 		Value[] multiplicity = new Value[]{
 				new Value(multi.min),
 				new Value(multi.max),
@@ -628,7 +628,17 @@ public class FmmlxDiagramCommunicator {
 				new Value(multi.duplicates)};
 		Value[] message = new Value[]{new Value(-1),
 				new Value(objectId),
+				new Value(attributeName),
 				new Value(multiplicity)};
 		WorkbenchClient.theClient().send(handler, "changeMultiplicity", message);
+	}
+
+	public void changeBody(int objectId, String operationName, String body) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(objectId),
+				new Value(operationName),
+				new Value(body)};
+		WorkbenchClient.theClient().send(handler, "changeBody", message);
 	}
 }
