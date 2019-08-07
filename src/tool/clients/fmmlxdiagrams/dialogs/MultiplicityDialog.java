@@ -18,8 +18,6 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 	private CheckBox isUpperLimitCheckBox;
 	private CheckBox orderedCheckBox;
 	private CheckBox duplicatesCheckBox;
-	private ObservableList<Integer> valueList = FXCollections.observableArrayList(0, 1, 2, 3, 4);
-
 	private Multiplicity oldMultiplicity;
 
 	public MultiplicityDialog() {
@@ -70,12 +68,18 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 		Label labelDuplicates = new Label(LabelAndHeaderTitle.allowDuplicates);
 		Label labelUpperLimit = new Label(LabelAndHeaderTitle.upperLimit);
 
-		minimumComboBox = new ComboBox<>(valueList);
+		minimumComboBox = new ComboBox<>(LevelList.levelList);
 		minimumComboBox.setValue(oldMultiplicity.min);
-		minimumComboBox.setEditable(true);
-		maximumComboBox = new ComboBox<>(valueList);
-		maximumComboBox.setValue(oldMultiplicity.max);
+		
+		maximumComboBox = new ComboBox<>();
 		maximumComboBox.setEditable(true);
+		minimumComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue != null) {
+				maximumComboBox.setItems(ValueList.getValueInterval(newValue));
+			}
+		});
+		minimumComboBox.setEditable(true);
+		
 
 		orderedCheckBox = new CheckBox();
 		orderedCheckBox.setSelected(oldMultiplicity.ordered);
