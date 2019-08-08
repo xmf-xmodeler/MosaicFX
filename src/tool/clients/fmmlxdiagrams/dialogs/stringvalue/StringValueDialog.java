@@ -25,6 +25,7 @@ public class StringValueDialog {
 
 		public static final String setDisplayName = "Set display name for source";
 		public static final String inputNewMultiplicity = "Input new Multiplicity";
+		public static final String selectNewTarget = "Select New Target!";
 	}
 
 	public static class LabelAndHeaderTitle {
@@ -73,6 +74,7 @@ public class StringValueDialog {
 		public static final String changeParent = "Change Parent";
 		public static final String changeMultiplicity = "Change Multiplicity";
 		public static final String changeOperationsBody = "Change Body";
+		public static final String changeAssociationTarget = "Change Association Target";
 
 		//Select
 		public static final String select = "Select ";
@@ -92,6 +94,7 @@ public class StringValueDialog {
 
 		public static final String start = "Start";
 		public static final String end = "End";
+		
 		
 	}
 

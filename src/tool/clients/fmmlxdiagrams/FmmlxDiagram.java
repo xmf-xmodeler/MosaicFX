@@ -704,7 +704,7 @@ public class FmmlxDiagram {
 	}
 
 	public void changeTargetAssociation(ChangeTargetDialogResult result) {
-		// TODO Auto-generated method stub
+		comm.changeTargetAssociation(result.getObject().getId(), result.getAssociationName(), result.getOldTargetID(), result.getNewTargetID());
 	}
 
 	public void changeMulitiplicityAttribute(MultiplicityDialogResult result) {

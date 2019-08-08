@@ -641,4 +641,15 @@ public class FmmlxDiagramCommunicator {
 				new Value(body)};
 		WorkbenchClient.theClient().send(handler, "changeBody", message);
 	}
+
+	public void changeTargetAssociation(int objectId, String associationName, Integer oldTargetID, Integer newTargetID) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(objectId),
+				new Value(associationName),
+				new Value(oldTargetID),
+				new Value(newTargetID)};
+		WorkbenchClient.theClient().send(handler, "changeTargetAssociation", message);
+		
+	}
 }

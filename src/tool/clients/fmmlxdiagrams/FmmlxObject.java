@@ -178,6 +178,11 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		result.addAll(otherAttributes);
 		return result;
 	}
+	
+	public Vector<FmmlxAssociation> getAllAssociation() {
+		//TODO get all association
+		return null;
+	}
 
 	public ObservableList<FmmlxAttribute> getAllAttributesAsList() {
 		ObservableList<FmmlxAttribute> result = FXCollections.observableArrayList(getAllAttributes());
