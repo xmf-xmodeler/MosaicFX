@@ -66,6 +66,18 @@ public class CustomDialog<R> extends Dialog<R> {
 		}
 	}
 
+	void addNodesToGrid(List<Node> nodes) {
+		int row = 0;
+		int i = 0;
+		while (i < nodes.size()) {
+			grid.add(nodes.get(i), 0, row);
+			i++;
+			grid.add(nodes.get(i), 1, row);
+			row++;
+			i++;
+		}
+	}
+
 	public Label getErrorLabel() {
 		return errorLabel;
 	}

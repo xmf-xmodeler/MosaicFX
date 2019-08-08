@@ -331,7 +331,7 @@ public class DiagramActions {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			ChangeSlotValueDialog dlg = new ChangeSlotValueDialog(hitObject, hitProperty);
+			ChangeSlotValueDialog dlg = new ChangeSlotValueDialog(diagram, hitObject, hitProperty);
 			Optional<ChangeSlotValueDialogResult> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
