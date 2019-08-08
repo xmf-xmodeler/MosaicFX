@@ -1,56 +1,92 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import tool.clients.fmmlxdiagrams.FmmlxAttribute;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeSlotValueDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog.LabelAndHeaderTitle;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogResult> {
 
-	private FmmlxObject object;
-	private FmmlxSlot slot;
+	private final FmmlxDiagram diagram;
+	private final FmmlxObject object;
+	private final FmmlxSlot slot;
+	private String type;
 
-	private TextField classNameTextField;
-	private TextField slotNameTextField;
 	private TextField slotValueTextField;
 	private CheckBox isExpressionCheckBox;
 
-	public ChangeSlotValueDialog(FmmlxObject object, FmmlxSlot slot) {
+	public ChangeSlotValueDialog(FmmlxDiagram diagram, FmmlxObject object, FmmlxSlot slot) {
 		super();
+		this.diagram = diagram;
 		this.object = object;
 		this.slot = slot;
 
+		getSlotType();
+
 		DialogPane dialog = getDialogPane();
-		dialog.setHeaderText("Change slot value");
+		dialog.setHeaderText(LabelAndHeaderTitle.changeSlotValue);
 		dialog.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		layoutContent();
 
 		dialog.setContent(flow);
+
+		if (!type.equals("String")) {
+			isExpressionCheckBox.setSelected(true);
+		}
 		setResult();
 
 		Platform.runLater(() -> slotValueTextField.requestFocus());
 	}
 
 	private void layoutContent() {
-		classNameTextField = new TextField(object.getName());
+		List<Node> nodes = new ArrayList<>();
+		TextField classNameTextField = new TextField(object.getName());
 		classNameTextField.setDisable(true);
-		slotNameTextField = new TextField(slot.getName());
+		TextField slotNameTextField = new TextField(slot.getName());
 		slotNameTextField.setDisable(true);
+		TextField slotTypeTextfield = new TextField(type);
+		slotTypeTextfield.setDisable(true);
 		slotValueTextField = new TextField(slot.getValue());
-		slotValueTextField.requestFocus();
 		isExpressionCheckBox = new CheckBox();
 
-		grid.add(new Label("Class"), 0, 0);
-		grid.add(classNameTextField, 1, 0);
-		grid.add(new Label("Slot name"), 0, 1);
-		grid.add(slotNameTextField, 1, 1);
-		grid.add(new Label("Value"), 0, 2);
-		grid.add(slotValueTextField, 1, 2);
-		grid.add(new Label("is Expression"), 0, 3);
-		grid.add(isExpressionCheckBox, 1, 3);
+		nodes.add(new Label(LabelAndHeaderTitle.aClass));
+		nodes.add(classNameTextField);
+		nodes.add(new Label(LabelAndHeaderTitle.name));
+		nodes.add(slotNameTextField);
+		nodes.add(new Label((LabelAndHeaderTitle.type)));
+		nodes.add(slotTypeTextfield);
+		nodes.add(new Label(LabelAndHeaderTitle.value));
+		nodes.add(slotValueTextField);
+		nodes.add(new Label(LabelAndHeaderTitle.expression));
+		nodes.add(isExpressionCheckBox);
 
+		addNodesToGrid(nodes);
+	}
 
+	private void getSlotType() {
+
+		Vector<FmmlxAttribute> allAttributes = new Vector<>();
+		FmmlxObject parent = object;
+		while (parent != null) {
+			allAttributes.addAll(parent.getOwnAttributes());
+			allAttributes.addAll(parent.getOtherAttributes());
+			parent = diagram.getObjectById(parent.getOf());
+		}
+
+		for (FmmlxAttribute attribute : allAttributes) {
+			if (attribute.getName().equals(slot.getName())) {
+				this.type = attribute.getType();
+			}
+		}
 	}
 
 	private void setResult() {
