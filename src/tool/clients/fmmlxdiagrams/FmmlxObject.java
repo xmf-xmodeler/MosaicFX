@@ -56,6 +56,12 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 	private Vector<FmmlxAttribute> otherAttributes = new Vector<>();
 	private Vector<FmmlxOperation> ownOperations = new Vector<>();
 	private Vector<FmmlxOperation> otherOperations = new Vector<>();
+	
+	//just for test. made by wahid 
+	private Vector<FmmlxAssociation> ownAssociation = new Vector<>();
+	private Vector<FmmlxAssociation> otherAssociation = new Vector<>();
+	//----------------------------
+	
 	private FmmlxDiagram diagram;
 	private PropertyType propertyType = PropertyType.Class;
 
@@ -180,8 +186,10 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 	}
 	
 	public Vector<FmmlxAssociation> getAllAssociation() {
-		//TODO get all association
-		return null;
+		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
+		result.addAll(ownAssociation);
+		result.addAll(otherAssociation);
+		return result;
 	}
 
 	public ObservableList<FmmlxAttribute> getAllAttributesAsList() {
