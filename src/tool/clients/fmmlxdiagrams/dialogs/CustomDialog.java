@@ -39,7 +39,7 @@ public class CustomDialog<R> extends Dialog<R> {
 		flow.getChildren().add(errorLabel);
 	}
 
-	void initializeGrid() {
+	private void initializeGrid() {
 		grid = new GridPane();
 		grid.setHgap(3);
 		grid.setVgap(3);
