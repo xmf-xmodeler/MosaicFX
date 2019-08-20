@@ -324,7 +324,7 @@ public class FmmlxDiagramCommunicator {
 		for (Object returnValueO : returnValuesList) {
 			Vector<Object> returnValue = (Vector<Object>) (returnValueO);
 			String name = (String) (returnValue.get(0));
-			String value = (String) (returnValue.get(1));
+			String value = (""+(returnValue.get(1)));
 			result.add(new FmmlxOperationValue(name, value));
 		}
 		return result;
