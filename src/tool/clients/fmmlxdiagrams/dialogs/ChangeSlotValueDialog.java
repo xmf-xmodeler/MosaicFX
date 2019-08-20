@@ -93,7 +93,6 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 				if (attribute.getMultiplicity() != null) {
 					this.multiplicity = attribute.getMultiplicity().toString();
 				} else {
-					this.type = "";
 					this.multiplicity = "";
 				}
 			}
