@@ -1698,7 +1698,6 @@ public class Diagram implements Display {
 		gc.setFill(Color.BLACK);
 		gc.fillText("new " + nodeCreationType, X + 8, Y + 2);
 		gc.setFill(oldBGColor);
-
 		gc.setStroke(oldFGColor);
 //    gc.setTransform(transform);
 

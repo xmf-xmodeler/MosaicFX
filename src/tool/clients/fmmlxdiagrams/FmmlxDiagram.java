@@ -669,8 +669,6 @@ public class FmmlxDiagram {
 
 	public void addOperation(AddDialogResult result) {
 		comm.addOperation(result.getObjectId(), result.getOperationName(), result.getLevel(), result.getOperationType(), result.getBody());
-		// TODO Auto-generated method stub
-
 	}
 
 	public void addAssociation(AddAssociationDialogResult result) {
@@ -712,15 +710,15 @@ public class FmmlxDiagram {
 	}
 
 	public void changeTargetAssociation(ChangeTargetDialogResult result) {
-		// TODO Auto-generated method stub
+		comm.changeTargetAssociation(result.getObject().getId(), result.getAssociationName(), result.getOldTargetID(), result.getNewTargetID());
 	}
 
 	public void changeMulitiplicityAttribute(MultiplicityDialogResult result) {
-		// TODO Auto-generated method stub
+		comm.changeMultiplicityAttribute(result.getObject().getId(), result.getSelectedAttribute().getName(), result.convertToMultiplicity());
 	}
 
 	public void changeBody(ChangeBodyDialogResult result) {
-		// TODO Auto-generated method stub
+		comm.changeBody(result.getObject().getId(), result.getSelectedItem().getName(), result.getBody());
 	}
 
 	public void checkOperationBody(String text) {
