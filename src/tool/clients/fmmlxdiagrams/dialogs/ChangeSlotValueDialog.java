@@ -23,6 +23,7 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 
 	private TextField slotValueTextField;
 	private CheckBox isExpressionCheckBox;
+	private String multiplicity;
 
 	public ChangeSlotValueDialog(FmmlxDiagram diagram, FmmlxObject object, FmmlxSlot slot) {
 		super();
@@ -55,6 +56,8 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 		slotNameTextField.setDisable(true);
 		TextField slotTypeTextfield = new TextField(type);
 		slotTypeTextfield.setDisable(true);
+		TextField slotMultiplicityTextField = new TextField(multiplicity.toString());
+		slotMultiplicityTextField.setDisable(true);
 		slotValueTextField = new TextField(slot.getValue());
 		isExpressionCheckBox = new CheckBox();
 
@@ -64,6 +67,8 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 		nodes.add(slotNameTextField);
 		nodes.add(new Label((LabelAndHeaderTitle.type)));
 		nodes.add(slotTypeTextfield);
+		nodes.add(new Label(LabelAndHeaderTitle.multiplicity));
+		nodes.add(slotMultiplicityTextField);
 		nodes.add(new Label(LabelAndHeaderTitle.value));
 		nodes.add(slotValueTextField);
 		nodes.add(new Label(LabelAndHeaderTitle.expression));
@@ -85,6 +90,12 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 		for (FmmlxAttribute attribute : allAttributes) {
 			if (attribute.getName().equals(slot.getName())) {
 				this.type = attribute.getType();
+				if (attribute.getMultiplicity() != null) {
+					this.multiplicity = attribute.getMultiplicity().toString();
+				} else {
+					this.type = "";
+					this.multiplicity = "";
+				}
 			}
 		}
 	}
