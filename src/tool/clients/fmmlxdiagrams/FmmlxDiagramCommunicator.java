@@ -324,7 +324,7 @@ public class FmmlxDiagramCommunicator {
 		for (Object returnValueO : returnValuesList) {
 			Vector<Object> returnValue = (Vector<Object>) (returnValueO);
 			String name = (String) (returnValue.get(0));
-			String value = (String) (returnValue.get(1));
+			String value = (returnValue.get(1)).toString();
 			result.add(new FmmlxOperationValue(name, value));
 		}
 		return result;
@@ -617,5 +617,39 @@ public class FmmlxDiagramCommunicator {
 
 	public void addAssociation() {
 		// TODO:create msg and value[]
+	}
+
+	public void changeMultiplicityAttribute(int objectId, String attributeName, Multiplicity multi) {
+		Value[] multiplicity = new Value[]{
+				new Value(multi.min),
+				new Value(multi.max),
+				new Value(multi.upperLimit),
+				new Value(multi.ordered),
+				new Value(multi.duplicates)};
+		Value[] message = new Value[]{new Value(-1),
+				new Value(objectId),
+				new Value(attributeName),
+				new Value(multiplicity)};
+		WorkbenchClient.theClient().send(handler, "changeMultiplicity", message);
+	}
+
+	public void changeBody(int objectId, String operationName, String body) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(objectId),
+				new Value(operationName),
+				new Value(body)};
+		WorkbenchClient.theClient().send(handler, "changeBody", message);
+	}
+
+	public void changeTargetAssociation(int objectId, String associationName, Integer oldTargetID, Integer newTargetID) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(objectId),
+				new Value(associationName),
+				new Value(oldTargetID),
+				new Value(newTargetID)};
+		WorkbenchClient.theClient().send(handler, "changeTargetAssociation", message);
+
 	}
 }

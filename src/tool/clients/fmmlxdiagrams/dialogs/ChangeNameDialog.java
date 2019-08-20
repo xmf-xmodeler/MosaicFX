@@ -35,8 +35,6 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 
 	//For Association
 	private Label selectAssociationNameLabel;
-	//TODO: change ComboBox
-	private ComboBox<FmmlxAssociation> selectAssociationBox;
 
 
 	private Vector<FmmlxAttribute> attributes;
@@ -128,25 +126,6 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		}
 	}
 
-	private void changeAssociationName() {
-		//insert Association List to Combobox;
-
-		classNameTextfield.setText(object.getName());
-		classNameTextfield.setDisable(true);
-
-		selectAssociationNameLabel = new Label("Select Association");
-		selectAssociationBox = new ComboBox<FmmlxAssociation>();
-
-		selectAssociationBox.setPrefWidth(COLUMN_WIDTH);
-		newNameLabel = new Label("New Attribute Name");
-		newNameTextField= new TextField();
-
-		grid.add(selectAssociationNameLabel, 0, 1);
-		grid.add(selectAssociationBox, 1, 1);
-		grid.add(newNameLabel, 0, 2);
-		grid.add(newNameTextField, 1, 2);
-
-	}
 
 	private void changeClassName() {
 		classNameTextfield.setText(object.getName());
@@ -178,6 +157,31 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		grid.add(comboBox, 1, 1);
 		grid.add(newNameLabel, 0, 2);
 		grid.add(newNameTextField, 1, 2);
+	}
+	
+	private void changeAssociationName() {
+		//insert Association List to Combobox;
+		associations = object.getAllAssociation();
+		
+		ObservableList<FmmlxAssociation> associationsList;
+		associationsList = FXCollections.observableList(associations);
+
+		classNameTextfield.setText(object.getName());
+		classNameTextfield.setDisable(true);
+
+		selectAssociationNameLabel = new Label("Select Association");
+		comboBox = (ComboBox<FmmlxProperty>) initializeComboBox(associationsList);
+
+		
+		comboBox.setPrefWidth(COLUMN_WIDTH);
+		newNameLabel = new Label("New Attribute Name");
+		newNameTextField= new TextField();
+
+		grid.add(selectAssociationNameLabel, 0, 1);
+		grid.add(comboBox, 1, 1);
+		grid.add(newNameLabel, 0, 2);
+		grid.add(newNameTextField, 1, 2);
+
 	}
 
 	private void changeOperationName() {
@@ -226,8 +230,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		if (comboBox.getSelectionModel().getSelectedItem() == null) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociation);
 			return false;
-		}
-		if (!InputChecker.getInstance().validateName(name)) {
+		} else if (!InputChecker.getInstance().validateName(name)) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
 			return false;
 		} else if (!InputChecker.getInstance().associationNameIsAvailable(name, object)) {
