@@ -98,6 +98,11 @@ public class StringValueDialog {
 
 		public static final String start = "Start";
 		public static final String end = "End";
+		public static final String editAssociation = "Edit Association";
+		public static final String newType = "New Type";
+		public static final String newInstLevel = "New instLevel";
+		public static final String newDisplayName = "New Display Name";
+		public static final String newIdentifier = "New Identifier";
 		
 		
 	}

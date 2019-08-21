@@ -719,4 +719,13 @@ public class FmmlxDiagram {
 		comm.checkOperationBody(text);
 	}
 
+	public void editAssociation(EditAssociationDialogResult result) {
+		comm.editAssociation(result.getSelectedAssociation().getId(),
+				result.getSource(), result.getTarget(),
+				result.getNewInstLevelSource(), result.getNewInstLevelTarget(),
+				result.getNewDisplayNameSource(), result.getNewDisplayNameTarget(),
+				result.getNewIdentifierSource(), result.getNewIdentifierTarget(),
+				result.getMultiplicitySource(), result.getMultiplicityTarget());
+	}
+
 }

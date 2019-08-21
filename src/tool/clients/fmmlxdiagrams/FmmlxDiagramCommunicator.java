@@ -652,4 +652,38 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "changeTargetAssociation", message);
 
 	}
+
+	public void editAssociation(int associationId, FmmlxObject source, FmmlxObject target, int newInstLevelSource,
+			int newInstLevelTarget, String newDisplayNameSource, String newDisplayNameTarget,
+			String newIdentifierSource, String newIdentifierTarget, Multiplicity multiSource,
+			Multiplicity multiTarget) {
+			Value[] multiplicitySource = new Value[]{
+				new Value(multiSource.min),
+				new Value(multiSource.max),
+				new Value(multiSource.upperLimit),
+				new Value(multiSource.ordered),
+				new Value(multiSource.duplicates)};
+			Value[] multiplicityTarget = new Value[]{
+				new Value(multiTarget.min),
+				new Value(multiTarget.max),
+				new Value(multiTarget.upperLimit),
+				new Value(multiTarget.ordered),
+				new Value(multiTarget.duplicates)};
+			Value[] message = new Value[] {
+				new Value(-1),
+				new Value(associationId),
+				new Value(source.getId()),
+				new Value(newInstLevelSource),
+				new Value(newInstLevelTarget),
+				new Value(newDisplayNameSource),
+				new Value(newDisplayNameTarget),
+				new Value(newIdentifierSource),
+				new Value(newIdentifierTarget),
+				new Value(newDisplayNameTarget),
+				new Value(newInstLevelTarget),
+				new Value(multiplicitySource),
+				new Value(multiplicityTarget)};
+			
+			WorkbenchClient.theClient().send(handler, "editAssociation", message);
+	}
 }
