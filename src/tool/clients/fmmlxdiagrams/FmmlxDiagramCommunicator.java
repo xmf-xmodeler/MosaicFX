@@ -110,7 +110,7 @@ public class FmmlxDiagramCommunicator {
 			if (DEBUG) System.err.println("Receiving request " + requestID);
 			v.remove(0);
 			if (requestID == -1) {
-				System.err.println("v.get(0)= " + v.get(0));
+				if (DEBUG) System.err.println("v.get(0)= " + v.get(0));
 				java.util.Vector<Object> err = (java.util.Vector<Object>) v.get(0);
 				if (err != null && err.size() > 0 && err.get(0) != null) {
 					CountDownLatch l = new CountDownLatch(1);
@@ -128,8 +128,9 @@ public class FmmlxDiagramCommunicator {
 			} else {
 				results.put(requestID, v);
 			}
+		} else {
+			if (DEBUG) System.err.println("o: " + o + "(" + o.getClass() + ")");
 		}
-//		System.err.println("o: " + o + "(" + o.getClass() + ")");
 	}
 
 	/**
@@ -434,7 +435,8 @@ public class FmmlxDiagramCommunicator {
 				new Value(multi.upperLimit),
 				new Value(multi.ordered),
 				new Value(multi.duplicates)}; // unused in XMF
-		Value[] message = new Value[]{new Value(-1),
+		Value[] message = new Value[]{
+				new Value(-1),
 				new Value(classID),
 				new Value(name),
 				new Value(level),
@@ -445,6 +447,7 @@ public class FmmlxDiagramCommunicator {
 
 	public void addOperation(int objectId, String operationName, int level, String operationType, String body) {
 		Value[] message = new Value[]{
+				new Value(-1),
 				new Value(objectId),
 				new Value(operationName),
 				new Value(level),
