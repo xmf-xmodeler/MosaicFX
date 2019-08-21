@@ -24,7 +24,7 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 		this(Multiplicity.OPTIONAL);
 	}
 
-	MultiplicityDialog(Multiplicity multiplicity) {
+	public MultiplicityDialog(Multiplicity multiplicity) {
 		super();
 
 

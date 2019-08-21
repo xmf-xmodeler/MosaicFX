@@ -161,7 +161,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	
 	private void changeAssociationName() {
 		//insert Association List to Combobox;
-		associations = object.getAllAssociation();
+		associations = object.getAllAssociations();
 		
 		ObservableList<FmmlxAssociation> associationsList;
 		associationsList = FXCollections.observableList(associations);

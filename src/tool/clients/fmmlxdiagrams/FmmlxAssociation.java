@@ -64,4 +64,19 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	public PropertyType getPropertyType() {
 		return propertyType;
 	}
+
+
+	public int getId() {
+		return id;
+	}
+
+
+	public FmmlxObject getStartNode() {
+		return  startNode;
+	}
+
+
+	public FmmlxObject getTargetNode() {
+		return endNode;
+	}
 }

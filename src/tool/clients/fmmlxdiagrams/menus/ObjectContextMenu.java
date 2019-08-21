@@ -85,9 +85,11 @@ public class ObjectContextMenu extends ContextMenu {
 		changeMultiplicityItem.setOnAction(e -> actions.changeMultiplicityDialog(object, PropertyType.Association));
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Association));
+		MenuItem editAssociation = new MenuItem("edit Association (test)");
+		editAssociation.setOnAction(e -> actions.editAssociationDialog(object, PropertyType.Association));
 
 		associationMenu.getItems().addAll(addItem, removeItem, changeTargetItem, changeNameItem, changeTypeItem,
-				changeMultiplicityItem, changeLevelItem);
+				changeMultiplicityItem, changeLevelItem, editAssociation);
 
 		return associationMenu;
 	}
