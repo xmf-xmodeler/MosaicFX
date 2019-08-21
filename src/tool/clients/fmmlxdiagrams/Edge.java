@@ -179,4 +179,8 @@ public class Edge implements CanvasElement, Selectable {
 			(points.get(n).getX() + points.get(n-1).getX())/2, 
 			(points.get(n).getY() + points.get(n-1).getY())/2);
 	}
+
+	public int getId() {
+		return id;
+	}
 }

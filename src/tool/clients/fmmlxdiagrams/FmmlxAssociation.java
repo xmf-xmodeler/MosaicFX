@@ -13,6 +13,8 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	private String reverseName;
 	private String accessNameStartToEnd;
 	private String accessNameEndToStart;
+	private Integer levelStartToEnd;
+	private Integer levelEndToStart;
 	private Multiplicity multiplicityStartToEnd;
 	private Multiplicity multiplicityEndToStart;
 
@@ -39,8 +41,11 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		this.reverseName = reverseName;
 		this.accessNameStartToEnd = accessNameStartToEnd;
 		this.accessNameEndToStart = accessNameEndToStart;
+		this.levelStartToEnd = levelStartToEnd;
+		this.levelEndToStart = levelEndToStart;
 		this.multiplicityStartToEnd = multiplicityStartToEnd;
 		this.multiplicityEndToStart = multiplicityEndToStart;
+		
 
 	}
 
@@ -59,6 +64,12 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	public String getName() {
 		return name;
 	}
+	
+
+	public String getReverseName() {
+		return reverseName;
+	}
+
 
 	@Override
 	public PropertyType getPropertyType() {
@@ -79,4 +90,38 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	public FmmlxObject getTargetNode() {
 		return endNode;
 	}
+
+
+	public Integer getLevelStartToEnd() {
+		return levelStartToEnd;
+	}
+
+
+	public Integer getLevelEndToStart() {
+		return levelEndToStart;
+	}
+
+
+	public String getAccessNameStartToEnd() {
+		return accessNameStartToEnd;
+	}
+
+
+	public String getAccessNameEndToStart() {
+		return accessNameEndToStart;
+	}
+
+
+	public Multiplicity getMultiplicityStartToEnd() {
+		return multiplicityStartToEnd;
+	}
+
+
+	public Multiplicity getMultiplicityEndToStart() {
+		return multiplicityEndToStart;
+	}
+	
+	
+	
+	
 }

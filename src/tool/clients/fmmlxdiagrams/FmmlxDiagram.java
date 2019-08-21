@@ -120,7 +120,31 @@ public class FmmlxDiagram {
 	public Canvas getCanvas() {
 		return canvas;
 	}
+	
+	public Vector<Edge> getAssociations(){
+		return new Vector<Edge>(edges); // read-only
+	} 
 
+	public Edge getAssociationById(int id){
+		for (Edge tmp : edges) {
+			if(tmp.getId()==id)
+				return tmp;
+		}
+		return null;
+	}
+	
+	public Vector<FmmlxAssociation> getRelatedAssociationByObject(FmmlxObject object){
+		Vector <FmmlxAssociation> result = new Vector<FmmlxAssociation>();
+		for(Edge tmp: edges) {
+			if(tmp instanceof FmmlxAssociation) {
+				if (tmp.startNode.getId() == object.getId() || tmp.endNode.getId() == object.getId()) {
+					result.add((FmmlxAssociation) tmp);
+				}
+			}	
+		}
+		return result;
+	}
+	
 	private void fetchDiagramData() {
 		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
 		objects.clear(); // to be replaced when updating instead of loading form scratch
