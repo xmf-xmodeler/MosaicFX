@@ -1,6 +1,8 @@
-package tool.clients.fmmlxdiagrams;
+package tool.clients.fmmlxdiagrams.dialogs.results;
 
-import tool.clients.fmmlxdiagrams.dialogs.results.DialogResult;
+import tool.clients.fmmlxdiagrams.FmmlxAssociation;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.Multiplicity;
 
 public class EditAssociationDialogResult extends DialogResult {
 	

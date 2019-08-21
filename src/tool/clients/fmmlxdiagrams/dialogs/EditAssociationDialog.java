@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams;
+package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +18,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
-import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.dialogs.LevelList;
-import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
+import tool.clients.fmmlxdiagrams.FmmlxAssociation;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.Multiplicity;
+import tool.clients.fmmlxdiagrams.dialogs.results.EditAssociationDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog.LabelAndHeaderTitle;
@@ -110,15 +112,83 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 		if(selectAssociationComboBox.getSelectionModel().getSelectedItem()==null) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociation);
 			return false;
+		} else if (newTypeSource.getSelectionModel().getSelectedItem()==null) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectNewTypeSource);
+			return false;
+		} else if (newTypeTarget.getSelectionModel().getSelectedItem()==null) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectNewTypeTarget);
+			return false;
+		} else if (!LevelList.generateLevelListToThreshold(0, newTypeSource.getSelectionModel().getSelectedItem().getLevel()).contains(getComboBoxIntegerValue(newInstLevelSource))) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectAllowedLevelSource);
+			return false;
+		} else if (!LevelList.generateLevelListToThreshold(0, newTypeTarget.getSelectionModel().getSelectedItem().getLevel()).contains(getComboBoxIntegerValue(newInstLevelTarget))) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectAllowedLevelTarget);
+			return false;
+		} else if (!validateNewDisplayNameSource()) {
+			return false;
+		} else if (!validateNewDisplayNameTarget()) {
+			return false;
+		} else if (!validateNewIdentifierSource()) {
+			return false;
+		} else if (!validateNewIdentifierTarget()) {
+			return false;
 		}
 		return true;
+	}
+
+	private boolean validateNewIdentifierTarget() {
+		String name = newIdentifierTarget.getText();
+		
+		if (!InputChecker.getInstance().validateName(name)) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidNameIdentifierTarget);
+			return false;
+		} else {
+			errorLabel.setText("");
+			return true;
+		}
+	}
+
+	private boolean validateNewIdentifierSource() {
+		String name = newIdentifierSource.getText();
+		
+		if (!InputChecker.getInstance().validateName(name)) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidNameIdentifierSource);
+			return false;
+		} else {
+			errorLabel.setText("");
+			return true;
+		}
+	}
+
+	private boolean validateNewDisplayNameTarget() {
+		String name = newDisplayNameTarget.getText();
+		
+		if (!InputChecker.getInstance().validateName(name)) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidNameDisplayTarget);
+			return false;
+		} else if (name.trim() =="") {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean validateNewDisplayNameSource() {
+		String name = newDisplayNameSource.getText();
+
+		if (!InputChecker.getInstance().validateName(name)) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidNameDisplaySource);
+			return false;
+		} else {
+			errorLabel.setText("");
+			return true;
+		}
 	}
 
 	private void layoutContent() {
 
 		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.editAssociation);
 		
-		associations = source.getAllAssociations();
+		associations = source.getAllRelatedAssociations();
 		
 		ObservableList<FmmlxAssociation> associationList;
 		associationList = FXCollections.observableList(associations);
@@ -171,7 +241,6 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 		newIdentifierSource = new TextField();
 		newIdentifierTarget = new TextField();
 		
-		
 		newTypeSource.setPrefWidth(COLUMN_WIDTH);
 		newTypeTarget.setPrefWidth(COLUMN_WIDTH);
 		newInstLevelSource.setPrefWidth(COLUMN_WIDTH);
@@ -188,12 +257,17 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 				for(FmmlxObject tmp : diagram.getObjects()) {
 					if (startNode.getId()==tmp.getId()) {
 						newTypeSource.getSelectionModel().select(tmp);
-					} else if(targetNode.getId()==tmp.getId()) {
+						newInstLevelSource.getSelectionModel().select(newValue.getLevelStartToEnd());
+						newDisplayNameSource.setText(newValue.getName());
+						newIdentifierSource.setText(newValue.getAccessNameStartToEnd());
+					} 
+					if(targetNode.getId()==tmp.getId()) {
 						newTypeTarget.getSelectionModel().select(tmp);
-					}
+						newInstLevelTarget.getSelectionModel().select(newValue.getLevelEndToStart());
+						newDisplayNameTarget.setText(newValue.getReverseName());
+						newIdentifierTarget.setText(newValue.getAccessNameEndToStart());
+					}					
 				}
-				
-				//TODO
 			}
 		});
 		
