@@ -18,9 +18,9 @@ public class Palette extends ToolBar {
 		addButton("-", e -> actions.zoomOut());
 		getItems().add(new Separator());
 		getItems().add(new Label("Show: "));
-		addRadioButton("Operations", e -> actions.toggleShowOperations());
-		addRadioButton("Operation Values", e -> actions.toggleShowOperationValues());
-		addRadioButton("Slots", e -> actions.toggleShowSlots());
+		addCheckBox("Operations", e -> actions.toggleShowOperations());
+		addCheckBox("Operation Values", e -> actions.toggleShowOperationValues());
+		addCheckBox("Slots", e -> actions.toggleShowSlots());
 		getItems().add(new Separator());
 		addButton("Update Diagram", e -> actions.updateDiagram());
 	}
@@ -31,8 +31,8 @@ public class Palette extends ToolBar {
 		getItems().add(button);
 	}
 
-	private void addRadioButton(String string, EventHandler<ActionEvent> eventHandler) {
-		RadioButton box = new RadioButton(string);
+	private void addCheckBox(String string, EventHandler<ActionEvent> eventHandler) {
+		CheckBox box = new CheckBox(string);
 		box.setOnAction(eventHandler);
 		box.setSelected(true);
 		getItems().add(box);
