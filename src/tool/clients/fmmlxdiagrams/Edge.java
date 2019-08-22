@@ -38,8 +38,8 @@ public class Edge implements CanvasElement, Selectable {
 		g.setLineWidth(isSelected()?3:1);
 		double[] xPoints = new double[points.size()];//+2];
 		double[] yPoints = new double[points.size()];//+2];
-		xPoints[0] = startNode.getX() + startNode.width / 2;
-		yPoints[0] = startNode.getY() + startNode.height / 2;
+//		xPoints[0] = startNode.getX() + startNode.width / 2;
+//		yPoints[0] = startNode.getY() + startNode.height / 2;
 		for(int i = 0; i < points.size(); i++) {
 			xPoints[i] = points.get(i).getX();
 			yPoints[i] = points.get(i).getY();
@@ -92,6 +92,7 @@ public class Edge implements CanvasElement, Selectable {
 
 	@Override
 	public ContextMenu getContextMenu(DiagramActions actions) {
+		System.err.println("getContextMenu " + id);
 		return new DefaultContextMenu(actions); //temporary
 	}
 

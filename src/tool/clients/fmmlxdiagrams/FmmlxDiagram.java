@@ -697,7 +697,13 @@ public class FmmlxDiagram {
 
 	public void addAssociation(AddAssociationDialogResult result) {
 		// TODO: add parameters
-		comm.addAssociation();
+		comm.addAssociation(
+				result.getSource().id, result.getTarget().id,
+				result.getIdentifierSource(), result.getIdentifierTarget(),
+				result.getDisplayNameSource(), result.getDisplayNameTarget(),
+				result.getMultiplicitySource(), result.getMultiplicityTarget(),
+				result.getInstLevelSource(), result.getInstLevelTarget()
+				);
 	}
 
 	public void changeAttributeOwner(ChangeOwnerDialogResult result) {

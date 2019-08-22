@@ -171,11 +171,14 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 		classTextField.setText(object.getName());
 		classTextField.setDisable(true);
 		nameTextField = new TextField();
+		nameTextField.setEditable(false);
 
 		typeComboBox = new ComboBox<>(ElementList.elementList);
 		typeComboBox.getSelectionModel().select("Element");
 		levelComboBox = new ComboBox<>(LevelList.generateLevelListToThreshold(0, object.getLevel()));
+		levelComboBox.getSelectionModel().select(0);
 		bodyTextArea = new TextArea(StringValueDialog.OperationStringValues.emptyOperation);
+		updateOperationName(nameTextField, StringValueDialog.OperationStringValues.emptyOperation);
 		Button checkSyntaxButton = new Button(StringValueDialog.LabelAndHeaderTitle.checkSyntax);
 		checkSyntaxButton.setOnAction(event -> AddDialog.this.checkBodySyntax());
 		checkSyntaxButton.setPrefWidth(COLUMN_WIDTH * 0.5);
@@ -185,7 +188,10 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 
 		levelComboBox.setPrefWidth(COLUMN_WIDTH);
 		typeComboBox.setPrefWidth(COLUMN_WIDTH);
-
+		
+		bodyTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
+		    updateOperationName(nameTextField, newValue);
+		});
 
 		grid.add(new Label(StringValueDialog.LabelAndHeaderTitle.aClass), 0, 0);
 		grid.add(classTextField, 1, 0);
@@ -199,6 +205,25 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 		grid.add(bodyTextArea, 1, 4, 1, 4);
 		grid.add(checkSyntaxButton, 0, 4);
 		grid.add(defaultOperationButton, 0, 5);
+	}
+
+	private void updateOperationName(TextField textField, String body) {
+		final String prefix = "@Operation ";
+		final String error = "operation name not recognized";
+		if(body.startsWith(prefix)) {
+			body = body.substring(prefix.length());
+			if(body.contains("(")) {
+				body = body.substring(0, body.indexOf("("));
+					if(body.contains("[")) {
+					body = body.substring(0, body.indexOf("["));
+				}
+			    textField.setText(body);
+			} else {
+				textField.setText(error);
+			}
+		} else {
+		textField.setText(error);
+		}
 	}
 
 	private void checkBodySyntax() {
