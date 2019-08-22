@@ -21,7 +21,7 @@ public class CustomDialog<R> extends Dialog<R> {
 
 	protected FlowPane flow;
 	protected GridPane grid;
-	Label errorLabel;
+	protected Label errorLabel;
 
 	public CustomDialog() {
 		super();
@@ -58,7 +58,7 @@ public class CustomDialog<R> extends Dialog<R> {
 		}
 	}
 
-	void addNodesToGrid(List<Node> nodes, int columnIndex) {
+	protected void addNodesToGrid(List<Node> nodes, int columnIndex) {
 		int counter = 0;
 		for (Node node : nodes) {
 			grid.add(node, columnIndex, counter);
@@ -86,7 +86,7 @@ public class CustomDialog<R> extends Dialog<R> {
 		return string == null || string.length() == 0;
 	}
 
-	Integer getComboBoxIntegerValue(ComboBox<Integer> box) {
+	public Integer getComboBoxIntegerValue(ComboBox<Integer> box) {
 		Integer result = null;
 		try {
 			result = Integer.parseInt(box.getEditor().getText());

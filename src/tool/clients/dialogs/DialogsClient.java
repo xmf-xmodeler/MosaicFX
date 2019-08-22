@@ -674,13 +674,12 @@ public class DialogsClient extends Client {
     Platform.runLater(()->{
         SelectionDialog sd = new SelectionDialog(title, message_, multi, allOptions, defaultOptions);
         Optional<String[]> dialogResult = sd.showAndWait();
-        
-        if(dialogResult.isPresent()){
-        	Value[] resultRaw = getResultArray(dialogResult.get(), defaultOptions); 
+		if(dialogResult.isPresent() && dialogResult.get().length>0){ //is present checks if object is present, emtpy string[] is an object
+        	Value[] resultRaw = getResultArray(dialogResult.get(), defaultOptions); //and is otherwise parsed into an array of length 0
         	if (multi){
         		result[0] = new Value(resultRaw);
         	}else {
-            	result[0] = resultRaw[0];
+            	result[0] = resultRaw[0]; //and would cause an OutOfBounds here
           	}
         }else{
         	if (multi){

@@ -26,6 +26,14 @@ public class StringValueDialog {
 		public static final String setDisplayName = "Set display name for source";
 		public static final String inputNewMultiplicity = "Input new Multiplicity";
 		public static final String selectNewTarget = "Select New Target!";
+		public static final String selectNewTypeSource = "Select New Start Type";
+		public static final String selectNewTypeTarget = "Select New End Type";
+		public static final String selectAllowedLevelSource = "Select Allowed Start Level";
+		public static final String selectAllowedLevelTarget = "Select Allowed End Level";
+		public static final String enterValidNameIdentifierTarget = "Type Valid Name For End Identifier!";
+		public static final String enterValidNameIdentifierSource = "Type Valid Name For Start Identifier!";
+		public static final String enterValidNameDisplaySource = "Type Valid Name For Start Display-Name!";
+		public static final String enterValidNameDisplayTarget = "Type Valid Name For End Display-Name!";
 	}
 
 	public static class LabelAndHeaderTitle {
@@ -98,6 +106,11 @@ public class StringValueDialog {
 
 		public static final String start = "Start";
 		public static final String end = "End";
+		public static final String editAssociation = "Edit Association";
+		public static final String newType = "New Type";
+		public static final String newInstLevel = "New instLevel";
+		public static final String newDisplayName = "New Display Name";
+		public static final String newIdentifier = "New Identifier";
 		
 		
 	}

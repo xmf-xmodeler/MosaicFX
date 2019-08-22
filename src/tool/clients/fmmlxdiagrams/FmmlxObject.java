@@ -54,13 +54,9 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 
 	private Vector<FmmlxAttribute> ownAttributes = new Vector<>();
 	private Vector<FmmlxAttribute> otherAttributes = new Vector<>();
+	
 	private Vector<FmmlxOperation> ownOperations = new Vector<>();
 	private Vector<FmmlxOperation> otherOperations = new Vector<>();
-	
-	//just for test. made by wahid 
-	private Vector<FmmlxAssociation> ownAssociation = new Vector<>();
-	private Vector<FmmlxAssociation> otherAssociation = new Vector<>();
-	//----------------------------
 	
 	private FmmlxDiagram diagram;
 	private PropertyType propertyType = PropertyType.Class;
@@ -185,10 +181,9 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		return result;
 	}
 	
-	public Vector<FmmlxAssociation> getAllAssociation() {
+	public Vector<FmmlxAssociation> getAllRelatedAssociations() {
 		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
-		result.addAll(ownAssociation);
-		result.addAll(otherAssociation);
+		result = diagram.getRelatedAssociationByObject(this);
 		return result;
 	}
 

@@ -1,8 +1,6 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
@@ -24,7 +22,7 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 		this(Multiplicity.OPTIONAL);
 	}
 
-	MultiplicityDialog(Multiplicity multiplicity) {
+	public MultiplicityDialog(Multiplicity multiplicity) {
 		super();
 
 
@@ -50,7 +48,7 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				return new MultiplicityDialogResult(						
+				return new MultiplicityDialogResult(
 						getComboBoxIntegerValue(minimumComboBox),
 						getComboBoxIntegerValue(maximumComboBox),
 						isUpperLimitCheckBox.isSelected(),
@@ -70,7 +68,7 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 
 		minimumComboBox = new ComboBox<>(LevelList.levelList);
 		minimumComboBox.setValue(oldMultiplicity.min);
-		
+
 		maximumComboBox = new ComboBox<>();
 		maximumComboBox.setEditable(true);
 		minimumComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -79,7 +77,7 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 			}
 		});
 		minimumComboBox.setEditable(true);
-		
+
 
 		orderedCheckBox = new CheckBox();
 		orderedCheckBox.setSelected(oldMultiplicity.ordered);
@@ -106,7 +104,7 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 	}
 
 	private boolean validateInput() {
-		if (minimumComboBox.getSelectionModel().getSelectedItem()==null || maximumComboBox.getSelectionModel().getSelectedItem()==null) {
+		if (minimumComboBox.getSelectionModel().getSelectedItem() == null || maximumComboBox.getSelectionModel().getSelectedItem() == null) {
 			errorLabel.setText("Minimum and Maximum cannot be blank.");
 			return false;
 		}

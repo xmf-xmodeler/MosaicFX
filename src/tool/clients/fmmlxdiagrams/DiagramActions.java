@@ -522,4 +522,21 @@ public class DiagramActions {
 			latch.countDown();
 		});
 	}
+
+	public void editAssociationDialog(FmmlxObject object, PropertyType association) {
+		CountDownLatch latch = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			EditAssociationDialog dlg = new EditAssociationDialog(diagram, object);
+			Optional<EditAssociationDialogResult> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final EditAssociationDialogResult result = opt.get();
+				diagram.editAssociation(result);
+				diagram.updateDiagram();
+			}
+			latch.countDown();
+		});
+	}
+
 }

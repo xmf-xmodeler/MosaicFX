@@ -120,7 +120,31 @@ public class FmmlxDiagram {
 	public Canvas getCanvas() {
 		return canvas;
 	}
+	
+	public Vector<Edge> getAssociations(){
+		return new Vector<Edge>(edges); // read-only
+	} 
 
+	public Edge getAssociationById(int id){
+		for (Edge tmp : edges) {
+			if(tmp.getId()==id)
+				return tmp;
+		}
+		return null;
+	}
+	
+	public Vector<FmmlxAssociation> getRelatedAssociationByObject(FmmlxObject object){
+		Vector <FmmlxAssociation> result = new Vector<FmmlxAssociation>();
+		for(Edge tmp: edges) {
+			if(tmp instanceof FmmlxAssociation) {
+				if (tmp.startNode.getId() == object.getId() || tmp.endNode.getId() == object.getId()) {
+					result.add((FmmlxAssociation) tmp);
+				}
+			}	
+		}
+		return result;
+	}
+	
 	private void fetchDiagramData() {
 		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
 		objects.clear(); // to be replaced when updating instead of loading form scratch
@@ -673,7 +697,13 @@ public class FmmlxDiagram {
 
 	public void addAssociation(AddAssociationDialogResult result) {
 		// TODO: add parameters
-		comm.addAssociation();
+		comm.addAssociation(
+				result.getSource().id, result.getTarget().id,
+				result.getIdentifierSource(), result.getIdentifierTarget(),
+				result.getDisplayNameSource(), result.getDisplayNameTarget(),
+				result.getMultiplicitySource(), result.getMultiplicityTarget(),
+				result.getInstLevelSource(), result.getInstLevelTarget()
+				);
 	}
 
 	public void changeAttributeOwner(ChangeOwnerDialogResult result) {
@@ -717,6 +747,15 @@ public class FmmlxDiagram {
 
 	public void checkOperationBody(String text) {
 		comm.checkOperationBody(text);
+	}
+
+	public void editAssociation(EditAssociationDialogResult result) {
+		comm.editAssociation(result.getSelectedAssociation().getId(),
+				result.getSource(), result.getTarget(),
+				result.getNewInstLevelSource(), result.getNewInstLevelTarget(),
+				result.getNewDisplayNameSource(), result.getNewDisplayNameTarget(),
+				result.getNewIdentifierSource(), result.getNewIdentifierTarget(),
+				result.getMultiplicitySource(), result.getMultiplicityTarget());
 	}
 
 }
