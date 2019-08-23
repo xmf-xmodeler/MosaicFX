@@ -81,16 +81,8 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		return id;
 	}
 
-
-	public FmmlxObject getStartNode() {
-		return  startNode;
-	}
-
-
-	public FmmlxObject getTargetNode() {
-		return endNode;
-	}
-
+	public FmmlxObject getSourceNode() {return startNode;}
+	public FmmlxObject getTargetNode() {return endNode;}
 
 	public Integer getLevelStartToEnd() {
 		return levelStartToEnd;
@@ -119,6 +111,13 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 
 	public Multiplicity getMultiplicityEndToStart() {
 		return multiplicityEndToStart;
+	}
+
+
+	public boolean doObjectsFit(FmmlxObject source, FmmlxObject target) {
+		if(source.isInstanceOf(getSourceNode(), levelEndToStart) && target.isInstanceOf(getTargetNode(), levelStartToEnd)) return true;
+		if(target.isInstanceOf(getSourceNode(), levelEndToStart) && source.isInstanceOf(getTargetNode(), levelStartToEnd)) return true;
+		return false;
 	}
 	
 	

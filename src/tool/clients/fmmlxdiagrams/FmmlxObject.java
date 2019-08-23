@@ -737,4 +737,9 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 	public PropertyType getPropertyType() {
 		return propertyType;
 	}
+
+	public boolean isInstanceOf(FmmlxObject theClass, Integer myLevel) {
+		if(myLevel != level) return false;
+		return this.getAllAncestors().contains(theClass);
+	}
 }

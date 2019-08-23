@@ -34,7 +34,7 @@ import java.util.concurrent.CountDownLatch;
 public class FmmlxDiagram {
 
 	enum MouseMode {
-		ASSOCIATION, MULTISELECT, STANDARD
+		@Deprecated ASSOCIATION, MULTISELECT, STANDARD, DRAW_EDGE
 	}
 
 	private SplitPane mainView;
@@ -49,6 +49,7 @@ public class FmmlxDiagram {
 	private ContextMenu activeContextMenu;
 	private DiagramActions actions;
 	private transient boolean objectsMoved = false;
+	private transient PropertyType drawEdgeType = null;
 	private Point2D lastPoint;
 	private Point2D currentPoint;
 	private MouseMode mode = MouseMode.STANDARD;
@@ -60,7 +61,7 @@ public class FmmlxDiagram {
 
 	private ScrollPane scrollerCanvas;
 
-	private FmmlxObject associationTarget;
+	private FmmlxObject newEdgeTarget;
 
 //	public Vector<FmmlxObject> fetchObjects() {
 //		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
@@ -221,7 +222,7 @@ public class FmmlxDiagram {
 		g.strokeRect(0, 0, 5, 5);
 
 		drawMultiSelectRect(g);
-		drawAssociationLine(g);
+		drawNewEdgeLine(g);
 	}
 
 	private void drawMultiSelectRect(GraphicsContext g) {
@@ -233,8 +234,8 @@ public class FmmlxDiagram {
 		}
 	}
 
-	private void drawAssociationLine(GraphicsContext g) {
-		if (mode == MouseMode.ASSOCIATION) {
+	private void drawNewEdgeLine(GraphicsContext g) {
+		if (mode == MouseMode.DRAW_EDGE) {
 			g.strokeLine(lastPoint.getX(), lastPoint.getY(), currentPoint.getX(), currentPoint.getY());
 
 		}
@@ -281,7 +282,7 @@ public class FmmlxDiagram {
 	private void mouseMoved(MouseEvent e) {
 		Point2D p = scale(e);
 
-		if (mode == MouseMode.ASSOCIATION) {
+		if (mode == MouseMode.DRAW_EDGE) {
 			storeCurrentPoint(p.getX(), p.getY());
 			redraw();
 		}
@@ -366,10 +367,15 @@ public class FmmlxDiagram {
 
 		Selectable hitObject = getElementAt(p.getX(), p.getY());
 		if (hitObject != null) {
-			if (mode == MouseMode.ASSOCIATION && associationTarget == null) {
-				associationTarget = hitObject instanceof FmmlxObject ? (FmmlxObject) hitObject : null;
-				actions.addAssociationDialog((FmmlxObject) selectedObjects.get(0), associationTarget);
-				associationTarget = null;
+			if (mode == MouseMode.DRAW_EDGE && newEdgeTarget == null) {
+				newEdgeTarget = hitObject instanceof FmmlxObject ? (FmmlxObject) hitObject : null;
+				switch(drawEdgeType) {
+					case Association: actions.addAssociationDialog((FmmlxObject) selectedObjects.get(0), newEdgeTarget); break;
+					case AssociationInstance: actions.addAssociationInstance((FmmlxObject) selectedObjects.get(0), newEdgeTarget); break;
+				    default: break;
+				}
+				
+				newEdgeTarget = null;
 				deselectAll();
 			}
 
@@ -389,8 +395,11 @@ public class FmmlxDiagram {
 				handleClickOnNodeElement(p, hitObject);
 			}
 		} else {
-			if (mode == MouseMode.ASSOCIATION) {
-				actions.addAssociationDialog((FmmlxObject) selectedObjects.get(0), null);
+			if (mode == MouseMode.DRAW_EDGE) {
+				switch(drawEdgeType) {
+				case AssociationInstance: actions.addAssociationDialog((FmmlxObject) selectedObjects.get(0), null); break;
+				default: break;
+				}
 			}
 			deselectAll();
 		}
@@ -459,8 +468,14 @@ public class FmmlxDiagram {
 
 	/* Setters for MouseMode */
 
+	@Deprecated
 	public void setAssociationMouseMode() {
 		mode = MouseMode.ASSOCIATION;
+	}
+	
+	public void setDrawEdgeMouseMode(PropertyType type) {
+		drawEdgeType = type;
+		mode = MouseMode.DRAW_EDGE;
 	}
 
 	////////////////////////////////////////////////////////////////////
@@ -756,6 +771,19 @@ public class FmmlxDiagram {
 				result.getNewDisplayNameSource(), result.getNewDisplayNameTarget(),
 				result.getNewIdentifierSource(), result.getNewIdentifierTarget(),
 				result.getMultiplicitySource(), result.getMultiplicityTarget());
+	}
+
+	public Vector<FmmlxAssociation> findAssociations(FmmlxObject source, FmmlxObject target) {
+		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
+		for (Edge e : edges) if (e instanceof FmmlxAssociation) {
+			FmmlxAssociation association = (FmmlxAssociation) e;
+			if(association.doObjectsFit(source, target)) result.add(association);
+		}
+		return result;
+	}
+
+	public void addAssociationInstance(FmmlxObject source, FmmlxObject target, FmmlxAssociation association) {
+		comm.addAssociationInstance(source.id, target.id, association.id);
 	}
 
 }

@@ -665,7 +665,6 @@ public class FmmlxDiagramCommunicator {
 				new Value(oldTargetID),
 				new Value(newTargetID)};
 		WorkbenchClient.theClient().send(handler, "changeTargetAssociation", message);
-
 	}
 
 	public void editAssociation(int associationId, FmmlxObject source, FmmlxObject target, int newInstLevelSource,
@@ -700,5 +699,14 @@ public class FmmlxDiagramCommunicator {
 				new Value(multiplicityTarget)};
 			
 			WorkbenchClient.theClient().send(handler, "editAssociation", message);
+	}
+
+	public void addAssociationInstance(int object1ID, int object2ID, int associationID) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(object1ID),
+				new Value(object2ID),
+				new Value(associationID)};
+		WorkbenchClient.theClient().send(handler, "addAssociationInstance", message);
 	}
 }
