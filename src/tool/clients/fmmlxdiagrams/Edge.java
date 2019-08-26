@@ -34,7 +34,7 @@ public class Edge implements CanvasElement, Selectable {
 	@Override
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
 		for(EdgeLabel label : labels) label.paintOn(g, xOffset, yOffset, fmmlxDiagram);
-		g.setStroke(fmmlxDiagram.isSelected(this)?Color.RED:Color.BLACK);
+		g.setStroke(fmmlxDiagram.isSelected(this)?Color.RED:getPrimaryColor());
 		g.setLineWidth(isSelected()?3:1);
 		double[] xPoints = new double[points.size()];//+2];
 		double[] yPoints = new double[points.size()];//+2];
@@ -56,6 +56,10 @@ public class Edge implements CanvasElement, Selectable {
 					   2 * R, 
 					   2 * R);
 		}
+	}
+
+	protected Color getPrimaryColor() {
+		return Color.BLACK;
 	}
 
 	private boolean isSelected() {

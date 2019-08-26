@@ -34,7 +34,7 @@ import java.util.concurrent.CountDownLatch;
 public class FmmlxDiagram {
 
 	enum MouseMode {
-		@Deprecated ASSOCIATION, MULTISELECT, STANDARD, DRAW_EDGE
+		MULTISELECT, STANDARD, DRAW_EDGE
 	}
 
 	private SplitPane mainView;
@@ -122,6 +122,8 @@ public class FmmlxDiagram {
 		return canvas;
 	}
 	
+	@Deprecated
+	//needs filter
 	public Vector<Edge> getAssociations(){
 		return new Vector<Edge>(edges); // read-only
 	} 
@@ -151,6 +153,7 @@ public class FmmlxDiagram {
 		objects.clear(); // to be replaced when updating instead of loading form scratch
 		objects.addAll(fetchedObjects);
 		Vector<Edge> fetchedEdges = comm.getAllAssociations();
+		fetchedEdges.addAll(comm.getAllAssociationsInstances());
 		edges.clear(); // to be replaced when updating instead of loading form scratch
 		edges.addAll(fetchedEdges);
 		for (FmmlxObject o : objects) {
@@ -219,7 +222,6 @@ public class FmmlxDiagram {
 		for (CanvasElement o : objectsToBePainted) {
 			o.paintOn(g, xOffset, yOffset, this);
 		}
-		g.strokeRect(0, 0, 5, 5);
 
 		drawMultiSelectRect(g);
 		drawNewEdgeLine(g);
@@ -308,16 +310,20 @@ public class FmmlxDiagram {
 	}
 
 	private void mouseReleased(MouseEvent e) {
-		if (mode == MouseMode.MULTISELECT) {
-			handleMultiSelect();
-		}
-		if (mode == MouseMode.STANDARD) {
-			mouseReleasedStandard();
-		}
-
-		mode = MouseMode.STANDARD;
-		for (Edge edge : edges) {
-			edge.dropPoint();
+		if(isMiddleClick(e)) {
+			selectedObjects.clear();
+		} else {
+			if (mode == MouseMode.MULTISELECT) {
+				handleMultiSelect();
+			}
+			if (mode == MouseMode.STANDARD) {
+				mouseReleasedStandard();
+			}
+	
+			mode = MouseMode.STANDARD;
+			for (Edge edge : edges) {
+				edge.dropPoint();
+			}
 		}
 		resizeCanvas();
 		redraw();
@@ -397,7 +403,8 @@ public class FmmlxDiagram {
 		} else {
 			if (mode == MouseMode.DRAW_EDGE) {
 				switch(drawEdgeType) {
-				case AssociationInstance: actions.addAssociationDialog((FmmlxObject) selectedObjects.get(0), null); break;
+				case Association: actions.addAssociationDialog((FmmlxObject) selectedObjects.get(0), null); break;
+				case AssociationInstance: actions.addAssociationInstance((FmmlxObject) selectedObjects.get(0), null); break;
 				default: break;
 				}
 			}
@@ -468,11 +475,6 @@ public class FmmlxDiagram {
 
 	/* Setters for MouseMode */
 
-	@Deprecated
-	public void setAssociationMouseMode() {
-		mode = MouseMode.ASSOCIATION;
-	}
-	
 	public void setDrawEdgeMouseMode(PropertyType type) {
 		drawEdgeType = type;
 		mode = MouseMode.DRAW_EDGE;

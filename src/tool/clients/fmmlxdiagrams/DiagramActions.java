@@ -559,7 +559,10 @@ public class DiagramActions {
 				// if associations.size() == 0 then association remains null
 				new Alert(AlertType.ERROR, "The selected objects don't fit any Association definition.", ButtonType.OK).showAndWait();
 			}
-			if(association != null) diagram.addAssociationInstance(source, target, association);
+			if(association != null) {
+				diagram.addAssociationInstance(source, target, association);
+				updateDiagram();
+			}
 		} else if (source != null ^ target != null) { // XOR
 			// In this case only one object is set. If only second is set: swap them
 			if(target != null) {source = target; target = null;} // swap

@@ -245,7 +245,40 @@ public class FmmlxDiagramCommunicator {
 					(Integer) edgeInfoAsList.get(10), // level e->s
 					null, //mul s->e
 					null, //mul e->e
-					diagram);// y-Position
+					diagram);
+			result.add(object);
+		}
+		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Vector<Edge> getAllAssociationsInstances() {
+		Vector<Object> response = xmfRequest(handler, "getAllAssociationInstances", new Value[]{});
+		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+		Vector<Edge> result = new Vector<>();
+		System.err.println("getAllAssociationInstances: " + responseContent.size());
+
+		for (Object edgeInfo : responseContent) {
+			Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
+
+			Vector<Point2D> listOfPoints = null;
+			Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(4);
+			if (pointsListO != null) {
+				listOfPoints = new Vector<Point2D>();
+				for (Object pointO : pointsListO) {
+					Vector<Object> pointV = (Vector<Object>) pointO;
+					Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); // leaving 0 free for future use as tag
+					listOfPoints.addElement(pointP);
+				}
+			}
+
+			Edge object = new FmmlxAssociationInstance(
+					(Integer) edgeInfoAsList.get(0), // id
+					(Integer) edgeInfoAsList.get(1), // startId
+					(Integer) edgeInfoAsList.get(2), // endId
+					(Integer) edgeInfoAsList.get(3), // ofId
+					listOfPoints, // points
+					diagram);
 			result.add(object);
 		}
 		return result;
