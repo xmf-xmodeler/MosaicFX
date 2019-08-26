@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams;
 
+import java.util.Vector;
+
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
 public class FmmlxAttribute implements FmmlxProperty {
@@ -19,11 +21,11 @@ public class FmmlxAttribute implements FmmlxProperty {
 		this.name = name;
 	}
 
-	public FmmlxAttribute(String name, int level, String type, Integer owner, String multiplicity) {
+	public FmmlxAttribute(String name, int level, String type, Integer owner, Multiplicity multiplicity) {
 		this.name = name;
 		this.level = level;
 		this.type = type;
-		this.multiplicity = Multiplicity.parseMultiplicity(multiplicity);
+		this.multiplicity = multiplicity;
 		this.owner = owner;
 	}
 

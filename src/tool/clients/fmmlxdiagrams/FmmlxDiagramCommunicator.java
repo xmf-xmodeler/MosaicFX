@@ -243,8 +243,8 @@ public class FmmlxDiagramCommunicator {
 					(String) edgeInfoAsList.get(8), // name 4
 					(Integer) edgeInfoAsList.get(9), // level s->e
 					(Integer) edgeInfoAsList.get(10), // level e->s
-					null, //mul s->e
-					null, //mul e->e
+					Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(11)), //mul s->e
+					Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(12)), //mul e->e
 					diagram);
 			result.add(object);
 		}
@@ -295,14 +295,22 @@ public class FmmlxDiagramCommunicator {
 		Vector<Object> otherAttList = (Vector<Object>) twoLists.get(1);
 		for (Object o : ownAttList) {
 			Vector<Object> attInfo = (Vector<Object>) o;
-			FmmlxAttribute object = new FmmlxAttribute((String) attInfo.get(0), (Integer) attInfo.get(2),
-					(String) attInfo.get(1), (Integer) attInfo.get(4), (String) attInfo.get(3));
+			FmmlxAttribute object = new FmmlxAttribute(
+					(String)  attInfo.get(0), 
+					(Integer) attInfo.get(2),
+					(String)  attInfo.get(1), 
+					(Integer) attInfo.get(4), 
+					Multiplicity.parseMultiplicity((Vector<Object>) attInfo.get(3)));
 			resultOwn.add(object);
 		}
 		for (Object o : otherAttList) {
 			Vector<Object> attInfo = (Vector<Object>) o;
-			FmmlxAttribute object = new FmmlxAttribute((String) attInfo.get(0), (Integer) attInfo.get(2),
-					(String) attInfo.get(1), (Integer) attInfo.get(4), (String) attInfo.get(3));
+			FmmlxAttribute object = new FmmlxAttribute(
+					(String)  attInfo.get(0), 
+					(Integer) attInfo.get(2),
+					(String)  attInfo.get(1), 
+					(Integer) attInfo.get(4), 
+					Multiplicity.parseMultiplicity((Vector<Object>) attInfo.get(3)));
 			resultOther.add(object);
 		}
 		Vector<Vector<FmmlxAttribute>> result = new Vector<>();
@@ -320,11 +328,11 @@ public class FmmlxDiagramCommunicator {
 			Vector<Object> opInfo = (Vector<Object>) o;
 			FmmlxOperation op =
 					new FmmlxOperation(
-							(String) opInfo.get(0), // name
+							(String)  opInfo.get(0), // name
 							(Integer) opInfo.get(1), // level
-							(String) opInfo.get(2), // type
+							(String)  opInfo.get(2), // type
 							(Integer) opInfo.get(3), // owner
-							(String) opInfo.get(4), // multiplicity
+							Multiplicity.parseMultiplicity((Vector<Object>) opInfo.get(4)), // multiplicity
 							(Boolean) opInfo.get(5), // isMonitored
 							null // args
 
@@ -462,19 +470,13 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) {
-		Value[] multiplicity = new Value[]{
-				new Value(multi.min),
-				new Value(multi.max),
-				new Value(multi.upperLimit),
-				new Value(multi.ordered),
-				new Value(multi.duplicates)}; // unused in XMF
 		Value[] message = new Value[]{
 				new Value(-1),
 				new Value(classID),
 				new Value(name),
 				new Value(level),
 				new Value(type),
-				new Value(multiplicity)};
+				new Value(multi.toValue())};
 		WorkbenchClient.theClient().send(handler, "addAttribute", message);
 	}
 
@@ -662,22 +664,17 @@ public class FmmlxDiagramCommunicator {
 				new Value(class1Id), new Value(class2Id),
 				new Value(ref1), new Value(ref2),
 				new Value(fwName), reverseName == null?new Value(-1):new Value(reverseName),
-				new Value(-1), new Value(-1), // multiplicity,
+				new Value(mul1.toValue()), 
+				new Value(mul2.toValue()), // multiplicity,
 				new Value(instLevel1), new Value(instLevel2)};
 		WorkbenchClient.theClient().send(handler, "addAssociation", message);
 	}
 
 	public void changeMultiplicityAttribute(int objectId, String attributeName, Multiplicity multi) {
-		Value[] multiplicity = new Value[]{
-				new Value(multi.min),
-				new Value(multi.max),
-				new Value(multi.upperLimit),
-				new Value(multi.ordered),
-				new Value(multi.duplicates)};
 		Value[] message = new Value[]{new Value(-1),
 				new Value(objectId),
 				new Value(attributeName),
-				new Value(multiplicity)};
+				new Value(multi.toValue())};
 		WorkbenchClient.theClient().send(handler, "changeMultiplicity", message);
 	}
 
@@ -704,18 +701,6 @@ public class FmmlxDiagramCommunicator {
 			int newInstLevelTarget, String newDisplayNameSource, String newDisplayNameTarget,
 			String newIdentifierSource, String newIdentifierTarget, Multiplicity multiSource,
 			Multiplicity multiTarget) {
-			Value[] multiplicitySource = new Value[]{
-				new Value(multiSource.min),
-				new Value(multiSource.max),
-				new Value(multiSource.upperLimit),
-				new Value(multiSource.ordered),
-				new Value(multiSource.duplicates)};
-			Value[] multiplicityTarget = new Value[]{
-				new Value(multiTarget.min),
-				new Value(multiTarget.max),
-				new Value(multiTarget.upperLimit),
-				new Value(multiTarget.ordered),
-				new Value(multiTarget.duplicates)};
 			Value[] message = new Value[] {
 				new Value(-1),
 				new Value(associationId),
@@ -728,8 +713,8 @@ public class FmmlxDiagramCommunicator {
 				new Value(newIdentifierTarget),
 				new Value(newDisplayNameTarget),
 				new Value(newInstLevelTarget),
-				new Value(multiplicitySource),
-				new Value(multiplicityTarget)};
+				new Value(multiSource.toValue()),
+				new Value(multiTarget.toValue())};
 			
 			WorkbenchClient.theClient().send(handler, "editAssociation", message);
 	}

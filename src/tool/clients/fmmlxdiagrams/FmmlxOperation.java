@@ -12,7 +12,7 @@ public class FmmlxOperation implements FmmlxProperty{
 	private boolean isMonitored;
 
 
-	public FmmlxOperation(String name, Integer level, String type, Integer owner, String multiplicity, boolean isMonitored, Vector<Object> args) {
+	public FmmlxOperation(String name, Integer level, String type, Integer owner, Multiplicity multiplicity, boolean isMonitored, Vector<Object> args) {
 		this.name = name;
 		this.level = level;
 		this.type = type;
