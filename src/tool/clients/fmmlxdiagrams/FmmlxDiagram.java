@@ -469,6 +469,10 @@ public class FmmlxDiagram {
 			} else if (hitObject instanceof Edge) {
 				activeContextMenu = hitObject.getContextMenu(actions);
 			}
+			if (!selectedObjects.contains(hitObject)) {
+				deselectAll();
+				selectedObjects.add(hitObject);
+			}
 		} else {
 			activeContextMenu = new DefaultContextMenu(actions);
 		}
