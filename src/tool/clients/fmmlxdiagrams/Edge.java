@@ -24,8 +24,8 @@ public class Edge implements CanvasElement, Selectable {
 		this.startNode = startNode;
 		this.endNode = endNode;
 		if (points == null || points.size() < 1) {
-			this.points.add(new Point2D(startNode.getX() + startNode.width / 2, startNode.getY() + startNode.height / 2));
-			this.points.add(new Point2D(endNode.getX() + endNode.width / 2, endNode.getY() + endNode.height / 2));
+			this.points.add(new Point2D(startNode.getX() + startNode.getWidth() / 2, startNode.getY() + startNode.getHeight() / 2));
+			this.points.add(new Point2D(endNode.getX() + endNode.getWidth() / 2, endNode.getY() + endNode.getHeight() / 2));
 		} else {
 			this.points.addAll(points);
 		}
@@ -126,12 +126,12 @@ public class Edge implements CanvasElement, Selectable {
 	}
 
 	public void moveStartPoint() {
-		Point2D startPoint = new Point2D(startNode.getX() + startNode.width / 2, startNode.getY() + startNode.height / 2);
+		Point2D startPoint = new Point2D(startNode.getX() + startNode.getWidth() / 2, startNode.getY() + startNode.getHeight() / 2);
 		points.setElementAt(startPoint, 0);
 	}
 
 	public void moveEndPoint() {
-		Point2D endPoint = new Point2D(endNode.getX() + endNode.width / 2, endNode.getY() + endNode.height / 2);
+		Point2D endPoint = new Point2D(endNode.getX() + endNode.getWidth() / 2, endNode.getY() + endNode.getHeight() / 2);
 		points.setElementAt(endPoint, points.size() - 1);
 	}
 

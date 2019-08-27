@@ -560,10 +560,21 @@ public class FmmlxDiagram {
 		Rectangle rec = new Rectangle(x, y, w, h);
 		deselectAll();
 		for (FmmlxObject o : objects) {
-			if (rec.contains(o.getX(), o.getY())) {
+			if (isObjectContained(rec, o)) {
 				select(o);
 			}
 		}
+	}
+
+	private boolean isObjectContained(Rectangle rec, FmmlxObject object) {
+		System.out.println("OBJECT X/Y: " + object.getX() + "/" + object.getY());
+		System.out.println("OBJECT Border X/Y: " + object.getBottomBorder() + "/" + object.getRightBorder());
+
+
+		return rec.contains(object.getX(), object.getY())
+				&& rec.contains(
+				object.getX() + object.getWidth(),
+				object.getY() + object.getHeight());
 	}
 
 	public Point2D scale(MouseEvent event) {
