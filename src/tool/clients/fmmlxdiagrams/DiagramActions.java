@@ -576,4 +576,7 @@ public class DiagramActions {
 		}
 	}
 
+	public void removeAssociationInstance(FmmlxAssociationInstance instance) {
+		diagram.removeAssociationInstance(instance);
+	}
 }
