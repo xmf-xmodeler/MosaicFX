@@ -310,6 +310,11 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 		addNodesToGrid(sourceNodes, 1);
 		addNodesToGrid(targetNodes, 2);
 	}
+	
+	protected void updateNodeInsideGrid(Node oldNode, Node newNode, int column, int row) {
+		grid.getChildren().remove(oldNode);
+		grid.add(newNode, column, row);
+	}
 
 	
 	private void setLevelList(ComboBox<Integer> comboBox, FmmlxObject refObject) {
