@@ -248,26 +248,26 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 		
 		selectAssociationComboBox = (ComboBox<FmmlxAssociation>) initializeComboBox(associationList);
 		selectAssociationComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
+			if (newValue != null) {				
 				int Id = newValue.getId();
 				FmmlxObject startNode = newValue.getStartNode();
-				FmmlxObject targetNode = newValue.getTargetNode();
+				FmmlxObject targetNode = newValue.getTargetNode();			
 				
+				newTypeSource.getSelectionModel().select(startNode);				
+				newTypeTarget.getSelectionModel().select(targetNode);
 				
-				for(FmmlxObject tmp : diagram.getObjects()) {
-					if (startNode.getId()==tmp.getId()) {
-						newTypeSource.getSelectionModel().select(tmp);
-						newInstLevelSource.getSelectionModel().select(newValue.getLevelStartToEnd());
-						newDisplayNameSource.setText(newValue.getName());
-						newIdentifierSource.setText(newValue.getAccessNameStartToEnd());
-					} 
-					if(targetNode.getId()==tmp.getId()) {
-						newTypeTarget.getSelectionModel().select(tmp);
-						newInstLevelTarget.getSelectionModel().select(newValue.getLevelEndToStart());
-						newDisplayNameTarget.setText(newValue.getReverseName());
-						newIdentifierTarget.setText(newValue.getAccessNameEndToStart());
-					}					
-				}
+				newInstLevelSource.getSelectionModel().select(newValue.getLevelStartToEnd());
+				newDisplayNameSource.setText(newValue.getName());
+				newIdentifierSource.setText(newValue.getAccessNameStartToEnd());
+				Multiplicity newMultiplicitySource = newValue.getMultiplicityStartToEnd();
+				//updateNodeInsideGrid(multiplicitySourceNode, createMultiplicityBox(newMultiplicitySource), 1, 8);
+				
+				newInstLevelTarget.getSelectionModel().select(newValue.getLevelEndToStart());
+				newDisplayNameTarget.setText(newValue.getReverseName());
+				newIdentifierTarget.setText(newValue.getAccessNameEndToStart());
+				Multiplicity newMultiplicityTarget = newValue.getMultiplicityEndToStart();
+				//updateNodeInsideGrid(multiplicityTargetNode, createMultiplicityBox(newMultiplicityTarget), 2, 8);
+				
 			}
 		});
 		
