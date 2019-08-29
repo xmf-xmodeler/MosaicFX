@@ -6,6 +6,7 @@ public enum PropertyType {
 	Operation("Operation"),
 	OperationValue("Operation value"),
 	Association("Association"),
+	AssociationInstance("AssociationInstance"),
 	Slot("Slot"),
 	Selection("Selection");
 

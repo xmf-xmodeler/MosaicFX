@@ -1,10 +1,15 @@
 package tool.clients.fmmlxdiagrams;
 
+import java.util.Vector;
+
+import xos.Value;
+
 public class Multiplicity {
 	public final int min;
 	public final int max;
 	public final boolean upperLimit;
 	public final boolean ordered;
+	@Deprecated // unused for now, maybe used later
 	public final boolean duplicates;
 
 	/**
@@ -40,9 +45,27 @@ public class Multiplicity {
 		return (max > 2 ? duplicates ? "[" : "{" : "") + (ordered ? "$" : "") + min + ".." + (upperLimit ? max : "*") + (max > 2 ? duplicates ? "]" : "}" : "");
 	}
 
-	public static Multiplicity parseMultiplicity(String multiplicity) {
-		// TODO Auto-generated method stub
-		return null;
+	public static Multiplicity parseMultiplicity(Vector<Object> xmfValue) {
+		try{
+			return new Multiplicity(
+				(Integer) xmfValue.get(0), 
+				(Integer) xmfValue.get(1), 
+				(Boolean) xmfValue.get(2), 
+				(Boolean) xmfValue.get(3), 
+				true); // unused
+		} catch (Exception e) {
+			System.err.println("Multiplicity unparseable: " + xmfValue);
+			return OPTIONAL;
+		}
+	}
+	
+	public Value[] toValue() {
+		return new Value[]{
+			new Value(min),
+			new Value(max),
+			new Value(upperLimit),
+			new Value(ordered),
+			new Value(duplicates)};
 	}
 
 

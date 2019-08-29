@@ -240,8 +240,8 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 		selectAssociationComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue != null) {				
 				int Id = newValue.getId();
-				FmmlxObject startNode = newValue.getStartNode();
-				FmmlxObject targetNode = newValue.getTargetNode();			
+				FmmlxObject startNode = newValue.getSourceNode();
+				FmmlxObject targetNode = newValue.getTargetNode();
 				
 				newTypeSource.getSelectionModel().select(startNode);				
 				newTypeTarget.getSelectionModel().select(targetNode);

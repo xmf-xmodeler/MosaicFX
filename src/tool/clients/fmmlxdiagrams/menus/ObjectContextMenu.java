@@ -72,7 +72,7 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu associationMenu = new Menu("Association");
 
 		MenuItem addItem = new MenuItem("Add");
-		addItem.setOnAction(e -> actions.setAssociationMode(object));
+		addItem.setOnAction(e -> actions.setDrawEdgeMode(object, PropertyType.Association));
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e_ -> actions.removeDialog(object, PropertyType.Association));
 		MenuItem changeTargetItem = new MenuItem("Change target");
@@ -138,7 +138,7 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu associationInstanceMenu = new Menu("Association instance");
 
 		MenuItem addValueItem = new MenuItem("Add instance");
-		addValueItem.setOnAction(e -> System.out.println("OCM: add association instance value called"));
+		addValueItem.setOnAction(e -> actions.setDrawEdgeMode(object, PropertyType.AssociationInstance));
 		MenuItem removeValueItem = new MenuItem("Remove instance");
 		removeValueItem.setOnAction(e -> System.out.println("OCM: remove association instance value called"));
 		MenuItem changeValueItem = new MenuItem("Change instance");
