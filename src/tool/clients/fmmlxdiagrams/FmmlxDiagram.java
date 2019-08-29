@@ -758,4 +758,9 @@ public class FmmlxDiagram {
 				result.getMultiplicitySource(), result.getMultiplicityTarget());
 	}
 
+	public void associationValue(AssociationValueDialogResult result) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -62,6 +62,10 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 	private Multiplicity multiplicityTarget;
 
 	private Vector<FmmlxAssociation> associations;
+	
+	private ArrayList<Node> labels;
+	private List<Node> sourceNodes;
+	private List<Node> targetNodes;
 
 	public EditAssociationDialog(FmmlxDiagram diagram, FmmlxObject object) {
 		
@@ -126,8 +130,6 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 			return false;
 		} else if (!validateNewDisplayNameSource()) {
 			return false;
-		} else if (!validateNewDisplayNameTarget()) {
-			return false;
 		} else if (!validateNewIdentifierSource()) {
 			return false;
 		} else if (!validateNewIdentifierTarget()) {
@@ -189,7 +191,6 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.editAssociation);
 		
 		associations = source.getAllRelatedAssociations();
-		
 		ObservableList<FmmlxAssociation> associationList;
 		associationList = FXCollections.observableList(associations);
 		
@@ -199,18 +200,7 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 		typeSource.setDisable(true);
 		typeTarget = new Label();
 		typeTarget.setDisable(true);
-		currentInstLevelSource= new Label("1 (test current level)");
-		currentInstLevelSource.setDisable(true);
-		currentInstLevelTarget = new Label("1 (test current level)");
-		currentInstLevelTarget.setDisable(true);
-		currentDisplayNameSource = new Label("aaa (test display name)");
-		currentDisplayNameSource.setDisable(true);
-		currentDisplayNameTarget = new Label("aaa (test display name)");
-		currentDisplayNameTarget.setDisable(true);
-		currentIdentifierSource = new Label("bbb (test identifier)");
-		currentIdentifierSource.setDisable(true);
-		currentIdentifierTarget = new Label("bbb (test identifier)");
-		currentIdentifierTarget.setDisable(true);
+		
 		
 		newTypeSource = (ComboBox<FmmlxObject>) initializeComboBox(diagram.getAllPossibleParentList());
 		newTypeSource.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -271,9 +261,9 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 			}
 		});
 		
-		ArrayList<Node> labels = new ArrayList<>();
-		List<Node> sourceNodes = new ArrayList<>();
-		List<Node> targetNodes = new ArrayList<>();
+		labels = new ArrayList<>();
+		sourceNodes = new ArrayList<>();
+		targetNodes = new ArrayList<>();
 		
 		labels.add(new Label(LabelAndHeaderTitle.selectedObject));
 		labels.add(new Label(LabelAndHeaderTitle.selectAssociation));

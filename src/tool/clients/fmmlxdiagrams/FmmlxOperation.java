@@ -10,6 +10,7 @@ public class FmmlxOperation implements FmmlxProperty{
 	String type;
 	Integer owner;
 	private boolean isMonitored;
+	String body;
 
 
 	public FmmlxOperation(String name, Integer level, String type, Integer owner, String multiplicity, boolean isMonitored, Vector<Object> args) {
