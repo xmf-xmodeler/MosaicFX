@@ -60,6 +60,9 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 	
 	private Multiplicity multiplicitySource;
 	private Multiplicity multiplicityTarget;
+	
+	private Node multiplicitySourceNode;
+	private Node multiplicityTargetNode;
 
 	private Vector<FmmlxAssociation> associations;
 	
@@ -235,11 +238,13 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 		newTypeTarget.setPrefWidth(COLUMN_WIDTH);
 		newInstLevelSource.setPrefWidth(COLUMN_WIDTH);
 		newInstLevelTarget.setPrefWidth(COLUMN_WIDTH);
+		multiplicitySourceNode = createMultiplicityBox(multiplicitySource);
+		multiplicityTargetNode = createMultiplicityBox(multiplicityTarget);
 		
 		selectAssociationComboBox = (ComboBox<FmmlxAssociation>) initializeComboBox(associationList);
 		selectAssociationComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue != null) {				
-				int Id = newValue.getId();
+				selectedAssociation = newValue;
 				FmmlxObject startNode = newValue.getSourceNode();
 				FmmlxObject targetNode = newValue.getTargetNode();
 				
@@ -250,13 +255,13 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 				newDisplayNameSource.setText(newValue.getName());
 				newIdentifierSource.setText(newValue.getAccessNameStartToEnd());
 				Multiplicity newMultiplicitySource = newValue.getMultiplicityStartToEnd();
-				//updateNodeInsideGrid(multiplicitySourceNode, createMultiplicityBox(newMultiplicitySource), 1, 8);
+				updateNodeInsideGrid(multiplicitySourceNode, createMultiplicityBox(newMultiplicitySource), 1, 8);
 				
 				newInstLevelTarget.getSelectionModel().select(newValue.getLevelEndToStart());
 				newDisplayNameTarget.setText(newValue.getReverseName());
 				newIdentifierTarget.setText(newValue.getAccessNameEndToStart());
 				Multiplicity newMultiplicityTarget = newValue.getMultiplicityEndToStart();
-				//updateNodeInsideGrid(multiplicityTargetNode, createMultiplicityBox(newMultiplicityTarget), 2, 8);
+				updateNodeInsideGrid(multiplicityTargetNode, createMultiplicityBox(newMultiplicityTarget), 2, 8);
 				
 			}
 		});
@@ -283,7 +288,7 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 		sourceNodes.add(newInstLevelSource);
 		sourceNodes.add(newDisplayNameSource);
 		sourceNodes.add(newIdentifierSource);
-		sourceNodes.add(createMultiplicityBox(multiplicitySource));
+		sourceNodes.add(multiplicitySourceNode);
 		
 		targetNodes.add(new Label(" "));
 		targetNodes.add(new Label(" "));
@@ -293,7 +298,7 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 		targetNodes.add(newInstLevelTarget);
 		targetNodes.add(newDisplayNameTarget);
 		targetNodes.add(newIdentifierTarget);
-		targetNodes.add(createMultiplicityBox(multiplicityTarget));
+		targetNodes.add(multiplicityTargetNode);
 
 		
 		addNodesToGrid(labels, 0);
