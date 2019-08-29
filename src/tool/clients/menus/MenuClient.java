@@ -474,4 +474,28 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
 	        handler.raiseEvent(m);
 	      }
 	}
+
+  //set values for debuging
+  public static void setClientCommunicationMonitoring(boolean monitor) {
+    EventHandler handler = theClient.getHandler();
+    if (monitor) handler.raiseEvent(handler.newMessage("monitorClientCommunication", 0));
+    else handler.raiseEvent(handler.newMessage("silentClientCommunication", 0));
+  }
+
+  public static void setDaemonMonitoring(boolean monitor) {
+    EventHandler handler = theClient.getHandler();
+    if (monitor) handler.raiseEvent(handler.newMessage("monitorDaemon", 0));
+    else handler.raiseEvent(handler.newMessage("silentDaemon", 0));
+  }
+
+  //open debugging menus
+  public static void openPerformanceMonitor() {
+    EventHandler handler = theClient.getHandler();
+   handler.raiseEvent(handler.newMessage("showPerformanceMonitor", 0));
+  }
+
+  public static void openCallMonitor() {
+    EventHandler handler = theClient.getHandler();
+    handler.raiseEvent(handler.newMessage("monitorCalls", 0));
+  }
 }
