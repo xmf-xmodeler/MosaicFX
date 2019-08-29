@@ -705,17 +705,15 @@ public class FmmlxDiagramCommunicator {
 				new Value(-1),
 				new Value(associationId),
 				new Value(source.getId()),
+				new Value(target.getId()),
 				new Value(newInstLevelSource),
 				new Value(newInstLevelTarget),
 				new Value(newDisplayNameSource),
-				new Value(newDisplayNameTarget),
+				newDisplayNameTarget == null ? new Value(-1) : new Value(newDisplayNameTarget),
 				new Value(newIdentifierSource),
 				new Value(newIdentifierTarget),
-				new Value(newDisplayNameTarget),
-				new Value(newInstLevelTarget),
 				new Value(multiSource.toValue()),
 				new Value(multiTarget.toValue())};
-
 		WorkbenchClient.theClient().send(handler, "editAssociation", message);
 	}
 

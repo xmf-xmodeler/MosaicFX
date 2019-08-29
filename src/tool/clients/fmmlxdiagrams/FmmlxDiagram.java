@@ -798,12 +798,14 @@ public class FmmlxDiagram {
 	}
 
 	public void editAssociation(EditAssociationDialogResult result) {
+		
 		comm.editAssociation(result.getSelectedAssociation().getId(),
-				result.getSource(), result.getTarget(),
-				result.getNewInstLevelSource(), result.getNewInstLevelTarget(),
-				result.getNewDisplayNameSource(), result.getNewDisplayNameTarget(),
-				result.getNewIdentifierSource(), result.getNewIdentifierTarget(),
+				result.getSource(), result.getTarget(), 
+				result.getNewInstLevelSource(), result.getNewInstLevelTarget(), 
+				result.getNewDisplayNameSource(), result.getNewDisplayNameTarget(), 
+				result.getNewIdentifierSource(), result.getNewIdentifierTarget(), 
 				result.getMultiplicitySource(), result.getMultiplicityTarget());
+		 
 	}
 
 	public Vector<FmmlxAssociation> findAssociations(FmmlxObject source, FmmlxObject target) {
