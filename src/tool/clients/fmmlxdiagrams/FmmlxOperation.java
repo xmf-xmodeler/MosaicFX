@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams;
 
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import xos.Value;
 
 import java.util.Vector;
 
@@ -49,5 +50,13 @@ public class FmmlxOperation implements FmmlxProperty{
 	@Override
 	public PropertyType getPropertyType() {
 		return null;
+	}
+
+	public String getBody() {
+		if (body==null) {
+			return "";
+		}else {
+			return body;
+		}
 	}
 }

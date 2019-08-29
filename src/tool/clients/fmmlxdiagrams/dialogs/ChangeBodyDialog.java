@@ -34,6 +34,9 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 	private TextArea bodyTextArea;
 	
 	private Vector<FmmlxOperation> operations;
+	
+	private ButtonType checkSyntaxButtonType;
+	private ButtonType defaultOperationButtonType;
 
 	public ChangeBodyDialog(FmmlxDiagram diagram, FmmlxObject object) {
 		super();
@@ -41,7 +44,11 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 		this.object=object;
 		
 		dialogPane = getDialogPane();
-		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+		
+		checkSyntaxButtonType = new ButtonType(StringValueDialog.LabelAndHeaderTitle.checkSyntax);
+		defaultOperationButtonType = new ButtonType(StringValueDialog.LabelAndHeaderTitle.defaultOperation);
+		
+		dialogPane.getButtonTypes().addAll(checkSyntaxButtonType, defaultOperationButtonType, ButtonType.OK, ButtonType.CANCEL);
 		layoutContent();
 		dialogPane.setContent(flow);
 		
@@ -51,7 +58,19 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 				e.consume();
 			}
 		});
-
+		
+		final Button defaultOperationButton = (Button) getDialogPane().lookupButton(defaultOperationButtonType);
+		defaultOperationButton.addEventFilter(ActionEvent.ACTION, e -> {
+				ChangeBodyDialog.this.resetOperationBody();
+				e.consume();	
+		});
+		
+		final Button checkSyntaxButton = (Button) getDialogPane().lookupButton(checkSyntaxButtonType);
+		checkSyntaxButton.addEventFilter(ActionEvent.ACTION, e -> {		
+			ChangeBodyDialog.this.checkBodySyntax();
+			e.consume();	
+		});
+		
 		setResult();
 
 	}
@@ -95,17 +114,9 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 		selectOperationComboBox = (ComboBox<FmmlxOperation>)initializeComboBox(operationsList);
 		selectOperationComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue != null) {
-				
-				//TODO input current body to textArea
+				bodyTextArea.setText(newValue.getBody());
 			}
 		});
-		
-		Button checkSyntaxButton = new Button(StringValueDialog.LabelAndHeaderTitle.checkSyntax);
-		checkSyntaxButton.setOnAction(event -> ChangeBodyDialog.this.checkBodySyntax());
-		checkSyntaxButton.setPrefWidth(COLUMN_WIDTH * 0.5);
-		Button defaultOperationButton = new Button(StringValueDialog.LabelAndHeaderTitle.defaultOperation);
-		defaultOperationButton.setOnAction(event -> ChangeBodyDialog.this.resetOperationBody());
-		defaultOperationButton.setPrefWidth(COLUMN_WIDTH * 0.5);
 		
 		selectOperationComboBox.setPrefWidth(COLUMN_WIDTH);
 		
@@ -115,8 +126,6 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 		grid.add(selectOperationComboBox, 1, 1);
 		grid.add(bodyLabel, 0, 2);
 		grid.add(bodyTextArea, 1, 2, 1, 2);
-		grid.add(checkSyntaxButton, 0, 2);
-		grid.add(defaultOperationButton, 0, 3);
 		
 	}
 	
