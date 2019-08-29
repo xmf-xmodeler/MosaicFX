@@ -77,10 +77,8 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 	private void layoutContent() {
 		operations = object.getOwnOperations();
 		operations.addAll(object.getOtherOperations());
-		
 		ObservableList<FmmlxOperation> operationsList;
 		operationsList = FXCollections.observableList(operations);
-		
 		
 		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.changeOperationsBody);
 		
@@ -97,6 +95,7 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 		selectOperationComboBox = (ComboBox<FmmlxOperation>)initializeComboBox(operationsList);
 		selectOperationComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue != null) {
+				
 				//TODO input current body to textArea
 			}
 		});

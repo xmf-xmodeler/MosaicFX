@@ -34,7 +34,7 @@ import java.util.concurrent.CountDownLatch;
 public class FmmlxDiagram {
 
 	enum MouseMode {
-		ASSOCIATION, MULTISELECT, STANDARD
+		MULTISELECT, STANDARD, DRAW_EDGE
 	}
 
 	private SplitPane mainView;
@@ -49,6 +49,7 @@ public class FmmlxDiagram {
 	private ContextMenu activeContextMenu;
 	private DiagramActions actions;
 	private transient boolean objectsMoved = false;
+	private transient PropertyType drawEdgeType = null;
 	private Point2D lastPoint;
 	private Point2D currentPoint;
 	private MouseMode mode = MouseMode.STANDARD;
@@ -60,7 +61,7 @@ public class FmmlxDiagram {
 
 	private ScrollPane scrollerCanvas;
 
-	private FmmlxObject associationTarget;
+	private FmmlxObject newEdgeTarget;
 
 //	public Vector<FmmlxObject> fetchObjects() {
 //		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
@@ -120,36 +121,39 @@ public class FmmlxDiagram {
 	public Canvas getCanvas() {
 		return canvas;
 	}
-	
-	public Vector<Edge> getAssociations(){
-		return new Vector<Edge>(edges); // read-only
-	} 
 
-	public Edge getAssociationById(int id){
+	@Deprecated
+	//needs filter
+	public Vector<Edge> getAssociations() {
+		return new Vector<Edge>(edges); // read-only
+	}
+
+	public Edge getAssociationById(int id) {
 		for (Edge tmp : edges) {
-			if(tmp.getId()==id)
+			if (tmp.getId() == id)
 				return tmp;
 		}
 		return null;
 	}
-	
-	public Vector<FmmlxAssociation> getRelatedAssociationByObject(FmmlxObject object){
-		Vector <FmmlxAssociation> result = new Vector<FmmlxAssociation>();
-		for(Edge tmp: edges) {
-			if(tmp instanceof FmmlxAssociation) {
+
+	public Vector<FmmlxAssociation> getRelatedAssociationByObject(FmmlxObject object) {
+		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
+		for (Edge tmp : edges) {
+			if (tmp instanceof FmmlxAssociation) {
 				if (tmp.startNode.getId() == object.getId() || tmp.endNode.getId() == object.getId()) {
 					result.add((FmmlxAssociation) tmp);
 				}
-			}	
+			}
 		}
 		return result;
 	}
-	
+
 	private void fetchDiagramData() {
 		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
 		objects.clear(); // to be replaced when updating instead of loading form scratch
 		objects.addAll(fetchedObjects);
 		Vector<Edge> fetchedEdges = comm.getAllAssociations();
+		fetchedEdges.addAll(comm.getAllAssociationsInstances());
 		edges.clear(); // to be replaced when updating instead of loading form scratch
 		edges.addAll(fetchedEdges);
 		for (FmmlxObject o : objects) {
@@ -218,10 +222,9 @@ public class FmmlxDiagram {
 		for (CanvasElement o : objectsToBePainted) {
 			o.paintOn(g, xOffset, yOffset, this);
 		}
-		g.strokeRect(0, 0, 5, 5);
 
 		drawMultiSelectRect(g);
-		drawAssociationLine(g);
+		drawNewEdgeLine(g);
 	}
 
 	private void drawMultiSelectRect(GraphicsContext g) {
@@ -233,8 +236,8 @@ public class FmmlxDiagram {
 		}
 	}
 
-	private void drawAssociationLine(GraphicsContext g) {
-		if (mode == MouseMode.ASSOCIATION) {
+	private void drawNewEdgeLine(GraphicsContext g) {
+		if (mode == MouseMode.DRAW_EDGE) {
 			g.strokeLine(lastPoint.getX(), lastPoint.getY(), currentPoint.getX(), currentPoint.getY());
 
 		}
@@ -281,7 +284,7 @@ public class FmmlxDiagram {
 	private void mouseMoved(MouseEvent e) {
 		Point2D p = scale(e);
 
-		if (mode == MouseMode.ASSOCIATION) {
+		if (mode == MouseMode.DRAW_EDGE) {
 			storeCurrentPoint(p.getX(), p.getY());
 			redraw();
 		}
@@ -307,16 +310,20 @@ public class FmmlxDiagram {
 	}
 
 	private void mouseReleased(MouseEvent e) {
-		if (mode == MouseMode.MULTISELECT) {
-			handleMultiSelect();
-		}
-		if (mode == MouseMode.STANDARD) {
-			mouseReleasedStandard();
-		}
+		if (isMiddleClick(e)) {
+			selectedObjects.clear();
+		} else {
+			if (mode == MouseMode.MULTISELECT) {
+				handleMultiSelect();
+			}
+			if (mode == MouseMode.STANDARD) {
+				mouseReleasedStandard();
+			}
 
-		mode = MouseMode.STANDARD;
-		for (Edge edge : edges) {
-			edge.dropPoint();
+			mode = MouseMode.STANDARD;
+			for (Edge edge : edges) {
+				edge.dropPoint();
+			}
 		}
 		resizeCanvas();
 		redraw();
@@ -366,10 +373,20 @@ public class FmmlxDiagram {
 
 		Selectable hitObject = getElementAt(p.getX(), p.getY());
 		if (hitObject != null) {
-			if (mode == MouseMode.ASSOCIATION && associationTarget == null) {
-				associationTarget = hitObject instanceof FmmlxObject ? (FmmlxObject) hitObject : null;
-				actions.addAssociationDialog((FmmlxObject) selectedObjects.get(0), associationTarget);
-				associationTarget = null;
+			if (mode == MouseMode.DRAW_EDGE && newEdgeTarget == null) {
+				newEdgeTarget = hitObject instanceof FmmlxObject ? (FmmlxObject) hitObject : null;
+				switch (drawEdgeType) {
+					case Association:
+						actions.addAssociationDialog((FmmlxObject) selectedObjects.get(0), newEdgeTarget);
+						break;
+					case AssociationInstance:
+						actions.addAssociationInstance((FmmlxObject) selectedObjects.get(0), newEdgeTarget);
+						break;
+					default:
+						break;
+				}
+
+				newEdgeTarget = null;
 				deselectAll();
 			}
 
@@ -389,8 +406,17 @@ public class FmmlxDiagram {
 				handleClickOnNodeElement(p, hitObject);
 			}
 		} else {
-			if (mode == MouseMode.ASSOCIATION) {
-				actions.addAssociationDialog((FmmlxObject) selectedObjects.get(0), null);
+			if (mode == MouseMode.DRAW_EDGE) {
+				switch (drawEdgeType) {
+					case Association:
+						actions.addAssociationDialog((FmmlxObject) selectedObjects.get(0), null);
+						break;
+					case AssociationInstance:
+						actions.addAssociationInstance((FmmlxObject) selectedObjects.get(0), null);
+						break;
+					default:
+						break;
+				}
 			}
 			deselectAll();
 		}
@@ -438,13 +464,21 @@ public class FmmlxDiagram {
 
 		Selectable hitObject = getElementAt(p.getX(), p.getY());
 		if (hitObject != null) {
-			activeContextMenu = hitObject.getContextMenu(actions);
-			activeContextMenu.show(scrollerCanvas, Side.LEFT, e.getX(), e.getY());
+			if (hitObject instanceof FmmlxObject) {
+				activeContextMenu = hitObject.getContextMenu(actions);
+			} else if (hitObject instanceof Edge) {
+				activeContextMenu = hitObject.getContextMenu(actions);
+			}
+			if (!selectedObjects.contains(hitObject)) {
+				deselectAll();
+				selectedObjects.add(hitObject);
+			}
 		} else {
 			activeContextMenu = new DefaultContextMenu(actions);
-			activeContextMenu.show(scrollerCanvas, Side.LEFT, e.getX(), e.getY());
 		}
+		showContextMenu(e);
 	}
+
 
 	private void handleScroll(ScrollEvent e) {
 		if (e.isControlDown()) {
@@ -459,14 +493,21 @@ public class FmmlxDiagram {
 
 	/* Setters for MouseMode */
 
-	public void setAssociationMouseMode() {
-		mode = MouseMode.ASSOCIATION;
+	public void setDrawEdgeMouseMode(PropertyType type) {
+		drawEdgeType = type;
+		mode = MouseMode.DRAW_EDGE;
 	}
 
 	////////////////////////////////////////////////////////////////////
 	private void clearContextMenus() {
 		if (activeContextMenu != null && activeContextMenu.isShowing()) {
 			activeContextMenu.hide();
+		}
+	}
+
+	private void showContextMenu(MouseEvent p) {
+		if (activeContextMenu != null) {
+			activeContextMenu.show(scrollerCanvas, Side.LEFT, p.getX(), p.getY());
 		}
 	}
 
@@ -519,10 +560,17 @@ public class FmmlxDiagram {
 		Rectangle rec = new Rectangle(x, y, w, h);
 		deselectAll();
 		for (FmmlxObject o : objects) {
-			if (rec.contains(o.getX(), o.getY())) {
+			if (isObjectContained(rec, o)) {
 				select(o);
 			}
 		}
+	}
+
+	private boolean isObjectContained(Rectangle rec, FmmlxObject object) {
+		return rec.contains(object.getX(), object.getY())
+				&& rec.contains(
+				object.getX() + object.getWidth(),
+				object.getY() + object.getHeight());
 	}
 
 	public Point2D scale(MouseEvent event) {
@@ -703,7 +751,7 @@ public class FmmlxDiagram {
 				result.getDisplayNameSource(), result.getDisplayNameTarget(),
 				result.getMultiplicitySource(), result.getMultiplicityTarget(),
 				result.getInstLevelSource(), result.getInstLevelTarget()
-				);
+		);
 	}
 
 	public void changeAttributeOwner(ChangeOwnerDialogResult result) {
@@ -756,6 +804,28 @@ public class FmmlxDiagram {
 				result.getNewDisplayNameSource(), result.getNewDisplayNameTarget(),
 				result.getNewIdentifierSource(), result.getNewIdentifierTarget(),
 				result.getMultiplicitySource(), result.getMultiplicityTarget());
+	}
+
+	public Vector<FmmlxAssociation> findAssociations(FmmlxObject source, FmmlxObject target) {
+		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
+		for (Edge e : edges)
+			if (e instanceof FmmlxAssociation) {
+				FmmlxAssociation association = (FmmlxAssociation) e;
+				if (association.doObjectsFit(source, target)) result.add(association);
+			}
+		return result;
+	}
+
+	public void addAssociationInstance(FmmlxObject source, FmmlxObject target, FmmlxAssociation association) {
+		comm.addAssociationInstance(source.id, target.id, association.id);
+	}
+
+	public void removeAssociationInstance(FmmlxAssociationInstance instance) {
+		comm.removeAssociationInstance(instance.getId());
+	}
+	public void associationValue(AssociationValueDialogResult result) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

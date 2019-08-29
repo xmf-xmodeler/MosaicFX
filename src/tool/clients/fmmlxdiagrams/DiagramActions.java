@@ -4,11 +4,15 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseEvent;
 import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
 
 import java.util.Optional;
+import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
 public class DiagramActions {
@@ -501,12 +505,6 @@ public class DiagramActions {
 		});
 	}
 
-	public void setAssociationMode(FmmlxObject source) {
-		diagram.setSelectedObject(source);
-		diagram.setAssociationMouseMode();
-		diagram.storeLastClick(source.getCenterX(), source.getCenterY());
-	}
-
 	public void addAssociationDialog(FmmlxObject source, FmmlxObject target) {
 		CountDownLatch latch = new CountDownLatch(1);
 
@@ -533,6 +531,65 @@ public class DiagramActions {
 			if (opt.isPresent()) {
 				final EditAssociationDialogResult result = opt.get();
 				diagram.editAssociation(result);
+				diagram.updateDiagram();
+			}
+			latch.countDown();
+		});
+	}
+
+	public void setDrawEdgeMode(FmmlxObject source, PropertyType type) {
+		diagram.setSelectedObject(source);
+		diagram.setDrawEdgeMouseMode(type);
+		diagram.storeLastClick(source.getCenterX(), source.getCenterY());
+	}
+
+	public void addAssociationInstance(FmmlxObject source, FmmlxObject target) {
+		if(source != null && target != null) {
+			// this case is relatively easy. We have two objects. Now we try to find the 
+			// association they belong to. If there are more than one, show a dialog to pick one.
+			// if there is only one, or one has been picked: proceed to xmf, otherwise nothing
+			FmmlxAssociation association = null;
+			Vector<FmmlxAssociation> associations = diagram.findAssociations(source, target);
+			if(associations.size() > 1) {
+				new Alert(AlertType.ERROR, "The programmer was too lazy to implement the dialog here. Proceed with random Association.", ButtonType.OK).showAndWait();
+				association = associations.firstElement();
+			} else if(associations.size() == 1) {
+				association = associations.firstElement();
+			} else {
+				// if associations.size() == 0 then association remains null
+				new Alert(AlertType.ERROR, "The selected objects don't fit any Association definition.", ButtonType.OK).showAndWait();
+			}
+			if(association != null) {
+				diagram.addAssociationInstance(source, target, association);
+				updateDiagram();
+			}
+		} else if (source != null ^ target != null) { // XOR
+			// In this case only one object is set. If only second is set: swap them
+			if(target != null) {source = target; target = null;} // swap
+			// now: source != null and target == null
+			// We don't know the association, so we try to figure it out:
+			Vector<FmmlxAssociation> associations = diagram.findAssociations(source, target);
+			new Alert(AlertType.ERROR, "No strategy for this situation yet. Choose two objects to create an Association Instance instead.", ButtonType.OK).showAndWait();
+		} else {
+			// nothing supplied
+			new Alert(AlertType.ERROR, "No strategy for this situation yet. Choose two objects to create an Association Instance instead.", ButtonType.OK).showAndWait();
+		}
+	}
+
+	public void removeAssociationInstance(FmmlxAssociationInstance instance) {
+		diagram.removeAssociationInstance(instance);
+	}
+	public void associationValueDialog(FmmlxObject object, PropertyType association) {
+		CountDownLatch latch = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			AssociationValueDialog dlg = new AssociationValueDialog(diagram, object);
+			Optional<AssociationValueDialogResult> opt = dlg.showAndWait();
+			
+
+			if (opt.isPresent()) {
+				final AssociationValueDialogResult result = opt.get();
+				diagram.associationValue(result);
 				diagram.updateDiagram();
 			}
 			latch.countDown();

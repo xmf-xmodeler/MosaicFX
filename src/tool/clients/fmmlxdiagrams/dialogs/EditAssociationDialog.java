@@ -62,6 +62,10 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 	private Multiplicity multiplicityTarget;
 
 	private Vector<FmmlxAssociation> associations;
+	
+	private ArrayList<Node> labels;
+	private List<Node> sourceNodes;
+	private List<Node> targetNodes;
 
 	public EditAssociationDialog(FmmlxDiagram diagram, FmmlxObject object) {
 		
@@ -126,8 +130,6 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 			return false;
 		} else if (!validateNewDisplayNameSource()) {
 			return false;
-		} else if (!validateNewDisplayNameTarget()) {
-			return false;
 		} else if (!validateNewIdentifierSource()) {
 			return false;
 		} else if (!validateNewIdentifierTarget()) {
@@ -189,7 +191,6 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.editAssociation);
 		
 		associations = source.getAllRelatedAssociations();
-		
 		ObservableList<FmmlxAssociation> associationList;
 		associationList = FXCollections.observableList(associations);
 		
@@ -199,18 +200,7 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 		typeSource.setDisable(true);
 		typeTarget = new Label();
 		typeTarget.setDisable(true);
-		currentInstLevelSource= new Label("1 (test current level)");
-		currentInstLevelSource.setDisable(true);
-		currentInstLevelTarget = new Label("1 (test current level)");
-		currentInstLevelTarget.setDisable(true);
-		currentDisplayNameSource = new Label("aaa (test display name)");
-		currentDisplayNameSource.setDisable(true);
-		currentDisplayNameTarget = new Label("aaa (test display name)");
-		currentDisplayNameTarget.setDisable(true);
-		currentIdentifierSource = new Label("bbb (test identifier)");
-		currentIdentifierSource.setDisable(true);
-		currentIdentifierTarget = new Label("bbb (test identifier)");
-		currentIdentifierTarget.setDisable(true);
+		
 		
 		newTypeSource = (ComboBox<FmmlxObject>) initializeComboBox(diagram.getAllPossibleParentList());
 		newTypeSource.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -248,32 +238,32 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 		
 		selectAssociationComboBox = (ComboBox<FmmlxAssociation>) initializeComboBox(associationList);
 		selectAssociationComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
+			if (newValue != null) {				
 				int Id = newValue.getId();
-				FmmlxObject startNode = newValue.getStartNode();
+				FmmlxObject startNode = newValue.getSourceNode();
 				FmmlxObject targetNode = newValue.getTargetNode();
 				
+				newTypeSource.getSelectionModel().select(startNode);				
+				newTypeTarget.getSelectionModel().select(targetNode);
 				
-				for(FmmlxObject tmp : diagram.getObjects()) {
-					if (startNode.getId()==tmp.getId()) {
-						newTypeSource.getSelectionModel().select(tmp);
-						newInstLevelSource.getSelectionModel().select(newValue.getLevelStartToEnd());
-						newDisplayNameSource.setText(newValue.getName());
-						newIdentifierSource.setText(newValue.getAccessNameStartToEnd());
-					} 
-					if(targetNode.getId()==tmp.getId()) {
-						newTypeTarget.getSelectionModel().select(tmp);
-						newInstLevelTarget.getSelectionModel().select(newValue.getLevelEndToStart());
-						newDisplayNameTarget.setText(newValue.getReverseName());
-						newIdentifierTarget.setText(newValue.getAccessNameEndToStart());
-					}					
-				}
+				newInstLevelSource.getSelectionModel().select(newValue.getLevelStartToEnd());
+				newDisplayNameSource.setText(newValue.getName());
+				newIdentifierSource.setText(newValue.getAccessNameStartToEnd());
+				Multiplicity newMultiplicitySource = newValue.getMultiplicityStartToEnd();
+				//updateNodeInsideGrid(multiplicitySourceNode, createMultiplicityBox(newMultiplicitySource), 1, 8);
+				
+				newInstLevelTarget.getSelectionModel().select(newValue.getLevelEndToStart());
+				newDisplayNameTarget.setText(newValue.getReverseName());
+				newIdentifierTarget.setText(newValue.getAccessNameEndToStart());
+				Multiplicity newMultiplicityTarget = newValue.getMultiplicityEndToStart();
+				//updateNodeInsideGrid(multiplicityTargetNode, createMultiplicityBox(newMultiplicityTarget), 2, 8);
+				
 			}
 		});
 		
-		ArrayList<Node> labels = new ArrayList<>();
-		List<Node> sourceNodes = new ArrayList<>();
-		List<Node> targetNodes = new ArrayList<>();
+		labels = new ArrayList<>();
+		sourceNodes = new ArrayList<>();
+		targetNodes = new ArrayList<>();
 		
 		labels.add(new Label(LabelAndHeaderTitle.selectedObject));
 		labels.add(new Label(LabelAndHeaderTitle.selectAssociation));
@@ -309,6 +299,11 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 		addNodesToGrid(labels, 0);
 		addNodesToGrid(sourceNodes, 1);
 		addNodesToGrid(targetNodes, 2);
+	}
+	
+	protected void updateNodeInsideGrid(Node oldNode, Node newNode, int column, int row) {
+		grid.getChildren().remove(oldNode);
+		grid.add(newNode, column, row);
 	}
 
 	
