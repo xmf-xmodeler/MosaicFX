@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams.dialogs;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
@@ -11,6 +12,7 @@ import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
@@ -48,6 +50,9 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 	//For add Association
 	private Label targetLabel;
 	private ComboBox<FmmlxObject> targetComboBox;
+	
+	private ArrayList<Node> labelsNode;
+	private List<Node> mainNodes;
 
 
 	private Multiplicity multiplicity = Multiplicity.OPTIONAL;
@@ -148,6 +153,7 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 		targetComboBox.setPrefWidth(COLUMN_WIDTH);
 		typeComboBox.setPrefWidth(COLUMN_WIDTH);
 		levelComboBox.setPrefWidth(COLUMN_WIDTH);
+		
 
 		grid.add(classLabel, 0, 0);
 		grid.add(classTextField, 1, 0);
@@ -161,6 +167,7 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 		grid.add(levelComboBox, 1, 4);
 		grid.add(multiplicityLabel, 0, 5);
 		grid.add(multiplicityButton, 1, 5);
+		
 
 	}
 
@@ -193,15 +200,23 @@ public class AddDialog extends CustomDialog<AddDialogResult> {
 		    updateOperationName(nameTextField, newValue);
 		});
 
-		grid.add(new Label(StringValueDialog.LabelAndHeaderTitle.aClass), 0, 0);
-		grid.add(classTextField, 1, 0);
-		grid.add(new Label(StringValueDialog.LabelAndHeaderTitle.name), 0, 1);
-		grid.add(nameTextField, 1, 1);
-		grid.add(new Label(StringValueDialog.LabelAndHeaderTitle.type), 0, 2);
-		grid.add(typeComboBox, 1, 2);
-		grid.add(new Label(StringValueDialog.LabelAndHeaderTitle.level), 0, 3);
-		grid.add(levelComboBox, 1, 3);
-		grid.add(new Label(StringValueDialog.LabelAndHeaderTitle.body), 0, 4);
+		labelsNode = new ArrayList<>();
+		mainNodes = new ArrayList<>();
+		
+		labelsNode.add(new Label(StringValueDialog.LabelAndHeaderTitle.aClass));
+		labelsNode.add(new Label(StringValueDialog.LabelAndHeaderTitle.name));
+		labelsNode.add(new Label(StringValueDialog.LabelAndHeaderTitle.type));
+		labelsNode.add(new Label(StringValueDialog.LabelAndHeaderTitle.level));
+		labelsNode.add(new Label(StringValueDialog.LabelAndHeaderTitle.body));
+		
+		mainNodes.add(classTextField);
+		mainNodes.add(nameTextField);
+		mainNodes.add(typeComboBox);
+		mainNodes.add(levelComboBox);
+		
+		addNodesToGrid(labelsNode, 0);
+		addNodesToGrid(mainNodes, 1);
+		
 		grid.add(bodyTextArea, 1, 4, 1, 4);
 		grid.add(checkSyntaxButton, 0, 4);
 		grid.add(defaultOperationButton, 0, 5);
