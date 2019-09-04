@@ -224,6 +224,16 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 	public Vector<Integer> getParents() {
 		return parents;
 	}
+	
+	public Vector<FmmlxObject> getInstance(){
+		Vector<FmmlxObject> result = new Vector<>();
+		for (FmmlxObject object : diagram.getObjects()) {
+			if (object.getOf()==this.getId()) {
+				result.add(object);
+			}
+		}
+		return result;
+	}
 
 	public void setParents(Vector<Integer> parents) {
 		this.parents = parents;

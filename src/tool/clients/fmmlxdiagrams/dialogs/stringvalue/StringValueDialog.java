@@ -34,6 +34,10 @@ public class StringValueDialog {
 		public static final String enterValidNameIdentifierSource = "Type Valid Name For Start Identifier!";
 		public static final String enterValidNameDisplaySource = "Type Valid Name For Start Display-Name!";
 		public static final String enterValidNameDisplayTarget = "Type Valid Name For End Display-Name!";
+		public static final String selectMetaClassA = "Select MetaClass-A!";
+		public static final String selectMetaClassB = "Select MetaClass-B!";
+		public static final String selectInstanceA = "Select Instance of MetaClass-A!";
+		public static final String selectInstanceB = "Select Instance of MetaClass-B!";
 	}
 
 	public static class LabelAndHeaderTitle {
@@ -115,7 +119,8 @@ public class StringValueDialog {
 		public static final String classALabel = "Class A";
 		public static final String classBLabel = "Class B";
 		public static final String association = "Association";
-		
+		public static final String selectMetaClassA = "Select Meta-Class A";
+		public static final String selectMetaClassB = "Select Meta-Class B";
 		
 	}
 

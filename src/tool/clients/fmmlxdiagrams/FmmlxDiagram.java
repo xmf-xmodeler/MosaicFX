@@ -117,6 +117,16 @@ public class FmmlxDiagram {
 		}
 		return null;
 	}
+	
+	public Object getAllMetaClass() {
+		Vector<FmmlxObject> result = new Vector<FmmlxObject>();
+		for (FmmlxObject object : getObjects()) {
+			if(object.getLevel()!=0) {
+				result.add(object);
+			}
+		}
+		return result;
+	}
 
 	public Canvas getCanvas() {
 		return canvas;
@@ -124,8 +134,15 @@ public class FmmlxDiagram {
 
 	@Deprecated
 	//needs filter
-	public Vector<Edge> getAssociations() {
-		return new Vector<Edge>(edges); // read-only
+	public Vector<FmmlxAssociation> getAssociations() {
+		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
+		for (Edge tmp : edges) {
+			if (tmp instanceof FmmlxAssociation) {
+				result.add((FmmlxAssociation) tmp);
+				
+			}
+		} 
+		return result; // read-only
 	}
 
 	public Edge getAssociationById(int id) {
@@ -146,6 +163,24 @@ public class FmmlxDiagram {
 			}
 		}
 		return result;
+	}
+	
+	public ObservableList<String> getAssociationListToPair(FmmlxObject metaclassA, FmmlxObject metaclassB){
+		Vector<String> result = new Vector<String>();
+		
+		Vector<FmmlxObject> instanceA = metaclassA.getInstance();
+		Vector<FmmlxObject> instanceB = metaclassB.getInstance();
+		
+		for (FmmlxObject object : instanceA) {
+			for (FmmlxObject object2 : instanceB) {
+				//TODO
+			}
+		}
+		
+		ObservableList<String> associationList;
+		associationList = FXCollections.observableList(result);
+
+		return associationList;
 	}
 
 	private void fetchDiagramData() {
