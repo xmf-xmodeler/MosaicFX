@@ -118,6 +118,8 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 					ObservableList<FmmlxObject> instanceOfClassB = FXCollections.observableList(instancesB); 
 					classBListView = initializeListView(instanceOfClassB, SelectionMode.SINGLE);
 					updateNodeInsideGrid(classBListView, classBListView, 2, 5);
+					
+					
 				 
 			});
 
@@ -131,8 +133,8 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 		classBNameTextField.setDisable(true);
 		
 		classAListView = initializeListView(null, SelectionMode.SINGLE);
-		associationListView = initializeListViewAssociation(null, SelectionMode.MULTIPLE);
-		classBListView= initializeListView(null, SelectionMode.MULTIPLE);
+		associationListView = initializeListViewAssociation(null, SelectionMode.SINGLE);
+		classBListView= initializeListView(null, SelectionMode.SINGLE);
 		
 		classANodes = new ArrayList<>();
 		associationNodes = new ArrayList<>();
