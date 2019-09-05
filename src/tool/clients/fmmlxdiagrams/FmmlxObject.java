@@ -234,6 +234,22 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		}
 		return result;
 	}
+	
+	public Vector<FmmlxObject> getInstanceByLevel(Integer level) {
+		Vector<FmmlxObject> result = new Vector<FmmlxObject>();
+		if (this.getInstance().size()!=0){
+			
+			if (this.getInstance().get(0).getLevel()==level) {
+				result.addAll(this.getInstance());
+			} else {
+				for (FmmlxObject tmp : this.getInstance()) {
+					result.addAll(tmp.getInstanceByLevel(level));
+				}
+			}
+		}
+		return result;
+	}
+	
 
 	public void setParents(Vector<Integer> parents) {
 		this.parents = parents;
@@ -765,4 +781,6 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		if (myLevel != level) return false;
 		return this.getAllAncestors().contains(theClass);
 	}
+
+
 }

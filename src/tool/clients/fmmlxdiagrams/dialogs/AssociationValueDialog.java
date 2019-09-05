@@ -2,7 +2,6 @@ package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Vector;
 
 import javafx.collections.FXCollections;
@@ -17,11 +16,11 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.AssociationValueDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.results.EditAssociationDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
 
 public class AssociationValueDialog extends CustomDialog<AssociationValueDialogResult>{
@@ -30,14 +29,15 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 	private FmmlxObject object;
 	private DialogPane dialogPane;
 	
+	private Label selectAssociation;
+	private ComboBox<FmmlxAssociation> selectAssociationComboBox;
+	
 	private Label classALabel;
 	private Label associationLabel;
 	private Label classBLabel;
-	private Label selectClassALabel;
-	private Label selectClassBLabel;
 	
-	private ComboBox<FmmlxObject> selectClassAComboBox;
-	private ComboBox<FmmlxObject> selectClassBComboBox;
+	private TextField classANameTextField;
+	private TextField classBNameTextField;
 	
 	private ListView<FmmlxObject> classAListView;
 	private ListView<String> associationListView;
@@ -90,14 +90,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 
 
 	private boolean validateUserInput() {
-		if (selectClassAComboBox.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectMetaClassA);
-			return false;
-		} else if (selectClassBComboBox.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectMetaClassB);
-			return false;
-		} 
-		return true;
+		return false;
 	}
 
 
@@ -106,52 +99,36 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 		ObservableList<FmmlxAssociation> associationList;
 		associationList = FXCollections.observableList(associations);
 		
-		metaClasses = (Vector<FmmlxObject>) diagram.getAllMetaClass();
-		ObservableList<FmmlxObject> metaClassList;
-		metaClassList =FXCollections.observableList(metaClasses);
-		
 		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.associationValue);
 		
-		selectClassALabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectMetaClassA);
-		selectClassBLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectMetaClassB);
-		
-		selectClassAComboBox= (ComboBox<FmmlxObject>) initializeComboBox(metaClassList);
-		selectClassAComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
-				instancesA = newValue.getInstance();
-				
-				ObservableList<FmmlxObject> instancesAList;
-				instancesAList =FXCollections.observableList(instancesA);
-				classAListView = initializeListView(instancesAList, SelectionMode.SINGLE);
-				
-				updateNodeInsideGrid(classAListView, classAListView, 0, 4);
-				
-				if (selectClassBComboBox.getSelectionModel().getSelectedItem()!=null) {
-					associationListView = initializeListViewAssociation(diagram.getAssociationListToPair(
-							classAListView.getSelectionModel().getSelectedItem(), classBListView.getSelectionModel().getSelectedItem()), 
-							SelectionMode.SINGLE);
-				}
-			}
-		});
-		
-		selectClassBComboBox= (ComboBox<FmmlxObject>) initializeComboBox(metaClassList);
-		selectClassBComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue != null) {
-				instancesB = newValue.getInstance();
-				
-				ObservableList<FmmlxObject> instancesBList;
-				instancesBList =FXCollections.observableList(instancesB);
-				classBListView = initializeListView(instancesBList, SelectionMode.SINGLE);
-				
-				updateNodeInsideGrid(classBListView, classBListView, 2, 4);
-				
-				
-			}
-		});
-		
+		selectAssociation = new Label(StringValueDialog.LabelAndHeaderTitle.selectAssociation);
+		selectAssociationComboBox = (ComboBox<FmmlxAssociation>) initializeComboBox(associationList);
+		selectAssociationComboBox.valueProperty().addListener((observable, oldValue,
+				newValue) -> { 
+					
+					classANameTextField.setText(newValue.getSourceNode().getName());
+					classBNameTextField.setText(newValue.getTargetNode().getName());
+					
+					instancesA = newValue.getSourceNode().getInstanceByLevel(newValue.getLevelStartToEnd());
+					ObservableList<FmmlxObject> instanceOfClassA = FXCollections.observableList(instancesA); 
+					classAListView = initializeListView(instanceOfClassA, SelectionMode.SINGLE);
+					updateNodeInsideGrid(classAListView, classAListView, 0, 5);
+					
+					instancesB = newValue.getTargetNode().getInstanceByLevel(newValue.getLevelEndToStart());
+					ObservableList<FmmlxObject> instanceOfClassB = FXCollections.observableList(instancesB); 
+					classBListView = initializeListView(instanceOfClassB, SelectionMode.SINGLE);
+					updateNodeInsideGrid(classBListView, classBListView, 2, 5);
+				 
+			});
+
 		classALabel = new Label(StringValueDialog.LabelAndHeaderTitle.classALabel);
 		associationLabel = new Label(StringValueDialog.LabelAndHeaderTitle.association);
 		classBLabel = new Label(StringValueDialog.LabelAndHeaderTitle.classBLabel);
+		
+		classANameTextField= new TextField();
+		classANameTextField.setDisable(true);
+		classBNameTextField = new TextField();
+		classBNameTextField.setDisable(true);
 		
 		classAListView = initializeListView(null, SelectionMode.SINGLE);
 		associationListView = initializeListViewAssociation(null, SelectionMode.MULTIPLE);
@@ -161,22 +138,25 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 		associationNodes = new ArrayList<>();
 		classBNodes = new ArrayList<>();
 		
-		classANodes.add(selectClassALabel);
-		classANodes.add(selectClassAComboBox);
+		classANodes.add(selectAssociation);
+		classANodes.add(selectAssociationComboBox);
 		classANodes.add(new Label(" "));
 		classANodes.add(classALabel);
+		classANodes.add(classANameTextField);
 		classANodes.add(classAListView);
 		
+		associationNodes.add(new Label(" "));
 		associationNodes.add(new Label(" "));
 		associationNodes.add(new Label(" "));
 		associationNodes.add(new Label(" "));
 		associationNodes.add(associationLabel);
 		associationNodes.add(associationListView);
 		
-		classBNodes.add(selectClassBLabel);
-		classBNodes.add(selectClassBComboBox);
+		classBNodes.add(new Label(" "));
+		classBNodes.add(new Label(" "));
 		classBNodes.add(new Label(" "));
 		classBNodes.add(classBLabel);
+		classBNodes.add(classBNameTextField);
 		classBNodes.add(classBListView);
 		
 		
