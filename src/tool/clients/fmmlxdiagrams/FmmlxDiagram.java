@@ -634,6 +634,8 @@ public class FmmlxDiagram {
 	public Font getFont() {
 		return font;
 	}
+	
+	
 
 	public Vector<Edge> getEdges() {
 		return edges;

@@ -119,7 +119,6 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 					classBListView = initializeListView(instanceOfClassB, SelectionMode.SINGLE);
 					updateNodeInsideGrid(classBListView, classBListView, 2, 5);
 					
-					
 				 
 			});
 
