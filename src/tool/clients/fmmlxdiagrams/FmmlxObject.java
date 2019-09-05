@@ -26,8 +26,8 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 	int level;
 	Integer of;
 	private Vector<Integer> parents;
-	int width;
-	int height;		
+	private int width;
+	private int height;
 	Object highlightedElement;
 
 	public transient double mouseMoveOffsetX;
@@ -56,10 +56,10 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 
 	private Vector<FmmlxAttribute> ownAttributes = new Vector<>();
 	private Vector<FmmlxAttribute> otherAttributes = new Vector<>();
-	
+
 	private Vector<FmmlxOperation> ownOperations = new Vector<>();
 	private Vector<FmmlxOperation> otherOperations = new Vector<>();
-	
+
 	private FmmlxDiagram diagram;
 	private PropertyType propertyType = PropertyType.Class;
 
@@ -148,12 +148,24 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		return y;
 	}
 
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
 	public int getRightBorder() {
 		return y + width;
 	}
 
 	public int getBottomBorder() {
 		return x + height;
+	}
+
+	public Point2D getBottomRightPoint() {
+		return new Point2D(getX() + height, y + width);
 	}
 
 	public void setX(int x) {
@@ -182,7 +194,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		result.addAll(otherAttributes);
 		return result;
 	}
-	
+
 	public Vector<FmmlxAssociation> getAllRelatedAssociations() {
 		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
 		result = diagram.getRelatedAssociationByObject(this);
@@ -570,7 +582,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 	}
 
 	public boolean isInstanceOf(FmmlxObject theClass, Integer myLevel) {
-		if(myLevel != level) return false;
+		if (myLevel != level) return false;
 		return this.getAllAncestors().contains(theClass);
 	}
 

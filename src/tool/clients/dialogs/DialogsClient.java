@@ -237,13 +237,13 @@ public class DialogsClient extends Client {
 	  		
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) { 
 			// we are on the right Thread already:
-			XModeler.getPropertyManager().getInterface();
+			XModeler.getPropertyManager().getUserInterface();
 		} else { // create a new Thread
 //			System.err.println("Calling redraw from " + Thread.currentThread());
 			CountDownLatch l = new CountDownLatch(1);
 			Platform.runLater(() -> {
 //				System.err.println("Doing redraw for " + Thread.currentThread());
-				XModeler.getPropertyManager().getInterface();
+				XModeler.getPropertyManager().getUserInterface();
 	    		l.countDown();
 			});
 			try {
@@ -345,7 +345,7 @@ public class DialogsClient extends Client {
 				fileChooser.setSelectedExtensionFilter(filter);
 				
 				PropertyManager pm = XModeler.getPropertyManager();
-				String pmPath = pm.getStringProperty("fileDialogPath", path);
+				String pmPath = pm.getProperty("fileDialogPath", path);
 				
 				File initFile = new File(pmPath);
 				fileChooser.setInitialFileName(def);
@@ -363,7 +363,7 @@ public class DialogsClient extends Client {
 
 				if (file != null) {
 					lastFile = file;
-					pm.setStringProperty("fileDialogPath", file.getParent());
+					pm.getProperty("fileDialogPath", file.getParent());
 					result[0] = new Value(file.getAbsolutePath());
 				} else {
 					result[0] = new Value("");

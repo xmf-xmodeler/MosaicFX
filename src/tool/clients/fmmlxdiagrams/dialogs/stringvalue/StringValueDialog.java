@@ -111,6 +111,10 @@ public class StringValueDialog {
 		public static final String newInstLevel = "New instLevel";
 		public static final String newDisplayName = "New Display Name";
 		public static final String newIdentifier = "New Identifier";
+		public static final String associationValue = "Association Value";
+		public static final String classALabel = "Class A";
+		public static final String classBLabel = "Class B";
+		public static final String association = "Association";
 		
 		
 	}

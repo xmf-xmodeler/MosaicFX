@@ -2,7 +2,9 @@ package tool.clients.fmmlxdiagrams;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ContextMenu;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
 import java.util.Vector;
 
@@ -45,7 +47,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		this.levelEndToStart = levelEndToStart;
 		this.multiplicityStartToEnd = multiplicityStartToEnd;
 		this.multiplicityEndToStart = multiplicityEndToStart;
-		
+
 
 	}
 
@@ -64,12 +66,11 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	public String getName() {
 		return name;
 	}
-	
+
 
 	public String getReverseName() {
 		return reverseName;
 	}
-
 
 	@Override
 	public PropertyType getPropertyType() {
@@ -81,8 +82,13 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		return id;
 	}
 
-	public FmmlxObject getSourceNode() {return startNode;}
-	public FmmlxObject getTargetNode() {return endNode;}
+	public FmmlxObject getSourceNode() {
+		return startNode;
+	}
+
+	public FmmlxObject getTargetNode() {
+		return endNode;
+	}
 
 	public Integer getLevelStartToEnd() {
 		return levelStartToEnd;
@@ -115,12 +121,21 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 
 
 	public boolean doObjectsFit(FmmlxObject source, FmmlxObject target) {
-		if(source.isInstanceOf(getSourceNode(), levelEndToStart) && target.isInstanceOf(getTargetNode(), levelStartToEnd)) return true;
-		if(target.isInstanceOf(getSourceNode(), levelEndToStart) && source.isInstanceOf(getTargetNode(), levelStartToEnd)) return true;
+		if (source.isInstanceOf(getSourceNode(), levelEndToStart) && target.isInstanceOf(getTargetNode(), levelStartToEnd))
+			return true;
+		if (target.isInstanceOf(getSourceNode(), levelEndToStart) && source.isInstanceOf(getTargetNode(), levelStartToEnd))
+			return true;
 		return false;
 	}
-	
-	
-	
-	
+
+	@Override
+	public ContextMenu getContextMenu(DiagramActions actions) {
+		System.err.println("getContextMenu " + id);
+		return new DefaultContextMenu(actions); //temporary
+	}
+
+	@Override
+	protected Double getLineDashes() {
+		return new Double(0);
+	}
 }

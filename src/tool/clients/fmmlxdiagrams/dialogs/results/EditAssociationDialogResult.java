@@ -6,7 +6,7 @@ import tool.clients.fmmlxdiagrams.Multiplicity;
 
 public class EditAssociationDialogResult extends DialogResult {
 	
-	private FmmlxAssociation selectedAssociation;
+	private final FmmlxAssociation selectedAssociation;
 	private FmmlxObject source;
 	private FmmlxObject target;
 	private int newInstLevelSource;

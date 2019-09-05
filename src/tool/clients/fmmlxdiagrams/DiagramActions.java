@@ -576,4 +576,24 @@ public class DiagramActions {
 		}
 	}
 
+	public void removeAssociationInstance(FmmlxAssociationInstance instance) {
+		diagram.removeAssociationInstance(instance);
+	}
+	public void associationValueDialog(FmmlxObject object, PropertyType association) {
+		CountDownLatch latch = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			AssociationValueDialog dlg = new AssociationValueDialog(diagram, object);
+			Optional<AssociationValueDialogResult> opt = dlg.showAndWait();
+			
+
+			if (opt.isPresent()) {
+				final AssociationValueDialogResult result = opt.get();
+				diagram.associationValue(result);
+				diagram.updateDiagram();
+			}
+			latch.countDown();
+		});
+	}
+
 }
