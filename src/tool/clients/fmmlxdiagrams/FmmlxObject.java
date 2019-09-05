@@ -224,22 +224,22 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 	public Vector<Integer> getParents() {
 		return parents;
 	}
-	
-	public Vector<FmmlxObject> getInstance(){
+
+	public Vector<FmmlxObject> getInstance() {
 		Vector<FmmlxObject> result = new Vector<>();
 		for (FmmlxObject object : diagram.getObjects()) {
-			if (object.getOf()==this.getId()) {
+			if (object.getOf() == this.getId()) {
 				result.add(object);
 			}
 		}
 		return result;
 	}
-	
+
 	public Vector<FmmlxObject> getInstanceByLevel(Integer level) {
 		Vector<FmmlxObject> result = new Vector<FmmlxObject>();
-		if (this.getInstance().size()!=0){
-			
-			if (this.getInstance().get(0).getLevel()==level) {
+		if (this.getInstance().size() != 0) {
+
+			if (this.getInstance().get(0).getLevel() == level) {
 				result.addAll(this.getInstance());
 			} else {
 				for (FmmlxObject tmp : this.getInstance()) {
@@ -249,7 +249,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		}
 		return result;
 	}
-	
+
 
 	public void setParents(Vector<Integer> parents) {
 		this.parents = parents;
@@ -295,19 +295,19 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		return nodeElements;
 	}
 
-	public void toogleShowOperations() {
+	public void toggleShowOperations() {
 		showOperations = !showOperations;
 	}
 
-	public void toogleShowOperationValues() {
+	public void toggleShowOperationValues() {
 		showOperationValues = !showOperationValues;
 	}
 
-	public void toogleShowSlots() {
+	public void toggleShowSlots() {
 		showSlots = !showSlots;
 	}
 
-	private void layout(FmmlxDiagram diagram, boolean selected) {
+	public void layout(FmmlxDiagram diagram) {
 
 		nodeElements = new Vector<>();
 //		double neededHeight = 0;
@@ -432,12 +432,6 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 
 		this.width = (int) neededWidth;
 		this.height = (int) currentY;
-
-		if (selected) {
-			NodeBox selectionBox = new NodeBox(0, 0, neededWidth, currentY, new Color(0, 0, 0, 0), Color.BLACK, selected ? 3. : 1., PropertyType.Selection);
-			nodeElements.addElement(selectionBox);
-		}
-
 	}
 
 	private boolean hasParents() {
@@ -503,7 +497,13 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram diagram) {
 
 		boolean selected = diagram.isSelected(this);
-		layout(diagram, selected);
+		NodeBox selectionBox = new NodeBox(0, 0, width, height, new Color(0, 0, 0, 0), Color.BLACK, selected ? 3. : 1., PropertyType.Selection);
+
+		if (selected) {
+			nodeElements.addElement(selectionBox);
+		} else {
+			nodeElements.remove(selectionBox);
+		}
 		g.setFont(diagram.getFont());
 
 		for (NodeElement e : nodeElements) {
