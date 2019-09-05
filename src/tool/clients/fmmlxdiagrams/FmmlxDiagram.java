@@ -395,6 +395,7 @@ public class FmmlxDiagram {
 				if (!selectedObjects.contains(hitObject)) {
 					selectedObjects.clear();
 					selectedObjects.add(hitObject);
+					highlightElementAt(hitObject, p);
 				}
 			}
 			if (e.getClickCount() == 2) {
@@ -419,6 +420,16 @@ public class FmmlxDiagram {
 			storeLastClick(p.getX(), p.getY());
 			storeCurrentPoint(p.getX(), p.getY());
 		}
+	}
+
+	private void highlightElementAt(Selectable hitObject, Point2D p) {
+		for(Selectable object : objects) {
+			object.highlightElementAt(null);
+		}
+		for(Edge object : edges) {
+			object.highlightElementAt(null);
+		}
+		hitObject.highlightElementAt(p);
 	}
 
 	private void handleClickOnNodeElement(Point2D p, Selectable hitObject) {
