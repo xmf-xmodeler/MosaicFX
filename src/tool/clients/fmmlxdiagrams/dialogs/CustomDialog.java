@@ -94,6 +94,11 @@ public class CustomDialog<R> extends Dialog<R> {
 		}
 		return result;
 	}
+	
+	protected void updateNodeInsideGrid(Node oldNode, Node newNode, int column, int row) {
+		grid.getChildren().remove(oldNode);
+		grid.add(newNode, column, row);
+	}
 
 	protected String getComboBoxStringValue(ComboBox<String> box) {
 		return box.getEditor().getText();
@@ -118,6 +123,28 @@ public class CustomDialog<R> extends Dialog<R> {
 			}
 		});
 
+		listView.getSelectionModel().setSelectionMode(selectionMode);
+		return listView;
+	}
+	
+	public ListView<String> initializeListViewAssociation(ObservableList<String> list, SelectionMode selectionMode){
+		ListView<String> listView = new ListView<>(list);
+		listView.setPrefHeight(75);
+		listView.setPrefWidth(COLUMN_WIDTH);
+
+		listView.setCellFactory(param -> new ListCell<String>() {
+			@Override
+			protected void updateItem(String object, boolean empty) {
+				super.updateItem(object, empty);
+
+				if (empty || object == null) {
+					setText(null);
+				} else {
+					setText(object);
+				}
+			}
+		});
+		
 		listView.getSelectionModel().setSelectionMode(selectionMode);
 		return listView;
 	}
