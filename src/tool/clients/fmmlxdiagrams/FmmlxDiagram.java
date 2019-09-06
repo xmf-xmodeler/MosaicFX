@@ -168,8 +168,8 @@ public class FmmlxDiagram {
 	public ObservableList<String> getAssociationListToPair(FmmlxObject metaclassA, FmmlxObject metaclassB){
 		Vector<String> result = new Vector<String>();
 		
-		Vector<FmmlxObject> instanceA = metaclassA.getInstance();
-		Vector<FmmlxObject> instanceB = metaclassB.getInstance();
+		Vector<FmmlxObject> instanceA = metaclassA.getInstances();
+		Vector<FmmlxObject> instanceB = metaclassB.getInstances();
 		
 		for (FmmlxObject object : instanceA) {
 			for (FmmlxObject object2 : instanceB) {
@@ -876,6 +876,11 @@ public class FmmlxDiagram {
 	public void associationValue(AssociationValueDialogResult result) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public boolean isNameAvailable(String t) {
+		for(FmmlxObject o : objects) if (o.getName().equals(t)) return false;
+		return true;
 	}
 
 }

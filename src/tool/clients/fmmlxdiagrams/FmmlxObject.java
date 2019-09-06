@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Vector;
 
+import org.sat4j.core.Vec;
+
 public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 
 	//	private String[] levelBackgroundColors = {"#8C8C8C", "#FFFFFF", "#000000", "#3111DB", "#dd2244", "#119955"};
@@ -226,7 +228,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		return parents;
 	}
 	
-	public Vector<FmmlxObject> getInstance(){
+	public Vector<FmmlxObject> getInstances(){
 		Vector<FmmlxObject> result = new Vector<>();
 		for (FmmlxObject object : diagram.getObjects()) {
 			if (object.getOf()==this.getId()) {
@@ -236,15 +238,15 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		return result;
 	}
 	
-	public Vector<FmmlxObject> getInstanceByLevel(Integer level) {
+	public Vector<FmmlxObject> getInstancesByLevel(Integer level) {
 		Vector<FmmlxObject> result = new Vector<FmmlxObject>();
-		if (this.getInstance().size()!=0){
+		if (this.getInstances().size()!=0){
 			
-			if (this.getInstance().get(0).getLevel()==level) {
-				result.addAll(this.getInstance());
+			if (this.getInstances().get(0).getLevel()==level) {
+				result.addAll(this.getInstances());
 			} else {
-				for (FmmlxObject tmp : this.getInstance()) {
-					result.addAll(tmp.getInstanceByLevel(level));
+				for (FmmlxObject tmp : this.getInstances()) {
+					result.addAll(tmp.getInstancesByLevel(level));
 				}
 			}
 		}
@@ -621,5 +623,21 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 //				e.isHit(mouseX, mouseY)
 //			}
 //		}
+	}
+
+	public String getAvailableInstanceName() {
+		String s = name;
+		if(level == 1) {
+			s = s.substring(0,1).toLowerCase() + s.substring(1);
+		}
+		int i = 1;
+		String t;
+		boolean ok = false;
+		do {
+		    t = s + i;
+		    ok = diagram.isNameAvailable(t);
+		    i++;
+		} while (!ok);
+		return t;
 	}
 }
