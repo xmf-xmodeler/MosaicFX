@@ -105,7 +105,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 		selectAssociationComboBox = (ComboBox<FmmlxAssociation>) initializeComboBox(associationList);
 		selectAssociationComboBox.valueProperty().addListener((observable, oldValue,
 				newValue) -> { 		
-					refreshDialogElement(newValue); 
+					refreshAllDialogElement(newValue); 
 			});
 
 		classALabel = new Label(StringValueDialog.LabelAndHeaderTitle.classALabel);
@@ -151,7 +151,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 		addNodesToGrid(classBNodes, 2);
 	}
 	
-	private void refreshDialogElement(FmmlxAssociation newValue) {
+	private void refreshAllDialogElement(FmmlxAssociation newValue) {
 		classANameTextField.setText(newValue.getSourceNode().getName());
 		classBNameTextField.setText(newValue.getTargetNode().getName());
 		
