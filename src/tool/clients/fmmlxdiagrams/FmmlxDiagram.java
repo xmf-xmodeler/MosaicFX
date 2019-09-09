@@ -132,18 +132,6 @@ public class FmmlxDiagram {
 		return canvas;
 	}
 
-	@Deprecated
-	//needs filter
-	public Vector<FmmlxAssociation> getAssociations() {
-		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
-		for (Edge tmp : edges) {
-			if (tmp instanceof FmmlxAssociation) {
-				result.add((FmmlxAssociation) tmp);
-				
-			}
-		} 
-		return result; // read-only
-	}
 
 	public Edge getAssociationById(int id) {
 		for (Edge tmp : edges) {
@@ -635,10 +623,30 @@ public class FmmlxDiagram {
 		return font;
 	}
 	
-	
+	public Vector<FmmlxAssociationInstance> getAssociationInstance(){
+		Vector<FmmlxAssociationInstance> result = new Vector<FmmlxAssociationInstance>();
+		for (Edge tmp : edges) {
+			if (tmp instanceof FmmlxAssociationInstance) {
+				result.add((FmmlxAssociationInstance) tmp);
+			}
+		}
+		return result; // read-only
+	}
 
 	public Vector<Edge> getEdges() {
 		return edges;
+	}
+	
+	@Deprecated
+	//needs filter
+	public Vector<FmmlxAssociation> getAssociations() {
+		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
+		for (Edge tmp : edges) {
+			if (tmp instanceof FmmlxAssociation) {
+				result.add((FmmlxAssociation) tmp);
+			}
+		} 
+		return result; // read-only
 	}
 
 	public double calculateTextHeight() {

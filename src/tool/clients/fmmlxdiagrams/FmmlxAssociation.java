@@ -121,10 +121,14 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	}
 
 
-	public String associationToPair() {
+	public String toPair() {
 		String firstString = this.getSourceNode().getName();
 		String seconString = this.getTargetNode().getName();
 		return "( "+firstString+" ; "+seconString+" )";
+	}
+	
+	public Vector<FmmlxAssociationInstance> getInstance(){
+		return diagram.getAssociationInstance();
 	}
 	
 	

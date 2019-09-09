@@ -31,4 +31,10 @@ public class FmmlxAssociationInstance extends Edge {
 	public ContextMenu getContextMenu(DiagramActions actions) {
 		return new AssociationInstanceContextMenu(this, actions);
 	}
+	
+	public String toPair() {
+		String firstString = this.startNode.getName();
+		String seconString = this.endNode.getName();
+		return "( "+firstString+" ; "+seconString+" )";
+	}
 }

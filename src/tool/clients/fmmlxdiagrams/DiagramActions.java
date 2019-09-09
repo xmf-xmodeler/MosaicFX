@@ -583,7 +583,7 @@ public class DiagramActions {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			AssociationValueDialog dlg = new AssociationValueDialog(diagram, object);
+			AssociationValueDialog dlg = new AssociationValueDialog(diagram);
 			Optional<AssociationValueDialogResult> opt = dlg.showAndWait();
 			
 
