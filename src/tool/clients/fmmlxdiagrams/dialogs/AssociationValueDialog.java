@@ -167,12 +167,12 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 
 
 	private void updateMetaClassListView(FmmlxAssociation newValue) {
-		instancesA = newValue.getSourceNode().getInstanceByLevel(newValue.getLevelStartToEnd());
+		instancesA = newValue.getSourceNode().getInstancesByLevel(newValue.getLevelStartToEnd());
 		ObservableList<FmmlxObject> instanceOfClassA = FXCollections.observableList(instancesA); 
 		classAListView = initializeListView(instanceOfClassA, SelectionMode.SINGLE);
 		updateNodeInsideGrid(classAListView, classAListView, 0, 5);
 		
-		instancesB = newValue.getTargetNode().getInstanceByLevel(newValue.getLevelEndToStart());
+		instancesB = newValue.getTargetNode().getInstancesByLevel(newValue.getLevelEndToStart());
 		ObservableList<FmmlxObject> instanceOfClassB = FXCollections.observableList(instancesB); 
 		classBListView = initializeListView(instanceOfClassB, SelectionMode.SINGLE);
 		updateNodeInsideGrid(classBListView, classBListView, 2, 5);
