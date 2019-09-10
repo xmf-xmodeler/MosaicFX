@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Vector;
 
+import org.sat4j.core.Vec;
+
 public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 
 	//	private String[] levelBackgroundColors = {"#8C8C8C", "#FFFFFF", "#000000", "#3111DB", "#dd2244", "#119955"};
@@ -28,6 +30,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 	private Vector<Integer> parents;
 	private int width;
 	private int height;
+	Object highlightedElement;
 
 	public transient double mouseMoveOffsetX;
 	public transient double mouseMoveOffsetY;
@@ -224,8 +227,8 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 	public Vector<Integer> getParents() {
 		return parents;
 	}
-
-	public Vector<FmmlxObject> getInstance() {
+	
+	public Vector<FmmlxObject> getInstances(){
 		Vector<FmmlxObject> result = new Vector<>();
 		for (FmmlxObject object : diagram.getObjects()) {
 			if (object.getOf() == this.getId()) {
@@ -234,16 +237,16 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		}
 		return result;
 	}
-
-	public Vector<FmmlxObject> getInstanceByLevel(Integer level) {
+	
+	public Vector<FmmlxObject> getInstancesByLevel(Integer level) {
 		Vector<FmmlxObject> result = new Vector<FmmlxObject>();
-		if (this.getInstance().size() != 0) {
-
-			if (this.getInstance().get(0).getLevel() == level) {
-				result.addAll(this.getInstance());
+		if (this.getInstances().size()!=0){
+			
+			if (this.getInstances().get(0).getLevel()==level) {
+				result.addAll(this.getInstances());
 			} else {
-				for (FmmlxObject tmp : this.getInstance()) {
-					result.addAll(tmp.getInstanceByLevel(level));
+				for (FmmlxObject tmp : this.getInstances()) {
+					result.addAll(tmp.getInstancesByLevel(level));
 				}
 			}
 		}
@@ -509,177 +512,6 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		for (NodeElement e : nodeElements) {
 			e.paintOn(g, x + xOffset, y + yOffset, diagram);
 		}
-
-//		SVGPath svg = new SVGPath();
-//		svg.setContent("M 0.47191648,941.54515 C 11.039886,971.73191 21.635686,1021.7519 16.900486,1050.1166 c 39.51702,-15.8746 62.62572,-4.3286 79.28572,1.4286 -12.15706,-33.0303 4.538784,-79.57167 17.857144,-107.1429 l -32.056204,32.77048 -10.45771,-38.42674 -15.38655,38.20521 -12.97218,-39.6037 -13.96148,41.72298 z");
-
-//		g.setStroke(selected ? Color.GREEN : Color.BLACK);
-//
-//		double calculatedHeight = 0;
-//		double calculatedWidth = 0;
-//
-//		//determine attributes to paint
-//		Vector<FmmlxAttribute> ownAttributesToPaint = new Vector<FmmlxAttribute>();
-//		Vector<FmmlxAttribute> otherAttributesToPaint = new Vector<FmmlxAttribute>();
-//
-//		for (FmmlxAttribute att : ownAttributes) {
-//			if (passReqs(att)) {
-//				ownAttributesToPaint.add(att);
-//				// determine maximal width
-//				Text text = new Text("[" + att.level + "] " + att.name + ":" + att.type);
-//				calculatedWidth = Math.max(text.getLayoutBounds().getWidth(), calculatedWidth);
-//			}
-//		}
-//		
-//		for (FmmlxAttribute att : otherAttributes) {
-//			if (passReqs(att)) {
-//				otherAttributesToPaint.add(att);
-//				// determine maximal width
-//				Text text = new Text("[" + att.level + "] " + att.name + ":" + att.type);
-//				calculatedWidth = Math.max(text.getLayoutBounds().getWidth(), calculatedWidth);
-//			}
-//		}
-//
-//		//determine maximal width of operations
-//		if (showOperations) {
-//			for (FmmlxOperation operation : operations) {
-//				Text text = new Text(operation.name);
-//				calculatedWidth = Math.max(text.getLayoutBounds().getWidth(), calculatedWidth);
-//			}
-//		}
-//		//determine maximal width of slots
-//		if (showSlots) {
-//			for (FmmlxSlot slot : slots) {
-//				Text text = new Text(slot.name + " = " + slot.value);
-//				calculatedWidth = Math.max(text.getLayoutBounds().getWidth(), calculatedWidth);
-//			}
-//		}
-//
-//		//determine maximal width of operation values
-//		if (showOperationValues) {
-//			for (FmmlxOperationValue operationValue : operationValues) {
-//				Text text = new Text(operationValue.name + " = " + operationValue.value);
-//				calculatedWidth = Math.max(text.getLayoutBounds().getWidth(), calculatedWidth);
-//			}
-//		}
-//
-//		//if minimum width is not reached just paint minimum
-//		calculatedWidth = Math.max(calculatedWidth + 2 * GAP, minWidth);
-//
-//		//calculating header height
-//		Text header = new Text("[" + level + "]" + name);
-//		double headerheight = header.getLayoutBounds().getHeight() + 2 * GAP;
-//
-//		//determine text height
-//		double textheight = new Text("TextForLayout").getLayoutBounds().getHeight();
-//
-//		//calculate starting position for text
-//		double Y = 0 + headerheight + 2 * GAP;    // just a guess
-//		calculatedHeight = Y + (ownAttributesToPaint.size() + otherAttributesToPaint.size() - 1) * (textheight + GAP) + GAP;
-//
-//		if (showOperations)
-//			calculatedHeight += (operations.size() - 1) * (textheight + GAP) + textheight + 2 * GAP;
-//
-//		if (showOperationValues)
-//			calculatedHeight += (operationValues.size() - 1) * (textheight + GAP) + textheight + 2 * GAP;
-//
-//		if (showSlots)
-//			calculatedHeight += (slots.size() - 1) * (textheight + GAP) + textheight + 2 * GAP;
-//
-//		calculatedHeight += 10;// just a guess
-//
-//		Y += y;
-//
-//		//set background
-//		g.setFill(Color.WHITE);
-//		g.fillRect(x, y, calculatedWidth, calculatedHeight);
-//		g.setFill(Color.BLACK);
-//
-//		//write attributes
-//		for (FmmlxAttribute att : ownAttributesToPaint) {
-//			Text text = new Text("[" + att.level + "] " + att.name + ":" + att.type);
-//			g.fillText(text.getText(), x + GAP, Y + GAP);
-////			if (!att.equals(ownAttributesToPaint.lastElement()))
-//				Y += text.getLayoutBounds().getHeight() + GAP;
-//		}
-//
-//		g.setFill(Color.GRAY);
-//		for (FmmlxAttribute att : otherAttributesToPaint) {
-//			Text text = new Text("[" + att.level + "] " + att.name + ":" + att.type);
-//			g.fillText(text.getText(), x + GAP, Y + GAP);
-////			if (!att.equals(otherAttributesToPaint.lastElement()))
-//				Y += text.getLayoutBounds().getHeight() + GAP;
-//		}
-//		g.setFill(Color.BLACK);
-//
-//		//write operations
-//		if (showOperations) {
-//
-//			//draw divider
-//			g.strokeLine(x, Y + textheight, x + calculatedWidth, Y + textheight);
-//			Y += textheight + 2 * GAP;
-//
-//			//write operations
-//			for (FmmlxOperation op : operations) {
-//				Text text = new Text(op.name);
-//				g.fillText(text.getText(), x + GAP, Y + GAP);
-//				if (!op.equals(operations.lastElement()))
-//					Y += text.getLayoutBounds().getHeight() + GAP;
-//			}
-//		}
-//
-//		//write slots
-//		if (showSlots) {
-//
-//			//draw divider
-//			g.strokeLine(x, Y + textheight, x + calculatedWidth, Y + textheight);
-//			Y += textheight + 2 * GAP;
-//
-//			//write operations
-//			for (FmmlxSlot slot : slots) {
-//				Text text = new Text(slot.name + " = " + slot.value);
-//				g.fillText(text.getText(), x + GAP, Y + GAP);
-//				if (!slot.equals(slots.lastElement()))
-//					Y += text.getLayoutBounds().getHeight() + GAP;
-//			}
-//		}
-//
-//		//write slots
-//		if (showOperationValues) {
-//
-//			//draw divider
-//			g.strokeLine(x, Y + textheight, x + calculatedWidth, Y + textheight);
-//			Y += textheight + 2 * GAP;
-//
-//			//write operations
-//			for (FmmlxOperationValue opValue : operationValues) {
-//				Text text = new Text(opValue.name + " = " + opValue.value);
-//				g.fillText(text.getText(), x + GAP, Y + GAP);
-//				if (!opValue.equals(operationValues.lastElement()))
-//					Y += text.getLayoutBounds().getHeight() + GAP;
-//			}
-//		}
-//
-//		//drawing the rectangle
-//
-//		g.setFill(Paint.valueOf(getColor()));
-//		g.fillRect(x, y, calculatedWidth, headerheight);
-//
-//		// set color to white for level 2 & 3
-//		if (level == 3 || level == 2) {
-//			g.setFill(Color.WHITE);
-//		} else {
-//			g.setFill(Color.BLACK);
-//		}
-//		g.fillText("[" + level + "]" + name, x + GAP, y + headerheight / 2 + GAP);
-//
-//		// draw divider between class name and attributes
-//		g.strokeLine(x, y + headerheight, x + calculatedWidth, y + headerheight);
-//		g.strokeRect(x, y, calculatedWidth, calculatedHeight);
-//
-//		this.height = (int) calculatedHeight;
-//		this.width = (int) calculatedWidth;
-
 	}
 
 	public void fetchDataDefinitions(FmmlxDiagramCommunicator comm) {
@@ -782,5 +614,30 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		return this.getAllAncestors().contains(theClass);
 	}
 
+	@Override
+	public void highlightElementAt(Point2D p) {
+//		if(p == null) highlightedElement = null; else {
+//			double X = p.getX() - this.x;
+//			double Y = p.getY() - this.y;
+//			for (NodeElement e : nodeElements) {
+//				e.isHit(mouseX, mouseY)
+//			}
+//		}
+	}
 
+	public String getAvailableInstanceName() {
+		String s = name;
+		if(level == 1) {
+			s = s.substring(0,1).toLowerCase() + s.substring(1);
+		}
+		int i = 1;
+		String t;
+		boolean ok = false;
+		do {
+		    t = s + i;
+		    ok = diagram.isNameAvailable(t);
+		    i++;
+		} while (!ok);
+		return t;
+	}
 }

@@ -326,18 +326,34 @@ public class FmmlxDiagramCommunicator {
 		Vector<FmmlxOperation> result = new Vector<>();
 		for (Object o : response0) {
 			Vector<Object> opInfo = (Vector<Object>) o;
-			FmmlxOperation op =
+			try { // temp for compatibility
+				FmmlxOperation op =
 					new FmmlxOperation(
-							(String) opInfo.get(0), // name
-							(Integer) opInfo.get(1), // level
-							(String) opInfo.get(2), // type
-							(Integer) opInfo.get(3), // owner
-							Multiplicity.parseMultiplicity((Vector<Object>) opInfo.get(4)), // multiplicity
-							(Boolean) opInfo.get(5), // isMonitored
-							null // args
+						(String) opInfo.get(0), // name
+						(Integer) opInfo.get(1), // level
+						(String) opInfo.get(2), // type
+						(String) opInfo.get(3), // body
+						(Integer) opInfo.get(4), // owner
+						Multiplicity.parseMultiplicity((Vector<Object>) opInfo.get(5)), // multiplicity
+						(Boolean) opInfo.get(6), // isMonitored
+						null // args
 
 					);
 			result.add(op);
+			} catch (Exception e) {
+				FmmlxOperation op =
+					new FmmlxOperation(
+						(String) opInfo.get(0), // name
+						(Integer) opInfo.get(1), // level
+						(String) opInfo.get(2), // type
+						"", // body
+						(Integer) opInfo.get(3), // owner
+						Multiplicity.parseMultiplicity((Vector<Object>) opInfo.get(4)), // multiplicity
+						(Boolean) opInfo.get(5), // isMonitored
+						null // args
+						);
+				result.add(op);
+			}
 		}
 		return result;
 	}
@@ -438,7 +454,8 @@ public class FmmlxDiagramCommunicator {
 	public void removeClass(int id, int strategy) {
 		Value[] message = new Value[]{
 				new Value(-1),
-				new Value(id)};
+				new Value(id),
+				new Value(strategy)};
 		WorkbenchClient.theClient().send(handler, "removeClass", message);
 	}
 

@@ -169,10 +169,10 @@ public class FmmlxDiagram {
 
 	public ObservableList<String> getAssociationListToPair(FmmlxObject metaclassA, FmmlxObject metaclassB) {
 		Vector<String> result = new Vector<String>();
-
-		Vector<FmmlxObject> instanceA = metaclassA.getInstance();
-		Vector<FmmlxObject> instanceB = metaclassB.getInstance();
-
+		
+		Vector<FmmlxObject> instanceA = metaclassA.getInstances();
+		Vector<FmmlxObject> instanceB = metaclassB.getInstances();
+		
 		for (FmmlxObject object : instanceA) {
 			for (FmmlxObject object2 : instanceB) {
 				//TODO
@@ -436,6 +436,7 @@ public class FmmlxDiagram {
 				if (!selectedObjects.contains(hitObject)) {
 					selectedObjects.clear();
 					selectedObjects.add(hitObject);
+					highlightElementAt(hitObject, p);
 				}
 			}
 			Point2D relativePoint = getRelativePointToNodeBox(hitObject, p);
@@ -483,8 +484,21 @@ public class FmmlxDiagram {
 		}
 	}
 
-	private void handleDoubleClickOnNodeElement(Point2D p, Selectable hitObject) {
-		Point2D relativePoint = getRelativePointToNodeBox(hitObject, p);
+	private void highlightElementAt(Selectable hitObject, Point2D p) {
+		for(Selectable object : objects) {
+			object.highlightElementAt(null);
+		}
+		for(Edge object : edges) {
+			object.highlightElementAt(null);
+		}
+		hitObject.highlightElementAt(p);
+	}
+
+	private void handleClickOnNodeElement(Point2D p, Selectable hitObject) {
+		NodeBox hitNodeBox = null;
+		Point2D relativePoint = new Point2D(
+				p.getX() - ((FmmlxObject) hitObject).getX(),
+				p.getY() - ((FmmlxObject) hitObject).getY());
 
 		// Checking NodeBoxes
 		NodeBox hitNodeBox = getHitNodeBox((FmmlxObject) hitObject, relativePoint);
@@ -904,6 +918,11 @@ public class FmmlxDiagram {
 	public void associationValue(AssociationValueDialogResult result) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public boolean isNameAvailable(String t) {
+		for(FmmlxObject o : objects) if (o.getName().equals(t)) return false;
+		return true;
 	}
 
 }

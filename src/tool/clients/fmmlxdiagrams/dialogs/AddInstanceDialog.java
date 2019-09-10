@@ -67,6 +67,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 			setOf(selectedObject);
 			createAndSetParentList();
 			ofComboBox.setDisable(true);
+			setInstanceName(selectedObject);
 		}
 		ofComboBox.setPrefWidth(COLUMN_WIDTH);
 
@@ -78,6 +79,11 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		grid.add(abstractCheckBox, 1, 3);
 		grid.add(new Label("Parent"), 0, 4);
 		grid.add(parentListView, 1, 4);
+	}
+
+	private void setInstanceName(FmmlxObject c) {
+		nameTextField.setText(c.getAvailableInstanceName());
+		
 	}
 
 	private void createAndSetParentList() {
