@@ -838,7 +838,7 @@ public class FmmlxDiagram {
 	}
 
 	public void changeBody(ChangeBodyDialogResult result) {
-		comm.changeBody(result.getObject().getId(), result.getSelectedItem().getName(), result.getBody());
+		comm.changeOperationBody(result.getObject().getId(), result.getSelectedItem().getName(), result.getBody());
 	}
 
 	public void checkOperationBody(String text) {
