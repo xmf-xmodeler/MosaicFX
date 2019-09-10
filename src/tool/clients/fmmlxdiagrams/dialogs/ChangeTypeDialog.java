@@ -79,14 +79,11 @@ public class ChangeTypeDialog extends CustomDialog<ChangeTypeDialogResult> {
 				switch (type) {
 
 					case Attribute:
-						setResultChangeTypeAttribute(type);
-						break;
+						return setResultChangeTypeAttribute(type);
 					case Operation:
-						setResultChangeTypeOperation(type);
-						break;
+						return setResultChangeTypeOperation(type);
 					case Association:
-						setResultChangeTypeAssociation(type);
-						break;
+						return setResultChangeTypeAssociation(type);
 					default:
 						System.err.println("AddDialogResult: No matching content type!");
 				}
