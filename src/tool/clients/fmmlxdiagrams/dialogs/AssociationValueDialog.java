@@ -153,8 +153,20 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 	
 	private void refreshAllDialogElement(FmmlxAssociation newValue) {
 		classANameTextField.setText(newValue.getSourceNode().getName());
-		classBNameTextField.setText(newValue.getTargetNode().getName());
-		
+		classBNameTextField.setText(newValue.getTargetNode().getName());		
+		updateMetaClassListView(newValue);
+		updateAssociationListView(newValue);
+	}
+	
+	private void updateAssociationListView(FmmlxAssociation newValue) {
+		associationInstances = newValue.getInstance();
+		ObservableList<FmmlxAssociationInstance> instanceOfAssociation = FXCollections.observableList(associationInstances);
+		associationListView = initializeListViewAssociation(instanceOfAssociation, SelectionMode.SINGLE);
+		updateNodeInsideGrid(associationListView, associationListView, 1, 5);
+	}
+
+
+	private void updateMetaClassListView(FmmlxAssociation newValue) {
 		instancesA = newValue.getSourceNode().getInstanceByLevel(newValue.getLevelStartToEnd());
 		ObservableList<FmmlxObject> instanceOfClassA = FXCollections.observableList(instancesA); 
 		classAListView = initializeListView(instanceOfClassA, SelectionMode.SINGLE);
@@ -164,10 +176,6 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 		ObservableList<FmmlxObject> instanceOfClassB = FXCollections.observableList(instancesB); 
 		classBListView = initializeListView(instanceOfClassB, SelectionMode.SINGLE);
 		updateNodeInsideGrid(classBListView, classBListView, 2, 5);
-		
-		associationInstances = newValue.getInstance();
-		ObservableList<FmmlxAssociationInstance> instanceOfAssociation = FXCollections.observableList(associationInstances);
-		associationListView = initializeListViewAssociation(instanceOfAssociation, SelectionMode.SINGLE);
-		updateNodeInsideGrid(associationListView, associationListView, 1, 5);
 	}
+	
 }
