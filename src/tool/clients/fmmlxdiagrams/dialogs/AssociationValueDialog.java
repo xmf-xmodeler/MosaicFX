@@ -68,6 +68,23 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 		layoutContent();
 		dialogPane.setContent(flow);
 		
+		final Button plusButton = (Button) getDialogPane().lookupButton(plusButtonType);
+		plusButton.addEventFilter(ActionEvent.ACTION, e -> {
+			addBlankAssociationInstance();
+			e.consume();
+		});
+		final Button minusButton = (Button) getDialogPane().lookupButton(minusButtonType);
+		minusButton.addEventFilter(ActionEvent.ACTION, e -> {
+			if (associationListView.getSelectionModel().getSelectedItem()!=null) {
+				removeAssociationInstance(associationListView.getSelectionModel().getSelectedItem());
+				diagram.updateDiagram();
+			}
+			e.consume();
+		});
+		final Button middleButton = (Button) getDialogPane().lookupButton(midlleButtonType);
+		plusButton.addEventFilter(ActionEvent.ACTION, e -> {
+			e.consume();
+		});
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
 			if (!validateUserInput()) {
@@ -76,6 +93,36 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 		});
 
 		setResult();
+	}
+
+
+	private void addBlankAssociationInstance() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private void changeStartNodeAssociationInstance() {
+		//TODO
+	}
+	
+	private void changeEndNodeAssociationInstance() {
+		//TODO
+	}
+
+
+	private void addAssociationInstance(FmmlxObject starNode, FmmlxObject endNode) {
+		// TODO Auto-generated method stub
+	}
+
+
+	private boolean validateForAddAssociationInstance() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	private void removeAssociationInstance(FmmlxAssociationInstance selectedItem) {
+		// TODO Auto-generated method stub
 	}
 
 
