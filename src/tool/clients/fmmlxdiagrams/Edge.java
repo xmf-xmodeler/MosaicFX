@@ -198,4 +198,10 @@ public class Edge implements CanvasElement, Selectable {
 	public int getId() {
 		return id;
 	}
+
+	@Override
+	public void highlightElementAt(Point2D p) {
+		// TODO Auto-generated method stub
+		
+	}
 }

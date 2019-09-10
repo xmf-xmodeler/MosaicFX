@@ -4,6 +4,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
 
@@ -71,12 +72,14 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 
 		maximumComboBox = new ComboBox<>();
 		maximumComboBox.setEditable(true);
+		maximumComboBox.setConverter(new IntegerStringConverter());
 		minimumComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue != null) {
 				maximumComboBox.setItems(ValueList.getValueInterval(newValue));
 			}
 		});
 		minimumComboBox.setEditable(true);
+		minimumComboBox.setConverter(new IntegerStringConverter());
 
 
 		orderedCheckBox = new CheckBox();
