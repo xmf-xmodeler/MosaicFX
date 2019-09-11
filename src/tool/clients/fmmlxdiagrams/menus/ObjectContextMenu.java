@@ -153,7 +153,7 @@ public class ObjectContextMenu extends ContextMenu {
 
 		MenuItem operationsItem = new MenuItem("Operations");
 		operationsItem.setOnAction(e -> {
-			object.toogleShowOperations();
+			object.toggleShowOperations();
 			actions.redrawDiagram();
 		});
 

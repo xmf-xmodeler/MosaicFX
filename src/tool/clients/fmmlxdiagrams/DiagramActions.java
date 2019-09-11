@@ -353,14 +353,14 @@ public class DiagramActions {
 	}
 
 	public void toggleIsAbstract(FmmlxObject object) {
-		object.toogleIsAbstract();
+		object.toggleIsAbstract();
 		diagram.redraw();
 	}
 
 	public void toggleShowOperations() {
 		for (FmmlxObject o : diagram.getObjects()) {
 			if (o.getShowOperations() == showOperations) {
-				o.toogleShowOperations();
+				o.toggleShowOperations();
 			}
 		}
 		showOperations = !showOperations;
@@ -370,7 +370,7 @@ public class DiagramActions {
 	public void toggleShowOperationValues() {
 		for (FmmlxObject o : diagram.getObjects()) {
 			if (o.getShowOperationValues() == showOperationValues) {
-				o.toogleShowOperationValues();
+				o.toggleShowOperationValues();
 			}
 		}
 		showOperationValues = !showOperationValues;
@@ -380,7 +380,7 @@ public class DiagramActions {
 	public void toggleShowSlots() {
 		for (FmmlxObject o : diagram.getObjects()) {
 			if (o.getShowSlots() == showSlots) {
-				o.toogleShowSlots();
+				o.toggleShowSlots();
 			}
 		}
 		showSlots = !showSlots;

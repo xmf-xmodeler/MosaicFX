@@ -30,6 +30,7 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 		this.diagram = diagram;
 		this.object = object;
 		this.slot = slot;
+		System.out.println("SLOT: " + slot);
 
 		getSlotType();
 
@@ -78,7 +79,6 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 	}
 
 	private void getSlotType() {
-
 		Vector<FmmlxAttribute> allAttributes = new Vector<>();
 		FmmlxObject parent = object;
 		while (parent != null) {
@@ -89,6 +89,7 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 
 		for (FmmlxAttribute attribute : allAttributes) {
 			if (attribute.getName().equals(slot.getName())) {
+				System.out.println(attribute.getName());
 				this.type = attribute.getType();
 				if (attribute.getMultiplicity() != null) {
 					this.multiplicity = attribute.getMultiplicity().toString();

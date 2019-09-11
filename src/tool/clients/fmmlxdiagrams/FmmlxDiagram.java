@@ -62,6 +62,7 @@ public class FmmlxDiagram {
 	private ScrollPane scrollerCanvas;
 
 	private FmmlxObject newEdgeTarget;
+	private NodeLabel lastHitLabel;
 
 //	public Vector<FmmlxObject> fetchObjects() {
 //		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
@@ -85,6 +86,7 @@ public class FmmlxDiagram {
 		mainView.setOrientation(Orientation.VERTICAL);
 		mainView.getItems().addAll(palette, scrollerCanvas);
 		transformFX = new Affine();
+		lastHitLabel = null;
 
 //		defaultContextMenu = new DefaultContextMenu(actions);
 
@@ -117,11 +119,11 @@ public class FmmlxDiagram {
 		}
 		return null;
 	}
-	
+
 	public Object getAllMetaClass() {
 		Vector<FmmlxObject> result = new Vector<FmmlxObject>();
 		for (FmmlxObject object : getObjects()) {
-			if(object.getLevel()!=0) {
+			if (object.getLevel() != 0) {
 				result.add(object);
 			}
 		}
@@ -139,9 +141,9 @@ public class FmmlxDiagram {
 		for (Edge tmp : edges) {
 			if (tmp instanceof FmmlxAssociation) {
 				result.add((FmmlxAssociation) tmp);
-				
+
 			}
-		} 
+		}
 		return result; // read-only
 	}
 
@@ -164,19 +166,19 @@ public class FmmlxDiagram {
 		}
 		return result;
 	}
-	
-	public ObservableList<String> getAssociationListToPair(FmmlxObject metaclassA, FmmlxObject metaclassB){
+
+	public ObservableList<String> getAssociationListToPair(FmmlxObject metaclassA, FmmlxObject metaclassB) {
 		Vector<String> result = new Vector<String>();
-		
+
 		Vector<FmmlxObject> instanceA = metaclassA.getInstances();
 		Vector<FmmlxObject> instanceB = metaclassB.getInstances();
-		
+
 		for (FmmlxObject object : instanceA) {
 			for (FmmlxObject object2 : instanceB) {
 				//TODO
 			}
 		}
-		
+
 		ObservableList<String> associationList;
 		associationList = FXCollections.observableList(result);
 
@@ -196,6 +198,7 @@ public class FmmlxDiagram {
 		}
 		for (FmmlxObject o : objects) {
 			o.fetchDataValues(comm);
+			o.layout(this);
 		}
 //		if (objects.size() >= 2) {
 //			Edge e = new Edge(-1, objects.get(0), objects.get(1), null, this);
@@ -274,10 +277,8 @@ public class FmmlxDiagram {
 	private void drawNewEdgeLine(GraphicsContext g) {
 		if (mode == MouseMode.DRAW_EDGE) {
 			g.strokeLine(lastPoint.getX(), lastPoint.getY(), currentPoint.getX(), currentPoint.getY());
-
 		}
 	}
-
 
 	////////////////////////////////////////////////////////////////////
 	////						MouseListener						////
@@ -420,7 +421,6 @@ public class FmmlxDiagram {
 					default:
 						break;
 				}
-
 				newEdgeTarget = null;
 				deselectAll();
 			}
@@ -438,8 +438,10 @@ public class FmmlxDiagram {
 					highlightElementAt(hitObject, p);
 				}
 			}
+			handleClickOnNodeElement(p, hitObject);
+
 			if (e.getClickCount() == 2) {
-				handleClickOnNodeElement(p, hitObject);
+				handleDoubleClickOnNodeElement(p, hitObject);
 			}
 		} else {
 			if (mode == MouseMode.DRAW_EDGE) {
@@ -468,41 +470,83 @@ public class FmmlxDiagram {
 	}
 
 	private void highlightElementAt(Selectable hitObject, Point2D p) {
-		for(Selectable object : objects) {
+		for (Selectable object : objects) {
 			object.highlightElementAt(null);
 		}
-		for(Edge object : edges) {
+		for (Edge object : edges) {
 			object.highlightElementAt(null);
 		}
 		hitObject.highlightElementAt(p);
 	}
 
 	private void handleClickOnNodeElement(Point2D p, Selectable hitObject) {
+		Point2D relativePoint = getRelativePointToNodeBox(hitObject, p);
+		NodeBox hitNodeBox = getHitNodeBox((FmmlxObject) hitObject, relativePoint);
+		if (hitNodeBox != null) {
+			NodeLabel hitLabel = getHitLabel(hitNodeBox, relativePoint);
+			if (hitLabel != null) {
+				if (lastHitLabel != null) {
+					lastHitLabel.setDeselected();
+				}
+				if (hitLabel.getActionObject().getPropertyType() != PropertyType.Class) {
+					lastHitLabel = hitLabel;
+					lastHitLabel.setSelected();
+				}
+			}
+		}
+	}
+
+	private void handleDoubleClickOnNodeElement(Point2D p, Selectable hitObject) {
 		NodeBox hitNodeBox = null;
 		Point2D relativePoint = new Point2D(
 				p.getX() - ((FmmlxObject) hitObject).getX(),
 				p.getY() - ((FmmlxObject) hitObject).getY());
 
 		// Checking NodeBoxes
-		for (NodeElement element : ((FmmlxObject) hitObject).getNodes()) {
+		hitNodeBox = getHitNodeBox((FmmlxObject) hitObject, relativePoint);
+		if (hitNodeBox != null) {
+			FmmlxProperty hitProperty = getHitProperty(hitNodeBox, relativePoint);
+			if (hitNodeBox.getElementType() == PropertyType.Slot && hitProperty != null) {
+				actions.changeSlotValue((FmmlxObject) hitObject, (FmmlxSlot) hitProperty);
+			} else {
+				actions.changeNameDialog((FmmlxObject) hitObject, hitNodeBox.getElementType(), hitProperty);
+			}
+		}
+	}
+
+	private NodeBox getHitNodeBox(FmmlxObject hitObject, Point2D relativePoint) {
+		for (NodeElement element : hitObject.getNodes()) {
 			if (element.isHit(relativePoint.getX(), relativePoint.getY()) && element instanceof NodeBox) {
 				if (((NodeBox) element).getElementType() != PropertyType.Selection && ((NodeBox) element).getElementType() != PropertyType.OperationValue) {
-					hitNodeBox = (NodeBox) element;
+					return (NodeBox) element;
 				}
 			}
 		}
-		if (hitNodeBox != null) {
-			for (NodeElement nodeLabel : hitNodeBox.nodeElements) {
-				if (nodeLabel.isHit(relativePoint.getX(), relativePoint.getY() - hitNodeBox.y) && nodeLabel instanceof NodeLabel) {
-					FmmlxProperty hitProperty = ((NodeLabel) nodeLabel).getActionObject();
-					if (hitNodeBox.getElementType() == PropertyType.Slot) {
-						actions.changeSlotValue((FmmlxObject) hitObject, (FmmlxSlot) hitProperty);
-					} else {
-						actions.changeNameDialog((FmmlxObject) hitObject, hitNodeBox.getElementType(), hitProperty);
-					}
-				}
+		return null;
+	}
+
+	private FmmlxProperty getHitProperty(NodeBox nodeBox, Point2D p) {
+		for (NodeElement nodeLabel : nodeBox.nodeElements) {
+			if (nodeLabel.isHit(p.getX(), p.getY() - nodeBox.y) && nodeLabel instanceof NodeLabel) {
+				return ((NodeLabel) nodeLabel).getActionObject();
 			}
 		}
+		return null;
+	}
+
+	private NodeLabel getHitLabel(NodeBox nodeBox, Point2D p) {
+		for (NodeElement nodeLabel : nodeBox.nodeElements) {
+			if (nodeLabel.isHit(p.getX(), p.getY() - nodeBox.y) && nodeLabel instanceof NodeLabel) {
+				return ((NodeLabel) nodeLabel);
+			}
+		}
+		return null;
+	}
+
+	private Point2D getRelativePointToNodeBox(Selectable hitObject, Point2D p) {
+		return new Point2D(
+				p.getX() - ((FmmlxObject) hitObject).getX(),
+				p.getY() - ((FmmlxObject) hitObject).getY());
 	}
 
 	private void handleRightClick(MouseEvent e) {
@@ -580,6 +624,10 @@ public class FmmlxDiagram {
 
 	void deselectAll() {
 		selectedObjects.clear();
+		if (lastHitLabel != null) {
+			lastHitLabel.setDeselected();
+			lastHitLabel = null;
+		}
 	}
 
 	public void setSelectedObject(FmmlxObject source) {
@@ -645,8 +693,7 @@ public class FmmlxDiagram {
 	public Font getFont() {
 		return font;
 	}
-	
-	
+
 
 	public Vector<Edge> getEdges() {
 		return edges;
@@ -846,14 +893,14 @@ public class FmmlxDiagram {
 	}
 
 	public void editAssociation(EditAssociationDialogResult result) {
-		
+
 		comm.editAssociation(result.getSelectedAssociation().getId(),
-				result.getSource(), result.getTarget(), 
-				result.getNewInstLevelSource(), result.getNewInstLevelTarget(), 
-				result.getNewDisplayNameSource(), result.getNewDisplayNameTarget(), 
-				result.getNewIdentifierSource(), result.getNewIdentifierTarget(), 
+				result.getSource(), result.getTarget(),
+				result.getNewInstLevelSource(), result.getNewInstLevelTarget(),
+				result.getNewDisplayNameSource(), result.getNewDisplayNameTarget(),
+				result.getNewIdentifierSource(), result.getNewIdentifierTarget(),
 				result.getMultiplicitySource(), result.getMultiplicityTarget());
-		 
+
 	}
 
 	public Vector<FmmlxAssociation> findAssociations(FmmlxObject source, FmmlxObject target) {
@@ -873,13 +920,14 @@ public class FmmlxDiagram {
 	public void removeAssociationInstance(FmmlxAssociationInstance instance) {
 		comm.removeAssociationInstance(instance.getId());
 	}
+
 	public void associationValue(AssociationValueDialogResult result) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public boolean isNameAvailable(String t) {
-		for(FmmlxObject o : objects) if (o.getName().equals(t)) return false;
+		for (FmmlxObject o : objects) if (o.getName().equals(t)) return false;
 		return true;
 	}
 
