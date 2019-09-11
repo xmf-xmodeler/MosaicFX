@@ -8,7 +8,7 @@ import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import java.util.Vector;
 
 public class NodeBox implements NodeElement {
-	
+
 	public interface X {
 		public double getWidth(boolean selected);
 	}
@@ -19,7 +19,7 @@ public class NodeBox implements NodeElement {
 	double height;
 	Paint bgColor;
 	Paint fgColor;
-	X lineWidth = (x) -> {return 1.;};
+	X lineWidth;
 	Vector<NodeElement> nodeElements = new Vector<>();
 	private PropertyType propertyType;
 

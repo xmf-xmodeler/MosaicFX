@@ -482,17 +482,19 @@ public class FmmlxDiagram {
 	}
 
 	private void handleClickOnNodeElement(Point2D p, Selectable hitObject) {
-		Point2D relativePoint = getRelativePointToNodeBox(hitObject, p);
-		NodeBox hitNodeBox = getHitNodeBox((FmmlxObject) hitObject, relativePoint);
-		if (hitNodeBox != null) {
-			NodeLabel hitLabel = getHitLabel(hitNodeBox, relativePoint);
-			if (hitLabel != null) {
-				if (lastHitLabel != null) {
-					lastHitLabel.setDeselected();
-				}
-				if (hitLabel.getActionObject().getPropertyType() != PropertyType.Class) {
-					lastHitLabel = hitLabel;
-					lastHitLabel.setSelected();
+		if (hitObject instanceof FmmlxObject) {
+			Point2D relativePoint = getRelativePointToNodeBox(hitObject, p);
+			NodeBox hitNodeBox = getHitNodeBox((FmmlxObject) hitObject, relativePoint);
+			if (hitNodeBox != null) {
+				NodeLabel hitLabel = getHitLabel(hitNodeBox, relativePoint);
+				if (hitLabel != null) {
+					if (lastHitLabel != null) {
+						lastHitLabel.setDeselected();
+					}
+					if (hitLabel.getActionObject().getPropertyType() != PropertyType.Class) {
+						lastHitLabel = hitLabel;
+						lastHitLabel.setSelected();
+					}
 				}
 			}
 		}
@@ -500,18 +502,20 @@ public class FmmlxDiagram {
 
 	private void handleDoubleClickOnNodeElement(Point2D p, Selectable hitObject) {
 		NodeBox hitNodeBox = null;
-		Point2D relativePoint = new Point2D(
-				p.getX() - ((FmmlxObject) hitObject).getX(),
-				p.getY() - ((FmmlxObject) hitObject).getY());
+		if (hitObject instanceof FmmlxObject) {
+			Point2D relativePoint = new Point2D(
+					p.getX() - ((FmmlxObject) hitObject).getX(),
+					p.getY() - ((FmmlxObject) hitObject).getY());
 
-		// Checking NodeBoxes
-		hitNodeBox = getHitNodeBox((FmmlxObject) hitObject, relativePoint);
-		if (hitNodeBox != null) {
-			FmmlxProperty hitProperty = getHitProperty(hitNodeBox, relativePoint);
-			if (hitNodeBox.getElementType() == PropertyType.Slot && hitProperty != null) {
-				actions.changeSlotValue((FmmlxObject) hitObject, (FmmlxSlot) hitProperty);
-			} else {
-				actions.changeNameDialog((FmmlxObject) hitObject, hitNodeBox.getElementType(), hitProperty);
+			// Checking NodeBoxes
+			hitNodeBox = getHitNodeBox((FmmlxObject) hitObject, relativePoint);
+			if (hitNodeBox != null) {
+				FmmlxProperty hitProperty = getHitProperty(hitNodeBox, relativePoint);
+				if (hitNodeBox.getElementType() == PropertyType.Slot && hitProperty != null) {
+					actions.changeSlotValue((FmmlxObject) hitObject, (FmmlxSlot) hitProperty);
+				} else {
+					actions.changeNameDialog((FmmlxObject) hitObject, hitNodeBox.getElementType(), hitProperty);
+				}
 			}
 		}
 	}
