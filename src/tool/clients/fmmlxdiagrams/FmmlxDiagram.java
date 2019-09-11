@@ -506,7 +506,7 @@ public class FmmlxDiagram {
 		hitNodeBox = getHitNodeBox((FmmlxObject) hitObject, relativePoint);
 		if (hitNodeBox != null) {
 			FmmlxProperty hitProperty = getHitProperty(hitNodeBox, relativePoint);
-			if (hitNodeBox.getElementType() == PropertyType.Slot) {
+			if (hitNodeBox.getElementType() == PropertyType.Slot && hitProperty != null) {
 				actions.changeSlotValue((FmmlxObject) hitObject, (FmmlxSlot) hitProperty);
 			} else {
 				actions.changeNameDialog((FmmlxObject) hitObject, hitNodeBox.getElementType(), hitProperty);
@@ -624,7 +624,10 @@ public class FmmlxDiagram {
 
 	void deselectAll() {
 		selectedObjects.clear();
-		lastHitLabel = null;
+		if (lastHitLabel != null) {
+			lastHitLabel.setDeselected();
+			lastHitLabel = null;
+		}
 	}
 
 	public void setSelectedObject(FmmlxObject source) {
