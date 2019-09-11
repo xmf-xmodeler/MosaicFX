@@ -63,7 +63,6 @@ public class FmmlxDiagram {
 
 	private FmmlxObject newEdgeTarget;
 	private NodeLabel lastHitLabel;
-	private FmmlxProperty lastSelectedProperty;
 
 //	public Vector<FmmlxObject> fetchObjects() {
 //		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
@@ -87,6 +86,7 @@ public class FmmlxDiagram {
 		mainView.setOrientation(Orientation.VERTICAL);
 		mainView.getItems().addAll(palette, scrollerCanvas);
 		transformFX = new Affine();
+		lastHitLabel = null;
 
 //		defaultContextMenu = new DefaultContextMenu(actions);
 
@@ -169,10 +169,10 @@ public class FmmlxDiagram {
 
 	public ObservableList<String> getAssociationListToPair(FmmlxObject metaclassA, FmmlxObject metaclassB) {
 		Vector<String> result = new Vector<String>();
-		
+
 		Vector<FmmlxObject> instanceA = metaclassA.getInstances();
 		Vector<FmmlxObject> instanceB = metaclassB.getInstances();
-		
+
 		for (FmmlxObject object : instanceA) {
 			for (FmmlxObject object2 : instanceB) {
 				//TODO
@@ -421,7 +421,6 @@ public class FmmlxDiagram {
 					default:
 						break;
 				}
-
 				newEdgeTarget = null;
 				deselectAll();
 			}
@@ -439,21 +438,7 @@ public class FmmlxDiagram {
 					highlightElementAt(hitObject, p);
 				}
 			}
-			Point2D relativePoint = getRelativePointToNodeBox(hitObject, p);
-			NodeBox hitNodeBox = getHitNodeBox((FmmlxObject) hitObject, relativePoint);
-			if (hitNodeBox != null) {
-				NodeLabel hitLabel = getHitLabel(hitNodeBox, relativePoint);
-				if (hitLabel != null) {
-					if (lastHitLabel != null) {
-						lastHitLabel.setDeselected();
-					}
-					if (hitLabel.getActionObject().getPropertyType() != PropertyType.Class) {
-						lastHitLabel = hitLabel;
-						lastHitLabel.setSelected();
-						lastSelectedProperty = lastHitLabel.getActionObject();
-					}
-				}
-			}
+			handleClickOnNodeElement(p, hitObject);
 
 			if (e.getClickCount() == 2) {
 				handleDoubleClickOnNodeElement(p, hitObject);
@@ -485,23 +470,40 @@ public class FmmlxDiagram {
 	}
 
 	private void highlightElementAt(Selectable hitObject, Point2D p) {
-		for(Selectable object : objects) {
+		for (Selectable object : objects) {
 			object.highlightElementAt(null);
 		}
-		for(Edge object : edges) {
+		for (Edge object : edges) {
 			object.highlightElementAt(null);
 		}
 		hitObject.highlightElementAt(p);
 	}
 
 	private void handleClickOnNodeElement(Point2D p, Selectable hitObject) {
+		Point2D relativePoint = getRelativePointToNodeBox(hitObject, p);
+		NodeBox hitNodeBox = getHitNodeBox((FmmlxObject) hitObject, relativePoint);
+		if (hitNodeBox != null) {
+			NodeLabel hitLabel = getHitLabel(hitNodeBox, relativePoint);
+			if (hitLabel != null) {
+				if (lastHitLabel != null) {
+					lastHitLabel.setDeselected();
+				}
+				if (hitLabel.getActionObject().getPropertyType() != PropertyType.Class) {
+					lastHitLabel = hitLabel;
+					lastHitLabel.setSelected();
+				}
+			}
+		}
+	}
+
+	private void handleDoubleClickOnNodeElement(Point2D p, Selectable hitObject) {
 		NodeBox hitNodeBox = null;
 		Point2D relativePoint = new Point2D(
 				p.getX() - ((FmmlxObject) hitObject).getX(),
 				p.getY() - ((FmmlxObject) hitObject).getY());
 
 		// Checking NodeBoxes
-		NodeBox hitNodeBox = getHitNodeBox((FmmlxObject) hitObject, relativePoint);
+		hitNodeBox = getHitNodeBox((FmmlxObject) hitObject, relativePoint);
 		if (hitNodeBox != null) {
 			FmmlxProperty hitProperty = getHitProperty(hitNodeBox, relativePoint);
 			if (hitNodeBox.getElementType() == PropertyType.Slot) {
@@ -622,6 +624,7 @@ public class FmmlxDiagram {
 
 	void deselectAll() {
 		selectedObjects.clear();
+		lastHitLabel = null;
 	}
 
 	public void setSelectedObject(FmmlxObject source) {
@@ -921,7 +924,7 @@ public class FmmlxDiagram {
 	}
 
 	public boolean isNameAvailable(String t) {
-		for(FmmlxObject o : objects) if (o.getName().equals(t)) return false;
+		for (FmmlxObject o : objects) if (o.getName().equals(t)) return false;
 		return true;
 	}
 

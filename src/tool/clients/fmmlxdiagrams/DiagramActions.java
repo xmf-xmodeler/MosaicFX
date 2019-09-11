@@ -353,7 +353,7 @@ public class DiagramActions {
 	}
 
 	public void toggleIsAbstract(FmmlxObject object) {
-		object.toogleIsAbstract();
+		object.toggleIsAbstract();
 		diagram.redraw();
 	}
 

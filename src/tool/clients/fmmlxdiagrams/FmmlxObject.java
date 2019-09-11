@@ -14,8 +14,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Vector;
 
-import org.sat4j.core.Vec;
-
 public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 
 	//	private String[] levelBackgroundColors = {"#8C8C8C", "#FFFFFF", "#000000", "#3111DB", "#dd2244", "#119955"};
@@ -227,8 +225,8 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 	public Vector<Integer> getParents() {
 		return parents;
 	}
-	
-	public Vector<FmmlxObject> getInstances(){
+
+	public Vector<FmmlxObject> getInstances() {
 		Vector<FmmlxObject> result = new Vector<>();
 		for (FmmlxObject object : diagram.getObjects()) {
 			if (object.getOf() == this.getId()) {
@@ -237,12 +235,12 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		}
 		return result;
 	}
-	
+
 	public Vector<FmmlxObject> getInstancesByLevel(Integer level) {
 		Vector<FmmlxObject> result = new Vector<FmmlxObject>();
-		if (this.getInstances().size()!=0){
-			
-			if (this.getInstances().get(0).getLevel()==level) {
+		if (this.getInstances().size() != 0) {
+
+			if (this.getInstances().get(0).getLevel() == level) {
 				result.addAll(this.getInstances());
 			} else {
 				for (FmmlxObject tmp : this.getInstances()) {
@@ -433,6 +431,10 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		}
 		currentY = yAfterOPVBox;
 
+		NodeBox selectionBox = new NodeBox(0, 0, neededWidth, currentY, new Color(0, 0, 0, 0), Color.BLACK, 1., PropertyType.Selection);
+		nodeElements.addElement(selectionBox);
+
+
 		this.width = (int) neededWidth;
 		this.height = (int) currentY;
 	}
@@ -493,6 +495,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 //			}
 //		}
 
+
 		//if minimum width is not reached just paint minimum
 		return Math.max(neededWidth + 2 * GAP, minWidth);
 	}
@@ -500,13 +503,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram diagram) {
 
 		boolean selected = diagram.isSelected(this);
-		NodeBox selectionBox = new NodeBox(0, 0, width, height, new Color(0, 0, 0, 0), Color.BLACK, selected ? 3. : 1., PropertyType.Selection);
 
-		if (selected) {
-			nodeElements.addElement(selectionBox);
-		} else {
-			nodeElements.remove(selectionBox);
-		}
 		g.setFont(diagram.getFont());
 
 		for (NodeElement e : nodeElements) {
@@ -562,7 +559,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		}
 	}
 
-	public void toogleIsAbstract() {
+	public void toggleIsAbstract() {
 		isAbstract = !isAbstract;
 	}
 
@@ -622,21 +619,22 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 //			for (NodeElement e : nodeElements) {
 //				e.isHit(mouseX, mouseY)
 //			}
+
 //		}
 	}
 
 	public String getAvailableInstanceName() {
 		String s = name;
-		if(level == 1) {
-			s = s.substring(0,1).toLowerCase() + s.substring(1);
+		if (level == 1) {
+			s = s.substring(0, 1).toLowerCase() + s.substring(1);
 		}
 		int i = 1;
 		String t;
 		boolean ok = false;
 		do {
-		    t = s + i;
-		    ok = diagram.isNameAvailable(t);
-		    i++;
+			t = s + i;
+			ok = diagram.isNameAvailable(t);
+			i++;
 		} while (!ok);
 		return t;
 	}
