@@ -424,7 +424,7 @@ public class FmmlxDiagram {
 				newEdgeTarget = null;
 				deselectAll();
 			}
-
+			
 			System.err.println("V:" + selectedObjects);
 			if (e.isControlDown()) {
 				if (selectedObjects.contains(hitObject)) {
@@ -457,17 +457,12 @@ public class FmmlxDiagram {
 					default:
 						break;
 				}
+			} else {
+				mode = MouseMode.MULTISELECT;
+				storeLastClick(p.getX(), p.getY());
+				storeCurrentPoint(p.getX(), p.getY());
 			}
 			deselectAll();
-		}
-
-
-		if (selectedObjects.contains(hitObject)) {
-			mode = MouseMode.STANDARD;
-		} else {
-			mode = MouseMode.MULTISELECT;
-			storeLastClick(p.getX(), p.getY());
-			storeCurrentPoint(p.getX(), p.getY());
 		}
 	}
 
@@ -660,6 +655,8 @@ public class FmmlxDiagram {
 				select(o);
 			}
 		}
+		
+		mode = MouseMode.STANDARD;
 	}
 
 	private boolean isObjectContained(Rectangle rec, FmmlxObject object) {
