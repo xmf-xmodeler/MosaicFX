@@ -9,17 +9,21 @@ import java.util.Vector;
 
 public class NodeBox implements NodeElement {
 
+	public interface X {
+		public double getWidth(boolean selected);
+	}
+
 	double x;
 	double y;
 	double width;
 	double height;
 	Paint bgColor;
 	Paint fgColor;
-	double lineWidth = 1;
+	X lineWidth;
 	Vector<NodeElement> nodeElements = new Vector<>();
 	private PropertyType propertyType;
 
-	public NodeBox(double x, double y, double width, double height, Paint bgColor, Paint fgColor, double lineWidth, PropertyType propertyType) {
+	public NodeBox(double x, double y, double width, double height, Paint bgColor, Paint fgColor, X lineWidth, PropertyType propertyType) {
 		super();
 		this.x = x;
 		this.y = y;
@@ -32,14 +36,14 @@ public class NodeBox implements NodeElement {
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram) {
+	public void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram, boolean objectIsSelected) {
 		g.setFill(bgColor);
 		g.fillRect(x + xOffset, y + yOffset, width, height);
 		g.setStroke(fgColor);
-		g.setLineWidth(lineWidth);
+		g.setLineWidth(lineWidth.getWidth(objectIsSelected));
 		g.strokeRect(x + xOffset, y + yOffset, width, height);
 		for (NodeElement e : nodeElements) {
-			e.paintOn(g, x + xOffset, y + yOffset, diagram);
+			e.paintOn(g, x + xOffset, y + yOffset, diagram, objectIsSelected);
 		}
 	}
 
