@@ -425,6 +425,7 @@ public class FmmlxDiagram {
 				deselectAll();
 			}
 
+			System.err.println("V:" + selectedObjects);
 			if (e.isControlDown()) {
 				if (selectedObjects.contains(hitObject)) {
 					selectedObjects.remove(hitObject);
@@ -438,6 +439,7 @@ public class FmmlxDiagram {
 					highlightElementAt(hitObject, p);
 				}
 			}
+			System.err.println("N:" + selectedObjects);
 			handleClickOnNodeElement(p, hitObject);
 
 			if (e.getClickCount() == 2) {

@@ -578,7 +578,9 @@ public class DiagramActions {
 
 	public void removeAssociationInstance(FmmlxAssociationInstance instance) {
 		diagram.removeAssociationInstance(instance);
+		diagram.updateDiagram();
 	}
+	
 	public void associationValueDialog(FmmlxObject object, PropertyType association) {
 		CountDownLatch latch = new CountDownLatch(1);
 

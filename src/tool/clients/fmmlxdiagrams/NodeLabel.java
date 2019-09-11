@@ -25,7 +25,7 @@ public class NodeLabel implements NodeElement {
 	private boolean selected;
 
 	@Override
-	public void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram) {
+	public void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram, boolean objectIsSelected) {
 		double hAlign = 0;
 		textWidth = diagram.calculateTextWidth(text);
 		textHeight = diagram.calculateTextHeight();

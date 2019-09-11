@@ -318,7 +318,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		double currentY = 0;
 
 		int headerLines = hasParents() ? 3 : 2;
-		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * headerLines, getLevelBackgroundColor(), Color.BLACK, 1, PropertyType.Class);
+		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * headerLines, getLevelBackgroundColor(), Color.BLACK, (x) -> {return 1.;}, PropertyType.Class);
 		nodeElements.addElement(header);
 		String ofName;
 		try {
@@ -351,7 +351,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		double attBoxHeight = Math.max(lineHeight * attSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
 		double yAfterAttBox = currentY + attBoxHeight;
 		double attY = 0;
-		NodeBox attBox = new NodeBox(0, currentY, neededWidth, attBoxHeight, Color.WHITE, Color.BLACK, 1, PropertyType.Attribute);
+		NodeBox attBox = new NodeBox(0, currentY, neededWidth, attBoxHeight, Color.WHITE, Color.BLACK, (x) -> {return 1.;}, PropertyType.Attribute);
 		nodeElements.addElement(attBox);
 
 		for (FmmlxAttribute att : ownAttributes) {
@@ -376,7 +376,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 //		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
 		double opsBoxHeight = Math.max(lineHeight * opsSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
 		double opsY = 0;
-		NodeBox opsBox = new NodeBox(0, currentY, neededWidth, opsBoxHeight, Color.WHITE, Color.BLACK, 1, PropertyType.Operation);
+		NodeBox opsBox = new NodeBox(0, currentY, neededWidth, opsBoxHeight, Color.WHITE, Color.BLACK, (x) -> {return 1.;}, PropertyType.Operation);
 		if (showOperations && opsSize > 0) {
 			yAfterOpsBox = currentY + opsBoxHeight;
 			nodeElements.addElement(opsBox);
@@ -402,7 +402,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 //		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
 		double slotBoxHeight = Math.max(lineHeight * slotSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
 		double slotsY = 0;
-		NodeBox slotsBox = new NodeBox(0, currentY, neededWidth, slotBoxHeight, Color.WHITE, Color.BLACK, 1, PropertyType.Slot);
+		NodeBox slotsBox = new NodeBox(0, currentY, neededWidth, slotBoxHeight, Color.WHITE, Color.BLACK, (x) -> {return 1.;}, PropertyType.Slot);
 		if (showSlots && slotSize > 0) {
 			yAfterSlotBox = currentY + slotBoxHeight;
 			nodeElements.addElement(slotsBox);
@@ -419,7 +419,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 //		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
 		double opvBoxHeight = Math.max(lineHeight * opvSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
 		double opvY = 0;
-		NodeBox opvBox = new NodeBox(0, currentY, neededWidth, opvBoxHeight, Color.WHITE, Color.BLACK, 1, PropertyType.OperationValue);
+		NodeBox opvBox = new NodeBox(0, currentY, neededWidth, opvBoxHeight, Color.WHITE, Color.BLACK, (x) -> {return 1.;}, PropertyType.OperationValue);
 		if (showOperationValues && opvSize > 0) {
 			yAfterOPVBox = currentY + opvBoxHeight;
 			nodeElements.addElement(opvBox);
@@ -431,7 +431,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		}
 		currentY = yAfterOPVBox;
 
-		NodeBox selectionBox = new NodeBox(0, 0, neededWidth, currentY, new Color(0, 0, 0, 0), Color.BLACK, 1., PropertyType.Selection);
+		NodeBox selectionBox = new NodeBox(0, 0, neededWidth, currentY, new Color(0, 0, 0, 0), Color.BLACK, (selected) -> {return selected?3:1;}, PropertyType.Selection);
 		nodeElements.addElement(selectionBox);
 
 
@@ -507,7 +507,7 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		g.setFont(diagram.getFont());
 
 		for (NodeElement e : nodeElements) {
-			e.paintOn(g, x + xOffset, y + yOffset, diagram);
+			e.paintOn(g, x + xOffset, y + yOffset, diagram, selected);
 		}
 	}
 
