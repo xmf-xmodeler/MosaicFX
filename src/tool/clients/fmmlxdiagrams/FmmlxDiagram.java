@@ -783,7 +783,7 @@ public class FmmlxDiagram {
 	}
 
 	public void removeAssociation(RemoveDialogResult result) {
-		comm.removeAssociation(result.getObject().getId(), result.getAssociation().getName(), 0);
+		comm.removeAssociation(result.getAssociation().getId(), 0);
 
 	}
 
