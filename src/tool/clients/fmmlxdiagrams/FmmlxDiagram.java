@@ -424,8 +424,7 @@ public class FmmlxDiagram {
 				newEdgeTarget = null;
 				deselectAll();
 			}
-			
-			System.err.println("V:" + selectedObjects);
+
 			if (e.isControlDown()) {
 				if (selectedObjects.contains(hitObject)) {
 					selectedObjects.remove(hitObject);
@@ -439,7 +438,6 @@ public class FmmlxDiagram {
 					highlightElementAt(hitObject, p);
 				}
 			}
-			System.err.println("N:" + selectedObjects);
 			handleClickOnNodeElement(p, hitObject);
 
 			if (e.getClickCount() == 2) {
@@ -659,7 +657,7 @@ public class FmmlxDiagram {
 				select(o);
 			}
 		}
-		
+
 		mode = MouseMode.STANDARD;
 	}
 
@@ -679,6 +677,13 @@ public class FmmlxDiagram {
 			e.printStackTrace();
 			return new javafx.geometry.Point2D(event.getX(), event.getY());
 		}
+	}
+
+	public FmmlxProperty getSelectedProperty() {
+		if (lastHitLabel != null) {
+			return lastHitLabel.getActionObject();
+		}
+		return null;
 	}
 
 	public double getZoom() {
