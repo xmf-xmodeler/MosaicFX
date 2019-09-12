@@ -472,17 +472,14 @@ public class FmmlxDiagramCommunicator {
 		Value[] message = new Value[]{
 				new Value(-1),
 				new Value(id),
-				new Value(name),
-				new Value(strategy)};
+				new Value(name)};
 		WorkbenchClient.theClient().send(handler, "removeOperation", message);
 	}
 
-	public void removeAssociation(int id, String name, int strategy) {
+	public void removeAssociation(int assocId, int strategy) {
 		Value[] message = new Value[]{
 				new Value(-1),
-				new Value(id),
-				new Value(name),
-				new Value(strategy)};
+				new Value(assocId)};
 		WorkbenchClient.theClient().send(handler, "removeAssociation", message);
 	}
 
@@ -560,7 +557,6 @@ public class FmmlxDiagramCommunicator {
 				new Value(oldLevel),
 				new Value(newLevel)};
 		WorkbenchClient.theClient().send(handler, "changeClassLevel", message);
-
 	}
 
 	public void changeAttributeLevel(int objectId, String attName, int oldLevel, int newLevel) {
@@ -695,13 +691,13 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "changeMultiplicity", message);
 	}
 
-	public void changeBody(int objectId, String operationName, String body) {
+	public void changeOperationBody(int objectId, String operationName, String body) {
 		Value[] message = new Value[]{
 				new Value(-1),
 				new Value(objectId),
 				new Value(operationName),
 				new Value(body)};
-		WorkbenchClient.theClient().send(handler, "changeBody", message);
+		WorkbenchClient.theClient().send(handler, "changeOperationBody", message);
 	}
 
 	public void changeTargetAssociation(int objectId, String associationName, Integer oldTargetID, Integer newTargetID) {
@@ -743,10 +739,10 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "addAssociationInstance", message);
 	}
 
-	public void removeAssociationInstance(int id) {
+	public void removeAssociationInstance(int assocInstId) {
 		Value[] message = new Value[]{
 				new Value(-1),
-				new Value(id)
+				new Value(assocInstId)
 		};
 		WorkbenchClient.theClient().send(handler, "removeAssociationInstance", message);
 	}

@@ -22,9 +22,10 @@ public class NodeLabel implements NodeElement {
 	private double textHeight;
 	private final static int Y_BASELINE_DIFF = 3;
 	private final static int BOX_GAP = 1;
+	private boolean selected;
 
 	@Override
-	public void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram) {
+	public void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram, boolean objectIsSelected) {
 		double hAlign = 0;
 		textWidth = diagram.calculateTextWidth(text);
 		textHeight = diagram.calculateTextHeight();
@@ -32,8 +33,8 @@ public class NodeLabel implements NodeElement {
 		if (alignment != Pos.BASELINE_LEFT) {
 			hAlign = (alignment == Pos.BASELINE_CENTER ? 0.5 : 1) * textWidth;
 		}
-		if (bgColor != null) {
-			g.setFill(bgColor);
+		if (selected || bgColor != null) {
+			g.setFill(selected ? Color.DARKGREY : bgColor);
 			g.fillRect(x - hAlign + xOffset - BOX_GAP, y + yOffset - BOX_GAP - textHeight, textWidth + 2 * BOX_GAP, textHeight + 2 * BOX_GAP);
 		}
 
@@ -62,6 +63,7 @@ public class NodeLabel implements NodeElement {
 		this.actionObject = actionObject;
 		this.text = text;
 		this.isAbstract = false;
+		this.selected = false;
 	}
 
 	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject,
@@ -75,6 +77,7 @@ public class NodeLabel implements NodeElement {
 		this.actionObject = actionObject;
 		this.text = text;
 		this.isAbstract = isAbstract;
+		this.selected = false;
 	}
 
 	@Override
@@ -95,6 +98,14 @@ public class NodeLabel implements NodeElement {
 	private boolean isHitBaseLineLeft(double mouseX, double mouseY) {
 		Rectangle rec = new Rectangle(x, y - textHeight, textWidth, textHeight);
 		return rec.contains(mouseX, mouseY);
+	}
+
+	public void setSelected() {
+		selected = true;
+	}
+
+	public void setDeselected() {
+		selected = false;
 	}
 
 	public FmmlxProperty getActionObject() {
