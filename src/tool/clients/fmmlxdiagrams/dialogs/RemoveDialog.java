@@ -263,4 +263,12 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 		//not sure 
 		return true;
 	}
+
+	public void setSelected(FmmlxProperty selectedFmmlxProperty) {
+		if (type == PropertyType.Attribute) {
+			selectAttributeComboBox.getSelectionModel().select((FmmlxAttribute) selectedFmmlxProperty);
+		} else if (type == PropertyType.Operation) {
+			selectOperationComboBox.getSelectionModel().select((FmmlxOperation) selectedFmmlxProperty);
+		}
+	}
 }

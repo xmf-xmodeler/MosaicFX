@@ -929,6 +929,10 @@ public class FmmlxDiagram {
 		comm.removeAssociationInstance(instance.getId());
 	}
 
+	public void removeAssociation(FmmlxAssociation association) {
+		comm.removeAssociation(association.getId(), 0);
+	}
+
 	public void associationValue(AssociationValueDialogResult result) {
 		// TODO Auto-generated method stub
 

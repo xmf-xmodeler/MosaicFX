@@ -7,10 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.util.converter.IntegerStringConverter;
-import tool.clients.fmmlxdiagrams.FmmlxAttribute;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.FmmlxOperation;
+import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
 
@@ -104,7 +101,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	}
 
 	private boolean validateAssociationLevelChange() {
-		if (selectAssociationComboBox.getSelectionModel().getSelectedItem()==null) {
+		if (selectAssociationComboBox.getSelectionModel().getSelectedItem() == null) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociation);
 			return false;
 		} else if (newLevelComboBox.getSelectionModel().getSelectedIndex() == -1) {
@@ -119,7 +116,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	}
 
 	private boolean validateOperationLevelChange() {
-		if (selectOperationComboBox.getSelectionModel().getSelectedItem()==null) {
+		if (selectOperationComboBox.getSelectionModel().getSelectedItem() == null) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectOperation);
 			return false;
 		} else if (newLevelComboBox.getSelectionModel().getSelectedIndex() == -1) {
@@ -134,7 +131,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	}
 
 	private boolean validateAttributeLevelChange() {
-		if (selectAttributeComboBox.getSelectionModel().getSelectedItem()==null) {
+		if (selectAttributeComboBox.getSelectionModel().getSelectedItem() == null) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectAttribute);
 			return false;
 		} else if (newLevelComboBox.getSelectionModel().getSelectedIndex() == -1) {
@@ -325,14 +322,14 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.changeClassLevel);
 		objectLevelTextField.setText(object.getLevel() + "");
 		objectLevelTextField.setDisable(true);
-		
+
 		newLevelLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectNewLevel);
 		currentLevel = object.getLevel();
 
 		newLevelComboBox = new ComboBox<Integer>(LevelList.levelList);
 		newLevelComboBox.setEditable(true);
 		newLevelComboBox.setConverter(new IntegerStringConverter());
- 
+
 		newLevelComboBox.setPrefWidth(COLUMN_WIDTH);
 		newLevelComboBox.valueProperty().addListener(new ChangeListener<Integer>() {
 
@@ -347,5 +344,13 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 		grid.add(objectLevelTextField, 1, 1);
 		grid.add(newLevelLabel, 0, 2);
 		grid.add(newLevelComboBox, 1, 2);
+	}
+
+	public void setSelected(FmmlxProperty selectedProperty) {
+		if (selectedProperty.getPropertyType() == PropertyType.Attribute) {
+			selectAttributeComboBox.getSelectionModel().select((FmmlxAttribute) selectedProperty);
+		} else if (selectedProperty.getPropertyType() == PropertyType.Operation) {
+			selectOperationComboBox.getSelectionModel().select((FmmlxOperation) selectedProperty);
+		}
 	}
 }

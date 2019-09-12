@@ -5,10 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
-import tool.clients.fmmlxdiagrams.FmmlxAttribute;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.FmmlxOperation;
+import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOwnerDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
 
@@ -94,13 +91,13 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 
 
 	private boolean validateChangeOwnerOperation() {
-		if (selectOperationComboBox.getSelectionModel().getSelectedItem()==null) {
+		if (selectOperationComboBox.getSelectionModel().getSelectedItem() == null) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectOperation);
 			return false;
 		} else if (newOwnerComboBox.getSelectionModel().getSelectedItem() == null) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectNewOwner);
 			return false;
-		} else if(newOwnerComboBox.getSelectionModel().getSelectedItem()==object) {
+		} else if (newOwnerComboBox.getSelectionModel().getSelectedItem() == object) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectAnotherClass);
 			return false;
 		}
@@ -109,13 +106,13 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 
 
 	private boolean validateChangeOwnerAttribute() {
-		if (selectAttributeComboBox.getSelectionModel().getSelectedItem()==null) {
+		if (selectAttributeComboBox.getSelectionModel().getSelectedItem() == null) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectAttribute);
 			return false;
 		} else if (newOwnerComboBox.getSelectionModel().getSelectedItem() == null) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectNewOwner);
 			return false;
-		} else if(newOwnerComboBox.getSelectionModel().getSelectedItem()==object) {
+		} else if (newOwnerComboBox.getSelectionModel().getSelectedItem() == object) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectAnotherClass);
 			return false;
 		}
@@ -125,23 +122,22 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 
 	private void layoutContent() {
 		classLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectedObject);
-		
+
 		newOwnerLabel = new Label(StringValueDialog.LabelAndHeaderTitle.newOwner);
 
 		classNameTextfield = new TextField();
 		classNameTextfield.setText(object.getName());
 		classNameTextfield.setDisable(true);
-		
-		
-		
+
+
 		attributes = object.getOwnAttributes();
 		attributes.addAll(object.getOtherAttributes());
-		
+
 
 		ObservableList<FmmlxObject> objectList = FXCollections.observableList(objects);
 		objectList.remove(object);
 		newOwnerComboBox = (ComboBox<FmmlxObject>) initializeComboBox(objectList);
-		
+
 		newOwnerComboBox.setPrefWidth(COLUMN_WIDTH);
 
 		grid.add(classLabel, 0, 0);
@@ -184,4 +180,11 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 	}
 
 
+	public void setSelected(FmmlxProperty selectedProperty) {
+		if (type == PropertyType.Attribute) {
+			selectAttributeComboBox.getSelectionModel().select((FmmlxAttribute) selectedProperty);
+		} else if (type == PropertyType.Operation) {
+			selectOperationComboBox.getSelectionModel().select((FmmlxOperation) selectedProperty);
+		}
+	}
 }

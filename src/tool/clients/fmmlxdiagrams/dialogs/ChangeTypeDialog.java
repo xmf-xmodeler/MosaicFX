@@ -1,9 +1,5 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Vector;
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -11,12 +7,13 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
-import tool.clients.fmmlxdiagrams.FmmlxAssociation;
-import tool.clients.fmmlxdiagrams.FmmlxAttribute;
-import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.FmmlxOperation;
+import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeTypeDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
 
 
 public class ChangeTypeDialog extends CustomDialog<ChangeTypeDialogResult> {
@@ -25,7 +22,7 @@ public class ChangeTypeDialog extends CustomDialog<ChangeTypeDialogResult> {
 	private DialogPane dialogPane;
 
 	private List<String> typesArray;
-	
+
 	//For all
 	private Label classLabel;
 	private Label currentTypeLabel;
@@ -156,7 +153,7 @@ public class ChangeTypeDialog extends CustomDialog<ChangeTypeDialogResult> {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectNewType);
 			return false;
 		} else if (newTypeComboBox.getSelectionModel().getSelectedItem().equals(currentTypeTextField.getText())) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAnotherType);	
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectAnotherType);
 			return false;
 		}
 		return true;
@@ -171,7 +168,7 @@ public class ChangeTypeDialog extends CustomDialog<ChangeTypeDialogResult> {
 		currentTypeLabel = new Label("Current Type");
 		currentTypeTextField = new TextField();
 		currentTypeTextField.setDisable(true);
-		
+
 		String[] types = new String[]{"Integer", "String", "Boolean", "Float"};
 		typesArray = Arrays.asList(types);
 		ObservableList<String> newTypeList = FXCollections.observableArrayList(typesArray);
@@ -179,7 +176,7 @@ public class ChangeTypeDialog extends CustomDialog<ChangeTypeDialogResult> {
 		newTypeLabel = new Label("Select New Type!");
 		newTypeComboBox = new ComboBox<String>(newTypeList);
 		newTypeComboBox.setEditable(true);
-		
+
 		newTypeComboBox.setPrefWidth(COLUMN_WIDTH);
 
 		grid.add(classLabel, 0, 0);
@@ -281,4 +278,11 @@ public class ChangeTypeDialog extends CustomDialog<ChangeTypeDialogResult> {
 
 	}
 
+	public void setSelected(FmmlxProperty selectedProperty) {
+		if (selectedProperty.getPropertyType() == PropertyType.Attribute) {
+			selectAttributeComboBox.getSelectionModel().select((FmmlxAttribute) selectedProperty);
+		} else if (selectedProperty.getPropertyType() == PropertyType.Operation) {
+			selectOperationComboBox.getSelectionModel().select((FmmlxOperation) selectedProperty);
+		}
+	}
 }

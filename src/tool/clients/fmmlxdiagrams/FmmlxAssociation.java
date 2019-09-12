@@ -4,7 +4,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
-import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
+import tool.clients.fmmlxdiagrams.menus.AssociationContextMenu;
 
 import java.util.Vector;
 
@@ -71,7 +71,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	public String getReverseName() {
 		return reverseName;
 	}
-	
+
 
 	@Override
 	public PropertyType getPropertyType() {
@@ -124,10 +124,10 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	public String associationToPair() {
 		String firstString = this.getSourceNode().getName();
 		String seconString = this.getTargetNode().getName();
-		return "( "+firstString+" ; "+seconString+" )";
+		return "( " + firstString + " ; " + seconString + " )";
 	}
-	
-	
+
+
 	public boolean doObjectsFit(FmmlxObject source, FmmlxObject target) {
 		if (source.isInstanceOf(getSourceNode(), levelEndToStart) && target.isInstanceOf(getTargetNode(), levelStartToEnd))
 			return true;
@@ -138,8 +138,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 
 	@Override
 	public ContextMenu getContextMenu(DiagramActions actions) {
-		System.err.println("getContextMenu " + id);
-		return new DefaultContextMenu(actions); //temporary
+		return new AssociationContextMenu(this, actions); //temporary
 	}
 
 	@Override

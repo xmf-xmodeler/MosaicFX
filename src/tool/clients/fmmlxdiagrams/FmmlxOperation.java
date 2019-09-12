@@ -1,11 +1,12 @@
 package tool.clients.fmmlxdiagrams;
 
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
-import xos.Value;
 
 import java.util.Vector;
 
-public class FmmlxOperation implements FmmlxProperty{
+public class FmmlxOperation implements FmmlxProperty {
+	private final PropertyType propertyType = PropertyType.Operation;
+
 	String name;
 	Integer level;
 	String type;
@@ -31,11 +32,11 @@ public class FmmlxOperation implements FmmlxProperty{
 	public Integer getLevel() {
 		return level;
 	}
-	
+
 	public String getLevelString() {
-		return level>=0?(""+level):" ";
+		return level >= 0 ? ("" + level) : " ";
 	}
-	
+
 	public String getType() {
 		return type;
 	}
@@ -50,13 +51,13 @@ public class FmmlxOperation implements FmmlxProperty{
 
 	@Override
 	public PropertyType getPropertyType() {
-		return null;
+		return propertyType;
 	}
 
 	public String getBody() {
-		if (body==null) {
+		if (body == null) {
 			return "";
-		}else {
+		} else {
 			return body;
 		}
 	}

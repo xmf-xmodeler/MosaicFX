@@ -150,8 +150,13 @@ public class DiagramActions {
 	public void removeDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch l = new CountDownLatch(1);
 
+		FmmlxProperty selectedFmmlxProperty = diagram.getSelectedProperty();
+
 		Platform.runLater(() -> {
 			RemoveDialog dlg = new RemoveDialog(diagram, object, type);
+			if (belongsPropertyToObject(object, selectedFmmlxProperty, type)) {
+				dlg.setSelected(selectedFmmlxProperty);
+			}
 			Optional<RemoveDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
@@ -227,14 +232,24 @@ public class DiagramActions {
 	}
 
 	public void changeNameDialog(FmmlxObject object, PropertyType type) {
-		changeNameDialog(object, type, null);
+		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
+		if (belongsPropertyToObject(object, selectedProperty, type)) {
+			changeNameDialog(object, type, selectedProperty);
+		} else {
+			changeNameDialog(object, type, null);
+		}
 	}
 
 	public void changeLevelDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch latch = new CountDownLatch(1);
 
+		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
+
 		Platform.runLater(() -> {
 			ChangeLevelDialog dlg = new ChangeLevelDialog(diagram, object, type);
+			if (belongsPropertyToObject(object, selectedProperty, type)) {
+				dlg.setSelected(selectedProperty);
+			}
 			Optional<ChangeLevelDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
@@ -261,7 +276,6 @@ public class DiagramActions {
 
 			latch.countDown();
 		});
-
 	}
 
 	public void changeOfDialog(FmmlxObject object) {
@@ -286,13 +300,18 @@ public class DiagramActions {
 	public void changeOwnerDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch l = new CountDownLatch(1);
 
+		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
+
 		Platform.runLater(() -> {
 			ChangeOwnerDialog dlg = new ChangeOwnerDialog(diagram, object, type);
+			if (belongsPropertyToObject(object, selectedProperty, type)) {
+				dlg.setSelected(selectedProperty);
+			}
+
 			Optional<ChangeOwnerDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
 				final ChangeOwnerDialogResult result = opt.get();
-				System.err.println(result);
 				switch (result.getType()) {
 					case Attribute:
 						diagram.changeAttributeOwner(result);
@@ -364,7 +383,7 @@ public class DiagramActions {
 			}
 		}
 		showOperations = !showOperations;
-		diagram.redraw();
+		diagram.updateDiagram();
 	}
 
 	public void toggleShowOperationValues() {
@@ -384,7 +403,7 @@ public class DiagramActions {
 			}
 		}
 		showSlots = !showSlots;
-		diagram.redraw();
+		diagram.updateDiagram();
 	}
 
 	public void addDialog(FmmlxObject object, PropertyType type) {
@@ -421,11 +440,14 @@ public class DiagramActions {
 	public void changeTypeDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch latch = new CountDownLatch(1);
 
+		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
+
 		Platform.runLater(() -> {
 			ChangeTypeDialog dlg = new ChangeTypeDialog(object, type);
+			if (belongsPropertyToObject(object, selectedProperty, type)) {
+				dlg.setSelected(selectedProperty);
+			}
 			Optional<ChangeTypeDialogResult> opt = dlg.showAndWait();
-
-			System.err.println("changeTypeDialog: " + opt);
 
 			if (opt.isPresent()) {
 				final ChangeTypeDialogResult result = opt.get();
@@ -450,14 +472,16 @@ public class DiagramActions {
 		});
 	}
 
-	//TODO: needs to be fixed -> dialog for different types > only type of comboBox changes according to type
-	//		result needs to be extended to save the changed property
-
 	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch latch = new CountDownLatch(1);
 
+		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
+
 		Platform.runLater(() -> {
 			ChangeMultiplicityDialog dlg = new ChangeMultiplicityDialog(object, type);
+			if (belongsPropertyToObject(object, selectedProperty, type)) {
+				dlg.setSelected(selectedProperty);
+			}
 			Optional<MultiplicityDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
@@ -584,6 +608,11 @@ public class DiagramActions {
 		diagram.updateDiagram();
 	}
 
+	public void removeAssociation(FmmlxAssociation association) {
+		diagram.removeAssociation(association);
+		diagram.updateDiagram();
+	}
+
 	public void associationValueDialog(FmmlxObject object, PropertyType association) {
 		CountDownLatch latch = new CountDownLatch(1);
 
@@ -599,6 +628,40 @@ public class DiagramActions {
 			}
 			latch.countDown();
 		});
+	}
+
+	public boolean belongsPropertyToObject(FmmlxObject object, FmmlxProperty property, PropertyType dialogType) {
+		if (property != null && property.getPropertyType() == dialogType) {
+			switch (dialogType) {
+				case Attribute:
+					return belongsAttributeToObject(object, (FmmlxAttribute) property);
+				case Operation:
+					return belongsOperationToObject(object, (FmmlxOperation) property);
+				default:
+					return false;
+			}
+		}
+		return false;
+	}
+
+	private boolean belongsAttributeToObject(FmmlxObject object, FmmlxAttribute selectedAttribute) {
+		Vector<FmmlxAttribute> objectAttributes = object.getAllAttributes();
+		for (FmmlxAttribute attribute : objectAttributes) {
+			if (attribute == selectedAttribute) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean belongsOperationToObject(FmmlxObject object, FmmlxOperation selectedOperation) {
+		Vector<FmmlxOperation> objectOperations = object.getOwnOperations();
+		for (FmmlxOperation operation : objectOperations) {
+			if (operation == selectedOperation) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
