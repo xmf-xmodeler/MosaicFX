@@ -587,6 +587,10 @@ public class FmmlxDiagram {
 		mode = MouseMode.DRAW_EDGE;
 	}
 
+	public void setStandardMouseMode() {
+		mode = MouseMode.STANDARD;
+	}
+
 	////////////////////////////////////////////////////////////////////
 	private void clearContextMenus() {
 		if (activeContextMenu != null && activeContextMenu.isShowing()) {
