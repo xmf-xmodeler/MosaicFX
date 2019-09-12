@@ -209,7 +209,6 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final ChangeNameDialogResult result = opt.get();
-				System.err.println(result.toString());
 				switch (result.getType()) {
 					case Class:
 						diagram.changeClassName(result);

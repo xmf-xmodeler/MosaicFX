@@ -507,7 +507,8 @@ public class FmmlxDiagram {
 				if (hitNodeBox.getElementType() == PropertyType.Slot && hitProperty != null) {
 					actions.changeSlotValue((FmmlxObject) hitObject, (FmmlxSlot) hitProperty);
 				} else {
-					actions.changeNameDialog((FmmlxObject) hitObject, hitNodeBox.getElementType(), hitProperty);
+					if (hitNodeBox.getElementType() != PropertyType.Slot)
+						actions.changeNameDialog((FmmlxObject) hitObject, hitNodeBox.getElementType(), hitProperty);
 				}
 			}
 		}
