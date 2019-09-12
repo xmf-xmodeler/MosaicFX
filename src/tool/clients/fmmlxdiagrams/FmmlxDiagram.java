@@ -318,6 +318,7 @@ public class FmmlxDiagram {
 	}
 
 	private void mouseMoved(MouseEvent e) {
+		System.out.println("MOUSE: " + mode);
 		Point2D p = scale(e);
 
 		if (mode == MouseMode.DRAW_EDGE) {
@@ -585,6 +586,10 @@ public class FmmlxDiagram {
 	public void setDrawEdgeMouseMode(PropertyType type) {
 		drawEdgeType = type;
 		mode = MouseMode.DRAW_EDGE;
+	}
+
+	public void setStandardMouseMode() {
+		mode = MouseMode.STANDARD;
 	}
 
 	////////////////////////////////////////////////////////////////////

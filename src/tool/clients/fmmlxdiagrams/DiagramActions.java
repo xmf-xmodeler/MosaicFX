@@ -535,6 +535,7 @@ public class DiagramActions {
 		Platform.runLater(() -> {
 			AddAssociationDialog dlg = new AddAssociationDialog(diagram, source, target);
 			Optional<AddAssociationDialogResult> opt = dlg.showAndWait();
+			diagram.setStandardMouseMode();
 
 			if (opt.isPresent()) {
 				final AddAssociationDialogResult result = opt.get();
