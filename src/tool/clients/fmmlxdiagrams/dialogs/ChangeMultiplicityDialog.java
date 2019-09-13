@@ -32,7 +32,7 @@ public class ChangeMultiplicityDialog extends CustomDialog<MultiplicityDialogRes
 	private List<Node> labelList;
 	private List<Node> inputsList;
 
-
+	@Deprecated
 	public ChangeMultiplicityDialog(FmmlxObject object, PropertyType type) {
 		this.object = object;
 		this.type = type;
@@ -177,11 +177,11 @@ public class ChangeMultiplicityDialog extends CustomDialog<MultiplicityDialogRes
 	}
 
 	private void setMultiplicityTextField(FmmlxAttribute attribute) {
-		if (attribute.getMultiplicity() != null) {
-			this.multiplicity = attribute.getMultiplicity();
-
-			multiplicityTextField.setText(this.multiplicity.toString());
-		}
+//		if (attribute.getMultiplicity() != null) {
+//			this.multiplicity = attribute.getMultiplicity();
+//
+//			multiplicityTextField.setText(this.multiplicity.toString());
+//		}
 	}
 
 	public void setSelected(FmmlxProperty selectedProperty) {

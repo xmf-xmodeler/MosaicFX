@@ -472,27 +472,27 @@ public class DiagramActions {
 		});
 	}
 
-	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type) {
-		CountDownLatch latch = new CountDownLatch(1);
-
-		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
-
-		Platform.runLater(() -> {
-			ChangeMultiplicityDialog dlg = new ChangeMultiplicityDialog(object, type);
-			if (belongsPropertyToObject(object, selectedProperty, type)) {
-				dlg.setSelected(selectedProperty);
-			}
-			Optional<MultiplicityDialogResult> opt = dlg.showAndWait();
-
-			if (opt.isPresent()) {
-				final MultiplicityDialogResult result = opt.get();
-				System.err.println(result);
-				diagram.changeMulitiplicityAttribute(result);
-				diagram.updateDiagram();
-			}
-			latch.countDown();
-		});
-	}
+//	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type) {
+//		CountDownLatch latch = new CountDownLatch(1);
+//
+//		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
+//
+//		Platform.runLater(() -> {
+//			ChangeMultiplicityDialog dlg = new ChangeMultiplicityDialog(object, type);
+//			if (belongsPropertyToObject(object, selectedProperty, type)) {
+//				dlg.setSelected(selectedProperty);
+//			}
+//			Optional<MultiplicityDialogResult> opt = dlg.showAndWait();
+//
+//			if (opt.isPresent()) {
+//				final MultiplicityDialogResult result = opt.get();
+//				System.err.println(result);
+//				diagram.changeMulitiplicityAttribute(result);
+//				diagram.updateDiagram();
+//			}
+//			latch.countDown();
+//		});
+//	}
 
 	public void changeTargetDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch latch = new CountDownLatch(1);

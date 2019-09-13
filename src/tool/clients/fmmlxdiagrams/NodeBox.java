@@ -9,7 +9,7 @@ import java.util.Vector;
 
 public class NodeBox implements NodeElement {
 
-	public interface X {
+	public interface LineWidthGetter {
 		public double getWidth(boolean selected);
 	}
 
@@ -19,11 +19,11 @@ public class NodeBox implements NodeElement {
 	double height;
 	Paint bgColor;
 	Paint fgColor;
-	X lineWidth;
+	LineWidthGetter lineWidth;
 	Vector<NodeElement> nodeElements = new Vector<>();
 	private PropertyType propertyType;
 
-	public NodeBox(double x, double y, double width, double height, Paint bgColor, Paint fgColor, X lineWidth, PropertyType propertyType) {
+	public NodeBox(double x, double y, double width, double height, Paint bgColor, Paint fgColor, LineWidthGetter lineWidth, PropertyType propertyType) {
 		super();
 		this.x = x;
 		this.y = y;
