@@ -333,7 +333,7 @@ public class XModeler extends Application {
     	
     	if(file != null){
     		selectedImage = file.getAbsolutePath();
-    		propertyManager.setProperty("loadImageDirectory", file.getParent());
+    		System.err.println("propertyManager.setProperty(\"loadImageDirectory\", file.getParent());");
     	}
     	
     }
