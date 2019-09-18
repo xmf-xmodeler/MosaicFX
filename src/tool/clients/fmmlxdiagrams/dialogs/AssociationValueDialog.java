@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Vector;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -79,7 +78,6 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 					e1.printStackTrace();
 				}
 			}
-			addBlankAssociationInstance();
 			e.consume();
 		});
 		final Button minusButton = (Button) getDialogPane().lookupButton(minusButtonType);
@@ -127,9 +125,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 	}
 
 
-	private void addAssociationValue(FmmlxObject startNode, FmmlxObject endNode) throws InterruptedException {
-			
-			
+	private void addAssociationValue(FmmlxObject startNode, FmmlxObject endNode) throws InterruptedException {		
 			diagram.addAssociationInstance(startNode, endNode, selectAssociationComboBox.getSelectionModel().getSelectedItem());
 			diagram.updateDiagram();
 			updateAssociationListView(selectAssociationComboBox.getSelectionModel().getSelectedItem());
@@ -151,33 +147,6 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 	}
 
 
-	private void addBlankAssociationInstance() {
-		// TODO Auto-generated method stub
-	}
-	
-	private void changeStartNodeAssociationInstance() {
-		//TODO
-		
-	}
-	
-	private void changeEndNodeAssociationInstance() {
-		//TODO
-		
-	}
-
-
-	private void addAssociationInstance(FmmlxObject starNode, FmmlxObject endNode) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	
-	private boolean validateForAddAssociationInstance() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
@@ -190,6 +159,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 
 
 
+	@SuppressWarnings("deprecation")
 	private void layoutContent() {
 		associations = diagram.getAssociations();
 		ObservableList<FmmlxAssociation> associationList;
