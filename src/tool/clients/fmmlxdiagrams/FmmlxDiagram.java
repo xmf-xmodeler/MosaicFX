@@ -939,11 +939,6 @@ public class FmmlxDiagram {
 		comm.removeAssociationInstance(instance.getId());
 	}
 
-	public void associationValue(AssociationValueDialogResult result) {
-		// TODO Auto-generated method stub
-
-	}
-
 	public boolean isNameAvailable(String t) {
 		for (FmmlxObject o : objects) if (o.getName().equals(t)) return false;
 		return true;
