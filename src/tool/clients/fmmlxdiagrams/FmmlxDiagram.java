@@ -949,4 +949,9 @@ public class FmmlxDiagram {
 		return true;
 	}
 
+	public void updateAssociationInstance(FmmlxAssociationInstance associationInstance, FmmlxObject startObject,
+			FmmlxObject endObject) {
+		comm.updateAssociationInstance(associationInstance.getId(), startObject.getId(), endObject.getId());	
+	}
+
 }

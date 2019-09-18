@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import org.eclipse.ui.internal.actions.SelectWorkingSetsAction;
-
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -66,14 +65,19 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 		plusButtonType = new ButtonType("+");
 		minusButtonType = new ButtonType("-");
 		midlleButtonType = new ButtonType("-> ->");
-		dialogPane.getButtonTypes().addAll(plusButtonType, minusButtonType, midlleButtonType, ButtonType.OK, ButtonType.CANCEL);
+		dialogPane.getButtonTypes().addAll(plusButtonType, minusButtonType, midlleButtonType, ButtonType.CLOSE);
 		layoutContent();
 		dialogPane.setContent(flow);
 		
 		final Button plusButton = (Button) getDialogPane().lookupButton(plusButtonType);
 		plusButton.addEventFilter(ActionEvent.ACTION, e -> {
 			if(validateAdd()) {
-				addAssociationValue(classAListView.getSelectionModel().getSelectedItem(), classBListView.getSelectionModel().getSelectedItem());
+				try {
+					addAssociationValue(classAListView.getSelectionModel().getSelectedItem(), classBListView.getSelectionModel().getSelectedItem());
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 			addBlankAssociationInstance();
 			e.consume();
@@ -89,25 +93,46 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 			e.consume();
 		});
 		final Button middleButton = (Button) getDialogPane().lookupButton(midlleButtonType);
-		plusButton.addEventFilter(ActionEvent.ACTION, e -> {
-			e.consume();
-		});
-		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
-		okButton.addEventFilter(ActionEvent.ACTION, e -> {
-			if (!validateUserInput()) {
-				e.consume();
+		middleButton.addEventFilter(ActionEvent.ACTION, e -> {
+			if (validateChange()) {
+				diagram.updateAssociationInstance(associationListView.getSelectionModel().getSelectedItem(), 
+						classAListView.getSelectionModel().getSelectedItem(),
+						classBListView.getSelectionModel().getSelectedItem());
+						
+				associationListView.getSelectionModel().getSelectedItem().edit(classAListView.getSelectionModel().getSelectedItem(),
+						classBListView.getSelectionModel().getSelectedItem());
+				updateAssociationListView(selectAssociationComboBox.getSelectionModel().getSelectedItem());
 			}
+			e.consume();
 		});
 
 		setResult();
 	}
 
 
-	private void addAssociationValue(FmmlxObject startNode, FmmlxObject endNode) {
-		diagram.addAssociationInstance(startNode, endNode, selectAssociationComboBox.getSelectionModel().getSelectedItem());
-		diagram.updateDiagram();
-		System.out.println(selectAssociationComboBox.getSelectionModel().getSelectedItem().getInstance().get(0).toPair());
-		updateAssociationListView(selectAssociationComboBox.getSelectionModel().getSelectedItem());
+	private boolean validateChange() {
+		if(selectAssociationComboBox.getSelectionModel().getSelectedItem()==null) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociation);
+			return false;
+		} else if(associationListView.getSelectionModel().getSelectedItem()==null) {
+			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociationInstance);
+		} else if(classAListView.getSelectionModel().getSelectedItem()==null) {
+			errorLabel.setText("Select instance from class "+ classANameTextField.getText());
+			return false;
+		} else if(classBListView.getSelectionModel().getSelectedItem()==null) {
+			errorLabel.setText("Select instance from class "+ classBNameTextField.getText());
+			return false;
+		}
+		return true;
+	}
+
+
+	private void addAssociationValue(FmmlxObject startNode, FmmlxObject endNode) throws InterruptedException {
+			
+			
+			diagram.addAssociationInstance(startNode, endNode, selectAssociationComboBox.getSelectionModel().getSelectedItem());
+			diagram.updateDiagram();
+			updateAssociationListView(selectAssociationComboBox.getSelectionModel().getSelectedItem());
 	}
 
 
@@ -128,7 +153,6 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 
 	private void addBlankAssociationInstance() {
 		// TODO Auto-generated method stub
-		
 	}
 	
 	private void changeStartNodeAssociationInstance() {
@@ -164,9 +188,6 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 	}
 
 
-	private boolean validateUserInput() {
-		return false;
-	}
 
 
 	private void layoutContent() {

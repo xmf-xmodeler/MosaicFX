@@ -141,8 +141,6 @@ public class DiagramActions {
 			}
 			diagram.updateDiagram();
 			l.countDown();
-
-
 		});
 	}
 
