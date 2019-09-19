@@ -9,7 +9,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
@@ -63,7 +62,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 		dialogPane = getDialogPane();
 		plusButtonType = new ButtonType("+");
 		minusButtonType = new ButtonType("-");
-		midlleButtonType = new ButtonType("-> ->");
+		midlleButtonType = new ButtonType("Confirm Edit");
 		dialogPane.getButtonTypes().addAll(plusButtonType, minusButtonType, midlleButtonType, ButtonType.CLOSE);
 		layoutContent();
 		dialogPane.setContent(flow);
@@ -91,8 +90,6 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 			}
 			e.consume();
 		});
-
-		setResult();
 	}
 
 	private boolean validateAdd() {
@@ -142,16 +139,6 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 		return true;
 	}
 
-
-	private void setResult() {
-		setResultConverter(dlgBtn -> {
-			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				//TODO
-			}
-			return null;
-		});
-	}
-
 	private void addAssociationInstance(FmmlxObject startNode, FmmlxObject endNode){		
 		diagram.addAssociationInstance(startNode, endNode, selectAssociationComboBox.getSelectionModel().getSelectedItem());
 		diagram.updateDiagram();
@@ -171,7 +158,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 		updateAssociationListView(selectAssociationComboBox.getSelectionModel().getSelectedItem());
 	}
 	
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "deprecation", "unchecked" })
 	private void layoutContent() {
 		associations = diagram.getAssociations();
 		ObservableList<FmmlxAssociation> associationList;
