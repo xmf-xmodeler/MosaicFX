@@ -20,8 +20,8 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 	private static HashMap<Integer, Paint> colors = null;
 	private String name;
 	int id;
-	private int x;
-	private int y;
+	private double x;
+	private double y;
 	private boolean isAbstract;
 	int level;
 	Integer of;
@@ -30,8 +30,10 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 	private int height;
 	Object highlightedElement;
 
-	public transient double mouseMoveOffsetX;
-	public transient double mouseMoveOffsetY;
+	private transient double mouseMoveOffsetX;
+	private transient double mouseMoveOffsetY;
+	private transient double lastValidX;
+	private transient double lastValidY;
 
 	boolean usePreferredWidth = false; //not implemented yet
 
@@ -140,11 +142,11 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		return id;
 	}
 
-	public int getX() {
+	public double getX() {
 		return x;
 	}
 
-	public int getY() {
+	public double getY() {
 		return y;
 	}
 
@@ -156,11 +158,11 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		return height;
 	}
 
-	public int getRightBorder() {
+	public double getRightBorder() {
 		return y + width;
 	}
 
-	public int getBottomBorder() {
+	public double getBottomBorder() {
 		return x + height;
 	}
 
@@ -452,7 +454,6 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 			neededWidth = Math.max(neededWidth, diagram.calculateTextWidth(getLevel() + "^MetaClass^") + 16);
 		}
 
-
 		//determine maximal width of attributes
 		for (FmmlxAttribute att : ownAttributes) {
 			neededWidth = Math.max(diagram.calculateTextWidth(att.name + ":" + att.type) + INST_LEVEL_WIDTH, neededWidth);
@@ -532,16 +533,16 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		operationValues = comm.fetchOperationValues(this.name, this.getMonitoredOperationsNames());
 	}
 
-	private boolean passReqs(FmmlxAttribute att) {
-		return true;
-	}
+//	private boolean passReqs(FmmlxAttribute att) {
+//		return true;
+//	}
 
 	public boolean isHit(double mouseX, double mouseY) {
 		return
-				mouseX > x &&
-						mouseY > y &&
-						mouseX < x + width &&
-						mouseY < y + height;
+			mouseX > x &&
+			mouseY > y &&
+			mouseX < x + width &&
+			mouseY < y + height;
 	}
 
 	@Override
@@ -553,10 +554,13 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 	public void moveTo(double x, double y, FmmlxDiagram diagram) {
 		setX((int) x);
 		setY((int) y);
-		for (Edge edge : diagram.getEdges()) {
-			if (edge.isStartNode(this)) edge.moveStartPoint();
-			if (edge.isEndNode(this)) edge.moveEndPoint();
+		for(Edge edge : diagram.getEdges()) {
+			if (edge.isStartNode(this)) edge.moveStartPoint(x + width/2, y + height/2);
+			if (edge.isEndNode(this)) edge.moveEndPoint(x + width/2, y + height/2);
 		}
+//		for(DiagramLabel label : diagram.getLabels()) {
+//			label.updatePosition();
+//		}
 	}
 
 	public void toggleIsAbstract() {
@@ -638,4 +642,15 @@ public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
 		} while (!ok);
 		return t;
 	}
+
+	@Override
+	public void setOffsetAndStoreLastValidPosition(Point2D p) {
+		mouseMoveOffsetX = p.getX() - x;
+		mouseMoveOffsetY = p.getY() - y;
+		lastValidX = x;
+		lastValidY = y;
+	}
+
+	@Override public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
+	@Override public double getMouseMoveOffsetY() {return mouseMoveOffsetY;}
 }

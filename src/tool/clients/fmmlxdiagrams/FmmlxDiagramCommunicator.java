@@ -253,7 +253,6 @@ public class FmmlxDiagramCommunicator {
 		Vector<Object> response = xmfRequest(handler, "getAllAssociationInstances", new Value[]{});
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
-		System.err.println("getAllAssociationInstances: " + responseContent.size());
 
 		for (Object edgeInfo : responseContent) {
 			Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
@@ -402,10 +401,10 @@ public class FmmlxDiagramCommunicator {
 	@SuppressWarnings("unused")
 	public void sendCurrentPosition(FmmlxObject o) {
 		Vector<Object> response = xmfRequest(handler, "sendNewPosition",
-				new Value[]{new Value(o.id), new Value(o.getX()), new Value(o.getY())});
+				new Value[]{new Value(o.id), new Value((int)(o.getX())), new Value((int)(o.getY()))});
 	}
 
-	public void sendCurrentPositions(FmmlxAssociation a) {
+	public void sendCurrentPositions(Edge a) {
 		Vector<Point2D> points = a.getPoints();
 
 		Value[] listOfPoints = new Value[points.size()];
@@ -491,16 +490,26 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "addAttribute", message);
 	}
 
-	public void addOperation(int objectId, String operationName, int level, String operationType, String body) {
+//	public void addOperation(int objectId, String operationName, int level, String operationType, String body) {
+//		Value[] message = new Value[]{
+//				new Value(-1),
+//				new Value(objectId),
+//				new Value(operationName),
+//				new Value(level),
+//				new Value(operationType),
+//				new Value(body)
+//		};
+//		WorkbenchClient.theClient().send(handler, "addOperation", message);
+//	}
+	
+	public void addOperation2(int objectId, int level, String body) {
 		Value[] message = new Value[]{
 				new Value(-1),
 				new Value(objectId),
-				new Value(operationName),
 				new Value(level),
-				new Value(operationType),
 				new Value(body)
 		};
-		WorkbenchClient.theClient().send(handler, "addOperation", message);
+		WorkbenchClient.theClient().send(handler, "addOperation2", message);
 	}
 
 	public void changeClassName(int id, String newName) {
@@ -742,5 +751,9 @@ public class FmmlxDiagramCommunicator {
 				new Value(assocInstId)
 		};
 		WorkbenchClient.theClient().send(handler, "removeAssociationInstance", message);
+	}
+
+	public void sendCurrentPositions(DiagramLabel l) {
+		System.err.println("sendCurrentPositions: " + l);
 	}
 }

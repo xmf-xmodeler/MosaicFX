@@ -584,8 +584,16 @@ public class DiagramActions {
 				new Alert(AlertType.ERROR, "The selected objects don't fit any Association definition.", ButtonType.OK).showAndWait();
 			}
 			if (association != null) {
-				diagram.addAssociationInstance(source, target, association);
-				updateDiagram();
+				final FmmlxObject sourceF = source;
+				final FmmlxObject targetF = target;
+				final FmmlxAssociation associationF = association;
+//				CountDownLatch l = new CountDownLatch(1);
+
+//				Platform.runLater(() -> {
+				diagram.addAssociationInstance(sourceF, targetF, associationF);
+//					l.countDown();
+//				    });			
+//				diagram.updateDiagram();
 			}
 		} else if (source != null ^ target != null) { // XOR
 			// In this case only one object is set. If only second is set: swap them
