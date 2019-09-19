@@ -57,13 +57,13 @@ public class ObjectContextMenu extends ContextMenu {
 		changeOwnerItem.setOnAction(e -> actions.changeOwnerDialog(object, PropertyType.Attribute));
 		MenuItem changeTypeItem = new MenuItem("Change type");
 		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Attribute));
-		MenuItem changeMultiplicityItem = new MenuItem("Change multiplicity");
-		changeMultiplicityItem.setOnAction(e -> actions.changeMultiplicityDialog(object, PropertyType.Attribute));
+//		MenuItem changeMultiplicityItem = new MenuItem("Change multiplicity");
+//		changeMultiplicityItem.setOnAction(e -> actions.changeMultiplicityDialog(object, PropertyType.Attribute));
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Attribute));
 
 		attributeMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeOwnerItem, changeTypeItem,
-				changeMultiplicityItem, changeLevelItem);
+				changeLevelItem);
 
 		return attributeMenu;
 	}
@@ -75,23 +75,23 @@ public class ObjectContextMenu extends ContextMenu {
 		addItem.setOnAction(e -> actions.setDrawEdgeMode(object, PropertyType.Association));
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e_ -> actions.removeDialog(object, PropertyType.Association));
-		MenuItem changeTargetItem = new MenuItem("Change target");
-		changeTargetItem.setOnAction(e -> actions.changeTargetDialog(object, PropertyType.Association));
-		MenuItem changeNameItem = new MenuItem("Change name");
-		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Association));
-		MenuItem changeTypeItem = new MenuItem("Change type");
-		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Association));
-		MenuItem changeMultiplicityItem = new MenuItem("Change multiplicity");
-		changeMultiplicityItem.setOnAction(e -> actions.changeMultiplicityDialog(object, PropertyType.Association));
-		MenuItem changeLevelItem = new MenuItem("Change level");
-		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Association));
-		MenuItem editAssociation = new MenuItem("edit Association (test)");
+//		MenuItem changeTargetItem = new MenuItem("Change target");
+//		changeTargetItem.setOnAction(e -> actions.changeTargetDialog(object, PropertyType.Association));
+//		MenuItem changeNameItem = new MenuItem("Change name");
+//		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Association));
+//		MenuItem changeTypeItem = new MenuItem("Change type");
+//		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Association));
+//		MenuItem changeMultiplicityItem = new MenuItem("Change multiplicity");
+//		changeMultiplicityItem.setOnAction(e -> actions.changeMultiplicityDialog(object, PropertyType.Association));
+//		MenuItem changeLevelItem = new MenuItem("Change level");
+//		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Association));
+		MenuItem editAssociation = new MenuItem("Edit Association Properties");
 		editAssociation.setOnAction(e -> actions.editAssociationDialog(object, PropertyType.Association));
-		MenuItem associationValue = new MenuItem("Association Value (test)");
+		MenuItem associationValue = new MenuItem("Edit Association Values");
 		associationValue.setOnAction(e -> actions.associationValueDialog(object, PropertyType.Association));
 
-		associationMenu.getItems().addAll(addItem, removeItem, changeTargetItem, changeNameItem, changeTypeItem,
-				changeMultiplicityItem, changeLevelItem, editAssociation, associationValue);
+		associationMenu.getItems().addAll(addItem, removeItem, /*changeTargetItem, changeNameItem, changeTypeItem,
+				changeMultiplicityItem, changeLevelItem, */editAssociation, associationValue);
 
 		return associationMenu;
 	}

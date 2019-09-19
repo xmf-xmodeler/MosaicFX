@@ -495,7 +495,8 @@ public class FmmlxDiagram {
 				if (hitNodeBox.getElementType() == PropertyType.Slot && hitProperty != null) {
 					actions.changeSlotValue((FmmlxObject) hitObject, (FmmlxSlot) hitProperty);
 				} else {
-					actions.changeNameDialog((FmmlxObject) hitObject, hitNodeBox.getElementType(), hitProperty);
+					if (hitNodeBox.getElementType() != PropertyType.Slot)
+						actions.changeNameDialog((FmmlxObject) hitObject, hitNodeBox.getElementType(), hitProperty);
 				}
 			}
 		}
@@ -573,6 +574,10 @@ public class FmmlxDiagram {
 	public void setDrawEdgeMouseMode(PropertyType type) {
 		drawEdgeType = type;
 		mode = MouseMode.DRAW_EDGE;
+	}
+
+	public void setStandardMouseMode() {
+		mode = MouseMode.STANDARD;
 	}
 
 	////////////////////////////////////////////////////////////////////
@@ -937,6 +942,11 @@ public class FmmlxDiagram {
 
 	public void removeAssociationInstance(FmmlxAssociationInstance instance) {
 		comm.removeAssociationInstance(instance.getId());
+	}
+
+
+	public void removeAssociation(FmmlxAssociation association) {
+		comm.removeAssociation(association.getId(), 0);
 	}
 
 	public boolean isNameAvailable(String t) {

@@ -21,7 +21,7 @@ public class FmmlxDiagramCommunicator {
 	private HashMap<Integer, Vector<Object>> results = new HashMap<>();
 	private static Hashtable<Integer, Tab> tabs = new Hashtable<Integer, Tab>();
 	private static Vector<FmmlxDiagram> diagrams = new Vector<FmmlxDiagram>();
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	private static Vector<FmmlxDiagramCommunicator> communicators = new Vector<FmmlxDiagramCommunicator>();
 	static TabPane tabPane;
 	FmmlxDiagram diagram;
@@ -150,7 +150,6 @@ public class FmmlxDiagramCommunicator {
 		}
 		args2[0] = new Value(requestID);
 		boolean waiting = true;
-//		System.err.println("send:" + targetHandle +"-"+ message +"-"+ args2);
 		WorkbenchClient.theClient().send(targetHandle, message, args2);
 		int attempts = 0;
 		int sleep = 10;
@@ -185,8 +184,6 @@ public class FmmlxDiagramCommunicator {
 		for (Object responseObject : responseContent) {
 			Vector<Object> responseObjectList = (Vector<Object>) (responseObject);
 
-//			System.out.println("Class/Object " + responseObjectList.get(1) + " found" + ": " + "Level : "
-//					+ (Integer) responseObjectList.get(2) + " of " + (Integer) responseObjectList.get(3) + " isAbstract: " + (Boolean) responseObjectList.get(5));
 			Vector<Object> parentListO = (Vector<Object>) responseObjectList.get(4);
 			Vector<Integer> parentListI = new Vector<Integer>();
 			for (Object o : parentListO) {
@@ -300,7 +297,7 @@ public class FmmlxDiagramCommunicator {
 					(Integer) attInfo.get(2),
 					(String) attInfo.get(1),
 					(Integer) attInfo.get(4),
-					Multiplicity.parseMultiplicity((Vector<Object>) attInfo.get(3)));
+					null);
 			resultOwn.add(object);
 		}
 		for (Object o : otherAttList) {
@@ -310,7 +307,7 @@ public class FmmlxDiagramCommunicator {
 					(Integer) attInfo.get(2),
 					(String) attInfo.get(1),
 					(Integer) attInfo.get(4),
-					Multiplicity.parseMultiplicity((Vector<Object>) attInfo.get(3)));
+					null);
 			resultOther.add(object);
 		}
 		Vector<Vector<FmmlxAttribute>> result = new Vector<>();
@@ -328,29 +325,29 @@ public class FmmlxDiagramCommunicator {
 			Vector<Object> opInfo = (Vector<Object>) o;
 			try { // temp for compatibility
 				FmmlxOperation op =
-					new FmmlxOperation(
-						(String) opInfo.get(0), // name
-						(Integer) opInfo.get(1), // level
-						(String) opInfo.get(2), // type
-						(String) opInfo.get(3), // body
-						(Integer) opInfo.get(4), // owner
-						Multiplicity.parseMultiplicity((Vector<Object>) opInfo.get(5)), // multiplicity
-						(Boolean) opInfo.get(6), // isMonitored
-						null // args
+						new FmmlxOperation(
+								(String) opInfo.get(0), // name
+								(Integer) opInfo.get(1), // level
+								(String) opInfo.get(2), // type
+								(String) opInfo.get(3), // body
+								(Integer) opInfo.get(4), // owner
+								null, // multiplicity
+								(Boolean) opInfo.get(6), // isMonitored
+								null // args
 
-					);
-			result.add(op);
+						);
+				result.add(op);
 			} catch (Exception e) {
 				FmmlxOperation op =
-					new FmmlxOperation(
-						(String) opInfo.get(0), // name
-						(Integer) opInfo.get(1), // level
-						(String) opInfo.get(2), // type
-						"", // body
-						(Integer) opInfo.get(3), // owner
-						Multiplicity.parseMultiplicity((Vector<Object>) opInfo.get(4)), // multiplicity
-						(Boolean) opInfo.get(5), // isMonitored
-						null // args
+						new FmmlxOperation(
+								(String) opInfo.get(0), // name
+								(Integer) opInfo.get(1), // level
+								(String) opInfo.get(2), // type
+								"", // body
+								(Integer) opInfo.get(3), // owner
+								null, // multiplicity
+								(Boolean) opInfo.get(5), // isMonitored
+								null // args
 						);
 				result.add(op);
 			}

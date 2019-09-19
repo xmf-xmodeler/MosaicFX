@@ -8,6 +8,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.HBox;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
@@ -31,7 +32,7 @@ public class ChangeMultiplicityDialog extends CustomDialog<MultiplicityDialogRes
 	private List<Node> labelList;
 	private List<Node> inputsList;
 
-
+	@Deprecated
 	public ChangeMultiplicityDialog(FmmlxObject object, PropertyType type) {
 		this.object = object;
 		this.type = type;
@@ -50,14 +51,14 @@ public class ChangeMultiplicityDialog extends CustomDialog<MultiplicityDialogRes
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				switch (type) {
-				
-				case Attribute:
-					return new MultiplicityDialogResult(object, propertyComboBox.getSelectionModel().getSelectedItem(),
-							type, this.multiplicity);
-				case Association:
-					//TODO
-				default:
-					System.err.println("ChangeNameDialog: No matching content type!");
+
+					case Attribute:
+						return new MultiplicityDialogResult(object, propertyComboBox.getSelectionModel().getSelectedItem(),
+								type, this.multiplicity);
+					case Association:
+						//TODO
+					default:
+						System.err.println("ChangeNameDialog: No matching content type!");
 				}
 			}
 			return null;
@@ -75,7 +76,7 @@ public class ChangeMultiplicityDialog extends CustomDialog<MultiplicityDialogRes
 	}
 
 	private boolean validateNewMultiplicity() {
-		if(this.multiplicity!=null) {
+		if (this.multiplicity != null) {
 			return true;
 		}
 		errorLabel.setText(StringValueDialog.ErrorMessage.inputNewMultiplicity);
@@ -83,7 +84,7 @@ public class ChangeMultiplicityDialog extends CustomDialog<MultiplicityDialogRes
 	}
 
 	private boolean validateSelectedAttribute() {
-		if(propertyComboBox.getSelectionModel().getSelectedItem()!=null) {
+		if (propertyComboBox.getSelectionModel().getSelectedItem() != null) {
 			return true;
 		}
 		errorLabel.setText(StringValueDialog.ErrorMessage.selectAttribute);
@@ -176,10 +177,16 @@ public class ChangeMultiplicityDialog extends CustomDialog<MultiplicityDialogRes
 	}
 
 	private void setMultiplicityTextField(FmmlxAttribute attribute) {
-		if (attribute.getMultiplicity() != null) {
-			this.multiplicity = attribute.getMultiplicity();
+//		if (attribute.getMultiplicity() != null) {
+//			this.multiplicity = attribute.getMultiplicity();
+//
+//			multiplicityTextField.setText(this.multiplicity.toString());
+//		}
+	}
 
-			multiplicityTextField.setText(this.multiplicity.toString());
+	public void setSelected(FmmlxProperty selectedProperty) {
+		if (type == PropertyType.Attribute) {
+			propertyComboBox.getSelectionModel().select((FmmlxAttribute) selectedProperty);
 		}
 	}
 }
