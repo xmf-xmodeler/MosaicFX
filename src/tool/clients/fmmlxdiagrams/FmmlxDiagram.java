@@ -984,4 +984,39 @@ public class FmmlxDiagram {
 	public void addLabel(DiagramLabel diagramLabel) {
 		labels.add(diagramLabel);
 	}
+
+	public void changeAssociationForwardName(int associationId, String newName) {
+		comm.changeAssociationForwardName(associationId, newName);
+		updateDiagram();
+	}
+
+	public void changeAssociationStart2EndLevel(int associationId, Integer newLevel) {
+		comm.changeAssociationStart2EndLevel(associationId, newLevel);
+		updateDiagram();
+	}
+	
+	public void changeAssociationEnd2StartLevel(int associationId, Integer newLevel) {
+		comm.changeAssociationEnd2StartLevel(associationId, newLevel);
+		updateDiagram();
+	}
+
+	public void changeAssociationStart2EndAccessName(int associationId, String newName) {
+		comm.changeAssociationStart2EndAccessName(associationId, newName);
+		updateDiagram();
+	}
+
+	public void changeAssociationEnd2StartAccessName(int associationId, String newName) {
+		comm.changeAssociationEnd2StartAccessName(associationId, newName);
+		updateDiagram();
+	}
+
+	public void changeAssociationStart2EndMultiplicity(int associationId, Multiplicity newMultiplicity) {
+		comm.changeAssociationStart2EndMultiplicity(associationId, newMultiplicity);
+		updateDiagram();
+	}
+
+	public void changeAssociationEnd2StartMultiplicity(int associationId, Multiplicity newMultiplicity) {
+		comm.changeAssociationEnd2StartMultiplicity(associationId, newMultiplicity);
+		updateDiagram();
+	}
 }

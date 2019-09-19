@@ -760,10 +760,65 @@ public class FmmlxDiagramCommunicator {
 				new Value(startObjectId),
 				new Value(endObjectId)};
 		WorkbenchClient.theClient().send(handler, "updateAssociationInstance", message);
-		
 	}
 
 	public void sendCurrentPositions(DiagramLabel l) {
 		System.err.println("sendCurrentPositions: " + l);
+	}
+
+	public void changeAssociationForwardName(int associationId, String newName) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(associationId),
+				new Value(newName)};
+		WorkbenchClient.theClient().send(handler, "changeAssociationForwardName", message);
+	}
+
+	public void changeAssociationStart2EndLevel(int associationId, Integer newLevel) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(associationId),
+				new Value(newLevel)};
+		WorkbenchClient.theClient().send(handler, "changeAssociationStart2EndLevel", message);
+	}
+
+	public void changeAssociationEnd2StartLevel(int associationId, Integer newLevel) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(associationId),
+				new Value(newLevel)};
+		WorkbenchClient.theClient().send(handler, "changeAssociationEnd2StartLevel", message);
+	}
+
+	public void changeAssociationStart2EndAccessName(int associationId, String newName) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(associationId),
+				new Value(newName)};
+		WorkbenchClient.theClient().send(handler, "changeAssociationStart2EndAccessName", message);
+	}
+
+	public void changeAssociationEnd2StartAccessName(int associationId, String newName) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(associationId),
+				new Value(newName)};
+		WorkbenchClient.theClient().send(handler, "changeAssociationEnd2StartAccessName", message);
+	}
+
+	public void changeAssociationStart2EndMultiplicity(int associationId, Multiplicity newMultiplicity) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(associationId),
+				new Value(newMultiplicity.toValue())};
+		WorkbenchClient.theClient().send(handler, "changeAssociationStart2EndMultiplicity", message);
+	}
+
+	public void changeAssociationEnd2StartMultiplicity(int associationId, Multiplicity newMultiplicity) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(associationId),
+				new Value(newMultiplicity.toValue())};
+		WorkbenchClient.theClient().send(handler, "changeAssociationEnd2StartMultiplicity", message);
 	}
 }
