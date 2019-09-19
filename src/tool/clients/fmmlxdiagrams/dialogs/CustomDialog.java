@@ -10,6 +10,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
+import tool.clients.fmmlxdiagrams.FmmlxAssociationInstance;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 
@@ -127,20 +128,20 @@ public class CustomDialog<R> extends Dialog<R> {
 		return listView;
 	}
 	
-	public ListView<String> initializeListViewAssociation(ObservableList<String> list, SelectionMode selectionMode){
-		ListView<String> listView = new ListView<>(list);
+	public ListView<FmmlxAssociationInstance> initializeListViewAssociation(ObservableList<FmmlxAssociationInstance> instanceOfAssociation, SelectionMode selectionMode){
+		ListView<FmmlxAssociationInstance> listView = new ListView<>(instanceOfAssociation);
 		listView.setPrefHeight(75);
 		listView.setPrefWidth(COLUMN_WIDTH);
 
-		listView.setCellFactory(param -> new ListCell<String>() {
+		listView.setCellFactory(param -> new ListCell<FmmlxAssociationInstance>() {
 			@Override
-			protected void updateItem(String object, boolean empty) {
+			protected void updateItem(FmmlxAssociationInstance object, boolean empty) {
 				super.updateItem(object, empty);
 
 				if (empty || object == null) {
 					setText(null);
 				} else {
-					setText(object);
+					setText(object.toPair());
 				}
 			}
 		});
