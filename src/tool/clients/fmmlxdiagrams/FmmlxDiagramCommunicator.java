@@ -753,6 +753,16 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "removeAssociationInstance", message);
 	}
 
+	public void updateAssociationInstance(int associationInstanceId, int startObjectId, int endObjectId) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(associationInstanceId),
+				new Value(startObjectId),
+				new Value(endObjectId)};
+		WorkbenchClient.theClient().send(handler, "updateAssociationInstance", message);
+		
+	}
+
 	public void sendCurrentPositions(DiagramLabel l) {
 		System.err.println("sendCurrentPositions: " + l);
 	}

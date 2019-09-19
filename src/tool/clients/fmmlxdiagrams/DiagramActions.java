@@ -141,8 +141,6 @@ public class DiagramActions {
 			}
 			diagram.updateDiagram();
 			l.countDown();
-
-
 		});
 	}
 
@@ -625,15 +623,9 @@ public class DiagramActions {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			AssociationValueDialog dlg = new AssociationValueDialog(diagram, object);
+			AssociationValueDialog dlg = new AssociationValueDialog(diagram);
 			Optional<AssociationValueDialogResult> opt = dlg.showAndWait();
 
-
-			if (opt.isPresent()) {
-				final AssociationValueDialogResult result = opt.get();
-				diagram.associationValue(result);
-				diagram.updateDiagram();
-			}
 			latch.countDown();
 		});
 	}
