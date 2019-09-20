@@ -1,4 +1,6 @@
-java -Xmx640m -cp .:./bin\
+java -Xmx640m \
+-Xdock:icon=Xmodeler.app/Contents/Resources/mosaic-no-bg.icns \
+-cp .:./bin\
 :lib/org.eclipse.ui.workbench_3.7.1.v20120104-1859.jar\
 :lib/org.eclipse.ui.workbench.texteditor_3.7.0.v20110928-1504.jar\
 :lib/org.eclipse.jface.text_3.7.2.v20111213-1208.jar\
