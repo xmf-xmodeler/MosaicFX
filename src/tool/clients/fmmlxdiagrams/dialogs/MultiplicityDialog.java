@@ -31,7 +31,6 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 		} else {
 			this.oldMultiplicity = Multiplicity.OPTIONAL;
 		}
-		System.err.println("M1: " + this.oldMultiplicity);
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.setHeaderText("Add / Edit Multiplicity");
 
