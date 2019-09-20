@@ -25,25 +25,33 @@ public class DiagramLabel implements CanvasElement, Selectable{
 //	private transient double lastValidRelativeX;
 //	private transient double lastValidRelativeY;
 
-	public DiagramLabel(Edge owner, Runnable action, ContextMenu menu, Vector<FmmlxObject> anchors, String value, double relativeX, double relativeY, double w, double h) {
+	private final Color bgColor;
+	private final Color fontColor;
+	private final static int MARGIN = 1;
+
+	public DiagramLabel(Edge owner, Runnable action, ContextMenu menu, Vector<FmmlxObject> anchors, String value, 
+			double relativeX, double relativeY, double w, double h,
+			Color fontColor, Color bgColor) {
 		this.owner = owner;
 		this.action = action;
 		this.menu = menu;
 		this.text = value;
 		this.relativeX = relativeX;
 		this.relativeY = relativeY;
-		this.width = w;
-		this.height = h;
+		this.width = w + 2 * MARGIN;
+		this.height = h + 2 * MARGIN;
 		this.anchors = anchors;
+		this.fontColor = fontColor;
+		this.bgColor = bgColor;
 	}
 
 	@Override
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
-		g.setFill(Color.YELLOW);
+		g.setFill(bgColor);
 		g.fillRect(this.getReferenceX() + relativeX, this.getReferenceY() + relativeY, this.width, this.height);
 		
-		g.setFill(Color.BLACK);
-		g.fillText(this.text, this.getReferenceX() + relativeX, this.getReferenceY() + relativeY + height);
+		g.setFill(fontColor);
+		g.fillText(this.text, this.getReferenceX() + relativeX + MARGIN, this.getReferenceY() + relativeY + height - MARGIN);
 	}
 
 	private double getReferenceX() {

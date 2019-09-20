@@ -52,7 +52,7 @@ public class FmmlxAssociationInstance extends Edge {
 		Vector<FmmlxObject> anchors = new Vector<>();
 		if(anchor!=Anchor.TARGET) anchors.add(startNode);
 		if(anchor!=Anchor.SOURCE) anchors.add(endNode);
-		diagram.addLabel(new DiagramLabel(this, action, null, anchors, value, 50, -100+yDiff, w, h));
+		diagram.addLabel(new DiagramLabel(this, action, null, anchors, value, 50, -100+yDiff, w, h, Color.BLACK, Color.YELLOW));
 	}
 	
 	@Override

@@ -4,6 +4,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.paint.Color;
 import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
@@ -23,6 +24,10 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	private Integer levelEndToStart;
 	private Multiplicity multiplicityStartToEnd;
 	private Multiplicity multiplicityEndToStart;
+
+	private final static Color TRANSPARENT = new Color(0, 0, 0, 0);
+	private final static Color BLACK = new Color(0, 0, 0, 1);
+	private final static Color WHITE = new Color(1, 1, 1, 1);
 
 	FmmlxAssociation(
 			Integer id,
@@ -57,24 +62,24 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	private enum Anchor {SOURCE,CENTRE,TARGET};
 
 	private void layout() {
-		createLabel(name, Anchor.CENTRE, showChangeFwNameDialog, 0);
+		createLabel(name, Anchor.CENTRE, showChangeFwNameDialog, 0, BLACK, TRANSPARENT);
 		if(reverseName != null) 
-	    createLabel(reverseName, Anchor.CENTRE, showChangeRvNameDialog, 20);
-		createLabel(accessNameStartToEnd, Anchor.TARGET, showChangeS2ENameDialog, 0);
-		createLabel(accessNameEndToStart, Anchor.SOURCE, showChangeE2SNameDialog, 0);
-		createLabel(""+levelStartToEnd, Anchor.TARGET, showChangeS2ELevelDialog, 20);
-		createLabel(""+levelEndToStart, Anchor.SOURCE, showChangeE2SLevelDialog, 20);
-		createLabel(multiplicityStartToEnd.toString(), Anchor.TARGET, showChangeS2EMultDialog, 40);
-		createLabel(multiplicityEndToStart.toString(), Anchor.SOURCE, showChangeE2SMultDialog, 40);
+	    createLabel(reverseName, Anchor.CENTRE, showChangeRvNameDialog, 20, BLACK, TRANSPARENT);
+		createLabel(accessNameStartToEnd, Anchor.TARGET, showChangeS2ENameDialog, 0, BLACK, TRANSPARENT);
+		createLabel(accessNameEndToStart, Anchor.SOURCE, showChangeE2SNameDialog, 0, BLACK, TRANSPARENT);
+		createLabel(""+levelStartToEnd, Anchor.TARGET, showChangeS2ELevelDialog, 20, WHITE, BLACK);
+		createLabel(""+levelEndToStart, Anchor.SOURCE, showChangeE2SLevelDialog, 20, WHITE, BLACK);
+		createLabel(multiplicityStartToEnd.toString(), Anchor.TARGET, showChangeS2EMultDialog, 40, BLACK, TRANSPARENT);
+		createLabel(multiplicityEndToStart.toString(), Anchor.SOURCE, showChangeE2SMultDialog, 40, BLACK, TRANSPARENT);
 	}
 
-	private void createLabel(String value, Anchor anchor, Runnable action, int yDiff) {
-		double w = Math.max(20, diagram.calculateTextWidth(value));
+	private void createLabel(String value, Anchor anchor, Runnable action, int yDiff, Color textColor, Color bgColor) {
+		double w = diagram.calculateTextWidth(value);
 		double h = diagram.calculateTextHeight();
 		Vector<FmmlxObject> anchors = new Vector<>();
 		if(anchor!=Anchor.TARGET) anchors.add(getSourceNode());
 		if(anchor!=Anchor.SOURCE) anchors.add(getTargetNode());
-		diagram.addLabel(new DiagramLabel(this, action, null, anchors, value, 50, -100+yDiff, w, h));
+		diagram.addLabel(new DiagramLabel(this, action, null, anchors, value, 50, -100+yDiff, w, h, textColor, bgColor));
 	}
 
 	@Override
