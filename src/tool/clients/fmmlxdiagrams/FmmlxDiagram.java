@@ -370,7 +370,7 @@ public class FmmlxDiagram {
 //					FmmlxAssociation a = (FmmlxAssociation) s;
 					comm.sendCurrentPositions((Edge) s);
 				} else if (s instanceof DiagramLabel) {
-					comm.sendCurrentPositions((DiagramLabel) s);
+					comm.storeLabelInfo((DiagramLabel) s);
 				}
 		}
 		objectsMoved = false;

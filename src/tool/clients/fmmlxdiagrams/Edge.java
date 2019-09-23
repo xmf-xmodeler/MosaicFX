@@ -4,11 +4,10 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
-import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
 import java.util.Vector;
 
-public class Edge implements CanvasElement, Selectable {
+public abstract class Edge implements CanvasElement, Selectable {
 
 	final public int id;
 	protected Vector<Point2D> points = new Vector<>();
@@ -17,8 +16,12 @@ public class Edge implements CanvasElement, Selectable {
 	protected FmmlxDiagram diagram;
 	protected Vector<EdgeLabel> labels = new Vector<>();
 	protected final Double DEFAULT_TOLERANCE = 6.;
+	protected boolean layoutingFinishedSuccesfully;
+	private Vector<Object> labelPositions;
 
-	public Edge(int id, FmmlxObject startNode, FmmlxObject endNode, Vector<Point2D> points, FmmlxDiagram diagram) {
+	public Edge(int id, FmmlxObject startNode, FmmlxObject endNode, Vector<Point2D> points, Vector<Object> labelPositions, FmmlxDiagram diagram) {
+		layoutingFinishedSuccesfully = false;
+		this.labelPositions = labelPositions;
 		this.id = id;
 		this.diagram = diagram;
 		this.startNode = startNode;
@@ -34,34 +37,41 @@ public class Edge implements CanvasElement, Selectable {
 
 	@Override
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
-		for (EdgeLabel label : labels) label.paintOn(g, xOffset, yOffset, fmmlxDiagram);
-		g.setStroke(fmmlxDiagram.isSelected(this) ? Color.RED : getPrimaryColor());
-		g.setLineWidth(isSelected() ? 3 : 1);
-		g.setLineDashes(getLineDashes());
-		double[] xPoints = new double[points.size()];//+2];
-		double[] yPoints = new double[points.size()];//+2];
-//		xPoints[0] = startNode.getX() + startNode.width / 2;
-//		yPoints[0] = startNode.getY() + startNode.height / 2;
-		for (int i = 0; i < points.size(); i++) {
-			xPoints[i] = points.get(i).getX();
-			yPoints[i] = points.get(i).getY();
+		if(!layoutingFinishedSuccesfully) {
+			layout(); diagram.redraw();
+		} else {
+		
+			for (EdgeLabel label : labels) label.paintOn(g, xOffset, yOffset, fmmlxDiagram);
+			g.setStroke(fmmlxDiagram.isSelected(this) ? Color.RED : getPrimaryColor());
+			g.setLineWidth(isSelected() ? 3 : 1);
+			g.setLineDashes(getLineDashes());
+			double[] xPoints = new double[points.size()];//+2];
+			double[] yPoints = new double[points.size()];//+2];
+	//		xPoints[0] = startNode.getX() + startNode.width / 2;
+	//		yPoints[0] = startNode.getY() + startNode.height / 2;
+			for (int i = 0; i < points.size(); i++) {
+				xPoints[i] = points.get(i).getX();
+				yPoints[i] = points.get(i).getY();
+			}
+	//		xPoints[points.size()+1] = endNode.getX() + endNode.width / 2;
+	//		yPoints[points.size()+1] = endNode.getY() + endNode.height / 2;
+	
+			g.strokePolyline(xPoints, yPoints, xPoints.length);
+	
+			if (pointToBeMoved != -1) {
+				final double R = 1.5;
+				g.fillOval(points.get(pointToBeMoved).getX() - R,
+						points.get(pointToBeMoved).getY() - R,
+						2 * R,
+						2 * R);
+			}
+	
+			// resetting the graphicsContext
+			g.setLineDashes(0);
 		}
-//		xPoints[points.size()+1] = endNode.getX() + endNode.width / 2;
-//		yPoints[points.size()+1] = endNode.getY() + endNode.height / 2;
-
-		g.strokePolyline(xPoints, yPoints, xPoints.length);
-
-		if (pointToBeMoved != -1) {
-			final double R = 1.5;
-			g.fillOval(points.get(pointToBeMoved).getX() - R,
-					points.get(pointToBeMoved).getY() - R,
-					2 * R,
-					2 * R);
-		}
-
-		// resetting the graphicsContext
-		g.setLineDashes(0);
 	}
+
+	protected abstract void layout();
 
 	protected Color getPrimaryColor() {
 		return Color.BLACK;
@@ -72,7 +82,6 @@ public class Edge implements CanvasElement, Selectable {
 	}
 
 	private boolean isSelected() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -105,10 +114,7 @@ public class Edge implements CanvasElement, Selectable {
 	}
 
 	@Override
-	public ContextMenu getContextMenu(DiagramActions actions) {
-		System.err.println("getContextMenu " + id);
-		return new DefaultContextMenu(actions); //temporary
-	}
+	public abstract ContextMenu getContextMenu(DiagramActions actions);
 
 	@Override
 	public void moveTo(double x, double y, FmmlxDiagram diagram) {
@@ -267,4 +273,16 @@ public class Edge implements CanvasElement, Selectable {
 	
 	@Override public double getMouseMoveOffsetX() {return 0;}
 	@Override public double getMouseMoveOffsetY() {return 0;}
+	
+
+	protected Point2D getLabelPosition(int localId) {
+		for(Object labelPositionO : labelPositions) {
+			Vector<Object> labelPosition = (Vector<Object>) labelPositionO;
+			int theirLocalId = (Integer) labelPosition.get(1);
+			if (theirLocalId == localId) {
+				return new Point2D((Float) labelPosition.get(2), (Float) labelPosition.get(3));
+			}
+		}
+		return null;
+	}
 }

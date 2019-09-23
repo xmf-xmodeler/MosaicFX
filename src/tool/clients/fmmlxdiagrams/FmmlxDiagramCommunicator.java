@@ -227,6 +227,8 @@ public class FmmlxDiagramCommunicator {
 					listOfPoints.addElement(pointP);
 				}
 			}
+			
+			Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(13);
 
 			Edge object = new FmmlxAssociation(
 					(Integer) edgeInfoAsList.get(0), // id
@@ -242,6 +244,7 @@ public class FmmlxDiagramCommunicator {
 					(Integer) edgeInfoAsList.get(10), // level e->s
 					Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(11)), //mul s->e
 					Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(12)), //mul e->e
+					labelPositions,
 					diagram);
 			result.add(object);
 		}
@@ -268,12 +271,15 @@ public class FmmlxDiagramCommunicator {
 				}
 			}
 
+			Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(5);
+			
 			Edge object = new FmmlxAssociationInstance(
 					(Integer) edgeInfoAsList.get(0), // id
 					(Integer) edgeInfoAsList.get(1), // startId
 					(Integer) edgeInfoAsList.get(2), // endId
 					(Integer) edgeInfoAsList.get(3), // ofId
 					listOfPoints, // points
+					labelPositions,
 					diagram);
 			result.add(object);
 		}
@@ -762,8 +768,10 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "updateAssociationInstance", message);
 	}
 
-	public void sendCurrentPositions(DiagramLabel l) {
-		System.err.println("sendCurrentPositions: " + l);
+	public void storeLabelInfo(DiagramLabel l) {
+		
+		WorkbenchClient.theClient().send(handler, "storeLabelInfo",l.getInfo4XMF());
+		//xmfRequest(handler, "storeLabelInfo",l.getInfo4XMF());
 	}
 
 	public void changeAssociationForwardName(int associationId, String newName) {

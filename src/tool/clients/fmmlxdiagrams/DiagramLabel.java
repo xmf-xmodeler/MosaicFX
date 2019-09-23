@@ -6,10 +6,12 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
+import xos.Value;
 
 public class DiagramLabel implements CanvasElement, Selectable{
 	
-	private final Edge owner; 
+	private final Edge owner;
+	private final int localID;
 	private final Runnable action;
 	private final String text;
 	private final ContextMenu menu;
@@ -29,10 +31,11 @@ public class DiagramLabel implements CanvasElement, Selectable{
 	private final Color fontColor;
 	private final static int MARGIN = 1;
 
-	public DiagramLabel(Edge owner, Runnable action, ContextMenu menu, Vector<FmmlxObject> anchors, String value, 
+	public DiagramLabel(Edge owner, int localID, Runnable action, ContextMenu menu, Vector<FmmlxObject> anchors, String value, 
 			double relativeX, double relativeY, double w, double h,
 			Color fontColor, Color bgColor) {
 		this.owner = owner;
+		this.localID = localID;
 		this.action = action;
 		this.menu = menu;
 		this.text = value;
@@ -51,7 +54,7 @@ public class DiagramLabel implements CanvasElement, Selectable{
 		g.fillRect(this.getReferenceX() + relativeX, this.getReferenceY() + relativeY, this.width, this.height);
 		
 		g.setFill(fontColor);
-		g.fillText(this.text, this.getReferenceX() + relativeX + MARGIN, this.getReferenceY() + relativeY + height - MARGIN);
+		g.fillText(this.text, this.getReferenceX() + relativeX + MARGIN, this.getReferenceY() + relativeY + height - MARGIN-2);
 	}
 
 	private double getReferenceX() {
@@ -108,5 +111,14 @@ public class DiagramLabel implements CanvasElement, Selectable{
 
 	public void performAction() {
 		action.run();
+	}
+
+	public Value[] getInfo4XMF() {
+		return new Value[]{
+			new Value(-1),
+			new Value(owner.id),
+			new Value(localID),
+			new Value((float)relativeX),
+			new Value((float)relativeY)};
 	}
 }
