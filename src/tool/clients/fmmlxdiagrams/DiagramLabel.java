@@ -8,7 +8,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
 import xos.Value;
 
-public class DiagramLabel implements CanvasElement, Selectable{
+public class DiagramLabel implements CanvasElement {
 	
 	private final Edge owner;
 	private final int localID;

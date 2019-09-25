@@ -403,11 +403,11 @@ public class DiagramActions {
 		diagram.updateDiagram();
 	}
 
-	public void addDialog(FmmlxObject object, PropertyType type) {
+	public void addOperationDialog(FmmlxObject object) {
 		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			AddDialog dlg = new AddDialog(diagram, object, type);
+			AddOperationDialog dlg = new AddOperationDialog(diagram, object);
 			Optional<AddDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {

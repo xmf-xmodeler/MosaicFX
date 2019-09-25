@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Vector;
 
-public class FmmlxObject implements CanvasElement, Selectable, FmmlxProperty {
+public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	//	private String[] levelBackgroundColors = {"#8C8C8C", "#FFFFFF", "#000000", "#3111DB", "#dd2244", "#119955"};
 	private static HashMap<Integer, Paint> colors = null;

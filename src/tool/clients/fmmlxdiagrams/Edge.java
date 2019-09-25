@@ -7,14 +7,14 @@ import javafx.scene.paint.Color;
 
 import java.util.Vector;
 
-public abstract class Edge implements CanvasElement, Selectable {
+public abstract class Edge implements CanvasElement {
 
 	final public int id;
 	protected Vector<Point2D> points = new Vector<>();
 	protected FmmlxObject startNode;
 	protected FmmlxObject endNode;
 	protected FmmlxDiagram diagram;
-	protected Vector<EdgeLabel> labels = new Vector<>();
+//	protected Vector<EdgeLabel> labels = new Vector<>();
 	protected final Double DEFAULT_TOLERANCE = 6.;
 	protected boolean layoutingFinishedSuccesfully;
 	private Vector<Object> labelPositions;
@@ -41,20 +41,16 @@ public abstract class Edge implements CanvasElement, Selectable {
 			layout(); diagram.redraw();
 		} else {
 		
-			for (EdgeLabel label : labels) label.paintOn(g, xOffset, yOffset, fmmlxDiagram);
+//			for (EdgeLabel label : labels) label.paintOn(g, xOffset, yOffset, fmmlxDiagram);
 			g.setStroke(fmmlxDiagram.isSelected(this) ? Color.RED : getPrimaryColor());
 			g.setLineWidth(isSelected() ? 3 : 1);
 			g.setLineDashes(getLineDashes());
 			double[] xPoints = new double[points.size()];//+2];
 			double[] yPoints = new double[points.size()];//+2];
-	//		xPoints[0] = startNode.getX() + startNode.width / 2;
-	//		yPoints[0] = startNode.getY() + startNode.height / 2;
 			for (int i = 0; i < points.size(); i++) {
 				xPoints[i] = points.get(i).getX();
 				yPoints[i] = points.get(i).getY();
 			}
-	//		xPoints[points.size()+1] = endNode.getX() + endNode.width / 2;
-	//		yPoints[points.size()+1] = endNode.getY() + endNode.height / 2;
 	
 			g.strokePolyline(xPoints, yPoints, xPoints.length);
 	
@@ -109,10 +105,6 @@ public abstract class Edge implements CanvasElement, Selectable {
 				- (testPoint.getY() - lineStart.getY()) * (lineEnd.getX() - lineStart.getX())) / normalLength;
 	}
 
-	public Point2D getAnchorPosition(EdgeLabel.Anchor anchor) {
-		return null;
-	}
-
 	@Override
 	public abstract ContextMenu getContextMenu(DiagramActions actions);
 
@@ -139,63 +131,35 @@ public abstract class Edge implements CanvasElement, Selectable {
 		Point2D oldEndPoint = latestValidPointConfiguration.lastElement();
 		double oldEndX = oldEndPoint.getX();
 		double oldEndY = oldEndPoint.getY();
-//		double oldDist = Math.sqrt((oldEndX-oldStartX)*(oldEndX-oldStartX)+(oldEndY-oldStartY)*(oldEndY-oldStartY));
-//		double oldDist = polarPoints.lastElement().radius;
-//		double newDist = Math.sqrt((newEndX-newStartX)*(newEndX-newStartX)+(newEndY-newStartY)*(newEndY-newStartY));
-//		
+		
 		Vector<Point2D> newPoints = new Vector<>();
-//		
+	
 		newPoints.add(new Point2D(newStartX, newStartY));
 		for(int i = 1; i < latestValidPointConfiguration.size()-1; i++) {
 			Point2D oldPoint = latestValidPointConfiguration.get(i);
 			double newX = (oldPoint.getX() - oldStartX) / (oldEndX - oldStartX) * (newEndX - newStartX) + newStartX;
 			double newY = (oldPoint.getY() - oldStartY) / (oldEndY - oldStartY) * (newEndY - newStartY) + newStartY;
-//			Polar p = polarPoints.get(i);
-//			double[] scaledRelativePosition = p.getScaledXY(newDist / oldDist);
-//			newPoints.add(new Point2D(newStartX + scaledRelativePosition[0], newStartY + scaledRelativePosition[1]));
 			if(Double.isFinite(newX) && Double.isFinite(newY))
 			newPoints.add(new Point2D(newX, newY));
 		};
 		newPoints.add(new Point2D(newEndX, newEndY));
-//		
 		points.clear();
 		points.addAll(newPoints);
 	}
 
 	public void moveStartPoint(double newStartX, double newStartY) {
 		movePoints(newStartX, newStartY, points.lastElement().getX(), points.lastElement().getY());
-//		Point2D startPoint = new Point2D(startNode.getX() + startNode.getWidth() / 2, startNode.getY() + startNode.getHeight() / 2);
-//		points.setElementAt(startPoint, 0);
 	}
 
 	public void moveEndPoint(double newEndX, double newEndY) {
 		movePoints(points.firstElement().getX(), points.firstElement().getY(), newEndX, newEndY);
-//		Point2D endPoint = new Point2D(endNode.getX() + endNode.getWidth() / 2, endNode.getY() + endNode.getHeight() / 2);
-//		points.setElementAt(endPoint, points.size() - 1);
 	}
-	
-//	private static class Polar{
-//		final double radius; final double angle;
-//		private Polar (double radius, double angle) {this.radius = radius; this.angle = angle;}
-//		private double[] getScaledXY(double scale) {return new double[] {radius * scale * Math.cos(angle), radius * scale * Math.sin(angle)};}
-//	}
-//    private static Polar getPolar(double x, double y) {return new Polar(Math.sqrt(x*x+y*y), Math.atan2(y, x));}
-	
+		
 	private void storeLatestValidPointConfiguration() {
 		latestValidPointConfiguration.clear();
 		latestValidPointConfiguration.addAll(points);
-//		Point2D startPoint = points.firstElement();
-//		Point2D endPoint = points.lastElement();
-//		double xDiff = startPoint.getX() - endPoint.getX();
-//		double yDiff = startPoint.getY() - endPoint.getY();
-//		double distance = Math.sqrt(xDiff*xDiff+yDiff*yDiff);
-//		System.err.println("Distance: " + distance);
-//		if(distance < 10) return; // too small -> too big rounding errors
-//		polarPoints.clear();
-//		for(Point2D p : points) {
-//			polarPoints.add(getPolar(p.getX() - startPoint.getX(), p.getY() - startPoint.getY()));
-//		}
 	}
+
 	private transient Vector<Point2D> latestValidPointConfiguration = new Vector<>();
 	private transient int pointToBeMoved = -1;
 
@@ -274,7 +238,7 @@ public abstract class Edge implements CanvasElement, Selectable {
 	@Override public double getMouseMoveOffsetX() {return 0;}
 	@Override public double getMouseMoveOffsetY() {return 0;}
 	
-
+	@SuppressWarnings("unchecked")
 	protected Point2D getLabelPosition(int localId) {
 		for(Object labelPositionO : labelPositions) {
 			Vector<Object> labelPosition = (Vector<Object>) labelPositionO;

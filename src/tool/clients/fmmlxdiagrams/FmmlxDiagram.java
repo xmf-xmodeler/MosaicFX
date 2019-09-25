@@ -44,9 +44,7 @@ public class FmmlxDiagram {
 	private Vector<Edge> edges = new Vector<>();
 	private Vector<DiagramLabel> labels = new Vector<>();
 
-	private transient Vector<Selectable> selectedObjects = new Vector<>();
-	//	private DefaultContextMenu defaultContextMenu;
-//	private ObjectContextMenu objectContextMenu;
+	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
 	private ContextMenu activeContextMenu;
 	private DiagramActions actions;
 	private transient boolean objectsMoved = false;
@@ -58,12 +56,12 @@ public class FmmlxDiagram {
 
 	private Point2D canvasRawSize = new Point2D(1200, 800);
 	private double zoom = 1.;
-	private Affine transformFX;
+	private Affine transformFX = new Affine();
 
 	private ScrollPane scrollerCanvas;
 
 	private FmmlxObject newEdgeTarget;
-	private NodeLabel lastHitLabel;
+	private NodeLabel lastHitLabel = null;
 	private boolean diagramRequiresUpdate = false;
 
 	FmmlxDiagram(FmmlxDiagramCommunicator comm, String label) {
@@ -75,10 +73,6 @@ public class FmmlxDiagram {
 		scrollerCanvas = new ScrollPane(canvas);
 		mainView.setOrientation(Orientation.VERTICAL);
 		mainView.getItems().addAll(palette, scrollerCanvas);
-		transformFX = new Affine();
-		lastHitLabel = null;
-
-//		defaultContextMenu = new DefaultContextMenu(actions);
 
 		canvas.setOnMousePressed(this::mousePressed);
 		canvas.setOnMouseDragged(this::mouseDragged);
@@ -99,6 +93,10 @@ public class FmmlxDiagram {
 
 	public Vector<FmmlxObject> getObjects() {
 		return new Vector<FmmlxObject>(objects); // read-only
+	}
+	
+	public Vector<Edge> getEdges() {
+		return new Vector<Edge>(edges); // read-only
 	}
 	
 	public Vector<DiagramLabel> getLabels() {
@@ -146,24 +144,6 @@ public class FmmlxDiagram {
 			}
 		}
 		return result;
-	}
-
-	public ObservableList<String> getAssociationListToPair(FmmlxObject metaclassA, FmmlxObject metaclassB) {
-		Vector<String> result = new Vector<String>();
-
-		Vector<FmmlxObject> instanceA = metaclassA.getInstances();
-		Vector<FmmlxObject> instanceB = metaclassB.getInstances();
-
-		for (FmmlxObject object : instanceA) {
-			for (FmmlxObject object2 : instanceB) {
-				//TODO
-			}
-		}
-
-		ObservableList<String> associationList;
-		associationList = FXCollections.observableList(result);
-
-		return associationList;
 	}
 
 	private void fetchDiagramData() {
@@ -312,7 +292,7 @@ public class FmmlxDiagram {
 
 	private void mouseDraggedStandard(Point2D p) {
 //		if (hitObject != null) {
-		for (Selectable s : selectedObjects)
+		for (CanvasElement s : selectedObjects)
 			if (s instanceof FmmlxObject) {
 				FmmlxObject o = (FmmlxObject) s;
 				s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
@@ -357,7 +337,7 @@ public class FmmlxDiagram {
 
 	private void mouseReleasedStandard() {
 		if (objectsMoved) {
-			for (Selectable s : selectedObjects)
+			for (CanvasElement s : selectedObjects)
 				if (s instanceof FmmlxObject) {
 					FmmlxObject o = (FmmlxObject) s;
 					comm.sendCurrentPosition(o);
@@ -389,7 +369,7 @@ public class FmmlxDiagram {
 		return e.getButton() == MouseButton.MIDDLE;
 	}
 
-	private Selectable getElementAt(double x, double y) {
+	private CanvasElement getElementAt(double x, double y) {
 		for (FmmlxObject o : objects)
 			if (o.isHit(x, y))
 				return o;
@@ -406,7 +386,7 @@ public class FmmlxDiagram {
 	private void handleLeftPressed(MouseEvent e) {
 		Point2D p = scale(e);
 
-		Selectable hitObject = getElementAt(p.getX(), p.getY());
+		CanvasElement hitObject = getElementAt(p.getX(), p.getY());
 		if (hitObject != null) {
 			if (mode == MouseMode.DRAW_EDGE && newEdgeTarget == null) {
 				newEdgeTarget = hitObject instanceof FmmlxObject ? (FmmlxObject) hitObject : null;
@@ -474,8 +454,8 @@ public class FmmlxDiagram {
 		diagramRequiresUpdate  = true;
 	}
 
-	private void highlightElementAt(Selectable hitObject, Point2D p) {
-		for (Selectable object : objects) {
+	private void highlightElementAt(CanvasElement hitObject, Point2D p) {
+		for (CanvasElement object : objects) {
 			object.highlightElementAt(null);
 		}
 		for (Edge object : edges) {
@@ -484,7 +464,7 @@ public class FmmlxDiagram {
 		hitObject.highlightElementAt(p);
 	}
 
-	private void handleClickOnNodeElement(Point2D p, Selectable hitObject) {
+	private void handleClickOnNodeElement(Point2D p, CanvasElement hitObject) {
 		if (hitObject instanceof FmmlxObject) {
 			Point2D relativePoint = getRelativePointToNodeBox(hitObject, p);
 			NodeBox hitNodeBox = getHitNodeBox((FmmlxObject) hitObject, relativePoint);
@@ -503,7 +483,7 @@ public class FmmlxDiagram {
 		}
 	}
 
-	private void handleDoubleClickOnNodeElement(Point2D p, Selectable hitObject) {
+	private void handleDoubleClickOnNodeElement(Point2D p, CanvasElement hitObject) {
 		NodeBox hitNodeBox = null;
 		if (hitObject instanceof FmmlxObject) {
 			Point2D relativePoint = new Point2D(
@@ -556,7 +536,7 @@ public class FmmlxDiagram {
 		return null;
 	}
 
-	private Point2D getRelativePointToNodeBox(Selectable hitObject, Point2D p) {
+	private Point2D getRelativePointToNodeBox(CanvasElement hitObject, Point2D p) {
 		return new Point2D(
 				p.getX() - ((FmmlxObject) hitObject).getX(),
 				p.getY() - ((FmmlxObject) hitObject).getY());
@@ -565,7 +545,7 @@ public class FmmlxDiagram {
 	private void handleRightClick(MouseEvent e) {
 		Point2D p = scale(e);
 
-		Selectable hitObject = getElementAt(p.getX(), p.getY());
+		CanvasElement hitObject = getElementAt(p.getX(), p.getY());
 		if (hitObject != null) {
 			if (hitObject instanceof FmmlxObject) {
 				activeContextMenu = hitObject.getContextMenu(actions);
@@ -627,11 +607,11 @@ public class FmmlxDiagram {
 	}
 
 	private void setMouseOffset(Point2D p) {
-		for (Selectable s : selectedObjects)
+		for (CanvasElement s : selectedObjects)
 			s.setOffsetAndStoreLastValidPosition(p);
 	}
 
-	public boolean isSelected(Selectable element) {
+	public boolean isSelected(CanvasElement element) {
 		return selectedObjects.contains(element);
 	}
 
@@ -725,10 +705,6 @@ public class FmmlxDiagram {
 			}
 		}
 		return result; // read-only
-	}
-
-	public Vector<Edge> getEdges() {
-		return edges;
 	}
 	
 	@Deprecated

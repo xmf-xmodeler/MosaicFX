@@ -99,7 +99,7 @@ public class ObjectContextMenu extends ContextMenu {
 	private Menu createOperationSubMenu() {
 		Menu operationMenu = new Menu("Operation");
 		MenuItem addItem = new MenuItem("Add");
-		addItem.setOnAction(e -> actions.addDialog(object, PropertyType.Operation));
+		addItem.setOnAction(e -> actions.addOperationDialog(object));
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Operation));
 		MenuItem changeNameItem = new MenuItem("Change name");
