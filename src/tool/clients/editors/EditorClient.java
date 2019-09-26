@@ -194,7 +194,7 @@ public class EditorClient extends Client {
 	  }
   }
 
-//  public void close(CTabFolderEvent event) {
+//  public void close(CTabFolderEvent event) { //TODO: consider reimplementing in javafx
 //    // Careful because the diagrams and files share the same tab folder...
 //    CTabItem item = (CTabItem) event.item;
 //    String id = getId(item);
@@ -759,18 +759,25 @@ public class EditorClient extends Client {
       ITextEditor editor = editors.get(id);
       editor.writeXML(out, item.isSelected(), item.getText(), item.getTooltip().getText());
     }
-//    for (String id : browsers.keySet()) {
-//      Tab tab = tabs.get(id);
-////      String label = tab.getText();
-////      String tooltip = tab.getTooltip().getText();
-////      WebView browser = browsers.get(id); //TODO:
-////      String url = browser.getEngine().getLocation();
-////      if (url.startsWith("file:") && url.endsWith("/web/index.html")) {
-////        url = "welcome";
-////      }
-////      String text = browser.getEngine().getDocument().toString();
-////      out.print("<Browser id='" + id + "' label='" + label + "' tooltip='" + tooltip + "' url='" + url + "' text='" + XModeler.encodeXmlAttribute(text) + "'/>");
-//    }
+    for (String id : browsers.keySet()) {
+      Tab tab = tabs.get(id);
+      if (tab != null) {
+        WebBrowser browser = browsers.get(id);
+
+        if (browser != null) {
+          String label = tab.getText();
+          String tooltip = tab.getTooltip().getText();
+          String url = browser.getUrl();
+          String text = browser.getDocument().toString();
+
+          if (url.startsWith("file:") && url.endsWith("/web/index.html")) {
+            url = "welcome";
+          }
+
+          out.print("<Browser id='" + id + "' label='" + label + "' tooltip='" + tooltip + "' url='" + url + "' text='" + XModeler.encodeXmlAttribute(text) + "'/>");
+        }
+      }
+    }
     out.print("</Editors>");
   }
 
@@ -783,7 +790,7 @@ public class EditorClient extends Client {
     setUrl(id.strValue(), url, true);
   }
 
-  private void newBrowser(Message message) { //TODO: raus
+  private void newBrowser(Message message) {
     String id = message.args[0].strValue();
     String label = message.args[1].strValue();
     String tooltip = message.args[2].strValue();
@@ -806,6 +813,7 @@ public class EditorClient extends Client {
 
                 vbox.getChildren().addAll(hbox, browserVbox);
                 tab.setContent(vbox);
+                tabs.put(id, tab);
 
                 tabPane.getTabs().add(tab);
                 tabPane.getSelectionModel().select(tab);
