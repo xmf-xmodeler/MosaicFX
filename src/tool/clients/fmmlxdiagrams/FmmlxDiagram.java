@@ -36,33 +36,38 @@ public class FmmlxDiagram {
 	enum MouseMode {
 		MULTISELECT, STANDARD, DRAW_EDGE
 	}
-
+	
+	// The elements which the diagram consists of GUI-wise
 	private SplitPane mainView;
-	private final FmmlxDiagramCommunicator comm;
 	private Canvas canvas;
+	private ScrollPane scrollerCanvas;
+	
+	// The communication to the xmf and other actions
+	private final FmmlxDiagramCommunicator comm;
+	private DiagramActions actions;
+	
+	// The elements representing the model which is displayed in the GUI
 	private Vector<FmmlxObject> objects = new Vector<>();
 	private Vector<Edge> edges = new Vector<>();
 	private Vector<DiagramLabel> labels = new Vector<>();
-
+	
+	// Temporary variables storing the current state of user interactions
 	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
 	private ContextMenu activeContextMenu;
-	private DiagramActions actions;
 	private transient boolean objectsMoved = false;
 	private transient PropertyType drawEdgeType = null;
 	private Point2D lastPoint;
 	private Point2D currentPoint;
 	private MouseMode mode = MouseMode.STANDARD;
-	private Font font;
-
-	private Point2D canvasRawSize = new Point2D(1200, 800);
-	private double zoom = 1.;
-	private Affine transformFX = new Affine();
-
-	private ScrollPane scrollerCanvas;
-
 	private FmmlxObject newEdgeTarget;
 	private NodeLabel lastHitLabel = null;
 	private boolean diagramRequiresUpdate = false;
+	
+	// The state of the canvas is stored here:
+	private Point2D canvasRawSize = new Point2D(1200, 800);
+	private double zoom = 1.;
+	private Affine transformFX = new Affine();
+	private Font font;
 
 	FmmlxDiagram(FmmlxDiagramCommunicator comm, String label) {
 		this.comm = comm;
@@ -91,59 +96,10 @@ public class FmmlxDiagram {
 		redraw();
 	}
 
-	public Vector<FmmlxObject> getObjects() {
-		return new Vector<FmmlxObject>(objects); // read-only
-	}
-	
-	public Vector<Edge> getEdges() {
-		return new Vector<Edge>(edges); // read-only
-	}
-	
-	public Vector<DiagramLabel> getLabels() {
-		return new Vector<DiagramLabel>(labels); // read-only
-	}
-
-	public FmmlxObject getObjectById(int id) {
-		for (FmmlxObject object : objects) {
-			if (object.getId() == id)
-				return object;
-		}
-		return null;
-	}
-
-	public Object getAllMetaClass() {
-		Vector<FmmlxObject> result = new Vector<FmmlxObject>();
-		for (FmmlxObject object : getObjects()) {
-			if (object.getLevel() != 0) {
-				result.add(object);
-			}
-		}
-		return result;
-	}
-
+	// Only used to set the mouse pointer. Find a better solution
+	@Deprecated
 	public Canvas getCanvas() {
 		return canvas;
-	}
-
-
-	public Edge getAssociationById(int id) {
-		for (Edge tmp : edges) {
-			if (tmp.getId() == id)
-				return tmp;
-		}
-		return null;
-	}
-
-	public Vector<FmmlxAssociation> getRelatedAssociationByObject(FmmlxObject object) {
-		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
-		for (Edge tmp : edges) {
-			if (tmp instanceof FmmlxAssociation) {
-				if (tmp.startNode.getId() == object.getId() || tmp.endNode.getId() == object.getId()) {
-					result.add((FmmlxAssociation) tmp);
-				}
-			}
-		}
-		return result;
 	}
 
 	private void fetchDiagramData() {
@@ -172,6 +128,7 @@ public class FmmlxDiagram {
 		redraw();
 	}
 
+	// This operation resets the size of the canvas when needed
 	private void resizeCanvas() {
 		try {
 			double maxRight = canvasRawSize.getX();
@@ -190,10 +147,20 @@ public class FmmlxDiagram {
 		}
 	}
 
+	// Only used to set the diagram into the tab. Find a better solution
+	@Deprecated
 	public SplitPane getView() {
 		return mainView;
 	}
+	
+	public FmmlxDiagramCommunicator getComm() {
+		return comm;
+	}
 
+    private void updateDiagramLater() {
+		diagramRequiresUpdate = true;
+	}
+	
 	public void redraw() {
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
 			// we are on the right Thread already:
@@ -334,7 +301,6 @@ public class FmmlxDiagram {
 		redraw();
 	}
 
-
 	private void mouseReleasedStandard() {
 		if (objectsMoved) {
 			for (CanvasElement s : selectedObjects)
@@ -357,17 +323,9 @@ public class FmmlxDiagram {
 
 	}
 
-	private boolean isLeftClick(MouseEvent e) {
-		return e.getButton() == MouseButton.PRIMARY;
-	}
-
-	private boolean isRightClick(MouseEvent e) {
-		return e.getButton() == MouseButton.SECONDARY;
-	}
-
-	private boolean isMiddleClick(MouseEvent e) {
-		return e.getButton() == MouseButton.MIDDLE;
-	}
+	private boolean isLeftClick(MouseEvent e) {return e.getButton() == MouseButton.PRIMARY;}
+	private boolean isRightClick(MouseEvent e) {return e.getButton() == MouseButton.SECONDARY;}
+	private boolean isMiddleClick(MouseEvent e) {return e.getButton() == MouseButton.MIDDLE;}
 
 	private CanvasElement getElementAt(double x, double y) {
 		for (FmmlxObject o : objects)
@@ -397,11 +355,9 @@ public class FmmlxDiagram {
 					case AssociationInstance:
 						final FmmlxObject obj1 = (FmmlxObject) selectedObjects.get(0);
 						final FmmlxObject obj2 = newEdgeTarget;
-//						CountDownLatch latch = new CountDownLatch(1);
 						Platform.runLater(() -> {
 							actions.addAssociationInstance(obj1, obj2);
 							updateDiagramLater();
-//							latch.countDown();
 						});						
 						break;
 					default:
@@ -448,10 +404,6 @@ public class FmmlxDiagram {
 			}
 			deselectAll();
 		}
-	}
-
-	private void updateDiagramLater() {
-		diagramRequiresUpdate  = true;
 	}
 
 	private void highlightElementAt(CanvasElement hitObject, Point2D p) {
@@ -759,108 +711,110 @@ public class FmmlxDiagram {
 		ObservableList<FmmlxObject> result = FXCollections.observableArrayList(objectList);
 		return result;
 	}
-
-	public ObservableList<FmmlxObject> getAllPossibleOf() {
-		// TODO Auto-generated method stub
-		return null;
+	
+	public void addLabel(DiagramLabel diagramLabel) {
+		labels.add(diagramLabel);
 	}
-
 
 	////////////////////////////////////////////////////////////////////
 	////					Messages to XMF							////
 	////////////////////////////////////////////////////////////////////
-
-	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) {
-		comm.addAttribute(classID, name, level, type, multi);
-
-	}
-
-	public void addMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
-		comm.addMetaClass(name, level, parents, isAbstract, x, y);
-	}
-
-	public void addNewInstance(int of, String name, int level, Vector<Integer> parents, boolean isAbstract, int x,
-							   int y) {
-		comm.addNewInstance(of, name, level, parents, isAbstract, x, y);
-	}
-
+	
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeClassName(ChangeNameDialogResult res) {
 		comm.changeClassName(res.getObjectId(), res.getNewName());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeOperationName(ChangeNameDialogResult res) {
 		comm.changeOperationName(res.getObjectId(), res.getOldName(), res.getNewName());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeAttributeName(ChangeNameDialogResult res) {
 		comm.changeAttributeName(res.getObjectId(), res.getOldName(), res.getNewName());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeAssociationName(ChangeNameDialogResult result) {
 		comm.changeAssociationName(result.getObjectId(), result.getOldName(), result.getNewName());
-
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeClassLevel(ChangeLevelDialogResult result) {
 		comm.changeClassLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());
-
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeAttributeLevel(ChangeLevelDialogResult result) {
 		comm.changeAttributeLevel(result.getObjectId(), result.getName(), result.getOldLevel(), result.getNewLevel());
-
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeAssociationLevel(ChangeLevelDialogResult result) {
 		comm.changeAssociationLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());
-
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeOperationLevel(ChangeLevelDialogResult result) {
 		comm.changeOperationLevel(result.getObjectId(), result.getName(), result.getOldLevel(), result.getNewLevel());
-
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeSlotValue(ChangeSlotValueDialogResult result) {
 		comm.changeSlotValue(result.getObject().getId(), result.getSlot().getName(), result.getNewValue());
 	}
-
-	public void removeAttribute(FmmlxObject c, FmmlxAttribute a, Integer strategy) {
-		comm.removeAttribute(c.getId(), a.getName(), 0);
-
-	}
-
+	
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeOf(ChangeOfDialogResult result) {
 		comm.changeOf(result.getObjectId(), result.getOldOfId(), result.getNewOfId());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void removeClass(RemoveDialogResult result) {
 		comm.removeClass(result.getObject().getId(), 0);
-
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void removeOperation(RemoveDialogResult result) {
 		comm.removeOperation(result.getObject().getId(), result.getOperation().getName(), 0);
 
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void removeAttribute(RemoveDialogResult result) {
 		comm.removeAttribute(result.getObject().getId(), result.getAttribute().getName(), 0);
-
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void removeAssociation(RemoveDialogResult result) {
 		comm.removeAssociation(result.getAssociation().getId(), 0);
-
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void addOperation(AddDialogResult result) {
 //		comm.addOperation(result.getObjectId(), result.getOperationName(), result.getLevel(), result.getOperationType(), result.getBody());
 		comm.addOperation2(result.getObjectId(), result.getLevel(), result.getBody());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void addAssociation(AddAssociationDialogResult result) {
-		// TODO: add parameters
 		comm.addAssociation(
 				result.getSource().id, result.getTarget().id,
 				result.getIdentifierSource(), result.getIdentifierTarget(),
@@ -870,49 +824,65 @@ public class FmmlxDiagram {
 		);
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeAttributeOwner(ChangeOwnerDialogResult result) {
 		comm.changeAttributeOwner(result.getObject().getId(), result.getNewOwnerID());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeOperationOwner(ChangeOwnerDialogResult result) {
 		comm.changeOperationOwner(result.getObject().getId(), result.getNewOwnerID());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeParent(ChangeParentDialogResult result) {
 		comm.changeParent(result.getObject().getId(), result.getCurrentParentIds(), result.getNewParentIds());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeTypeAttribute(ChangeTypeDialogResult result) {
 		comm.changeAttributeType(result.getObject().getId(), result.getAttribute().getName(),
 				result.getOldType(), result.getNewType());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeTypeOperation(ChangeTypeDialogResult result) {
 		comm.changeOperationType(result.getObject().getId(), result.getOperation().getName(),
 				result.getOldType(), result.getNewType());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeTypeAssociation(ChangeTypeDialogResult result) {
 		comm.changeAssociationType(result.getObject().getId(), result.getAssociation().getName(),
 				result.getOldType(), result.getNewType());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeTargetAssociation(ChangeTargetDialogResult result) {
 		comm.changeTargetAssociation(result.getObject().getId(), result.getAssociationName(), result.getOldTargetID(), result.getNewTargetID());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeMulitiplicityAttribute(MultiplicityDialogResult result) {
 		comm.changeMultiplicityAttribute(result.getObject().getId(), result.getSelectedAttribute().getName(), result.convertToMultiplicity());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeBody(ChangeBodyDialogResult result) {
 		comm.changeOperationBody(result.getObject().getId(), result.getSelectedItem().getName(), result.getBody());
 	}
-
-	public void checkOperationBody(String text) {
-		comm.checkOperationBody(text);
-	}
-
+	
+	// to be migrated to Communicator
+	@Deprecated
 	public void editAssociation(EditAssociationDialogResult result) {
 
 		comm.editAssociation(result.getSelectedAssociation().getId(),
@@ -934,65 +904,61 @@ public class FmmlxDiagram {
 		return result;
 	}
 
-	public void addAssociationInstance(FmmlxObject source, FmmlxObject target, FmmlxAssociation association) {
-		comm.addAssociationInstance(source.id, target.id, association.id);
+	// Some useful methods for queries:
+	
+
+	public Vector<FmmlxObject> getObjects() {
+		return new Vector<FmmlxObject>(objects); // read-only
+	}
+	
+	public Vector<Edge> getEdges() {
+		return new Vector<Edge>(edges); // read-only
+	}
+	
+	public Vector<DiagramLabel> getLabels() {
+		return new Vector<DiagramLabel>(labels); // read-only
 	}
 
-	public void removeAssociationInstance(FmmlxAssociationInstance instance) {
-		comm.removeAssociationInstance(instance.getId());
+	public FmmlxObject getObjectById(int id) {
+		for (FmmlxObject object : objects) {
+			if (object.getId() == id)
+				return object;
+		}
+		return null;
 	}
-
-
-	public void removeAssociation(FmmlxAssociation association) {
-		comm.removeAssociation(association.getId(), 0);
+	
+	public Edge getAssociationById(int id) {
+		for (Edge tmp : edges) {
+			if (tmp.getId() == id)
+				return tmp;
+		}
+		return null;
 	}
-
+	
+	public Object getAllMetaClass() {
+		Vector<FmmlxObject> result = new Vector<FmmlxObject>();
+		for (FmmlxObject object : getObjects()) {
+			if (object.getLevel() != 0) {
+				result.add(object);
+			}
+		}
+		return result;
+	}
+	
+	public Vector<FmmlxAssociation> getRelatedAssociationByObject(FmmlxObject object) {
+		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
+		for (Edge tmp : edges) {
+			if (tmp instanceof FmmlxAssociation) {
+				if (tmp.startNode.getId() == object.getId() || tmp.endNode.getId() == object.getId()) {
+					result.add((FmmlxAssociation) tmp);
+				}
+			}
+		}
+		return result;
+	}
+	
 	public boolean isNameAvailable(String t) {
 		for (FmmlxObject o : objects) if (o.getName().equals(t)) return false;
 		return true;
-	}
-
-	public void updateAssociationInstance(FmmlxAssociationInstance associationInstance, FmmlxObject startObject,
-			FmmlxObject endObject) {
-		comm.updateAssociationInstance(associationInstance.getId(), startObject.getId(), endObject.getId());	
-	}
-
-	public void addLabel(DiagramLabel diagramLabel) {
-		labels.add(diagramLabel);
-	}
-
-	public void changeAssociationForwardName(int associationId, String newName) {
-		comm.changeAssociationForwardName(associationId, newName);
-		updateDiagram();
-	}
-
-	public void changeAssociationStart2EndLevel(int associationId, Integer newLevel) {
-		comm.changeAssociationStart2EndLevel(associationId, newLevel);
-		updateDiagram();
-	}
-	
-	public void changeAssociationEnd2StartLevel(int associationId, Integer newLevel) {
-		comm.changeAssociationEnd2StartLevel(associationId, newLevel);
-		updateDiagram();
-	}
-
-	public void changeAssociationStart2EndAccessName(int associationId, String newName) {
-		comm.changeAssociationStart2EndAccessName(associationId, newName);
-		updateDiagram();
-	}
-
-	public void changeAssociationEnd2StartAccessName(int associationId, String newName) {
-		comm.changeAssociationEnd2StartAccessName(associationId, newName);
-		updateDiagram();
-	}
-
-	public void changeAssociationStart2EndMultiplicity(int associationId, Multiplicity newMultiplicity) {
-		comm.changeAssociationStart2EndMultiplicity(associationId, newMultiplicity);
-		updateDiagram();
-	}
-
-	public void changeAssociationEnd2StartMultiplicity(int associationId, Multiplicity newMultiplicity) {
-		comm.changeAssociationEnd2StartMultiplicity(associationId, newMultiplicity);
-		updateDiagram();
 	}
 }

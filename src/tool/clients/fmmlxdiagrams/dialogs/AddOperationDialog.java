@@ -153,7 +153,7 @@ public class AddOperationDialog extends CustomDialog<AddDialogResult> {
 		
 	private void checkBodySyntax() {
 		if (!isNullOrEmpty(bodyTextArea.getText()) && !bodyTextArea.getText().contentEquals(StringValueDialog.OperationStringValues.emptyOperation)) {
-			diagram.checkOperationBody(bodyTextArea.getText());
+			diagram.getComm().checkOperationBody(bodyTextArea.getText());
 		}
 	}
 

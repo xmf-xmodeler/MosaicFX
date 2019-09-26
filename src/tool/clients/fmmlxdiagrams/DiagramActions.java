@@ -58,7 +58,7 @@ public class DiagramActions {
 
 						if (x > 0 && y > 0) {
 							System.err.println("MCD: " + mcdResult.isAbstract());
-							diagram.addMetaClass(mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentIds(), mcdResult.isAbstract(), x, y);
+							diagram.getComm().addMetaClass(mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentIds(), mcdResult.isAbstract(), x, y);
 
 							canvas.setCursor(Cursor.DEFAULT);
 							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
@@ -98,7 +98,7 @@ public class DiagramActions {
 						int y = (int) e.getY();
 
 						if (x > 0 && y > 0) {
-							diagram.addNewInstance(aidResult.getOf(), aidResult.getName(), aidResult.getLevel(),
+							diagram.getComm().addNewInstance(aidResult.getOf(), aidResult.getName(), aidResult.getLevel(),
 									aidResult.getParentId(), false, x, y);
 
 							canvas.setCursor(Cursor.DEFAULT);
@@ -137,7 +137,7 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				AddAttributeDialogResult aad = result.get();
-				diagram.addAttribute(aad.getClassID(), aad.getName(), aad.getLevel(), aad.getType(), aad.getMultiplicity());
+				diagram.getComm().addAttribute(aad.getClassID(), aad.getName(), aad.getLevel(), aad.getType(), aad.getMultiplicity());
 			}
 			diagram.updateDiagram();
 			l.countDown();
@@ -588,7 +588,7 @@ public class DiagramActions {
 //				CountDownLatch l = new CountDownLatch(1);
 
 //				Platform.runLater(() -> {
-				diagram.addAssociationInstance(sourceF, targetF, associationF);
+				diagram.getComm().addAssociationInstance(sourceF.id, targetF.id, associationF.id);
 //					l.countDown();
 //				    });			
 //				diagram.updateDiagram();
@@ -610,12 +610,12 @@ public class DiagramActions {
 	}
 
 	public void removeAssociationInstance(FmmlxAssociationInstance instance) {
-		diagram.removeAssociationInstance(instance);
+		diagram.getComm().removeAssociationInstance(instance.id);
 		diagram.updateDiagram();
 	}
 
 	public void removeAssociation(FmmlxAssociation association) {
-		diagram.removeAssociation(association);
+		diagram.getComm().removeAssociation(association.id, -1);
 		diagram.updateDiagram();
 	}
 
