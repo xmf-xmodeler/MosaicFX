@@ -26,11 +26,10 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 	public MultiplicityDialog(Multiplicity multiplicity) {
 		super();
 
-
 		if (multiplicity != null) {
 			this.oldMultiplicity = multiplicity;
 		} else {
-			this.oldMultiplicity = Multiplicity.MANDATORY;
+			this.oldMultiplicity = Multiplicity.OPTIONAL;
 		}
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.setHeaderText("Add / Edit Multiplicity");
@@ -67,10 +66,11 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 		Label labelDuplicates = new Label(LabelAndHeaderTitle.allowDuplicates);
 		Label labelUpperLimit = new Label(LabelAndHeaderTitle.upperLimit);
 
-		minimumComboBox = new ComboBox<>(LevelList.levelList);
+		minimumComboBox = new ComboBox<>();
 		minimumComboBox.setValue(oldMultiplicity.min);
 
 		maximumComboBox = new ComboBox<>();
+		if(oldMultiplicity.upperLimit) maximumComboBox.setValue(oldMultiplicity.max);
 		maximumComboBox.setEditable(true);
 		maximumComboBox.setConverter(new IntegerStringConverter());
 		minimumComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -80,7 +80,6 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 		});
 		minimumComboBox.setEditable(true);
 		minimumComboBox.setConverter(new IntegerStringConverter());
-
 
 		orderedCheckBox = new CheckBox();
 		orderedCheckBox.setSelected(oldMultiplicity.ordered);

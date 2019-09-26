@@ -1,5 +1,8 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import java.util.ArrayList;
+import java.util.Vector;
+
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
@@ -96,7 +99,7 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult> {
 		currentOfTextField.setDisable(true);
 
 
-		allPossibleOf = diagram.getAllPossibleOf();
+		allPossibleOf = null; //diagram.getAllPossibleOf();
 		newOfComboBox = (ComboBox<FmmlxObject>) initializeComboBox(allPossibleOf);
 
 		newOfComboBox.setPrefWidth(COLUMN_WIDTH);

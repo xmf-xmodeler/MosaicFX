@@ -4,21 +4,24 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
-import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
 import java.util.Vector;
 
-public class Edge implements CanvasElement, Selectable {
+public abstract class Edge implements CanvasElement {
 
 	final public int id;
 	protected Vector<Point2D> points = new Vector<>();
 	protected FmmlxObject startNode;
 	protected FmmlxObject endNode;
 	protected FmmlxDiagram diagram;
-	protected Vector<EdgeLabel> labels = new Vector<>();
-	protected final Double DEFAULT_TOLERANCE = 3.;
+//	protected Vector<EdgeLabel> labels = new Vector<>();
+	protected final Double DEFAULT_TOLERANCE = 6.;
+	protected boolean layoutingFinishedSuccesfully;
+	private Vector<Object> labelPositions;
 
-	public Edge(int id, FmmlxObject startNode, FmmlxObject endNode, Vector<Point2D> points, FmmlxDiagram diagram) {
+	public Edge(int id, FmmlxObject startNode, FmmlxObject endNode, Vector<Point2D> points, Vector<Object> labelPositions, FmmlxDiagram diagram) {
+		layoutingFinishedSuccesfully = false;
+		this.labelPositions = labelPositions;
 		this.id = id;
 		this.diagram = diagram;
 		this.startNode = startNode;
@@ -29,38 +32,42 @@ public class Edge implements CanvasElement, Selectable {
 		} else {
 			this.points.addAll(points);
 		}
+		storeLatestValidPointConfiguration();
 	}
 
 	@Override
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
-		for (EdgeLabel label : labels) label.paintOn(g, xOffset, yOffset, fmmlxDiagram);
-		g.setStroke(fmmlxDiagram.isSelected(this) ? Color.RED : getPrimaryColor());
-		g.setLineWidth(isSelected() ? 3 : 1);
-		g.setLineDashes(getLineDashes());
-		double[] xPoints = new double[points.size()];//+2];
-		double[] yPoints = new double[points.size()];//+2];
-//		xPoints[0] = startNode.getX() + startNode.width / 2;
-//		yPoints[0] = startNode.getY() + startNode.height / 2;
-		for (int i = 0; i < points.size(); i++) {
-			xPoints[i] = points.get(i).getX();
-			yPoints[i] = points.get(i).getY();
+		if(!layoutingFinishedSuccesfully) {
+			layout(); diagram.redraw();
+		} else {
+		
+//			for (EdgeLabel label : labels) label.paintOn(g, xOffset, yOffset, fmmlxDiagram);
+			g.setStroke(fmmlxDiagram.isSelected(this) ? Color.RED : getPrimaryColor());
+			g.setLineWidth(isSelected() ? 3 : 1);
+			g.setLineDashes(getLineDashes());
+			double[] xPoints = new double[points.size()];//+2];
+			double[] yPoints = new double[points.size()];//+2];
+			for (int i = 0; i < points.size(); i++) {
+				xPoints[i] = points.get(i).getX();
+				yPoints[i] = points.get(i).getY();
+			}
+	
+			g.strokePolyline(xPoints, yPoints, xPoints.length);
+	
+			if (pointToBeMoved != -1) {
+				final double R = 1.5;
+				g.fillOval(points.get(pointToBeMoved).getX() - R,
+						points.get(pointToBeMoved).getY() - R,
+						2 * R,
+						2 * R);
+			}
+	
+			// resetting the graphicsContext
+			g.setLineDashes(0);
 		}
-//		xPoints[points.size()+1] = endNode.getX() + endNode.width / 2;
-//		yPoints[points.size()+1] = endNode.getY() + endNode.height / 2;
-
-		g.strokePolyline(xPoints, yPoints, xPoints.length);
-
-		if (pointToBeMoved != -1) {
-			final double R = 1.5;
-			g.fillOval(points.get(pointToBeMoved).getX() - R,
-					points.get(pointToBeMoved).getY() - R,
-					2 * R,
-					2 * R);
-		}
-
-		// resetting the graphicsContext
-		g.setLineDashes(0);
 	}
+
+	protected abstract void layout();
 
 	protected Color getPrimaryColor() {
 		return Color.BLACK;
@@ -71,7 +78,6 @@ public class Edge implements CanvasElement, Selectable {
 	}
 
 	private boolean isSelected() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -99,15 +105,8 @@ public class Edge implements CanvasElement, Selectable {
 				- (testPoint.getY() - lineStart.getY()) * (lineEnd.getX() - lineStart.getX())) / normalLength;
 	}
 
-	public Point2D getAnchorPosition(EdgeLabel.Anchor anchor) {
-		return null;
-	}
-
 	@Override
-	public ContextMenu getContextMenu(DiagramActions actions) {
-		System.err.println("getContextMenu " + id);
-		return new DefaultContextMenu(actions); //temporary
-	}
+	public abstract ContextMenu getContextMenu(DiagramActions actions);
 
 	@Override
 	public void moveTo(double x, double y, FmmlxDiagram diagram) {
@@ -124,17 +123,44 @@ public class Edge implements CanvasElement, Selectable {
 	public boolean isEndNode(FmmlxObject fmmlxObject) {
 		return endNode == fmmlxObject;
 	}
-
-	public void moveStartPoint() {
-		Point2D startPoint = new Point2D(startNode.getX() + startNode.getWidth() / 2, startNode.getY() + startNode.getHeight() / 2);
-		points.setElementAt(startPoint, 0);
+	
+	public void movePoints(double newStartX, double newStartY, double newEndX, double newEndY) {
+		Point2D oldStartPoint = latestValidPointConfiguration.firstElement();
+		double oldStartX = oldStartPoint.getX();
+		double oldStartY = oldStartPoint.getY();
+		Point2D oldEndPoint = latestValidPointConfiguration.lastElement();
+		double oldEndX = oldEndPoint.getX();
+		double oldEndY = oldEndPoint.getY();
+		
+		Vector<Point2D> newPoints = new Vector<>();
+	
+		newPoints.add(new Point2D(newStartX, newStartY));
+		for(int i = 1; i < latestValidPointConfiguration.size()-1; i++) {
+			Point2D oldPoint = latestValidPointConfiguration.get(i);
+			double newX = (oldPoint.getX() - oldStartX) / (oldEndX - oldStartX) * (newEndX - newStartX) + newStartX;
+			double newY = (oldPoint.getY() - oldStartY) / (oldEndY - oldStartY) * (newEndY - newStartY) + newStartY;
+			if(Double.isFinite(newX) && Double.isFinite(newY))
+			newPoints.add(new Point2D(newX, newY));
+		};
+		newPoints.add(new Point2D(newEndX, newEndY));
+		points.clear();
+		points.addAll(newPoints);
 	}
 
-	public void moveEndPoint() {
-		Point2D endPoint = new Point2D(endNode.getX() + endNode.getWidth() / 2, endNode.getY() + endNode.getHeight() / 2);
-		points.setElementAt(endPoint, points.size() - 1);
+	public void moveStartPoint(double newStartX, double newStartY) {
+		movePoints(newStartX, newStartY, points.lastElement().getX(), points.lastElement().getY());
 	}
 
+	public void moveEndPoint(double newEndX, double newEndY) {
+		movePoints(points.firstElement().getX(), points.firstElement().getY(), newEndX, newEndY);
+	}
+		
+	private void storeLatestValidPointConfiguration() {
+		latestValidPointConfiguration.clear();
+		latestValidPointConfiguration.addAll(points);
+	}
+
+	private transient Vector<Point2D> latestValidPointConfiguration = new Vector<>();
 	private transient int pointToBeMoved = -1;
 
 	public void setPointAtToBeMoved(Point2D mousePoint) {
@@ -182,6 +208,8 @@ public class Edge implements CanvasElement, Selectable {
 		}
 		// in any case no point to be moved anymore
 		pointToBeMoved = -1;
+		
+		storeLatestValidPointConfiguration();
 	}
 
 	public Vector<Point2D> getPoints() {
@@ -200,8 +228,25 @@ public class Edge implements CanvasElement, Selectable {
 	}
 
 	@Override
-	public void highlightElementAt(Point2D p) {
-		// TODO Auto-generated method stub
-		
+	public void highlightElementAt(Point2D p) {}
+
+	@Override
+	public void setOffsetAndStoreLastValidPosition(Point2D p) {
+		storeLatestValidPointConfiguration();		
+	}
+	
+	@Override public double getMouseMoveOffsetX() {return 0;}
+	@Override public double getMouseMoveOffsetY() {return 0;}
+	
+	@SuppressWarnings("unchecked")
+	protected Point2D getLabelPosition(int localId) {
+		for(Object labelPositionO : labelPositions) {
+			Vector<Object> labelPosition = (Vector<Object>) labelPositionO;
+			int theirLocalId = (Integer) labelPosition.get(1);
+			if (theirLocalId == localId) {
+				return new Point2D((Float) labelPosition.get(2), (Float) labelPosition.get(3));
+			}
+		}
+		return null;
 	}
 }

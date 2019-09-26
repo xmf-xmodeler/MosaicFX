@@ -36,45 +36,38 @@ public class FmmlxDiagram {
 	enum MouseMode {
 		MULTISELECT, STANDARD, DRAW_EDGE
 	}
-
+	
+	// The elements which the diagram consists of GUI-wise
 	private SplitPane mainView;
-	private final FmmlxDiagramCommunicator comm;
 	private Canvas canvas;
+	private ScrollPane scrollerCanvas;
+	
+	// The communication to the xmf and other actions
+	private final FmmlxDiagramCommunicator comm;
+	private DiagramActions actions;
+	
+	// The elements representing the model which is displayed in the GUI
 	private Vector<FmmlxObject> objects = new Vector<>();
 	private Vector<Edge> edges = new Vector<>();
-
-	private transient Vector<Selectable> selectedObjects = new Vector<>();
-	//	private DefaultContextMenu defaultContextMenu;
-//	private ObjectContextMenu objectContextMenu;
+	private Vector<DiagramLabel> labels = new Vector<>();
+	
+	// Temporary variables storing the current state of user interactions
+	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
 	private ContextMenu activeContextMenu;
-	private DiagramActions actions;
 	private transient boolean objectsMoved = false;
 	private transient PropertyType drawEdgeType = null;
 	private Point2D lastPoint;
 	private Point2D currentPoint;
 	private MouseMode mode = MouseMode.STANDARD;
-	private Font font;
-
+	private FmmlxObject newEdgeTarget;
+	private NodeLabel lastHitLabel = null;
+	private boolean diagramRequiresUpdate = false;
+	
+	// The state of the canvas is stored here:
 	private Point2D canvasRawSize = new Point2D(1200, 800);
 	private double zoom = 1.;
-	private Affine transformFX;
-
-	private ScrollPane scrollerCanvas;
-
-	private FmmlxObject newEdgeTarget;
-	private NodeLabel lastHitLabel;
-
-//	public Vector<FmmlxObject> fetchObjects() {
-//		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
-//		objects.clear(); // to be replaced when updating instead of loading form scratch
-//		objects.addAll(fetchedObjects);
-//		for (FmmlxObject o : objects) {
-//			o.fetchDataDefinitions(comm);
-//		}
-//		for (FmmlxObject o : objects) {
-//			o.fetchDataValues(comm);
-//		}
-//		return objects;
+	private Affine transformFX = new Affine();
+	private Font font;
 
 	FmmlxDiagram(FmmlxDiagramCommunicator comm, String label) {
 		this.comm = comm;
@@ -85,10 +78,6 @@ public class FmmlxDiagram {
 		scrollerCanvas = new ScrollPane(canvas);
 		mainView.setOrientation(Orientation.VERTICAL);
 		mainView.getItems().addAll(palette, scrollerCanvas);
-		transformFX = new Affine();
-		lastHitLabel = null;
-
-//		defaultContextMenu = new DefaultContextMenu(actions);
 
 		canvas.setOnMousePressed(this::mousePressed);
 		canvas.setOnMouseDragged(this::mouseDragged);
@@ -107,95 +96,39 @@ public class FmmlxDiagram {
 		redraw();
 	}
 
-	//	}
-	public Vector<FmmlxObject> getObjects() {
-		return new Vector<FmmlxObject>(objects); // read-only
-	}
-
-	public FmmlxObject getObjectById(int id) {
-		for (FmmlxObject object : objects) {
-			if (object.getId() == id)
-				return object;
-		}
-		return null;
-	}
-
-	public Object getAllMetaClass() {
-		Vector<FmmlxObject> result = new Vector<FmmlxObject>();
-		for (FmmlxObject object : getObjects()) {
-			if (object.getLevel() != 0) {
-				result.add(object);
-			}
-		}
-		return result;
-	}
-
+	// Only used to set the mouse pointer. Find a better solution
+	@Deprecated
 	public Canvas getCanvas() {
 		return canvas;
 	}
 
-
-	public Edge getAssociationById(int id) {
-		for (Edge tmp : edges) {
-			if (tmp.getId() == id)
-				return tmp;
-		}
-		return null;
-	}
-
-	public Vector<FmmlxAssociation> getRelatedAssociationByObject(FmmlxObject object) {
-		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
-		for (Edge tmp : edges) {
-			if (tmp instanceof FmmlxAssociation) {
-				if (tmp.startNode.getId() == object.getId() || tmp.endNode.getId() == object.getId()) {
-					result.add((FmmlxAssociation) tmp);
-				}
-			}
-		}
-		return result;
-	}
-
-	public ObservableList<String> getAssociationListToPair(FmmlxObject metaclassA, FmmlxObject metaclassB) {
-		Vector<String> result = new Vector<String>();
-
-		Vector<FmmlxObject> instanceA = metaclassA.getInstances();
-		Vector<FmmlxObject> instanceB = metaclassB.getInstances();
-
-		for (FmmlxObject object : instanceA) {
-			for (FmmlxObject object2 : instanceB) {
-				//TODO
-			}
-		}
-
-		ObservableList<String> associationList;
-		associationList = FXCollections.observableList(result);
-
-		return associationList;
-	}
-
 	private void fetchDiagramData() {
+		objects.clear();
+		edges.clear();
+		labels.clear();
+		
 		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
-		objects.clear(); // to be replaced when updating instead of loading form scratch
 		objects.addAll(fetchedObjects);
+		
 		Vector<Edge> fetchedEdges = comm.getAllAssociations();
 		fetchedEdges.addAll(comm.getAllAssociationsInstances());
-		edges.clear(); // to be replaced when updating instead of loading form scratch
+
 		edges.addAll(fetchedEdges);
+		
 		for (FmmlxObject o : objects) {
 			o.fetchDataDefinitions(comm);
 		}
+		
 		for (FmmlxObject o : objects) {
 			o.fetchDataValues(comm);
 			o.layout(this);
 		}
-//		if (objects.size() >= 2) {
-//			Edge e = new Edge(-1, objects.get(0), objects.get(1), null, this);
-//			edges.add(e);
-//		}
+		
 		resizeCanvas();
 		redraw();
 	}
 
+	// This operation resets the size of the canvas when needed
 	private void resizeCanvas() {
 		try {
 			double maxRight = canvasRawSize.getX();
@@ -214,10 +147,20 @@ public class FmmlxDiagram {
 		}
 	}
 
+	// Only used to set the diagram into the tab. Find a better solution
+	@Deprecated
 	public SplitPane getView() {
 		return mainView;
 	}
+	
+	public FmmlxDiagramCommunicator getComm() {
+		return comm;
+	}
 
+    private void updateDiagramLater() {
+		diagramRequiresUpdate = true;
+	}
+	
 	public void redraw() {
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
 			// we are on the right Thread already:
@@ -243,6 +186,7 @@ public class FmmlxDiagram {
 		g.setTransform(transformFX);
 		Vector<CanvasElement> objectsToBePainted = new Vector<>();
 		objectsToBePainted.addAll(objects);
+		objectsToBePainted.addAll(labels);
 		objectsToBePainted.addAll(edges);
 		Collections.reverse(objectsToBePainted);
 		for (CanvasElement o : objectsToBePainted) {
@@ -290,7 +234,6 @@ public class FmmlxDiagram {
 
 	private void mouseDragged(MouseEvent e) {
 		Point2D p = scale(e);
-//		FmmlxObject hitObject = getElementAt(p.getX(), p.getY());
 
 		if (mode == MouseMode.MULTISELECT) {
 			storeCurrentPoint(p.getX(), p.getY());
@@ -316,12 +259,13 @@ public class FmmlxDiagram {
 
 	private void mouseDraggedStandard(Point2D p) {
 //		if (hitObject != null) {
-		for (Selectable s : selectedObjects)
+		for (CanvasElement s : selectedObjects)
 			if (s instanceof FmmlxObject) {
 				FmmlxObject o = (FmmlxObject) s;
-//				o.setX((int) (p.getX() - o.mouseMoveOffsetX));
-//				o.setY((int) (p.getY() - o.mouseMoveOffsetY));
-				s.moveTo(p.getX() - o.mouseMoveOffsetX, p.getY() - o.mouseMoveOffsetY, this);
+				s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
+			} else if (s instanceof DiagramLabel) {
+				DiagramLabel o = (DiagramLabel) s;
+				s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
 			} else { // must be edge
 				s.moveTo(p.getX(), p.getY(), this);
 			}
@@ -350,52 +294,57 @@ public class FmmlxDiagram {
 			}
 		}
 		resizeCanvas();
+		if(diagramRequiresUpdate) {
+			diagramRequiresUpdate = false;
+			updateDiagram();
+		}
 		redraw();
 	}
 
-
 	private void mouseReleasedStandard() {
 		if (objectsMoved) {
-			for (Selectable s : selectedObjects)
+			for (CanvasElement s : selectedObjects)
 				if (s instanceof FmmlxObject) {
 					FmmlxObject o = (FmmlxObject) s;
 					comm.sendCurrentPosition(o);
-				} else if (s instanceof FmmlxAssociation) {
-					FmmlxAssociation a = (FmmlxAssociation) s;
-					comm.sendCurrentPositions(a);
+					for(Edge e : edges) {
+						if(e.isStartNode(o) || e.isEndNode(o)) {
+							comm.sendCurrentPositions(e);
+						}
+					}
+				} else if (s instanceof Edge) {
+//					FmmlxAssociation a = (FmmlxAssociation) s;
+					comm.sendCurrentPositions((Edge) s);
+				} else if (s instanceof DiagramLabel) {
+					comm.storeLabelInfo((DiagramLabel) s);
 				}
 		}
 		objectsMoved = false;
 
 	}
 
-	private boolean isLeftClick(MouseEvent e) {
-		return e.getButton() == MouseButton.PRIMARY;
-	}
+	private boolean isLeftClick(MouseEvent e) {return e.getButton() == MouseButton.PRIMARY;}
+	private boolean isRightClick(MouseEvent e) {return e.getButton() == MouseButton.SECONDARY;}
+	private boolean isMiddleClick(MouseEvent e) {return e.getButton() == MouseButton.MIDDLE;}
 
-	private boolean isRightClick(MouseEvent e) {
-		return e.getButton() == MouseButton.SECONDARY;
-	}
-
-	private boolean isMiddleClick(MouseEvent e) {
-		return e.getButton() == MouseButton.MIDDLE;
-	}
-
-	private Selectable getElementAt(double x, double y) {
+	private CanvasElement getElementAt(double x, double y) {
 		for (FmmlxObject o : objects)
 			if (o.isHit(x, y))
 				return o;
-		for (Edge e : edges) {
+		for (Edge e : edges)
 			if (e.isHit(x, y))
 				return e;
-		}
+		for (DiagramLabel l : labels)
+			if (l.isHit(x, y))
+				return l;
+		
 		return null;
 	}
 
 	private void handleLeftPressed(MouseEvent e) {
 		Point2D p = scale(e);
 
-		Selectable hitObject = getElementAt(p.getX(), p.getY());
+		CanvasElement hitObject = getElementAt(p.getX(), p.getY());
 		if (hitObject != null) {
 			if (mode == MouseMode.DRAW_EDGE && newEdgeTarget == null) {
 				newEdgeTarget = hitObject instanceof FmmlxObject ? (FmmlxObject) hitObject : null;
@@ -404,7 +353,12 @@ public class FmmlxDiagram {
 						actions.addAssociationDialog((FmmlxObject) selectedObjects.get(0), newEdgeTarget);
 						break;
 					case AssociationInstance:
-						actions.addAssociationInstance((FmmlxObject) selectedObjects.get(0), newEdgeTarget);
+						final FmmlxObject obj1 = (FmmlxObject) selectedObjects.get(0);
+						final FmmlxObject obj2 = newEdgeTarget;
+						Platform.runLater(() -> {
+							actions.addAssociationInstance(obj1, obj2);
+							updateDiagramLater();
+						});						
 						break;
 					default:
 						break;
@@ -452,8 +406,8 @@ public class FmmlxDiagram {
 		}
 	}
 
-	private void highlightElementAt(Selectable hitObject, Point2D p) {
-		for (Selectable object : objects) {
+	private void highlightElementAt(CanvasElement hitObject, Point2D p) {
+		for (CanvasElement object : objects) {
 			object.highlightElementAt(null);
 		}
 		for (Edge object : edges) {
@@ -462,7 +416,7 @@ public class FmmlxDiagram {
 		hitObject.highlightElementAt(p);
 	}
 
-	private void handleClickOnNodeElement(Point2D p, Selectable hitObject) {
+	private void handleClickOnNodeElement(Point2D p, CanvasElement hitObject) {
 		if (hitObject instanceof FmmlxObject) {
 			Point2D relativePoint = getRelativePointToNodeBox(hitObject, p);
 			NodeBox hitNodeBox = getHitNodeBox((FmmlxObject) hitObject, relativePoint);
@@ -481,7 +435,7 @@ public class FmmlxDiagram {
 		}
 	}
 
-	private void handleDoubleClickOnNodeElement(Point2D p, Selectable hitObject) {
+	private void handleDoubleClickOnNodeElement(Point2D p, CanvasElement hitObject) {
 		NodeBox hitNodeBox = null;
 		if (hitObject instanceof FmmlxObject) {
 			Point2D relativePoint = new Point2D(
@@ -499,6 +453,9 @@ public class FmmlxDiagram {
 						actions.changeNameDialog((FmmlxObject) hitObject, hitNodeBox.getElementType(), hitProperty);
 				}
 			}
+		} else if (hitObject instanceof DiagramLabel) {
+			DiagramLabel l = (DiagramLabel) hitObject;
+			l.performAction();
 		}
 	}
 
@@ -531,7 +488,7 @@ public class FmmlxDiagram {
 		return null;
 	}
 
-	private Point2D getRelativePointToNodeBox(Selectable hitObject, Point2D p) {
+	private Point2D getRelativePointToNodeBox(CanvasElement hitObject, Point2D p) {
 		return new Point2D(
 				p.getX() - ((FmmlxObject) hitObject).getX(),
 				p.getY() - ((FmmlxObject) hitObject).getY());
@@ -540,7 +497,7 @@ public class FmmlxDiagram {
 	private void handleRightClick(MouseEvent e) {
 		Point2D p = scale(e);
 
-		Selectable hitObject = getElementAt(p.getX(), p.getY());
+		CanvasElement hitObject = getElementAt(p.getX(), p.getY());
 		if (hitObject != null) {
 			if (hitObject instanceof FmmlxObject) {
 				activeContextMenu = hitObject.getContextMenu(actions);
@@ -602,15 +559,11 @@ public class FmmlxDiagram {
 	}
 
 	private void setMouseOffset(Point2D p) {
-		for (Selectable s : selectedObjects)
-			if (s instanceof FmmlxObject) {
-				FmmlxObject o = (FmmlxObject) s;
-				o.mouseMoveOffsetX = p.getX() - o.getX();
-				o.mouseMoveOffsetY = p.getY() - o.getY();
-			}
+		for (CanvasElement s : selectedObjects)
+			s.setOffsetAndStoreLastValidPosition(p);
 	}
 
-	public boolean isSelected(Selectable element) {
+	public boolean isSelected(CanvasElement element) {
 		return selectedObjects.contains(element);
 	}
 
@@ -705,10 +658,6 @@ public class FmmlxDiagram {
 		}
 		return result; // read-only
 	}
-
-	public Vector<Edge> getEdges() {
-		return edges;
-	}
 	
 	@Deprecated
 	//needs filter
@@ -762,107 +711,110 @@ public class FmmlxDiagram {
 		ObservableList<FmmlxObject> result = FXCollections.observableArrayList(objectList);
 		return result;
 	}
-
-	public ObservableList<FmmlxObject> getAllPossibleOf() {
-		// TODO Auto-generated method stub
-		return null;
+	
+	public void addLabel(DiagramLabel diagramLabel) {
+		labels.add(diagramLabel);
 	}
-
 
 	////////////////////////////////////////////////////////////////////
 	////					Messages to XMF							////
 	////////////////////////////////////////////////////////////////////
-
-	public void addAttribute(int classID, String name, int level, String type, Multiplicity multi) {
-		comm.addAttribute(classID, name, level, type, multi);
-
-	}
-
-	public void addMetaClass(String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
-		comm.addMetaClass(name, level, parents, isAbstract, x, y);
-	}
-
-	public void addNewInstance(int of, String name, int level, Vector<Integer> parents, boolean isAbstract, int x,
-							   int y) {
-		comm.addNewInstance(of, name, level, parents, isAbstract, x, y);
-	}
-
+	
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeClassName(ChangeNameDialogResult res) {
 		comm.changeClassName(res.getObjectId(), res.getNewName());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeOperationName(ChangeNameDialogResult res) {
 		comm.changeOperationName(res.getObjectId(), res.getOldName(), res.getNewName());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeAttributeName(ChangeNameDialogResult res) {
 		comm.changeAttributeName(res.getObjectId(), res.getOldName(), res.getNewName());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeAssociationName(ChangeNameDialogResult result) {
 		comm.changeAssociationName(result.getObjectId(), result.getOldName(), result.getNewName());
-
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeClassLevel(ChangeLevelDialogResult result) {
 		comm.changeClassLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());
-
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeAttributeLevel(ChangeLevelDialogResult result) {
 		comm.changeAttributeLevel(result.getObjectId(), result.getName(), result.getOldLevel(), result.getNewLevel());
-
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeAssociationLevel(ChangeLevelDialogResult result) {
 		comm.changeAssociationLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());
-
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeOperationLevel(ChangeLevelDialogResult result) {
 		comm.changeOperationLevel(result.getObjectId(), result.getName(), result.getOldLevel(), result.getNewLevel());
-
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeSlotValue(ChangeSlotValueDialogResult result) {
 		comm.changeSlotValue(result.getObject().getId(), result.getSlot().getName(), result.getNewValue());
 	}
-
-	public void removeAttribute(FmmlxObject c, FmmlxAttribute a, Integer strategy) {
-		comm.removeAttribute(c.getId(), a.getName(), 0);
-
-	}
-
+	
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeOf(ChangeOfDialogResult result) {
 		comm.changeOf(result.getObjectId(), result.getOldOfId(), result.getNewOfId());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void removeClass(RemoveDialogResult result) {
 		comm.removeClass(result.getObject().getId(), 0);
-
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void removeOperation(RemoveDialogResult result) {
 		comm.removeOperation(result.getObject().getId(), result.getOperation().getName(), 0);
 
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void removeAttribute(RemoveDialogResult result) {
 		comm.removeAttribute(result.getObject().getId(), result.getAttribute().getName(), 0);
-
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void removeAssociation(RemoveDialogResult result) {
 		comm.removeAssociation(result.getAssociation().getId(), 0);
-
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void addOperation(AddDialogResult result) {
-		comm.addOperation(result.getObjectId(), result.getOperationName(), result.getLevel(), result.getOperationType(), result.getBody());
+//		comm.addOperation(result.getObjectId(), result.getOperationName(), result.getLevel(), result.getOperationType(), result.getBody());
+		comm.addOperation2(result.getObjectId(), result.getLevel(), result.getBody());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void addAssociation(AddAssociationDialogResult result) {
-		// TODO: add parameters
 		comm.addAssociation(
 				result.getSource().id, result.getTarget().id,
 				result.getIdentifierSource(), result.getIdentifierTarget(),
@@ -872,49 +824,65 @@ public class FmmlxDiagram {
 		);
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeAttributeOwner(ChangeOwnerDialogResult result) {
 		comm.changeAttributeOwner(result.getObject().getId(), result.getNewOwnerID());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeOperationOwner(ChangeOwnerDialogResult result) {
 		comm.changeOperationOwner(result.getObject().getId(), result.getNewOwnerID());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeParent(ChangeParentDialogResult result) {
 		comm.changeParent(result.getObject().getId(), result.getCurrentParentIds(), result.getNewParentIds());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeTypeAttribute(ChangeTypeDialogResult result) {
 		comm.changeAttributeType(result.getObject().getId(), result.getAttribute().getName(),
 				result.getOldType(), result.getNewType());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeTypeOperation(ChangeTypeDialogResult result) {
 		comm.changeOperationType(result.getObject().getId(), result.getOperation().getName(),
 				result.getOldType(), result.getNewType());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeTypeAssociation(ChangeTypeDialogResult result) {
 		comm.changeAssociationType(result.getObject().getId(), result.getAssociation().getName(),
 				result.getOldType(), result.getNewType());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeTargetAssociation(ChangeTargetDialogResult result) {
 		comm.changeTargetAssociation(result.getObject().getId(), result.getAssociationName(), result.getOldTargetID(), result.getNewTargetID());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeMulitiplicityAttribute(MultiplicityDialogResult result) {
 		comm.changeMultiplicityAttribute(result.getObject().getId(), result.getSelectedAttribute().getName(), result.convertToMultiplicity());
 	}
 
+	// to be migrated to Communicator
+	@Deprecated
 	public void changeBody(ChangeBodyDialogResult result) {
 		comm.changeOperationBody(result.getObject().getId(), result.getSelectedItem().getName(), result.getBody());
 	}
-
-	public void checkOperationBody(String text) {
-		comm.checkOperationBody(text);
-	}
-
+	
+	// to be migrated to Communicator
+	@Deprecated
 	public void editAssociation(EditAssociationDialogResult result) {
 
 		comm.editAssociation(result.getSelectedAssociation().getId(),
@@ -936,27 +904,61 @@ public class FmmlxDiagram {
 		return result;
 	}
 
-	public void addAssociationInstance(FmmlxObject source, FmmlxObject target, FmmlxAssociation association) {
-		comm.addAssociationInstance(source.id, target.id, association.id);
+	// Some useful methods for queries:
+	
+
+	public Vector<FmmlxObject> getObjects() {
+		return new Vector<FmmlxObject>(objects); // read-only
+	}
+	
+	public Vector<Edge> getEdges() {
+		return new Vector<Edge>(edges); // read-only
+	}
+	
+	public Vector<DiagramLabel> getLabels() {
+		return new Vector<DiagramLabel>(labels); // read-only
 	}
 
-	public void removeAssociationInstance(FmmlxAssociationInstance instance) {
-		comm.removeAssociationInstance(instance.getId());
+	public FmmlxObject getObjectById(int id) {
+		for (FmmlxObject object : objects) {
+			if (object.getId() == id)
+				return object;
+		}
+		return null;
 	}
-
-
-	public void removeAssociation(FmmlxAssociation association) {
-		comm.removeAssociation(association.getId(), 0);
+	
+	public Edge getAssociationById(int id) {
+		for (Edge tmp : edges) {
+			if (tmp.getId() == id)
+				return tmp;
+		}
+		return null;
 	}
-
+	
+	public Object getAllMetaClass() {
+		Vector<FmmlxObject> result = new Vector<FmmlxObject>();
+		for (FmmlxObject object : getObjects()) {
+			if (object.getLevel() != 0) {
+				result.add(object);
+			}
+		}
+		return result;
+	}
+	
+	public Vector<FmmlxAssociation> getRelatedAssociationByObject(FmmlxObject object) {
+		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
+		for (Edge tmp : edges) {
+			if (tmp instanceof FmmlxAssociation) {
+				if (tmp.startNode.getId() == object.getId() || tmp.endNode.getId() == object.getId()) {
+					result.add((FmmlxAssociation) tmp);
+				}
+			}
+		}
+		return result;
+	}
+	
 	public boolean isNameAvailable(String t) {
 		for (FmmlxObject o : objects) if (o.getName().equals(t)) return false;
 		return true;
 	}
-
-	public void updateAssociationInstance(FmmlxAssociationInstance associationInstance, FmmlxObject startObject,
-			FmmlxObject endObject) {
-		comm.updateAssociationInstance(associationInstance.getId(), startObject.getId(), endObject.getId());	
-	}
-
 }

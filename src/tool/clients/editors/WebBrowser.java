@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.web.WebView;
+import org.w3c.dom.Document;
 import tool.clients.EventHandler;
 import tool.helper.IconGenerator;
 import xos.Message;
@@ -63,6 +64,18 @@ public class WebBrowser {
                 startUrl = url;
             }
         }
+    }
+
+    protected String getUrl() {
+        String url = "";
+        if (webView != null) url = webView.getEngine().getLocation();
+        return url;
+    }
+
+    protected Document getDocument() {
+        Document doc = null;
+        if (webView != null) doc = webView.getEngine().getDocument();
+        return doc;
     }
 
     private void createBrowser(String url, String text) { //TODO: constructor

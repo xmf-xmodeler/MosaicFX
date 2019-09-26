@@ -227,6 +227,8 @@ public class FmmlxDiagramCommunicator {
 					listOfPoints.addElement(pointP);
 				}
 			}
+			
+			Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(13);
 
 			Edge object = new FmmlxAssociation(
 					(Integer) edgeInfoAsList.get(0), // id
@@ -242,6 +244,7 @@ public class FmmlxDiagramCommunicator {
 					(Integer) edgeInfoAsList.get(10), // level e->s
 					Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(11)), //mul s->e
 					Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(12)), //mul e->e
+					labelPositions,
 					diagram);
 			result.add(object);
 		}
@@ -253,7 +256,6 @@ public class FmmlxDiagramCommunicator {
 		Vector<Object> response = xmfRequest(handler, "getAllAssociationInstances", new Value[]{});
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
-		System.err.println("getAllAssociationInstances: " + responseContent.size());
 
 		for (Object edgeInfo : responseContent) {
 			Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
@@ -269,12 +271,15 @@ public class FmmlxDiagramCommunicator {
 				}
 			}
 
+			Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(5);
+			
 			Edge object = new FmmlxAssociationInstance(
 					(Integer) edgeInfoAsList.get(0), // id
 					(Integer) edgeInfoAsList.get(1), // startId
 					(Integer) edgeInfoAsList.get(2), // endId
 					(Integer) edgeInfoAsList.get(3), // ofId
 					listOfPoints, // points
+					labelPositions,
 					diagram);
 			result.add(object);
 		}
@@ -402,10 +407,10 @@ public class FmmlxDiagramCommunicator {
 	@SuppressWarnings("unused")
 	public void sendCurrentPosition(FmmlxObject o) {
 		Vector<Object> response = xmfRequest(handler, "sendNewPosition",
-				new Value[]{new Value(o.id), new Value(o.getX()), new Value(o.getY())});
+				new Value[]{new Value(o.id), new Value((int)(o.getX())), new Value((int)(o.getY()))});
 	}
 
-	public void sendCurrentPositions(FmmlxAssociation a) {
+	public void sendCurrentPositions(Edge a) {
 		Vector<Point2D> points = a.getPoints();
 
 		Value[] listOfPoints = new Value[points.size()];
@@ -491,16 +496,26 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "addAttribute", message);
 	}
 
-	public void addOperation(int objectId, String operationName, int level, String operationType, String body) {
+//	public void addOperation(int objectId, String operationName, int level, String operationType, String body) {
+//		Value[] message = new Value[]{
+//				new Value(-1),
+//				new Value(objectId),
+//				new Value(operationName),
+//				new Value(level),
+//				new Value(operationType),
+//				new Value(body)
+//		};
+//		WorkbenchClient.theClient().send(handler, "addOperation", message);
+//	}
+	
+	public void addOperation2(int objectId, int level, String body) {
 		Value[] message = new Value[]{
 				new Value(-1),
 				new Value(objectId),
-				new Value(operationName),
 				new Value(level),
-				new Value(operationType),
 				new Value(body)
 		};
-		WorkbenchClient.theClient().send(handler, "addOperation", message);
+		WorkbenchClient.theClient().send(handler, "addOperation2", message);
 	}
 
 	public void changeClassName(int id, String newName) {
@@ -751,6 +766,67 @@ public class FmmlxDiagramCommunicator {
 				new Value(startObjectId),
 				new Value(endObjectId)};
 		WorkbenchClient.theClient().send(handler, "updateAssociationInstance", message);
+	}
+
+	public void storeLabelInfo(DiagramLabel l) {
 		
+		WorkbenchClient.theClient().send(handler, "storeLabelInfo",l.getInfo4XMF());
+		//xmfRequest(handler, "storeLabelInfo",l.getInfo4XMF());
+	}
+
+	public void changeAssociationForwardName(int associationId, String newName) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(associationId),
+				new Value(newName)};
+		WorkbenchClient.theClient().send(handler, "changeAssociationForwardName", message);
+	}
+
+	public void changeAssociationStart2EndLevel(int associationId, Integer newLevel) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(associationId),
+				new Value(newLevel)};
+		WorkbenchClient.theClient().send(handler, "changeAssociationStart2EndLevel", message);
+	}
+
+	public void changeAssociationEnd2StartLevel(int associationId, Integer newLevel) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(associationId),
+				new Value(newLevel)};
+		WorkbenchClient.theClient().send(handler, "changeAssociationEnd2StartLevel", message);
+	}
+
+	public void changeAssociationStart2EndAccessName(int associationId, String newName) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(associationId),
+				new Value(newName)};
+		WorkbenchClient.theClient().send(handler, "changeAssociationStart2EndAccessName", message);
+	}
+
+	public void changeAssociationEnd2StartAccessName(int associationId, String newName) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(associationId),
+				new Value(newName)};
+		WorkbenchClient.theClient().send(handler, "changeAssociationEnd2StartAccessName", message);
+	}
+
+	public void changeAssociationStart2EndMultiplicity(int associationId, Multiplicity newMultiplicity) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(associationId),
+				new Value(newMultiplicity.toValue())};
+		WorkbenchClient.theClient().send(handler, "changeAssociationStart2EndMultiplicity", message);
+	}
+
+	public void changeAssociationEnd2StartMultiplicity(int associationId, Multiplicity newMultiplicity) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(associationId),
+				new Value(newMultiplicity.toValue())};
+		WorkbenchClient.theClient().send(handler, "changeAssociationEnd2StartMultiplicity", message);
 	}
 }

@@ -1,6 +1,5 @@
 package tool.clients.browser;
 
-import java.io.File;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.HashSet;
@@ -42,7 +41,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Font;

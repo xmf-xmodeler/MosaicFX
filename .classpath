@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="lib" path="lib/org.eclipse.ui.workbench_3.7.1.v20120104-1859.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.ui.workbench.texteditor_3.7.0.v20110928-1504.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.jface.text_3.7.2.v20111213-1208.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.osgi_3.7.2.v20120110-1415.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.jface_3.7.0.v20110928-1505.jar"/>
 	<classpathentry kind="lib" path="lib/jacob-1.14.3.jar"/>
-	<classpathentry kind="lib" path="lib/poi-3.10.1/ooxml-lib/dom4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="lib/poi-3.10.1/ooxml-lib/stax-api-1.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/poi-3.10.1/ooxml-lib/xmlbeans-2.6.0.jar"/>
 	<classpathentry kind="lib" path="lib/kodkod.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.draw2d_3.5.0.jar"/>

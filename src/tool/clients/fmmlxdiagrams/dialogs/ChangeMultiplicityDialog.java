@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import static tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog.LabelAndHeaderTitle;
 
+@Deprecated
 public class ChangeMultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 
 	private final PropertyType type;
@@ -32,7 +33,6 @@ public class ChangeMultiplicityDialog extends CustomDialog<MultiplicityDialogRes
 	private List<Node> labelList;
 	private List<Node> inputsList;
 
-	@Deprecated
 	public ChangeMultiplicityDialog(FmmlxObject object, PropertyType type) {
 		this.object = object;
 		this.type = type;
