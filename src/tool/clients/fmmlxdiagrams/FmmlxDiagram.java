@@ -723,49 +723,6 @@ public class FmmlxDiagram {
 	////					Messages to XMF							////
 	////////////////////////////////////////////////////////////////////
 	
-	// to be migrated to Communicator
-	@Deprecated
-	public void addAssociation(AddAssociationDialogResult result) {
-		comm.addAssociation(
-				result.getSource().id, result.getTarget().id,
-				result.getIdentifierSource(), result.getIdentifierTarget(),
-				result.getDisplayNameSource(), result.getDisplayNameTarget(),
-				result.getMultiplicitySource(), result.getMultiplicityTarget(),
-				result.getInstLevelSource(), result.getInstLevelTarget()
-		);
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void changeTargetAssociation(ChangeTargetDialogResult result) {
-		comm.changeTargetAssociation(result.getObject().getId(), result.getAssociationName(), result.getOldTargetID(), result.getNewTargetID());
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void changeMulitiplicityAttribute(MultiplicityDialogResult result) {
-		comm.changeMultiplicityAttribute(result.getObject().getId(), result.getSelectedAttribute().getName(), result.convertToMultiplicity());
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void changeBody(ChangeBodyDialogResult result) {
-		comm.changeOperationBody(result.getObject().getId(), result.getSelectedItem().getName(), result.getBody());
-	}
-	
-	// to be migrated to Communicator
-	@Deprecated
-	public void editAssociation(EditAssociationDialogResult result) {
-
-		comm.editAssociation(result.getSelectedAssociation().getId(),
-				result.getSource(), result.getTarget(),
-				result.getNewInstLevelSource(), result.getNewInstLevelTarget(),
-				result.getNewDisplayNameSource(), result.getNewDisplayNameTarget(),
-				result.getNewIdentifierSource(), result.getNewIdentifierTarget(),
-				result.getMultiplicitySource(), result.getMultiplicityTarget());
-
-	}
-
 	public Vector<FmmlxAssociation> findAssociations(FmmlxObject source, FmmlxObject target) {
 		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
 		for (Edge e : edges)
@@ -778,7 +735,6 @@ public class FmmlxDiagram {
 
 	// Some useful methods for queries:
 	
-
 	public Vector<FmmlxObject> getObjects() {
 		return new Vector<FmmlxObject>(objects); // read-only
 	}

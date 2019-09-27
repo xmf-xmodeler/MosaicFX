@@ -20,22 +20,34 @@ public class ObjectContextMenu extends ContextMenu {
 
 		MenuItem addInstanceItem = new MenuItem("Add instance");
 		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object));
+		if(object.getLevel() > 1 && !object.isAbstract()) getItems().add(addInstanceItem);
+		
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Class));
+		getItems().add(removeItem);
+		
 		MenuItem changeNameItem = new MenuItem("Change name");
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Class));
+		getItems().add(changeNameItem);
+		
 		MenuItem changeOfItem = new MenuItem("Change of (Metaclass)");
 		changeOfItem.setOnAction(e -> actions.changeOfDialog(object));
 		changeOfItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+		getItems().add(changeOfItem);
+		
 		MenuItem changeParentItem = new MenuItem("Change parent (Superclass)");
 		changeParentItem.setOnAction(e -> actions.changeParentsDialog(object));
 		changeParentItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+		getItems().add(changeParentItem);
+		
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Class));
 		changeLevelItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+		getItems().add(changeLevelItem);
+		
 		MenuItem abstractClassItem = new MenuItem(object.isAbstract()?"Make concrete":"Make abstract");
 		abstractClassItem.setOnAction(e -> actions.toggleAbstract(object));
-		abstractClassItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+		if(object.getLevel() > 0) getItems().add(abstractClassItem);
 
 		Menu attributeMenu = createAttributeSubMenu();
 		Menu associationMenu = createAssociationSubMenu();
@@ -44,8 +56,7 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu associationInstanceMenu = createAssociationInstanceSubMenu();
 		Menu showMenu = createShowSubMenu();
 
-		getItems().addAll(addInstanceItem, removeItem, changeNameItem, changeOfItem, changeParentItem, changeLevelItem, abstractClassItem,
-				attributeMenu, associationMenu, operationMenu, slotMenu, associationInstanceMenu, showMenu);
+		getItems().addAll(attributeMenu, associationMenu, operationMenu, slotMenu, associationInstanceMenu, showMenu);
 	}
 
 	private Menu createAttributeSubMenu() {
