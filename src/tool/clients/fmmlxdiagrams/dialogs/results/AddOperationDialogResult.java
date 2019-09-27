@@ -3,7 +3,7 @@ package tool.clients.fmmlxdiagrams.dialogs.results;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
-public class AddDialogResult extends DialogResult {
+public class AddOperationDialogResult extends DialogResult {
 
 	// General fields used for all types
 	private final PropertyType type;
@@ -15,13 +15,13 @@ public class AddDialogResult extends DialogResult {
 	private String operationType;
 	private String body;
 
-	public AddDialogResult(FmmlxObject object, PropertyType type) {
+	public AddOperationDialogResult(FmmlxObject object, PropertyType type) {
 		this.type = type;
 		this.object = object;
 	}
 
 	//Constructor for type = operation
-	public AddDialogResult(FmmlxObject object, String name, int level, String operationType, String body) {
+	public AddOperationDialogResult(FmmlxObject object, String name, int level, String operationType, String body) {
 		this.object = object;
 		this.type = PropertyType.Operation;
 		this.operationName = name;

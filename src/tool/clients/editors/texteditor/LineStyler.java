@@ -1,18 +1,12 @@
 package tool.clients.editors.texteditor;
 
-import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Vector;
 
 import javafx.scene.paint.Color;
-import tool.clients.editors.EditorClient;
 import tool.clients.editors.MultiLineRule;
 import tool.clients.editors.WordRule;
-import tool.xmodeler.XModeler;
 
 public class LineStyler {
-
-  private static final Color       BLACK          = Color.rgb(0,0,0);
 
   TextEditor                       editor;
   boolean                          lineNumbers    = true;

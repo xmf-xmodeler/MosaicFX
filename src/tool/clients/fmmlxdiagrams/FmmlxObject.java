@@ -563,9 +563,11 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 //		}
 	}
 
-	public void toggleIsAbstract() {
-		isAbstract = !isAbstract;
-	}
+//	public void toggleIsAbstract() {
+//		isAbstract = !isAbstract;
+//	}
+	
+	public boolean isAbstract() {return isAbstract;}
 
 	private Vector<String> getSlotNames() {
 		Vector<String> slotNames = new Vector<String>();

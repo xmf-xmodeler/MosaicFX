@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
+import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
@@ -36,6 +37,8 @@ public class FmmlxDiagram {
 	enum MouseMode {
 		MULTISELECT, STANDARD, DRAW_EDGE
 	}
+	
+	public static final boolean SHOW_MENUITEMS_IN_DEVELOPMENT = false;
 	
 	// The elements which the diagram consists of GUI-wise
 	private SplitPane mainView;
@@ -722,98 +725,6 @@ public class FmmlxDiagram {
 	
 	// to be migrated to Communicator
 	@Deprecated
-	public void changeClassName(ChangeNameDialogResult res) {
-		comm.changeClassName(res.getObjectId(), res.getNewName());
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void changeOperationName(ChangeNameDialogResult res) {
-		comm.changeOperationName(res.getObjectId(), res.getOldName(), res.getNewName());
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void changeAttributeName(ChangeNameDialogResult res) {
-		comm.changeAttributeName(res.getObjectId(), res.getOldName(), res.getNewName());
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void changeAssociationName(ChangeNameDialogResult result) {
-		comm.changeAssociationName(result.getObjectId(), result.getOldName(), result.getNewName());
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void changeClassLevel(ChangeLevelDialogResult result) {
-		comm.changeClassLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void changeAttributeLevel(ChangeLevelDialogResult result) {
-		comm.changeAttributeLevel(result.getObjectId(), result.getName(), result.getOldLevel(), result.getNewLevel());
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void changeAssociationLevel(ChangeLevelDialogResult result) {
-		comm.changeAssociationLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void changeOperationLevel(ChangeLevelDialogResult result) {
-		comm.changeOperationLevel(result.getObjectId(), result.getName(), result.getOldLevel(), result.getNewLevel());
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void changeSlotValue(ChangeSlotValueDialogResult result) {
-		comm.changeSlotValue(result.getObject().getId(), result.getSlot().getName(), result.getNewValue());
-	}
-	
-	// to be migrated to Communicator
-	@Deprecated
-	public void changeOf(ChangeOfDialogResult result) {
-		comm.changeOf(result.getObjectId(), result.getOldOfId(), result.getNewOfId());
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void removeClass(RemoveDialogResult result) {
-		comm.removeClass(result.getObject().getId(), 0);
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void removeOperation(RemoveDialogResult result) {
-		comm.removeOperation(result.getObject().getId(), result.getOperation().getName(), 0);
-
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void removeAttribute(RemoveDialogResult result) {
-		comm.removeAttribute(result.getObject().getId(), result.getAttribute().getName(), 0);
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void removeAssociation(RemoveDialogResult result) {
-		comm.removeAssociation(result.getAssociation().getId(), 0);
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void addOperation(AddDialogResult result) {
-//		comm.addOperation(result.getObjectId(), result.getOperationName(), result.getLevel(), result.getOperationType(), result.getBody());
-		comm.addOperation2(result.getObjectId(), result.getLevel(), result.getBody());
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
 	public void addAssociation(AddAssociationDialogResult result) {
 		comm.addAssociation(
 				result.getSource().id, result.getTarget().id,
@@ -822,45 +733,6 @@ public class FmmlxDiagram {
 				result.getMultiplicitySource(), result.getMultiplicityTarget(),
 				result.getInstLevelSource(), result.getInstLevelTarget()
 		);
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void changeAttributeOwner(ChangeOwnerDialogResult result) {
-		comm.changeAttributeOwner(result.getObject().getId(), result.getNewOwnerID());
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void changeOperationOwner(ChangeOwnerDialogResult result) {
-		comm.changeOperationOwner(result.getObject().getId(), result.getNewOwnerID());
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void changeParent(ChangeParentDialogResult result) {
-		comm.changeParent(result.getObject().getId(), result.getCurrentParentIds(), result.getNewParentIds());
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void changeTypeAttribute(ChangeTypeDialogResult result) {
-		comm.changeAttributeType(result.getObject().getId(), result.getAttribute().getName(),
-				result.getOldType(), result.getNewType());
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void changeTypeOperation(ChangeTypeDialogResult result) {
-		comm.changeOperationType(result.getObject().getId(), result.getOperation().getName(),
-				result.getOldType(), result.getNewType());
-	}
-
-	// to be migrated to Communicator
-	@Deprecated
-	public void changeTypeAssociation(ChangeTypeDialogResult result) {
-		comm.changeAssociationType(result.getObject().getId(), result.getAssociation().getName(),
-				result.getOldType(), result.getNewType());
 	}
 
 	// to be migrated to Communicator
@@ -960,5 +832,9 @@ public class FmmlxDiagram {
 	public boolean isNameAvailable(String t) {
 		for (FmmlxObject o : objects) if (o.getName().equals(t)) return false;
 		return true;
+	}
+
+	public void setCursor(Cursor c) {
+		canvas.setCursor(c);
 	}
 }

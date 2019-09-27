@@ -606,7 +606,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(objectId),
 				new Value(oldOfId),
 				new Value(newOfId)};
-		WorkbenchClient.theClient().send(handler, "changOf", message);
+		WorkbenchClient.theClient().send(handler, "changeOf", message);
 	}
 
 	public void changeAttributeOwner(int objectId, Integer newOwnerID) {
@@ -614,7 +614,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(-1),
 				new Value(objectId),
 				new Value(newOwnerID)};
-		WorkbenchClient.theClient().send(handler, "changOf", message);
+		WorkbenchClient.theClient().send(handler, "changeAttributeOwner", message);
 	}
 
 	public void changeOperationOwner(int objectId, Integer newOwnerID) {
@@ -622,7 +622,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(-1),
 				new Value(objectId),
 				new Value(newOwnerID)};
-		WorkbenchClient.theClient().send(handler, "changOwner", message);
+		WorkbenchClient.theClient().send(handler, "changeOperationOwner", message);
 	}
 
 	public void changeParent(int objectId, Vector<Integer> currentParents, Vector<Integer> newParents) {
@@ -828,5 +828,13 @@ public class FmmlxDiagramCommunicator {
 				new Value(associationId),
 				new Value(newMultiplicity.toValue())};
 		WorkbenchClient.theClient().send(handler, "changeAssociationEnd2StartMultiplicity", message);
+	}
+
+	public void setClassAbstract(int id, boolean b) {
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(id),
+				new Value(b)};
+		WorkbenchClient.theClient().send(handler, "setClassAbstract", message);		
 	}
 }
