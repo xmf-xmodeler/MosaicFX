@@ -638,4 +638,13 @@ public class DiagramActions {
 		return false;
 	}
 
+	public void levelRaiseAll() {diagram.getComm().levelRaiseAll();}
+	public void levelLowerAll() {diagram.getComm().levelLowerAll();}
+
+	public void levelRaiseRelated(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
+	public void levelLowerRelated(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
+	public void levelInsertBelow(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
+	public void levelRemoveThis(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
+
+
 }

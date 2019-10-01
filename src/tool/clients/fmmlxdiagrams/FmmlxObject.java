@@ -530,12 +530,9 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	public void fetchDataValues(FmmlxDiagramCommunicator comm) {
 		slots = comm.fetchSlots(this.name, this.getSlotNames());
+
 		operationValues = comm.fetchOperationValues(this.name, this.getMonitoredOperationsNames());
 	}
-
-//	private boolean passReqs(FmmlxAttribute att) {
-//		return true;
-//	}
 
 	public boolean isHit(double mouseX, double mouseY) {
 		return
@@ -558,14 +555,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 			if (edge.isStartNode(this)) edge.moveStartPoint(x + width/2, y + height/2);
 			if (edge.isEndNode(this)) edge.moveEndPoint(x + width/2, y + height/2);
 		}
-//		for(DiagramLabel label : diagram.getLabels()) {
-//			label.updatePosition();
-//		}
 	}
-
-//	public void toggleIsAbstract() {
-//		isAbstract = !isAbstract;
-//	}
 	
 	public boolean isAbstract() {return isAbstract;}
 

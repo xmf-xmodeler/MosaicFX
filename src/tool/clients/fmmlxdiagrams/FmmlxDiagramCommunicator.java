@@ -152,7 +152,7 @@ public class FmmlxDiagramCommunicator {
 		boolean waiting = true;
 		WorkbenchClient.theClient().send(targetHandle, message, args2);
 		int attempts = 0;
-		int sleep = 10;
+		int sleep = 5;
 		while (waiting && attempts < 20) {
 			if (DEBUG) System.err.println(attempts + ". attempt");
 			attempts++;
@@ -404,10 +404,15 @@ public class FmmlxDiagramCommunicator {
 	/// Operations storing graphical info to xmf ///
 	////////////////////////////////////////////////
 
-	@SuppressWarnings("unused")
 	public void sendCurrentPosition(FmmlxObject o) {
-		Vector<Object> response = xmfRequest(handler, "sendNewPosition",
-				new Value[]{new Value(o.id), new Value((int)(o.getX())), new Value((int)(o.getY()))});
+//		Vector<Object> response = xmfRequest(handler, "sendNewPosition",
+//				new Value[]{});
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(o.id), 
+				new Value((int)(o.getX())), 
+				new Value((int)(o.getY()))};
+		WorkbenchClient.theClient().send(handler, "sendNewPosition", message);
 	}
 
 	public void sendCurrentPositions(Edge a) {
@@ -827,5 +832,15 @@ public class FmmlxDiagramCommunicator {
 				new Value(classId),
 				new Value(b)};
 		WorkbenchClient.theClient().send(handler, "setClassAbstract", message);		
+	}
+
+	public void levelRaiseAll() {
+		Value[] message = new Value[]{new Value(-1), new Value(1)};
+		WorkbenchClient.theClient().send(handler, "levelRaiseAll", message);		
+	}
+
+	public void levelLowerAll() {
+		Value[] message = new Value[]{new Value(-1), new Value(-1)};
+		WorkbenchClient.theClient().send(handler, "levelRaiseAll", message);		
 	}
 }

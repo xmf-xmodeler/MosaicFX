@@ -105,11 +105,12 @@ public class FmmlxDiagram {
 		return canvas;
 	}
 
-	private void fetchDiagramData() {
+	private synchronized void fetchDiagramData() {
+		
 		objects.clear();
 		edges.clear();
 		labels.clear();
-		
+
 		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
 		objects.addAll(fetchedObjects);
 		
@@ -117,6 +118,7 @@ public class FmmlxDiagram {
 		fetchedEdges.addAll(comm.getAllAssociationsInstances());
 
 		edges.addAll(fetchedEdges);
+		
 		
 		for (FmmlxObject o : objects) {
 			o.fetchDataDefinitions(comm);
@@ -160,7 +162,7 @@ public class FmmlxDiagram {
 		return comm;
 	}
 
-    private void updateDiagramLater() {
+	private void updateDiagramLater() {
 		diagramRequiresUpdate = true;
 	}
 	
@@ -392,9 +394,11 @@ public class FmmlxDiagram {
 			if (mode == MouseMode.DRAW_EDGE) {
 				switch (drawEdgeType) {
 					case Association:
+						mode = MouseMode.STANDARD;
 						actions.addAssociationDialog((FmmlxObject) selectedObjects.get(0), null);
 						break;
 					case AssociationInstance:
+						mode = MouseMode.STANDARD;
 						actions.addAssociationInstance((FmmlxObject) selectedObjects.get(0), null);
 						break;
 					default:
@@ -718,10 +722,6 @@ public class FmmlxDiagram {
 	public void addLabel(DiagramLabel diagramLabel) {
 		labels.add(diagramLabel);
 	}
-
-	////////////////////////////////////////////////////////////////////
-	////					Messages to XMF							////
-	////////////////////////////////////////////////////////////////////
 	
 	public Vector<FmmlxAssociation> findAssociations(FmmlxObject source, FmmlxObject target) {
 		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
@@ -732,6 +732,11 @@ public class FmmlxDiagram {
 			}
 		return result;
 	}
+	
+	////////////////////////////////////////////////////////////////////
+	////					Messages to XMF							////
+	////////////////////////////////////////////////////////////////////
+
 
 	// Some useful methods for queries:
 	

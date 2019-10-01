@@ -40,10 +40,10 @@ public class ObjectContextMenu extends ContextMenu {
 		changeParentItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		getItems().add(changeParentItem);
 		
-		MenuItem changeLevelItem = new MenuItem("Change level");
-		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Class));
-		changeLevelItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
-		getItems().add(changeLevelItem);
+//		MenuItem changeLevelItem = new MenuItem("Change level");
+//		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Class));
+//		changeLevelItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+//		getItems().add(changeLevelItem);
 		
 		MenuItem abstractClassItem = new MenuItem(object.isAbstract()?"Make concrete":"Make abstract");
 		abstractClassItem.setOnAction(e -> actions.toggleAbstract(object));
@@ -55,8 +55,28 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu slotMenu = createSlotSubMenu();
 		Menu associationInstanceMenu = createAssociationInstanceSubMenu();
 		Menu showMenu = createShowSubMenu();
+		
+		Menu levelMenu = new Menu("Levels");
+		MenuItem levelRaiseAllItem = new MenuItem("Raise all");
+		levelRaiseAllItem.setOnAction(e -> actions.levelRaiseAll());
+		MenuItem levelLowerAllItem = new MenuItem("Lower all");
+		levelLowerAllItem.setOnAction(e -> actions.levelLowerAll());
+		MenuItem levelRaiseHereItem = new MenuItem("Raise related");
+		levelRaiseHereItem.setOnAction(e -> actions.levelRaiseAll());
+		levelRaiseHereItem.setDisable(true);
+		MenuItem levelLowerHereItem = new MenuItem("Lower related");
+		levelLowerHereItem.setOnAction(e -> actions.levelLowerAll());
+		levelLowerHereItem.setDisable(true);
+		MenuItem levelSplitItem = new MenuItem("Split level here");
+		levelSplitItem.setOnAction(e -> actions.levelRaiseAll());
+		levelSplitItem.setDisable(true);
+		MenuItem levelMergeItem = new MenuItem("Merge with Metaclass");
+		levelMergeItem.setOnAction(e -> actions.levelLowerAll());
+		levelMergeItem.setDisable(true);
+		
+		levelMenu.getItems().addAll(levelRaiseAllItem, levelLowerAllItem, levelRaiseHereItem, levelLowerHereItem, levelSplitItem, levelMergeItem);
 
-		getItems().addAll(attributeMenu, associationMenu, operationMenu, slotMenu, associationInstanceMenu, showMenu);
+		getItems().addAll(attributeMenu, associationMenu, operationMenu, slotMenu, associationInstanceMenu, levelMenu, showMenu);
 	}
 
 	private Menu createAttributeSubMenu() {

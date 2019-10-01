@@ -161,6 +161,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	}	
 	
 	public boolean doObjectsFit(FmmlxObject source, FmmlxObject target) {
+		if(source==null || target == null) return false;
 		if (source.isInstanceOf(getSourceNode(), levelEndToStart) && target.isInstanceOf(getTargetNode(), levelStartToEnd))
 			return true;
 		if (target.isInstanceOf(getSourceNode(), levelEndToStart) && source.isInstanceOf(getTargetNode(), levelStartToEnd))
@@ -170,7 +171,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 
 	@Override
 	public ContextMenu getContextMenu(DiagramActions actions) {
-		return new AssociationContextMenu(this, actions); //temporary
+		return new AssociationContextMenu(this, actions);
 	}
 
 	@Override

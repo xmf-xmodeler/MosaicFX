@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams.menus;
 
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 
@@ -19,7 +20,15 @@ public class DefaultContextMenu extends ContextMenu {
 		MenuItem addAssociationItem = new MenuItem("Add Association");
 		addAssociationItem.setOnAction(e -> actions.addAssociationDialog(null, null));
 //		associationMenu.getItems().add(addAssociationItem);
+		
+		Menu levelMenu = new Menu("Levels");
+		MenuItem levelRaiseAllItem = new MenuItem("Raise all");
+		levelRaiseAllItem.setOnAction(e -> actions.levelRaiseAll());
+		MenuItem levelLowerAllItem = new MenuItem("Lower all");
+		levelLowerAllItem.setOnAction(e -> actions.levelLowerAll());
+		
+		levelMenu.getItems().addAll(levelRaiseAllItem, levelLowerAllItem);
 
-		getItems().addAll(addClassItem, addInstanceItem, addAssociationItem);
+		getItems().addAll(addClassItem, addInstanceItem, addAssociationItem, levelMenu);
 	}
 }
