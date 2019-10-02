@@ -310,10 +310,10 @@ public class DiagramActions {
 				final ChangeOwnerDialogResult result = opt.get();
 				switch (result.getType()) {
 					case Attribute:
-						diagram.getComm().changeAttributeOwner(result.getObject().getId(), result.getNewOwnerID());
+						diagram.getComm().changeAttributeOwner(result.getObject().getId(), result.getAttribute().getName(), result.getNewOwnerID());
 						break;
 					case Operation:
-						diagram.getComm().changeOperationOwner(result.getObject().getId(), result.getNewOwnerID());
+						diagram.getComm().changeOperationOwner(result.getObject().getId(), result.getOperation().getName(), result.getNewOwnerID());
 						break;
 					default:
 						System.err.println("ChangeOwnerDialogResult: No matching content type!");

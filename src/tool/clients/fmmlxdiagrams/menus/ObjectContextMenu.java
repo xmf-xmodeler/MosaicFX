@@ -143,7 +143,6 @@ public class ObjectContextMenu extends ContextMenu {
 		changeNameItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
 		changeOwnerItem.setOnAction(e -> actions.changeOwnerDialog(object, PropertyType.Operation));
-		changeOwnerItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		MenuItem changeTypeItem = new MenuItem("Change type (use Change body instead)");
 		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Operation));
 		changeTypeItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);

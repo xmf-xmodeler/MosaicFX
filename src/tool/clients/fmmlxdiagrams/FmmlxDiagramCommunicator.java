@@ -613,20 +613,20 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "changeOf", message);
 	}
 
-	public void changeAttributeOwner(int objectId, Integer newOwnerID) {
+	public void changeAttributeOwner(int objectId, String name, Integer newOwnerID) {
 		Value[] message = new Value[]{
 				new Value(-1),
 				new Value(objectId),
-				new Value(-1),
+				new Value(name),
 				new Value(newOwnerID)};
 		WorkbenchClient.theClient().send(handler, "changeAttributeOwner", message);
 	}
 
-	public void changeOperationOwner(int objectId, Integer newOwnerID) {
+	public void changeOperationOwner(int objectId, String name, Integer newOwnerID) {
 		Value[] message = new Value[]{
 				new Value(-1),
 				new Value(objectId),
-				new Value(-1),
+				new Value(name),
 				new Value(newOwnerID)};
 		WorkbenchClient.theClient().send(handler, "changeOperationOwner", message);
 	}
