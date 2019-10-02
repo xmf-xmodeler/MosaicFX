@@ -718,6 +718,8 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "changeAssociationTarget", message);
 	}
 
+	// to be discussed how this may work anyway
+	@Deprecated
 	public void editAssociation(int associationId, FmmlxObject source, FmmlxObject target, int newInstLevelSource,
 								int newInstLevelTarget, String newDisplayNameSource, String newDisplayNameTarget,
 								String newIdentifierSource, String newIdentifierTarget, Multiplicity multiSource,

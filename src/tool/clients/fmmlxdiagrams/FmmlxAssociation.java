@@ -185,6 +185,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
 			diagram.getComm().changeAssociationForwardName(this.id, result.get());
+			diagram.updateDiagram();
 		}
 	};
 
@@ -198,6 +199,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			try {
 				Integer level = Integer.parseInt(result.get());
 				diagram.getComm().changeAssociationStart2EndLevel(this.id, level);
+				diagram.updateDiagram();
 			} catch (Exception e) {
 				System.err.println("Number not readable. Change Nothing.");
 			}
@@ -210,6 +212,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
 			diagram.getComm().changeAssociationStart2EndAccessName(this.id, result.get());
+			diagram.updateDiagram();
 		}
 	};
 	
@@ -218,6 +221,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		Optional<MultiplicityDialogResult> mr = md.showAndWait();
 		if(mr.isPresent()) {
 			diagram.getComm().changeAssociationStart2EndMultiplicity(this.id, mr.get().convertToMultiplicity());
+			diagram.updateDiagram();
 		}
 	};
 	
@@ -229,6 +233,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			try {
 				Integer level = Integer.parseInt(result.get());
 				diagram.getComm().changeAssociationEnd2StartLevel(this.id, level);
+				diagram.updateDiagram();
 			} catch (Exception e) {
 				System.err.println("Number not readable. Change Nothing.");
 			}
@@ -241,6 +246,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
 			diagram.getComm().changeAssociationEnd2StartAccessName(this.id, result.get());
+			diagram.updateDiagram();
 		}
 	};
 	
@@ -249,6 +255,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		Optional<MultiplicityDialogResult> mr = md.showAndWait();
 		if(mr.isPresent()) {
 			diagram.getComm().changeAssociationEnd2StartMultiplicity(this.id, mr.get().convertToMultiplicity());
+			diagram.updateDiagram();
 		}
 	};
 }
