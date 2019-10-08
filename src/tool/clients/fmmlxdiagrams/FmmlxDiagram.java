@@ -508,7 +508,6 @@ public class FmmlxDiagram {
 
 	private void handleRightClick(MouseEvent e) {
 		Point2D p = scale(e);
-
 		CanvasElement hitObject = getElementAt(p.getX(), p.getY());
 		if (hitObject != null) {
 			if (hitObject instanceof FmmlxObject) {
@@ -558,7 +557,7 @@ public class FmmlxDiagram {
 
 	private void showContextMenu(MouseEvent p) {
 		if (activeContextMenu != null) {
-			activeContextMenu.show(scrollerCanvas, Side.LEFT, p.getX(), p.getY());
+			activeContextMenu.show(canvas, Side.LEFT, p.getX(), p.getY());
 		}
 	}
 
