@@ -384,7 +384,7 @@ public class FmmlxDiagramCommunicator {
 		for (Object returnValueO : returnValuesList) {
 			Vector<Object> returnValue = (Vector<Object>) (returnValueO);
 			String name = (String) (returnValue.get(0));
-			String value = (returnValue.get(1)).toString();
+			String value = returnValue.get(1) == null?"null":(returnValue.get(1)).toString();
 			result.add(new FmmlxOperationValue(name, value));
 		}
 		return result;

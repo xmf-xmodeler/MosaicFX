@@ -64,6 +64,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	private FmmlxDiagram diagram;
 	private PropertyType propertyType = PropertyType.Class;
+	private transient boolean requiresReLayout;
 
 	static {
 		colors = new HashMap<>();
@@ -114,6 +115,10 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		this.isAbstract = isAbstract;
 		this.of = of;
 		this.parents = parents;
+		
+		this.showOperations = diagram.isShowOperations();
+		this.showOperationValues = diagram.isShowOperationValues();
+		this.showSlots = diagram.isShowSlots();
 	}
 
 	private String getParentsListString(FmmlxDiagram diagram) {
@@ -298,20 +303,24 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		return nodeElements;
 	}
 
-	public void toggleShowOperations() {
-		showOperations = !showOperations;
+	public void setShowOperations(boolean show) {
+		requiresReLayout = showOperations!=show;
+		showOperations = show;
 	}
 
-	public void toggleShowOperationValues() {
-		showOperationValues = !showOperationValues;
+	public void setShowOperationValues(boolean show) {
+		requiresReLayout = showOperationValues!=show;
+		showOperationValues = show;
 	}
 
-	public void toggleShowSlots() {
-		showSlots = !showSlots;
+	public void setShowSlots(boolean show) {
+		requiresReLayout = showSlots!=show;
+		showSlots = show;
 	}
 
 	public void layout(FmmlxDiagram diagram) {
-
+		requiresReLayout = false;
+		
 		nodeElements = new Vector<>();
 //		double neededHeight = 0;
 		double neededWidth = calculateNeededWidth(diagram);
@@ -391,7 +400,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 			}
 			for (FmmlxOperation o : otherOperations) {
 				opsY += lineHeight;
-				NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, o.getName() + ":" + o.getType() + " (from " + diagram.getObjectById(o.getOwner()).name + ")");
+				NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, o.getName() + "():" + o.getType() + " (from " + diagram.getObjectById(o.getOwner()).name + ")");
 				opsBox.nodeElements.add(oLabel);
 				NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, o.getLevelString() + "");
 				opsBox.nodeElements.add(oLevelLabel);
@@ -502,6 +511,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	}
 
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram diagram) {
+		
+		if(requiresReLayout) layout(diagram);
 
 		boolean selected = diagram.isSelected(this);
 
@@ -645,4 +656,5 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	@Override public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
 	@Override public double getMouseMoveOffsetY() {return mouseMoveOffsetY;}
+
 }

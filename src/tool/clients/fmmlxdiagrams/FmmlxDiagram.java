@@ -71,6 +71,11 @@ public class FmmlxDiagram {
 	private double zoom = 1.;
 	private Affine transformFX = new Affine();
 	private Font font;
+	
+	private boolean showOperations = true;
+	private boolean showOperationValues = true;
+	private boolean showSlots = true;
+
 
 	FmmlxDiagram(FmmlxDiagramCommunicator comm, String label) {
 		this.comm = comm;
@@ -798,4 +803,12 @@ public class FmmlxDiagram {
 	public void setCursor(Cursor c) {
 		canvas.setCursor(c);
 	}
+	
+	public void setShowOperations(boolean show) {this.showOperations = show;}	
+	public void setShowOperationValues(boolean show) {this.showOperationValues = show;}	
+	public void setShowSlots(boolean show) {this.showSlots = show;}
+	
+	public boolean isShowOperations() {return this.showOperations;}	
+	public boolean isShowOperationValues() {return this.showOperationValues;}	
+	public boolean isShowSlots() {return this.showSlots;}	
 }

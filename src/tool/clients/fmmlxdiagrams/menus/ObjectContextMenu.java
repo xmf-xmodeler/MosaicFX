@@ -20,7 +20,7 @@ public class ObjectContextMenu extends ContextMenu {
 
 		MenuItem addInstanceItem = new MenuItem("Add instance");
 		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object));
-		if(object.getLevel() > 1 && !object.isAbstract()) getItems().add(addInstanceItem);
+		if(object.getLevel() >= 1 && !object.isAbstract()) getItems().add(addInstanceItem);
 		
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Class));
@@ -194,7 +194,7 @@ public class ObjectContextMenu extends ContextMenu {
 
 		MenuItem operationsItem = new MenuItem("Operations");
 		operationsItem.setOnAction(e -> {
-			object.toggleShowOperations();
+			object.setShowOperations(true);
 			actions.redrawDiagram();
 		});
 

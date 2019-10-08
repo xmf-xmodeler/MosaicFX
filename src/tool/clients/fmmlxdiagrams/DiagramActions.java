@@ -7,6 +7,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.input.MouseEvent;
 import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
@@ -21,15 +22,8 @@ public class DiagramActions {
 
 	private FmmlxDiagram diagram;
 
-	private boolean showOperations;
-	private boolean showOperationValues;
-	private boolean showSlots;
-
 	DiagramActions(FmmlxDiagram diagram) {
 		this.diagram = diagram;
-		showOperations = true;
-		showOperationValues = true;
-		showSlots = true;
 	}
 
 	public void redrawDiagram() {
@@ -372,34 +366,31 @@ public class DiagramActions {
 		diagram.redraw();
 	}
 
-	public void toggleShowOperations() {
+	public void setShowOperations(CheckBox box) {
+		boolean show = box.isSelected();
+		diagram.setShowOperations(show);
 		for (FmmlxObject o : diagram.getObjects()) {
-			if (o.getShowOperations() == showOperations) {
-				o.toggleShowOperations();
-			}
+			o.setShowOperations(show);
 		}
-		showOperations = !showOperations;
-		diagram.updateDiagram();
-	}
-
-	public void toggleShowOperationValues() {
-		for (FmmlxObject o : diagram.getObjects()) {
-			if (o.getShowOperationValues() == showOperationValues) {
-				o.toggleShowOperationValues();
-			}
-		}
-		showOperationValues = !showOperationValues;
 		diagram.redraw();
 	}
 
-	public void toggleShowSlots() {
+	public void setShowOperationValues(CheckBox box) {
+		boolean show = box.isSelected();
+		diagram.setShowOperationValues(show);
 		for (FmmlxObject o : diagram.getObjects()) {
-			if (o.getShowSlots() == showSlots) {
-				o.toggleShowSlots();
-			}
+			o.setShowOperationValues(show);
 		}
-		showSlots = !showSlots;
-		diagram.updateDiagram();
+		diagram.redraw();
+	}
+
+	public void setShowSlots(CheckBox box) {
+		boolean show = box.isSelected();
+		diagram.setShowSlots(show);
+		for (FmmlxObject o : diagram.getObjects()) {
+			o.setShowSlots(show);
+		}
+		diagram.redraw();
 	}
 
 	public void addOperationDialog(FmmlxObject object) {

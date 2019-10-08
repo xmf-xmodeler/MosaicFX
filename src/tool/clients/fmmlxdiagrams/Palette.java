@@ -18,9 +18,14 @@ public class Palette extends ToolBar {
 		addButton("-", e -> actions.zoomOut());
 		getItems().add(new Separator());
 		getItems().add(new Label("Show: "));
-		addCheckBox("Operations", e -> actions.toggleShowOperations());
-		addCheckBox("Operation Values", e -> actions.toggleShowOperationValues());
-		addCheckBox("Slots", e -> actions.toggleShowSlots());
+		CheckBox boxO = addCheckBox("Operations");
+		CheckBox boxOV = addCheckBox("Operation Values");
+		CheckBox boxS = addCheckBox("Slots");
+		
+		boxO.setOnAction(e -> actions.setShowOperations(boxO));
+		boxOV.setOnAction(e -> actions.setShowOperationValues(boxOV));
+		boxS.setOnAction(e -> actions.setShowSlots(boxS));
+		
 		getItems().add(new Separator());
 		addButton("Update Diagram", e -> actions.updateDiagram());
 	}
@@ -31,10 +36,10 @@ public class Palette extends ToolBar {
 		getItems().add(button);
 	}
 
-	private void addCheckBox(String string, EventHandler<ActionEvent> eventHandler) {
+	private CheckBox addCheckBox(String string) {
 		CheckBox box = new CheckBox(string);
-		box.setOnAction(eventHandler);
 		box.setSelected(true);
 		getItems().add(box);
+		return box;
 	}
 }
