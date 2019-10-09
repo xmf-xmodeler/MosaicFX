@@ -205,6 +205,9 @@
 			<zipfileset dir="./resources/" prefix="${prefix}">
 				<include name="changelog.txt" />
 			</zipfileset>
+			<zipfileset dir="./resources/" prefix="${prefix}" filemode="755">
+				<include name="XModeler.app/**"/>
+			</zipfileset>
 			<zipfileset dir="../../XMF/com.ceteva.xmf.machine" prefix="${prefix}">
 				<include name="bin/**" />
 				<exclude name="**/.DS_Store" />
