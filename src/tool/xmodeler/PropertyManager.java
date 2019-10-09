@@ -203,7 +203,7 @@ public class PropertyManager {
 		addRow(generalGrid, "TOOL_Y", getProperty("TOOL_X", 100));
 		addRow(generalGrid, "TOOL_WIDTH",  getProperty("TOOL_WIDTH", 1200));
 		addRow(generalGrid, "TOOL_HEIGHT", getProperty("TOOL_HEIGHT", 900));
-		//TODO: re add path options with file picker
+		addRow(generalGrid, "fileDialogPath", getProperty("fileDialogPath", ""));
 	}
 
 	private void fillDebugGrid() {
