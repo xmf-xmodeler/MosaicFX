@@ -349,7 +349,7 @@ public class DialogsClient extends Client {
 				
 				File initFile = new File(pmPath);
 				fileChooser.setInitialFileName(def);
-				if (initFile.exists()) {
+				if (initFile.isDirectory()) {
 					fileChooser.setInitialDirectory(initFile);
 				}else{
 					fileChooser.setInitialDirectory(lastFile.getParentFile());
