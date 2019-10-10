@@ -91,7 +91,7 @@ public class NodeLabel implements NodeElement {
 	}
 
 	private boolean isHitBaseLineCenter(double mouseX, double mouseY) {
-		Rectangle rec = new Rectangle(x - 0.5 * textWidth, y, textWidth, textHeight);
+		Rectangle rec = new Rectangle(x - 0.5 * textWidth, y - textHeight, textWidth, textHeight);
 		return rec.contains(mouseX, mouseY);
 	}
 
