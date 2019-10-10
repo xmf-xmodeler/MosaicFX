@@ -526,7 +526,7 @@ public class DiagramActions {
 
 	public void setDrawEdgeMode(FmmlxObject source, PropertyType type) {
 		diagram.setSelectedObject(source);
-		diagram.setDrawEdgeMouseMode(type);
+		diagram.setDrawEdgeMouseMode(type, source);
 		diagram.storeLastClick(source.getCenterX(), source.getCenterY());
 	}
 

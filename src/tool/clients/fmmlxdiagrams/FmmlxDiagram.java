@@ -61,8 +61,8 @@ public class FmmlxDiagram {
 	private transient PropertyType drawEdgeType = null;
 	private Point2D lastPoint;
 	private Point2D currentPoint;
-	private MouseMode mode = MouseMode.STANDARD;
-	private FmmlxObject newEdgeTarget;
+	private MouseMode mouseMode = MouseMode.STANDARD;
+	private FmmlxObject newEdgeSource;
 	private NodeLabel lastHitLabel = null;
 	private boolean diagramRequiresUpdate = false;
 	
@@ -208,7 +208,7 @@ public class FmmlxDiagram {
 	}
 
 	private void drawMultiSelectRect(GraphicsContext g) {
-		if (mode == MouseMode.MULTISELECT) {
+		if (mouseMode == MouseMode.MULTISELECT) {
 			double x = Math.min(lastPoint.getX(), currentPoint.getX());
 			double y = Math.min(lastPoint.getY(), currentPoint.getY());
 
@@ -217,7 +217,7 @@ public class FmmlxDiagram {
 	}
 
 	private void drawNewEdgeLine(GraphicsContext g) {
-		if (mode == MouseMode.DRAW_EDGE) {
+		if (mouseMode == MouseMode.DRAW_EDGE) {
 			g.strokeLine(lastPoint.getX(), lastPoint.getY(), currentPoint.getX(), currentPoint.getY());
 		}
 	}
@@ -245,11 +245,11 @@ public class FmmlxDiagram {
 	private void mouseDragged(MouseEvent e) {
 		Point2D p = scale(e);
 
-		if (mode == MouseMode.MULTISELECT) {
+		if (mouseMode == MouseMode.MULTISELECT) {
 			storeCurrentPoint(p.getX(), p.getY());
 			redraw();
 		}
-		if (mode == MouseMode.STANDARD) {
+		if (mouseMode == MouseMode.STANDARD) {
 			if (selectedObjects.size() == 1 && selectedObjects.firstElement() instanceof Edge) {
 				((Edge) selectedObjects.firstElement()).setPointAtToBeMoved(p);
 
@@ -261,7 +261,7 @@ public class FmmlxDiagram {
 	private void mouseMoved(MouseEvent e) {
 		Point2D p = scale(e);
 
-		if (mode == MouseMode.DRAW_EDGE) {
+		if (mouseMode == MouseMode.DRAW_EDGE) {
 			storeCurrentPoint(p.getX(), p.getY());
 			redraw();
 		}
@@ -291,14 +291,14 @@ public class FmmlxDiagram {
 		if (isMiddleClick(e)) {
 			selectedObjects.clear();
 		} else {
-			if (mode == MouseMode.MULTISELECT) {
+			if (mouseMode == MouseMode.MULTISELECT) {
 				handleMultiSelect();
 			}
-			if (mode == MouseMode.STANDARD) {
+			if (mouseMode == MouseMode.STANDARD) {
 				mouseReleasedStandard();
 			}
 
-			mode = MouseMode.STANDARD;
+			mouseMode = MouseMode.STANDARD;
 			for (Edge edge : edges) {
 				edge.dropPoint();
 			}
@@ -356,8 +356,9 @@ public class FmmlxDiagram {
 
 		CanvasElement hitObject = getElementAt(p.getX(), p.getY());
 		if (hitObject != null) {
-			if (mode == MouseMode.DRAW_EDGE && newEdgeTarget == null) {
-				newEdgeTarget = hitObject instanceof FmmlxObject ? (FmmlxObject) hitObject : null;
+			if (mouseMode == MouseMode.DRAW_EDGE) {
+				mouseMode = MouseMode.STANDARD;
+				FmmlxObject newEdgeTarget = hitObject instanceof FmmlxObject ? (FmmlxObject) hitObject : null;
 				switch (drawEdgeType) {
 					case Association:
 						actions.addAssociationDialog((FmmlxObject) selectedObjects.get(0), newEdgeTarget);
@@ -373,7 +374,6 @@ public class FmmlxDiagram {
 					default:
 						break;
 				}
-				newEdgeTarget = null;
 				deselectAll();
 			}
 
@@ -396,21 +396,21 @@ public class FmmlxDiagram {
 				handleDoubleClickOnNodeElement(p, hitObject);
 			}
 		} else {
-			if (mode == MouseMode.DRAW_EDGE) {
+			if (mouseMode == MouseMode.DRAW_EDGE) {
 				switch (drawEdgeType) {
 					case Association:
-						mode = MouseMode.STANDARD;
+						mouseMode = MouseMode.STANDARD;
 						actions.addAssociationDialog((FmmlxObject) selectedObjects.get(0), null);
 						break;
 					case AssociationInstance:
-						mode = MouseMode.STANDARD;
+						mouseMode = MouseMode.STANDARD;
 						actions.addAssociationInstance((FmmlxObject) selectedObjects.get(0), null);
 						break;
 					default:
 						break;
 				}
 			} else {
-				mode = MouseMode.MULTISELECT;
+				mouseMode = MouseMode.MULTISELECT;
 				storeLastClick(p.getX(), p.getY());
 				storeCurrentPoint(p.getX(), p.getY());
 			}
@@ -539,13 +539,14 @@ public class FmmlxDiagram {
 
 	/* Setters for MouseMode */
 
-	public void setDrawEdgeMouseMode(PropertyType type) {
+	public void setDrawEdgeMouseMode(PropertyType type, FmmlxObject newEdgeSource) {
 		drawEdgeType = type;
-		mode = MouseMode.DRAW_EDGE;
+		mouseMode = MouseMode.DRAW_EDGE;
+		this.newEdgeSource = newEdgeSource;
 	}
 
 	public void setStandardMouseMode() {
-		mode = MouseMode.STANDARD;
+		mouseMode = MouseMode.STANDARD;
 	}
 
 	////////////////////////////////////////////////////////////////////
@@ -615,7 +616,7 @@ public class FmmlxDiagram {
 			}
 		}
 
-		mode = MouseMode.STANDARD;
+		mouseMode = MouseMode.STANDARD;
 	}
 
 	private boolean isObjectContained(Rectangle rec, FmmlxObject object) {
