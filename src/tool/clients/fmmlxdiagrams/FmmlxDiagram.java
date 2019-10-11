@@ -448,21 +448,25 @@ public class FmmlxDiagram {
 	}
 
 	private void handleDoubleClickOnNodeElement(Point2D p, CanvasElement hitObject) {
-		NodeBox hitNodeBox = null;
 		if (hitObject instanceof FmmlxObject) {
-			Point2D relativePoint = new Point2D(
-					p.getX() - ((FmmlxObject) hitObject).getX(),
-					p.getY() - ((FmmlxObject) hitObject).getY());
+			Point2D relativePoint = getRelativePointToNodeBox(hitObject, p);
 
 			// Checking NodeBoxes
-			hitNodeBox = getHitNodeBox((FmmlxObject) hitObject, relativePoint);
+			NodeBox hitNodeBox = getHitNodeBox((FmmlxObject) hitObject, relativePoint);
 			if (hitNodeBox != null) {
-				FmmlxProperty hitProperty = getHitProperty(hitNodeBox, relativePoint);
-				if (hitNodeBox.getElementType() == PropertyType.Slot && hitProperty != null) {
-					actions.changeSlotValue((FmmlxObject) hitObject, (FmmlxSlot) hitProperty);
+				
+				FmmlxProperty hitProperty = getHitProperty((NodeBox) hitNodeBox, relativePoint);
+				if (((NodeBox) hitNodeBox).getElementType() == PropertyType.Slot && hitProperty != null) {
+					actions.changeSlotValue((FmmlxObject) hitObject, (FmmlxSlot) hitProperty);		
 				} else {
-					if (hitNodeBox.getElementType() != PropertyType.Slot)
-						actions.changeNameDialog((FmmlxObject) hitObject, hitNodeBox.getElementType(), hitProperty);
+					if (((NodeBox) hitNodeBox).getElementType() != PropertyType.Slot) {
+						NodeLabel hitLabel = getHitLabel(hitNodeBox, relativePoint);				
+						if (hitLabel.getText().length()<=2) {
+							actions.changeLevelDialog((FmmlxObject) hitObject, ((NodeBox) hitNodeBox).getElementType());
+						} else {
+							actions.changeNameDialog((FmmlxObject) hitObject, ((NodeBox) hitNodeBox).getElementType(), hitProperty);
+						}	
+					}		
 				}
 			}
 		} else if (hitObject instanceof DiagramLabel) {
