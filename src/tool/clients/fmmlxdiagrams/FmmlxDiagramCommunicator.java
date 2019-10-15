@@ -845,4 +845,10 @@ public class FmmlxDiagramCommunicator {
 		Value[] message = new Value[]{new Value(-1), new Value(-1)};
 		WorkbenchClient.theClient().send(handler, "levelRaiseAll", message);		
 	}
+
+	public void printProtocol() {
+		Value[] message = new Value[]{new Value(-1)};
+		WorkbenchClient.theClient().send(handler, "printProtocol", message);		
+	}
+
 }

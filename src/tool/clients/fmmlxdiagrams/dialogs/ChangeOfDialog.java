@@ -1,8 +1,5 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
-import java.util.ArrayList;
-import java.util.Vector;
-
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
@@ -11,7 +8,6 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOfDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
-
 
 public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult> {
 

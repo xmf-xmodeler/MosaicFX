@@ -28,6 +28,7 @@ public class Palette extends ToolBar {
 		
 		getItems().add(new Separator());
 		addButton("Update Diagram", e -> actions.updateDiagram());
+		addButton("Print Protocol", e -> actions.printProtocol());
 	}
 
 	private void addButton(String string, EventHandler<ActionEvent> eventHandler) {

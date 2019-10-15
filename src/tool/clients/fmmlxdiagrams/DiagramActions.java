@@ -360,6 +360,10 @@ public class DiagramActions {
 	public void updateDiagram() {
 		diagram.updateDiagram();
 	}
+	
+	public void printProtocol() {
+		diagram.getComm().printProtocol();
+	}
 
 	public void toggleAbstract(FmmlxObject object) {
 		diagram.getComm().setClassAbstract(object.getId(), !object.isAbstract());

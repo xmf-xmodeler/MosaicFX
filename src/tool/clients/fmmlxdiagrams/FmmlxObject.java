@@ -73,7 +73,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		colors.put(1, Color.valueOf("#FFFFFF"));
 		colors.put(2, Color.valueOf("#000000"));
 		colors.put(3, Color.valueOf("#3111DB"));
-		colors.put(4, Color.valueOf("#dd2244"));
+		colors.put(4, Color.valueOf("#BB1133"));
 		colors.put(5, Color.valueOf("#119955"));
 		colors.put(6, new LinearGradient(0, 0, 20, 10, false, CycleMethod.REPEAT,
 				new Stop(.24, Color.valueOf("#22cc55")),
@@ -284,7 +284,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	}
 
 	public String getLevelFontColor() {
-		return new Vector<Integer>(Arrays.asList(2, 3)).contains(level) ? "#ffffff" : "000000";
+		return new Vector<Integer>(Arrays.asList(2, 3, 4)).contains(level) ? "#ffffff" : "000000";
 	}
 
 	public boolean getShowOperations() {
