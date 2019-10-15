@@ -344,8 +344,8 @@ public class DialogsClient extends Client {
 				fileChooser.getExtensionFilters().add(filter);
 				fileChooser.setSelectedExtensionFilter(filter);
 				
-				PropertyManager pm = XModeler.getPropertyManager();
-				String pmPath = pm.getProperty("fileDialogPath", path);
+//				PropertyManager pm = XModeler.getPropertyManager();
+				String pmPath = PropertyManager.getProperty("fileDialogPath", path);
 				
 				File initFile = new File(pmPath);
 				fileChooser.setInitialFileName(def);
@@ -363,7 +363,7 @@ public class DialogsClient extends Client {
 
 				if (file != null) {
 					lastFile = file;
-					pm.getProperty("fileDialogPath", file.getParent());
+					PropertyManager.getProperty("fileDialogPath", file.getParent());
 					result[0] = new Value(file.getAbsolutePath());
 				} else {
 					result[0] = new Value("");

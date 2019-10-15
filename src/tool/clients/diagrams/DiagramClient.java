@@ -1599,9 +1599,6 @@ public class DiagramClient extends Client {
 				diagram.renderOff();
 	}
 
-	private transient static javafx.scene.text.Text t;
-	private transient static javafx.scene.text.Font f;
-
 	public javafx.geometry.Point2D textDimension(String text, javafx.scene.text.Font font) {
 
 //	  javafx.scene.Group root = new javafx.scene.Group();
