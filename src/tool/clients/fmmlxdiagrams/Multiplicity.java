@@ -42,7 +42,8 @@ public class Multiplicity {
 
 	@Override
 	public String toString() {
-		return (max > 2 ? duplicates ? "[" : "{" : "") + (ordered ? "$" : "") + min + ".." + (upperLimit ? max : "*") + (max > 2 ? duplicates ? "]" : "}" : "");
+		return ((ordered ? "$" : "") + min + ".." + (upperLimit ? max : "*"));
+//		return (max > 2 ? duplicates ? "[" : "{" : "") + (ordered ? "$" : "") + min + ".." + (upperLimit ? max : "*") + (max > 2 ? duplicates ? "]" : "}" : "");
 	}
 
 	public static Multiplicity parseMultiplicity(Vector<Object> xmfValue) {

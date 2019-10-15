@@ -1,6 +1,5 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
-//import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -8,16 +7,13 @@ import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-//import tool.clients.fmmlxdiagrams.Multiplicity;
-import tool.clients.fmmlxdiagrams.dialogs.results.AddDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.AddOperationDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
 
 import java.util.ArrayList;
-//import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
 
-public class AddOperationDialog extends CustomDialog<AddDialogResult> {
+public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 	private DialogPane dialogPane;
 	private FmmlxDiagram diagram;
 	private FmmlxObject object;
@@ -55,7 +51,7 @@ public class AddOperationDialog extends CustomDialog<AddDialogResult> {
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				return new AddDialogResult(object, null, levelComboBox.getSelectionModel().getSelectedItem(), null,
+				return new AddOperationDialogResult(object, null, levelComboBox.getSelectionModel().getSelectedItem(), null,
 						bodyTextArea.getText());
 
 			}

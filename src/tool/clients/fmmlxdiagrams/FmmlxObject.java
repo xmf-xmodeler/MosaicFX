@@ -64,6 +64,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	private FmmlxDiagram diagram;
 	private PropertyType propertyType = PropertyType.Class;
+	private transient boolean requiresReLayout;
 
 	static {
 		colors = new HashMap<>();
@@ -72,7 +73,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		colors.put(1, Color.valueOf("#FFFFFF"));
 		colors.put(2, Color.valueOf("#000000"));
 		colors.put(3, Color.valueOf("#3111DB"));
-		colors.put(4, Color.valueOf("#dd2244"));
+		colors.put(4, Color.valueOf("#BB1133"));
 		colors.put(5, Color.valueOf("#119955"));
 		colors.put(6, new LinearGradient(0, 0, 20, 10, false, CycleMethod.REPEAT,
 				new Stop(.24, Color.valueOf("#22cc55")),
@@ -114,6 +115,10 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		this.isAbstract = isAbstract;
 		this.of = of;
 		this.parents = parents;
+		
+		this.showOperations = diagram.isShowOperations();
+		this.showOperationValues = diagram.isShowOperationValues();
+		this.showSlots = diagram.isShowSlots();
 	}
 
 	private String getParentsListString(FmmlxDiagram diagram) {
@@ -279,7 +284,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	}
 
 	public String getLevelFontColor() {
-		return new Vector<Integer>(Arrays.asList(2, 3)).contains(level) ? "#ffffff" : "000000";
+		return new Vector<Integer>(Arrays.asList(2, 3, 4)).contains(level) ? "#ffffff" : "000000";
 	}
 
 	public boolean getShowOperations() {
@@ -298,20 +303,24 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		return nodeElements;
 	}
 
-	public void toggleShowOperations() {
-		showOperations = !showOperations;
+	public void setShowOperations(boolean show) {
+		requiresReLayout = showOperations!=show;
+		showOperations = show;
 	}
 
-	public void toggleShowOperationValues() {
-		showOperationValues = !showOperationValues;
+	public void setShowOperationValues(boolean show) {
+		requiresReLayout = showOperationValues!=show;
+		showOperationValues = show;
 	}
 
-	public void toggleShowSlots() {
-		showSlots = !showSlots;
+	public void setShowSlots(boolean show) {
+		requiresReLayout = showSlots!=show;
+		showSlots = show;
 	}
 
 	public void layout(FmmlxDiagram diagram) {
-
+		requiresReLayout = false;
+		
 		nodeElements = new Vector<>();
 //		double neededHeight = 0;
 		double neededWidth = calculateNeededWidth(diagram);
@@ -391,7 +400,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 			}
 			for (FmmlxOperation o : otherOperations) {
 				opsY += lineHeight;
-				NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, o.getName() + ":" + o.getType() + " (from " + diagram.getObjectById(o.getOwner()).name + ")");
+				NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, o.getName() + "():" + o.getType() + " (from " + diagram.getObjectById(o.getOwner()).name + ")");
 				opsBox.nodeElements.add(oLabel);
 				NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, o.getLevelString() + "");
 				opsBox.nodeElements.add(oLevelLabel);
@@ -502,6 +511,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	}
 
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram diagram) {
+		
+		if(requiresReLayout) layout(diagram);
 
 		boolean selected = diagram.isSelected(this);
 
@@ -530,12 +541,9 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	public void fetchDataValues(FmmlxDiagramCommunicator comm) {
 		slots = comm.fetchSlots(this.name, this.getSlotNames());
+
 		operationValues = comm.fetchOperationValues(this.name, this.getMonitoredOperationsNames());
 	}
-
-//	private boolean passReqs(FmmlxAttribute att) {
-//		return true;
-//	}
 
 	public boolean isHit(double mouseX, double mouseY) {
 		return
@@ -558,14 +566,9 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 			if (edge.isStartNode(this)) edge.moveStartPoint(x + width/2, y + height/2);
 			if (edge.isEndNode(this)) edge.moveEndPoint(x + width/2, y + height/2);
 		}
-//		for(DiagramLabel label : diagram.getLabels()) {
-//			label.updatePosition();
-//		}
 	}
-
-	public void toggleIsAbstract() {
-		isAbstract = !isAbstract;
-	}
+	
+	public boolean isAbstract() {return isAbstract;}
 
 	private Vector<String> getSlotNames() {
 		Vector<String> slotNames = new Vector<String>();
@@ -653,4 +656,5 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	@Override public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
 	@Override public double getMouseMoveOffsetY() {return mouseMoveOffsetY;}
+
 }

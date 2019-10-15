@@ -4,6 +4,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import tool.clients.fmmlxdiagrams.DiagramActions;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
@@ -19,18 +20,34 @@ public class ObjectContextMenu extends ContextMenu {
 
 		MenuItem addInstanceItem = new MenuItem("Add instance");
 		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object));
+		if(object.getLevel() >= 1 && !object.isAbstract()) getItems().add(addInstanceItem);
+		
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Class));
+		getItems().add(removeItem);
+		
 		MenuItem changeNameItem = new MenuItem("Change name");
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Class));
-		MenuItem changeOfItem = new MenuItem("Change of");
+		getItems().add(changeNameItem);
+		
+		MenuItem changeOfItem = new MenuItem("Change of (Metaclass)");
 		changeOfItem.setOnAction(e -> actions.changeOfDialog(object));
-		MenuItem changeParentItem = new MenuItem("Change parent");
+		changeOfItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+		getItems().add(changeOfItem);
+		
+		MenuItem changeParentItem = new MenuItem("Change parent (Superclass)");
 		changeParentItem.setOnAction(e -> actions.changeParentsDialog(object));
-		MenuItem changeLevelItem = new MenuItem("Change level");
-		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Class));
-		MenuItem abstractClassItem = new MenuItem("Change abstract");
-		abstractClassItem.setOnAction(e -> actions.toggleIsAbstract(object));
+		changeParentItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+		getItems().add(changeParentItem);
+		
+//		MenuItem changeLevelItem = new MenuItem("Change level");
+//		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Class));
+//		changeLevelItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+//		getItems().add(changeLevelItem);
+		
+		MenuItem abstractClassItem = new MenuItem(object.isAbstract()?"Make concrete":"Make abstract");
+		abstractClassItem.setOnAction(e -> actions.toggleAbstract(object));
+		if(object.getLevel() > 0) getItems().add(abstractClassItem);
 
 		Menu attributeMenu = createAttributeSubMenu();
 		Menu associationMenu = createAssociationSubMenu();
@@ -38,9 +55,28 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu slotMenu = createSlotSubMenu();
 		Menu associationInstanceMenu = createAssociationInstanceSubMenu();
 		Menu showMenu = createShowSubMenu();
+		
+		Menu levelMenu = new Menu("Levels");
+		MenuItem levelRaiseAllItem = new MenuItem("Raise all");
+		levelRaiseAllItem.setOnAction(e -> actions.levelRaiseAll());
+		MenuItem levelLowerAllItem = new MenuItem("Lower all");
+		levelLowerAllItem.setOnAction(e -> actions.levelLowerAll());
+		MenuItem levelRaiseHereItem = new MenuItem("Raise related");
+		levelRaiseHereItem.setOnAction(e -> actions.levelRaiseAll());
+		levelRaiseHereItem.setDisable(true);
+		MenuItem levelLowerHereItem = new MenuItem("Lower related");
+		levelLowerHereItem.setOnAction(e -> actions.levelLowerAll());
+		levelLowerHereItem.setDisable(true);
+		MenuItem levelSplitItem = new MenuItem("Split level here");
+		levelSplitItem.setOnAction(e -> actions.levelRaiseAll());
+		levelSplitItem.setDisable(true);
+		MenuItem levelMergeItem = new MenuItem("Merge with Metaclass");
+		levelMergeItem.setOnAction(e -> actions.levelLowerAll());
+		levelMergeItem.setDisable(true);
+		
+		levelMenu.getItems().addAll(levelRaiseAllItem, levelLowerAllItem, levelRaiseHereItem, levelLowerHereItem, levelSplitItem, levelMergeItem);
 
-		getItems().addAll(addInstanceItem, removeItem, changeNameItem, changeOfItem, changeParentItem, changeLevelItem, abstractClassItem,
-				attributeMenu, associationMenu, operationMenu, slotMenu, associationInstanceMenu, showMenu);
+		getItems().addAll(attributeMenu, associationMenu, operationMenu, slotMenu, associationInstanceMenu, levelMenu, showMenu);
 	}
 
 	private Menu createAttributeSubMenu() {
@@ -55,10 +91,9 @@ public class ObjectContextMenu extends ContextMenu {
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Attribute));
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
 		changeOwnerItem.setOnAction(e -> actions.changeOwnerDialog(object, PropertyType.Attribute));
+		changeOwnerItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		MenuItem changeTypeItem = new MenuItem("Change type");
 		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Attribute));
-//		MenuItem changeMultiplicityItem = new MenuItem("Change multiplicity");
-//		changeMultiplicityItem.setOnAction(e -> actions.changeMultiplicityDialog(object, PropertyType.Attribute));
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Attribute));
 
@@ -87,6 +122,7 @@ public class ObjectContextMenu extends ContextMenu {
 //		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Association));
 		MenuItem editAssociation = new MenuItem("Edit Association Properties");
 		editAssociation.setOnAction(e -> actions.editAssociationDialog(object, PropertyType.Association));
+		editAssociation.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		MenuItem associationValue = new MenuItem("Edit Association Values");
 		associationValue.setOnAction(e -> actions.associationValueDialog(object, PropertyType.Association));
 
@@ -102,12 +138,14 @@ public class ObjectContextMenu extends ContextMenu {
 		addItem.setOnAction(e -> actions.addOperationDialog(object));
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Operation));
-		MenuItem changeNameItem = new MenuItem("Change name");
+		MenuItem changeNameItem = new MenuItem("Change name (use Change body instead)");
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Operation));
+		changeNameItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
 		changeOwnerItem.setOnAction(e -> actions.changeOwnerDialog(object, PropertyType.Operation));
-		MenuItem changeTypeItem = new MenuItem("Change type");
+		MenuItem changeTypeItem = new MenuItem("Change type (use Change body instead)");
 		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Operation));
+		changeTypeItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		MenuItem changeBodyItem = new MenuItem("Change body");
 		changeBodyItem.setOnAction(e -> actions.changeBodyDialog(object));
 		MenuItem changeLevelItem = new MenuItem("Change level");
@@ -121,15 +159,16 @@ public class ObjectContextMenu extends ContextMenu {
 
 	private Menu createSlotSubMenu() {
 		Menu slotMenu = new Menu("Slot");
+		slotMenu.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 
-		MenuItem addValueItem = new MenuItem("Add value");
-		addValueItem.setOnAction(e -> System.out.println("OCM: add slot value called"));
-		MenuItem removeValueItem = new MenuItem("Remove value");
-		removeValueItem.setOnAction(e -> System.out.println("OCM: remove slot value called"));
+//		MenuItem addValueItem = new MenuItem("Add value");
+//		addValueItem.setOnAction(e -> System.out.println("OCM: add slot value called"));
+//		MenuItem removeValueItem = new MenuItem("Remove value");
+//		removeValueItem.setOnAction(e -> System.out.println("OCM: remove slot value called"));
 		MenuItem changeValueItem = new MenuItem("Change value");
 		changeValueItem.setOnAction(e -> System.out.println("OCM: change slot value called"));
 
-		slotMenu.getItems().addAll(addValueItem, removeValueItem, changeValueItem);
+		slotMenu.getItems().addAll(changeValueItem);
 
 		return slotMenu;
 	}
@@ -141,8 +180,10 @@ public class ObjectContextMenu extends ContextMenu {
 		addValueItem.setOnAction(e -> actions.setDrawEdgeMode(object, PropertyType.AssociationInstance));
 		MenuItem removeValueItem = new MenuItem("Remove instance");
 		removeValueItem.setOnAction(e -> System.out.println("OCM: remove association instance value called"));
+		removeValueItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		MenuItem changeValueItem = new MenuItem("Change instance");
 		changeValueItem.setOnAction(e -> System.out.println("OCM: change association instance value called"));
+		changeValueItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 
 		associationInstanceMenu.getItems().addAll(addValueItem, removeValueItem, changeValueItem);
 		return associationInstanceMenu;
@@ -153,7 +194,7 @@ public class ObjectContextMenu extends ContextMenu {
 
 		MenuItem operationsItem = new MenuItem("Operations");
 		operationsItem.setOnAction(e -> {
-			object.toggleShowOperations();
+			object.setShowOperations(true);
 			actions.redrawDiagram();
 		});
 

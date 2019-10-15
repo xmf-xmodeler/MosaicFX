@@ -1,11 +1,9 @@
 package tool.clients.editors.texteditor;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Vector;
 
 import javafx.scene.canvas.GraphicsContext;
-import tool.xmodeler.XModeler;
 
 public class Signature {
 

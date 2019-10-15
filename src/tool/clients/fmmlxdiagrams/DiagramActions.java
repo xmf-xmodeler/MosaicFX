@@ -7,6 +7,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.input.MouseEvent;
 import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
@@ -21,15 +22,8 @@ public class DiagramActions {
 
 	private FmmlxDiagram diagram;
 
-	private boolean showOperations;
-	private boolean showOperationValues;
-	private boolean showSlots;
-
 	DiagramActions(FmmlxDiagram diagram) {
 		this.diagram = diagram;
-		showOperations = true;
-		showOperationValues = true;
-		showSlots = true;
 	}
 
 	public void redrawDiagram() {
@@ -162,16 +156,16 @@ public class DiagramActions {
 				System.err.println(result.toString());
 				switch (result.getType()) {
 					case Class:
-						diagram.removeClass(result);
+						diagram.getComm().removeClass(result.getObject().getId(), 0);
 						break;
 					case Operation:
-						diagram.removeOperation(result);
+						diagram.getComm().removeOperation(result.getObject().getId(), result.getOperation().getName(), 0);
 						break;
 					case Attribute:
-						diagram.removeAttribute(result);
+						diagram.getComm().removeAttribute(result.getObject().getId(), result.getAttribute().getName(), 0);
 						break;
 					case Association:
-						diagram.removeAssociation(result);
+						diagram.getComm().removeAssociation(result.getAssociation().getId(), 0);
 					default:
 						System.err.println("ChangeNameDialogResult: No matching content type!");
 				}
@@ -209,16 +203,16 @@ public class DiagramActions {
 				final ChangeNameDialogResult result = opt.get();
 				switch (result.getType()) {
 					case Class:
-						diagram.changeClassName(result);
+						diagram.getComm().changeClassName(result.getObjectId(), result.getNewName());
 						break;
 					case Operation:
-						diagram.changeOperationName(result);
+						diagram.getComm().changeOperationName(result.getObjectId(), result.getOldName(), result.getNewName());
 						break;
 					case Attribute:
-						diagram.changeAttributeName(result);
+						diagram.getComm().changeAttributeName(result.getObjectId(), result.getOldName(), result.getNewName());
 						break;
-					case Association:
-						diagram.changeAssociationName(result);
+//					case Association:
+//						diagram.getComm().changeAssociationName(result.getObjectId(), result.getOldName(), result.getNewName());
 					default:
 						System.err.println("ChangeNameDialogResult: No matching content type!");
 				}
@@ -251,20 +245,19 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final ChangeLevelDialogResult result = opt.get();
-				System.err.println(result.toString());
 				switch (result.getType()) {
 					case Class:
-						diagram.changeClassLevel(result);
+						diagram.getComm().changeClassLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());
 						break;
 					case Attribute:
-						diagram.changeAttributeLevel(result);
+						diagram.getComm().changeAttributeLevel(result.getObjectId(), result.getName(), result.getOldLevel(), result.getNewLevel());
 						break;
 					case Operation:
-						diagram.changeOperationLevel(result);
+						diagram.getComm().changeOperationLevel(result.getObjectId(), result.getName(), result.getOldLevel(), result.getNewLevel());
 						break;
-					case Association:
-						diagram.changeAssociationLevel(result);
-						break;
+//					case Association:
+//						diagram.getComm().changeAssociationLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());
+//						break;
 					default:
 						System.err.println("ChangeLevelDialogResult: No matching content type!");
 				}
@@ -285,7 +278,7 @@ public class DiagramActions {
 
 			if (cod.isPresent()) {
 				final ChangeOfDialogResult result = cod.get();
-				diagram.changeOf(result);
+				diagram.getComm().changeOf(result.getObjectId(), result.getOldOfId(), result.getNewOfId());
 				diagram.updateDiagram();
 			}
 			l.countDown();
@@ -311,10 +304,10 @@ public class DiagramActions {
 				final ChangeOwnerDialogResult result = opt.get();
 				switch (result.getType()) {
 					case Attribute:
-						diagram.changeAttributeOwner(result);
+						diagram.getComm().changeAttributeOwner(result.getObject().getId(), result.getAttribute().getName(), result.getNewOwnerID());
 						break;
 					case Operation:
-						diagram.changeOperationOwner(result);
+						diagram.getComm().changeOperationOwner(result.getObject().getId(), result.getOperation().getName(), result.getNewOwnerID());
 						break;
 					default:
 						System.err.println("ChangeOwnerDialogResult: No matching content type!");
@@ -337,7 +330,7 @@ public class DiagramActions {
 
 			if (cpd.isPresent()) {
 				ChangeParentDialogResult result = cpd.get();
-				diagram.changeParent(result);
+				diagram.getComm().changeParent(result.getObject().getId(), result.getCurrentParentIds(), result.getNewParentIds());
 				diagram.updateDiagram();
 			}
 
@@ -356,7 +349,7 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				ChangeSlotValueDialogResult slotValueDialogResult = result.get();
-				diagram.changeSlotValue(slotValueDialogResult);
+				diagram.getComm().changeSlotValue(slotValueDialogResult.getObject().getId(), slotValueDialogResult.getSlot().getName(), slotValueDialogResult.getNewValue());
 				diagram.updateDiagram();
 			}
 
@@ -367,40 +360,41 @@ public class DiagramActions {
 	public void updateDiagram() {
 		diagram.updateDiagram();
 	}
+	
+	public void printProtocol() {
+		diagram.getComm().printProtocol();
+	}
 
-	public void toggleIsAbstract(FmmlxObject object) {
-		object.toggleIsAbstract();
+	public void toggleAbstract(FmmlxObject object) {
+		diagram.getComm().setClassAbstract(object.getId(), !object.isAbstract());
 		diagram.redraw();
 	}
 
-	public void toggleShowOperations() {
+	public void setShowOperations(CheckBox box) {
+		boolean show = box.isSelected();
+		diagram.setShowOperations(show);
 		for (FmmlxObject o : diagram.getObjects()) {
-			if (o.getShowOperations() == showOperations) {
-				o.toggleShowOperations();
-			}
+			o.setShowOperations(show);
 		}
-		showOperations = !showOperations;
-		diagram.updateDiagram();
-	}
-
-	public void toggleShowOperationValues() {
-		for (FmmlxObject o : diagram.getObjects()) {
-			if (o.getShowOperationValues() == showOperationValues) {
-				o.toggleShowOperationValues();
-			}
-		}
-		showOperationValues = !showOperationValues;
 		diagram.redraw();
 	}
 
-	public void toggleShowSlots() {
+	public void setShowOperationValues(CheckBox box) {
+		boolean show = box.isSelected();
+		diagram.setShowOperationValues(show);
 		for (FmmlxObject o : diagram.getObjects()) {
-			if (o.getShowSlots() == showSlots) {
-				o.toggleShowSlots();
-			}
+			o.setShowOperationValues(show);
 		}
-		showSlots = !showSlots;
-		diagram.updateDiagram();
+		diagram.redraw();
+	}
+
+	public void setShowSlots(CheckBox box) {
+		boolean show = box.isSelected();
+		diagram.setShowSlots(show);
+		for (FmmlxObject o : diagram.getObjects()) {
+			o.setShowSlots(show);
+		}
+		diagram.redraw();
 	}
 
 	public void addOperationDialog(FmmlxObject object) {
@@ -408,26 +402,11 @@ public class DiagramActions {
 
 		Platform.runLater(() -> {
 			AddOperationDialog dlg = new AddOperationDialog(diagram, object);
-			Optional<AddDialogResult> opt = dlg.showAndWait();
+			Optional<AddOperationDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
-				final AddDialogResult result = opt.get();
-				System.err.println(result);
-				switch (result.getType()) {
-					case Class:
-						//TODO diagram.addMetaClass(result);
-						break;
-					case Attribute:
-						//TODO diagram.addAttribute(result);
-						break;
-					case Operation:
-						diagram.addOperation(result);
-						break;
-					case Association:
-						break;
-					default:
-						System.err.println("AddDialogResult: No matching content type!");
-				}
+				final AddOperationDialogResult result = opt.get();
+				diagram.getComm().addOperation2(result.getObjectId(), result.getLevel(), result.getBody());
 				diagram.updateDiagram();
 			}
 			latch.countDown();
@@ -451,14 +430,17 @@ public class DiagramActions {
 
 				switch (result.getType()) {
 					case Attribute:
-						diagram.changeTypeAttribute(result);
+						diagram.getComm().changeAttributeType(result.getObject().getId(), result.getAttribute().getName(),
+								result.getOldType(), result.getNewType());
 						break;
 					case Operation:
-						diagram.changeTypeOperation(result);
+						diagram.getComm().changeOperationType(result.getObject().getId(), result.getOperation().getName(),
+								result.getOldType(), result.getNewType());
 						break;
-					case Association:
-						diagram.changeTypeAssociation(result);
-						break;
+//					case Association:
+//						diagram.getComm().changeAssociationType(result.getObject().getId(), result.getAssociation().getName(),
+//								result.getOldType(), result.getNewType());
+//						break;
 					default:
 						System.err.println("AddDialogResult: No matching content type!");
 				}
@@ -469,28 +451,6 @@ public class DiagramActions {
 		});
 	}
 
-//	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type) {
-//		CountDownLatch latch = new CountDownLatch(1);
-//
-//		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
-//
-//		Platform.runLater(() -> {
-//			ChangeMultiplicityDialog dlg = new ChangeMultiplicityDialog(object, type);
-//			if (belongsPropertyToObject(object, selectedProperty, type)) {
-//				dlg.setSelected(selectedProperty);
-//			}
-//			Optional<MultiplicityDialogResult> opt = dlg.showAndWait();
-//
-//			if (opt.isPresent()) {
-//				final MultiplicityDialogResult result = opt.get();
-//				System.err.println(result);
-//				diagram.changeMulitiplicityAttribute(result);
-//				diagram.updateDiagram();
-//			}
-//			latch.countDown();
-//		});
-//	}
-
 	public void changeTargetDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch latch = new CountDownLatch(1);
 
@@ -500,8 +460,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final ChangeTargetDialogResult result = opt.get();
-				System.err.println(result);
-				diagram.changeTargetAssociation(result);
+				diagram.getComm().changeAssociationTarget(result.getObject().getId(), result.getAssociationName(), result.getOldTargetID(), result.getNewTargetID());
 				diagram.updateDiagram();
 			}
 
@@ -518,8 +477,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final ChangeBodyDialogResult result = opt.get();
-				System.err.println(result);
-				diagram.changeBody(result);
+				diagram.getComm().changeOperationBody(result.getObject().getId(), result.getSelectedItem().getName(), result.getBody());
 				diagram.updateDiagram();
 			}
 			latch.countDown();
@@ -536,7 +494,13 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final AddAssociationDialogResult result = opt.get();
-				diagram.addAssociation(result);
+				diagram.getComm().addAssociation(
+						result.getSource().id, result.getTarget().id,
+						result.getIdentifierSource(), result.getIdentifierTarget(),
+						result.getDisplayNameSource(), result.getDisplayNameTarget(),
+						result.getMultiplicitySource(), result.getMultiplicityTarget(),
+						result.getInstLevelSource(), result.getInstLevelTarget()
+				);
 				diagram.updateDiagram();
 			}
 			latch.countDown();
@@ -552,7 +516,12 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final EditAssociationDialogResult result = opt.get();
-				diagram.editAssociation(result);
+				diagram.getComm().editAssociation(result.getSelectedAssociation().getId(),
+						result.getSource(), result.getTarget(),
+						result.getNewInstLevelSource(), result.getNewInstLevelTarget(),
+						result.getNewDisplayNameSource(), result.getNewDisplayNameTarget(),
+						result.getNewIdentifierSource(), result.getNewIdentifierTarget(),
+						result.getMultiplicitySource(), result.getMultiplicityTarget());
 				diagram.updateDiagram();
 			}
 			latch.countDown();
@@ -561,7 +530,7 @@ public class DiagramActions {
 
 	public void setDrawEdgeMode(FmmlxObject source, PropertyType type) {
 		diagram.setSelectedObject(source);
-		diagram.setDrawEdgeMouseMode(type);
+		diagram.setDrawEdgeMouseMode(type, source);
 		diagram.storeLastClick(source.getCenterX(), source.getCenterY());
 	}
 
@@ -663,5 +632,14 @@ public class DiagramActions {
 		}
 		return false;
 	}
+
+	public void levelRaiseAll() {diagram.getComm().levelRaiseAll();}
+	public void levelLowerAll() {diagram.getComm().levelLowerAll();}
+
+	public void levelRaiseRelated(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
+	public void levelLowerRelated(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
+	public void levelInsertBelow(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
+	public void levelRemoveThis(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
+
 
 }
