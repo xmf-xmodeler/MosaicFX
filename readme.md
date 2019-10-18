@@ -11,11 +11,9 @@ It enables relaxing essential conflicts of system design and the construction of
 
 LE4MM is an international research cooperation between University of Duisburg-Essen & Aston University Birmingham developing the XModeler.
 
+![img aston](https://www.unibaggage.com/shipping/wp-content/uploads/2015/11/photo.png | width=320)  
+![img ude](https://static.wiwi.uni-due.de/ude2018/Images/UDE-logo-claim.svg | width=320)
 
-![img aston](https://www.unibaggage.com/shipping/wp-content/uploads/2015/11/photo.png)  
-![img ude](https://static.wiwi.uni-due.de/ude2018/Images/UDE-logo-claim.svg)
-<img src=“https://static.wiwi.uni-due.de/ude2018/Images/UDE-logo-claim.svg” width=200>
-<img src=“https://www.unibaggage.com/shipping/wp-content/uploads/2015/11/photo.png” width=200>
 ***
 
 
