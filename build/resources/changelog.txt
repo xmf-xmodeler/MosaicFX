@@ -2,7 +2,7 @@
 
 New:
 
-- Launch scripts renamed to xmodeler.(extension for your OS)
+- Launch scripts renamed to XModeler.(extension for your OS)
 - Application for macOS with dock icon and name
 - First beta version of the new FMMLX diagram type features in this beta:
     - Adding classes, attributes, operations, and associations
@@ -26,7 +26,7 @@ Improvements:
 
 - Operators are now left associative by default
 - Build / launch scripts are formatted to be more readable
-- Removed unused libaries (project size ~halved)
+- Removed unused libraries (project size ~halved)
 
 
 
