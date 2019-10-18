@@ -11,7 +11,7 @@ It enables relaxing essential conflicts of system design and the construction of
 
 LE4MM is an international research cooperation between University of Duisburg-Essen & Aston University Birmingham developing the XModeler.
 
-![img aston](https://raw.githubusercontent.com/xmf-xmodeler/MosaicFX/v1.1.8/resources/webroot/img/aston-univeristy-logo.png) ![img ude](https://raw.githubusercontent.com/xmf-xmodeler/MosaicFX/v1.1.8/resources/webroot/img/ude-logo.jpg)
+![img aston](https://raw.githubusercontent.com/xmf-xmodeler/MosaicFX/v1.1.8/resources/webroot/img/aston-univeristy-logo.png)<pre>      </pre>![img ude](https://raw.githubusercontent.com/xmf-xmodeler/MosaicFX/v1.1.8/resources/webroot/img/ude-logo.jpg)
 
 ***
 
