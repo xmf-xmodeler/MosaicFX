@@ -1,3 +1,35 @@
+=== Version 1.1.8 ===== 18.10.2019
+
+New:
+
+- Launch scripts renamed to xmodeler.(extension for your OS)
+- Application for macOS with dock icon and name
+- First beta version of the new FMMLX diagram type features in this beta:
+    - Adding classes, attributes, operations, and associations
+    - Change/Editing of classes, attributes, associations, multiplicities, and properties
+    - Remove classes, attributes, operations, and associations
+- WebBrowser with loading spinner and new interface
+- Welcome page with project image and animation
+- Debugging options now in the preference menu and saved to config file
+- Preferences now in user.properties old xml settings are ignored
+- Vector logo for the XModeler project
+- Readme.md for the Github repo
+
+
+Bugfixes:
+
+- Right click for context menu in the TextEditor
+- Snippets on welcome page working again
+- Welcome page PDFs can be reopened again
+
+Improvements:
+
+- Operators are now left associative by default
+- Build / launch scripts are formatted to be more readable
+- Removed unused libaries (project size ~halved)
+
+
+
 === Version 1.1.7 ===== 28.03.2019
 - welcome page updated
 - properties form layout cleaned up 
