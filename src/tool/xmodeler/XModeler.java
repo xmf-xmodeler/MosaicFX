@@ -48,6 +48,7 @@ import tool.clients.dialogs.DialogsClient;
 import tool.clients.dialogs.notifier.NotificationType;
 import tool.clients.dialogs.notifier.NotifierDialog;
 import tool.clients.editors.EditorClient;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.forms.FormsClient;
 import tool.clients.menus.MenuClient;
 import tool.clients.oleBridge.OleBridgeClient;
@@ -80,7 +81,7 @@ public class XModeler extends Application {
   static String[]        copyOfArgs          = null;
   static boolean         showLoad            = false;
   public static String   textEditorClass     = "tool.clients.editors.TextEditor";
-  public static PropertyManager propertyManager 	 = new PropertyManager("user_properties.xml");
+  public static PropertyManager propertyManager 	 = new PropertyManager("user.properties");
 
   //JavaFX
   static Stage 			 stage 		 		 = null;
@@ -324,15 +325,15 @@ public class XModeler extends Application {
     	fileChooser.getExtensionFilters().add(filter);
     	fileChooser.setSelectedExtensionFilter(filter);
         
-    	String initalDirectory = propertyManager.getStringProperty("loadImageDirectory", null);
-    	if (initalDirectory != null)
+    	String initalDirectory = propertyManager.getProperty("loadImageDirectory", "");
+    	if (!initalDirectory.equals(""))
     	fileChooser.setInitialDirectory(new File(initalDirectory));
     	
     	File file = fileChooser.showOpenDialog(stage);
     	
     	if(file != null){
     		selectedImage = file.getAbsolutePath();
-    		propertyManager.setStringProperty("loadImageDirectory",file.getParent());
+    		System.err.println("propertyManager.setProperty(\"loadImageDirectory\", file.getParent());");
     	}
     	
     }
@@ -406,7 +407,7 @@ public class XModeler extends Application {
     xos.newMessageClient("com.ceteva.modelBrowser", new ModelBrowserClient());
     xos.newMessageClient("com.ceteva.diagram", new DiagramClient());
     xos.newMessageClient("com.ceteva.dialogs", new DialogsClient());
-    xos.newMessageClient("com.ceteva.forms", new FormsClient());
+    xos.newMessageClient("com.ceteva.forms", new FormsClient()); PropertyManager.setXmfSettings();
     xos.newMessageClient("com.ceteva.undo", new UndoClient());
     xos.newMessageClient("com.ceteva.oleBridge", new OleBridgeClient());
 //    xos.newMessageClient("screenGeneration", new ScreenGenerationClient()); // BB
@@ -418,6 +419,7 @@ public class XModeler extends Application {
 	  FormsClient.start(propertyTabs);
 	  Console.start(propertyTabs); // only one which does more
 	  DiagramClient.start(editorTabs);
+	  FmmlxDiagramCommunicator.start(editorTabs);
   }
   
   
@@ -473,22 +475,23 @@ public class XModeler extends Application {
 			stage.getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 			setToolTitle();
 			
-			stage.setX(propertyManager.getIntProperty("TOOL_X", TOOL_X));		
-			stage.setY(propertyManager.getIntProperty("TOOL_Y", TOOL_Y));			
+			stage.setX(propertyManager.getProperty("TOOL_X", TOOL_X));
+			stage.setY(propertyManager.getProperty("TOOL_Y", TOOL_Y));
 			stage.setScene(scene);
 			stage.setOnCloseRequest(  new EventHandler<WindowEvent>() {
 				  public void handle(WindowEvent event) {
 					  //propertyManager.writeXMLFile();
-					  if (loadedImagePath == null) {
-						  WorkbenchClient.theClient().shutdownEvent();
-					  } else {
-						  WorkbenchClient.theClient().shutdownAndSaveEvent(loadedImagePath, inflationPath());
-					  }
+                      if (propertyManager.getProperty("IGNORE_SAVE_IMAGE", false)) {
+                          System.exit(0);
+                      } else {
+                          if (loadedImagePath == null) WorkbenchClient.theClient().shutdownEvent();
+                          else WorkbenchClient.theClient().shutdownAndSaveEvent(loadedImagePath, inflationPath());
+                      }
 					  event.consume();
 //					  event.doit = false;
 				  }
 		  });
-			//propertyManager.getInterface(); //comment out to see the Interface
+			//propertyManager.getUserInterface(); //comment out to see the Interface
 			
 //TODO Why timer? Can we intergrate it properly?
 //			XModeler.getDisplay().timerExec(3000, 

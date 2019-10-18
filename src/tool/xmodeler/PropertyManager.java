@@ -1,422 +1,299 @@
 package tool.xmodeler;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
+import javafx.scene.control.*;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.NodeList;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import tool.clients.menus.MenuClient;
 import tool.helper.IconGenerator;
 
-import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.Properties;
 
 public class PropertyManager {
 
-	DocumentBuilderFactory dbFactory;
-	DocumentBuilder dBuilder;
-	Document doc;
-	Document backup;
-	File xmlFile;
-	String filePath;
+	//settings
+	static String filePath;
+	static Properties properties;
 
-	final String type_int = "int";
-	final String type_bool = "Boolean";
-	final String type_String = "String";
-	final String type_double = "double";
-
+	//ui
 	Stage stage;
-	GridPane propGrid;
+	GridPane generalGrid;
+	GridPane debugGrid;
 
-	/*
-	 * 
-	 */
 	public PropertyManager(String filePath) {
+		PropertyManager.filePath = filePath;
+		PropertyManager.properties = new Properties();
 
+		loadProperties();
+	}
+
+	private void loadProperties() {
 		try {
-			dbFactory = DocumentBuilderFactory.newInstance();
-			dBuilder = dbFactory.newDocumentBuilder();
-			this.filePath = filePath;
-			xmlFile = new File(filePath);
-			if (!xmlFile.exists()) {
-				doc = dBuilder.newDocument();
-				Element rootElement = doc.createElement("properties");
-				doc.appendChild(rootElement);
-				writeXMLFile();
+			properties.load(new FileInputStream(filePath));
+		} catch (FileNotFoundException e) {
+			System.err.println("No user.properties found. Will be created once you change some preferences.");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-				// setting standard values
-				setIntProperty("TOOL_X", 100);
-				setIntProperty("TOOL_Y", 100);
-				setIntProperty("TOOL_WIDTH", 1200);
-				setIntProperty("TOOL_HEIGHT", 900);
-			} else {
-				doc = dBuilder.parse(xmlFile);
-				backup = dBuilder.parse(xmlFile);
-			}
+	private static void storeProperties() {
+        setXmfDebugging();
+		try {
+			properties.store(new FileOutputStream(filePath), null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	//public
+
+	public static void setProperty(String key, String value) {
+		properties.setProperty(key, value);
+		PropertyManager.storeProperties();
+	}
+
+	public static String getProperty(String key, String defaultValue) {
+		return properties.getProperty(key, defaultValue);
+	}
+
+	public static int getProperty(String key, int defaultValue) {
+		return Integer.parseInt(properties.getProperty(key, defaultValue+""));
+	}
+
+	public static boolean getProperty(String key, boolean defaultValue) {
+		return Boolean.parseBoolean(properties.getProperty(key, defaultValue+""));
+	}
+
+	// GUI
+
+	public void getUserInterface() {
+		try {
+			//init gridpanes
+			generalGrid = getGridpane();
+			debugGrid = getGridpane();
+
+			//fill gridpanes
+			fillPropGrid();
+			fillDebugGrid();
+
+			//labels
+			Label generalLabel = new Label("General:");
+			Label debugLabel = new Label("Debug:");
+
+			//control buttons
+			HBox buttons = getControlButtons();
+
+			//merge into mainVbox
+			VBox gridPanes = new VBox(generalLabel, generalGrid, debugLabel, debugGrid);
+			gridPanes.setPadding(new Insets(10));
+			VBox mainVbox = new VBox(new ScrollPane(gridPanes), buttons);
+			mainVbox.setPadding(new Insets(10));
+			mainVbox.setSpacing(10);
+
+			// init scene
+			initScene(mainVbox);
 
 		} catch (Exception e) {
-			System.err.println("Loading XML File failed");
-			System.err.println(e.getMessage());
+			e.printStackTrace();
 		}
+
 	}
 
-	/*
-	 * returns the value if property with given key exists returns defaultValue
-	 * otherwise
-	 */
-	private String getProperty(String key, String defaultValue, String type) {
+	private HBox getControlButtons() {
+		Button btnCancel = new Button("Cancel");
+		btnCancel.setOnAction(this::onCancelButtonClicked);
 
-		if (key.isEmpty()) {
-			System.err.println("Input must not be empty");
-			return defaultValue;
+		Button btnSave = new Button("Save");
+		btnSave.setOnAction(this::onSaveButtonClicked);
+
+		//layout
+		HBox buttons = new HBox(btnCancel, btnSave);
+		buttons.setSpacing(10);
+		buttons.setAlignment(Pos.CENTER_RIGHT);
+		return buttons;
+	}
+
+	private void onCancelButtonClicked(ActionEvent actionEvent) {
+		stage.close();
+	}
+
+	private void onSaveButtonClicked(ActionEvent actionEvent) {
+		parseGridPane(generalGrid);
+		parseGridPane(debugGrid);
+		stage.close();
+	}
+
+	private void parseGridPane(GridPane gridPane) {
+		//parse rows and col into array
+		Node[][] gridPaneNodes = getGridPaneRows(gridPane);
+
+		//loop through all rows
+		for (int row = 0; row < getGridLength(gridPane); row++) { //height
+			// get key label
+			String key = ((Label) gridPaneNodes[0][row]).getText();
+			// get value field
+			String value = getNodeValue(gridPaneNodes[1][row]);
+			System.out.println(("key: " + key + ", val: " + value));
+			if (value.isEmpty()) properties.remove(key);
+			else properties.setProperty(key, value);
 		}
-		try {
-			// File xmlFile = new File(filePath);
-			if (xmlFile.exists()) {
-				Node n = contains(key, type);
-				if (n != null) {
-					return n.getAttributes().getNamedItem("value").getNodeValue();
-				}
+
+		storeProperties();
+	}
+
+	private String getNodeValue(Node node) {
+		String value = "";
+		if (node instanceof TextField) {
+			value = ((TextField) node).getText();
+		}
+		if (node instanceof CheckBox) {
+			value = String.valueOf(((CheckBox) node).isSelected());
+		}
+		return value;
+	}
+
+	private Node[][] getGridPaneRows(GridPane gridPane) {
+		Node[][] gridPaneNodes = new Node[2][getGridLength(gridPane)]; //width, height
+		for (Node child : gridPane.getChildren()) {
+			Integer column = GridPane.getColumnIndex(child);
+			Integer row = GridPane.getRowIndex(child);
+			if (column != null && row != null) {
+				gridPaneNodes[column][row] = child;
 			}
+		}
+		return gridPaneNodes;
+	}
+
+	private GridPane getGridpane() {
+		GridPane gridPane = new GridPane();
+		gridPane.setPadding(new Insets(10, 0, 10, 0));
+		gridPane.setHgap(10);
+		gridPane.setVgap(10);
+		return gridPane;
+	}
+
+	private void initScene(VBox vb) {
+		if (stage != null) stage.close();
+
+		Scene scene = new Scene(vb);
+		stage = new Stage();
+		stage.setTitle("Preferences");
+		stage.getIcons().add(IconGenerator.getImage("shell/mosaic32"));
+		stage.setScene(scene);
+		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.show();
+	}
+
+	private void fillPropGrid() {
+		addRow(generalGrid, "TOOL_X", getProperty("TOOL_X", 100));
+		addRow(generalGrid, "TOOL_Y", getProperty("TOOL_X", 100));
+		addRow(generalGrid, "TOOL_WIDTH",  getProperty("TOOL_WIDTH", 1200));
+		addRow(generalGrid, "TOOL_HEIGHT", getProperty("TOOL_HEIGHT", 900));
+		addRow(generalGrid, "fileDialogPath", getProperty("fileDialogPath", ""));
+	}
+
+	private void fillDebugGrid() {
+		addRow(debugGrid, "MONITOR_CLIENT_COMMUNICATION", getProperty("MONITOR_CLIENT_COMMUNICATION", false));
+		addRow(debugGrid, "MONITOR_DAEMON_FIRING", getProperty("MONITOR_DAEMON_FIRING", false));
+		addRow(debugGrid, "IGNORE_SAVE_IMAGE", getProperty("IGNORE_SAVE_IMAGE", false));
+		addRow(debugGrid, "LOG_XMF_OUTPUT", getProperty("LOG_XMF_OUTPUT", false));
+		addRow(debugGrid, "MONITOR_CALLS", "Open", actionEvent -> {
+			MenuClient.openCallMonitor();
+		});
+		addRow(debugGrid, "PERFORMANCE_MONITOR", "Open", actionEvent -> {
+			MenuClient.openPerformanceMonitor();
+		});
+	}
+
+	private GridPane addRow(GridPane pane, String key, String value) {
+		pane.addRow(getGridLength(pane), getKeyLabel(key), getValueTextField(value));
+		return pane;
+	}
+
+	private GridPane addRow(GridPane pane, String key, int value) {
+		pane.addRow(getGridLength(pane), getKeyLabel(key), getValueIntField(value));
+		return pane;
+	}
+
+	private GridPane addRow(GridPane pane, String key, boolean value) {
+		pane.addRow(getGridLength(pane), getKeyLabel(key), getValueCheckBox(value));
+		return pane;
+	}
+
+	private GridPane addRow(GridPane pane, String key, String buttonText, EventHandler<ActionEvent> onAction) {
+		pane.addRow(getGridLength(pane), getKeyLabel(key), getButton(buttonText, onAction));
+		return pane;
+	}
+
+	private Label getKeyLabel(String value) {
+		return new Label(value);
+	}
+
+	private TextField getValueTextField(String value) {
+		return new TextField(value);
+	}
+
+	private TextField getValueIntField(int value) {
+		TextField textField = new TextField(value + "");
+
+		// force the field to accept int only
+		textField.textProperty().addListener((observableValue, oldValue, newValue) -> {
+			if (!newValue.matches("\\d*")) {
+				textField.setText(newValue.replaceAll("[^\\d]", ""));
+			}
+		});
+
+		return textField;
+	}
+
+	private CheckBox getValueCheckBox(boolean value) {
+		CheckBox checkBox = new CheckBox("");
+		checkBox.setSelected(value);
+		return checkBox;
+	}
+
+	private Button getButton(String text, EventHandler<ActionEvent> onAction) {
+		Button button = new Button(text);
+		button.setOnAction(onAction);
+		return button;
+	}
+
+	private int getGridLength(GridPane gridPane) {
+		int rows = 0;
+		try {
+			Method method = gridPane.getClass().getDeclaredMethod("getNumberOfRows");
+			method.setAccessible(true);
+			rows = (Integer) method.invoke(gridPane);
 		} catch (Exception e) {
-			System.err.println("Error at PropertyManager.getProperty(): " + e.getMessage());
+			e.printStackTrace();
 		}
-		return defaultValue;
+		return rows;
 	}
 
-	public int getIntProperty(String key, int defaultValue) {
-		String result = getProperty(key, Integer.toString(defaultValue), type_int);
-		try {
-			return Integer.parseInt(result);
-		} catch (NumberFormatException e) {
-			System.out.println("Error at PropertyManager.getIntProperty" + e.getMessage());
-			return defaultValue;
-		}
+    //set xmf debugging values
+    private static void setXmfDebugging() {
+        MenuClient.setClientCommunicationMonitoring(getProperty("MONITOR_CLIENT_COMMUNICATION", false));
+        MenuClient.setDaemonMonitoring(getProperty("MONITOR_DAEMON_FIRING", false));
+    }
 
-	}
-
-	public double getDoubleProperty(String key, double defaultValue) {
-		String result = getProperty(key, Double.toString(defaultValue), type_double);
-		try {
-			return Double.parseDouble(result);
-		} catch (NumberFormatException e) {
-			System.out.println("Error at PropertyManager.getDoubleProperty" + e.getMessage());
-			return defaultValue;
-		}
-
-	}
-
-	public String getStringProperty(String key, String defaultValue) {
-		return getProperty(key, defaultValue, type_String);
-	}
-
-	public Boolean getBooleanProperty(String key, Boolean defaultValue) {
-		String result = getProperty(key, Boolean.toString(defaultValue), type_bool);
-		if (result.equalsIgnoreCase("true") || result.equalsIgnoreCase("false")) {
-			return Boolean.valueOf(result);
-		} else
-			return defaultValue;
-	}
-
-	/*
-	 * creates property with given parameters if key does not exist changes value
-	 * and type of existing key otherwise
-	 */
-
-	private void setProperty(String name, String value, String type) {
-		if (name.isEmpty()) {
-			System.err.println("Input must not be empty");
-			return;
-		}
-		try {
-			// File xmlFile = new File(filePath);
-			if (xmlFile.exists()) {
-				// Document doc = dBuilder.parse(xmlFile);
-				Element root = doc.getDocumentElement();
-				// checks if Element exists already
-				Node n = contains(name);
-
-				if (n != null) {
-					Attr attr = doc.createAttribute("value");
-					attr.setValue(value);
-					n.getAttributes().setNamedItem(attr);
-				} else {
-					// create new Element
-					// setting key
-					Element e = doc.createElement("property");
-					Attr attr = doc.createAttribute("key");
-					attr.setValue(name);
-					e.setAttributeNode(attr);
-					// setting value
-					attr = doc.createAttribute("value");
-					attr.setValue(value);
-					e.setAttributeNode(attr);
-					// setting type
-					attr = doc.createAttribute("type");
-					attr.setValue(type);
-					e.setAttributeNode(attr);
-					// append element
-					root.appendChild(e);
-
-				}
-					writeXMLFile();
-				if (stage != null)
-				if (stage.isShowing()) {
-					createPropGrid();
-				}
-			}
-
-		} catch (Exception e) {
-
-		}
-	}
-
-	public void setIntProperty(String key, int value) {
-		setProperty(key, Integer.toString(value), type_int);
-	}
-
-	public void setDoubleProperty(String key, double value) {
-		setProperty(key, Double.toString(value), type_double);
-	}
-
-	public void setStringProperty(String key, String value) {
-		setProperty(key, value, type_String);
-	}
-
-	public void setBooleanProperty(String key, Boolean value) {
-		setProperty(key, Boolean.toString(value), type_bool);
-	}
-
-	/*
-	 * Removes Property with given name returns true if successful returns false
-	 * otherwise
-	 */
-	public Boolean deleteProperty(String key) {
-		if (key.isEmpty()) {
-			System.err.println("PropertyManager.deleteProperty(): Input must not be empty");
-			return false;
-		}
-		try {
-			// File xmlFile = new File(filePath);
-			// Document doc = dBuilder.parse(xmlFile);
-			Node n = contains(key);
-			if (n == null) {
-				System.err.println("PropertyManager.deleteProperty(): \"" + key + "\" not found");
-				return false;
-			} else {
-				NodeList nL = doc.getDocumentElement().getElementsByTagName("property");
-				for (int i = 0; i < nL.getLength(); i++) {
-					Node e = nL.item(i);
-					String eKey = e.getAttributes().getNamedItem("key").getNodeValue();
-					if (key.equals(eKey)) {
-						(doc.getDocumentElement()).removeChild(e);
-					}
-					writeXMLFile();
-				}
-
-				return true;
-			}
-		} catch (Exception e) {
-			System.err.println("Error at PropertyManager.deleteProperty(): " + e.getMessage());
-		}
-		return false;
-	}
-
-	/*
-	 * write the content into xml file
-	 */
-	public void writeXMLFile() {
-		try {
-			// File xmlFile = new File(filePath);
-
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(xmlFile);
-			transformer.transform(source, result);
-			if (stage != null)
-			if (stage.isShowing()) {
-				createPropGrid();
-			}
-		} catch (TransformerException e) {
-			System.err.println("Error at PropertyManager.writeXMLFile(): " + e.getMessage());
-		}
-	}
-
-	// returns XML-file to a String
-
-	public String printXMLFile() {
-		String result = "";
-		try {
-			// File xmlFile = new File(filePath);
-			// Document doc = dBuilder.parse(xmlFile);
-			result = result.concat("Root Element: " + doc.getDocumentElement().getTagName() + "\n");
-			NodeList nL = doc.getElementsByTagName("property");
-			for (int i = 0; i < nL.getLength(); ++i) {
-				result = result.concat("Property: \"" + nL.item(i).getAttributes().getNamedItem("key").getNodeValue()
-						+ "\" | Value: \"" + nL.item(i).getAttributes().getNamedItem("value").getNodeValue() + "\"\n");
-			}
-		} catch (Exception e) {
-			System.err.println("Error in PropertyManager.printXMLFile()");
-			System.err.println(e.getMessage());
-		}
-		return result;
-
-	}
-
-	/*
-	 * searches for an element with given key returns Node if found returns null
-	 * otherwise
-	 */
-	private Node contains(String key) {
-		try {
-			// File xmlFile = new File(filePath);
-			// Document doc = dBuilder.parse(xmlFile);
-			NodeList nL = doc.getElementsByTagName("property");
-			for (int i = 0; i < nL.getLength(); i++) {
-				Node e = nL.item(i);
-				String eKey = e.getAttributes().getNamedItem("key").getNodeValue();
-				if (eKey != null)
-					if (eKey.equals(key)) {
-						return e;
-					}
-			}
-		} catch (Exception e) {
-			System.err.println("Error at PropertyManager.contains()");
-			System.err.println(e.getMessage());
-		}
-		return null;
-	}
-
-	private Node contains(String key, String type) {
-		try {
-			// File xmlFile = new File(filePath);
-			// Document doc = dBuilder.parse(xmlFile);
-			NodeList nL = doc.getElementsByTagName("property");
-			for (int i = 0; i < nL.getLength(); i++) {
-				Node e = nL.item(i);
-				String eKey = e.getAttributes().getNamedItem("key").getNodeValue();
-				String eType = e.getAttributes().getNamedItem("type").getNodeValue();
-				if (eKey != null && eType != null)
-					if (eKey.equals(key) && eType.equals(type)) {
-						return e;
-					}
-			}
-		} catch (Exception e) {
-			System.err.println("Error at PropertyManager.contains()");
-			System.err.println(e.getMessage());
-		}
-		return null;
-	}
-
-	public void getInterface() {
-		try {
-			if (stage != null) {
-				stage.close();
-			}
-			
-			propGrid = new GridPane();
-			createPropGrid();
-			propGrid.setPadding(new Insets(10));
-			propGrid.setHgap(10);
-			propGrid.setVgap(10);
-
-			Label lblCaption = new Label("Preferences:");
-
-			Button btnOk = new Button("OK");
-			btnOk.setOnAction(new EventHandler<ActionEvent>() {
-
-				@Override
-				public void handle(ActionEvent event) {
-					// TODO Auto-generated method stub
-					writeXMLFile();
-					stage.close();
-				}
-			});
-
-			Button btnApply = new Button("Apply");
-			btnApply.setDisable(true);
-			btnApply.setOnAction(new EventHandler<ActionEvent>() {
-
-				@Override
-				public void handle(ActionEvent event) {
-					// TODO Auto-generated method stub
-
-				}
-			});
-
-			Button btnCancel = new Button("Cancel");
-			btnCancel.setOnAction(new EventHandler<ActionEvent>() {
-
-				@Override
-				public void handle(ActionEvent event) {
-					stage.close();
-				}
-			});
-
-			HBox buttons = new HBox(btnOk, btnApply, btnCancel);
-			buttons.setSpacing(10);
-			buttons.setAlignment(Pos.CENTER_RIGHT);
-
-			VBox vb = new VBox(lblCaption, new ScrollPane(propGrid), buttons);
-			vb.setPadding(new Insets(10));
-			vb.setSpacing(10);
-
-			Scene scene = new Scene(vb);
-			stage = new Stage();
-			stage.setTitle("Preferences");
-			stage.getIcons().add(IconGenerator.getImage("shell/mosaic32"));
-			stage.setScene(scene);
-			stage.initModality(Modality.APPLICATION_MODAL);
-			stage.show();
-
-		} catch (Exception e) {
-			System.err.println("Exception: getInterface(): " +e.getMessage());
-		}
-
-	}
-
-	private void createPropGrid() {
-		propGrid.getChildren().clear();
-		try {
-			// File xmlFile = new File(filePath);
-			// Document doc = dBuilder.parse(xmlFile);
-			NodeList nL = doc.getElementsByTagName("property");
-			for (int i = 0; i < nL.getLength(); i++) {
-				NamedNodeMap attributes = nL.item(i).getAttributes();
-				Label key = new Label(attributes.getNamedItem("key").getTextContent());
-				TextField value = new TextField(attributes.getNamedItem("value").getTextContent());
-				Label type = new Label(attributes.getNamedItem("type").getTextContent());
-				propGrid.addRow(i, key, value, type);
-
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-
-		}
-	}
-
+    public static void setXmfSettings() {
+	    if (properties != null) setXmfDebugging();
+    }
 }

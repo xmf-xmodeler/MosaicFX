@@ -237,13 +237,13 @@ public class DialogsClient extends Client {
 	  		
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) { 
 			// we are on the right Thread already:
-			XModeler.getPropertyManager().getInterface();
+			XModeler.getPropertyManager().getUserInterface();
 		} else { // create a new Thread
 //			System.err.println("Calling redraw from " + Thread.currentThread());
 			CountDownLatch l = new CountDownLatch(1);
 			Platform.runLater(() -> {
 //				System.err.println("Doing redraw for " + Thread.currentThread());
-				XModeler.getPropertyManager().getInterface();
+				XModeler.getPropertyManager().getUserInterface();
 	    		l.countDown();
 			});
 			try {
@@ -344,12 +344,12 @@ public class DialogsClient extends Client {
 				fileChooser.getExtensionFilters().add(filter);
 				fileChooser.setSelectedExtensionFilter(filter);
 				
-				PropertyManager pm = XModeler.getPropertyManager();
-				String pmPath = pm.getStringProperty("fileDialogPath", path);
+//				PropertyManager pm = XModeler.getPropertyManager();
+				String pmPath = PropertyManager.getProperty("fileDialogPath", path);
 				
 				File initFile = new File(pmPath);
 				fileChooser.setInitialFileName(def);
-				if (initFile.exists()) {
+				if (initFile.isDirectory()) {
 					fileChooser.setInitialDirectory(initFile);
 				}else{
 					fileChooser.setInitialDirectory(lastFile.getParentFile());
@@ -362,8 +362,8 @@ public class DialogsClient extends Client {
 				}
 
 				if (file != null) {
-					lastFile = file;
-					pm.setStringProperty("fileDialogPath", file.getParent());
+					String lastFile = file.isDirectory() ? file.getPath() : file.getParentFile().getPath();
+					PropertyManager.setProperty("fileDialogPath", lastFile);
 					result[0] = new Value(file.getAbsolutePath());
 				} else {
 					result[0] = new Value("");
@@ -674,13 +674,12 @@ public class DialogsClient extends Client {
     Platform.runLater(()->{
         SelectionDialog sd = new SelectionDialog(title, message_, multi, allOptions, defaultOptions);
         Optional<String[]> dialogResult = sd.showAndWait();
-        
-        if(dialogResult.isPresent()){
-        	Value[] resultRaw = getResultArray(dialogResult.get(), defaultOptions); 
+		if(dialogResult.isPresent() && dialogResult.get().length>0){ //is present checks if object is present, emtpy string[] is an object
+        	Value[] resultRaw = getResultArray(dialogResult.get(), defaultOptions); //and is otherwise parsed into an array of length 0
         	if (multi){
         		result[0] = new Value(resultRaw);
         	}else {
-            	result[0] = resultRaw[0];
+            	result[0] = resultRaw[0]; //and would cause an OutOfBounds here
           	}
         }else{
         	if (multi){
