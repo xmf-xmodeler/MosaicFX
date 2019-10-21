@@ -199,6 +199,9 @@ public class FmmlxDiagram {
 		objectsToBePainted.addAll(labels);
 		objectsToBePainted.addAll(edges);
 		Collections.reverse(objectsToBePainted);
+		for (FmmlxObject o : objects) {
+			o.updatePortOder();
+		}
 		for (CanvasElement o : objectsToBePainted) {
 			o.paintOn(g, xOffset, yOffset, this);
 		}
@@ -448,7 +451,7 @@ public class FmmlxDiagram {
 	}
 
 	private void handleDoubleClickOnNodeElement(Point2D p, CanvasElement hitObject) {
-		if (hitObject instanceof FmmlxObject) {
+		if (hitObject != null && hitObject instanceof FmmlxObject) {
 			Point2D relativePoint = getRelativePointToNodeBox(hitObject, p);
 
 			// Checking NodeBoxes
@@ -461,7 +464,7 @@ public class FmmlxDiagram {
 				} else {
 					if (((NodeBox) hitNodeBox).getElementType() != PropertyType.Slot) {
 						NodeLabel hitLabel = getHitLabel(hitNodeBox, relativePoint);				
-						if (hitLabel.getText().length()<=2) {
+						if (hitLabel == null || hitLabel.getText() == null || hitLabel.getText().length()<=2) {
 							actions.changeLevelDialog((FmmlxObject) hitObject, ((NodeBox) hitNodeBox).getElementType());
 						} else {
 							actions.changeNameDialog((FmmlxObject) hitObject, ((NodeBox) hitNodeBox).getElementType(), hitProperty);

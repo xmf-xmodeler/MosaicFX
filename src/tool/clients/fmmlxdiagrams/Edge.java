@@ -5,34 +5,36 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
 
+import java.text.DecimalFormat;
 import java.util.Vector;
 
 public abstract class Edge implements CanvasElement {
 
 	final public int id;
-	protected Vector<Point2D> points = new Vector<>();
+	protected Vector<Point2D> intermediatePoints = new Vector<>();
 	protected FmmlxObject startNode;
 	protected FmmlxObject endNode;
 	protected FmmlxDiagram diagram;
-//	protected Vector<EdgeLabel> labels = new Vector<>();
 	protected final Double DEFAULT_TOLERANCE = 6.;
 	protected boolean layoutingFinishedSuccesfully;
 	private Vector<Object> labelPositions;
 
-	public Edge(int id, FmmlxObject startNode, FmmlxObject endNode, Vector<Point2D> points, Vector<Object> labelPositions, FmmlxDiagram diagram) {
+	public Edge(int id, FmmlxObject startNode, FmmlxObject endNode, Vector<Point2D> intermediatePoints, Vector<Object> labelPositions, FmmlxDiagram diagram) {
 		layoutingFinishedSuccesfully = false;
 		this.labelPositions = labelPositions;
 		this.id = id;
 		this.diagram = diagram;
 		this.startNode = startNode;
 		this.endNode = endNode;
-		if (points == null || points.size() < 1) {
-			this.points.add(new Point2D(startNode.getX() + startNode.getWidth() / 2, startNode.getY() + startNode.getHeight() / 2));
-			this.points.add(new Point2D(endNode.getX() + endNode.getWidth() / 2, endNode.getY() + endNode.getHeight() / 2));
+		if (intermediatePoints == null || intermediatePoints.size() < 1) {
+//			this.points.add(new Point2D(startNode.getX() + startNode.getWidth() / 2, startNode.getY() + startNode.getHeight() / 2));
+//			this.points.add(new Point2D(endNode.getX() + endNode.getWidth() / 2, endNode.getY() + endNode.getHeight() / 2));
 		} else {
-			this.points.addAll(points);
+			this.intermediatePoints.addAll(intermediatePoints);
 		}
 		storeLatestValidPointConfiguration();
+		startNode.addEdgeStart(this, FmmlxObjectPort.EAST);
+		endNode.addEdgeEnd(this, FmmlxObjectPort.WEST);
 	}
 
 	@Override
@@ -40,8 +42,13 @@ public abstract class Edge implements CanvasElement {
 		if(!layoutingFinishedSuccesfully) {
 			layout(); diagram.redraw();
 		} else {
-		
+		    Vector<Point2D> points = getAllPoints();
 //			for (EdgeLabel label : labels) label.paintOn(g, xOffset, yOffset, fmmlxDiagram);
+		    g.setFill(Color.RED);
+		    g.fillText(
+		    		new DecimalFormat("0.00").format(Math.atan2(-endNode.getCenterY() + startNode.getCenterY(), endNode.getCenterX() - startNode.getCenterX())/Math.PI)+"\u03C0", 
+		    		.5*(startNode.getCenterX() + endNode.getCenterX()), 
+		    		.5*(startNode.getCenterY() + endNode.getCenterY())-12);
 			g.setStroke(fmmlxDiagram.isSelected(this) ? Color.RED : getPrimaryColor());
 			g.setLineWidth(isSelected() ? 3 : 1);
 			g.setLineDashes(getLineDashes());
@@ -67,6 +74,14 @@ public abstract class Edge implements CanvasElement {
 		}
 	}
 
+	protected Vector<Point2D> getAllPoints() {
+		Vector<Point2D> allPoints = new Vector<Point2D>();
+		allPoints.add(startNode.getPointForEdge(this, true));
+		allPoints.addAll(intermediatePoints);
+		allPoints.add(endNode.getPointForEdge(this, false));
+		return allPoints;
+	}
+
 	protected abstract void layout();
 
 	protected Color getPrimaryColor() {
@@ -87,6 +102,7 @@ public abstract class Edge implements CanvasElement {
 	}
 
 	public boolean isHit(Point2D p, Double tolerance) {
+	    Vector<Point2D> points = getAllPoints();
 		for (int i = 0; i < points.size() - 1; i++) {
 //			System.err.println("distance=" + distance(p, points.get(i), points.get(i+1)));
 			if (distance(p, points.get(i), points.get(i + 1)) < (tolerance == null ? DEFAULT_TOLERANCE : tolerance)) {
@@ -110,9 +126,9 @@ public abstract class Edge implements CanvasElement {
 
 	@Override
 	public void moveTo(double x, double y, FmmlxDiagram diagram) {
-		if (pointToBeMoved != -1) {
+		if (pointToBeMoved > 0 && pointToBeMoved <= intermediatePoints.size()) {
 //			Point2D oldPoint = points.get(pointToBeMoved);
-			points.setElementAt(new Point2D(x, y), pointToBeMoved);
+			intermediatePoints.setElementAt(new Point2D(x, y), pointToBeMoved-1);
 		}
 	}
 
@@ -125,45 +141,46 @@ public abstract class Edge implements CanvasElement {
 	}
 	
 	public void movePoints(double newStartX, double newStartY, double newEndX, double newEndY) {
-		Point2D oldStartPoint = latestValidPointConfiguration.firstElement();
-		double oldStartX = oldStartPoint.getX();
-		double oldStartY = oldStartPoint.getY();
-		Point2D oldEndPoint = latestValidPointConfiguration.lastElement();
-		double oldEndX = oldEndPoint.getX();
-		double oldEndY = oldEndPoint.getY();
-		
-		Vector<Point2D> newPoints = new Vector<>();
-	
-		newPoints.add(new Point2D(newStartX, newStartY));
-		for(int i = 1; i < latestValidPointConfiguration.size()-1; i++) {
-			Point2D oldPoint = latestValidPointConfiguration.get(i);
-			double newX = (oldPoint.getX() - oldStartX) / (oldEndX - oldStartX) * (newEndX - newStartX) + newStartX;
-			double newY = (oldPoint.getY() - oldStartY) / (oldEndY - oldStartY) * (newEndY - newStartY) + newStartY;
-			if(Double.isFinite(newX) && Double.isFinite(newY))
-			newPoints.add(new Point2D(newX, newY));
-		};
-		newPoints.add(new Point2D(newEndX, newEndY));
-		points.clear();
-		points.addAll(newPoints);
+//		Point2D oldStartPoint = latestValidPointConfiguration.firstElement();
+//		double oldStartX = oldStartPoint.getX();
+//		double oldStartY = oldStartPoint.getY();
+//		Point2D oldEndPoint = latestValidPointConfiguration.lastElement();
+//		double oldEndX = oldEndPoint.getX();
+//		double oldEndY = oldEndPoint.getY();
+//		
+//		Vector<Point2D> newPoints = new Vector<>();
+//	
+//		newPoints.add(new Point2D(newStartX, newStartY));
+//		for(int i = 1; i < latestValidPointConfiguration.size()-1; i++) {
+//			Point2D oldPoint = latestValidPointConfiguration.get(i);
+//			double newX = (oldPoint.getX() - oldStartX) / (oldEndX - oldStartX) * (newEndX - newStartX) + newStartX;
+//			double newY = (oldPoint.getY() - oldStartY) / (oldEndY - oldStartY) * (newEndY - newStartY) + newStartY;
+//			if(Double.isFinite(newX) && Double.isFinite(newY))
+//			newPoints.add(new Point2D(newX, newY));
+//		};
+//		newPoints.add(new Point2D(newEndX, newEndY));
+//		points.clear();
+//		points.addAll(newPoints);
 	}
 
-	public void moveStartPoint(double newStartX, double newStartY) {
-		movePoints(newStartX, newStartY, points.lastElement().getX(), points.lastElement().getY());
-	}
-
-	public void moveEndPoint(double newEndX, double newEndY) {
-		movePoints(points.firstElement().getX(), points.firstElement().getY(), newEndX, newEndY);
-	}
+//	public void moveStartPoint(double newStartX, double newStartY) {
+//		movePoints(newStartX, newStartY, points.lastElement().getX(), points.lastElement().getY());
+//	}
+//
+//	public void moveEndPoint(double newEndX, double newEndY) {
+//		movePoints(points.firstElement().getX(), points.firstElement().getY(), newEndX, newEndY);
+//	}
 		
 	private void storeLatestValidPointConfiguration() {
 		latestValidPointConfiguration.clear();
-		latestValidPointConfiguration.addAll(points);
+		latestValidPointConfiguration.addAll(intermediatePoints);
 	}
 
 	private transient Vector<Point2D> latestValidPointConfiguration = new Vector<>();
 	private transient int pointToBeMoved = -1;
 
 	public void setPointAtToBeMoved(Point2D mousePoint) {
+	    Vector<Point2D> points = getAllPoints();
 		// An edge has been dragged on at Point p.
 
 		// if a point is already found
@@ -199,6 +216,7 @@ public abstract class Edge implements CanvasElement {
 	}
 
 	public void dropPoint() {
+	    Vector<Point2D> points = getAllPoints();
 		if (pointToBeMoved != -1) {
 			// if point very close to other point, remove it.
 			if (distance(points.get(pointToBeMoved), points.get(pointToBeMoved + 1)) < DEFAULT_TOLERANCE
@@ -212,11 +230,12 @@ public abstract class Edge implements CanvasElement {
 		storeLatestValidPointConfiguration();
 	}
 
-	public Vector<Point2D> getPoints() {
-		return new Vector<Point2D>(points);
+	public Vector<Point2D> getIntermediatePoints() {
+		return new Vector<Point2D>(intermediatePoints);
 	}
 
 	protected Point2D getCentreAnchor() {
+	    Vector<Point2D> points = getAllPoints();
 		int n = points.size() / 2;
 		return new Point2D(
 				(points.get(n).getX() + points.get(n - 1).getX()) / 2,

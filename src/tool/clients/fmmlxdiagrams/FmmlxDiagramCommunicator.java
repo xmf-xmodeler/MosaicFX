@@ -416,7 +416,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void sendCurrentPositions(Edge a) {
-		Vector<Point2D> points = a.getPoints();
+		Vector<Point2D> points = a.getIntermediatePoints();
 
 		Value[] listOfPoints = new Value[points.size()];
 		for (int i = 0; i < listOfPoints.length; i++) {

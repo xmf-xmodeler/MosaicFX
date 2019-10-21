@@ -34,6 +34,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	private transient double mouseMoveOffsetY;
 	private transient double lastValidX;
 	private transient double lastValidY;
+	
+	private FmmlxObjectPort ports;
 
 	boolean usePreferredWidth = false; //not implemented yet
 
@@ -119,6 +121,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		this.showOperations = diagram.isShowOperations();
 		this.showOperationValues = diagram.isShowOperationValues();
 		this.showSlots = diagram.isShowSlots();
+		
+		this.ports = new FmmlxObjectPort(this);
 	}
 
 	private String getParentsListString(FmmlxDiagram diagram) {
@@ -562,10 +566,10 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	public void moveTo(double x, double y, FmmlxDiagram diagram) {
 		setX((int) x);
 		setY((int) y);
-		for(Edge edge : diagram.getEdges()) {
-			if (edge.isStartNode(this)) edge.moveStartPoint(x + width/2, y + height/2);
-			if (edge.isEndNode(this)) edge.moveEndPoint(x + width/2, y + height/2);
-		}
+//		for(Edge edge : diagram.getEdges()) {
+//			if (edge.isStartNode(this)) edge.moveStartPoint(x + width/2, y + height/2);
+//			if (edge.isEndNode(this)) edge.moveEndPoint(x + width/2, y + height/2);
+//		}
 	}
 	
 	public boolean isAbstract() {return isAbstract;}
@@ -657,4 +661,20 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	@Override public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
 	@Override public double getMouseMoveOffsetY() {return mouseMoveOffsetY;}
 
+	public Point2D getPointForEdge(Edge edge, boolean isStartNode) {
+		return ports.getPointForEdge(edge, isStartNode);
+	}
+
+	public void addEdgeStart(Edge edge, int direction) {
+		ports.addNewEdge(edge, direction);
+	}
+	
+	public void addEdgeEnd(Edge edge, int direction) {
+		ports.addNewEdge(edge, direction);
+	}
+
+	public void updatePortOder() {
+		ports.sortAllPorts();
+		
+	}
 }

@@ -51,7 +51,6 @@ public class DiagramActions {
 						int y = (int) e.getY();
 
 						if (x > 0 && y > 0) {
-							System.err.println("MCD: " + mcdResult.isAbstract());
 							diagram.getComm().addMetaClass(mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentIds(), mcdResult.isAbstract(), x, y);
 
 							canvas.setCursor(Cursor.DEFAULT);
