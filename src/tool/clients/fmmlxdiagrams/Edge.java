@@ -126,8 +126,7 @@ public abstract class Edge implements CanvasElement {
 
 	@Override
 	public void moveTo(double x, double y, FmmlxDiagram diagram) {
-		if (pointToBeMoved > 0 && pointToBeMoved <= intermediatePoints.size()) {
-//			Point2D oldPoint = points.get(pointToBeMoved);
+		if(pointToBeMoved != -1) {
 			intermediatePoints.setElementAt(new Point2D(x, y), pointToBeMoved-1);
 		}
 	}
@@ -205,7 +204,7 @@ public abstract class Edge implements CanvasElement {
 			}
 			if (pointToBeMoved != -1) { // make sure we found one
 				Point2D newPoint = new Point2D(mousePoint.getX(), mousePoint.getY());
-				points.insertElementAt(newPoint, pointToBeMoved);
+				intermediatePoints.insertElementAt(newPoint, pointToBeMoved-1);
 			}
 		}
 
