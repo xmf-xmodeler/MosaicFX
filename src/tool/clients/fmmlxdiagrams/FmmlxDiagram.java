@@ -364,10 +364,10 @@ public class FmmlxDiagram {
 				FmmlxObject newEdgeTarget = hitObject instanceof FmmlxObject ? (FmmlxObject) hitObject : null;
 				switch (drawEdgeType) {
 					case Association:
-						actions.addAssociationDialog((FmmlxObject) selectedObjects.get(0), newEdgeTarget);
+						actions.addAssociationDialog(newEdgeSource, newEdgeTarget);
 						break;
 					case AssociationInstance:
-						final FmmlxObject obj1 = (FmmlxObject) selectedObjects.get(0);
+						final FmmlxObject obj1 = newEdgeSource;
 						final FmmlxObject obj2 = newEdgeTarget;
 						Platform.runLater(() -> {
 							actions.addAssociationInstance(obj1, obj2);
@@ -403,11 +403,11 @@ public class FmmlxDiagram {
 				switch (drawEdgeType) {
 					case Association:
 						mouseMode = MouseMode.STANDARD;
-						actions.addAssociationDialog((FmmlxObject) selectedObjects.get(0), null);
+						actions.addAssociationDialog(newEdgeSource, null);
 						break;
 					case AssociationInstance:
 						mouseMode = MouseMode.STANDARD;
-						actions.addAssociationInstance((FmmlxObject) selectedObjects.get(0), null);
+						actions.addAssociationInstance(newEdgeSource, null);
 						break;
 					default:
 						break;
