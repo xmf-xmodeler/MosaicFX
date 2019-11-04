@@ -307,6 +307,7 @@ public class EditorClient extends Client {
         tab.setTooltip(new Tooltip(toolTip));
         tab.setClosable(true);
         tabs.put(id, tab);
+        tab.setOnCloseRequest(event -> tabTextClosed(id));
         try {
           Class<?> textEditorClass = Class.forName(XModeler.textEditorClass);
           Constructor<?> cnstr = textEditorClass.getConstructor(new Class<?>[] { String.class, String.class, TabPane.class, Boolean.TYPE, Boolean.TYPE, String.class });
@@ -829,20 +830,27 @@ public class EditorClient extends Client {
     tab.setClosable(true);
     tab.setTooltip(new Tooltip(tooltip));
 
-    tab.setOnCloseRequest((e)->{
-      // Careful because the diagrams and files share the same tab folder...
-      if (id != null && (editors.containsKey(id) || browsers.containsKey(id))) {
-        EventHandler handler = getHandler();
-        Message message = handler.newMessage("textClosed", 1);
-        message.args[0] = new Value(id);
-        handler.raiseEvent(message);
-        editors.remove(id);
-        browsers.remove(id);
-        tabs.remove(id);
-      }
-    });
+    tab.setOnCloseRequest(event -> tabTextClosed(id));
+
+//    tab.setOnCloseRequest((e)->{
+//
+//    });
 
     return tab;
+  }
+
+  private void tabTextClosed(String id) {
+    //Careful because the diagrams and files share the same tab folder...
+    if (id != null && (editors.containsKey(id) || browsers.containsKey(id))) {
+      EventHandler handler = getHandler();
+      Message message = handler.newMessage("textClosed", 1);
+      message.args[0] = new Value(id);
+      handler.raiseEvent(message);
+      editors.remove(id);
+      browsers.remove(id);
+      tabs.remove(id);
+    }
+
   }
 
   private void setUrl(final String id, final String url, final boolean addToHistory) {
