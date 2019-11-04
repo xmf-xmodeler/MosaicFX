@@ -31,6 +31,18 @@ For Users: [How to run XModeler?](https://www.wi-inf.uni-duisburg-essen.de/LE4MM
 
 ## Usage
 
+## Troubleshooting
+
+#### class not found
+This is likely a directory issue. Make sure you are in the XModeler directory that you downloaded and unzipped.
+
+#### required java version
+This project requires at least java 1.8 However with recent Oracle license changes and exclusion of javaFX, 
+we recommend using an [open java RE 1.8 with javaFX](https://www.azul.com/downloads/zulu-community/?&version=java-8-lts&package=jre-fx&show-old-builds=true).
+
+#### javaFX not found
+This probably means that you have a java RE without javaFX. We recommend an [open java 1.8 RE with javaFX](https://www.azul.com/downloads/zulu-community/?&version=java-8-lts&package=jre-fx&show-old-builds=true).
+
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
