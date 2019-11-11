@@ -68,7 +68,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				int classId = selectedObject.getId();
 
-				//TODO AddAttributeDialogResult and Multiplicity Result
 				return new AddAttributeDialogResult(
 						classId,
 						nameTextField.getText(),
@@ -152,7 +151,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		typeComboBox = new ComboBox<>(typeList);
 		typeComboBox.setEditable(true);
 		multiplicityButton = new Button();
-		//multiplicityButton.setText("Add / Edit Multiplicity");
 		multiplicityButton.setText(multiplicity.getClass().getSimpleName());
 		multiplicityButton.setOnAction(e -> {
 			showMultiplicityDialog();
