@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams.dialogs;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.util.converter.IntegerStringConverter;
@@ -162,19 +163,26 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		levelComboBox.setPrefWidth(COLUMN_WIDTH);
 		typeComboBox.setPrefWidth(COLUMN_WIDTH);
 		multiplicityButton.setPrefWidth(COLUMN_WIDTH);
-
-		grid.add(nameLabel, 0, 1);
-		grid.add(nameTextField, 1, 1);
-		grid.add(classLabel, 0, 0);
-		grid.add(classTextField, 1, 0);
-		grid.add(levelLabel, 0, 2);
-		grid.add(levelComboBox, 1, 2);
-		grid.add(typeLabel, 0, 3);
-		grid.add(typeComboBox, 1, 3);
-		grid.add(multiplicityLabel, 0, 4);
-		grid.add(multiplicityButton, 1, 4);
-		grid.add(displayMultiplicityLabel, 1, 5);
-
+		
+		List<Node> labelNode = new ArrayList<Node>();
+		List<Node> editorNode = new ArrayList<Node>();
+		
+		labelNode.add(nameLabel);
+		labelNode.add(classLabel);
+		labelNode.add(levelLabel);
+		labelNode.add(typeLabel);
+		labelNode.add(multiplicityLabel);
+		
+		editorNode.add(nameTextField);
+		editorNode.add(classTextField);
+		editorNode.add(levelComboBox);
+		editorNode.add(typeComboBox);
+		editorNode.add(multiplicityButton);
+		editorNode.add(displayMultiplicityLabel);
+		
+		addNodesToGrid(labelNode, 0);
+		addNodesToGrid(editorNode, 1);
+		
 	}
 
 	private void showMultiplicityDialog() {

@@ -17,7 +17,6 @@ import javafx.scene.control.cell.TextFieldListCell;
 import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.Enum;
 import tool.clients.fmmlxdiagrams.EnumElement;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumerationDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
 import javafx.scene.Node;
