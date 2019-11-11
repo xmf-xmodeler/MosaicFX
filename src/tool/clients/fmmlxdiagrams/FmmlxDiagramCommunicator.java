@@ -851,7 +851,7 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "printProtocol", message);		
 	}
 
-	public void addEnumeration() {
+	public void addEnumeration(Enum enumeration) {
 		// TODO Auto-generated method stub
 	}
 

@@ -39,6 +39,7 @@ public class StringValueDialog {
 		public static final String selectInstanceA = "Select Instance of MetaClass-A!";
 		public static final String selectInstanceB = "Select Instance of MetaClass-B!";
 		public static final String selectAssociationInstance = "Select Association Instance!";
+		public static final String inputNumberOfElement= "Input Number of Element";
 	}
 
 	public static class LabelAndHeaderTitle {

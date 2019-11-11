@@ -144,14 +144,14 @@ public class DiagramActions {
 		Platform.runLater(() -> {
 			AddEnumerationDialog dlg;
 			
-			dlg = new AddEnumerationDialog(diagram);
+			dlg = new AddEnumerationDialog();
 
 			dlg.setTitle("Creat Enumeration");
 			Optional<AddEnumerationDialogResult> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
 				AddEnumerationDialogResult aed = result.get();
-				diagram.getComm().addEnumeration(); //TODO
+				diagram.getComm().addEnumeration(aed.getEnumeration()); 
 			}
 			diagram.updateDiagram();
 			l.countDown();

@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -14,6 +15,7 @@ import tool.clients.fmmlxdiagrams.FmmlxAssociationInstance;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CustomDialog<R> extends Dialog<R> {
@@ -104,6 +106,34 @@ public class CustomDialog<R> extends Dialog<R> {
 	protected String getComboBoxStringValue(ComboBox<String> box) {
 		return box.getEditor().getText();
 	}
+	
+	public ListView<String> initializeListView(int rowNumber) {
+		
+		ObservableList<String> initListString = FXCollections.observableArrayList();
+
+		for (int i=1; i<=rowNumber; i++) {
+			initListString.add("Element "+ i);
+		}
+		
+		ListView<String> listView = new ListView<>(initListString);
+		listView.setPrefWidth(COLUMN_WIDTH);
+
+		listView.setCellFactory(param -> new ListCell<String>() {
+			@Override
+			protected void updateItem(String object, boolean empty) {
+				super.updateItem(object, empty);
+
+				if (empty || object == null || object == "") {
+					setText("");
+				} else {
+					setText(object);
+				}
+			}
+		});
+
+		return listView;
+	}
+	
 
 	public ListView<FmmlxObject> initializeListView(ObservableList<FmmlxObject> list, SelectionMode selectionMode) {
 

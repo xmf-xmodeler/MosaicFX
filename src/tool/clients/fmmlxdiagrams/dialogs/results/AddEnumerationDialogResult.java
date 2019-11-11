@@ -1,23 +1,17 @@
 package tool.clients.fmmlxdiagrams.dialogs.results;
 
-import java.util.LinkedList;
+import tool.clients.fmmlxdiagrams.Enum;
 
-public class AddEnumerationDialogResult {
+public class AddEnumerationDialogResult extends DialogResult{
 	
-	private String name;
-	private LinkedList<String> elements;
+	private Enum enumeration;
 	
-	public AddEnumerationDialogResult(String name, LinkedList<String> elements) {
-		super();
-		this.name = name;
-		this.elements = elements;
-	}
-	
-	public String getName() {
-		return name;
+	public AddEnumerationDialogResult(Enum enum1) {
+		this.enumeration=enum1;
 	}
 
-	public LinkedList<String> getElements() {
-		return elements;
+	public Enum getEnumeration() {
+		return enumeration;
 	}
+	
 }
