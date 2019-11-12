@@ -9,6 +9,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.*;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
+import tool.clients.fmmlxdiagrams.port.AssociationPortContainer;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,6 +35,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	private transient double mouseMoveOffsetY;
 	private transient double lastValidX;
 	private transient double lastValidY;
+	
+	private AssociationPortContainer portContainers;
 
 	boolean usePreferredWidth = false; //not implemented yet
 

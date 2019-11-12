@@ -93,6 +93,14 @@ public class FmmlxDiagramCommunicator {
 		}
 		return result;
 	}
+	
+	private Value[] createValueArrayEnumElement(Vector<EnumElement> vector) {
+		Value[] result = new Value[vector.size()];
+		for(int i = 0; i < result.length; i++) {
+			result[i] = new Value(vector.get(i).getName());
+		}
+		return result;
+	}
 
 	/**
 	 * This operations is called by xmf, usually after a request from java.
@@ -851,4 +859,17 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "printProtocol", message);		
 	}
 
+	public void addEnumeration(Enum enumeration) {
+		Value[] enumElementArray = createValueArrayEnumElement(enumeration.getElements());
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(enumeration.getName()),
+				new Value(enumElementArray)};
+		WorkbenchClient.theClient().send(handler, "addEnumeration", message);
+	}
+
+	public void editEnumeration() {
+		// TODO Auto-generated method stub
+		
+	}
 }
