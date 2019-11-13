@@ -1,16 +1,16 @@
 package tool.clients.fmmlxdiagrams.dialogs.results;
 
-import tool.clients.fmmlxdiagrams.Enum;
+import tool.clients.fmmlxdiagrams.FmmlxEnum;
 
 public class AddEnumerationDialogResult extends DialogResult{
 	
-	private Enum enumeration;
+	private FmmlxEnum enumeration;
 	
-	public AddEnumerationDialogResult(Enum enum1) {
+	public AddEnumerationDialogResult(FmmlxEnum enum1) {
 		this.enumeration=enum1;
 	}
 
-	public Enum getEnumeration() {
+	public FmmlxEnum getEnumeration() {
 		return enumeration;
 	}
 	

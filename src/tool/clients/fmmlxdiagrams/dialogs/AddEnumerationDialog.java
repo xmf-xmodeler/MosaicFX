@@ -15,7 +15,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.util.converter.IntegerStringConverter;
-import tool.clients.fmmlxdiagrams.Enum;
+import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.EnumElement;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumerationDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
@@ -62,7 +62,7 @@ public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResul
 					elements.add(new EnumElement(tmp));
 				}
 				
-				return new AddEnumerationDialogResult(new Enum(nameTextField.getText(), elements));
+				return new AddEnumerationDialogResult(new FmmlxEnum(nameTextField.getText(), elements));
 			}
 			return null;
 		});
@@ -72,10 +72,24 @@ public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResul
 	private boolean validateUserInput() {
 		if (!validateName()) {
 			return false;
-		} if (numberOfElements.getSelectionModel().getSelectedItem()==null) {
+		} else if (numberOfElements.getSelectionModel().getSelectedItem()==null) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.inputNumberOfElement);
 			return false;
+		} else if(!validateElementName()) {
+			return false;
+		} else {
+			return true;
 		}
+	}
+
+	private boolean validateElementName() {
+		for (String tmp : inputElementListview.getItems()) {
+			if (!InputChecker.getInstance().validateName(tmp)) {
+				errorLabel.setText(StringValueDialog.ErrorMessage.pleaseInputValidNameForEnumElement);
+				return false;
+			} 
+		}
+		errorLabel.setText("");
 		return true;
 	}
 
@@ -84,6 +98,8 @@ public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResul
 
 		if (!InputChecker.getInstance().validateName(name)) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
+			return false;
+		} else if(!validateElementName()){
 			return false;
 		} else {
 			errorLabel.setText("");

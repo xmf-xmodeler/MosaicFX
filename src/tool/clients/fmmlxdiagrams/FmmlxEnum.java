@@ -2,18 +2,18 @@ package tool.clients.fmmlxdiagrams;
 
 import java.util.Vector;
 
-public class Enum {
+public class FmmlxEnum {
 
 	private String name;
 	private Vector<EnumElement> elements;
 	
-	public Enum(String name) {
+	public FmmlxEnum(String name) {
 		super();
 		this.name = name;
 		this.elements = new Vector<EnumElement>();
 	}
 
-	public Enum(String name, Vector<EnumElement> elements) {
+	public FmmlxEnum(String name, Vector<EnumElement> elements) {
 		super();
 		this.name = name;
 		this.elements = elements;
