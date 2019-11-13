@@ -859,7 +859,7 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "printProtocol", message);		
 	}
 
-	public void addEnumeration(Enum enumeration) {
+	public void addEnumeration(FmmlxEnum enumeration) {
 		Value[] enumElementArray = createValueArrayEnumElement(enumeration.getElements());
 		Value[] message = new Value[]{
 				new Value(-1),
@@ -868,8 +868,14 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "addEnumeration", message);
 	}
 
-	public void editEnumeration() {
-		// TODO Auto-generated method stub
+	public void editEnumeration(String name, FmmlxEnum fmmlxEnum) {
+		Value[] enumElementArray = createValueArrayEnumElement(fmmlxEnum.getElements());
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(name),
+				new Value(fmmlxEnum.getName()),
+				new Value(enumElementArray)};
+		WorkbenchClient.theClient().send(handler, "editEnumeration", message);
 		
 	}
 }

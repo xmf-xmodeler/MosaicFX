@@ -14,6 +14,7 @@ import javafx.util.StringConverter;
 import tool.clients.fmmlxdiagrams.FmmlxAssociationInstance;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
+import tool.clients.fmmlxdiagrams.FmmlxEnum;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -179,6 +180,7 @@ public class CustomDialog<R> extends Dialog<R> {
 		listView.getSelectionModel().setSelectionMode(selectionMode);
 		return listView;
 	}
+	
 
 	public ComboBox<? extends FmmlxProperty> initializeComboBox(ObservableList<? extends FmmlxProperty> list) {
 		ComboBox<FmmlxProperty> comboBox = new ComboBox(list);
@@ -212,4 +214,39 @@ public class CustomDialog<R> extends Dialog<R> {
 		comboBox.setPrefWidth(COLUMN_WIDTH);
 		return comboBox;
 	}
+	
+	public ComboBox<FmmlxEnum> initializeComboBoxEnum(ObservableList<FmmlxEnum> observableList) {
+		ComboBox<FmmlxEnum> comboBox = new ComboBox<FmmlxEnum>(observableList);
+		comboBox.setCellFactory(param -> new ListCell<FmmlxEnum>() {
+			@Override
+			protected void updateItem(FmmlxEnum item, boolean empty) {
+				super.updateItem(item, empty);
+
+				if (empty || isNullOrEmpty(item.getName())) {
+					setText(null);
+				} else {
+					setText(item.getName());
+				}
+			}
+		});
+		comboBox.setConverter(new StringConverter<FmmlxEnum>() {
+			@Override
+			public String toString(FmmlxEnum object) {
+				if (object == null) {
+					return null;
+				} else {
+					return object.getName();
+				}
+			}
+
+			@Override
+			public FmmlxEnum fromString(String string) {
+				return null;
+			}
+		});
+		comboBox.setPrefWidth(COLUMN_WIDTH);
+		return comboBox;
+	}
+
+
 }

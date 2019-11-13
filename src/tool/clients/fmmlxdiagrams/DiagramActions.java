@@ -165,14 +165,14 @@ public class DiagramActions {
 		Platform.runLater(() -> {
 			EditEnumerationDialog dlg;
 			
-			dlg = new EditEnumerationDialog(diagram);
+			dlg = new EditEnumerationDialog();
 
 			dlg.setTitle("Edit Enumeration");
 			Optional<EditEnumerationDialogResult> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
 				EditEnumerationDialogResult aed = result.get();
-				diagram.getComm().editEnumeration(); //TODO
+				diagram.getComm().editEnumeration(aed.getEnumName(), aed.getNewEditedEnum());
 			}
 			diagram.updateDiagram();
 			l.countDown();
