@@ -7,13 +7,13 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.*;
-import tool.clients.diagrams.Port;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
 
 public class FmmlxObject implements CanvasElement, FmmlxProperty {
@@ -37,8 +37,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	private transient double lastValidX;
 	private transient double lastValidY;
 	
-	Hashtable<Integer, AssociationPort>  associationPorts = new Hashtable<Integer, AssociationPort>();
-
 	boolean usePreferredWidth = false; //not implemented yet
 
 	int preferredWidth = 0;
@@ -661,18 +659,5 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	@Override public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
 	@Override public double getMouseMoveOffsetY() {return mouseMoveOffsetY;}
-	
-	public void newAssociationPort(int id, double x, double y, double width, double height) {
-		AssociationPort associationPort = new AssociationPort(id, x, y, Math.min(width, getWidth()), Math.min(height, getHeight()));
-		associationPorts.put(id, associationPort);
-	}
-	
-	public void paintAssociationPortHover(GraphicsContext gc, double x, double y, double xOffset, double yOffset) {
-		for (AssociationPort associationPort : associationPorts.values()) {
-	        if (associationPort.contains(x - getX(), y - getY())) {
-	          associationPort.paintHover(gc, getX(), getY(), xOffset, yOffset);
-	        }   
-		}    
-	}
 
 }
