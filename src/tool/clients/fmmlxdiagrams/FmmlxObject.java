@@ -7,12 +7,13 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.*;
+import tool.clients.diagrams.Port;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
-import tool.clients.fmmlxdiagrams.port.AssociationPortContainer;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Vector;
 
 public class FmmlxObject implements CanvasElement, FmmlxProperty {
@@ -36,7 +37,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	private transient double lastValidX;
 	private transient double lastValidY;
 	
-	private AssociationPortContainer portContainers;
+	Hashtable<String, Port>  ports         = new Hashtable<String, Port>();
 
 	boolean usePreferredWidth = false; //not implemented yet
 
@@ -563,6 +564,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	@Override
 	public void moveTo(double x, double y, FmmlxDiagram diagram) {
+	    this.x = x;
+	    this.y = y;
 		setX((int) x);
 		setY((int) y);
 		for(Edge edge : diagram.getEdges()) {
