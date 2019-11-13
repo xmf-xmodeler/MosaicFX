@@ -37,7 +37,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	private transient double lastValidX;
 	private transient double lastValidY;
 	
-	Hashtable<String, Port>  ports         = new Hashtable<String, Port>();
+	Hashtable<Integer, AssociationPort>  associationPorts = new Hashtable<Integer, AssociationPort>();
 
 	boolean usePreferredWidth = false; //not implemented yet
 
@@ -632,7 +632,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 //			for (NodeElement e : nodeElements) {
 //				e.isHit(mouseX, mouseY)
 //			}
-
 //		}
 	}
 
@@ -662,5 +661,18 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	@Override public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
 	@Override public double getMouseMoveOffsetY() {return mouseMoveOffsetY;}
+	
+	public void newAssociationPort(int id, double x, double y, double width, double height) {
+		AssociationPort associationPort = new AssociationPort(id, x, y, Math.min(width, getWidth()), Math.min(height, getHeight()));
+		associationPorts.put(id, associationPort);
+	}
+	
+	public void paintAssociationPortHover(GraphicsContext gc, double x, double y, double xOffset, double yOffset) {
+		for (AssociationPort associationPort : associationPorts.values()) {
+	        if (associationPort.contains(x - getX(), y - getY())) {
+	          associationPort.paintHover(gc, getX(), getY(), xOffset, yOffset);
+	        }   
+		}    
+	}
 
 }
