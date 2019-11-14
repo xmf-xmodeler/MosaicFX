@@ -20,25 +20,6 @@ public abstract class Edge implements CanvasElement {
 	protected boolean layoutingFinishedSuccesfully;
 	private Vector<Object> labelPositions;
 	
-	//For new Association Design (by. Wahid)
-	//=========================================================================================================//
-	
-	public enum HeadStyle {NO_ARROW(0), ARROW(1), BLACK_DIAMOND(2), WHITE_DIAMOND(3), BLACK_ARROW(4), WHITE_ARROW(5), BLACK_CIRCLE(6), WHITE_CIRCLE(7); 
-		  int id; 
-		  private HeadStyle(int id) {this.id = id;}
-		  private int getID() {return id;}
-		  private static HeadStyle getHeadStyle(int id) {
-			  for(HeadStyle headStyle : HeadStyle.values()) if(headStyle.id == id) return headStyle;
-			  throw new IllegalArgumentException("HeadStyle id " + id + " not in use!");
-		  }
-	 }
-	
-	private Point2D startDockPosition; 
-	private Point2D endDockPosition;
-	
-	
-	//=========================================================================================================//
-
 	public Edge(int id, FmmlxObject startNode, FmmlxObject endNode, Vector<Point2D> points, Vector<Object> labelPositions, FmmlxDiagram diagram) {
 		layoutingFinishedSuccesfully = false;
 		this.labelPositions = labelPositions;
