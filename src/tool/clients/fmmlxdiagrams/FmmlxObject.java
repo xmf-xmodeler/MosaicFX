@@ -7,6 +7,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.*;
+import tool.clients.fmmlxdiagrams.Edge.HeadStyle;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 
@@ -67,6 +68,14 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	private FmmlxDiagram diagram;
 	private PropertyType propertyType = PropertyType.Class;
 	private transient boolean requiresReLayout;
+	
+	//For new Association Design (by. Wahid)
+	//=========================================================================================================//
+	
+	private AssociationPort port;
+	
+	//=========================================================================================================//
+	
 
 	static {
 		colors = new HashMap<>();
