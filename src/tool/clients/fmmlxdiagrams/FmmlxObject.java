@@ -12,8 +12,6 @@ import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Vector;
 
 public class FmmlxObject implements CanvasElement, FmmlxProperty {
