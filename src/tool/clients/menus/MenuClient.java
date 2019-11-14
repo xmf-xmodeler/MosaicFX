@@ -29,11 +29,11 @@ import xos.Value;
 public class MenuClient extends Client implements javafx.event.EventHandler<ActionEvent>{//implements SelectionListener {
 
   static MenuClient                   theClient;
-  static Hashtable<String, Menu>      menus            = new Hashtable<String, Menu>();
-  static Hashtable<String, MenuItem>  items            = new Hashtable<String, MenuItem>();
-  static Hashtable<String, PopupMenu> popups           = new Hashtable<String, PopupMenu>();
-  private static Hashtable<String, PopupMenu> popupAssignments = new Hashtable<String, PopupMenu>();
-  static Hashtable<Menu, String>      menuSharingTable = new Hashtable<Menu, String>();
+  static Hashtable<String, Menu>      menus            			= new Hashtable<String, Menu>();
+  static Hashtable<String, MenuItem>  items            			= new Hashtable<String, MenuItem>();
+  static Hashtable<String, PopupMenu> popups           			= new Hashtable<String, PopupMenu>();
+  private static Hashtable<String, PopupMenu> popupAssignments 	= new Hashtable<String, PopupMenu>();
+  static Hashtable<Menu, String>      menuSharingTable 			= new Hashtable<Menu, String>();
 
   public MenuClient() {
     super("com.ceteva.menus");

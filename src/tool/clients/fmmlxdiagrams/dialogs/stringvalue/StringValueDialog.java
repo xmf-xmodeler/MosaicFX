@@ -42,6 +42,7 @@ public class StringValueDialog {
 		public static final String inputNumberOfElement= "Input Number of Element";
 		public static final String pleaseInputValidNameForEnumElement= "Please Input Valid Name for Enum-Element";
 		public static final String selectEnumeration= "Select Enumeration";
+		public static final String thereAreDuplicates= "There are Duplicates";
 	}
 
 	public static class LabelAndHeaderTitle {

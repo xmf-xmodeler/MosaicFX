@@ -157,17 +157,5 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	private Node createAddAndRemoveButton(Button button1, Button button2) {
-		HBox hBox = new HBox();
-		hBox.setPrefWidth(COLUMN_WIDTH);
-	
-		button1.setPrefWidth(COLUMN_WIDTH * 0.5);	
-		button2.setPrefWidth(COLUMN_WIDTH * 0.5);
-
-		hBox.getChildren().addAll(button1, button2);
-
-		return hBox;
-	}
 
 }

@@ -72,7 +72,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	//For new Association Design (by. Wahid)
 	//=========================================================================================================//
 	
-	private AssociationPort port;
+	private AssociationPortRegion port;
 	
 	//=========================================================================================================//
 	

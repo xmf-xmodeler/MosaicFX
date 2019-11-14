@@ -1,9 +1,12 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
@@ -12,6 +15,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.util.converter.IntegerStringConverter;
@@ -30,6 +34,9 @@ public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResul
 	private TextField nameTextField;
 	private ComboBox<Integer> numberOfElements;
 	private ListView<String> inputElementListview;
+	
+	private Button addElementButton;
+	private Button removeElementButton;
 	
 
 	public AddEnumerationDialog() {
@@ -75,22 +82,23 @@ public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResul
 		} else if (numberOfElements.getSelectionModel().getSelectedItem()==null) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.inputNumberOfElement);
 			return false;
-		} else if(!validateElementName()) {
+		} 
+		
+		Set<String> set = new HashSet<String>(inputElementListview.getItems());
+		if(set.size() < inputElementListview.getItems().size()){
+			errorLabel.setText(StringValueDialog.ErrorMessage.thereAreDuplicates);
 			return false;
-		} else {
-			return true;
 		}
-	}
-
-	private boolean validateElementName() {
+		
 		for (String tmp : inputElementListview.getItems()) {
 			if (!InputChecker.getInstance().validateName(tmp)) {
-				errorLabel.setText(StringValueDialog.ErrorMessage.pleaseInputValidNameForEnumElement);
+				errorLabel.setText("\""+tmp+"\""+ " is not valid name for enumeration's element");
 				return false;
 			} 
 		}
 		errorLabel.setText("");
 		return true;
+
 	}
 
 	private boolean validateName() {
@@ -98,8 +106,6 @@ public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResul
 
 		if (!InputChecker.getInstance().validateName(name)) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
-			return false;
-		} else if(!validateElementName()){
 			return false;
 		} else {
 			errorLabel.setText("");
@@ -120,6 +126,11 @@ public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResul
 		inputElementListview = initializeListView(0);
 		inputElementListview.setEditable(true);
 		inputElementListview.setCellFactory(TextFieldListCell.forListView());
+		inputElementListview.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		
+		addElementButton = new Button("Add Element");
+		removeElementButton = new Button("Remove Element");
+		
 		
 		List<Node> labelNode = new ArrayList<Node>();
 		List<Node> editorNode = new ArrayList<Node>();
@@ -127,14 +138,32 @@ public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResul
 		numberOfElements.valueProperty().addListener((observable, oldValue, newValue1) -> {
 			if (newValue1 != null) {
 				int newValue = newValue1.intValue();
-				ListView<String> newInput = initializeListView(newValue);
-				newInput.setEditable(true);
-				newInput.setCellFactory(TextFieldListCell.forListView());
+				if (inputElementListview.getItems().size()==0) {
+					for(int i=inputElementListview.getItems().size(); i<newValue;i++) {
+						int elementNumber= i+1;
+						inputElementListview.getItems().add("Element"+elementNumber);
+					}	
+				} else {
+					if(newValue==inputElementListview.getItems().size()) {
 						
-				updateNodeInsideGrid(inputElementLabel, new Label("Input Element"), 0, 2);
-				updateNodeInsideGrid(inputElementListview, newInput, 1, 2);
+					} else {
+						if (newValue<inputElementListview.getItems().size()) {
+							for(int i=inputElementListview.getItems().size(); i>newValue; i--) {
+								inputElementListview.getItems().remove(i-1);
+							}
+						}else {
+							for(int i=inputElementListview.getItems().size(); i<newValue;i++) {
+								int elementNumber= i+1;
+								inputElementListview.getItems().add("Element"+elementNumber);
+							}				
+						}
+					}
+				}
 			}
 		});
+		
+		addElementButton.setOnAction(e -> addElement());
+		removeElementButton.setOnAction(e -> removeElement(inputElementListview.getSelectionModel().getSelectedItems()));
 
 		labelNode.add(nameLabel);
 		labelNode.add(numberOfElementLabel);
@@ -143,9 +172,20 @@ public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResul
 		editorNode.add(nameTextField);
 		editorNode.add(numberOfElements);
 		editorNode.add(inputElementListview);
+		editorNode.add(createAddAndRemoveButton(addElementButton, removeElementButton));
 		
 		addNodesToGrid(labelNode,0);
 		addNodesToGrid(editorNode, 1);
+	}
+
+	private void removeElement(ObservableList<String> observableList) {
+		inputElementListview.getItems().removeAll(observableList);
+		numberOfElements.setValue(inputElementListview.getItems().size());
+	}
+
+	private void addElement() {
+		int elementNumber=inputElementListview.getItems().size()+1;
+		inputElementListview.getItems().add("Element"+elementNumber);
 	}
 
 }
