@@ -74,7 +74,6 @@ public class FmmlxDiagram {
 	private boolean showOperationValues = true;
 	private boolean showSlots = true;
 
-
 	FmmlxDiagram(FmmlxDiagramCommunicator comm, String label) {
 		this.comm = comm;
 		mainView = new SplitPane();
