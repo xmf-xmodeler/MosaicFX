@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
@@ -246,6 +247,18 @@ public class CustomDialog<R> extends Dialog<R> {
 		});
 		comboBox.setPrefWidth(COLUMN_WIDTH);
 		return comboBox;
+	}
+	
+	public Node createAddAndRemoveButton(Button button1, Button button2) {
+		HBox hBox = new HBox();
+		hBox.setPrefWidth(COLUMN_WIDTH);
+	
+		button1.setPrefWidth(COLUMN_WIDTH * 0.5);	
+		button2.setPrefWidth(COLUMN_WIDTH * 0.5);
+
+		hBox.getChildren().addAll(button1, button2);
+
+		return hBox;
 	}
 
 

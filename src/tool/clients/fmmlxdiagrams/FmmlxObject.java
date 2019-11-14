@@ -9,7 +9,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.*;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
-import tool.clients.fmmlxdiagrams.port.AssociationPortContainer;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,8 +35,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	private transient double lastValidX;
 	private transient double lastValidY;
 	
-	private AssociationPortContainer portContainers;
-
 	boolean usePreferredWidth = false; //not implemented yet
 
 	int preferredWidth = 0;
@@ -68,7 +65,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	private FmmlxDiagram diagram;
 	private PropertyType propertyType = PropertyType.Class;
 	private transient boolean requiresReLayout;
-
+	
 	static {
 		colors = new HashMap<>();
 //		private String[] levelBackgroundColors = {"#8C8C8C", "#FFFFFF", "#000000", "#3111DB", "#dd2244", "#119955"};
@@ -563,6 +560,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	@Override
 	public void moveTo(double x, double y, FmmlxDiagram diagram) {
+	    this.x = x;
+	    this.y = y;
 		setX((int) x);
 		setY((int) y);
 		for(Edge edge : diagram.getEdges()) {
@@ -629,7 +628,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 //			for (NodeElement e : nodeElements) {
 //				e.isHit(mouseX, mouseY)
 //			}
-
 //		}
 	}
 

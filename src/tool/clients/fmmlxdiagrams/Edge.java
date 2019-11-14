@@ -18,7 +18,7 @@ public abstract class Edge implements CanvasElement {
 	protected final Double DEFAULT_TOLERANCE = 6.;
 	protected boolean layoutingFinishedSuccesfully;
 	private Vector<Object> labelPositions;
-
+	
 	public Edge(int id, FmmlxObject startNode, FmmlxObject endNode, Vector<Point2D> points, Vector<Object> labelPositions, FmmlxDiagram diagram) {
 		layoutingFinishedSuccesfully = false;
 		this.labelPositions = labelPositions;

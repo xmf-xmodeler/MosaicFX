@@ -22,7 +22,6 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
-import tool.clients.fmmlxdiagrams.dialogs.results.*;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
 import java.io.FileInputStream;
@@ -62,7 +61,6 @@ public class FmmlxDiagram {
 	private Point2D lastPoint;
 	private Point2D currentPoint;
 	private MouseMode mouseMode = MouseMode.STANDARD;
-	private FmmlxObject newEdgeSource;
 	private NodeLabel lastHitLabel = null;
 	private boolean diagramRequiresUpdate = false;
 	
@@ -75,7 +73,6 @@ public class FmmlxDiagram {
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
 	private boolean showSlots = true;
-
 
 	FmmlxDiagram(FmmlxDiagramCommunicator comm, String label) {
 		this.comm = comm;
@@ -546,7 +543,6 @@ public class FmmlxDiagram {
 	public void setDrawEdgeMouseMode(PropertyType type, FmmlxObject newEdgeSource) {
 		drawEdgeType = type;
 		mouseMode = MouseMode.DRAW_EDGE;
-		this.newEdgeSource = newEdgeSource;
 	}
 
 	public void setStandardMouseMode() {
