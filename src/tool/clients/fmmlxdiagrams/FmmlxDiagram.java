@@ -29,6 +29,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
@@ -75,10 +77,16 @@ public class FmmlxDiagram {
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
 	private boolean showSlots = true;
+	
+	private final int diagramID;
+	private transient long lastAction;
+	private transient boolean suppressRedraw;
 
 
-	FmmlxDiagram(FmmlxDiagramCommunicator comm, String label) {
+	FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String label) {
 		this.comm = comm;
+		this.diagramID = diagramID;
+		this.lastAction = System.currentTimeMillis();
 		mainView = new SplitPane();
 		canvas = new Canvas(canvasRawSize.getX(), canvasRawSize.getY());
 		actions = new DiagramActions(this);
@@ -93,6 +101,7 @@ public class FmmlxDiagram {
 		canvas.setOnMouseMoved(this::mouseMoved);
 		canvas.addEventFilter(ScrollEvent.ANY, this::handleScroll);
 
+
 		new Thread(this::fetchDiagramData).start();
 
 		try {
@@ -102,6 +111,16 @@ public class FmmlxDiagram {
 		}
 
 		redraw();
+		
+		java.util.Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+			
+			@Override
+			public void run() {
+				redraw();
+			}
+		}, 25, 25);
+		
 	}
 
 	// Only used to set the mouse pointer. Find a better solution
@@ -112,15 +131,17 @@ public class FmmlxDiagram {
 
 	private synchronized void fetchDiagramData() {
 		
+		suppressRedraw = true;
+		
 		objects.clear();
 		edges.clear();
 		labels.clear();
 
-		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects();
+		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
 		objects.addAll(fetchedObjects);
 		
-		Vector<Edge> fetchedEdges = comm.getAllAssociations();
-		fetchedEdges.addAll(comm.getAllAssociationsInstances());
+		Vector<Edge> fetchedEdges = comm.getAllAssociations(this);
+		fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
 
 		edges.addAll(fetchedEdges);
 		
@@ -135,6 +156,7 @@ public class FmmlxDiagram {
 		}
 		
 		resizeCanvas();
+		suppressRedraw = false;
 		redraw();
 	}
 
@@ -172,6 +194,7 @@ public class FmmlxDiagram {
 	}
 	
 	public void redraw() {
+		if (suppressRedraw) return;
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
 			// we are on the right Thread already:
 			paintOn(canvas.getGraphicsContext2D(), 0, 0);
@@ -205,7 +228,6 @@ public class FmmlxDiagram {
 		for (CanvasElement o : objectsToBePainted) {
 			o.paintOn(g, xOffset, yOffset, this);
 		}
-
 		drawMultiSelectRect(g);
 		drawNewEdgeLine(g);
 	}
@@ -229,6 +251,8 @@ public class FmmlxDiagram {
 	////						MouseListener						////
 	////////////////////////////////////////////////////////////////////
 	private void mousePressed(MouseEvent e) {
+		lastAction = System.currentTimeMillis();
+        suppressRedraw = false;
 		Point2D p = scale(e);
 		clearContextMenus();
 
@@ -319,17 +343,17 @@ public class FmmlxDiagram {
 			for (CanvasElement s : selectedObjects)
 				if (s instanceof FmmlxObject) {
 					FmmlxObject o = (FmmlxObject) s;
-					comm.sendCurrentPosition(o);
+					comm.sendCurrentPosition(this, o);
 					for(Edge e : edges) {
 						if(e.isStartNode(o) || e.isEndNode(o)) {
-							comm.sendCurrentPositions(e);
+							comm.sendCurrentPositions(this, e);
 						}
 					}
 				} else if (s instanceof Edge) {
 //					FmmlxAssociation a = (FmmlxAssociation) s;
-					comm.sendCurrentPositions((Edge) s);
+					comm.sendCurrentPositions(this, (Edge) s);
 				} else if (s instanceof DiagramLabel) {
-					comm.storeLabelInfo((DiagramLabel) s);
+					comm.storeLabelInfo(this, (DiagramLabel) s);
 				}
 		}
 		objectsMoved = false;
@@ -817,5 +841,9 @@ public class FmmlxDiagram {
 	
 	public boolean isShowOperations() {return this.showOperations;}	
 	public boolean isShowOperationValues() {return this.showOperationValues;}	
-	public boolean isShowSlots() {return this.showSlots;}	
+	public boolean isShowSlots() {return this.showSlots;}
+
+	public int getID() {
+		return diagramID;
+	}	
 }

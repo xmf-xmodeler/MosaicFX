@@ -139,20 +139,20 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 	}
 
 	private void addAssociationInstance(FmmlxObject startNode, FmmlxObject endNode){		
-		diagram.getComm().addAssociationInstance(startNode.getId(), endNode.getId(), selectAssociationComboBox.getSelectionModel().getSelectedItem().id);
+		diagram.getComm().addAssociationInstance(diagram, startNode.getId(), endNode.getId(), selectAssociationComboBox.getSelectionModel().getSelectedItem().id);
 		diagram.updateDiagram();
 		updateAssociationListView(selectAssociationComboBox.getSelectionModel().getSelectedItem());
 	}
 	
 	private void removeAssociationInstance(FmmlxAssociationInstance selectedItem) {
-		diagram.getComm().removeAssociationInstance(selectedItem.id);
+		diagram.getComm().removeAssociationInstance(diagram, selectedItem.id);
 		associationListView.getItems().remove(selectedItem);
 		diagram.updateDiagram();
 	}
 
 	private void editAssociationInstance(FmmlxAssociationInstance selectedAssociationInstance, FmmlxObject newStartObject,
 			FmmlxObject newEndObject) {
-		diagram.getComm().updateAssociationInstance(selectedAssociationInstance.id, newStartObject.getId(), newEndObject.getId());
+		diagram.getComm().updateAssociationInstance(diagram, selectedAssociationInstance.id, newStartObject.getId(), newEndObject.getId());
 		selectedAssociationInstance.edit(newStartObject, newEndObject);
 		updateAssociationListView(selectAssociationComboBox.getSelectionModel().getSelectedItem());
 	}

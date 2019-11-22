@@ -528,10 +528,10 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	}
 
 	public void fetchDataDefinitions(FmmlxDiagramCommunicator comm) {
-		Vector<Vector<FmmlxAttribute>> attributeList = comm.fetchAttributes(this.name);
+		Vector<Vector<FmmlxAttribute>> attributeList = comm.fetchAttributes(diagram, this.name);
 		ownAttributes = attributeList.get(0);
 		otherAttributes = attributeList.get(1);
-		Vector<FmmlxOperation> operations = comm.fetchOperations(this.name);
+		Vector<FmmlxOperation> operations = comm.fetchOperations(diagram, this.name);
 		ownOperations = new Vector<FmmlxOperation>();
 		otherOperations = new Vector<FmmlxOperation>();
 		for (FmmlxOperation o : operations) {
@@ -544,9 +544,9 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	}
 
 	public void fetchDataValues(FmmlxDiagramCommunicator comm) {
-		slots = comm.fetchSlots(this.name, this.getSlotNames());
+		slots = comm.fetchSlots(diagram, this.name, this.getSlotNames());
 
-		operationValues = comm.fetchOperationValues(this.name, this.getMonitoredOperationsNames());
+		operationValues = comm.fetchOperationValues(diagram, this.name, this.getMonitoredOperationsNames());
 	}
 
 	public boolean isHit(double mouseX, double mouseY) {
