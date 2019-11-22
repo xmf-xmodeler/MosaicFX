@@ -28,7 +28,16 @@ public class DefaultContextMenu extends ContextMenu {
 		levelLowerAllItem.setOnAction(e -> actions.levelLowerAll());
 		
 		levelMenu.getItems().addAll(levelRaiseAllItem, levelLowerAllItem);
+	
+		Menu enumeration = new Menu("Enumeration");
+		MenuItem createEnumeration = new MenuItem("Create Enumeration");
+		createEnumeration.setOnAction(e -> actions.addEnumerationDialog());
+		MenuItem editEnumeration = new MenuItem("Edit Enumeration");
+		editEnumeration.setOnAction(e -> actions.editEnumerationDialog());
+		
+		enumeration.getItems().addAll(createEnumeration, editEnumeration);
+		
 
-		getItems().addAll(addClassItem, addInstanceItem, addAssociationItem, levelMenu);
+		getItems().addAll(addClassItem, addInstanceItem, addAssociationItem, levelMenu, enumeration);
 	}
 }

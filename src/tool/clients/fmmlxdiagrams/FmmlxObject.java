@@ -67,7 +67,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	private FmmlxDiagram diagram;
 	private PropertyType propertyType = PropertyType.Class;
 	private transient boolean requiresReLayout;
-
+	
 	static {
 		colors = new HashMap<>();
 //		private String[] levelBackgroundColors = {"#8C8C8C", "#FFFFFF", "#000000", "#3111DB", "#dd2244", "#119955"};
@@ -341,11 +341,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		} catch (Exception e) {
 			ofName = e.getMessage();
 		}
-		if (ofName != null) {
-//			ofName = "^" + ofName + "^";
-		} else {
-			ofName = "MetaClass";
-		}
+		if (ofName == null) ofName = "MetaClass";
+		
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, Color.valueOf(getLevelFontColor() + "75"), null, this, "^" + ofName + "^");
 		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight, Color.valueOf(getLevelFontColor() + "75"), null, this, "" + level);
 		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, Color.valueOf(getLevelFontColor()), null, this, name, isAbstract);
@@ -564,6 +561,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	@Override
 	public void moveTo(double x, double y, FmmlxDiagram diagram) {
+	    this.x = x;
+	    this.y = y;
 		setX((int) x);
 		setY((int) y);
 //		for(Edge edge : diagram.getEdges()) {
@@ -630,7 +629,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 //			for (NodeElement e : nodeElements) {
 //				e.isHit(mouseX, mouseY)
 //			}
-
 //		}
 	}
 

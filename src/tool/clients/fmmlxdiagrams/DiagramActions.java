@@ -137,6 +137,46 @@ public class DiagramActions {
 		});
 	}
 
+	public void addEnumerationDialog() {
+		CountDownLatch l = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			AddEnumerationDialog dlg;
+			
+			dlg = new AddEnumerationDialog();
+
+			dlg.setTitle("Creat Enumeration");
+			Optional<AddEnumerationDialogResult> result = dlg.showAndWait();
+
+			if (result.isPresent()) {
+				AddEnumerationDialogResult aed = result.get();
+				diagram.getComm().addEnumeration(aed.getEnumeration()); 
+			}
+			diagram.updateDiagram();
+			l.countDown();
+		});
+		
+	}
+	
+	public void editEnumerationDialog() {
+		CountDownLatch l = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			EditEnumerationDialog dlg;
+			
+			dlg = new EditEnumerationDialog();
+
+			dlg.setTitle("Edit Enumeration");
+			Optional<EditEnumerationDialogResult> result = dlg.showAndWait();
+
+			if (result.isPresent()) {
+				EditEnumerationDialogResult aed = result.get();
+				diagram.getComm().editEnumeration(aed.getEnumName(), aed.getNewEditedEnum());
+			}
+			diagram.updateDiagram();
+			l.countDown();
+		});
+	}
 
 	public void removeDialog(FmmlxObject object, PropertyType type) {
 		CountDownLatch l = new CountDownLatch(1);
@@ -639,6 +679,5 @@ public class DiagramActions {
 	public void levelLowerRelated(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
 	public void levelInsertBelow(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
 	public void levelRemoveThis(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
-
 
 }

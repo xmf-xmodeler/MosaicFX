@@ -74,6 +74,8 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		createLabel(multiplicityEndToStart.toString(), 7, Anchor.SOURCE, showChangeE2SMultDialog, -40, BLACK, TRANSPARENT);
 		layoutingFinishedSuccesfully = true;
 	}
+	
+	
 
 	private void createLabel(String value, int localId, Anchor anchor, Runnable action, int yDiff, Color textColor, Color bgColor) {
 		Point2D storedPostion = getLabelPosition(localId);
@@ -93,6 +95,22 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			diagram.addLabel(new DiagramLabel(this, localId, action, null, anchors, value, 50, -boxHeight-30+yDiff, w, h, textColor, bgColor));
 		}
 	}
+	
+	///////////////////////////////////////////////////////////////////////////
+	private void createAssociationInformationLabels(String value, int localId, Runnable action) {
+		Point2D storedPostion = getLabelPosition(localId);
+		
+		double w = diagram.calculateTextWidth(value);
+		double h = diagram.calculateTextHeight();
+		
+		if(storedPostion != null) {
+			//TODO create information container ([informationen])
+			
+		} else {
+			//TODO
+		}
+	}
+	///////////////////////////////////////////////////////////////////////////
 
 	@Override
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {

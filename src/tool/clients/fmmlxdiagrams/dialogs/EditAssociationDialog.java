@@ -41,12 +41,6 @@ public class EditAssociationDialog extends CustomDialog<EditAssociationDialogRes
 	
 	private Label typeSource;
 	private Label typeTarget;
-	private Label currentInstLevelSource;
-	private Label currentInstLevelTarget;
-	private Label currentDisplayNameSource;
-	private Label currentDisplayNameTarget;
-	private Label currentIdentifierSource;
-	private Label currentIdentifierTarget;
 	
 	private TextField selectedObject;
 	private ComboBox<FmmlxObject> newTypeSource;
