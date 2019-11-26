@@ -16,7 +16,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
-import tool.clients.fmmlxdiagrams.FmmlxAssociationInstance;
+import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.AssociationValueDialogResult;
@@ -38,7 +38,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 	private TextField classBNameTextField;
 	
 	private ListView<FmmlxObject> classAListView;
-	private ListView<FmmlxAssociationInstance> associationListView;
+	private ListView<FmmlxLink> associationListView;
 	private ListView<FmmlxObject> classBListView;	
 	
 	private ArrayList<Node> classANodes;
@@ -50,7 +50,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 	private ButtonType midlleButtonType;
 	
 	private Vector<FmmlxAssociation> associations;
-	private Vector<FmmlxAssociationInstance> associationInstances;
+	private Vector<FmmlxLink> associationInstances;
 	private Vector<FmmlxObject> instancesA;
 	private Vector<FmmlxObject> instancesB;
 	
@@ -144,13 +144,13 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 		updateAssociationListView(selectAssociationComboBox.getSelectionModel().getSelectedItem());
 	}
 	
-	private void removeAssociationInstance(FmmlxAssociationInstance selectedItem) {
+	private void removeAssociationInstance(FmmlxLink selectedItem) {
 		diagram.getComm().removeAssociationInstance(diagram, selectedItem.id);
 		associationListView.getItems().remove(selectedItem);
 		diagram.updateDiagram();
 	}
 
-	private void editAssociationInstance(FmmlxAssociationInstance selectedAssociationInstance, FmmlxObject newStartObject,
+	private void editAssociationInstance(FmmlxLink selectedAssociationInstance, FmmlxObject newStartObject,
 			FmmlxObject newEndObject) {
 		diagram.getComm().updateAssociationInstance(diagram, selectedAssociationInstance.id, newStartObject.getId(), newEndObject.getId());
 		selectedAssociationInstance.edit(newStartObject, newEndObject);
@@ -227,7 +227,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 	private void updateAssociationListView(FmmlxAssociation newValue) {
 		FmmlxAssociation association = (FmmlxAssociation) diagram.getAssociationById(newValue.getId());
 		associationInstances = association.getInstance();
-		ObservableList<FmmlxAssociationInstance> instanceOfAssociation = FXCollections.observableList(associationInstances);
+		ObservableList<FmmlxLink> instanceOfAssociation = FXCollections.observableList(associationInstances);
 		associationListView = initializeListViewAssociation(instanceOfAssociation, SelectionMode.SINGLE);
 		updateNodeInsideGrid(associationListView, associationListView, 1, 5);
 	}

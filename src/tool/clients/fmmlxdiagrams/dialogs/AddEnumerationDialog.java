@@ -69,7 +69,7 @@ public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResul
 					elements.add(new EnumElement(tmp));
 				}
 				
-				return new AddEnumerationDialogResult(new FmmlxEnum(nameTextField.getText(), elements));
+				return new AddEnumerationDialogResult(new FmmlxEnum(nameTextField.getText(), new Vector<>()));
 			}
 			return null;
 		});

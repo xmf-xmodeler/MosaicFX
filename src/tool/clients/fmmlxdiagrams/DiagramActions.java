@@ -145,12 +145,12 @@ public class DiagramActions {
 			
 			dlg = new AddEnumerationDialog();
 
-			dlg.setTitle("Creat Enumeration");
+			dlg.setTitle("Create Enumeration");
 			Optional<AddEnumerationDialogResult> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
 				AddEnumerationDialogResult aed = result.get();
-				diagram.getComm().addEnumeration(aed.getEnumeration()); 
+				diagram.getComm().addEnumeration(diagram, aed.getEnumeration().getName()); 
 			}
 			diagram.updateDiagram();
 			l.countDown();
@@ -171,7 +171,7 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				EditEnumerationDialogResult aed = result.get();
-				diagram.getComm().editEnumeration(aed.getEnumName(), aed.getNewEditedEnum());
+//				diagram.getComm().editEnumeration(aed.getEnumName(), aed.getNewEditedEnum());
 			}
 			diagram.updateDiagram();
 			l.countDown();
@@ -617,7 +617,7 @@ public class DiagramActions {
 		}
 	}
 
-	public void removeAssociationInstance(FmmlxAssociationInstance instance) {
+	public void removeAssociationInstance(FmmlxLink instance) {
 		diagram.getComm().removeAssociationInstance(diagram, instance.id);
 		diagram.updateDiagram();
 	}

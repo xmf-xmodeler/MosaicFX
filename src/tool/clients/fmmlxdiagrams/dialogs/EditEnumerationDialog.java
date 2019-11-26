@@ -73,7 +73,7 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 					} else {
 						newName = chooseEnumComboBox.getSelectionModel().getSelectedItem().getName();
 					}
-					return new EditEnumerationDialogResult(chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), new FmmlxEnum(newName, enumElement));
+					return new EditEnumerationDialogResult(chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), new FmmlxEnum(newName, new Vector<>()));
 				}
 			}
 			return null;
@@ -136,8 +136,8 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 		chooseEnumComboBox.valueProperty().addListener((observable, oldValue, newValue1) -> {
 			if (newValue1 != null) {
 				newNameTextField.setText(newValue1.getName());
-				for(EnumElement tmp: chooseEnumComboBox.getSelectionModel().getSelectedItem().getElements()) {
-					inputElementListview.getItems().add(tmp.getName());
+				for(String tmp: chooseEnumComboBox.getSelectionModel().getSelectedItem().getElements()) {
+					inputElementListview.getItems().add(tmp);
 				}
 			}
 		});

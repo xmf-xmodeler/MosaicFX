@@ -24,7 +24,6 @@ public class FmmlxDiagramCommunicator {
 	private static final boolean DEBUG = false;
 	private static Vector<FmmlxDiagramCommunicator> communicators = new Vector<FmmlxDiagramCommunicator>();
 	static TabPane tabPane;
-//	FmmlxDiagram diagram;
 	private String name;
 	private Value getNoReturnExpectedMessageID(int diagramID) {return new Value(new Value[] {new Value(diagramID), new Value(-1)});}
 
@@ -96,13 +95,15 @@ public class FmmlxDiagramCommunicator {
 		return result;
 	}
 	
-	private Value[] createValueArrayEnumElement(Vector<EnumElement> vector) {
+/*
+ * 	private Value[] createValueArrayEnumElement(Vector<EnumElement> vector) {
 		Value[] result = new Value[vector.size()];
 		for(int i = 0; i < result.length; i++) {
 			result[i] = new Value(vector.get(i).getName());
 		}
 		return result;
 	}
+*/
 
 	/**
 	 * This operations is called by xmf, usually after a request from java.
@@ -286,7 +287,7 @@ public class FmmlxDiagramCommunicator {
 
 			Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(5);
 			
-			Edge object = new FmmlxAssociationInstance(
+			Edge object = new FmmlxLink(
 					(Integer) edgeInfoAsList.get(0), // id
 					(Integer) edgeInfoAsList.get(1), // startId
 					(Integer) edgeInfoAsList.get(2), // endId
@@ -413,6 +414,25 @@ public class FmmlxDiagramCommunicator {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
+	public Vector<FmmlxEnum> fetchAllEnums(FmmlxDiagram diagram) {
+		Vector<Object> response = xmfRequest(handler, diagram, "getAllEnums");
+		Vector<Object> enumList = (Vector<Object>) (response.get(0));
+		Vector<FmmlxEnum> result = new Vector<FmmlxEnum>();
+		for (Object enumO : enumList) {
+			Vector<Object> enumV = (Vector<Object>) enumO;
+			String           name = (String)         (enumV.get(0));
+			Vector<Object> itemsV = (Vector<Object>) (enumV.get(1));
+			Vector<String> items = new Vector<String>();
+			for(Object itemO : itemsV) {
+				String itemName = (String) itemO;
+				items.add(itemName);
+			}
+			result.add(new FmmlxEnum(name, items));
+		}
+		return result;
+	}
+	
 	////////////////////////////////////////////////
 	/// Operations storing graphical info to xmf ///
 	////////////////////////////////////////////////
@@ -784,7 +804,7 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "updateAssociationInstance", message);
 	}
 
-	public void storeLabelInfo(FmmlxDiagram diagram, DiagramLabel l) {
+	public void storeLabelInfo(FmmlxDiagram diagram, DiagramEdgeLabel l) {
 		
 		WorkbenchClient.theClient().send(handler, "storeLabelInfo",l.getInfo4XMF());
 		//xmfRequest(handler, "storeLabelInfo",l.getInfo4XMF());
@@ -869,23 +889,51 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "printProtocol", message);		
 	}
 
-	public void addEnumeration(FmmlxEnum enumeration) {
-		Value[] enumElementArray = createValueArrayEnumElement(enumeration.getElements());
+	public void addEnumeration(FmmlxDiagram diagram, String newEnumName) {
 		Value[] message = new Value[]{
-				new Value(-1),
-				new Value(enumeration.getName()),
-				new Value(enumElementArray)};
+				getNoReturnExpectedMessageID(diagram.getID()),
+				new Value(newEnumName)};
 		WorkbenchClient.theClient().send(handler, "addEnumeration", message);
 	}
 
-	public void editEnumeration(String name, FmmlxEnum fmmlxEnum) {
-		Value[] enumElementArray = createValueArrayEnumElement(fmmlxEnum.getElements());
+	public void renameEnumeration(FmmlxDiagram diagram, String oldEnumName, String newEnumName) {
 		Value[] message = new Value[]{
-				new Value(-1),
-				new Value(name),
-				new Value(fmmlxEnum.getName()),
-				new Value(enumElementArray)};
-		WorkbenchClient.theClient().send(handler, "editEnumeration", message);
-		
+				getNoReturnExpectedMessageID(diagram.getID()),
+				new Value(oldEnumName),
+				new Value(newEnumName)};
+		WorkbenchClient.theClient().send(handler, "changeEnumerationName", message);
 	}
+	
+	public void removeEnumeration(FmmlxDiagram diagram, String enumName) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagram.getID()),
+				new Value(enumName)};
+		WorkbenchClient.theClient().send(handler, "removeEnumeration", message);
+	}
+	
+	public void addEnumerationValue(FmmlxDiagram diagram, String enumName, String newEnumValueName) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagram.getID()),
+				new Value(enumName),
+				new Value(newEnumValueName)};
+		WorkbenchClient.theClient().send(handler, "addEnumerationValue", message);
+	}
+
+	public void renameEnumerationValue(FmmlxDiagram diagram, String enumName, String oldEnumValueName, String newEnumValueName) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagram.getID()),
+				new Value(enumName),
+				new Value(oldEnumValueName),
+				new Value(newEnumValueName)};
+		WorkbenchClient.theClient().send(handler, "changeEnumerationValueName", message);
+	}
+	
+	public void removeEnumerationValue(FmmlxDiagram diagram, String enumName, String enumValueName) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagram.getID()),
+				new Value(enumName),
+				new Value(enumValueName)};
+		WorkbenchClient.theClient().send(handler, "removeEnumerationValue", message);
+	}
+
 }

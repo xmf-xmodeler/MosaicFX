@@ -12,7 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
-import tool.clients.fmmlxdiagrams.FmmlxAssociationInstance;
+import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
@@ -160,14 +160,14 @@ public class CustomDialog<R> extends Dialog<R> {
 		return listView;
 	}
 	
-	public ListView<FmmlxAssociationInstance> initializeListViewAssociation(ObservableList<FmmlxAssociationInstance> instanceOfAssociation, SelectionMode selectionMode){
-		ListView<FmmlxAssociationInstance> listView = new ListView<>(instanceOfAssociation);
+	public ListView<FmmlxLink> initializeListViewAssociation(ObservableList<FmmlxLink> instanceOfAssociation, SelectionMode selectionMode){
+		ListView<FmmlxLink> listView = new ListView<>(instanceOfAssociation);
 		listView.setPrefHeight(75);
 		listView.setPrefWidth(COLUMN_WIDTH);
 
-		listView.setCellFactory(param -> new ListCell<FmmlxAssociationInstance>() {
+		listView.setCellFactory(param -> new ListCell<FmmlxLink>() {
 			@Override
-			protected void updateItem(FmmlxAssociationInstance object, boolean empty) {
+			protected void updateItem(FmmlxLink object, boolean empty) {
 				super.updateItem(object, empty);
 
 				if (empty || object == null) {

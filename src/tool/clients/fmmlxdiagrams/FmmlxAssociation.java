@@ -88,11 +88,11 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		if(anchor!=Anchor.SOURCE) anchors.add(getTargetNode());
 		
 		if(storedPostion != null) {
-			diagram.addLabel(new DiagramLabel(this, localId, action, null, anchors, value, storedPostion.getX(), storedPostion.getY(), w, h, textColor, bgColor));
+			diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, storedPostion.getX(), storedPostion.getY(), w, h, textColor, bgColor));
 		} else {
 			double boxHeight = anchor==Anchor.CENTRE?-20:
 				(anchor==Anchor.SOURCE?startNode:endNode).getHeight()/2;
-			diagram.addLabel(new DiagramLabel(this, localId, action, null, anchors, value, 50, -boxHeight-30+yDiff, w, h, textColor, bgColor));
+			diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, 50, -boxHeight-30+yDiff, w, h, textColor, bgColor));
 		}
 	}
 	
@@ -174,7 +174,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		return "( " + firstString + " ; " + seconString + " )";
 	}
 	
-	public Vector<FmmlxAssociationInstance> getInstance(){
+	public Vector<FmmlxLink> getInstance(){
 		return diagram.getAssociationInstance();
 	}	
 	

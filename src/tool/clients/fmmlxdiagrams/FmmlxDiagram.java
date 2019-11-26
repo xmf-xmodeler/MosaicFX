@@ -53,18 +53,19 @@ public class FmmlxDiagram {
 	// The elements representing the model which is displayed in the GUI
 	private Vector<FmmlxObject> objects = new Vector<>();
 	private Vector<Edge> edges = new Vector<>();
-	private Vector<DiagramLabel> labels = new Vector<>();
+	private Vector<DiagramEdgeLabel> labels = new Vector<>();
+	private Vector<FmmlxEnum> enums = new Vector<>();
 	
 	// Temporary variables storing the current state of user interactions
 	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
 	private ContextMenu activeContextMenu;
 	private transient boolean objectsMoved = false;
 	private transient PropertyType drawEdgeType = null;
-	private Point2D lastPoint;
-	private Point2D currentPoint;
-	private MouseMode mouseMode = MouseMode.STANDARD;
-	private FmmlxObject newEdgeSource;
-	private NodeLabel lastHitLabel = null;
+	private transient Point2D lastPoint;
+	private transient Point2D currentPoint;
+	private transient MouseMode mouseMode = MouseMode.STANDARD;
+	private transient FmmlxObject newEdgeSource;
+	private transient NodeLabel lastHitLabel = null;
 	private boolean diagramRequiresUpdate = false;
 	
 	// The state of the canvas is stored here:
@@ -135,6 +136,7 @@ public class FmmlxDiagram {
 		objects.clear();
 		edges.clear();
 		labels.clear();
+		enums.clear();
 
 		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
 		objects.addAll(fetchedObjects);
@@ -144,6 +146,8 @@ public class FmmlxDiagram {
 
 		edges.addAll(fetchedEdges);
 		
+		enums = comm.fetchAllEnums(this);
+		System.err.println(enums);
 		
 		for (FmmlxObject o : objects) {
 			o.fetchDataDefinitions(comm);
@@ -299,8 +303,8 @@ public class FmmlxDiagram {
 			if (s instanceof FmmlxObject) {
 				FmmlxObject o = (FmmlxObject) s;
 				s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
-			} else if (s instanceof DiagramLabel) {
-				DiagramLabel o = (DiagramLabel) s;
+			} else if (s instanceof DiagramEdgeLabel) {
+				DiagramEdgeLabel o = (DiagramEdgeLabel) s;
 				s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
 			} else { // must be edge
 				s.moveTo(p.getX(), p.getY(), this);
@@ -351,8 +355,8 @@ public class FmmlxDiagram {
 				} else if (s instanceof Edge) {
 //					FmmlxAssociation a = (FmmlxAssociation) s;
 					comm.sendCurrentPositions(this, (Edge) s);
-				} else if (s instanceof DiagramLabel) {
-					comm.storeLabelInfo(this, (DiagramLabel) s);
+				} else if (s instanceof DiagramEdgeLabel) {
+					comm.storeLabelInfo(this, (DiagramEdgeLabel) s);
 				}
 		}
 		objectsMoved = false;
@@ -370,7 +374,7 @@ public class FmmlxDiagram {
 		for (Edge e : edges)
 			if (e.isHit(x, y))
 				return e;
-		for (DiagramLabel l : labels)
+		for (DiagramEdgeLabel l : labels)
 			if (l.isHit(x, y))
 				return l;
 		
@@ -495,8 +499,8 @@ public class FmmlxDiagram {
 					}		
 				}
 			}
-		} else if (hitObject instanceof DiagramLabel) {
-			DiagramLabel l = (DiagramLabel) hitObject;
+		} else if (hitObject instanceof DiagramEdgeLabel) {
+			DiagramEdgeLabel l = (DiagramEdgeLabel) hitObject;
 			l.performAction();
 		}
 	}
@@ -691,11 +695,11 @@ public class FmmlxDiagram {
 	}
 
 	
-	public Vector<FmmlxAssociationInstance> getAssociationInstance(){
-		Vector<FmmlxAssociationInstance> result = new Vector<FmmlxAssociationInstance>();
+	public Vector<FmmlxLink> getAssociationInstance(){
+		Vector<FmmlxLink> result = new Vector<FmmlxLink>();
 		for (Edge tmp : edges) {
-			if (tmp instanceof FmmlxAssociationInstance) {
-				result.add((FmmlxAssociationInstance) tmp);
+			if (tmp instanceof FmmlxLink) {
+				result.add((FmmlxLink) tmp);
 			}
 		}
 		return result; // read-only
@@ -754,7 +758,7 @@ public class FmmlxDiagram {
 		return result;
 	}
 	
-	public void addLabel(DiagramLabel diagramLabel) {
+	public void addLabel(DiagramEdgeLabel diagramLabel) {
 		labels.add(diagramLabel);
 	}
 	
@@ -783,8 +787,8 @@ public class FmmlxDiagram {
 		return new Vector<Edge>(edges); // read-only
 	}
 	
-	public Vector<DiagramLabel> getLabels() {
-		return new Vector<DiagramLabel>(labels); // read-only
+	public Vector<DiagramEdgeLabel> getLabels() {
+		return new Vector<DiagramEdgeLabel>(labels); // read-only
 	}
 
 	public FmmlxObject getObjectById(int id) {
@@ -844,5 +848,17 @@ public class FmmlxDiagram {
 
 	public int getID() {
 		return diagramID;
+	}
+
+	public Vector<String> getAvailableTypes() {
+		Vector<String> types = new Vector<String>();
+		types.add("Boolean");
+		types.add("Integer");
+		types.add("Float");
+		types.add("String");
+		for(FmmlxEnum e : enums) {
+			types.add(e.getName());
+		}
+		return types;
 	}	
 }
