@@ -147,7 +147,6 @@ public class FmmlxDiagram {
 		edges.addAll(fetchedEdges);
 		
 		enums = comm.fetchAllEnums(this);
-		System.err.println(enums);
 		
 		for (FmmlxObject o : objects) {
 			o.fetchDataDefinitions(comm);
@@ -860,5 +859,19 @@ public class FmmlxDiagram {
 			types.add(e.getName());
 		}
 		return types;
+	}
+
+	public boolean isEnum(String enumName) {
+		for (FmmlxEnum e : enums) {
+			if(e.getName().equals(enumName)) return true;
+		}
+		return false;
+	}
+
+	public Vector<String> getEnumItems(String enumName) {
+		for (FmmlxEnum e : enums) {
+			if(e.getName().equals(enumName)) return e.getElements();
+		}
+		return null;
 	}	
 }

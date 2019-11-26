@@ -19,18 +19,23 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 	private final FmmlxDiagram diagram;
 	private final FmmlxObject object;
 	private final FmmlxSlot slot;
-	private String type;
+	private final String type;
 
 	private TextField slotValueTextField;
+	private ComboBox<String> slotValueComboBox;
 	private CheckBox isExpressionCheckBox;
+	
+	private enum Mode {DEFAULT, STRING, ENUM}
+	private final Mode mode;
 
 	public ChangeSlotValueDialog(FmmlxDiagram diagram, FmmlxObject object, FmmlxSlot slot) {
 		super();
 		this.diagram = diagram;
 		this.object = object;
 		this.slot = slot;
+		this.type = slot.getType(diagram);
+		this.mode = "String".equals(this.type)?Mode.STRING:diagram.isEnum(this.type)?Mode.ENUM:Mode.DEFAULT;
 
-		getSlotType();
 
 		DialogPane dialog = getDialogPane();
 		dialog.setHeaderText(LabelAndHeaderTitle.changeSlotValue);
@@ -39,12 +44,9 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 
 		dialog.setContent(flow);
 
-		if (!type.equals("String")) {
-			isExpressionCheckBox.setSelected(true);
-		}
 		setResult();
 
-		Platform.runLater(() -> slotValueTextField.requestFocus());
+		if (mode != Mode.ENUM) Platform.runLater(() -> slotValueTextField.requestFocus());
 	}
 
 	private void layoutContent() {
@@ -55,7 +57,16 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 		slotNameTextField.setDisable(true);
 		TextField slotTypeTextfield = new TextField(type);
 		slotTypeTextfield.setDisable(true);
-		slotValueTextField = new TextField(slot.getValue());
+		Node inputItem = null; 
+		if(mode != Mode.ENUM) {
+			slotValueTextField = new TextField(slot.getValue());
+			inputItem = slotValueTextField;
+		} else {
+			slotValueComboBox = new ComboBox<>();
+			slotValueComboBox.getItems().addAll(diagram.getEnumItems(type));
+			slotValueComboBox.getSelectionModel().select(slot.getValue());
+			inputItem = slotValueComboBox;
+		}
 		isExpressionCheckBox = new CheckBox();
 
 		nodes.add(new Label(LabelAndHeaderTitle.aClass));
@@ -65,14 +76,21 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 		nodes.add(new Label((LabelAndHeaderTitle.type)));
 		nodes.add(slotTypeTextfield);
 		nodes.add(new Label(LabelAndHeaderTitle.value));
-		nodes.add(slotValueTextField);
+		nodes.add(inputItem);
 		nodes.add(new Label(LabelAndHeaderTitle.expression));
 		nodes.add(isExpressionCheckBox);
 
 		addNodesToGrid(nodes);
+		
+		if(mode == Mode.DEFAULT) {
+			isExpressionCheckBox.setSelected(true);
+		}
+		if(mode == Mode.ENUM) {
+			isExpressionCheckBox.setDisable(true);
+		}
 	}
 
-	private void getSlotType() {
+	/*private void getSlotType() {
 		Vector<FmmlxAttribute> allAttributes = new Vector<>();
 		FmmlxObject parent = object;
 		while (parent != null) {
@@ -86,7 +104,7 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 				this.type = attribute.getType();
 			}
 		}
-	}
+	}*/
 
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
@@ -95,8 +113,14 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 				if (isExpressionCheckBox.isSelected()) {
 					return new ChangeSlotValueDialogResult(object, slot, slotValueTextField.getText());
 				} else {
-					String slotValue = "\"" + slotValueTextField.getText() + "\"";
-					return new ChangeSlotValueDialogResult(object, slot, slotValue);
+					if(mode != Mode.ENUM) {
+						String slotValue = "\"" + slotValueTextField.getText() + "\"";
+						return new ChangeSlotValueDialogResult(object, slot, slotValue);
+					} else {
+						String enumItem = type + "::" + slotValueComboBox.getSelectionModel().getSelectedItem();
+						System.err.println("enumItem: "+enumItem);
+						return new ChangeSlotValueDialogResult(object, slot, enumItem);
+					}
 				}
 			}
 			return null;

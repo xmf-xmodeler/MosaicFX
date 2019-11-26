@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams;
 
+import java.util.Collections;
 import java.util.Vector;
 
 public class FmmlxEnum {
@@ -17,6 +18,7 @@ public class FmmlxEnum {
 		super();
 		this.name = name;
 		this.elements = elements;
+		Collections.sort(this.elements);
 	}
 
 //	private void addElement(EnumElement element) {

@@ -541,7 +541,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	}
 
 	public void fetchDataValues(FmmlxDiagramCommunicator comm) {
-		slots = comm.fetchSlots(diagram, this.name, this.getSlotNames());
+		slots = comm.fetchSlots(diagram, this, this.getSlotNames());
 
 		operationValues = comm.fetchOperationValues(diagram, this.name, this.getMonitoredOperationsNames());
 	}

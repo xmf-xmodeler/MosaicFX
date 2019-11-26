@@ -375,16 +375,16 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxSlot> fetchSlots(FmmlxDiagram diagram, String objectName, Vector<String> slotNames) {
+	public Vector<FmmlxSlot> fetchSlots(FmmlxDiagram diagram, FmmlxObject owner, Vector<String> slotNames) {
 		Value[] slotNameArray = createValueArrayString(slotNames);
-		Vector<Object> response = xmfRequest(handler, diagram, "getSlots", new Value[]{new Value(objectName), new Value(slotNameArray)});
+		Vector<Object> response = xmfRequest(handler, diagram, "getSlots", new Value[]{new Value(owner.getName()), new Value(slotNameArray)});
 		Vector<Object> slotList = (Vector<Object>) (response.get(0));
 		Vector<FmmlxSlot> result = new Vector<>();
 		for (Object slotO : slotList) {
 			Vector<Object> slot = (Vector<Object>) (slotO);
 			String name = (String) (slot.get(0));
 			String value = (String) (slot.get(1));
-			result.add(new FmmlxSlot(name, value));
+			result.add(new FmmlxSlot(name, value, owner));
 		}
 		return result;
 	}
