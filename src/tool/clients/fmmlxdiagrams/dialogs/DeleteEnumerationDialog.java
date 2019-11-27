@@ -2,7 +2,9 @@ package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -70,15 +72,18 @@ public class DeleteEnumerationDialog extends CustomDialog<DeleteEnumerationDialo
 	}
 
 	private ObservableList<FmmlxEnum> getEnumList() {
-		// TODO Auto-generated method stub
-		return null;
+		Vector<FmmlxEnum> enums = diagram.getEnums();
+		
+		return FXCollections.observableArrayList(enums);
 	}
 
 
 	private void removeEnum() {
 		if(validateUserInput()) {
 			DeleteEnumerationDialogResult aed = new DeleteEnumerationDialogResult(enumListview.getSelectionModel().getSelectedItems());
-			diagram.getComm().deleteEnumeration(aed.getEnumList());
+			for(String s : aed.getEnumList()) {
+				diagram.getComm().removeEnumeration(this.diagram, s);
+			}
 		}
 	}
 

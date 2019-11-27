@@ -7,13 +7,13 @@ import tool.clients.fmmlxdiagrams.menus.AssociationInstanceContextMenu;
 
 import java.util.Vector;
 
-public class FmmlxAssociationInstance extends Edge {
+public class FmmlxLink extends Edge {
 
 //	FmmlxAssociation ofAssociation;
 	int ofId;
 	private FmmlxDiagram diagram;
 
-	public FmmlxAssociationInstance(int id, int startId, int endId, int ofId, Vector<Point2D> points,
+	public FmmlxLink(int id, int startId, int endId, int ofId, Vector<Point2D> points,
 									Vector<Object> labelPositions, FmmlxDiagram diagram) {
 		super(id, diagram.getObjectById(startId), diagram.getObjectById(endId), points, labelPositions, diagram);
 //		this.ofAssociation = (FmmlxAssociation) diagram.getAssociationById(ofId);
@@ -53,7 +53,7 @@ public class FmmlxAssociationInstance extends Edge {
 		Vector<FmmlxObject> anchors = new Vector<>();
 		if(anchor!=Anchor.TARGET) anchors.add(startNode);
 		if(anchor!=Anchor.SOURCE) anchors.add(endNode);
-		diagram.addLabel(new DiagramLabel(this, localId, action, null, anchors, value, 50, -100+yDiff, w, h, Color.BLACK, Color.YELLOW));
+		diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, 50, -100+yDiff, w, h, Color.BLACK, Color.YELLOW));
 	}
 	
 	@Override

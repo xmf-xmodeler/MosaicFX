@@ -1,3 +1,4 @@
+
 package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResul
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				Vector<EnumElement> elements = new Vector<EnumElement>();		
+				Vector<String> elements = new Vector<String>();
 				return new AddEnumerationDialogResult(new FmmlxEnum(nameTextField.getText(),elements));
 			}
 			return null;
@@ -102,3 +103,4 @@ public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResul
 
 
 }
+
