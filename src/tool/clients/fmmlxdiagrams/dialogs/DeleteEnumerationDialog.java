@@ -3,7 +3,7 @@ package tool.clients.fmmlxdiagrams.dialogs;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.event.ActionEvent;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -16,12 +16,8 @@ import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.dialogs.results.DeleteEnumerationDialogResult;
 
 public class DeleteEnumerationDialog extends CustomDialog<DeleteEnumerationDialogResult>{
-	
-
-	private Label enumListLabel;
-	
+	private Label enumListLabel;	
 	private ListView<FmmlxEnum> enumListview;
-	
 	private Button deleteButton;
 	private FmmlxDiagram diagram;
 	
@@ -40,7 +36,6 @@ public class DeleteEnumerationDialog extends CustomDialog<DeleteEnumerationDialo
 		setResult();
 	}
 
-
 	private void setResult() {
 		setResultConverter(dlgBtn -> {	
 				return null;
@@ -58,7 +53,7 @@ public class DeleteEnumerationDialog extends CustomDialog<DeleteEnumerationDialo
 
 	private void addElementToGrid() {
 		enumListLabel = new Label("Enum List");
-		enumListview=initializeEnumListView(null, SelectionMode.MULTIPLE);
+		enumListview=initializeEnumListView(getEnumList(), SelectionMode.MULTIPLE);
 		
 		deleteButton = new Button("Delete Enumeration");
 		deleteButton.setOnAction(e->removeEnum());
@@ -73,6 +68,12 @@ public class DeleteEnumerationDialog extends CustomDialog<DeleteEnumerationDialo
 		addNodesToGrid(labelNode,0);
 		addNodesToGrid(editorNode, 1);
 	}
+
+	private ObservableList<FmmlxEnum> getEnumList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 	private void removeEnum() {
 		if(validateUserInput()) {
