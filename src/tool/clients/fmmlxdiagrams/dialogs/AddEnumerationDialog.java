@@ -13,7 +13,6 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
-import tool.clients.fmmlxdiagrams.EnumElement;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumerationDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
@@ -64,13 +63,11 @@ public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResul
 	}
 
 	private boolean validateUserInput() {
-		if (!validateName()) {
-			
+		if (!validateName()) {	
 			return false;
 		} 
 		errorLabel.setText("");
 		return true;
-
 	}
 
 	private boolean validateName() {

@@ -15,6 +15,7 @@ import javafx.util.StringConverter;
 import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
+import tool.clients.fmmlxdiagrams.EnumElement;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 
 import java.util.ArrayList;
@@ -132,7 +133,7 @@ public class CustomDialog<R> extends Dialog<R> {
 				}
 			}
 		});
-
+		listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		return listView;
 	}
 	
@@ -271,7 +272,7 @@ public class CustomDialog<R> extends Dialog<R> {
 		return comboBox;
 	}
 	
-	public Node createAddAndRemoveButton(Button button1, Button button2) {
+	public Node joinNodeElementInHBox(Button button1, Button button2) {
 		HBox hBox = new HBox();
 		hBox.setPrefWidth(COLUMN_WIDTH);
 	
@@ -279,6 +280,18 @@ public class CustomDialog<R> extends Dialog<R> {
 		button2.setPrefWidth(COLUMN_WIDTH * 0.5);
 
 		hBox.getChildren().addAll(button1, button2);
+
+		return hBox;
+	}
+	
+	public Node joinNodeElementInHBox(ComboBox<FmmlxEnum> textField, Button button) {
+		HBox hBox = new HBox();
+		hBox.setPrefWidth(COLUMN_WIDTH);
+	
+		textField.setPrefWidth(COLUMN_WIDTH * 0.6);	
+		button.setPrefWidth(COLUMN_WIDTH * 0.4);
+
+		hBox.getChildren().addAll(textField, button);
 
 		return hBox;
 	}

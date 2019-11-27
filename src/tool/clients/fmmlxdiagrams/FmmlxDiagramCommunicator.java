@@ -943,4 +943,24 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "removeEnumerationValue", message);
 	}
 
+	public void editEnumeration(FmmlxDiagram diagram, String enumName, Vector<String> elements) {
+		Value[] elementArray = createValueArrayString(elements);
+		
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagram.getID()),
+				new Value(enumName),
+				new Value(elementArray)};
+		WorkbenchClient.theClient().send(handler, "editEnum", message);
+		
+	}
+
+	public void changeEnumerationName(FmmlxDiagram diagram, String oldName, String newName) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagram.getID()),
+				new Value(oldName),
+				new Value(newName)};
+		WorkbenchClient.theClient().send(handler, "changeEnumName", message);
+		
+	}
+
 }

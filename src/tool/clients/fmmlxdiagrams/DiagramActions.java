@@ -175,7 +175,7 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				EditEnumerationDialogResult aed = result.get();
-//				diagram.getComm().editEnumeration(aed.getEnumName(), aed.getNewEditedEnum());
+				diagram.getComm().editEnumeration(diagram, aed.getEnumName(), aed.getNewEditedEnum().getElements());
 			}
 			diagram.updateDiagram();
 			l.countDown();

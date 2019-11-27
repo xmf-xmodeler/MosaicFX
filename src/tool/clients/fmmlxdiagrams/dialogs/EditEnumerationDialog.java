@@ -18,9 +18,9 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldListCell;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumElementDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeEnumNameDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.EditEnumerationDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
 import tool.clients.fmmlxdiagrams.EnumElement;
@@ -30,15 +30,14 @@ import tool.clients.fmmlxdiagrams.FmmlxEnum;
 public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogResult>{
 	
 	private Label chooseEnumLabel;
-	private Label newNameLabel;
 	private Label inputElementLabel;
 
 	private ComboBox<FmmlxEnum> chooseEnumComboBox;
-	private TextField newNameTextField;
 	private ListView<String> inputElementListview;
 
 	private Button addElementButton;
 	private Button removeElementButton;
+	private Button changeNameButton;
 	private Vector<EnumElement> enumElement;
 	
 	private FmmlxDiagram diagram;
@@ -70,20 +69,14 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				String newName;
-				enumElement = null;
-				
+	
 				for (String tmp : inputElementListview.getItems()) {
 					enumElement.add(new EnumElement(tmp));
 				}
 				if(chooseEnumComboBox.getSelectionModel().getSelectedItem()!=null) {
-					if (newNameTextField.getText()!=chooseEnumComboBox.getSelectionModel().getSelectedItem().getName()||newNameTextField.getText().length()>0) {
-						newName=newNameTextField.getText();
-						
-					} else {
-						newName = chooseEnumComboBox.getSelectionModel().getSelectedItem().getName();
-					}
-					return new EditEnumerationDialogResult(chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), new FmmlxEnum(newName, new Vector<>()));
+					return new EditEnumerationDialogResult(chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), 
+							new FmmlxEnum(chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(),
+							new Vector<>()));
 				}
 			}
 			return null;
@@ -94,11 +87,7 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 		if(chooseEnumComboBox.getSelectionModel().getSelectedItem()==null) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectEnumeration);
 			return false;
-		} else if(newNameTextField.getText().length()>0) {
-			if (!validateName()) {
-				return false;
-			} 
-		} 
+		}
 		
 		Set<String> set = new HashSet<String>(inputElementListview.getItems());
 		if(set.size() < inputElementListview.getItems().size()){
@@ -116,26 +105,10 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 		return true;
 	}
 
-	private boolean validateName() {
-		String name = newNameTextField.getText();
-
-		if (!InputChecker.getInstance().validateName(name)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
-			return false;
-		} else {
-			errorLabel.setText("");
-			return true;
-		}
-	}
-
-
 	private void addElementToGrid() {
 		chooseEnumLabel = new Label("Choose Enumeration");
-		newNameLabel = new Label("New Name");
 		inputElementLabel = new Label("Elements");
 		
-		newNameTextField = new TextField();
-		newNameTextField.isEditable();
 		
 		inputElementListview = initializeListView(0);
 		inputElementListview.setEditable(true);
@@ -143,7 +116,7 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 		chooseEnumComboBox = (ComboBox<FmmlxEnum>) initializeComboBoxEnum(getEnumList());
 		chooseEnumComboBox.valueProperty().addListener((observable, oldValue, newValue1) -> {
 			if (newValue1 != null) {
-				newNameTextField.setText(newValue1.getName());
+				inputElementListview.getItems().clear();
 				for(String tmp: chooseEnumComboBox.getSelectionModel().getSelectedItem().getElements()) {
 					inputElementListview.getItems().add(tmp);
 				}
@@ -152,32 +125,42 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 		
 		addElementButton = new Button("Add Element");
 		removeElementButton = new Button("Remove Element");
+		changeNameButton = new Button("Change Name");
 		
 		List<Node> labelNode = new ArrayList<Node>(); 
 		List<Node> editorNode = new ArrayList<Node>();
 		
 
 		labelNode.add(chooseEnumLabel);
-		labelNode.add(newNameLabel);
+		labelNode.add(new Label(" "));
+		labelNode.add(new Label(" "));
 		labelNode.add(inputElementLabel);
 			
-		editorNode.add(chooseEnumComboBox);
-		editorNode.add(newNameTextField);
-			
-
-		  	
+		editorNode.add(joinNodeElementInHBox(chooseEnumComboBox, changeNameButton));
+		editorNode.add(new Label(" "));
+		editorNode.add(new Label(" "));
 		editorNode.add(inputElementListview);
-		editorNode.add(createAddAndRemoveButton(addElementButton,
-		removeElementButton));
+		editorNode.add(joinNodeElementInHBox(addElementButton, removeElementButton));
 		  
 		addElementButton.setOnAction(e -> addElement(inputElementListview));
 		removeElementButton.setOnAction(e ->removeElement(inputElementListview.getSelectionModel().getSelectedItems()));
-		  
+		changeNameButton.setOnAction(e -> chageEnumNameDialog(chooseEnumComboBox.getSelectionModel().getSelectedItem()));  
 		  
 		addNodesToGrid(labelNode,0); addNodesToGrid(editorNode, 1);
 		 
 		
 	} 
+
+	private void chageEnumNameDialog(FmmlxEnum selectedItem) {
+		ChangeEnumName dlg = new ChangeEnumName(diagram, selectedItem);
+		Optional<ChangeEnumNameDialogResult> opt = dlg.showAndWait();
+
+		if (opt.isPresent()) {
+			ChangeEnumNameDialogResult result = opt.get();
+			diagram.getComm().changeEnumerationName(diagram, result.getOldName(), result.getNewName());
+		}
+		
+	}
 
 	private ObservableList<FmmlxEnum> getEnumList() {	
 		Vector<FmmlxEnum> enums = diagram.getEnums();		
@@ -194,7 +177,7 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 
 	private void addElement(ListView<String> list) {
 		if(chooseEnumComboBox.getSelectionModel().getSelectedItem()!=null) {
-			AddEnumElement dlg = new AddEnumElement();
+			AddEnumElement dlg = new AddEnumElement(list);
 			Optional<AddEnumElementDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {

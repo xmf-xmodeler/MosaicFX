@@ -70,7 +70,6 @@ public class FmmlxEnum {
 	public Vector<String> getElements() {
 		return elements;
 	}
-
 //
 //	public void setElements(Vector<EnumElement> elements) {
 //		this.elements = elements;
