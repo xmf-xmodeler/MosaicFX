@@ -165,7 +165,7 @@ public class DiagramActions {
 		Platform.runLater(() -> {
 			EditEnumerationDialog dlg;
 			
-			dlg = new EditEnumerationDialog(string, enumName);
+			dlg = new EditEnumerationDialog(diagram);
 
 			if (string.equals("edit_element")) {
 				dlg.setTitle("Edit Enumeration");
