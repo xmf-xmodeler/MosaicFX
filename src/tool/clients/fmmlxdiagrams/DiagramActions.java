@@ -52,8 +52,7 @@ public class DiagramActions {
 						int y = (int) e.getY();
 
 						if (x > 0 && y > 0) {
-							System.err.println("MCD: " + mcdResult.isAbstract());
-							diagram.getComm().addMetaClass(mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentIds(), mcdResult.isAbstract(), x, y);
+							diagram.getComm().addMetaClass(diagram, mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentIds(), mcdResult.isAbstract(), x, y);
 
 							canvas.setCursor(Cursor.DEFAULT);
 							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
@@ -93,7 +92,7 @@ public class DiagramActions {
 						int y = (int) e.getY();
 
 						if (x > 0 && y > 0) {
-							diagram.getComm().addNewInstance(aidResult.getOf(), aidResult.getName(), aidResult.getLevel(),
+							diagram.getComm().addNewInstance(diagram, aidResult.getOf(), aidResult.getName(), aidResult.getLevel(),
 									aidResult.getParentId(), false, x, y);
 
 							canvas.setCursor(Cursor.DEFAULT);
@@ -132,7 +131,7 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				AddAttributeDialogResult aad = result.get();
-				diagram.getComm().addAttribute(aad.getClassID(), aad.getName(), aad.getLevel(), aad.getType(), aad.getMultiplicity());
+				diagram.getComm().addAttribute(diagram, aad.getClassID(), aad.getName(), aad.getLevel(), aad.getType(), aad.getMultiplicity());
 			}
 			diagram.updateDiagram();
 			l.countDown();
@@ -147,12 +146,12 @@ public class DiagramActions {
 			
 			dlg = new AddEnumerationDialog(diagram);
 
-			dlg.setTitle("Creat Enumeration");
+			dlg.setTitle("Create Enumeration");
 			Optional<AddEnumerationDialogResult> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
 				AddEnumerationDialogResult aed = result.get();
-				diagram.getComm().addEnumeration(aed.getEnumeration()); 
+				diagram.getComm().addEnumeration(diagram, aed.getEnumeration().getName()); 
 			}
 			diagram.updateDiagram();
 			l.countDown();
@@ -176,7 +175,7 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				EditEnumerationDialogResult aed = result.get();
-				diagram.getComm().editEnumeration(aed.getEnumName(), aed.getNewEditedEnum());
+//				diagram.getComm().editEnumeration(aed.getEnumName(), aed.getNewEditedEnum());
 			}
 			diagram.updateDiagram();
 			l.countDown();
@@ -215,16 +214,16 @@ public class DiagramActions {
 				System.err.println(result.toString());
 				switch (result.getType()) {
 					case Class:
-						diagram.getComm().removeClass(result.getObject().getId(), 0);
+						diagram.getComm().removeClass(diagram, result.getObject().getId(), 0);
 						break;
 					case Operation:
-						diagram.getComm().removeOperation(result.getObject().getId(), result.getOperation().getName(), 0);
+						diagram.getComm().removeOperation(diagram, result.getObject().getId(), result.getOperation().getName(), 0);
 						break;
 					case Attribute:
-						diagram.getComm().removeAttribute(result.getObject().getId(), result.getAttribute().getName(), 0);
+						diagram.getComm().removeAttribute(diagram, result.getObject().getId(), result.getAttribute().getName(), 0);
 						break;
 					case Association:
-						diagram.getComm().removeAssociation(result.getAssociation().getId(), 0);
+						diagram.getComm().removeAssociation(diagram, result.getAssociation().getId(), 0);
 					default:
 						System.err.println("ChangeNameDialogResult: No matching content type!");
 				}
@@ -262,13 +261,13 @@ public class DiagramActions {
 				final ChangeNameDialogResult result = opt.get();
 				switch (result.getType()) {
 					case Class:
-						diagram.getComm().changeClassName(result.getObjectId(), result.getNewName());
+						diagram.getComm().changeClassName(diagram, result.getObjectId(), result.getNewName());
 						break;
 					case Operation:
-						diagram.getComm().changeOperationName(result.getObjectId(), result.getOldName(), result.getNewName());
+						diagram.getComm().changeOperationName(diagram, result.getObjectId(), result.getOldName(), result.getNewName());
 						break;
 					case Attribute:
-						diagram.getComm().changeAttributeName(result.getObjectId(), result.getOldName(), result.getNewName());
+						diagram.getComm().changeAttributeName(diagram, result.getObjectId(), result.getOldName(), result.getNewName());
 						break;
 //					case Association:
 //						diagram.getComm().changeAssociationName(result.getObjectId(), result.getOldName(), result.getNewName());
@@ -306,13 +305,13 @@ public class DiagramActions {
 				final ChangeLevelDialogResult result = opt.get();
 				switch (result.getType()) {
 					case Class:
-						diagram.getComm().changeClassLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());
+						diagram.getComm().changeClassLevel(diagram, result.getObjectId(), result.getOldLevel(), result.getNewLevel());
 						break;
 					case Attribute:
-						diagram.getComm().changeAttributeLevel(result.getObjectId(), result.getName(), result.getOldLevel(), result.getNewLevel());
+						diagram.getComm().changeAttributeLevel(diagram, result.getObjectId(), result.getName(), result.getOldLevel(), result.getNewLevel());
 						break;
 					case Operation:
-						diagram.getComm().changeOperationLevel(result.getObjectId(), result.getName(), result.getOldLevel(), result.getNewLevel());
+						diagram.getComm().changeOperationLevel(diagram, result.getObjectId(), result.getName(), result.getOldLevel(), result.getNewLevel());
 						break;
 //					case Association:
 //						diagram.getComm().changeAssociationLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());
@@ -337,7 +336,7 @@ public class DiagramActions {
 
 			if (cod.isPresent()) {
 				final ChangeOfDialogResult result = cod.get();
-				diagram.getComm().changeOf(result.getObjectId(), result.getOldOfId(), result.getNewOfId());
+				diagram.getComm().changeOf(diagram, result.getObjectId(), result.getOldOfId(), result.getNewOfId());
 				diagram.updateDiagram();
 			}
 			l.countDown();
@@ -363,10 +362,10 @@ public class DiagramActions {
 				final ChangeOwnerDialogResult result = opt.get();
 				switch (result.getType()) {
 					case Attribute:
-						diagram.getComm().changeAttributeOwner(result.getObject().getId(), result.getAttribute().getName(), result.getNewOwnerID());
+						diagram.getComm().changeAttributeOwner(diagram, result.getObject().getId(), result.getAttribute().getName(), result.getNewOwnerID());
 						break;
 					case Operation:
-						diagram.getComm().changeOperationOwner(result.getObject().getId(), result.getOperation().getName(), result.getNewOwnerID());
+						diagram.getComm().changeOperationOwner(diagram, result.getObject().getId(), result.getOperation().getName(), result.getNewOwnerID());
 						break;
 					default:
 						System.err.println("ChangeOwnerDialogResult: No matching content type!");
@@ -389,7 +388,7 @@ public class DiagramActions {
 
 			if (cpd.isPresent()) {
 				ChangeParentDialogResult result = cpd.get();
-				diagram.getComm().changeParent(result.getObject().getId(), result.getCurrentParentIds(), result.getNewParentIds());
+				diagram.getComm().changeParent(diagram, result.getObject().getId(), result.getCurrentParentIds(), result.getNewParentIds());
 				diagram.updateDiagram();
 			}
 
@@ -408,7 +407,7 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				ChangeSlotValueDialogResult slotValueDialogResult = result.get();
-				diagram.getComm().changeSlotValue(slotValueDialogResult.getObject().getId(), slotValueDialogResult.getSlot().getName(), slotValueDialogResult.getNewValue());
+				diagram.getComm().changeSlotValue(diagram, slotValueDialogResult.getObject().getId(), slotValueDialogResult.getSlot().getName(), slotValueDialogResult.getNewValue());
 				diagram.updateDiagram();
 			}
 
@@ -421,11 +420,11 @@ public class DiagramActions {
 	}
 	
 	public void printProtocol() {
-		diagram.getComm().printProtocol();
+		diagram.getComm().printProtocol(diagram);
 	}
 
 	public void toggleAbstract(FmmlxObject object) {
-		diagram.getComm().setClassAbstract(object.getId(), !object.isAbstract());
+		diagram.getComm().setClassAbstract(diagram, object.getId(), !object.isAbstract());
 		diagram.redraw();
 	}
 
@@ -465,7 +464,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final AddOperationDialogResult result = opt.get();
-				diagram.getComm().addOperation2(result.getObjectId(), result.getLevel(), result.getBody());
+				diagram.getComm().addOperation2(diagram, result.getObjectId(), result.getLevel(), result.getBody());
 				diagram.updateDiagram();
 			}
 			latch.countDown();
@@ -489,11 +488,11 @@ public class DiagramActions {
 
 				switch (result.getType()) {
 					case Attribute:
-						diagram.getComm().changeAttributeType(result.getObject().getId(), result.getAttribute().getName(),
+						diagram.getComm().changeAttributeType(diagram, result.getObject().getId(), result.getAttribute().getName(),
 								result.getOldType(), result.getNewType());
 						break;
 					case Operation:
-						diagram.getComm().changeOperationType(result.getObject().getId(), result.getOperation().getName(),
+						diagram.getComm().changeOperationType(diagram, result.getObject().getId(), result.getOperation().getName(),
 								result.getOldType(), result.getNewType());
 						break;
 //					case Association:
@@ -519,7 +518,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final ChangeTargetDialogResult result = opt.get();
-				diagram.getComm().changeAssociationTarget(result.getObject().getId(), result.getAssociationName(), result.getOldTargetID(), result.getNewTargetID());
+				diagram.getComm().changeAssociationTarget(diagram, result.getObject().getId(), result.getAssociationName(), result.getOldTargetID(), result.getNewTargetID());
 				diagram.updateDiagram();
 			}
 
@@ -536,7 +535,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final ChangeBodyDialogResult result = opt.get();
-				diagram.getComm().changeOperationBody(result.getObject().getId(), result.getSelectedItem().getName(), result.getBody());
+				diagram.getComm().changeOperationBody(diagram, result.getObject().getId(), result.getSelectedItem().getName(), result.getBody());
 				diagram.updateDiagram();
 			}
 			latch.countDown();
@@ -553,7 +552,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final AddAssociationDialogResult result = opt.get();
-				diagram.getComm().addAssociation(
+				diagram.getComm().addAssociation(diagram,
 						result.getSource().id, result.getTarget().id,
 						result.getIdentifierSource(), result.getIdentifierTarget(),
 						result.getDisplayNameSource(), result.getDisplayNameTarget(),
@@ -575,7 +574,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final EditAssociationDialogResult result = opt.get();
-				diagram.getComm().editAssociation(result.getSelectedAssociation().getId(),
+				diagram.getComm().editAssociation(diagram, result.getSelectedAssociation().getId(),
 						result.getSource(), result.getTarget(),
 						result.getNewInstLevelSource(), result.getNewInstLevelTarget(),
 						result.getNewDisplayNameSource(), result.getNewDisplayNameTarget(),
@@ -616,7 +615,7 @@ public class DiagramActions {
 //				CountDownLatch l = new CountDownLatch(1);
 
 //				Platform.runLater(() -> {
-				diagram.getComm().addAssociationInstance(sourceF.id, targetF.id, associationF.id);
+				diagram.getComm().addAssociationInstance(diagram, sourceF.id, targetF.id, associationF.id);
 //					l.countDown();
 //				    });			
 //				diagram.updateDiagram();
@@ -637,13 +636,13 @@ public class DiagramActions {
 		}
 	}
 
-	public void removeAssociationInstance(FmmlxAssociationInstance instance) {
-		diagram.getComm().removeAssociationInstance(instance.id);
+	public void removeAssociationInstance(FmmlxLink instance) {
+		diagram.getComm().removeAssociationInstance(diagram, instance.id);
 		diagram.updateDiagram();
 	}
 
 	public void removeAssociation(FmmlxAssociation association) {
-		diagram.getComm().removeAssociation(association.id, -1);
+		diagram.getComm().removeAssociation(diagram, association.id, -1);
 		diagram.updateDiagram();
 	}
 
@@ -692,8 +691,8 @@ public class DiagramActions {
 		return false;
 	}
 
-	public void levelRaiseAll() {diagram.getComm().levelRaiseAll();}
-	public void levelLowerAll() {diagram.getComm().levelLowerAll();}
+	public void levelRaiseAll() {diagram.getComm().levelRaiseAll(diagram);}
+	public void levelLowerAll() {diagram.getComm().levelLowerAll(diagram);}
 
 	public void levelRaiseRelated(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
 	public void levelLowerRelated(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}

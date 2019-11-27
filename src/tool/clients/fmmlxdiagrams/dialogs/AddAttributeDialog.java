@@ -19,8 +19,6 @@ import java.util.*;
 
 public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
-
-	private List<String> typesArray;
 	private Label nameLabel;
 	private Label classLabel;
 	private Label levelLabel;
@@ -36,6 +34,8 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 	private FmmlxObject selectedObject;
 	private Button multiplicityButton;
 	private Multiplicity multiplicity = Multiplicity.OPTIONAL;
+	
+	private Vector<String> types;
 
 	public AddAttributeDialog(final FmmlxDiagram diagram) {
 		this(diagram, null);
@@ -43,6 +43,8 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
 	public AddAttributeDialog(final FmmlxDiagram diagram, FmmlxObject selectedObject) {
 		super();
+
+		types = diagram.getAvailableTypes();
 
 		DialogPane dialogPane = getDialogPane();
 		this.selectedObject = selectedObject;
@@ -59,7 +61,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 				e.consume();
 			}
 		});
-
+		
 		setResult();
 	}
 
@@ -138,9 +140,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		typeLabel = new Label(StringValueDialog.LabelAndHeaderTitle.type);
 		multiplicityLabel = new Label(StringValueDialog.LabelAndHeaderTitle.Multiplicity);
 
-		String[] types = new String[]{"Integer", "String", "Boolean", "Float"};
-		typesArray = Arrays.asList(types);
-		ObservableList<String> typeList = FXCollections.observableArrayList(typesArray);
+		ObservableList<String> typeList = FXCollections.observableArrayList(types);
 
 		nameTextField = new TextField();
 		classTextField = new TextField();

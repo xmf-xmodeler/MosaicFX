@@ -76,8 +76,13 @@ public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResul
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				Vector<EnumElement> elements = new Vector<EnumElement>();		
-				return new AddEnumerationDialogResult(new FmmlxEnum(nameTextField.getText(),elements));
+				Vector<EnumElement> elements = new Vector<EnumElement>();
+				
+				for(String tmp : inputElementListview.getItems()) {
+					elements.add(new EnumElement(tmp));
+				}
+				
+				return new AddEnumerationDialogResult(new FmmlxEnum(nameTextField.getText(), new Vector<>()));
 			}
 			return null;
 		});

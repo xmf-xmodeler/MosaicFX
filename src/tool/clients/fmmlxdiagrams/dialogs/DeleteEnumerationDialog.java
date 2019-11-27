@@ -77,7 +77,9 @@ public class DeleteEnumerationDialog extends CustomDialog<DeleteEnumerationDialo
 	private void removeEnum() {
 		if(validateUserInput()) {
 			DeleteEnumerationDialogResult aed = new DeleteEnumerationDialogResult(enumListview.getSelectionModel().getSelectedItems());
-			diagram.getComm().deleteEnumeration(aed.getEnumList());
+			for(String s : aed.getEnumList()) {
+				diagram.getComm().removeEnumeration(this.diagram, s);
+			}
 		}
 	}
 

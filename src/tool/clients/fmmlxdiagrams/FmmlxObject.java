@@ -35,6 +35,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	private transient double lastValidX;
 	private transient double lastValidY;
 	
+	private FmmlxObjectPort ports;
+
 	boolean usePreferredWidth = false; //not implemented yet
 
 	int preferredWidth = 0;
@@ -119,6 +121,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		this.showOperations = diagram.isShowOperations();
 		this.showOperationValues = diagram.isShowOperationValues();
 		this.showSlots = diagram.isShowSlots();
+		
+		this.ports = new FmmlxObjectPort(this);
 	}
 
 	private String getParentsListString(FmmlxDiagram diagram) {
@@ -337,11 +341,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		} catch (Exception e) {
 			ofName = e.getMessage();
 		}
-		if (ofName != null) {
-//			ofName = "^" + ofName + "^";
-		} else {
-			ofName = "MetaClass";
-		}
+		if (ofName == null) ofName = "MetaClass";
+		
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, Color.valueOf(getLevelFontColor() + "75"), null, this, "^" + ofName + "^");
 		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight, Color.valueOf(getLevelFontColor() + "75"), null, this, "" + level);
 		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, Color.valueOf(getLevelFontColor()), null, this, name, isAbstract);
@@ -524,10 +525,10 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	}
 
 	public void fetchDataDefinitions(FmmlxDiagramCommunicator comm) {
-		Vector<Vector<FmmlxAttribute>> attributeList = comm.fetchAttributes(this.name);
+		Vector<Vector<FmmlxAttribute>> attributeList = comm.fetchAttributes(diagram, this.name);
 		ownAttributes = attributeList.get(0);
 		otherAttributes = attributeList.get(1);
-		Vector<FmmlxOperation> operations = comm.fetchOperations(this.name);
+		Vector<FmmlxOperation> operations = comm.fetchOperations(diagram, this.name);
 		ownOperations = new Vector<FmmlxOperation>();
 		otherOperations = new Vector<FmmlxOperation>();
 		for (FmmlxOperation o : operations) {
@@ -540,9 +541,9 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	}
 
 	public void fetchDataValues(FmmlxDiagramCommunicator comm) {
-		slots = comm.fetchSlots(this.name, this.getSlotNames());
+		slots = comm.fetchSlots(diagram, this, this.getSlotNames());
 
-		operationValues = comm.fetchOperationValues(this.name, this.getMonitoredOperationsNames());
+		operationValues = comm.fetchOperationValues(diagram, this.name, this.getMonitoredOperationsNames());
 	}
 
 	public boolean isHit(double mouseX, double mouseY) {
@@ -564,10 +565,10 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	    this.y = y;
 		setX((int) x);
 		setY((int) y);
-		for(Edge edge : diagram.getEdges()) {
-			if (edge.isStartNode(this)) edge.moveStartPoint(x + width/2, y + height/2);
-			if (edge.isEndNode(this)) edge.moveEndPoint(x + width/2, y + height/2);
-		}
+//		for(Edge edge : diagram.getEdges()) {
+//			if (edge.isStartNode(this)) edge.moveStartPoint(x + width/2, y + height/2);
+//			if (edge.isEndNode(this)) edge.moveEndPoint(x + width/2, y + height/2);
+//		}
 	}
 	
 	public boolean isAbstract() {return isAbstract;}
@@ -658,4 +659,20 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	@Override public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
 	@Override public double getMouseMoveOffsetY() {return mouseMoveOffsetY;}
 
+	public Point2D getPointForEdge(Edge edge, boolean isStartNode) {
+		return ports.getPointForEdge(edge, isStartNode);
+	}
+
+	public void addEdgeStart(Edge edge, int direction) {
+		ports.addNewEdge(edge, direction);
+	}
+	
+	public void addEdgeEnd(Edge edge, int direction) {
+		ports.addNewEdge(edge, direction);
+	}
+
+	public void updatePortOder() {
+		ports.sortAllPorts();
+		
+	}
 }

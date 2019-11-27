@@ -8,7 +8,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
 import xos.Value;
 
-public class DiagramLabel implements CanvasElement {
+public class DiagramEdgeLabel implements CanvasElement {
 	
 	private final Edge owner;
 	private final int localID;
@@ -31,7 +31,7 @@ public class DiagramLabel implements CanvasElement {
 	private final Color fontColor;
 	private final static int MARGIN = 1;
 
-	public DiagramLabel(Edge owner, int localID, Runnable action, ContextMenu menu, Vector<FmmlxObject> anchors, String value, 
+	public DiagramEdgeLabel(Edge owner, int localID, Runnable action, ContextMenu menu, Vector<FmmlxObject> anchors, String value, 
 			double relativeX, double relativeY, double w, double h,
 			Color fontColor, Color bgColor) {
 		this.owner = owner;
@@ -115,7 +115,7 @@ public class DiagramLabel implements CanvasElement {
 
 	public Value[] getInfo4XMF() {
 		return new Value[]{
-			new Value(-1),
+			new Value(new Value[] {new Value(owner.diagram.getID()), new Value(-1)}),
 			new Value(owner.id),
 			new Value(localID),
 			new Value((float)relativeX),

@@ -1,17 +1,21 @@
 package tool.clients.fmmlxdiagrams;
 
+import java.util.Vector;
+
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
 public class FmmlxSlot implements FmmlxProperty {
 	private PropertyType propertyType = PropertyType.Slot;
+	private FmmlxObject owner;
 
-	public FmmlxSlot(String name, String value) {
+	public FmmlxSlot(String name, String value, FmmlxObject owner) {
 		this.name = name;
 		this.value = value;
+		this.owner = owner;
 	}
 
-	private String name = "TestSlot";
-	private String value = "SlotValue";
+	private String name;
+	private String value;
 
 	public String getName() {
 		return name;
@@ -32,5 +36,23 @@ public class FmmlxSlot implements FmmlxProperty {
 	@Override
 	public PropertyType getPropertyType() {
 		return propertyType;
+	}
+	
+	public String getType(FmmlxDiagram diagram) {
+		Vector<FmmlxAttribute> allAttributes = new Vector<>();
+		FmmlxObject next = owner;
+		while (next != null) {
+			allAttributes.addAll(next.getOwnAttributes());
+			allAttributes.addAll(next.getOtherAttributes());
+			next = diagram.getObjectById(next.getOf());
+		}
+
+		for (FmmlxAttribute attribute : allAttributes) {
+			if (attribute.getName().equals(getName()) && attribute.level == owner.level) {
+				return attribute.getType();
+			}
+		}
+		
+		throw new RuntimeException("Slot type not found");
 	}
 }
