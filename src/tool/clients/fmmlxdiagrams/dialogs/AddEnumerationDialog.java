@@ -53,7 +53,7 @@ public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResul
 
 		
 		
-		dialogPane.getButtonTypes().addAll(ButtonType.CANCEL, ButtonType.NEXT);
+		dialogPane.getButtonTypes().addAll(ButtonType.CANCEL, ButtonType.OK);
 		dialogPane.setHeaderText("Create Enumeration");
 
 		addElementToGrid();

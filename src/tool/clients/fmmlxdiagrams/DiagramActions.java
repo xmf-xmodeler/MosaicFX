@@ -189,15 +189,10 @@ public class DiagramActions {
 		Platform.runLater(() -> {
 			DeleteEnumerationDialog dlg;
 			
-			dlg = new DeleteEnumerationDialog();
+			dlg = new DeleteEnumerationDialog(diagram);
 
 			dlg.setTitle("Delete Enumeration");
 			Optional<DeleteEnumerationDialogResult> result = dlg.showAndWait();
-
-			if (result.isPresent()) {
-				DeleteEnumerationDialogResult aed = result.get();
-				diagram.getComm().deleteEnumeration(aed.getEnumList());
-			}
 			diagram.updateDiagram();
 			l.countDown();
 		});

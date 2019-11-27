@@ -2,6 +2,7 @@ package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -12,7 +13,10 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import tool.clients.fmmlxdiagrams.EnumElement;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
+import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumerationDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.DeleteEnumerationDialogResult;
 
 public class DeleteEnumerationDialog extends CustomDialog<DeleteEnumerationDialogResult>{
@@ -23,43 +27,43 @@ public class DeleteEnumerationDialog extends CustomDialog<DeleteEnumerationDialo
 	private ListView<FmmlxEnum> enumListview;
 	
 	private Button deleteButton;
+	private FmmlxDiagram diagram;
 	
-	public DeleteEnumerationDialog() {
+	public DeleteEnumerationDialog(FmmlxDiagram diagram) {
 		super();
+		this.diagram=diagram;
 		
 		DialogPane dialogPane = getDialogPane();
-		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+		dialogPane.getButtonTypes().addAll(ButtonType.FINISH);
 		dialogPane.setHeaderText("Delete Enumeration");
 
 		addElementToGrid();
 
 		dialogPane.setContent(flow);
 
-		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
+		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.FINISH);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
-			if (!validateUserInput()) {
-				e.consume();
-			}
+			e.consume();
 		});
-
+		
 		setResult();
 	}
 
+
 	private void setResult() {
-		setResultConverter(dlgBtn -> {
-			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				return new DeleteEnumerationDialogResult(enumListview.getSelectionModel().getSelectedItems());
-			}
-			return null;
+		setResultConverter(dlgBtn -> {	
+				return null;
 		});
-		
 	}
 
+
 	private boolean validateUserInput() {
-		if (enumListview.getSelectionModel().getSelectedItem()!=null) {
-			return true;
+		if (enumListview.getSelectionModel().getSelectedItem()==null) {
+			errorLabel.setText("Please select at least one enumeration");
+			return false;
 		}
-		return false;
+		errorLabel.setText("");
+		return true;
 	}
 
 	private void addElementToGrid() {
@@ -67,6 +71,7 @@ public class DeleteEnumerationDialog extends CustomDialog<DeleteEnumerationDialo
 		enumListview=initializeEnumListView(null, SelectionMode.MULTIPLE);
 		
 		deleteButton = new Button("Delete Enumeration");
+		deleteButton.setOnAction(e->removeEnum());
 		
 		List<Node> labelNode = new ArrayList<Node>();
 		List<Node> editorNode = new ArrayList<Node>();
@@ -77,6 +82,13 @@ public class DeleteEnumerationDialog extends CustomDialog<DeleteEnumerationDialo
 		
 		addNodesToGrid(labelNode,0);
 		addNodesToGrid(editorNode, 1);
+	}
+
+	private void removeEnum() {
+		if(!validateUserInput()) {
+			DeleteEnumerationDialogResult aed = new DeleteEnumerationDialogResult(enumListview.getSelectionModel().getSelectedItems());
+			diagram.getComm().deleteEnumeration(aed.getEnumList());
+		}
 	}
 
 }
