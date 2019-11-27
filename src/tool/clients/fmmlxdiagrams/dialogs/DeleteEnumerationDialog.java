@@ -2,21 +2,17 @@ package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
-import tool.clients.fmmlxdiagrams.EnumElement;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
-import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumerationDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.DeleteEnumerationDialogResult;
 
 public class DeleteEnumerationDialog extends CustomDialog<DeleteEnumerationDialogResult>{
@@ -34,18 +30,13 @@ public class DeleteEnumerationDialog extends CustomDialog<DeleteEnumerationDialo
 		this.diagram=diagram;
 		
 		DialogPane dialogPane = getDialogPane();
-		dialogPane.getButtonTypes().addAll(ButtonType.FINISH);
+		dialogPane.getButtonTypes().addAll(ButtonType.CLOSE);
 		dialogPane.setHeaderText("Delete Enumeration");
 
 		addElementToGrid();
 
 		dialogPane.setContent(flow);
 
-		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.FINISH);
-		okButton.addEventFilter(ActionEvent.ACTION, e -> {
-			e.consume();
-		});
-		
 		setResult();
 	}
 
@@ -58,7 +49,7 @@ public class DeleteEnumerationDialog extends CustomDialog<DeleteEnumerationDialo
 
 	private boolean validateUserInput() {
 		if (enumListview.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText("Please select at least one enumeration");
+			errorLabel.setText("Please select at least one enumeration!");
 			return false;
 		}
 		errorLabel.setText("");
@@ -84,7 +75,7 @@ public class DeleteEnumerationDialog extends CustomDialog<DeleteEnumerationDialo
 	}
 
 	private void removeEnum() {
-		if(!validateUserInput()) {
+		if(validateUserInput()) {
 			DeleteEnumerationDialogResult aed = new DeleteEnumerationDialogResult(enumListview.getSelectionModel().getSelectedItems());
 			diagram.getComm().deleteEnumeration(aed.getEnumList());
 		}
