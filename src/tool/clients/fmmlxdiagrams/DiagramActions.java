@@ -8,6 +8,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
@@ -22,7 +23,7 @@ public class DiagramActions {
 
 	private FmmlxDiagram diagram;
 
-	DiagramActions(FmmlxDiagram diagram) {
+	public DiagramActions(FmmlxDiagram diagram) {
 		this.diagram = diagram;
 	}
 
@@ -144,7 +145,7 @@ public class DiagramActions {
 		Platform.runLater(() -> {
 			AddEnumerationDialog dlg;
 			
-			dlg = new AddEnumerationDialog();
+			dlg = new AddEnumerationDialog(diagram);
 
 			dlg.setTitle("Creat Enumeration");
 			Optional<AddEnumerationDialogResult> result = dlg.showAndWait();
@@ -159,20 +160,43 @@ public class DiagramActions {
 		
 	}
 	
-	public void editEnumerationDialog() {
+	public void editEnumerationDialog(String string, String enumName) {
 		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			EditEnumerationDialog dlg;
 			
-			dlg = new EditEnumerationDialog();
+			dlg = new EditEnumerationDialog(string, enumName);
 
-			dlg.setTitle("Edit Enumeration");
+			if (string.equals("edit_element")) {
+				dlg.setTitle("Edit Enumeration");
+			} 
+			
 			Optional<EditEnumerationDialogResult> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
 				EditEnumerationDialogResult aed = result.get();
 				diagram.getComm().editEnumeration(aed.getEnumName(), aed.getNewEditedEnum());
+			}
+			diagram.updateDiagram();
+			l.countDown();
+		});
+	}
+	
+	public void deleteEnumerationDialog() {
+		CountDownLatch l = new CountDownLatch(1);
+
+		Platform.runLater(() -> {
+			DeleteEnumerationDialog dlg;
+			
+			dlg = new DeleteEnumerationDialog();
+
+			dlg.setTitle("Delete Enumeration");
+			Optional<DeleteEnumerationDialogResult> result = dlg.showAndWait();
+
+			if (result.isPresent()) {
+				DeleteEnumerationDialogResult aed = result.get();
+				diagram.getComm().deleteEnumeration(aed.getEnumList());
 			}
 			diagram.updateDiagram();
 			l.countDown();
@@ -680,5 +704,7 @@ public class DiagramActions {
 	public void levelLowerRelated(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
 	public void levelInsertBelow(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
 	public void levelRemoveThis(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
+
+
 
 }

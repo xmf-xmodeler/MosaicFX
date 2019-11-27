@@ -101,6 +101,14 @@ public class FmmlxDiagramCommunicator {
 		}
 		return result;
 	}
+	
+	private Value[] createValueArrayEnum(Vector<String> vector) {
+		Value[] result = new Value[vector.size()];
+		for(int i = 0; i < result.length; i++) {
+			result[i] = new Value(vector.get(i));
+		}
+		return result;
+	}
 
 	/**
 	 * This operations is called by xmf, usually after a request from java.
@@ -860,11 +868,9 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void addEnumeration(FmmlxEnum enumeration) {
-		Value[] enumElementArray = createValueArrayEnumElement(enumeration.getElements());
 		Value[] message = new Value[]{
 				new Value(-1),
-				new Value(enumeration.getName()),
-				new Value(enumElementArray)};
+				new Value(enumeration.getName())};
 		WorkbenchClient.theClient().send(handler, "addEnumeration", message);
 	}
 
@@ -878,4 +884,14 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "editEnumeration", message);
 		
 	}
+
+	public void deleteEnumeration(Vector<String> vector) {
+		Value[] enumArray = createValueArrayEnum(vector);
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(enumArray)};
+		WorkbenchClient.theClient().send(handler, "deleteEnumeration", message);
+	}
+
+
 }
