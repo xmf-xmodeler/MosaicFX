@@ -56,7 +56,6 @@ public class DeleteEnumerationDialog extends CustomDialog<DeleteEnumerationDialo
 		});
 	}
 
-
 	private boolean validateUserInput() {
 		if (enumListview.getSelectionModel().getSelectedItem()==null) {
 			errorLabel.setText("Please select at least one enumeration");
