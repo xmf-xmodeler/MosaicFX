@@ -716,6 +716,10 @@ public class FmmlxDiagram {
 		return result; // read-only
 	}
 
+	/**
+	 * Calculates the height of the text. Because that depends of the font size and the screen resolution
+	 * @return the text height
+	 */
 	public double calculateTextHeight() {
 		Text t = new Text("TestText");
 		t.setFont(font);

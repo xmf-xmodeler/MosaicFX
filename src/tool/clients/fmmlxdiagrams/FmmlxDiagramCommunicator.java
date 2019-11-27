@@ -714,14 +714,14 @@ public class FmmlxDiagramCommunicator {
 
 	public void addAssociation(FmmlxDiagram diagram, 
 			Integer class1Id, Integer class2Id,
-			String ref1, String ref2,
+			String accessSourceFromTargetName, String accessTargetFromSourceName,
 			String fwName, String reverseName,
 			Multiplicity mul1, Multiplicity mul2,
 			Integer instLevel1, Integer instLevel2) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(class1Id), new Value(class2Id),
-				new Value(ref1), new Value(ref2),
+				new Value(accessSourceFromTargetName), new Value(accessTargetFromSourceName),
 				new Value(fwName), reverseName == null ? new Value(-1) : new Value(reverseName),
 				new Value(mul1.toValue()),
 				new Value(mul2.toValue()), // multiplicity,
