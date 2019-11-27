@@ -136,6 +136,28 @@ public class CustomDialog<R> extends Dialog<R> {
 		return listView;
 	}
 	
+	public ListView<FmmlxEnum> initializeEnumListView(ObservableList<FmmlxEnum> list, SelectionMode selectionMode) {
+
+		ListView<FmmlxEnum> listView = new ListView<>(list);
+		listView.setPrefHeight(75);
+		listView.setPrefWidth(COLUMN_WIDTH);
+
+		listView.setCellFactory(param -> new ListCell<FmmlxEnum>() {
+			@Override
+			protected void updateItem(FmmlxEnum object, boolean empty) {
+				super.updateItem(object, empty);
+
+				if (empty || object == null || object.getName() == null) {
+					setText(null);
+				} else {
+					setText(object.getName());
+				}
+			}
+		});
+
+		listView.getSelectionModel().setSelectionMode(selectionMode);
+		return listView;
+	}
 
 	public ListView<FmmlxObject> initializeListView(ObservableList<FmmlxObject> list, SelectionMode selectionMode) {
 
