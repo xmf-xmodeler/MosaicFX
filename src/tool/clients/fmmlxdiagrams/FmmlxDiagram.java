@@ -129,6 +129,14 @@ public class FmmlxDiagram {
 		return canvas;
 	}
 
+	public Vector<FmmlxEnum> getEnums() {
+		return enums;
+	}
+
+	public void setEnums(Vector<FmmlxEnum> enums) {
+		this.enums = enums;
+	}
+
 	private synchronized void fetchDiagramData() {
 		
 		suppressRedraw = true;
