@@ -43,6 +43,8 @@ public class StringValueDialog {
 		public static final String pleaseInputValidNameForEnumElement= "Please Input Valid Name for Enum-Element";
 		public static final String selectEnumeration= "Select Enumeration";
 		public static final String thereAreDuplicates= "There are Duplicates";
+		public static final String elementAlreadyExist = "Element with the same name already exist";
+		public static final String enumAlreadyExist= "Enumeration with the same name already exist";
 	}
 
 	public static class LabelAndHeaderTitle {

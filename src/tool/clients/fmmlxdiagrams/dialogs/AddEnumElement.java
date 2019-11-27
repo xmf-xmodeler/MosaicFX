@@ -10,6 +10,7 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumElementDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
@@ -17,8 +18,9 @@ import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
 public class AddEnumElement extends CustomDialog<AddEnumElementDialogResult>{
 	private Label inputElementNameLabel;
 	private TextField inputElementNameTextField;
+	private ListView<String> list;
 
-	public AddEnumElement() {
+	public AddEnumElement(ListView<String> list) {
 		super();
 
 		
@@ -53,6 +55,9 @@ public class AddEnumElement extends CustomDialog<AddEnumElementDialogResult>{
 
 		if (!InputChecker.getInstance().validateName(name)) {
 			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
+			return false;
+		} else if(list.getItems().contains(name)){
+			errorLabel.setText(StringValueDialog.ErrorMessage.elementAlreadyExist);
 			return false;
 		} else {
 			errorLabel.setText("");
