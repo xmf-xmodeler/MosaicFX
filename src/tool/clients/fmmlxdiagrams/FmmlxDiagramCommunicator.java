@@ -102,8 +102,15 @@ public class FmmlxDiagramCommunicator {
 			result[i] = new Value(vector.get(i).getName());
 		}
 		return result;
+	}*/
+	
+	private Value[] createValueArrayEnum(Vector<String> vector) {
+		Value[] result = new Value[vector.size()];
+		for(int i = 0; i < result.length; i++) {
+			result[i] = new Value(vector.get(i));
+		}
+		return result;
 	}
-*/
 
 	/**
 	 * This operations is called by xmf, usually after a request from java.
