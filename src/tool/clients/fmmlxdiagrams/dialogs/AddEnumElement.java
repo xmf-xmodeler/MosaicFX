@@ -23,7 +23,7 @@ public class AddEnumElement extends CustomDialog<AddEnumElementDialogResult>{
 	public AddEnumElement(ListView<String> list) {
 		super();
 
-		
+		this.list= list;
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
