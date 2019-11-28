@@ -70,18 +70,18 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
 	
-				for (String tmp : inputElementListview.getItems()) {
-					enumElement.add(tmp);
-				}
-				if(chooseEnumComboBox.getSelectionModel().getSelectedItem()!=null) {
-					return new EditEnumerationDialogResult(chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), 
-							new FmmlxEnum(chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(),
-							new Vector<>()));
-				} else {
-					return new EditEnumerationDialogResult(chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), 
-							new FmmlxEnum(chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(),
-							enumElement));
-				}
+				/*
+				 * for (String tmp : inputElementListview.getItems()) { enumElement.add(tmp); }
+				 * if(chooseEnumComboBox.getSelectionModel().getSelectedItem()!=null) { return
+				 * new EditEnumerationDialogResult(chooseEnumComboBox.getSelectionModel().
+				 * getSelectedItem().getName(), new
+				 * FmmlxEnum(chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(),
+				 * new Vector<>())); } else { return new
+				 * EditEnumerationDialogResult(chooseEnumComboBox.getSelectionModel().
+				 * getSelectedItem().getName(), new
+				 * FmmlxEnum(chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(),
+				 * enumElement)); }
+				 */
 			}
 			return null;
 		});
