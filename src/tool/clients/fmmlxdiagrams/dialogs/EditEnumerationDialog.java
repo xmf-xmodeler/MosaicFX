@@ -38,7 +38,7 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 	private Button addElementButton;
 	private Button removeElementButton;
 	private Button changeNameButton;
-	private Vector<EnumElement> enumElement;
+	private Vector<String> enumElement;
 	
 	private FmmlxDiagram diagram;
 	
@@ -71,12 +71,16 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
 	
 				for (String tmp : inputElementListview.getItems()) {
-					enumElement.add(new EnumElement(tmp));
+					enumElement.add(tmp);
 				}
 				if(chooseEnumComboBox.getSelectionModel().getSelectedItem()!=null) {
 					return new EditEnumerationDialogResult(chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), 
 							new FmmlxEnum(chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(),
 							new Vector<>()));
+				} else {
+					return new EditEnumerationDialogResult(chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), 
+							new FmmlxEnum(chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(),
+							enumElement));
 				}
 			}
 			return null;
@@ -108,6 +112,7 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 	private void addElementToGrid() {
 		chooseEnumLabel = new Label("Choose Enumeration");
 		inputElementLabel = new Label("Elements");
+		enumElement = new Vector<String>();
 		
 		
 		inputElementListview = initializeListView(0);
