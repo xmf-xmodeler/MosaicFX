@@ -19,7 +19,12 @@ public abstract class Edge implements CanvasElement {
 	protected boolean layoutingFinishedSuccesfully;
 	private Vector<Object> labelPositions;
 
-	public Edge(int id, FmmlxObject startNode, FmmlxObject endNode, Vector<Point2D> intermediatePoints, Vector<Object> labelPositions, FmmlxDiagram diagram) {
+	public Edge(int id, 
+			FmmlxObject startNode, FmmlxObject endNode, 
+			Vector<Point2D> intermediatePoints, 
+			PortRegion sourcePort, PortRegion targetPort, 
+			Vector<Object> labelPositions, 
+			FmmlxDiagram diagram) {
 		layoutingFinishedSuccesfully = false;
 		this.labelPositions = labelPositions;
 		this.id = id;

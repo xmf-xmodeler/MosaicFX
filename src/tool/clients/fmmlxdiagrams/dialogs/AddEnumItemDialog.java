@@ -15,12 +15,12 @@ import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumElementDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
 
-public class AddEnumElement extends CustomDialog<AddEnumElementDialogResult>{
+public class AddEnumItemDialog extends CustomDialog<AddEnumElementDialogResult>{
 	private Label inputElementNameLabel;
 	private TextField inputElementNameTextField;
 	private ListView<String> list;
 
-	public AddEnumElement(ListView<String> list) {
+	public AddEnumItemDialog(ListView<String> list) {
 		super();
 
 		this.list= list;

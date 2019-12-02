@@ -891,7 +891,28 @@ public class FmmlxDiagram {
 
 	public Vector<String> getEnumItems(String enumName) {
 		for (FmmlxEnum e : enums) {
-			if(e.getName().equals(enumName)) return e.getElements();
+			if(e.getName().equals(enumName)) return e.getItems();
+		}
+		return null;
+	}
+
+	public synchronized void updateEnums() {
+		enums.clear();
+
+		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
+		objects.addAll(fetchedObjects);
+		
+		Vector<Edge> fetchedEdges = comm.getAllAssociations(this);
+		fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
+
+		edges.addAll(fetchedEdges);
+		
+		enums = comm.fetchAllEnums(this);
+	}
+
+	public FmmlxEnum getEnum(String enumName) {
+		for (FmmlxEnum e : enums) {
+			if(e.getName().equals(enumName)) return e;
 		}
 		return null;
 	}	
