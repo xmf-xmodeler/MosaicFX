@@ -38,14 +38,14 @@ public abstract class Edge implements CanvasElement {
 			this.intermediatePoints.addAll(intermediatePoints);
 		}
 		storeLatestValidPointConfiguration();
-		startNode.addEdgeStart(this, FmmlxObjectPort.EAST);
-		endNode.addEdgeEnd(this, FmmlxObjectPort.WEST);
+		startNode.addEdgeStart(this, sourcePort);
+		endNode.addEdgeEnd(this, targetPort);
 	}
 
 	@Override
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
 		if(!layoutingFinishedSuccesfully) {
-			layout(); diagram.redraw();
+			layoutLabels(); diagram.redraw();
 		} else {
 		    Vector<Point2D> points = getAllPoints();
 //			for (EdgeLabel label : labels) label.paintOn(g, xOffset, yOffset, fmmlxDiagram);
@@ -87,8 +87,37 @@ public abstract class Edge implements CanvasElement {
 		return allPoints;
 	}
 
-	protected abstract void layout();
+	protected abstract void layoutLabels();
+	
+	protected void align() {
+		if(intermediatePoints.size() < 2) {
+			if(startNode.getDirectionForEdge(this, true).isHorizontal())
+				intermediatePoints.add(new Point2D((startNode.getCenterX() + endNode.getCenterX())/2, startNode.getCenterY())); 
+			else
+				intermediatePoints.add(new Point2D(startNode.getCenterX(), (startNode.getCenterY() + endNode.getCenterY())/2));
+			
+			if(endNode.getDirectionForEdge(this, false).isHorizontal())
+				intermediatePoints.add(new Point2D((startNode.getCenterX() + endNode.getCenterX())/2, endNode.getCenterY())); 
+			else
+				intermediatePoints.add(new Point2D(endNode.getCenterX(), (startNode.getCenterY() + endNode.getCenterY())/2));
+		};
+		
+		Point2D first = startNode.getPointForEdge(this, true);
+		Point2D second = intermediatePoints.get(0);
+		PortRegion sourceDirection = startNode.getDirectionForEdge(this, true);
+		
+		Point2D newSecond = sourceDirection.isHorizontal()?new Point2D(second.getX(), first.getY()):new Point2D(first.getX(), second.getY());
+		intermediatePoints.setElementAt(newSecond, 0);
+		
+		Point2D penultimate = intermediatePoints.get(intermediatePoints.size()-1);
+		Point2D ultimate = endNode.getPointForEdge(this, false);
+		PortRegion targetDirection = endNode.getDirectionForEdge(this, false);
+		
+		Point2D newPenultimate = targetDirection.isHorizontal()?new Point2D(penultimate.getX(), ultimate.getY()):new Point2D(ultimate.getX(), penultimate.getY());
+		intermediatePoints.setElementAt(newPenultimate, intermediatePoints.size()-1);
 
+	}
+	
 	protected Color getPrimaryColor() {
 		return Color.BLACK;
 	}
@@ -144,37 +173,6 @@ public abstract class Edge implements CanvasElement {
 		return endNode == fmmlxObject;
 	}
 	
-	public void movePoints(double newStartX, double newStartY, double newEndX, double newEndY) {
-//		Point2D oldStartPoint = latestValidPointConfiguration.firstElement();
-//		double oldStartX = oldStartPoint.getX();
-//		double oldStartY = oldStartPoint.getY();
-//		Point2D oldEndPoint = latestValidPointConfiguration.lastElement();
-//		double oldEndX = oldEndPoint.getX();
-//		double oldEndY = oldEndPoint.getY();
-//		
-//		Vector<Point2D> newPoints = new Vector<>();
-//	
-//		newPoints.add(new Point2D(newStartX, newStartY));
-//		for(int i = 1; i < latestValidPointConfiguration.size()-1; i++) {
-//			Point2D oldPoint = latestValidPointConfiguration.get(i);
-//			double newX = (oldPoint.getX() - oldStartX) / (oldEndX - oldStartX) * (newEndX - newStartX) + newStartX;
-//			double newY = (oldPoint.getY() - oldStartY) / (oldEndY - oldStartY) * (newEndY - newStartY) + newStartY;
-//			if(Double.isFinite(newX) && Double.isFinite(newY))
-//			newPoints.add(new Point2D(newX, newY));
-//		};
-//		newPoints.add(new Point2D(newEndX, newEndY));
-//		points.clear();
-//		points.addAll(newPoints);
-	}
-
-//	public void moveStartPoint(double newStartX, double newStartY) {
-//		movePoints(newStartX, newStartY, points.lastElement().getX(), points.lastElement().getY());
-//	}
-//
-//	public void moveEndPoint(double newEndX, double newEndY) {
-//		movePoints(points.firstElement().getX(), points.firstElement().getY(), newEndX, newEndY);
-//	}
-		
 	private void storeLatestValidPointConfiguration() {
 		latestValidPointConfiguration.clear();
 		latestValidPointConfiguration.addAll(intermediatePoints);
@@ -202,7 +200,7 @@ public abstract class Edge implements CanvasElement {
 		}
 		if (pointToBeMoved == -1) { // not pressed on an existing node
 			for (int i = 0; i < points.size() - 1; i++) {
-//				System.err.println("distance=" + distance(mousePoint, points.get(i), points.get(i+1)));
+			//	System.err.println("distance=" + distance(mousePoint, points.get(i), points.get(i+1)));
 				if (distance(mousePoint, points.get(i), points.get(i + 1)) < DEFAULT_TOLERANCE) {
 					pointToBeMoved = i + 1; // i is the point before the node. We will insert a new one, which will be number i+1
 				}
@@ -212,7 +210,6 @@ public abstract class Edge implements CanvasElement {
 				intermediatePoints.insertElementAt(newPoint, pointToBeMoved-1);
 			}
 		}
-
 	}
 
 	private Double distance(Point2D A, Point2D B) {

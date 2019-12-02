@@ -160,13 +160,17 @@ public class FmmlxDiagram {
 		edges.addAll(fetchedEdges);
 		
 		enums = comm.fetchAllEnums(this);
-		for (FmmlxObject o : objects) {
+		for(FmmlxObject o : objects) {
 			o.fetchDataDefinitions(comm);
 		}
 		
-		for (FmmlxObject o : objects) {
+		for(FmmlxObject o : objects) {
 			o.fetchDataValues(comm);
 			o.layout(this);
+		}
+		
+		for(Edge e : edges) {
+			e.align();
 		}
 		
 		resizeCanvas();
@@ -319,6 +323,9 @@ public class FmmlxDiagram {
 			if (s instanceof FmmlxObject) {
 				FmmlxObject o = (FmmlxObject) s;
 				s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
+				for(Edge e : edges) {
+					if(e.isStartNode(o) || e.isEndNode(o)) e.align();
+				}
 			} else if (s instanceof DiagramEdgeLabel) {
 				DiagramEdgeLabel o = (DiagramEdgeLabel) s;
 				s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
@@ -347,6 +354,7 @@ public class FmmlxDiagram {
 			mouseMode = MouseMode.STANDARD;
 			for (Edge edge : edges) {
 				edge.dropPoint();
+				edge.align();
 			}
 		}
 		resizeCanvas();

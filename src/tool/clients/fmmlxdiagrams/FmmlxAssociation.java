@@ -63,7 +63,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	
 	private enum Anchor {SOURCE,CENTRE,TARGET};
 
-	@Override protected void layout() {
+	@Override protected void layoutLabels() {
 		createLabel(name, 0, Anchor.CENTRE, showChangeFwNameDialog, 0, BLACK, TRANSPARENT);
 		if(reverseName != null) 
 	    createLabel(reverseName, 1, Anchor.CENTRE, showChangeRvNameDialog, -20, BLACK, TRANSPARENT);

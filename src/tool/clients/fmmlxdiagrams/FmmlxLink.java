@@ -25,7 +25,7 @@ public class FmmlxLink extends Edge {
 	
 	private enum Anchor {SOURCE,CENTRE,TARGET};
 
-	@Override protected void layout() {
+	@Override protected void layoutLabels() {
 		try{
 			createLabel("of " + getOfAssociation().getName(), 0, Anchor.CENTRE, ()->{System.err.println("Huhu!");}, 0);
 			layoutingFinishedSuccesfully = true;
