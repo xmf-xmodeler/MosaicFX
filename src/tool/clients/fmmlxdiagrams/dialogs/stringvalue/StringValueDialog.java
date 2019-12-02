@@ -68,6 +68,9 @@ public class StringValueDialog {
 		public static final String multiplicity = "Multiplicity";
 		public static final String value = "Value";
 		public static final String expression = "Is expression";
+		public static final String visible ="Visible";
+		public static final String symmetric ="Symmetric";
+		public static final String transitive ="Transitive";
 
 
 		//Current
