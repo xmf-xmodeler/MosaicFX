@@ -121,4 +121,7 @@ public class DiagramEdgeLabel implements CanvasElement {
 			new Value((float)relativeX),
 			new Value((float)relativeY)};
 	}
+
+	@Override
+	public void unHighlight() {}
 }

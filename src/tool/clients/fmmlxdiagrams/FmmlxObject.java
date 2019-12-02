@@ -677,8 +677,10 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	public void updatePortOder() {
 		ports.sortAllPorts();
-		
 	}
+
+	@Override
+	public void unHighlight() {	}
 
 
 }

@@ -54,6 +54,19 @@ public abstract class Edge implements CanvasElement {
 		    		new DecimalFormat("0.00").format(Math.atan2(-endNode.getCenterY() + startNode.getCenterY(), endNode.getCenterX() - startNode.getCenterX())/Math.PI)+"\u03C0", 
 		    		.5*(startNode.getCenterX() + endNode.getCenterX()), 
 		    		.5*(startNode.getCenterY() + endNode.getCenterY())-12);
+		    
+		    // hover
+		    if(firstHoverPointIndex != null) {
+		    	g.setStroke(new Color(1., .8, .2, 1.));
+		    	g.setLineWidth(5);
+		    	g.strokeLine(
+		    			points.get(firstHoverPointIndex).getX(), 
+		    			points.get(firstHoverPointIndex).getY(), 
+		    			points.get(firstHoverPointIndex+1).getX(), 
+		    			points.get(firstHoverPointIndex+1).getY());
+		    }
+
+		    // normal
 			g.setStroke(fmmlxDiagram.isSelected(this) ? Color.RED : getPrimaryColor());
 			g.setLineWidth(isSelected() ? 3 : 1);
 			g.setLineDashes(getLineDashes());
@@ -66,13 +79,13 @@ public abstract class Edge implements CanvasElement {
 	
 			g.strokePolyline(xPoints, yPoints, xPoints.length);
 	
-			if (pointToBeMoved != -1) {
+			/*if (pointToBeMoved != -1) {
 				final double R = 1.5;
 				g.fillOval(points.get(pointToBeMoved).getX() - R,
 						points.get(pointToBeMoved).getY() - R,
 						2 * R,
 						2 * R);
-			}
+			}*/
 	
 			// resetting the graphicsContext
 			g.setLineDashes(0);
@@ -130,23 +143,36 @@ public abstract class Edge implements CanvasElement {
 		return false;
 	}
 
-
 	public boolean isHit(double x, double y) {
-		return isHit(new Point2D(x, y), 5.);
+		return null != isHit(new Point2D(x, y), 2.5);
 	}
 
-	public boolean isHit(Point2D p, Double tolerance) {
+	public Integer isHit(Point2D p, Double tolerance) {
+		if(p == null) return null;
 	    Vector<Point2D> points = getAllPoints();
+//	    System.err.println(points);
 		for (int i = 0; i < points.size() - 1; i++) {
-//			System.err.println("distance=" + distance(p, points.get(i), points.get(i+1)));
-			if (distance(p, points.get(i), points.get(i + 1)) < (tolerance == null ? DEFAULT_TOLERANCE : tolerance)) {
-				return true;
+			if (distance(p, points.get(i), points.get(i + 1)) < 0.15/*(tolerance == null ? DEFAULT_TOLERANCE : tolerance)*/) {
+				return i;
 			}
 		}
-		return false;
+		return null;
+	}
+	
+	private double distance(Point2D p, Point2D a, Point2D b) { // assume lines to be aligned
+//		System.err.println(a + " - " + p + " - " + b);
+		
+		double angleAP = Math.atan2(
+				a.getY() - p.getY(), 
+				p.getX() - a.getX());
+		double anglePB = Math.atan2(
+				p.getY() - b.getY(), 
+				b.getX() - p.getX());
+		double angleAB = (5 * Math.PI + angleAP - anglePB) % (2 * Math.PI) - Math.PI;
+		return Math.abs(angleAB);
 	}
 
-	private double distance(Point2D testPoint, Point2D lineStart, Point2D lineEnd) { // some fancy math copied from the old diagram
+	private double distance_OLD(Point2D testPoint, Point2D lineStart, Point2D lineEnd) { // some fancy math copied from the old diagram
 		double normalLength = Math.sqrt(
 				(lineEnd.getX() - lineStart.getX()) * (lineEnd.getX() - lineStart.getX())
 						+ (lineEnd.getY() - lineStart.getY()) * (lineEnd.getY() - lineStart.getY()));
@@ -160,8 +186,15 @@ public abstract class Edge implements CanvasElement {
 
 	@Override
 	public void moveTo(double x, double y, FmmlxDiagram diagram) {
+//		System.err.println("move point " + pointToBeMoved + " to " + x + "," + y + (movementDirectionHorizontal?"H":"V"));
 		if(pointToBeMoved != -1) {
-			intermediatePoints.setElementAt(new Point2D(x, y), pointToBeMoved-1);
+			if(movementDirectionHorizontal) {
+				intermediatePoints.setElementAt(new Point2D(x, intermediatePoints.get(pointToBeMoved-1).getY()), pointToBeMoved-1);
+				intermediatePoints.setElementAt(new Point2D(x, intermediatePoints.get(pointToBeMoved).getY()), pointToBeMoved);				
+			} else {
+				intermediatePoints.setElementAt(new Point2D(intermediatePoints.get(pointToBeMoved-1).getX(),y), pointToBeMoved-1);
+				intermediatePoints.setElementAt(new Point2D(intermediatePoints.get(pointToBeMoved).getX(),y), pointToBeMoved);				
+			}
 		}
 	}
 
@@ -180,6 +213,8 @@ public abstract class Edge implements CanvasElement {
 
 	private transient Vector<Point2D> latestValidPointConfiguration = new Vector<>();
 	private transient int pointToBeMoved = -1;
+	private transient boolean movementDirectionHorizontal;
+	private Integer firstHoverPointIndex;
 
 	public void setPointAtToBeMoved(Point2D mousePoint) {
 	    Vector<Point2D> points = getAllPoints();
@@ -187,8 +222,15 @@ public abstract class Edge implements CanvasElement {
 
 		// if a point is already found
 		if (pointToBeMoved != -1) return;
+		
+		Integer hitLine = isHit(mousePoint, 0.2);
+		if(hitLine != null && hitLine > 0 && hitLine < points.size() - 2) {
+			pointToBeMoved = hitLine;
+//			System.err.println("hit between " + hitLine + " and " + (hitLine+1));
+			movementDirectionHorizontal = points.get(pointToBeMoved).getX() == points.get(pointToBeMoved+1).getX();
+		}
 
-		// If there is a Point at p, then that is to be moved
+/*		// If there is a Point at p, then that is to be moved
 		// otherwise one is created on the spot.
 		// that point's index is stored temporarily while the mouse is dragged
 		pointToBeMoved = -1;
@@ -201,7 +243,7 @@ public abstract class Edge implements CanvasElement {
 		if (pointToBeMoved == -1) { // not pressed on an existing node
 			for (int i = 0; i < points.size() - 1; i++) {
 			//	System.err.println("distance=" + distance(mousePoint, points.get(i), points.get(i+1)));
-				if (distance(mousePoint, points.get(i), points.get(i + 1)) < DEFAULT_TOLERANCE) {
+				if (distance_OLD(mousePoint, points.get(i), points.get(i + 1)) < DEFAULT_TOLERANCE) {
 					pointToBeMoved = i + 1; // i is the point before the node. We will insert a new one, which will be number i+1
 				}
 			}
@@ -209,7 +251,7 @@ public abstract class Edge implements CanvasElement {
 				Point2D newPoint = new Point2D(mousePoint.getX(), mousePoint.getY());
 				intermediatePoints.insertElementAt(newPoint, pointToBeMoved-1);
 			}
-		}
+		}*/
 	}
 
 	private Double distance(Point2D A, Point2D B) {
@@ -217,14 +259,14 @@ public abstract class Edge implements CanvasElement {
 	}
 
 	public void dropPoint() {
-	    Vector<Point2D> points = getAllPoints();
+	    /*Vector<Point2D> points = getAllPoints();
 		if (pointToBeMoved != -1) {
 			// if point very close to other point, remove it.
 			if (distance(points.get(pointToBeMoved), points.get(pointToBeMoved + 1)) < DEFAULT_TOLERANCE
 					|| distance(points.get(pointToBeMoved), points.get(pointToBeMoved - 1)) < DEFAULT_TOLERANCE) {
 				points.remove(pointToBeMoved);
 			}
-		}
+		}*/
 		// in any case no point to be moved anymore
 		pointToBeMoved = -1;
 		
@@ -248,7 +290,9 @@ public abstract class Edge implements CanvasElement {
 	}
 
 	@Override
-	public void highlightElementAt(Point2D p) {}
+	public void highlightElementAt(Point2D p) {
+		firstHoverPointIndex = isHit(p, .2);
+	}
 
 	@Override
 	public void setOffsetAndStoreLastValidPosition(Point2D p) {
@@ -269,4 +313,7 @@ public abstract class Edge implements CanvasElement {
 		}
 		return null;
 	}
+	
+	@Override
+	public void unHighlight() {	firstHoverPointIndex = null;}
 }

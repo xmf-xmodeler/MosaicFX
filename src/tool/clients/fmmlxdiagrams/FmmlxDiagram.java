@@ -308,6 +308,8 @@ public class FmmlxDiagram {
 		}
 	}
 
+	private transient CanvasElement lastElementUnderMouse = null;
+	
 	private void mouseMoved(MouseEvent e) {
 		Point2D p = scale(e);
 
@@ -315,6 +317,20 @@ public class FmmlxDiagram {
 			storeCurrentPoint(p.getX(), p.getY());
 			redraw();
 		}
+		
+		CanvasElement elementUnderMouse = getElementAt(p.getX(), p.getY());
+		if(elementUnderMouse != lastElementUnderMouse) {
+			lastElementUnderMouse = elementUnderMouse;
+			for (FmmlxObject o : objects)
+				o.unHighlight();
+			for (Edge edge : edges)
+				edge.unHighlight();
+			for (DiagramEdgeLabel l : labels)
+				l.unHighlight();
+		}
+		
+		if(elementUnderMouse != null) elementUnderMouse.highlightElementAt(p);
+		
 	}
 
 	private void mouseDraggedStandard(Point2D p) {

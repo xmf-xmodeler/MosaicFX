@@ -82,4 +82,7 @@ public class FmmlxLink extends Edge {
 		this.startNode=diagram.getObjectById(selectedItem.getId());
 		this.endNode= diagram.getObjectById(selectedItem2.getId());
 	}
+	
+	@Override
+	public void unHighlight() {	}
 }
