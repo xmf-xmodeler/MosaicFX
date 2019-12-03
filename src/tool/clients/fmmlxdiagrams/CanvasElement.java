@@ -15,10 +15,12 @@ public interface CanvasElement {
 	boolean isHit(double x, double y);
 
 	void highlightElementAt(Point2D p);
+	void unHighlight();
 
 	void setOffsetAndStoreLastValidPosition(Point2D p);
 	
 	double getMouseMoveOffsetX();
 	double getMouseMoveOffsetY();
+
 
 }

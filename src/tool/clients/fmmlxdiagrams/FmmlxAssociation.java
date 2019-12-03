@@ -35,6 +35,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			Integer endId,
 			Integer parentAssociationId,
 			Vector<Point2D> points,
+			PortRegion sourcePort, PortRegion targetPort, 
 			String name,
 			String reverseName,
 			String accessNameStartToEnd,
@@ -46,7 +47,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			Vector<Object> labelPositions,
 			FmmlxDiagram diagram) {
 
-		super(id, diagram.getObjectById(startId), diagram.getObjectById(endId), points, labelPositions, diagram);
+		super(id, diagram.getObjectById(startId), diagram.getObjectById(endId), points, sourcePort, targetPort, labelPositions, diagram);
 
 		this.name = name;
 		this.reverseName = reverseName;
@@ -62,7 +63,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	
 	private enum Anchor {SOURCE,CENTRE,TARGET};
 
-	@Override protected void layout() {
+	@Override protected void layoutLabels() {
 		createLabel(name, 0, Anchor.CENTRE, showChangeFwNameDialog, 0, BLACK, TRANSPARENT);
 		if(reverseName != null) 
 	    createLabel(reverseName, 1, Anchor.CENTRE, showChangeRvNameDialog, -20, BLACK, TRANSPARENT);

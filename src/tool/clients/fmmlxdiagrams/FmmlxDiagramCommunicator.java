@@ -257,6 +257,8 @@ public class FmmlxDiagramCommunicator {
 					(Integer) edgeInfoAsList.get(2), // endId
 					(Integer) edgeInfoAsList.get(3), // parentId
 					listOfPoints, // points
+					PortRegion.EAST,
+					PortRegion.WEST,
 					(String) edgeInfoAsList.get(5), // name 1
 					(String) edgeInfoAsList.get(6), // name 2
 					(String) edgeInfoAsList.get(7), // name 3
@@ -300,6 +302,7 @@ public class FmmlxDiagramCommunicator {
 					(Integer) edgeInfoAsList.get(2), // endId
 					(Integer) edgeInfoAsList.get(3), // ofId
 					listOfPoints, // points
+					PortRegion.EAST, PortRegion.WEST, 
 					labelPositions,
 					diagram);
 			result.add(object);
@@ -903,7 +906,7 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "addEnumeration", message);
 	}
 
-	public void renameEnumeration(FmmlxDiagram diagram, String oldEnumName, String newEnumName) {
+	public void changeEnumerationName(FmmlxDiagram diagram, String oldEnumName, String newEnumName) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(oldEnumName),
@@ -918,29 +921,23 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "removeEnumeration", message);
 	}
 	
-	public void addEnumerationValue(FmmlxDiagram diagram, String enumName, String newEnumValueName) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+	public void addEnumerationItem(FmmlxDiagram diagram, String enumName, String newEnumValueName) {
+		xmfRequest(handler, diagram, "addEnumerationValue", new Value[]{
 				new Value(enumName),
-				new Value(newEnumValueName)};
-		WorkbenchClient.theClient().send(handler, "addEnumerationValue", message);
+				new Value(newEnumValueName)});
 	}
 
-	public void renameEnumerationValue(FmmlxDiagram diagram, String enumName, String oldEnumValueName, String newEnumValueName) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+	public void changeEnumerationItemName(FmmlxDiagram diagram, String enumName, String oldEnumValueName, String newEnumValueName) {
+		xmfRequest(handler, diagram, "changeEnumerationValueName", new Value[]{
 				new Value(enumName),
 				new Value(oldEnumValueName),
-				new Value(newEnumValueName)};
-		WorkbenchClient.theClient().send(handler, "changeEnumerationValueName", message);
+				new Value(newEnumValueName)});
 	}
 	
-	public void removeEnumerationValue(FmmlxDiagram diagram, String enumName, String enumValueName) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+	public void removeEnumerationItem(FmmlxDiagram diagram, String enumName, String enumValueName) {
+		xmfRequest(handler, diagram, "removeEnumerationValue", new Value[]{
 				new Value(enumName),
-				new Value(enumValueName)};
-		WorkbenchClient.theClient().send(handler, "removeEnumerationValue", message);
+				new Value(enumValueName)});
 	}
 
 	public void editEnumeration(FmmlxDiagram diagram, String enumName, Vector<String> elements) {
@@ -953,14 +950,4 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "editEnum", message);
 		
 	}
-
-	public void changeEnumerationName(FmmlxDiagram diagram, String oldName, String newName) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(oldName),
-				new Value(newName)};
-		WorkbenchClient.theClient().send(handler, "changeEnumerationName", message);
-		
-	}
-
 }

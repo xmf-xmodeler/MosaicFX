@@ -13,9 +13,10 @@ public class FmmlxLink extends Edge {
 	int ofId;
 	private FmmlxDiagram diagram;
 
-	public FmmlxLink(int id, int startId, int endId, int ofId, Vector<Point2D> points,
-									Vector<Object> labelPositions, FmmlxDiagram diagram) {
-		super(id, diagram.getObjectById(startId), diagram.getObjectById(endId), points, labelPositions, diagram);
+	public FmmlxLink(int id, int startId, int endId, int ofId, Vector<Point2D> points, 
+				PortRegion sourcePort, PortRegion targetPort, 
+				Vector<Object> labelPositions, FmmlxDiagram diagram) {
+		super(id, diagram.getObjectById(startId), diagram.getObjectById(endId), points, sourcePort, targetPort, labelPositions, diagram);
 //		this.ofAssociation = (FmmlxAssociation) diagram.getAssociationById(ofId);
 		this.ofId = ofId;
 		this.diagram = diagram;
@@ -24,7 +25,7 @@ public class FmmlxLink extends Edge {
 	
 	private enum Anchor {SOURCE,CENTRE,TARGET};
 
-	@Override protected void layout() {
+	@Override protected void layoutLabels() {
 		try{
 			createLabel("of " + getOfAssociation().getName(), 0, Anchor.CENTRE, ()->{System.err.println("Huhu!");}, 0);
 			layoutingFinishedSuccesfully = true;
@@ -81,4 +82,7 @@ public class FmmlxLink extends Edge {
 		this.startNode=diagram.getObjectById(selectedItem.getId());
 		this.endNode= diagram.getObjectById(selectedItem2.getId());
 	}
+	
+	@Override
+	public void unHighlight() {	}
 }
