@@ -959,7 +959,7 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(oldName),
 				new Value(newName)};
-		WorkbenchClient.theClient().send(handler, "changeEnumName", message);
+		WorkbenchClient.theClient().send(handler, "changeEnumerationName", message);
 		
 	}
 

@@ -133,7 +133,6 @@ public class CustomDialog<R> extends Dialog<R> {
 				}
 			}
 		});
-		listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		return listView;
 	}
 	
