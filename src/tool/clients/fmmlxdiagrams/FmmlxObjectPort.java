@@ -93,4 +93,16 @@ public class FmmlxObjectPort {
 		}
 		throw new RuntimeException("Point does not exist: Edge " + edge + " on Node " + owner);
 	}
+
+	public void setDirectionForEdge(Edge edge, boolean isStartNode, PortRegion newPortRegion) {
+		for(PortRegion direction : PortRegion.values()) {
+			Vector<Edge> edgesOnOneSide = edges.get(direction);
+			for(int i = 0; i < edgesOnOneSide.size(); i++) {
+				if(edgesOnOneSide.get(i) == edge && (isStartNode?edge.startNode:edge.endNode) == owner) {
+					edgesOnOneSide.remove(i); i--; break;
+				}
+			}
+		}
+		edges.get(newPortRegion).add(edge);
+	}
 }

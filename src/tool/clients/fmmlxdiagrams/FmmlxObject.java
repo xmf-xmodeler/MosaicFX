@@ -664,7 +664,11 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	}
 
 	public PortRegion getDirectionForEdge(Edge edge, boolean isStartNode) {
-		return  ports.getDirectionForEdge(edge, isStartNode);
+		return ports.getDirectionForEdge(edge, isStartNode);
+	}
+	
+	public void setDirectionForEdge(Edge edge, boolean isStartNode, PortRegion newPortRegion) {
+		ports.setDirectionForEdge(edge, isStartNode, newPortRegion);
 	}
 	
 	public void addEdgeStart(Edge edge, PortRegion direction) {
