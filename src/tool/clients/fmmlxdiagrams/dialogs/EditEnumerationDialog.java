@@ -147,8 +147,8 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 		editorNode.add(inputElementListview);
 		editorNode.add(joinNodeElementInHBox(addElementButton, removeElementButton));
 		  
-		addElementButton.setOnAction(e -> addElement(inputElementListview));
-		removeElementButton.setOnAction(e ->removeElement(inputElementListview.getSelectionModel().getSelectedItems()));
+		addElementButton.setOnAction(e -> addElement(chooseEnumComboBox.getSelectionModel().getSelectedItem(),inputElementListview));
+		removeElementButton.setOnAction(e ->removeElement(inputElementListview.getSelectionModel().getSelectedItem()));
 		changeNameButton.setOnAction(e -> chageEnumNameDialog(chooseEnumComboBox.getSelectionModel().getSelectedItem()));  
 		  
 		addNodesToGrid(labelNode,0); addNodesToGrid(editorNode, 1);
@@ -172,24 +172,24 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 		return FXCollections.observableArrayList(enums);
 	}
 	
-	private void removeElement(ObservableList<String> observableList) {
+	private void removeElement(String string) {
 		if(chooseEnumComboBox.getSelectionModel().getSelectedItem()!=null) {
-			inputElementListview.getItems().removeAll(observableList);
+			//inputElementListview.getItems().removeAll(string);
+			diagram.getComm().removeEnumerationValue(this.diagram, chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), string);
 		} else {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectEnumeration);
 		}
 	}
 
-	private void addElement(ListView<String> list) {
+	private void addElement(FmmlxEnum selectedEnum, ListView<String> list) {
 		if(chooseEnumComboBox.getSelectionModel().getSelectedItem()!=null) {
-			AddEnumElement dlg = new AddEnumElement(list);
+			AddEnumElement dlg = new AddEnumElement(diagram, selectedEnum, list);
 			Optional<AddEnumElementDialogResult> opt = dlg.showAndWait();
-
-			if (opt.isPresent()) {
-				AddEnumElementDialogResult result = opt.get();
-
-				list.getItems().add(result.getName());
-			}
+			
+			/*
+			 * if (opt.isPresent()) { AddEnumElementDialogResult result = opt.get();
+			 * list.getItems().add(result.getName()); }
+			 */
 		} else {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectEnumeration);
 		}
