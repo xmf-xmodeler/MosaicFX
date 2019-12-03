@@ -17,6 +17,8 @@ public abstract class Edge implements CanvasElement {
 	protected FmmlxDiagram diagram;
 	protected final Double DEFAULT_TOLERANCE = 6.;
 	protected boolean layoutingFinishedSuccesfully;
+	protected boolean SourceVisible;
+	protected boolean TargetVisible;
 	private Vector<Object> labelPositions;
 
 	public Edge(int id, 
