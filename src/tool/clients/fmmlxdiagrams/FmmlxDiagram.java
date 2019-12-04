@@ -139,12 +139,12 @@ public class FmmlxDiagram {
 
 	private synchronized void fetchDiagramData() {
 		if(suppressRedraw) {
-			System.err.println("\talready fetching diagram data");
+//			System.err.println("\talready fetching diagram data");
 			return;
 		}
 		suppressRedraw = true;
 		
-		System.err.println("suppressRedraw");
+//		System.err.println("suppressRedraw");
 		
 		objects.clear();
 		edges.clear();
@@ -154,12 +154,6 @@ public class FmmlxDiagram {
 		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
 		objects.addAll(fetchedObjects);
 		
-		Vector<Edge> fetchedEdges = comm.getAllAssociations(this);
-		fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
-
-		edges.addAll(fetchedEdges);
-		
-		enums = comm.fetchAllEnums(this);
 		for(FmmlxObject o : objects) {
 			o.fetchDataDefinitions(comm);
 		}
@@ -169,13 +163,21 @@ public class FmmlxDiagram {
 			o.layout(this);
 		}
 		
+		Vector<Edge> fetchedEdges = comm.getAllAssociations(this);
+		fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
+
+		edges.addAll(fetchedEdges);
+		
+		enums = comm.fetchAllEnums(this);
+
+		
 		for(Edge e : edges) {
 			e.align();
 		}
 		
 		resizeCanvas();
 		suppressRedraw = false;
-		System.err.println("allowRedraw");
+//		System.err.println("allowRedraw");
 		redraw();
 	}
 
@@ -393,7 +395,6 @@ public class FmmlxDiagram {
 						}
 					}
 				} else if (s instanceof Edge) {
-//					FmmlxAssociation a = (FmmlxAssociation) s;
 					comm.sendCurrentPositions(this, (Edge) s);
 				} else if (s instanceof DiagramEdgeLabel) {
 					comm.storeLabelInfo(this, (DiagramEdgeLabel) s);

@@ -257,8 +257,6 @@ public class FmmlxDiagramCommunicator {
 					(Integer) edgeInfoAsList.get(2), // endId
 					(Integer) edgeInfoAsList.get(3), // parentId
 					listOfPoints, // points
-					PortRegion.EAST,
-					PortRegion.WEST,
 					(String) edgeInfoAsList.get(5), // name 1
 					(String) edgeInfoAsList.get(6), // name 2
 					(String) edgeInfoAsList.get(7), // name 3
@@ -413,16 +411,31 @@ public class FmmlxDiagramCommunicator {
 		}
 		return result;
 	}
-
-	public Vector<FmmlxObject> fetchParentClasses(String objectName) {
-		Vector<FmmlxObject> result = new Vector<>();
-		return result;
+	
+	@SuppressWarnings("unchecked")	
+	public Vector<Issue> fetchIssues(FmmlxDiagram diagram, String objectName) {
+		/*Vector<Object> response = xmfRequest(handler, diagram, "getIssues", new Value[]{new Value(objectName)});
+		Vector<Object> returnValuesList = (Vector<Object>) (response.get(0));
+		Vector<Issue> result = new Vector<>();
+		for (Object returnValueO : returnValuesList) {
+			Vector<Object> returnValue = (Vector<Object>) (returnValueO);
+			String message  = (String) (returnValue.get(0));
+			Integer severity = (Integer) (returnValue.get(1));
+			result.add(new Issue(message, severity));
+		}
+		return result;*/
+		return new Vector<Issue>();
 	}
 
-	public FmmlxObject fetchOf(String objectName) {
-		FmmlxObject result = null;
-		return result;
-	}
+//	public Vector<FmmlxObject> fetchParentClasses(String objectName) {
+//		Vector<FmmlxObject> result = new Vector<>();
+//		return result;
+//	}
+//
+//	public FmmlxObject fetchOf(String objectName) {
+//		FmmlxObject result = null;
+//		return result;
+//	}
 
 	@SuppressWarnings("unchecked")
 	public Vector<FmmlxEnum> fetchAllEnums(FmmlxDiagram diagram) {

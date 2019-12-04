@@ -24,7 +24,6 @@ public abstract class Edge implements CanvasElement {
 	public Edge(int id, 
 			FmmlxObject startNode, FmmlxObject endNode, 
 			Vector<Point2D> intermediatePoints, 
-			PortRegion sourcePort, PortRegion targetPort, 
 			Vector<Object> labelPositions, 
 			FmmlxDiagram diagram) {
 		layoutingFinishedSuccesfully = false;
@@ -34,14 +33,33 @@ public abstract class Edge implements CanvasElement {
 		this.startNode = startNode;
 		this.endNode = endNode;
 		if (intermediatePoints == null || intermediatePoints.size() < 1) {
-//			this.points.add(new Point2D(startNode.getX() + startNode.getWidth() / 2, startNode.getY() + startNode.getHeight() / 2));
-//			this.points.add(new Point2D(endNode.getX() + endNode.getWidth() / 2, endNode.getY() + endNode.getHeight() / 2));
 		} else {
 			this.intermediatePoints.addAll(intermediatePoints);
 		}
 		storeLatestValidPointConfiguration();
-		startNode.addEdgeStart(this, sourcePort);
-		endNode.addEdgeEnd(this, targetPort);
+		PortRegion startPortRegion = determinePort(startNode, intermediatePoints.size()<1?null:intermediatePoints.firstElement(), PortRegion.EAST);
+		PortRegion endPortRegion   = determinePort(endNode,   intermediatePoints.size()<1?null:intermediatePoints.lastElement(),  PortRegion.WEST);
+		
+//		System.err.println(startPortRegion + "-->" + endPortRegion);
+		
+		startNode.addEdgeStart(this, startPortRegion);
+		endNode.addEdgeEnd(this, endPortRegion);
+	}
+
+	private PortRegion determinePort(FmmlxObject node, Point2D nextPoint, PortRegion defaultRegion) {
+		if(nextPoint == null) {
+			return defaultRegion;
+		}
+//		System.err.println(node.getX() + "-->" + nextPoint.getX() + "-->" +  node.getMaxRight());
+		if(node.getX() < nextPoint.getX() && nextPoint.getX() < node.getMaxRight()) {
+			// N or S
+			if(node.getY() > nextPoint.getY()) return PortRegion.NORTH;
+			return PortRegion.SOUTH;
+		} else {
+			// E or W
+			if(node.getX() > nextPoint.getX()) return PortRegion.WEST;
+			 return PortRegion.EAST;
+		}
 	}
 
 	@Override
@@ -72,14 +90,23 @@ public abstract class Edge implements CanvasElement {
 			g.setStroke(fmmlxDiagram.isSelected(this) ? Color.RED : getPrimaryColor());
 			g.setLineWidth(isSelected() ? 3 : 1);
 			g.setLineDashes(getLineDashes());
-			double[] xPoints = new double[points.size()];//+2];
-			double[] yPoints = new double[points.size()];//+2];
-			for (int i = 0; i < points.size(); i++) {
-				xPoints[i] = points.get(i).getX();
-				yPoints[i] = points.get(i).getY();
-			}
-	
-			g.strokePolyline(xPoints, yPoints, xPoints.length);
+			
+			for(int i = 0; i < points.size()-1; i++) {
+				g.strokeLine(
+						points.get(i).getX(), 
+						points.get(i).getY(), 
+						points.get(i+1).getX(),
+						points.get(i+1).getY());}
+			
+//			// prepare line segments
+//			double[] xPoints = new double[points.size()];
+//			double[] yPoints = new double[points.size()];
+//			for (int i = 0; i < points.size(); i++) {
+//				xPoints[i] = points.get(i).getX();
+//				yPoints[i] = points.get(i).getY();
+//			}
+//			
+//			g.strokePolyline(xPoints, yPoints, xPoints.length);
 						
 			if(newSourcePortRegion != null) {
 				double[] xPoints2 = new double[] {
@@ -190,7 +217,7 @@ public abstract class Edge implements CanvasElement {
 		if(p == null) return null;
 	    Vector<Point2D> points = getAllPoints();
 		for (int i = 0; i < points.size() - 1; i++) {
-			if (distance(p, points.get(i), points.get(i + 1)) < 0.15/*(tolerance == null ? DEFAULT_TOLERANCE : tolerance)*/) {
+			if (distance(p, points.get(i), points.get(i + 1)) < 0.2/*(tolerance == null ? DEFAULT_TOLERANCE : tolerance)*/) {
 				return i;
 			}
 		}
@@ -379,6 +406,7 @@ public abstract class Edge implements CanvasElement {
 				} 			
 				startNode.setDirectionForEdge(this, true, newSourcePortRegion);
 			}
+			align();
 		}
 
 		if(newTargetPortRegion != null && newTargetPortRegion != endNode.getDirectionForEdge(this, false)) {
@@ -419,6 +447,7 @@ public abstract class Edge implements CanvasElement {
 				} 			
 				endNode.setDirectionForEdge(this, false, newTargetPortRegion);
 			}
+			align();
 		}
 		
 		pointToBeMoved = -1;
@@ -427,6 +456,8 @@ public abstract class Edge implements CanvasElement {
 	    moveMode = MoveMode.normal;
 		
 		storeLatestValidPointConfiguration();
+		
+		diagram.getComm().sendCurrentPositions(diagram, this);
 	}
 
 	public Vector<Point2D> getIntermediatePoints() {
