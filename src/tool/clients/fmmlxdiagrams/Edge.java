@@ -37,8 +37,14 @@ public abstract class Edge implements CanvasElement {
 			this.intermediatePoints.addAll(intermediatePoints);
 		}
 		storeLatestValidPointConfiguration();
-		PortRegion startPortRegion = determinePort(startNode, intermediatePoints.size()<1?null:intermediatePoints.firstElement(), PortRegion.EAST);
-		PortRegion endPortRegion   = determinePort(endNode,   intermediatePoints.size()<1?null:intermediatePoints.lastElement(),  PortRegion.WEST);
+		PortRegion startPortRegion = determinePort(
+				startNode, 
+				intermediatePoints.size()<1?null:intermediatePoints.firstElement(), 
+				startNode.getCenterX()<endNode.getCenterX()?PortRegion.EAST:PortRegion.WEST);
+		PortRegion endPortRegion   = determinePort(
+				endNode,   
+				intermediatePoints.size()<1?null:intermediatePoints.lastElement(),  
+				startNode.getCenterX()<endNode.getCenterX()?PortRegion.WEST:PortRegion.EAST);
 		
 //		System.err.println(startPortRegion + "-->" + endPortRegion);
 		
@@ -92,22 +98,19 @@ public abstract class Edge implements CanvasElement {
 			g.setLineDashes(getLineDashes());
 			
 			for(int i = 0; i < points.size()-1; i++) {
+				Vector<Point2D> intersections = diagram.findEdgeIntersections(points.get(i), points.get(i+1));
+				
 				g.strokeLine(
 						points.get(i).getX(), 
 						points.get(i).getY(), 
 						points.get(i+1).getX(),
-						points.get(i+1).getY());}
-			
-//			// prepare line segments
-//			double[] xPoints = new double[points.size()];
-//			double[] yPoints = new double[points.size()];
-//			for (int i = 0; i < points.size(); i++) {
-//				xPoints[i] = points.get(i).getX();
-//				yPoints[i] = points.get(i).getY();
-//			}
-//			
-//			g.strokePolyline(xPoints, yPoints, xPoints.length);
-						
+						points.get(i+1).getY());
+				
+				for(Point2D p : intersections) {
+					g.fillOval(p.getX()-2, p.getY()-2, 4, 4);
+				}
+			}
+							
 			if(newSourcePortRegion != null) {
 				double[] xPoints2 = new double[] {
 					(points.get(0).getX() + points.get(1).getX())/2,
@@ -195,6 +198,10 @@ public abstract class Edge implements CanvasElement {
 		Point2D newPenultimate = targetDirection.isHorizontal()?new Point2D(penultimate.getX(), ultimate.getY()):new Point2D(ultimate.getX(), penultimate.getY());
 		intermediatePoints.setElementAt(newPenultimate, intermediatePoints.size()-1);
 
+//		for(int i = 0; i < intermediatePoints.size(); i++) {
+//			System.err.println(i + ": " + intermediatePoints.get(i));
+//		}
+//		System.err.println("---");
 	}
 	
 	protected Color getPrimaryColor() {
@@ -419,7 +426,7 @@ public abstract class Edge implements CanvasElement {
 							endNode.getMaxBottom() + 30));
 					intermediatePoints.setElementAt(new Point2D(
 							intermediatePoints.get(intermediatePoints.size()-2).getX(), 
-							endNode.getMaxBottom() + 30), 1);
+							endNode.getMaxBottom() + 30), intermediatePoints.size()-2);
 				} else 
 					if(newTargetPortRegion == PortRegion.NORTH) {
 						intermediatePoints.add(new Point2D(

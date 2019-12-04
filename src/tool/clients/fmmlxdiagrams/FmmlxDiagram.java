@@ -940,5 +940,27 @@ public class FmmlxDiagram {
 			if(e.getName().equals(enumName)) return e;
 		}
 		return null;
+	}
+
+	public Vector<Point2D> findEdgeIntersections(Point2D a, Point2D b) { // only interested in a-b horizontal crossed c-d vertical
+		Vector<Point2D> result = new Vector<Point2D>();
+		for(Edge e : edges) {
+			Vector<Point2D> otherPoints = e.getAllPoints();
+			for(int i = 0; i < otherPoints.size()-1; i++) {
+				Point2D c = otherPoints.get(i);
+				Point2D d = otherPoints.get(i+1);
+				if(a.getY() == b.getY()) { // possibly redundant
+					if(c.getX() == d.getX()) {
+						// check for intersection
+						if(c.getY() < a.getY() ^ d.getY() < a.getY()) { // if c and d are on different sides of a/b (y)
+							if(a.getX() < c.getX() ^ b.getX() < c.getX() ) { // if a and c are on different sides of c/d (x)
+								result.add(new Point2D(c.getX(), a.getY()));
+							}
+						}
+					}
+				}
+			}
+		}
+		return result;
 	}	
 }
