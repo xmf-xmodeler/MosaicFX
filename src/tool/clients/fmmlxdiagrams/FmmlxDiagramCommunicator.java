@@ -935,9 +935,31 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	public void addEnumerationItem(FmmlxDiagram diagram, String enumName, String newEnumValueName) {
-		xmfRequest(handler, diagram, "addEnumerationValue", new Value[]{
+		Vector<Object> result = xmfRequest(handler, diagram, "addEnumerationValue", new Value[]{
 				new Value(enumName),
 				new Value(newEnumValueName)});
+		System.err.println(result);
+		showErrorMessage(result);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void showErrorMessage(Vector<Object> msgAsVec) {
+		if(msgAsVec.size() <= 0) return;
+		java.util.Vector<Object> err = (java.util.Vector<Object>) msgAsVec.get(0);
+		if (err != null && err.size() > 0 && err.get(0) != null) {
+//			CountDownLatch l = new CountDownLatch(1);
+			Platform.runLater(() -> {
+				Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
+				alert.showAndWait();
+//				l.countDown();
+			});
+//			try {
+//				l.await();
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+		}
+		
 	}
 
 	public void changeEnumerationItemName(FmmlxDiagram diagram, String enumName, String oldEnumValueName, String newEnumValueName) {

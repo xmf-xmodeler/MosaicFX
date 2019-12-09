@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
@@ -39,7 +40,7 @@ public class NodeBox implements NodeElement {
 	public void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram, boolean objectIsSelected) {
 		g.setFill(bgColor);
 		g.fillRect(x + xOffset, y + yOffset, width, height);
-		g.setStroke(fgColor);
+		g.setStroke(/*objectIsSelected&&System.currentTimeMillis()%2400<500?new Color(1.,.8,0.,1.):*/fgColor);
 		g.setLineWidth(lineWidth.getWidth(objectIsSelected));
 		g.strokeRect(x + xOffset, y + yOffset, width, height);
 		for (NodeElement e : nodeElements) {

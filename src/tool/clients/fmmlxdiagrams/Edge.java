@@ -4,8 +4,11 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcType;
 
 import java.text.DecimalFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Vector;
 
 public abstract class Edge implements CanvasElement {
@@ -100,14 +103,71 @@ public abstract class Edge implements CanvasElement {
 			for(int i = 0; i < points.size()-1; i++) {
 				Vector<Point2D> intersections = diagram.findEdgeIntersections(points.get(i), points.get(i+1));
 				
-				g.strokeLine(
+//				for(Point2D p : intersections) {
+//					g.fillOval(p.getX()-2, p.getY()-2, 4, 4);
+//				}
+				
+				if(intersections.size() == 0) {
+					g.strokeLine(
 						points.get(i).getX(), 
 						points.get(i).getY(), 
 						points.get(i+1).getX(),
-						points.get(i+1).getY());
-				
-				for(Point2D p : intersections) {
-					g.fillOval(p.getX()-2, p.getY()-2, 4, 4);
+						points.get(i+1).getY());					
+				} else {
+					
+					Point2D first = points.get(i);
+					Point2D last = points.get(i+1);
+					
+					Point2D now = first.getX() < last.getX() ? first : last;
+					Point2D endOfLine = first.getX() < last.getX() ? last : first;
+					
+					Collections.sort(intersections, new Comparator<Point2D>() {
+
+						@Override
+						public int compare(Point2D o1, Point2D o2) {
+							// TODO Auto-generated method stub
+							return o1.getX() < o2.getX() ? -1 : o1.getX() == o2.getX() ? 0 : 1;
+						}
+					});
+					
+					boolean tunnelMode = false;
+					final int R = 5;
+					while(intersections.size() > 0) {
+						Point2D next = intersections.remove(0);
+						if(tunnelMode) {
+							if(next.getX() - 2 * R > now.getX()) { // enough space to next 
+								g.strokeArc(now.getX() - R , now.getY() - R, R*2, R*2, 0, 90, ArcType.OPEN);
+								g.strokeLine(now.getX() + R, now.getY(), next.getX() - R, next.getY() );
+								g.strokeArc(next.getX() - R, next.getY() - R, R*2, R*2, 90, 90, ArcType.OPEN);
+							} else { // not enough space -> just line to next
+								g.strokeLine(now.getX(), now.getY() - R, next.getX(), next.getY() - R );
+							}
+						} else {
+							if(next.getX() - R > now.getX()) {
+								g.strokeLine(now.getX(), now.getY(), next.getX() - R, next.getY() );
+								g.strokeArc(next.getX() - R, next.getY() - R, R*2, R*2, 90, 90, ArcType.OPEN);
+							} else {
+//								double midX = (now.getX() + next.getX()) / 2;
+								g.strokeLine(now.getX(), now.getY(), now.getX(), next.getY() - R);
+								g.strokeLine(now.getX(), now.getY(), next.getX(), next.getY());
+//								g.strokeLine(midX, now.getY() - R, next.getX(), next.getY() - R);
+							}
+							tunnelMode = true;
+						}
+						now = next;
+					}
+					
+					// last intersection to end of line
+	
+					if(endOfLine.getX() - R > now.getX()) {
+						g.strokeArc(now.getX() - R , now.getY() - R, R*2, R*2, 0, 90, ArcType.OPEN);
+						g.strokeLine(now.getX() + R, now.getY(), endOfLine.getX(), endOfLine.getY());
+					} else {
+//						double midX = (now.getX() + endOfLine.getX()) / 2;
+						g.strokeLine(now.getX(), now.getY() - R, endOfLine.getX(), endOfLine.getY() - R);
+						g.strokeLine(endOfLine.getX(), now.getY() - R, endOfLine.getX(), endOfLine.getY());
+//						g.strokeLine(midX, now.getY(), endOfLine.getX(), endOfLine.getY());
+					}
 				}
 			}
 							

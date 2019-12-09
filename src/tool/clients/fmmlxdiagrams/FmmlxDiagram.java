@@ -276,14 +276,15 @@ public class FmmlxDiagram {
 	////						MouseListener						////
 	////////////////////////////////////////////////////////////////////
 	private void mousePressed(MouseEvent e) {
+		if(suppressRedraw) return; 
 		lastAction = System.currentTimeMillis();
         suppressRedraw = false;
 		Point2D p = scale(e);
 		clearContextMenus();
 
-		if (isMiddleClick(e)) {
-			selectedObjects.addAll(objects);
-		}
+//		if (isMiddleClick(e)) {
+//			selectedObjects.addAll(objects);
+//		}
 		if (isLeftClick(e)) {
 			handleLeftPressed(e);
 		}
@@ -949,12 +950,14 @@ public class FmmlxDiagram {
 			for(int i = 0; i < otherPoints.size()-1; i++) {
 				Point2D c = otherPoints.get(i);
 				Point2D d = otherPoints.get(i+1);
-				if(a.getY() == b.getY()) { // possibly redundant
-					if(c.getX() == d.getX()) {
-						// check for intersection
-						if(c.getY() < a.getY() ^ d.getY() < a.getY()) { // if c and d are on different sides of a/b (y)
-							if(a.getX() < c.getX() ^ b.getX() < c.getX() ) { // if a and c are on different sides of c/d (x)
-								result.add(new Point2D(c.getX(), a.getY()));
+				if(a != c && b != d && a != d && b != c) {
+					if(a.getY() == b.getY()) { // possibly redundant
+						if(c.getX() == d.getX()) {
+							// check for intersection
+							if((c.getY() < a.getY()) != (d.getY() < a.getY())) { // if c and d are on different sides of a/b (y)
+								if((a.getX() < c.getX()) != (b.getX() < c.getX())) { // if a and b are on different sides of c/d (x)
+									result.add(new Point2D(c.getX(), a.getY()));
+								}
 							}
 						}
 					}
