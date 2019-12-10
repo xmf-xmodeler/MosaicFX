@@ -78,7 +78,7 @@ public abstract class Edge implements CanvasElement {
 		} else {
 		    Vector<Point2D> points = getAllPoints();
 //			for (EdgeLabel label : labels) label.paintOn(g, xOffset, yOffset, fmmlxDiagram);
-		    g.setFill(Color.RED);
+		    g.setFill(new Color(.8, .8, .9, 1.));
 		    g.fillText(
 		    		new DecimalFormat("0.00").format(Math.atan2(-endNode.getCenterY() + startNode.getCenterY(), endNode.getCenterX() - startNode.getCenterX())/Math.PI)+"\u03C0", 
 		    		.5*(startNode.getCenterX() + endNode.getCenterX()), 
@@ -103,10 +103,6 @@ public abstract class Edge implements CanvasElement {
 			for(int i = 0; i < points.size()-1; i++) {
 				Vector<Point2D> intersections = diagram.findEdgeIntersections(points.get(i), points.get(i+1));
 				
-//				for(Point2D p : intersections) {
-//					g.fillOval(p.getX()-2, p.getY()-2, 4, 4);
-//				}
-				
 				if(intersections.size() == 0) {
 					g.strokeLine(
 						points.get(i).getX(), 
@@ -125,7 +121,6 @@ public abstract class Edge implements CanvasElement {
 
 						@Override
 						public int compare(Point2D o1, Point2D o2) {
-							// TODO Auto-generated method stub
 							return o1.getX() < o2.getX() ? -1 : o1.getX() == o2.getX() ? 0 : 1;
 						}
 					});
@@ -147,10 +142,8 @@ public abstract class Edge implements CanvasElement {
 								g.strokeLine(now.getX(), now.getY(), next.getX() - R, next.getY() );
 								g.strokeArc(next.getX() - R, next.getY() - R, R*2, R*2, 90, 90, ArcType.OPEN);
 							} else {
-//								double midX = (now.getX() + next.getX()) / 2;
 								g.strokeLine(now.getX(), now.getY(), now.getX(), next.getY() - R);
-								g.strokeLine(now.getX(), now.getY(), next.getX(), next.getY());
-//								g.strokeLine(midX, now.getY() - R, next.getX(), next.getY() - R);
+								g.strokeLine(now.getX(), now.getY() - R, next.getX(), next.getY() - R);
 							}
 							tunnelMode = true;
 						}
@@ -163,10 +156,8 @@ public abstract class Edge implements CanvasElement {
 						g.strokeArc(now.getX() - R , now.getY() - R, R*2, R*2, 0, 90, ArcType.OPEN);
 						g.strokeLine(now.getX() + R, now.getY(), endOfLine.getX(), endOfLine.getY());
 					} else {
-//						double midX = (now.getX() + endOfLine.getX()) / 2;
 						g.strokeLine(now.getX(), now.getY() - R, endOfLine.getX(), endOfLine.getY() - R);
 						g.strokeLine(endOfLine.getX(), now.getY() - R, endOfLine.getX(), endOfLine.getY());
-//						g.strokeLine(midX, now.getY(), endOfLine.getX(), endOfLine.getY());
 					}
 				}
 			}

@@ -170,10 +170,7 @@ public class FmmlxDiagram {
 		
 		enums = comm.fetchAllEnums(this);
 
-		
-		for(Edge e : edges) {
-			e.align();
-		}
+		for(Edge e : edges) {e.align();}
 		
 		resizeCanvas();
 		suppressRedraw = false;
@@ -218,8 +215,7 @@ public class FmmlxDiagram {
 		if (suppressRedraw) {
 			//System.err.println("redraw skipped");
 			return;}
-		if (objects.size() <= 0) {
-			System.err.println("redraw skipped (0)");return;}
+		if (objects.size() <= 0) {return;}
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
 			// we are on the right Thread already:
 			paintOn(canvas.getGraphicsContext2D(), 0, 0);
@@ -352,6 +348,9 @@ public class FmmlxDiagram {
 				s.moveTo(p.getX(), p.getY(), this);
 			}
 		objectsMoved = true;
+        
+		for(Edge e : edges) {e.align();}
+
 		redraw();
 //		} else {
 //			mode = MouseMode.MULTISELECT;

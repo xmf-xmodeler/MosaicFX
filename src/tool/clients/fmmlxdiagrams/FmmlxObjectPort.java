@@ -47,9 +47,9 @@ public class FmmlxObjectPort {
 	
 	private Double getAngle(Edge edge, PortRegion direction) {
 		double startAngle = Math.PI*(
-				direction == PortRegion.NORTH?-3./2:
+				direction == PortRegion.NORTH?-1./2:
             	direction == PortRegion.EAST?-1.:
-            	direction == PortRegion.SOUTH?-1./2:
+            	direction == PortRegion.SOUTH?-3./2:
             	0);
 		FmmlxObject otherEnd = edge.startNode==owner?edge.endNode:edge.startNode;
 		double angle = Math.atan2(
