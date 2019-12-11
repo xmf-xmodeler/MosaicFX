@@ -268,8 +268,11 @@ public class FmmlxDiagramCommunicator {
 					Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(11)), //mul s->e
 					Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(12)), //mul e->e
 					labelPositions,
-					diagram);
-			result.add(object);
+					diagram 
+					//,(Integer) edgeInfoAsList.get(13), // sourceHead
+					//(Integer) edgeInfoAsList.get(14) // targetHead
+			);
+					result.add(object);
 		}
 		return result;
 	}
@@ -727,7 +730,8 @@ public class FmmlxDiagramCommunicator {
 			String accessSourceFromTargetName, String accessTargetFromSourceName,
 			String fwName, String reverseName,
 			Multiplicity mul1, Multiplicity mul2,
-			Integer instLevel1, Integer instLevel2) {
+			Integer instLevel1, Integer instLevel2, boolean sourceVisible, boolean targetVisible,
+			boolean isSymmetric, boolean isTransitive) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(class1Id), new Value(class2Id),
@@ -735,7 +739,8 @@ public class FmmlxDiagramCommunicator {
 				new Value(fwName), reverseName == null ? new Value(-1) : new Value(reverseName),
 				new Value(mul1.toValue()),
 				new Value(mul2.toValue()), // multiplicity,
-				new Value(instLevel1), new Value(instLevel2)};
+				new Value(instLevel1), new Value(instLevel2),
+				new Value(sourceVisible), new Value(targetVisible), new Value(isSymmetric), new Value(isTransitive) };
 		WorkbenchClient.theClient().send(handler, "addAssociation", message);
 	}
 

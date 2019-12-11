@@ -5,6 +5,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.paint.Color;
+import tool.clients.fmmlxdiagrams.Edge.HeadStyle;
 import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
@@ -24,11 +25,17 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	private Integer levelEndToStart;
 	private Multiplicity multiplicityStartToEnd;
 	private Multiplicity multiplicityEndToStart;
+	protected boolean sourceVisible;
+	protected boolean targetVisible;
 
+	HeadStyle sourceHead; 
+	HeadStyle targetHead;
 	private final static Color TRANSPARENT = new Color(0, 0, 0, 0);
 	private final static Color BLACK = new Color(0, 0, 0, 1);
 	private final static Color WHITE = new Color(1, 1, 1, 1);
 
+	
+	
 	FmmlxAssociation(
 			Integer id,
 			Integer startId,
@@ -45,7 +52,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			Multiplicity multiplicityStartToEnd,
 			Multiplicity multiplicityEndToStart,
 			Vector<Object> labelPositions,
-			FmmlxDiagram diagram) {
+			FmmlxDiagram diagram){
 
 		super(id, diagram.getObjectById(startId), diagram.getObjectById(endId), points, sourcePort, targetPort, labelPositions, diagram);
 
@@ -57,8 +64,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		this.levelEndToStart = levelEndToStart;
 		this.multiplicityStartToEnd = multiplicityStartToEnd;
 		this.multiplicityEndToStart = multiplicityEndToStart;
-		
-//		layout();
+		//		layout();
 	}
 	
 	private enum Anchor {SOURCE,CENTRE,TARGET};
@@ -113,10 +119,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	}
 	///////////////////////////////////////////////////////////////////////////
 
-	@Override
-	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
-		super.paintOn(g, xOffset, yOffset, fmmlxDiagram);
-	}
+	
 
 	@Override
 	public String getName() {
@@ -167,7 +170,14 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	public Multiplicity getMultiplicityEndToStart() {
 		return multiplicityEndToStart;
 	}
-
+	
+	public boolean getTargetVisible() {
+		return targetVisible;
+	}
+	
+	public boolean getSourceVisible() {
+		return sourceVisible;
+	}
 
 	public String toPair() {
 		String firstString = this.getSourceNode().getName();
@@ -277,4 +287,10 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			diagram.updateDiagram();
 		}
 	};
+	
+	@Override
+	public HeadStyle getTargetDecoration() {
+		
+		return HeadStyle.ARROW;
+	}
 }

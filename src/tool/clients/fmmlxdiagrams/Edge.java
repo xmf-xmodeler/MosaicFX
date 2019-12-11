@@ -4,6 +4,8 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Affine;
+import tool.clients.fmmlxdiagrams.PortRegion;
 
 import java.text.DecimalFormat;
 import java.util.Vector;
@@ -17,10 +19,20 @@ public abstract class Edge implements CanvasElement {
 	protected FmmlxDiagram diagram;
 	protected final Double DEFAULT_TOLERANCE = 6.;
 	protected boolean layoutingFinishedSuccesfully;
-	protected boolean SourceVisible;
-	protected boolean TargetVisible;
+
 	private Vector<Object> labelPositions;
 
+	protected enum HeadStyle {NO_ARROW(0),ARROW(1), FULL_TRIANGLE(2), CIRCLE(3);
+		int id;
+		private HeadStyle(int id) {this.id=id;}
+		//private int getID() {return id;}
+		private static HeadStyle getHeadStyle(int id) {
+			for (HeadStyle headStyle : HeadStyle.values()) if (headStyle.id==id) return headStyle;
+			throw new IllegalArgumentException("HeadStyle ID "+ id + " not in use!");
+		}
+		
+		}
+	
 	public Edge(int id, 
 			FmmlxObject startNode, FmmlxObject endNode, 
 			Vector<Point2D> intermediatePoints, 
@@ -33,6 +45,7 @@ public abstract class Edge implements CanvasElement {
 		this.diagram = diagram;
 		this.startNode = startNode;
 		this.endNode = endNode;
+
 		if (intermediatePoints == null || intermediatePoints.size() < 1) {
 //			this.points.add(new Point2D(startNode.getX() + startNode.getWidth() / 2, startNode.getY() + startNode.getHeight() / 2));
 //			this.points.add(new Point2D(endNode.getX() + endNode.getWidth() / 2, endNode.getY() + endNode.getHeight() / 2));
@@ -78,7 +91,45 @@ public abstract class Edge implements CanvasElement {
 	
 			// resetting the graphicsContext
 			g.setLineDashes(0);
+			
+			drawTargetDecoration(g,getTargetDecoration(),endNode.getDirectionForEdge(this, false), endNode.getPointForEdge(this, false));
+					
 		}
+	}
+	
+	
+
+	private void drawTargetDecoration(GraphicsContext g, HeadStyle targetDecoration, PortRegion directionForEdge,
+			Point2D pointForEdge) {
+		if (targetDecoration==HeadStyle.NO_ARROW) {
+			return;
+		}
+		
+		Affine old = g.getTransform();
+		Affine local = new Affine(old);
+		double angle=(directionForEdge==PortRegion.EAST?-0.5:directionForEdge== PortRegion.WEST?0.5:directionForEdge== PortRegion.NORTH?1:0)*180;
+		local.appendRotation(angle, pointForEdge.getX(), pointForEdge.getY());
+		g.setTransform(local);
+		switch (targetDecoration) {
+		case ARROW:
+			{
+			final double size=16;
+			System.out.println(angle);
+			g.strokeLine(pointForEdge.getX()-size/2, pointForEdge.getY()+size, pointForEdge.getX(), pointForEdge.getY());
+			g.strokeLine(pointForEdge.getX()+size/2, pointForEdge.getY()+size, pointForEdge.getX(), pointForEdge.getY());
+			}
+			break;
+	
+		default:
+			break;
+		
+		}
+		g.setTransform(old);
+	}
+	
+	public HeadStyle getTargetDecoration() {
+	
+		return HeadStyle.NO_ARROW;
 	}
 
 	protected Vector<Point2D> getAllPoints() {
