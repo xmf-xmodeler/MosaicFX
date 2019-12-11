@@ -227,7 +227,37 @@ public class FmmlxDiagramCommunicator {
 		}
 		return result;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public Vector<Edge> getAllInheritanceEdges(FmmlxDiagram diagram) {
+		Vector<Object> response = xmfRequest(handler, diagram, "getAllInheritanceEdges", new Value[]{});
+		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+		Vector<Edge> result = new Vector<>();
 
+		for (Object edgeInfo : responseContent) {
+			Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
+
+			Vector<Point2D> listOfPoints = null;
+			Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(3);
+			if (pointsListO != null) {
+				listOfPoints = new Vector<Point2D>();
+				for (Object pointO : pointsListO) {
+					Vector<Object> pointV = (Vector<Object>) pointO;
+					Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); // leaving 0 free for future use as tag
+					listOfPoints.addElement(pointP);
+				}
+			}
+
+			Edge object = new InheritanceEdge(
+					(Integer) edgeInfoAsList.get(0), // id
+					(Integer) edgeInfoAsList.get(1), // startId
+					(Integer) edgeInfoAsList.get(2), // endId
+					listOfPoints, // points
+					diagram);
+			result.add(object);
+		}
+		return result;
+	}
 
 	@SuppressWarnings("unchecked")
 	public Vector<Edge> getAllAssociations(FmmlxDiagram diagram) {
@@ -471,8 +501,8 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "sendNewPosition", message);
 	}
 
-	public void sendCurrentPositions(FmmlxDiagram diagram, Edge a) {
-		Vector<Point2D> points = a.getIntermediatePoints();
+	public void sendCurrentPositions(FmmlxDiagram diagram, Edge e) {
+		Vector<Point2D> points = e.getIntermediatePoints();
 
 		Value[] listOfPoints = new Value[points.size()];
 		for (int i = 0; i < listOfPoints.length; i++) {
@@ -485,11 +515,9 @@ public class FmmlxDiagramCommunicator {
 		
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(a.id), 
+				new Value(e.id), 
 				new Value(listOfPoints)};
 		WorkbenchClient.theClient().send(handler, "sendNewPositions", message);
-//		xmfRequest(handler, "sendNewPositions",
-//				new Value[]{new Value(a.id), new Value(listOfPoints)});
 	}
 
 	////////////////////////////////////////////////////

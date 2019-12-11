@@ -77,7 +77,6 @@ public abstract class Edge implements CanvasElement {
 			layoutLabels(); diagram.redraw();
 		} else {
 		    Vector<Point2D> points = getAllPoints();
-//			for (EdgeLabel label : labels) label.paintOn(g, xOffset, yOffset, fmmlxDiagram);
 		    g.setFill(new Color(.8, .8, .9, 1.));
 		    g.fillText(
 		    		new DecimalFormat("0.00").format(Math.atan2(-endNode.getCenterY() + startNode.getCenterY(), endNode.getCenterX() - startNode.getCenterX())/Math.PI)+"\u03C0", 
@@ -614,4 +613,6 @@ public abstract class Edge implements CanvasElement {
 			horizontal = !horizontal;
 		}
 	}
+	
+	public boolean isVisible() { return true; }
 }

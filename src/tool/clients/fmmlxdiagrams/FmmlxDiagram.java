@@ -101,7 +101,6 @@ public class FmmlxDiagram {
 		canvas.setOnMouseMoved(this::mouseMoved);
 		canvas.addEventFilter(ScrollEvent.ANY, this::handleScroll);
 
-
 		new Thread(this::fetchDiagramData).start();
 
 		try {
@@ -167,6 +166,7 @@ public class FmmlxDiagram {
 		fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
 
 		edges.addAll(fetchedEdges);
+		edges.addAll(comm.getAllInheritanceEdges(this));
 		
 		enums = comm.fetchAllEnums(this);
 
