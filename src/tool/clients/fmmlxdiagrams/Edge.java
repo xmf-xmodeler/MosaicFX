@@ -561,4 +561,57 @@ public abstract class Edge implements CanvasElement {
 	
 	@Override
 	public void unHighlight() {	firstHoverPointIndex = null;}
+
+	public void removeRedundantPoints() {
+		pointToBeMoved = -1;
+		firstHoverPointIndex = null;
+		final double TOLERANCE = 3;
+		
+		if(intermediatePoints.size() < 3) return;
+		Integer removeIndex = null;
+		for(int i = 0; removeIndex == null && i < intermediatePoints.size() - 1; i++) {
+//			System.err.println("d("+i+"): " + intermediatePoints.get(i).distance(intermediatePoints.get(i+1)));
+			if(intermediatePoints.get(i).distance(intermediatePoints.get(i+1)) < TOLERANCE) removeIndex = i;
+		}
+				
+		if(removeIndex != null) {
+			intermediatePoints.remove(removeIndex.intValue()); intermediatePoints.remove(removeIndex.intValue());
+//			if(intermediatePoints.size() >= 2) {
+//			for(int z = 0; z < intermediatePoints.size()-1;z++) {
+//				Point2D first = intermediatePoints.get(z);
+//				Point2D second = intermediatePoints.get(z+1);
+//				
+//				if(Math.abs(first.getX()-second.getX()) < TOLERANCE) {
+//					second = new Point2D(first.getX(), second.getY());
+//					intermediatePoints.setElementAt(second, z+1);
+//				}
+//				else if(Math.abs(first.getY()-second.getY()) < TOLERANCE) {
+//					second = new Point2D(second.getX(), first.getY());
+//					intermediatePoints.setElementAt(second, z+1);
+//				}
+//			}
+			removeRedundantPoints();
+			align();
+			ensure90DegreeAngles();
+		}
+	}
+
+	private void ensure90DegreeAngles() {
+		boolean horizontal = startNode.getDirectionForEdge(this, true).isHorizontal();
+
+//		System.err.println();
+		for(int countTotal = 1; countTotal <= intermediatePoints.size(); countTotal++) {
+			Point2D now = intermediatePoints.get(countTotal-1);
+			Point2D previous = getAllPoints().get(countTotal-1);
+//			System.err.print(now + " moveTo ");
+			if(horizontal) {
+				now = new Point2D(now.getX(), previous.getY());
+			} else {
+				now = new Point2D(previous.getX(), now.getY());
+			}
+//			System.err.println(now);
+			intermediatePoints.setElementAt(now, countTotal-1);
+			horizontal = !horizontal;
+		}
+	}
 }

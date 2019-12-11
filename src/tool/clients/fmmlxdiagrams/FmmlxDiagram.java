@@ -384,6 +384,8 @@ public class FmmlxDiagram {
 	}
 
 	private void mouseReleasedStandard() {
+		for (Edge e : edges) e.removeRedundantPoints();
+		
 		if (objectsMoved) {
 			for (CanvasElement s : selectedObjects)
 				if (s instanceof FmmlxObject) {
