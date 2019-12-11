@@ -21,7 +21,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
+import tool.clients.fmmlxdiagrams.Palette;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.fmmlxPalette.FmmlxPalette;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 
 import java.io.FileInputStream;
@@ -81,6 +83,10 @@ public class FmmlxDiagram {
 	private final int diagramID;
 	private transient long lastAction;
 	private transient boolean suppressRedraw;
+	private final FmmlxPalette fmmlxPalette;
+	
+	String edgeCreationType = null;
+	String nodeCreationType = null;
 
 
 	FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String label) {
@@ -91,9 +97,12 @@ public class FmmlxDiagram {
 		canvas = new Canvas(canvasRawSize.getX(), canvasRawSize.getY());
 		actions = new DiagramActions(this);
 		Palette palette = new Palette(actions);
+		fmmlxPalette = new FmmlxPalette(this);
+		fmmlxPalette.init(this);
 		scrollerCanvas = new ScrollPane(canvas);
 		mainView.setOrientation(Orientation.VERTICAL);
-		mainView.getItems().addAll(palette, scrollerCanvas);
+		mainView.getItems().addAll(fmmlxPalette, palette, scrollerCanvas);
+		mainView.setDividerPosition(0, 0.2);
 
 		canvas.setOnMousePressed(this::mousePressed);
 		canvas.setOnMouseDragged(this::mouseDragged);
@@ -132,9 +141,33 @@ public class FmmlxDiagram {
 	public Vector<FmmlxEnum> getEnums() {
 		return enums;
 	}
+	
+	public void deleteGroup(String name) {
+		fmmlxPalette.deleteGroup(name);
+	}
+	
+	public void deselectPalette() {
+		edgeCreationType = null;
+		nodeCreationType = null;
+		fmmlxPalette.deselect();
+	}
+	
+	public FmmlxPalette getPalette() {
+		return fmmlxPalette;
+	}
+	
+	public void newAction(String groupId, String label, String toolId, String icon) {
+		fmmlxPalette.newAction(this, groupId, label, toolId, icon);
+//    container.layout();
+	}
+	
+	public void newFmmlxGroup(String name) {
+		if (!fmmlxPalette.hasGroup(name)) {
+			fmmlxPalette.newGroup(name);
+		}
+	}
 
 	public void setEnums(Vector<FmmlxEnum> enums) {
-		this.enums = enums;
 	}
 
 	private synchronized void fetchDiagramData() {

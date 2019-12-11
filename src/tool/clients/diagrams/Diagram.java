@@ -1405,7 +1405,6 @@ public class Diagram implements Display {
 	public void newGroup(String name) {
 		if (!palette.hasGroup(name)) {
 			palette.newGroup(name);
-//      container.layout();
 		}
 	}
 

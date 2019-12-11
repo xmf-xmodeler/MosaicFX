@@ -5,6 +5,7 @@ import java.io.PrintStream;
 
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 public class ToggleTool extends Tool {
 
