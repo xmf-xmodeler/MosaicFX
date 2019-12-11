@@ -557,8 +557,10 @@ public class DiagramActions {
 						result.getIdentifierSource(), result.getIdentifierTarget(),
 						result.getDisplayNameSource(), result.getDisplayNameTarget(),
 						result.getMultiplicitySource(), result.getMultiplicityTarget(),
-						result.getInstLevelSource(), result.getInstLevelTarget()
-				);
+						result.getInstLevelSource(), result.getInstLevelTarget(),
+						result.getSourceVisible(),  result.getTargetVisible(), 
+						result.getIsSymmetric(), result.getIsTransitive()
+						);
 				diagram.updateDiagram();
 			}
 			latch.countDown();
@@ -580,7 +582,7 @@ public class DiagramActions {
 						result.getNewDisplayNameSource(), result.getNewDisplayNameTarget(),
 						result.getNewIdentifierSource(), result.getNewIdentifierTarget(),
 						result.getMultiplicitySource(), result.getMultiplicityTarget());
-				diagram.updateDiagram();
+						diagram.updateDiagram();
 			}
 			latch.countDown();
 		});
