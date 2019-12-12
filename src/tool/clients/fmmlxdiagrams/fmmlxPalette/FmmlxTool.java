@@ -46,8 +46,6 @@ public abstract class FmmlxTool {
 
 
 		public abstract TreeItem<String> createButton();
-	  
-		public abstract void writeXML(PrintStream out);
 
 		public abstract String getType();
 

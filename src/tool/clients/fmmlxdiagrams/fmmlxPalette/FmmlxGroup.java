@@ -1,6 +1,5 @@
 package tool.clients.fmmlxdiagrams.fmmlxPalette;
 
-import java.util.Collection;
 import java.util.Vector;
 
 import javafx.scene.control.TreeItem;
@@ -8,8 +7,8 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import xos.Value;
 
 public class FmmlxGroup extends TreeItem {
-	FmmlxPalette fmmlxPalette;
-	String name;
+	private FmmlxPalette fmmlxPalette;
+	private String name;
 	Vector<FmmlxTool> tools = new Vector<FmmlxTool>();
 
 	@SuppressWarnings("unchecked")
@@ -53,21 +52,6 @@ public class FmmlxGroup extends TreeItem {
 			if (tool.getLabel().equals(label)) return tool;
 		return null;
 	}
-	
-	public void newToggle(FmmlxDiagram fmmlxDiagram, String label, String toolId, boolean state, String iconTrue, String iconFalse) {
-		FmmlxToggleTool tool = new FmmlxToggleTool(fmmlxDiagram, label, toolId, state, iconTrue, iconFalse);
-		tools.addAll((Collection<? extends FmmlxTool>) tool);
-	    getChildren().add(tool.getButton());
-	}
-
-	public void newAction(FmmlxDiagram fmmlxDiagram, String label, String toolId, String icon) {
-		FmmlxTool tool = getFmmlxTool(label);
-	    if (tool != null) removeTool(label);
-	    
-	    FmmlxActionTool actionTool = new FmmlxActionTool(fmmlxDiagram, label, toolId, icon);
-	    tools.add(actionTool);
-	    getChildren().add(actionTool.getButton());
-	  }
 
 	private void removeTool(String label) {
 		FmmlxTool tool = getFmmlxTool(label);

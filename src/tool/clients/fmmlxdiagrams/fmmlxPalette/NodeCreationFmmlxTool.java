@@ -1,8 +1,8 @@
 package tool.clients.fmmlxdiagrams.fmmlxPalette;
 
-import java.io.PrintStream;
-
+import java.io.File;
 import javafx.scene.control.TreeItem;
+import javafx.scene.image.ImageView;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 public class NodeCreationFmmlxTool extends FmmlxTool {
@@ -13,20 +13,16 @@ public class NodeCreationFmmlxTool extends FmmlxTool {
 
 	@Override
 	public TreeItem<String> createButton() {
-		// TODO Auto-generated method stub
-		return null;
+		ImageView image = new ImageView(new javafx.scene.image.Image(new File(icon).toURI().toString()));
+		button = new TreeItem<String>(label, image);
+		
+	    return button;
 	}
 
-	@Override
-	public void writeXML(PrintStream out) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public String getType() {
-		// TODO Auto-generated method stub
-		return null;
+		return "NODE";
 	}
 
 }

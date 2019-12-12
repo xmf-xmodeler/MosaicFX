@@ -58,16 +58,17 @@ public class FmmlxPalette{
 		}
 	}
 	
-	private void generateToogle(FmmlxDiagram diagram, String name){
+	private void generateToogle(FmmlxDiagram fmmlxDiagram, String name){
 		
 		FmmlxGroup fmmlxGroup = getFmmlxGroup(name);
 		if(fmmlxGroup != null) {
 			if(fmmlxGroup.getName().equals("Models")) {
 				//TODO
 			} else if(fmmlxGroup.getName().equals("Relationsship")) {
-				//TODO
+				newTool(fmmlxDiagram, "Relationsship", "Association", "association", true, "resources/gif/Tools/Inherit.png");
+				newTool(fmmlxDiagram, "Relationsship", "Specialization", "specialization", true, "resources/gif/Tools/Inherit.png");
 			} else if(fmmlxGroup.getName().equals("Classes/Object")) {
-				//TODO
+				newTool(fmmlxDiagram, "Classes/Object", "MetaClass", "metaClass", false, "resources/gif/Tools/Inherit.png");
 			}
 		} else
 			System.err.println("cannot find group " + name);
@@ -93,18 +94,21 @@ public class FmmlxPalette{
 	public void deleteGroup(String name) {
 		fmmlxGroups.remove(name);
 	}
-
-	public void newToggle(FmmlxDiagram diagram, String groupName, String label, String toolId, boolean state, String iconTrue, String iconFalse) {
-		FmmlxGroup group = getFmmlxGroup(groupName);
-	    if (group != null) {
-	    	group.newToggle(diagram, label, toolId, state, iconTrue, iconFalse);
-	    } else System.err.println("cannot find group " + groupName);
+	
+	public void newTool(FmmlxDiagram fmmlxDiagram, String groupName, String label, String toolId, boolean isEdge, String icon) {
+		FmmlxGroup fmmlxGroup = getFmmlxGroup(groupName);
+		if (fmmlxGroup != null) {
+			fmmlxGroup.newFmmlxTool(fmmlxDiagram, label, toolId, isEdge, icon);
+		} else
+			System.err.println("cannot find group " + groupName);
+		
+		System.out.println("size " +fmmlxGroup.getChildren().size());
 	}
 	
 	public void newAction(FmmlxDiagram fmmlxDiagram, String groupName, String label, String toolId, String icon) {
 		FmmlxGroup fmmlxGroup = getFmmlxGroup(groupName);
 	    if (fmmlxGroup != null) {
-	      fmmlxGroup.newAction(fmmlxDiagram, label, toolId, icon);
+	      //fmmlxGroup.newAction(fmmlxDiagram, label, toolId, icon);
 	    } else System.err.println("cannot find group " + groupName);
 	}
 	
