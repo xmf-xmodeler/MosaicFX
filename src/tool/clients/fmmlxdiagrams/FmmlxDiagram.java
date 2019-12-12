@@ -359,21 +359,17 @@ public class FmmlxDiagram {
 	}
 
 	private void mouseReleased(MouseEvent e) {
-		if (isMiddleClick(e)) {
-			selectedObjects.clear();
-		} else {
-			if (mouseMode == MouseMode.MULTISELECT) {
-				handleMultiSelect();
-			}
-			if (mouseMode == MouseMode.STANDARD) {
-				mouseReleasedStandard();
-			}
+		if (mouseMode == MouseMode.MULTISELECT) {
+			handleMultiSelect();
+		}
+		if (mouseMode == MouseMode.STANDARD) {
+			mouseReleasedStandard();
+		}
 
-			mouseMode = MouseMode.STANDARD;
-			for (Edge edge : edges) {
-				edge.dropPoint();
-				edge.align();
-			}
+		mouseMode = MouseMode.STANDARD;
+		for (Edge edge : edges) {
+			edge.dropPoint();
+			edge.align();
 		}
 		resizeCanvas();
 		if(diagramRequiresUpdate) {

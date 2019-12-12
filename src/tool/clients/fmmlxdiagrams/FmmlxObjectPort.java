@@ -63,7 +63,9 @@ public class FmmlxObjectPort {
 	public Point2D getPointForEdge(Edge edge, boolean isStartNode) {
 		for(PortRegion direction : PortRegion.values()) {
 			Vector<Edge> edgesOnOneSide = edges.get(direction);
+			int visibleEdgeCount = 0;
 			for(int i = 0; i < edgesOnOneSide.size(); i++) {
+				if(edgesOnOneSide.get(i).visible) visibleEdgeCount++;
 				if(edgesOnOneSide.get(i) == edge && (isStartNode?edge.startNode:edge.endNode) == owner) {
 					double maxX = direction == PortRegion.NORTH || direction == PortRegion.WEST ? owner.getX() : owner.getMaxRight();
 					double minX = direction == PortRegion.SOUTH || direction == PortRegion.WEST ? owner.getX() : owner.getMaxRight();
@@ -73,9 +75,15 @@ public class FmmlxObjectPort {
 					double diffX = maxX - minX;
 					double diffY = maxY - minY;
 					
-					double share = 1. / (edgesOnOneSide.size() + 1);
+					int visibleEdges = 0;
+					for(Edge E : edgesOnOneSide) if(E.visible) visibleEdges++;
 					
-					return new Point2D(minX + diffX * share * (i+1), minY + diffY * share * (i+1));
+					if(edge.visible) {
+						double share = 1. / (visibleEdges + 1);
+						return new Point2D(minX + diffX * share * (visibleEdgeCount), minY + diffY * share * (visibleEdgeCount));
+					}	else {
+						return new Point2D(minX + diffX / 2, minY + diffY / 2);
+					}
 				}
 			}
 		}

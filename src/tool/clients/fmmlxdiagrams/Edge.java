@@ -3,6 +3,8 @@ package tool.clients.fmmlxdiagrams;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.scene.transform.Affine;
@@ -22,6 +24,8 @@ public abstract class Edge implements CanvasElement {
 	protected FmmlxDiagram diagram;
 	protected final Double DEFAULT_TOLERANCE = 6.;
 	protected boolean layoutingFinishedSuccesfully;
+
+	protected boolean visible;
 
 	private Vector<Object> labelPositions;
 
@@ -85,6 +89,7 @@ public abstract class Edge implements CanvasElement {
 
 	@Override
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
+		if(!visible) return;
 		if(!layoutingFinishedSuccesfully) {
 			layoutLabels(); diagram.redraw();
 		} else {
@@ -223,7 +228,7 @@ public abstract class Edge implements CanvasElement {
 			
 			drawTargetDecoration(g,getTargetDecoration(),endNode.getDirectionForEdge(this, false), endNode.getPointForEdge(this, false));
 					
-		}
+			}
 		}
 	
 	
@@ -243,7 +248,6 @@ public abstract class Edge implements CanvasElement {
 		case ARROW:
 			{
 			final double size=16;
-			System.out.println(angle);
 			g.strokeLine(pointForEdge.getX()-size/2, pointForEdge.getY()+size, pointForEdge.getX(), pointForEdge.getY());
 			g.strokeLine(pointForEdge.getX()+size/2, pointForEdge.getY()+size, pointForEdge.getX(), pointForEdge.getY());
 			}
@@ -272,6 +276,7 @@ public abstract class Edge implements CanvasElement {
 	protected abstract void layoutLabels();
 	
 	protected void align() {
+		checkVisibilityMode();
 		if(intermediatePoints.size() < 2) {
 			if(startNode.getDirectionForEdge(this, true).isHorizontal())
 				intermediatePoints.add(new Point2D((startNode.getCenterX() + endNode.getCenterX())/2, startNode.getCenterY())); 
@@ -304,6 +309,8 @@ public abstract class Edge implements CanvasElement {
 //		System.err.println("---");
 	}
 	
+	protected void checkVisibilityMode() {visible = true;}
+
 	protected Color getPrimaryColor() {
 		return Color.BLACK;
 	}
@@ -317,6 +324,7 @@ public abstract class Edge implements CanvasElement {
 	}
 
 	public boolean isHit(double x, double y) {
+		if(!visible) return false;
 		return null != isHit(new Point2D(x, y), 2.5);
 	}
 
@@ -353,8 +361,17 @@ public abstract class Edge implements CanvasElement {
 	}
 
 	@Override
-	public abstract ContextMenu getContextMenu(DiagramActions actions);
+	public final ContextMenu getContextMenu(DiagramActions actions) {
+		ContextMenu localMenu = getContextMenuLocal(actions);
+		if(localMenu.getItems().size()>0) localMenu.getItems().add(new SeparatorMenuItem());
+		MenuItem repairItem = new MenuItem("Repair Edge Alignment");
+		repairItem.setOnAction(e -> ensure90DegreeAngles());
+		localMenu.getItems().add(repairItem);
+		return localMenu;
+	}
 
+	public abstract ContextMenu getContextMenuLocal(DiagramActions actions);
+	
 	@Override
 	public void moveTo(double x, double y, FmmlxDiagram diagram) {
 		lastMousePosition = new Point2D(x, y);
@@ -426,42 +443,14 @@ public abstract class Edge implements CanvasElement {
 			movementDirectionHorizontal = points.get(pointToBeMoved).getX() == points.get(pointToBeMoved+1).getX();
 			}
 			else if(hitLine == 0) {
+				pointToBeMoved = -2;
 				moveMode = MoveMode.moveSourcePortArea;
 			}
 			else if(hitLine == points.size() - 2) {
+				pointToBeMoved = -2;
 				moveMode = MoveMode.moveTargetPortArea;
-			}
-				
+			}		
 		}
-		
-		
-
-/*		// If there is a Point at p, then that is to be moved
-		// otherwise one is created on the spot.
-		// that point's index is stored temporarily while the mouse is dragged
-		pointToBeMoved = -1;
-		for (int i = 1; i < points.size() - 1; i++) { // can't drag first nor last
-			Point2D edgePoint = points.get(i);
-			if (distance(mousePoint, edgePoint) < DEFAULT_TOLERANCE) {
-				pointToBeMoved = i;
-			}
-		}
-		if (pointToBeMoved == -1) { // not pressed on an existing node
-			for (int i = 0; i < points.size() - 1; i++) {
-			//	System.err.println("distance=" + distance(mousePoint, points.get(i), points.get(i+1)));
-				if (distance_OLD(mousePoint, points.get(i), points.get(i + 1)) < DEFAULT_TOLERANCE) {
-					pointToBeMoved = i + 1; // i is the point before the node. We will insert a new one, which will be number i+1
-				}
-			}
-			if (pointToBeMoved != -1) { // make sure we found one
-				Point2D newPoint = new Point2D(mousePoint.getX(), mousePoint.getY());
-				intermediatePoints.insertElementAt(newPoint, pointToBeMoved-1);
-			}
-		}*/
-	}
-
-	private Double distance(Point2D A, Point2D B) {
-		return Math.sqrt(Math.pow(A.getX() - B.getX(), 2) + Math.pow(A.getY() - B.getY(), 2));
 	}
 
 	public void dropPoint() {

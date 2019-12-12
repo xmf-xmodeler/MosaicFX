@@ -196,7 +196,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	}
 
 	@Override
-	public ContextMenu getContextMenu(DiagramActions actions) {
+	public ContextMenu getContextMenuLocal(DiagramActions actions) {
 		return new AssociationContextMenu(this, actions);
 	}
 

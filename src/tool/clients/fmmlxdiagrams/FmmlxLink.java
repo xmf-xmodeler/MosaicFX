@@ -67,7 +67,7 @@ public class FmmlxLink extends Edge {
 	}
 
 	@Override
-	public ContextMenu getContextMenu(DiagramActions actions) {
+	public ContextMenu getContextMenuLocal(DiagramActions actions) {
 		return new AssociationInstanceContextMenu(this, actions);
 	}
 	

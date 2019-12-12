@@ -17,15 +17,17 @@ public class InheritanceEdge extends Edge {
 		super(id, diagram.getObjectById(childID), diagram.getObjectById(parentID), intermediatePoints, new Vector<>(), diagram);
 	}
 
+	protected void checkVisibilityMode() {visible = endNode.getPointForEdge(this, false).distance(startNode.getPointForEdge(this, true))<1000;}
+	
 	@Override
 	protected void layoutLabels() {layoutingFinishedSuccesfully = true;} // NONE
 
 	@Override
-	public ContextMenu getContextMenu(DiagramActions actions) {
-		return null;
+	public ContextMenu getContextMenuLocal(DiagramActions actions) {
+		return new ContextMenu();
 	}
 	
 	protected Color getPrimaryColor() {
-		return new Color(.9,.3,.5,1.);
+		return Color.BLACK;
 	}
 }
