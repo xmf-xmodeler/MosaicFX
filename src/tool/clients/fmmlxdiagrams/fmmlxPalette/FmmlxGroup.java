@@ -4,11 +4,6 @@ import java.util.Collection;
 import java.util.Vector;
 
 import javafx.scene.control.TreeItem;
-import tool.clients.diagrams.ActionTool;
-import tool.clients.diagrams.Diagram;
-import tool.clients.diagrams.EdgeCreationTool;
-import tool.clients.diagrams.NodeCreationTool;
-import tool.clients.diagrams.Tool;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import xos.Value;
 
@@ -17,6 +12,7 @@ public class FmmlxGroup extends TreeItem {
 	String name;
 	Vector<FmmlxTool> tools = new Vector<FmmlxTool>();
 
+	@SuppressWarnings("unchecked")
 	public FmmlxGroup(String name) {
 		super(name);
 		this.name = name;

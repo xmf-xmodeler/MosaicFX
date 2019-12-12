@@ -43,7 +43,8 @@ public class FmmlxDiagram {
 	
 	public static final boolean SHOW_MENUITEMS_IN_DEVELOPMENT = false;
 	
-	// The elements which the diagram consists of GUI-wise
+	// The elements which the diagram consists of GUI-wis
+	private SplitPane pane;
 	private SplitPane mainView;
 	private Canvas canvas;
 	private ScrollPane scrollerCanvas;
@@ -93,6 +94,8 @@ public class FmmlxDiagram {
 		this.comm = comm;
 		this.diagramID = diagramID;
 		this.lastAction = System.currentTimeMillis();
+		
+		pane = new SplitPane();
 		mainView = new SplitPane();
 		canvas = new Canvas(canvasRawSize.getX(), canvasRawSize.getY());
 		actions = new DiagramActions(this);
@@ -100,9 +103,13 @@ public class FmmlxDiagram {
 		fmmlxPalette = new FmmlxPalette(this);
 		fmmlxPalette.init(this);
 		scrollerCanvas = new ScrollPane(canvas);
+		pane.setOrientation(Orientation.HORIZONTAL);
+		pane.setDividerPosition(0, 0.2);
 		mainView.setOrientation(Orientation.VERTICAL);
-		mainView.getItems().addAll(fmmlxPalette, palette, scrollerCanvas);
+		mainView.getItems().addAll(palette, scrollerCanvas);
 		mainView.setDividerPosition(0, 0.2);
+		
+		pane.getItems().addAll(fmmlxPalette.getToolBar(), mainView);
 
 		canvas.setOnMousePressed(this::mousePressed);
 		canvas.setOnMouseDragged(this::mouseDragged);
@@ -149,7 +156,6 @@ public class FmmlxDiagram {
 	public void deselectPalette() {
 		edgeCreationType = null;
 		nodeCreationType = null;
-		fmmlxPalette.deselect();
 	}
 	
 	public FmmlxPalette getPalette() {
@@ -158,12 +164,11 @@ public class FmmlxDiagram {
 	
 	public void newAction(String groupId, String label, String toolId, String icon) {
 		fmmlxPalette.newAction(this, groupId, label, toolId, icon);
-//    container.layout();
 	}
 	
 	public void newFmmlxGroup(String name) {
 		if (!fmmlxPalette.hasGroup(name)) {
-			fmmlxPalette.newGroup(name);
+			fmmlxPalette.newFmmlxGroup(name);
 		}
 	}
 
@@ -234,7 +239,7 @@ public class FmmlxDiagram {
 	// Only used to set the diagram into the tab. Find a better solution
 	@Deprecated
 	public SplitPane getView() {
-		return mainView;
+		return pane;
 	}
 	
 	public FmmlxDiagramCommunicator getComm() {
@@ -247,14 +252,12 @@ public class FmmlxDiagram {
 	
 	public void redraw() {
 		if (suppressRedraw) {
-			//System.err.println("redraw skipped");
 			return;}
 		if (objects.size() <= 0) {
 			System.err.println("redraw skipped (0)");return;}
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
-			// we are on the right Thread already:
 			paintOn(canvas.getGraphicsContext2D(), 0, 0);
-		} else { // create a new Thread
+		} else {
 			CountDownLatch l = new CountDownLatch(1);
 			Platform.runLater(() -> {
 				paintOn(canvas.getGraphicsContext2D(), 0, 0);
@@ -383,10 +386,6 @@ public class FmmlxDiagram {
 			}
 		objectsMoved = true;
 		redraw();
-//		} else {
-//			mode = MouseMode.MULTISELECT;
-//			storeLastClick(p.getX(), p.getY());
-//		}
 	}
 
 	private void mouseReleased(MouseEvent e) {
@@ -426,7 +425,7 @@ public class FmmlxDiagram {
 						}
 					}
 				} else if (s instanceof Edge) {
-//					FmmlxAssociation a = (FmmlxAssociation) s;
+
 					comm.sendCurrentPositions(this, (Edge) s);
 				} else if (s instanceof DiagramEdgeLabel) {
 					comm.storeLabelInfo(this, (DiagramEdgeLabel) s);

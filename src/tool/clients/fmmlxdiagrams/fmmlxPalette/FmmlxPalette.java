@@ -1,28 +1,26 @@
 package tool.clients.fmmlxdiagrams.fmmlxPalette;
 
 import java.util.HashMap;
+import java.util.Vector;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import tool.clients.diagrams.Diagram;
 import tool.clients.diagrams.Group;
 import tool.clients.diagrams.Tool;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
-public class FmmlxPalette extends ToolBar{
+public class FmmlxPalette{
 	
 	private TreeView<String> tree;
-//	private HashMap<String,TreeItem<String>> gRoups = new HashMap<>();
 	private HashMap<String, FmmlxGroup> fmmlxGroups = new HashMap<>();
-//	private HashMap<String,TreeItem<String>> buttons = new HashMap<>();
 	private TreeItem<String> root;
+
 	
 	public FmmlxPalette(FmmlxDiagram diagram) {
 		  tree = new TreeView<String>();
-		  root = new TreeItem<String>("Root");
+		  root = new TreeItem<String>();
 		  tree.setRoot(root);
 		  root.setExpanded(true);
 		  
@@ -34,10 +32,6 @@ public class FmmlxPalette extends ToolBar{
 	        		TreeItem<String> oldValue,
 	        		TreeItem<String> newValue) {
 	        	
-//	            TreeItem<String> selectedItem = (TreeItem<String>) newValue;
-	            // Workaround:
-	            // if leaf is selected, 
-	            // then it must be part of a group
 	        	if(newValue == null) return;
 	            if(newValue.getChildren().isEmpty()) {
 	            	TreeItem<String> parent = newValue.getParent();
@@ -52,19 +46,33 @@ public class FmmlxPalette extends ToolBar{
 		  });
 	  }
 	public void init(FmmlxDiagram diagram) {
-		diagram.newFmmlxGroup("FmmlxDiagram");
-		newFmmlxTool(diagram, "Diagram", "Select", "Select", false, "resources/gif/Select.gif");
+		
+		Vector<String> groupNames = new Vector<String>();
+		groupNames.add("Models");
+		groupNames.add("Relationsship");
+		groupNames.add("Classes/Object");
+		
+		for (int i=0 ; i<3; i++) {
+			diagram.newFmmlxGroup(groupNames.get(i));
+			generateToogle(diagram, groupNames.get(i));
+		}
 	}
 	
-	private void newFmmlxTool(FmmlxDiagram diagram, String groupName, String label, String toolId, boolean isEdge,
-			String icon) {
-		FmmlxGroup group = getFmmlxGroup(groupName);
-		if (group != null) {
-			group.newFmmlxTool(diagram, label, toolId, isEdge, icon);
-		} else
-			System.err.println("cannot find group " + groupName);
+	private void generateToogle(FmmlxDiagram diagram, String name){
 		
+		FmmlxGroup fmmlxGroup = getFmmlxGroup(name);
+		if(fmmlxGroup != null) {
+			if(fmmlxGroup.getName().equals("Models")) {
+				//TODO
+			} else if(fmmlxGroup.getName().equals("Relationsship")) {
+				//TODO
+			} else if(fmmlxGroup.getName().equals("Classes/Object")) {
+				//TODO
+			}
+		} else
+			System.err.println("cannot find group " + name);
 	}
+	
 	public boolean hasGroup(String name) {
 		return getFmmlxGroup(name) != null;
 	}
@@ -73,37 +81,35 @@ public class FmmlxPalette extends ToolBar{
 		return fmmlxGroups.get(name);
 	}
 	
-	public void newGroup(String name) {
-		FmmlxGroup group = new FmmlxGroup(name);
+	public void newFmmlxGroup(String name) {
+		FmmlxGroup fmmlxGroup = new FmmlxGroup(name);
 		if(root.getChildren().size() <= 1 ) {
-			group.setExpanded(true);
+			fmmlxGroup.setExpanded(true);
 		}
-		root.getChildren().add(group);
-		fmmlxGroups.put(name, group);
+		root.getChildren().add(fmmlxGroup);
+		fmmlxGroups.put(name, fmmlxGroup);
 	}
 	
 	public void deleteGroup(String name) {
-	    FmmlxGroup group = getFmmlxGroup(name);
-	    if (group != null) {
-	      fmmlxGroups.remove(group);
-	      group.delete();
-	    }
-	  }
-	
-	 public void deselect() {
-	  }
-	
+		fmmlxGroups.remove(name);
+	}
+
 	public void newToggle(FmmlxDiagram diagram, String groupName, String label, String toolId, boolean state, String iconTrue, String iconFalse) {
-	    FmmlxGroup group = getFmmlxGroup(groupName);
+		FmmlxGroup group = getFmmlxGroup(groupName);
 	    if (group != null) {
-	      group.newToggle(diagram, label, toolId, state, iconTrue, iconFalse);
+	    	group.newToggle(diagram, label, toolId, state, iconTrue, iconFalse);
 	    } else System.err.println("cannot find group " + groupName);
-	  }
+	}
+	
 	public void newAction(FmmlxDiagram fmmlxDiagram, String groupName, String label, String toolId, String icon) {
 		FmmlxGroup fmmlxGroup = getFmmlxGroup(groupName);
 	    if (fmmlxGroup != null) {
 	      fmmlxGroup.newAction(fmmlxDiagram, label, toolId, icon);
 	    } else System.err.println("cannot find group " + groupName);
+	}
+	
+	public TreeView<String> getToolBar() {
+		return tree;
 	}
 
 
