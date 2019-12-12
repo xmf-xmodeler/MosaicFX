@@ -2,15 +2,14 @@ package tool.clients.fmmlxdiagrams.fmmlxPalette;
 
 import java.util.Vector;
 
-import tool.clients.diagrams.Tool;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import xos.Value;
 
-public class FmmlxGroupClasses extends FmmlxGroup {
-	
+public class FmmlxGroupModel extends FmmlxGroup {
+
 	private Vector<FmmlxTool> tools = new Vector<FmmlxTool>();
 
-	public FmmlxGroupClasses(String name) {
+	public FmmlxGroupModel(String name) {
 		super(name);
 	}
 

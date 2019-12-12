@@ -1,15 +1,13 @@
 package tool.clients.fmmlxdiagrams.fmmlxPalette;
 
-import java.util.Vector;
 
 import javafx.scene.control.TreeItem;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import xos.Value;
 
-public class FmmlxGroup extends TreeItem {
-	private FmmlxPalette fmmlxPalette;
-	private String name;
-	Vector<FmmlxTool> tools = new Vector<FmmlxTool>();
+public abstract class FmmlxGroup extends TreeItem {
+	public FmmlxPalette fmmlxPalette;
+	public String name;
 
 	@SuppressWarnings("unchecked")
 	public FmmlxGroup(String name) {
@@ -18,73 +16,29 @@ public class FmmlxGroup extends TreeItem {
 	}
 	
 	public String getName() {
-	    return name;
+		return name;
 	}
 	
-	public Value asValue(String name) {
-	    Value[] bs = new Value[tools.size() + 1];
-	    bs[0] = new Value(name);
-	    int i = 1;
-	    for (FmmlxTool tool : tools) {
-	      bs[i++] = new Value(new Value[] { new Value(tool.getId()), new Value(tool.getType()) });
-	    }
-	    return new Value(bs);
-	}
+	public abstract Value asValue(String name);
 	
-	public void delete() {
-		for (FmmlxTool tool : tools) {
-	    	tool.delete();
-	    }
-	}
+	public abstract void delete();
 	
-	public void deselect() {
-		for (FmmlxTool tool : tools) {
-			tool.reset();
-		}
-	}
+	public abstract void deselect();
 	
-	public FmmlxPalette getPalette() {
-		return fmmlxPalette;
-	}
+	public abstract FmmlxPalette getFmmlxPalette();
 	
-	public FmmlxTool getToolLabelled(String label) {
-		for (FmmlxTool tool : tools)
-			if (tool.getLabel().equals(label)) return tool;
-		return null;
-	}
+	public abstract FmmlxTool getToolLabelled(String label);
 
-	private void removeTool(String label) {
-		FmmlxTool tool = getFmmlxTool(label);
-	    removeFmmlxTool(tool);
-		
-	}
+	public abstract void removeTool(String label);
 	
-	void removeFmmlxTool(FmmlxTool tool) {
-	    if (tool != null) {
-	      tools.remove(tool);
-	      tool.delete();
-	    }
-	  }
+	public abstract void removeFmmlxTool(FmmlxTool tool);
 
-	private FmmlxTool getFmmlxTool(String label) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public abstract FmmlxTool getFmmlxTool(String label);
 
-	public void newFmmlxTool(FmmlxDiagram diagram, String label, String toolId, boolean isEdge, String icon) {
-		for(FmmlxTool tool : tools) { // Quickfix for Copenhagen/MULTI2018, prevent repeated creation of tools
-			if(tool.label.equals(label)) return;
-		}
-		  
-	    if (isEdge) {
-	    	FmmlxTool edge = new EdgeCreationFmmlxTool(diagram, label, toolId, icon);
-	        tools.add(edge); 
-	        getChildren().add(edge.getButton());
-	    } else {
-	    	FmmlxTool node = new NodeCreationFmmlxTool(diagram, label, toolId, icon);
-	    	tools.add(node);
-	        getChildren().add(node.getButton());
-	    }		
+	public abstract void newFmmlxTool(FmmlxDiagram diagram, String label, String toolId, boolean isEdge, String icon);
+
+	public void setFmmlxPalette(FmmlxPalette fmmlxPalette) {
+		this.fmmlxPalette = fmmlxPalette;
 	}
 
 }

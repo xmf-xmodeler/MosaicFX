@@ -63,10 +63,13 @@ public class FmmlxPalette{
 		FmmlxGroup fmmlxGroup = getFmmlxGroup(name);
 		if(fmmlxGroup != null) {
 			if(fmmlxGroup.getName().equals("Models")) {
-				//TODO
+				newTool(fmmlxDiagram, "Models", "Auxillary Classes", "auxilary", false, "resources/gif/Tools/Inherit.png");
+				newTool(fmmlxDiagram, "Models", "getPackageName()", "getPackageName()", false, "resources/gif/Tools/Inherit.png");
 			} else if(fmmlxGroup.getName().equals("Relationsship")) {
-				newTool(fmmlxDiagram, "Relationsship", "Association", "association", true, "resources/gif/Tools/Inherit.png");
-				newTool(fmmlxDiagram, "Relationsship", "Specialization", "specialization", true, "resources/gif/Tools/Inherit.png");
+				newTool(fmmlxDiagram, "Relationsship", "Association", "association", false, "resources/gif/Tools/Inherit.png");
+				newTool(fmmlxDiagram, "Relationsship", "Specialization", "spezialization", false, "resources/gif/Tools/Inherit.png");
+				newTool(fmmlxDiagram, "Relationsship", "Delegation", "delegation", false, "resources/gif/Tools/Inherit.png");
+				
 			} else if(fmmlxGroup.getName().equals("Classes/Object")) {
 				newTool(fmmlxDiagram, "Classes/Object", "MetaClass", "metaClass", false, "resources/gif/Tools/Inherit.png");
 			}
@@ -83,7 +86,14 @@ public class FmmlxPalette{
 	}
 	
 	public void newFmmlxGroup(String name) {
-		FmmlxGroup fmmlxGroup = new FmmlxGroup(name);
+		FmmlxGroup fmmlxGroup;
+		if(name.equals("Relationsship")) {
+			fmmlxGroup = new FmmlxGroupRelationsship(name);
+		} else if (name.equals("Classes/Object")){
+			fmmlxGroup = new FmmlxGroupClasses(name);
+		} else {
+			fmmlxGroup = new FmmlxGroupModel(name);
+		}
 		if(root.getChildren().size() <= 1 ) {
 			fmmlxGroup.setExpanded(true);
 		}
@@ -101,8 +111,6 @@ public class FmmlxPalette{
 			fmmlxGroup.newFmmlxTool(fmmlxDiagram, label, toolId, isEdge, icon);
 		} else
 			System.err.println("cannot find group " + groupName);
-		
-		System.out.println("size " +fmmlxGroup.getChildren().size());
 	}
 	
 	public void newAction(FmmlxDiagram fmmlxDiagram, String groupName, String label, String toolId, String icon) {
