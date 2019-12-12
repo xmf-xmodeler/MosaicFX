@@ -118,7 +118,6 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 						return new ChangeSlotValueDialogResult(object, slot, slotValue);
 					} else {
 						String enumItem = type + "::" + slotValueComboBox.getSelectionModel().getSelectedItem();
-						System.err.println("enumItem: "+enumItem);
 						return new ChangeSlotValueDialogResult(object, slot, enumItem);
 					}
 				}

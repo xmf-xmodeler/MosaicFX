@@ -101,7 +101,6 @@ public class FmmlxDiagram {
 		canvas.setOnMouseMoved(this::mouseMoved);
 		canvas.addEventFilter(ScrollEvent.ANY, this::handleScroll);
 
-
 		new Thread(this::fetchDiagramData).start();
 
 		try {
@@ -138,8 +137,13 @@ public class FmmlxDiagram {
 	}
 
 	private synchronized void fetchDiagramData() {
-		
+		if(suppressRedraw) {
+//			System.err.println("\talready fetching diagram data");
+			return;
+		}
 		suppressRedraw = true;
+		
+//		System.err.println("suppressRedraw");
 		
 		objects.clear();
 		edges.clear();
@@ -149,24 +153,28 @@ public class FmmlxDiagram {
 		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
 		objects.addAll(fetchedObjects);
 		
-		Vector<Edge> fetchedEdges = comm.getAllAssociations(this);
-		fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
-
-		edges.addAll(fetchedEdges);
-		
-		enums = comm.fetchAllEnums(this);
-		
-		for (FmmlxObject o : objects) {
+		for(FmmlxObject o : objects) {
 			o.fetchDataDefinitions(comm);
 		}
 		
-		for (FmmlxObject o : objects) {
+		for(FmmlxObject o : objects) {
 			o.fetchDataValues(comm);
 			o.layout(this);
 		}
 		
+		Vector<Edge> fetchedEdges = comm.getAllAssociations(this);
+		fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
+
+		edges.addAll(fetchedEdges);
+		edges.addAll(comm.getAllInheritanceEdges(this));
+		
+		enums = comm.fetchAllEnums(this);
+
+		for(Edge e : edges) {e.align();}
+		
 		resizeCanvas();
 		suppressRedraw = false;
+//		System.err.println("allowRedraw");
 		redraw();
 	}
 
@@ -204,7 +212,10 @@ public class FmmlxDiagram {
 	}
 	
 	public void redraw() {
-		if (suppressRedraw) return;
+		if (suppressRedraw) {
+			//System.err.println("redraw skipped");
+			return;}
+		if (objects.size() <= 0) {return;}
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
 			// we are on the right Thread already:
 			paintOn(canvas.getGraphicsContext2D(), 0, 0);
@@ -261,14 +272,15 @@ public class FmmlxDiagram {
 	////						MouseListener						////
 	////////////////////////////////////////////////////////////////////
 	private void mousePressed(MouseEvent e) {
+		if(suppressRedraw) return; 
 		lastAction = System.currentTimeMillis();
         suppressRedraw = false;
 		Point2D p = scale(e);
 		clearContextMenus();
 
-		if (isMiddleClick(e)) {
-			selectedObjects.addAll(objects);
-		}
+//		if (isMiddleClick(e)) {
+//			selectedObjects.addAll(objects);
+//		}
 		if (isLeftClick(e)) {
 			handleLeftPressed(e);
 		}
@@ -295,6 +307,8 @@ public class FmmlxDiagram {
 		}
 	}
 
+	private transient CanvasElement lastElementUnderMouse = null;
+	
 	private void mouseMoved(MouseEvent e) {
 		Point2D p = scale(e);
 
@@ -302,6 +316,20 @@ public class FmmlxDiagram {
 			storeCurrentPoint(p.getX(), p.getY());
 			redraw();
 		}
+		
+		CanvasElement elementUnderMouse = getElementAt(p.getX(), p.getY());
+		if(elementUnderMouse != lastElementUnderMouse) {
+			lastElementUnderMouse = elementUnderMouse;
+			for (FmmlxObject o : objects)
+				o.unHighlight();
+			for (Edge edge : edges)
+				edge.unHighlight();
+			for (DiagramEdgeLabel l : labels)
+				l.unHighlight();
+		}
+		
+		if(elementUnderMouse != null) elementUnderMouse.highlightElementAt(p);
+		
 	}
 
 	private void mouseDraggedStandard(Point2D p) {
@@ -310,6 +338,9 @@ public class FmmlxDiagram {
 			if (s instanceof FmmlxObject) {
 				FmmlxObject o = (FmmlxObject) s;
 				s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
+				for(Edge e : edges) {
+					if(e.isStartNode(o) || e.isEndNode(o)) e.align();
+				}
 			} else if (s instanceof DiagramEdgeLabel) {
 				DiagramEdgeLabel o = (DiagramEdgeLabel) s;
 				s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
@@ -317,6 +348,9 @@ public class FmmlxDiagram {
 				s.moveTo(p.getX(), p.getY(), this);
 			}
 		objectsMoved = true;
+        
+		for(Edge e : edges) {e.align();}
+
 		redraw();
 //		} else {
 //			mode = MouseMode.MULTISELECT;
@@ -325,20 +359,17 @@ public class FmmlxDiagram {
 	}
 
 	private void mouseReleased(MouseEvent e) {
-		if (isMiddleClick(e)) {
-			selectedObjects.clear();
-		} else {
-			if (mouseMode == MouseMode.MULTISELECT) {
-				handleMultiSelect();
-			}
-			if (mouseMode == MouseMode.STANDARD) {
-				mouseReleasedStandard();
-			}
+		if (mouseMode == MouseMode.MULTISELECT) {
+			handleMultiSelect();
+		}
+		if (mouseMode == MouseMode.STANDARD) {
+			mouseReleasedStandard();
+		}
 
-			mouseMode = MouseMode.STANDARD;
-			for (Edge edge : edges) {
-				edge.dropPoint();
-			}
+		mouseMode = MouseMode.STANDARD;
+		for (Edge edge : edges) {
+			edge.dropPoint();
+			edge.align();
 		}
 		resizeCanvas();
 		if(diagramRequiresUpdate) {
@@ -349,6 +380,8 @@ public class FmmlxDiagram {
 	}
 
 	private void mouseReleasedStandard() {
+		for (Edge e : edges) e.removeRedundantPoints();
+		
 		if (objectsMoved) {
 			for (CanvasElement s : selectedObjects)
 				if (s instanceof FmmlxObject) {
@@ -360,7 +393,6 @@ public class FmmlxDiagram {
 						}
 					}
 				} else if (s instanceof Edge) {
-//					FmmlxAssociation a = (FmmlxAssociation) s;
 					comm.sendCurrentPositions(this, (Edge) s);
 				} else if (s instanceof DiagramEdgeLabel) {
 					comm.storeLabelInfo(this, (DiagramEdgeLabel) s);
@@ -882,8 +914,53 @@ public class FmmlxDiagram {
 
 	public Vector<String> getEnumItems(String enumName) {
 		for (FmmlxEnum e : enums) {
-			if(e.getName().equals(enumName)) return e.getElements();
+			if(e.getName().equals(enumName)) return e.getItems();
 		}
 		return null;
+	}
+
+	public synchronized void updateEnums() {
+		enums.clear();
+
+		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
+		objects.addAll(fetchedObjects);
+		
+		Vector<Edge> fetchedEdges = comm.getAllAssociations(this);
+		fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
+
+		edges.addAll(fetchedEdges);
+		
+		enums = comm.fetchAllEnums(this);
+	}
+
+	public FmmlxEnum getEnum(String enumName) {
+		for (FmmlxEnum e : enums) {
+			if(e.getName().equals(enumName)) return e;
+		}
+		return null;
+	}
+
+	public Vector<Point2D> findEdgeIntersections(Point2D a, Point2D b) { // only interested in a-b horizontal crossed c-d vertical
+		Vector<Point2D> result = new Vector<Point2D>();
+		for(Edge e : edges) {
+			Vector<Point2D> otherPoints = e.getAllPoints();
+			for(int i = 0; i < otherPoints.size()-1; i++) {
+				Point2D c = otherPoints.get(i);
+				Point2D d = otherPoints.get(i+1);
+				if(a != c && b != d && a != d && b != c) {
+					if(a.getY() == b.getY()) { // possibly redundant
+						if(c.getX() == d.getX()) {
+							// check for intersection
+							if((c.getY() < a.getY()) != (d.getY() < a.getY())) { // if c and d are on different sides of a/b (y)
+								if((a.getX() < c.getX()) != (b.getX() < c.getX())) { // if a and b are on different sides of c/d (x)
+									result.add(new Point2D(c.getX(), a.getY()));
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return result;
 	}	
 }

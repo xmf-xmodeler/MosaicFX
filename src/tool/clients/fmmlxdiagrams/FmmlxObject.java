@@ -32,8 +32,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	private transient double mouseMoveOffsetX;
 	private transient double mouseMoveOffsetY;
-	private transient double lastValidX;
-	private transient double lastValidY;
+//	private transient double lastValidX;
+//	private transient double lastValidY;
 	
 	private FmmlxObjectPort ports;
 
@@ -45,6 +45,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
 	private boolean showSlots = true;
+	private boolean showIssues = true;
 
 	static int testDiff = 10;
 
@@ -67,6 +68,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	private FmmlxDiagram diagram;
 	private PropertyType propertyType = PropertyType.Class;
 	private transient boolean requiresReLayout;
+	
+	private Vector<Issue> issues;
 	
 	static {
 		colors = new HashMap<>();
@@ -95,7 +98,10 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 				new Stop(6. / 6, Color.valueOf("#ff4444"))));
 	}
 
-	public FmmlxObject(Integer id, String name, int level, Integer of, Vector<Integer> parents, Boolean isAbstract, Integer lastKnownX, Integer lastKnownY, FmmlxDiagram diagram) {
+	public FmmlxObject(Integer id, String name, int level, 
+			Integer of, Vector<Integer> parents, Boolean isAbstract, 
+			Integer lastKnownX, Integer lastKnownY,
+			FmmlxDiagram diagram) {
 		this.name = name;
 		this.id = id;
 		this.diagram = diagram;
@@ -123,6 +129,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		this.showSlots = diagram.isShowSlots();
 		
 		this.ports = new FmmlxObjectPort(this);
+		
+		this.issues = issues;
 	}
 
 	private String getParentsListString(FmmlxDiagram diagram) {
@@ -538,6 +546,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 				otherOperations.add(o);
 			}
 		}
+		issues = comm.fetchIssues(diagram, this.name);
 	}
 
 	public void fetchDataValues(FmmlxDiagramCommunicator comm) {
@@ -652,8 +661,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	public void setOffsetAndStoreLastValidPosition(Point2D p) {
 		mouseMoveOffsetX = p.getX() - x;
 		mouseMoveOffsetY = p.getY() - y;
-		lastValidX = x;
-		lastValidY = y;
+//		lastValidX = x;
+//		lastValidY = y;
 	}
 
 	@Override public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
@@ -663,16 +672,28 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		return ports.getPointForEdge(edge, isStartNode);
 	}
 
-	public void addEdgeStart(Edge edge, int direction) {
+	public PortRegion getDirectionForEdge(Edge edge, boolean isStartNode) {
+		return ports.getDirectionForEdge(edge, isStartNode);
+	}
+	
+	public void setDirectionForEdge(Edge edge, boolean isStartNode, PortRegion newPortRegion) {
+		ports.setDirectionForEdge(edge, isStartNode, newPortRegion);
+	}
+	
+	public void addEdgeStart(Edge edge, PortRegion direction) {
 		ports.addNewEdge(edge, direction);
 	}
 	
-	public void addEdgeEnd(Edge edge, int direction) {
+	public void addEdgeEnd(Edge edge, PortRegion direction) {
 		ports.addNewEdge(edge, direction);
 	}
 
 	public void updatePortOder() {
 		ports.sortAllPorts();
-		
 	}
+
+	@Override
+	public void unHighlight() {	}
+
+
 }

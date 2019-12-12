@@ -50,7 +50,7 @@ public class AddEnumElement extends CustomDialog<AddEnumElementDialogResult>{
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {				
-				diagram.getComm().addEnumerationValue(this.diagram, selectedEnum.getName(), inputElementNameTextField.getText());
+				diagram.getComm().addEnumerationItem(this.diagram, selectedEnum.getName(), inputElementNameTextField.getText());
 			}
 			return null;
 		});

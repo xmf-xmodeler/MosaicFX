@@ -23,7 +23,6 @@ import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumElementDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeEnumNameDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.EditEnumerationDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
-import tool.clients.fmmlxdiagrams.EnumElement;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 
@@ -35,10 +34,10 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 	private ComboBox<FmmlxEnum> chooseEnumComboBox;
 	private ListView<String> inputElementListview;
 
-	private Button addElementButton;
-	private Button removeElementButton;
+	private Button addItemButton;
+	private Button removeItemButton;
 	private Button changeNameButton;
-	private Vector<String> enumElement;
+	private Vector<String> enumItems;
 	
 	private FmmlxDiagram diagram;
 	
@@ -52,7 +51,7 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 
 		dialogPane.setHeaderText("Edit Enumeration");
 
-		addElementToGrid();
+		layout();
 
 		dialogPane.setContent(flow);
 
@@ -109,11 +108,10 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 		return true;
 	}
 
-	private void addElementToGrid() {
+	private void layout() {
 		chooseEnumLabel = new Label("Choose Enumeration");
-		inputElementLabel = new Label("Elements");
-		enumElement = new Vector<String>();
-		
+		inputElementLabel = new Label("Items");
+		enumItems = new Vector<String>();
 		
 		inputElementListview = initializeListView(0);
 		inputElementListview.setEditable(true);
@@ -122,14 +120,14 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 		chooseEnumComboBox.valueProperty().addListener((observable, oldValue, newValue1) -> {
 			if (newValue1 != null) {
 				inputElementListview.getItems().clear();
-				for(String tmp: chooseEnumComboBox.getSelectionModel().getSelectedItem().getElements()) {
+				for(String tmp: chooseEnumComboBox.getSelectionModel().getSelectedItem().getItems()) {
 					inputElementListview.getItems().add(tmp);
 				}
 			}
 		});
 		
-		addElementButton = new Button("Add Element");
-		removeElementButton = new Button("Remove Element");
+		addItemButton = new Button("Add Element");
+		removeItemButton = new Button("Remove Element");
 		changeNameButton = new Button("Change Name");
 		
 		List<Node> labelNode = new ArrayList<Node>(); 
@@ -145,10 +143,10 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 		editorNode.add(new Label(" "));
 		editorNode.add(new Label(" "));
 		editorNode.add(inputElementListview);
-		editorNode.add(joinNodeElementInHBox(addElementButton, removeElementButton));
+		editorNode.add(joinNodeElementInHBox(addItemButton, removeItemButton));
 		  
-		addElementButton.setOnAction(e -> addElement(chooseEnumComboBox.getSelectionModel().getSelectedItem(),inputElementListview));
-		removeElementButton.setOnAction(e ->removeElement(inputElementListview.getSelectionModel().getSelectedItem()));
+		addItemButton.setOnAction(e -> addElement(chooseEnumComboBox.getSelectionModel().getSelectedItem(),inputElementListview));
+		removeItemButton.setOnAction(e ->removeElement(inputElementListview.getSelectionModel().getSelectedItem()));
 		changeNameButton.setOnAction(e -> chageEnumNameDialog(chooseEnumComboBox.getSelectionModel().getSelectedItem()));  
 		  
 		addNodesToGrid(labelNode,0); addNodesToGrid(editorNode, 1);
@@ -175,7 +173,14 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 	private void removeElement(String string) {
 		if(chooseEnumComboBox.getSelectionModel().getSelectedItem()!=null) {
 			//inputElementListview.getItems().removeAll(string);
-			diagram.getComm().removeEnumerationValue(this.diagram, chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), string);
+			diagram.getComm().removeEnumerationItem(this.diagram, chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), string);
+//			for(String itemToBeRemoved : observableList) {
+//				diagram.getComm().removeEnumerationItem(
+//						diagram, 
+//						chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), 
+//						itemToBeRemoved);
+//			}
+//			inputElementListview.getItems().removeAll(observableList);
 		} else {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectEnumeration);
 		}
@@ -190,6 +195,22 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 			 * if (opt.isPresent()) { AddEnumElementDialogResult result = opt.get();
 			 * list.getItems().add(result.getName()); }
 			 */
+
+			if (opt.isPresent()) {
+				AddEnumElementDialogResult result = opt.get();
+
+				list.getItems().add(result.getName());
+				diagram.getComm().addEnumerationItem(
+						diagram, 
+						chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), 
+						result.getName());
+				
+				diagram.updateEnums();
+				
+				inputElementListview.getItems().addAll(diagram.getEnum(selectedEnum.getName()).getItems());
+				
+				
+			}
 		} else {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectEnumeration);
 		}
