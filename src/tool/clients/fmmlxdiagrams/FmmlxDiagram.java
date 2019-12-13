@@ -971,5 +971,15 @@ public class FmmlxDiagram {
 			if(e.getName().equals(enumName)) return e;
 		}
 		return null;
+	}
+
+	public int getMaxLevel() {
+		int init = 0;
+		for (FmmlxObject tmp : objects){
+			if (tmp.getLevel()>=init) {
+				init = tmp.getLevel();
+			}
+		}
+		return init;
 	}	
 }

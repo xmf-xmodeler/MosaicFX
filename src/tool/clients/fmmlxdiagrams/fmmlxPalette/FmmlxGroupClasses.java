@@ -1,12 +1,10 @@
 package tool.clients.fmmlxdiagrams.fmmlxPalette;
 
 import java.util.Vector;
-
-import tool.clients.diagrams.Tool;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import xos.Value;
 
-public class FmmlxGroupClasses extends FmmlxGroup {
+public class FmmlxGroupClasses extends FmmlxGroup implements IFmmlxGroup{
 	
 	private Vector<FmmlxTool> tools = new Vector<FmmlxTool>();
 
@@ -88,6 +86,7 @@ public class FmmlxGroupClasses extends FmmlxGroup {
 	        tools.add(edge); 
 	        getChildren().add(edge.getButton());
 	    } else {
+	    	int maxLevel = diagram.getMaxLevel();
 	    	FmmlxTool node = new NodeCreationFmmlxTool(diagram, label, toolId, icon);
 	    	tools.add(node);
 	        getChildren().add(node.getButton());

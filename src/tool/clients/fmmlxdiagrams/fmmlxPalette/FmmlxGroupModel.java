@@ -5,7 +5,7 @@ import java.util.Vector;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import xos.Value;
 
-public class FmmlxGroupModel extends FmmlxGroup {
+public class FmmlxGroupModel extends FmmlxGroup implements IFmmlxGroup{
 
 	private Vector<FmmlxTool> tools = new Vector<FmmlxTool>();
 

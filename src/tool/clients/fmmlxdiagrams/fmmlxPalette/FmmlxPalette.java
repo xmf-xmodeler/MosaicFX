@@ -108,7 +108,10 @@ public class FmmlxPalette{
 	public void newTool(FmmlxDiagram fmmlxDiagram, String groupName, String label, String toolId, boolean isEdge, String icon) {
 		FmmlxGroup fmmlxGroup = getFmmlxGroup(groupName);
 		if (fmmlxGroup != null) {
-			fmmlxGroup.newFmmlxTool(fmmlxDiagram, label, toolId, isEdge, icon);
+			if(fmmlxGroup instanceof FmmlxGroupRelationsship) {
+				((FmmlxGroupRelationsship) fmmlxGroup).newFmmlxTool(fmmlxDiagram, label, toolId, isEdge, icon);
+			}
+			
 		} else
 			System.err.println("cannot find group " + groupName);
 	}
