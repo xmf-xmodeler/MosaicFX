@@ -69,6 +69,10 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	private PropertyType propertyType = PropertyType.Class;
 	private transient boolean requiresReLayout;
 	
+	public void triggerLayout() {
+		this.requiresReLayout = true;
+	}
+
 	private Vector<Issue> issues;
 	
 	static {
@@ -138,13 +142,20 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		for (Integer parentID : getParents()) {
 			String parentName;
 			try {
-				parentName = diagram.getObjectById(parentID).name;
+				FmmlxObject parent = diagram.getObjectById(parentID);
+				InheritanceEdge edge = diagram.getInheritanceEdge(this, parent);
+				if(edge != null && !edge.visible) {
+					parentName = parent.name;
+					parentsList += parentName + ", ";
+				} 
 			} catch (Exception e) {
+				e.printStackTrace();
 				parentName = e.getMessage();
+				parentsList += parentName + ", ";
 			}
-			parentsList += parentName + ", ";
 		}
-		return parentsList.substring(0, parentsList.length() - 2);
+		if(!("extends ".equals(parentsList))) return parentsList.substring(0, parentsList.length() - 2);
+		return "";
 	}
 
 	public String getName() {
@@ -340,7 +351,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		double textHeight = diagram.calculateTextHeight();
 		double currentY = 0;
 
-		int headerLines = hasParents() ? 3 : 2;
+		String parentString = getParentsListString(diagram);
+		int headerLines = /*hasParents()*/(!"".equals(parentString)) ? 3 : 2;
 		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * headerLines, getLevelBackgroundColor(), Color.BLACK, (x) -> {return 1.;}, PropertyType.Class);
 		nodeElements.addElement(header);
 		String ofName;
@@ -358,8 +370,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		header.nodeElements.add(levelLabel);
 		header.nodeElements.add(nameLabel);
 
-		if (hasParents()) {
-			NodeLabel parentsLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 3, Color.valueOf(getLevelFontColor()), null, this, getParentsListString(diagram), isAbstract);
+		if ((!"".equals(parentString))) {
+			NodeLabel parentsLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 3, Color.valueOf(getLevelFontColor()), null, this, parentString, isAbstract);
 			header.nodeElements.add(parentsLabel);
 		}
 

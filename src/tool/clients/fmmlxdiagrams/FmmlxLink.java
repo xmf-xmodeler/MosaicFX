@@ -15,7 +15,7 @@ public class FmmlxLink extends Edge {
 
 	public FmmlxLink(int id, int startId, int endId, int ofId, Vector<Point2D> points, PortRegion sourcePort, PortRegion targetPort, 
 				Vector<Object> labelPositions, FmmlxDiagram diagram) {
-		super(id, diagram.getObjectById(startId), diagram.getObjectById(endId), points, labelPositions, diagram);
+		super(id, diagram.getObjectById(startId), diagram.getObjectById(endId), points, sourcePort, targetPort, labelPositions, diagram);
 //		this.ofAssociation = (FmmlxAssociation) diagram.getAssociationById(ofId);
 		this.ofId = ofId;
 		this.diagram = diagram;

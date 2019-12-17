@@ -169,8 +169,8 @@ public class FmmlxDiagram {
 		edges.addAll(comm.getAllInheritanceEdges(this));
 		
 		enums = comm.fetchAllEnums(this);
-
-		for(Edge e : edges) {e.align();}
+		
+		triggerOverallReLayout();
 		
 		resizeCanvas();
 		suppressRedraw = false;
@@ -190,8 +190,8 @@ public class FmmlxDiagram {
 			}
 			canvasRawSize = new Point2D(maxRight, maxBottom);
 			Point2D canvasScreenSize = transformFX.transform(canvasRawSize);
-			canvas.setWidth(canvasScreenSize.getX() + 5);
-			canvas.setHeight(canvasScreenSize.getY() + 5);
+			canvas.setWidth(Math.min(4096, canvasScreenSize.getX() + 5));
+			canvas.setHeight(Math.min(4096, canvasScreenSize.getY() + 5));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -359,24 +359,38 @@ public class FmmlxDiagram {
 	}
 
 	private void mouseReleased(MouseEvent e) {
-		if (mouseMode == MouseMode.MULTISELECT) {
+		if(mouseMode == MouseMode.MULTISELECT) {
 			handleMultiSelect();
 		}
-		if (mouseMode == MouseMode.STANDARD) {
+		if(mouseMode == MouseMode.STANDARD) {
 			mouseReleasedStandard();
 		}
 
 		mouseMode = MouseMode.STANDARD;
-		for (Edge edge : edges) {
+		
+		for(Edge edge : edges) {
 			edge.dropPoint();
-			edge.align();
 		}
+		
+		triggerOverallReLayout();
+
 		resizeCanvas();
 		if(diagramRequiresUpdate) {
 			diagramRequiresUpdate = false;
 			updateDiagram();
 		}
 		redraw();
+	}
+
+	private void triggerOverallReLayout() {
+		for(int i = 0; i < 3; i++) {
+			for(FmmlxObject o : objects) {
+				o.layout(this);
+			}
+			for(Edge edge : edges) {
+				edge.align();
+			}
+		}
 	}
 
 	private void mouseReleasedStandard() {
@@ -940,20 +954,22 @@ public class FmmlxDiagram {
 		return null;
 	}
 
-	public Vector<Point2D> findEdgeIntersections(Point2D a, Point2D b) { // only interested in a-b horizontal crossed c-d vertical
+	public Vector<Point2D> findEdgeIntersections(Point2D a, Point2D b) { // only interested in a-b horizontal crossing c-d vertical
 		Vector<Point2D> result = new Vector<Point2D>();
 		for(Edge e : edges) {
-			Vector<Point2D> otherPoints = e.getAllPoints();
-			for(int i = 0; i < otherPoints.size()-1; i++) {
-				Point2D c = otherPoints.get(i);
-				Point2D d = otherPoints.get(i+1);
-				if(a != c && b != d && a != d && b != c) {
-					if(a.getY() == b.getY()) { // possibly redundant
-						if(c.getX() == d.getX()) {
-							// check for intersection
-							if((c.getY() < a.getY()) != (d.getY() < a.getY())) { // if c and d are on different sides of a/b (y)
-								if((a.getX() < c.getX()) != (b.getX() < c.getX())) { // if a and b are on different sides of c/d (x)
-									result.add(new Point2D(c.getX(), a.getY()));
+			if(e.isVisible()) {
+				Vector<Point2D> otherPoints = e.getAllPoints();
+				for(int i = 0; i < otherPoints.size()-1; i++) {
+					Point2D c = otherPoints.get(i);
+					Point2D d = otherPoints.get(i+1);
+					if(a != c && b != d && a != d && b != c) {
+						if(a.getY() == b.getY()) { // possibly redundant
+							if(c.getX() == d.getX()) {
+								// check for intersection
+								if((c.getY() < a.getY()) != (d.getY() < a.getY())) { // if c and d are on different sides of a/b (y)
+									if((a.getX() < c.getX()) != (b.getX() < c.getX())) { // if a and b are on different sides of c/d (x)
+										result.add(new Point2D(c.getX(), a.getY()));
+									}
 								}
 							}
 						}
@@ -962,5 +978,15 @@ public class FmmlxDiagram {
 			}
 		}
 		return result;
+	}
+
+	public InheritanceEdge getInheritanceEdge(FmmlxObject child, FmmlxObject parent) {
+		for(Edge e : edges) {
+			if(e instanceof InheritanceEdge) {
+				InheritanceEdge i = (InheritanceEdge) e;
+				if(i.isStartNode(child) && i.isEndNode(parent)) return i;
+			}
+		}
+		return null;
 	}	
 }

@@ -48,7 +48,10 @@ public abstract class Edge implements CanvasElement {
 
 	}
 
-	public Edge(int id, FmmlxObject startNode, FmmlxObject endNode, Vector<Point2D> intermediatePoints,
+	public Edge(int id, 
+			FmmlxObject startNode, FmmlxObject endNode, 
+			Vector<Point2D> intermediatePoints,
+			PortRegion startPortRegion, PortRegion endPortRegion,
 			Vector<Object> labelPositions, FmmlxDiagram diagram) {
 		layoutingFinishedSuccesfully = false;
 		this.labelPositions = labelPositions;
@@ -61,11 +64,11 @@ public abstract class Edge implements CanvasElement {
 			this.intermediatePoints.addAll(intermediatePoints);
 		}
 		storeLatestValidPointConfiguration();
-		PortRegion startPortRegion = determinePort(startNode,
-				intermediatePoints.size() < 1 ? null : intermediatePoints.firstElement(),
+		if(startPortRegion==null) startPortRegion = determinePort(startNode,
+				this.intermediatePoints.size() < 1 ? null : this.intermediatePoints.firstElement(),
 				startNode.getCenterX() < endNode.getCenterX() ? PortRegion.EAST : PortRegion.WEST);
-		PortRegion endPortRegion = determinePort(endNode,
-				intermediatePoints.size() < 1 ? null : intermediatePoints.lastElement(),
+		if(endPortRegion==null) endPortRegion = determinePort(endNode,
+				this.intermediatePoints.size() < 1 ? null : this.intermediatePoints.lastElement(),
 				startNode.getCenterX() < endNode.getCenterX() ? PortRegion.WEST : PortRegion.EAST);
 
 //		System.err.println(startPortRegion + "-->" + endPortRegion);

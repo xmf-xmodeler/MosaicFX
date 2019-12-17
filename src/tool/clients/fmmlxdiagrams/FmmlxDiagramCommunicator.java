@@ -174,12 +174,12 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(targetHandle, message, args2);
 		int attempts = 0;
 		int sleep = 5;
-		while (waiting && attempts < 20) {
+		while (waiting && sleep < 200 * (DEBUG?100:1)) {
 			if (DEBUG) System.err.println(attempts + ". attempt");
 			attempts++;
 			try {
 				Thread.sleep(sleep);
-				sleep += 50;
+				sleep *= 2;
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -239,12 +239,20 @@ public class FmmlxDiagramCommunicator {
 
 			Vector<Point2D> listOfPoints = null;
 			Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(3);
-			if (pointsListO != null) {
+			PortRegion startRegion = null;
+			PortRegion endRegion = null;
+			if(pointsListO != null && pointsListO.size()>=2) {
 				listOfPoints = new Vector<Point2D>();
+				if("startNode".equals(((Vector<Object>)(pointsListO.firstElement())).get(0)))
+					startRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.firstElement())).get(1)));
+				if("endNode".equals(((Vector<Object>)(pointsListO.lastElement())).get(0)))
+					endRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.lastElement())).get(1)));
 				for (Object pointO : pointsListO) {
 					Vector<Object> pointV = (Vector<Object>) pointO;
-					Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); // leaving 0 free for future use as tag
-					listOfPoints.addElement(pointP);
+					if("defaultPoint".equals(pointV.get(0))) {
+						Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); 
+						listOfPoints.addElement(pointP);
+					}
 				}
 			}
 
@@ -253,6 +261,7 @@ public class FmmlxDiagramCommunicator {
 					(Integer) edgeInfoAsList.get(1), // startId
 					(Integer) edgeInfoAsList.get(2), // endId
 					listOfPoints, // points
+					startRegion, endRegion,
 					diagram);
 			result.add(object);
 		}
@@ -270,23 +279,36 @@ public class FmmlxDiagramCommunicator {
 
 			Vector<Point2D> listOfPoints = null;
 			Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(4);
-			if (pointsListO != null) {
+			PortRegion startRegion = null;
+			PortRegion endRegion = null;
+			if(pointsListO != null && pointsListO.size()>=2) {
 				listOfPoints = new Vector<Point2D>();
+				if("startNode".equals(((Vector<Object>)(pointsListO.firstElement())).get(0)))
+					startRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.firstElement())).get(1)));
+				if("endNode".equals(((Vector<Object>)(pointsListO.lastElement())).get(0)))
+					endRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.lastElement())).get(1)));
 				for (Object pointO : pointsListO) {
 					Vector<Object> pointV = (Vector<Object>) pointO;
-					Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); // leaving 0 free for future use as tag
-					listOfPoints.addElement(pointP);
+					if("defaultPoint".equals(pointV.get(0))) {
+						Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); 
+						listOfPoints.addElement(pointP);
+					}
 				}
 			}
 			
 			Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(13);
 
+			System.err.println("listOfPoints: " + listOfPoints);
+			System.err.println("startRegion: " + startRegion);
+			System.err.println("endRegion: " + endRegion);
+			
 			Edge object = new FmmlxAssociation(
 					(Integer) edgeInfoAsList.get(0), // id
 					(Integer) edgeInfoAsList.get(1), // startId
 					(Integer) edgeInfoAsList.get(2), // endId
 					(Integer) edgeInfoAsList.get(3), // parentId
 					listOfPoints, // points
+					startRegion, endRegion,
 					(String) edgeInfoAsList.get(5), // name 1
 					(String) edgeInfoAsList.get(6), // name 2
 					(String) edgeInfoAsList.get(7), // name 3
@@ -316,12 +338,20 @@ public class FmmlxDiagramCommunicator {
 
 			Vector<Point2D> listOfPoints = null;
 			Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(4);
-			if (pointsListO != null) {
+			PortRegion startRegion = null;
+			PortRegion endRegion = null;
+			if(pointsListO != null && pointsListO.size()>=2) {
 				listOfPoints = new Vector<Point2D>();
+				if("startNode".equals(((Vector<Object>)(pointsListO.firstElement())).get(0)))
+					startRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.firstElement())).get(1)));
+				if("endNode".equals(((Vector<Object>)(pointsListO.lastElement())).get(0)))
+					endRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.lastElement())).get(1)));
 				for (Object pointO : pointsListO) {
 					Vector<Object> pointV = (Vector<Object>) pointO;
-					Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); // leaving 0 free for future use as tag
-					listOfPoints.addElement(pointP);
+					if("defaultPoint".equals(pointV.get(0))) {
+						Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); 
+						listOfPoints.addElement(pointP);
+					}
 				}
 			}
 
@@ -333,7 +363,7 @@ public class FmmlxDiagramCommunicator {
 					(Integer) edgeInfoAsList.get(2), // endId
 					(Integer) edgeInfoAsList.get(3), // ofId
 					listOfPoints, // points
-					PortRegion.EAST, PortRegion.WEST, 
+					startRegion, endRegion,
 					labelPositions,
 					diagram);
 			result.add(object);
@@ -507,15 +537,28 @@ public class FmmlxDiagramCommunicator {
 	public void sendCurrentPositions(FmmlxDiagram diagram, Edge e) {
 		Vector<Point2D> points = e.getIntermediatePoints();
 
-		Value[] listOfPoints = new Value[points.size()];
-		for (int i = 0; i < listOfPoints.length; i++) {
+		Value[] listOfPoints = new Value[points.size() + 2];
+		{
+			Value[] pointS = new Value[3];
+			pointS[0] = new Value("startNode");
+			pointS[1] = new Value(e.startNode.getDirectionForEdge(e, true).toString());
+			pointS[2] = new Value(0);
+			listOfPoints[0] = new Value(pointS);
+		}
+		for (int i = 0; i < points.size(); i++) {
 			Value[] point = new Value[3];
 			point[0] = new Value("defaultPoint");
 			point[1] = new Value((float) (points.get(i).getX()));
 			point[2] = new Value((float) (points.get(i).getY()));
-			listOfPoints[i] = new Value(point);
+			listOfPoints[i+1] = new Value(point);
 		}
-		
+		{
+			Value[] pointE = new Value[3];
+			pointE[0] = new Value("endNode");
+			pointE[1] = new Value(e.endNode.getDirectionForEdge(e, false).toString());
+			pointE[2] = new Value(0);
+			listOfPoints[listOfPoints.length-1] = new Value(pointE);
+		}
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(e.id), 

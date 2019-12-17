@@ -40,6 +40,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			Integer endId,
 			Integer parentAssociationId,
 			Vector<Point2D> points,
+			PortRegion startPortRegion, PortRegion endPortRegion,
 			String name,
 			String reverseName,
 			String accessNameStartToEnd,
@@ -51,7 +52,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			Vector<Object> labelPositions,
 			FmmlxDiagram diagram) {
 
-		super(id, diagram.getObjectById(startId), diagram.getObjectById(endId), points, labelPositions, diagram);
+		super(id, diagram.getObjectById(startId), diagram.getObjectById(endId), points, startPortRegion, endPortRegion, labelPositions, diagram);
 
 		this.name = name;
 		this.reverseName = reverseName;
