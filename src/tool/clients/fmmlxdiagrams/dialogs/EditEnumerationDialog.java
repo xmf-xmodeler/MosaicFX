@@ -195,11 +195,6 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 		if(chooseEnumComboBox.getSelectionModel().getSelectedItem()!=null) {
 			AddEnumElement dlg = new AddEnumElement(diagram, selectedEnum, list);
 			Optional<AddEnumElementDialogResult> opt = dlg.showAndWait();
-			
-			/*
-			 * if (opt.isPresent()) { AddEnumElementDialogResult result = opt.get();
-			 * list.getItems().add(result.getName()); }
-			 */
 
 			if (opt.isPresent()) {
 				AddEnumElementDialogResult result = opt.get();
@@ -212,12 +207,10 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 				} catch (TimeOutException e) {
 					e.printStackTrace();
 				}
-				
+			
 				diagram.updateEnums();
 				
 				inputElementListview.getItems().addAll(diagram.getEnum(selectedEnum.getName()).getItems());
-				
-				
 			}
 		} else {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectEnumeration);

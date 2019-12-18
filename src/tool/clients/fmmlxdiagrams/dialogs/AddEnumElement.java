@@ -51,11 +51,7 @@ public class AddEnumElement extends CustomDialog<AddEnumElementDialogResult>{
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {				
-				try{
-					diagram.getComm().addEnumerationItem(this.diagram, selectedEnum.getName(), inputElementNameTextField.getText());
-				} catch (TimeOutException e) {
-					e.printStackTrace();
-				}
+				return new AddEnumElementDialogResult(inputElementNameTextField.getText());
 			}
 			return null;
 		});
@@ -78,7 +74,7 @@ public class AddEnumElement extends CustomDialog<AddEnumElementDialogResult>{
 
 	private void addElementToGrid() {
 		
-		inputElementNameLabel = new Label ("Type Element Name!");
+		inputElementNameLabel = new Label ("new Enumeration Element name");
 		inputElementNameTextField = new TextField();
 		
 		List<Node> mainNode = new ArrayList<Node>(); 
