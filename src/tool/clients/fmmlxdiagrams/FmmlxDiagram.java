@@ -118,7 +118,6 @@ public class FmmlxDiagram {
 		canvas.setOnMouseMoved(this::mouseMoved);
 		canvas.addEventFilter(ScrollEvent.ANY, this::handleScroll);
 
-
 		new Thread(this::fetchDiagramData).start();
 
 		try {
@@ -190,49 +189,45 @@ public class FmmlxDiagram {
 			return;
 		}
 		suppressRedraw = true;
-		
-		System.err.println("suppressRedraw");
-		
-		objects.clear();
-		edges.clear();
-		labels.clear();
-		enums.clear();
-
-		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
-		objects.addAll(fetchedObjects);
-		
-		int init = 0;
-		for (FmmlxObject tmp : fetchedObjects){
-			if (tmp.getLevel()>=init) {
-				init = tmp.getLevel();
+		try {
+			
+	//		System.err.println("suppressRedraw");
+			
+			objects.clear();
+			edges.clear();
+			labels.clear();
+			enums.clear();
+	
+			Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
+			objects.addAll(fetchedObjects);
+			
+			for(FmmlxObject o : objects) {
+				o.fetchDataDefinitions(comm);
 			}
+			
+			for(FmmlxObject o : objects) {
+				o.fetchDataValues(comm);
+				o.layout(this);
+			}
+			
+			Vector<Edge> fetchedEdges = comm.getAllAssociations(this);
+			fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
+	
+			edges.addAll(fetchedEdges);
+			edges.addAll(comm.getAllInheritanceEdges(this));
+			
+			enums = comm.fetchAllEnums(this);
+			
+			triggerOverallReLayout();
+			
+			resizeCanvas();
+			
+	//		System.err.println("allowRedraw");
+			redraw();
+		} catch (TimeOutException e) {
+			e.printStackTrace();
 		}
-		this.maxLevel = init;
-		
-		
-		
-		Vector<Edge> fetchedEdges = comm.getAllAssociations(this);
-		fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
-
-		edges.addAll(fetchedEdges);
-		
-		enums = comm.fetchAllEnums(this);
-		for(FmmlxObject o : objects) {
-			o.fetchDataDefinitions(comm);
-		}
-		
-		for(FmmlxObject o : objects) {
-			o.fetchDataValues(comm);
-			o.layout(this);
-		}
-		
-		for(Edge e : edges) {
-			e.align();
-		}
-		
-		resizeCanvas();
 		suppressRedraw = false;
-		System.err.println("allowRedraw");
 		redraw();
 		fmmlxPalette.reset();
 		fmmlxPalette.init(this);
@@ -250,8 +245,8 @@ public class FmmlxDiagram {
 			}
 			canvasRawSize = new Point2D(maxRight, maxBottom);
 			Point2D canvasScreenSize = transformFX.transform(canvasRawSize);
-			canvas.setWidth(canvasScreenSize.getX() + 5);
-			canvas.setHeight(canvasScreenSize.getY() + 5);
+			canvas.setWidth(Math.min(4096, canvasScreenSize.getX() + 5));
+			canvas.setHeight(Math.min(4096, canvasScreenSize.getY() + 5));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -274,8 +269,7 @@ public class FmmlxDiagram {
 	public void redraw() {
 		if (suppressRedraw) {
 			return;}
-		if (objects.size() <= 0) {
-			System.err.println("redraw skipped (0)");return;}
+		if (objects.size() <= 0) {return;}
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
 			paintOn(canvas.getGraphicsContext2D(), 0, 0);
 		} else {
@@ -334,14 +328,15 @@ public class FmmlxDiagram {
 	////						MouseListener						////
 	////////////////////////////////////////////////////////////////////
 	private void mousePressed(MouseEvent e) {
+		if(suppressRedraw) return; 
 		lastAction = System.currentTimeMillis();
         suppressRedraw = false;
 		Point2D p = scale(e);
 		clearContextMenus();
 
-		if (isMiddleClick(e)) {
-			selectedObjects.addAll(objects);
-		}
+//		if (isMiddleClick(e)) {
+//			selectedObjects.addAll(objects);
+//		}
 		if (isLeftClick(e)) {
 			handleLeftPressed(e);
 		}
@@ -409,27 +404,29 @@ public class FmmlxDiagram {
 				s.moveTo(p.getX(), p.getY(), this);
 			}
 		objectsMoved = true;
+        
+		for(Edge e : edges) {e.align();}
+
 		redraw();
 		
 	}
 
 	private void mouseReleased(MouseEvent e) {
-		if (isMiddleClick(e)) {
-			selectedObjects.clear();
-		} else {
-			if (mouseMode == MouseMode.MULTISELECT) {
-				handleMultiSelect();
-			}
-			if (mouseMode == MouseMode.STANDARD) {
-				mouseReleasedStandard();
-			}
-
-			mouseMode = MouseMode.STANDARD;
-			for (Edge edge : edges) {
-				edge.dropPoint();
-				edge.align();
-			}
+		if(mouseMode == MouseMode.MULTISELECT) {
+			handleMultiSelect();
 		}
+		if(mouseMode == MouseMode.STANDARD) {
+			mouseReleasedStandard();
+		}
+
+		mouseMode = MouseMode.STANDARD;
+		
+		for(Edge edge : edges) {
+			edge.dropPoint();
+		}
+		
+		triggerOverallReLayout();
+
 		resizeCanvas();
 		if(diagramRequiresUpdate) {
 			diagramRequiresUpdate = false;
@@ -438,7 +435,20 @@ public class FmmlxDiagram {
 		redraw();
 	}
 
+	private void triggerOverallReLayout() {
+		for(int i = 0; i < 3; i++) {
+			for(FmmlxObject o : objects) {
+				o.layout(this);
+			}
+			for(Edge edge : edges) {
+				edge.align();
+			}
+		}
+	}
+
 	private void mouseReleasedStandard() {
+		for (Edge e : edges) e.removeRedundantPoints();
+		
 		if (objectsMoved) {
 			for (CanvasElement s : selectedObjects)
 				if (s instanceof FmmlxObject) {
@@ -933,7 +943,7 @@ public class FmmlxDiagram {
 		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
 		for (Edge tmp : edges) {
 			if (tmp instanceof FmmlxAssociation) {
-				if (tmp.startNode.getId() == object.getId() || tmp.endNode.getId() == object.getId()) {
+				if (tmp.sourceNode.getId() == object.getId() || tmp.targetNode.getId() == object.getId()) {
 					result.add((FmmlxAssociation) tmp);
 				}
 			}
@@ -989,17 +999,21 @@ public class FmmlxDiagram {
 	}
 
 	public synchronized void updateEnums() {
-		enums.clear();
-
-		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
-		objects.addAll(fetchedObjects);
-		
-		Vector<Edge> fetchedEdges = comm.getAllAssociations(this);
-		fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
-
-		edges.addAll(fetchedEdges);
-		
-		enums = comm.fetchAllEnums(this);
+		try {
+			enums.clear();
+	
+			Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
+			objects.addAll(fetchedObjects);
+			
+			Vector<Edge> fetchedEdges = comm.getAllAssociations(this);
+			fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
+	
+			edges.addAll(fetchedEdges);
+			
+			enums = comm.fetchAllEnums(this); }
+		catch (TimeOutException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public FmmlxEnum getEnum(String enumName) {
@@ -1008,8 +1022,43 @@ public class FmmlxDiagram {
 		}
 		return null;
 	}
-
 	public int getMaxLevel() {
 		return this.maxLevel;
+	}
+
+	public Vector<Point2D> findEdgeIntersections(Point2D a, Point2D b) { // only interested in a-b horizontal crossing c-d vertical
+		Vector<Point2D> result = new Vector<Point2D>();
+		for(Edge e : edges) {
+			if(e.isVisible()) {
+				Vector<Point2D> otherPoints = e.getAllPoints();
+				for(int i = 0; i < otherPoints.size()-1; i++) {
+					Point2D c = otherPoints.get(i);
+					Point2D d = otherPoints.get(i+1);
+					if(a != c && b != d && a != d && b != c) {
+						if(a.getY() == b.getY()) { // possibly redundant
+							if(c.getX() == d.getX()) {
+								// check for intersection
+								if((c.getY() < a.getY()) != (d.getY() < a.getY())) { // if c and d are on different sides of a/b (y)
+									if((a.getX() < c.getX()) != (b.getX() < c.getX())) { // if a and b are on different sides of c/d (x)
+										result.add(new Point2D(c.getX(), a.getY()));
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	public InheritanceEdge getInheritanceEdge(FmmlxObject child, FmmlxObject parent) {
+		for(Edge e : edges) {
+			if(e instanceof InheritanceEdge) {
+				InheritanceEdge i = (InheritanceEdge) e;
+				if(i.isStartNode(child) && i.isEndNode(parent)) return i;
+			}
+		}
+		return null;
 	}	
 }

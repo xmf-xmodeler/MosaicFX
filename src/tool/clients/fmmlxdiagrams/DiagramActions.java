@@ -8,14 +8,13 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
 
 import java.util.Optional;
 import java.util.Vector;
-import java.util.concurrent.CountDownLatch;
+//import java.util.concurrent.CountDownLatch;
 
 public class DiagramActions {
 
@@ -32,7 +31,7 @@ public class DiagramActions {
 	}
 
 	public void addMetaClassDialog() {
-		CountDownLatch l = new CountDownLatch(2);
+//		CountDownLatch l = new CountDownLatch(2);
 
 		Platform.runLater(() -> {
 			CreateMetaClassDialog dlg = new CreateMetaClassDialog(diagram);
@@ -58,7 +57,7 @@ public class DiagramActions {
 							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
 
 							diagram.updateDiagram();
-							l.countDown();
+//							l.countDown();
 						}
 					}
 				};
@@ -72,7 +71,7 @@ public class DiagramActions {
 	}
 
 	public void addInstanceDialog(FmmlxObject object) {
-		CountDownLatch l = new CountDownLatch(1);
+//		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			AddInstanceDialog dialog = new AddInstanceDialog(diagram, object);
@@ -106,7 +105,7 @@ public class DiagramActions {
 
 			}
 
-			l.countDown();
+//			l.countDown();
 		});
 	}
 
@@ -116,7 +115,7 @@ public class DiagramActions {
 
 	public void addAttributeDialog(FmmlxObject object) {
 
-		CountDownLatch l = new CountDownLatch(1);
+//		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			AddAttributeDialog dlg;
@@ -134,12 +133,12 @@ public class DiagramActions {
 				diagram.getComm().addAttribute(diagram, aad.getClassID(), aad.getName(), aad.getLevel(), aad.getType(), aad.getMultiplicity());
 			}
 			diagram.updateDiagram();
-			l.countDown();
+//			l.countDown();
 		});
 	}
 
 	public void addEnumerationDialog() {
-		CountDownLatch l = new CountDownLatch(1);
+//		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			AddEnumerationDialog dlg;
@@ -154,13 +153,13 @@ public class DiagramActions {
 				diagram.getComm().addEnumeration(diagram, aed.getEnumeration().getName()); 
 			}
 			diagram.updateDiagram();
-			l.countDown();
+//			l.countDown();
 		});
 		
 	}
 	
 	public void editEnumerationDialog(String string, String enumName) {
-		CountDownLatch l = new CountDownLatch(1);
+//		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			EditEnumerationDialog dlg;
@@ -173,17 +172,17 @@ public class DiagramActions {
 			
 			Optional<EditEnumerationDialogResult> result = dlg.showAndWait();
 
-			if (result.isPresent()) {
-				EditEnumerationDialogResult aed = result.get();
-				diagram.getComm().editEnumeration(diagram, aed.getEnumName(), aed.getNewEditedEnum().getItems());
-			}
-			diagram.updateDiagram();
-			l.countDown();
+//			if (result.isPresent()) {
+//				EditEnumerationDialogResult aed = result.get();
+//				diagram.getComm().editEnumeration(diagram, aed.getEnumName(), aed.getNewEditedEnum().getItems());
+//			}
+//			diagram.updateDiagram();
+//			l.countDown();
 		});
 	}
 	
 	public void deleteEnumerationDialog() {
-		CountDownLatch l = new CountDownLatch(1);
+//		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			DeleteEnumerationDialog dlg;
@@ -193,12 +192,12 @@ public class DiagramActions {
 			dlg.setTitle("Delete Enumeration");
 			Optional<DeleteEnumerationDialogResult> result = dlg.showAndWait();
 			diagram.updateDiagram();
-			l.countDown();
+//			l.countDown();
 		});
 	}
 
 	public void removeDialog(FmmlxObject object, PropertyType type) {
-		CountDownLatch l = new CountDownLatch(1);
+//		CountDownLatch l = new CountDownLatch(1);
 
 		FmmlxProperty selectedFmmlxProperty = diagram.getSelectedProperty();
 
@@ -229,13 +228,13 @@ public class DiagramActions {
 				}
 			}
 			diagram.updateDiagram();
-			l.countDown();
+//			l.countDown();
 		});
 	}
 
 
 	public void zoomIn() {
-		diagram.setZoom(diagram.getZoom() * zoomLevel);
+		diagram.setZoom(Math.min(2, diagram.getZoom() * zoomLevel));
 		diagram.redraw();
 	}
 
@@ -250,7 +249,7 @@ public class DiagramActions {
 	}
 
 	public void changeNameDialog(FmmlxObject object, PropertyType type, FmmlxProperty selectedProperty) {
-		CountDownLatch latch = new CountDownLatch(1);
+//		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			ChangeNameDialog dlg = new ChangeNameDialog(diagram, object, type, selectedProperty);
@@ -276,7 +275,7 @@ public class DiagramActions {
 				}
 			}
 			diagram.updateDiagram();
-			latch.countDown();
+//			latch.countDown();
 		});
 	}
 
@@ -290,7 +289,7 @@ public class DiagramActions {
 	}
 
 	public void changeLevelDialog(FmmlxObject object, PropertyType type) {
-		CountDownLatch latch = new CountDownLatch(1);
+//		CountDownLatch latch = new CountDownLatch(1);
 
 		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
 
@@ -322,13 +321,13 @@ public class DiagramActions {
 				diagram.updateDiagram();
 			}
 
-			latch.countDown();
+//			latch.countDown();
 		});
 	}
 
 	public void changeOfDialog(FmmlxObject object) {
 
-		CountDownLatch l = new CountDownLatch(1);
+//		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			ChangeOfDialog dlg = new ChangeOfDialog(diagram, object);
@@ -339,14 +338,14 @@ public class DiagramActions {
 				diagram.getComm().changeOf(diagram, result.getObjectId(), result.getOldOfId(), result.getNewOfId());
 				diagram.updateDiagram();
 			}
-			l.countDown();
+//			l.countDown();
 		});
 
 
 	}
 
 	public void changeOwnerDialog(FmmlxObject object, PropertyType type) {
-		CountDownLatch l = new CountDownLatch(1);
+//		CountDownLatch l = new CountDownLatch(1);
 
 		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
 
@@ -374,13 +373,13 @@ public class DiagramActions {
 				diagram.updateDiagram();
 			}
 
-			l.countDown();
+//			l.countDown();
 		});
 	}
 
 	public void changeParentsDialog(FmmlxObject object) {
 
-		CountDownLatch l = new CountDownLatch(1);
+//		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			ChangeParentDialog dlg = new ChangeParentDialog(diagram, object);
@@ -392,14 +391,14 @@ public class DiagramActions {
 				diagram.updateDiagram();
 			}
 
-			l.countDown();
+//			l.countDown();
 		});
 
 	}
 
 	public void changeSlotValue(FmmlxObject hitObject, FmmlxSlot hitProperty) {
 
-		CountDownLatch l = new CountDownLatch(1);
+//		CountDownLatch l = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			ChangeSlotValueDialog dlg = new ChangeSlotValueDialog(diagram, hitObject, hitProperty);
@@ -411,7 +410,7 @@ public class DiagramActions {
 				diagram.updateDiagram();
 			}
 
-			l.countDown();
+//			l.countDown();
 		});
 	}
 
@@ -456,7 +455,7 @@ public class DiagramActions {
 	}
 
 	public void addOperationDialog(FmmlxObject object) {
-		CountDownLatch latch = new CountDownLatch(1);
+//		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			AddOperationDialog dlg = new AddOperationDialog(diagram, object);
@@ -467,12 +466,12 @@ public class DiagramActions {
 				diagram.getComm().addOperation2(diagram, result.getObjectId(), result.getLevel(), result.getBody());
 				diagram.updateDiagram();
 			}
-			latch.countDown();
+//			latch.countDown();
 		});
 	}
 
 	public void changeTypeDialog(FmmlxObject object, PropertyType type) {
-		CountDownLatch latch = new CountDownLatch(1);
+//		CountDownLatch latch = new CountDownLatch(1);
 
 		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
 
@@ -505,12 +504,12 @@ public class DiagramActions {
 				diagram.updateDiagram();
 			}
 
-			latch.countDown();
+//			latch.countDown();
 		});
 	}
 
 	public void changeTargetDialog(FmmlxObject object, PropertyType type) {
-		CountDownLatch latch = new CountDownLatch(1);
+//		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			ChangeTargetDialog dlg = new ChangeTargetDialog(diagram, object, type);
@@ -522,12 +521,12 @@ public class DiagramActions {
 				diagram.updateDiagram();
 			}
 
-			latch.countDown();
+//			latch.countDown();
 		});
 	}
 
 	public void changeBodyDialog(FmmlxObject object) {
-		CountDownLatch latch = new CountDownLatch(1);
+//		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			ChangeBodyDialog dlg = new ChangeBodyDialog(diagram, object);
@@ -538,12 +537,12 @@ public class DiagramActions {
 				diagram.getComm().changeOperationBody(diagram, result.getObject().getId(), result.getSelectedItem().getName(), result.getBody());
 				diagram.updateDiagram();
 			}
-			latch.countDown();
+//			latch.countDown();
 		});
 	}
 
 	public void addAssociationDialog(FmmlxObject source, FmmlxObject target) {
-		CountDownLatch latch = new CountDownLatch(1);
+//		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			AddAssociationDialog dlg = new AddAssociationDialog(diagram, source, target);
@@ -557,16 +556,18 @@ public class DiagramActions {
 						result.getIdentifierSource(), result.getIdentifierTarget(),
 						result.getDisplayNameSource(), result.getDisplayNameTarget(),
 						result.getMultiplicitySource(), result.getMultiplicityTarget(),
-						result.getInstLevelSource(), result.getInstLevelTarget()
-				);
+						result.getInstLevelSource(), result.getInstLevelTarget(),
+						result.getSourceVisible(),  result.getTargetVisible(), 
+						result.getIsSymmetric(), result.getIsTransitive()
+						);
 				diagram.updateDiagram();
 			}
-			latch.countDown();
+//			latch.countDown();
 		});
 	}
 
 	public void editAssociationDialog(FmmlxObject object, PropertyType association) {
-		CountDownLatch latch = new CountDownLatch(1);
+//		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			EditAssociationDialog dlg = new EditAssociationDialog(diagram, object);
@@ -580,9 +581,9 @@ public class DiagramActions {
 						result.getNewDisplayNameSource(), result.getNewDisplayNameTarget(),
 						result.getNewIdentifierSource(), result.getNewIdentifierTarget(),
 						result.getMultiplicitySource(), result.getMultiplicityTarget());
-				diagram.updateDiagram();
+						diagram.updateDiagram();
 			}
-			latch.countDown();
+//			latch.countDown();
 		});
 	}
 
@@ -647,13 +648,13 @@ public class DiagramActions {
 	}
 
 	public void associationValueDialog(FmmlxObject object, PropertyType association) {
-		CountDownLatch latch = new CountDownLatch(1);
+//		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			AssociationValueDialog dlg = new AssociationValueDialog(diagram);
 			Optional<AssociationValueDialogResult> opt = dlg.showAndWait();
 
-			latch.countDown();
+//			latch.countDown();
 		});
 	}
 

@@ -5,6 +5,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.paint.Color;
+import tool.clients.fmmlxdiagrams.Edge.HeadStyle;
 import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
@@ -24,7 +25,11 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	private Integer levelEndToStart;
 	private Multiplicity multiplicityStartToEnd;
 	private Multiplicity multiplicityEndToStart;
+	protected boolean sourceVisible;
+	protected boolean targetVisible;
 
+	HeadStyle sourceHead; 
+	HeadStyle targetHead;
 	private final static Color TRANSPARENT = new Color(0, 0, 0, 0);
 	private final static Color BLACK = new Color(0, 0, 0, 1);
 	private final static Color WHITE = new Color(1, 1, 1, 1);
@@ -35,7 +40,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			Integer endId,
 			Integer parentAssociationId,
 			Vector<Point2D> points,
-			PortRegion sourcePort, PortRegion targetPort, 
+			PortRegion startPortRegion, PortRegion endPortRegion,
 			String name,
 			String reverseName,
 			String accessNameStartToEnd,
@@ -47,7 +52,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			Vector<Object> labelPositions,
 			FmmlxDiagram diagram) {
 
-		super(id, diagram.getObjectById(startId), diagram.getObjectById(endId), points, sourcePort, targetPort, labelPositions, diagram);
+		super(id, diagram.getObjectById(startId), diagram.getObjectById(endId), points, startPortRegion, endPortRegion, labelPositions, diagram);
 
 		this.name = name;
 		this.reverseName = reverseName;
@@ -92,7 +97,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, storedPostion.getX(), storedPostion.getY(), w, h, textColor, bgColor));
 		} else {
 			double boxHeight = anchor==Anchor.CENTRE?-20:
-				(anchor==Anchor.SOURCE?startNode:endNode).getHeight()/2;
+				(anchor==Anchor.SOURCE?sourceNode:targetNode).getHeight()/2;
 			diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, 50, -boxHeight-30+yDiff, w, h, textColor, bgColor));
 		}
 	}
@@ -113,10 +118,6 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	}
 	///////////////////////////////////////////////////////////////////////////
 
-	@Override
-	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
-		super.paintOn(g, xOffset, yOffset, fmmlxDiagram);
-	}
 
 	@Override
 	public String getName() {
@@ -137,11 +138,11 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	}
 
 	public FmmlxObject getSourceNode() {
-		return startNode;
+		return sourceNode;
 	}
 
 	public FmmlxObject getTargetNode() {
-		return endNode;
+		return targetNode;
 	}
 
 	public Integer getLevelStartToEnd() {
@@ -168,6 +169,13 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		return multiplicityEndToStart;
 	}
 
+	public boolean getTargetVisible() {
+		return targetVisible;
+	}
+
+	public boolean getSourceVisible() {
+		return sourceVisible;
+	}
 
 	public String toPair() {
 		String firstString = this.getSourceNode().getName();
@@ -189,7 +197,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	}
 
 	@Override
-	public ContextMenu getContextMenu(DiagramActions actions) {
+	public ContextMenu getContextMenuLocal(DiagramActions actions) {
 		return new AssociationContextMenu(this, actions);
 	}
 
@@ -277,4 +285,10 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			diagram.updateDiagram();
 		}
 	};
+	
+	@Override
+	public HeadStyle getTargetDecoration() {
+		
+		return HeadStyle.ARROW;
+	}
 }

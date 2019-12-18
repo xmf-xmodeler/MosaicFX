@@ -6,6 +6,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Affine;
 import xos.Value;
 
 public class DiagramEdgeLabel implements CanvasElement {
@@ -50,11 +51,13 @@ public class DiagramEdgeLabel implements CanvasElement {
 
 	@Override
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
+		
 		g.setFill(bgColor);
 		g.fillRect(this.getReferenceX() + relativeX, this.getReferenceY() + relativeY, this.width, this.height);
 		
 		g.setFill(fontColor);
 		g.fillText(this.text, this.getReferenceX() + relativeX + MARGIN, this.getReferenceY() + relativeY + height - MARGIN-2);
+
 	}
 
 	private double getReferenceX() {

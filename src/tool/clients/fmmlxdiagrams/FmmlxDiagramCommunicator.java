@@ -21,7 +21,7 @@ public class FmmlxDiagramCommunicator {
 	private HashMap<Integer, Vector<Object>> results = new HashMap<>();
 	private static Hashtable<Integer, Tab> tabs = new Hashtable<Integer, Tab>();
 	private static Vector<FmmlxDiagram> diagrams = new Vector<FmmlxDiagram>();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	private static Vector<FmmlxDiagramCommunicator> communicators = new Vector<FmmlxDiagramCommunicator>();
 	static TabPane tabPane;
 	private String name;
@@ -137,7 +137,8 @@ public class FmmlxDiagramCommunicator {
 					CountDownLatch l = new CountDownLatch(1);
 					Platform.runLater(() -> {
 						Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
-						alert.showAndWait();
+						//alert.showAndWait(); NOPE
+						alert.show();
 						l.countDown();
 					});
 					try {
@@ -162,7 +163,7 @@ public class FmmlxDiagramCommunicator {
 	 * @param args         the arguments of that operation
 	 * @return
 	 */
-	private Vector<Object> xmfRequest(int targetHandle, FmmlxDiagram diagram, String message, Value... args) {
+	private Vector<Object> xmfRequest(int targetHandle, FmmlxDiagram diagram, String message, Value... args) throws TimeOutException {
 		Value[] args2 = new Value[args.length + 1];
 		int requestID = idCounter++;
 		if (DEBUG) System.err.println(name + ": Sending request " + message + "(" + requestID + ") handle" + targetHandle);
@@ -174,12 +175,12 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(targetHandle, message, args2);
 		int attempts = 0;
 		int sleep = 5;
-		while (waiting && attempts < 20) {
+		while (waiting && sleep < 200 * (DEBUG?100:10)) {
 			if (DEBUG) System.err.println(attempts + ". attempt");
 			attempts++;
 			try {
 				Thread.sleep(sleep);
-				sleep += 50;
+				sleep *= 2;
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -189,7 +190,7 @@ public class FmmlxDiagramCommunicator {
 		}
 
 		if (waiting)
-			throw new RuntimeException("Did not receive answer in time!");
+			throw new TimeOutException();
 		return results.remove(requestID);
 	}
 
@@ -198,7 +199,7 @@ public class FmmlxDiagramCommunicator {
 	/////////////////////////////////////////
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxObject> getAllObjects(FmmlxDiagram diagram) {
+	public Vector<FmmlxObject> getAllObjects(FmmlxDiagram diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram, "getAllObjects", new Value[]{});
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<FmmlxObject> result = new Vector<>();
@@ -227,10 +228,49 @@ public class FmmlxDiagramCommunicator {
 		}
 		return result;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public Vector<Edge> getAllInheritanceEdges(FmmlxDiagram diagram) throws TimeOutException {
+		Vector<Object> response = xmfRequest(handler, diagram, "getAllInheritanceEdges", new Value[]{});
+		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+		Vector<Edge> result = new Vector<>();
 
+		for (Object edgeInfo : responseContent) {
+			Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
+
+			Vector<Point2D> listOfPoints = null;
+			Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(3);
+			PortRegion startRegion = null;
+			PortRegion endRegion = null;
+			if(pointsListO != null && pointsListO.size()>=2) {
+				listOfPoints = new Vector<Point2D>();
+				if("startNode".equals(((Vector<Object>)(pointsListO.firstElement())).get(0)))
+					startRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.firstElement())).get(1)));
+				if("endNode".equals(((Vector<Object>)(pointsListO.lastElement())).get(0)))
+					endRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.lastElement())).get(1)));
+				for (Object pointO : pointsListO) {
+					Vector<Object> pointV = (Vector<Object>) pointO;
+					if("defaultPoint".equals(pointV.get(0))) {
+						Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); 
+						listOfPoints.addElement(pointP);
+					}
+				}
+			}
+
+			Edge object = new InheritanceEdge(
+					(Integer) edgeInfoAsList.get(0), // id
+					(Integer) edgeInfoAsList.get(1), // startId
+					(Integer) edgeInfoAsList.get(2), // endId
+					listOfPoints, // points
+					startRegion, endRegion,
+					diagram);
+			result.add(object);
+		}
+		return result;
+	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<Edge> getAllAssociations(FmmlxDiagram diagram) {
+	public Vector<Edge> getAllAssociations(FmmlxDiagram diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram, "getAllAssociations", new Value[]{});
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
@@ -240,25 +280,36 @@ public class FmmlxDiagramCommunicator {
 
 			Vector<Point2D> listOfPoints = null;
 			Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(4);
-			if (pointsListO != null) {
+			PortRegion startRegion = null;
+			PortRegion endRegion = null;
+			if(pointsListO != null && pointsListO.size()>=2) {
 				listOfPoints = new Vector<Point2D>();
+				if("startNode".equals(((Vector<Object>)(pointsListO.firstElement())).get(0)))
+					startRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.firstElement())).get(1)));
+				if("endNode".equals(((Vector<Object>)(pointsListO.lastElement())).get(0)))
+					endRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.lastElement())).get(1)));
 				for (Object pointO : pointsListO) {
 					Vector<Object> pointV = (Vector<Object>) pointO;
-					Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); // leaving 0 free for future use as tag
-					listOfPoints.addElement(pointP);
+					if("defaultPoint".equals(pointV.get(0))) {
+						Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); 
+						listOfPoints.addElement(pointP);
+					}
 				}
 			}
 			
 			Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(13);
 
+			System.err.println("listOfPoints: " + listOfPoints);
+			System.err.println("startRegion: " + startRegion);
+			System.err.println("endRegion: " + endRegion);
+			
 			Edge object = new FmmlxAssociation(
 					(Integer) edgeInfoAsList.get(0), // id
 					(Integer) edgeInfoAsList.get(1), // startId
 					(Integer) edgeInfoAsList.get(2), // endId
 					(Integer) edgeInfoAsList.get(3), // parentId
 					listOfPoints, // points
-					PortRegion.EAST,
-					PortRegion.WEST,
+					startRegion, endRegion,
 					(String) edgeInfoAsList.get(5), // name 1
 					(String) edgeInfoAsList.get(6), // name 2
 					(String) edgeInfoAsList.get(7), // name 3
@@ -268,14 +319,17 @@ public class FmmlxDiagramCommunicator {
 					Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(11)), //mul s->e
 					Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(12)), //mul e->e
 					labelPositions,
-					diagram);
+					diagram 
+					//,(Integer) edgeInfoAsList.get(13), // sourceHead
+					//(Integer) edgeInfoAsList.get(14) // targetHead
+			);
 			result.add(object);
 		}
 		return result;
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<Edge> getAllAssociationsInstances(FmmlxDiagram diagram) {
+	public Vector<Edge> getAllAssociationsInstances(FmmlxDiagram diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram, "getAllAssociationInstances", new Value[]{});
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
@@ -285,12 +339,20 @@ public class FmmlxDiagramCommunicator {
 
 			Vector<Point2D> listOfPoints = null;
 			Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(4);
-			if (pointsListO != null) {
+			PortRegion startRegion = null;
+			PortRegion endRegion = null;
+			if(pointsListO != null && pointsListO.size()>=2) {
 				listOfPoints = new Vector<Point2D>();
+				if("startNode".equals(((Vector<Object>)(pointsListO.firstElement())).get(0)))
+					startRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.firstElement())).get(1)));
+				if("endNode".equals(((Vector<Object>)(pointsListO.lastElement())).get(0)))
+					endRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.lastElement())).get(1)));
 				for (Object pointO : pointsListO) {
 					Vector<Object> pointV = (Vector<Object>) pointO;
-					Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); // leaving 0 free for future use as tag
-					listOfPoints.addElement(pointP);
+					if("defaultPoint".equals(pointV.get(0))) {
+						Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); 
+						listOfPoints.addElement(pointP);
+					}
 				}
 			}
 
@@ -302,7 +364,7 @@ public class FmmlxDiagramCommunicator {
 					(Integer) edgeInfoAsList.get(2), // endId
 					(Integer) edgeInfoAsList.get(3), // ofId
 					listOfPoints, // points
-					PortRegion.EAST, PortRegion.WEST, 
+					startRegion, endRegion,
 					labelPositions,
 					diagram);
 			result.add(object);
@@ -311,7 +373,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<Vector<FmmlxAttribute>> fetchAttributes(FmmlxDiagram diagram, String className) {
+	public Vector<Vector<FmmlxAttribute>> fetchAttributes(FmmlxDiagram diagram, String className) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram, "getAllAttributes", new Value[]{new Value(className)});
 		Vector<Object> twoLists = (Vector<Object>) (response.get(0));
 		Vector<FmmlxAttribute> resultOwn = new Vector<>();
@@ -346,7 +408,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxOperation> fetchOperations(FmmlxDiagram diagram, String className) {
+	public Vector<FmmlxOperation> fetchOperations(FmmlxDiagram diagram, String className) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram, "getOwnOperations", new Value[]{new Value(className)});
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxOperation> result = new Vector<>();
@@ -385,7 +447,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxSlot> fetchSlots(FmmlxDiagram diagram, FmmlxObject owner, Vector<String> slotNames) {
+	public Vector<FmmlxSlot> fetchSlots(FmmlxDiagram diagram, FmmlxObject owner, Vector<String> slotNames) throws TimeOutException {
 		Value[] slotNameArray = createValueArrayString(slotNames);
 		Vector<Object> response = xmfRequest(handler, diagram, "getSlots", new Value[]{new Value(owner.getName()), new Value(slotNameArray)});
 		Vector<Object> slotList = (Vector<Object>) (response.get(0));
@@ -400,7 +462,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxOperationValue> fetchOperationValues(FmmlxDiagram diagram, String objectName, Vector<String> monitoredOperationsNames) {
+	public Vector<FmmlxOperationValue> fetchOperationValues(FmmlxDiagram diagram, String objectName, Vector<String> monitoredOperationsNames) throws TimeOutException {
 		Value[] monitoredOperationsNameArray = createValueArrayString(monitoredOperationsNames);
 		Vector<Object> response = xmfRequest(handler, diagram, "getOperationValues", new Value[]{new Value(objectName), new Value(monitoredOperationsNameArray)});
 		Vector<Object> returnValuesList = (Vector<Object>) (response.get(0));
@@ -425,7 +487,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxEnum> fetchAllEnums(FmmlxDiagram diagram) {
+	public Vector<FmmlxEnum> fetchAllEnums(FmmlxDiagram diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram, "getAllEnums");
 		Vector<Object> enumList = (Vector<Object>) (response.get(0));
 		Vector<FmmlxEnum> result = new Vector<FmmlxEnum>();
@@ -458,25 +520,36 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "sendNewPosition", message);
 	}
 
-	public void sendCurrentPositions(FmmlxDiagram diagram, Edge a) {
-		Vector<Point2D> points = a.getIntermediatePoints();
+	public void sendCurrentPositions(FmmlxDiagram diagram, Edge e) {
+		Vector<Point2D> points = e.getIntermediatePoints();
 
-		Value[] listOfPoints = new Value[points.size()];
-		for (int i = 0; i < listOfPoints.length; i++) {
+		Value[] listOfPoints = new Value[points.size() + 2];
+		{
+			Value[] pointS = new Value[3];
+			pointS[0] = new Value("startNode");
+			pointS[1] = new Value(e.sourceNode.getDirectionForEdge(e.sourceEnd, true).toString());
+			pointS[2] = new Value(0);
+			listOfPoints[0] = new Value(pointS);
+		}
+		for (int i = 0; i < points.size(); i++) {
 			Value[] point = new Value[3];
 			point[0] = new Value("defaultPoint");
 			point[1] = new Value((float) (points.get(i).getX()));
 			point[2] = new Value((float) (points.get(i).getY()));
-			listOfPoints[i] = new Value(point);
+			listOfPoints[i+1] = new Value(point);
 		}
-		
+		{
+			Value[] pointE = new Value[3];
+			pointE[0] = new Value("endNode");
+			pointE[1] = new Value(e.targetNode.getDirectionForEdge(e.targetEnd, false).toString());
+			pointE[2] = new Value(0);
+			listOfPoints[listOfPoints.length-1] = new Value(pointE);
+		}
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(a.id), 
+				new Value(e.id), 
 				new Value(listOfPoints)};
 		WorkbenchClient.theClient().send(handler, "sendNewPositions", message);
-//		xmfRequest(handler, "sendNewPositions",
-//				new Value[]{new Value(a.id), new Value(listOfPoints)});
 	}
 
 	////////////////////////////////////////////////////
@@ -727,7 +800,8 @@ public class FmmlxDiagramCommunicator {
 			String accessSourceFromTargetName, String accessTargetFromSourceName,
 			String fwName, String reverseName,
 			Multiplicity mul1, Multiplicity mul2,
-			Integer instLevel1, Integer instLevel2) {
+			Integer instLevel1, Integer instLevel2, boolean sourceVisible, boolean targetVisible,
+			boolean isSymmetric, boolean isTransitive) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(class1Id), new Value(class2Id),
@@ -735,7 +809,8 @@ public class FmmlxDiagramCommunicator {
 				new Value(fwName), reverseName == null ? new Value(-1) : new Value(reverseName),
 				new Value(mul1.toValue()),
 				new Value(mul2.toValue()), // multiplicity,
-				new Value(instLevel1), new Value(instLevel2)};
+				new Value(instLevel1), new Value(instLevel2),
+				new Value(sourceVisible), new Value(targetVisible), new Value(isSymmetric), new Value(isTransitive) };
 		WorkbenchClient.theClient().send(handler, "addAssociation", message);
 	}
 
@@ -921,20 +996,42 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "removeEnumeration", message);
 	}
 	
-	public void addEnumerationItem(FmmlxDiagram diagram, String enumName, String newEnumValueName) {
-		xmfRequest(handler, diagram, "addEnumerationValue", new Value[]{
+	public void addEnumerationItem(FmmlxDiagram diagram, String enumName, String newEnumValueName) throws TimeOutException {
+		Vector<Object> result = xmfRequest(handler, diagram, "addEnumerationValue", new Value[]{
 				new Value(enumName),
 				new Value(newEnumValueName)});
+		System.err.println(result);
+		showErrorMessage(result);
 	}
 
-	public void changeEnumerationItemName(FmmlxDiagram diagram, String enumName, String oldEnumValueName, String newEnumValueName) {
+	@SuppressWarnings("unchecked")
+	private void showErrorMessage(Vector<Object> msgAsVec) {
+		if(msgAsVec.size() <= 0) return;
+		java.util.Vector<Object> err = (java.util.Vector<Object>) msgAsVec.get(0);
+		if (err != null && err.size() > 0 && err.get(0) != null) {
+//			CountDownLatch l = new CountDownLatch(1);
+			Platform.runLater(() -> {
+				Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
+				alert.showAndWait();
+//				l.countDown();
+			});
+//			try {
+//				l.await();
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+		}
+		
+	}
+
+	public void changeEnumerationItemName(FmmlxDiagram diagram, String enumName, String oldEnumValueName, String newEnumValueName) throws TimeOutException {
 		xmfRequest(handler, diagram, "changeEnumerationValueName", new Value[]{
 				new Value(enumName),
 				new Value(oldEnumValueName),
 				new Value(newEnumValueName)});
 	}
 	
-	public void removeEnumerationItem(FmmlxDiagram diagram, String enumName, String enumValueName) {
+	public void removeEnumerationItem(FmmlxDiagram diagram, String enumName, String enumValueName) throws TimeOutException {
 		xmfRequest(handler, diagram, "removeEnumerationValue", new Value[]{
 				new Value(enumName),
 				new Value(enumValueName)});

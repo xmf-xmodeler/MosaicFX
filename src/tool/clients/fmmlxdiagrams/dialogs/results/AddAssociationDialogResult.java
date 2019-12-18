@@ -83,19 +83,19 @@ public class AddAssociationDialogResult extends DialogResult {
 		return multiplicityTarget;
 	}
 	
-	public Boolean sourceVisible() {
+	public Boolean getSourceVisible() {
 		return sourceVisible;
 	}
 	
-	public Boolean targetVisible() {
+	public Boolean getTargetVisible() {
 		return targetVisible;
 	}
 	
-	public Boolean isSymmetric() {
+	public Boolean getIsSymmetric() {
 		return isSymmetric;
 	}
 	
-	public Boolean isTransitive() {
+	public Boolean getIsTransitive() {
 		return isTransitive;
 	}
 
