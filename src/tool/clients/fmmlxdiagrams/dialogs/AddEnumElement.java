@@ -14,6 +14,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
+import tool.clients.fmmlxdiagrams.TimeOutException;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumElementDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
 
@@ -50,7 +51,7 @@ public class AddEnumElement extends CustomDialog<AddEnumElementDialogResult>{
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {				
-				diagram.getComm().addEnumerationItem(this.diagram, selectedEnum.getName(), inputElementNameTextField.getText());
+				return new AddEnumElementDialogResult(inputElementNameTextField.getText());
 			}
 			return null;
 		});
@@ -73,7 +74,7 @@ public class AddEnumElement extends CustomDialog<AddEnumElementDialogResult>{
 
 	private void addElementToGrid() {
 		
-		inputElementNameLabel = new Label ("Type Element Name!");
+		inputElementNameLabel = new Label ("new Enumeration Element name");
 		inputElementNameTextField = new TextField();
 		
 		List<Node> mainNode = new ArrayList<Node>(); 

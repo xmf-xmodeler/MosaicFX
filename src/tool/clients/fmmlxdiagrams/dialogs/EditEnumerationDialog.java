@@ -25,6 +25,7 @@ import tool.clients.fmmlxdiagrams.dialogs.results.EditEnumerationDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
+import tool.clients.fmmlxdiagrams.TimeOutException;
 
 public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogResult>{
 	
@@ -173,7 +174,11 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 	private void removeElement(String string) {
 		if(chooseEnumComboBox.getSelectionModel().getSelectedItem()!=null) {
 			//inputElementListview.getItems().removeAll(string);
-			diagram.getComm().removeEnumerationItem(this.diagram, chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), string);
+			try {
+				diagram.getComm().removeEnumerationItem(this.diagram, chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), string);
+			} catch (TimeOutException e) {
+				e.printStackTrace();
+			}
 //			for(String itemToBeRemoved : observableList) {
 //				diagram.getComm().removeEnumerationItem(
 //						diagram, 
@@ -190,26 +195,22 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 		if(chooseEnumComboBox.getSelectionModel().getSelectedItem()!=null) {
 			AddEnumElement dlg = new AddEnumElement(diagram, selectedEnum, list);
 			Optional<AddEnumElementDialogResult> opt = dlg.showAndWait();
-			
-			/*
-			 * if (opt.isPresent()) { AddEnumElementDialogResult result = opt.get();
-			 * list.getItems().add(result.getName()); }
-			 */
 
 			if (opt.isPresent()) {
 				AddEnumElementDialogResult result = opt.get();
 
 				list.getItems().add(result.getName());
-				diagram.getComm().addEnumerationItem(
+				try { diagram.getComm().addEnumerationItem(
 						diagram, 
 						chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), 
 						result.getName());
-				
+				} catch (TimeOutException e) {
+					e.printStackTrace();
+				}
+			
 				diagram.updateEnums();
 				
 				inputElementListview.getItems().addAll(diagram.getEnum(selectedEnum.getName()).getItems());
-				
-				
 			}
 		} else {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectEnumeration);

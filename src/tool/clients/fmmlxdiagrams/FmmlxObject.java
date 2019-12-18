@@ -32,8 +32,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	private transient double mouseMoveOffsetX;
 	private transient double mouseMoveOffsetY;
-//	private transient double lastValidX;
-//	private transient double lastValidY;
+	private transient double lastValidX;
+	private transient double lastValidY;
 	
 	private FmmlxObjectPort ports;
 
@@ -45,7 +45,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
 	private boolean showSlots = true;
-	private boolean showIssues = true;
 
 	static int testDiff = 10;
 
@@ -69,7 +68,11 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	private PropertyType propertyType = PropertyType.Class;
 	private transient boolean requiresReLayout;
 	
-	private Vector<Issue> issues;
+	public void triggerLayout() {
+		this.requiresReLayout = true;
+	}
+
+	//private Vector<Issue> issues;
 	
 	static {
 		colors = new HashMap<>();
@@ -98,10 +101,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 				new Stop(6. / 6, Color.valueOf("#ff4444"))));
 	}
 
-	public FmmlxObject(Integer id, String name, int level, 
-			Integer of, Vector<Integer> parents, Boolean isAbstract, 
-			Integer lastKnownX, Integer lastKnownY,
-			FmmlxDiagram diagram) {
+	public FmmlxObject(Integer id, String name, int level, Integer of, Vector<Integer> parents, Boolean isAbstract, Integer lastKnownX, Integer lastKnownY, FmmlxDiagram diagram) {
 		this.name = name;
 		this.id = id;
 		this.diagram = diagram;
@@ -129,8 +129,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		this.showSlots = diagram.isShowSlots();
 		
 		this.ports = new FmmlxObjectPort(this);
-		
-		this.issues = issues;
 	}
 
 	private String getParentsListString(FmmlxDiagram diagram) {
@@ -138,13 +136,20 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		for (Integer parentID : getParents()) {
 			String parentName;
 			try {
-				parentName = diagram.getObjectById(parentID).name;
+				FmmlxObject parent = diagram.getObjectById(parentID);
+				InheritanceEdge edge = diagram.getInheritanceEdge(this, parent);
+				if(edge != null && !edge.visible) {
+					parentName = parent.name;
+					parentsList += parentName + ", ";
+				} 
 			} catch (Exception e) {
+				e.printStackTrace();
 				parentName = e.getMessage();
+				parentsList += parentName + ", ";
 			}
-			parentsList += parentName + ", ";
 		}
-		return parentsList.substring(0, parentsList.length() - 2);
+		if(!("extends ".equals(parentsList))) return parentsList.substring(0, parentsList.length() - 2);
+		return "";
 	}
 
 	public String getName() {
@@ -340,7 +345,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		double textHeight = diagram.calculateTextHeight();
 		double currentY = 0;
 
-		int headerLines = hasParents() ? 3 : 2;
+		String parentString = getParentsListString(diagram);
+		int headerLines = /*hasParents()*/(!"".equals(parentString)) ? 3 : 2;
 		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * headerLines, getLevelBackgroundColor(), Color.BLACK, (x) -> {return 1.;}, PropertyType.Class);
 		nodeElements.addElement(header);
 		String ofName;
@@ -358,8 +364,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		header.nodeElements.add(levelLabel);
 		header.nodeElements.add(nameLabel);
 
-		if (hasParents()) {
-			NodeLabel parentsLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 3, Color.valueOf(getLevelFontColor()), null, this, getParentsListString(diagram), isAbstract);
+		if ((!"".equals(parentString))) {
+			NodeLabel parentsLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 3, Color.valueOf(getLevelFontColor()), null, this, parentString, isAbstract);
 			header.nodeElements.add(parentsLabel);
 		}
 
@@ -532,7 +538,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		}
 	}
 
-	public void fetchDataDefinitions(FmmlxDiagramCommunicator comm) {
+	public void fetchDataDefinitions(FmmlxDiagramCommunicator comm) throws TimeOutException {
 		Vector<Vector<FmmlxAttribute>> attributeList = comm.fetchAttributes(diagram, this.name);
 		ownAttributes = attributeList.get(0);
 		otherAttributes = attributeList.get(1);
@@ -546,10 +552,9 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 				otherOperations.add(o);
 			}
 		}
-		issues = comm.fetchIssues(diagram, this.name);
 	}
 
-	public void fetchDataValues(FmmlxDiagramCommunicator comm) {
+	public void fetchDataValues(FmmlxDiagramCommunicator comm) throws TimeOutException {
 		slots = comm.fetchSlots(diagram, this, this.getSlotNames());
 
 		operationValues = comm.fetchOperationValues(diagram, this.name, this.getMonitoredOperationsNames());
@@ -661,30 +666,26 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	public void setOffsetAndStoreLastValidPosition(Point2D p) {
 		mouseMoveOffsetX = p.getX() - x;
 		mouseMoveOffsetY = p.getY() - y;
-//		lastValidX = x;
-//		lastValidY = y;
+		lastValidX = x;
+		lastValidY = y;
 	}
 
 	@Override public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
 	@Override public double getMouseMoveOffsetY() {return mouseMoveOffsetY;}
 
-	public Point2D getPointForEdge(Edge edge, boolean isStartNode) {
+	public Point2D getPointForEdge(Edge.End edge, boolean isStartNode) {
 		return ports.getPointForEdge(edge, isStartNode);
 	}
 
-	public PortRegion getDirectionForEdge(Edge edge, boolean isStartNode) {
+	public PortRegion getDirectionForEdge(Edge.End edge, boolean isStartNode) {
 		return ports.getDirectionForEdge(edge, isStartNode);
 	}
 	
-	public void setDirectionForEdge(Edge edge, boolean isStartNode, PortRegion newPortRegion) {
+	public void setDirectionForEdge(Edge.End edge, boolean isStartNode, PortRegion newPortRegion) {
 		ports.setDirectionForEdge(edge, isStartNode, newPortRegion);
 	}
 	
-	public void addEdgeStart(Edge edge, PortRegion direction) {
-		ports.addNewEdge(edge, direction);
-	}
-	
-	public void addEdgeEnd(Edge edge, PortRegion direction) {
+	public void addEdgeEnd(Edge.End edge, PortRegion direction) {
 		ports.addNewEdge(edge, direction);
 	}
 
