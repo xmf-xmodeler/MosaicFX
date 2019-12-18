@@ -7,15 +7,16 @@ import tool.clients.fmmlxdiagrams.menus.AssociationInstanceContextMenu;
 
 import java.util.Vector;
 
-public class FmmlxAssociationInstance extends Edge {
+public class FmmlxLink extends Edge {
 
 //	FmmlxAssociation ofAssociation;
 	int ofId;
 	private FmmlxDiagram diagram;
 
-	public FmmlxAssociationInstance(int id, int startId, int endId, int ofId, Vector<Point2D> points,
-									Vector<Object> labelPositions, FmmlxDiagram diagram) {
-		super(id, diagram.getObjectById(startId), diagram.getObjectById(endId), points, labelPositions, diagram);
+	public FmmlxLink(int id, int startId, int endId, int ofId, Vector<Point2D> points, 
+				PortRegion sourcePort, PortRegion targetPort, 
+				Vector<Object> labelPositions, FmmlxDiagram diagram) {
+		super(id, diagram.getObjectById(startId), diagram.getObjectById(endId), points, sourcePort, targetPort, labelPositions, diagram);
 //		this.ofAssociation = (FmmlxAssociation) diagram.getAssociationById(ofId);
 		this.ofId = ofId;
 		this.diagram = diagram;
@@ -24,7 +25,7 @@ public class FmmlxAssociationInstance extends Edge {
 	
 	private enum Anchor {SOURCE,CENTRE,TARGET};
 
-	@Override protected void layout() {
+	@Override protected void layoutLabels() {
 		try{
 			createLabel("of " + getOfAssociation().getName(), 0, Anchor.CENTRE, ()->{System.err.println("Huhu!");}, 0);
 			layoutingFinishedSuccesfully = true;
@@ -51,9 +52,9 @@ public class FmmlxAssociationInstance extends Edge {
 		double w = Math.max(20, diagram.calculateTextWidth(value));
 		double h = diagram.calculateTextHeight();
 		Vector<FmmlxObject> anchors = new Vector<>();
-		if(anchor!=Anchor.TARGET) anchors.add(startNode);
-		if(anchor!=Anchor.SOURCE) anchors.add(endNode);
-		diagram.addLabel(new DiagramLabel(this, localId, action, null, anchors, value, 50, -100+yDiff, w, h, Color.BLACK, Color.YELLOW));
+		if(anchor!=Anchor.TARGET) anchors.add(sourceNode);
+		if(anchor!=Anchor.SOURCE) anchors.add(targetNode);
+		diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, 50, -100+yDiff, w, h, Color.BLACK, Color.YELLOW));
 	}
 	
 	@Override
@@ -67,18 +68,21 @@ public class FmmlxAssociationInstance extends Edge {
 	}
 
 	@Override
-	public ContextMenu getContextMenu(DiagramActions actions) {
+	public ContextMenu getContextMenuLocal(DiagramActions actions) {
 		return new AssociationInstanceContextMenu(this, actions);
 	}
 	
 	public String toPair() {
-		String firstString = this.startNode.getName();
-		String seconString = this.endNode.getName();
+		String firstString = this.sourceNode.getName();
+		String seconString = this.targetNode.getName();
 		return "( "+firstString+" ; "+seconString+" )";
 	}
 
 	public void edit(FmmlxObject selectedItem, FmmlxObject selectedItem2) {
-		this.startNode=diagram.getObjectById(selectedItem.getId());
-		this.endNode= diagram.getObjectById(selectedItem2.getId());
+		this.sourceNode=diagram.getObjectById(selectedItem.getId());
+		this.targetNode= diagram.getObjectById(selectedItem2.getId());
 	}
+	
+	@Override
+	public void unHighlight() {	}
 }

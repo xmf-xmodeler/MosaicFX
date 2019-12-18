@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams.dialogs;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.util.converter.IntegerStringConverter;
@@ -18,8 +19,6 @@ import java.util.*;
 
 public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
-
-	private List<String> typesArray;
 	private Label nameLabel;
 	private Label classLabel;
 	private Label levelLabel;
@@ -35,6 +34,8 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 	private FmmlxObject selectedObject;
 	private Button multiplicityButton;
 	private Multiplicity multiplicity = Multiplicity.OPTIONAL;
+	
+	private Vector<String> types;
 
 	public AddAttributeDialog(final FmmlxDiagram diagram) {
 		this(diagram, null);
@@ -42,6 +43,8 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
 	public AddAttributeDialog(final FmmlxDiagram diagram, FmmlxObject selectedObject) {
 		super();
+
+		types = diagram.getAvailableTypes();
 
 		DialogPane dialogPane = getDialogPane();
 		this.selectedObject = selectedObject;
@@ -58,7 +61,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 				e.consume();
 			}
 		});
-
+		
 		setResult();
 	}
 
@@ -67,7 +70,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				int classId = selectedObject.getId();
 
-				//TODO AddAttributeDialogResult and Multiplicity Result
 				return new AddAttributeDialogResult(
 						classId,
 						nameTextField.getText(),
@@ -138,9 +140,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		typeLabel = new Label(StringValueDialog.LabelAndHeaderTitle.type);
 		multiplicityLabel = new Label(StringValueDialog.LabelAndHeaderTitle.Multiplicity);
 
-		String[] types = new String[]{"Integer", "String", "Boolean", "Float"};
-		typesArray = Arrays.asList(types);
-		ObservableList<String> typeList = FXCollections.observableArrayList(typesArray);
+		ObservableList<String> typeList = FXCollections.observableArrayList(types);
 
 		nameTextField = new TextField();
 		classTextField = new TextField();
@@ -151,7 +151,6 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		typeComboBox = new ComboBox<>(typeList);
 		typeComboBox.setEditable(true);
 		multiplicityButton = new Button();
-		//multiplicityButton.setText("Add / Edit Multiplicity");
 		multiplicityButton.setText(multiplicity.getClass().getSimpleName());
 		multiplicityButton.setOnAction(e -> {
 			showMultiplicityDialog();
@@ -162,19 +161,26 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		levelComboBox.setPrefWidth(COLUMN_WIDTH);
 		typeComboBox.setPrefWidth(COLUMN_WIDTH);
 		multiplicityButton.setPrefWidth(COLUMN_WIDTH);
-
-		grid.add(nameLabel, 0, 1);
-		grid.add(nameTextField, 1, 1);
-		grid.add(classLabel, 0, 0);
-		grid.add(classTextField, 1, 0);
-		grid.add(levelLabel, 0, 2);
-		grid.add(levelComboBox, 1, 2);
-		grid.add(typeLabel, 0, 3);
-		grid.add(typeComboBox, 1, 3);
-		grid.add(multiplicityLabel, 0, 4);
-		grid.add(multiplicityButton, 1, 4);
-		grid.add(displayMultiplicityLabel, 1, 5);
-
+		
+		List<Node> labelNode = new ArrayList<Node>();
+		List<Node> editorNode = new ArrayList<Node>();
+		
+		labelNode.add(nameLabel);
+		labelNode.add(classLabel);
+		labelNode.add(levelLabel);
+		labelNode.add(typeLabel);
+		labelNode.add(multiplicityLabel);
+		
+		editorNode.add(nameTextField);
+		editorNode.add(classTextField);
+		editorNode.add(levelComboBox);
+		editorNode.add(typeComboBox);
+		editorNode.add(multiplicityButton);
+		editorNode.add(displayMultiplicityLabel);
+		
+		addNodesToGrid(labelNode, 0);
+		addNodesToGrid(editorNode, 1);
+		
 	}
 
 	private void showMultiplicityDialog() {

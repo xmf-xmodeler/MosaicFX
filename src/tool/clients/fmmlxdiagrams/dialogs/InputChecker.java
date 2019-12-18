@@ -29,6 +29,8 @@ public class InputChecker {
 			return false;
 		} else if (checkFirstStringIsDigit(name)) {
 			return false;
+		} else if (name.contains(" ")) {
+			return false;
 		}
 		return true;
 	}

@@ -26,7 +26,7 @@ public class Edge {
 
   Vector<Waypoint>                   waypoints       = new Vector<Waypoint>();
   Vector<Label>                      labels          = new Vector<Label>();
-  boolean                            hidden          = false;
+  boolean                            hidden           = false;
   String                             id;
   Node                               sourceNode;
   Port                               sourcePort;
@@ -112,7 +112,7 @@ public int getBlue() {
 	  labels.add(new Label(this, id, text, pos, x, y, editable, underline, condense, red, green, blue, border, borderRed, borderGreen, borderBlue, font, arrow, hidden, fill));
   }
 
-  /** aligns the start and end waypoint to 90° lines if possible 
+  /** aligns the start and end waypoint to 90ï¿½ lines if possible 
   /*PACKAGE ACCESS*/ void align() {
     // Called when there is some jiggling to be done.
 //    if (waypoints.size() == 2) {
@@ -126,7 +126,7 @@ public int getBlue() {
 
   /**
    * When a (visible) waypoint is moved, the start and end waypoints
-   * will be moved as possible to have straight (90°) lines.
+   * will be moved as possible to have straight (90ï¿½) lines.
    */
   /*PACKAGE ACCESS*/ void movedBy(Waypoint justMoved) {
     if (justMoved != start() && justMoved != end()) {

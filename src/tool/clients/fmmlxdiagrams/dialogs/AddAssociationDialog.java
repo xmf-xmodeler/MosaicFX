@@ -27,7 +27,6 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 	private Multiplicity multiplicitySource;
 	private Multiplicity multiplicityTarget;
 
-
 	private ComboBox<FmmlxObject> typeSource;
 	private ComboBox<Integer> instLevelSource;
 	private TextField displayNameSource;
@@ -36,6 +35,10 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 	private ComboBox<Integer> instLevelTarget;
 	private TextField displayNameTarget;
 	private TextField identifierTarget;
+	private CheckBox sourceVisible;
+	private CheckBox targetVisible;
+	private CheckBox isSymmetric;
+	private CheckBox isTransitive;
 
 	public AddAssociationDialog(FmmlxDiagram diagram, FmmlxObject source, FmmlxObject target) {
 		this.diagram = diagram;
@@ -64,6 +67,10 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 		labels.add(new Label(LabelAndHeaderTitle.displayName));
 		labels.add(new Label(LabelAndHeaderTitle.identifier));
 		labels.add(new Label(LabelAndHeaderTitle.multiplicity));
+		labels.add(new Label(LabelAndHeaderTitle.visible));
+		labels.add(new Label(LabelAndHeaderTitle.symmetric));
+		labels.add(new Label(LabelAndHeaderTitle.transitive));
+
 
 		List<Node> sourceNodes = new ArrayList<>();
 
@@ -84,13 +91,18 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 		instLevelSource.getSelectionModel().select(0);
 		displayNameSource = new TextField();
 		identifierSource = new TextField();
+		sourceVisible = new CheckBox();
+		isSymmetric = new CheckBox();
+		isTransitive = new CheckBox();
 		sourceNodes.add(startLabel);
 		sourceNodes.add(typeSource);
 		sourceNodes.add(instLevelSource);
 		sourceNodes.add(displayNameSource);
 		sourceNodes.add(identifierSource);
 		sourceNodes.add(createMultiplicityBox(multiplicitySource));
-
+		sourceNodes.add(sourceVisible);
+		sourceNodes.add(isSymmetric);
+		sourceNodes.add(isTransitive);
 		List<Node> targetNodes = new ArrayList<>();
 
 		typeTarget = (ComboBox<FmmlxObject>) initializeComboBox(diagram.getAllPossibleParentList());
@@ -108,13 +120,14 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 		displayNameTarget = new TextField();
 		displayNameTarget.setTooltip(new Tooltip(ToolTip.displayNameSource));
 		identifierTarget = new TextField();
+		targetVisible = new CheckBox();		
 		targetNodes.add(new Label(LabelAndHeaderTitle.end));
 		targetNodes.add(typeTarget);
 		targetNodes.add(instLevelTarget);
 		targetNodes.add(displayNameTarget);
 		targetNodes.add(identifierTarget);
 		targetNodes.add(createMultiplicityBox(multiplicityTarget));
-
+		targetNodes.add(targetVisible);
 		addNodesToGrid(labels, 0);
 		addNodesToGrid(sourceNodes, 1);
 		addNodesToGrid(targetNodes, 2);
@@ -191,6 +204,7 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 			errorLabel.setText(ErrorMessage.setDisplayName);
 			return false;
 		}
+		
 
 		return true;
 	}
@@ -208,7 +222,11 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 						identifierSource.getText(),
 						identifierTarget.getText(),
 						multiplicitySource,
-						multiplicityTarget
+						multiplicityTarget,
+						sourceVisible.isSelected(),
+						targetVisible.isSelected(),
+						isSymmetric.isSelected(),
+						isTransitive.isSelected()						
 				);
 			}
 			return null;

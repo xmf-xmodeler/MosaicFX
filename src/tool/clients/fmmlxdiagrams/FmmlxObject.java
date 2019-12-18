@@ -34,6 +34,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	private transient double mouseMoveOffsetY;
 	private transient double lastValidX;
 	private transient double lastValidY;
+	
+	private FmmlxObjectPort ports;
 
 	boolean usePreferredWidth = false; //not implemented yet
 
@@ -65,7 +67,13 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	private FmmlxDiagram diagram;
 	private PropertyType propertyType = PropertyType.Class;
 	private transient boolean requiresReLayout;
+	
+	public void triggerLayout() {
+		this.requiresReLayout = true;
+	}
 
+	//private Vector<Issue> issues;
+	
 	static {
 		colors = new HashMap<>();
 //		private String[] levelBackgroundColors = {"#8C8C8C", "#FFFFFF", "#000000", "#3111DB", "#dd2244", "#119955"};
@@ -119,6 +127,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		this.showOperations = diagram.isShowOperations();
 		this.showOperationValues = diagram.isShowOperationValues();
 		this.showSlots = diagram.isShowSlots();
+		
+		this.ports = new FmmlxObjectPort(this);
 	}
 
 	private String getParentsListString(FmmlxDiagram diagram) {
@@ -126,13 +136,20 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		for (Integer parentID : getParents()) {
 			String parentName;
 			try {
-				parentName = diagram.getObjectById(parentID).name;
+				FmmlxObject parent = diagram.getObjectById(parentID);
+				InheritanceEdge edge = diagram.getInheritanceEdge(this, parent);
+				if(edge != null && !edge.visible) {
+					parentName = parent.name;
+					parentsList += parentName + ", ";
+				} 
 			} catch (Exception e) {
+				e.printStackTrace();
 				parentName = e.getMessage();
+				parentsList += parentName + ", ";
 			}
-			parentsList += parentName + ", ";
 		}
-		return parentsList.substring(0, parentsList.length() - 2);
+		if(!("extends ".equals(parentsList))) return parentsList.substring(0, parentsList.length() - 2);
+		return "";
 	}
 
 	public String getName() {
@@ -328,7 +345,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		double textHeight = diagram.calculateTextHeight();
 		double currentY = 0;
 
-		int headerLines = hasParents() ? 3 : 2;
+		String parentString = getParentsListString(diagram);
+		int headerLines = /*hasParents()*/(!"".equals(parentString)) ? 3 : 2;
 		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * headerLines, getLevelBackgroundColor(), Color.BLACK, (x) -> {return 1.;}, PropertyType.Class);
 		nodeElements.addElement(header);
 		String ofName;
@@ -337,11 +355,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		} catch (Exception e) {
 			ofName = e.getMessage();
 		}
-		if (ofName != null) {
-//			ofName = "^" + ofName + "^";
-		} else {
-			ofName = "MetaClass";
-		}
+		if (ofName == null) ofName = "MetaClass";
+		
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, Color.valueOf(getLevelFontColor() + "75"), null, this, "^" + ofName + "^");
 		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight, Color.valueOf(getLevelFontColor() + "75"), null, this, "" + level);
 		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, Color.valueOf(getLevelFontColor()), null, this, name, isAbstract);
@@ -349,8 +364,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		header.nodeElements.add(levelLabel);
 		header.nodeElements.add(nameLabel);
 
-		if (hasParents()) {
-			NodeLabel parentsLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 3, Color.valueOf(getLevelFontColor()), null, this, getParentsListString(diagram), isAbstract);
+		if ((!"".equals(parentString))) {
+			NodeLabel parentsLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 3, Color.valueOf(getLevelFontColor()), null, this, parentString, isAbstract);
 			header.nodeElements.add(parentsLabel);
 		}
 
@@ -523,11 +538,11 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		}
 	}
 
-	public void fetchDataDefinitions(FmmlxDiagramCommunicator comm) {
-		Vector<Vector<FmmlxAttribute>> attributeList = comm.fetchAttributes(this.name);
+	public void fetchDataDefinitions(FmmlxDiagramCommunicator comm) throws TimeOutException {
+		Vector<Vector<FmmlxAttribute>> attributeList = comm.fetchAttributes(diagram, this.name);
 		ownAttributes = attributeList.get(0);
 		otherAttributes = attributeList.get(1);
-		Vector<FmmlxOperation> operations = comm.fetchOperations(this.name);
+		Vector<FmmlxOperation> operations = comm.fetchOperations(diagram, this.name);
 		ownOperations = new Vector<FmmlxOperation>();
 		otherOperations = new Vector<FmmlxOperation>();
 		for (FmmlxOperation o : operations) {
@@ -539,10 +554,10 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		}
 	}
 
-	public void fetchDataValues(FmmlxDiagramCommunicator comm) {
-		slots = comm.fetchSlots(this.name, this.getSlotNames());
+	public void fetchDataValues(FmmlxDiagramCommunicator comm) throws TimeOutException {
+		slots = comm.fetchSlots(diagram, this, this.getSlotNames());
 
-		operationValues = comm.fetchOperationValues(this.name, this.getMonitoredOperationsNames());
+		operationValues = comm.fetchOperationValues(diagram, this.name, this.getMonitoredOperationsNames());
 	}
 
 	public boolean isHit(double mouseX, double mouseY) {
@@ -560,12 +575,14 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	@Override
 	public void moveTo(double x, double y, FmmlxDiagram diagram) {
+	    this.x = x;
+	    this.y = y;
 		setX((int) x);
 		setY((int) y);
-		for(Edge edge : diagram.getEdges()) {
-			if (edge.isStartNode(this)) edge.moveStartPoint(x + width/2, y + height/2);
-			if (edge.isEndNode(this)) edge.moveEndPoint(x + width/2, y + height/2);
-		}
+//		for(Edge edge : diagram.getEdges()) {
+//			if (edge.isStartNode(this)) edge.moveStartPoint(x + width/2, y + height/2);
+//			if (edge.isEndNode(this)) edge.moveEndPoint(x + width/2, y + height/2);
+//		}
 	}
 	
 	public boolean isAbstract() {return isAbstract;}
@@ -626,7 +643,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 //			for (NodeElement e : nodeElements) {
 //				e.isHit(mouseX, mouseY)
 //			}
-
 //		}
 	}
 
@@ -656,5 +672,29 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	@Override public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
 	@Override public double getMouseMoveOffsetY() {return mouseMoveOffsetY;}
+
+	public Point2D getPointForEdge(Edge.End edge, boolean isStartNode) {
+		return ports.getPointForEdge(edge, isStartNode);
+	}
+
+	public PortRegion getDirectionForEdge(Edge.End edge, boolean isStartNode) {
+		return ports.getDirectionForEdge(edge, isStartNode);
+	}
+	
+	public void setDirectionForEdge(Edge.End edge, boolean isStartNode, PortRegion newPortRegion) {
+		ports.setDirectionForEdge(edge, isStartNode, newPortRegion);
+	}
+	
+	public void addEdgeEnd(Edge.End edge, PortRegion direction) {
+		ports.addNewEdge(edge, direction);
+	}
+
+	public void updatePortOder() {
+		ports.sortAllPorts();
+	}
+
+	@Override
+	public void unHighlight() {	}
+
 
 }

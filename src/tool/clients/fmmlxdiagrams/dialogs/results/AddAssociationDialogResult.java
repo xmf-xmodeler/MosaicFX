@@ -15,13 +15,18 @@ public class AddAssociationDialogResult extends DialogResult {
 	private String identifierTarget;
 	private Multiplicity multiplicitySource;
 	private Multiplicity multiplicityTarget;
+	private Boolean sourceVisible;
+	private Boolean targetVisible;
+	private Boolean isSymmetric;
+	private Boolean isTransitive;
 
 
 	public AddAssociationDialogResult(FmmlxObject source, FmmlxObject target,
 									  Integer instLevelSource, Integer instLevelTarget,
 									  String displayNameSource, String displayNameTarget,
 									  String identifierSource, String identifierTarget,
-									  Multiplicity multiplicitySource, Multiplicity multiplicityTarget) {
+									  Multiplicity multiplicitySource, Multiplicity multiplicityTarget,
+									  Boolean sourceVisible, Boolean targetVisible, Boolean isSymmetric, Boolean isTransitive) {
 		this.source = source;
 		this.target = target;
 		this.instLevelSource = instLevelSource;
@@ -32,6 +37,10 @@ public class AddAssociationDialogResult extends DialogResult {
 		this.identifierTarget = identifierTarget;
 		this.multiplicitySource = multiplicitySource;
 		this.multiplicityTarget = multiplicityTarget;
+		this.sourceVisible = sourceVisible;
+		this.targetVisible = targetVisible;
+		this.isSymmetric = isSymmetric;
+		this.isTransitive = isTransitive;
 	}
 
 	public FmmlxObject getSource() {
@@ -72,6 +81,22 @@ public class AddAssociationDialogResult extends DialogResult {
 
 	public Multiplicity getMultiplicityTarget() {
 		return multiplicityTarget;
+	}
+	
+	public Boolean getSourceVisible() {
+		return sourceVisible;
+	}
+	
+	public Boolean getTargetVisible() {
+		return targetVisible;
+	}
+	
+	public Boolean getIsSymmetric() {
+		return isSymmetric;
+	}
+	
+	public Boolean getIsTransitive() {
+		return isTransitive;
 	}
 
 	@Override

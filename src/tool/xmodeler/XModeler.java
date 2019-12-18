@@ -30,23 +30,17 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.image.Image;
+
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import tool.clients.browser.ModelBrowserClient;
 import tool.clients.diagrams.DiagramClient;
 import tool.clients.dialogs.DialogsClient;
-import tool.clients.dialogs.notifier.NotificationType;
-import tool.clients.dialogs.notifier.NotifierDialog;
 import tool.clients.editors.EditorClient;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.forms.FormsClient;
@@ -510,8 +504,8 @@ public class XModeler extends Application {
 			menuBar.getMenus().add(menuDebug);
 			
 			 */
+//			      }});			
 
-//			      }});
 			
   }
   

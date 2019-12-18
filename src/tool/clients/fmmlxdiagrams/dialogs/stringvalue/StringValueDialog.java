@@ -39,6 +39,12 @@ public class StringValueDialog {
 		public static final String selectInstanceA = "Select Instance of MetaClass-A!";
 		public static final String selectInstanceB = "Select Instance of MetaClass-B!";
 		public static final String selectAssociationInstance = "Select Association Instance!";
+		public static final String inputNumberOfElement= "Input Number of Element";
+		public static final String pleaseInputValidNameForEnumElement= "Please Input Valid Name for Enum-Element";
+		public static final String selectEnumeration= "Select Enumeration";
+		public static final String thereAreDuplicates= "There are Duplicates";
+		public static final String elementAlreadyExist = "Element with the same name already exist";
+		public static final String enumAlreadyExist= "Enumeration with the same name already exist";
 	}
 
 	public static class LabelAndHeaderTitle {
@@ -62,6 +68,9 @@ public class StringValueDialog {
 		public static final String multiplicity = "Multiplicity";
 		public static final String value = "Value";
 		public static final String expression = "Is expression";
+		public static final String visible ="Visible";
+		public static final String symmetric ="Symmetric";
+		public static final String transitive ="Transitive";
 
 
 		//Current
