@@ -208,9 +208,9 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 					e.printStackTrace();
 				}
 			
-				diagram.updateEnums();
-				
-				inputElementListview.getItems().addAll(diagram.getEnum(selectedEnum.getName()).getItems());
+//				diagram.updateEnums();
+//				
+//				inputElementListview.getItems().addAll(diagram.getEnum(selectedEnum.getName()).getItems());
 			}
 		} else {
 			errorLabel.setText(StringValueDialog.ErrorMessage.selectEnumeration);
