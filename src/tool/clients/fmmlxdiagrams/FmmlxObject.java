@@ -72,7 +72,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		this.requiresReLayout = true;
 	}
 
-	private Vector<Issue> issues;
+	//private Vector<Issue> issues;
 	
 	static {
 		colors = new HashMap<>();
