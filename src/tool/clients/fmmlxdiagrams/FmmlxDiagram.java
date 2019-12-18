@@ -86,6 +86,8 @@ public class FmmlxDiagram {
 	private transient boolean suppressRedraw;
 	private final FmmlxPalette fmmlxPalette;
 	
+	private int maxLevel;
+	
 	String edgeCreationType = null;
 	String nodeCreationType = null;
 
@@ -101,7 +103,6 @@ public class FmmlxDiagram {
 		actions = new DiagramActions(this);
 		Palette palette = new Palette(actions);
 		fmmlxPalette = new FmmlxPalette(this);
-		fmmlxPalette.init(this);
 		scrollerCanvas = new ScrollPane(canvas);
 		pane.setOrientation(Orientation.HORIZONTAL);
 		pane.setDividerPosition(0, 0.2);
@@ -171,6 +172,14 @@ public class FmmlxDiagram {
 			fmmlxPalette.newFmmlxGroup(name);
 		}
 	}
+	
+	public void setEdgeCreationType(String edgeCreationType) {
+		this.edgeCreationType = edgeCreationType;
+	}
+	
+	public void setNodeCreationType(String nodeCreationType) {
+		this.nodeCreationType = nodeCreationType;
+	}
 
 	public void setEnums(Vector<FmmlxEnum> enums) {
 	}
@@ -191,6 +200,16 @@ public class FmmlxDiagram {
 
 		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
 		objects.addAll(fetchedObjects);
+		
+		int init = 0;
+		for (FmmlxObject tmp : fetchedObjects){
+			if (tmp.getLevel()>=init) {
+				init = tmp.getLevel();
+			}
+		}
+		this.maxLevel = init;
+		
+		
 		
 		Vector<Edge> fetchedEdges = comm.getAllAssociations(this);
 		fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
@@ -215,6 +234,8 @@ public class FmmlxDiagram {
 		suppressRedraw = false;
 		System.err.println("allowRedraw");
 		redraw();
+		fmmlxPalette.reset();
+		fmmlxPalette.init(this);
 	}
 
 	// This operation resets the size of the canvas when needed
@@ -270,6 +291,9 @@ public class FmmlxDiagram {
 			}
 		}
 	}
+	
+	
+	
 
 	private void paintOn(GraphicsContext g, int xOffset, int yOffset) {
 		g.setTransform(new Affine());
@@ -386,6 +410,7 @@ public class FmmlxDiagram {
 			}
 		objectsMoved = true;
 		redraw();
+		
 	}
 
 	private void mouseReleased(MouseEvent e) {
@@ -875,6 +900,17 @@ public class FmmlxDiagram {
 		return null;
 	}
 	
+	public Vector<FmmlxObject> getObjectsByLevel(int level){
+		Vector<FmmlxObject> result = new Vector<FmmlxObject>();
+		
+		for (FmmlxObject object : objects) {
+			if (object.getLevel()==level) {
+				result.add(object);
+			}
+		}
+		return result;
+	}
+	
 	public Edge getAssociationById(int id) {
 		for (Edge tmp : edges) {
 			if (tmp.getId() == id)
@@ -974,12 +1010,6 @@ public class FmmlxDiagram {
 	}
 
 	public int getMaxLevel() {
-		int init = 0;
-		for (FmmlxObject tmp : objects){
-			if (tmp.getLevel()>=init) {
-				init = tmp.getLevel();
-			}
-		}
-		return init;
+		return this.maxLevel;
 	}	
 }

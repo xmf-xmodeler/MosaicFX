@@ -1,7 +1,5 @@
 package tool.clients.fmmlxdiagrams.fmmlxPalette;
 
-import java.io.PrintStream;
-
 import javafx.scene.control.TreeItem;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
@@ -47,16 +45,14 @@ public abstract class FmmlxTool {
 
 		public abstract TreeItem<String> createButton();
 
-		public abstract String getType();
-
-		public /*abstract*/ void reset() {/*throw new RuntimeException("Not implemented yet.");*/}
-
-		public /*abstract*/ void select() {/*throw new RuntimeException("Not implemented yet.");*/}
-	  
-		public /*abstract*/ void widgetSelected() {System.err.println("widgetSelected");}
 
 		public void delete() {
 			new RuntimeException("Button cannot be deleted yet.");
 //	    button.dispose();
 		}
+
+		protected abstract String getType();
+
+		protected abstract void reset();
+
 }

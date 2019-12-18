@@ -76,8 +76,7 @@ public class FmmlxGroupModel extends FmmlxGroup implements IFmmlxGroup{
 		    return null;
 	}
 
-	@Override
-	public void newFmmlxTool(FmmlxDiagram diagram, String label, String toolId, boolean isEdge, String icon) {
+	public void newFmmlxNodeTool(FmmlxDiagram diagram, String label, String toolId, boolean isEdge, String icon) {
 		for(FmmlxTool tool : tools) { // Quickfix for Copenhagen/MULTI2018, prevent repeated creation of tools
 			if(tool.label.equals(label)) return;
 		}

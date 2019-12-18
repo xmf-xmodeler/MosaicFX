@@ -2,7 +2,9 @@ package tool.clients.fmmlxdiagrams.fmmlxPalette;
 
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.concurrent.CountDownLatch;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TreeItem;
@@ -10,6 +12,7 @@ import javafx.scene.control.TreeView;
 import tool.clients.diagrams.Group;
 import tool.clients.diagrams.Tool;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 public class FmmlxPalette{
 	
@@ -45,6 +48,7 @@ public class FmmlxPalette{
 
 		  });
 	  }
+	
 	public void init(FmmlxDiagram diagram) {
 		
 		Vector<String> groupNames = new Vector<String>();
@@ -61,22 +65,35 @@ public class FmmlxPalette{
 	private void generateToogle(FmmlxDiagram fmmlxDiagram, String name){
 		
 		FmmlxGroup fmmlxGroup = getFmmlxGroup(name);
+		
+		
 		if(fmmlxGroup != null) {
 			if(fmmlxGroup.getName().equals("Models")) {
 				newTool(fmmlxDiagram, "Models", "Auxillary Classes", "auxilary", false, "resources/gif/Tools/Inherit.png");
 				newTool(fmmlxDiagram, "Models", "getPackageName()", "getPackageName()", false, "resources/gif/Tools/Inherit.png");
 			} else if(fmmlxGroup.getName().equals("Relationsship")) {
-				newTool(fmmlxDiagram, "Relationsship", "Association", "association", false, "resources/gif/Tools/Inherit.png");
-				newTool(fmmlxDiagram, "Relationsship", "Specialization", "spezialization", false, "resources/gif/Tools/Inherit.png");
-				newTool(fmmlxDiagram, "Relationsship", "Delegation", "delegation", false, "resources/gif/Tools/Inherit.png");
+				newTool(fmmlxDiagram, "Relationsship", "Association", "association", false, "resources/gif/Association.gif");
+				newTool(fmmlxDiagram, "Relationsship", "Specialization", "spezialization", false, "resources/gif/Tools/Inherit.gif");
+				newTool(fmmlxDiagram, "Relationsship", "Delegation", "delegation", false, "resources/gif/XCore/Delegation.png");
 				
 			} else if(fmmlxGroup.getName().equals("Classes/Object")) {
 				newTool(fmmlxDiagram, "Classes/Object", "MetaClass", "metaClass", false, "resources/gif/Tools/Inherit.png");
+				int maxLevel = fmmlxDiagram.getMaxLevel();
+				for (int i = maxLevel ; i>=0 ; i--) {
+					for (FmmlxObject tmp : fmmlxDiagram.getObjects()) {
+						if (tmp.getLevel()==i) {
+							newNodeTool(fmmlxDiagram, "Classes/Object", tmp.getName(), tmp.getId()+"", tmp.getLevel(), false, "");
+						}
+					}	
+				}
+				
+			} else {
+				System.err.println("cannot find group " + name);
 			}
-		} else
-			System.err.println("cannot find group " + name);
+		}
 	}
-	
+
+
 	public boolean hasGroup(String name) {
 		return getFmmlxGroup(name) != null;
 	}
@@ -110,11 +127,35 @@ public class FmmlxPalette{
 		if (fmmlxGroup != null) {
 			if(fmmlxGroup instanceof FmmlxGroupRelationsship) {
 				((FmmlxGroupRelationsship) fmmlxGroup).newFmmlxTool(fmmlxDiagram, label, toolId, isEdge, icon);
+			} else if (fmmlxGroup instanceof FmmlxGroupClasses) {
+				try {
+					((FmmlxGroupClasses) fmmlxGroup).newFmmlxMetaclassTool(fmmlxDiagram, label, toolId, isEdge, icon);
+				} catch (InterruptedException e) {
+					
+					e.printStackTrace();
+				}
+			} else {
+				((FmmlxGroupModel) fmmlxGroup).newFmmlxNodeTool(fmmlxDiagram, label, toolId, isEdge, icon);
 			}
 			
 		} else
 			System.err.println("cannot find group " + groupName);
 	}
+	
+	
+	private void newNodeTool(FmmlxDiagram fmmlxDiagram, String groupName, String label, String toolId, int level, boolean isEdge,
+			String icon) {
+			FmmlxGroup fmmlxGroup = getFmmlxGroup(groupName);
+			if (fmmlxGroup instanceof FmmlxGroupClasses) {
+			try {
+				((FmmlxGroupClasses) fmmlxGroup).newFmmlxNodeTool(fmmlxDiagram, label, toolId, level, isEdge, icon);
+			} catch (InterruptedException e) {
+				
+				e.printStackTrace();
+			}
+		}
+		
+	}	
 	
 	public void newAction(FmmlxDiagram fmmlxDiagram, String groupName, String label, String toolId, String icon) {
 		FmmlxGroup fmmlxGroup = getFmmlxGroup(groupName);
@@ -126,6 +167,23 @@ public class FmmlxPalette{
 	public TreeView<String> getToolBar() {
 		return tree;
 	}
+	
+	public void reset() {
+		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
+			tree.getSelectionModel().clearSelection();
 
+		} else { // create a new Thread
+			CountDownLatch l = new CountDownLatch(1);
+			Platform.runLater(() -> {
+				tree.getSelectionModel().clearSelection();
+				l.countDown();
+			});
+			try {
+				l.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 }

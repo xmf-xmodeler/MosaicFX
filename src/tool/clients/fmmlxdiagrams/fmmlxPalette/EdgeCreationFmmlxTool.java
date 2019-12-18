@@ -5,7 +5,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
-public class EdgeCreationFmmlxTool extends FmmlxTool {
+public class EdgeCreationFmmlxTool extends FmmlxTool implements ITool{
 
 	public EdgeCreationFmmlxTool(FmmlxDiagram diagram, String label, String toolId, String icon) {
 		super(diagram, label, toolId, icon);
@@ -18,9 +18,27 @@ public class EdgeCreationFmmlxTool extends FmmlxTool {
 	    return button;
 	}
 
-	@Override
 	public String getType() {
 		return "EDGE";
+	}
+
+	@Override
+	public void reset() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void select() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void widgetSelected() {
+		diagram.deselectPalette();
+	    select();
+	    diagram.setEdgeCreationType(getId());
 	}
 
 }

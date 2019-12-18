@@ -21,6 +21,4 @@ public interface IFmmlxGroup {
 	public void removeFmmlxTool(FmmlxTool tool);
 
 	public FmmlxTool getFmmlxTool(String label);
-
-	public void newFmmlxTool(FmmlxDiagram diagram, String label, String toolId, boolean isEdge, String icon);
 }

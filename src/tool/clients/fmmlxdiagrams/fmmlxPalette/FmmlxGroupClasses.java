@@ -1,6 +1,9 @@
 package tool.clients.fmmlxdiagrams.fmmlxPalette;
 
 import java.util.Vector;
+
+import javafx.collections.ObservableList;
+import javafx.scene.control.TreeItem;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import xos.Value;
 
@@ -75,22 +78,26 @@ public class FmmlxGroupClasses extends FmmlxGroup implements IFmmlxGroup{
 		    return null;
 	}
 
-	@Override
-	public void newFmmlxTool(FmmlxDiagram diagram, String label, String toolId, boolean isEdge, String icon) {
-		for(FmmlxTool tool : tools) { // Quickfix for Copenhagen/MULTI2018, prevent repeated creation of tools
+	public void newFmmlxMetaclassTool(FmmlxDiagram diagram, String label, String toolId, boolean isEdge, String icon) throws InterruptedException {
+		for(FmmlxTool tool : tools) { 
+			if(tool.label.equals(label)) return;
+		}	
+	    FmmlxTool node = new NodeCreationFmmlxTool(diagram, label, toolId, icon);
+	    tools.add(node);
+	    getChildren().add(node.getButton());
+	}
+
+	public void newFmmlxNodeTool(FmmlxDiagram diagram, String label, String toolId, int level, boolean isEdge, String icon) throws InterruptedException {
+		
+		for(FmmlxTool tool : tools) { 
 			if(tool.label.equals(label)) return;
 		}
-		  
-	    if (isEdge) {
-	    	FmmlxTool edge = new EdgeCreationFmmlxTool(diagram, label, toolId, icon);
-	        tools.add(edge); 
-	        getChildren().add(edge.getButton());
-	    } else {
-	    	int maxLevel = diagram.getMaxLevel();
-	    	FmmlxTool node = new NodeCreationFmmlxTool(diagram, label, toolId, icon);
-	    	tools.add(node);
-	        getChildren().add(node.getButton());
-	    }
+
+	    FmmlxTool node = new NodeCreationFmmlxTool(diagram, label, toolId, level, icon);
+	    tools.add(node);
+	    getChildren().add(node.getButton());
+		
 	}
+	
 
 }
