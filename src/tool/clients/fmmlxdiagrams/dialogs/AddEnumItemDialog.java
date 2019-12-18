@@ -51,11 +51,7 @@ public class AddEnumItemDialog extends CustomDialog<AddEnumElementDialogResult>{
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				try {
-					diagram.getComm().addEnumerationItem(this.diagram, selectedEnum.getName(), inputElementNameTextField.getText());
-				} catch (TimeOutException e) {
-					e.printStackTrace();
-				}
+				return new AddEnumElementDialogResult(inputElementNameTextField.getText());
 			}
 			return null;
 		});
