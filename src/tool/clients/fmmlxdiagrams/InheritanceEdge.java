@@ -16,7 +16,7 @@ public class InheritanceEdge extends Edge {
 				diagram);
 	}
 
-	protected void checkVisibilityMode() {visible = endNode.getPointForEdge(this, false).distance(startNode.getPointForEdge(this, true))<1000;}
+	protected void checkVisibilityMode() {visible = targetNode.getPointForEdge(targetEnd, false).distance(sourceNode.getPointForEdge(sourceEnd, true))<1000;}
 	
 	@Override
 	protected void layoutLabels() {

@@ -27,7 +27,6 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 	private Multiplicity multiplicitySource;
 	private Multiplicity multiplicityTarget;
 
-
 	private ComboBox<FmmlxObject> typeSource;
 	private ComboBox<Integer> instLevelSource;
 	private TextField displayNameSource;

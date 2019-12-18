@@ -544,7 +544,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		}
 	}
 
-	public void fetchDataDefinitions(FmmlxDiagramCommunicator comm) {
+	public void fetchDataDefinitions(FmmlxDiagramCommunicator comm) throws TimeOutException {
 		Vector<Vector<FmmlxAttribute>> attributeList = comm.fetchAttributes(diagram, this.name);
 		ownAttributes = attributeList.get(0);
 		otherAttributes = attributeList.get(1);
@@ -561,7 +561,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		issues = comm.fetchIssues(diagram, this.name);
 	}
 
-	public void fetchDataValues(FmmlxDiagramCommunicator comm) {
+	public void fetchDataValues(FmmlxDiagramCommunicator comm) throws TimeOutException {
 		slots = comm.fetchSlots(diagram, this, this.getSlotNames());
 
 		operationValues = comm.fetchOperationValues(diagram, this.name, this.getMonitoredOperationsNames());
@@ -680,23 +680,19 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	@Override public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
 	@Override public double getMouseMoveOffsetY() {return mouseMoveOffsetY;}
 
-	public Point2D getPointForEdge(Edge edge, boolean isStartNode) {
+	public Point2D getPointForEdge(Edge.End edge, boolean isStartNode) {
 		return ports.getPointForEdge(edge, isStartNode);
 	}
 
-	public PortRegion getDirectionForEdge(Edge edge, boolean isStartNode) {
+	public PortRegion getDirectionForEdge(Edge.End edge, boolean isStartNode) {
 		return ports.getDirectionForEdge(edge, isStartNode);
 	}
 	
-	public void setDirectionForEdge(Edge edge, boolean isStartNode, PortRegion newPortRegion) {
+	public void setDirectionForEdge(Edge.End edge, boolean isStartNode, PortRegion newPortRegion) {
 		ports.setDirectionForEdge(edge, isStartNode, newPortRegion);
 	}
 	
-	public void addEdgeStart(Edge edge, PortRegion direction) {
-		ports.addNewEdge(edge, direction);
-	}
-	
-	public void addEdgeEnd(Edge edge, PortRegion direction) {
+	public void addEdgeEnd(Edge.End edge, PortRegion direction) {
 		ports.addNewEdge(edge, direction);
 	}
 

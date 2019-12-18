@@ -142,40 +142,45 @@ public class FmmlxDiagram {
 			return;
 		}
 		suppressRedraw = true;
-		
-//		System.err.println("suppressRedraw");
-		
-		objects.clear();
-		edges.clear();
-		labels.clear();
-		enums.clear();
-
-		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
-		objects.addAll(fetchedObjects);
-		
-		for(FmmlxObject o : objects) {
-			o.fetchDataDefinitions(comm);
+		try {
+			
+	//		System.err.println("suppressRedraw");
+			
+			objects.clear();
+			edges.clear();
+			labels.clear();
+			enums.clear();
+	
+			Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
+			objects.addAll(fetchedObjects);
+			
+			for(FmmlxObject o : objects) {
+				o.fetchDataDefinitions(comm);
+			}
+			
+			for(FmmlxObject o : objects) {
+				o.fetchDataValues(comm);
+				o.layout(this);
+			}
+			
+			Vector<Edge> fetchedEdges = comm.getAllAssociations(this);
+			fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
+	
+			edges.addAll(fetchedEdges);
+			edges.addAll(comm.getAllInheritanceEdges(this));
+			
+			enums = comm.fetchAllEnums(this);
+			
+			triggerOverallReLayout();
+			
+			resizeCanvas();
+			
+	//		System.err.println("allowRedraw");
+			redraw();
+		} catch (TimeOutException e) {
+			e.printStackTrace();
 		}
-		
-		for(FmmlxObject o : objects) {
-			o.fetchDataValues(comm);
-			o.layout(this);
-		}
-		
-		Vector<Edge> fetchedEdges = comm.getAllAssociations(this);
-		fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
-
-		edges.addAll(fetchedEdges);
-		edges.addAll(comm.getAllInheritanceEdges(this));
-		
-		enums = comm.fetchAllEnums(this);
-		
-		triggerOverallReLayout();
-		
-		resizeCanvas();
 		suppressRedraw = false;
-//		System.err.println("allowRedraw");
-		redraw();
 	}
 
 	// This operation resets the size of the canvas when needed
@@ -878,7 +883,7 @@ public class FmmlxDiagram {
 		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
 		for (Edge tmp : edges) {
 			if (tmp instanceof FmmlxAssociation) {
-				if (tmp.startNode.getId() == object.getId() || tmp.endNode.getId() == object.getId()) {
+				if (tmp.sourceNode.getId() == object.getId() || tmp.targetNode.getId() == object.getId()) {
 					result.add((FmmlxAssociation) tmp);
 				}
 			}
@@ -934,17 +939,21 @@ public class FmmlxDiagram {
 	}
 
 	public synchronized void updateEnums() {
-		enums.clear();
-
-		Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
-		objects.addAll(fetchedObjects);
-		
-		Vector<Edge> fetchedEdges = comm.getAllAssociations(this);
-		fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
-
-		edges.addAll(fetchedEdges);
-		
-		enums = comm.fetchAllEnums(this);
+		try {
+			enums.clear();
+	
+			Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
+			objects.addAll(fetchedObjects);
+			
+			Vector<Edge> fetchedEdges = comm.getAllAssociations(this);
+			fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
+	
+			edges.addAll(fetchedEdges);
+			
+			enums = comm.fetchAllEnums(this); }
+		catch (TimeOutException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public FmmlxEnum getEnum(String enumName) {

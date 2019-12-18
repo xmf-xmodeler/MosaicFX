@@ -19,11 +19,18 @@ public abstract class Edge implements CanvasElement {
 
 	final public int id;
 	protected Vector<Point2D> intermediatePoints = new Vector<>();
-	protected FmmlxObject startNode;
-	protected FmmlxObject endNode;
+	protected FmmlxObject sourceNode;
+	protected FmmlxObject targetNode;
 	protected FmmlxDiagram diagram;
 	protected final Double DEFAULT_TOLERANCE = 6.;
 	protected boolean layoutingFinishedSuccesfully;
+	
+	public final Edge.End sourceEnd = new Edge.Source(this);
+	public final Edge.End targetEnd = new Edge.Target(this);
+	
+	public static abstract class End {public final Edge edge; private End(Edge edge) {this.edge = edge;} public abstract FmmlxObject getNode();};
+	public static class Source extends End{private Source(Edge edge) {super(edge);} public FmmlxObject getNode() {return edge.sourceNode;}};
+	public static class Target extends End{private Target(Edge edge) {super(edge);} public FmmlxObject getNode() {return edge.targetNode;}};
 
 	protected boolean visible;
 
@@ -51,37 +58,41 @@ public abstract class Edge implements CanvasElement {
 	public Edge(int id, 
 			FmmlxObject startNode, FmmlxObject endNode, 
 			Vector<Point2D> intermediatePoints,
-			PortRegion startPortRegion, PortRegion endPortRegion,
+			PortRegion sourcePortRegion, PortRegion targetPortRegion,
 			Vector<Object> labelPositions, FmmlxDiagram diagram) {
 		layoutingFinishedSuccesfully = false;
 		this.labelPositions = labelPositions;
 		this.id = id;
 		this.diagram = diagram;
-		this.startNode = startNode;
-		this.endNode = endNode;
+		this.sourceNode = startNode;
+		this.targetNode = endNode;
 		if (intermediatePoints == null || intermediatePoints.size() < 1) {
 		} else {
 			this.intermediatePoints.addAll(intermediatePoints);
 		}
 		storeLatestValidPointConfiguration();
-		if(startPortRegion==null) startPortRegion = determinePort(startNode,
+		
+		if(sourcePortRegion==null) {
+			if(startNode == endNode) sourcePortRegion = PortRegion.EAST; else
+			sourcePortRegion = determinePort(startNode,
 				this.intermediatePoints.size() < 1 ? null : this.intermediatePoints.firstElement(),
 				startNode.getCenterX() < endNode.getCenterX() ? PortRegion.EAST : PortRegion.WEST);
-		if(endPortRegion==null) endPortRegion = determinePort(endNode,
+		}
+		if(targetPortRegion==null) {
+			if(startNode == endNode) targetPortRegion = PortRegion.NORTH; else
+			targetPortRegion = determinePort(endNode,
 				this.intermediatePoints.size() < 1 ? null : this.intermediatePoints.lastElement(),
 				startNode.getCenterX() < endNode.getCenterX() ? PortRegion.WEST : PortRegion.EAST);
+		}
+        startNode.addEdgeEnd(this.sourceEnd, sourcePortRegion);
+        endNode.addEdgeEnd(this.targetEnd, targetPortRegion);
 
-//		System.err.println(startPortRegion + "-->" + endPortRegion);
-
-		startNode.addEdgeStart(this, startPortRegion);
-		endNode.addEdgeEnd(this, endPortRegion);
 	}
 
 	private PortRegion determinePort(FmmlxObject node, Point2D nextPoint, PortRegion defaultRegion) {
 		if (nextPoint == null) {
 			return defaultRegion;
 		}
-//		System.err.println(node.getX() + "-->" + nextPoint.getX() + "-->" +  node.getMaxRight());
 		if (node.getX() < nextPoint.getX() && nextPoint.getX() < node.getMaxRight()) {
 			// N or S
 			if (node.getY() > nextPoint.getY())
@@ -104,10 +115,10 @@ public abstract class Edge implements CanvasElement {
 			Vector<Point2D> points = getAllPoints();
 			g.setFill(new Color(.8, .8, .9, 1.));
 			g.fillText(
-					new DecimalFormat("0.00").format(Math.atan2(-endNode.getCenterY() + startNode.getCenterY(),
-							endNode.getCenterX() - startNode.getCenterX()) / Math.PI) + "\u03C0",
-					.5 * (startNode.getCenterX() + endNode.getCenterX()),
-					.5 * (startNode.getCenterY() + endNode.getCenterY()) - 12);
+					new DecimalFormat("0.00").format(Math.atan2(-targetNode.getCenterY() + sourceNode.getCenterY(),
+							targetNode.getCenterX() - sourceNode.getCenterX()) / Math.PI) + "\u03C0",
+					.5 * (sourceNode.getCenterX() + targetNode.getCenterX()),
+					.5 * (sourceNode.getCenterY() + targetNode.getCenterY()) - 12);
 
 			// hover
 			if (firstHoverPointIndex != null) {
@@ -184,14 +195,14 @@ public abstract class Edge implements CanvasElement {
 			if (newSourcePortRegion != null) {
 				double[] xPoints2 = new double[] { (points.get(0).getX() + points.get(1).getX()) / 2,
 						lastMousePosition.getX(),
-						newSourcePortRegion == PortRegion.WEST ? startNode.getX()
-								: newSourcePortRegion == PortRegion.EAST ? startNode.getMaxRight()
-										: startNode.getCenterX() };
+						newSourcePortRegion == PortRegion.WEST ? sourceNode.getX()
+								: newSourcePortRegion == PortRegion.EAST ? sourceNode.getMaxRight()
+										: sourceNode.getCenterX() };
 				double[] yPoints2 = new double[] { (points.get(0).getY() + points.get(1).getY()) / 2,
 						lastMousePosition.getY(),
-						newSourcePortRegion == PortRegion.NORTH ? startNode.getY()
-								: newSourcePortRegion == PortRegion.SOUTH ? startNode.getMaxBottom()
-										: startNode.getCenterY() };
+						newSourcePortRegion == PortRegion.NORTH ? sourceNode.getY()
+								: newSourcePortRegion == PortRegion.SOUTH ? sourceNode.getMaxBottom()
+										: sourceNode.getCenterY() };
 
 				g.setStroke(new Color(1., .8, .2, 1.));
 				g.strokePolyline(xPoints2, yPoints2, xPoints2.length);
@@ -204,15 +215,15 @@ public abstract class Edge implements CanvasElement {
 				double[] xPoints2 = new double[] {
 						(points.get(points.size() - 1).getX() + points.get(points.size() - 2).getX()) / 2,
 						lastMousePosition.getX(),
-						newSourcePortRegion == PortRegion.WEST ? endNode.getX()
-								: newTargetPortRegion == PortRegion.EAST ? endNode.getMaxRight()
-										: endNode.getCenterX() };
+						newSourcePortRegion == PortRegion.WEST ? targetNode.getX()
+								: newTargetPortRegion == PortRegion.EAST ? targetNode.getMaxRight()
+										: targetNode.getCenterX() };
 				double[] yPoints2 = new double[] {
 						(points.get(points.size() - 1).getY() + points.get(points.size() - 2).getY()) / 2,
 						lastMousePosition.getY(),
-						newSourcePortRegion == PortRegion.NORTH ? endNode.getY()
-								: newTargetPortRegion == PortRegion.SOUTH ? endNode.getMaxBottom()
-										: endNode.getCenterY() };
+						newSourcePortRegion == PortRegion.NORTH ? targetNode.getY()
+								: newTargetPortRegion == PortRegion.SOUTH ? targetNode.getMaxBottom()
+										: targetNode.getCenterY() };
 
 				g.setStroke(new Color(1., .8, .2, 1.));
 				g.strokePolyline(xPoints2, yPoints2, xPoints2.length);
@@ -229,10 +240,10 @@ public abstract class Edge implements CanvasElement {
 			// resetting the graphicsContext
 			g.setLineDashes(0);
 
-			drawDecoration(g, getTargetDecoration(), endNode.getDirectionForEdge(this, false),
-					endNode.getPointForEdge(this, false));
-			drawDecoration(g, getSourceDecoration(), startNode.getDirectionForEdge(this, true),
-					startNode.getPointForEdge(this, true));
+			drawDecoration(g, getTargetDecoration(), targetNode.getDirectionForEdge(targetEnd, false),
+					targetNode.getPointForEdge(targetEnd, false));
+			drawDecoration(g, getSourceDecoration(), sourceNode.getDirectionForEdge(sourceEnd, true),
+					sourceNode.getPointForEdge(sourceEnd, true));
 
 		}
 	}
@@ -305,9 +316,9 @@ public abstract class Edge implements CanvasElement {
 
 	protected Vector<Point2D> getAllPoints() {
 		Vector<Point2D> allPoints = new Vector<Point2D>();
-		allPoints.add(startNode.getPointForEdge(this, true));
+		allPoints.add(sourceNode.getPointForEdge(sourceEnd, true));
 		allPoints.addAll(intermediatePoints);
-		allPoints.add(endNode.getPointForEdge(this, false));
+		allPoints.add(targetNode.getPointForEdge(targetEnd, false));
 		return allPoints;
 	}
 
@@ -316,41 +327,42 @@ public abstract class Edge implements CanvasElement {
 	protected void align() {
 		checkVisibilityMode();
 		if(intermediatePoints.size() < 2) {
-			if(startNode.getDirectionForEdge(this, true).isHorizontal())
-				intermediatePoints.add(new Point2D((startNode.getCenterX() + endNode.getCenterX())/2, startNode.getCenterY())); 
-			else
-				intermediatePoints
-						.add(new Point2D(startNode.getCenterX(), (startNode.getCenterY() + endNode.getCenterY()) / 2));
-
-			if (endNode.getDirectionForEdge(this, false).isHorizontal())
-				intermediatePoints
-						.add(new Point2D((startNode.getCenterX() + endNode.getCenterX()) / 2, endNode.getCenterY()));
-			else
-				intermediatePoints
-						.add(new Point2D(endNode.getCenterX(), (startNode.getCenterY() + endNode.getCenterY()) / 2));
+			if(sourceNode.getDirectionForEdge(sourceEnd, true).isHorizontal() == targetNode.getDirectionForEdge(targetEnd, false).isHorizontal()) {
+				if(sourceNode.getDirectionForEdge(sourceEnd, true).isHorizontal())
+					intermediatePoints.add(new Point2D((sourceNode.getCenterX() + targetNode.getCenterX())/2, sourceNode.getCenterY())); 
+				else
+					intermediatePoints.add(new Point2D(sourceNode.getCenterX(), (sourceNode.getCenterY() + targetNode.getCenterY()) / 2));
+	
+				if (targetNode.getDirectionForEdge(targetEnd, false).isHorizontal())
+					intermediatePoints.add(new Point2D((sourceNode.getCenterX() + targetNode.getCenterX()) / 2, targetNode.getCenterY()));
+				else
+					intermediatePoints.add(new Point2D(targetNode.getCenterX(), (sourceNode.getCenterY() + targetNode.getCenterY()) / 2));
+			} else if(sourceNode.getDirectionForEdge(sourceEnd, true) == PortRegion.EAST && targetNode.getDirectionForEdge(targetEnd, false) == PortRegion.NORTH) {
+				intermediatePoints.add(new Point2D(sourceNode.getMaxRight() + 40, sourceNode.getCenterY())); 
+				intermediatePoints.add(new Point2D(sourceNode.getMaxRight() + 40, targetNode.getY() - 40)); 
+				intermediatePoints.add(new Point2D(targetNode.getCenterX(), targetNode.getY() - 40)); 
+			} else {
+				System.err.println("Unexpected initial edge alignment");
+			}
+			
 		}
-		;
-
-		Point2D first = startNode.getPointForEdge(this, true);
+		
+		
+		Point2D first = sourceNode.getPointForEdge(sourceEnd, true);
 		Point2D second = intermediatePoints.get(0);
-		PortRegion sourceDirection = startNode.getDirectionForEdge(this, true);
+		PortRegion sourceDirection = sourceNode.getDirectionForEdge(sourceEnd, true);
 
 		Point2D newSecond = sourceDirection.isHorizontal() ? new Point2D(second.getX(), first.getY())
 				: new Point2D(first.getX(), second.getY());
 		intermediatePoints.setElementAt(newSecond, 0);
 
 		Point2D penultimate = intermediatePoints.get(intermediatePoints.size() - 1);
-		Point2D ultimate = endNode.getPointForEdge(this, false);
-		PortRegion targetDirection = endNode.getDirectionForEdge(this, false);
+		Point2D ultimate = targetNode.getPointForEdge(targetEnd, false);
+		PortRegion targetDirection = targetNode.getDirectionForEdge(targetEnd, false);
 
 		Point2D newPenultimate = targetDirection.isHorizontal() ? new Point2D(penultimate.getX(), ultimate.getY())
 				: new Point2D(ultimate.getX(), penultimate.getY());
 		intermediatePoints.setElementAt(newPenultimate, intermediatePoints.size() - 1);
-
-//		for(int i = 0; i < intermediatePoints.size(); i++) {
-//			System.err.println(i + ": " + intermediatePoints.get(i));
-//		}
-//		System.err.println("---");
 	}
 	
 	protected void checkVisibilityMode() {visible = true;}
@@ -393,14 +405,14 @@ public abstract class Edge implements CanvasElement {
 		return Math.abs(angleAB);
 	}
 
-	private double distance_OLD(Point2D testPoint, Point2D lineStart, Point2D lineEnd) { // some fancy math copied from
+	/*private double distance_OLD(Point2D testPoint, Point2D lineStart, Point2D lineEnd) { // some fancy math copied from
 																							// the old diagram
 		double normalLength = Math.sqrt((lineEnd.getX() - lineStart.getX()) * (lineEnd.getX() - lineStart.getX())
 				+ (lineEnd.getY() - lineStart.getY()) * (lineEnd.getY() - lineStart.getY()));
 
 		return Math.abs((testPoint.getX() - lineStart.getX()) * (lineEnd.getY() - lineStart.getY())
 				- (testPoint.getY() - lineStart.getY()) * (lineEnd.getX() - lineStart.getX())) / normalLength;
-	}
+	}*/
 
 	@Override
 	public final ContextMenu getContextMenu(DiagramActions actions) {
@@ -417,7 +429,7 @@ public abstract class Edge implements CanvasElement {
 	@Override
 	public void moveTo(double x, double y, FmmlxDiagram diagram) {
 		lastMousePosition = new Point2D(x, y);
-//		System.err.println("move point " + pointToBeMoved + " to " + x + "," + y + (movementDirectionHorizontal?"H":"V"));
+		//System.err.println("move point " + pointToBeMoved + " to " + x + "," + y + (movementDirectionHorizontal?"H":"V"));
 		if (pointToBeMoved != -1 && moveMode == MoveMode.normal) {
 			if (movementDirectionHorizontal) {
 				intermediatePoints.setElementAt(new Point2D(x, intermediatePoints.get(pointToBeMoved - 1).getY()),
@@ -431,9 +443,9 @@ public abstract class Edge implements CanvasElement {
 						pointToBeMoved);
 			}
 		} else if (moveMode == MoveMode.moveSourcePortArea) {
-			newSourcePortRegion = findBestRegion(startNode, x, y);
+			newSourcePortRegion = findBestRegion(sourceNode, x, y);
 		} else if (moveMode == MoveMode.moveTargetPortArea) {
-			newTargetPortRegion = findBestRegion(endNode, x, y);
+			newTargetPortRegion = findBestRegion(targetNode, x, y);
 		}
 	}
 
@@ -460,11 +472,11 @@ public abstract class Edge implements CanvasElement {
 	}
 
 	public boolean isStartNode(FmmlxObject fmmlxObject) {
-		return startNode == fmmlxObject;
+		return sourceNode == fmmlxObject;
 	}
 
 	public boolean isEndNode(FmmlxObject fmmlxObject) {
-		return endNode == fmmlxObject;
+		return targetNode == fmmlxObject;
 	}
 
 	private void storeLatestValidPointConfiguration() {
@@ -520,63 +532,63 @@ public abstract class Edge implements CanvasElement {
 		 * points.remove(pointToBeMoved); } }
 		 */
 		// in any case no point to be moved anymore
-
-		if (newSourcePortRegion != null && newSourcePortRegion != startNode.getDirectionForEdge(this, true)) {
-			if (newSourcePortRegion.isOpposite(startNode.getDirectionForEdge(this, true))) {
-				startNode.setDirectionForEdge(this, true, newSourcePortRegion);
+		
+		if (newSourcePortRegion != null && newSourcePortRegion != sourceNode.getDirectionForEdge(sourceEnd, true)) {
+			if (newSourcePortRegion.isOpposite(sourceNode.getDirectionForEdge(sourceEnd, true))) {
+				sourceNode.setDirectionForEdge(sourceEnd, true, newSourcePortRegion);
 			} else { // requires a new point
 				if (newSourcePortRegion == PortRegion.SOUTH) {
 					intermediatePoints
-							.insertElementAt(new Point2D(0 /* does not matter */, startNode.getMaxBottom() + 30), 0);
+							.insertElementAt(new Point2D(0 /* does not matter */, sourceNode.getMaxBottom() + 30), 0);
 					intermediatePoints.setElementAt(
-							new Point2D(intermediatePoints.get(1).getX(), startNode.getMaxBottom() + 30), 1);
+							new Point2D(intermediatePoints.get(1).getX(), sourceNode.getMaxBottom() + 30), 1);
 				} else if (newSourcePortRegion == PortRegion.NORTH) {
-					intermediatePoints.insertElementAt(new Point2D(0 /* does not matter */, startNode.getY() - 30), 0);
+					intermediatePoints.insertElementAt(new Point2D(0 /* does not matter */, sourceNode.getY() - 30), 0);
 					intermediatePoints
-							.setElementAt(new Point2D(intermediatePoints.get(1).getX(), startNode.getY() - 30), 1);
+							.setElementAt(new Point2D(intermediatePoints.get(1).getX(), sourceNode.getY() - 30), 1);
 				} else if (newSourcePortRegion == PortRegion.WEST) {
-					intermediatePoints.insertElementAt(new Point2D(startNode.getX() - 30, 0 /* does not matter */), 0);
+					intermediatePoints.insertElementAt(new Point2D(sourceNode.getX() - 30, 0 /* does not matter */), 0);
 					intermediatePoints
-							.setElementAt(new Point2D(startNode.getX() - 30, intermediatePoints.get(1).getY()), 1);
+							.setElementAt(new Point2D(sourceNode.getX() - 30, intermediatePoints.get(1).getY()), 1);
 				} else if (newSourcePortRegion == PortRegion.EAST) {
 					intermediatePoints
-							.insertElementAt(new Point2D(startNode.getMaxRight() + 30, 0 /* does not matter */), 0);
+							.insertElementAt(new Point2D(sourceNode.getMaxRight() + 30, 0 /* does not matter */), 0);
 					intermediatePoints.setElementAt(
-							new Point2D(startNode.getMaxRight() + 30, intermediatePoints.get(1).getY()), 1);
+							new Point2D(sourceNode.getMaxRight() + 30, intermediatePoints.get(1).getY()), 1);
 				}
-				startNode.setDirectionForEdge(this, true, newSourcePortRegion);
+				sourceNode.setDirectionForEdge(sourceEnd, true, newSourcePortRegion);
 			}
 			align();
 		}
 
-		if (newTargetPortRegion != null && newTargetPortRegion != endNode.getDirectionForEdge(this, false)) {
-			if (newTargetPortRegion.isOpposite(endNode.getDirectionForEdge(this, false))) {
-				endNode.setDirectionForEdge(this, false, newTargetPortRegion);
+		if (newTargetPortRegion != null && newTargetPortRegion != targetNode.getDirectionForEdge(targetEnd, false)) {
+			if (newTargetPortRegion.isOpposite(targetNode.getDirectionForEdge(targetEnd, false))) {
+				targetNode.setDirectionForEdge(targetEnd, false, newTargetPortRegion);
 			} else { // requires a new point
 				if (newTargetPortRegion == PortRegion.SOUTH) {
-					intermediatePoints.add(new Point2D(0 /* does not matter */, endNode.getMaxBottom() + 30));
+					intermediatePoints.add(new Point2D(0 /* does not matter */, targetNode.getMaxBottom() + 30));
 					intermediatePoints
 							.setElementAt(new Point2D(intermediatePoints.get(intermediatePoints.size() - 2).getX(),
-									endNode.getMaxBottom() + 30), intermediatePoints.size() - 2);
+									targetNode.getMaxBottom() + 30), intermediatePoints.size() - 2);
 				} else if (newTargetPortRegion == PortRegion.NORTH) {
-					intermediatePoints.add(new Point2D(0 /* does not matter */, endNode.getY() - 30));
+					intermediatePoints.add(new Point2D(0 /* does not matter */, targetNode.getY() - 30));
 					intermediatePoints
 							.setElementAt(new Point2D(intermediatePoints.get(intermediatePoints.size() - 2).getX(),
-									endNode.getY() - 30), intermediatePoints.size() - 2);
+									targetNode.getY() - 30), intermediatePoints.size() - 2);
 				} else if (newTargetPortRegion == PortRegion.WEST) {
-					intermediatePoints.add(new Point2D(endNode.getX() - 30, 0 /* does not matter */));
+					intermediatePoints.add(new Point2D(targetNode.getX() - 30, 0 /* does not matter */));
 					intermediatePoints.setElementAt(
-							new Point2D(endNode.getX() - 30,
+							new Point2D(targetNode.getX() - 30,
 									intermediatePoints.get(intermediatePoints.size() - 2).getY()),
 							intermediatePoints.size() - 2);
 				} else if (newTargetPortRegion == PortRegion.EAST) {
-					intermediatePoints.add(new Point2D(endNode.getMaxRight() + 30, 0 /* does not matter */));
+					intermediatePoints.add(new Point2D(targetNode.getMaxRight() + 30, 0 /* does not matter */));
 					intermediatePoints.setElementAt(
-							new Point2D(endNode.getMaxRight() + 30,
+							new Point2D(targetNode.getMaxRight() + 30,
 									intermediatePoints.get(intermediatePoints.size() - 2).getY()),
 							intermediatePoints.size() - 2);
 				}
-				endNode.setDirectionForEdge(this, false, newTargetPortRegion);
+				targetNode.setDirectionForEdge(targetEnd, false, newTargetPortRegion);
 			}
 			align();
 		}
@@ -652,7 +664,6 @@ public abstract class Edge implements CanvasElement {
 			return;
 		Integer removeIndex = null;
 		for (int i = 0; removeIndex == null && i < intermediatePoints.size() - 1; i++) {
-//			System.err.println("d("+i+"): " + intermediatePoints.get(i).distance(intermediatePoints.get(i+1)));
 			if (intermediatePoints.get(i).distance(intermediatePoints.get(i + 1)) < TOLERANCE)
 				removeIndex = i;
 		}
@@ -660,20 +671,6 @@ public abstract class Edge implements CanvasElement {
 		if (removeIndex != null) {
 			intermediatePoints.remove(removeIndex.intValue());
 			intermediatePoints.remove(removeIndex.intValue());
-//			if(intermediatePoints.size() >= 2) {
-//			for(int z = 0; z < intermediatePoints.size()-1;z++) {
-//				Point2D first = intermediatePoints.get(z);
-//				Point2D second = intermediatePoints.get(z+1);
-//				
-//				if(Math.abs(first.getX()-second.getX()) < TOLERANCE) {
-//					second = new Point2D(first.getX(), second.getY());
-//					intermediatePoints.setElementAt(second, z+1);
-//				}
-//				else if(Math.abs(first.getY()-second.getY()) < TOLERANCE) {
-//					second = new Point2D(second.getX(), first.getY());
-//					intermediatePoints.setElementAt(second, z+1);
-//				}
-//			}
 			removeRedundantPoints();
 			align();
 			ensure90DegreeAngles();
@@ -681,19 +678,16 @@ public abstract class Edge implements CanvasElement {
 	}
 
 	private void ensure90DegreeAngles() {
-		boolean horizontal = startNode.getDirectionForEdge(this, true).isHorizontal();
+		boolean horizontal = sourceNode.getDirectionForEdge(sourceEnd, true).isHorizontal();
 
-//		System.err.println();
 		for (int countTotal = 1; countTotal <= intermediatePoints.size(); countTotal++) {
 			Point2D now = intermediatePoints.get(countTotal - 1);
 			Point2D previous = getAllPoints().get(countTotal - 1);
-//			System.err.print(now + " moveTo ");
 			if (horizontal) {
 				now = new Point2D(now.getX(), previous.getY());
 			} else {
 				now = new Point2D(previous.getX(), now.getY());
 			}
-//			System.err.println(now);
 			intermediatePoints.setElementAt(now, countTotal - 1);
 			horizontal = !horizontal;
 		}
