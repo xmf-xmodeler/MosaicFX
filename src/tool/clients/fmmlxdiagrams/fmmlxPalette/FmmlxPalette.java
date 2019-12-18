@@ -79,6 +79,7 @@ public class FmmlxPalette{
 			} else if(fmmlxGroup.getName().equals("Classes/Object")) {
 				newTool(fmmlxDiagram, "Classes/Object", "MetaClass", "metaClass", false, "resources/gif/Tools/Inherit.png");
 				int maxLevel = fmmlxDiagram.getMaxLevel();
+				System.out.println("max level : "+ maxLevel);
 				for (int i = maxLevel ; i>=0 ; i--) {
 					for (FmmlxObject tmp : fmmlxDiagram.getObjects()) {
 						if (tmp.getLevel()==i) {

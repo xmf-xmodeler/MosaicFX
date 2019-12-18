@@ -1023,7 +1023,13 @@ public class FmmlxDiagram {
 		return null;
 	}
 	public int getMaxLevel() {
-		return this.maxLevel;
+		int level = 0;
+		for (FmmlxObject tmp : objects) {
+			if(tmp.getLevel()>=level) {
+				level=tmp.getLevel();
+			}
+		}
+		return level;
 	}
 
 	public Vector<Point2D> findEdgeIntersections(Point2D a, Point2D b) { // only interested in a-b horizontal crossing c-d vertical
