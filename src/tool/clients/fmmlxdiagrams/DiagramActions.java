@@ -218,7 +218,7 @@ public class DiagramActions {
 				dlg.setTitle("Edit Enumeration");
 			} 
 			
-			Optional<EditEnumerationDialogResult> result = dlg.showAndWait();
+			dlg.show();
 
 //			if (result.isPresent()) {
 //				EditEnumerationDialogResult aed = result.get();
