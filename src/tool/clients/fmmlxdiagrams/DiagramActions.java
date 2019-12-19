@@ -2,6 +2,7 @@ package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
@@ -65,6 +66,30 @@ public class DiagramActions {
 			}
 		});
 	}
+	
+	public void addMetaClassDialog(MouseEvent e) {
+		Platform.runLater(() -> {
+			CreateMetaClassDialog dlg = new CreateMetaClassDialog(diagram);
+			dlg.setTitle("Add metaclass");
+			Optional<MetaClassDialogResult> result = dlg.showAndWait();
+
+			if (result.isPresent()) {
+				final MetaClassDialogResult mcdResult = result.get();
+
+
+				int x = (int) e.getX();
+				int y = (int) e.getY();
+
+				if (x > 0 && y > 0) {
+					diagram.getComm().addMetaClass(diagram, mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentIds(), mcdResult.isAbstract(), x, y);	
+					diagram.updateDiagram();
+				}
+			
+			}
+		});
+		
+	}
+
 
 	public void addInstanceDialog() {
 		addInstanceDialog(null);
@@ -107,6 +132,29 @@ public class DiagramActions {
 
 //			l.countDown();
 		});
+	}
+	
+	public void addInstanceDialog(FmmlxObject object, MouseEvent e) {
+		Platform.runLater(() -> {
+			AddInstanceDialog dialog = new AddInstanceDialog(diagram, object);
+			dialog.setTitle("Add instance");
+			Optional<AddInstanceDialogResult> result = dialog.showAndWait();
+
+			if (result.isPresent()) {
+				final AddInstanceDialogResult aidResult = result.get();
+
+				int x = (int) e.getX();
+				int y = (int) e.getY();
+				
+				if (x > 0 && y > 0) {
+					diagram.getComm().addNewInstance(diagram, aidResult.getOf(), aidResult.getName(), aidResult.getLevel(),
+							aidResult.getParentId(), false, x, y);
+
+					diagram.updateDiagram();
+				}
+			}
+		});
+		
 	}
 
 	public void addAttributeDialog() {
@@ -700,6 +748,9 @@ public class DiagramActions {
 	public void levelInsertBelow(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
 	public void levelRemoveThis(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
 
+	
+
+	
 
 
 }

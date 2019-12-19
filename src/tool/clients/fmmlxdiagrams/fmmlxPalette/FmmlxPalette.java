@@ -9,8 +9,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import tool.clients.diagrams.Group;
-import tool.clients.diagrams.Tool;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 
@@ -38,9 +36,9 @@ public class FmmlxPalette{
 	        	if(newValue == null) return;
 	            if(newValue.getChildren().isEmpty()) {
 	            	TreeItem<String> parent = newValue.getParent();
-	            	if(parent instanceof Group) {
-	            		Group group = (Group) parent;
-	            		Tool tool = group.getToolLabelled(newValue.getValue());
+	            	if(parent instanceof FmmlxGroup) {
+	            		FmmlxGroup group = (FmmlxGroup) parent;
+	            		FmmlxTool tool = group.getToolLabelled(newValue.getValue());
 	            		if(tool != null) tool.widgetSelected();
 	            	}
 	            }
@@ -79,6 +77,7 @@ public class FmmlxPalette{
 			} else if(fmmlxGroup.getName().equals("Classes/Object")) {
 				newTool(fmmlxDiagram, "Classes/Object", "MetaClass", "metaClass", false, "resources/gif/Tools/Inherit.png");
 				int maxLevel = fmmlxDiagram.getMaxLevel();
+				System.out.println("max level : "+ maxLevel);
 				for (int i = maxLevel ; i>=0 ; i--) {
 					for (FmmlxObject tmp : fmmlxDiagram.getObjects()) {
 						if (tmp.getLevel()==i) {
@@ -184,6 +183,11 @@ public class FmmlxPalette{
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public void deselect() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
