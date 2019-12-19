@@ -175,7 +175,7 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(targetHandle, message, args2);
 		int attempts = 0;
 		int sleep = 5;
-		while (waiting && sleep < 200 * (DEBUG?100:10)) {
+		while (waiting && sleep < 200 * 100) {
 			if (DEBUG) System.err.println(attempts + ". attempt");
 			attempts++;
 			try {
