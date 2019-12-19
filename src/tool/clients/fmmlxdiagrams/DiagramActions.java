@@ -2,7 +2,6 @@ package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
 import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;

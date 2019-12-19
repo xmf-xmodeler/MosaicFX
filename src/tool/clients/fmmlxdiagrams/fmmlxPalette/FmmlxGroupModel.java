@@ -92,4 +92,16 @@ public class FmmlxGroupModel extends FmmlxGroup implements IFmmlxGroup{
 	    }
 	}
 
+	@Override
+	public void clearTreeItem() {
+		getChildren().clear();	
+		
+	}
+
+	@Override
+	public void clearTool() {
+		tools.clear();	
+		
+	}
+
 }

@@ -1,6 +1,9 @@
 package tool.clients.fmmlxdiagrams.fmmlxPalette;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
@@ -70,14 +73,14 @@ public class FmmlxPalette{
 				newTool(fmmlxDiagram, "Models", "Auxillary Classes", "auxilary", false, "resources/gif/Tools/Inherit.png");
 				newTool(fmmlxDiagram, "Models", "getPackageName()", "getPackageName()", false, "resources/gif/Tools/Inherit.png");
 			} else if(fmmlxGroup.getName().equals("Relationsship")) {
-				newTool(fmmlxDiagram, "Relationsship", "Association", "association", false, "resources/gif/Association.gif");
-				newTool(fmmlxDiagram, "Relationsship", "Specialization", "spezialization", false, "resources/gif/Tools/Inherit.gif");
-				newTool(fmmlxDiagram, "Relationsship", "Delegation", "delegation", false, "resources/gif/XCore/Delegation.png");
+				newTool(fmmlxDiagram, "Relationsship", "Association", "association", true, "resources/gif/Association.gif");
+				newTool(fmmlxDiagram, "Relationsship", "Association Instance", "associationInstance", true, "resources/gif/Association.gif");
+				newTool(fmmlxDiagram, "Relationsship", "Specialization", "spezialization", true, "resources/gif/Tools/Inherit.gif");
+				newTool(fmmlxDiagram, "Relationsship", "Delegation", "delegation", true, "resources/gif/XCore/Delegation.png");
 				
 			} else if(fmmlxGroup.getName().equals("Classes/Object")) {
 				newTool(fmmlxDiagram, "Classes/Object", "MetaClass", "metaClass", false, "resources/gif/Tools/Inherit.png");
 				int maxLevel = fmmlxDiagram.getMaxLevel();
-				System.out.println("max level : "+ maxLevel);
 				for (int i = maxLevel ; i>=0 ; i--) {
 					for (FmmlxObject tmp : fmmlxDiagram.getObjects()) {
 						if (tmp.getLevel()==i) {
@@ -167,7 +170,7 @@ public class FmmlxPalette{
 		return tree;
 	}
 	
-	public void reset() {
+	public void clearSelection() {
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
 			tree.getSelectionModel().clearSelection();
 
@@ -183,6 +186,20 @@ public class FmmlxPalette{
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public void clearAllGroup() {
+		Iterator groupIterator = fmmlxGroups.entrySet().iterator();
+		
+		while(groupIterator.hasNext()) {
+			Map.Entry pair = (Entry) groupIterator.next();
+			((FmmlxGroup) pair.getValue()).clearTreeItem();
+			((FmmlxGroup) pair.getValue()).clearTool();
+		}
+	}
+
+	public HashMap<String, FmmlxGroup> getFmmlxGroups() {
+		return fmmlxGroups;
 	}
 
 	public void deselect() {

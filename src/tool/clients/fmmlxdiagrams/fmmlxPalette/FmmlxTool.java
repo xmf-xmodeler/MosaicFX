@@ -37,7 +37,6 @@ public abstract class FmmlxTool {
 		}
 
 		public String getId() {
-			System.out.println("ID : "+id);
 			return id;
 		}
 

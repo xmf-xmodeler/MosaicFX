@@ -83,4 +83,15 @@ public class FmmlxGroupRelationsship extends FmmlxGroup {
 	    }		
 	}
 
+	@Override
+	public void clearTreeItem() {
+		getChildren().clear();	
+		
+	}
+
+	@Override
+	public void clearTool() {
+		tools.clear();
+	}
+
 }

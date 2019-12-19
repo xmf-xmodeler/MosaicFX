@@ -22,5 +22,9 @@ public abstract class FmmlxGroup extends TreeItem {
 	}
 
 	public abstract FmmlxTool getToolLabelled(String value);
+	
+	public abstract void clearTreeItem();
+	
+	public abstract void clearTool();
 
 }

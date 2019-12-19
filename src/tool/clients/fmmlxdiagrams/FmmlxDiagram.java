@@ -183,10 +183,10 @@ public class FmmlxDiagram {
 		this.nodeCreationType = nodeCreationType;
 	}
 	
-	public void resetPalette() {
+	public void clearSelectionPalette() {
 		edgeCreationType = null;
 		nodeCreationType = null;
-		fmmlxPalette.reset();
+		fmmlxPalette.clearSelection();
 	}
 
 	public void setEnums(Vector<FmmlxEnum> enums) {
@@ -238,7 +238,7 @@ public class FmmlxDiagram {
 		}
 		suppressRedraw = false;
 		redraw();
-		resetPalette();
+		fmmlxPalette.clearAllGroup();
 		fmmlxPalette.init(this);
 	}
 
@@ -496,97 +496,116 @@ public class FmmlxDiagram {
 		
 		return null;
 	}
+	
+	private void handleNullCreationType(MouseEvent e, CanvasElement hitObject) {
+		Point2D p = scale(e);
+
+		if (hitObject != null) {
+			if (mouseMode == MouseMode.DRAW_EDGE) {
+				mouseMode = MouseMode.STANDARD;
+				FmmlxObject newEdgeTarget = hitObject instanceof FmmlxObject ? (FmmlxObject) hitObject : null;
+				switch (drawEdgeType) {
+					case Association:
+						actions.addAssociationDialog(newEdgeSource, newEdgeTarget);
+						break;
+					case AssociationInstance:
+						final FmmlxObject obj1 = newEdgeSource;
+						final FmmlxObject obj2 = newEdgeTarget;
+						Platform.runLater(() -> {
+							actions.addAssociationInstance(obj1, obj2);
+							updateDiagramLater();
+						});						
+						break;
+					default:
+						break;
+				}
+				deselectAll();
+			}
+
+			if (e.isControlDown()) {
+				if (selectedObjects.contains(hitObject)) {
+					selectedObjects.remove(hitObject);
+				} else {
+					selectedObjects.add(hitObject);
+				}
+			} else {
+				if (!selectedObjects.contains(hitObject)) {
+					selectedObjects.clear();
+					selectedObjects.add(hitObject);
+					highlightElementAt(hitObject, p);
+				}
+			}
+			handleClickOnNodeElement(p, hitObject);
+
+			if (e.getClickCount() == 2) {
+				handleDoubleClickOnNodeElement(p, hitObject);
+			}
+		} else {
+			if (mouseMode == MouseMode.DRAW_EDGE) {
+				switch (drawEdgeType) {
+					case Association:
+						mouseMode = MouseMode.STANDARD;
+						actions.addAssociationDialog(newEdgeSource, null);
+						break;
+					case AssociationInstance:
+						mouseMode = MouseMode.STANDARD;
+						actions.addAssociationInstance(newEdgeSource, null);
+						break;
+					default:
+						break;
+				}
+			} else {
+				mouseMode = MouseMode.MULTISELECT;
+				storeLastClick(p.getX(), p.getY());
+				storeCurrentPoint(p.getX(), p.getY());
+			}
+		}
+		
+	}
 
 	private void handleLeftPressed(MouseEvent e) {
 		Point2D p = scale(e);
 		CanvasElement hitObject = getElementAt(p.getX(), p.getY());
 		
 		if (nodeCreationType == null && edgeCreationType == null) {
-			if (hitObject != null) {
-				if (mouseMode == MouseMode.DRAW_EDGE) {
-					mouseMode = MouseMode.STANDARD;
-					FmmlxObject newEdgeTarget = hitObject instanceof FmmlxObject ? (FmmlxObject) hitObject : null;
-					switch (drawEdgeType) {
-						case Association:
-							actions.addAssociationDialog(newEdgeSource, newEdgeTarget);
-							break;
-						case AssociationInstance:
-							final FmmlxObject obj1 = newEdgeSource;
-							final FmmlxObject obj2 = newEdgeTarget;
-							Platform.runLater(() -> {
-								actions.addAssociationInstance(obj1, obj2);
-								updateDiagramLater();
-							});						
-							break;
-						default:
-							break;
-					}
-					deselectAll();
-				}
-
-				if (e.isControlDown()) {
-					if (selectedObjects.contains(hitObject)) {
-						selectedObjects.remove(hitObject);
-					} else {
-						selectedObjects.add(hitObject);
-					}
-				} else {
-					if (!selectedObjects.contains(hitObject)) {
-						selectedObjects.clear();
-						selectedObjects.add(hitObject);
-						highlightElementAt(hitObject, p);
-					}
-				}
-				handleClickOnNodeElement(p, hitObject);
-
-				if (e.getClickCount() == 2) {
-					handleDoubleClickOnNodeElement(p, hitObject);
-				}
-			} else {
-				if (mouseMode == MouseMode.DRAW_EDGE) {
-					switch (drawEdgeType) {
-						case Association:
-							mouseMode = MouseMode.STANDARD;
-							actions.addAssociationDialog(newEdgeSource, null);
-							break;
-						case AssociationInstance:
-							mouseMode = MouseMode.STANDARD;
-							actions.addAssociationInstance(newEdgeSource, null);
-							break;
-						default:
-							break;
-					}
-				} else {
-					mouseMode = MouseMode.MULTISELECT;
-					storeLastClick(p.getX(), p.getY());
-					storeCurrentPoint(p.getX(), p.getY());
-				}
-				deselectAll();
-				resetPalette();
-			}
+			handleNullCreationType(e, hitObject);		
 			
 		} else if (edgeCreationType != null) {
-			
+
+			if (edgeCreationType=="association") {
+				hitObject = getElementAt(p.getX(), p.getY());
+				if(hitObject instanceof FmmlxObject) {
+					actions.setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Association);
+					//TODO
+				}
+			} else if (edgeCreationType=="associationInstance") {
+				if(hitObject instanceof FmmlxObject) {
+					actions.setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.AssociationInstance);
+					//TODO
+				}
+				deselectAll();
+				clearSelectionPalette();
+			}
 		} else if (nodeCreationType != null) {
+
 			if (nodeCreationType=="metaClass") {
-				
 				actions.addMetaClassDialog(e);
-				
+				deselectAll();
+				clearSelectionPalette();
 			} else {
 				actions.addInstanceDialog(getObjectById(Integer.parseInt(nodeCreationType)),e);
+				deselectAll();
+				clearSelectionPalette();
 			}
-			deselectAll();
-			resetPalette();
-			
 		}
 		if (updateID != null) {
-			deselectAll();
-			resetPalette();
+			
 		}
 		
 		
 		
 	}
+
 
 	private void highlightElementAt(CanvasElement hitObject, Point2D p) {
 		for (CanvasElement object : objects) {
@@ -754,7 +773,8 @@ public class FmmlxDiagram {
 	}
 
 	void deselectAll() {
-		resetPalette();
+		clearSelectionPalette();
+		deselectPalette();
 		selectedObjects.clear();
 		if (lastHitLabel != null) {
 			lastHitLabel.setDeselected();
