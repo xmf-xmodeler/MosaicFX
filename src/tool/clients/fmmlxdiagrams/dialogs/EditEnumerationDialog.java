@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -200,13 +201,16 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 				AddEnumElementDialogResult result = opt.get();
 
 				list.getItems().add(result.getName());
-				try { diagram.getComm().addEnumerationItem(
+				this.close();
+				
+				Platform.runLater(()->{try { 
+				        diagram.getComm().addEnumerationItem(
 						diagram, 
 						chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), 
 						result.getName());
 				} catch (TimeOutException e) {
 					e.printStackTrace();
-				}
+				}});
 			
 //				diagram.updateEnums();
 //				
