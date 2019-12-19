@@ -568,26 +568,26 @@ public class FmmlxDiagram {
 		CanvasElement hitObject = getElementAt(p.getX(), p.getY());
 		
 		if (nodeCreationType == null && edgeCreationType == null) {
-			handleNullCreationType(e, hitObject);		
+			handleNullCreationType(e, hitObject);	
+			
 			
 		} else if (edgeCreationType != null) {
-
+			
 			if (edgeCreationType=="association") {
 				hitObject = getElementAt(p.getX(), p.getY());
 				if(hitObject instanceof FmmlxObject) {
-					actions.setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Association);
 					//TODO
 				}
 			} else if (edgeCreationType=="associationInstance") {
+				
 				if(hitObject instanceof FmmlxObject) {
-					actions.setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.AssociationInstance);
 					//TODO
 				}
 				deselectAll();
 				clearSelectionPalette();
 			}
 		} else if (nodeCreationType != null) {
-
+			System.out.println("empat");
 			if (nodeCreationType=="metaClass") {
 				actions.addMetaClassDialog(e);
 				deselectAll();
@@ -598,12 +598,6 @@ public class FmmlxDiagram {
 				clearSelectionPalette();
 			}
 		}
-		if (updateID != null) {
-			
-		}
-		
-		
-		
 	}
 
 
