@@ -3,7 +3,7 @@ package tool.clients.fmmlxdiagrams.fmmlxPalette;
 import javafx.scene.control.TreeItem;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
-public class FmmlxGroup extends TreeItem {
+public abstract class FmmlxGroup extends TreeItem {
 	public FmmlxPalette fmmlxPalette;
 	public String name;
 
@@ -20,5 +20,11 @@ public class FmmlxGroup extends TreeItem {
 	public FmmlxPalette getFmmlxPalette() {
 		return getFmmlxPalette();
 	}
+
+	public abstract FmmlxTool getToolLabelled(String value);
+	
+	public abstract void clearTreeItem();
+	
+	public abstract void clearTool();
 
 }

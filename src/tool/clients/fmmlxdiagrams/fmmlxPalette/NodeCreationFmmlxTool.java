@@ -41,14 +41,13 @@ public class NodeCreationFmmlxTool extends FmmlxTool implements ITool {
 
 	@Override
 	public void select() {
-		diagram.deselectPalette();
-	    select();
-	    diagram.setNodeCreationType(getId());
+
 	}
 
 	@Override
 	public void widgetSelected() {
-		// TODO Auto-generated method stub
-		
+		diagram.deselectPalette();
+	    select();
+	    diagram.setNodeCreationType(getId());	
 	}
 }

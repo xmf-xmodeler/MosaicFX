@@ -98,6 +98,18 @@ public class FmmlxGroupClasses extends FmmlxGroup implements IFmmlxGroup{
 	    getChildren().add(node.getButton());
 		
 	}
+
+	@Override
+	public void clearTreeItem() {
+		getChildren().clear();		
+	}
+
+	@Override
+	public void clearTool() {
+		tools.clear();
+		
+	}
+	
 	
 
 }

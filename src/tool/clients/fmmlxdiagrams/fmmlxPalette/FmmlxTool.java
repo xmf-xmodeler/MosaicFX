@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams.fmmlxPalette;
 
 import javafx.scene.control.TreeItem;
+import tool.clients.diagrams.Tool;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 public abstract class FmmlxTool {
@@ -27,6 +28,7 @@ public abstract class FmmlxTool {
 		public String getLabel() {
 		    return label;
 		}
+		
 		  
 		public void setID(String text) {
 			this.label = text;
@@ -54,5 +56,7 @@ public abstract class FmmlxTool {
 		protected abstract String getType();
 
 		protected abstract void reset();
+
+		protected abstract void widgetSelected();
 
 }
