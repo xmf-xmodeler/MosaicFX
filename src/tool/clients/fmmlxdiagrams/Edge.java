@@ -37,22 +37,7 @@ public abstract class Edge implements CanvasElement {
 	private Vector<Object> labelPositions;
 
 	protected enum HeadStyle {
-		NO_ARROW(0), ARROW(1), FULL_TRIANGLE(2), CIRCLE(3);
-
-		int id;
-
-		private HeadStyle(int id) {
-			this.id = id;
-		}
-
-		// private int getID() {return id;}
-		private static HeadStyle getHeadStyle(int id) {
-			for (HeadStyle headStyle : HeadStyle.values())
-				if (headStyle.id == id)
-					return headStyle;
-			throw new IllegalArgumentException("HeadStyle ID " + id + " not in use!");
-		}
-
+		NO_ARROW, ARROW, FULL_TRIANGLE, CIRCLE;
 	}
 
 	public Edge(int id, 

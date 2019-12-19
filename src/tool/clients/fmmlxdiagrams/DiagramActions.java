@@ -216,7 +216,7 @@ public class DiagramActions {
 			if (string.equals("edit_element")) {
 				dlg.setTitle("Edit Enumeration");
 			} 
-			
+		
 			dlg.show();
 
 //			if (result.isPresent()) {
