@@ -21,11 +21,10 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
-import tool.clients.diagrams.DiagramClient;
 import tool.clients.fmmlxdiagrams.Palette;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
-import tool.clients.fmmlxdiagrams.fmmlxPalette.FmmlxPalette;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
+import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -85,7 +84,7 @@ public class FmmlxDiagram {
 	private final int diagramID;
 	private transient long lastAction;
 	private transient boolean suppressRedraw;
-	private final FmmlxPalette fmmlxPalette;
+	private final NewFmmlxPalette newFmmlxPalette;
 	
 	private int maxLevel;
 	public String updateID = null;
@@ -104,7 +103,7 @@ public class FmmlxDiagram {
 		canvas = new Canvas(canvasRawSize.getX(), canvasRawSize.getY());
 		actions = new DiagramActions(this);
 		Palette palette = new Palette(actions);
-		fmmlxPalette = new FmmlxPalette(this);
+		newFmmlxPalette = new NewFmmlxPalette(this);
 		scrollerCanvas = new ScrollPane(canvas);
 		pane.setOrientation(Orientation.HORIZONTAL);
 		pane.setDividerPosition(0, 0.2);
@@ -112,7 +111,7 @@ public class FmmlxDiagram {
 		mainView.getItems().addAll(palette, scrollerCanvas);
 		mainView.setDividerPosition(0, 0.2);
 		
-		pane.getItems().addAll(fmmlxPalette.getToolBar(), mainView);
+		pane.getItems().addAll(newFmmlxPalette.getToolBar(), mainView);
 
 		canvas.setOnMousePressed(this::mousePressed);
 		canvas.setOnMouseDragged(this::mouseDragged);
@@ -151,29 +150,16 @@ public class FmmlxDiagram {
 		return enums;
 	}
 	
-	public void deleteGroup(String name) {
-		fmmlxPalette.deleteGroup(name);
-	}
-	
 	public void deselectPalette() {
 		edgeCreationType = null;
 		nodeCreationType = null;
-		fmmlxPalette.deselect();
+		newFmmlxPalette.deselect();
 	}
 	
-	public FmmlxPalette getPalette() {
-		return fmmlxPalette;
+	public NewFmmlxPalette getPalette() {
+		return newFmmlxPalette;
 	}
 	
-	public void newAction(String groupId, String label, String toolId, String icon) {
-		fmmlxPalette.newAction(this, groupId, label, toolId, icon);
-	}
-	
-	public void newFmmlxGroup(String name) {
-		if (!fmmlxPalette.hasGroup(name)) {
-			fmmlxPalette.newFmmlxGroup(name);
-		}
-	}
 	
 	public void setEdgeCreationType(String edgeCreationType) {
 		this.edgeCreationType = edgeCreationType;
@@ -186,7 +172,7 @@ public class FmmlxDiagram {
 	public void clearSelectionPalette() {
 		edgeCreationType = null;
 		nodeCreationType = null;
-		fmmlxPalette.clearSelection();
+		newFmmlxPalette.clearSelection();
 	}
 
 	public void setEnums(Vector<FmmlxEnum> enums) {
@@ -238,8 +224,10 @@ public class FmmlxDiagram {
 		}
 		suppressRedraw = false;
 		redraw();
-		fmmlxPalette.clearAllGroup();
-		fmmlxPalette.init(this);
+		//fmmlxPalette.clearAllGroup();
+		//fmmlxPalette.init(this);
+		newFmmlxPalette.clearAllGroup();
+		newFmmlxPalette.populate();
 	}
 
 	// This operation resets the size of the canvas when needed
@@ -587,7 +575,6 @@ public class FmmlxDiagram {
 				clearSelectionPalette();
 			}
 		} else if (nodeCreationType != null) {
-			System.out.println("empat");
 			if (nodeCreationType=="metaClass") {
 				actions.addMetaClassDialog(e);
 				deselectAll();

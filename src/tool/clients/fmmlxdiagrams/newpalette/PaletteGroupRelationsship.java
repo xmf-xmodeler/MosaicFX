@@ -1,0 +1,58 @@
+package tool.clients.fmmlxdiagrams.newpalette;
+
+import java.util.Vector;
+
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+
+public class PaletteGroupRelationsship extends PaletteGroup {
+	
+	private Vector<PaletteItem> items= new Vector<PaletteItem>();
+
+	public PaletteGroupRelationsship(FmmlxTool value) {
+		super(value);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void populate(FmmlxDiagram fmmlxDiagram) {
+		initTools(fmmlxDiagram);
+		inflateInGroup();
+		this.setExpanded(true);
+	}
+
+	private void initTools(FmmlxDiagram fmmlxDiagram) {
+		FmmlxTool associationTool = new ToolRelationsship(fmmlxDiagram, "Association", "association", "");
+		FmmlxTool associationInstanceTool = new ToolRelationsship(fmmlxDiagram, "Association Instance", "assoziationInstance", "");
+		FmmlxTool spezializationTool = new ToolRelationsship(fmmlxDiagram, "Spezialization", "spezialization", "");
+		FmmlxTool delegationTool = new ToolRelationsship(fmmlxDiagram, "Delegation", "delegation", "");
+		
+		PaletteItem associationPaletteItem = new PaletteItem(associationTool);
+		PaletteItem associationInstancePaletteItem = new PaletteItem(associationInstanceTool);
+		PaletteItem spezialization = new PaletteItem(spezializationTool);
+		PaletteItem delegation = new PaletteItem(delegationTool);
+		
+		items.add(associationPaletteItem);
+		items.add(associationInstancePaletteItem);
+		items.add(spezialization);
+		items.add(delegation);
+	}
+
+	private void inflateInGroup() {
+		for (PaletteItem tmp : items) {
+			getChildren().add(tmp);
+		}
+	}
+
+	@Override
+	public void clearTreeItem() {
+		getChildren().clear();	
+		
+	}
+
+	@Override
+	public void clearTool() {
+		items.clear();
+		
+	}
+
+}

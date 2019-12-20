@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.fmmlxPalette;
+package tool.clients.fmmlxdiagrams.newpalette;
 
 
 public interface ITool {

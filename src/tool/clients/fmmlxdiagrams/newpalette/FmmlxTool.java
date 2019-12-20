@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.fmmlxPalette;
+package tool.clients.fmmlxdiagrams.newpalette;
 
 import javafx.scene.control.TreeItem;
 import tool.clients.diagrams.Tool;
@@ -6,11 +6,15 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 public abstract class FmmlxTool {
 	
-		FmmlxDiagram diagram;	
-		String  label;
-		String  id;
-		String  icon;
-		TreeItem<String>  button;
+		public FmmlxDiagram diagram;	
+		public String  label;
+		public String  id;
+		public String  icon;
+		public TreeItem<String>  button;
+
+		public FmmlxDiagram getDiagram() {
+			return diagram;
+		}
 
 		public FmmlxTool(FmmlxDiagram diagram, String label, String id, String icon) {
 		    super();
@@ -57,6 +61,6 @@ public abstract class FmmlxTool {
 
 		protected abstract void reset();
 
-		protected abstract void widgetSelected();
+		public abstract void widgetSelected();
 
 }

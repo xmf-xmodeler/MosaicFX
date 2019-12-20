@@ -9,6 +9,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.*;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
+import tool.clients.fmmlxdiagrams.newpalette.FmmlxTool;
+import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
+import tool.clients.fmmlxdiagrams.newpalette.ToolClass;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -695,6 +698,12 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	@Override
 	public void unHighlight() {	}
+
+	public PaletteItem toPaletteItem(FmmlxDiagram fmmlxDiagram) {
+		FmmlxTool tool = new ToolClass(fmmlxDiagram, getName(), getId()+"", "");	
+		PaletteItem item = new PaletteItem(tool);
+		return item;
+	}
 
 
 }
