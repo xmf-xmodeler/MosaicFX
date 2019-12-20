@@ -9,7 +9,7 @@ public class PaletteGroupClass extends PaletteGroup {
 	
 	private Vector<PaletteItem> items= new Vector<PaletteItem>();
 
-	public PaletteGroupClass(FmmlxTool value) {
+	public PaletteGroupClass(PaletteTool value) {
 		super(value);
 		// TODO Auto-generated constructor stub
 	}
@@ -24,7 +24,7 @@ public class PaletteGroupClass extends PaletteGroup {
 
 	private void initTools(FmmlxDiagram fmmlxDiagram) {
 		
-		FmmlxTool metaClassTool = new ToolClass(fmmlxDiagram, "MetaClass", "metaClass", "");
+		PaletteTool metaClassTool = new ToolClass(fmmlxDiagram, "MetaClass", "metaClass", "");
 		PaletteItem metaClassPaletteItem = new PaletteItem(metaClassTool);
 		items.add(metaClassPaletteItem);
 		

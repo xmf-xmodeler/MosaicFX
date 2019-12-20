@@ -8,7 +8,7 @@ public class PaletteGroupRelationsship extends PaletteGroup {
 	
 	private Vector<PaletteItem> items= new Vector<PaletteItem>();
 
-	public PaletteGroupRelationsship(FmmlxTool value) {
+	public PaletteGroupRelationsship(PaletteTool value) {
 		super(value);
 		// TODO Auto-generated constructor stub
 	}
@@ -21,10 +21,10 @@ public class PaletteGroupRelationsship extends PaletteGroup {
 	}
 
 	private void initTools(FmmlxDiagram fmmlxDiagram) {
-		FmmlxTool associationTool = new ToolRelationsship(fmmlxDiagram, "Association", "association", "");
-		FmmlxTool associationInstanceTool = new ToolRelationsship(fmmlxDiagram, "Association Instance", "assoziationInstance", "");
-		FmmlxTool spezializationTool = new ToolRelationsship(fmmlxDiagram, "Spezialization", "spezialization", "");
-		FmmlxTool delegationTool = new ToolRelationsship(fmmlxDiagram, "Delegation", "delegation", "");
+		PaletteTool associationTool = new ToolRelationsship(fmmlxDiagram, "Association", "association", "resources/gif/Select.gif");
+		PaletteTool associationInstanceTool = new ToolRelationsship(fmmlxDiagram, "Association Instance", "assoziationInstance", "");
+		PaletteTool spezializationTool = new ToolRelationsship(fmmlxDiagram, "Spezialization", "spezialization", "");
+		PaletteTool delegationTool = new ToolRelationsship(fmmlxDiagram, "Delegation", "delegation", "");
 		
 		PaletteItem associationPaletteItem = new PaletteItem(associationTool);
 		PaletteItem associationInstancePaletteItem = new PaletteItem(associationInstanceTool);

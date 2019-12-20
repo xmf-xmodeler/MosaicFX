@@ -8,7 +8,7 @@ public class PaletteGroupModels extends PaletteGroup {
 	
 	private Vector<PaletteItem> items= new Vector<PaletteItem>();
 
-	public PaletteGroupModels(FmmlxTool value) {
+	public PaletteGroupModels(PaletteTool value) {
 		super(value);
 		// TODO Auto-generated constructor stub
 	}
@@ -28,8 +28,8 @@ public class PaletteGroupModels extends PaletteGroup {
 	}
 
 	private void initTools(FmmlxDiagram fmmlxDiagram) {
-		FmmlxTool auxillaryTools = new ToolModels(fmmlxDiagram, "Auxillary Classes", "auxillary", "");
-		FmmlxTool ordersTool = new ToolModels(fmmlxDiagram, "Orders", "orders", "");
+		PaletteTool auxillaryTools = new ToolModels(fmmlxDiagram, "Auxillary Classes", "auxillary", "");
+		PaletteTool ordersTool = new ToolModels(fmmlxDiagram, "Orders", "orders", "");
 
 		PaletteItem associationPaletteItem = new PaletteItem(auxillaryTools);
 		PaletteItem associationInstancePaletteItem = new PaletteItem(ordersTool);

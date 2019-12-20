@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.newpalette;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -12,14 +13,15 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.ImageView;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 public class NewFmmlxPalette {
 	
-	private TreeView<FmmlxTool> tree;
+	private TreeView<PaletteTool> tree;
 	private HashMap<String, PaletteGroup> paletteGroups = new HashMap<>();
 	private FmmlxDiagram fmmlxDiagram;
-	private TreeItem<FmmlxTool> root; 
+	private TreeItem<PaletteTool> root; 
 	
 	public NewFmmlxPalette(FmmlxDiagram fmmlxDiagram) {
 		super();
@@ -29,8 +31,8 @@ public class NewFmmlxPalette {
 	}
 
 	private void populateTree() {
-		FmmlxTool rootTool = new ToolRoot(fmmlxDiagram, "Root", "root", "");
-		root = new TreeItem<FmmlxTool>(rootTool);
+		PaletteTool rootTool = new ToolRoot(fmmlxDiagram, "Root", "root", "");
+		root = new TreeItem<PaletteTool>(rootTool);
 		tree.setRoot(root);
 		root.setExpanded(true);
 		tree.setShowRoot(false);
@@ -53,9 +55,9 @@ public class NewFmmlxPalette {
 
 	private void initGroup() {			
 		
-		FmmlxTool modelsGroupTooL = new GroupToolModels(fmmlxDiagram, "Models", "models", "");
-		FmmlxTool relatiosshipGroupTool = new GroupToolRelationsship(fmmlxDiagram, "Relationsship", "relationsship", "");
-		FmmlxTool classGroupTool = new GroupToolClass(fmmlxDiagram, "Classes/Object", "classes", "");
+		PaletteTool modelsGroupTooL = new GroupToolModels(fmmlxDiagram, "Models", "models", "");
+		PaletteTool relatiosshipGroupTool = new GroupToolRelationsship(fmmlxDiagram, "Relationsship", "relationsship", "");
+		PaletteTool classGroupTool = new GroupToolClass(fmmlxDiagram, "Classes/Object", "classes", "");
 		
 		PaletteGroup modelsGroup = new PaletteGroupModels(modelsGroupTooL);
 		PaletteGroup relationsshipGroup = new PaletteGroupRelationsship(relatiosshipGroupTool);
@@ -68,49 +70,44 @@ public class NewFmmlxPalette {
 		root.getChildren().add(modelsGroup);
 		root.getChildren().add(relationsshipGroup);
 		root.getChildren().add(classGroup);
-		
-//		Iterator<Entry<String, PaletteGroup>> it = paletteGroups.entrySet().iterator();
-//	    while (it.hasNext()) {
-//	        @SuppressWarnings("rawtypes")
-//			Map.Entry pair = (Map.Entry)it.next();
-//	        root.getChildren().add((TreeItem<FmmlxTool>) pair.getValue());    
-//	    }
 	
 	}
 
-	public TreeView<FmmlxTool> getToolBar() {
+	public TreeView<PaletteTool> getToolBar() {
 		return tree;
 	}
 	
-	public TreeView<FmmlxTool> initCustomTreeView() {
+	public TreeView<PaletteTool> initCustomTreeView() {
 
-		TreeView<FmmlxTool> treeView = new TreeView<FmmlxTool>();
+		TreeView<PaletteTool> treeView = new TreeView<PaletteTool>();
 		
-		treeView.setCellFactory(param -> new TreeCell<FmmlxTool>() {
-			protected void updateItem(FmmlxTool item, boolean empty) {
+		treeView.setCellFactory(param -> new TreeCell<PaletteTool>() {
+			protected void updateItem(PaletteTool item, boolean empty) {
 				super.updateItem(item, empty);
 				
 				if (empty || item == null || item.getLabel() == null) {
 					setText(null);
 				} else {
+					ImageView image = new ImageView(new javafx.scene.image.Image(new File(item.getIcon()).toURI().toString()));
+					setGraphic(image);
 					setText(item.getLabel());
 				}
 			};
 		});
 		
-		treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<FmmlxTool>>() {
+		treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<PaletteTool>>() {
 
 	        @Override
 	        public void changed(
-	        		ObservableValue<? extends TreeItem<FmmlxTool>> observable, 
-	        		TreeItem<FmmlxTool> oldValue,
-	        		TreeItem<FmmlxTool> newValue) {
+	        		ObservableValue<? extends TreeItem<PaletteTool>> observable, 
+	        		TreeItem<PaletteTool> oldValue,
+	        		TreeItem<PaletteTool> newValue) {
 	        	
 	        	if(newValue == null) return;
 	        	
 	            if(newValue.getChildren().isEmpty()) {
 	            	
-	            	TreeItem<FmmlxTool> parent = newValue.getParent();
+	            	TreeItem<PaletteTool> parent = newValue.getParent();
 	            	if(parent instanceof PaletteGroup) {
 	            		newValue.getValue().widgetSelected();
 	            	}
