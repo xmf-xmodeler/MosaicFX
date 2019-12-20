@@ -8,11 +8,11 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 public class EdgeCreationFmmlxTool extends FmmlxTool implements ITool{
 
 	public EdgeCreationFmmlxTool(FmmlxDiagram diagram, String label, String toolId, String icon) {
-		super(diagram, label, toolId, icon);
+		super(diagram, label, toolId, icon);createButton();
 	}
 
-	@Override
-	public TreeItem<String> createButton() {
+//	@Override
+	private TreeItem<String> createButton() {
 	    ImageView image = new ImageView(new javafx.scene.image.Image(new File(icon).toURI().toString()));
 		button = new TreeItem<String>(label, image);
 	    return button;

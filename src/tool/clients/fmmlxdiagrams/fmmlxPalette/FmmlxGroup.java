@@ -1,13 +1,11 @@
 package tool.clients.fmmlxdiagrams.fmmlxPalette;
 
 import javafx.scene.control.TreeItem;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
-public abstract class FmmlxGroup extends TreeItem {
+public abstract class FmmlxGroup extends TreeItem<String> {
 	public FmmlxPalette fmmlxPalette;
 	public String name;
 
-	@SuppressWarnings("unchecked")
 	public FmmlxGroup(String name) {
 		super(name);
 		this.name = name;

@@ -54,16 +54,16 @@ public class FmmlxPalette{
 		
 		Vector<String> groupNames = new Vector<String>();
 		groupNames.add("Models");
-		groupNames.add("Relationsship");
+		groupNames.add("Relationship");
 		groupNames.add("Classes/Object");
 		
 		for (int i=0 ; i<3; i++) {
 			diagram.newFmmlxGroup(groupNames.get(i));
-			generateToogle(diagram, groupNames.get(i));
+			generateToggle(diagram, groupNames.get(i));
 		}
 	}
 	
-	private void generateToogle(FmmlxDiagram fmmlxDiagram, String name){
+	private void generateToggle(FmmlxDiagram fmmlxDiagram, String name){
 		
 		FmmlxGroup fmmlxGroup = getFmmlxGroup(name);
 		
@@ -72,11 +72,11 @@ public class FmmlxPalette{
 			if(fmmlxGroup.getName().equals("Models")) {
 				newTool(fmmlxDiagram, "Models", "Auxillary Classes", "auxilary", false, "resources/gif/Tools/Inherit.png");
 				newTool(fmmlxDiagram, "Models", "getPackageName()", "getPackageName()", false, "resources/gif/Tools/Inherit.png");
-			} else if(fmmlxGroup.getName().equals("Relationsship")) {
-				newTool(fmmlxDiagram, "Relationsship", "Association", "association", true, "resources/gif/Association.gif");
-				newTool(fmmlxDiagram, "Relationsship", "Association Instance", "associationInstance", true, "resources/gif/Association.gif");
-				newTool(fmmlxDiagram, "Relationsship", "Specialization", "spezialization", true, "resources/gif/Tools/Inherit.gif");
-				newTool(fmmlxDiagram, "Relationsship", "Delegation", "delegation", true, "resources/gif/XCore/Delegation.png");
+			} else if(fmmlxGroup.getName().equals("Relationship")) {
+				newTool(fmmlxDiagram, "Relationship", "Association", "association", true, "resources/gif/Association.gif");
+				newTool(fmmlxDiagram, "Relationship", "Association Instance", "associationInstance", true, "resources/gif/Association.gif");
+				newTool(fmmlxDiagram, "Relationship", "Specialization", "spezialization", true, "resources/gif/Tools/Inherit.gif");
+				newTool(fmmlxDiagram, "Relationship", "Delegation", "delegation", true, "resources/gif/XCore/Delegation.png");
 				
 			} else if(fmmlxGroup.getName().equals("Classes/Object")) {
 				newTool(fmmlxDiagram, "Classes/Object", "MetaClass", "metaClass", false, "resources/gif/Tools/Inherit.png");
@@ -84,7 +84,7 @@ public class FmmlxPalette{
 				for (int i = maxLevel ; i>=0 ; i--) {
 					for (FmmlxObject tmp : fmmlxDiagram.getObjects()) {
 						if (tmp.getLevel()==i) {
-							newNodeTool(fmmlxDiagram, "Classes/Object", tmp.getName(), tmp.getId()+"", tmp.getLevel(), false, "");
+							newNodeTool(fmmlxDiagram, "Classes/Object", tmp.getName(), tmp.getId()+"", tmp.getLevel(), false, null);
 						}
 					}	
 				}

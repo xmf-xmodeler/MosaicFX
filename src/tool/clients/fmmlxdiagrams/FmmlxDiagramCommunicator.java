@@ -298,10 +298,6 @@ public class FmmlxDiagramCommunicator {
 			}
 			
 			Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(13);
-
-			System.err.println("listOfPoints: " + listOfPoints);
-			System.err.println("startRegion: " + startRegion);
-			System.err.println("endRegion: " + endRegion);
 			
 			Edge object = new FmmlxAssociation(
 					(Integer) edgeInfoAsList.get(0), // id

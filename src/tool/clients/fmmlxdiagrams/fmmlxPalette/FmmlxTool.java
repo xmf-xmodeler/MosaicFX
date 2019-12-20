@@ -13,12 +13,11 @@ public abstract class FmmlxTool {
 		TreeItem<String>  button;
 
 		public FmmlxTool(FmmlxDiagram diagram, String label, String id, String icon) {
-		    super();
 		    this.diagram = diagram;
 		    this.label = label;
 		    this.id = id;
 		    this.icon = icon;
-		    button = createButton();
+//		    button = createButton();
 		}
 	  
 		public String getIcon() {
@@ -45,7 +44,7 @@ public abstract class FmmlxTool {
 		}
 
 
-		public abstract TreeItem<String> createButton();
+//		public abstract TreeItem<String> createButton();
 
 
 		public void delete() {

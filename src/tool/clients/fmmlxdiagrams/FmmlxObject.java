@@ -301,7 +301,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	}
 
 	public String getLevelFontColor() {
-		return new Vector<Integer>(Arrays.asList(2, 3, 4)).contains(level) ? "#ffffff" : "000000";
+		return new Vector<Integer>(Arrays.asList(2, 3, 4, 5)).contains(level) ? "#ffffff" : "000000";
 	}
 
 	public boolean getShowOperations() {
