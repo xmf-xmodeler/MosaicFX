@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
 
+import com.sun.prism.paint.Paint;
+
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -14,10 +16,13 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 public class NewFmmlxPalette {
 	
+	public static HashMap<Integer, Paint> colors = null;
 	private TreeView<PaletteTool> tree;
 	private HashMap<String, PaletteGroup> paletteGroups = new HashMap<>();
 	private FmmlxDiagram fmmlxDiagram;
@@ -34,7 +39,6 @@ public class NewFmmlxPalette {
 		PaletteTool rootTool = new ToolRoot(fmmlxDiagram, "Root", "root", "");
 		root = new TreeItem<PaletteTool>(rootTool);
 		tree.setRoot(root);
-		root.setExpanded(true);
 		tree.setShowRoot(false);
 		initGroup();
 	}
@@ -86,11 +90,24 @@ public class NewFmmlxPalette {
 				super.updateItem(item, empty);
 				
 				if (empty || item == null || item.getLabel() == null) {
-					setText(null);
-				} else {
-					ImageView image = new ImageView(new javafx.scene.image.Image(new File(item.getIcon()).toURI().toString()));
-					setGraphic(image);
-					setText(item.getLabel());
+					setText("");
+					setGraphic(null);
+				} else { 
+					if (!item.getIcon().equals("")) {
+						ImageView imageView = new ImageView(new javafx.scene.image.Image(new File(item.getIcon()).toURI().toString()));
+						setGraphic(imageView);
+						
+					} else {
+						setGraphic(null);		
+					}	
+					
+					if(item.getLevel()==1000) {
+						setText(item.getLabel());
+						setTextFill(Color.valueOf("#000000"));
+					} else {
+						setText(item.getLabel());
+						setTextFill(FmmlxObject.colors.get(item.getLevel()));
+					}
 				}
 			};
 		});
@@ -119,9 +136,10 @@ public class NewFmmlxPalette {
 	}
 
 	public void clearAllGroup() {
-		Iterator groupIterator = paletteGroups.entrySet().iterator();
+		Iterator<Entry<String, PaletteGroup>> groupIterator = paletteGroups.entrySet().iterator();
 		
 		while(groupIterator.hasNext()) {
+			@SuppressWarnings("rawtypes")
 			Map.Entry pair = (Entry) groupIterator.next();
 			((PaletteGroup) pair.getValue()).clearTreeItem();
 			((PaletteGroup) pair.getValue()).clearTool();
@@ -131,7 +149,6 @@ public class NewFmmlxPalette {
 	public HashMap<String, PaletteGroup> getFmmlxGroups() {
 		return paletteGroups;
 	}
-
 
 	public void clearSelection() {
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
@@ -150,12 +167,5 @@ public class NewFmmlxPalette {
 		}
 		
 	}
-
-	public void deselect() {
-		// TODO Auto-generated method stub
-		
-	}
-
-
 
 }

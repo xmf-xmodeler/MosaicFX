@@ -10,21 +10,21 @@ public class PaletteGroupRelationsship extends PaletteGroup {
 
 	public PaletteGroupRelationsship(PaletteTool value) {
 		super(value);
-		// TODO Auto-generated constructor stub
+		setExpanded(true);
 	}
 
 	@Override
 	public void populate(FmmlxDiagram fmmlxDiagram) {
 		initTools(fmmlxDiagram);
 		inflateInGroup();
-		this.setExpanded(true);
+		
 	}
 
 	private void initTools(FmmlxDiagram fmmlxDiagram) {
-		PaletteTool associationTool = new ToolRelationsship(fmmlxDiagram, "Association", "association", "resources/gif/Select.gif");
-		PaletteTool associationInstanceTool = new ToolRelationsship(fmmlxDiagram, "Association Instance", "assoziationInstance", "");
-		PaletteTool spezializationTool = new ToolRelationsship(fmmlxDiagram, "Spezialization", "spezialization", "");
-		PaletteTool delegationTool = new ToolRelationsship(fmmlxDiagram, "Delegation", "delegation", "");
+		PaletteTool associationTool = new ToolRelationsship(fmmlxDiagram, "Association", "association", "resources/gif/Association.gif");
+		PaletteTool associationInstanceTool = new ToolRelationsship(fmmlxDiagram, "Association Instance", "assoziationInstance","resources/gif/Association.gif");
+		PaletteTool spezializationTool = new ToolRelationsship(fmmlxDiagram, "Spezialization", "spezialization", "resources/gif/Inheritance.gif");
+		PaletteTool delegationTool = new ToolRelationsship(fmmlxDiagram, "Delegation", "delegation", "resources/gif/XCore/Delegation.png");
 		
 		PaletteItem associationPaletteItem = new PaletteItem(associationTool);
 		PaletteItem associationInstancePaletteItem = new PaletteItem(associationInstanceTool);

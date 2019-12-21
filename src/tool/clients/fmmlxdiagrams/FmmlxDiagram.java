@@ -82,10 +82,12 @@ public class FmmlxDiagram {
 	private boolean showSlots = true;
 	
 	private final int diagramID;
+	@SuppressWarnings("unused")
 	private transient long lastAction;
 	private transient boolean suppressRedraw;
 	private final NewFmmlxPalette newFmmlxPalette;
 	
+	@SuppressWarnings("unused")
 	private int maxLevel;
 	public String updateID = null;
 	
@@ -153,7 +155,7 @@ public class FmmlxDiagram {
 	public void deselectPalette() {
 		edgeCreationType = null;
 		nodeCreationType = null;
-		newFmmlxPalette.deselect();
+		newFmmlxPalette.clearSelection();
 	}
 	
 	public NewFmmlxPalette getPalette() {
@@ -469,6 +471,7 @@ public class FmmlxDiagram {
 
 	private boolean isLeftClick(MouseEvent e) {return e.getButton() == MouseButton.PRIMARY;}
 	private boolean isRightClick(MouseEvent e) {return e.getButton() == MouseButton.SECONDARY;}
+	@SuppressWarnings("unused")
 	private boolean isMiddleClick(MouseEvent e) {return e.getButton() == MouseButton.MIDDLE;}
 
 	private CanvasElement getElementAt(double x, double y) {

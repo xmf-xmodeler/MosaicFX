@@ -10,14 +10,13 @@ public class PaletteGroupModels extends PaletteGroup {
 
 	public PaletteGroupModels(PaletteTool value) {
 		super(value);
-		// TODO Auto-generated constructor stub
+		setExpanded(true);
 	}
 
 	@Override
 	public void populate(FmmlxDiagram fmmlxDiagram) {
 		initTools(fmmlxDiagram);
 		inflateInGroup();
-		this.setExpanded(true);
 		
 	}
 

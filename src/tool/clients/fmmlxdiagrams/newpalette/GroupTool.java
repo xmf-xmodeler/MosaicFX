@@ -5,7 +5,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 public class GroupTool extends PaletteTool {
 
 	public GroupTool(FmmlxDiagram diagram, String label, String id, String icon) {
-		super(diagram, label, id, icon);
+		super(diagram, label, id, 1000, icon);
 		// TODO Auto-generated constructor stub
 	}
 

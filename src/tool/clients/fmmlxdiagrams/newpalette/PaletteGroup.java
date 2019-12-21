@@ -7,6 +7,7 @@ public abstract class PaletteGroup extends TreeItem<PaletteTool> implements IPal
 
 	public PaletteGroup(PaletteTool value) {
 		super(value);
+		
 	}
 	
 	public abstract void populate(FmmlxDiagram diagram);

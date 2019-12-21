@@ -18,13 +18,12 @@ public class PaletteGroupClass extends PaletteGroup {
 	public void populate(FmmlxDiagram fmmlxDiagram) {
 		initTools(fmmlxDiagram);
 		inflateInGroup();
-		this.setExpanded(true);
 		
 	}
 
 	private void initTools(FmmlxDiagram fmmlxDiagram) {
 		
-		PaletteTool metaClassTool = new ToolClass(fmmlxDiagram, "MetaClass", "metaClass", "");
+		PaletteTool metaClassTool = new ToolClass(fmmlxDiagram, "MetaClass", "metaClass", 1000, "");
 		PaletteItem metaClassPaletteItem = new PaletteItem(metaClassTool);
 		items.add(metaClassPaletteItem);
 		

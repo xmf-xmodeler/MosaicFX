@@ -20,7 +20,7 @@ import java.util.Vector;
 public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	//	private String[] levelBackgroundColors = {"#8C8C8C", "#FFFFFF", "#000000", "#3111DB", "#dd2244", "#119955"};
-	private static HashMap<Integer, Paint> colors = null;
+	public static HashMap<Integer, Paint> colors = null;
 	private String name;
 	int id;
 	private double x;
@@ -35,7 +35,9 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	private transient double mouseMoveOffsetX;
 	private transient double mouseMoveOffsetY;
+	@SuppressWarnings("unused")
 	private transient double lastValidX;
+	@SuppressWarnings("unused")
 	private transient double lastValidY;
 	
 	private FmmlxObjectPort ports;
@@ -700,7 +702,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	public void unHighlight() {	}
 
 	public PaletteItem toPaletteItem(FmmlxDiagram fmmlxDiagram) {
-		PaletteTool tool = new ToolClass(fmmlxDiagram, getName(), getId()+"", "");	
+		PaletteTool tool = new ToolClass(fmmlxDiagram, getName(), getId()+"", getLevel(), "");	
 		PaletteItem item = new PaletteItem(tool);
 		return item;
 	}

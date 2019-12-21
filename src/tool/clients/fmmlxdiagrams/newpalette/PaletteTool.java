@@ -1,6 +1,4 @@
 package tool.clients.fmmlxdiagrams.newpalette;
-
-import javafx.scene.control.TreeItem;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 public abstract class PaletteTool {
@@ -9,26 +7,31 @@ public abstract class PaletteTool {
 		public String  label;
 		public String  id;
 		public String  icon;
-		public TreeItem<String>  button;
+		public final int level;
 
-		public FmmlxDiagram getDiagram() {
-			return diagram;
-		}
-
-		public PaletteTool(FmmlxDiagram diagram, String label, String id, String icon) {
+		public PaletteTool(FmmlxDiagram diagram, String label, String id, int level, String icon) {
 		    super();
 		    this.diagram = diagram;
 		    this.label = label;
 		    this.id = id;
+		    this.level= level;
 		    this.icon = icon;
 		}
 	  
+		public FmmlxDiagram getDiagram() {
+			return diagram;
+		}
+		
 		public String getIcon() {
 			return icon;
 		}
 
 		public String getLabel() {
 		    return label;
+		}
+		
+		public int getLevel() {
+			return level;
 		}
 		
 		  
