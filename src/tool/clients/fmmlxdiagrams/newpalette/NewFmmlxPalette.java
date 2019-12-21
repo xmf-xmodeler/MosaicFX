@@ -1,8 +1,6 @@
 package tool.clients.fmmlxdiagrams.newpalette;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -25,7 +23,6 @@ import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 
@@ -68,9 +65,9 @@ public class NewFmmlxPalette {
 
 	private void initGroup() {			
 		
-		PaletteTool modelsGroupTooL = new GroupToolModels(fmmlxDiagram, "Models", "models", "");
-		PaletteTool relatiosshipGroupTool = new GroupToolRelationsship(fmmlxDiagram, "Relationsship", "relationsship", "");
-		PaletteTool classGroupTool = new GroupToolClass(fmmlxDiagram, "Classes/Object", "classes", "");
+		PaletteTool modelsGroupTooL = new ToolGroup(fmmlxDiagram, "Models", "models", "");
+		PaletteTool relatiosshipGroupTool = new ToolGroup(fmmlxDiagram, "Relationsship", "relationsship", "");
+		PaletteTool classGroupTool = new ToolGroup(fmmlxDiagram, "Classes/Object", "classes", "");
 		
 		PaletteGroup modelsGroup = new PaletteGroupModels(modelsGroupTooL);
 		PaletteGroup relationsshipGroup = new PaletteGroupRelationsship(relatiosshipGroupTool);
