@@ -471,7 +471,8 @@ public class DiagramActions {
 
 	public void toggleAbstract(FmmlxObject object) {
 		diagram.getComm().setClassAbstract(diagram, object.getId(), !object.isAbstract());
-		diagram.redraw();
+		diagram.updateDiagram();
+		
 	}
 
 	public void setShowOperations(CheckBox box) {

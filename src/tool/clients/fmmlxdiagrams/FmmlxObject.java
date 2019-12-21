@@ -702,7 +702,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	public void unHighlight() {	}
 
 	public PaletteItem toPaletteItem(FmmlxDiagram fmmlxDiagram) {
-		PaletteTool tool = new ToolClass(fmmlxDiagram, getName(), getId()+"", getLevel(), "");	
+		PaletteTool tool = new ToolClass(fmmlxDiagram, getName(), getId()+"", getLevel(), isAbstract, "");	
 		PaletteItem item = new PaletteItem(tool);
 		return item;
 	}

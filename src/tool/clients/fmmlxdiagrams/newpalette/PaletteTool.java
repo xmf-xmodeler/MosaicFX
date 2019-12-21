@@ -3,18 +3,20 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 public abstract class PaletteTool {
 	
-		public FmmlxDiagram diagram;	
-		public String  label;
-		public String  id;
-		public String  icon;
-		public final int level;
+		private FmmlxDiagram diagram;	
+		private String  label;
+		private String  id;
+		private String  icon;
+		private final int level;
+		private final boolean isAbstract;
 
-		public PaletteTool(FmmlxDiagram diagram, String label, String id, int level, String icon) {
+		public PaletteTool(FmmlxDiagram diagram, String label, String id, int level, boolean isAbstract, String icon) {
 		    super();
 		    this.diagram = diagram;
 		    this.label = label;
 		    this.id = id;
 		    this.level= level;
+		    this.isAbstract=isAbstract;
 		    this.icon = icon;
 		}
 	  
@@ -41,6 +43,10 @@ public abstract class PaletteTool {
 
 		public String getId() {
 			return id;
+		}
+
+		public boolean isAbstract() {
+			return isAbstract;
 		}
 
 		public abstract void widgetSelected();

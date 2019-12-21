@@ -1,6 +1,8 @@
 package tool.clients.fmmlxdiagrams.newpalette;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -12,11 +14,18 @@ import com.sun.prism.paint.Paint;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 
@@ -92,21 +101,39 @@ public class NewFmmlxPalette {
 				if (empty || item == null || item.getLabel() == null) {
 					setText("");
 					setGraphic(null);
+					setBorder(null);
 				} else { 
+					
 					if (!item.getIcon().equals("")) {
 						ImageView imageView = new ImageView(new javafx.scene.image.Image(new File(item.getIcon()).toURI().toString()));
 						setGraphic(imageView);
-						
+						setBorder(null);
 					} else {
-						setGraphic(null);		
+						setGraphic(null);
+						setBorder(null);
 					}	
 					
 					if(item.getLevel()==1000) {
 						setText(item.getLabel());
-						setTextFill(Color.valueOf("#000000"));
+						if(item.getId().equals("metaClass")) {
+							setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.DASHED, new CornerRadii(10), new BorderWidths(2),new Insets(2, 5, 2, 5))));
+						} else {
+							setBorder(null);
+						}
+						
 					} else {
-						setText(item.getLabel());
-						setTextFill(FmmlxObject.colors.get(item.getLevel()));
+						setText(item.getLabel());				
+						if(item.getLevel()==1) {							
+							setBorder(new Border(new BorderStroke(Color.LIGHTGRAY, BorderStrokeStyle.SOLID, new CornerRadii(10), new BorderWidths(1),new Insets(2, 5, 2, 5))));
+						} else {
+							setBorder(new Border(new BorderStroke(FmmlxObject.colors.get(item.getLevel()), BorderStrokeStyle.SOLID, new CornerRadii(10), new BorderWidths(1),new Insets(2, 5, 2, 5))));					
+						}
+					}
+					
+					if(item.isAbstract()) {
+						setFont(fmmlxDiagram.getPaletteFontKursiv());
+					} else {			
+						setFont(fmmlxDiagram.getPaletteFont());
 					}
 				}
 			};

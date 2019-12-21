@@ -76,6 +76,9 @@ public class FmmlxDiagram {
 	private double zoom = 1.;
 	private Affine transformFX = new Affine();
 	private Font font;
+	private Font fontKursiv;
+	private Font paletteFont;
+	private Font paletteFontKursiv;
 	
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
@@ -125,9 +128,15 @@ public class FmmlxDiagram {
 
 		try {
 			font = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono.ttf"), 14);
+			fontKursiv = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 14);
+			paletteFont = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSans.ttf"), 12);
+			paletteFontKursiv =Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 12);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		
+		
+
 
 		redraw();
 		
@@ -165,17 +174,14 @@ public class FmmlxDiagram {
 	
 	public void setEdgeCreationType(String edgeCreationType) {
 		this.edgeCreationType = edgeCreationType;
+		this.nodeCreationType= null;
 	}
 	
 	public void setNodeCreationType(String nodeCreationType) {
 		this.nodeCreationType = nodeCreationType;
+		this.edgeCreationType = null;
 	}
 	
-	public void clearSelectionPalette() {
-		edgeCreationType = null;
-		nodeCreationType = null;
-		newFmmlxPalette.clearSelection();
-	}
 
 	public void setEnums(Vector<FmmlxEnum> enums) {
 	}
@@ -225,9 +231,8 @@ public class FmmlxDiagram {
 			e.printStackTrace();
 		}
 		suppressRedraw = false;
-		redraw();
-		//fmmlxPalette.clearAllGroup();
-		//fmmlxPalette.init(this);
+		//redraw();
+
 		newFmmlxPalette.clearAllGroup();
 		newFmmlxPalette.populate();
 	}
@@ -575,17 +580,17 @@ public class FmmlxDiagram {
 					//TODO
 				}
 				deselectAll();
-				clearSelectionPalette();
+				deselectPalette();
 			}
 		} else if (nodeCreationType != null) {
 			if (nodeCreationType=="metaClass") {
 				actions.addMetaClassDialog(e);
 				deselectAll();
-				clearSelectionPalette();
+				deselectPalette();
 			} else {
 				actions.addInstanceDialog(getObjectById(Integer.parseInt(nodeCreationType)),e);
 				deselectAll();
-				clearSelectionPalette();
+				deselectPalette();
 			}
 		}
 	}
@@ -757,7 +762,6 @@ public class FmmlxDiagram {
 	}
 
 	void deselectAll() {
-		clearSelectionPalette();
 		deselectPalette();
 		selectedObjects.clear();
 		if (lastHitLabel != null) {
@@ -838,6 +842,18 @@ public class FmmlxDiagram {
 
 	public Font getFont() {
 		return font;
+	}
+	
+	public Font getFontKursiv() {
+		return fontKursiv;
+	}
+	
+	public Font getPaletteFont() {
+		return paletteFont;
+	}
+	
+	public Font getPaletteFontKursiv() {
+		return paletteFontKursiv;
 	}
 
 	
