@@ -43,6 +43,7 @@ public class FmmlxDiagramCommunicator {
 		this.handler = handler;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void newDiagram(int diagramID, String name) {
 		this.name = name;
 		CountDownLatch l = new CountDownLatch(1);
@@ -104,6 +105,7 @@ public class FmmlxDiagramCommunicator {
 		return result;
 	}*/
 	
+	@SuppressWarnings("unused")
 	private Value[] createValueArrayEnum(Vector<String> vector) {
 		Value[] result = new Value[vector.size()];
 		for(int i = 0; i < result.length; i++) {
@@ -298,10 +300,6 @@ public class FmmlxDiagramCommunicator {
 			}
 			
 			Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(13);
-
-			System.err.println("listOfPoints: " + listOfPoints);
-			System.err.println("startRegion: " + startRegion);
-			System.err.println("endRegion: " + endRegion);
 			
 			Edge object = new FmmlxAssociation(
 					(Integer) edgeInfoAsList.get(0), // id

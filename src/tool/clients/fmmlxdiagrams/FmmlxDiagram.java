@@ -21,11 +21,10 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
-import tool.clients.diagrams.DiagramClient;
 import tool.clients.fmmlxdiagrams.Palette;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
-import tool.clients.fmmlxdiagrams.fmmlxPalette.FmmlxPalette;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
+import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -77,16 +76,21 @@ public class FmmlxDiagram {
 	private double zoom = 1.;
 	private Affine transformFX = new Affine();
 	private Font font;
+	private Font fontKursiv;
+	private Font paletteFont;
+	private Font paletteFontKursiv;
 	
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
 	private boolean showSlots = true;
 	
 	private final int diagramID;
+	@SuppressWarnings("unused")
 	private transient long lastAction;
 	private transient boolean suppressRedraw;
-	private final FmmlxPalette fmmlxPalette;
+	private final NewFmmlxPalette newFmmlxPalette;
 	
+	@SuppressWarnings("unused")
 	private int maxLevel;
 	public String updateID = null;
 	
@@ -104,15 +108,15 @@ public class FmmlxDiagram {
 		canvas = new Canvas(canvasRawSize.getX(), canvasRawSize.getY());
 		actions = new DiagramActions(this);
 		Palette palette = new Palette(actions);
-		fmmlxPalette = new FmmlxPalette(this);
+		newFmmlxPalette = new NewFmmlxPalette(this);
 		scrollerCanvas = new ScrollPane(canvas);
 		pane.setOrientation(Orientation.HORIZONTAL);
-		pane.setDividerPosition(0, 0.2);
+		pane.setDividerPosition(0, 0.25);
 		mainView.setOrientation(Orientation.VERTICAL);
 		mainView.getItems().addAll(palette, scrollerCanvas);
 		mainView.setDividerPosition(0, 0.2);
 		
-		pane.getItems().addAll(fmmlxPalette.getToolBar(), mainView);
+		pane.getItems().addAll(newFmmlxPalette.getToolBar(), mainView);
 
 		canvas.setOnMousePressed(this::mousePressed);
 		canvas.setOnMouseDragged(this::mouseDragged);
@@ -124,6 +128,9 @@ public class FmmlxDiagram {
 
 		try {
 			font = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono.ttf"), 14);
+			fontKursiv = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 14);
+			paletteFont = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSans.ttf"), 12);
+			paletteFontKursiv =Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 12);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -151,43 +158,27 @@ public class FmmlxDiagram {
 		return enums;
 	}
 	
-	public void deleteGroup(String name) {
-		fmmlxPalette.deleteGroup(name);
-	}
-	
 	public void deselectPalette() {
 		edgeCreationType = null;
 		nodeCreationType = null;
-		fmmlxPalette.deselect();
+		newFmmlxPalette.clearSelection();
 	}
 	
-	public FmmlxPalette getPalette() {
-		return fmmlxPalette;
+	public NewFmmlxPalette getPalette() {
+		return newFmmlxPalette;
 	}
 	
-	public void newAction(String groupId, String label, String toolId, String icon) {
-		fmmlxPalette.newAction(this, groupId, label, toolId, icon);
-	}
-	
-	public void newFmmlxGroup(String name) {
-		if (!fmmlxPalette.hasGroup(name)) {
-			fmmlxPalette.newFmmlxGroup(name);
-		}
-	}
 	
 	public void setEdgeCreationType(String edgeCreationType) {
 		this.edgeCreationType = edgeCreationType;
+		this.nodeCreationType= null;
 	}
 	
 	public void setNodeCreationType(String nodeCreationType) {
 		this.nodeCreationType = nodeCreationType;
+		this.edgeCreationType = null;
 	}
 	
-	public void clearSelectionPalette() {
-		edgeCreationType = null;
-		nodeCreationType = null;
-		fmmlxPalette.clearSelection();
-	}
 
 	public void setEnums(Vector<FmmlxEnum> enums) {
 	}
@@ -237,9 +228,10 @@ public class FmmlxDiagram {
 			e.printStackTrace();
 		}
 		suppressRedraw = false;
-		redraw();
-		fmmlxPalette.clearAllGroup();
-		fmmlxPalette.init(this);
+		//redraw();
+
+		newFmmlxPalette.clearAllGroup();
+		newFmmlxPalette.populate();
 	}
 
 	// This operation resets the size of the canvas when needed
@@ -293,10 +285,7 @@ public class FmmlxDiagram {
 				e.printStackTrace();
 			}
 		}
-	}
-	
-	
-	
+	}	
 
 	private void paintOn(GraphicsContext g, int xOffset, int yOffset) {
 		g.setTransform(new Affine());
@@ -375,8 +364,7 @@ public class FmmlxDiagram {
 	private transient CanvasElement lastElementUnderMouse = null;
 	
 	private void mouseMoved(MouseEvent e) {
-		Point2D p = scale(e);
-
+		Point2D p = scale(e);;
 		if (mouseMode == MouseMode.DRAW_EDGE) {
 			storeCurrentPoint(p.getX(), p.getY());
 			redraw();
@@ -421,14 +409,16 @@ public class FmmlxDiagram {
 	}
 
 	private void mouseReleased(MouseEvent e) {
+		System.out.println("release");
 		if(mouseMode == MouseMode.MULTISELECT) {
 			handleMultiSelect();
 		}
 		if(mouseMode == MouseMode.STANDARD) {
 			mouseReleasedStandard();
+		} 
+		if(mouseMode!=MouseMode.DRAW_EDGE) {
+			mouseMode=MouseMode.STANDARD;
 		}
-
-		mouseMode = MouseMode.STANDARD;
 		
 		for(Edge edge : edges) {
 			edge.dropPoint();
@@ -481,6 +471,7 @@ public class FmmlxDiagram {
 
 	private boolean isLeftClick(MouseEvent e) {return e.getButton() == MouseButton.PRIMARY;}
 	private boolean isRightClick(MouseEvent e) {return e.getButton() == MouseButton.SECONDARY;}
+	@SuppressWarnings("unused")
 	private boolean isMiddleClick(MouseEvent e) {return e.getButton() == MouseButton.MIDDLE;}
 
 	private CanvasElement getElementAt(double x, double y) {
@@ -535,6 +526,7 @@ public class FmmlxDiagram {
 					highlightElementAt(hitObject, p);
 				}
 			}
+			
 			handleClickOnNodeElement(p, hitObject);
 
 			if (e.getClickCount() == 2) {
@@ -554,13 +546,12 @@ public class FmmlxDiagram {
 					default:
 						break;
 				}
-			} else {
+			} else {	
 				mouseMode = MouseMode.MULTISELECT;
 				storeLastClick(p.getX(), p.getY());
 				storeCurrentPoint(p.getX(), p.getY());
 			}
-		}
-		
+		}		
 	}
 
 	private void handleLeftPressed(MouseEvent e) {
@@ -568,44 +559,29 @@ public class FmmlxDiagram {
 		CanvasElement hitObject = getElementAt(p.getX(), p.getY());
 		
 		if (nodeCreationType == null && edgeCreationType == null) {
-			handleNullCreationType(e, hitObject);		
+			handleNullCreationType(e, hitObject);			
 			
-		} else if (edgeCreationType != null) {
-
+		} else if (edgeCreationType != null) {			
 			if (edgeCreationType=="association") {
 				hitObject = getElementAt(p.getX(), p.getY());
-				if(hitObject instanceof FmmlxObject) {
+				if(hitObject instanceof FmmlxObject) {		
 					actions.setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Association);
-					//TODO
 				}
 			} else if (edgeCreationType=="associationInstance") {
 				if(hitObject instanceof FmmlxObject) {
 					actions.setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.AssociationInstance);
-					//TODO
 				}
-				deselectAll();
-				clearSelectionPalette();
 			}
 		} else if (nodeCreationType != null) {
-
 			if (nodeCreationType=="metaClass") {
 				actions.addMetaClassDialog(e);
 				deselectAll();
-				clearSelectionPalette();
 			} else {
 				actions.addInstanceDialog(getObjectById(Integer.parseInt(nodeCreationType)),e);
 				deselectAll();
-				clearSelectionPalette();
 			}
 		}
-		if (updateID != null) {
-			
-		}
-		
-		
-		
 	}
-
 
 	private void highlightElementAt(CanvasElement hitObject, Point2D p) {
 		for (CanvasElement object : objects) {
@@ -773,7 +749,6 @@ public class FmmlxDiagram {
 	}
 
 	void deselectAll() {
-		clearSelectionPalette();
 		deselectPalette();
 		selectedObjects.clear();
 		if (lastHitLabel != null) {
@@ -854,6 +829,18 @@ public class FmmlxDiagram {
 
 	public Font getFont() {
 		return font;
+	}
+	
+	public Font getFontKursiv() {
+		return fontKursiv;
+	}
+	
+	public Font getPaletteFont() {
+		return paletteFont;
+	}
+	
+	public Font getPaletteFontKursiv() {
+		return paletteFontKursiv;
 	}
 
 	

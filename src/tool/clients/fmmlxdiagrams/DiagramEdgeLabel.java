@@ -56,15 +56,8 @@ public class DiagramEdgeLabel implements CanvasElement {
 		g.fillRect(this.getReferenceX() + relativeX, this.getReferenceY() + relativeY, this.width, this.height);
 		
 		g.setFill(fontColor);
-		g.fillText(this.text+"Test", this.getReferenceX() + relativeX + MARGIN, this.getReferenceY() + relativeY + height - MARGIN-2);
+		g.fillText(this.text, this.getReferenceX() + relativeX + MARGIN, this.getReferenceY() + relativeY + height - MARGIN-2);
 		
-		double size=16;
-		g.setFill(Color.BLACK);
-		g.fillPolygon(
-				new double[] { this.getReferenceX() + relativeX, this.getReferenceX() + relativeX - size / 2,
-						this.getReferenceX() + relativeX + size / 2 },
-				new double[] { this.getReferenceY(), this.getReferenceY() + size, this.getReferenceY() + size }, 3);
-
 	}
 
 	private double getReferenceX() {
