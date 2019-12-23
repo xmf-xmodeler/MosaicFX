@@ -111,7 +111,7 @@ public class FmmlxDiagram {
 		newFmmlxPalette = new NewFmmlxPalette(this);
 		scrollerCanvas = new ScrollPane(canvas);
 		pane.setOrientation(Orientation.HORIZONTAL);
-		pane.setDividerPosition(0, 0.2);
+		pane.setDividerPosition(0, 0.25);
 		mainView.setOrientation(Orientation.VERTICAL);
 		mainView.getItems().addAll(palette, scrollerCanvas);
 		mainView.setDividerPosition(0, 0.2);
@@ -134,9 +134,6 @@ public class FmmlxDiagram {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		
-		
-
 
 		redraw();
 		
@@ -288,10 +285,7 @@ public class FmmlxDiagram {
 				e.printStackTrace();
 			}
 		}
-	}
-	
-	
-	
+	}	
 
 	private void paintOn(GraphicsContext g, int xOffset, int yOffset) {
 		g.setTransform(new Affine());
@@ -370,8 +364,7 @@ public class FmmlxDiagram {
 	private transient CanvasElement lastElementUnderMouse = null;
 	
 	private void mouseMoved(MouseEvent e) {
-		Point2D p = scale(e);
-
+		Point2D p = scale(e);;
 		if (mouseMode == MouseMode.DRAW_EDGE) {
 			storeCurrentPoint(p.getX(), p.getY());
 			redraw();
@@ -416,14 +409,16 @@ public class FmmlxDiagram {
 	}
 
 	private void mouseReleased(MouseEvent e) {
+		System.out.println("release");
 		if(mouseMode == MouseMode.MULTISELECT) {
 			handleMultiSelect();
 		}
 		if(mouseMode == MouseMode.STANDARD) {
 			mouseReleasedStandard();
+		} 
+		if(mouseMode!=MouseMode.DRAW_EDGE) {
+			mouseMode=MouseMode.STANDARD;
 		}
-
-		mouseMode = MouseMode.STANDARD;
 		
 		for(Edge edge : edges) {
 			edge.dropPoint();
@@ -531,6 +526,7 @@ public class FmmlxDiagram {
 					highlightElementAt(hitObject, p);
 				}
 			}
+			
 			handleClickOnNodeElement(p, hitObject);
 
 			if (e.getClickCount() == 2) {
@@ -550,13 +546,12 @@ public class FmmlxDiagram {
 					default:
 						break;
 				}
-			} else {
+			} else {	
 				mouseMode = MouseMode.MULTISELECT;
 				storeLastClick(p.getX(), p.getY());
 				storeCurrentPoint(p.getX(), p.getY());
 			}
-		}
-		
+		}		
 	}
 
 	private void handleLeftPressed(MouseEvent e) {
@@ -564,37 +559,29 @@ public class FmmlxDiagram {
 		CanvasElement hitObject = getElementAt(p.getX(), p.getY());
 		
 		if (nodeCreationType == null && edgeCreationType == null) {
-			handleNullCreationType(e, hitObject);	
+			handleNullCreationType(e, hitObject);			
 			
-			
-		} else if (edgeCreationType != null) {
-			
+		} else if (edgeCreationType != null) {			
 			if (edgeCreationType=="association") {
 				hitObject = getElementAt(p.getX(), p.getY());
-				if(hitObject instanceof FmmlxObject) {
-					//TODO
+				if(hitObject instanceof FmmlxObject) {		
+					actions.setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Association);
 				}
 			} else if (edgeCreationType=="associationInstance") {
-				
 				if(hitObject instanceof FmmlxObject) {
-					//TODO
+					actions.setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.AssociationInstance);
 				}
-				deselectAll();
-				deselectPalette();
 			}
 		} else if (nodeCreationType != null) {
 			if (nodeCreationType=="metaClass") {
 				actions.addMetaClassDialog(e);
 				deselectAll();
-				deselectPalette();
 			} else {
 				actions.addInstanceDialog(getObjectById(Integer.parseInt(nodeCreationType)),e);
 				deselectAll();
-				deselectPalette();
 			}
 		}
 	}
-
 
 	private void highlightElementAt(CanvasElement hitObject, Point2D p) {
 		for (CanvasElement object : objects) {

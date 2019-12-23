@@ -14,7 +14,4 @@ public class ToolClass extends PaletteTool{
 	public void widgetSelected() {
 		getDiagram().setNodeCreationType(getId());		
 	}
-
-
-
 }

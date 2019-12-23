@@ -11,7 +11,7 @@ public class PaletteGroupClass extends PaletteGroup {
 
 	public PaletteGroupClass(PaletteTool value) {
 		super(value);
-		// TODO Auto-generated constructor stub
+		setExpanded(true);
 	}
 
 	@Override

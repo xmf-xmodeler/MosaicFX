@@ -98,22 +98,22 @@ public class NewFmmlxPalette {
 				if (empty || item == null || item.getLabel() == null) {
 					setText("");
 					setGraphic(null);
-					setBorder(null);
+					setBorder(new Border(new BorderStroke(null, null, null, null,new Insets(2, 5, 2, 5))));
 				} else { 
 					
 					if (!item.getIcon().equals("")) {
 						ImageView imageView = new ImageView(new javafx.scene.image.Image(new File(item.getIcon()).toURI().toString()));
 						setGraphic(imageView);
-						setBorder(null);
+						setBorder(new Border(new BorderStroke(null, null, null, null,new Insets(2, 5, 2, 5))));
 					} else {
 						setGraphic(null);
-						setBorder(null);
+						setBorder(new Border(new BorderStroke(null, null, null, null,new Insets(2, 5, 2, 5))));
 					}	
 					
 					if(item.getLevel()==1000) {
 						setText(item.getLabel());
 						if(item.getId().equals("metaClass")) {
-							setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.DASHED, new CornerRadii(10), new BorderWidths(2),new Insets(2, 5, 2, 5))));
+							setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.DASHED, new CornerRadii(10), new BorderWidths(2),new Insets(2, 5, 2, 25))));
 						} else {
 							setBorder(null);
 						}
@@ -121,9 +121,9 @@ public class NewFmmlxPalette {
 					} else {
 						setText(item.getLabel());				
 						if(item.getLevel()==1) {							
-							setBorder(new Border(new BorderStroke(Color.LIGHTGRAY, BorderStrokeStyle.SOLID, new CornerRadii(10), new BorderWidths(1),new Insets(2, 5, 2, 5))));
+							setBorder(new Border(new BorderStroke(Color.LIGHTGRAY, BorderStrokeStyle.SOLID, new CornerRadii(10), new BorderWidths(1),new Insets(2, 5, 2, 25))));
 						} else {
-							setBorder(new Border(new BorderStroke(FmmlxObject.colors.get(item.getLevel()), BorderStrokeStyle.SOLID, new CornerRadii(10), new BorderWidths(1),new Insets(2, 5, 2, 5))));					
+							setBorder(new Border(new BorderStroke(FmmlxObject.colors.get(item.getLevel()), BorderStrokeStyle.SOLID, new CornerRadii(10), new BorderWidths(1),new Insets(2, 5, 2, 25))));					
 						}
 					}
 					
@@ -154,7 +154,6 @@ public class NewFmmlxPalette {
 	            	}
 	            }
 	        }
-
 		  });
 		return treeView;
 	}

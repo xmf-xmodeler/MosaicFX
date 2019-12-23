@@ -639,6 +639,7 @@ public class DiagramActions {
 		diagram.setSelectedObject(source);
 		diagram.setDrawEdgeMouseMode(type, source);
 		diagram.storeLastClick(source.getCenterX(), source.getCenterY());
+		diagram.deselectAll();
 	}
 
 	public void addAssociationInstance(FmmlxObject source, FmmlxObject target) {
