@@ -45,16 +45,14 @@ public class NodeLabel implements NodeElement {
 
 		// Changing font to oblique(italic)
 		if (isAbstract) {
-			try {
-				g.setFont(Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 14));
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
+			g.setFont(diagram.getFontKursiv());
+		} else {
+			g.setFont(diagram.getFont());
 		}
 		g.setFill(fgColor);
 		g.fillText(text, x - hAlign + xOffset, y + yOffset - Y_BASELINE_DIFF);
 		// Resetting font to standard in case font was changed
-		g.setFont(diagram.getFont());
+		
 	}
 
 	/*public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,

@@ -43,6 +43,7 @@ public class FmmlxDiagramCommunicator {
 		this.handler = handler;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void newDiagram(int diagramID, String name) {
 		this.name = name;
 		CountDownLatch l = new CountDownLatch(1);

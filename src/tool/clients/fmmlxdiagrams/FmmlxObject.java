@@ -9,6 +9,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.*;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
+import tool.clients.fmmlxdiagrams.newpalette.PaletteTool;
+import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
+import tool.clients.fmmlxdiagrams.newpalette.ToolClass;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,7 +20,7 @@ import java.util.Vector;
 public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	//	private String[] levelBackgroundColors = {"#8C8C8C", "#FFFFFF", "#000000", "#3111DB", "#dd2244", "#119955"};
-	private static HashMap<Integer, Paint> colors = null;
+	public static HashMap<Integer, Paint> colors = null;
 	private String name;
 	int id;
 	private double x;
@@ -734,6 +737,12 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		if(p == null) return;
 		NodeLabel hitLabel = getHitLabel(p);
 		if(hitLabel != null) hitLabel.performDoubleClickAction();
+	}
+
+	public PaletteItem toPaletteItem(FmmlxDiagram fmmlxDiagram) {
+		PaletteTool tool = new ToolClass(fmmlxDiagram, getName(), getId()+"", getLevel(), isAbstract, "");	
+		PaletteItem item = new PaletteItem(tool);
+		return item;
 	}
 
 
