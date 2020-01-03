@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams;
 
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -56,5 +57,20 @@ public class NodeBox implements NodeElement {
 
 	public PropertyType getElementType() {
 		return propertyType;
+	}
+
+	@Override public double getX() {return x;}
+	@Override public double getY() {return y;}
+	
+	@Override public NodeLabel getHitLabel(Point2D pointRelativeToParent) {
+		if(isHit(pointRelativeToParent.getX(), pointRelativeToParent.getY())) {
+			NodeLabel hitLabel = null;
+			for(NodeElement e : nodeElements) if(hitLabel == null) {
+				 hitLabel = e.getHitLabel(new Point2D(pointRelativeToParent.getX() - getX(), pointRelativeToParent.getY() - getY()));
+			}
+			return hitLabel;
+		} else {
+			return null;
+		}
 	}
 }

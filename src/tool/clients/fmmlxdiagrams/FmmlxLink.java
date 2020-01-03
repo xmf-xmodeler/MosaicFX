@@ -49,8 +49,8 @@ public class FmmlxLink extends Edge {
 //				 + (getTargetNode().getX() + getTargetNode().getWidth()  / 2) * (anchor==Anchor.SOURCE?0.2:anchor==Anchor.TARGET?0.8:0.5);
 //		double y = (getSourceNode().getY() + getSourceNode().getHeight() / 2) * (anchor==Anchor.SOURCE?0.8:anchor==Anchor.TARGET?0.2:0.5)
 //				 + (getTargetNode().getY() + getTargetNode().getHeight() / 2) * (anchor==Anchor.SOURCE?0.2:anchor==Anchor.TARGET?0.8:0.5);
-		double w = Math.max(20, diagram.calculateTextWidth(value));
-		double h = diagram.calculateTextHeight();
+		double w = Math.max(20, FmmlxDiagram.calculateTextWidth(value));
+		double h = FmmlxDiagram.calculateTextHeight();
 		Vector<FmmlxObject> anchors = new Vector<>();
 		if(anchor!=Anchor.TARGET) anchors.add(sourceNode);
 		if(anchor!=Anchor.SOURCE) anchors.add(targetNode);

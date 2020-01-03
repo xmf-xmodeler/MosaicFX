@@ -21,7 +21,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
-import tool.clients.diagrams.DiagramClient;
 import tool.clients.fmmlxdiagrams.Palette;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.fmmlxPalette.FmmlxPalette;
@@ -69,14 +68,14 @@ public class FmmlxDiagram {
 	private transient Point2D currentPoint;
 	private transient MouseMode mouseMode = MouseMode.STANDARD;
 	private transient FmmlxObject newEdgeSource;
-	private transient NodeLabel lastHitLabel = null;
+	private transient FmmlxProperty lastHitProperty = null;
 	private boolean diagramRequiresUpdate = false;
 	
 	// The state of the canvas is stored here:
 	private Point2D canvasRawSize = new Point2D(1200, 800);
 	private double zoom = 1.;
 	private Affine transformFX = new Affine();
-	private Font font;
+	private static Font font;
 	
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
@@ -87,7 +86,6 @@ public class FmmlxDiagram {
 	private transient boolean suppressRedraw;
 	private final FmmlxPalette fmmlxPalette;
 	
-	private int maxLevel;
 	public String updateID = null;
 	
 	String edgeCreationType = null;
@@ -189,8 +187,8 @@ public class FmmlxDiagram {
 		fmmlxPalette.clearSelection();
 	}
 
-	public void setEnums(Vector<FmmlxEnum> enums) {
-	}
+//	public void setEnums(Vector<FmmlxEnum> enums) {
+//	}
 
 	private synchronized void fetchDiagramData() {
 		if(suppressRedraw) {
@@ -280,8 +278,9 @@ public class FmmlxDiagram {
 			return;}
 		if (objects.size() <= 0) {return;}
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
+			// we are on the right Thread already:
 			paintOn(canvas.getGraphicsContext2D(), 0, 0);
-		} else {
+		} else { // create a new Thread
 			CountDownLatch l = new CountDownLatch(1);
 			Platform.runLater(() -> {
 				paintOn(canvas.getGraphicsContext2D(), 0, 0);
@@ -294,9 +293,6 @@ public class FmmlxDiagram {
 			}
 		}
 	}
-	
-	
-	
 
 	private void paintOn(GraphicsContext g, int xOffset, int yOffset) {
 		g.setTransform(new Affine());
@@ -346,10 +342,10 @@ public class FmmlxDiagram {
 //		if (isMiddleClick(e)) {
 //			selectedObjects.addAll(objects);
 //		}
-		if (isLeftClick(e)) {
+		if (isLeftButton(e)) {
 			handleLeftPressed(e);
 		}
-		if (isRightClick(e)) {
+		if (isRightButton(e)) {
 			handleRightClick(e);
 		}
 		setMouseOffset(p);
@@ -479,9 +475,9 @@ public class FmmlxDiagram {
 
 	}
 
-	private boolean isLeftClick(MouseEvent e) {return e.getButton() == MouseButton.PRIMARY;}
-	private boolean isRightClick(MouseEvent e) {return e.getButton() == MouseButton.SECONDARY;}
-	private boolean isMiddleClick(MouseEvent e) {return e.getButton() == MouseButton.MIDDLE;}
+	private boolean isLeftButton(MouseEvent e) {return e.getButton() == MouseButton.PRIMARY;}
+	private boolean isRightButton(MouseEvent e) {return e.getButton() == MouseButton.SECONDARY;}
+//	private boolean isMiddleClick(MouseEvent e) {return e.getButton() == MouseButton.MIDDLE;}
 
 	private CanvasElement getElementAt(double x, double y) {
 		for (FmmlxObject o : objects)
@@ -497,7 +493,7 @@ public class FmmlxDiagram {
 		return null;
 	}
 	
-	private void handleNullCreationType(MouseEvent e, CanvasElement hitObject) {
+	private void handleLeftPressedDefault(MouseEvent e, CanvasElement hitObject) {
 		Point2D p = scale(e);
 
 		if (hitObject != null) {
@@ -535,7 +531,7 @@ public class FmmlxDiagram {
 					highlightElementAt(hitObject, p);
 				}
 			}
-			handleClickOnNodeElement(p, hitObject);
+			handlePressedOnNodeElement(p, hitObject);
 
 			if (e.getClickCount() == 2) {
 				handleDoubleClickOnNodeElement(p, hitObject);
@@ -568,7 +564,7 @@ public class FmmlxDiagram {
 		CanvasElement hitObject = getElementAt(p.getX(), p.getY());
 		
 		if (nodeCreationType == null && edgeCreationType == null) {
-			handleNullCreationType(e, hitObject);		
+			handleLeftPressedDefault(e, hitObject);		
 			
 		} else if (edgeCreationType != null) {
 
@@ -601,11 +597,7 @@ public class FmmlxDiagram {
 		if (updateID != null) {
 			
 		}
-		
-		
-		
 	}
-
 
 	private void highlightElementAt(CanvasElement hitObject, Point2D p) {
 		for (CanvasElement object : objects) {
@@ -617,86 +609,23 @@ public class FmmlxDiagram {
 		hitObject.highlightElementAt(p);
 	}
 
-	private void handleClickOnNodeElement(Point2D p, CanvasElement hitObject) {
+	private void handlePressedOnNodeElement(Point2D p, CanvasElement hitObject) {
 		if (hitObject instanceof FmmlxObject) {
-			Point2D relativePoint = getRelativePointToNodeBox(hitObject, p);
-			NodeBox hitNodeBox = getHitNodeBox((FmmlxObject) hitObject, relativePoint);
-			if (hitNodeBox != null) {
-				NodeLabel hitLabel = getHitLabel(hitNodeBox, relativePoint);
-				if (hitLabel != null) {
-					if (lastHitLabel != null) {
-						lastHitLabel.setDeselected();
-					}
-					if (hitLabel.getActionObject().getPropertyType() != PropertyType.Class) {
-						lastHitLabel = hitLabel;
-						lastHitLabel.setSelected();
-					}
-				}
-			}
+			FmmlxObject obj = (FmmlxObject) hitObject;
+			Point2D relativePoint = new Point2D(p.getX() - obj.getX(), p.getY() - obj.getY());
+			lastHitProperty = obj.handlePressedOnNodeElement(relativePoint);
 		}
 	}
 
 	private void handleDoubleClickOnNodeElement(Point2D p, CanvasElement hitObject) {
 		if (hitObject != null && hitObject instanceof FmmlxObject) {
-			Point2D relativePoint = getRelativePointToNodeBox(hitObject, p);
-
-			// Checking NodeBoxes
-			NodeBox hitNodeBox = getHitNodeBox((FmmlxObject) hitObject, relativePoint);
-			if (hitNodeBox != null) {
-				
-				FmmlxProperty hitProperty = getHitProperty((NodeBox) hitNodeBox, relativePoint);
-				if (((NodeBox) hitNodeBox).getElementType() == PropertyType.Slot && hitProperty != null) {
-					actions.changeSlotValue((FmmlxObject) hitObject, (FmmlxSlot) hitProperty);		
-				} else {
-					if (((NodeBox) hitNodeBox).getElementType() != PropertyType.Slot) {
-						NodeLabel hitLabel = getHitLabel(hitNodeBox, relativePoint);				
-						if (hitLabel == null || hitLabel.getText() == null || hitLabel.getText().length()<=2) {
-							actions.changeLevelDialog((FmmlxObject) hitObject, ((NodeBox) hitNodeBox).getElementType());
-						} else {
-							actions.changeNameDialog((FmmlxObject) hitObject, ((NodeBox) hitNodeBox).getElementType(), hitProperty);
-						}	
-					}		
-				}
-			}
+			FmmlxObject obj = (FmmlxObject) hitObject;
+			Point2D relativePoint = new Point2D(p.getX() - obj.getX(), p.getY() - obj.getY());
+			obj.performDoubleClickAction(relativePoint);
 		} else if (hitObject instanceof DiagramEdgeLabel) {
 			DiagramEdgeLabel l = (DiagramEdgeLabel) hitObject;
 			l.performAction();
 		}
-	}
-
-	private NodeBox getHitNodeBox(FmmlxObject hitObject, Point2D relativePoint) {
-		for (NodeElement element : hitObject.getNodes()) {
-			if (element.isHit(relativePoint.getX(), relativePoint.getY()) && element instanceof NodeBox) {
-				if (((NodeBox) element).getElementType() != PropertyType.Selection && ((NodeBox) element).getElementType() != PropertyType.OperationValue) {
-					return (NodeBox) element;
-				}
-			}
-		}
-		return null;
-	}
-
-	private FmmlxProperty getHitProperty(NodeBox nodeBox, Point2D p) {
-		for (NodeElement nodeLabel : nodeBox.nodeElements) {
-			if (nodeLabel.isHit(p.getX(), p.getY() - nodeBox.y) && nodeLabel instanceof NodeLabel) {
-				return ((NodeLabel) nodeLabel).getActionObject();
-			}
-		}
-		return null;
-	}
-
-	private NodeLabel getHitLabel(NodeBox nodeBox, Point2D p) {
-		for (NodeElement nodeLabel : nodeBox.nodeElements) {
-			if (nodeLabel.isHit(p.getX(), p.getY() - nodeBox.y) && nodeLabel instanceof NodeLabel) {
-				return ((NodeLabel) nodeLabel);
-			}
-		}
-		return null;
-	}
-
-	private Point2D getRelativePointToNodeBox(CanvasElement hitObject, Point2D p) {
-		return new Point2D(
-				p.getX() - ((FmmlxObject) hitObject).getX(),
-				p.getY() - ((FmmlxObject) hitObject).getY());
 	}
 
 	private void handleRightClick(MouseEvent e) {
@@ -776,10 +705,10 @@ public class FmmlxDiagram {
 		clearSelectionPalette();
 		deselectPalette();
 		selectedObjects.clear();
-		if (lastHitLabel != null) {
-			lastHitLabel.setDeselected();
-			lastHitLabel = null;
-		}
+//		if (lastHitLabel != null) {
+//			lastHitLabel.setDeselected();
+//			lastHitLabel = null;
+//		}
 	}
 
 	public void setSelectedObject(FmmlxObject source) {
@@ -795,7 +724,6 @@ public class FmmlxDiagram {
 
 	public void updateDiagram() {
 		new Thread(this::fetchDiagramData).start();
-		
 	}
 
 	private void handleMultiSelect() {
@@ -834,10 +762,7 @@ public class FmmlxDiagram {
 	}
 
 	public FmmlxProperty getSelectedProperty() {
-		if (lastHitLabel != null) {
-			return lastHitLabel.getActionObject();
-		}
-		return null;
+		return lastHitProperty;
 	}
 
 	public double getZoom() {
@@ -883,13 +808,13 @@ public class FmmlxDiagram {
 	 * Calculates the height of the text. Because that depends of the font size and the screen resolution
 	 * @return the text height
 	 */
-	public double calculateTextHeight() {
+	public static double calculateTextHeight() {
 		Text t = new Text("TestText");
 		t.setFont(font);
 		return t.getLayoutBounds().getHeight();
 	}
 
-	public double calculateTextWidth(String text) {
+	public static double calculateTextWidth(String text) {
 		Text t = new Text(text);
 		t.setFont(font);
 		return t.getLayoutBounds().getWidth();
@@ -1080,7 +1005,7 @@ public class FmmlxDiagram {
 	public int getMaxLevel() {
 		int level = 0;
 		for (FmmlxObject tmp : objects) {
-			if(tmp.getLevel()>=level) {
+			if(tmp.getLevel()>level) {
 				level=tmp.getLevel();
 			}
 		}
@@ -1121,5 +1046,9 @@ public class FmmlxDiagram {
 			}
 		}
 		return null;
+	}
+
+	public DiagramActions getActions() {
+		return actions;
 	}	
 }

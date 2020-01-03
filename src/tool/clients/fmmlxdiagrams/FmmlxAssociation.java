@@ -86,8 +86,8 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	private void createLabel(String value, int localId, Anchor anchor, Runnable action, int yDiff, Color textColor, Color bgColor) {
 		Point2D storedPostion = getLabelPosition(localId);
 		
-		double w = diagram.calculateTextWidth(value);
-		double h = diagram.calculateTextHeight();
+		double w = FmmlxDiagram.calculateTextWidth(value);
+		double h = FmmlxDiagram.calculateTextHeight();
 		
 		Vector<FmmlxObject> anchors = new Vector<>();
 		if(anchor!=Anchor.TARGET) anchors.add(getSourceNode());
@@ -106,8 +106,8 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	private void createAssociationInformationLabels(String value, int localId, Runnable action) {
 		Point2D storedPostion = getLabelPosition(localId);
 		
-		double w = diagram.calculateTextWidth(value);
-		double h = diagram.calculateTextHeight();
+		double w = FmmlxDiagram.calculateTextWidth(value);
+		double h = FmmlxDiagram.calculateTextHeight();
 		
 		if(storedPostion != null) {
 			//TODO create information container ([informationen])

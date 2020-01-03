@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams;
 
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -10,6 +11,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 public class NodeLabel implements NodeElement {
+	
+	public interface Action{
+		public void perform();
+	}
+	
 	private Pos alignment;
 	private double x;
 	private double y;
@@ -23,12 +29,11 @@ public class NodeLabel implements NodeElement {
 	private final static int Y_BASELINE_DIFF = 3;
 	private final static int BOX_GAP = 1;
 	private boolean selected;
+	private Action action;
 
 	@Override
 	public void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram, boolean objectIsSelected) {
 		double hAlign = 0;
-		textWidth = diagram.calculateTextWidth(text);
-		textHeight = diagram.calculateTextHeight();
 
 		if (alignment != Pos.BASELINE_LEFT) {
 			hAlign = (alignment == Pos.BASELINE_CENTER ? 0.5 : 1) * textWidth;
@@ -52,7 +57,7 @@ public class NodeLabel implements NodeElement {
 		g.setFont(diagram.getFont());
 	}
 
-	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject,
+	/*public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
 					 String text) {
 		super();
 		this.alignment = alignment;
@@ -64,9 +69,13 @@ public class NodeLabel implements NodeElement {
 		this.text = text;
 		this.isAbstract = false;
 		this.selected = false;
-	}
+		this.action = action;
+		
+		textWidth = FmmlxDiagram.calculateTextWidth(text);
+		textHeight = FmmlxDiagram.calculateTextHeight();
+	}*/
 
-	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject,
+	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
 					 String text, boolean isAbstract) {
 		super();
 		this.alignment = alignment;
@@ -78,6 +87,10 @@ public class NodeLabel implements NodeElement {
 		this.text = text;
 		this.isAbstract = isAbstract;
 		this.selected = false;
+		this.action = action;
+		
+		textWidth = FmmlxDiagram.calculateTextWidth(text);
+		textHeight = FmmlxDiagram.calculateTextHeight();
 	}
 
 	@Override
@@ -114,5 +127,17 @@ public class NodeLabel implements NodeElement {
 
 	public String getText() {
 		return text;
+	}
+	
+	@Override public double getX() {return x;}
+	@Override public double getY() {return y;}	
+	
+	@Override public NodeLabel getHitLabel(Point2D pointRelativeToParent) {
+		if(isHit(pointRelativeToParent.getX(), pointRelativeToParent.getY()))
+			return this; return null;
+	}
+
+	public void performDoubleClickAction() {
+		action.perform();		
 	}
 }
