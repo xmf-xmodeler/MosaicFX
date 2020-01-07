@@ -14,6 +14,7 @@ import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
 import tool.clients.fmmlxdiagrams.newpalette.ToolClass;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -417,7 +418,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 			for (FmmlxOperation o : ownOperations) {
 				opsY += lineHeight;
 				NodeLabel.Action changeOpNameAction = () -> {diagram.getActions().changeNameDialog(this, PropertyType.Operation, o);};
-				NodeLabel opLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.BLACK, null, o, changeOpNameAction, o.getName() + "():" + o.getType(), false);
+				NodeLabel opLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.BLACK, null, o, changeOpNameAction, o.getFullString(diagram), false);
 				opsBox.nodeElements.add(opLabel);
 				NodeLabel.Action changeOpLevelAction = () -> {diagram.getActions().changeLevelDialog(this, PropertyType.Operation);};
 				NodeLabel opLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.BLACK, o, changeOpLevelAction, o.getLevelString() + "", false);
@@ -425,7 +426,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 			}
 			for (FmmlxOperation o : otherOperations) {
 				opsY += lineHeight;
-				NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, NO_ACTION, o.getName() + "():" + o.getType() + " (from " + diagram.getObjectById(o.getOwner()).name + ")", false);
+				NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectById(o.getOwner()).name + ")", false);
 				opsBox.nodeElements.add(oLabel);
 				NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "", false);
 				opsBox.nodeElements.add(oLevelLabel);
@@ -501,11 +502,11 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 //		//determine maximal width of operations
 		if (showOperations) {
 			for (FmmlxOperation o : ownOperations) {
-				String text = o.name + "():" + o.type;
+				String text = o.getFullString(diagram);
 				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(text) + INST_LEVEL_WIDTH, neededWidth);
 			}
 			for (FmmlxOperation o : otherOperations) {
-				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.name + "():" + o.type + " (from " + diagram.getObjectById(o.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
+				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + diagram.getObjectById(o.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
 			}
 		}
 		//determine maximal width of slots
@@ -554,15 +555,19 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	public void fetchDataDefinitions(FmmlxDiagramCommunicator comm) throws TimeOutException {
 		Vector<Vector<FmmlxAttribute>> attributeList = comm.fetchAttributes(diagram, this.name);
 		ownAttributes = attributeList.get(0);
+		Collections.sort(ownAttributes);
 		otherAttributes = attributeList.get(1);
+		Collections.sort(otherAttributes);
 		Vector<FmmlxOperation> operations = comm.fetchOperations(diagram, this.name);
 		ownOperations = new Vector<FmmlxOperation>();
 		otherOperations = new Vector<FmmlxOperation>();
 		for (FmmlxOperation o : operations) {
 			if (o.owner == this.id) {
 				ownOperations.add(o);
+				Collections.sort(ownOperations);
 			} else {
 				otherOperations.add(o);
+				Collections.sort(otherOperations);
 			}
 		}
 	}

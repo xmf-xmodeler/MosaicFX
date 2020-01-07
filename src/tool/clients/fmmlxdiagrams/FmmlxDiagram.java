@@ -87,6 +87,7 @@ public class FmmlxDiagram {
 	private final int diagramID;
 	private transient boolean suppressRedraw;
 	private final NewFmmlxPalette newFmmlxPalette;
+	private String packagePath = null;
 	
 	public String updateID = null;
 	
@@ -94,9 +95,11 @@ public class FmmlxDiagram {
 	String nodeCreationType = null;
 
 
-	FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String label) {
+	FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String label, String packagePath) {
 		this.comm = comm;
 		this.diagramID = diagramID;
+		this.packagePath = packagePath;
+		System.out.println("packagePath: " + packagePath);
 		
 		pane = new SplitPane();
 		mainView = new SplitPane();
@@ -404,7 +407,6 @@ public class FmmlxDiagram {
 	}
 
 	private void mouseReleased(MouseEvent e) {
-		System.out.println("release");
 		if(mouseMode == MouseMode.MULTISELECT) {
 			handleMultiSelect();
 		}
@@ -1038,5 +1040,15 @@ public class FmmlxDiagram {
 
 	public DiagramActions getActions() {
 		return actions;
-	}	
+	}
+	
+	public String convertPath2Short(String typePath) {
+		String[] prefixes = new String[]{packagePath, "Root::XCore", "Root"};
+			for(String prefix : prefixes) {
+				if(typePath.startsWith(prefix)) {
+					return typePath.substring(prefix.length()+2);
+				}
+			}
+		return typePath;
+	}
 }

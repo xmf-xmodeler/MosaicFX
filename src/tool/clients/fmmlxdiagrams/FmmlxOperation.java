@@ -4,7 +4,7 @@ import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
 import java.util.Vector;
 
-public class FmmlxOperation implements FmmlxProperty {
+public class FmmlxOperation implements FmmlxProperty, Comparable<FmmlxOperation> {
 	private final PropertyType propertyType = PropertyType.Operation;
 
 	String name;
@@ -13,9 +13,11 @@ public class FmmlxOperation implements FmmlxProperty {
 	Integer owner;
 	private boolean isMonitored;
 	String body;
+	Vector<String> paramNames;
+	Vector<String> paramTypes;
 
 
-	public FmmlxOperation(String name, Integer level, String type, String body, Integer owner, Multiplicity multiplicity, boolean isMonitored, Vector<Object> args) {
+	public FmmlxOperation(String name, Vector<String> paramNames, Vector<String> paramTypes, Integer level, String type, String body, Integer owner, Multiplicity multiplicity, boolean isMonitored) {
 		this.name = name;
 		this.level = level;
 		this.type = type;
@@ -23,6 +25,8 @@ public class FmmlxOperation implements FmmlxProperty {
 //		this.multiplicity = multiplicity;
 		this.isMonitored = isMonitored;
 		this.body = body;
+		this.paramNames = paramNames;
+		this.paramTypes = paramTypes;
 	}
 
 	public String getName() {
@@ -60,5 +64,21 @@ public class FmmlxOperation implements FmmlxProperty {
 		} else {
 			return body;
 		}
+	}
+
+	public String getFullString(FmmlxDiagram diagram) {
+		String params = "";
+		for(int i = 0; i < paramNames.size(); i++) {
+			if(!"".equals(params)) params = params+", ";
+			params = params + paramNames.get(i)+ ":" + diagram.convertPath2Short(paramTypes.get(i));
+		}
+		return name + "("+params+"):" + diagram.convertPath2Short(type);
+	}
+
+	@Override
+	public int compareTo(FmmlxOperation that) {
+		if(this.level < that.level) return 1; // high levels first
+		if(this.level > that.level) return -1;
+		return this.name.compareTo(that.name);
 	}
 }
