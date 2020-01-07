@@ -2,7 +2,7 @@ package tool.clients.fmmlxdiagrams;
 
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
-public class FmmlxAttribute implements FmmlxProperty {
+public class FmmlxAttribute implements FmmlxProperty, Comparable<FmmlxAttribute>{
 
 	String name;
 //	private Multiplicity multiplicity;
@@ -44,6 +44,13 @@ public class FmmlxAttribute implements FmmlxProperty {
 	public String getType() {
 		// TODO Auto-generated method stub
 		return type;
+	}
+
+	@Override
+	public int compareTo(FmmlxAttribute that) {
+		if(this.level < that.level) return 1; // high levels first
+		if(this.level > that.level) return -1;
+		return this.name.compareTo(that.name);
 	}
 
 //	public Multiplicity getMultiplicity() {

@@ -44,14 +44,14 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void newDiagram(int diagramID, String name) {
-		this.name = name;
+	public void newDiagram(int diagramID, String diagramName, String packageName) {
+		this.name = diagramName;
 		CountDownLatch l = new CountDownLatch(1);
-		final String label = name;//"getPackageName();";
+		final String label = diagramName;//"getPackageName();";
 		Platform.runLater(() -> {
-			if (DEBUG) System.err.println("Create FMMLx-Diagram ("+name+") ...");
+			if (DEBUG) System.err.println("Create FMMLx-Diagram ("+diagramName+") ...");
 
-			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, label);
+			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, label, packageName);
 			Tab tab = new Tab(label);
 			tab.setContent(diagram.getView());
 			tab.setClosable(true);
@@ -105,7 +105,6 @@ public class FmmlxDiagramCommunicator {
 		return result;
 	}*/
 	
-	@SuppressWarnings("unused")
 	private Value[] createValueArrayEnum(Vector<String> vector) {
 		Value[] result = new Value[vector.size()];
 		for(int i = 0; i < result.length; i++) {
@@ -412,34 +411,32 @@ public class FmmlxDiagramCommunicator {
 		Vector<FmmlxOperation> result = new Vector<>();
 		for (Object o : response0) {
 			Vector<Object> opInfo = (Vector<Object>) o;
-			try { // temp for compatibility
-				FmmlxOperation op =
-						new FmmlxOperation(
-								(String) opInfo.get(0), // name
-								(Integer) opInfo.get(1), // level
-								(String) opInfo.get(2), // type
-								(String) opInfo.get(3), // body
-								(Integer) opInfo.get(4), // owner
-								null, // multiplicity
-								(Boolean) opInfo.get(6), // isMonitored
-								null // args
 
-						);
-				result.add(op);
-			} catch (Exception e) {
-				FmmlxOperation op =
-						new FmmlxOperation(
-								(String) opInfo.get(0), // name
-								(Integer) opInfo.get(1), // level
-								(String) opInfo.get(2), // type
-								"", // body
-								(Integer) opInfo.get(3), // owner
-								null, // multiplicity
-								(Boolean) opInfo.get(5), // isMonitored
-								null // args
-						);
-				result.add(op);
+			Vector<Object> paramNamesO = (Vector<Object>) opInfo.get(1);
+			Vector<String> paramNamesS = new Vector<String>();
+			for (Object O : paramNamesO) {
+				paramNamesS.add((String) O);
 			}
+			
+			Vector<Object> paramTypesO = (Vector<Object>) opInfo.get(2);
+			Vector<String> paramTypesS = new Vector<String>();
+			for (Object O : paramTypesO) {
+				paramTypesS.add((String) O);
+			}
+		
+			FmmlxOperation op =
+				new FmmlxOperation(
+					(String) opInfo.get(0), // name
+					paramNamesS, // paramNames
+					paramTypesS, // paramTypes
+					(Integer) opInfo.get(3), // level
+					(String) opInfo.get(4), // type
+					(String) opInfo.get(5), // body
+					(Integer) opInfo.get(6), // owner
+					null, // multiplicity
+					(Boolean) opInfo.get(8) // isMonitored
+				);
+			result.add(op);
 		}
 		return result;
 	}

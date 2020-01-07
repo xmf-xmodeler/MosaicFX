@@ -14,6 +14,7 @@ import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
 import tool.clients.fmmlxdiagrams.newpalette.ToolClass;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -32,13 +33,15 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	private int width;
 	private int height;
 	Object highlightedElement;
-
+    
+	private final static NodeLabel.Action NO_ACTION = () -> {};
+	
 	private transient double mouseMoveOffsetX;
 	private transient double mouseMoveOffsetY;
-	@SuppressWarnings("unused")
-	private transient double lastValidX;
-	@SuppressWarnings("unused")
-	private transient double lastValidY;
+//	private transient double lastValidX;
+//	private transient double lastValidY;
+	
+	private transient Point2D lastClick = null;
 	
 	private FmmlxObjectPort ports;
 
@@ -342,12 +345,11 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	public void layout(FmmlxDiagram diagram) {
 		requiresReLayout = false;
-		
 		nodeElements = new Vector<>();
 //		double neededHeight = 0;
 		double neededWidth = calculateNeededWidth(diagram);
 		//determine text height
-		double textHeight = diagram.calculateTextHeight();
+		double textHeight = FmmlxDiagram.calculateTextHeight();
 		double currentY = 0;
 
 		String parentString = getParentsListString(diagram);
@@ -362,15 +364,15 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		}
 		if (ofName == null) ofName = "MetaClass";
 		
-		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, Color.valueOf(getLevelFontColor() + "75"), null, this, "^" + ofName + "^");
-		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight, Color.valueOf(getLevelFontColor() + "75"), null, this, "" + level);
-		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, Color.valueOf(getLevelFontColor()), null, this, name, isAbstract);
+		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, Color.valueOf(getLevelFontColor() + "75"), null, this, NO_ACTION, "^" + ofName + "^", false) ;
+		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight, Color.valueOf(getLevelFontColor() + "75"), null, this, NO_ACTION, "" + level, false);
+		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, Color.valueOf(getLevelFontColor()), null, this, NO_ACTION, name, isAbstract);
 		header.nodeElements.add(metaclassLabel);
 		header.nodeElements.add(levelLabel);
 		header.nodeElements.add(nameLabel);
 
 		if ((!"".equals(parentString))) {
-			NodeLabel parentsLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 3, Color.valueOf(getLevelFontColor()), null, this, parentString, isAbstract);
+			NodeLabel parentsLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 3, Color.valueOf(getLevelFontColor()), null, this, NO_ACTION, parentString, isAbstract);
 			header.nodeElements.add(parentsLabel);
 		}
 
@@ -387,16 +389,18 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 		for (FmmlxAttribute att : ownAttributes) {
 			attY += lineHeight;
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.BLACK, null, att, att.getName() + ":" + att.type);
+			NodeLabel.Action changeAttNameAction = () -> {diagram.getActions().changeNameDialog(this, PropertyType.Attribute, att);};
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.BLACK, null, att, changeAttNameAction, att.getName() + ":" + att.type, false);
 			attBox.nodeElements.add(attLabel);
-			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.BLACK, att, att.level + "");
+			NodeLabel.Action changeAttLevelAction = () -> {diagram.getActions().changeLevelDialog(this, PropertyType.Attribute);};
+			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.BLACK, att, changeAttLevelAction, att.level + "", false);
 			attBox.nodeElements.add(attLevelLabel);
 		}
 		for (FmmlxAttribute att : otherAttributes) {
 			attY += lineHeight;
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, att.getName() + ":" + att.type + " (from " + diagram.getObjectById(att.owner).name + ")");
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, NO_ACTION, att.getName() + ":" + att.type + " (from " + diagram.getObjectById(att.owner).name + ")", false);
 			attBox.nodeElements.add(attLabel);
-			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.GRAY, att, att.level + "");
+			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.GRAY, att, NO_ACTION, att.level + "", false);
 			attBox.nodeElements.add(attLevelLabel);
 		}
 		currentY = yAfterAttBox;
@@ -413,16 +417,18 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 			nodeElements.addElement(opsBox);
 			for (FmmlxOperation o : ownOperations) {
 				opsY += lineHeight;
-				NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.BLACK, null, o, o.getName() + "():" + o.getType());
-				opsBox.nodeElements.add(attLabel);
-				NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.BLACK, o, o.getLevelString() + "");
-				opsBox.nodeElements.add(attLevelLabel);
+				NodeLabel.Action changeOpNameAction = () -> {diagram.getActions().changeNameDialog(this, PropertyType.Operation, o);};
+				NodeLabel opLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.BLACK, null, o, changeOpNameAction, o.getFullString(diagram), false);
+				opsBox.nodeElements.add(opLabel);
+				NodeLabel.Action changeOpLevelAction = () -> {diagram.getActions().changeLevelDialog(this, PropertyType.Operation);};
+				NodeLabel opLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.BLACK, o, changeOpLevelAction, o.getLevelString() + "", false);
+				opsBox.nodeElements.add(opLevelLabel);
 			}
 			for (FmmlxOperation o : otherOperations) {
 				opsY += lineHeight;
-				NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, o.getName() + "():" + o.getType() + " (from " + diagram.getObjectById(o.getOwner()).name + ")");
+				NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectById(o.getOwner()).name + ")", false);
 				opsBox.nodeElements.add(oLabel);
-				NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, o.getLevelString() + "");
+				NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "", false);
 				opsBox.nodeElements.add(oLevelLabel);
 			}
 		}
@@ -439,7 +445,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 			nodeElements.addElement(slotsBox);
 			for (FmmlxSlot s : slots) {
 				slotsY += lineHeight;
-				NodeLabel slotLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, slotsY, Color.BLACK, null, s, s.getName() + " = " + s.getValue());
+				NodeLabel.Action changeSlotValueAction = () -> {diagram.getActions().changeSlotValue(this, s);};
+				NodeLabel slotLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, slotsY, Color.BLACK, null, s, changeSlotValueAction, s.getName() + " = " + s.getValue(), false);
 				slotsBox.nodeElements.add(slotLabel);
 			}
 		}
@@ -456,7 +463,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 			nodeElements.addElement(opvBox);
 			for (FmmlxOperationValue opv : operationValues) {
 				opvY += lineHeight;
-				NodeLabel opvLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, opvY, Color.BLACK, null, opv, opv.getName() + " = " + opv.getValue());
+				NodeLabel opvLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, opvY, Color.BLACK, null, opv, NO_ACTION, opv.getName() + " = " + opv.getValue(), false);
 				opvBox.nodeElements.add(opvLabel);
 			}
 		}
@@ -468,6 +475,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 		this.width = (int) neededWidth;
 		this.height = (int) currentY;
+
+		handlePressedOnNodeElement(lastClick);
 	}
 
 	private boolean hasParents() {
@@ -475,46 +484,46 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	}
 
 	private double calculateNeededWidth(FmmlxDiagram diagram) {
-		double neededWidth = diagram.calculateTextWidth(name);
+		double neededWidth = FmmlxDiagram.calculateTextWidth(name);
 
 		if (of >= 0) {
-			neededWidth = Math.max(neededWidth, diagram.calculateTextWidth(getLevel() + "^" + diagram.getObjectById(of).name + "^") + 16);
+			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(getLevel() + "^" + diagram.getObjectById(of).name + "^") + 16);
 		} else {
-			neededWidth = Math.max(neededWidth, diagram.calculateTextWidth(getLevel() + "^MetaClass^") + 16);
+			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(getLevel() + "^MetaClass^") + 16);
 		}
 
 		//determine maximal width of attributes
 		for (FmmlxAttribute att : ownAttributes) {
-			neededWidth = Math.max(diagram.calculateTextWidth(att.name + ":" + att.type) + INST_LEVEL_WIDTH, neededWidth);
+			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ":" + att.type) + INST_LEVEL_WIDTH, neededWidth);
 		}
 		for (FmmlxAttribute att : otherAttributes) {
-			neededWidth = Math.max(diagram.calculateTextWidth(att.name + ":" + att.type + " (from " + diagram.getObjectById(att.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
+			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ":" + att.type + " (from " + diagram.getObjectById(att.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
 		}
 //		//determine maximal width of operations
 		if (showOperations) {
 			for (FmmlxOperation o : ownOperations) {
-				String text = o.name + "():" + o.type;
-				neededWidth = Math.max(diagram.calculateTextWidth(text) + INST_LEVEL_WIDTH, neededWidth);
+				String text = o.getFullString(diagram);
+				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(text) + INST_LEVEL_WIDTH, neededWidth);
 			}
 			for (FmmlxOperation o : otherOperations) {
-				neededWidth = Math.max(diagram.calculateTextWidth(o.name + "():" + o.type + " (from " + diagram.getObjectById(o.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
+				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + diagram.getObjectById(o.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
 			}
 		}
 		//determine maximal width of slots
 		if (showSlots && slots.size() > 0) {
 			for (FmmlxSlot slot : slots) {
-				neededWidth = Math.max(diagram.calculateTextWidth(slot.getName() + " = " + slot.getValue()), neededWidth);
+				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(slot.getName() + " = " + slot.getValue()), neededWidth);
 
 			}
 		}
 		if (showOperationValues) {
 			for (FmmlxOperationValue opValue : operationValues) {
-				neededWidth = Math.max(diagram.calculateTextWidth(opValue.getName() + " = " + opValue.getValue()), neededWidth);
+				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(opValue.getName() + " = " + opValue.getValue()), neededWidth);
 			}
 		}
 
 		if (hasParents()) {
-			neededWidth = Math.max(diagram.calculateTextWidth(getParentsListString(diagram)), neededWidth);
+			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(getParentsListString(diagram)), neededWidth);
 		}
 //
 //		//determine maximal width of operation values
@@ -546,15 +555,19 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	public void fetchDataDefinitions(FmmlxDiagramCommunicator comm) throws TimeOutException {
 		Vector<Vector<FmmlxAttribute>> attributeList = comm.fetchAttributes(diagram, this.name);
 		ownAttributes = attributeList.get(0);
+		Collections.sort(ownAttributes);
 		otherAttributes = attributeList.get(1);
+		Collections.sort(otherAttributes);
 		Vector<FmmlxOperation> operations = comm.fetchOperations(diagram, this.name);
 		ownOperations = new Vector<FmmlxOperation>();
 		otherOperations = new Vector<FmmlxOperation>();
 		for (FmmlxOperation o : operations) {
 			if (o.owner == this.id) {
 				ownOperations.add(o);
+				Collections.sort(ownOperations);
 			} else {
 				otherOperations.add(o);
+				Collections.sort(otherOperations);
 			}
 		}
 	}
@@ -671,8 +684,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	public void setOffsetAndStoreLastValidPosition(Point2D p) {
 		mouseMoveOffsetX = p.getX() - x;
 		mouseMoveOffsetY = p.getY() - y;
-		lastValidX = x;
-		lastValidY = y;
+//		lastValidX = x;
+//		lastValidY = y;
 	}
 
 	@Override public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
@@ -700,6 +713,36 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 	@Override
 	public void unHighlight() {	}
+	
+	public FmmlxProperty handlePressedOnNodeElement(Point2D relativePoint) {
+		if(relativePoint == null) return null;
+		if(!diagram.isSelected(this)) {
+			lastClick = null; return null;
+ 		}
+		lastClick = relativePoint;
+		NodeLabel hitLabel = getHitLabel(relativePoint);
+		if (hitLabel != null) {
+			if (hitLabel.getActionObject().getPropertyType() != PropertyType.Class) {
+				hitLabel.setSelected();
+				return hitLabel.getActionObject();
+			}
+		}
+		return null;
+	}
+
+	private NodeLabel getHitLabel(Point2D relativePoint) {
+		NodeLabel hitLabel = null;
+		for(NodeElement e : nodeElements) if(hitLabel == null) {
+			 hitLabel =  e.getHitLabel(relativePoint);//new Point2D(relativePoint.getX() - e.getX(), relativePoint.getY() - e.getY()));
+		}
+		return hitLabel;
+	}
+
+	public void performDoubleClickAction(Point2D p) {
+		if(p == null) return;
+		NodeLabel hitLabel = getHitLabel(p);
+		if(hitLabel != null) hitLabel.performDoubleClickAction();
+	}
 
 	public PaletteItem toPaletteItem(FmmlxDiagram fmmlxDiagram) {
 		PaletteTool tool = new ToolClass(fmmlxDiagram, getName(), getId()+"", getLevel(), isAbstract, "");	
