@@ -428,7 +428,7 @@ public class FmmlxDiagram {
 			diagramRequiresUpdate = false;
 			updateDiagram();
 		}
-		//redraw();
+		redraw();
 	}
 
 	private void triggerOverallReLayout() {
