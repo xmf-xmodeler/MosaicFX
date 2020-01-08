@@ -266,7 +266,6 @@ public class FmmlxDiagram {
 	}
 	
 	public void redraw() {
-		System.out.println("redraw");
 		if (suppressRedraw) {
 			return;}
 		if (objects.size() <= 0) {return;}
