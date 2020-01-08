@@ -409,7 +409,6 @@ public class FmmlxDiagram {
 	}
 
 	private void mouseReleased(MouseEvent e) {
-		System.out.println("release");
 		if(mouseMode == MouseMode.MULTISELECT) {
 			handleMultiSelect();
 		}
@@ -431,7 +430,7 @@ public class FmmlxDiagram {
 			diagramRequiresUpdate = false;
 			updateDiagram();
 		}
-		redraw();
+		//redraw();
 	}
 
 	private void triggerOverallReLayout() {
