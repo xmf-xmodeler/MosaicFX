@@ -315,6 +315,10 @@ public class FmmlxDiagramCommunicator {
 					(Integer) edgeInfoAsList.get(10), // level e->s
 					Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(11)), //mul s->e
 					Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(12)), //mul e->e
+					(Boolean) edgeInfoAsList.get(14), // visibility t->s
+					(Boolean) edgeInfoAsList.get(15), // visibility s->t
+					(Boolean) edgeInfoAsList.get(16), // symmetric
+					(Boolean) edgeInfoAsList.get(17), // transitive
 					labelPositions,
 					diagram 
 					//,(Integer) edgeInfoAsList.get(13), // sourceHead
@@ -605,6 +609,15 @@ public class FmmlxDiagramCommunicator {
 				new Value(assocId)};
 		WorkbenchClient.theClient().send(handler, "removeAssociation", message);
 	}
+	
+	public void setAssociationEndVisibility(FmmlxDiagram diagram, int assocId, boolean targetEnd, boolean newVisbility) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagram.getID()),
+				new Value(assocId),
+				new Value(targetEnd),
+				new Value(newVisbility)};
+		WorkbenchClient.theClient().send(handler, "setAssociationEndVisibility", message);
+	}
 
 	public void addAttribute(FmmlxDiagram diagram, int classID, String name, int level, String type, Multiplicity multi) {
 		Value[] message = new Value[]{
@@ -884,8 +897,7 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "updateAssociationInstance", message);
 	}
 
-	public void storeLabelInfo(FmmlxDiagram diagram, DiagramEdgeLabel l) {
-		
+	public void storeLabelInfo(FmmlxDiagram diagram, DiagramEdgeLabel l) {		
 		WorkbenchClient.theClient().send(handler, "storeLabelInfo",l.getInfo4XMF());
 		//xmfRequest(handler, "storeLabelInfo",l.getInfo4XMF());
 	}
@@ -1042,4 +1054,5 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "editEnum", message);
 		
 	}
+	
 }

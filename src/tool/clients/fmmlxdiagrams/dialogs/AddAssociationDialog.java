@@ -92,6 +92,7 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 		displayNameSource = new TextField();
 		identifierSource = new TextField();
 		sourceVisible = new CheckBox();
+		sourceVisible.setSelected(true);
 		isSymmetric = new CheckBox();
 		isTransitive = new CheckBox();
 		sourceNodes.add(startLabel);
@@ -121,6 +122,7 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 		displayNameTarget.setTooltip(new Tooltip(ToolTip.displayNameSource));
 		identifierTarget = new TextField();
 		targetVisible = new CheckBox();		
+		targetVisible.setSelected(true);
 		targetNodes.add(new Label(LabelAndHeaderTitle.end));
 		targetNodes.add(typeTarget);
 		targetNodes.add(instLevelTarget);
@@ -131,7 +133,6 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 		addNodesToGrid(labels, 0);
 		addNodesToGrid(sourceNodes, 1);
 		addNodesToGrid(targetNodes, 2);
-
 	}
 
 	private Node createMultiplicityBox(Multiplicity multiplicity) {

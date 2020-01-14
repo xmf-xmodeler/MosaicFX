@@ -8,11 +8,13 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.scene.transform.Affine;
+import kodkod.engine.bool.Int;
 import tool.clients.fmmlxdiagrams.PortRegion;
 
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Vector;
 
 public abstract class Edge implements CanvasElement {
@@ -34,7 +36,8 @@ public abstract class Edge implements CanvasElement {
 
 	protected boolean visible;
 
-	private Vector<Object> labelPositions;
+	private Vector<Object> labelPositions_OLD;
+	private HashMap<Integer, Point2D> labelPositions;
 
 	protected enum HeadStyle {
 		NO_ARROW, ARROW, FULL_TRIANGLE, CIRCLE;
@@ -46,7 +49,7 @@ public abstract class Edge implements CanvasElement {
 			PortRegion sourcePortRegion, PortRegion targetPortRegion,
 			Vector<Object> labelPositions, FmmlxDiagram diagram) {
 		layoutingFinishedSuccesfully = false;
-		this.labelPositions = labelPositions;
+		initLabelPositionMap(labelPositions);
 		this.id = id;
 		this.diagram = diagram;
 		this.sourceNode = startNode;
@@ -75,6 +78,7 @@ public abstract class Edge implements CanvasElement {
         endNode.addEdgeEnd(this.targetEnd, targetPortRegion);
 
 	}
+
 
 	private PortRegion determinePort(FmmlxObject node, Point2D nextPoint, PortRegion defaultRegion) {
 		if (nextPoint == null) {
@@ -623,16 +627,21 @@ public abstract class Edge implements CanvasElement {
 		return 0;
 	}
 
-	@SuppressWarnings("unchecked")
 	protected Point2D getLabelPosition(int localId) {
-		for (Object labelPositionO : labelPositions) {
+		return labelPositions.get(localId);
+	}
+
+	private void initLabelPositionMap(Vector<Object> labelPositions2) {
+		labelPositions = new HashMap<>();
+		for (Object labelPositionO : labelPositions2) {
+			@SuppressWarnings("unchecked")
 			Vector<Object> labelPosition = (Vector<Object>) labelPositionO;
 			int theirLocalId = (Integer) labelPosition.get(1);
-			if (theirLocalId == localId) {
-				return new Point2D((Float) labelPosition.get(2), (Float) labelPosition.get(3));
-			}
+			float x = (Float) labelPosition.get(2);
+			float y = (Float) labelPosition.get(3);
+			Point2D p = new Point2D(x, y);
+			labelPositions.put(theirLocalId, p);
 		}
-		return null;
 	}
 
 	@Override
@@ -680,5 +689,11 @@ public abstract class Edge implements CanvasElement {
 
 	public boolean isVisible() {
 		return true;
+	}
+
+
+	public void updatePosition(DiagramEdgeLabel del) {
+		labelPositions.put(del.localID, new Point2D(del.relativeX, del.relativeY));
+		
 	}
 }

@@ -181,7 +181,7 @@ public class FmmlxDiagram {
 //	public void setEnums(Vector<FmmlxEnum> enums) {
 //	}
 
-	private synchronized void fetchDiagramData() {
+	private void fetchDiagramData() {
 		if(suppressRedraw) {
 			System.err.println("\talready fetching diagram data");
 			return;
@@ -438,6 +438,7 @@ public class FmmlxDiagram {
 			}
 			for(Edge edge : edges) {
 				edge.align();
+				edge.layoutLabels();
 			}
 		}
 	}
@@ -459,7 +460,9 @@ public class FmmlxDiagram {
 
 					comm.sendCurrentPositions(this, (Edge) s);
 				} else if (s instanceof DiagramEdgeLabel) {
-					comm.storeLabelInfo(this, (DiagramEdgeLabel) s);
+					DiagramEdgeLabel del = (DiagramEdgeLabel) s;
+					del.owner.updatePosition(del);
+					comm.storeLabelInfo(this, del);
 				}
 		}
 		objectsMoved = false;
@@ -840,7 +843,20 @@ public class FmmlxDiagram {
 	}
 	
 	public void addLabel(DiagramEdgeLabel diagramLabel) {
-		labels.add(diagramLabel);
+		Integer index = null;
+		for(int i = 0; i < labels.size(); i++) {
+			DiagramEdgeLabel label = labels.get(i);
+			if(label.owner == diagramLabel.owner && label.localID == diagramLabel.localID) {
+				index = i;
+			}
+		}
+		if(index == null) {
+			labels.add(diagramLabel);
+		} else {
+			labels.set(index, diagramLabel);
+		}
+		
+		
 	}
 	
 	public Vector<FmmlxAssociation> findAssociations(FmmlxObject source, FmmlxObject target) {

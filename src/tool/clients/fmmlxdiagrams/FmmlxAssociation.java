@@ -49,6 +49,10 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			int levelEndToStart,
 			Multiplicity multiplicityStartToEnd,
 			Multiplicity multiplicityEndToStart,
+			boolean sourceFromTargetVisible,
+			boolean targetFromSourceVisible,
+			boolean symmetric,
+			boolean transitive,
 			Vector<Object> labelPositions,
 			FmmlxDiagram diagram) {
 
@@ -66,59 +70,87 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 //		layout();
 	}
 	
-	private enum Anchor {SOURCE,CENTRE,TARGET};
+	private enum Anchor {CENTRE_MOVABLE, SOURCE_LEVEL, TARGET_LEVEL, SOURCE_MULTI, TARGET_MULTI};
 
 	@Override protected void layoutLabels() {
-		createLabel(name, 0, Anchor.CENTRE, showChangeFwNameDialog, 0, BLACK, TRANSPARENT);
-		if(reverseName != null) 
-	    createLabel(reverseName, 1, Anchor.CENTRE, showChangeRvNameDialog, -20, BLACK, TRANSPARENT);
-		createLabel(accessNameStartToEnd, 2, Anchor.TARGET, showChangeS2ENameDialog, 0, BLACK, TRANSPARENT);
-		createLabel(accessNameEndToStart, 3, Anchor.SOURCE, showChangeE2SNameDialog, 0, BLACK, TRANSPARENT);
-		createLabel(""+levelStartToEnd, 4, Anchor.TARGET, showChangeS2ELevelDialog, -20, WHITE, BLACK);
-		createLabel(""+levelEndToStart, 5, Anchor.SOURCE, showChangeE2SLevelDialog, -20, WHITE, BLACK);
-		createLabel(multiplicityStartToEnd.toString(), 6, Anchor.TARGET, showChangeS2EMultDialog, -40, BLACK, TRANSPARENT);
-		createLabel(multiplicityEndToStart.toString(), 7, Anchor.SOURCE, showChangeE2SMultDialog, -40, BLACK, TRANSPARENT);
+		createLabel(name, 0, Anchor.CENTRE_MOVABLE, showChangeFwNameDialog, 0, BLACK, TRANSPARENT);
+//		if(reverseName != null) 
+//	    createLabel(reverseName, 1, Anchor.CENTRE, showChangeRvNameDialog, -20, BLACK, TRANSPARENT);
+		createLabel(""+levelStartToEnd, 2, Anchor.TARGET_LEVEL, showChangeS2ELevelDialog, 0, WHITE, BLACK);
+		createLabel(""+levelEndToStart, 3, Anchor.SOURCE_LEVEL, showChangeE2SLevelDialog, 0, WHITE, BLACK);
+		createLabel(multiplicityStartToEnd.toString(), 4, Anchor.TARGET_MULTI, showChangeS2EMultDialog, 0, BLACK, TRANSPARENT);
+		createLabel(multiplicityEndToStart.toString(), 5, Anchor.SOURCE_MULTI, showChangeE2SMultDialog, 0, BLACK, TRANSPARENT);
 		layoutingFinishedSuccesfully = true;
 	}
 	
-	
-
 	private void createLabel(String value, int localId, Anchor anchor, Runnable action, int yDiff, Color textColor, Color bgColor) {
-		Point2D storedPostion = getLabelPosition(localId);
-		
 		double w = FmmlxDiagram.calculateTextWidth(value);
 		double h = FmmlxDiagram.calculateTextHeight();
 		
-		Vector<FmmlxObject> anchors = new Vector<>();
-		if(anchor!=Anchor.TARGET) anchors.add(getSourceNode());
-		if(anchor!=Anchor.SOURCE) anchors.add(getTargetNode());
-		
-		if(storedPostion != null) {
-			diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, storedPostion.getX(), storedPostion.getY(), w, h, textColor, bgColor));
+		if(Anchor.CENTRE_MOVABLE == anchor) {
+			Point2D storedPostion = getLabelPosition(localId);
+			Vector<FmmlxObject> anchors = new Vector<>();
+			anchors.add(getSourceNode());
+			anchors.add(getTargetNode());
+			if(storedPostion != null) {
+				diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, storedPostion.getX(), storedPostion.getY(), w, h, textColor, bgColor));
+			} else {
+				diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, 0, -h*1.5, w, h, textColor, bgColor));
+			}
 		} else {
-			double boxHeight = anchor==Anchor.CENTRE?-20:
-				(anchor==Anchor.SOURCE?sourceNode:targetNode).getHeight()/2;
-			diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, 50, -boxHeight-30+yDiff, w, h, textColor, bgColor));
+			Vector<FmmlxObject> anchors = new Vector<>();
+			double x,y;
+			Point2D p;
+			PortRegion dir;
+			if(anchor == Anchor.SOURCE_LEVEL || anchor == Anchor.SOURCE_MULTI) {
+				p = getSourceNode().getPointForEdge(sourceEnd, true);
+				dir = getSourceNode().getDirectionForEdge(sourceEnd, true); 
+				anchors.add(getSourceNode());
+			} else {
+				p = getTargetNode().getPointForEdge(targetEnd, false);
+				dir = getTargetNode().getDirectionForEdge(targetEnd, false); 
+				anchors.add(getTargetNode());
+			}
+			FmmlxObject node = anchors.firstElement();
+
+			final double TEXT_X_DIFF = 10;
+			final double TEXT_Y_DIFF = 10;
+			switch(anchor) {
+			case SOURCE_LEVEL:
+			case TARGET_LEVEL: {
+				if(dir == PortRegion.SOUTH) {
+					y = TEXT_Y_DIFF;
+				} else {
+					y = -TEXT_Y_DIFF-h;
+				}
+				if(dir == PortRegion.EAST) {
+					x = TEXT_X_DIFF;
+				} else {
+					x = -TEXT_X_DIFF - w;
+				}
+				break;}
+			case SOURCE_MULTI: 
+			case TARGET_MULTI: {
+				if(dir == PortRegion.NORTH) {
+					y = -TEXT_Y_DIFF-h;
+				} else {
+					y = TEXT_Y_DIFF;
+				}
+				if(dir == PortRegion.WEST) {
+					x = -TEXT_X_DIFF - w;
+				} else {
+					x = TEXT_X_DIFF;
+				}
+				break;}
+			default: {x=0;y=0;break;}
+			}
+			diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, 
+					p.getX() - node.getCenterX() + x, 
+					p.getY() - node.getCenterY() + y, 
+					w, h, textColor, bgColor));
 		}
 	}
 	
-	///////////////////////////////////////////////////////////////////////////
-	private void createAssociationInformationLabels(String value, int localId, Runnable action) {
-		Point2D storedPostion = getLabelPosition(localId);
-		
-		double w = FmmlxDiagram.calculateTextWidth(value);
-		double h = FmmlxDiagram.calculateTextHeight();
-		
-		if(storedPostion != null) {
-			//TODO create information container ([informationen])
-			
-		} else {
-			//TODO
-		}
-	}
-	///////////////////////////////////////////////////////////////////////////
-
-
 	@Override
 	public String getName() {
 		return name;
