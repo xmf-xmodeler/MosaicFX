@@ -11,15 +11,15 @@ import xos.Value;
 
 public class DiagramEdgeLabel implements CanvasElement {
 	
-	private final Edge owner;
-	private final int localID;
+	final Edge owner;
+	final int localID;
 	private final Runnable action;
 	private final String text;
 	private final ContextMenu menu;
 //	private double x; 
 //	private double y;
-	private double relativeX;
-	private double relativeY;
+	public double relativeX;
+	public double relativeY;
 	private double width;
 	private double height;
 	private Vector<FmmlxObject> anchors;
