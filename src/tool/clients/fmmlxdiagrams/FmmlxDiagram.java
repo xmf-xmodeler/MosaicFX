@@ -83,6 +83,9 @@ public class FmmlxDiagram {
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
 	private boolean showSlots = true;
+	private boolean showGetterAndSetter = true;
+	private boolean showDerivedOperations=true;
+	private boolean showDerivedAttributes=true;
 	
 	private final int diagramID;
 	private transient boolean suppressRedraw;
@@ -949,10 +952,14 @@ public class FmmlxDiagram {
 	public void setShowOperations(boolean show) {this.showOperations = show;}	
 	public void setShowOperationValues(boolean show) {this.showOperationValues = show;}	
 	public void setShowSlots(boolean show) {this.showSlots = show;}
+	public void setShowGettersAndSetters(boolean show) {this.showGetterAndSetter = show;}
+	public void setShowDerivedOperations(boolean show) {this.showDerivedOperations = show;}
+	public void setShowDerivedAttributes(boolean show) {this.showDerivedAttributes = show;}
 	
 	public boolean isShowOperations() {return this.showOperations;}	
 	public boolean isShowOperationValues() {return this.showOperationValues;}	
 	public boolean isShowSlots() {return this.showSlots;}
+	public boolean isShowGetterAndSetter(boolean show) {return this.showGetterAndSetter;}
 
 	public int getID() {
 		return diagramID;
@@ -1067,4 +1074,5 @@ public class FmmlxDiagram {
 			}
 		return typePath;
 	}
+
 }
