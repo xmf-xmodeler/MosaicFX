@@ -15,10 +15,7 @@ import javafx.util.StringConverter;
 import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
-import tool.clients.fmmlxdiagrams.EnumElement;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class CustomDialog<R> extends Dialog<R> {
