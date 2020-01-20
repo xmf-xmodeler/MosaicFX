@@ -133,7 +133,7 @@ public class FmmlxDiagram {
 			e.printStackTrace();
 		}
 
-		redraw();
+		//redraw();
 		
 		java.util.Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -221,12 +221,12 @@ public class FmmlxDiagram {
 			resizeCanvas();
 			
 	//		System.err.println("allowRedraw");
-			redraw();
+	//		redraw();
 		} catch (TimeOutException e) {
 			e.printStackTrace();
 		}
 		suppressRedraw = false;
-		//redraw();
+		redraw();
 
 		newFmmlxPalette.update();
 	}
@@ -339,7 +339,7 @@ public class FmmlxDiagram {
 			handleRightClick(e);
 		}
 		setMouseOffset(p);
-		redraw();
+		//redraw();
 	}
 
 	private void mouseDragged(MouseEvent e) {

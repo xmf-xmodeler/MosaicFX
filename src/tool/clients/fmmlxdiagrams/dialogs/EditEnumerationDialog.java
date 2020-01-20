@@ -6,10 +6,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
-
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -148,7 +147,7 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 		editorNode.add(joinNodeElementInHBox(addItemButton, removeItemButton));
 		  
 		addItemButton.setOnAction(e -> addElement(chooseEnumComboBox.getSelectionModel().getSelectedItem(),inputElementListview));
-		removeItemButton.setOnAction(e ->removeElement(inputElementListview.getSelectionModel().getSelectedItem()));
+		removeItemButton.setOnAction(e ->removeElement(inputElementListview.getSelectionModel().getSelectedItem(),inputElementListview));
 		changeNameButton.setOnAction(e -> chageEnumNameDialog(chooseEnumComboBox.getSelectionModel().getSelectedItem()));  
 		  
 		addNodesToGrid(labelNode,0); addNodesToGrid(editorNode, 1);
@@ -172,14 +171,28 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 		return FXCollections.observableArrayList(enums);
 	}
 	
-	private void removeElement(String string) {
+	private void removeElement(String string, ListView<String> list) {
 		if(chooseEnumComboBox.getSelectionModel().getSelectedItem()!=null) {
-			//inputElementListview.getItems().removeAll(string);
-			try {
-				diagram.getComm().removeEnumerationItem(this.diagram, chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), string);
-			} catch (TimeOutException e) {
-				e.printStackTrace();
-			}
+			
+			list.getItems().remove(string);
+			Task<Void> task = new Task<Void>() {
+
+				@Override
+				protected Void call() throws Exception {
+					try {
+						
+						diagram.getComm().removeEnumerationItem(diagram, chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), string);
+						diagram.updateEnums();
+					} catch (TimeOutException e) {
+						e.printStackTrace();
+					}
+					return null;
+				}
+
+			};
+			
+			new Thread(task).start();
+			
 //			for(String itemToBeRemoved : observableList) {
 //				diagram.getComm().removeEnumerationItem(
 //						diagram, 
@@ -201,18 +214,27 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 				AddEnumElementDialogResult result = opt.get();
 
 				list.getItems().add(result.getName());
-				this.close();
+				dlg.close();
 				
-				Platform.runLater(()->{try { 
-				        diagram.getComm().addEnumerationItem(
-						diagram, 
-						chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), 
-						result.getName());
-				} catch (TimeOutException e) {
-					e.printStackTrace();
-				}});
-			
-//				diagram.updateEnums();
+				Task<Void> task = new Task<Void>() {
+
+					@Override
+					protected Void call() throws Exception {
+						try { 
+					        diagram.getComm().addEnumerationItem(
+							diagram, 
+							chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), 
+							result.getName());
+					        diagram.updateEnums();
+					} catch (TimeOutException e) {
+						e.printStackTrace();
+					}
+						return null;
+					}
+				};
+				
+				new Thread(task).start();		
+				
 //				
 //				inputElementListview.getItems().addAll(diagram.getEnum(selectedEnum.getName()).getItems());
 			}

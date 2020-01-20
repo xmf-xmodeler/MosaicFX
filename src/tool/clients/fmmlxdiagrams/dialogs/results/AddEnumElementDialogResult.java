@@ -4,7 +4,7 @@ import tool.clients.fmmlxdiagrams.EnumElement;
 
 public class AddEnumElementDialogResult extends DialogResult{
 
-	String name;
+	private String name;
 	
 	public AddEnumElementDialogResult(String name) {
 		super();
@@ -12,12 +12,10 @@ public class AddEnumElementDialogResult extends DialogResult{
 	}
 
 	public EnumElement convertToElement() {
-		// TODO Auto-generated method stub
 		return new EnumElement(name);
 	}
 
 	public String getName() {
-		// TODO Auto-generated method stub
 		return name;
 	}
 
