@@ -228,8 +228,7 @@ public class FmmlxDiagram {
 		suppressRedraw = false;
 		//redraw();
 
-		newFmmlxPalette.clearAllGroup();
-		newFmmlxPalette.populate();
+		newFmmlxPalette.update();
 	}
 
 	// This operation resets the size of the canvas when needed

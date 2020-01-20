@@ -390,7 +390,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		for (FmmlxAttribute att : ownAttributes) {
 			attY += lineHeight;
 			NodeLabel.Action changeAttNameAction = () -> {diagram.getActions().changeNameDialog(this, PropertyType.Attribute, att);};
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.BLACK, null, att, changeAttNameAction, att.getName() + ":" + att.type, false);
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.BLACK, null, att, changeAttNameAction, att.getName() + ":" + att.type +"["+ att.getMultiplicity() + "]" , false);
 			attBox.nodeElements.add(attLabel);
 			NodeLabel.Action changeAttLevelAction = () -> {diagram.getActions().changeLevelDialog(this, PropertyType.Attribute);};
 			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.BLACK, att, changeAttLevelAction, att.level + "", false);
@@ -398,7 +398,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		}
 		for (FmmlxAttribute att : otherAttributes) {
 			attY += lineHeight;
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, NO_ACTION, att.getName() + ":" + att.type + " (from " + diagram.getObjectById(att.owner).name + ")", false);
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, NO_ACTION, att.getName() + ":" + att.type +"["+ att.getMultiplicity() + "]" + " (from " + diagram.getObjectById(att.owner).name + ")", false);
 			attBox.nodeElements.add(attLabel);
 			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.GRAY, att, NO_ACTION, att.level + "", false);
 			attBox.nodeElements.add(attLevelLabel);
@@ -494,10 +494,10 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 		//determine maximal width of attributes
 		for (FmmlxAttribute att : ownAttributes) {
-			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ":" + att.type) + INST_LEVEL_WIDTH, neededWidth);
+			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ":" + att.type +"["+ att.getMultiplicity() + "]") + INST_LEVEL_WIDTH, neededWidth);
 		}
 		for (FmmlxAttribute att : otherAttributes) {
-			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ":" + att.type + " (from " + diagram.getObjectById(att.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
+			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ":" + att.type +"["+ att.getMultiplicity() + "]" + " (from " + diagram.getObjectById(att.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
 		}
 //		//determine maximal width of operations
 		if (showOperations) {

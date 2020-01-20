@@ -309,14 +309,14 @@ public class FmmlxDiagramCommunicator {
 					startRegion, endRegion,
 					(String) edgeInfoAsList.get(5), // name 1
 					(String) edgeInfoAsList.get(6), // name 2
-					(String) edgeInfoAsList.get(7), // name 3
-					(String) edgeInfoAsList.get(8), // name 4
-					(Integer) edgeInfoAsList.get(9), // level s->e
-					(Integer) edgeInfoAsList.get(10), // level e->s
-					Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(11)), //mul s->e
-					Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(12)), //mul e->e
-					(Boolean) edgeInfoAsList.get(14), // visibility t->s
-					(Boolean) edgeInfoAsList.get(15), // visibility s->t
+					(String) edgeInfoAsList.get(7), // name source->target
+					(String) edgeInfoAsList.get(8), // name target->source
+					(Integer) edgeInfoAsList.get(9), // level source->target
+					(Integer) edgeInfoAsList.get(10), // level target->source
+					Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(11)), //mul source->target
+					Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(12)), //mul target->source
+					(Boolean) edgeInfoAsList.get(14), // visibility target->source
+					(Boolean) edgeInfoAsList.get(15), // visibility source->target
 					(Boolean) edgeInfoAsList.get(16), // symmetric
 					(Boolean) edgeInfoAsList.get(17), // transitive
 					labelPositions,
@@ -389,7 +389,7 @@ public class FmmlxDiagramCommunicator {
 					(Integer) attInfo.get(2),
 					(String) attInfo.get(1),
 					(Integer) attInfo.get(4),
-					null);
+					Multiplicity.parseMultiplicity((Vector<Object>) attInfo.get(3)));
 			resultOwn.add(object);
 		}
 		for (Object o : otherAttList) {
@@ -399,7 +399,7 @@ public class FmmlxDiagramCommunicator {
 					(Integer) attInfo.get(2),
 					(String) attInfo.get(1),
 					(Integer) attInfo.get(4),
-					null);
+					Multiplicity.parseMultiplicity((Vector<Object>) attInfo.get(3)));
 			resultOther.add(object);
 		}
 		Vector<Vector<FmmlxAttribute>> result = new Vector<>();

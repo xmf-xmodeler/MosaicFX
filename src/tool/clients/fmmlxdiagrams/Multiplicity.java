@@ -42,7 +42,9 @@ public class Multiplicity {
 
 	@Override
 	public String toString() {
-		return ((ordered ? "$" : "") + min + ".." + (upperLimit ? max : "*"));
+		return (ordered && max >= 2 ? "$" : "") 
+				+ min 
+				+ (min == max?"":(".." + (upperLimit ? max : "*")));
 //		return (max > 2 ? duplicates ? "[" : "{" : "") + (ordered ? "$" : "") + min + ".." + (upperLimit ? max : "*") + (max > 2 ? duplicates ? "]" : "}" : "");
 	}
 

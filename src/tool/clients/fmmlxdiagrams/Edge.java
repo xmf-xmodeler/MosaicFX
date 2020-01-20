@@ -297,7 +297,6 @@ public abstract class Edge implements CanvasElement {
 	
 
 	public HeadStyle getTargetDecoration() {
-
 		return HeadStyle.ARROW;
 	}
 

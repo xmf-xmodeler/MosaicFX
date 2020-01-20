@@ -1,11 +1,9 @@
 package tool.clients.fmmlxdiagrams;
 
 import javafx.geometry.Point2D;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.paint.Color;
-import tool.clients.fmmlxdiagrams.Edge.HeadStyle;
 import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
@@ -25,8 +23,10 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	private Integer levelEndToStart;
 	private Multiplicity multiplicityStartToEnd;
 	private Multiplicity multiplicityEndToStart;
-	protected boolean sourceVisible;
-	protected boolean targetVisible;
+	protected boolean sourceFromTargetVisible;
+	protected boolean targetFromSourceVisible;
+	protected boolean symmetric;
+	protected boolean transitive;
 
 	HeadStyle sourceHead; 
 	HeadStyle targetHead;
@@ -66,6 +66,10 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		this.levelEndToStart = levelEndToStart;
 		this.multiplicityStartToEnd = multiplicityStartToEnd;
 		this.multiplicityEndToStart = multiplicityEndToStart;
+		this.sourceFromTargetVisible = sourceFromTargetVisible;
+		this.targetFromSourceVisible = targetFromSourceVisible;
+		this.symmetric = symmetric;
+		this.transitive = transitive;
 		
 //		layout();
 	}
@@ -201,12 +205,12 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		return multiplicityEndToStart;
 	}
 
-	public boolean getTargetVisible() {
-		return targetVisible;
+	public boolean isTargetVisible() {
+		return targetFromSourceVisible;
 	}
 
-	public boolean getSourceVisible() {
-		return sourceVisible;
+	public boolean isSourceVisible() {
+		return sourceFromTargetVisible;
 	}
 
 	public String toPair() {
@@ -247,8 +251,6 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			diagram.updateDiagram();
 		}
 	};
-
-	private Runnable showChangeRvNameDialog = null;
 	
 	private Runnable showChangeS2ELevelDialog = () -> {
 		TextInputDialog td = new TextInputDialog(levelStartToEnd+"");
@@ -320,7 +322,14 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	
 	@Override
 	public HeadStyle getTargetDecoration() {
-		
-		return HeadStyle.ARROW;
+		return targetFromSourceVisible?HeadStyle.ARROW:HeadStyle.NO_ARROW;
 	}
+	
+	@Override
+	public HeadStyle getSourceDecoration() {
+		return sourceFromTargetVisible?HeadStyle.ARROW:HeadStyle.NO_ARROW;
+	}
+
+	public boolean isSymmetric() {return symmetric;}
+	public boolean isTransitive() {return transitive;}
 }
