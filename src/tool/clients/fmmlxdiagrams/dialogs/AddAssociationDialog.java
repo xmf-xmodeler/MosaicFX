@@ -39,6 +39,8 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 	private CheckBox targetVisible;
 	private CheckBox isSymmetric;
 	private CheckBox isTransitive;
+	private MultiplicityBox sourceMultiplicityBox;
+	private MultiplicityBox targetMultiplicityBox;
 
 	public AddAssociationDialog(FmmlxDiagram diagram, FmmlxObject source, FmmlxObject target) {
 		this.diagram = diagram;
@@ -71,7 +73,6 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 		labels.add(new Label(LabelAndHeaderTitle.symmetric));
 		labels.add(new Label(LabelAndHeaderTitle.transitive));
 
-
 		List<Node> sourceNodes = new ArrayList<>();
 
 		typeSource = (ComboBox<FmmlxObject>) initializeComboBox(diagram.getAllPossibleParentList());
@@ -100,7 +101,8 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 		sourceNodes.add(instLevelSource);
 		sourceNodes.add(displayNameSource);
 		sourceNodes.add(identifierSource);
-		sourceNodes.add(createMultiplicityBox(multiplicitySource));
+		sourceMultiplicityBox = new MultiplicityBox(multiplicitySource);
+		sourceNodes.add(sourceMultiplicityBox);
 		sourceNodes.add(sourceVisible);
 		sourceNodes.add(isSymmetric);
 		sourceNodes.add(isTransitive);
@@ -128,27 +130,28 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 		targetNodes.add(instLevelTarget);
 		targetNodes.add(displayNameTarget);
 		targetNodes.add(identifierTarget);
-		targetNodes.add(createMultiplicityBox(multiplicityTarget));
+		targetMultiplicityBox = new MultiplicityBox(multiplicityTarget);
+		targetNodes.add(targetMultiplicityBox);
 		targetNodes.add(targetVisible);
 		addNodesToGrid(labels, 0);
 		addNodesToGrid(sourceNodes, 1);
 		addNodesToGrid(targetNodes, 2);
 	}
 
-	private Node createMultiplicityBox(Multiplicity multiplicity) {
-		HBox multiplicityBox = new HBox();
-		multiplicityBox.setPrefWidth(COLUMN_WIDTH);
-		TextField textField = new TextField(multiplicity.toString());
-		textField.setDisable(true);
-		textField.setPrefWidth(COLUMN_WIDTH * 0.7);
-		Button sourceMultiplicityButton = new Button(LabelAndHeaderTitle.change);
-		sourceMultiplicityButton.setOnAction(e -> showMultiplicityDialog(multiplicity, textField));
-		sourceMultiplicityButton.setPrefWidth(COLUMN_WIDTH * 0.3);
-
-		multiplicityBox.getChildren().addAll(textField, sourceMultiplicityButton);
-
-		return multiplicityBox;
-	}
+//	private Node createMultiplicityBox(Multiplicity multiplicity) {
+//		HBox multiplicityBox = new HBox();
+//		multiplicityBox.setPrefWidth(COLUMN_WIDTH);
+//		TextField textField = new TextField(multiplicity.toString());
+//		textField.setDisable(true);
+//		textField.setPrefWidth(COLUMN_WIDTH * 0.7);
+//		Button sourceMultiplicityButton = new Button(LabelAndHeaderTitle.change);
+//		sourceMultiplicityButton.setOnAction(e -> showMultiplicityDialog(multiplicity, textField));
+//		sourceMultiplicityButton.setPrefWidth(COLUMN_WIDTH * 0.3);
+//
+//		multiplicityBox.getChildren().addAll(textField, sourceMultiplicityButton);
+//
+//		return multiplicityBox;
+//	}
 
 	private void showMultiplicityDialog(Multiplicity multiplicity, TextField textField) {
 		MultiplicityDialog dlg = new MultiplicityDialog(multiplicity);
@@ -222,8 +225,8 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 						displayNameTarget.getText(),
 						identifierSource.getText(),
 						identifierTarget.getText(),
-						multiplicitySource,
-						multiplicityTarget,
+						sourceMultiplicityBox.getMultiplicity(),
+						targetMultiplicityBox.getMultiplicity(),
 						sourceVisible.isSelected(),
 						targetVisible.isSelected(),
 						isSymmetric.isSelected(),

@@ -17,14 +17,25 @@ public class EditAssociationDialogResult extends DialogResult {
 	private String newIdentifierTarget;
 	private Multiplicity multiplicitySource;
 	private Multiplicity multiplicityTarget;
+	private boolean sourceVisibleFromTarget;
+	private boolean targetVisibleFromSource;
+	private boolean symmetric;
+	private boolean transitive;
 
 
-	public EditAssociationDialogResult(FmmlxAssociation selectedAssociation, FmmlxObject object, FmmlxObject target, Integer newInstLevelSource,
-			Integer newInstLevelTarget, String newDisplayNameSource, String newDisplayNameTarget, String newIdentifierSource, String newIdentifierTarget,
-			Multiplicity multiplicitySource, Multiplicity multiplicityTarget) {
+
+	public EditAssociationDialogResult(FmmlxAssociation selectedAssociation, FmmlxObject source, FmmlxObject target, 
+			Integer newInstLevelSource, Integer  newInstLevelTarget, 
+			String  newDisplayNameSource, String newDisplayNameTarget, 			
+			String  newIdentifierSource, String  newIdentifierTarget,		
+			Multiplicity multiplicitySource, Multiplicity multiplicityTarget,		
+			boolean sourceVisibleFromTarget,
+			boolean targetVisibleFromSource,
+			boolean symmetric,
+			boolean transitive) {
 		
 		this.selectedAssociation = selectedAssociation;
-		this.source = object;
+		this.source = source;
 		this.target = target;
 		this.newInstLevelSource = newInstLevelSource;
 		this.newInstLevelTarget = newInstLevelTarget;
@@ -34,10 +45,14 @@ public class EditAssociationDialogResult extends DialogResult {
 		this.newIdentifierTarget = newIdentifierTarget;
 		this.multiplicitySource = multiplicitySource;
 		this.multiplicityTarget = multiplicityTarget;
+		this.sourceVisibleFromTarget = sourceVisibleFromTarget;
+		this.targetVisibleFromSource = targetVisibleFromSource;
+		this.symmetric = symmetric;
+		this.transitive = transitive;
 	}
 
 
-	public FmmlxAssociation getSelectedAssociation() {
+	public FmmlxAssociation getAssociation() {
 		return selectedAssociation;
 	}
 
@@ -91,6 +106,23 @@ public class EditAssociationDialogResult extends DialogResult {
 		return multiplicityTarget;
 	}
 	
-	
 
+	public boolean isSourceVisibleFromTarget() {
+		return sourceVisibleFromTarget;
+	}
+
+
+	public boolean isTargetVisibleFromSource() {
+		return targetVisibleFromSource;
+	}
+
+
+	public boolean isSymmetric() {
+		return symmetric;
+	}
+
+
+	public boolean isTransitive() {
+		return transitive;
+	}
 }
