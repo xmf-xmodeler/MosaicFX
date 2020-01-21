@@ -15,7 +15,9 @@ import javafx.application.Platform;
 import javafx.beans.binding.SetBinding;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.SetChangeListener;
 import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.control.SelectionModel;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -101,6 +103,8 @@ public class NewFmmlxPalette {
 			protected void updateItem(PaletteTool item, boolean empty) {
 				super.updateItem(item, empty);
 				
+
+				
 				Vector<Integer> textColorInt = new Vector<Integer>(Arrays.asList(2, 3, 4, 5));
 				
 				if (empty || item == null || item.getLabel() == null) {
@@ -166,8 +170,7 @@ public class NewFmmlxPalette {
 	        		TreeItem<PaletteTool> newValue) {
 	        	
 	        	if(newValue == null) return;
-	        	
-	        	
+	        
 	            if(newValue.getChildren().isEmpty()) {
 	            	TreeItem<PaletteTool> parent = newValue.getParent();
 	            	if(parent instanceof PaletteGroup) {
