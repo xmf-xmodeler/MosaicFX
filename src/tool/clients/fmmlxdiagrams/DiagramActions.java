@@ -618,8 +618,6 @@ public class DiagramActions {
 	}
 
 	public void editAssociationDialog(final FmmlxAssociation association) {
-//		CountDownLatch latch = new CountDownLatch(1);
-
 		Platform.runLater(() -> {
 			EditAssociationDialog dlg = new EditAssociationDialog(diagram, association);
 			Optional<EditAssociationDialogResult> opt = dlg.showAndWait();
@@ -628,11 +626,9 @@ public class DiagramActions {
 				final EditAssociationDialogResult result = opt.get();
 				
 				if(result.getAssociation().isSourceVisible() != result.isSourceVisibleFromTarget()) {
-					System.err.println("isSourceVisible:" + result.getAssociation().isSourceVisible() + "--> " + result.isSourceVisibleFromTarget());
 					diagram.getComm().setAssociationEndVisibility(diagram, result.getAssociation().id, false, result.isSourceVisibleFromTarget());				
 				}
 				if(result.getAssociation().isTargetVisible() != result.isTargetVisibleFromSource()) {
-					System.err.println("isTargetVisible:" + result.getAssociation().isTargetVisible() + "--> " + result.isTargetVisibleFromSource());
 					diagram.getComm().setAssociationEndVisibility(diagram, result.getAssociation().id, true, result.isTargetVisibleFromSource());				
 				}
 				
@@ -668,15 +664,8 @@ public class DiagramActions {
 					diagram.getComm().changeAssociationForwardName(diagram, result.getAssociation().id, result.getNewDisplayNameSource());
 				}
 					
-//				diagram.getComm().editAssociation(diagram, result.getAssociation().getId(),
-//						result.getSource(), result.getTarget(),
-//						result.getNewInstLevelSource(), result.getNewInstLevelTarget(),
-//						result.getNewDisplayNameSource(), result.getNewDisplayNameTarget(),
-//						result.getNewIdentifierSource(), result.getNewIdentifierTarget(),
-//						result.getMultiplicitySource(), result.getMultiplicityTarget());
 				diagram.updateDiagram();
 			}
-//			latch.countDown();
 		});
 	}
 

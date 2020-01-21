@@ -50,7 +50,7 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				return new MultiplicityDialogResult(
 						getComboBoxIntegerValue(minimumComboBox),
-						getComboBoxIntegerValue(maximumComboBox),
+						isUpperLimitCheckBox.isSelected()?getComboBoxIntegerValue(maximumComboBox):Integer.MAX_VALUE,
 						isUpperLimitCheckBox.isSelected(),
 						orderedCheckBox.isSelected(),
 						duplicatesCheckBox.isSelected());
@@ -70,9 +70,14 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 		minimumComboBox.setValue(oldMultiplicity.min);
 
 		maximumComboBox = new ComboBox<>();
-		if(oldMultiplicity.upperLimit) maximumComboBox.setValue(oldMultiplicity.max);
 		maximumComboBox.setEditable(true);
 		maximumComboBox.setConverter(new IntegerStringConverter());
+		if(oldMultiplicity.upperLimit) {
+			maximumComboBox.setValue(oldMultiplicity.max);
+		} else {
+			maximumComboBox.setValue(0);
+			maximumComboBox.setDisable(true);
+		}
 		minimumComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue != null) {
 				maximumComboBox.setItems(ValueList.getValueInterval(newValue));

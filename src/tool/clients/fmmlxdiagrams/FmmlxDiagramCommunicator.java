@@ -1007,7 +1007,6 @@ public class FmmlxDiagramCommunicator {
 		Vector<Object> result = xmfRequest(handler, diagram, "addEnumerationValue", new Value[]{
 				new Value(enumName),
 				new Value(newEnumValueName)});
-		System.err.println(result);
 		showErrorMessage(result);
 	}
 
