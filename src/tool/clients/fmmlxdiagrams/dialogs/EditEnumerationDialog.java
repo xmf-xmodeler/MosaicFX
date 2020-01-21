@@ -179,8 +179,7 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 
 				@Override
 				protected Void call() throws Exception {
-					try {
-						
+					try {				
 						diagram.getComm().removeEnumerationItem(diagram, chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), string);
 						diagram.updateEnums();
 					} catch (TimeOutException e) {

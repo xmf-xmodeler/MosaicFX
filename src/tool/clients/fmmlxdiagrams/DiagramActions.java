@@ -81,6 +81,8 @@ public class DiagramActions {
 
 				if (x > 0 && y > 0) {
 					diagram.getComm().addMetaClass(diagram, mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentIds(), mcdResult.isAbstract(), x, y);	
+
+					
 					diagram.updateDiagram();
 				}
 			
@@ -141,6 +143,7 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				final AddInstanceDialogResult aidResult = result.get();
+				
 
 				int x = (int) e.getX();
 				int y = (int) e.getY();

@@ -7,6 +7,7 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Cursor;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
@@ -170,11 +171,13 @@ public class FmmlxDiagram {
 	public void setEdgeCreationType(String edgeCreationType) {
 		this.edgeCreationType = edgeCreationType;
 		this.nodeCreationType= null;
+		getCanvas().setCursor(Cursor.CROSSHAIR);
 	}
 	
 	public void setNodeCreationType(String nodeCreationType) {
 		this.nodeCreationType = nodeCreationType;
 		this.edgeCreationType = null;
+		getCanvas().setCursor(Cursor.CROSSHAIR);
 	}
 	
 
@@ -563,18 +566,23 @@ public class FmmlxDiagram {
 				hitObject = getElementAt(p.getX(), p.getY());
 				if(hitObject instanceof FmmlxObject) {		
 					actions.setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Association);
+					getCanvas().setCursor(Cursor.DEFAULT);
+					
 				}
 			} else if (edgeCreationType=="associationInstance") {
 				if(hitObject instanceof FmmlxObject) {
 					actions.setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.AssociationInstance);
+					getCanvas().setCursor(Cursor.DEFAULT);
 				}
 			}
 		} else if (nodeCreationType != null) {
 			if (nodeCreationType=="metaClass") {
 				actions.addMetaClassDialog(e);
+				getCanvas().setCursor(Cursor.DEFAULT);
 				deselectAll();
 			} else {
 				actions.addInstanceDialog(getObjectById(Integer.parseInt(nodeCreationType)),e);
+				getCanvas().setCursor(Cursor.DEFAULT);
 				deselectAll();
 			}
 		}
