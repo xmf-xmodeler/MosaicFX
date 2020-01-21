@@ -5,7 +5,7 @@ import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 public class FmmlxAttribute implements FmmlxProperty, Comparable<FmmlxAttribute>{
 
 	String name;
-//	private Multiplicity multiplicity;
+	private Multiplicity multiplicity;
 	Integer owner;
 	int level;
 	String type;
@@ -23,7 +23,7 @@ public class FmmlxAttribute implements FmmlxProperty, Comparable<FmmlxAttribute>
 		this.name = name;
 		this.level = level;
 		this.type = type;
-//		this.multiplicity = multiplicity;
+		this.multiplicity = multiplicity;
 		this.owner = owner;
 	}
 
@@ -37,12 +37,10 @@ public class FmmlxAttribute implements FmmlxProperty, Comparable<FmmlxAttribute>
 	}
 
 	public int getOwnerId() {
-		// TODO Auto-generated method stub
 		return owner;
 	}
 
 	public String getType() {
-		// TODO Auto-generated method stub
 		return type;
 	}
 
@@ -53,9 +51,9 @@ public class FmmlxAttribute implements FmmlxProperty, Comparable<FmmlxAttribute>
 		return this.name.compareTo(that.name);
 	}
 
-//	public Multiplicity getMultiplicity() {
-//		return multiplicity;
-//	}
+	public Multiplicity getMultiplicity() {
+		return multiplicity;
+	}
 //
 //	public void setMultiplicity(Multiplicity multiplicity) {
 //		this.multiplicity = multiplicity;

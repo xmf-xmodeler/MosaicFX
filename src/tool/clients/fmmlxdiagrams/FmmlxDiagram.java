@@ -228,8 +228,7 @@ public class FmmlxDiagram {
 		suppressRedraw = false;
 		redraw();
 
-		newFmmlxPalette.clearAllGroup();
-		newFmmlxPalette.populate();
+		newFmmlxPalette.update();
 	}
 
 	// This operation resets the size of the canvas when needed
@@ -987,15 +986,6 @@ public class FmmlxDiagram {
 	public synchronized void updateEnums() {
 		try {
 			enums.clear();
-	
-			Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
-			objects.addAll(fetchedObjects);
-			
-			Vector<Edge> fetchedEdges = comm.getAllAssociations(this);
-			fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
-	
-			edges.addAll(fetchedEdges);
-			
 			enums = comm.fetchAllEnums(this); }
 		catch (TimeOutException e) {
 			e.printStackTrace();

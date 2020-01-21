@@ -32,11 +32,11 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 			this.oldMultiplicity = Multiplicity.OPTIONAL;
 		}
 		DialogPane dialogPane = getDialogPane();
-		dialogPane.setHeaderText("Add / Edit Multiplicity");
+		dialogPane.setHeaderText("Edit Multiplicity");
 
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-		addElementToGrid();
+		addElementsToGrid();
 		dialogPane.setContent(flow);
 
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
@@ -59,7 +59,7 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 		});
 	}
 
-	public void addElementToGrid() {
+	public void addElementsToGrid() {
 		Label labelMin = new Label(LabelAndHeaderTitle.minimum);
 		Label labelMax = new Label(LabelAndHeaderTitle.maximum);
 		Label labelOrdered = new Label(LabelAndHeaderTitle.ordered);
@@ -107,7 +107,7 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 
 	private boolean validateInput() {
 		if (minimumComboBox.getSelectionModel().getSelectedItem() == null || maximumComboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText("Minimum and Maximum cannot be blank.");
+			errorLabel.setText("Minimum or Maximum cannot be blank.");
 			return false;
 		}
 		if (!validateMax()) {
