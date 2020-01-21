@@ -486,6 +486,17 @@ public class DiagramActions {
 		}
 		diagram.redraw();
 	}
+	
+	public void setShowGettersAndSetters(CheckBox box) {
+		boolean show = box.isSelected();
+		diagram.setShowGettersAndSetters(show);
+		for (FmmlxObject o : diagram.getObjects()) {
+			o.setShowGettersAndSetters(show);
+		}
+		diagram.redraw();
+		
+	}
+
 
 	public void setShowOperationValues(CheckBox box) {
 		boolean show = box.isSelected();
@@ -504,6 +515,26 @@ public class DiagramActions {
 		}
 		diagram.redraw();
 	}
+	
+	public void setShowDerivedOperations(CheckBox box) {
+		boolean show = box.isSelected();
+		diagram.setShowDerivedOperations(show);
+		for (FmmlxObject o : diagram.getObjects()) {
+			o.setShowDerivedOperations(show);
+		}
+		diagram.redraw();
+		
+	}
+
+	public void setShowDerivedAttributes(CheckBox box) {
+		boolean show=box.isSelected();
+		diagram.setShowDerivedAttributes(show);
+		for (FmmlxObject o : diagram.getObjects()) {
+			o.setShowDerivedAttributes(show);
+		}
+		diagram.redraw();
+	}
+
 
 	public void addOperationDialog(FmmlxObject object) {
 //		CountDownLatch latch = new CountDownLatch(1);
@@ -782,6 +813,7 @@ public class DiagramActions {
 	public void levelLowerRelated(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
 	public void levelInsertBelow(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
 	public void levelRemoveThis(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
+
 
 	
 

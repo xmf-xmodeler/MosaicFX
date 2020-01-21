@@ -53,6 +53,9 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
 	private boolean showSlots = true;
+	private boolean showGettersAndSetters = true;
+	private boolean showDerivedOperations = true;
+	private boolean showDerivedAttributes = true;
 
 	static int testDiff = 10;
 
@@ -323,25 +326,45 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	public boolean getShowSlots() {
 		return showSlots;
 	}
+	
+	public boolean getShowGetterAndSetter() {
+		return showGettersAndSetters;
+	}
 
 	public Vector<NodeElement> getNodes() {
 		return nodeElements;
 	}
 
 	public void setShowOperations(boolean show) {
-		requiresReLayout = showOperations!=show;
+		requiresReLayout |= showOperations!=show;
 		showOperations = show;
 	}
 
 	public void setShowOperationValues(boolean show) {
-		requiresReLayout = showOperationValues!=show;
+		requiresReLayout |= showOperationValues!=show;
 		showOperationValues = show;
 	}
 
 	public void setShowSlots(boolean show) {
-		requiresReLayout = showSlots!=show;
+		requiresReLayout |= showSlots!=show;
 		showSlots = show;
 	}
+	
+	public void setShowGettersAndSetters(boolean show) {
+		requiresReLayout |= showGettersAndSetters!=show;
+		showGettersAndSetters = show;
+	}
+	
+	public void setShowDerivedOperations(boolean show) {
+		requiresReLayout |= showDerivedOperations!=show;
+		showDerivedOperations = show;
+	}
+	
+	public void setShowDerivedAttributes(boolean show) {
+		requiresReLayout |= showDerivedAttributes!=show;
+		showDerivedAttributes = show;
+	}
+
 
 	public void layout(FmmlxDiagram diagram) {
 		requiresReLayout = false;
@@ -380,7 +403,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
 
-		int attSize = ownAttributes.size() + otherAttributes.size();
+		int attSize = countAttributesToBeShown();
 		double attBoxHeight = Math.max(lineHeight * attSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
 		double yAfterAttBox = currentY + attBoxHeight;
 		double attY = 0;
@@ -397,17 +420,19 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 			attBox.nodeElements.add(attLevelLabel);
 		}
 		for (FmmlxAttribute att : otherAttributes) {
+			if(showDerivedAttributes) {
 			attY += lineHeight;
 			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, NO_ACTION, att.getName() + ":" + att.type +"["+ att.getMultiplicity() + "]" + " (from " + diagram.getObjectById(att.owner).name + ")", false);
 			attBox.nodeElements.add(attLabel);
 			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.GRAY, att, NO_ACTION, att.level + "", false);
 			attBox.nodeElements.add(attLevelLabel);
+			}
 		}
 		currentY = yAfterAttBox;
 
 		double yAfterOpsBox = currentY;
 
-		int opsSize = ownOperations.size() + otherOperations.size();
+		int opsSize = countOperationsToBeShown();
 //		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
 		double opsBoxHeight = Math.max(lineHeight * opsSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
 		double opsY = 0;
@@ -416,20 +441,26 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 			yAfterOpsBox = currentY + opsBoxHeight;
 			nodeElements.addElement(opsBox);
 			for (FmmlxOperation o : ownOperations) {
-				opsY += lineHeight;
-				NodeLabel.Action changeOpNameAction = () -> {diagram.getActions().changeNameDialog(this, PropertyType.Operation, o);};
-				NodeLabel opLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.BLACK, null, o, changeOpNameAction, o.getFullString(diagram), false);
-				opsBox.nodeElements.add(opLabel);
-				NodeLabel.Action changeOpLevelAction = () -> {diagram.getActions().changeLevelDialog(this, PropertyType.Operation);};
-				NodeLabel opLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.BLACK, o, changeOpLevelAction, o.getLevelString() + "", false);
-				opsBox.nodeElements.add(opLevelLabel);
+				if(showGettersAndSetters || !(o.name.startsWith("set") || o.name.startsWith("get"))) {
+					opsY += lineHeight;
+					NodeLabel.Action changeOpNameAction = () -> {diagram.getActions().changeNameDialog(this, PropertyType.Operation, o);};
+					NodeLabel opLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.BLACK, null, o, changeOpNameAction, o.getFullString(diagram), false);
+					opsBox.nodeElements.add(opLabel);
+					NodeLabel.Action changeOpLevelAction = () -> {diagram.getActions().changeLevelDialog(this, PropertyType.Operation);};
+					NodeLabel opLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.BLACK, o, changeOpLevelAction, o.getLevelString() + "", false);
+					opsBox.nodeElements.add(opLevelLabel);
+				}
 			}
 			for (FmmlxOperation o : otherOperations) {
+				if(showGettersAndSetters || !(o.name.startsWith("set") || o.name.startsWith("get"))) {
+				if(showDerivedOperations) {
 				opsY += lineHeight;
 				NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectById(o.getOwner()).name + ")", false);
 				opsBox.nodeElements.add(oLabel);
 				NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "", false);
 				opsBox.nodeElements.add(oLevelLabel);
+				}
+				}
 			}
 		}
 		currentY = yAfterOpsBox;
@@ -477,6 +508,37 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		this.height = (int) currentY;
 
 		handlePressedOnNodeElement(lastClick);
+	}
+
+	private int countOperationsToBeShown() {
+		int counter=0;
+		for (FmmlxOperation o : ownOperations) {
+			if(showGettersAndSetters  ||  !(o.name.startsWith("set") || o.name.startsWith("get"))) {
+			counter++;	
+			}
+		}
+		
+		for (FmmlxOperation o : otherOperations) {
+			if(showGettersAndSetters || !(o.name.startsWith("set") || o.name.startsWith("get"))) {
+			if(showDerivedOperations) {
+				counter++;
+			}
+			}
+		}
+		return counter;
+	}
+	
+	private int countAttributesToBeShown() {
+		int counter=0;
+		for (FmmlxAttribute att : otherAttributes) {
+			if(showDerivedAttributes) {
+			counter++;
+			}
+		}
+		for (FmmlxAttribute att: ownAttributes) {
+			counter++;
+		}
+		return counter;
 	}
 
 	private boolean hasParents() {
@@ -750,5 +812,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		return item;
 	}
 
+	
 
 }

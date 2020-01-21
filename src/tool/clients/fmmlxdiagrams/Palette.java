@@ -21,15 +21,22 @@ public class Palette extends ToolBar {
 		CheckBox boxO = addCheckBox("Operations");
 		CheckBox boxOV = addCheckBox("Operation Values");
 		CheckBox boxS = addCheckBox("Slots");
-		
+		CheckBox boxGettersAndSetters = addCheckBox("Getters & Setters");
+		CheckBox boxDerivedOperations = addCheckBox("Derived Operations");
+		CheckBox boxDerivedAttributes = addCheckBox("Derived Attributes");
+ 		
 		boxO.setOnAction(e -> actions.setShowOperations(boxO));
 		boxOV.setOnAction(e -> actions.setShowOperationValues(boxOV));
 		boxS.setOnAction(e -> actions.setShowSlots(boxS));
+		boxGettersAndSetters.setOnAction(e-> actions.setShowGettersAndSetters(boxGettersAndSetters));
+		boxDerivedOperations.setOnAction(e-> actions.setShowDerivedOperations(boxDerivedOperations));
+		boxDerivedAttributes.setOnAction(e-> actions.setShowDerivedAttributes(boxDerivedAttributes));
 		
 		getItems().add(new Separator());
 		addButton("Update Diagram", e -> actions.updateDiagram());
 		addButton("Print Protocol", e -> actions.printProtocol());
-	}
+		
+		}
 
 	private void addButton(String string, EventHandler<ActionEvent> eventHandler) {
 		Button button = new Button(string);
