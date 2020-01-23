@@ -1066,5 +1066,13 @@ public class FmmlxDiagramCommunicator {
 		}
 		return result;
 	}
+
+	public void assignToGlobal(FmmlxDiagram fmmlxDiagram, FmmlxObject object, String varName) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(fmmlxDiagram.getID()),
+				new Value(object.id),
+				new Value(varName)};
+		WorkbenchClient.theClient().send(handler, "assignToGlobal", message);
+	}
 	
 }

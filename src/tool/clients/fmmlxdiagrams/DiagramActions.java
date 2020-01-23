@@ -8,6 +8,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
@@ -811,10 +812,15 @@ public class DiagramActions {
 	public void levelInsertBelow(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
 	public void levelRemoveThis(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
 
-
-	
-
-	
-
-
+	public void assignToGlobal(FmmlxObject object) {
+		TextInputDialog dialog = new TextInputDialog("");
+		dialog.setTitle("Assign to Global Variable");
+		dialog.setHeaderText("Global Variable Name:");
+		 
+		Optional<String> result = dialog.showAndWait();
+		String entered = "none.";
+		 
+		if (result.isPresent()) 		 
+			diagram.getComm().assignToGlobal(diagram, object, result.get());
+	}
 }

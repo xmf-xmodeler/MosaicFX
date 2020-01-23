@@ -73,10 +73,12 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem levelMergeItem = new MenuItem("Merge with Metaclass");
 		levelMergeItem.setOnAction(e -> actions.levelLowerAll());
 		levelMergeItem.setDisable(true);
+		MenuItem assignItem = new MenuItem("Assign to Global Variable");
+		assignItem.setOnAction(e -> actions.assignToGlobal(object));
 		
 		levelMenu.getItems().addAll(levelRaiseAllItem, levelLowerAllItem, levelRaiseHereItem, levelLowerHereItem, levelSplitItem, levelMergeItem);
 
-		getItems().addAll(attributeMenu, associationMenu, operationMenu, slotMenu, associationInstanceMenu, levelMenu, showMenu);
+		getItems().addAll(attributeMenu, associationMenu, operationMenu, slotMenu, associationInstanceMenu, levelMenu, showMenu, assignItem);
 	}
 
 	private Menu createAttributeSubMenu() {
