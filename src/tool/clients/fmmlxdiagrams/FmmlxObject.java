@@ -519,10 +519,10 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		}
 		
 		for (FmmlxOperation o : otherOperations) {
-			if(showGettersAndSetters || !(o.name.startsWith("set") || o.name.startsWith("get"))) {
-			if(showDerivedOperations) {
+			if(showGettersAndSetters || !(o.name.startsWith("set") || o.name.startsWith("get"))){
+				if(showDerivedOperations) {
 				counter++;
-			}
+				}
 			}
 		}
 		return counter;
@@ -559,17 +559,25 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ":" + att.type +"["+ att.getMultiplicity() + "]") + INST_LEVEL_WIDTH, neededWidth);
 		}
 		for (FmmlxAttribute att : otherAttributes) {
+			if(showDerivedAttributes) {
 			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ":" + att.type +"["+ att.getMultiplicity() + "]" + " (from " + diagram.getObjectById(att.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
+			}
 		}
 //		//determine maximal width of operations
 		if (showOperations) {
 			for (FmmlxOperation o : ownOperations) {
+				if(showGettersAndSetters  ||  !(o.name.startsWith("set") || o.name.startsWith("get"))) {
 				String text = o.getFullString(diagram);
 				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(text) + INST_LEVEL_WIDTH, neededWidth);
-			}
+				}
+			}	
 			for (FmmlxOperation o : otherOperations) {
+				if(showGettersAndSetters || !(o.name.startsWith("set") || o.name.startsWith("get"))){
+				if(showDerivedOperations) {
 				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + diagram.getObjectById(o.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
-			}
+						}
+					}
+				}
 		}
 		//determine maximal width of slots
 		if (showSlots && slots.size() > 0) {
