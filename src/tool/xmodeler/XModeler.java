@@ -319,7 +319,7 @@ public class XModeler extends Application {
     	fileChooser.getExtensionFilters().add(filter);
     	fileChooser.setSelectedExtensionFilter(filter);
         
-    	String initalDirectory = propertyManager.getProperty("loadImageDirectory", "");
+    	String initalDirectory = PropertyManager.getProperty("fileDialogPath", "");
     	if (!initalDirectory.equals(""))
     	fileChooser.setInitialDirectory(new File(initalDirectory));
     	
@@ -327,7 +327,7 @@ public class XModeler extends Application {
     	
     	if(file != null){
     		selectedImage = file.getAbsolutePath();
-    		System.err.println("propertyManager.setProperty(\"loadImageDirectory\", file.getParent());");
+    		PropertyManager.setProperty("fileDialogPath", file.getParent());
     	}
     	
     }
@@ -469,13 +469,13 @@ public class XModeler extends Application {
 			stage.getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 			setToolTitle();
 			
-			stage.setX(propertyManager.getProperty("TOOL_X", TOOL_X));
-			stage.setY(propertyManager.getProperty("TOOL_Y", TOOL_Y));
+			stage.setX(PropertyManager.getProperty("TOOL_X", TOOL_X));
+			stage.setY(PropertyManager.getProperty("TOOL_Y", TOOL_Y));
 			stage.setScene(scene);
 			stage.setOnCloseRequest(  new EventHandler<WindowEvent>() {
 				  public void handle(WindowEvent event) {
 					  //propertyManager.writeXMLFile();
-                      if (propertyManager.getProperty("IGNORE_SAVE_IMAGE", false)) {
+                      if (PropertyManager.getProperty("IGNORE_SAVE_IMAGE", false)) {
                           System.exit(0);
                       } else {
                           if (loadedImagePath == null) WorkbenchClient.theClient().shutdownEvent();

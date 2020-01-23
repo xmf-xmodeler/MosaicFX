@@ -134,10 +134,13 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		this.isAbstract = isAbstract;
 		this.of = of;
 		this.parents = parents;
-		
+
 		this.showOperations = diagram.isShowOperations();
 		this.showOperationValues = diagram.isShowOperationValues();
 		this.showSlots = diagram.isShowSlots();
+		this.showDerivedOperations = diagram.isShowDerivedOperations();
+		this.showDerivedAttributes = diagram.isShowDerivedAttributes();
+		this.showGettersAndSetters = diagram.isShowGetterAndSetter();
 		
 		this.ports = new FmmlxObjectPort(this);
 	}

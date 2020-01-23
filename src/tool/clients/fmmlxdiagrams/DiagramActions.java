@@ -260,7 +260,6 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final RemoveDialogResult result = opt.get();
-				System.err.println(result.toString());
 				switch (result.getType()) {
 					case Class:
 						diagram.getComm().removeClass(diagram, result.getObject().getId(), 0);

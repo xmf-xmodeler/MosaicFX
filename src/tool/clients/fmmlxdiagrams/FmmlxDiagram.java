@@ -59,6 +59,7 @@ public class FmmlxDiagram {
 	private Vector<Edge> edges = new Vector<>();
 	private Vector<DiagramEdgeLabel> labels = new Vector<>();
 	private Vector<FmmlxEnum> enums = new Vector<>();
+	private Vector<String> auxTypes = new Vector<>();
 	
 	// Temporary variables storing the current state of user interactions
 	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
@@ -103,7 +104,7 @@ public class FmmlxDiagram {
 		this.comm = comm;
 		this.diagramID = diagramID;
 		this.packagePath = packagePath;
-		System.out.println("packagePath: " + packagePath);
+//		System.out.println("packagePath: " + packagePath);
 		
 		pane = new SplitPane();
 		mainView = new SplitPane();
@@ -200,7 +201,8 @@ public class FmmlxDiagram {
 			objects.clear();
 			edges.clear();
 			labels.clear();
-			enums.clear();
+//			enums.clear();
+//			auxTypes.clear();
 	
 			Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
 			objects.addAll(fetchedObjects);
@@ -219,8 +221,9 @@ public class FmmlxDiagram {
 	
 			edges.addAll(fetchedEdges);
 			edges.addAll(comm.getAllInheritanceEdges(this));
-			
+
 			enums = comm.fetchAllEnums(this);
+			auxTypes = comm.fetchAllAuxTypes(this);
 			
 			triggerOverallReLayout();
 			
@@ -293,7 +296,9 @@ public class FmmlxDiagram {
 
 	private void paintOn(GraphicsContext g, int xOffset, int yOffset) {
 		g.setTransform(new Affine());
-		g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+//		g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+		g.setFill(Color.WHITE);
+		g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 		g.setFill(Color.BLACK);
 		g.setTransform(transformFX);
 		Vector<CanvasElement> objectsToBePainted = new Vector<>();
@@ -966,7 +971,9 @@ public class FmmlxDiagram {
 	public boolean isShowOperations() {return this.showOperations;}	
 	public boolean isShowOperationValues() {return this.showOperationValues;}	
 	public boolean isShowSlots() {return this.showSlots;}
-	public boolean isShowGetterAndSetter(boolean show) {return this.showGetterAndSetter;}
+	public boolean isShowGetterAndSetter() {return this.showGetterAndSetter;}
+	public boolean isShowDerivedOperations() {return this.showDerivedOperations;}
+	public boolean isShowDerivedAttributes() {return this.showDerivedAttributes;}
 
 	public int getID() {
 		return diagramID;
@@ -978,6 +985,9 @@ public class FmmlxDiagram {
 		types.add("Integer");
 		types.add("Float");
 		types.add("String");
+		for(String s : auxTypes) {
+			types.add(s);
+		}
 		for(FmmlxEnum e : enums) {
 			types.add(e.getName());
 		}
