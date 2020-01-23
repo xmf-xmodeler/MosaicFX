@@ -71,11 +71,14 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 			e.consume();	
 		});
 		
-		setResult();
+		setResultConverter();
+		
+		setResizable(true);
+		dialogPane.setMinSize(800, 500);
 
 	}
 	
-	private void setResult() {
+	private void setResultConverter() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				return new ChangeBodyDialogResult(object, selectOperationComboBox.getSelectionModel().getSelectedItem(), 
@@ -110,6 +113,7 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 		classTextField.setDisable(true);
 		
 		bodyTextArea = new TextArea();
+		bodyTextArea.setMinSize(620, 350);
 		
 		selectOperationComboBox = (ComboBox<FmmlxOperation>)initializeComboBox(operationsList);
 		selectOperationComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -126,7 +130,6 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 		grid.add(selectOperationComboBox, 1, 1);
 		grid.add(bodyLabel, 0, 2);
 		grid.add(bodyTextArea, 1, 2, 1, 2);
-		
 	}
 	
 	private void checkBodySyntax() {

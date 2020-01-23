@@ -8,6 +8,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
@@ -260,7 +261,6 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final RemoveDialogResult result = opt.get();
-				System.err.println(result.toString());
 				switch (result.getType()) {
 					case Class:
 						diagram.getComm().removeClass(diagram, result.getObject().getId(), 0);
@@ -486,6 +486,17 @@ public class DiagramActions {
 		}
 		diagram.redraw();
 	}
+	
+	public void setShowGettersAndSetters(CheckBox box) {
+		boolean show = box.isSelected();
+		diagram.setShowGettersAndSetters(show);
+		for (FmmlxObject o : diagram.getObjects()) {
+			o.setShowGettersAndSetters(show);
+		}
+		diagram.redraw();
+		
+	}
+
 
 	public void setShowOperationValues(CheckBox box) {
 		boolean show = box.isSelected();
@@ -504,6 +515,26 @@ public class DiagramActions {
 		}
 		diagram.redraw();
 	}
+	
+	public void setShowDerivedOperations(CheckBox box) {
+		boolean show = box.isSelected();
+		diagram.setShowDerivedOperations(show);
+		for (FmmlxObject o : diagram.getObjects()) {
+			o.setShowDerivedOperations(show);
+		}
+		diagram.redraw();
+		
+	}
+
+	public void setShowDerivedAttributes(CheckBox box) {
+		boolean show=box.isSelected();
+		diagram.setShowDerivedAttributes(show);
+		for (FmmlxObject o : diagram.getObjects()) {
+			o.setShowDerivedAttributes(show);
+		}
+		diagram.redraw();
+	}
+
 
 	public void addOperationDialog(FmmlxObject object) {
 //		CountDownLatch latch = new CountDownLatch(1);
@@ -651,12 +682,10 @@ public class DiagramActions {
 				}
 				
 				if(!result.getAssociation().getMultiplicityEndToStart().equals(result.getMultiplicitySource())) {
-					System.err.println("getMultiplicityEndToStart:" + result.getAssociation().getMultiplicityEndToStart() + "--> " + result.getMultiplicitySource());
-					diagram.getComm().changeAssociationStart2EndMultiplicity(diagram, result.getAssociation().id, result.getMultiplicitySource());
+					diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram, result.getAssociation().id, result.getMultiplicitySource());
 				}
 				if(!result.getAssociation().getMultiplicityStartToEnd().equals(result.getMultiplicityTarget())) {
-					System.err.println("getMultiplicityStartToEnd:" +result.getAssociation().getMultiplicityStartToEnd()  + "--> " + result.getMultiplicityTarget());
-					diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram, result.getAssociation().id, result.getMultiplicityTarget());
+					diagram.getComm().changeAssociationStart2EndMultiplicity(diagram, result.getAssociation().id, result.getMultiplicityTarget());
 				}
 				
 				if(!result.getAssociation().getName().equals(result.getNewDisplayNameSource())) {
@@ -783,9 +812,15 @@ public class DiagramActions {
 	public void levelInsertBelow(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
 	public void levelRemoveThis(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
 
-	
-
-	
-
-
+	public void assignToGlobal(FmmlxObject object) {
+		TextInputDialog dialog = new TextInputDialog("");
+		dialog.setTitle("Assign to Global Variable");
+		dialog.setHeaderText("Global Variable Name:");
+		 
+		Optional<String> result = dialog.showAndWait();
+		String entered = "none.";
+		 
+		if (result.isPresent()) 		 
+			diagram.getComm().assignToGlobal(diagram, object, result.get());
+	}
 }

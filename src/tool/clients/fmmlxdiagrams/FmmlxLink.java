@@ -54,7 +54,7 @@ public class FmmlxLink extends Edge {
 		Vector<FmmlxObject> anchors = new Vector<>();
 		if(anchor!=Anchor.TARGET) anchors.add(sourceNode);
 		if(anchor!=Anchor.SOURCE) anchors.add(targetNode);
-		diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, 50, -100+yDiff, w, h, Color.BLACK, Color.YELLOW));
+		diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, 0, -20+yDiff, w, h, Color.BLACK, new Color(0, 0, 0, 0)));
 	}
 	
 	@Override

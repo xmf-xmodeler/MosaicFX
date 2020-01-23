@@ -50,7 +50,7 @@ public class PropertyManager {
 		}
 	}
 
-	private void storeProperties() {
+	private static void storeProperties() {
         setXmfDebugging();
 		try {
 			properties.store(new FileOutputStream(filePath), null);
@@ -61,8 +61,8 @@ public class PropertyManager {
 
 	//public
 
-	public void setProperty(String key, String value) {
-		properties.getProperty(key, value);
+	public static void setProperty(String key, String value) {
+		properties.setProperty(key, value);
 		storeProperties();
 	}
 

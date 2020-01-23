@@ -104,12 +104,13 @@ public abstract class Edge implements CanvasElement {
 			layoutLabels(); diagram.redraw();
 		} else {
 			Vector<Point2D> points = getAllPoints();
-			g.setFill(new Color(.8, .8, .9, 1.));
+			/* SHOW ANGLE 
+            g.setFill(new Color(.8, .8, .9, 1.));
 			g.fillText(
 					new DecimalFormat("0.00").format(Math.atan2(-targetNode.getCenterY() + sourceNode.getCenterY(),
 							targetNode.getCenterX() - sourceNode.getCenterX()) / Math.PI) + "\u03C0",
 					.5 * (sourceNode.getCenterX() + targetNode.getCenterX()),
-					.5 * (sourceNode.getCenterY() + targetNode.getCenterY()) - 12);
+					.5 * (sourceNode.getCenterY() + targetNode.getCenterY()) - 12); */
 
 			// hover
 			if (firstHoverPointIndex != null) {
