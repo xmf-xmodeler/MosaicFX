@@ -374,6 +374,18 @@ public class DiagramActions {
 //			latch.countDown();
 		});
 	}
+	
+	public void instanceGeneratorDialog(FmmlxObject object) {
+		Platform.runLater(() -> {
+			InstanceGeneratorDialog dlg = new InstanceGeneratorDialog(diagram, object);
+			Optional<InstanceGeneratorDialogResult> igd = dlg.showAndWait();
+
+			if (igd.isPresent()) {
+			
+			}
+		});
+	
+	}
 
 	public void changeOfDialog(FmmlxObject object) {
 
@@ -793,6 +805,8 @@ public class DiagramActions {
 	public void levelLowerRelated(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
 	public void levelInsertBelow(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
 	public void levelRemoveThis(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
+
+
 
 	
 

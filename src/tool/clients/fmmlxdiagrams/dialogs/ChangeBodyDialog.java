@@ -12,6 +12,7 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Priority;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
@@ -42,6 +43,7 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 		super();
 		this.diagram=diagram;
 		this.object=object;
+		setResizable(true);
 		
 		dialogPane = getDialogPane();
 		
@@ -108,7 +110,8 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 		classTextField = new TextField();
 		classTextField.setText(object.getName());
 		classTextField.setDisable(true);
-		
+		classTextField.setMinWidth(COLUMN_WIDTH);
+		classTextField.isResizable();
 		bodyTextArea = new TextArea();
 		
 		selectOperationComboBox = (ComboBox<FmmlxOperation>)initializeComboBox(operationsList);
@@ -126,7 +129,7 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 		grid.add(selectOperationComboBox, 1, 1);
 		grid.add(bodyLabel, 0, 2);
 		grid.add(bodyTextArea, 1, 2, 1, 2);
-		
+		grid.setHgrow(bodyTextArea, Priority.ALWAYS);
 	}
 	
 	private void checkBodySyntax() {

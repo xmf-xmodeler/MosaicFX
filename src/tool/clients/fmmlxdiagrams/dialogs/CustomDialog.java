@@ -51,7 +51,7 @@ public class CustomDialog<R> extends Dialog<R> {
 		ColumnConstraints cc;
 		for (int i = 0; i < 2; i++) {
 			cc = new ColumnConstraints();
-			cc.setMaxWidth(COLUMN_WIDTH);
+			//cc.setMaxWidth(COLUMN_WIDTH);
 			cc.setMinWidth(COLUMN_WIDTH);
 			cc.setFillWidth(true);
 			cc.setHgrow(Priority.ALWAYS);
@@ -68,6 +68,7 @@ public class CustomDialog<R> extends Dialog<R> {
 			counter++;
 		}
 	}
+	
 
 	void addNodesToGrid(List<Node> nodes) {
 		int row = 0;

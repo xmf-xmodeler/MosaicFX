@@ -4,7 +4,6 @@ package tool.clients.fmmlxdiagrams.dialogs;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
@@ -53,6 +52,11 @@ public class AddAssociationDialog extends CustomDialog<AddAssociationDialogResul
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		dialogPane.setHeaderText("Add Association");
+		
+		Button cancel = (Button) getDialogPane().lookupButton(ButtonType.CANCEL); 
+		cancel.addEventFilter(ActionEvent.ACTION, e -> {
+			diagram.redraw();
+		});
 
 		layoutContent();
 		setClasses();

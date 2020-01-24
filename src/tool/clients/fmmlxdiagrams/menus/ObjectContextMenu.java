@@ -30,6 +30,10 @@ public class ObjectContextMenu extends ContextMenu {
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Class));
 		getItems().add(changeNameItem);
 		
+		MenuItem instanceGenerator = new MenuItem("Instance Generator");
+		instanceGenerator.setOnAction(e -> actions.instanceGeneratorDialog(object));
+		getItems().add(instanceGenerator);
+		
 		MenuItem changeOfItem = new MenuItem("Change of (Metaclass)");
 		changeOfItem.setOnAction(e -> actions.changeOfDialog(object));
 		changeOfItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
