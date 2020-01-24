@@ -31,7 +31,7 @@ public class NodeBox implements NodeElement {
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		this.bgColor = bgColor;
+		this.bgColor =bgColor;
 		this.fgColor = fgColor;
 		this.lineWidth = lineWidth;
 		this.propertyType = propertyType;

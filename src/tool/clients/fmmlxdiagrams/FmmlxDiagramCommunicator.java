@@ -1007,7 +1007,6 @@ public class FmmlxDiagramCommunicator {
 		Vector<Object> result = xmfRequest(handler, diagram, "addEnumerationValue", new Value[]{
 				new Value(enumName),
 				new Value(newEnumValueName)});
-		System.err.println(result);
 		showErrorMessage(result);
 	}
 
@@ -1053,6 +1052,27 @@ public class FmmlxDiagramCommunicator {
 				new Value(elementArray)};
 		WorkbenchClient.theClient().send(handler, "editEnum", message);
 		
+	}
+
+	@SuppressWarnings("unchecked")
+	public Vector<String> fetchAllAuxTypes(FmmlxDiagram fmmlxDiagram) throws TimeOutException {
+		Vector<Object> response = xmfRequest(handler, fmmlxDiagram, "getAllAuxTypes");
+		Vector<Object> auxList = (Vector<Object>) (response.get(0));
+		Vector<String> result = new Vector<String>();
+		for (Object auxO : auxList) {
+			Vector<Object> auxV = (Vector<Object>) auxO;
+			String           name = (String)         (auxV.get(0));
+			result.add(name);
+		}
+		return result;
+	}
+
+	public void assignToGlobal(FmmlxDiagram fmmlxDiagram, FmmlxObject object, String varName) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(fmmlxDiagram.getID()),
+				new Value(object.id),
+				new Value(varName)};
+		WorkbenchClient.theClient().send(handler, "assignToGlobal", message);
 	}
 	
 }

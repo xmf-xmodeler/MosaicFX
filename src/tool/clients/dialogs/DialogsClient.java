@@ -363,7 +363,7 @@ public class DialogsClient extends Client {
 
 				if (file != null) {
 					lastFile = file;
-					PropertyManager.getProperty("fileDialogPath", file.getParent());
+					PropertyManager.setProperty("fileDialogPath", file.getParent());
 					result[0] = new Value(file.getAbsolutePath());
 				} else {
 					result[0] = new Value("");
