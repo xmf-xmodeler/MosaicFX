@@ -823,4 +823,8 @@ public class DiagramActions {
 		if (result.isPresent()) 		 
 			diagram.getComm().assignToGlobal(diagram, object, result.get());
 	}
+
+	public void showBody(FmmlxObject object, FmmlxOperation operation) {
+		diagram.getComm().showBody(diagram, object, operation);
+	}
 }

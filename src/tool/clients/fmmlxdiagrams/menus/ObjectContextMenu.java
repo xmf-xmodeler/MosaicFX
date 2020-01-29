@@ -1,21 +1,28 @@
 package tool.clients.fmmlxdiagrams.menus;
 
+import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.FmmlxOperation;
+import tool.clients.fmmlxdiagrams.FmmlxProperty;
+import tool.clients.fmmlxdiagrams.NodeLabel;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
 public class ObjectContextMenu extends ContextMenu {
 
 	private final FmmlxObject object;
 	private DiagramActions actions;
+	FmmlxProperty activeProperty;
 
-	public ObjectContextMenu(FmmlxObject object, DiagramActions actions) {
+	public ObjectContextMenu(FmmlxObject object, DiagramActions actions, Point2D relativePoint) {
 		this.actions = actions;
 		this.object = object;
+		NodeLabel nl = this.object.getHitLabel(relativePoint);
+		activeProperty = nl==null?null:nl.getActionObject();
 		setAutoHide(true);
 
 		MenuItem addInstanceItem = new MenuItem("Add instance");
@@ -148,13 +155,21 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeTypeItem = new MenuItem("Change type (use Change body instead)");
 		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Operation));
 		changeTypeItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+		
+		MenuItem showBodyItem = new MenuItem("Show body in editor");
+		if(activeProperty != null && activeProperty instanceof FmmlxOperation) {
+			showBodyItem.setOnAction(e -> actions.showBody(object, (FmmlxOperation) activeProperty));
+		} else {
+			showBodyItem.setDisable(true);
+		}
+		
 		MenuItem changeBodyItem = new MenuItem("Change body");
 		changeBodyItem.setOnAction(e -> actions.changeBodyDialog(object));
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Operation));
 
 		operationMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeOwnerItem, changeTypeItem,
-				changeBodyItem, changeLevelItem);
+				showBodyItem, changeBodyItem, changeLevelItem);
 
 		return operationMenu;
 	}

@@ -1053,7 +1053,24 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "editEnum", message);
 		
 	}
-
+	
+	@SuppressWarnings("unchecked")
+	public Vector<Issue> fetchIssues(FmmlxDiagram fmmlxDiagram) throws TimeOutException {
+		Vector<Object> response = xmfRequest(handler, fmmlxDiagram, "getAllIssues");
+		Vector<Object> issueList = (Vector<Object>) (response.get(0));
+		Vector<Issue> result = new Vector<Issue>();
+		for (Object issueO : issueList) {
+			Vector<Object> issueV = (Vector<Object>) issueO;
+			try{
+				Issue issue = Issue.readIssue(issueV);
+				result.add(issue);
+			} catch (Issue.IssueNotReadableException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public Vector<String> fetchAllAuxTypes(FmmlxDiagram fmmlxDiagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, fmmlxDiagram, "getAllAuxTypes");
@@ -1061,7 +1078,7 @@ public class FmmlxDiagramCommunicator {
 		Vector<String> result = new Vector<String>();
 		for (Object auxO : auxList) {
 			Vector<Object> auxV = (Vector<Object>) auxO;
-			String           name = (String)         (auxV.get(0));
+			String name = (String) (auxV.get(0));
 			result.add(name);
 		}
 		return result;
@@ -1074,5 +1091,15 @@ public class FmmlxDiagramCommunicator {
 				new Value(varName)};
 		WorkbenchClient.theClient().send(handler, "assignToGlobal", message);
 	}
-	
+
+	public void showBody(FmmlxDiagram fmmlxDiagram, FmmlxObject object, FmmlxOperation operation) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(fmmlxDiagram.getID()),
+				new Value(object.id),
+				new Value(operation.name),
+				new Value(-1), // arity
+				};
+		WorkbenchClient.theClient().send(handler, "showBody", message);
+	}
+
 }

@@ -30,10 +30,27 @@ public class NodeLabel implements NodeElement {
 	private final static int BOX_GAP = 1;
 	private boolean selected;
 	private Action action;
+	
+	private boolean special = false;
+	private double availableWidth;
 
 	@Override
 	public void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram, boolean objectIsSelected) {
 		double hAlign = 0;
+		String textLocal = text;
+		
+		if(special) {
+			int length = text.length();
+			double neededWidth = FmmlxDiagram.calculateTextWidth(text);
+			if(neededWidth > availableWidth) {
+				textLocal = text + "     " + text;
+				int cycle = length + 5;
+				final int SPEED = 400;
+				int step = (int)((System.currentTimeMillis() % (cycle * SPEED)) / SPEED);
+				textLocal = textLocal.substring(step);
+				textLocal = textLocal.substring(0,(int)(length * availableWidth / neededWidth + .5));
+			}
+		}
 
 		if (alignment != Pos.BASELINE_LEFT) {
 			hAlign = (alignment == Pos.BASELINE_CENTER ? 0.5 : 1) * textWidth;
@@ -50,7 +67,7 @@ public class NodeLabel implements NodeElement {
 			g.setFont(diagram.getFont());
 		}
 		g.setFill(fgColor);
-		g.fillText(text, x - hAlign + xOffset, y + yOffset - Y_BASELINE_DIFF);
+		g.fillText(textLocal, x - hAlign + xOffset, y + yOffset - Y_BASELINE_DIFF);
 		// Resetting font to standard in case font was changed
 		
 	}
@@ -137,5 +154,10 @@ public class NodeLabel implements NodeElement {
 
 	public void performDoubleClickAction() {
 		action.perform();		
+	}
+
+	public void activateSpecialMode(double availableWidth) {
+		this.special = true;
+		this.availableWidth = availableWidth;
 	}
 }
