@@ -2,6 +2,7 @@ package tool.clients.fmmlxdiagrams;
 
 import java.util.Vector;
 
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
@@ -69,11 +70,39 @@ public class Issue {
 	public void performResolveAction(FmmlxDiagram diagram) {
 		String actionName = (String) solution.get(0);
 		if("setSlotValue".equals(actionName)) {
-			Integer id = (Integer) solution.get(1);
-			FmmlxObject obj = diagram.getObjectById(id);
+			FmmlxObject obj = diagram.getObjectById((Integer) solution.get(1));
 			String slotName = (String) solution.get(2);
 			FmmlxSlot slot = obj.getSlot(slotName);
 			diagram.getActions().changeSlotValue(obj, slot);
+		} else if("addMissingLink".equals(actionName)) { 
+			FmmlxObject obj = diagram.getObjectById((Integer) solution.get(1));
+			FmmlxAssociation assoc = diagram.getAssociationById((Integer) solution.get(2));
+			diagram.getActions().addMissingLink(obj, assoc);
+//			Platform.runLater(()->{
+//		        Alert alert = new Alert(AlertType.INFORMATION);
+//		        alert.setTitle("Resolving Issue");
+//		 
+//		        // Header Text: null
+//		        alert.setHeaderText(null);
+//		        alert.setContentText("The association "+(String) solution.get(2)+" has too few links to object "+ diagram.getObjectById((Integer) solution.get(1)).getName()+". A new link needs to be added.");
+//		 
+//		        alert.showAndWait();
+//			});
+		} else if("removeTooManyLinks".equals(actionName)) { 
+			FmmlxObject obj = diagram.getObjectById((Integer) solution.get(1));
+			FmmlxAssociation assoc = diagram.getAssociationById((Integer) solution.get(2));
+			Platform.runLater(()->{
+		        Alert alert = new Alert(AlertType.ERROR);
+		        alert.setTitle("Too many links");
+		 
+		        // Header Text: null
+		        alert.setHeaderText(null);
+		        alert.setContentText("The association "+assoc.getName()+" has too many links to object "+ obj.getName()+". One of them needs to be removed.");
+		 
+		        alert.showAndWait();
+			});	        
+		} else { System.err.println("Solution not recognized: " + solution.get(0));
+			
 //		} else { // NOT IN AUTO-MODE
 //	        Alert alert = new Alert(AlertType.INFORMATION);
 //	        alert.setTitle("Resolving Issue");

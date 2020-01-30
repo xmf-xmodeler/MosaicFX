@@ -818,7 +818,6 @@ public class DiagramActions {
 		dialog.setHeaderText("Global Variable Name:");
 		 
 		Optional<String> result = dialog.showAndWait();
-		String entered = "none.";
 		 
 		if (result.isPresent()) 		 
 			diagram.getComm().assignToGlobal(diagram, object, result.get());
@@ -826,5 +825,21 @@ public class DiagramActions {
 
 	public void showBody(FmmlxObject object, FmmlxOperation operation) {
 		diagram.getComm().showBody(diagram, object, operation);
+	}
+
+	public void addMissingLink(FmmlxObject obj, FmmlxAssociation assoc) {
+		Platform.runLater(() -> {
+			AddMissingLinkDialog dlg = new AddMissingLinkDialog(diagram, obj, assoc);
+			Optional<AddMissingLinkDialogResult> solution = dlg.showAndWait();
+
+			if(solution.isPresent()) {
+				if(solution.get().createNew) {
+					addInstanceDialog(solution.get().selection);				
+				} else {
+					diagram.getComm().addAssociationInstance(diagram, obj.getId(), solution.get().selection.getId(), assoc.getId());
+					diagram.updateDiagram();
+				}
+			}
+		});
 	}
 }

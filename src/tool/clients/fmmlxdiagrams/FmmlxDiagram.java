@@ -930,10 +930,10 @@ public class FmmlxDiagram {
 		return result;
 	}
 	
-	public Edge getAssociationById(int id) {
+	public FmmlxAssociation getAssociationById(int id) {
 		for (Edge tmp : edges) {
 			if (tmp.getId() == id)
-				return tmp;
+				return (FmmlxAssociation) tmp;
 		}
 		return null;
 	}

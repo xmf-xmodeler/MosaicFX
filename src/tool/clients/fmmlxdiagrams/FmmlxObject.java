@@ -13,6 +13,7 @@ import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
 import tool.clients.fmmlxdiagrams.newpalette.ToolClass;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
@@ -845,6 +846,14 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		return null;
 	}
 
-	
+	public Vector<FmmlxObject> getAllChildren() {
+		System.err.println("FmmlxObject::getAllChildren() not yet implemented.");
+		return new Vector<FmmlxObject>();
+	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 
 }
