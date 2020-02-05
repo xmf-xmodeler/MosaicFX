@@ -1093,7 +1093,6 @@ public class FmmlxDiagram {
 
 	public Vector<Issue> getIssues(FmmlxObject fmmlxObject) {
 		Vector<Issue> result = new Vector<Issue>();
-		if(fmmlxObject.id % 10 == 0) result.add(Issue.NOT_YET_IMPLEMENTED);
 		if(issues != null) for(Issue issue : issues) { 
 			if(issue.isAffected(fmmlxObject)) {
 				result.add(issue);

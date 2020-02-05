@@ -73,19 +73,19 @@ public class NewFmmlxPalette {
 
 	private void initGroup() {			
 		
-		PaletteTool modelsGroupTooL = new ToolGroup(fmmlxDiagram, "Models", "models", "");
-		PaletteTool relatiosshipGroupTool = new ToolGroup(fmmlxDiagram, "Relationsship", "relationsship", "");
+//		PaletteTool modelsGroupTooL = new ToolGroup(fmmlxDiagram, "Models", "models", "");
+		PaletteTool relatiosshipGroupTool = new ToolGroup(fmmlxDiagram, "Relationships", "relationsship", "");
 		PaletteTool classGroupTool = new ToolGroup(fmmlxDiagram, "Classes/Object", "classes", "");
 		
-		PaletteGroup modelsGroup = new PaletteGroupModels(modelsGroupTooL);
+//		PaletteGroup modelsGroup = new PaletteGroupModels(modelsGroupTooL);
 		PaletteGroup relationsshipGroup = new PaletteGroupRelationsship(relatiosshipGroupTool);
 		PaletteGroup classGroup = new PaletteGroupClass(classGroupTool);
 		
-		paletteGroups.put("Models", modelsGroup);
-		paletteGroups.put("Relationsship", relationsshipGroup);
+//		paletteGroups.put("Models", modelsGroup);
+		paletteGroups.put("Relationships", relationsshipGroup);
 		paletteGroups.put("Class", classGroup);
 		
-		root.getChildren().add(modelsGroup);
+//		root.getChildren().add(modelsGroup);
 		root.getChildren().add(relationsshipGroup);
 		root.getChildren().add(classGroup);
 	
