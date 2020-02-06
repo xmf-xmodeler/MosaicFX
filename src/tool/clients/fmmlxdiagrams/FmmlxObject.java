@@ -823,6 +823,4 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		return item;
 	}
 
-	
-
 }

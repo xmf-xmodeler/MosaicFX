@@ -131,7 +131,7 @@ public class StringValueDialog {
 		public static final String association = "Association";
 		public static final String selectMetaClassA = "Select Meta-Class A";
 		public static final String selectMetaClassB = "Select Meta-Class B";
-		public static final String numberOfElement = "Number Of Element";
+		public static final String numberOfInstances = "Number Of Instance";
 		
 	}
 

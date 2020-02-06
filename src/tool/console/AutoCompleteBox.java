@@ -21,6 +21,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Paint;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import xos.Message;
 import xos.Value;
 
@@ -52,6 +53,7 @@ public class AutoCompleteBox extends Dialog<String> {
         javafx.scene.Node closeButton = getDialogPane().lookupButton(ButtonType.CLOSE);
         closeButton.managedProperty().bind(closeButton.visibleProperty());
         closeButton.setVisible(false);
+        this.initStyle(StageStyle.UNDECORATED);
 	}
 
 	public String show(int x, int y) {
@@ -60,7 +62,7 @@ public class AutoCompleteBox extends Dialog<String> {
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
 		grid.setVgap(10);
-		grid.setPadding(new Insets(20, 150, 10, 10));
+		grid.setPadding(new Insets(5, 5, 5, 5));
 
         searchField = new TextField();
         searchField.setText("Search here...");

@@ -52,7 +52,7 @@ public class ConsoleView {
   History              history         = new History();
   int                  inputStart      = 0;
 //  FontData             fontData;
-  // Font textFont = new Font(Display.getCurrent(), "Monaco", 14, SWT.NORMAL);
+// Font textFont = new Font(Display.getCurrent(), "Monaco", 14, SWT.NORMAL);
   Color                backgroundColor = Color.WHEAT;//new Color(org.eclipse.swt.widgets.Display.getCurrent(), 255, 255, 255); 
   Color                foregroundColor = Color.CHOCOLATE;//new Color(org.eclipse.swt.widgets.Display.getCurrent(), 0, 0, 0);
   int                  waterMark       = 1000;
@@ -69,10 +69,9 @@ public class ConsoleView {
 	scrollpane.setContent(textArea);
 	scrollpane.setFitToWidth(true);
 	scrollpane.setFitToHeight(true);
-	  	
+	
 	textArea.setWrapText(true);
 	textArea.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
-
 	//	Region node = textArea.lookup("content");
 	
 //	System.err.println(node);

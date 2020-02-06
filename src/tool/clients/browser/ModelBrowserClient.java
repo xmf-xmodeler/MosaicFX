@@ -35,7 +35,6 @@ import java.util.concurrent.CountDownLatch;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import javafx.application.Platform;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -114,9 +113,11 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
     Value icon = message.args[4];
     int index = -1;
     if (message.arity == 6) index = message.args[5].intValue;
-    if (trees.containsKey(parentId.strValue()))
-      addRootNodeWithIcon(parentId.strValue(), nodeId.strValue(), text.strValue(), editable.boolValue, false, icon.strValue(), index);
-    else addNodeWithIcon(parentId.strValue(), nodeId.strValue(), text.strValue(), editable.boolValue, false, icon.strValue(), index);
+    if (trees.containsKey(parentId.strValue())) {
+    	 addRootNodeWithIcon(parentId.strValue(), nodeId.strValue(), text.strValue(), editable.boolValue, false, icon.strValue(), index);
+    } else {
+    	addNodeWithIcon(parentId.strValue(), nodeId.strValue(), text.strValue(), editable.boolValue, false, icon.strValue(), index);
+    }
   }
 
   private void addNodeWithIcon(final String parentId, final String nodeId, final String text, boolean editable, final boolean expanded, final String icon, final int index) {
@@ -478,7 +479,7 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
       NodeList treeNodes = modelBrowser.getChildNodes();
       for (int i = 0; i < treeNodes.getLength(); i++) {
         Node treeNode = treeNodes.item(i);
-        inflateTree(treeNode);
+        inflateTree(treeNode);   
       }
     } else System.err.println("expecting exactly 1 model browser got: " + modelBrowsers.getLength());
   }

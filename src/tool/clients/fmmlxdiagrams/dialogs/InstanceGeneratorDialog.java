@@ -2,11 +2,12 @@ package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 
-import javafx.collections.ObservableList;
+import com.sun.scenario.effect.impl.prism.PrImage;
+
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.stage.StageStyle;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.InstanceGeneratorDialogResult;
@@ -15,6 +16,7 @@ import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog.LabelAnd
 public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialogResult>{
 
 	
+	@SuppressWarnings("unused")
 	private FmmlxDiagram diagram;
 	private FmmlxObject object;
 	private Label ofLabel ;
@@ -34,7 +36,6 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		dialogPane.setHeaderText("Instance Generator");
-		setResizable(true);
 		layoutContent();
 		dialogPane.setContent(flow);
 		setValidation();
@@ -53,7 +54,7 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 
 	private void layoutContent() {
 		ofLabel = new Label(LabelAndHeaderTitle.of);
-		numberOfElementLabel = new Label(LabelAndHeaderTitle.numberOfElement);
+		numberOfElementLabel = new Label(LabelAndHeaderTitle.numberOfInstances);
 		
 		ofTextField = new TextField();
 		ofTextField.setText(object.getName());
