@@ -90,7 +90,7 @@ public class DiagramEdgeLabel implements CanvasElement {
 	}
 
 	@Override
-	public ContextMenu getContextMenu(DiagramActions actions) {
+	public ContextMenu getContextMenu(DiagramActions actions, Point2D absolutePoint) {
 		return menu;
 	}
 

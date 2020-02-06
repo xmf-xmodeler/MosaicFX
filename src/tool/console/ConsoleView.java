@@ -79,14 +79,7 @@ public class ConsoleView {
 	
 	//    setFont("fonts/DejaVuSansMono.ttf", "DejaVu Sans Mono");
     addVerifyListener(textArea);
-    try {
-    	Font defaultFont = textArea.getFont();
-        Font f = Font.loadFont(new FileInputStream(new File("resources/fonts/DejaVuSansMono.ttf")), defaultFont.getSize());
-		textArea.setFont(f);
-	} catch (FileNotFoundException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+    setFont(textArea.getFont().getSize());
 //    tabItem.setControl(c1);
 	
 //	textArea.textProperty().addListener(new ChangeListener<String>() {
@@ -98,7 +91,16 @@ public class ConsoleView {
 //	});
   }
   
-  public Node getView() {
+  private void setFont(double size) {
+	    try {
+	        Font f = Font.loadFont(new FileInputStream(new File("resources/fonts/DejaVuSansMono.ttf")), size);
+			textArea.setFont(f);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}	
+}
+
+public Node getView() {
 	// TODO Auto-generated method stub
 	return scrollpane;
   }
@@ -236,11 +238,13 @@ public class ConsoleView {
           String command = recallFromHistoryBackward();
           if (command != "") addCommand(textArea, command);
           revertInput();
-//        } else if (e.keyCode == '+' && ((e.stateMask & SWT.CTRL) == SWT.CTRL)) {
+        } else if (keyEvent.getCode() == KeyCode.PLUS && keyEvent.isControlDown()) {
+        	setFont(textArea.getFont().getSize() + FONT_INC);
 //          fontData.setHeight(Math.min(fontData.getHeight() + FONT_INC, MAX_FONT_HEIGHT));
 //          text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
 //          revertInput();
-//        } else if (e.keyCode == '-' && ((e.stateMask & SWT.CTRL) == SWT.CTRL)) {
+        } else if (keyEvent.getCode() == KeyCode.MINUS && keyEvent.isControlDown()) {
+        	setFont(textArea.getFont().getSize() - FONT_INC);
 //          fontData.setHeight(Math.max(MIN_FONT_HEIGHT, fontData.getHeight() - FONT_INC));
 //          text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
 //          revertInput();

@@ -21,7 +21,7 @@ public class FmmlxDiagramCommunicator {
 	private HashMap<Integer, Vector<Object>> results = new HashMap<>();
 	private static Hashtable<Integer, Tab> tabs = new Hashtable<Integer, Tab>();
 	private static Vector<FmmlxDiagram> diagrams = new Vector<FmmlxDiagram>();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	private static Vector<FmmlxDiagramCommunicator> communicators = new Vector<FmmlxDiagramCommunicator>();
 	static TabPane tabPane;
 	private String name;
@@ -193,6 +193,11 @@ public class FmmlxDiagramCommunicator {
 		if (waiting)
 			throw new TimeOutException();
 		return results.remove(requestID);
+	}
+
+	private void sendMessage(String command, Value[] message) {
+		if (DEBUG) System.err.println(name + ": Sending command " + command);
+		WorkbenchClient.theClient().send(handler, command, message);
 	}
 
 	/////////////////////////////////////////
@@ -516,11 +521,21 @@ public class FmmlxDiagramCommunicator {
 				new Value(o.id), 
 				new Value((int)(o.getX())), 
 				new Value((int)(o.getY()))};
-		WorkbenchClient.theClient().send(handler, "sendNewPosition", message);
+		sendMessage("sendNewPosition", message);
 	}
 
 	public void sendCurrentPositions(FmmlxDiagram diagram, Edge e) {
 		Vector<Point2D> points = e.getIntermediatePoints();
+		
+		if(points.size() < 2) System.err.println("Suspicious edge alignment");
+		for(Point2D p : points) {
+			if(!Double.isFinite(p.getX())) {
+				System.err.println("Suspicious X coordiante");
+			}
+			if(!Double.isFinite(p.getY())) {
+				System.err.println("Suspicious Y coordiante");
+			}
+		}
 
 		Value[] listOfPoints = new Value[points.size() + 2];
 		{
@@ -548,7 +563,7 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(e.id), 
 				new Value(listOfPoints)};
-		WorkbenchClient.theClient().send(handler, "sendNewPositions", message);
+		sendMessage("sendNewPositions", message);
 	}
 
 	////////////////////////////////////////////////////
@@ -565,7 +580,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(parentsArray),
 				new Value(isAbstract),
 				new Value(x), new Value(y)};
-		WorkbenchClient.theClient().send(handler, "addMetaClass", message);
+		sendMessage("addMetaClass", message);
 	}
 
 	public void addNewInstance(FmmlxDiagram diagram, int of, String name, int level, Vector<Integer> parents, boolean isAbstract, int x,
@@ -575,7 +590,7 @@ public class FmmlxDiagramCommunicator {
 		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagram.getID()), new Value(of), new Value(name),
 				// new Value(level),
 				new Value(parentsArray), new Value(isAbstract), new Value(x), new Value(y)};
-		WorkbenchClient.theClient().send(handler, "addInstance", message);
+		sendMessage("addInstance", message);
 	}
 
 	public void removeClass(FmmlxDiagram diagram, int id, int strategy) {
@@ -583,7 +598,7 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(id),
 				new Value(strategy)};
-		WorkbenchClient.theClient().send(handler, "removeClass", message);
+		sendMessage("removeClass", message);
 	}
 
 	public void removeAttribute(FmmlxDiagram diagram, int id, String name, int strategy) {
@@ -592,7 +607,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(id),
 				new Value(name),
 				new Value(strategy)};
-		WorkbenchClient.theClient().send(handler, "removeAttribute", message);
+		sendMessage("removeAttribute", message);
 	}
 
 	public void removeOperation(FmmlxDiagram diagram, int id, String name, int strategy) {
@@ -600,23 +615,23 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(id),
 				new Value(name)};
-		WorkbenchClient.theClient().send(handler, "removeOperation", message);
+		sendMessage("removeOperation", message);
 	}
 
 	public void removeAssociation(FmmlxDiagram diagram, int assocId, int strategy) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(assocId)};
-		WorkbenchClient.theClient().send(handler, "removeAssociation", message);
+		sendMessage("removeAssociation", message);
 	}
-	
+
 	public void setAssociationEndVisibility(FmmlxDiagram diagram, int assocId, boolean targetEnd, boolean newVisbility) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(assocId),
 				new Value(targetEnd),
 				new Value(newVisbility)};
-		WorkbenchClient.theClient().send(handler, "setAssociationEndVisibility", message);
+		sendMessage("setAssociationEndVisibility", message);
 	}
 
 	public void addAttribute(FmmlxDiagram diagram, int classID, String name, int level, String type, Multiplicity multi) {
@@ -627,7 +642,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(level),
 				new Value(type),
 				new Value(multi.toValue())};
-		WorkbenchClient.theClient().send(handler, "addAttribute", message);
+		sendMessage("addAttribute", message);
 	}
 
 //	public void addOperation(int objectId, String operationName, int level, String operationType, String body) {
@@ -639,7 +654,7 @@ public class FmmlxDiagramCommunicator {
 //				new Value(operationType),
 //				new Value(body)
 //		};
-//		WorkbenchClient.theClient().send(handler, "addOperation", message);
+//		sendMessage("addOperation", message);
 //	}
 	
 	public void addOperation2(FmmlxDiagram diagram, int objectId, int level, String body) {
@@ -649,7 +664,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(level),
 				new Value(body)
 		};
-		WorkbenchClient.theClient().send(handler, "addOperation2", message);
+		sendMessage("addOperation2", message);
 	}
 
 	public void changeClassName(FmmlxDiagram diagram, int id, String newName) {
@@ -657,7 +672,7 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(id),
 				new Value(newName)};
-		WorkbenchClient.theClient().send(handler, "changeClassName", message);
+		sendMessage("changeClassName", message);
 	}
 
 	public void changeOperationName(FmmlxDiagram diagram, int id, String oldName, String newName) {
@@ -666,7 +681,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(id),
 				new Value(oldName),
 				new Value(newName)};
-		WorkbenchClient.theClient().send(handler, "changeOperationName", message);
+		sendMessage("changeOperationName", message);
 	}
 
 	public void changeAttributeName(FmmlxDiagram diagram, int id, String oldName, String newName) {
@@ -675,7 +690,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(id),
 				new Value(oldName),
 				new Value(newName)};
-		WorkbenchClient.theClient().send(handler, "changeAttributeName", message);
+		sendMessage("changeAttributeName", message);
 	}
 
 //	public void changeAssociationName(int objectId, String oldName, String newName) {
@@ -684,7 +699,7 @@ public class FmmlxDiagramCommunicator {
 //				new Value(objectId),
 //				new Value(oldName),
 //				new Value(newName)};
-//		WorkbenchClient.theClient().send(handler, "changeAssociationName", message);
+//		sendMessage("changeAssociationName", message);
 //	}
 
 	public void changeSlotValue(FmmlxDiagram diagram, int id, String slotName, String aParsableText) {
@@ -693,7 +708,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(id),
 				new Value(slotName),
 				new Value(aParsableText)};
-		WorkbenchClient.theClient().send(handler, "changeSlotValue", message);
+		sendMessage("changeSlotValue", message);
 	}
 
 	public void changeClassLevel(FmmlxDiagram diagram, int objectId, int oldLevel, int newLevel) {
@@ -701,7 +716,7 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(objectId),
 				new Value(newLevel)};
-		WorkbenchClient.theClient().send(handler, "changeClassLevel", message);
+		sendMessage("changeClassLevel", message);
 	}
 
 	public void changeAttributeLevel(FmmlxDiagram diagram, int objectId, String attName, int oldLevel, int newLevel) {
@@ -711,7 +726,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(attName),
 				new Value(oldLevel),
 				new Value(newLevel)};
-		WorkbenchClient.theClient().send(handler, "changeAttributeLevel", message);
+		sendMessage("changeAttributeLevel", message);
 	}
 
 //	public void changeAssociationLevel(int objectId, int oldLevel, int newLevel) {
@@ -720,7 +735,7 @@ public class FmmlxDiagramCommunicator {
 //				new Value(objectId),
 //				new Value(oldLevel),
 //				new Value(newLevel)};
-//		WorkbenchClient.theClient().send(handler, "changeAssociationLevel", message);
+//		sendMessage("changeAssociationLevel", message);
 //	}
 
 	public void changeOperationLevel(FmmlxDiagram diagram, int objectId, String opName, int oldLevel, int newLevel) {
@@ -730,7 +745,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(opName),
 				new Value(oldLevel),
 				new Value(newLevel)};
-		WorkbenchClient.theClient().send(handler, "changeOperationLevel", message);
+		sendMessage("changeOperationLevel", message);
 	}
 
 	public void changeOf(FmmlxDiagram diagram, int objectId, int oldOfId, int newOfId) {
@@ -739,7 +754,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(objectId),
 				new Value(oldOfId),
 				new Value(newOfId)};
-		WorkbenchClient.theClient().send(handler, "changeOf", message);
+		sendMessage("changeOf", message);
 	}
 
 	public void changeAttributeOwner(FmmlxDiagram diagram, int objectId, String name, Integer newOwnerID) {
@@ -748,7 +763,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(objectId),
 				new Value(name),
 				new Value(newOwnerID)};
-		WorkbenchClient.theClient().send(handler, "changeAttributeOwner", message);
+		sendMessage("changeAttributeOwner", message);
 	}
 
 	public void changeOperationOwner(FmmlxDiagram diagram, int objectId, String name, Integer newOwnerID) {
@@ -757,7 +772,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(objectId),
 				new Value(name),
 				new Value(newOwnerID)};
-		WorkbenchClient.theClient().send(handler, "changeOperationOwner", message);
+		sendMessage("changeOperationOwner", message);
 	}
 
 	public void changeParent(FmmlxDiagram diagram, int objectId, Vector<Integer> currentParents, Vector<Integer> newParents) {
@@ -769,7 +784,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(objectId),
 				new Value(parentsArray),
 				new Value(newParentsArray)};
-		WorkbenchClient.theClient().send(handler, "changeParent", message);
+		sendMessage("changeParent", message);
 
 	}
 
@@ -780,7 +795,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(attributeName),
 				new Value(oldType),
 				new Value(newType)};
-		WorkbenchClient.theClient().send(handler, "changeAttributeType", message);
+		sendMessage("changeAttributeType", message);
 
 	}
 
@@ -791,7 +806,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(operationName),
 //				new Value(oldType),
 				new Value(newType)};
-		WorkbenchClient.theClient().send(handler, "changeOperationType", message);
+		sendMessage("changeOperationType", message);
 
 	}
 
@@ -800,7 +815,7 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(-1),
 				new Value(body)
 		};
-		WorkbenchClient.theClient().send(handler, "checkOperationBody", message);
+		sendMessage("checkOperationBody", message);
 	}
 
 	public void addAssociation(FmmlxDiagram diagram, 
@@ -819,7 +834,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(mul2.toValue()), // multiplicity,
 				new Value(instLevel1), new Value(instLevel2),
 				new Value(sourceVisible), new Value(targetVisible), new Value(isSymmetric), new Value(isTransitive) };
-		WorkbenchClient.theClient().send(handler, "addAssociation", message);
+		sendMessage("addAssociation", message);
 	}
 
 //	public void changeMultiplicityAttribute(int objectId, String attributeName, Multiplicity multi) {
@@ -827,7 +842,7 @@ public class FmmlxDiagramCommunicator {
 //				new Value(objectId),
 //				new Value(attributeName),
 //				new Value(multi.toValue())};
-//		WorkbenchClient.theClient().send(handler, "changeMultiplicity", message);
+//		sendMessage("changeMultiplicity", message);
 //	}
 
 	public void changeOperationBody(FmmlxDiagram diagram, int objectId, String operationName, String body) {
@@ -836,7 +851,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(objectId),
 				new Value(operationName),
 				new Value(body)};
-		WorkbenchClient.theClient().send(handler, "changeOperationBody", message);
+		sendMessage("changeOperationBody", message);
 	}
 
 	public void changeAssociationTarget(FmmlxDiagram diagram, int objectId, String associationName, Integer oldTargetID, Integer newTargetID) {
@@ -846,7 +861,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(associationName),
 				new Value(oldTargetID),
 				new Value(newTargetID)};
-		WorkbenchClient.theClient().send(handler, "changeAssociationTarget", message);
+		sendMessage("changeAssociationTarget", message);
 	}
 
 	// to be discussed how this may work anyway
@@ -868,7 +883,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(newIdentifierTarget),
 				new Value(multiSource.toValue()),
 				new Value(multiTarget.toValue())};
-		WorkbenchClient.theClient().send(handler, "editAssociation", message);
+		sendMessage("editAssociation", message);
 	}
 
 	public void addAssociationInstance(FmmlxDiagram diagram, int object1ID, int object2ID, int associationID) {
@@ -877,7 +892,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(object1ID),
 				new Value(object2ID),
 				new Value(associationID)};
-		WorkbenchClient.theClient().send(handler, "addAssociationInstance", message);
+		sendMessage("addAssociationInstance", message);
 	}
 
 	public void removeAssociationInstance(FmmlxDiagram diagram, int assocInstId) {
@@ -885,7 +900,7 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(assocInstId)
 		};
-		WorkbenchClient.theClient().send(handler, "removeAssociationInstance", message);
+		sendMessage("removeAssociationInstance", message);
 	}
 
 	public void updateAssociationInstance(FmmlxDiagram diagram, int associationInstanceId, int startObjectId, int endObjectId) {
@@ -894,11 +909,11 @@ public class FmmlxDiagramCommunicator {
 				new Value(associationInstanceId),
 				new Value(startObjectId),
 				new Value(endObjectId)};
-		WorkbenchClient.theClient().send(handler, "updateAssociationInstance", message);
+		sendMessage("updateAssociationInstance", message);
 	}
 
 	public void storeLabelInfo(FmmlxDiagram diagram, DiagramEdgeLabel l) {		
-		WorkbenchClient.theClient().send(handler, "storeLabelInfo",l.getInfo4XMF());
+		sendMessage("storeLabelInfo",l.getInfo4XMF());
 		//xmfRequest(handler, "storeLabelInfo",l.getInfo4XMF());
 	}
 
@@ -907,7 +922,7 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(associationId),
 				new Value(newName)};
-		WorkbenchClient.theClient().send(handler, "changeAssociationForwardName", message);
+		sendMessage("changeAssociationForwardName", message);
 	}
 
 	public void changeAssociationStart2EndLevel(FmmlxDiagram diagram, int associationId, Integer newLevel) {
@@ -915,7 +930,7 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(associationId),
 				new Value(newLevel)};
-		WorkbenchClient.theClient().send(handler, "changeAssociationStart2EndLevel", message);
+		sendMessage("changeAssociationStart2EndLevel", message);
 	}
 
 	public void changeAssociationEnd2StartLevel(FmmlxDiagram diagram, int associationId, Integer newLevel) {
@@ -923,7 +938,7 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(associationId),
 				new Value(newLevel)};
-		WorkbenchClient.theClient().send(handler, "changeAssociationEnd2StartLevel", message);
+		sendMessage("changeAssociationEnd2StartLevel", message);
 	}
 
 	public void changeAssociationStart2EndAccessName(FmmlxDiagram diagram, int associationId, String newName) {
@@ -931,7 +946,7 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(associationId),
 				new Value(newName)};
-		WorkbenchClient.theClient().send(handler, "changeAssociationStart2EndAccessName", message);
+		sendMessage("changeAssociationStart2EndAccessName", message);
 	}
 
 	public void changeAssociationEnd2StartAccessName(FmmlxDiagram diagram, int associationId, String newName) {
@@ -939,7 +954,7 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(associationId),
 				new Value(newName)};
-		WorkbenchClient.theClient().send(handler, "changeAssociationEnd2StartAccessName", message);
+		sendMessage("changeAssociationEnd2StartAccessName", message);
 	}
 
 	public void changeAssociationStart2EndMultiplicity(FmmlxDiagram diagram, int associationId, Multiplicity newMultiplicity) {
@@ -947,7 +962,7 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(associationId),
 				new Value(newMultiplicity.toValue())};
-		WorkbenchClient.theClient().send(handler, "changeAssociationStart2EndMultiplicity", message);
+		sendMessage("changeAssociationStart2EndMultiplicity", message);
 	}
 
 	public void changeAssociationEnd2StartMultiplicity(FmmlxDiagram diagram, int associationId, Multiplicity newMultiplicity) {
@@ -955,7 +970,7 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(associationId),
 				new Value(newMultiplicity.toValue())};
-		WorkbenchClient.theClient().send(handler, "changeAssociationEnd2StartMultiplicity", message);
+		sendMessage("changeAssociationEnd2StartMultiplicity", message);
 	}
 
 	public void setClassAbstract(FmmlxDiagram diagram, int classId, boolean b) {
@@ -963,29 +978,29 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(classId),
 				new Value(b)};
-		WorkbenchClient.theClient().send(handler, "setClassAbstract", message);		
+		sendMessage("setClassAbstract", message);		
 	}
 
 	public void levelRaiseAll(FmmlxDiagram diagram) {
 		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagram.getID()), new Value(1)};
-		WorkbenchClient.theClient().send(handler, "levelRaiseAll", message);		
+		sendMessage("levelRaiseAll", message);		
 	}
 
 	public void levelLowerAll(FmmlxDiagram diagram) {
 		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagram.getID()), new Value(-1)};
-		WorkbenchClient.theClient().send(handler, "levelRaiseAll", message);		
+		sendMessage("levelRaiseAll", message);		
 	}
 
 	public void printProtocol(FmmlxDiagram diagram) {
 		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagram.getID())};
-		WorkbenchClient.theClient().send(handler, "printProtocol", message);		
+		sendMessage("printProtocol", message);		
 	}
 
 	public void addEnumeration(FmmlxDiagram diagram, String newEnumName) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(newEnumName)};
-		WorkbenchClient.theClient().send(handler, "addEnumeration", message);
+		sendMessage("addEnumeration", message);
 	}
 
 	public void changeEnumerationName(FmmlxDiagram diagram, String oldEnumName, String newEnumName) {
@@ -993,14 +1008,14 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(oldEnumName),
 				new Value(newEnumName)};
-		WorkbenchClient.theClient().send(handler, "changeEnumerationName", message);
+		sendMessage("changeEnumerationName", message);
 	}
 	
 	public void removeEnumeration(FmmlxDiagram diagram, String enumName) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(enumName)};
-		WorkbenchClient.theClient().send(handler, "removeEnumeration", message);
+		sendMessage("removeEnumeration", message);
 	}
 	
 	public void addEnumerationItem(FmmlxDiagram diagram, String enumName, String newEnumValueName) throws TimeOutException {
@@ -1050,10 +1065,27 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(enumName),
 				new Value(elementArray)};
-		WorkbenchClient.theClient().send(handler, "editEnum", message);
+		sendMessage("editEnum", message);
 		
 	}
-
+	
+	@SuppressWarnings("unchecked")
+	public Vector<Issue> fetchIssues(FmmlxDiagram fmmlxDiagram) throws TimeOutException {
+		Vector<Object> response = xmfRequest(handler, fmmlxDiagram, "getAllIssues");
+		Vector<Object> issueList = (Vector<Object>) (response.get(0));
+		Vector<Issue> result = new Vector<Issue>();
+		for (Object issueO : issueList) {
+			Vector<Object> issueV = (Vector<Object>) issueO;
+			try{
+				Issue issue = Issue.readIssue(issueV);
+				result.add(issue);
+			} catch (Issue.IssueNotReadableException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public Vector<String> fetchAllAuxTypes(FmmlxDiagram fmmlxDiagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, fmmlxDiagram, "getAllAuxTypes");
@@ -1061,7 +1093,7 @@ public class FmmlxDiagramCommunicator {
 		Vector<String> result = new Vector<String>();
 		for (Object auxO : auxList) {
 			Vector<Object> auxV = (Vector<Object>) auxO;
-			String           name = (String)         (auxV.get(0));
+			String name = (String) (auxV.get(0));
 			result.add(name);
 		}
 		return result;
@@ -1072,7 +1104,17 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(fmmlxDiagram.getID()),
 				new Value(object.id),
 				new Value(varName)};
-		WorkbenchClient.theClient().send(handler, "assignToGlobal", message);
+		sendMessage("assignToGlobal", message);
 	}
-	
+
+	public void showBody(FmmlxDiagram fmmlxDiagram, FmmlxObject object, FmmlxOperation operation) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(fmmlxDiagram.getID()),
+				new Value(object.id),
+				new Value(operation.name),
+				new Value(-1), // arity
+				};
+		sendMessage("showBody", message);
+	}
+
 }

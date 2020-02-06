@@ -14,6 +14,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Priority;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
@@ -46,7 +48,7 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 		setResizable(true);
 		
 		dialogPane = getDialogPane();
-		
+
 		checkSyntaxButtonType = new ButtonType(StringValueDialog.LabelAndHeaderTitle.checkSyntax);
 		defaultOperationButtonType = new ButtonType(StringValueDialog.LabelAndHeaderTitle.defaultOperation);
 		
@@ -117,7 +119,8 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 		classTextField.isResizable();
 		
 		bodyTextArea = new TextArea();
-		
+		bodyTextArea.setMinSize(620, 350);
+		bodyTextArea.resize(COLUMN_WIDTH, grid.getHeight());
 		selectOperationComboBox = (ComboBox<FmmlxOperation>)initializeComboBox(operationsList);
 		selectOperationComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue != null) {

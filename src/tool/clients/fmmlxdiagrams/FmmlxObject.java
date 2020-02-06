@@ -1,6 +1,5 @@
 package tool.clients.fmmlxdiagrams;
 
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
@@ -14,6 +13,7 @@ import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
 import tool.clients.fmmlxdiagrams.newpalette.ToolClass;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
@@ -82,8 +82,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	public void triggerLayout() {
 		this.requiresReLayout = true;
 	}
-
-	//private Vector<Issue> issues;
 	
 	static {
 		colors = new HashMap<>();
@@ -372,15 +370,15 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	public void layout(FmmlxDiagram diagram) {
 		requiresReLayout = false;
 		nodeElements = new Vector<>();
-//		double neededHeight = 0;
 		double neededWidth = calculateNeededWidth(diagram);
 		//determine text height
 		double textHeight = FmmlxDiagram.calculateTextHeight();
-		double currentY = 0;
+		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
+		double currentY = 0;		
 
 		String parentString = getParentsListString(diagram);
 		int headerLines = /*hasParents()*/(!"".equals(parentString)) ? 3 : 2;
-		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * headerLines, getLevelBackgroundColor(), Color.BLACK, (x) -> {return 1.;}, PropertyType.Class);
+		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * headerLines + EXTRA_Y_PER_LINE, getLevelBackgroundColor(), Color.BLACK, (x) -> {return 1.;}, PropertyType.Class);
 		nodeElements.addElement(header);
 		String ofName;
 		try {
@@ -402,9 +400,26 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 			header.nodeElements.add(parentsLabel);
 		}
 
-		currentY += headerLines * textHeight;
-
-		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
+		currentY += headerLines * textHeight + EXTRA_Y_PER_LINE;
+		
+		Vector<Issue> issues = diagram.getIssues(this);
+		if(issues.size() > 0) {
+			double issueBoxHeight = lineHeight * issues.size() + EXTRA_Y_PER_LINE;
+			NodeBox issueBox = new IssueBox(0, currentY, neededWidth, issueBoxHeight, 
+				Color.BLACK, Color.BLACK, (x) -> {return 1.;}, PropertyType.Issue);
+			nodeElements.addElement(issueBox);
+			double issY = 0;
+			
+			for(Issue i : issues) {
+				issY += lineHeight;
+				
+				NodeLabel issueLabel = new NodeLabel(Pos.BASELINE_LEFT, IssueBox.BOX_SIZE * 1.5, issY, new Color(1., .8, 0., 1.), null, this, () -> {i.performResolveAction(diagram);}, i.getText(), false);
+				issueBox.nodeElements.add(issueLabel);
+				issueLabel.activateSpecialMode(neededWidth - 3 * IssueBox.BOX_SIZE);
+			}
+		
+			currentY += issueBoxHeight;
+		}
 
 		int attSize = countAttributesToBeShown();
 		double attBoxHeight = Math.max(lineHeight * attSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
@@ -660,8 +675,9 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	}
 
 	@Override
-	public ObjectContextMenu getContextMenu(DiagramActions actions) {
-		return new ObjectContextMenu(this, actions);
+	public ObjectContextMenu getContextMenu(DiagramActions actions, Point2D absolutePoint) {
+		Point2D relativePoint = new Point2D(absolutePoint.getX() - getX(), absolutePoint.getY() - getY());
+		return new ObjectContextMenu(this, actions, relativePoint);
 	}
 
 	@Override
@@ -803,7 +819,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		return null;
 	}
 
-	private NodeLabel getHitLabel(Point2D relativePoint) {
+	public NodeLabel getHitLabel(Point2D relativePoint) {
 		NodeLabel hitLabel = null;
 		for(NodeElement e : nodeElements) if(hitLabel == null) {
 			 hitLabel =  e.getHitLabel(relativePoint);//new Point2D(relativePoint.getX() - e.getX(), relativePoint.getY() - e.getY()));
@@ -821,6 +837,23 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		PaletteTool tool = new ToolClass(fmmlxDiagram, getName(), getId()+"", getLevel(), isAbstract, "");	
 		PaletteItem item = new PaletteItem(tool);
 		return item;
+	}
+
+	public FmmlxSlot getSlot(String slotName) {
+		for(FmmlxSlot slot : slots) {
+			if(slot.getName().equals(slotName)) return slot;
+		}
+		return null;
+	}
+
+	public Vector<FmmlxObject> getAllChildren() {
+		System.err.println("FmmlxObject::getAllChildren() not yet implemented.");
+		return new Vector<FmmlxObject>();
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 
 }

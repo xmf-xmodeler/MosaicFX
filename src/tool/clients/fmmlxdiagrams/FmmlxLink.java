@@ -27,7 +27,7 @@ public class FmmlxLink extends Edge {
 
 	@Override protected void layoutLabels() {
 		try{
-			createLabel("of " + getOfAssociation().getName(), 0, Anchor.CENTRE, ()->{System.err.println("Huhu!");}, 0);
+			createLabel(getOfAssociation().getName(), 0, Anchor.CENTRE, ()->{System.err.println("Huhu!");}, 0);
 			layoutingFinishedSuccesfully = true;
 		} catch(Exception e) {layoutingFinishedSuccesfully = false;}
 //		if(reverseName != null) 

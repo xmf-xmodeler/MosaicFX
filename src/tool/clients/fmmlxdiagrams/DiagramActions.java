@@ -645,20 +645,20 @@ public class DiagramActions {
 //		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			AddAssociationDialog dlg = new AddAssociationDialog(diagram, source, target);
-			Optional<AddAssociationDialogResult> opt = dlg.showAndWait();
+			AssociationDialog dlg = new AssociationDialog(diagram, source, target, false);
+			Optional<AssociationDialogResult> opt = dlg.showAndWait();
 			diagram.setStandardMouseMode();
 
 			if (opt.isPresent()) {
-				final AddAssociationDialogResult result = opt.get();
+				final AssociationDialogResult result = opt.get();
 				diagram.getComm().addAssociation(diagram,
 						result.getSource().id, result.getTarget().id,
-						result.getIdentifierSource(), result.getIdentifierTarget(),
-						result.getDisplayNameSource(), result.getDisplayNameTarget(),
-						result.getMultiplicitySource(), result.getMultiplicityTarget(),
-						result.getInstLevelSource(), result.getInstLevelTarget(),
-						result.getSourceVisible(),  result.getTargetVisible(), 
-						result.getIsSymmetric(), result.getIsTransitive()
+						result.getNewIdentifierSource(), result.getNewIdentifierTarget(),
+						result.getNewDisplayName(),
+						null, result.getMultiplicitySource(), result.getMultiplicityTarget(),
+						result.getNewInstLevelSource(), result.getNewInstLevelTarget(),
+						result.isSourceVisibleFromTarget(),  result.isTargetVisibleFromSource(), 
+						result.isSymmetric(), result.isTransitive()
 						);
 				diagram.updateDiagram();
 			}
@@ -668,11 +668,11 @@ public class DiagramActions {
 
 	public void editAssociationDialog(final FmmlxAssociation association) {
 		Platform.runLater(() -> {
-			EditAssociationDialog dlg = new EditAssociationDialog(diagram, association);
-			Optional<EditAssociationDialogResult> opt = dlg.showAndWait();
+			AssociationDialog dlg = new AssociationDialog(diagram, association, true);
+			Optional<AssociationDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
-				final EditAssociationDialogResult result = opt.get();
+				final AssociationDialogResult result = opt.get();
 				
 				if(result.getAssociation().isSourceVisible() != result.isSourceVisibleFromTarget()) {
 					diagram.getComm().setAssociationEndVisibility(diagram, result.getAssociation().id, false, result.isSourceVisibleFromTarget());				
@@ -706,9 +706,9 @@ public class DiagramActions {
 					diagram.getComm().changeAssociationStart2EndMultiplicity(diagram, result.getAssociation().id, result.getMultiplicityTarget());
 				}
 				
-				if(!result.getAssociation().getName().equals(result.getNewDisplayNameSource())) {
-					System.err.println("getName:" +result.getAssociation().getName()  + "--> " + result.getNewDisplayNameSource());
-					diagram.getComm().changeAssociationForwardName(diagram, result.getAssociation().id, result.getNewDisplayNameSource());
+				if(!result.getAssociation().getName().equals(result.getNewDisplayName())) {
+					System.err.println("getName:" +result.getAssociation().getName()  + "--> " + result.getNewDisplayName());
+					diagram.getComm().changeAssociationForwardName(diagram, result.getAssociation().id, result.getNewDisplayName());
 				}
 					
 				diagram.updateDiagram();
@@ -836,10 +836,29 @@ public class DiagramActions {
 		dialog.setHeaderText("Global Variable Name:");
 		 
 		Optional<String> result = dialog.showAndWait();
-		String entered = "none.";
 		 
 		if (result.isPresent()) 		 
 			diagram.getComm().assignToGlobal(diagram, object, result.get());
 	}
 
+
+	public void showBody(FmmlxObject object, FmmlxOperation operation) {
+		diagram.getComm().showBody(diagram, object, operation);
+	}
+
+	public void addMissingLink(FmmlxObject obj, FmmlxAssociation assoc) {
+		Platform.runLater(() -> {
+			AddMissingLinkDialog dlg = new AddMissingLinkDialog(diagram, obj, assoc);
+			Optional<AddMissingLinkDialogResult> solution = dlg.showAndWait();
+
+			if(solution.isPresent()) {
+				if(solution.get().createNew) {
+					addInstanceDialog(solution.get().selection);				
+				} else {
+					diagram.getComm().addAssociationInstance(diagram, obj.getId(), solution.get().selection.getId(), assoc.getId());
+					diagram.updateDiagram();
+				}
+			}
+		});
+	}
 }
