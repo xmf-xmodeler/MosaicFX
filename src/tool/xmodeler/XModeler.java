@@ -12,7 +12,6 @@ import java.util.concurrent.CountDownLatch;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -49,6 +48,8 @@ import tool.clients.diagrams.DiagramClient;
 import tool.clients.dialogs.DialogsClient;
 import tool.clients.editors.EditorClient;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
+import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
+import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserStage;
 import tool.clients.forms.FormsClient;
 import tool.clients.menus.MenuClient;
 import tool.clients.oleBridge.OleBridgeClient;
@@ -429,11 +430,12 @@ public class XModeler extends Application {
 	  Console.start(propertyTabs); // only one which does more
 	  DiagramClient.start(editorTabs);
 	  FmmlxDiagramCommunicator.start(editorTabs);
+	  ClassBrowserClient.start();
   }
   
   
   public static void openXModeler() {
-		stage.show();		
+		stage.show();
   }
   
   @Override

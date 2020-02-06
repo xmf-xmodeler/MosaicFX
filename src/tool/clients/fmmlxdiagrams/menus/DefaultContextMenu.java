@@ -21,6 +21,7 @@ public class DefaultContextMenu extends ContextMenu {
 		addAssociationItem.setOnAction(e -> actions.addAssociationDialog(null, null));
 //		associationMenu.getItems().add(addAssociationItem);
 		
+		
 		Menu levelMenu = new Menu("Levels");
 		MenuItem levelRaiseAllItem = new MenuItem("Raise all");
 		levelRaiseAllItem.setOnAction(e -> actions.levelRaiseAll());
@@ -36,10 +37,12 @@ public class DefaultContextMenu extends ContextMenu {
 		editEnumeration.setOnAction(e -> actions.editEnumerationDialog("edit_element",""));
 		MenuItem deleteEnumeration = new MenuItem("Delete Enumeration");
 		deleteEnumeration.setOnAction(e -> actions.deleteEnumerationDialog());
+		MenuItem packageListView = new MenuItem("Package ListView");
+		packageListView.setOnAction(e -> actions.classBrowserStage());
 		
 		enumeration.getItems().addAll(createEnumeration, editEnumeration, deleteEnumeration);
 		
 
-		getItems().addAll(addClassItem, addInstanceItem, addAssociationItem, levelMenu, enumeration);
+		getItems().addAll(addClassItem, addInstanceItem, addAssociationItem, levelMenu, enumeration, packageListView);
 	}
 }

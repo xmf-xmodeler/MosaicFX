@@ -12,6 +12,7 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Priority;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -44,6 +45,7 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 		super();
 		this.diagram=diagram;
 		this.object=object;
+		setResizable(true);
 		
 		dialogPane = getDialogPane();
 
@@ -113,6 +115,8 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 		classTextField = new TextField();
 		classTextField.setText(object.getName());
 		classTextField.setDisable(true);
+		classTextField.setMinWidth(COLUMN_WIDTH);
+		classTextField.isResizable();
 		
 		bodyTextArea = new TextArea();
 		bodyTextArea.setMinSize(620, 350);

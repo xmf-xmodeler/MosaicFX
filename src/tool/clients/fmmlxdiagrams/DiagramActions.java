@@ -10,9 +10,9 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
+import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
-
 import java.util.Optional;
 import java.util.Vector;
 //import java.util.concurrent.CountDownLatch;
@@ -29,6 +29,12 @@ public class DiagramActions {
 
 	public void redrawDiagram() {
 		diagram.redraw();
+	}
+	
+	public void classBrowserStage() {
+		Platform.runLater(() -> {
+			ClassBrowserClient.show();
+		});
 	}
 
 	public void addMetaClassDialog() {
@@ -373,6 +379,18 @@ public class DiagramActions {
 
 //			latch.countDown();
 		});
+	}
+	
+	public void instanceGeneratorDialog(FmmlxObject object) {
+		Platform.runLater(() -> {
+			InstanceGeneratorDialog dlg = new InstanceGeneratorDialog(diagram, object);
+			Optional<InstanceGeneratorDialogResult> igd = dlg.showAndWait();
+
+			if (igd.isPresent()) {
+			
+			}
+		});
+	
 	}
 
 	public void changeOfDialog(FmmlxObject object) {
@@ -822,6 +840,7 @@ public class DiagramActions {
 		if (result.isPresent()) 		 
 			diagram.getComm().assignToGlobal(diagram, object, result.get());
 	}
+
 
 	public void showBody(FmmlxObject object, FmmlxOperation operation) {
 		diagram.getComm().showBody(diagram, object, operation);
