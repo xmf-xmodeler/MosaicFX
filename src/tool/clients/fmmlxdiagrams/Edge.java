@@ -406,7 +406,7 @@ public abstract class Edge implements CanvasElement {
 	}*/
 
 	@Override
-	public final ContextMenu getContextMenu(DiagramActions actions) {
+	public final ContextMenu getContextMenu(DiagramActions actions, Point2D absolutePoint) {
 		ContextMenu localMenu = getContextMenuLocal(actions);
 		if(localMenu.getItems().size()>0) localMenu.getItems().add(new SeparatorMenuItem());
 		MenuItem repairItem = new MenuItem("Repair Edge Alignment");

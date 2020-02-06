@@ -28,13 +28,15 @@ public class CustomDialog<R> extends Dialog<R> {
 
 	public CustomDialog() {
 		super();
-
+		
 		initializeGrid();
+		
 		flow = new FlowPane();
 		flow.setHgap(3);
 		flow.setVgap(3);
 		flow.setPrefWrapLength(250);
-
+		
+		
 		flow.getChildren().add(grid);
 
 		errorLabel = new Label();
@@ -47,11 +49,12 @@ public class CustomDialog<R> extends Dialog<R> {
 		grid.setHgap(3);
 		grid.setVgap(3);
 		grid.setPadding(new Insets(3, 3, 3, 3));
+			
 
 		ColumnConstraints cc;
 		for (int i = 0; i < 2; i++) {
 			cc = new ColumnConstraints();
-			cc.setMaxWidth(COLUMN_WIDTH);
+			//cc.setMaxWidth(COLUMN_WIDTH);
 			cc.setMinWidth(COLUMN_WIDTH);
 			cc.setFillWidth(true);
 			cc.setHgrow(Priority.ALWAYS);
@@ -68,6 +71,7 @@ public class CustomDialog<R> extends Dialog<R> {
 			counter++;
 		}
 	}
+	
 
 	void addNodesToGrid(List<Node> nodes) {
 		int row = 0;

@@ -28,8 +28,8 @@ public class StringValueDialog {
 		public static final String selectNewTarget = "Select New Target!";
 		public static final String selectNewTypeSource = "Select New Start Type";
 		public static final String selectNewTypeTarget = "Select New End Type";
-		public static final String selectAllowedLevelSource = "Select Allowed Start Level";
-		public static final String selectAllowedLevelTarget = "Select Allowed End Level";
+		public static final String selectAllowedLevelSource = "Select Allowed Start Level.";
+		public static final String selectAllowedLevelTarget = "Select Allowed End Level.";
 		public static final String enterValidNameIdentifierTarget = "Type Valid Name For End Identifier!";
 		public static final String enterValidNameIdentifierSource = "Type Valid Name For Start Identifier!";
 		public static final String enterValidNameDisplaySource = "Type Valid Name For Start Display-Name!";
@@ -83,6 +83,7 @@ public class StringValueDialog {
 		public static final String newOwner = "New Owner";
 		public static final String newLevel = "New Level";
 		public static final String newOperation = "New Operation";
+		public static final String newAssociation = "New Association";
 
 		//Change
 		public static final String change = "Change";
@@ -131,6 +132,8 @@ public class StringValueDialog {
 		public static final String association = "Association";
 		public static final String selectMetaClassA = "Select Meta-Class A";
 		public static final String selectMetaClassB = "Select Meta-Class B";
+
+		public static final String numberOfInstances = "Number Of Instance";
 		
 	}
 

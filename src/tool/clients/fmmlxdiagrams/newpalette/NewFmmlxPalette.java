@@ -12,13 +12,9 @@ import java.util.concurrent.CountDownLatch;
 import com.sun.prism.paint.Paint;
 
 import javafx.application.Platform;
-import javafx.beans.binding.SetBinding;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.SetChangeListener;
 import javafx.geometry.Insets;
-import javafx.scene.Cursor;
-import javafx.scene.control.SelectionModel;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -73,19 +69,19 @@ public class NewFmmlxPalette {
 
 	private void initGroup() {			
 		
-		PaletteTool modelsGroupTooL = new ToolGroup(fmmlxDiagram, "Models", "models", "");
-		PaletteTool relatiosshipGroupTool = new ToolGroup(fmmlxDiagram, "Relationsship", "relationsship", "");
+//		PaletteTool modelsGroupTooL = new ToolGroup(fmmlxDiagram, "Models", "models", "");
+		PaletteTool relatiosshipGroupTool = new ToolGroup(fmmlxDiagram, "Relationships", "relationsship", "");
 		PaletteTool classGroupTool = new ToolGroup(fmmlxDiagram, "Classes/Object", "classes", "");
 		
-		PaletteGroup modelsGroup = new PaletteGroupModels(modelsGroupTooL);
+//		PaletteGroup modelsGroup = new PaletteGroupModels(modelsGroupTooL);
 		PaletteGroup relationsshipGroup = new PaletteGroupRelationsship(relatiosshipGroupTool);
 		PaletteGroup classGroup = new PaletteGroupClass(classGroupTool);
 		
-		paletteGroups.put("Models", modelsGroup);
-		paletteGroups.put("Relationsship", relationsshipGroup);
+//		paletteGroups.put("Models", modelsGroup);
+		paletteGroups.put("Relationships", relationsshipGroup);
 		paletteGroups.put("Class", classGroup);
 		
-		root.getChildren().add(modelsGroup);
+//		root.getChildren().add(modelsGroup);
 		root.getChildren().add(relationsshipGroup);
 		root.getChildren().add(classGroup);
 	
@@ -102,8 +98,6 @@ public class NewFmmlxPalette {
 		treeView.setCellFactory(param -> new TreeCell<PaletteTool>() {
 			protected void updateItem(PaletteTool item, boolean empty) {
 				super.updateItem(item, empty);
-				
-
 				
 				Vector<Integer> textColorInt = new Vector<Integer>(Arrays.asList(2, 3, 4, 5));
 				
@@ -157,9 +151,11 @@ public class NewFmmlxPalette {
 					} else {			
 						setFont(fmmlxDiagram.getPaletteFont());
 					}
+					
 				}
 			};
 		});
+		
 		treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<PaletteTool>>() {
 		
 

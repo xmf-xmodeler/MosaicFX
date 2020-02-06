@@ -7,7 +7,6 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
 import javafx.scene.Cursor;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
@@ -60,6 +59,7 @@ public class FmmlxDiagram {
 	private Vector<DiagramEdgeLabel> labels = new Vector<>();
 	private Vector<FmmlxEnum> enums = new Vector<>();
 	private Vector<String> auxTypes = new Vector<>();
+	private Vector<Issue> issues = new Vector<>();
 	
 	// Temporary variables storing the current state of user interactions
 	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
@@ -98,6 +98,7 @@ public class FmmlxDiagram {
 	
 	String edgeCreationType = null;
 	String nodeCreationType = null;
+
 
 
 	FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String label, String packagePath) {
@@ -201,11 +202,14 @@ public class FmmlxDiagram {
 			objects.clear();
 			edges.clear();
 			labels.clear();
+			issues.clear();
 //			enums.clear();
 //			auxTypes.clear();
 	
 			Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
 			objects.addAll(fetchedObjects);
+			
+			issues.addAll(comm.fetchIssues(this));
 			
 			for(FmmlxObject o : objects) {
 				o.fetchDataDefinitions(comm);
@@ -225,12 +229,11 @@ public class FmmlxDiagram {
 			enums = comm.fetchAllEnums(this);
 			auxTypes = comm.fetchAllAuxTypes(this);
 			
+			
 			triggerOverallReLayout();
 			
 			resizeCanvas();
 			
-	//		System.err.println("allowRedraw");
-	//		redraw();
 		} catch (TimeOutException e) {
 			e.printStackTrace();
 		}
@@ -238,6 +241,10 @@ public class FmmlxDiagram {
 		redraw();
 
 		newFmmlxPalette.update();
+		
+		if(issues.size() > 0) {
+			issues.firstElement().performResolveAction(this);
+		}
 	}
 
 	// This operation resets the size of the canvas when needed
@@ -326,7 +333,7 @@ public class FmmlxDiagram {
 	}
 
 	private void drawNewEdgeLine(GraphicsContext g) {
-		if (mouseMode == MouseMode.DRAW_EDGE) {
+		if (mouseMode == MouseMode.DRAW_EDGE && lastPoint != null && currentPoint != null) {
 			g.strokeLine(lastPoint.getX(), lastPoint.getY(), currentPoint.getX(), currentPoint.getY());
 		}
 	}
@@ -630,9 +637,9 @@ public class FmmlxDiagram {
 		CanvasElement hitObject = getElementAt(p.getX(), p.getY());
 		if (hitObject != null) {
 			if (hitObject instanceof FmmlxObject) {
-				activeContextMenu = hitObject.getContextMenu(actions);
+				activeContextMenu = hitObject.getContextMenu(actions, p);
 			} else if (hitObject instanceof Edge) {
-				activeContextMenu = hitObject.getContextMenu(actions);
+				activeContextMenu = hitObject.getContextMenu(actions, p);
 			}
 			if (!selectedObjects.contains(hitObject)) {
 				deselectAll();
@@ -922,10 +929,10 @@ public class FmmlxDiagram {
 		return result;
 	}
 	
-	public Edge getAssociationById(int id) {
+	public FmmlxAssociation getAssociationById(int id) {
 		for (Edge tmp : edges) {
 			if (tmp.getId() == id)
-				return tmp;
+				return (FmmlxAssociation) tmp;
 		}
 		return null;
 	}
@@ -1081,6 +1088,16 @@ public class FmmlxDiagram {
 				}
 			}
 		return typePath;
+	}
+
+	public Vector<Issue> getIssues(FmmlxObject fmmlxObject) {
+		Vector<Issue> result = new Vector<Issue>();
+		if(issues != null) for(Issue issue : issues) { 
+			if(issue.isAffected(fmmlxObject)) {
+				result.add(issue);
+			}
+		}
+		return result;
 	}
 
 }
