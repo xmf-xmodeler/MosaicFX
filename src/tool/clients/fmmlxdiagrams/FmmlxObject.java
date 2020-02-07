@@ -512,7 +512,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 			nodeElements.addElement(opvBox);
 			for (FmmlxOperationValue opv : operationValues) {
 				opvY += lineHeight;
-				NodeLabel opvLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, opvY, Color.BLACK, null, opv, NO_ACTION, opv.getName() + " = " + opv.getValue(), false);
+				NodeLabel opvLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, opvY, new Color(0.0,0.4,0.2,1.0), new Color(0.85,0.9,0.85,1.0), opv, NO_ACTION, opv.getName() + " = " + opv.getValue(), false);
 				opvBox.nodeElements.add(opvLabel);
 			}
 		}

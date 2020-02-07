@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -20,6 +22,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 
 	private TextField classTextField; 
 	private ComboBox<Integer> levelComboBox;
+	private Button monitorButton;
 
 	ObservableList<String> classList;
 	private TextArea bodyTextArea;
@@ -71,6 +74,11 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 //		typeComboBox.getSelectionModel().select("Element");
 		levelComboBox = new ComboBox<>(LevelList.generateLevelListToThreshold(0, object.getLevel()));
 		levelComboBox.getSelectionModel().select(0);
+		monitorButton = new Button("Monitor Operation Values");
+		monitorButton.setOnAction(event -> {
+		        resetOperationBody("op0", true);
+		    }
+		);
 		bodyTextArea = new TextArea(StringValueDialog.OperationStringValues.emptyOperation);
 //		updateOperationName2TextField(nameTextField, StringValueDialog.OperationStringValues.emptyOperation);
 		Button checkSyntaxButton = new Button(StringValueDialog.LabelAndHeaderTitle.checkSyntax);
@@ -79,7 +87,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 		Button defaultOperationButton = new Button(StringValueDialog.LabelAndHeaderTitle.defaultOperation);
 		defaultOperationButton.setOnAction(event -> {
 //			String name = nameTextField.getText();
-			AddOperationDialog.this.resetOperationBody("op0");
+			AddOperationDialog.this.resetOperationBody("op0", false);
 		});
 		defaultOperationButton.setPrefWidth(COLUMN_WIDTH * 0.5);
 
@@ -102,6 +110,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 		
 		mainNodes.add(classTextField);
 		mainNodes.add(levelComboBox);
+		mainNodes.add(monitorButton);
 		
 		addNodesToGrid(labelsNode, 0);
 		addNodesToGrid(mainNodes, 1);
@@ -153,9 +162,11 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 		}
 	}
 
-	private void resetOperationBody(String name) {
+	private void resetOperationBody(String name, boolean monitor) {
 		bodyTextArea.setText(
-				"@Operation "+name+"()"+/*":XCore::Element+"+*/"\n" +
+				"@Operation "+name
+				+(monitor?"[monitor=true]":"")
+				+"()"+":XCore::Element+"+"\n" +
 				"  null\n" +
 				"end");
 	}
