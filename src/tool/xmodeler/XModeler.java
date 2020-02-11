@@ -263,12 +263,12 @@ public class XModeler extends Application {
   public static void main(String[] args) {
 	  System.setProperty("prism.order", "sw");
 	  
-	try {
-		PrintStream R = new PrintStream(new File("err.txt"));
-		System.setErr(R);
-	} catch (FileNotFoundException e) {
-		e.printStackTrace();
-	} 
+//	try {
+//		PrintStream R = new PrintStream(new File("err.txt"));
+//		System.setErr(R);
+//	} catch (FileNotFoundException e) {
+//		e.printStackTrace();
+//	} 
 	  
     copyOfArgs = Arrays.copyOf(args, args.length);
     textEditorClass = args.length > 1 ? args[1] : "tool.clients.editors.TextEditor";

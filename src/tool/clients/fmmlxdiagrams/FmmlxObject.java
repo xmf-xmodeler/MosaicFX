@@ -13,7 +13,6 @@ import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
 import tool.clients.fmmlxdiagrams.newpalette.ToolClass;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
@@ -164,57 +163,18 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		return "";
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public int getLevel() {
-		return level;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public double getX() {
-		return x;
-	}
-
-	public double getY() {
-		return y;
-	}
-
-	public int getWidth() {
-		return width;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	public double getRightBorder() {
-		return y + width;
-	}
-
-	public double getBottomBorder() {
-		return x + height;
-	}
-
-	public Point2D getBottomRightPoint() {
-		return new Point2D(getX() + height, y + width);
-	}
-
-	public void setX(int x) {
-		this.x = x;
-	}
-
-	public void setY(int y) {
-		this.y = y;
-	}
-
-	public int getOf() {
-		return of;
-	}
+	public String getName() { return name; }
+	public int getLevel() { return level; }
+	public int getId() { return id; }
+	public double getX() { return x; }
+	public double getY() { return y; }
+	public int getWidth() { return width; }
+	public int getHeight() { return height; }
+	public double getCenterX() { return x + width / 2.; }
+	public double getCenterY() { return y + height / 2.; }
+	public double getRightX() { return x + width; }
+	public double getBottomY() { return y + height; }
+	public int getOf() { return of; }
 
 	public Vector<FmmlxAttribute> getOwnAttributes() {
 		return new Vector<FmmlxAttribute>(ownAttributes);
@@ -257,7 +217,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		return result;
 	}
 
-
 	public Vector<Integer> getParents() {
 		return parents;
 	}
@@ -287,25 +246,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		return result;
 	}
 
-
 	public void setParents(Vector<Integer> parents) {
 		this.parents = parents;
-	}
-
-	public double getMaxBottom() {
-		return y + height;
-	}
-
-	public double getCenterX() {
-		return x + width / 2;
-	}
-
-	public double getCenterY() {
-		return y + height / 2;
-	}
-
-	public double getMaxRight() {
-		return x + width;
 	}
 
 	public Paint getLevelBackgroundColor() {
@@ -495,8 +437,10 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 			for (FmmlxSlot s : slots) {
 				slotsY += lineHeight;
 				NodeLabel.Action changeSlotValueAction = () -> {diagram.getActions().changeSlotValue(this, s);};
-				NodeLabel slotLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, slotsY, Color.BLACK, null, s, changeSlotValueAction, s.getName() + " = " + s.getValue(), false);
-				slotsBox.nodeElements.add(slotLabel);
+				NodeLabel slotNameLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, slotsY, Color.BLACK, null, s, changeSlotValueAction, s.getName() + " = ", false);
+				slotsBox.nodeElements.add(slotNameLabel);
+				NodeLabel slotValueLabel = new NodeLabel(Pos.BASELINE_LEFT, 3 + slotNameLabel.getWidth(), slotsY, new Color(0.0,0.4,0.2,1.0), new Color(0.85,0.9,0.85,1.0), s, changeSlotValueAction, "" + s.getValue(), false);
+				slotsBox.nodeElements.add(slotValueLabel);
 			}
 		}
 		currentY = yAfterSlotBox;
@@ -512,8 +456,10 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 			nodeElements.addElement(opvBox);
 			for (FmmlxOperationValue opv : operationValues) {
 				opvY += lineHeight;
-				NodeLabel opvLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, opvY, new Color(0.0,0.4,0.2,1.0), new Color(0.85,0.9,0.85,1.0), opv, NO_ACTION, opv.getName() + " = " + opv.getValue(), false);
-				opvBox.nodeElements.add(opvLabel);
+				NodeLabel opvNameLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, opvY, Color.BLACK, null, opv, NO_ACTION, opv.getName() + "()->", false);
+				opvBox.nodeElements.add(opvNameLabel);
+				NodeLabel opvValueLabel = new NodeLabel(Pos.BASELINE_LEFT, 5 + opvNameLabel.getWidth(), opvY, opv.isInRange()?Color.YELLOW:Color.RED, Color.BLACK, opv, NO_ACTION, "" + opv.getValue(), false);
+				opvBox.nodeElements.add(opvValueLabel);
 			}
 		}
 		currentY = yAfterOPVBox;
@@ -547,16 +493,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	}
 	
 	private int countAttributesToBeShown() {
-		int counter=0;
-		for (FmmlxAttribute att : otherAttributes) {
-			if(showDerivedAttributes) {
-			counter++;
-			}
-		}
-		for (FmmlxAttribute att: ownAttributes) {
-			counter++;
-		}
-		return counter;
+		return otherAttributes.size() + ownAttributes.size();
 	}
 
 	private boolean hasParents() {
@@ -684,8 +621,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	public void moveTo(double x, double y, FmmlxDiagram diagram) {
 	    this.x = x;
 	    this.y = y;
-		setX((int) x);
-		setY((int) y);
 //		for(Edge edge : diagram.getEdges()) {
 //			if (edge.isStartNode(this)) edge.moveStartPoint(x + width/2, y + height/2);
 //			if (edge.isEndNode(this)) edge.moveEndPoint(x + width/2, y + height/2);

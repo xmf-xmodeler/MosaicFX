@@ -5,10 +5,6 @@ import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
 public class NodeLabel implements NodeElement {
 	
@@ -159,5 +155,9 @@ public class NodeLabel implements NodeElement {
 	public void activateSpecialMode(double availableWidth) {
 		this.special = true;
 		this.availableWidth = availableWidth;
+	}
+
+	public double getWidth() {
+		return FmmlxDiagram.calculateTextWidth(text);
 	}
 }

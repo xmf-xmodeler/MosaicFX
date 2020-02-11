@@ -254,8 +254,8 @@ public class FmmlxDiagram {
 			double maxBottom = canvasRawSize.getY();
 
 			for (FmmlxObject object : objects) {
-				maxRight = Math.max(maxRight, object.getMaxRight());
-				maxBottom = Math.max(maxBottom, object.getMaxBottom());
+				maxRight = Math.max(maxRight, object.getRightX());
+				maxBottom = Math.max(maxBottom, object.getBottomY());
 			}
 			canvasRawSize = new Point2D(maxRight, maxBottom);
 			Point2D canvasScreenSize = transformFX.transform(canvasRawSize);

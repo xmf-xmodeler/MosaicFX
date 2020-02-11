@@ -110,7 +110,6 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 		
 		mainNodes.add(classTextField);
 		mainNodes.add(levelComboBox);
-		mainNodes.add(monitorButton);
 		
 		addNodesToGrid(labelsNode, 0);
 		addNodesToGrid(mainNodes, 1);
@@ -118,6 +117,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 		grid.add(bodyTextArea, 1, 2, 1, 4);
 		grid.add(checkSyntaxButton, 0, 2);
 		grid.add(defaultOperationButton, 0, 3);
+		grid.add(monitorButton, 0, 4);
 	}
 
 //	private void updateOperationName2TextField(TextField textField, String body) {
@@ -166,7 +166,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 		bodyTextArea.setText(
 				"@Operation "+name
 				+(monitor?"[monitor=true]":"")
-				+"()"+":XCore::Element+"+"\n" +
+				+"()"+":XCore::Element"+"\n" +
 				"  null\n" +
 				"end");
 	}

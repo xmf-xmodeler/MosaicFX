@@ -112,7 +112,14 @@ public class FmmlxDiagramCommunicator {
 		}
 		return result;
 	}
-
+	
+	public void triggerUpdate() {
+		for(FmmlxDiagram diagram : diagrams) {
+			diagram.updateDiagram();
+		}
+	}
+	
+	
 	/**
 	 * This operations is called by xmf, usually after a request from java.
 	 *
@@ -475,7 +482,9 @@ public class FmmlxDiagramCommunicator {
 			Vector<Object> returnValue = (Vector<Object>) (returnValueO);
 			String name = (String) (returnValue.get(0));
 			String value = returnValue.get(1) == null?"null":(returnValue.get(1)).toString();
-			result.add(new FmmlxOperationValue(name, value));
+			Boolean hasRange = (Boolean) returnValue.get(2);
+			Boolean isInRange = (Boolean) returnValue.get(3);
+			result.add(new FmmlxOperationValue(name, value, hasRange, isInRange));
 		}
 		return result;
 	}

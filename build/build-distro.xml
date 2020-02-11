@@ -56,7 +56,7 @@
 			</classpath>
 		</javac>
 		<mkdir dir="../bin"/>
-		<javac srcdir="../src" destdir="../bin" classpathref="../.classpath">
+		<javac srcdir="../src" destdir="../bin">
 			<classpath>
 				<path>
 					<fileset dir="../lib/">
