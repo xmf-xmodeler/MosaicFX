@@ -70,14 +70,18 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		this.targetFromSourceVisible = targetFromSourceVisible;
 		this.symmetric = symmetric;
 		this.transitive = transitive;
-		
+				
 //		layout();
 	}
 	
-	private enum Anchor {CENTRE_MOVABLE, SOURCE_LEVEL, TARGET_LEVEL, SOURCE_MULTI, TARGET_MULTI};
+	private enum Anchor {CENTRE_MOVABLE, SOURCE_LEVEL, TARGET_LEVEL, SOURCE_MULTI, TARGET_MULTI,CENTRE_SELFASSOCIATION};
 
 	@Override protected void layoutLabels() {
+		if( sourceNode == targetNode) {
+			createLabel(name, 0, Anchor.CENTRE_SELFASSOCIATION, showChangeFwNameDialog, 0, BLACK, TRANSPARENT);
+		}else {
 		createLabel(name, 0, Anchor.CENTRE_MOVABLE, showChangeFwNameDialog, 0, BLACK, TRANSPARENT);
+		}
 //		if(reverseName != null) 
 //	    createLabel(reverseName, 1, Anchor.CENTRE, showChangeRvNameDialog, -20, BLACK, TRANSPARENT);
 		createLabel(""+levelStartToEnd, 2, Anchor.TARGET_LEVEL, showChangeS2ELevelDialog, 0, WHITE, BLACK);
@@ -100,6 +104,16 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 				diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, storedPostion.getX(), storedPostion.getY(), w, h, textColor, bgColor));
 			} else {
 				diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, 0, -h*1.5, w, h, textColor, bgColor));
+			}
+		} else if (Anchor.CENTRE_SELFASSOCIATION==anchor) {
+			Point2D storedPostion = getLabelPosition(localId);
+			Vector<FmmlxObject> anchors = new Vector<>();
+			anchors.add(getSourceNode());
+			anchors.add(getTargetNode());
+			if(storedPostion != null) {
+				diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, storedPostion.getX(), storedPostion.getY(), w, h, textColor, bgColor));
+			} else {
+				diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, sourceNode.getWidth()/2, -4*h-0.5*sourceNode.getHeight(), w, h, textColor, bgColor));
 			}
 		} else {
 			Vector<FmmlxObject> anchors = new Vector<>();
