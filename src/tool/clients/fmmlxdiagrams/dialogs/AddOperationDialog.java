@@ -1,7 +1,5 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -73,7 +71,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 //		typeComboBox = new ComboBox<>(ElementList.elementList);
 //		typeComboBox.getSelectionModel().select("Element");
 		levelComboBox = new ComboBox<>(LevelList.generateLevelListToThreshold(0, object.getLevel()));
-		levelComboBox.getSelectionModel().select(0);
+		levelComboBox.getSelectionModel().selectLast();
 		monitorButton = new Button("Monitor Operation Values");
 		monitorButton.setOnAction(event -> {
 		        resetOperationBody("op0", true);

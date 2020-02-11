@@ -43,6 +43,11 @@ public class FmmlxAttribute implements FmmlxProperty, Comparable<FmmlxAttribute>
 	public String getType() {
 		return type;
 	}
+	
+	public String getTypeShort() {
+		if(type.startsWith("Auxiliary::")) return type.substring("Auxiliary::".length());
+		return type;
+	}
 
 	@Override
 	public int compareTo(FmmlxAttribute that) {

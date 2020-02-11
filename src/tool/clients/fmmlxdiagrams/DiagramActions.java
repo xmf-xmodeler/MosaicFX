@@ -31,10 +31,14 @@ public class DiagramActions {
 		diagram.redraw();
 	}
 	
-	public void classBrowserStage() {
-		Platform.runLater(() -> {
-			ClassBrowserClient.show();
-		});
+	public void classBrowserStage(boolean xmf) {
+		if(xmf)  {
+			diagram.getComm().openPackageBrowser();
+		} else {
+			Platform.runLater(() -> {
+				ClassBrowserClient.show(null);
+			});
+		}
 	}
 
 	public void addMetaClassDialog() {
@@ -344,6 +348,26 @@ public class DiagramActions {
 		}
 	}
 
+
+	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type) {
+		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
+		
+		if (selectedProperty != null && selectedProperty instanceof FmmlxAttribute && type == PropertyType.Attribute) {
+			FmmlxAttribute att = (FmmlxAttribute) selectedProperty;
+			Multiplicity oldMul = att.getMultiplicity();
+			
+			Platform.runLater(() -> {
+				MultiplicityDialog md = new MultiplicityDialog(oldMul);
+				Optional<MultiplicityDialogResult> mr = md.showAndWait();
+				if(mr.isPresent()) {
+					diagram.getComm().changeAttributeMultiplicity(diagram, object.id, att.name, oldMul, mr.get().convertToMultiplicity());
+					diagram.updateDiagram();
+				}
+			});
+			
+		}
+	}
+	
 	public void changeLevelDialog(FmmlxObject object, PropertyType type) {
 //		CountDownLatch latch = new CountDownLatch(1);
 

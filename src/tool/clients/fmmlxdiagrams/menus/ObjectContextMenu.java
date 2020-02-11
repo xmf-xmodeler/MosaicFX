@@ -109,9 +109,11 @@ public class ObjectContextMenu extends ContextMenu {
 		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Attribute));
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Attribute));
+		MenuItem changeMulItem = new MenuItem("Change multiplicity");
+		changeMulItem.setOnAction(e -> actions.changeMultiplicityDialog(object, PropertyType.Attribute));
 
 		attributeMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeOwnerItem, changeTypeItem,
-				changeLevelItem);
+				changeLevelItem, changeMulItem);
 
 		return attributeMenu;
 	}

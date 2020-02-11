@@ -58,16 +58,13 @@ public class DiagramEdgeLabel implements CanvasElement {
 		g.setFill(fontColor);
 		g.fillText(this.text, this.getReferenceX() + relativeX + MARGIN, this.getReferenceY() + relativeY + height - MARGIN-2);
 		if(anchors.size()>=2) {
-		if(anchors.firstElement().getCenterX() <= anchors.elementAt(1).getCenterX()) {
-			
-		
-		g.fillPolygon(new double[] { this.getReferenceX()+relativeX+width, this.getReferenceX()+relativeX+width + size, this.getReferenceX()+relativeX+width },
-					  new double[] { this.getReferenceY()+relativeY, this.getReferenceY()+relativeY + size /2, this.getReferenceY()+relativeY+ size}, 3);
-		}else {
-			g.fillPolygon(new double[] { this.getReferenceX()+relativeX, this.getReferenceX()+relativeX - size+5, this.getReferenceX()+relativeX },
-					  new double[] { this.getReferenceY()+relativeY, this.getReferenceY()+relativeY + size /2, this.getReferenceY()+relativeY+ size}, 3);
-		}
-			
+			if(anchors.firstElement().getCenterX() <= anchors.elementAt(1).getCenterX()) {		
+				g.fillPolygon(new double[] { this.getReferenceX()+relativeX+width, this.getReferenceX()+relativeX+width + size-5, this.getReferenceX()+relativeX+width },
+						      new double[] { this.getReferenceY()+relativeY, this.getReferenceY()+relativeY + size /2, this.getReferenceY()+relativeY+ size}, 3);
+			}else {
+				g.fillPolygon(new double[] { this.getReferenceX()+relativeX, this.getReferenceX()+relativeX - size+5, this.getReferenceX()+relativeX },
+						      new double[] { this.getReferenceY()+relativeY, this.getReferenceY()+relativeY + size /2, this.getReferenceY()+relativeY+ size}, 3);
+			}
 		}
 	}
 

@@ -19,7 +19,6 @@ import java.util.Vector;
 
 public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
-	//	private String[] levelBackgroundColors = {"#8C8C8C", "#FFFFFF", "#000000", "#3111DB", "#dd2244", "#119955"};
 	public static HashMap<Integer, Paint> colors = null;
 	private String name;
 	int id;
@@ -37,8 +36,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	
 	private transient double mouseMoveOffsetX;
 	private transient double mouseMoveOffsetY;
-//	private transient double lastValidX;
-//	private transient double lastValidY;
 	
 	private transient Point2D lastClick = null;
 	
@@ -373,7 +370,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		for (FmmlxAttribute att : ownAttributes) {
 			attY += lineHeight;
 			NodeLabel.Action changeAttNameAction = () -> {diagram.getActions().changeNameDialog(this, PropertyType.Attribute, att);};
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.BLACK, null, att, changeAttNameAction, att.getName() + ":" + att.type +"["+ att.getMultiplicity() + "]" , false);
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.BLACK, null, att, changeAttNameAction, att.getName() + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]" , false);
 			attBox.nodeElements.add(attLabel);
 			NodeLabel.Action changeAttLevelAction = () -> {diagram.getActions().changeLevelDialog(this, PropertyType.Attribute);};
 			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.BLACK, att, changeAttLevelAction, att.level + "", false);
@@ -382,7 +379,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		for (FmmlxAttribute att : otherAttributes) {
 			if(showDerivedAttributes) {
 			attY += lineHeight;
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, NO_ACTION, att.getName() + ":" + att.type +"["+ att.getMultiplicity() + "]" + " (from " + diagram.getObjectById(att.owner).name + ")", false);
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, NO_ACTION, att.getName() + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + diagram.getObjectById(att.owner).name + ")", false);
 			attBox.nodeElements.add(attLabel);
 			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.GRAY, att, NO_ACTION, att.level + "", false);
 			attBox.nodeElements.add(attLevelLabel);
@@ -511,11 +508,11 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 
 		//determine maximal width of attributes
 		for (FmmlxAttribute att : ownAttributes) {
-			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ":" + att.type +"["+ att.getMultiplicity() + "]") + INST_LEVEL_WIDTH, neededWidth);
+			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]") + INST_LEVEL_WIDTH, neededWidth);
 		}
 		for (FmmlxAttribute att : otherAttributes) {
 			if(showDerivedAttributes) {
-			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ":" + att.type +"["+ att.getMultiplicity() + "]" + " (from " + diagram.getObjectById(att.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
+			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + diagram.getObjectById(att.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
 			}
 		}
 //		//determine maximal width of operations
@@ -543,7 +540,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		}
 		if (showOperationValues) {
 			for (FmmlxOperationValue opValue : operationValues) {
-				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(opValue.getName() + " = " + opValue.getValue()), neededWidth);
+				neededWidth = Math.max(2+FmmlxDiagram.calculateTextWidth(opValue.getName() + " -> " + opValue.getValue()), neededWidth);
 			}
 		}
 

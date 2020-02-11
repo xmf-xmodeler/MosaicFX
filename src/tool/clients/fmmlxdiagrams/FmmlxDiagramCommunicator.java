@@ -701,16 +701,20 @@ public class FmmlxDiagramCommunicator {
 				new Value(newName)};
 		sendMessage("changeAttributeName", message);
 	}
+	
 
-//	public void changeAssociationName(int objectId, String oldName, String newName) {
-//		Value[] message = new Value[]{
-//				new Value(-1),
-//				new Value(objectId),
-//				new Value(oldName),
-//				new Value(newName)};
-//		sendMessage("changeAssociationName", message);
-//	}
-
+	public void changeAttributeMultiplicity(FmmlxDiagram diagram, int id, String name, Multiplicity oldMul,
+			Multiplicity newMul) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagram.getID()),
+				new Value(id),
+				new Value(name),
+				new Value(oldMul.toValue()),
+				new Value(newMul.toValue())};
+		sendMessage("changeAttributeMultiplicity", message);
+		
+	}
+	
 	public void changeSlotValue(FmmlxDiagram diagram, int id, String slotName, String aParsableText) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
@@ -1125,5 +1129,10 @@ public class FmmlxDiagramCommunicator {
 				};
 		sendMessage("showBody", message);
 	}
+
+	public void openPackageBrowser() {
+		WorkbenchClient.theClient().send(handler, "openPackageBrowser()", new Value[] {});
+	}
+
 
 }
