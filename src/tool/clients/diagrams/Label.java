@@ -420,7 +420,7 @@ public class Label implements Selectable {
   public void paintSelected(GraphicsContext gc, int x, int y) { // TODO:ADAPT X/Y
 	  if (hidden) return;
 //    Color c = gc.getForeground();
-    gc.setStroke(Color.RED);
+    gc.setStroke(Color.GREEN);
     gc.strokeRect(getAbsoluteX() - 2, getAbsoluteY() - 2, getWidth() + 4, getHeight() + 4);
     EdgePainter.Point source = edge.sourceIntercept();
     EdgePainter.Point target = edge.targetIntercept();
