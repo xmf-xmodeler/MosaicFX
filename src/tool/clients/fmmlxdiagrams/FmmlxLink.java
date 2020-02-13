@@ -54,7 +54,18 @@ public class FmmlxLink extends Edge {
 		Vector<FmmlxObject> anchors = new Vector<>();
 		if(anchor!=Anchor.TARGET) anchors.add(sourceNode);
 		if(anchor!=Anchor.SOURCE) anchors.add(targetNode);
-		diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, 0, -20+yDiff, w, h, Color.BLACK, new Color(0, 0, 0, 0)));
+		
+		if(anchor==Anchor.CENTRE) {
+		Point2D storedPostion = getLabelPosition(localId);	
+		anchors.add(getSourceNode());
+		anchors.add(getTargetNode());
+		if(storedPostion != null) {
+			diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, storedPostion.getX(), storedPostion.getY(), w, h, Color.BLACK, new Color(0,0,0,0)));
+		} else {
+			diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, 0, -h*1.5, w, h, Color.BLACK, new Color(0,0,0,0)));
+		}	
+		}
+		//diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, 0, -20+yDiff, w, h, Color.BLACK, new Color(0, 0, 0, 0)));
 	}
 	
 	@Override
@@ -85,4 +96,12 @@ public class FmmlxLink extends Edge {
 	
 	@Override
 	public void unHighlight() {	}
+	
+	public FmmlxObject getSourceNode() {
+		return sourceNode;
+	}
+	
+	public FmmlxObject getTargetNode() {
+		return targetNode;
+	}
 }

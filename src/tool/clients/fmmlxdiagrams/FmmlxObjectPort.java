@@ -67,10 +67,10 @@ public class FmmlxObjectPort {
 			for(int i = 0; i < edgesOnOneSide.size(); i++) {
 				if(edgesOnOneSide.get(i).edge.visible) visibleEdgeCount++;
 				if(edgesOnOneSide.get(i) == edgeEnd && edgeEnd.getNode() == owner) {//(isStartNode?edgeEnd.startNode:edgeEnd.endNode) == owner) {
-					double maxX = direction == PortRegion.NORTH || direction == PortRegion.WEST ? owner.getX() : owner.getMaxRight();
-					double minX = direction == PortRegion.SOUTH || direction == PortRegion.WEST ? owner.getX() : owner.getMaxRight();
-					double minY = direction == PortRegion.NORTH || direction == PortRegion.WEST ? owner.getY() : owner.getMaxBottom();
-					double maxY = direction == PortRegion.NORTH || direction == PortRegion.EAST ? owner.getY() : owner.getMaxBottom();
+					double maxX = direction == PortRegion.NORTH || direction == PortRegion.WEST ? owner.getX() : owner.getRightX();
+					double minX = direction == PortRegion.SOUTH || direction == PortRegion.WEST ? owner.getX() : owner.getRightX();
+					double minY = direction == PortRegion.NORTH || direction == PortRegion.WEST ? owner.getY() : owner.getBottomY();
+					double maxY = direction == PortRegion.NORTH || direction == PortRegion.EAST ? owner.getY() : owner.getBottomY();
 					
 					double diffX = maxX - minX;
 					double diffY = maxY - minY;

@@ -254,8 +254,8 @@ public class FmmlxDiagram {
 			double maxBottom = canvasRawSize.getY();
 
 			for (FmmlxObject object : objects) {
-				maxRight = Math.max(maxRight, object.getMaxRight());
-				maxBottom = Math.max(maxBottom, object.getMaxBottom());
+				maxRight = Math.max(maxRight, object.getRightX());
+				maxBottom = Math.max(maxBottom, object.getBottomY());
 			}
 			canvasRawSize = new Point2D(maxRight, maxBottom);
 			Point2D canvasScreenSize = transformFX.transform(canvasRawSize);
@@ -1081,7 +1081,7 @@ public class FmmlxDiagram {
 	}
 	
 	public String convertPath2Short(String typePath) {
-		String[] prefixes = new String[]{packagePath, "Root::XCore", "Root"};
+		String[] prefixes = new String[]{packagePath, "Root::XCore", "Root::Auxiliary", "Root"};
 			for(String prefix : prefixes) {
 				if(typePath.startsWith(prefix)) {
 					return typePath.substring(prefix.length()+2);

@@ -148,6 +148,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		classTextField.setDisable(true);
 		levelComboBox = new ComboBox<>(LevelList.getLevelInterval(selectedObject));
 		levelComboBox.setConverter(new IntegerStringConverter());
+		levelComboBox.getSelectionModel().selectLast();
 		typeComboBox = new ComboBox<>(typeList);
 		typeComboBox.setEditable(true);
 		multiplicityButton = new Button();
