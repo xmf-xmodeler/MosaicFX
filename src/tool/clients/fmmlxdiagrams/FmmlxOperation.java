@@ -28,6 +28,20 @@ public class FmmlxOperation implements FmmlxProperty, Comparable<FmmlxOperation>
 		this.paramNames = paramNames;
 		this.paramTypes = paramTypes;
 	}
+	
+	
+
+	public Vector<String> getParamNames() {
+		return paramNames;
+	}
+
+
+
+	public Vector<String> getParamTypes() {
+		return paramTypes;
+	}
+
+
 
 	public String getName() {
 		return name;

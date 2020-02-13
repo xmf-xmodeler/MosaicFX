@@ -36,7 +36,7 @@ public class DiagramActions {
 			diagram.getComm().openPackageBrowser();
 		} else {
 			Platform.runLater(() -> {
-				ClassBrowserClient.show(null);
+				ClassBrowserClient.show(diagram);
 			});
 		}
 	}

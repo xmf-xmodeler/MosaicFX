@@ -207,7 +207,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		return otherOperations;
 	}
 
-	private Vector<FmmlxOperation> getAllOperations() {
+	public Vector<FmmlxOperation> getAllOperations() {
 		Vector<FmmlxOperation> result = new Vector<FmmlxOperation>();
 		result.addAll(ownOperations);
 		result.addAll(otherOperations);

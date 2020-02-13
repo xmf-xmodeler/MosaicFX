@@ -1,6 +1,5 @@
 package tool.clients.fmmlxdiagrams.classbrowser;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
@@ -21,8 +21,10 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
+import tool.clients.fmmlxdiagrams.FmmlxSlot;
 
 
 public class ClassBrowserStage extends CustomStage {
@@ -34,7 +36,7 @@ public class ClassBrowserStage extends CustomStage {
 	protected static ListView<String> protocolListView;
 	protected static ListView<FmmlxOperation> fmmlxOperationListView;
 	protected static ListView<FmmlxAssociation> fmmlxAssociationListView;
-	protected static ListView<String> slotListView;
+	protected static ListView<FmmlxSlot> slotListView;
 	private ComboBox<String> abstractComboBox;
 	private TextField objectBrowserTextField;
 	private TextField operationInputTextField;
@@ -58,19 +60,15 @@ public class ClassBrowserStage extends CustomStage {
 	protected GridPane attributeGridpane;
 	protected VBox consoleContainer;
 	
+	private FmmlxDiagram diagram;
+	private FmmlxObject selectedObject;
+	
 	public ClassBrowserStage() {
 		super();
-		//this.diagram=diagram;
 		
 		setTitle("Class Browser");
 		
-		codeArea = new TextArea();
-		
-		initClassBrowserContainer();
-		
-		
-		consoleContainer= new VBox();
-		consoleContainer.getChildren().add(codeArea);
+		initAllContainer();
 
 		outerSplitPane = new SplitPane();
 		outerSplitPane.setOrientation(Orientation.VERTICAL);
@@ -91,10 +89,22 @@ public class ClassBrowserStage extends CustomStage {
 	}
 
 	private void onClose() {
+		clearAll();
 		hide();
 	}
 
-	private void initClassBrowserContainer() {
+	private void clearAll() {
+		fmmlxAssociationListView.getItems().clear();
+		fmmlxAttributeListView.getItems().clear();
+		fmmlxOperationListView.getItems().clear();
+		fmmlxObjectListView.getItems().clear();
+	}
+
+	private void initAllContainer() {
+		codeArea = new TextArea();
+		consoleContainer= new VBox();
+		consoleContainer.getChildren().add(codeArea);
+		
 		classBrowserContainer = new GridPane();
 		attributeGridpane = new GridPane();
 		classBrowserContainer.setHgap(10);
@@ -112,48 +122,107 @@ public class ClassBrowserStage extends CustomStage {
 		modelListView = new ListView<String>();
 		modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue1) -> {
 			if (newValue1 != null) {
-				//TODO if model selected
+				
 				//First clear all ListView
 				fmmlxObjectListView.getItems().clear();
 				fmmlxAttributeListView.getItems().clear();
 				protocolListView.getItems().clear();
 				fmmlxOperationListView.getItems().clear();
 				fmmlxAssociationListView.getItems().clear();
+				
+				//TODO if model selected
+				//updateDiagram(newValue1);
 			}
 		});
 		
 		projectBrowserTextFied = new TextField();
+		projectBrowserTextFied.textProperty().addListener((observable, oldValue, newValue) -> {
+		    projectBrowserListerner(modelListView, oldValue, newValue);
+		});
 		projectBrowserVBox= joinNodeInVBox(new Label("Project :"), projectBrowserTextFied);
 		
 		fmmlxObjectListView = new ListView<FmmlxObject>();
+		fmmlxObjectListView.setCellFactory(param -> new ListCell<FmmlxObject>() {
+			@Override
+			protected void updateItem(FmmlxObject obj, boolean empty) {
+				super.updateItem(obj, empty);
+
+				if (empty || obj == null || obj.getName() == null) {
+					setText(null);
+				} else {
+					setText("("+obj.getLevel()+")"+" "+ obj.getName());
+				}
+			}
+		});
 		fmmlxObjectListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue1) -> {
 			if (newValue1 != null) {
-				//TODO if object selected
+				
+				selectedObject=newValue1;
+				
+				//Clear Att/opp etc
+				fmmlxAttributeListView.getItems().clear();
+				protocolListView.getItems().clear();
+				fmmlxOperationListView.getItems().clear();
+				fmmlxAssociationListView.getItems().clear();
+				
+				//Populate ListViews
+				fmmlxAttributeListView.getItems().addAll(newValue1.getAllAttributes());
+				fmmlxOperationListView.getItems().addAll(newValue1.getAllOperations());
+				fmmlxAssociationListView.getItems().addAll(newValue1.getAllRelatedAssociations());
 			}
 		});
 		
 		objectBrowserTextField = new TextField();
+		objectBrowserTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+			clearAll();
+		    objectBrowserListerner(fmmlxObjectListView, diagram, oldValue, newValue);
+		});
 		abstractComboBox = new ComboBox<String>();
 		objectBrowserVBox = joinNodeInVBox(new Label("class :"), objectBrowserTextField);
 		abstractVBox = joinNodeInVBox(new Label("abstract :"), abstractComboBox);
 		
 		fmmlxAttributeListView = new ListView<FmmlxAttribute>();
+		fmmlxAttributeListView.setCellFactory(param -> new ListCell<FmmlxAttribute>() {
+			@Override
+			protected void updateItem(FmmlxAttribute att, boolean empty) {
+				super.updateItem(att, empty);
+
+				if (empty || att == null || att.getName() == null) {
+					setText(null);
+				} else {
+					setText("("+att.getLevel()+")"+" "+ att.getName());
+				}
+			}
+		});
 		fmmlxAttributeListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue1) -> {
 			if (newValue1 != null) {
-				//TODO if model selected
+				//TODO if attribute selected
 			}
 		});
 		
-		slotListView = new ListView<String>();
+		slotListView = new ListView<FmmlxSlot>();
 		attributeBrowserTextField = new TextField();
 		attributeBrowserVBox = joinNodeInVBox(new Label("class :"), attributeBrowserTextField);
 		
 		protocolListView = new ListView<String>();
 		
 		fmmlxOperationListView = new ListView<FmmlxOperation>();
+		fmmlxOperationListView.setCellFactory(param -> new ListCell<FmmlxOperation>() {
+			@Override
+			protected void updateItem(FmmlxOperation op, boolean empty) {
+				super.updateItem(op, empty);
+
+				if (empty || op == null || op.getName() == null) {
+					setText(null);
+				} else {
+					
+					setText(op.getName());
+				}
+			}
+		});
 		fmmlxOperationListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue1) -> {
 			if (newValue1 != null) {
-				//TODO if model selected
+				//TODO if operation selected
 			}
 		});
 		
@@ -163,17 +232,33 @@ public class ClassBrowserStage extends CustomStage {
 		operationInputVBox = joinNodeInVBox(new Label("Input :"), operationOutputTexField);
 		
 		fmmlxAssociationListView = new ListView<FmmlxAssociation>();
+		fmmlxAssociationListView.setCellFactory(param -> new ListCell<FmmlxAssociation>() {
+			@Override
+			protected void updateItem(FmmlxAssociation ass, boolean empty) {
+				super.updateItem(ass, empty);
+
+				if (empty || ass == null || ass.getName() == null) {
+					setText(null);
+				} else {
+					setText(ass.getName());
+				}
+			}
+		});
 		fmmlxAssociationListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue1) -> {
 			if (newValue1 != null) {
-				//TODO if model selected
+				if(newValue1.getSourceNode().getName().equals(selectedObject.getName())){
+					associationBrowserTextField.setText("("+newValue1.getTargetNode().getLevel()+")"+" "+newValue1.getTargetNode().getName());
+				} else {
+					associationBrowserTextField.setText("("+newValue1.getSourceNode().getLevel()+")"+" "+newValue1.getSourceNode().getName());
+				}
 			}
 		});
 		
 		associationBrowserTextField = new TextField();
+		associationBrowserTextField.setEditable(false);
+		associationBrowserTextField.setDisable(true);
 		associationBrowserVBox = joinNodeInVBox(new Label("with :"), associationBrowserTextField);
 		 
-		
-		
 		List<Node> modelNode = new ArrayList<Node>();
 		modelNode.add(new Label(""));
 		modelNode.add(new Label("Model"));
@@ -181,7 +266,6 @@ public class ClassBrowserStage extends CustomStage {
 		modelNode.add(projectBrowserVBox);
 		modelNode.add(new Label(""));
 		modelNode.add(new Label("code"));
-		
 		
 		List<Node> objectNode = new ArrayList<Node>();
 		objectNode.add(new Label(""));
@@ -193,7 +277,7 @@ public class ClassBrowserStage extends CustomStage {
 		List<Node> attributeNode = new ArrayList<Node>();
 		attributeNode.add(new Label(""));
 		attributeNode.add(new Label("Attributes"));
-//		
+		
 		attributeGridpane.add(fmmlxAttributeListView, 0, 1);
 		attributeGridpane.add(new Label("Slots"), 0	, 2);
 		attributeGridpane.add(slotListView, 0, 3);
@@ -231,81 +315,15 @@ public class ClassBrowserStage extends CustomStage {
 		addNodesToGrid(classBrowserContainer,operationNode, 4);
 		addNodesToGrid(classBrowserContainer,associationNode, 5);
 	}
-	
-	private VBox joinNodeInVBox(Node node1, Node node2) {
-		VBox result = new VBox();
-		GridPane grid = new GridPane();
-		grid.add(node1, 0, 0);
-		grid.add(node2, 1, 0);
+
+	public void updateDiagram(FmmlxDiagram diagram) {
+
+		clearAll();
+		this.diagram=diagram;
 		
-		ColumnConstraints col1 = new ColumnConstraints();
-	    col1.setPercentWidth(33);
-	    ColumnConstraints col2 = new ColumnConstraints();
-	    col2.setPercentWidth(68);
-
-	    grid.getColumnConstraints().addAll(col1,col2);
-	    
-		result.getChildren().add(grid);
-		return result;
-	}
-
-	public TextArea getCodeArea() {
-		return codeArea;
-	}
-
-	public ListView<String> getModelListView() {
-		return modelListView;
-	}
-
-	public ListView<FmmlxObject> getFmmlxObjectListView() {
-		return fmmlxObjectListView;
-	}
-
-	public ListView<FmmlxAttribute> getFmmlxAttributeListView() {
-		return fmmlxAttributeListView;
-	}
-
-	public ListView<String> getProtocolListView() {
-		return protocolListView;
-	}
-
-	public ListView<FmmlxOperation> getFmmlxOperationListView() {
-		return fmmlxOperationListView;
-	}
-
-	public ListView<FmmlxAssociation> getFmmlxAssociationListView() {
-		return fmmlxAssociationListView;
-	}
-
-	public ListView<String> getSlotListView() {
-		return slotListView;
-	}
-
-	public ComboBox<String> getAbstractComboBox() {
-		return abstractComboBox;
-	}
-
-	public TextField getObjectBrowserTextField() {
-		return objectBrowserTextField;
-	}
-
-	public TextField getOperationInputTextField() {
-		return operationInputTextField;
-	}
-
-	public TextField getOperationOutputTexField() {
-		return operationOutputTexField;
-	}
-
-	public TextField getAssociationBrowserTextField() {
-		return associationBrowserTextField;
-	}
-
-	public TextField getAttributeBrowserTextField() {
-		return attributeBrowserTextField;
-	}
-
-	public TextField getProjectBrowserTextFied() {
-		return projectBrowserTextFied;
+		for(FmmlxObject obj : diagram.getObjects()) {
+			fmmlxObjectListView.getItems().add(obj);
+		}
+		
 	}
 }

@@ -8,8 +8,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 public class CustomStage extends Stage{
@@ -64,5 +67,35 @@ public class CustomStage extends Stage{
 		}
 	}
 	
+	public void objectBrowserListerner(ListView<FmmlxObject>listView, FmmlxDiagram diagram, String oldValue, String newValue) {
+		listView.getItems().clear();
+		for(FmmlxObject tmp : diagram.getObjects()) {
+			if(tmp.getName().contains(newValue)) {
+				listView.getItems().add(tmp);
+			}
+		}
+	}
+	
+	public void projectBrowserListerner(ListView<String> modelListView2, String oldValue, String newValue) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public VBox joinNodeInVBox(Node node1, Node node2) {
+		VBox result = new VBox();
+		GridPane grid = new GridPane();
+		grid.add(node1, 0, 0);
+		grid.add(node2, 1, 0);
+		
+		ColumnConstraints col1 = new ColumnConstraints();
+	    col1.setPercentWidth(33);
+	    ColumnConstraints col2 = new ColumnConstraints();
+	    col2.setPercentWidth(68);
+
+	    grid.getColumnConstraints().addAll(col1,col2);
+	    
+		result.getChildren().add(grid);
+		return result;
+	}
 
 }
