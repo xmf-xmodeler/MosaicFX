@@ -2,7 +2,6 @@ package tool.clients.fmmlxdiagrams.classbrowser;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -21,41 +20,22 @@ import javafx.scene.layout.VBox;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.FmmlxSlot;
 
 
 public class ClassBrowserStage extends CustomStage {
 
-	protected static TextArea codeArea;
-	protected static ListView<String> modelListView;
-	protected static ListView<String> fmmlxObjectListView;
-	protected static ListView<String> fmmlxAttributeListView;
-	protected static ListView<String> protocolListView;
-	protected static ListView<String> fmmlxOperationListView;
-	protected static ListView<String> fmmlxAssociationListView;
-	protected static ListView<FmmlxSlot> slotListView;
+	protected TextArea codeArea;
+	protected ListView<String> modelListView,fmmlxObjectListView, fmmlxAttributeListView, 
+						protocolListView, fmmlxOperationListView, fmmlxAssociationListView, slotListView;
 	private ComboBox<String> abstractComboBox;
-	private TextField objectBrowserTextField;
-	private TextField operationInputTextField;
-	private TextField operationOutputTexField;
-	private TextField associationBrowserTextField;
-	private TextField attributeBrowserTextField;
-	private TextField projectBrowserTextFied;
+	private TextField objectBrowserTextField, operationInputTextField, operationOutputTexField, 
+						associationBrowserTextField, attributeBrowserTextField, projectBrowserTextFied;
 	
-	//Organizer
 	protected StackPane root;
-	protected VBox container;
+	protected VBox container, projectBrowserVBox, objectBrowserVBox, attributeBrowserVBox, abstractVBox,
+						operationOutputVBox, operationInputVBox, associationBrowserVBox, consoleContainer;
 	protected SplitPane outerSplitPane;
-	protected VBox projectBrowserVBox;
-	protected VBox objectBrowserVBox;
-	protected VBox attributeBrowserVBox;
-	protected VBox operationOutputVBox;
-	protected VBox operationInputVBox;
-	protected VBox associationBrowserVBox;
-	protected VBox abstractVBox;
-	protected GridPane classBrowserContainer;
-	protected GridPane attributeGridpane;
-	protected VBox consoleContainer;
+	protected GridPane classBrowserContainer, attributeGridpane;
 	
 	private FmmlxDiagram diagram;
 	private FmmlxObject selectedObject;
@@ -146,13 +126,11 @@ public class ClassBrowserStage extends CustomStage {
 				
 				selectedObject=diagram.getObjectByName(parts[1]);
 				
-				//Clear Att/opp etc
 				fmmlxAttributeListView.getItems().clear();
 				protocolListView.getItems().clear();
 				fmmlxOperationListView.getItems().clear();
 				fmmlxAssociationListView.getItems().clear();
 				
-				//Populate ListViews
 				fmmlxAttributeListView.getItems().addAll(selectedObject.getAllAttributesString());
 				fmmlxOperationListView.getItems().addAll(selectedObject.getAllOperationsString());
 				fmmlxAssociationListView.getItems().addAll(selectedObject.getAllRelatedAssociationsString());
@@ -175,7 +153,7 @@ public class ClassBrowserStage extends CustomStage {
 			}
 		});
 		
-		slotListView = new ListView<FmmlxSlot>();
+		slotListView = new ListView<String>();
 		attributeBrowserTextField = new TextField();
 		attributeBrowserVBox = joinNodeInVBox(new Label("class :"), attributeBrowserTextField);
 		
