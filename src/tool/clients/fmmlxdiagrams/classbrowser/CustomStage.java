@@ -67,11 +67,11 @@ public class CustomStage extends Stage{
 		}
 	}
 	
-	public void objectBrowserListerner(ListView<FmmlxObject>listView, FmmlxDiagram diagram, String oldValue, String newValue) {
-		listView.getItems().clear();
+	public void objectBrowserListerner(ListView<String> fmmlxObjectListView, FmmlxDiagram diagram, String oldValue, String newValue) {
+		fmmlxObjectListView.getItems().clear();
 		for(FmmlxObject tmp : diagram.getObjects()) {
 			if(tmp.getName().contains(newValue)) {
-				listView.getItems().add(tmp);
+				fmmlxObjectListView.getItems().add("("+tmp.getLevel()+") "+tmp.getName());
 			}
 		}
 	}

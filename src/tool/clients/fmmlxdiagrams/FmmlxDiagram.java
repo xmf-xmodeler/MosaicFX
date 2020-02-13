@@ -1100,4 +1100,22 @@ public class FmmlxDiagram {
 		return result;
 	}
 
+	public FmmlxObject getObjectByName(String name) {
+		for(FmmlxObject obj : getObjects()) {
+			if (obj.getName().equals(name)){
+				return obj;
+			}
+		}
+		return null;
+	}
+
+	public FmmlxAssociation getAssociationByName(String name) {
+		for(FmmlxAssociation as : getAssociations()) {
+			if(as.getName().equals(name)) {
+				return as;
+			}
+		}
+		return null;
+	}
+
 }

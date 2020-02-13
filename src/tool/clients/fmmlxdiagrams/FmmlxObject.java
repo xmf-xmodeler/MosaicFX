@@ -15,6 +15,8 @@ import tool.clients.fmmlxdiagrams.newpalette.ToolClass;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
 
 public class FmmlxObject implements CanvasElement, FmmlxProperty {
@@ -786,6 +788,33 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	public List<String> getAllAttributesString() {
+		List<String> result = new LinkedList<String>();
+		
+		for(FmmlxAttribute att : getAllAttributes()) {
+			result.add("("+att.getLevel()+") "+att.getName());
+		}
+		return result;
+	}
+
+	public List<String> getAllOperationsString() {
+		List<String> result = new LinkedList<String>();
+		
+		for(FmmlxOperation op : getAllOperations()) {
+			result.add(op.getName());
+		}
+		return result;
+	}
+
+	public List<String> getAllRelatedAssociationsString() {
+		List<String> result = new LinkedList<String>();
+		
+		for(FmmlxAssociation as : getAllRelatedAssociations()) {
+			result.add(as.getName());
+		}
+		return result;
 	}
 
 }
