@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.xmodeler.XModeler;
 
 public class CustomStage extends Stage{
 
@@ -22,7 +23,17 @@ public class CustomStage extends Stage{
 	public CustomStage() {
 		super();
 		setWidth(1100);
-		setHeight(800);
+		setHeight(800);		
+		setOnShowing(e-> onShow());
+	}
+	
+	private void onShow() {
+		double centerXPosition = XModeler.getStage().getX() + XModeler.getStage().getWidth()/2d;
+        double centerYPosition = XModeler.getStage().getY() + XModeler.getStage().getHeight()/2d;
+        
+        this.setX(centerXPosition - this.getWidth()/2d);
+        this.setY(centerYPosition - this.getHeight()/2d);
+        this.show();
 	}
 	
 	public ListView<FmmlxObject> initializeListView(ObservableList<FmmlxObject> list, SelectionMode selectionMode) {

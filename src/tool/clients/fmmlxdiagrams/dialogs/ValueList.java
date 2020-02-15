@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 
 public class ValueList {
 	public static final ObservableList<Integer> valueList = FXCollections.observableArrayList(0, 1, 2, 3, 4, 5);
+	public static final ObservableList<Boolean> booleanList = FXCollections.observableArrayList(true, false);
 
 	public static final ObservableList<Integer> getValueInterval(Integer minValue) {	
 		int startInt = minValue;
