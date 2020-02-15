@@ -803,7 +803,16 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		List<String> result = new LinkedList<String>();
 		
 		for(FmmlxOperation op : getAllOperations()) {
-			result.add(op.getName());
+			StringBuilder stringBuilderType = new StringBuilder();
+			int paramLength= op.getParamTypes().size();		
+			for(int i =0 ; i<paramLength;i++) {			
+				stringBuilderType.append(op.getParamTypes().get(i).split("::")[2]);
+				if(i!=paramLength-1) {
+					stringBuilderType.append(", ");
+				}
+			}
+			
+			result.add(op.getName()+" ("+stringBuilderType.toString()+")");
 		}
 		return result;
 	}
@@ -817,4 +826,12 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		return result;
 	}
 
+	public FmmlxOperation getOperationByName(String newValue) {		
+		for (FmmlxOperation op : getAllOperations()) {
+			if(op.getName().equals(newValue)) {
+				return op;
+			}
+		}
+		return null;
+	}
 }
