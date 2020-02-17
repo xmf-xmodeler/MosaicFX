@@ -29,7 +29,7 @@ public class PaletteGroupClass extends PaletteGroup {
 		
 		int maxLevel = fmmlxDiagram.getMaxLevel();
 		
-		for (int i = maxLevel ; i>=0 ; i--) {
+		for (int i = maxLevel ; i>0 ; i--) {
 			for (FmmlxObject tmp : fmmlxDiagram.getObjects()) {
 				if (tmp.getLevel()==i) {
 					items.add(tmp.toPaletteItem(fmmlxDiagram));

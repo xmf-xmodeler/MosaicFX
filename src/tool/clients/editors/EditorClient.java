@@ -759,7 +759,7 @@ public class EditorClient extends Client {
       ITextEditor editor = editors.get(id);
       editor.writeXML(out, item.isSelected(), item.getText(), item.getTooltip().getText());
     }
-    for (String id : browsers.keySet()) {
+    /*for (String id : browsers.keySet()) {
       Tab tab = tabs.get(id);
       if (tab != null) {
         WebBrowser browser = browsers.get(id);
@@ -777,7 +777,7 @@ public class EditorClient extends Client {
           out.print("<Browser id='" + id + "' label='" + label + "' tooltip='" + tooltip + "' url='" + url + "' text='" + XModeler.encodeXmlAttribute(text) + "'/>");
         }
       }
-    }
+    }*/
     out.print("</Editors>");
   }
 
