@@ -15,7 +15,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeTargetDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
 
 public class ChangeTargetDialog extends CustomDialog<ChangeTargetDialogResult>{
 	private DialogPane dialogPane;
@@ -70,21 +70,21 @@ public class ChangeTargetDialog extends CustomDialog<ChangeTargetDialogResult>{
 
 	private boolean validateUserInput() {
 		if (selectAssociationComboBox.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociation);
+			errorLabel.setText(StringValue.ErrorMessage.selectAssociation);
 			return false;
 		}else if(newTargetComboBox.getSelectionModel().getSelectedItem()==null || 
 				newTargetComboBox.getSelectionModel().getSelectedItem().getName()==
 				currentTargetTextField.getText()) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectNewTarget);
+			errorLabel.setText(StringValue.ErrorMessage.selectNewTarget);
 			return false;
 		}
 		return true;
 	}
 
 	private void layoutContent() {
-		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.changeAssociationTarget);
-		classLabel = new Label(StringValueDialog.LabelAndHeaderTitle.aClass);
-		selectAssociationLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectAssociation);
+		dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeAssociationTarget);
+		classLabel = new Label(StringValue.LabelAndHeaderTitle.aClass);
+		selectAssociationLabel = new Label(StringValue.LabelAndHeaderTitle.selectAssociation);
 		currentTarget = new Label("Current Target");
 		newTarget = new Label("New Target");
 		

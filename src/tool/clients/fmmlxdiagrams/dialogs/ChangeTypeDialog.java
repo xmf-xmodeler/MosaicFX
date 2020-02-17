@@ -9,7 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeTypeDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -121,39 +121,39 @@ public class ChangeTypeDialog extends CustomDialog<ChangeTypeDialogResult> {
 
 	private boolean validateChangeTypeAssociation() {
 		if (selectAssociationComboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociation);
+			errorLabel.setText(StringValue.ErrorMessage.selectAssociation);
 			return false;
 		} else if (newTypeComboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectNewType);
+			errorLabel.setText(StringValue.ErrorMessage.selectNewType);
 			return false;
 		} else if (newTypeComboBox.getSelectionModel().getSelectedItem().equals(currentTypeTextField.getText())) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAnotherType);
+			errorLabel.setText(StringValue.ErrorMessage.selectAnotherType);
 		}
 		return true;
 	}
 
 	private boolean validateChangeTypeOperation() {
 		if (selectOperationComboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectOperation);
+			errorLabel.setText(StringValue.ErrorMessage.selectOperation);
 			return false;
 		} else if (newTypeComboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectNewType);
+			errorLabel.setText(StringValue.ErrorMessage.selectNewType);
 			return false;
 		} else if (newTypeComboBox.getSelectionModel().getSelectedItem().equals(currentTypeTextField.getText())) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAnotherType);
+			errorLabel.setText(StringValue.ErrorMessage.selectAnotherType);
 		}
 		return true;
 	}
 
 	private boolean validateChangeTypeAttribute() {
 		if (selectAttributeComboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAttribute);
+			errorLabel.setText(StringValue.ErrorMessage.selectAttribute);
 			return false;
 		} else if (newTypeComboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectNewType);
+			errorLabel.setText(StringValue.ErrorMessage.selectNewType);
 			return false;
 		} else if (newTypeComboBox.getSelectionModel().getSelectedItem().equals(currentTypeTextField.getText())) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAnotherType);
+			errorLabel.setText(StringValue.ErrorMessage.selectAnotherType);
 			return false;
 		}
 		return true;
@@ -187,15 +187,15 @@ public class ChangeTypeDialog extends CustomDialog<ChangeTypeDialogResult> {
 		grid.add(newTypeComboBox, 1, 3);
 		switch (type) {
 			case Attribute:
-				dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.changeAttributeType);
+				dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeAttributeType);
 				layoutContentChangeTypeAttribute();
 				break;
 			case Association:
-				dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.changeAssociationType);
+				dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeAssociationType);
 				layoutContentChangeTypeAssoiation();
 				break;
 			case Operation:
-				dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.changeOperationType);
+				dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeOperationType);
 				layoutContentChangeTypeOperation();
 			default:
 				System.err.println("ChangeTypeDialog: No matching content type!");
@@ -211,7 +211,7 @@ public class ChangeTypeDialog extends CustomDialog<ChangeTypeDialogResult> {
 		ObservableList<FmmlxAttribute> attributeList;
 		attributeList = FXCollections.observableList(attributes);
 
-		selectAttributeLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectAttribute);
+		selectAttributeLabel = new Label(StringValue.LabelAndHeaderTitle.selectAttribute);
 		selectAttributeComboBox = (ComboBox<FmmlxAttribute>) initializeComboBox(attributeList);
 		selectAttributeComboBox.valueProperty().addListener(new ChangeListener<FmmlxAttribute>() {
 
@@ -232,7 +232,7 @@ public class ChangeTypeDialog extends CustomDialog<ChangeTypeDialogResult> {
 	private void layoutContentChangeTypeAssoiation() {
 		//TODO insert Associatio list to combobox
 
-		selectAssociationLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectAssociation);
+		selectAssociationLabel = new Label(StringValue.LabelAndHeaderTitle.selectAssociation);
 		selectAssociationComboBox = new ComboBox<FmmlxAssociation>();
 		selectAssociationComboBox.valueProperty().addListener(new ChangeListener<FmmlxAssociation>() {
 
@@ -258,7 +258,7 @@ public class ChangeTypeDialog extends CustomDialog<ChangeTypeDialogResult> {
 		ObservableList<FmmlxOperation> operationList;
 		operationList = FXCollections.observableList(operations);
 
-		selectOperationLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectOperation);
+		selectOperationLabel = new Label(StringValue.LabelAndHeaderTitle.selectOperation);
 		selectOperationComboBox = (ComboBox<FmmlxOperation>) initializeComboBox(operationList);
 		selectOperationComboBox.valueProperty().addListener(new ChangeListener<FmmlxOperation>() {
 

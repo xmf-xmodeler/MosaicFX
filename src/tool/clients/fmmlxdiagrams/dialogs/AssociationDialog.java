@@ -21,8 +21,8 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.results.AssociationDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog.LabelAndHeaderTitle;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue.LabelAndHeaderTitle;
 
 public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 
@@ -125,9 +125,9 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 
 	private void layoutContent() {
 		if(editMode) {
-			dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.editAssociation);
+			dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.editAssociation);
 		} else if (!editMode){
-			dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.newAssociation);
+			dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.newAssociation);
 		}
 		
 		associations = new Vector<>(); associations.add(association);//source.getAllRelatedAssociations();
@@ -294,10 +294,10 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 	
 	private boolean validateUserInput() {
 		 if (newTypeSource.getSelectionModel().getSelectedItem()==null) {
-				errorLabel.setText(StringValueDialog.ErrorMessage.selectNewTypeSource);
+				errorLabel.setText(StringValue.ErrorMessage.selectNewTypeSource);
 				return false;
 				} else if (newTypeTarget.getSelectionModel().getSelectedItem()==null) {
-				errorLabel.setText(StringValueDialog.ErrorMessage.selectNewTypeTarget);
+				errorLabel.setText(StringValue.ErrorMessage.selectNewTypeTarget);
 				return false;
 				}
 		if (!validateNewDisplayName()) {
@@ -309,21 +309,21 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 			}
 		if(association!=null) {
 			if(selectAssociationComboBox.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociation);
+			errorLabel.setText(StringValue.ErrorMessage.selectAssociation);
 			return false;
 			}  else if (!LevelList.generateLevelListToThreshold(0, newTypeSource.getSelectionModel().getSelectedItem().getLevel()).contains(getComboBoxIntegerValue(newInstLevelSource))) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAllowedLevelSource  + " Highest allowed level is: " + (association.getSourceNode().getLevel()-1));
+			errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelSource  + " Highest allowed level is: " + (association.getSourceNode().getLevel()-1));
 			return false;
 			} else if (!LevelList.generateLevelListToThreshold(0, newTypeTarget.getSelectionModel().getSelectedItem().getLevel()).contains(getComboBoxIntegerValue(newInstLevelTarget))) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAllowedLevelTarget + " Highest allowed level is: " + (association.getTargetNode().getLevel()-1));
+			errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelTarget + " Highest allowed level is: " + (association.getTargetNode().getLevel()-1));
 			return false;
 			} 
 		}else {
 			  if (!LevelList.generateLevelListToThreshold(0, newTypeSource.getSelectionModel().getSelectedItem().getLevel()).contains(getComboBoxIntegerValue(newInstLevelSource))) {
-					errorLabel.setText(StringValueDialog.ErrorMessage.selectAllowedLevelSource  + " Highest allowed level is: " + (source.getLevel()-1));
+					errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelSource  + " Highest allowed level is: " + (source.getLevel()-1));
 					return false;
 					} else if (!LevelList.generateLevelListToThreshold(0, newTypeTarget.getSelectionModel().getSelectedItem().getLevel()).contains(getComboBoxIntegerValue(newInstLevelTarget))) {
-					errorLabel.setText(StringValueDialog.ErrorMessage.selectAllowedLevelTarget + " Highest allowed level is: " + (target.getLevel()-1));
+					errorLabel.setText(StringValue.ErrorMessage.selectAllowedLevelTarget + " Highest allowed level is: " + (target.getLevel()-1));
 					return false;
 					} 
 			}
@@ -334,7 +334,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 		String name = newIdentifierTarget.getText();
 		
 		if (!InputChecker.getInstance().validateName(name)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidNameIdentifierTarget);
+			errorLabel.setText(StringValue.ErrorMessage.enterValidNameIdentifierTarget);
 			return false;
 		} else {
 			errorLabel.setText("");
@@ -346,7 +346,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 		String name = newIdentifierSource.getText();
 		
 		if (!InputChecker.getInstance().validateName(name)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidNameIdentifierSource);
+			errorLabel.setText(StringValue.ErrorMessage.enterValidNameIdentifierSource);
 			return false;
 		} else {
 			errorLabel.setText("");
@@ -358,7 +358,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 		String name = newDisplayName.getText();
 
 		if (!InputChecker.getInstance().validateName(name)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidNameDisplaySource);
+			errorLabel.setText(StringValue.ErrorMessage.enterValidNameDisplaySource);
 			return false;
 		} else {
 			errorLabel.setText("");

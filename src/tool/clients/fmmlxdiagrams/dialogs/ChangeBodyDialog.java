@@ -17,7 +17,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeBodyDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
 
 public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 	
@@ -46,8 +46,8 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 		
 		dialogPane = getDialogPane();
 
-		checkSyntaxButtonType = new ButtonType(StringValueDialog.LabelAndHeaderTitle.checkSyntax);
-		defaultOperationButtonType = new ButtonType(StringValueDialog.LabelAndHeaderTitle.defaultOperation);
+		checkSyntaxButtonType = new ButtonType(StringValue.LabelAndHeaderTitle.checkSyntax);
+		defaultOperationButtonType = new ButtonType(StringValue.LabelAndHeaderTitle.defaultOperation);
 		
 		dialogPane.getButtonTypes().addAll(checkSyntaxButtonType, defaultOperationButtonType, ButtonType.OK, ButtonType.CANCEL);
 		layoutContent();
@@ -91,7 +91,7 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 
 	private boolean validateUserInput() {
 		if(selectOperationComboBox.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectOperation);
+			errorLabel.setText(StringValue.ErrorMessage.selectOperation);
 			return false;
 		}
 		return true;
@@ -103,7 +103,7 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 		ObservableList<FmmlxOperation> operationsList;
 		operationsList = FXCollections.observableList(operations);
 		
-		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.changeOperationsBody);
+		dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeOperationsBody);
 		
 		classLabel = new Label("Class");
 		selectOperationLabel = new Label("Select operation");
@@ -136,13 +136,13 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 	}
 	
 	private void checkBodySyntax() {
-		if (!isNullOrEmpty(bodyTextArea.getText()) && !bodyTextArea.getText().contentEquals(StringValueDialog.OperationStringValues.emptyOperation)) {
+		if (!isNullOrEmpty(bodyTextArea.getText()) && !bodyTextArea.getText().contentEquals(StringValue.OperationStringValues.emptyOperation)) {
 			diagram.getComm().checkOperationBody(bodyTextArea.getText());
 		}
 	}
 	
 	private void resetOperationBody() {
-		bodyTextArea.setText(StringValueDialog.OperationStringValues.emptyOperation);
+		bodyTextArea.setText(StringValue.OperationStringValues.emptyOperation);
 	}
 
 }
