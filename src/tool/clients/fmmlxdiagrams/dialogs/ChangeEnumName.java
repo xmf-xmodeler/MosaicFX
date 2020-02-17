@@ -15,7 +15,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumElementDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeEnumNameDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
 
 public class ChangeEnumName extends CustomDialog<ChangeEnumNameDialogResult>{
 	
@@ -70,7 +70,7 @@ public class ChangeEnumName extends CustomDialog<ChangeEnumNameDialogResult>{
 		
 		for (FmmlxEnum tmp : diagram.getEnums()) {
 			if (tmp.getName().equals(newNameTextField.getText())) {
-				errorLabel.setText(StringValueDialog.ErrorMessage.enumAlreadyExist);
+				errorLabel.setText(StringValue.ErrorMessage.enumAlreadyExist);
 				return false;
 			}
 		}
@@ -82,7 +82,7 @@ public class ChangeEnumName extends CustomDialog<ChangeEnumNameDialogResult>{
 		String name = newNameTextField.getText();
 
 		if (!InputChecker.getInstance().validateName(name)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
+			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else {
 			errorLabel.setText("");

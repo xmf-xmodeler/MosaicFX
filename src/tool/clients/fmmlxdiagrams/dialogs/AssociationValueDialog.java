@@ -20,7 +20,7 @@ import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.AssociationValueDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
 
 public class AssociationValueDialog extends CustomDialog<AssociationValueDialogResult>{
 	
@@ -93,7 +93,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 
 	private boolean validateAdd() {
 		if(selectAssociationComboBox.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociation);
+			errorLabel.setText(StringValue.ErrorMessage.selectAssociation);
 			return false;
 		} else if(classAListView.getSelectionModel().getSelectedItem()==null) {
 			errorLabel.setText("Select instance from class "+ classANameTextField.getText());
@@ -109,10 +109,10 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 	
 	private boolean validateRemove() {
 		if(selectAssociationComboBox.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociation);
+			errorLabel.setText(StringValue.ErrorMessage.selectAssociation);
 			return false;
 		} else if(associationListView.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociationInstance);
+			errorLabel.setText(StringValue.ErrorMessage.selectAssociationInstance);
 			return false;
 		}
 		errorLabel.setText("");
@@ -122,10 +122,10 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 
 	private boolean validateChange() {
 		if(selectAssociationComboBox.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociation);
+			errorLabel.setText(StringValue.ErrorMessage.selectAssociation);
 			return false;
 		} else if(associationListView.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociationInstance);
+			errorLabel.setText(StringValue.ErrorMessage.selectAssociationInstance);
 			return false;
 		} else if(classAListView.getSelectionModel().getSelectedItem()==null) {
 			errorLabel.setText("Select instance from class "+ classANameTextField.getText());
@@ -163,9 +163,9 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 		ObservableList<FmmlxAssociation> associationList;
 		associationList = FXCollections.observableList(associations);
 		
-		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.associationValue);
+		dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.associationValue);
 		
-		selectAssociation = new Label(StringValueDialog.LabelAndHeaderTitle.selectAssociation);
+		selectAssociation = new Label(StringValue.LabelAndHeaderTitle.selectAssociation);
 		selectAssociationComboBox = (ComboBox<FmmlxAssociation>) initializeComboBox(associationList);
 		selectAssociationComboBox.valueProperty().addListener((observable, oldValue,
 				newValue) -> { 		
@@ -175,7 +175,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 			});
 
 		classALabel = new Label(" ");
-		associationLabel = new Label(StringValueDialog.LabelAndHeaderTitle.association);
+		associationLabel = new Label(StringValue.LabelAndHeaderTitle.association);
 		classBLabel = new Label(" ");
 		
 		classANameTextField= new TextField();

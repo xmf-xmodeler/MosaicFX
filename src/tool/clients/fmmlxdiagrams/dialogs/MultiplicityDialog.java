@@ -8,7 +8,7 @@ import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
 
-import static tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog.LabelAndHeaderTitle;
+import static tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue.LabelAndHeaderTitle;
 
 public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 

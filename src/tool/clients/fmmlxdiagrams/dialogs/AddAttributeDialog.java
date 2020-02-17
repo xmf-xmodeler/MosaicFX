@@ -12,7 +12,7 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
 
 import java.util.*;
 
@@ -33,7 +33,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
 	private FmmlxObject selectedObject;
 	private Button multiplicityButton;
-	private Multiplicity multiplicity = Multiplicity.OPTIONAL;
+	private Multiplicity multiplicity = Multiplicity.MANDATORY;
 	
 	private Vector<String> types;
 
@@ -98,7 +98,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		Label errorLabel = getErrorLabel();
 
 		if (getComboBoxStringValue(typeComboBox) == null || getComboBoxStringValue(typeComboBox).length() < 1) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectType);
+			errorLabel.setText(StringValue.ErrorMessage.selectType);
 			return false;
 		}
 		errorLabel.setText("");
@@ -109,7 +109,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		Label errorLabel = getErrorLabel();
 
 		if (levelComboBox.getSelectionModel().getSelectedIndex() == -1) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectLevel);
+			errorLabel.setText(StringValue.ErrorMessage.selectLevel);
 			return false;
 		}
 		errorLabel.setText("");
@@ -122,10 +122,10 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		String name = nameTextField.getText();
 
 		if (!InputChecker.getInstance().validateName(name)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
+			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, selectedObject)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.nameAlreadyUsed);
+			errorLabel.setText(StringValue.ErrorMessage.nameAlreadyUsed);
 			return false;
 		} else {
 			errorLabel.setText("");
@@ -134,11 +134,11 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 	}
 
 	private void addElementToGrid() {
-		nameLabel = new Label(StringValueDialog.LabelAndHeaderTitle.name);
-		classLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectedObject);
-		levelLabel = new Label(StringValueDialog.LabelAndHeaderTitle.level);
-		typeLabel = new Label(StringValueDialog.LabelAndHeaderTitle.type);
-		multiplicityLabel = new Label(StringValueDialog.LabelAndHeaderTitle.Multiplicity);
+		nameLabel = new Label(StringValue.LabelAndHeaderTitle.name);
+		classLabel = new Label(StringValue.LabelAndHeaderTitle.selectedObject);
+		levelLabel = new Label(StringValue.LabelAndHeaderTitle.level);
+		typeLabel = new Label(StringValue.LabelAndHeaderTitle.type);
+		multiplicityLabel = new Label(StringValue.LabelAndHeaderTitle.Multiplicity);
 
 		ObservableList<String> typeList = FXCollections.observableArrayList(types);
 

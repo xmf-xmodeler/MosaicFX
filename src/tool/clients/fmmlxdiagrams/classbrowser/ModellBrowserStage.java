@@ -5,7 +5,6 @@ import java.util.List;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -15,99 +14,74 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.dialogs.ValueList;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
+import tool.xmodeler.XModeler;
 
 
-public class ClassBrowserStage extends CustomStage {
+public class ModellBrowserStage extends CustomStage {
 
-	protected TextArea codeArea;
-	protected ListView<String> modelListView,fmmlxObjectListView, fmmlxAttributeListView, 
-						protocolListView, fmmlxOperationListView, fmmlxAssociationListView, slotListView;
+	private TextArea codeArea;
+	private ListView<String> modelListView,fmmlxObjectListView, fmmlxAttributeListView, 
+						fmmlxOperationListView, fmmlxAssociationListView, slotListView, protocolListView;
 	private ComboBox<Boolean> abstractComboBox;
-	private TextField classBrowserTextField, operationInputTextField, operationOutputTexField, 
-						associationBrowserTextField, attributeBrowserTextField, projectBrowserTextFied;
-	
-	protected StackPane root;
-	protected VBox container, projectBrowserVBox, classBrowserVBox, attributeBrowserVBox, abstractVBox,
-						operationOutputVBox, operationInputVBox, associationBrowserVBox, consoleContainer;
-	protected SplitPane outerSplitPane;
-	protected GridPane classBrowserContainer, attributeGridpane;
-	
+	private TextField modellBrowserTextFied, classBrowserTextField, operationInputTextField, operationOutputTexField, 
+						associationBrowserTextField, attributeBrowserTextField;
+	private VBox modellBrowserVBox, classBrowserVBox, attributeBrowserVBox, abstractVBox,
+						operationOutputVBox, operationInputVBox, associationBrowserVBox, consoleContainerVBox;
+	private SplitPane outerSplitPane;
+	private GridPane mainGridPane, attributeGridpane;	
 	private FmmlxDiagram diagram;
 	private FmmlxObject selectedObject;
 	
-	public ClassBrowserStage() {
-		super();		
-		setTitle("Modell Browser");
+	public ModellBrowserStage() {
+		super(StringValue.LabelAndHeaderTitle.modellBrowser, XModeler.getStage(), 1100, 800);		
 		
 		initAllElement();
-		inflateElement();
-		
-		outerSplitPane = new SplitPane();
-		outerSplitPane.setOrientation(Orientation.VERTICAL);
-		outerSplitPane.getItems().addAll(classBrowserContainer, consoleContainer);
-		
-		container = new VBox();
-		container.getChildren().addAll(outerSplitPane);
-		
-		VBox.setVgrow(outerSplitPane,Priority.ALWAYS);
-		VBox.setVgrow(codeArea,Priority.ALWAYS);
-		
-		root = new StackPane(container);
-		root.setPadding(new Insets(7));
-		scene = new Scene(root);
-		setScene(scene);
+		addAllElementToPane();			
+		getContainer().getChildren().addAll(outerSplitPane);
 		
 		setOnCloseRequest(e -> onClose());
 	}
 
 	private void onClose() {
-		clearAll();
+		clearAll(ClearSelectionMode.MODELL);
 		hide();
 	}
 
-	private void clearAll() {
-		fmmlxObjectListView.getItems().clear();
-		fmmlxAttributeListView.getItems().clear();
-		slotListView.getItems().clear();
-		protocolListView.getItems().clear();
-		fmmlxOperationListView.getItems().clear();
-		fmmlxAssociationListView.getItems().clear();
+	private void clearAll(ClearSelectionMode mode) {	
+		if (mode == ClearSelectionMode.MODELL) {
+			fmmlxObjectListView.getItems().clear();
+			classBrowserTextField.setText(StringValue.LabelAndHeaderTitle.empty);
+		}
 		
-		classBrowserTextField.setText("");
-		attributeBrowserTextField.setText("");
-		operationInputTextField.setText("");
-		operationOutputTexField.setText("");
-		associationBrowserTextField.setText("");
+		if (mode == ClearSelectionMode.OBJECT || mode == ClearSelectionMode.MODELL) {
+			fmmlxAttributeListView.getItems().clear();
+			slotListView.getItems().clear();
+			protocolListView.getItems().clear();
+			fmmlxOperationListView.getItems().clear();
+			fmmlxAssociationListView.getItems().clear();
+			
+			attributeBrowserTextField.setText(StringValue.LabelAndHeaderTitle.empty);
+			operationInputTextField.setText(StringValue.LabelAndHeaderTitle.empty);
+			operationOutputTexField.setText(StringValue.LabelAndHeaderTitle.empty);
+			associationBrowserTextField.setText(StringValue.LabelAndHeaderTitle.empty);
+		}
 	}
 	
-	private void clearOnObjectSelection() {
-		fmmlxAttributeListView.getItems().clear();
-		slotListView.getItems().clear();
-		protocolListView.getItems().clear();
-		fmmlxOperationListView.getItems().clear();
-		fmmlxAssociationListView.getItems().clear();
-		
-		attributeBrowserTextField.setText("");
-		operationInputTextField.setText("");
-		operationOutputTexField.setText("");
-		associationBrowserTextField.setText("");
-	}
-	
-	private void initAllElement() {
-		
-		classBrowserContainer = new GridPane();
+	@Override
+	protected void initAllElement() {
+		mainGridPane = new GridPane();
 		attributeGridpane = new GridPane();
-		classBrowserContainer.setHgap(10);
-		classBrowserContainer.setVgap(8);
-		classBrowserContainer.setPadding(new Insets(3, 3, 3, 3));
-		setColumnConstrain(classBrowserContainer);
+		mainGridPane.setHgap(10);
+		mainGridPane.setVgap(8);
+		mainGridPane.setPadding(new Insets(3, 3, 3, 3));
+		setColumnConstrain(mainGridPane);
 
 		modelListView = new ListView<String>();
 		fmmlxObjectListView = new ListView<String>();
@@ -117,7 +91,7 @@ public class ClassBrowserStage extends CustomStage {
 		fmmlxAssociationListView = new ListView<String>();
 		fmmlxOperationListView = new ListView<String>();
 		
-		projectBrowserTextFied = new TextField();
+		modellBrowserTextFied = new TextField();
 		classBrowserTextField = new TextField();
 		attributeBrowserTextField = new TextField();
 		operationInputTextField = new TextField();
@@ -130,21 +104,29 @@ public class ClassBrowserStage extends CustomStage {
 		abstractComboBox = new ComboBox<Boolean>(ValueList.booleanList);
 		
 		codeArea = new TextArea();
-		consoleContainer= new VBox();
-		consoleContainer.getChildren().add(codeArea);
+		consoleContainerVBox= new VBox();
+		consoleContainerVBox.getChildren().add(codeArea);
 		
-		abstractVBox = joinNodeInVBox(new Label("abstract :"), abstractComboBox);
-		projectBrowserVBox= joinNodeInVBox(new Label("Project :"), projectBrowserTextFied);
-		operationOutputVBox = joinNodeInVBox(new Label("Output :"), operationOutputTexField);
-		operationInputVBox = joinNodeInVBox(new Label("Input :"), operationInputTextField);
-		classBrowserVBox = joinNodeInVBox(new Label("class :"), classBrowserTextField);
-		associationBrowserVBox = joinNodeInVBox(new Label("with :"), associationBrowserTextField);
-		attributeBrowserVBox = joinNodeInVBox(new Label("class :"), attributeBrowserTextField);
+		outerSplitPane = new SplitPane();
+		outerSplitPane.setOrientation(Orientation.VERTICAL);
+		outerSplitPane.getItems().addAll(mainGridPane, consoleContainerVBox);
+		
+		VBox.setVgrow(outerSplitPane,Priority.ALWAYS);
+		VBox.setVgrow(codeArea,Priority.ALWAYS);
+		
+		String doubleDots = " :";
+		abstractVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.abstractSmall+doubleDots), abstractComboBox);
+		modellBrowserVBox= getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.project+doubleDots), modellBrowserTextFied);
+		operationOutputVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.output+doubleDots), operationOutputTexField);
+		operationInputVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.input+doubleDots), operationInputTextField);
+		classBrowserVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.aClassSmall+doubleDots), classBrowserTextField);
+		associationBrowserVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.withSmall+doubleDots), associationBrowserTextField);
+		attributeBrowserVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.aClassSmall+doubleDots), attributeBrowserTextField);
 		
 		modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onModelListViewNewValue(oldValue, newValue));
-		projectBrowserTextFied.textProperty().addListener((observable, oldValue, newValue) 
-				-> projectBrowserListerner(modelListView, oldValue, newValue));
+		modellBrowserTextFied.textProperty().addListener((observable, oldValue, newValue) 
+				-> modellBrowserListerner(modelListView, oldValue, newValue));
 		fmmlxObjectListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onObjectListViewNewValue(oldValue, newValue));	
 		classBrowserTextField.textProperty().addListener((observable, oldValue, newValue) 
@@ -163,28 +145,29 @@ public class ClassBrowserStage extends CustomStage {
 				-> onAssociationListViewNewValue(oldValue,newValue)); 
 	}
 
-	private void inflateElement() {
+	@Override
+	protected void addAllElementToPane() {
 		List<Node> modelNode = new ArrayList<Node>();
-		modelNode.add(new Label(""));
-		modelNode.add(new Label("Model"));
+		modelNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
+		modelNode.add(new Label(StringValue.LabelAndHeaderTitle.modell));
 		modelNode.add(modelListView);
-		modelNode.add(projectBrowserVBox);
-		modelNode.add(new Label(""));
-		modelNode.add(new Label("code"));
+		modelNode.add(modellBrowserVBox);
+		modelNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
+		modelNode.add(new Label(StringValue.LabelAndHeaderTitle.code));
 		
 		List<Node> objectNode = new ArrayList<Node>();
-		objectNode.add(new Label(""));
-		objectNode.add(new Label("Objects"));
+		objectNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
+		objectNode.add(new Label(StringValue.LabelAndHeaderTitle.objects));
 		objectNode.add(fmmlxObjectListView);
 		objectNode.add(classBrowserVBox);
 		objectNode.add(abstractVBox);
 		
 		List<Node> attributeNode = new ArrayList<Node>();
-		attributeNode.add(new Label(""));
-		attributeNode.add(new Label("Attributes"));
+		attributeNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
+		attributeNode.add(new Label(StringValue.LabelAndHeaderTitle.attributes));
 		
 		attributeGridpane.add(fmmlxAttributeListView, 0, 1);
-		attributeGridpane.add(new Label("Slots"), 0	, 2);
+		attributeGridpane.add(new Label(StringValue.LabelAndHeaderTitle.slots), 0	, 2);
 		attributeGridpane.add(slotListView, 0, 3);
 		
 		ColumnConstraints col1 = new ColumnConstraints();
@@ -194,31 +177,31 @@ public class ClassBrowserStage extends CustomStage {
 		
 		attributeNode.add(attributeGridpane);
 		attributeNode.add(attributeBrowserVBox);	
-		
-		List<Node> protocolNode = new ArrayList<Node>();
-		protocolNode.add(new Label(""));
-		protocolNode.add(new Label("Protocols"));
-		protocolNode.add(protocolListView);
-		
+//		
+//		List<Node> protocolNode = new ArrayList<Node>();
+//		protocolNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
+//		protocolNode.add(new Label(StringValue.LabelAndHeaderTitle.protocols));
+//		protocolNode.add(protocolListView);
+//		
 		List<Node> operationNode = new ArrayList<Node>();
-		operationNode.add(new Label(""));
-		operationNode.add(new Label("Operations"));
+		operationNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
+		operationNode.add(new Label(StringValue.LabelAndHeaderTitle.operations));
 		operationNode.add(fmmlxOperationListView);
 		operationNode.add(operationOutputVBox);
 		operationNode.add(operationInputVBox);
 		
 		List<Node> associationNode = new ArrayList<Node>();
-		associationNode.add(new Label(""));
-		associationNode.add(new Label("Associations"));
+		associationNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
+		associationNode.add(new Label(StringValue.LabelAndHeaderTitle.associations));
 		associationNode.add(fmmlxAssociationListView);
 		associationNode.add(associationBrowserVBox);
 		
-		addNodesToGrid(classBrowserContainer,modelNode, 0);
-		addNodesToGrid(classBrowserContainer,objectNode, 1);
-		addNodesToGrid(classBrowserContainer,attributeNode, 2);
-		addNodesToGrid(classBrowserContainer,protocolNode, 3);
-		addNodesToGrid(classBrowserContainer,operationNode, 4);
-		addNodesToGrid(classBrowserContainer,associationNode, 5);
+		getGridControl().addNodesToGrid(mainGridPane,modelNode, 0);
+		getGridControl().addNodesToGrid(mainGridPane,objectNode, 1);
+		getGridControl().addNodesToGrid(mainGridPane,attributeNode, 2);
+//		getGridControl().addNodesToGrid(mainGridPane,protocolNode, 3);
+		getGridControl().addNodesToGrid(mainGridPane,operationNode, 3);
+		getGridControl().addNodesToGrid(mainGridPane,associationNode, 4);
 	}
 
 	private void onOperationListViewNewValue(String oldValue, String newValue) {
@@ -242,14 +225,13 @@ public class ClassBrowserStage extends CustomStage {
 		}
 	}
 	
-	public void projectBrowserListerner(ListView<String> modelListView2, String oldValue, String newValue) {
-		clearAll();
+	private void modellBrowserListerner(ListView<String> modelListView2, String oldValue, String newValue) {
+		clearAll(ClearSelectionMode.MODELL);
 		//TODO
-		
 	}
 
 	private void classBrowserTextFieldListener(String oldValue, String newValue) {
-		clearOnObjectSelection();
+		clearAll(ClearSelectionMode.OBJECT);
 		fmmlxObjectListView.getItems().clear();
 		for(FmmlxObject tmp : diagram.getObjects()) {
 			if(tmp.getName().contains(newValue)) {
@@ -262,7 +244,7 @@ public class ClassBrowserStage extends CustomStage {
 		if (newValue != null) {
 			
 			selectedObject=diagram.getObjectByName(newValue.split(" ")[1]);		
-			clearOnObjectSelection();
+			clearAll(ClearSelectionMode.OBJECT);
 			
 			fmmlxAttributeListView.getItems().addAll(selectedObject.getAllAttributesString());
 			slotListView.getItems().addAll(selectedObject.getAllSlotString());
@@ -286,8 +268,7 @@ public class ClassBrowserStage extends CustomStage {
 	private void onAbstractNewValue(Boolean oldValue, Boolean newValue) {
 		if(newValue != null) {
 			if(newValue!=oldValue) {
-				diagram.getComm().setClassAbstract(diagram, selectedObject.getId(), !selectedObject.isAbstract());
-				diagram.updateDiagram();
+				//TODO
 			}
 		}
 	}
@@ -303,7 +284,7 @@ public class ClassBrowserStage extends CustomStage {
 	}
 
 	public void updateDiagram(FmmlxDiagram diagram) {
-		clearAll();
+		clearAll(ClearSelectionMode.MODELL);
 		this.diagram=diagram;
 		
 		for(FmmlxObject obj : diagram.getObjects()) {
@@ -314,11 +295,9 @@ public class ClassBrowserStage extends CustomStage {
 	private void onModelListViewNewValue(String oldValue, String newValue) {
 		if (newValue != null) {
 			
-			clearAll();
-			
-			
-			//TODO if model selected
-			
+			clearAll(ClearSelectionMode.MODELL);
+						
+			//TODO if model selected			
 			//updateDiagram(newValue1);
 		}
 	}	

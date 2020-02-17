@@ -6,7 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.RemoveDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
 
 import java.util.Vector;
 
@@ -234,7 +234,7 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 
 	private boolean validateRemoveAssociation() {
 		if (selectAssociationComboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociation);
+			errorLabel.setText(StringValue.ErrorMessage.selectAssociation);
 			return false;
 		}
 		return true;
@@ -243,7 +243,7 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 
 	private boolean validateRemoveOperation() {
 		if (selectOperationComboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectOperation);
+			errorLabel.setText(StringValue.ErrorMessage.selectOperation);
 			return false;
 		}
 		return true;
@@ -252,7 +252,7 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 
 	private boolean validateRemoveAttribute() {
 		if (selectAttributeComboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAttribute);
+			errorLabel.setText(StringValue.ErrorMessage.selectAttribute);
 			return false;
 		}
 		return true;

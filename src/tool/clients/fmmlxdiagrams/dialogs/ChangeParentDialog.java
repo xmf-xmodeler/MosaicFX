@@ -8,7 +8,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeParentDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
 
 import java.util.ArrayList;
 import java.util.Vector;
@@ -37,7 +37,7 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 		this.object = object;
 
 		DialogPane dialogPane = getDialogPane();
-		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.changeParent);
+		dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeParent);
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
 		setLayoutContent();
@@ -63,7 +63,7 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 	private boolean validateUserInput() {
 		if (possibleParents.size()>=1) {
 			if(newParentListView.getSelectionModel().getSelectedItems().size()==0) {
-				errorLabel.setText(StringValueDialog.ErrorMessage.selectNewParent);
+				errorLabel.setText(StringValue.ErrorMessage.selectNewParent);
 				return false;
 			}
 		}
@@ -72,15 +72,15 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 
 	private void setLayoutContent() {
 
-		selectedObjectLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectedObject);
-		currentParentsLabel = new Label(StringValueDialog.LabelAndHeaderTitle.currentParent);
+		selectedObjectLabel = new Label(StringValue.LabelAndHeaderTitle.selectedObject);
+		currentParentsLabel = new Label(StringValue.LabelAndHeaderTitle.currentParent);
 	
 
 		selectedObjectTextField = new TextField();
 		selectedObjectTextField.setText(object.getName());
 		selectedObjectTextField.setDisable(true);
 
-		newParentLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectNewParent);
+		newParentLabel = new Label(StringValue.LabelAndHeaderTitle.selectNewParent);
 
 		currentParentList = getCurrentParent();
 		currentParentsListView = initializeListView(currentParentList, SelectionMode.MULTIPLE);

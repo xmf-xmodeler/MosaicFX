@@ -2,7 +2,6 @@ package tool.clients.fmmlxdiagrams;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;

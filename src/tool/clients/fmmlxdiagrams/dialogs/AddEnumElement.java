@@ -16,7 +16,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.TimeOutException;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumElementDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
 
 public class AddEnumElement extends CustomDialog<AddEnumElementDialogResult>{
 	private Label inputElementNameLabel;
@@ -61,10 +61,10 @@ public class AddEnumElement extends CustomDialog<AddEnumElementDialogResult>{
 		String name = inputElementNameTextField.getText();
 
 		if (!InputChecker.getInstance().validateName(name)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
+			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else if(list.getItems().contains(name)){
-			errorLabel.setText(StringValueDialog.ErrorMessage.elementAlreadyExist);
+			errorLabel.setText(StringValue.ErrorMessage.elementAlreadyExist);
 			return false;
 		} else {
 			errorLabel.setText("");
