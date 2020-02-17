@@ -6,7 +6,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
-import javafx.scene.transform.Affine;
 import xos.Value;
 
 public class DiagramEdgeLabel implements CanvasElement {

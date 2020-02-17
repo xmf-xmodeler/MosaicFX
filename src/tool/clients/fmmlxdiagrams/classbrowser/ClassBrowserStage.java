@@ -5,7 +5,6 @@ import java.util.List;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -15,54 +14,36 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.dialogs.ValueList;
+import tool.xmodeler.XModeler;
 
 
 public class ClassBrowserStage extends CustomStage {
 
-	protected TextArea codeArea;
-	protected ListView<String> modelListView,fmmlxObjectListView, fmmlxAttributeListView, 
+	private TextArea codeArea;
+	private ListView<String> modelListView,fmmlxObjectListView, fmmlxAttributeListView, 
 						protocolListView, fmmlxOperationListView, fmmlxAssociationListView, slotListView;
 	private ComboBox<Boolean> abstractComboBox;
 	private TextField classBrowserTextField, operationInputTextField, operationOutputTexField, 
 						associationBrowserTextField, attributeBrowserTextField, projectBrowserTextFied;
-	
-	protected StackPane root;
-	protected VBox container, projectBrowserVBox, classBrowserVBox, attributeBrowserVBox, abstractVBox,
+	private VBox projectBrowserVBox, classBrowserVBox, attributeBrowserVBox, abstractVBox,
 						operationOutputVBox, operationInputVBox, associationBrowserVBox, consoleContainer;
-	protected SplitPane outerSplitPane;
-	protected GridPane classBrowserContainer, attributeGridpane;
-	
+	private SplitPane outerSplitPane;
+	private GridPane classBrowserContainer, attributeGridpane;	
 	private FmmlxDiagram diagram;
 	private FmmlxObject selectedObject;
 	
 	public ClassBrowserStage() {
-		super();		
-		setTitle("Modell Browser");
+		super("Modell Browser", XModeler.getStage(), 1100, 800);		
 		
 		initAllElement();
-		inflateElement();
-		
-		outerSplitPane = new SplitPane();
-		outerSplitPane.setOrientation(Orientation.VERTICAL);
-		outerSplitPane.getItems().addAll(classBrowserContainer, consoleContainer);
-		
-		container = new VBox();
-		container.getChildren().addAll(outerSplitPane);
-		
-		VBox.setVgrow(outerSplitPane,Priority.ALWAYS);
-		VBox.setVgrow(codeArea,Priority.ALWAYS);
-		
-		root = new StackPane(container);
-		root.setPadding(new Insets(7));
-		scene = new Scene(root);
-		setScene(scene);
+		addElementToGrid();			
+		getContainer().getChildren().addAll(outerSplitPane);
 		
 		setOnCloseRequest(e -> onClose());
 	}
@@ -101,7 +82,6 @@ public class ClassBrowserStage extends CustomStage {
 	}
 	
 	private void initAllElement() {
-		
 		classBrowserContainer = new GridPane();
 		attributeGridpane = new GridPane();
 		classBrowserContainer.setHgap(10);
@@ -133,6 +113,13 @@ public class ClassBrowserStage extends CustomStage {
 		consoleContainer= new VBox();
 		consoleContainer.getChildren().add(codeArea);
 		
+		outerSplitPane = new SplitPane();
+		outerSplitPane.setOrientation(Orientation.VERTICAL);
+		outerSplitPane.getItems().addAll(classBrowserContainer, consoleContainer);
+		
+		VBox.setVgrow(outerSplitPane,Priority.ALWAYS);
+		VBox.setVgrow(codeArea,Priority.ALWAYS);
+		
 		abstractVBox = joinNodeInVBox(new Label("abstract :"), abstractComboBox);
 		projectBrowserVBox= joinNodeInVBox(new Label("Project :"), projectBrowserTextFied);
 		operationOutputVBox = joinNodeInVBox(new Label("Output :"), operationOutputTexField);
@@ -163,7 +150,7 @@ public class ClassBrowserStage extends CustomStage {
 				-> onAssociationListViewNewValue(oldValue,newValue)); 
 	}
 
-	private void inflateElement() {
+	private void addElementToGrid() {
 		List<Node> modelNode = new ArrayList<Node>();
 		modelNode.add(new Label(""));
 		modelNode.add(new Label("Model"));
@@ -242,7 +229,7 @@ public class ClassBrowserStage extends CustomStage {
 		}
 	}
 	
-	public void projectBrowserListerner(ListView<String> modelListView2, String oldValue, String newValue) {
+	private void projectBrowserListerner(ListView<String> modelListView2, String oldValue, String newValue) {
 		clearAll();
 		//TODO
 		
@@ -315,10 +302,8 @@ public class ClassBrowserStage extends CustomStage {
 		if (newValue != null) {
 			
 			clearAll();
-			
-			
-			//TODO if model selected
-			
+						
+			//TODO if model selected			
 			//updateDiagram(newValue1);
 		}
 	}	

@@ -2,59 +2,47 @@ package tool.clients.fmmlxdiagrams.classbrowser;
 
 import java.util.List;
 
-import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.xmodeler.XModeler;
 
 public class CustomStage extends Stage{
 
-	protected Scene scene;
+	private final Stage relativeStage;
+	private final Scene scene;
+	private final VBox container;
+	private final StackPane root;
 	
-	public CustomStage() {
+	public CustomStage(String title, Stage relativeStage, int width, int height) {
 		super();
-		setWidth(1100);
-		setHeight(800);		
-		setOnShowing(e-> onShow());
+		this.setWidth(width);
+		this.setHeight(height);
+		this.setTitle(title);
+		this.relativeStage=relativeStage;
+		this.container = new VBox();
+		this.root =  new StackPane(container);
+		this.root.setPadding(new Insets(7));
+		this.scene = new Scene(root);
+		this.setScene(scene);
+		this.setOnShowing(e-> onShow());	
 	}
 	
+	public VBox getContainer() {
+		return container;
+	}
+
 	private void onShow() {
-		double centerXPosition = XModeler.getStage().getX() + XModeler.getStage().getWidth()/2d;
-        double centerYPosition = XModeler.getStage().getY() + XModeler.getStage().getHeight()/2d;
+		double centerXPosition = relativeStage.getX() + relativeStage.getWidth()/2d;
+        double centerYPosition = relativeStage.getY() + relativeStage.getHeight()/2d;
         
         this.setX(centerXPosition - this.getWidth()/2d);
         this.setY(centerYPosition - this.getHeight()/2d);
         this.show();
-	}
-	
-	public ListView<FmmlxObject> initializeListView(ObservableList<FmmlxObject> list, SelectionMode selectionMode) {
-
-		ListView<FmmlxObject> listView = new ListView<>(list);
-		listView.setPrefHeight(75);
-
-		listView.setCellFactory(param -> new ListCell<FmmlxObject>() {
-			@Override
-			protected void updateItem(FmmlxObject object, boolean empty) {
-				super.updateItem(object, empty);
-
-				if (empty || object == null || object.getName() == null) {
-					setText(null);
-				} else {
-					setText(object.getName());
-				}
-			}
-		});
-
-		listView.getSelectionModel().setSelectionMode(selectionMode);
-		return listView;
 	}
 	
 	protected void addNodesToGrid(GridPane grid, List<Node> nodes, int columnIndex) {
@@ -76,7 +64,6 @@ public class CustomStage extends Stage{
 			i++;
 		}
 	}
-	
 	
 	public VBox joinNodeInVBox(Node node1, Node node2) {
 		VBox result = new VBox();
