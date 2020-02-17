@@ -846,8 +846,8 @@ public class DiagramActions {
 		return false;
 	}
 
-	public void levelRaiseAll() {diagram.getComm().levelRaiseAll(diagram);}
-	public void levelLowerAll() {diagram.getComm().levelLowerAll(diagram);}
+	public void levelRaiseAll() {diagram.getComm().levelRaiseAll(diagram);diagram.updateDiagram();}
+	public void levelLowerAll() {diagram.getComm().levelLowerAll(diagram);diagram.updateDiagram();}
 
 	public void levelRaiseRelated(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}
 	public void levelLowerRelated(FmmlxObject o) {throw new RuntimeException("Not implemented yet");}

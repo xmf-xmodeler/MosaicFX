@@ -6,29 +6,31 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class XDate {
-	boolean precisionDayOnly;
-	long time;
+//	boolean precisionDayOnly;
+//	long time;
 	
 	public XDate() {};
 	
-	public void setNow() {time = System.currentTimeMillis();}
+	public String getNow() {return System.currentTimeMillis()+"";}
 	
-	public String printDate(String pattern) { return new SimpleDateFormat(pattern).format(new Date(time)); }
+	public String printDate(String timeString, String pattern) { return new SimpleDateFormat(pattern).format(new Date(Long.parseLong(timeString))); }
 	
-	public void setYearMonthDay(int year, int month, int day) {
-		setYearMonthDayHourMinuteSecond(year, month, day, 0, 0, 0);
+	public String getYearMonthDay(int year, int month, int day) {
+		return getYearMonthDayHourMinuteSecond(year, month, day, 0, 0, 0);
 	}
 	
-	public void setYearMonthDayHourMinuteSecond(int year, int month, int day, int hour, int minute, int second) {
+	public String getYearMonthDayHourMinuteSecond(int year, int month, int day, int hour, int minute, int second) {
 		GregorianCalendar gc = new GregorianCalendar();
 		gc.set(year, month-1, day, hour, minute, second);
-		time = gc.getTime().getTime();
+		return gc.getTime().getTime()+"";
 	}
 	
-	public String getDifference(XDate other) {
-		if(other.time > this.time) return "-"+other.getDifference(this);
-		long diff = this.time - other.time;
-//		long ms = diff % 1000; diff /= 1000;
+	public String getDifference(String thisTimeS, String thatTimeS) {
+		long thisTime = Long.parseLong(thisTimeS);
+		long thatTime = Long.parseLong(thatTimeS);
+		
+		if(thatTime > thisTime) return "-"+getDifference(thatTimeS, thisTimeS);
+		long diff = thisTime - thatTime;
 		diff += 500; diff /= 1000; // rounding milliseconds
 		long s = diff % 60; diff /= 60;
 		long m = diff % 60; diff /= 60;
@@ -38,5 +40,19 @@ public class XDate {
 		DecimalFormat NN = new DecimalFormat("00");
 		
 		return (d>0?(d + "d "):"") + NN.format(h) + ":" + NN.format(m) + ":" + NN.format(s);
+	}
+	
+	public Integer age(String time) {
+		try {
+			long thisTime = Long.parseLong(time);
+			long now = System.currentTimeMillis();
+			long diff = now - thisTime;
+			long YEAR = 31_556_952_000l;
+			long years = diff / YEAR;
+			int yearsI = (int) years;
+			return yearsI;
+		} catch (Exception any) {
+			return null;
+		}
 	}
 }

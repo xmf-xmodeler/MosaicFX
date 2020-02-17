@@ -33,7 +33,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
 	private FmmlxObject selectedObject;
 	private Button multiplicityButton;
-	private Multiplicity multiplicity = Multiplicity.OPTIONAL;
+	private Multiplicity multiplicity = Multiplicity.MANDATORY;
 	
 	private Vector<String> types;
 
