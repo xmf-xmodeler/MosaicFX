@@ -25,7 +25,6 @@ public class ClassBrowserClient{
 	public static void show(FmmlxDiagram diagram) {
 		stage.show();
 		stage.toFront();
-		stage.setAlwaysOnTop(true);
 		stage.updateDiagram(diagram);
 	}
 

@@ -28,7 +28,7 @@ public class ModellBrowserStage extends CustomStage {
 
 	private TextArea codeArea;
 	private ListView<String> modelListView,fmmlxObjectListView, fmmlxAttributeListView, 
-						protocolListView, fmmlxOperationListView, fmmlxAssociationListView, slotListView;
+						fmmlxOperationListView, fmmlxAssociationListView, slotListView, protocolListView;
 	private ComboBox<Boolean> abstractComboBox;
 	private TextField modellBrowserTextFied, classBrowserTextField, operationInputTextField, operationOutputTexField, 
 						associationBrowserTextField, attributeBrowserTextField;
@@ -114,13 +114,14 @@ public class ModellBrowserStage extends CustomStage {
 		VBox.setVgrow(outerSplitPane,Priority.ALWAYS);
 		VBox.setVgrow(codeArea,Priority.ALWAYS);
 		
-		abstractVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.abstractSmall+" :"), abstractComboBox);
-		modellBrowserVBox= getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.project+" :"), modellBrowserTextFied);
-		operationOutputVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.output+" :"), operationOutputTexField);
-		operationInputVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.input+" :"), operationInputTextField);
-		classBrowserVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.aClassSmall+" :"), classBrowserTextField);
-		associationBrowserVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.withSmall+" :"), associationBrowserTextField);
-		attributeBrowserVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.aClassSmall+" :"), attributeBrowserTextField);
+		String doubleDots = " :";
+		abstractVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.abstractSmall+doubleDots), abstractComboBox);
+		modellBrowserVBox= getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.project+doubleDots), modellBrowserTextFied);
+		operationOutputVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.output+doubleDots), operationOutputTexField);
+		operationInputVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.input+doubleDots), operationInputTextField);
+		classBrowserVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.aClassSmall+doubleDots), classBrowserTextField);
+		associationBrowserVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.withSmall+doubleDots), associationBrowserTextField);
+		attributeBrowserVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.aClassSmall+doubleDots), attributeBrowserTextField);
 		
 		modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onModelListViewNewValue(oldValue, newValue));
@@ -176,12 +177,12 @@ public class ModellBrowserStage extends CustomStage {
 		
 		attributeNode.add(attributeGridpane);
 		attributeNode.add(attributeBrowserVBox);	
-		
-		List<Node> protocolNode = new ArrayList<Node>();
-		protocolNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
-		protocolNode.add(new Label(StringValue.LabelAndHeaderTitle.protocols));
-		protocolNode.add(protocolListView);
-		
+//		
+//		List<Node> protocolNode = new ArrayList<Node>();
+//		protocolNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
+//		protocolNode.add(new Label(StringValue.LabelAndHeaderTitle.protocols));
+//		protocolNode.add(protocolListView);
+//		
 		List<Node> operationNode = new ArrayList<Node>();
 		operationNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		operationNode.add(new Label(StringValue.LabelAndHeaderTitle.operations));
@@ -198,9 +199,9 @@ public class ModellBrowserStage extends CustomStage {
 		getGridControl().addNodesToGrid(mainGridPane,modelNode, 0);
 		getGridControl().addNodesToGrid(mainGridPane,objectNode, 1);
 		getGridControl().addNodesToGrid(mainGridPane,attributeNode, 2);
-		getGridControl().addNodesToGrid(mainGridPane,protocolNode, 3);
-		getGridControl().addNodesToGrid(mainGridPane,operationNode, 4);
-		getGridControl().addNodesToGrid(mainGridPane,associationNode, 5);
+//		getGridControl().addNodesToGrid(mainGridPane,protocolNode, 3);
+		getGridControl().addNodesToGrid(mainGridPane,operationNode, 3);
+		getGridControl().addNodesToGrid(mainGridPane,associationNode, 4);
 	}
 
 	private void onOperationListViewNewValue(String oldValue, String newValue) {
@@ -267,8 +268,7 @@ public class ModellBrowserStage extends CustomStage {
 	private void onAbstractNewValue(Boolean oldValue, Boolean newValue) {
 		if(newValue != null) {
 			if(newValue!=oldValue) {
-				diagram.getComm().setClassAbstract(diagram, selectedObject.getId(), !selectedObject.isAbstract());
-				diagram.updateDiagram();
+				//TODO
 			}
 		}
 	}
