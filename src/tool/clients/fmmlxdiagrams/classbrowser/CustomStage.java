@@ -12,7 +12,6 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.xmodeler.XModeler;
 
@@ -78,19 +77,6 @@ public class CustomStage extends Stage{
 		}
 	}
 	
-	public void objectBrowserListerner(ListView<String> fmmlxObjectListView, FmmlxDiagram diagram, String oldValue, String newValue) {
-		fmmlxObjectListView.getItems().clear();
-		for(FmmlxObject tmp : diagram.getObjects()) {
-			if(tmp.getName().contains(newValue)) {
-				fmmlxObjectListView.getItems().add("("+tmp.getLevel()+") "+tmp.getName());
-			}
-		}
-	}
-	
-	public void projectBrowserListerner(ListView<String> modelListView2, String oldValue, String newValue) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	public VBox joinNodeInVBox(Node node1, Node node2) {
 		VBox result = new VBox();

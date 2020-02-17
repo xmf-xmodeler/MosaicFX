@@ -834,4 +834,13 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 		}
 		return null;
 	}
+
+	public List<String> getAllSlotString() {
+		List<String> result = new LinkedList<String>();
+		
+		for(FmmlxSlot slot : slots) {
+			result.add(slot.getName()+" = "+slot.getValue());
+		}
+		return result;
+	}
 }
