@@ -4,7 +4,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 public class ClassBrowserClient{
 	
-	public static ClassBrowserStage stage;
+	public static ModellBrowserStage stage;
 	public static ClassBrowserClient classBrowserClientInstance;
 
 	public ClassBrowserClient() {
@@ -12,7 +12,7 @@ public class ClassBrowserClient{
 	}
 
 	public static void start() {
-		ClassBrowserClient.stage = new ClassBrowserStage();
+		ClassBrowserClient.stage = new ModellBrowserStage();
 	}
 	
 	public static ClassBrowserClient getInstance() {

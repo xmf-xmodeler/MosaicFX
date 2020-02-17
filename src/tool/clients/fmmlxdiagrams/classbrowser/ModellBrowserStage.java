@@ -23,26 +23,26 @@ import tool.clients.fmmlxdiagrams.dialogs.ValueList;
 import tool.xmodeler.XModeler;
 
 
-public class ClassBrowserStage extends CustomStage {
+public class ModellBrowserStage extends CustomStage {
 
 	private TextArea codeArea;
 	private ListView<String> modelListView,fmmlxObjectListView, fmmlxAttributeListView, 
 						protocolListView, fmmlxOperationListView, fmmlxAssociationListView, slotListView;
 	private ComboBox<Boolean> abstractComboBox;
-	private TextField classBrowserTextField, operationInputTextField, operationOutputTexField, 
-						associationBrowserTextField, attributeBrowserTextField, projectBrowserTextFied;
-	private VBox projectBrowserVBox, classBrowserVBox, attributeBrowserVBox, abstractVBox,
-						operationOutputVBox, operationInputVBox, associationBrowserVBox, consoleContainer;
+	private TextField modellBrowserTextFied, classBrowserTextField, operationInputTextField, operationOutputTexField, 
+						associationBrowserTextField, attributeBrowserTextField;
+	private VBox modellBrowserVBox, classBrowserVBox, attributeBrowserVBox, abstractVBox,
+						operationOutputVBox, operationInputVBox, associationBrowserVBox, consoleContainerVBox;
 	private SplitPane outerSplitPane;
-	private GridPane classBrowserContainer, attributeGridpane;	
+	private GridPane mainGridPane, attributeGridpane;	
 	private FmmlxDiagram diagram;
 	private FmmlxObject selectedObject;
 	
-	public ClassBrowserStage() {
+	public ModellBrowserStage() {
 		super("Modell Browser", XModeler.getStage(), 1100, 800);		
 		
 		initAllElement();
-		addElementToGrid();			
+		addAllElementToPane();			
 		getContainer().getChildren().addAll(outerSplitPane);
 		
 		setOnCloseRequest(e -> onClose());
@@ -80,14 +80,14 @@ public class ClassBrowserStage extends CustomStage {
 		operationOutputTexField.setText("");
 		associationBrowserTextField.setText("");
 	}
-	
-	private void initAllElement() {
-		classBrowserContainer = new GridPane();
+	@Override
+	protected void initAllElement() {
+		mainGridPane = new GridPane();
 		attributeGridpane = new GridPane();
-		classBrowserContainer.setHgap(10);
-		classBrowserContainer.setVgap(8);
-		classBrowserContainer.setPadding(new Insets(3, 3, 3, 3));
-		setColumnConstrain(classBrowserContainer);
+		mainGridPane.setHgap(10);
+		mainGridPane.setVgap(8);
+		mainGridPane.setPadding(new Insets(3, 3, 3, 3));
+		setColumnConstrain(mainGridPane);
 
 		modelListView = new ListView<String>();
 		fmmlxObjectListView = new ListView<String>();
@@ -97,7 +97,7 @@ public class ClassBrowserStage extends CustomStage {
 		fmmlxAssociationListView = new ListView<String>();
 		fmmlxOperationListView = new ListView<String>();
 		
-		projectBrowserTextFied = new TextField();
+		modellBrowserTextFied = new TextField();
 		classBrowserTextField = new TextField();
 		attributeBrowserTextField = new TextField();
 		operationInputTextField = new TextField();
@@ -110,28 +110,28 @@ public class ClassBrowserStage extends CustomStage {
 		abstractComboBox = new ComboBox<Boolean>(ValueList.booleanList);
 		
 		codeArea = new TextArea();
-		consoleContainer= new VBox();
-		consoleContainer.getChildren().add(codeArea);
+		consoleContainerVBox= new VBox();
+		consoleContainerVBox.getChildren().add(codeArea);
 		
 		outerSplitPane = new SplitPane();
 		outerSplitPane.setOrientation(Orientation.VERTICAL);
-		outerSplitPane.getItems().addAll(classBrowserContainer, consoleContainer);
+		outerSplitPane.getItems().addAll(mainGridPane, consoleContainerVBox);
 		
 		VBox.setVgrow(outerSplitPane,Priority.ALWAYS);
 		VBox.setVgrow(codeArea,Priority.ALWAYS);
 		
-		abstractVBox = joinNodeInVBox(new Label("abstract :"), abstractComboBox);
-		projectBrowserVBox= joinNodeInVBox(new Label("Project :"), projectBrowserTextFied);
-		operationOutputVBox = joinNodeInVBox(new Label("Output :"), operationOutputTexField);
-		operationInputVBox = joinNodeInVBox(new Label("Input :"), operationInputTextField);
-		classBrowserVBox = joinNodeInVBox(new Label("class :"), classBrowserTextField);
-		associationBrowserVBox = joinNodeInVBox(new Label("with :"), associationBrowserTextField);
-		attributeBrowserVBox = joinNodeInVBox(new Label("class :"), attributeBrowserTextField);
+		abstractVBox = getVBoxControl().joinNodeInVBox(new Label("abstract :"), abstractComboBox);
+		modellBrowserVBox= getVBoxControl().joinNodeInVBox(new Label("Project :"), modellBrowserTextFied);
+		operationOutputVBox = getVBoxControl().joinNodeInVBox(new Label("Output :"), operationOutputTexField);
+		operationInputVBox = getVBoxControl().joinNodeInVBox(new Label("Input :"), operationInputTextField);
+		classBrowserVBox = getVBoxControl().joinNodeInVBox(new Label("class :"), classBrowserTextField);
+		associationBrowserVBox = getVBoxControl().joinNodeInVBox(new Label("with :"), associationBrowserTextField);
+		attributeBrowserVBox = getVBoxControl().joinNodeInVBox(new Label("class :"), attributeBrowserTextField);
 		
 		modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onModelListViewNewValue(oldValue, newValue));
-		projectBrowserTextFied.textProperty().addListener((observable, oldValue, newValue) 
-				-> projectBrowserListerner(modelListView, oldValue, newValue));
+		modellBrowserTextFied.textProperty().addListener((observable, oldValue, newValue) 
+				-> modellBrowserListerner(modelListView, oldValue, newValue));
 		fmmlxObjectListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onObjectListViewNewValue(oldValue, newValue));	
 		classBrowserTextField.textProperty().addListener((observable, oldValue, newValue) 
@@ -150,12 +150,13 @@ public class ClassBrowserStage extends CustomStage {
 				-> onAssociationListViewNewValue(oldValue,newValue)); 
 	}
 
-	private void addElementToGrid() {
+	@Override
+	protected void addAllElementToPane() {
 		List<Node> modelNode = new ArrayList<Node>();
 		modelNode.add(new Label(""));
 		modelNode.add(new Label("Model"));
 		modelNode.add(modelListView);
-		modelNode.add(projectBrowserVBox);
+		modelNode.add(modellBrowserVBox);
 		modelNode.add(new Label(""));
 		modelNode.add(new Label("code"));
 		
@@ -200,12 +201,12 @@ public class ClassBrowserStage extends CustomStage {
 		associationNode.add(fmmlxAssociationListView);
 		associationNode.add(associationBrowserVBox);
 		
-		addNodesToGrid(classBrowserContainer,modelNode, 0);
-		addNodesToGrid(classBrowserContainer,objectNode, 1);
-		addNodesToGrid(classBrowserContainer,attributeNode, 2);
-		addNodesToGrid(classBrowserContainer,protocolNode, 3);
-		addNodesToGrid(classBrowserContainer,operationNode, 4);
-		addNodesToGrid(classBrowserContainer,associationNode, 5);
+		getGridControl().addNodesToGrid(mainGridPane,modelNode, 0);
+		getGridControl().addNodesToGrid(mainGridPane,objectNode, 1);
+		getGridControl().addNodesToGrid(mainGridPane,attributeNode, 2);
+		getGridControl().addNodesToGrid(mainGridPane,protocolNode, 3);
+		getGridControl().addNodesToGrid(mainGridPane,operationNode, 4);
+		getGridControl().addNodesToGrid(mainGridPane,associationNode, 5);
 	}
 
 	private void onOperationListViewNewValue(String oldValue, String newValue) {
@@ -229,7 +230,7 @@ public class ClassBrowserStage extends CustomStage {
 		}
 	}
 	
-	private void projectBrowserListerner(ListView<String> modelListView2, String oldValue, String newValue) {
+	private void modellBrowserListerner(ListView<String> modelListView2, String oldValue, String newValue) {
 		clearAll();
 		//TODO
 		
