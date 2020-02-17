@@ -54,23 +54,24 @@ public class ModellBrowserStage extends CustomStage {
 		hide();
 	}
 
-	private void clearAll(ClearSelectionMode mode) {
-		
+	private void clearAll(ClearSelectionMode mode) {	
 		if (mode == ClearSelectionMode.MODELL) {
 			fmmlxObjectListView.getItems().clear();
 			classBrowserTextField.setText(StringValue.LabelAndHeaderTitle.empty);
 		}
 		
-		fmmlxAttributeListView.getItems().clear();
-		slotListView.getItems().clear();
-		protocolListView.getItems().clear();
-		fmmlxOperationListView.getItems().clear();
-		fmmlxAssociationListView.getItems().clear();
-		
-		attributeBrowserTextField.setText(StringValue.LabelAndHeaderTitle.empty);
-		operationInputTextField.setText(StringValue.LabelAndHeaderTitle.empty);
-		operationOutputTexField.setText(StringValue.LabelAndHeaderTitle.empty);
-		associationBrowserTextField.setText(StringValue.LabelAndHeaderTitle.empty);
+		if (mode == ClearSelectionMode.OBJECT || mode == ClearSelectionMode.MODELL) {
+			fmmlxAttributeListView.getItems().clear();
+			slotListView.getItems().clear();
+			protocolListView.getItems().clear();
+			fmmlxOperationListView.getItems().clear();
+			fmmlxAssociationListView.getItems().clear();
+			
+			attributeBrowserTextField.setText(StringValue.LabelAndHeaderTitle.empty);
+			operationInputTextField.setText(StringValue.LabelAndHeaderTitle.empty);
+			operationOutputTexField.setText(StringValue.LabelAndHeaderTitle.empty);
+			associationBrowserTextField.setText(StringValue.LabelAndHeaderTitle.empty);
+		}
 	}
 	
 	@Override
