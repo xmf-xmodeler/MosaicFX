@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams.classbrowser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -19,6 +20,7 @@ import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
+import tool.clients.fmmlxdiagrams.SortedValue;
 import tool.clients.fmmlxdiagrams.dialogs.ValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
 import tool.xmodeler.XModeler;
@@ -223,9 +225,10 @@ public class ModellBrowserStage extends CustomStage {
 	private void classBrowserTextFieldListener(String oldValue, String newValue) {
 		clearAll(ClearSelectionMode.OBJECT);
 		fmmlxObjectListView.getItems().clear();
-		for(FmmlxObject tmp : diagram.getObjects()) {
-			if(tmp.getName().toLowerCase().contains(newValue.toLowerCase())) {
-				fmmlxObjectListView.getItems().add("("+tmp.getLevel()+") "+tmp.getName());
+		
+		for(FmmlxObject obj : diagram.getSortedObject(SortedValue.REVERSE)) {
+			if(obj.getName().toLowerCase().contains(newValue.toLowerCase())) {
+				fmmlxObjectListView.getItems().add("("+obj.getLevel()+") "+obj.getName());
 			}
 		}
 	}
@@ -277,7 +280,9 @@ public class ModellBrowserStage extends CustomStage {
 		clearAll(ClearSelectionMode.MODELL);
 		this.diagram=diagram;
 		
-		for(FmmlxObject obj : diagram.getObjects()) {
+		List<FmmlxObject> objects = diagram.getSortedObject(SortedValue.REVERSE);
+		
+		for(FmmlxObject obj : objects) {
 			fmmlxObjectListView.getItems().add("("+obj.getLevel()+") "+obj.getName());
 		}
 	}
