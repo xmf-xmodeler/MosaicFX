@@ -19,7 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
-public class FmmlxObject implements CanvasElement, FmmlxProperty {
+public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<FmmlxObject> {
 
 	public static HashMap<Integer, Paint> colors = null;
 	private String name;
@@ -579,19 +579,19 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 	public void fetchDataDefinitions(FmmlxDiagramCommunicator comm) throws TimeOutException {
 		Vector<Vector<FmmlxAttribute>> attributeList = comm.fetchAttributes(diagram, this.name);
 		ownAttributes = attributeList.get(0);
-		Collections.sort(ownAttributes);
+		Collections.sort(ownAttributes, Collections.reverseOrder());
 		otherAttributes = attributeList.get(1);
-		Collections.sort(otherAttributes);
+		Collections.sort(otherAttributes, Collections.reverseOrder());
 		Vector<FmmlxOperation> operations = comm.fetchOperations(diagram, this.name);
 		ownOperations = new Vector<FmmlxOperation>();
 		otherOperations = new Vector<FmmlxOperation>();
 		for (FmmlxOperation o : operations) {
 			if (o.owner == this.id) {
 				ownOperations.add(o);
-				Collections.sort(ownOperations);
+				Collections.sort(ownOperations, Collections.reverseOrder());
 			} else {
 				otherOperations.add(o);
-				Collections.sort(otherOperations);
+				Collections.sort(otherOperations, Collections.reverseOrder());
 			}
 		}
 	}
@@ -842,5 +842,17 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty {
 			result.add(slot.getName()+" = "+slot.getValue());
 		}
 		return result;
+	}
+
+	
+	@Override
+	public int compareTo(FmmlxObject anotherObject) {
+		if(this.getLevel()>anotherObject.getLevel()) {
+			return 1;
+		} else if (this.getLevel()<anotherObject.getLevel()) {
+			return -1;
+		} else {
+			return this.name.compareTo(anotherObject.getName());
+		}
 	}
 }
