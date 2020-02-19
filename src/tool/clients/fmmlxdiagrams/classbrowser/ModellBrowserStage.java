@@ -224,7 +224,7 @@ public class ModellBrowserStage extends CustomStage {
 		clearAll(ClearSelectionMode.OBJECT);
 		fmmlxObjectListView.getItems().clear();
 		for(FmmlxObject tmp : diagram.getObjects()) {
-			if(tmp.getName().contains(newValue)) {
+			if(tmp.getName().toLowerCase().contains(newValue.toLowerCase())) {
 				fmmlxObjectListView.getItems().add("("+tmp.getLevel()+") "+tmp.getName());
 			}
 		}
