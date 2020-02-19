@@ -28,7 +28,7 @@ public class ModellBrowserStage extends CustomStage {
 
 	private TextArea codeArea;
 	private ListView<String> modelListView,fmmlxObjectListView, fmmlxAttributeListView, 
-						fmmlxOperationListView, fmmlxAssociationListView, slotListView, protocolListView;
+						fmmlxOperationListView, fmmlxAssociationListView, slotListView;
 	private ComboBox<Boolean> abstractComboBox;
 	private TextField modellBrowserTextFied, classBrowserTextField, operationInputTextField, operationOutputTexField, 
 						associationBrowserTextField, attributeBrowserTextField;
@@ -63,7 +63,6 @@ public class ModellBrowserStage extends CustomStage {
 		if (mode == ClearSelectionMode.OBJECT || mode == ClearSelectionMode.MODELL) {
 			fmmlxAttributeListView.getItems().clear();
 			slotListView.getItems().clear();
-			protocolListView.getItems().clear();
 			fmmlxOperationListView.getItems().clear();
 			fmmlxAssociationListView.getItems().clear();
 			
@@ -87,7 +86,6 @@ public class ModellBrowserStage extends CustomStage {
 		fmmlxObjectListView = new ListView<String>();
 		fmmlxAttributeListView = new ListView<String>();
 		slotListView = new ListView<String>();
-		protocolListView = new ListView<String>();
 		fmmlxAssociationListView = new ListView<String>();
 		fmmlxOperationListView = new ListView<String>();
 		
@@ -137,8 +135,6 @@ public class ModellBrowserStage extends CustomStage {
 				-> onAttributeListViewNewValue(oldValue, newValue));
 		slotListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onSlotListViewNewValue(modelListView, oldValue, newValue));
-		protocolListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
-				-> onProtocolListViewNewValue(oldValue, newValue));
 		fmmlxOperationListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onOperationListViewNewValue(oldValue, newValue));
 		fmmlxAssociationListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
@@ -177,12 +173,7 @@ public class ModellBrowserStage extends CustomStage {
 		
 		attributeNode.add(attributeGridpane);
 		attributeNode.add(attributeBrowserVBox);	
-//		
-//		List<Node> protocolNode = new ArrayList<Node>();
-//		protocolNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
-//		protocolNode.add(new Label(StringValue.LabelAndHeaderTitle.protocols));
-//		protocolNode.add(protocolListView);
-//		
+
 		List<Node> operationNode = new ArrayList<Node>();
 		operationNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		operationNode.add(new Label(StringValue.LabelAndHeaderTitle.operations));
@@ -199,7 +190,6 @@ public class ModellBrowserStage extends CustomStage {
 		getGridControl().addNodesToGrid(mainGridPane,modelNode, 0);
 		getGridControl().addNodesToGrid(mainGridPane,objectNode, 1);
 		getGridControl().addNodesToGrid(mainGridPane,attributeNode, 2);
-//		getGridControl().addNodesToGrid(mainGridPane,protocolNode, 3);
 		getGridControl().addNodesToGrid(mainGridPane,operationNode, 3);
 		getGridControl().addNodesToGrid(mainGridPane,associationNode, 4);
 	}
@@ -234,7 +224,7 @@ public class ModellBrowserStage extends CustomStage {
 		clearAll(ClearSelectionMode.OBJECT);
 		fmmlxObjectListView.getItems().clear();
 		for(FmmlxObject tmp : diagram.getObjects()) {
-			if(tmp.getName().contains(newValue)) {
+			if(tmp.getName().toLowerCase().contains(newValue.toLowerCase())) {
 				fmmlxObjectListView.getItems().add("("+tmp.getLevel()+") "+tmp.getName());
 			}
 		}
@@ -301,12 +291,6 @@ public class ModellBrowserStage extends CustomStage {
 			//updateDiagram(newValue1);
 		}
 	}	
-
-	private void onProtocolListViewNewValue(String oldValue, String newValue) {
-		if (newValue != null) {
-			// TODO if protocol selected
-		}
-	}
 	
 	private void onSlotListViewNewValue(ListView<String> modelListView2, String oldValue, String newValue) {
 		if (newValue != null) {
