@@ -21,7 +21,7 @@ public class FmmlxDiagramCommunicator {
 	private HashMap<Integer, Vector<Object>> results = new HashMap<>();
 	private static Hashtable<Integer, Tab> tabs = new Hashtable<Integer, Tab>();
 	private static Vector<FmmlxDiagram> diagrams = new Vector<FmmlxDiagram>();
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	private static Vector<FmmlxDiagramCommunicator> communicators = new Vector<FmmlxDiagramCommunicator>();
 	static TabPane tabPane;
 	private String name;
@@ -467,6 +467,7 @@ public class FmmlxDiagramCommunicator {
 			Vector<Object> slot = (Vector<Object>) (slotO);
 			String name = (String) (slot.get(0));
 			String value = (String) (slot.get(1));
+			System.err.println("slot.value: " + value);
 			result.add(new FmmlxSlot(name, value, owner));
 		}
 		return result;
