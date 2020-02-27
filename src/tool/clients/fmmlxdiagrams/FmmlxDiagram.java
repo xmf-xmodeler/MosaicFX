@@ -30,12 +30,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
-public class FmmlxDiagram {
+public class FmmlxDiagram{
 
 	enum MouseMode {
 		MULTISELECT, STANDARD, DRAW_EDGE
@@ -1097,6 +1098,37 @@ public class FmmlxDiagram {
 				result.add(issue);
 			}
 		}
+		return result;
+	}
+
+	public FmmlxObject getObjectByName(String name) {
+		for(FmmlxObject obj : getObjects()) {
+			if (obj.getName().equals(name)){
+				return obj;
+			}
+		}
+		return null;
+	}
+
+	public FmmlxAssociation getAssociationByName(String name) {
+		for(FmmlxAssociation as : getAssociations()) {
+			if(as.getName().equals(name)) {
+				return as;
+			}
+		}
+		return null;
+	}
+
+	public List<FmmlxObject> getSortedObject(SortedValue sortedValue) {
+		List<FmmlxObject> result = new ArrayList<FmmlxObject>();
+		for (FmmlxObject obj : getObjects()) {
+			result.add(obj);
+		}		
+		if(sortedValue == SortedValue.REVERSE) {
+			Collections.sort(result, Collections.reverseOrder());
+		}else {
+			Collections.sort(result);
+		}		
 		return result;
 	}
 

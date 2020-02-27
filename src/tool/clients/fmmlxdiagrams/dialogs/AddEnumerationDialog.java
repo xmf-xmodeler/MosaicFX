@@ -15,7 +15,7 @@ import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumerationDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
 import javafx.scene.Node;
 
 public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResult>{
@@ -74,7 +74,7 @@ public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResul
 		String name = nameTextField.getText();
 
 		if (!InputChecker.getInstance().validateName(name)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
+			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else {
 			errorLabel.setText("");

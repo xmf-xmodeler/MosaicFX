@@ -1,6 +1,6 @@
 package tool.clients.fmmlxdiagrams.dialogs.stringvalue;
 
-public class StringValueDialog {
+public class StringValue {
 
 	public static class ErrorMessage {
 		//Select
@@ -72,7 +72,6 @@ public class StringValueDialog {
 		public static final String symmetric ="Symmetric";
 		public static final String transitive ="Transitive";
 
-
 		//Current
 		public static final String currentOwner = "Current Owner";
 		public static final String currentLevel = "Current Level";
@@ -130,10 +129,26 @@ public class StringValueDialog {
 		public static final String classALabel = "Class A";
 		public static final String classBLabel = "Class B";
 		public static final String association = "Association";
+		public static final String associations = "Associations";
 		public static final String selectMetaClassA = "Select Meta-Class A";
 		public static final String selectMetaClassB = "Select Meta-Class B";
 
 		public static final String numberOfInstances = "Number Of Instance";
+		public static final String modell = "Modell";
+		public static final String code = "code";
+		public static final String objects = "Objects";
+		public static final String attributes = "Attributes";
+		public static final String slots = "Slots";
+		public static final String protocols = "Protocols";
+		public static final String operations = "Operations";
+		public static final String empty = "";
+		public static final String modellBrowser = "Modell Browser";
+		public static final String aClassSmall = "class";
+		public static final String project = "Project";
+		public static final String output = "Output";
+		public static final String input = "Input";
+		public static final String abstractSmall = "abstract";
+		public static final String withSmall = "with";
 		
 	}
 

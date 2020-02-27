@@ -7,7 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOwnerDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
 
 import java.util.Vector;
 
@@ -92,13 +92,13 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 
 	private boolean validateChangeOwnerOperation() {
 		if (selectOperationComboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectOperation);
+			errorLabel.setText(StringValue.ErrorMessage.selectOperation);
 			return false;
 		} else if (newOwnerComboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectNewOwner);
+			errorLabel.setText(StringValue.ErrorMessage.selectNewOwner);
 			return false;
 		} else if (newOwnerComboBox.getSelectionModel().getSelectedItem() == object) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAnotherClass);
+			errorLabel.setText(StringValue.ErrorMessage.selectAnotherClass);
 			return false;
 		}
 		return true;
@@ -107,13 +107,13 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 
 	private boolean validateChangeOwnerAttribute() {
 		if (selectAttributeComboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAttribute);
+			errorLabel.setText(StringValue.ErrorMessage.selectAttribute);
 			return false;
 		} else if (newOwnerComboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectNewOwner);
+			errorLabel.setText(StringValue.ErrorMessage.selectNewOwner);
 			return false;
 		} else if (newOwnerComboBox.getSelectionModel().getSelectedItem() == object) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAnotherClass);
+			errorLabel.setText(StringValue.ErrorMessage.selectAnotherClass);
 			return false;
 		}
 		return true;
@@ -121,9 +121,9 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 
 
 	private void layoutContent() {
-		classLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectedObject);
+		classLabel = new Label(StringValue.LabelAndHeaderTitle.selectedObject);
 
-		newOwnerLabel = new Label(StringValueDialog.LabelAndHeaderTitle.newOwner);
+		newOwnerLabel = new Label(StringValue.LabelAndHeaderTitle.newOwner);
 
 		classNameTextfield = new TextField();
 		classNameTextfield.setText(object.getName());
@@ -147,27 +147,27 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 		grid.add(newOwnerComboBox, 1, 3);
 		switch (type) {
 			case Attribute:
-				dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.changeAttributeOwner);
+				dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeAttributeOwner);
 				attributes = object.getOwnAttributes();
 				attributes.addAll(object.getOtherAttributes());
 
 				ObservableList<FmmlxAttribute> attributeList;
 				attributeList = FXCollections.observableList(attributes);
 
-				selectAttribute = new Label(StringValueDialog.LabelAndHeaderTitle.selectAttribute);
+				selectAttribute = new Label(StringValue.LabelAndHeaderTitle.selectAttribute);
 				selectAttributeComboBox = (ComboBox<FmmlxAttribute>) initializeComboBox(attributeList);
 				selectAttributeComboBox.setPrefWidth(COLUMN_WIDTH);
 				grid.add(selectAttribute, 0, 1);
 				grid.add(selectAttributeComboBox, 1, 1);
 				break;
 			case Operation:
-				dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.changeOperationOwner);
+				dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeOperationOwner);
 				operations = object.getOwnOperations();
 				operations.addAll(object.getOtherOperations());
 
 				ObservableList<FmmlxOperation> operationList;
 				operationList = FXCollections.observableList(operations);
-				selectOperation = new Label(StringValueDialog.LabelAndHeaderTitle.selectOperation);
+				selectOperation = new Label(StringValue.LabelAndHeaderTitle.selectOperation);
 				selectOperationComboBox = (ComboBox<FmmlxOperation>) initializeComboBox(operationList);
 				selectOperationComboBox.setPrefWidth(COLUMN_WIDTH);
 				grid.add(selectOperation, 0, 1);

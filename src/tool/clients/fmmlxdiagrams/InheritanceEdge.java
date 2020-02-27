@@ -5,7 +5,6 @@ import java.util.Vector;
 import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
-import tool.clients.fmmlxdiagrams.Edge.HeadStyle;
 
 public class InheritanceEdge extends Edge {
 

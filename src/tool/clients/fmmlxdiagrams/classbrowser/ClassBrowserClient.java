@@ -1,25 +1,18 @@
 package tool.clients.fmmlxdiagrams.classbrowser;
 
-import tool.clients.Client;
-import xos.Message;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 public class ClassBrowserClient{
 	
-	public static ClassBrowserStage stage;
+	public static ModellBrowserStage stage;
 	public static ClassBrowserClient classBrowserClientInstance;
 
 	public ClassBrowserClient() {
-//		super("com.ceteva.modelBrowser");
 	    classBrowserClientInstance = this;
 	}
 
-//	@Override
-//	public boolean processMessage(Message message) {
-//		return false;
-//	}
-
 	public static void start() {
-		ClassBrowserClient.stage = new ClassBrowserStage();
+		ClassBrowserClient.stage = new ModellBrowserStage();
 	}
 	
 	public static ClassBrowserClient getInstance() {
@@ -28,10 +21,11 @@ public class ClassBrowserClient{
 		}
 	    return classBrowserClientInstance;
 	 }
-	
-	public static void show(Object handle) {
+
+	public static void show(FmmlxDiagram diagram) {
 		stage.show();
 		stage.toFront();
+		stage.updateDiagram(diagram);
 	}
 
 }

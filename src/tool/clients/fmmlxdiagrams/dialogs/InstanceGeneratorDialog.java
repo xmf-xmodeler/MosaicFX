@@ -11,7 +11,7 @@ import javafx.stage.StageStyle;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.InstanceGeneratorDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog.LabelAndHeaderTitle;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue.LabelAndHeaderTitle;
 
 public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialogResult>{
 

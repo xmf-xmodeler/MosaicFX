@@ -8,7 +8,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddOperationDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +61,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 	}
 
 	private void layoutContent() {
-		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.newOperation);
+		dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.newOperation);
 
 		classTextField = new TextField();
 		classTextField.setText(object.getName());
@@ -77,12 +77,12 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 		        resetOperationBody("op0", true);
 		    }
 		);
-		bodyTextArea = new TextArea(StringValueDialog.OperationStringValues.emptyOperation);
+		bodyTextArea = new TextArea(StringValue.OperationStringValues.emptyOperation);
 //		updateOperationName2TextField(nameTextField, StringValueDialog.OperationStringValues.emptyOperation);
-		Button checkSyntaxButton = new Button(StringValueDialog.LabelAndHeaderTitle.checkSyntax);
+		Button checkSyntaxButton = new Button(StringValue.LabelAndHeaderTitle.checkSyntax);
 		checkSyntaxButton.setOnAction(event -> AddOperationDialog.this.checkBodySyntax());
 		checkSyntaxButton.setPrefWidth(COLUMN_WIDTH * 0.5);
-		Button defaultOperationButton = new Button(StringValueDialog.LabelAndHeaderTitle.defaultOperation);
+		Button defaultOperationButton = new Button(StringValue.LabelAndHeaderTitle.defaultOperation);
 		defaultOperationButton.setOnAction(event -> {
 //			String name = nameTextField.getText();
 			AddOperationDialog.this.resetOperationBody("op0", false);
@@ -102,9 +102,9 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 		labelsNode = new ArrayList<>();
 		mainNodes = new ArrayList<>();
 		
-		labelsNode.add(new Label(StringValueDialog.LabelAndHeaderTitle.aClass));
-		labelsNode.add(new Label(StringValueDialog.LabelAndHeaderTitle.level));
-		labelsNode.add(new Label(StringValueDialog.LabelAndHeaderTitle.body));
+		labelsNode.add(new Label(StringValue.LabelAndHeaderTitle.aClass));
+		labelsNode.add(new Label(StringValue.LabelAndHeaderTitle.level));
+		labelsNode.add(new Label(StringValue.LabelAndHeaderTitle.body));
 		
 		mainNodes.add(classTextField);
 		mainNodes.add(levelComboBox);
@@ -155,7 +155,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 //	
 		
 	private void checkBodySyntax() {
-		if (!isNullOrEmpty(bodyTextArea.getText()) && !bodyTextArea.getText().contentEquals(StringValueDialog.OperationStringValues.emptyOperation)) {
+		if (!isNullOrEmpty(bodyTextArea.getText()) && !bodyTextArea.getText().contentEquals(StringValue.OperationStringValues.emptyOperation)) {
 			diagram.getComm().checkOperationBody(bodyTextArea.getText());
 		}
 	}
@@ -184,10 +184,10 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 //			return false;
 //		} else
 	    if (levelComboBox.getSelectionModel().getSelectedIndex() == -1) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectLevel);
+			errorLabel.setText(StringValue.ErrorMessage.selectLevel);
 			return false;
 		} else if (bodyTextArea.getText().equals("")) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.inputBody);
+			errorLabel.setText(StringValue.ErrorMessage.inputBody);
 			return false;
 		}
 		return true;

@@ -51,8 +51,8 @@ public class FmmlxAttribute implements FmmlxProperty, Comparable<FmmlxAttribute>
 
 	@Override
 	public int compareTo(FmmlxAttribute that) {
-		if(this.level < that.level) return 1; // high levels first
-		if(this.level > that.level) return -1;
+		if(this.level < that.level) return -1;
+		if(this.level > that.level) return 1;
 		return this.name.compareTo(that.name);
 	}
 

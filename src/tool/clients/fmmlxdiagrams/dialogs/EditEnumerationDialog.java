@@ -22,7 +22,7 @@ import javafx.scene.control.cell.TextFieldListCell;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumElementDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeEnumNameDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.EditEnumerationDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.TimeOutException;
@@ -89,13 +89,13 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 
 	private boolean validateUserInput() {
 		if(chooseEnumComboBox.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectEnumeration);
+			errorLabel.setText(StringValue.ErrorMessage.selectEnumeration);
 			return false;
 		}
 		
 		Set<String> set = new HashSet<String>(inputElementListview.getItems());
 		if(set.size() < inputElementListview.getItems().size()){
-			errorLabel.setText(StringValueDialog.ErrorMessage.thereAreDuplicates);
+			errorLabel.setText(StringValue.ErrorMessage.thereAreDuplicates);
 			return false;
 		}
 		
@@ -200,7 +200,7 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 //			}
 //			inputElementListview.getItems().removeAll(observableList);
 		} else {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectEnumeration);
+			errorLabel.setText(StringValue.ErrorMessage.selectEnumeration);
 		}
 	}
 
@@ -238,7 +238,7 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 //				inputElementListview.getItems().addAll(diagram.getEnum(selectedEnum.getName()).getItems());
 			}
 		} else {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectEnumeration);
+			errorLabel.setText(StringValue.ErrorMessage.selectEnumeration);
 		}
 	}
 }

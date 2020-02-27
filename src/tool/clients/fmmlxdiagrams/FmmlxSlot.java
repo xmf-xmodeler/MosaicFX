@@ -7,15 +7,14 @@ import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 public class FmmlxSlot implements FmmlxProperty {
 	private PropertyType propertyType = PropertyType.Slot;
 	private FmmlxObject owner;
+	private String name;
+	private String value;
 
 	public FmmlxSlot(String name, String value, FmmlxObject owner) {
 		this.name = name;
 		this.value = value;
 		this.owner = owner;
 	}
-
-	private String name;
-	private String value;
 
 	public String getName() {
 		return name;

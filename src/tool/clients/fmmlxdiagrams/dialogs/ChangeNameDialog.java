@@ -6,7 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
 
 import java.util.Vector;
 
@@ -228,13 +228,13 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		String name = newNameTextField.getText();
 
 		if (comboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociation);
+			errorLabel.setText(StringValue.ErrorMessage.selectAssociation);
 			return false;
 		} else if (!InputChecker.getInstance().validateName(name)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
+			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else if (!InputChecker.getInstance().associationNameIsAvailable(name, object)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.nameAlreadyUsed);
+			errorLabel.setText(StringValue.ErrorMessage.nameAlreadyUsed);
 			return false;
 		}
 		return true;
@@ -244,10 +244,10 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		String name = newNameTextField.getText();
 
 		if (!InputChecker.getInstance().validateName(name)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
+			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else if (!InputChecker.getInstance().classNameIsAvailable(name, diagram)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.nameAlreadyUsed);
+			errorLabel.setText(StringValue.ErrorMessage.nameAlreadyUsed);
 			return false;
 		} else {
 			errorLabel.setText("");
@@ -259,15 +259,15 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		String name = newNameTextField.getText();
 
 		if (comboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectOperation);
+			errorLabel.setText(StringValue.ErrorMessage.selectOperation);
 			return false;
 		}
 
 		if (!InputChecker.getInstance().validateName(name)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
+			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, object)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.nameAlreadyUsed);
+			errorLabel.setText(StringValue.ErrorMessage.nameAlreadyUsed);
 			return false;
 		}
 		return true;
@@ -277,14 +277,14 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 		String name = newNameTextField.getText();
 
 		if (comboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAttribute);
+			errorLabel.setText(StringValue.ErrorMessage.selectAttribute);
 			return false;
 		}
 		if (!InputChecker.getInstance().validateName(name)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
+			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, object)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.nameAlreadyUsed);
+			errorLabel.setText(StringValue.ErrorMessage.nameAlreadyUsed);
 			return false;
 		} else {
 			errorLabel.setText("");
