@@ -20,7 +20,7 @@ import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.AssociationValueDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 public class AssociationValueDialog extends CustomDialog<AssociationValueDialogResult>{
 	

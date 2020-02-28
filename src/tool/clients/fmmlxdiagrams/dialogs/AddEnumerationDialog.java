@@ -15,7 +15,7 @@ import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumerationDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import javafx.scene.Node;
 
 public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResult>{

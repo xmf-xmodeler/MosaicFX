@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import static tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue.LabelAndHeaderTitle;
+
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
@@ -7,8 +9,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
-
-import static tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue.LabelAndHeaderTitle;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
 
 public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 

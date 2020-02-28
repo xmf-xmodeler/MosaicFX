@@ -7,7 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOwnerDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.Vector;
 

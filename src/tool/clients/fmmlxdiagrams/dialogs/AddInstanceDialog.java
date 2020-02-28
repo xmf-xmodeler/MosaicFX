@@ -17,7 +17,6 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
 	private FmmlxDiagram diagram;
 	private FmmlxObject selectedObject;
-
 	private TextField nameTextField;
 	private ListView<FmmlxObject> parentListView;
 	private ComboBox<FmmlxObject> ofComboBox;

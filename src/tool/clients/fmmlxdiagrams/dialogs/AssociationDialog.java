@@ -21,8 +21,8 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.results.AssociationDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue.LabelAndHeaderTitle;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue.LabelAndHeaderTitle;
 
 public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 

@@ -15,7 +15,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumElementDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeEnumNameDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 public class ChangeEnumName extends CustomDialog<ChangeEnumNameDialogResult>{
 	

@@ -22,7 +22,7 @@ import javafx.scene.control.cell.TextFieldListCell;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumElementDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeEnumNameDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.EditEnumerationDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.TimeOutException;

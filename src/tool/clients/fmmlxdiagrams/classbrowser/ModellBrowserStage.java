@@ -21,8 +21,8 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.SortedValue;
-import tool.clients.fmmlxdiagrams.dialogs.ValueList;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
 import tool.xmodeler.XModeler;
 
 

@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs;
+package tool.clients.fmmlxdiagrams.dialogs.instancegenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,9 +7,11 @@ import javafx.scene.control.*;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
+import tool.clients.fmmlxdiagrams.dialogs.LevelList;
 import tool.clients.fmmlxdiagrams.dialogs.results.InstanceGeneratorDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue.LabelAndHeaderTitle;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue.LabelAndHeaderTitle;
 
 public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialogResult>{
 	
@@ -21,9 +23,8 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 	private TextField ofTextField;
 	private ComboBox<Integer> numberOfElementComboBox;
 	private List<Node> labelNode;
-	private List<Node> typeLabel;
+	private List<Node> typeLabelNode;
 	private List<Node> inputNode;
-	private List<Node> editNode;
 	private List<Node> editButtonNode;
 	private DialogPane dialogPane;
 
@@ -60,19 +61,17 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 		numberOfElementComboBox = new ComboBox<>(LevelList.generateLevelListToThreshold(1, 5));
 		
 		labelNode = new ArrayList<Node>();
-		
-		typeLabel = new ArrayList<Node>();
+		typeLabelNode = new ArrayList<Node>();
 		inputNode = new ArrayList<Node>();
-		editNode = new ArrayList<Node>();
 		editButtonNode = new ArrayList<Node>();
 		
 		labelNode.add(ofLabel);
 		labelNode.add(numberOfElementLabel);
 		labelNode.add(new Label());
 		
-		typeLabel.add(new Label(StringValue.LabelAndHeaderTitle.empty));
-		typeLabel.add(new Label(StringValue.LabelAndHeaderTitle.empty));
-		typeLabel.add(new Label(StringValue.LabelAndHeaderTitle.empty));
+		typeLabelNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
+		typeLabelNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
+		typeLabelNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		
 		inputNode.add(ofTextField);
 		inputNode.add(numberOfElementComboBox);
@@ -84,7 +83,7 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 		
 		for (FmmlxAttribute tmp : object.getAllAttributes()) {			
 			labelNode.add(new Label(tmp.getName()));	
-			typeLabel.add(new Label(tmp.getType()));
+			typeLabelNode.add(new Label(": "+tmp.getType()));
 			ComboBox<InstanceGeneratorGenerateType> comboBox = initializeComboBoxGeneratorList(getGenerateTypeList(tmp.getType()), tmp);
 			inputNode.add(comboBox);
 			Button button = new InstanceGeneratorEditButton(StringValue.LabelAndHeaderTitle.EDIT, tmp);
@@ -92,10 +91,9 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 		}
 		
 		addNodesToGrid(labelNode, 0);
-		addNodesToGrid(typeLabel,1);
+		addNodesToGrid(typeLabelNode,1);
 		addNodesToGrid(inputNode,2);
-		addNodesToGrid(editNode,3);
-		addNodesToGrid(editButtonNode, 5);
+		addNodesToGrid(editButtonNode, 3);
 	}
 
 }

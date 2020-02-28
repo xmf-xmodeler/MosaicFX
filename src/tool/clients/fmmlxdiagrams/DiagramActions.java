@@ -12,6 +12,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.dialogs.*;
+import tool.clients.fmmlxdiagrams.dialogs.instancegenerator.InstanceGeneratorDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
 import java.util.Optional;
 import java.util.Vector;

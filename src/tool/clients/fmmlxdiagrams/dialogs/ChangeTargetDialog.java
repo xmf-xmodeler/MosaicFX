@@ -15,7 +15,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeTargetDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 public class ChangeTargetDialog extends CustomDialog<ChangeTargetDialogResult>{
 	private DialogPane dialogPane;

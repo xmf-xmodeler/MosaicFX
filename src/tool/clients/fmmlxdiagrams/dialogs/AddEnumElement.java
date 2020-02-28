@@ -16,7 +16,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.TimeOutException;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumElementDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 public class AddEnumElement extends CustomDialog<AddEnumElementDialogResult>{
 	private Label inputElementNameLabel;
