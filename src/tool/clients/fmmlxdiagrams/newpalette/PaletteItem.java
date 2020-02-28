@@ -6,9 +6,7 @@ public class PaletteItem extends TreeItem<PaletteTool> {
 
 	public PaletteItem(PaletteTool value) {
 		super(value);
-		// TODO Auto-generated constructor stub
-		
-		
+		// TODO Auto-generated constructor stub	
 	}
 	
 }

@@ -15,6 +15,7 @@ import javafx.util.StringConverter;
 import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
+import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import java.util.List;
 
@@ -239,6 +240,39 @@ public class CustomDialog<R> extends Dialog<R> {
 		return comboBox;
 	}
 	
+	protected InstanceGeneratorGenerateTypeComboBox<InstanceGeneratorGenerateType> initializeComboBoxGeneratorList(ObservableList<InstanceGeneratorGenerateType> observableList, FmmlxAttribute attribute) {
+		ComboBox<InstanceGeneratorGenerateType> comboBox = new InstanceGeneratorGenerateTypeComboBox<InstanceGeneratorGenerateType>(observableList, attribute);
+		comboBox.setCellFactory(param -> new ListCell<InstanceGeneratorGenerateType>() {
+			@Override
+			protected void updateItem(InstanceGeneratorGenerateType item, boolean empty) {
+				super.updateItem(item, empty);
+
+				if (empty || isNullOrEmpty(item.toString())) {
+					setText(null);
+				} else {
+					setText(item.toString());
+				}
+			}
+		});
+		comboBox.setConverter(new StringConverter<InstanceGeneratorGenerateType>() {
+			@Override
+			public String toString(InstanceGeneratorGenerateType object) {
+				if (object == null) {
+					return null;
+				} else {
+					return object.toString();
+				}
+			}
+
+			@Override
+			public InstanceGeneratorGenerateType fromString(String string) {
+				return null;
+			}
+		});
+		comboBox.setPrefWidth(COLUMN_WIDTH);
+		return (InstanceGeneratorGenerateTypeComboBox<InstanceGeneratorGenerateType>) comboBox;
+	}
+	
 	public ComboBox<FmmlxEnum> initializeComboBoxEnum(ObservableList<FmmlxEnum> observableList) {
 		ComboBox<FmmlxEnum> comboBox = new ComboBox<FmmlxEnum>(observableList);
 		comboBox.setCellFactory(param -> new ListCell<FmmlxEnum>() {
@@ -294,6 +328,17 @@ public class CustomDialog<R> extends Dialog<R> {
 		hBox.getChildren().addAll(textField, button);
 
 		return hBox;
+	}
+	
+	protected ObservableList<InstanceGeneratorGenerateType> getGenerateTypeList(String type) {
+		if(type.equals("Integer") || type.equals("Float")) {
+			return FXCollections.observableArrayList(InstanceGeneratorGenerateType.INCREMENT, InstanceGeneratorGenerateType.STATIC, InstanceGeneratorGenerateType.LIST);
+		} else if (type.equals("String")) {
+			return FXCollections.observableArrayList(InstanceGeneratorGenerateType.STATIC, InstanceGeneratorGenerateType.LIST);
+		} else if (type.equals("Boolean")) {
+			return FXCollections.observableArrayList(InstanceGeneratorGenerateType.STATIC, InstanceGeneratorGenerateType.LIST);
+		}
+		return  FXCollections.observableArrayList(InstanceGeneratorGenerateType.NULL);
 	}
 
 

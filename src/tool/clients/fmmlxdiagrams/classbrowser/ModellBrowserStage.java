@@ -72,6 +72,8 @@ public class ModellBrowserStage extends CustomStage {
 			operationInputTextField.setText(StringValue.LabelAndHeaderTitle.empty);
 			operationOutputTexField.setText(StringValue.LabelAndHeaderTitle.empty);
 			associationBrowserTextField.setText(StringValue.LabelAndHeaderTitle.empty);
+			
+			codeArea.clear();
 		}
 	}
 	
@@ -214,6 +216,7 @@ public class ModellBrowserStage extends CustomStage {
 			}					
 			operationInputTextField.setText(stringBuilder.toString());
 			operationOutputTexField.setText(op.getType().split("::")[2]);
+			codeArea.setText(op.getBody());
 		}
 	}
 	

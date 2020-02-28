@@ -1124,7 +1124,7 @@ public class FmmlxDiagramCommunicator {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(fmmlxDiagram.getID()),
 				new Value(object.id),
-				new Value(operation.name),
+				new Value(operation.getName()),
 				new Value(-1), // arity
 				};
 		sendMessage("showBody", message);
