@@ -4,12 +4,11 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 
-@SuppressWarnings("hiding")
-public class InstanceGeneratorGenerateTypeComboBox<GenerateType> extends ComboBox<GenerateType> {
+public class InstanceGeneratorGenerateTypeComboBox<T> extends ComboBox<T> {
 	
 	private FmmlxAttribute attribute;
 
-	public InstanceGeneratorGenerateTypeComboBox(ObservableList<GenerateType> observableList, FmmlxAttribute attribute) {
+	public InstanceGeneratorGenerateTypeComboBox(ObservableList<T> observableList, FmmlxAttribute attribute) {
 		super(observableList);
 		this.attribute = attribute;
 	}

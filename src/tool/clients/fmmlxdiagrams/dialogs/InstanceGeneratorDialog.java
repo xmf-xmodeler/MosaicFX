@@ -2,7 +2,6 @@ package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
@@ -13,7 +12,6 @@ import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue.LabelAndHeaderTitle;
 
 public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialogResult>{
-
 	
 	@SuppressWarnings("unused")
 	private FmmlxDiagram diagram;
@@ -28,8 +26,6 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 	private List<Node> editNode;
 	private List<Node> editButtonNode;
 	private DialogPane dialogPane;
-	
-	
 
 	public InstanceGeneratorDialog(FmmlxDiagram diagram, FmmlxObject object) {
 		this.diagram= diagram;
@@ -91,7 +87,7 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 			typeLabel.add(new Label(tmp.getType()));
 			ComboBox<InstanceGeneratorGenerateType> comboBox = initializeComboBoxGeneratorList(getGenerateTypeList(tmp.getType()), tmp);
 			inputNode.add(comboBox);
-			Button button = new Button("edit");
+			Button button = new InstanceGeneratorEditButton(StringValue.LabelAndHeaderTitle.EDIT, tmp);
 			editButtonNode.add(button);
 		}
 		

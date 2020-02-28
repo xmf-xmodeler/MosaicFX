@@ -48,6 +48,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		setResult();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void layoutContent(FmmlxObject selectedObject) {
 
 		ObservableList<FmmlxProperty> ofList = getAllOfList();
