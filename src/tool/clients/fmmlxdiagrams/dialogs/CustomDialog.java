@@ -76,7 +76,7 @@ public class CustomDialog<R> extends Dialog<R> {
 	}
 	
 
-	void addNodesToGrid(List<Node> nodes) {
+	protected void addNodesToGrid(List<Node> nodes) {
 		int row = 0;
 		int i = 0;
 		while (i < nodes.size()) {
@@ -92,7 +92,7 @@ public class CustomDialog<R> extends Dialog<R> {
 		return errorLabel;
 	}
 
-	boolean isNullOrEmpty(String string) {
+	protected boolean isNullOrEmpty(String string) {
 		return string == null || string.length() == 0;
 	}
 
@@ -210,6 +210,7 @@ public class CustomDialog<R> extends Dialog<R> {
 	
 
 	public ComboBox<? extends FmmlxProperty> initializeComboBox(ObservableList<? extends FmmlxProperty> list) {
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		ComboBox<FmmlxProperty> comboBox = new ComboBox(list);
 		comboBox.setCellFactory(param -> new ListCell<FmmlxProperty>() {
 			@Override

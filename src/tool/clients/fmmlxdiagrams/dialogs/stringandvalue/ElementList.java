@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs;
+package tool.clients.fmmlxdiagrams.dialogs.stringandvalue;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

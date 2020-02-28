@@ -8,6 +8,7 @@ import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.LevelList;
 
 public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 

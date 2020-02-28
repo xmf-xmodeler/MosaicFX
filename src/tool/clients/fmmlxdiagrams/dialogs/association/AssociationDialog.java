@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs;
+package tool.clients.fmmlxdiagrams.dialogs.association;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,11 @@ import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
+import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
+import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
+import tool.clients.fmmlxdiagrams.dialogs.MultiplicityBox;
 import tool.clients.fmmlxdiagrams.dialogs.results.AssociationDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.LevelList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue.LabelAndHeaderTitle;
 

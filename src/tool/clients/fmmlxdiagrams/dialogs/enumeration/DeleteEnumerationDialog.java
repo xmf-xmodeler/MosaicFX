@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs;
+package tool.clients.fmmlxdiagrams.dialogs.enumeration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +15,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
+import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.DeleteEnumerationDialogResult;
 
 public class DeleteEnumerationDialog extends CustomDialog<DeleteEnumerationDialogResult>{

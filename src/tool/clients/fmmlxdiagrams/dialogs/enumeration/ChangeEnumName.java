@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs;
+package tool.clients.fmmlxdiagrams.dialogs.enumeration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +13,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
+import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
+import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumElementDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeEnumNameDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;

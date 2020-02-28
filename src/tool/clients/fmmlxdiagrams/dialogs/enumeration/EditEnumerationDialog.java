@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs;
+package tool.clients.fmmlxdiagrams.dialogs.enumeration;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,6 +19,8 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.cell.TextFieldListCell;
+import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
+import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumElementDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeEnumNameDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.EditEnumerationDialogResult;

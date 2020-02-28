@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.LevelList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.Vector;
