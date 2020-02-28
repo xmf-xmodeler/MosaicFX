@@ -400,7 +400,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 			yAfterOpsBox = currentY + opsBoxHeight;
 			nodeElements.addElement(opsBox);
 			for (FmmlxOperation o : ownOperations) {
-				if(showGettersAndSetters || !(o.name.startsWith("set") || o.name.startsWith("get"))) {
+				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 					opsY += lineHeight;
 					NodeLabel.Action changeOpNameAction = () -> {diagram.getActions().changeNameDialog(this, PropertyType.Operation, o);};
 					NodeLabel opLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.BLACK, null, o, changeOpNameAction, o.getFullString(diagram), false);
@@ -411,7 +411,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 				}
 			}
 			for (FmmlxOperation o : otherOperations) {
-				if(showGettersAndSetters || !(o.name.startsWith("set") || o.name.startsWith("get"))) {
+				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 				if(showDerivedOperations) {
 				opsY += lineHeight;
 				NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectById(o.getOwner()).name + ")", false);
@@ -476,13 +476,13 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	private int countOperationsToBeShown() {
 		int counter=0;
 		for (FmmlxOperation o : ownOperations) {
-			if(showGettersAndSetters  ||  !(o.name.startsWith("set") || o.name.startsWith("get"))) {
+			if(showGettersAndSetters  ||  !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 			counter++;	
 			}
 		}
 		
 		for (FmmlxOperation o : otherOperations) {
-			if(showGettersAndSetters || !(o.name.startsWith("set") || o.name.startsWith("get"))){
+			if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
 				if(showDerivedOperations) {
 				counter++;
 				}
@@ -520,15 +520,15 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 //		//determine maximal width of operations
 		if (showOperations) {
 			for (FmmlxOperation o : ownOperations) {
-				if(showGettersAndSetters  ||  !(o.name.startsWith("set") || o.name.startsWith("get"))) {
+				if(showGettersAndSetters  ||  !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 				String text = o.getFullString(diagram);
 				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(text) + INST_LEVEL_WIDTH, neededWidth);
 				}
 			}	
 			for (FmmlxOperation o : otherOperations) {
-				if(showGettersAndSetters || !(o.name.startsWith("set") || o.name.startsWith("get"))){
+				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
 				if(showDerivedOperations) {
-				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + diagram.getObjectById(o.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
+				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + diagram.getObjectById(o.getOwner()).name + ")") + INST_LEVEL_WIDTH, neededWidth);
 						}
 					}
 				}
@@ -586,7 +586,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		ownOperations = new Vector<FmmlxOperation>();
 		otherOperations = new Vector<FmmlxOperation>();
 		for (FmmlxOperation o : operations) {
-			if (o.owner == this.id) {
+			if (o.getOwner() == this.id) {
 				ownOperations.add(o);
 				Collections.sort(ownOperations, Collections.reverseOrder());
 			} else {
@@ -644,8 +644,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		Vector<String> monitorNames = new Vector<String>();
 		for (FmmlxObject ancestor : getAllAncestors()) {
 			for (FmmlxOperation operation : ancestor.getAllOperations()) {
-				if (operation.level == this.level && operation.isMonitored() && !monitorNames.contains(operation.name)) {
-					monitorNames.add(operation.name);
+				if (operation.getLevel() == this.level && operation.isMonitored() && !monitorNames.contains(operation.getName())) {
+					monitorNames.add(operation.getName());
 				}
 			}
 		}

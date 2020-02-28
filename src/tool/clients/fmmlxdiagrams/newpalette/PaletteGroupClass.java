@@ -1,9 +1,11 @@
 package tool.clients.fmmlxdiagrams.newpalette;
 
+import java.util.List;
 import java.util.Vector;
 
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.SortedValue;
 
 public class PaletteGroupClass extends PaletteGroup {
 	
@@ -27,16 +29,10 @@ public class PaletteGroupClass extends PaletteGroup {
 		PaletteItem metaClassPaletteItem = new PaletteItem(metaClassTool);
 		items.add(metaClassPaletteItem);
 		
-		int maxLevel = fmmlxDiagram.getMaxLevel();
-		
-		for (int i = maxLevel ; i>0 ; i--) {
-			for (FmmlxObject tmp : fmmlxDiagram.getObjects()) {
-				if (tmp.getLevel()==i) {
-					items.add(tmp.toPaletteItem(fmmlxDiagram));
-				}
-			}	
-		}
-		
+		List<FmmlxObject> objects = fmmlxDiagram.getSortedObject(SortedValue.REVERSE);
+		for (FmmlxObject tmp : objects) {
+			items.add(tmp.toPaletteItem(fmmlxDiagram));			
+		}		
 	}
 
 	private void inflateInGroup() {

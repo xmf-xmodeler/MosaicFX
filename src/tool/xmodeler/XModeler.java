@@ -336,8 +336,12 @@ public class XModeler extends Application {
     	fileChooser.setSelectedExtensionFilter(filter);
         
     	String initalDirectory = PropertyManager.getProperty("fileDialogPath", "");
-    	if (!initalDirectory.equals(""))
-    	fileChooser.setInitialDirectory(new File(initalDirectory));
+    	if (!initalDirectory.equals("")) {
+    		File dir = new File(initalDirectory);
+    		if(dir.exists()) {
+    			fileChooser.setInitialDirectory(dir);
+    		}
+    	}
     	
     	File file = fileChooser.showOpenDialog(stage);
     	

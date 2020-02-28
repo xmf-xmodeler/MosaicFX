@@ -1031,6 +1031,7 @@ public class FmmlxDiagram{
 		}
 		return null;
 	}
+	
 	public int getMaxLevel() {
 		int level = 0;
 		for (FmmlxObject tmp : objects) {

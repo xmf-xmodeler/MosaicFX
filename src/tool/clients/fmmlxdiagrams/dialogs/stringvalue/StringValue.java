@@ -149,6 +149,7 @@ public class StringValue {
 		public static final String input = "Input";
 		public static final String abstractSmall = "abstract";
 		public static final String withSmall = "with";
+		public static final String EDIT = "Edit";
 		
 	}
 

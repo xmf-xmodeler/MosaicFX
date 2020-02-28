@@ -7,14 +7,14 @@ import java.util.Vector;
 public class FmmlxOperation implements FmmlxProperty, Comparable<FmmlxOperation> {
 	private final PropertyType propertyType = PropertyType.Operation;
 
-	String name;
-	Integer level;
-	String type;
-	Integer owner;
+	private String name;
+	private int level;
+	private String type;
+	private int owner;
 	private boolean isMonitored;
-	String body;
-	Vector<String> paramNames;
-	Vector<String> paramTypes;
+	private String body;
+	private Vector<String> paramNames;
+	private Vector<String> paramTypes;
 
 
 	public FmmlxOperation(String name, Vector<String> paramNames, Vector<String> paramTypes, Integer level, String type, String body, Integer owner, Multiplicity multiplicity, boolean isMonitored) {
