@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs;
+package tool.clients.fmmlxdiagrams.dialogs.shared;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -8,6 +8,8 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.*;
+import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
+import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeTypeDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 

@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs;
+package tool.clients.fmmlxdiagrams.dialogs.association;
 
 import java.util.Vector;
 
@@ -13,7 +13,8 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-
+import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
+import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeTargetDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 

@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs.instancegenerator;
+package tool.clients.fmmlxdiagrams.dialogs.instance;
 
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;

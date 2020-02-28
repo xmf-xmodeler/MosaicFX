@@ -1,10 +1,12 @@
-package tool.clients.fmmlxdiagrams.dialogs;
+package tool.clients.fmmlxdiagrams.dialogs.shared;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import tool.clients.fmmlxdiagrams.*;
+import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
+import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.results.RemoveDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 

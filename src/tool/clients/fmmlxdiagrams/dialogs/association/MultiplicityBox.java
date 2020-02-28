@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs;
+package tool.clients.fmmlxdiagrams.dialogs.association;
 
 import java.util.Optional;
 

@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs;
+package tool.clients.fmmlxdiagrams.dialogs.instance;
 
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -6,6 +6,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOfDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 

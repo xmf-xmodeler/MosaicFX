@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs.instancegenerator;
+package tool.clients.fmmlxdiagrams.dialogs.instance;
 
 import java.util.ArrayList;
 import java.util.List;

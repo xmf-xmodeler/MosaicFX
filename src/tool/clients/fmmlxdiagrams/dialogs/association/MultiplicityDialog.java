@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs;
+package tool.clients.fmmlxdiagrams.dialogs.association;
 
 import static tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue.LabelAndHeaderTitle;
 
@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.Multiplicity;
+import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
 
