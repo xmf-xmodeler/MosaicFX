@@ -84,7 +84,7 @@ public class InputChecker {
 		return true;
 	}
 
-	public boolean isComboBoxItemNull(ComboBox comboBox) {
+	public boolean isComboBoxItemNull(ComboBox<?> comboBox) {
 		return comboBox.getSelectionModel().getSelectedItem() == null;
 	}
 
