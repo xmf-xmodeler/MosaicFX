@@ -20,8 +20,10 @@ import tool.clients.fmmlxdiagrams.dialogs.enumeration.AddEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.enumeration.DeleteEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.enumeration.EditEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.instance.AddInstanceDialog;
+import tool.clients.fmmlxdiagrams.dialogs.instance.AttributeGeneratorDialog;
 import tool.clients.fmmlxdiagrams.dialogs.instance.ChangeOfDialog;
 import tool.clients.fmmlxdiagrams.dialogs.instance.InstanceGeneratorDialog;
+import tool.clients.fmmlxdiagrams.dialogs.instance.InstanceGeneratorGenerateType;
 import tool.clients.fmmlxdiagrams.dialogs.operation.AddOperationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.operation.ChangeBodyDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
@@ -31,6 +33,7 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeOwnerDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeParentDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
+import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
 
 import java.util.Optional;
 import java.util.Vector;
@@ -58,6 +61,13 @@ public class DiagramActions {
 				ClassBrowserClient.show(diagram);
 			});
 		}
+	}
+	
+	public void instanceGenerator(FmmlxObject object) {	
+		Platform.runLater(() -> {
+			InstanceGenerator.show(object);
+		});
+		
 	}
 
 	public void addMetaClassDialog() {
@@ -424,9 +434,9 @@ public class DiagramActions {
 		});
 	}
 	
-	public void instanceGeneratorDialog(FmmlxObject object) {
+	public void instanceGeneratorDialog(DiagramActions actions, FmmlxObject object) {
 		Platform.runLater(() -> {
-			InstanceGeneratorDialog dlg = new InstanceGeneratorDialog(diagram, object);
+			InstanceGeneratorDialog dlg = new InstanceGeneratorDialog(diagram, object, actions);
 			Optional<InstanceGeneratorDialogResult> igd = dlg.showAndWait();
 
 			if (igd.isPresent()) {
@@ -904,4 +914,13 @@ public class DiagramActions {
 			}
 		});
 	}
+
+	public void attributeGeneratorDialog(FmmlxAttribute tmp, InstanceGeneratorGenerateType selectedType) {
+		Platform.runLater(() -> {
+			if(selectedType!=null) {
+				AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(tmp, selectedType);
+				Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
+			}
+		});
+	}	
 }

@@ -10,6 +10,7 @@ public class InstanceGeneratorEditButton extends Button {
 	public InstanceGeneratorEditButton(String string, FmmlxAttribute att) {
 		super(string);
 		this.attribute = att;
+		
 	}
 	public FmmlxAttribute getAttribute() {
 		return attribute;

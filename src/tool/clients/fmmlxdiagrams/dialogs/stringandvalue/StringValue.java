@@ -150,6 +150,11 @@ public class StringValue {
 		public static final String abstractSmall = "abstract";
 		public static final String withSmall = "with";
 		public static final String EDIT = "Edit";
+		public static final String instanceGenerator = "InstanceGenerator";
+		public static final String startValue = "Start Value";
+		public static final String endValue = "End Value";
+		public static final String incrementValue = "Increment Value";
+		public static final String valueList = "Value List";
 		
 	}
 
