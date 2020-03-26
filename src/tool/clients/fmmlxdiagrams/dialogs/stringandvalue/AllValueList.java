@@ -9,6 +9,7 @@ import java.util.ArrayList;
 public class AllValueList {
 	public static final ObservableList<Integer> levelList = FXCollections.observableArrayList(0, 1, 2, 3, 4, 5);
 	public static final ObservableList<String> traditionalTypeList = FXCollections.observableArrayList("Integer", "String", "Float", "Boolean");
+	public static final ObservableList<String> booleanList = FXCollections.observableArrayList("true", "false");
 	
 	public static final ObservableList<Integer> getLevelInterval(FmmlxObject object) {
 		int maxLevel = object.getLevel()-1;

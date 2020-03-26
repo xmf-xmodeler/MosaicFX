@@ -6,6 +6,7 @@ import java.util.List;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -13,7 +14,9 @@ import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.AttributeGeneratorDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
 
 public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDialogResult>{
 	
@@ -27,6 +30,7 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
 	//For Static -------------------------------
 	private Label staticValueLabel;
 	private TextField staticValueTextField;
+	private ComboBox<String> staticValueComboBox;
 	//==========================================
 	
 	//For List ---------------------------------
@@ -108,20 +112,40 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
 	private void validateStatic() {
 		switch(attribute.getType()){
         case "Integer":
-            //TODO
+            validateStaticForInteger();
             break;
         case "Float":
-        	//TODO
+        	validateStaticForFloat();
             break;
         case "String":
-        	//TODO
+        	validateStaticForString();
             break;
         case "Boolean":
-        	//TODO
+        	validateStaticForBoolean();
             break;
         default:
             System.out.println("undifined Type");
         }		
+	}
+
+	private void validateStaticForBoolean() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void validateStaticForString() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void validateStaticForFloat() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void validateStaticForInteger() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void validateIncrement() {
@@ -209,10 +233,17 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
 		inputNode = new ArrayList<Node>();
 			
 		staticValueLabel = new Label(StringValue.LabelAndHeaderTitle.value);
-		staticValueTextField = new TextField();
+		
+		if(attribute.getType().equals("Boolean")) {
+			staticValueComboBox = new ComboBox<String>(AllValueList.booleanList);
+			inputNode.add(staticValueComboBox);
+		} else {
+			staticValueTextField = new TextField();
+			inputNode.add(staticValueTextField);
+		}
 		
 		labelNode.add(staticValueLabel);
-		inputNode.add(staticValueTextField);
+		
 	}
 
 }
