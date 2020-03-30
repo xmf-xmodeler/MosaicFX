@@ -284,7 +284,7 @@ public class Form {
 		if (this.id.equals(parentId)) {
 			TreeView<String> treeView = new TreeView<String>();
 			treeView.setMinHeight(200);
-			treeView.setMinWidth(300);
+			treeView.setMinWidth(800);
 
 			trees.put(id, treeView);
 			gridBoxes.add(treeView, 0, rowRight);

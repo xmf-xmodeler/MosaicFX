@@ -51,23 +51,24 @@ public abstract class Edge implements CanvasElement {
 		this.diagram = diagram;
 		this.sourceNode = startNode;
 		this.targetNode = endNode;
-		if (intermediatePoints == null || intermediatePoints.size() < 1) {
-//			this.points.add(new Point2D(startNode.getX() + startNode.getWidth() / 2, startNode.getY() + startNode.getHeight() / 2));
-//			this.points.add(new Point2D(endNode.getX() + endNode.getWidth() / 2, endNode.getY() + endNode.getHeight() / 2));
-		} else {
+		if (intermediatePoints == null || intermediatePoints.size() < 1) {} else {
 			this.intermediatePoints.addAll(intermediatePoints);
 		}
 		storeLatestValidPointConfiguration();
 		
 		if(sourcePortRegion==null) {
-			if(startNode == endNode) sourcePortRegion = PortRegion.EAST; else
-			sourcePortRegion = determinePort(startNode,
+			if(this instanceof InheritanceEdge) sourcePortRegion = PortRegion.NORTH;
+			else if(startNode == endNode) sourcePortRegion = PortRegion.EAST; 
+			else
+			sourcePortRegion = determineInitialPort(startNode,
 				this.intermediatePoints.size() < 1 ? null : this.intermediatePoints.firstElement(),
 				startNode.getCenterX() < endNode.getCenterX() ? PortRegion.EAST : PortRegion.WEST);
 		}
 		if(targetPortRegion==null) {
-			if(startNode == endNode) targetPortRegion = PortRegion.NORTH; else
-			targetPortRegion = determinePort(endNode,
+			if(this instanceof InheritanceEdge) targetPortRegion = PortRegion.SOUTH;
+			else if(startNode == endNode) targetPortRegion = PortRegion.NORTH; 
+			else
+			targetPortRegion = determineInitialPort(endNode,
 				this.intermediatePoints.size() < 1 ? null : this.intermediatePoints.lastElement(),
 				startNode.getCenterX() < endNode.getCenterX() ? PortRegion.WEST : PortRegion.EAST);
 		}
@@ -77,7 +78,7 @@ public abstract class Edge implements CanvasElement {
 	}
 
 
-	private PortRegion determinePort(FmmlxObject node, Point2D nextPoint, PortRegion defaultRegion) {
+	private PortRegion determineInitialPort(FmmlxObject node, Point2D nextPoint, PortRegion defaultRegion) {
 		if (nextPoint == null) {
 			return defaultRegion;
 		}
@@ -579,14 +580,18 @@ public abstract class Edge implements CanvasElement {
 			}
 		}
 
+
+		storeLatestValidPointConfiguration();
+
+		if(pointToBeMoved != -1 || newSourcePortRegion!= null || newTargetPortRegion != null) {
+				diagram.getComm().sendCurrentPositions(diagram, this);
+		}
+		 
 		pointToBeMoved = -1;
 		newSourcePortRegion = null;
 		newTargetPortRegion = null;
 		moveMode = MoveMode.normal;
 
-		storeLatestValidPointConfiguration();
-
-		diagram.getComm().sendCurrentPositions(diagram, this);
 	}
 
 	public Vector<Point2D> getIntermediatePoints() {
