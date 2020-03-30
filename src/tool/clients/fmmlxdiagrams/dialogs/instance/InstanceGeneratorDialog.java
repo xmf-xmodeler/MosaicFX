@@ -2,6 +2,8 @@ package tool.clients.fmmlxdiagrams.dialogs.instance;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
+
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.util.converter.IntegerStringConverter;
@@ -30,6 +32,8 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 	private List<Node> editButtonNode;
 	private DialogPane dialogPane;
 	private DiagramActions actions;
+	
+	private Vector<ValueGenerator> currentGenerator =  new Vector<ValueGenerator>();
 
 	public InstanceGeneratorDialog(FmmlxDiagram diagram, FmmlxObject object, DiagramActions actions) {
 		this.diagram= diagram;
@@ -87,14 +91,15 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 		editButtonNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		editButtonNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		
-		for (FmmlxAttribute tmp : object.getAllAttributes()) {			
-			labelNode.add(new Label(tmp.getName()));	
-			typeLabelNode.add(new Label(": "+tmp.getType()));
-			if(AllValueList.traditionalTypeList.contains(tmp.getType())) {
-				ComboBox<InstanceGeneratorGenerateType> comboBox = initializeComboBoxGeneratorList(getGenerateTypeList(tmp.getType()), tmp);
+		for (FmmlxAttribute att : object.getAllAttributes()) {			
+			labelNode.add(new Label(att.getName()));	
+			typeLabelNode.add(new Label(": "+att.getType()));
+			
+			if(AllValueList.traditionalTypeList.contains(att.getType())) {
+				ComboBox<InstanceGeneratorGenerateType> comboBox = initializeComboBoxGeneratorList(getGenerateTypeList(att.getType()), att);
 				inputNode.add(comboBox);
-				Button button = new InstanceGeneratorEditButton(StringValue.LabelAndHeaderTitle.EDIT, tmp);
-				button.setOnAction(e -> actions.attributeGeneratorDialog(tmp, comboBox.getSelectionModel().getSelectedItem()));
+				Button button = new InstanceGeneratorEditButton(StringValue.LabelAndHeaderTitle.EDIT, att);
+				button.setOnAction(e -> actions.attributeGeneratorDialog(att, comboBox.getSelectionModel().getSelectedItem()));
 				editButtonNode.add(button);
 			} else {
 				inputNode.add(new Label(" "));
