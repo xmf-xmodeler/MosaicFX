@@ -10,9 +10,11 @@ import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
+import tool.clients.fmmlxdiagrams.dialogs.association.MultiplicityDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.*;
 
@@ -146,7 +148,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		classTextField = new TextField();
 		classTextField.setText(selectedObject.getName());
 		classTextField.setDisable(true);
-		levelComboBox = new ComboBox<>(LevelList.getLevelInterval(selectedObject));
+		levelComboBox = new ComboBox<>(AllValueList.getLevelInterval(selectedObject));
 		levelComboBox.setConverter(new IntegerStringConverter());
 		levelComboBox.getSelectionModel().selectLast();
 		typeComboBox = new ComboBox<>(typeList);

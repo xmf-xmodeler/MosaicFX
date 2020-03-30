@@ -8,6 +8,7 @@ import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 
 public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 
@@ -54,7 +55,7 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 
 		nameTextField = new TextField();
 		parentListView = initializeListView(possibleParents, SelectionMode.MULTIPLE);
-		levelComboBox = new ComboBox<>(LevelList.levelList);
+		levelComboBox = new ComboBox<>(AllValueList.levelList);
 		levelComboBox.setConverter(new IntegerStringConverter());
 		levelComboBox.setEditable(true);
 		levelComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {

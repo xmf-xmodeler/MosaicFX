@@ -1,7 +1,6 @@
 package tool.clients.fmmlxdiagrams.classbrowser;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -21,8 +20,8 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.SortedValue;
-import tool.clients.fmmlxdiagrams.dialogs.ValueList;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValue;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
 import tool.xmodeler.XModeler;
 
 
@@ -51,7 +50,7 @@ public class ModellBrowserStage extends CustomStage {
 		setOnCloseRequest(e -> onClose());
 	}
 
-	private void onClose() {
+	public void onClose() {
 		clearAll(ClearSelectionMode.MODELL);
 		hide();
 	}
@@ -72,6 +71,8 @@ public class ModellBrowserStage extends CustomStage {
 			operationInputTextField.setText(StringValue.LabelAndHeaderTitle.empty);
 			operationOutputTexField.setText(StringValue.LabelAndHeaderTitle.empty);
 			associationBrowserTextField.setText(StringValue.LabelAndHeaderTitle.empty);
+			
+			codeArea.clear();
 		}
 	}
 	
@@ -214,6 +215,7 @@ public class ModellBrowserStage extends CustomStage {
 			}					
 			operationInputTextField.setText(stringBuilder.toString());
 			operationOutputTexField.setText(op.getType().split("::")[2]);
+			codeArea.setText(op.getBody());
 		}
 	}
 	
