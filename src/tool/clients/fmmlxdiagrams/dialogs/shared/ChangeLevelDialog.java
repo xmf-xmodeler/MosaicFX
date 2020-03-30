@@ -11,7 +11,7 @@ import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.LevelList;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.Vector;
@@ -202,7 +202,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 		selectAssociationComboBox = new ComboBox<String>();
 		currentLevelTextField = new TextField();
 		currentLevelTextField.setDisable(true);
-		newLevelComboBox = new ComboBox<Integer>(LevelList.getLevelInterval(object));
+		newLevelComboBox = new ComboBox<Integer>(AllValueList.getLevelInterval(object));
 
 		selectAssociationComboBox.setPrefWidth(COLUMN_WIDTH);
 		newLevelComboBox.setPrefWidth(COLUMN_WIDTH);
@@ -250,7 +250,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 		});
 		currentLevelTextField = new TextField();
 		currentLevelTextField.setDisable(true);
-		newLevelComboBox = new ComboBox<Integer>(LevelList.getLevelInterval(object));
+		newLevelComboBox = new ComboBox<Integer>(AllValueList.getLevelInterval(object));
 
 
 		selectOperationComboBox.setPrefWidth(COLUMN_WIDTH);
@@ -300,7 +300,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 			}
 		});
 
-		newLevelComboBox = new ComboBox<Integer>(LevelList.getLevelInterval(object));
+		newLevelComboBox = new ComboBox<Integer>(AllValueList.getLevelInterval(object));
 		newLevelComboBox.valueProperty().addListener(new ChangeListener<Integer>() {
 
 			@Override
@@ -329,7 +329,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 		newLevelLabel = new Label(StringValue.LabelAndHeaderTitle.selectNewLevel);
 		currentLevel = object.getLevel();
 
-		newLevelComboBox = new ComboBox<Integer>(LevelList.levelList);
+		newLevelComboBox = new ComboBox<Integer>(AllValueList.levelList);
 		newLevelComboBox.setEditable(true);
 		newLevelComboBox.setConverter(new IntegerStringConverter());
 

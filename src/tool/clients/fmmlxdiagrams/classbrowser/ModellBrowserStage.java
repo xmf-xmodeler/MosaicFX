@@ -1,7 +1,6 @@
 package tool.clients.fmmlxdiagrams.classbrowser;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -51,7 +50,7 @@ public class ModellBrowserStage extends CustomStage {
 		setOnCloseRequest(e -> onClose());
 	}
 
-	private void onClose() {
+	public void onClose() {
 		clearAll(ClearSelectionMode.MODELL);
 		hide();
 	}

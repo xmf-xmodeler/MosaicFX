@@ -20,6 +20,7 @@ public abstract class CustomStage extends Stage{
 	private GridControl gridControl;
 	private VBoxControl vBoxControl;
 	
+	
 	public CustomStage(String title, Stage relativeStage, int width, int height) {
 		super();
 		this.setWidth(width);
@@ -39,6 +40,8 @@ public abstract class CustomStage extends Stage{
 	protected abstract void initAllElement();
 	
 	protected abstract void addAllElementToPane();
+	
+	public abstract void onClose();
 	
 	protected VBox getContainer() {
 		return container;

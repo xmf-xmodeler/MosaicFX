@@ -9,7 +9,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddOperationDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.LevelList;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.ArrayList;
@@ -72,7 +72,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 
 //		typeComboBox = new ComboBox<>(ElementList.elementList);
 //		typeComboBox.getSelectionModel().select("Element");
-		levelComboBox = new ComboBox<>(LevelList.generateLevelListToThreshold(0, object.getLevel()));
+		levelComboBox = new ComboBox<>(AllValueList.generateLevelListToThreshold(0, object.getLevel()));
 		levelComboBox.getSelectionModel().selectLast();
 		monitorButton = new Button("Monitor Operation Values");
 		monitorButton.setOnAction(event -> {
