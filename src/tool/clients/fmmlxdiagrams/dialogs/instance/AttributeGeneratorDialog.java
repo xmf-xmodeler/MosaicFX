@@ -11,17 +11,17 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import tool.clients.fmmlxdiagrams.FmmlxAttribute;
+import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.AttributeGeneratorDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
-import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
+
 
 public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDialogResult>{
 	
-	private FmmlxAttribute attribute;
 	private InstanceGeneratorGenerateType type;
+	private String attributeType;
 	
 	private DialogPane dialogPane;
 	
@@ -50,23 +50,51 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
 	private TextField incrementValueTextField;
 	//==========================================
 	
+	//For Random -------------------------------
+	
+	//Values
 
-	public AttributeGeneratorDialog(FmmlxAttribute tmp, InstanceGeneratorGenerateType selectedType) {
-		this.attribute=tmp;
-		this.type=selectedType;
+	
+
+	public AttributeGeneratorDialog(InstanceGeneratorGenerateType type, String attributeType) {
+		this.type=type;
+		this.attributeType = attributeType;
 		
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialogPane.setHeaderText(attribute.getName()+ " : "+ type);
+		dialogPane.setHeaderText(type.toString());
 		layoutContent();
 		dialogPane.setContent(flow);
 		setValidation();
 		setResult();
 	}
 
+
 	private void setResult() {
-		// TODO Auto-generated method stub
-		
+		setResultConverter(dlgBtn -> {
+			
+			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
+				switch(type){
+		        case INCREMENT:
+		        	//return new AttributeGeneratorDialogResult(startValueTextField.getText(), endValueTextField.getText(), incrementValueTextField.getText(), attributeType, type);
+		        case STATIC:
+		        	//return new AttributeGeneratorDialogResult(startValueTextField.getText(), endValueTextField.getText(), incrementValueTextField.getText(), attributeType, type);
+		        	break;
+		        case LIST:
+		        	//return new AttributeGeneratorDialogResult(startValueTextField.getText(), endValueTextField.getText(), incrementValueTextField.getText(), attributeType, type);
+		        	break;
+		        case NORMALDISTRIBUTION:
+		        	//return new AttributeGeneratorDialogResult(startValueTextField.getText(), endValueTextField.getText(), incrementValueTextField.getText(), attributeType, type);
+		        	break;
+		        case RANDOM:
+		        	//return new AttributeGeneratorDialogResult(startValueTextField.getText(), endValueTextField.getText(), incrementValueTextField.getText(), attributeType, type);
+		        	break;
+		        default:
+		            System.out.println("undifined Type");
+		        }
+			}
+			return null;
+		});	
 	}
 
 	private void setValidation() {
@@ -77,8 +105,8 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
         case STATIC:
         	validateStatic();
             break;
-        case NULL:
-        	//TODO
+        case RANDOM:
+        	validateRandom();
             break;
         case LIST:
         	validateList();
@@ -89,8 +117,29 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
 		
 	}
 
+	private void validateRandom() {
+		switch(attributeType){
+        case "Integer":
+            //TODO
+            break;
+        case "Float":
+        	//TODO
+            break;
+        case "String":
+        	//TODO
+            break;
+        case "Boolean":
+        	//TODO
+            break;
+        default:
+            System.out.println("undifined Type");
+		}
+		
+	}
+
+
 	private void validateList() {
-		switch(attribute.getType()){
+		switch(attributeType){
         case "Integer":
             //TODO
             break;
@@ -110,7 +159,7 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
 	}
 
 	private void validateStatic() {
-		switch(attribute.getType()){
+		switch(attributeType){
         case "Integer":
             validateStaticForInteger();
             break;
@@ -149,7 +198,7 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
 	}
 
 	private void validateIncrement() {
-		switch(attribute.getType()){
+		switch(attributeType){
         case "Integer":
             //TODO
             break;
@@ -170,17 +219,20 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
 	private void layoutContent() {
 		switch(type){
         case INCREMENT:
-            layoutIncrement(attribute.getType());
+            layoutIncrement(attributeType);
             break;
         case STATIC:
-        	layoutStatic(attribute.getType());
+        	layoutStatic(attributeType);
             break;
-        case NULL:
-        	//TODO
+        case RANDOM:
+        	layoutRandom(attributeType);
             break;
         case LIST:
-        	layoutList(attribute.getType());
+        	layoutList(attributeType);
             break;
+        case NORMALDISTRIBUTION:
+        	layoutNormalDistribution(attributeType);
+        	break;
         default:
             System.out.println("undifined Type");
         }
@@ -188,6 +240,20 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
 		addNodesToGrid(labelNode, 0);
 		addNodesToGrid(inputNode, 1);	
 	}
+
+	private void layoutNormalDistribution(String attributeType2) {
+		labelNode = new ArrayList<Node>();
+		inputNode = new ArrayList<Node>();
+		
+	}
+
+
+	private void layoutRandom(String attributeType2) {
+		labelNode = new ArrayList<Node>();
+		inputNode = new ArrayList<Node>();
+		
+	}
+
 
 	private void layoutList(String type2) {
 		labelNode = new ArrayList<Node>();
@@ -234,7 +300,7 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
 			
 		staticValueLabel = new Label(StringValue.LabelAndHeaderTitle.value);
 		
-		if(attribute.getType().equals("Boolean")) {
+		if(attributeType.equals("Boolean")) {
 			staticValueComboBox = new ComboBox<String>(AllValueList.booleanList);
 			inputNode.add(staticValueComboBox);
 		} else {

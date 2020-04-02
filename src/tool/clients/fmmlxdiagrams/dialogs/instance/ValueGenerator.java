@@ -6,4 +6,5 @@ public interface ValueGenerator {
 	public String generate();
 	
 	public boolean fitsType(String type);
+	public String getName2();
 }

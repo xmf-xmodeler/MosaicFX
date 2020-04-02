@@ -1,12 +1,22 @@
 package tool.clients.fmmlxdiagrams.dialogs.instance;
 
-public class IncrementGenerator implements ValueGenerator{
+import java.util.Optional;
+
+
+import tool.clients.fmmlxdiagrams.dialogs.results.AttributeGeneratorDialogResult;
+
+public class IncrementGenerator<T> implements ValueGenerator{
 	
-	int min;
-	int max;
-	int step;
+	private T min;
+	private T max;
+	private T step;
+	private String type;
 	
-	int counter;
+
+	public IncrementGenerator(String type) {
+		super();
+		this.type = type;
+	}
 
 	@Override
 	public String getName() {
@@ -15,16 +25,28 @@ public class IncrementGenerator implements ValueGenerator{
 
 	@Override
 	public void openDialog() {
-		// TODO Auto-generated method stub
-		// min = dialog.result.min()...
-		counter = min;
+		AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(InstanceGeneratorGenerateType.INCREMENT, type );
+		Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
+		
+//		if (opt.isPresent()) {
+//			AttributeGeneratorDialogResult result = opt.get();
+//			if (type.equals("Integer")) {
+//				this.max = (T) result.getValue1Integer();
+//				this.min =  (T)result.getValue2Integer();
+//				this.step = (T) result.getIncrementInt();
+//			} else if (type.equals("Float")) {
+//				this.max =  (T)result.getValue1Float();
+//				this.min = (T) result.getValue2Float();
+//				this.step = (T) result.getIncrementFloat();
+//			} 
+//			
+//		}
 	}
 
 	@Override
 	public String generate() {
-		String result = "" + counter;
-		counter ++;
-		return result;
+		//TODO
+		return "";
 	}
 
 	@Override
@@ -33,5 +55,46 @@ public class IncrementGenerator implements ValueGenerator{
 		if("Float".equals(type)) return true;
 		return false;
 	}
+
+	public T getMin() {
+		return min;
+	}
+
+	public void setMin(T minInt) {
+		this.min = minInt;
+	}
+
+	public T getMax() {
+		return max;
+	}
+
+	public void setMax(T maxInt) {
+		this.max = maxInt;
+	}
+
+	public T getStep() {
+		return step;
+	}
+
+	public void setStepInt(T stepInt) {
+		this.step = stepInt;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	@Override
+	public String getName2() {
+		if(min==null || max==null || step== null) {
+			return getName()+" (incomplete)";
+		}
+		return getName();
+	}
+	
 
 }

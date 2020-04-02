@@ -434,9 +434,9 @@ public class DiagramActions {
 		});
 	}
 	
-	public void instanceGeneratorDialog(DiagramActions actions, FmmlxObject object) {
+	public void instanceGeneratorDialog(FmmlxObject object) {
 		Platform.runLater(() -> {
-			InstanceGeneratorDialog dlg = new InstanceGeneratorDialog(diagram, object, actions);
+			InstanceGeneratorDialog dlg = new InstanceGeneratorDialog(object);
 			Optional<InstanceGeneratorDialogResult> igd = dlg.showAndWait();
 
 			if (igd.isPresent()) {
@@ -915,12 +915,12 @@ public class DiagramActions {
 		});
 	}
 
-	public void attributeGeneratorDialog(FmmlxAttribute tmp, InstanceGeneratorGenerateType selectedType) {
-		Platform.runLater(() -> {
-			if(selectedType!=null) {
-				AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(tmp, selectedType);
-				Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
-			}
-		});
-	}	
+//	public void attributeGeneratorDialog(FmmlxAttribute tmp, InstanceGeneratorGenerateType selectedType) {
+//		Platform.runLater(() -> {
+//			if(selectedType!=null) {
+//				AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(tmp, selectedType);
+//				Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
+//			}
+//		});
+//	}	
 }
