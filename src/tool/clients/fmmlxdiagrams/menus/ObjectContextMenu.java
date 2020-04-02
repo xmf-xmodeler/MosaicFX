@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams.menus;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
@@ -39,7 +41,7 @@ public class ObjectContextMenu extends ContextMenu {
 		
 		MenuItem instanceGenerator = new MenuItem("Instance Generator");
 		//instanceGenerator.setOnAction(e -> actions.instanceGenerator(object));
-		instanceGenerator.setOnAction(e -> actions.instanceGeneratorDialog(actions, object));
+		instanceGenerator.setOnAction(e -> actions.instanceGeneratorDialog(object));
 		getItems().add(instanceGenerator);
 		
 		MenuItem changeOfItem = new MenuItem("Change of (Metaclass)");
@@ -49,7 +51,6 @@ public class ObjectContextMenu extends ContextMenu {
 		
 		MenuItem changeParentItem = new MenuItem("Change parent (Superclass)");
 		changeParentItem.setOnAction(e -> actions.changeParentsDialog(object));
-		changeParentItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		getItems().add(changeParentItem);
 		
 //		MenuItem changeLevelItem = new MenuItem("Change level");
@@ -67,6 +68,7 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu slotMenu = createSlotSubMenu();
 		Menu associationInstanceMenu = createAssociationInstanceSubMenu();
 		Menu showMenu = createShowSubMenu();
+		Menu delegationMenu = createDelegationSubMenu();
 		
 		Menu levelMenu = new Menu("Levels");
 		MenuItem levelRaiseAllItem = new MenuItem("Raise all");
@@ -90,7 +92,9 @@ public class ObjectContextMenu extends ContextMenu {
 		
 		levelMenu.getItems().addAll(levelRaiseAllItem, levelLowerAllItem, levelRaiseHereItem, levelLowerHereItem, levelSplitItem, levelMergeItem);
 
-		getItems().addAll(attributeMenu, associationMenu, operationMenu, slotMenu, associationInstanceMenu, levelMenu, showMenu, assignItem);
+		getItems().addAll(attributeMenu, associationMenu, operationMenu, delegationMenu, slotMenu, associationInstanceMenu, levelMenu, showMenu, assignItem);
+		
+		addNewMenuItem(this, "Hide", e -> System.out.println("Hide not yet implemented."), ALWAYS);
 	}
 
 	private Menu createAttributeSubMenu() {
@@ -224,5 +228,31 @@ public class ObjectContextMenu extends ContextMenu {
 
 		showSubMenu.getItems().addAll(operationsItem);
 		return showSubMenu;
+	}
+	
+	private Menu createDelegationSubMenu() {
+		Menu delegationMenu = new Menu("Delegate");
+		addNewMenuItem(delegationMenu, "add Delegate to", e -> System.out.println("add Delegate to not yet implemented."), ALWAYS);
+		addNewMenuItem(delegationMenu, "remove Delegate to", e -> System.out.println("remove Delegate to not yet implemented."), ALWAYS);
+		addNewMenuItem(delegationMenu, "add Rolefiller", e -> System.out.println("add Rolefiller not yet implemented."), ALWAYS);
+		addNewMenuItem(delegationMenu, "remove Rolefiller", e -> System.out.println("remove Rolefiller not yet implemented."), ALWAYS);
+		return delegationMenu;
+	}
+
+	private interface Enabler {
+		boolean isEnabled();
+	}
+	private static final Enabler ALWAYS = () -> true; 
+	
+	private void addNewMenuItem(Menu parentMenu, String name, EventHandler<ActionEvent> action, Enabler enabler) {
+		MenuItem item = new MenuItem(name);
+		item.setDisable(!enabler.isEnabled());
+		parentMenu.getItems().add(item);
+	}
+	
+	private void addNewMenuItem(ContextMenu parentMenu, String name, EventHandler<ActionEvent> action, Enabler enabler) {
+		MenuItem item = new MenuItem(name);
+		item.setDisable(!enabler.isEnabled());
+		parentMenu.getItems().add(item);
 	}
 }

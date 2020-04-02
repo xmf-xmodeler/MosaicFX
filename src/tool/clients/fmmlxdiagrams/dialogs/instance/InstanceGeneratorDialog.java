@@ -2,12 +2,12 @@ package tool.clients.fmmlxdiagrams.dialogs.instance;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
+
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.util.converter.IntegerStringConverter;
-import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.InstanceGeneratorDialogResult;
@@ -16,9 +16,8 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue.LabelAndHeaderTitle;
 
 public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialogResult>{
-	
-	@SuppressWarnings("unused")
-	private FmmlxDiagram diagram;
+
+
 	private FmmlxObject object;
 	private Label ofLabel ;
 	private Label numberOfElementLabel;
@@ -29,12 +28,12 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 	private List<Node> inputNode;
 	private List<Node> editButtonNode;
 	private DialogPane dialogPane;
-	private DiagramActions actions;
+	
+	//private Vector<ValueGenerator> currentGenerator =  new Vector<ValueGenerator>();
 
-	public InstanceGeneratorDialog(FmmlxDiagram diagram, FmmlxObject object, DiagramActions actions) {
-		this.diagram= diagram;
+	public InstanceGeneratorDialog(FmmlxObject object) {
+
 		this.object= object;
-		this.actions=actions;
 		
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -87,14 +86,15 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 		editButtonNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		editButtonNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		
-		for (FmmlxAttribute tmp : object.getAllAttributes()) {			
-			labelNode.add(new Label(tmp.getName()));	
-			typeLabelNode.add(new Label(": "+tmp.getType()));
-			if(AllValueList.traditionalTypeList.contains(tmp.getType())) {
-				ComboBox<InstanceGeneratorGenerateType> comboBox = initializeComboBoxGeneratorList(getGenerateTypeList(tmp.getType()), tmp);
+		for (FmmlxAttribute att : object.getAllAttributes()) {			
+			labelNode.add(new Label(att.getName()));	
+			typeLabelNode.add(new Label(": "+att.getType()));
+			
+			if(AllValueList.traditionalTypeList.contains(att.getType())) {
+				ComboBox<ValueGenerator> comboBox = initializeComboBoxGeneratorList(att);
 				inputNode.add(comboBox);
-				Button button = new InstanceGeneratorEditButton(StringValue.LabelAndHeaderTitle.EDIT, tmp);
-				button.setOnAction(e -> actions.attributeGeneratorDialog(tmp, comboBox.getSelectionModel().getSelectedItem()));
+				Button button = new InstanceGeneratorEditButton(StringValue.LabelAndHeaderTitle.EDIT, att);
+				button.setOnAction(e -> comboBox.getSelectionModel().getSelectedItem().openDialog());
 				editButtonNode.add(button);
 			} else {
 				inputNode.add(new Label(" "));
@@ -107,4 +107,5 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 		addNodesToGrid(inputNode,2);
 		addNodesToGrid(editButtonNode, 3);
 	}
+	
 }

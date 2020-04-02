@@ -467,7 +467,6 @@ public class FmmlxDiagramCommunicator {
 			Vector<Object> slot = (Vector<Object>) (slotO);
 			String name = (String) (slot.get(0));
 			String value = (String) (slot.get(1));
-			System.err.println("slot.value: " + value);
 			result.add(new FmmlxSlot(name, value, owner));
 		}
 		return result;
@@ -540,10 +539,10 @@ public class FmmlxDiagramCommunicator {
 		if(points.size() < 2) System.err.println("Suspicious edge alignment");
 		for(Point2D p : points) {
 			if(!Double.isFinite(p.getX())) {
-				System.err.println("Suspicious X coordiante");
+				System.err.println("Suspicious X coordinate");
 			}
 			if(!Double.isFinite(p.getY())) {
-				System.err.println("Suspicious Y coordiante");
+				System.err.println("Suspicious Y coordinate");
 			}
 		}
 

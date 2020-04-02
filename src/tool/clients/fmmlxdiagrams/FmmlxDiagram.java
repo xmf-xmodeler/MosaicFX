@@ -492,13 +492,13 @@ public class FmmlxDiagram{
 //	private boolean isMiddleClick(MouseEvent e) {return e.getButton() == MouseButton.MIDDLE;}
 
 	private CanvasElement getElementAt(double x, double y) {
-		for (FmmlxObject o : objects)
+		for (FmmlxObject o : new Vector<>(objects))
 			if (o.isHit(x, y))
 				return o;
-		for (Edge e : edges)
+		for (Edge e : new Vector<>(edges))
 			if (e.isHit(x, y))
 				return e;
-		for (DiagramEdgeLabel l : labels)
+		for (DiagramEdgeLabel l : new Vector<>(labels))
 			if (l.isHit(x, y))
 				return l;
 		
