@@ -57,8 +57,9 @@ public class IncrementGenerator<T> implements ValueGenerator{
 
 	@Override
 	public String generate() {
-		//TODO
-		return "";
+		String allvalue= "start : "+startValue+", "+"endValue : "+endValue+", "+"increment : "+inc;
+		String result = InstanceGeneratorGenerateType.INCREMENT.toString()+" : "+" ( "+ allvalue +" ) ";
+		return result;
 	}
 
 	@Override

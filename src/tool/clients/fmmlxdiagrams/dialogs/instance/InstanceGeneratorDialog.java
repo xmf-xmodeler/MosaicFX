@@ -1,11 +1,13 @@
 package tool.clients.fmmlxdiagrams.dialogs.instance;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
@@ -28,6 +30,8 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 	private List<Node> inputNode;
 	private List<Node> editButtonNode;
 	private DialogPane dialogPane;
+	
+	private HashMap<FmmlxAttribute, ValueGenerator> value;
 
 	public InstanceGeneratorDialog(FmmlxObject object) {
 		this.object= object;
@@ -36,6 +40,7 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 		dialogPane.setHeaderText("Instance Generator");
 		layoutContent();
 		dialogPane.setContent(flow);
+		
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
 			if (!inputIsValid()) {
@@ -45,8 +50,25 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 		setResult();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void setResult() {
-		// TODO Auto-generated method stub	
+		setResultConverter(dlgBtn -> {		
+		if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
+			this.value = new HashMap<FmmlxAttribute, ValueGenerator>();
+			int counter = 3;
+			for(FmmlxAttribute att : object.getAllAttributes()) {
+				Node node = inputNode.get(counter);
+				if(node instanceof ComboBox) {
+					value.put(att, ((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem());
+				} else {
+					value.put(att, null);
+				}
+				counter++;
+			}
+			return new InstanceGeneratorDialogResult(object, numberOfElementComboBox.getSelectionModel().getSelectedItem(), value);
+		}
+		return null;
+	});	
 	}
 
 	private boolean inputIsValid() {
