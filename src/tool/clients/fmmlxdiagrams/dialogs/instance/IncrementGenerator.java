@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams.dialogs.instance;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -7,9 +9,9 @@ import tool.clients.fmmlxdiagrams.dialogs.results.AttributeGeneratorDialogResult
 
 public class IncrementGenerator<T> implements ValueGenerator{
 	
-	private T min;
-	private T max;
-	private T step;
+	private T startValue;
+	private T endValue;
+	private T inc;
 	private String type;
 	
 
@@ -25,22 +27,32 @@ public class IncrementGenerator<T> implements ValueGenerator{
 
 	@Override
 	public void openDialog() {
-		AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(InstanceGeneratorGenerateType.INCREMENT, type );
+		
+		if (startValue != null && endValue!=null && inc!=null) {
+			List<T> values = new ArrayList<T>();
+			values.add(startValue);
+			values.add(endValue);
+			values.add(inc);
+			AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(InstanceGeneratorGenerateType.INCREMENT, type, values );
+			dialogResult(dlg);
+			
+		} else {
+			AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(InstanceGeneratorGenerateType.INCREMENT, type);
+			dialogResult(dlg);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void dialogResult(AttributeGeneratorDialog dlg) {
 		Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
 		
-//		if (opt.isPresent()) {
-//			AttributeGeneratorDialogResult result = opt.get();
-//			if (type.equals("Integer")) {
-//				this.max = (T) result.getValue1Integer();
-//				this.min =  (T)result.getValue2Integer();
-//				this.step = (T) result.getIncrementInt();
-//			} else if (type.equals("Float")) {
-//				this.max =  (T)result.getValue1Float();
-//				this.min = (T) result.getValue2Float();
-//				this.step = (T) result.getIncrementFloat();
-//			} 
-//			
-//		}
+		if (opt.isPresent()) {
+			AttributeGeneratorDialogResult result = opt.get();				
+			this.startValue = (T) result.getValueStart();
+			this.endValue = (T) result.getValueEnd();
+			this.inc = (T) result.getIncrement();
+			
+		}
 	}
 
 	@Override
@@ -56,41 +68,17 @@ public class IncrementGenerator<T> implements ValueGenerator{
 		return false;
 	}
 
-	public T getMin() {
-		return min;
-	}
+	
 
-	public void setMin(T minInt) {
-		this.min = minInt;
-	}
 
-	public T getMax() {
-		return max;
-	}
-
-	public void setMax(T maxInt) {
-		this.max = maxInt;
-	}
-
-	public T getStep() {
-		return step;
-	}
-
-	public void setStepInt(T stepInt) {
-		this.step = stepInt;
-	}
 
 	public String getType() {
 		return type;
 	}
 
-	public void setType(String type) {
-		this.type = type;
-	}
-
 	@Override
 	public String getName2() {
-		if(min==null || max==null || step== null) {
+		if(startValue==null || endValue==null || inc==null) {
 			return getName()+" (incomplete)";
 		}
 		return getName();

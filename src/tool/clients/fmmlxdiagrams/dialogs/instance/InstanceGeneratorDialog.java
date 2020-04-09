@@ -2,8 +2,8 @@ package tool.clients.fmmlxdiagrams.dialogs.instance;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
+import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.util.converter.IntegerStringConverter;
@@ -28,30 +28,51 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 	private List<Node> inputNode;
 	private List<Node> editButtonNode;
 	private DialogPane dialogPane;
-	
-	//private Vector<ValueGenerator> currentGenerator =  new Vector<ValueGenerator>();
 
 	public InstanceGeneratorDialog(FmmlxObject object) {
-
 		this.object= object;
-		
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		dialogPane.setHeaderText("Instance Generator");
 		layoutContent();
 		dialogPane.setContent(flow);
-		setValidation();
+		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
+		okButton.addEventFilter(ActionEvent.ACTION, e -> {
+			if (!inputIsValid()) {
+				e.consume();
+			}
+		});
 		setResult();
 	}
 
 	private void setResult() {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub	
 	}
 
-	private void setValidation() {
-		// TODO Auto-generated method stub
-		
+	private boolean inputIsValid() {
+		return checkComboBoxes();
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean checkComboBoxes() {
+		if (numberOfElementComboBox.getSelectionModel().getSelectedItem()==null) {
+			errorLabel.setText("Please select number of Instance");
+			return false;
+		}
+		for(Node node : inputNode) {
+			if (node instanceof ComboBox) {
+				if (((ComboBox<ValueGenerator>) node).getSelectionModel()
+						.getSelectedItem() == null /*
+													 * || ((ComboBox<ValueGenerator>)
+													 * node).getSelectionModel().getSelectedItem().getName2().contains(
+													 * "incomplete")
+													 */) {
+					errorLabel.setText("Please input all required values");
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	private void layoutContent() {

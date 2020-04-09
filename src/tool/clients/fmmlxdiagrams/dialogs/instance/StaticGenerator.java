@@ -1,12 +1,14 @@
 package tool.clients.fmmlxdiagrams.dialogs.instance;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import tool.clients.fmmlxdiagrams.dialogs.results.AttributeGeneratorDialogResult;
 
 public class StaticGenerator<T> implements ValueGenerator{
 
-	private T value;
+	private String value;
 	private String type;
 
 	public StaticGenerator(String type) {
@@ -14,11 +16,11 @@ public class StaticGenerator<T> implements ValueGenerator{
 		this.type = type;
 	}
 
-	public T getValue() {
+	public String getValue() {
 		return value;
 	}
 
-	public void setValue(T value) {
+	public void setValue(String value) {
 		this.value = value;
 	}
 
@@ -35,22 +37,35 @@ public class StaticGenerator<T> implements ValueGenerator{
 		return "Static";
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void openDialog() {
-		AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(InstanceGeneratorGenerateType.STATIC, type);
+		if (value!=null) {
+			List<String> values = new ArrayList<String>();
+			values.add(value);
+			AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(InstanceGeneratorGenerateType.STATIC, type, values);
+			dialogResult(dlg);
+			
+		} else {
+			AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(InstanceGeneratorGenerateType.STATIC, type);
+			dialogResult(dlg);
+		}	
+	}
+
+	
+	private void dialogResult(AttributeGeneratorDialog dlg) {
 		Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
 		
 		if (opt.isPresent()) {
+
 			AttributeGeneratorDialogResult result = opt.get();
 			if (type.equals("Integer")) {
-				this.value = (T) result.getValueInt();
+				this.value =  result.getValueInt().toString();
 			} else if (type.equals("Float")) {
-				this.value = (T) result.getValueFloat();
+				this.value =  result.getValueFloat().toString();
 			} else if (type.equals("Boolean")) {
-				this.value = (T) result.getValueBool();		
+				this.value =  result.getValueBool().toString();	
 			} else if (type.equals("String")) {
-				this.value = (T) result.getValueString();
+				this.value = result.getValueString();
 			}
 		}
 	}
@@ -77,6 +92,4 @@ public class StaticGenerator<T> implements ValueGenerator{
 		}
 		return getName();
 	}
-	
-	
 }

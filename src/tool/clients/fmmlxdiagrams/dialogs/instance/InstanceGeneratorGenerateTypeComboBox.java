@@ -12,6 +12,7 @@ public class InstanceGeneratorGenerateTypeComboBox extends ComboBox<ValueGenerat
 	public <T> InstanceGeneratorGenerateTypeComboBox(FmmlxAttribute attribute) {
 		super(getGenerateTypeList(attribute.getType()));
 		this.attribute = attribute;
+
 	}
 
 	public FmmlxAttribute getAttribute() {
@@ -22,16 +23,17 @@ public class InstanceGeneratorGenerateTypeComboBox extends ComboBox<ValueGenerat
 		this.attribute = attribute;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static ObservableList<ValueGenerator> getGenerateTypeList(String type) {
 		if(type.equals("Integer")) {
-			IncrementGenerator<Integer> incG = new IncrementGenerator<Integer>(type);
+			IncrementGenerator incG = new IncrementGenerator(type);
 			StaticGenerator<Integer> sGInt = new StaticGenerator<Integer>("Integer");
-			ListGenerator<Integer> listGInt = new ListGenerator<Integer>("Integer");
+			ListGenerator<Integer> listGInt = new ListGenerator<Integer>("Integer" );
 			NormalDistributionGenerator<Integer> nDGenerator = new NormalDistributionGenerator<Integer>("Integer");
 			RandomGenerator<Integer> rGenerator = new RandomGenerator<Integer>("Integer");
 			return FXCollections.observableArrayList(incG, sGInt, listGInt, nDGenerator, rGenerator);
 		} else if(type.equals("Float")) {
-			IncrementGenerator<Float> incF = new IncrementGenerator<Float>("Float");
+			IncrementGenerator incF = new IncrementGenerator("Float");
 			StaticGenerator<Float> sGFloat = new StaticGenerator<Float>("Float");
 			ListGenerator<Float> listGFloat = new ListGenerator<Float>("Float");
 			RandomGenerator<Float> rGenerator = new RandomGenerator<Float>("Float");

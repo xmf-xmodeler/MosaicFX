@@ -28,33 +28,22 @@ public class AttributeGeneratorDialogResult extends DialogResult {
 	
 	//For Increment
 		
-		//For Integer
-		private int value1Integer;
-		private int value2Integer;
-		private int incrementInt;
+		private String valueStart;
+		private String valueEnd;
+		private String increment;
+
 		
-		//For Float
-		private float value1Float;
-		private float value2Float;
-		private float incrementFloat;
-		
-		//For String
-		private String valueString;
+	//Value For String
+		private String valueString;		
 		
 		
 		
 		//Generator Increment
 		public AttributeGeneratorDialogResult(String value1, String value2, String increment, String type, InstanceGeneratorGenerateType gType) {
-			this.gType = gType;
-			if (type.equals("Integer")) {
-				this.value1Integer = Integer.parseInt(value1);
-				this.value2Integer = Integer.parseInt(value2);
-				this.incrementFloat = Integer.parseInt(increment);
-			} else if (type.equals("Float")) {
-				this.value1Float = Float.parseFloat(value1);
-				this.value2Float = Float.parseFloat(value2);
-				this.incrementFloat = Float.parseFloat(increment);
-			}
+			this.gType = gType;		
+			this.valueStart = value1;
+			this.valueEnd = value2;
+			this.increment = increment;
 		}
 		
 		//Generator Static
@@ -95,28 +84,16 @@ public class AttributeGeneratorDialogResult extends DialogResult {
 			return gType;
 		}
 
-		public int getValue1Integer() {
-			return value1Integer;
+		public String getValueStart() {
+			return valueStart;
 		}
 
-		public int getValue2Integer() {
-			return value2Integer;
+		public String getValueEnd() {
+			return valueEnd;
 		}
 
-		public int getIncrementInt() {
-			return incrementInt;
-		}
-
-		public float getValue1Float() {
-			return value1Float;
-		}
-
-		public float getValue2Float() {
-			return value2Float;
-		}
-
-		public float getIncrementFloat() {
-			return incrementFloat;
+		public String getIncrement() {
+			return increment;
 		}
 
 		public Boolean getValueBool() {
