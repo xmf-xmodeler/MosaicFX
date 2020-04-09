@@ -42,6 +42,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem instanceGenerator = new MenuItem("Instance Generator");
 		//instanceGenerator.setOnAction(e -> actions.instanceGenerator(object));
 		instanceGenerator.setOnAction(e -> actions.instanceGeneratorDialog(object));
+		instanceGenerator.setDisable(object.notTraditionalDataTypeExists());
 		getItems().add(instanceGenerator);
 		
 		MenuItem changeOfItem = new MenuItem("Change of (Metaclass)");

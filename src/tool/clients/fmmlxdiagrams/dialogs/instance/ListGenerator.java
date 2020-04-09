@@ -10,6 +10,7 @@ public class ListGenerator<T> implements ValueGenerator{
 	private Vector<T> elements;
 	private String type;
 
+
 	public ListGenerator(String string) {
 		super();
 		this.type= string;
