@@ -24,6 +24,7 @@ import tool.clients.fmmlxdiagrams.dialogs.instance.AttributeGeneratorDialog;
 import tool.clients.fmmlxdiagrams.dialogs.instance.ChangeOfDialog;
 import tool.clients.fmmlxdiagrams.dialogs.instance.InstanceGeneratorDialog;
 import tool.clients.fmmlxdiagrams.dialogs.instance.InstanceGeneratorGenerateType;
+import tool.clients.fmmlxdiagrams.dialogs.instance.ValueGenerator;
 import tool.clients.fmmlxdiagrams.dialogs.operation.AddOperationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.operation.ChangeBodyDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
@@ -35,6 +36,8 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Vector;
 //import java.util.concurrent.CountDownLatch;
@@ -436,11 +439,23 @@ public class DiagramActions {
 	
 	public void instanceGeneratorDialog(FmmlxObject object) {
 		Platform.runLater(() -> {
+			
+			//TODO
 			InstanceGeneratorDialog dlg = new InstanceGeneratorDialog(object);
 			Optional<InstanceGeneratorDialogResult> igd = dlg.showAndWait();
-
-			if (igd.isPresent()) {
 			
+			if (igd.isPresent()) {
+				final InstanceGeneratorDialogResult result = igd.get();
+				System.out.println("ID : "+result.getObject().getId());
+				System.out.println("Number of Instance : "+ result.getNumberOfInstance());
+				Iterator it = result.getValue().entrySet().iterator();			
+				while (it.hasNext()) {
+			        Map.Entry pair = (Map.Entry)it.next();
+			        System.out.println(((FmmlxAttribute) pair.getKey()).getName() + " = " + ((ValueGenerator) pair.getValue()).generate());
+			        it.remove(); 
+			    }
+				System.out.println("========================================================================");
+				diagram.getComm().instanceGenerator(diagram, result.getObject().getId(), result.getValue());
 			}
 		});
 	

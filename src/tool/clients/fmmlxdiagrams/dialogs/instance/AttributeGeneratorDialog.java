@@ -113,8 +113,14 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
         	this.incrementValueTextField.setText(incValue);
         	break;
         case STATIC:
-        	this.staticValue =  value.get(0).toString();
-        	staticValueTextField.setText(staticValue);
+        	if (attributeType.equals("Boolean")) {
+        		this.staticValue =  value.get(0).toString();
+        		staticValueComboBox.setValue(value.toString());
+        	} else {
+        		this.staticValue =  value.get(0).toString();
+            	staticValueTextField.setText(staticValue);
+        	}
+
         	break;
         case LIST:     	
         	break;
@@ -134,7 +140,11 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
 		        case INCREMENT:
 		        	return new AttributeGeneratorDialogResult(startValueTextField.getText(), endValueTextField.getText(), incrementValueTextField.getText(), attributeType, type);
 		        case STATIC:
-		        	return new AttributeGeneratorDialogResult(staticValueTextField.getText(), attributeType, type);
+		        	if (attributeType.equals("Boolean")) {
+		        		return new AttributeGeneratorDialogResult(staticValueComboBox.getSelectionModel().getSelectedItem(), attributeType, type);
+		        	} else {
+		        		return new AttributeGeneratorDialogResult(staticValueTextField.getText(), attributeType, type);
+		        	}
 		        case LIST:
 		        	//return new AttributeGeneratorDialogResult(startValueTextField.getText(), endValueTextField.getText(), incrementValueTextField.getText(), attributeType, type);
 		        	break;
@@ -157,6 +167,11 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
         case INCREMENT:
             return validateIncrement(startValueTextField.getText(), endValueTextField.getText(), incrementValueTextField.getText());    
         case STATIC:
+        	if (attributeType.equals("Boolean")) {
+        		if (staticValueComboBox.getSelectionModel().getSelectedItem()!=null) {
+        			return true;
+        		}
+        	}
         	return validateStatic(staticValueTextField.getText());
         case RANDOM:
         	return validateRandom();    

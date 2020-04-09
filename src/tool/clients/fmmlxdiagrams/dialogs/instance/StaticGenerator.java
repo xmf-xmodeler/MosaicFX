@@ -71,9 +71,8 @@ public class StaticGenerator<T> implements ValueGenerator{
 	}
 
 	@Override
-	public String generate() {
-		// TODO Auto-generated method stub
-		return "";
+	public String generate() {		
+		return InstanceGeneratorGenerateType.STATIC.toString() +" : "+" ( "+value+" ) ";
 	}
 
 	@Override
