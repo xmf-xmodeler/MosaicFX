@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import tool.clients.fmmlxdiagrams.dialogs.results.AttributeGeneratorDialogResult;
 
-public class StaticGenerator<T> implements ValueGenerator{
+public class StaticGenerator implements ValueGenerator{
 
 	private String value;
 	private String type;
@@ -20,16 +20,8 @@ public class StaticGenerator<T> implements ValueGenerator{
 		return value;
 	}
 
-	public void setValue(String value) {
-		this.value = value;
-	}
-
 	public String getType() {
 		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
 	}
 
 	@Override

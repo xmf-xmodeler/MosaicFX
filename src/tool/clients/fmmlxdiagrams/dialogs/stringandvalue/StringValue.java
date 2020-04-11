@@ -155,6 +155,7 @@ public class StringValue {
 		public static final String endValue = "End Value";
 		public static final String incrementValue = "Increment Value";
 		public static final String valueList = "Value List";
+		public static final String randomValue = "Random Value";
 		
 	}
 

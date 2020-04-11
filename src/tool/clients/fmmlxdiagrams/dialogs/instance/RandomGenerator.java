@@ -1,41 +1,26 @@
 package tool.clients.fmmlxdiagrams.dialogs.instance;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import tool.clients.fmmlxdiagrams.dialogs.results.AttributeGeneratorDialogResult;
 
-public class RandomGenerator<T> implements ValueGenerator{
+public class RandomGenerator implements ValueGenerator{
 
-	private List<T> value;
+	private String value;
 	private String type;
 	
 	public RandomGenerator(String string) {
 		this.type = string;
 	}
 
-	
-	public RandomGenerator(List<T> value, String type) {
-		super();
-		this.value = value;
-		this.type = type;
-	}
-
-
-	public List<T> getValue() {
+	public String getValue() {
 		return value;
-	}
-
-	public void setValue(List<T> value) {
-		this.value = value;
 	}
 
 	public String getType() {
 		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
 	}
 
 	@Override
@@ -45,14 +30,38 @@ public class RandomGenerator<T> implements ValueGenerator{
 
 	@Override
 	public void openDialog() {
-		AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(InstanceGeneratorGenerateType.RANDOM, type);
+		if (value!=null){
+			List<String> values = new ArrayList<String>();
+			values.add(value);
+			AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(InstanceGeneratorGenerateType.RANDOM, type, values);
+			dialogResult(dlg);
+		} else {
+			AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(InstanceGeneratorGenerateType.RANDOM, type);
+			dialogResult(dlg);
+		}
+
+	}
+
+	private void dialogResult(AttributeGeneratorDialog dlg) {
 		Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
+		
+		if (opt.isPresent()) {
+			AttributeGeneratorDialogResult result = opt.get();
+			if (type.equals("Integer")) {
+				this.value =  result.getValueInt().toString();
+			} else if (type.equals("Float")) {
+				this.value =  result.getValueFloat().toString();
+			} else if (type.equals("Boolean")) {
+				this.value =  result.getValueBool().toString();	
+			} else if (type.equals("String")) {
+				this.value = result.getValueString();
+			}
+		}
 	}
 
 	@Override
-	public String generate() {
-		// TODO Auto-generated method stub
-		return null;
+	public String generate() {	
+		return InstanceGeneratorGenerateType.RANDOM.toString() +" : "+" ( "+value+" ) ";
 	}
 
 	@Override

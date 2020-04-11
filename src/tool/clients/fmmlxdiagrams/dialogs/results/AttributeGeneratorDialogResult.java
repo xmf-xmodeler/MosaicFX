@@ -9,14 +9,14 @@ public class AttributeGeneratorDialogResult extends DialogResult {
 	
 	private InstanceGeneratorGenerateType gType;
 	
-	//For List and Random
+	//For List 
 		//For Integer
 		private List<Integer> intValues = new ArrayList<Integer>();
 		private List<Float> floatValues = new ArrayList<Float>();
 		private List<Boolean> boolValues = new ArrayList<Boolean>();
 		private List<String> stringValues = new ArrayList<String>();
 	
-	//For Static
+	//For Static and Random
 		
 		//For Integer
 		private Integer valueInt;
@@ -36,8 +36,6 @@ public class AttributeGeneratorDialogResult extends DialogResult {
 	//Value For String
 		private String valueString;		
 		
-		
-		
 		//Generator Increment
 		public AttributeGeneratorDialogResult(String value1, String value2, String increment, String type, InstanceGeneratorGenerateType gType) {
 			this.gType = gType;		
@@ -46,7 +44,7 @@ public class AttributeGeneratorDialogResult extends DialogResult {
 			this.increment = increment;
 		}
 		
-		//Generator Static
+		//Generator Static and Random
 		public AttributeGeneratorDialogResult(String value, String type, InstanceGeneratorGenerateType gType) {
 			this.gType = gType;
 			if (type.equals("Boolean")) {

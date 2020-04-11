@@ -2,6 +2,7 @@ package tool.clients.fmmlxdiagrams.dialogs.instance;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -53,6 +54,9 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
 	//==========================================
 	
 	//For Random -------------------------------
+	private Label randomValueLabel;
+	private TextField randomValueTextField;
+	private Button generateRandomValueButton;
 	
 	//StaticValue
 	private String staticValue;
@@ -65,7 +69,7 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
 	//ListValues
 	
 	//RandomValue
-	
+	private String randomValue;
 
 	public AttributeGeneratorDialog(InstanceGeneratorGenerateType type, String attributeType) {
 		this.type=type;
@@ -115,7 +119,7 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
         case STATIC:
         	if (attributeType.equals("Boolean")) {
         		this.staticValue =  value.get(0).toString();
-        		staticValueComboBox.setValue(value.toString());
+        		staticValueComboBox.setValue(value.get(0).toString());
         	} else {
         		this.staticValue =  value.get(0).toString();
             	staticValueTextField.setText(staticValue);
@@ -127,6 +131,8 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
         case NORMALDISTRIBUTION:
         	break;
         case RANDOM:
+        	this.randomValue =value.get(0).toString();
+        	this.randomValueTextField.setText(value.get(0).toString());
         	break;
         default:
             System.out.println("undifined Type");
@@ -152,8 +158,7 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
 		        	//return new AttributeGeneratorDialogResult(startValueTextField.getText(), endValueTextField.getText(), incrementValueTextField.getText(), attributeType, type);
 		        	break;
 		        case RANDOM:
-		        	//return new AttributeGeneratorDialogResult(startValueTextField.getText(), endValueTextField.getText(), incrementValueTextField.getText(), attributeType, type);
-		        	break;
+		        	return new AttributeGeneratorDialogResult(randomValueTextField.getText(), attributeType, type);
 		        default:
 		            System.out.println("undifined Type");
 		        }
@@ -184,23 +189,11 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
 	}
 
 	private boolean validateRandom() {
-		switch(attributeType){
-        case "Integer":
-            //TODO
-            return false;
-        case "Float":
-        	//TODO
-        	 return false;
-        case "String":
-        	//TODO
-        	 return false;
-        case "Boolean":
-        	//TODO
-        	 return false;
-        default:
-        	 return false;
+		if (!randomValueTextField.getText().equals("")) {
+			return true;
 		}
-		
+		errorLabel.setText("Please generate random value");
+		return false;	
 	}
 
 
@@ -343,15 +336,45 @@ public class AttributeGeneratorDialog extends CustomDialog<AttributeGeneratorDia
 		addNodesToGrid(inputNode, 1);	
 	}
 
-	private void layoutNormalDistribution(String attributeType2) {
+	private void layoutNormalDistribution(String attributeType) {
 		labelNode = new ArrayList<Node>();
 		inputNode = new ArrayList<Node>();		
 	}
 
-	private void layoutRandom(String attributeType2) {
+	private void layoutRandom(String attributeType) {
 		labelNode = new ArrayList<Node>();
 		inputNode = new ArrayList<Node>();	
+		
+		randomValueLabel = new Label(StringValue.LabelAndHeaderTitle.randomValue);
+		randomValueTextField = new TextField();
+		randomValueTextField.setDisable(true);
+		randomValueTextField.setEditable(false);
+		generateRandomValueButton = new Button("Generate");
+		generateRandomValueButton.setOnAction(e -> generateRandomValue(attributeType));
+		
+		labelNode.add(randomValueLabel);
+		inputNode.add(randomValueTextField);
+		inputNode.add(generateRandomValueButton);
 	}
+
+	private void generateRandomValue(String attributeType) {
+		switch(attributeType){
+        case "Integer":
+            randomValueTextField.setText((int)Math.random()+"");
+            break;
+        case "Float":
+        	randomValueTextField.setText((float)Math.random()+"");
+            break;
+        case "Boolean":
+        	Random rd = new Random();
+        	Boolean bool = rd.nextBoolean();
+        	randomValueTextField.setText(bool.toString());
+            break;
+        default:
+            System.out.println("undifined Type");
+        }
+	}
+
 
 	private void layoutList(String type2) {
 		labelNode = new ArrayList<Node>();
