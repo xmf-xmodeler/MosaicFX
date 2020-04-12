@@ -12,32 +12,31 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGeneratorStaticDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 public class AttributeGeneratorStaticDialog extends CustomDialog<AttributeGeneratorStaticDialogResult> implements AttributeGeneratorDialog {
-	protected InstanceGeneratorGenerateType type;
-	protected String attributeType;
+
+	private String attributeType;
 	
 	private DialogPane dialogPane;
 	
-	protected List<Node> labelNode;
-	protected List<Node> inputNode;
+	private List<Node> labelNode;
+	private List<Node> inputNode;
 	private Label staticValueLabel;
 	private TextField staticValueTextField;
 	private ComboBox<String> staticValueComboBox;
 	
 	private String staticValue;
 
-	public AttributeGeneratorStaticDialog(InstanceGeneratorGenerateType type, String attributeType) {
-		this.type=type;
+	public AttributeGeneratorStaticDialog(String valueGeneratorName, String attributeType) {
+
 		this.attributeType = attributeType;
 		
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialogPane.setHeaderText(type.toString() + " : "+attributeType);
+		dialogPane.setHeaderText(valueGeneratorName + " : "+attributeType);
 		dialogPane.setContent(flow);
 		layoutContent();
 		
@@ -50,13 +49,13 @@ public class AttributeGeneratorStaticDialog extends CustomDialog<AttributeGenera
 		setResult();
 	}
 	
-	public <T> AttributeGeneratorStaticDialog(InstanceGeneratorGenerateType type, String attributeType, List<T> value) {
-		this.type=type;
+	public <T> AttributeGeneratorStaticDialog(String valueGeneratorName, String attributeType, List<T> value) {
+
 		this.attributeType = attributeType;
 		
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialogPane.setHeaderText(type.toString());
+		dialogPane.setHeaderText(valueGeneratorName + " : "+attributeType);
 		dialogPane.setContent(flow);
 		layoutContent();
 

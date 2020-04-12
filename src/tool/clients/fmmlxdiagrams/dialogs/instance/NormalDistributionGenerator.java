@@ -48,12 +48,12 @@ public class NormalDistributionGenerator<T> implements ValueGenerator{
 
 	@Override
 	public String getName() {
-		return "Normal-Distribution";
+		return "NORMAL DISTRIBUTION";
 	}
 
 	@Override
 	public void openDialog() {
-		AttributeGeneratorNormalDistributionDialog dlg = new AttributeGeneratorNormalDistributionDialog(InstanceGeneratorGenerateType.NORMALDISTRIBUTION, type);
+		AttributeGeneratorNormalDistributionDialog dlg = new AttributeGeneratorNormalDistributionDialog(getName(), type);
 		Optional<AttributeGeneratorNormalDistributionDialogResult> opt = dlg.showAndWait();
 	}
 

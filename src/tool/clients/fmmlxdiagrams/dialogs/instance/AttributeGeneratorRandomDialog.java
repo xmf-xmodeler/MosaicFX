@@ -16,13 +16,13 @@ import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGen
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 public class AttributeGeneratorRandomDialog extends CustomDialog<AttributeGeneratorRandomDialogResult> implements AttributeGeneratorDialog {
-	protected InstanceGeneratorGenerateType type;
-	protected String attributeType;
+
+	private String attributeType;
 	
 	private DialogPane dialogPane;
 	
-	protected List<Node> labelNode;
-	protected List<Node> inputNode;
+	private List<Node> labelNode;
+	private List<Node> inputNode;
 	
 	private String randomValue;
 	
@@ -30,13 +30,13 @@ public class AttributeGeneratorRandomDialog extends CustomDialog<AttributeGenera
 	private TextField randomValueTextField;
 	private Button generateRandomValueButton;
 
-	public AttributeGeneratorRandomDialog(InstanceGeneratorGenerateType type, String attributeType) {
-		this.type=type;
+	public AttributeGeneratorRandomDialog(String valueGeneratorName, String attributeType) {
+		
 		this.attributeType = attributeType;
 		
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialogPane.setHeaderText(type.toString() + " : "+attributeType);
+//		dialogPane.setHeaderText(type.toString() + " : "+attributeType);
 		dialogPane.setContent(flow);
 		layoutContent();
 
@@ -50,13 +50,13 @@ public class AttributeGeneratorRandomDialog extends CustomDialog<AttributeGenera
 	}
 	
 
-	public <T> AttributeGeneratorRandomDialog(InstanceGeneratorGenerateType type, String attributeType, List<T> value) {
-		this.type=type;
+	public <T> AttributeGeneratorRandomDialog(String valueGeneratorName, String attributeType, List<T> value) {
+
 		this.attributeType = attributeType;
 		System.out.println();
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialogPane.setHeaderText(type.toString());
+//		dialogPane.setHeaderText(type.toString());
 		dialogPane.setContent(flow);
 		layoutContent();
 

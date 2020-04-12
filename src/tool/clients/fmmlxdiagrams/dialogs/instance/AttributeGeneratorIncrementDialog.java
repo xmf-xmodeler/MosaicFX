@@ -18,13 +18,13 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 
 public class AttributeGeneratorIncrementDialog extends CustomDialog<AttributeGeneratorIncrementDialogResult> implements AttributeGeneratorDialog {
-	protected InstanceGeneratorGenerateType type;
-	protected String attributeType;
+	
+	private String attributeType;
 	
 	private DialogPane dialogPane;
 	
-	protected List<Node> labelNode;
-	protected List<Node> inputNode;
+	private List<Node> labelNode;
+	private List<Node> inputNode;
 
 	private Label startValueLabel;
 	private Label endValueLabel;
@@ -34,17 +34,17 @@ public class AttributeGeneratorIncrementDialog extends CustomDialog<AttributeGen
 	private TextField endValueTextField;
 	private TextField incrementValueTextField;
 	
-	public String startValue;
-	public String endValue;
-	protected String incValue;
+	private String startValue;
+	private String endValue;
+	private String incValue;
 	
-	public AttributeGeneratorIncrementDialog(InstanceGeneratorGenerateType type, String attributeType) {
-		this.type=type;
+	public AttributeGeneratorIncrementDialog(String valueGeneratorName, String attributeType) {
+		
 		this.attributeType = attributeType;
 		
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialogPane.setHeaderText(type.toString() + " : "+attributeType);
+		dialogPane.setHeaderText(valueGeneratorName + " : "+attributeType);
 		layoutContent();
 
 		dialogPane.setContent(flow);
@@ -57,13 +57,13 @@ public class AttributeGeneratorIncrementDialog extends CustomDialog<AttributeGen
 		setResult();
 	}
 	
-	public <T> AttributeGeneratorIncrementDialog(InstanceGeneratorGenerateType type, String attributeType, List<T> value) {
-		this.type=type;
+	public <T> AttributeGeneratorIncrementDialog(String valueGeneratorName, String attributeType, List<T> value) {
+
 		this.attributeType = attributeType;
 		System.out.println();
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialogPane.setHeaderText(type.toString());
+		dialogPane.setHeaderText(valueGeneratorName + " : "+ attributeType);
 		layoutContent();
 		
 		dialogPane.setContent(flow);

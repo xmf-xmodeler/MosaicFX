@@ -26,7 +26,7 @@ public class StaticGenerator implements ValueGenerator{
 
 	@Override
 	public String getName() {
-		return "Static";
+		return "STATIC";
 	}
 
 	@Override
@@ -34,11 +34,11 @@ public class StaticGenerator implements ValueGenerator{
 		if (value!=null) {
 			List<String> values = new ArrayList<String>();
 			values.add(value);
-			AttributeGeneratorStaticDialog dlg = new AttributeGeneratorStaticDialog(InstanceGeneratorGenerateType.STATIC, type, values);
+			AttributeGeneratorStaticDialog dlg = new AttributeGeneratorStaticDialog(getName(), type, values);
 			dialogResult((AttributeGeneratorStaticDialog) dlg);
 			
 		} else {
-			AttributeGeneratorStaticDialog dlg = new AttributeGeneratorStaticDialog(InstanceGeneratorGenerateType.STATIC, type);
+			AttributeGeneratorStaticDialog dlg = new AttributeGeneratorStaticDialog(getName(), type);
 			dialogResult((AttributeGeneratorStaticDialog) dlg);
 		}	
 	}
@@ -64,7 +64,7 @@ public class StaticGenerator implements ValueGenerator{
 
 	@Override
 	public String generate() {		
-		return InstanceGeneratorGenerateType.STATIC.toString() +" : "+" ( "+value+" ) ";
+		return "STATIC : "+" ( "+value+" ) ";
 	}
 
 	@Override

@@ -22,7 +22,7 @@ public class IncrementGenerator<T> implements ValueGenerator{
 
 	@Override
 	public String getName() {
-		return "Increment";
+		return "INCREMENT";
 	}
 
 	@Override
@@ -33,11 +33,11 @@ public class IncrementGenerator<T> implements ValueGenerator{
 			values.add(startValue);
 			values.add(endValue);
 			values.add(inc);
-			AttributeGeneratorIncrementDialog dlg = new AttributeGeneratorIncrementDialog(InstanceGeneratorGenerateType.INCREMENT, type, values );
+			AttributeGeneratorIncrementDialog dlg = new AttributeGeneratorIncrementDialog(getName(), type, values );
 			dialogResult(dlg);
 			
 		} else {
-			AttributeGeneratorIncrementDialog dlg = new AttributeGeneratorIncrementDialog(InstanceGeneratorGenerateType.INCREMENT, type);
+			AttributeGeneratorIncrementDialog dlg = new AttributeGeneratorIncrementDialog(getName(), type);
 			dialogResult(dlg);
 		}
 	}
@@ -58,7 +58,7 @@ public class IncrementGenerator<T> implements ValueGenerator{
 	@Override
 	public String generate() {
 		String allvalue= "start : "+startValue+", "+"endValue : "+endValue+", "+"increment : "+inc;
-		String result = InstanceGeneratorGenerateType.INCREMENT.toString()+" : "+" ( "+ allvalue +" ) ";
+		String result = "INCREMENT : "+" ( "+ allvalue +" ) ";
 		return result;
 	}
 

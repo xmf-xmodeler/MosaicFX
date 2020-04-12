@@ -24,13 +24,13 @@ public class ListGenerator<T> implements ValueGenerator{
 
 	@Override
 	public String getName() {
-		return "List";
+		return "LIST";
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void openDialog() {
-		AttributeGeneratorListDialog dlg = new AttributeGeneratorListDialog(InstanceGeneratorGenerateType.LIST, type);
+		AttributeGeneratorListDialog dlg = new AttributeGeneratorListDialog(getName(), type);
 		Optional<AttributeGeneratorListDialogResult> opt = dlg.showAndWait();
 		
 		if (opt.isPresent()) {

@@ -25,7 +25,7 @@ public class RandomGenerator implements ValueGenerator{
 
 	@Override
 	public String getName() {
-		return "Random";
+		return "RANDOM";
 	}
 
 	@Override
@@ -33,10 +33,10 @@ public class RandomGenerator implements ValueGenerator{
 		if (value!=null){
 			List<String> values = new ArrayList<String>();
 			values.add(value);
-			AttributeGeneratorRandomDialog dlg = new AttributeGeneratorRandomDialog(InstanceGeneratorGenerateType.RANDOM, type, values);
+			AttributeGeneratorRandomDialog dlg = new AttributeGeneratorRandomDialog(getName(), type, values);
 			dialogResult(dlg);
 		} else {
-			AttributeGeneratorRandomDialog dlg = new AttributeGeneratorRandomDialog(InstanceGeneratorGenerateType.RANDOM, type);
+			AttributeGeneratorRandomDialog dlg = new AttributeGeneratorRandomDialog(getName(), type);
 			dialogResult(dlg);
 		}
 
@@ -59,7 +59,7 @@ public class RandomGenerator implements ValueGenerator{
 
 	@Override
 	public String generate() {	
-		return InstanceGeneratorGenerateType.RANDOM.toString() +" : "+" ( "+value+" ) ";
+		return "RANDOM : "+" ( "+value+" ) ";
 	}
 
 	@Override

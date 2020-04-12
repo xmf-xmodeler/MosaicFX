@@ -15,7 +15,6 @@ import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGen
 public class AttributeGeneratorNormalDistributionDialog extends CustomDialog<AttributeGeneratorNormalDistributionDialogResult>
 		implements AttributeGeneratorDialog {
 	
-	protected InstanceGeneratorGenerateType type;
 	protected String attributeType;
 	
 	private DialogPane dialogPane;
@@ -23,14 +22,14 @@ public class AttributeGeneratorNormalDistributionDialog extends CustomDialog<Att
 	protected List<Node> labelNode;
 	protected List<Node> inputNode;
 
-	public <T> AttributeGeneratorNormalDistributionDialog(InstanceGeneratorGenerateType type, String attributeType,
+	public <T> AttributeGeneratorNormalDistributionDialog(String valueGeneratorName, String attributeType,
 			List<T> value) {
-		this.type=type;
+
 		this.attributeType = attributeType;
 		System.out.println();
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialogPane.setHeaderText(type.toString());
+		dialogPane.setHeaderText(valueGeneratorName + " : "+ attributeType);
 		layoutContent();
 		addNodesToGrid(labelNode, 0);
 		addNodesToGrid(inputNode, 1);
@@ -46,13 +45,13 @@ public class AttributeGeneratorNormalDistributionDialog extends CustomDialog<Att
 		// TODO insert Value
 	}
 
-	public AttributeGeneratorNormalDistributionDialog(InstanceGeneratorGenerateType type, String attributeType) {
-		this.type=type;
+	public AttributeGeneratorNormalDistributionDialog(String valueGeneratorName, String attributeType) {
+
 		this.attributeType = attributeType;
 		
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialogPane.setHeaderText(type.toString() + " : "+attributeType);
+		dialogPane.setHeaderText(valueGeneratorName + " : "+attributeType);
 		layoutContent();
 		addNodesToGrid(labelNode, 0);
 		addNodesToGrid(inputNode, 1);

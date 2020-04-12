@@ -16,26 +16,26 @@ import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGen
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 public class AttributeGeneratorListDialog extends CustomDialog<AttributeGeneratorListDialogResult> implements AttributeGeneratorDialog {
-	protected InstanceGeneratorGenerateType type;
-	protected String attributeType;
+
+	private String attributeType;
 	
 	private DialogPane dialogPane;
 	
-	protected List<Node> labelNode;
-	protected List<Node> inputNode;
+	private List<Node> labelNode;
+	private List<Node> inputNode;
 	
 	private Label valueListLabel;
 	private ListView<String> listValue;
 	private Button addItemButton;
 	private Button removeItemButton;
 
-	public <T> AttributeGeneratorListDialog(InstanceGeneratorGenerateType type, String attributeType, List<T> value) {
-		this.type=type;
+	public <T> AttributeGeneratorListDialog(String valueGeneratorName, String attributeType, List<T> value) {
+		
 		this.attributeType = attributeType;
 		System.out.println();
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialogPane.setHeaderText(type.toString());
+//		dialogPane.setHeaderText(type.toString());
 		layoutContent();
 		addNodesToGrid(labelNode, 0);
 		addNodesToGrid(inputNode, 1);
@@ -51,13 +51,13 @@ public class AttributeGeneratorListDialog extends CustomDialog<AttributeGenerato
 		//TODO insert value
 	}
 
-	public AttributeGeneratorListDialog(InstanceGeneratorGenerateType type, String attributeType) {
-		this.type=type;
+	public AttributeGeneratorListDialog(String valueGeneratorName, String attributeType) {
+		
 		this.attributeType = attributeType;
 		
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialogPane.setHeaderText(type.toString() + " : "+attributeType);
+//		dialogPane.setHeaderText(type.toString() + " : "+attributeType);
 		layoutContent();
 		addNodesToGrid(labelNode, 0);
 		addNodesToGrid(inputNode, 1);
