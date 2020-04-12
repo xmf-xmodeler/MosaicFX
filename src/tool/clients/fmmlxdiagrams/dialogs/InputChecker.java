@@ -92,5 +92,52 @@ public class InputChecker {
 		return textField.getText() == null
 				|| textField.getText().length() == 0;
 	}
+	
+	public boolean validateInteger(String string) {
+		boolean isValidInteger = false;
+	      try
+	      {
+	         Integer.parseInt(string); 
+	         isValidInteger = true;
+	      }
+	      catch (NumberFormatException ex)
+	      {
+	         //
+	      }	 
+	      return isValidInteger;
+		
+	}
+	
+	public boolean validateFloat(String string) {
+		boolean isValidFloat = false;
+	      try
+	      {
+	         Float.parseFloat(string);
+	         isValidFloat = true;
+	         
+	      }
+	      catch (NumberFormatException ex)
+	      {
+	    	  //
+	      }
+	 
+	      return isValidFloat;
+	}
+	
+	public boolean validateBoolean(String string) {
+		boolean isValidBoolean = false;
+	      try
+	      {
+	         Boolean.parseBoolean(string);
+	         isValidBoolean = true;
+	         
+	      }
+	      catch (NumberFormatException ex)
+	      {
+	    	  //
+	      }
+	 
+	      return isValidBoolean;
+	}
 
 }

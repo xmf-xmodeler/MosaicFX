@@ -53,7 +53,7 @@ public class NormalDistributionGenerator<T> implements ValueGenerator{
 
 	@Override
 	public void openDialog() {
-		AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(InstanceGeneratorGenerateType.NORMALDISTRIBUTION, type);
+		AttributeGeneratorNormalDistributionDialog dlg = new AttributeGeneratorNormalDistributionDialog(InstanceGeneratorGenerateType.NORMALDISTRIBUTION, type);
 		Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
 	}
 

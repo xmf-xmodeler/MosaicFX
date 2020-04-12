@@ -33,17 +33,17 @@ public class IncrementGenerator<T> implements ValueGenerator{
 			values.add(startValue);
 			values.add(endValue);
 			values.add(inc);
-			AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(InstanceGeneratorGenerateType.INCREMENT, type, values );
+			AttributeGeneratorIncrementDialog dlg = new AttributeGeneratorIncrementDialog(InstanceGeneratorGenerateType.INCREMENT, type, values );
 			dialogResult(dlg);
 			
 		} else {
-			AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(InstanceGeneratorGenerateType.INCREMENT, type);
+			AttributeGeneratorIncrementDialog dlg = new AttributeGeneratorIncrementDialog(InstanceGeneratorGenerateType.INCREMENT, type);
 			dialogResult(dlg);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private void dialogResult(AttributeGeneratorDialog dlg) {
+	private void dialogResult(AttributeGeneratorIncrementDialog dlg) {
 		Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
 		
 		if (opt.isPresent()) {

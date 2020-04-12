@@ -20,10 +20,8 @@ import tool.clients.fmmlxdiagrams.dialogs.enumeration.AddEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.enumeration.DeleteEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.enumeration.EditEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.instance.AddInstanceDialog;
-import tool.clients.fmmlxdiagrams.dialogs.instance.AttributeGeneratorDialog;
 import tool.clients.fmmlxdiagrams.dialogs.instance.ChangeOfDialog;
 import tool.clients.fmmlxdiagrams.dialogs.instance.InstanceGeneratorDialog;
-import tool.clients.fmmlxdiagrams.dialogs.instance.InstanceGeneratorGenerateType;
 import tool.clients.fmmlxdiagrams.dialogs.instance.ValueGenerator;
 import tool.clients.fmmlxdiagrams.dialogs.operation.AddOperationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.operation.ChangeBodyDialog;
@@ -34,7 +32,6 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeOwnerDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeParentDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
-import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -66,12 +63,7 @@ public class DiagramActions {
 		}
 	}
 	
-	public void instanceGenerator(FmmlxObject object) {	
-		Platform.runLater(() -> {
-			InstanceGenerator.show(object);
-		});
-		
-	}
+
 
 	public void addMetaClassDialog() {
 //		CountDownLatch l = new CountDownLatch(2);

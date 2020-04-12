@@ -30,7 +30,7 @@ public class ListGenerator<T> implements ValueGenerator{
 	@SuppressWarnings("unchecked")
 	@Override
 	public void openDialog() {
-		AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(InstanceGeneratorGenerateType.LIST, type);
+		AttributeGeneratorListDialog dlg = new AttributeGeneratorListDialog(InstanceGeneratorGenerateType.LIST, type);
 		Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
 		
 		if (opt.isPresent()) {

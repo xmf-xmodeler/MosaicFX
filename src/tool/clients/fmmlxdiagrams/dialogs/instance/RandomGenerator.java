@@ -33,16 +33,16 @@ public class RandomGenerator implements ValueGenerator{
 		if (value!=null){
 			List<String> values = new ArrayList<String>();
 			values.add(value);
-			AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(InstanceGeneratorGenerateType.RANDOM, type, values);
+			AttributeGeneratorRandomDialog dlg = new AttributeGeneratorRandomDialog(InstanceGeneratorGenerateType.RANDOM, type, values);
 			dialogResult(dlg);
 		} else {
-			AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(InstanceGeneratorGenerateType.RANDOM, type);
+			AttributeGeneratorRandomDialog dlg = new AttributeGeneratorRandomDialog(InstanceGeneratorGenerateType.RANDOM, type);
 			dialogResult(dlg);
 		}
 
 	}
 
-	private void dialogResult(AttributeGeneratorDialog dlg) {
+	private void dialogResult(AttributeGeneratorRandomDialog dlg) {
 		Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
 		
 		if (opt.isPresent()) {

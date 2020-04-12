@@ -34,17 +34,17 @@ public class StaticGenerator implements ValueGenerator{
 		if (value!=null) {
 			List<String> values = new ArrayList<String>();
 			values.add(value);
-			AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(InstanceGeneratorGenerateType.STATIC, type, values);
-			dialogResult(dlg);
+			AttributeGeneratorStaticDialog dlg = new AttributeGeneratorStaticDialog(InstanceGeneratorGenerateType.STATIC, type, values);
+			dialogResult((AttributeGeneratorStaticDialog) dlg);
 			
 		} else {
-			AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(InstanceGeneratorGenerateType.STATIC, type);
-			dialogResult(dlg);
+			AttributeGeneratorStaticDialog dlg = new AttributeGeneratorStaticDialog(InstanceGeneratorGenerateType.STATIC, type);
+			dialogResult((AttributeGeneratorStaticDialog) dlg);
 		}	
 	}
 
 	
-	private void dialogResult(AttributeGeneratorDialog dlg) {
+	private void dialogResult(AttributeGeneratorStaticDialog dlg) {
 		Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
 		
 		if (opt.isPresent()) {

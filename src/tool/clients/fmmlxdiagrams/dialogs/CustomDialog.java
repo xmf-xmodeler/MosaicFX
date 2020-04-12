@@ -22,6 +22,7 @@ import tool.clients.fmmlxdiagrams.dialogs.instance.ValueGenerator;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import java.util.List;
+import java.util.Random;
 
 public class CustomDialog<R> extends Dialog<R> {
 
@@ -30,6 +31,7 @@ public class CustomDialog<R> extends Dialog<R> {
 	protected FlowPane flow;
 	protected GridPane grid;
 	protected Label errorLabel;
+	protected InputChecker inputChecker;
 
 	public CustomDialog() {
 		super();
@@ -41,6 +43,7 @@ public class CustomDialog<R> extends Dialog<R> {
 		flow.setVgap(3);
 		flow.setPrefWrapLength(250);
 		
+		inputChecker = new InputChecker();
 		
 		flow.getChildren().add(grid);
 
@@ -347,6 +350,56 @@ public class CustomDialog<R> extends Dialog<R> {
 	}
 	
 	
+	public boolean validateString(String string) {
+
+		if (!InputChecker.getInstance().validateName(string)) {
+			errorLabel.setText("Enter valid String!");
+			return false;
+		} else {
+			errorLabel.setText("");
+			return true;
+		}
+	}
+	
+	
+	public boolean validateIncrement(String startValue, String endValue, String increment, String attributeType) {
+		Boolean valid = false;
+		switch(attributeType){
+        case "Integer":   	
+        	valid = inputChecker.validateInteger(startValue) && inputChecker.validateInteger(endValue) && inputChecker.validateInteger(increment);
+        	if(!valid) {
+        		errorLabel.setText("Please input valid Integer-Value");
+        	}
+        	return valid;
+        case "Float":
+        	valid =  inputChecker.validateFloat(startValue) && inputChecker.validateFloat(endValue) && inputChecker.validateFloat(increment);
+        	if(!valid) {
+        		errorLabel.setText("Please input valid Float-Value");
+        	}
+        	return valid;
+        default:
+           	return false;
+        }
+		
+	}
+	
+	protected void generateRandomValue(TextField randomValueTextField, String attributeType) {
+		switch(attributeType){
+        case "Integer":
+            randomValueTextField.setText((int)Math.random()+"");
+            break;
+        case "Float":
+        	randomValueTextField.setText((float)Math.random()+"");
+            break;
+        case "Boolean":
+        	Random rd = new Random();
+        	Boolean bool = rd.nextBoolean();
+        	randomValueTextField.setText(bool.toString());
+            break;
+        default:
+            System.out.println("undifined Type");
+        }
+	}
 
 
 }
