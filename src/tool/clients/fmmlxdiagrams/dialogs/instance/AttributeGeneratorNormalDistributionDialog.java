@@ -9,9 +9,10 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.dialogs.results.AttributeGeneratorDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGeneratorNormalDistributionDialogResult;
 
-public class AttributeGeneratorNormalDistributionDialog extends CustomDialog<AttributeGeneratorDialogResult>
+
+public class AttributeGeneratorNormalDistributionDialog extends CustomDialog<AttributeGeneratorNormalDistributionDialogResult>
 		implements AttributeGeneratorDialog {
 	
 	protected InstanceGeneratorGenerateType type;

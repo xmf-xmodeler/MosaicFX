@@ -3,7 +3,7 @@ package tool.clients.fmmlxdiagrams.dialogs.instance;
 import java.util.Optional;
 import java.util.Vector;
 
-import tool.clients.fmmlxdiagrams.dialogs.results.AttributeGeneratorDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGeneratorListDialogResult;
 
 public class ListGenerator<T> implements ValueGenerator{
 	
@@ -31,10 +31,10 @@ public class ListGenerator<T> implements ValueGenerator{
 	@Override
 	public void openDialog() {
 		AttributeGeneratorListDialog dlg = new AttributeGeneratorListDialog(InstanceGeneratorGenerateType.LIST, type);
-		Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
+		Optional<AttributeGeneratorListDialogResult> opt = dlg.showAndWait();
 		
 		if (opt.isPresent()) {
-			AttributeGeneratorDialogResult result = opt.get();
+			AttributeGeneratorListDialogResult result = opt.get();
 			if (type.equals("Integer")) {
 				this.elements = (Vector<T>) result.getIntValues();
 			} else if (type.equals("Float")) {

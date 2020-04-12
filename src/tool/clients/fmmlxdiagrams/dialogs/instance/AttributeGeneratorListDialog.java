@@ -12,10 +12,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.dialogs.results.AttributeGeneratorDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGeneratorListDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
-public class AttributeGeneratorListDialog extends CustomDialog<AttributeGeneratorDialogResult> implements AttributeGeneratorDialog {
+public class AttributeGeneratorListDialog extends CustomDialog<AttributeGeneratorListDialogResult> implements AttributeGeneratorDialog {
 	protected InstanceGeneratorGenerateType type;
 	protected String attributeType;
 	

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import tool.clients.fmmlxdiagrams.dialogs.results.AttributeGeneratorDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGeneratorRandomDialogResult;
 
 public class RandomGenerator implements ValueGenerator{
 
@@ -43,19 +43,17 @@ public class RandomGenerator implements ValueGenerator{
 	}
 
 	private void dialogResult(AttributeGeneratorRandomDialog dlg) {
-		Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
+		Optional<AttributeGeneratorRandomDialogResult> opt = dlg.showAndWait();
 		
 		if (opt.isPresent()) {
-			AttributeGeneratorDialogResult result = opt.get();
+			AttributeGeneratorRandomDialogResult result = opt.get();
 			if (type.equals("Integer")) {
 				this.value =  result.getValueInt().toString();
 			} else if (type.equals("Float")) {
 				this.value =  result.getValueFloat().toString();
 			} else if (type.equals("Boolean")) {
 				this.value =  result.getValueBool().toString();	
-			} else if (type.equals("String")) {
-				this.value = result.getValueString();
-			}
+			} 
 		}
 	}
 

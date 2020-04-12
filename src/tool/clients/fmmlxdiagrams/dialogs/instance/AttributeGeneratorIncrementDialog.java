@@ -12,12 +12,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.dialogs.results.AttributeGeneratorDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGeneratorIncrementDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 
 
-public class AttributeGeneratorIncrementDialog extends CustomDialog<AttributeGeneratorDialogResult> implements AttributeGeneratorDialog {
+public class AttributeGeneratorIncrementDialog extends CustomDialog<AttributeGeneratorIncrementDialogResult> implements AttributeGeneratorDialog {
 	protected InstanceGeneratorGenerateType type;
 	protected String attributeType;
 	
@@ -46,8 +46,7 @@ public class AttributeGeneratorIncrementDialog extends CustomDialog<AttributeGen
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		dialogPane.setHeaderText(type.toString() + " : "+attributeType);
 		layoutContent();
-		addNodesToGrid(labelNode, 0);
-		addNodesToGrid(inputNode, 1);
+
 		dialogPane.setContent(flow);
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
@@ -66,8 +65,7 @@ public class AttributeGeneratorIncrementDialog extends CustomDialog<AttributeGen
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		dialogPane.setHeaderText(type.toString());
 		layoutContent();
-		addNodesToGrid(labelNode, 0);
-		addNodesToGrid(inputNode, 1);
+		
 		dialogPane.setContent(flow);
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
@@ -90,11 +88,10 @@ public class AttributeGeneratorIncrementDialog extends CustomDialog<AttributeGen
 		setResultConverter(dlgBtn -> {		
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				
-				return new AttributeGeneratorDialogResult(startValueTextField.getText(), endValueTextField.getText(), incrementValueTextField.getText(), attributeType, type);		        
+				return new AttributeGeneratorIncrementDialogResult(startValueTextField.getText(), endValueTextField.getText(), incrementValueTextField.getText(), attributeType);		        
 			}
 			return null;
-		});	
-		
+		});		
 	}
 
 	@Override
@@ -123,6 +120,9 @@ public class AttributeGeneratorIncrementDialog extends CustomDialog<AttributeGen
 		inputNode.add(startValueTextField);
 		inputNode.add(endValueTextField);
 		inputNode.add(incrementValueTextField);
+		
+		addNodesToGrid(labelNode, 0);
+		addNodesToGrid(inputNode, 1);
 		
 	}
 

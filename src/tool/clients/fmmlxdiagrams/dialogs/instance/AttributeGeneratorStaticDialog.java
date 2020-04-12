@@ -13,11 +13,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
-import tool.clients.fmmlxdiagrams.dialogs.results.AttributeGeneratorDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGeneratorStaticDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
-public class AttributeGeneratorStaticDialog extends CustomDialog<AttributeGeneratorDialogResult> implements AttributeGeneratorDialog {
+public class AttributeGeneratorStaticDialog extends CustomDialog<AttributeGeneratorStaticDialogResult> implements AttributeGeneratorDialog {
 	protected InstanceGeneratorGenerateType type;
 	protected String attributeType;
 	
@@ -38,10 +38,9 @@ public class AttributeGeneratorStaticDialog extends CustomDialog<AttributeGenera
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		dialogPane.setHeaderText(type.toString() + " : "+attributeType);
-		layoutContent();
-		addNodesToGrid(labelNode, 0);
-		addNodesToGrid(inputNode, 1);
 		dialogPane.setContent(flow);
+		layoutContent();
+		
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
 			if (!inputIsValid()) {		
@@ -54,14 +53,13 @@ public class AttributeGeneratorStaticDialog extends CustomDialog<AttributeGenera
 	public <T> AttributeGeneratorStaticDialog(InstanceGeneratorGenerateType type, String attributeType, List<T> value) {
 		this.type=type;
 		this.attributeType = attributeType;
-		System.out.println();
+		
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		dialogPane.setHeaderText(type.toString());
-		layoutContent();
-		addNodesToGrid(labelNode, 0);
-		addNodesToGrid(inputNode, 1);
 		dialogPane.setContent(flow);
+		layoutContent();
+
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
 			if (!inputIsValid()) {
@@ -85,9 +83,9 @@ public class AttributeGeneratorStaticDialog extends CustomDialog<AttributeGenera
 	public void setResult() {
 		setResultConverter(dlgBtn -> {		
 			if (attributeType.equals("Boolean")) {
-        		return new AttributeGeneratorDialogResult(staticValueComboBox.getSelectionModel().getSelectedItem(), attributeType, type);
+        		return new AttributeGeneratorStaticDialogResult(staticValueComboBox.getSelectionModel().getSelectedItem(), attributeType);
         	} else {
-        		return new AttributeGeneratorDialogResult(staticValueTextField.getText(), attributeType, type);
+        		return new AttributeGeneratorStaticDialogResult(staticValueTextField.getText(), attributeType);
         	}
 		});	
 	}
@@ -141,6 +139,9 @@ public class AttributeGeneratorStaticDialog extends CustomDialog<AttributeGenera
 			inputNode.add(staticValueTextField);
 		}		
 		labelNode.add(staticValueLabel);
+	
+		addNodesToGrid(labelNode, 0);
+		addNodesToGrid(inputNode, 1);
 	}
 
 

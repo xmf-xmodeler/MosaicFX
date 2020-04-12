@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import tool.clients.fmmlxdiagrams.dialogs.results.AttributeGeneratorDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGeneratorStaticDialogResult;
 
 public class StaticGenerator implements ValueGenerator{
 
@@ -45,11 +45,11 @@ public class StaticGenerator implements ValueGenerator{
 
 	
 	private void dialogResult(AttributeGeneratorStaticDialog dlg) {
-		Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
+		Optional<AttributeGeneratorStaticDialogResult> opt = dlg.showAndWait();
 		
 		if (opt.isPresent()) {
 
-			AttributeGeneratorDialogResult result = opt.get();
+			AttributeGeneratorStaticDialogResult result = opt.get();
 			if (type.equals("Integer")) {
 				this.value =  result.getValueInt().toString();
 			} else if (type.equals("Float")) {

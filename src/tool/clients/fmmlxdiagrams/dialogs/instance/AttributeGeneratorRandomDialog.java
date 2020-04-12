@@ -12,10 +12,10 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.dialogs.results.AttributeGeneratorDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGeneratorRandomDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
-public class AttributeGeneratorRandomDialog extends CustomDialog<AttributeGeneratorDialogResult> implements AttributeGeneratorDialog {
+public class AttributeGeneratorRandomDialog extends CustomDialog<AttributeGeneratorRandomDialogResult> implements AttributeGeneratorDialog {
 	protected InstanceGeneratorGenerateType type;
 	protected String attributeType;
 	
@@ -37,10 +37,9 @@ public class AttributeGeneratorRandomDialog extends CustomDialog<AttributeGenera
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		dialogPane.setHeaderText(type.toString() + " : "+attributeType);
-		layoutContent();
-		addNodesToGrid(labelNode, 0);
-		addNodesToGrid(inputNode, 1);
 		dialogPane.setContent(flow);
+		layoutContent();
+
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
 			if (!inputIsValid()) {		
@@ -50,7 +49,6 @@ public class AttributeGeneratorRandomDialog extends CustomDialog<AttributeGenera
 		setResult();
 	}
 	
-	
 
 	public <T> AttributeGeneratorRandomDialog(InstanceGeneratorGenerateType type, String attributeType, List<T> value) {
 		this.type=type;
@@ -59,10 +57,9 @@ public class AttributeGeneratorRandomDialog extends CustomDialog<AttributeGenera
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		dialogPane.setHeaderText(type.toString());
-		layoutContent();
-		addNodesToGrid(labelNode, 0);
-		addNodesToGrid(inputNode, 1);
 		dialogPane.setContent(flow);
+		layoutContent();
+
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
 			if (!inputIsValid()) {
@@ -81,7 +78,7 @@ public class AttributeGeneratorRandomDialog extends CustomDialog<AttributeGenera
 	@Override
 	public void setResult() {
 		setResultConverter(dlgBtn -> {		
-			return new AttributeGeneratorDialogResult(randomValueTextField.getText(), attributeType, type);
+			return new AttributeGeneratorRandomDialogResult(randomValueTextField.getText(), attributeType);
 		});	
 
 	}
@@ -110,6 +107,9 @@ public class AttributeGeneratorRandomDialog extends CustomDialog<AttributeGenera
 		labelNode.add(randomValueLabel);
 		inputNode.add(randomValueTextField);
 		inputNode.add(generateRandomValueButton);
+		
+		addNodesToGrid(labelNode, 0);
+		addNodesToGrid(inputNode, 1);
 
 	}
 

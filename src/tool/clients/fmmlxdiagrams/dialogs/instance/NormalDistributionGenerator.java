@@ -3,7 +3,8 @@ package tool.clients.fmmlxdiagrams.dialogs.instance;
 import java.util.List;
 import java.util.Optional;
 
-import tool.clients.fmmlxdiagrams.dialogs.results.AttributeGeneratorDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGeneratorNormalDistributionDialogResult;
+
 
 public class NormalDistributionGenerator<T> implements ValueGenerator{
 
@@ -26,7 +27,6 @@ public class NormalDistributionGenerator<T> implements ValueGenerator{
 	public List<T> getValue() {
 		return value;
 	}
-
 
 
 	public void setValue(List<T> value) {
@@ -54,7 +54,7 @@ public class NormalDistributionGenerator<T> implements ValueGenerator{
 	@Override
 	public void openDialog() {
 		AttributeGeneratorNormalDistributionDialog dlg = new AttributeGeneratorNormalDistributionDialog(InstanceGeneratorGenerateType.NORMALDISTRIBUTION, type);
-		Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
+		Optional<AttributeGeneratorNormalDistributionDialogResult> opt = dlg.showAndWait();
 	}
 
 	@Override

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-import tool.clients.fmmlxdiagrams.dialogs.results.AttributeGeneratorDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGeneratorIncrementDialogResult;
 
 public class IncrementGenerator<T> implements ValueGenerator{
 	
@@ -44,10 +44,10 @@ public class IncrementGenerator<T> implements ValueGenerator{
 
 	@SuppressWarnings("unchecked")
 	private void dialogResult(AttributeGeneratorIncrementDialog dlg) {
-		Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
+		Optional<AttributeGeneratorIncrementDialogResult> opt = dlg.showAndWait();
 		
 		if (opt.isPresent()) {
-			AttributeGeneratorDialogResult result = opt.get();				
+			AttributeGeneratorIncrementDialogResult result = opt.get();				
 			this.startValue = (T) result.getValueStart();
 			this.endValue = (T) result.getValueEnd();
 			this.inc = (T) result.getIncrement();
