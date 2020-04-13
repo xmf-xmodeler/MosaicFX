@@ -1,7 +1,7 @@
 # java
 /bin/
 *.log
-
+/out/
 # idea
 .idea
 *.iml
