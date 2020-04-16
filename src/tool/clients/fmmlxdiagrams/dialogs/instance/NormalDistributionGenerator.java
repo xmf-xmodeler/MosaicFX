@@ -1,50 +1,30 @@
 package tool.clients.fmmlxdiagrams.dialogs.instance;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGeneratorNormalDistributionDialogResult;
 
 
-public class NormalDistributionGenerator<T> implements ValueGenerator{
+public class NormalDistributionGenerator implements ValueGenerator{
 
-	private List<T> value;
-	private String type;
-	
+	private List<String> value;
+	private final String type;
 	
 	public NormalDistributionGenerator(String type) {
 		super();
 		this.type = type;
 	}
-	
-	public NormalDistributionGenerator(List<T> value, String type) {
-		super();
-		this.value = value;
-		this.type = type;
-	}
-	
 
-	public List<T> getValue() {
+	public List<String> getValue() {
 		return value;
 	}
-
-
-	public void setValue(List<T> value) {
-		this.value = value;
-	}
-
-
 
 	public String getType() {
 		return type;
 	}
-
-
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
 
 	@Override
 	public String getName() {
@@ -53,14 +33,59 @@ public class NormalDistributionGenerator<T> implements ValueGenerator{
 
 	@Override
 	public void openDialog() {
-		AttributeGeneratorNormalDistributionDialog dlg = new AttributeGeneratorNormalDistributionDialog(getName(), type);
+		if (value != null){
+			AttributeGeneratorNormalDistributionDialog dlg = new AttributeGeneratorNormalDistributionDialog(getName(), type, value);
+			dialogResult(dlg);
+		} else {
+			AttributeGeneratorNormalDistributionDialog dlg = new AttributeGeneratorNormalDistributionDialog(getName(), type);
+			dialogResult(dlg);
+		}
+	}
+
+	private void dialogResult(AttributeGeneratorNormalDistributionDialog dlg) {
 		Optional<AttributeGeneratorNormalDistributionDialogResult> opt = dlg.showAndWait();
+
+		if (opt.isPresent()){
+			AttributeGeneratorNormalDistributionDialogResult result = opt.get();
+			setValue(result.getAttributeType(), result.getMeanValue(), result.getStdDevValue(), result.getRangeMinValue(), result.getRangeMaxValue());
+		}
+	}
+
+	public void setValue(String attributeType, String mean, String std, String min, String max) {
+		this.value = new ArrayList<>();
+		value.add(mean);
+		value.add(std);
+		value.add(min);
+		value.add(max);
 	}
 
 	@Override
 	public String generate() {
-		// TODO Auto-generated method stub
-		return null;
+		return generateValue(type, value.get(0), value.get(1), Long.parseLong(value.get(2)), Long.parseLong(value.get(3)));
+	}
+
+	public String generateValue(String attributeType, String mean, String stdDeviation, long rangeMin, long rangeMax){
+		Random random = new Random();
+		if(attributeType.equals("Integer")){
+			int meanInt = Integer.parseInt(mean);
+			int stdDevInt = Integer.parseInt(stdDeviation);
+			while(true){
+				long nextGauss = Math.round((random.nextGaussian()*stdDevInt)+meanInt);
+				if(nextGauss<=rangeMax && nextGauss>=rangeMin){
+					return nextGauss+"";
+				}
+			}
+		} else if (attributeType.equals("Float")){
+			float meanFloat = Float.parseFloat(mean);
+			float stdDevFloat = Float.parseFloat(stdDeviation);
+			while(true){
+				double nextGauss = (random.nextGaussian()*stdDevFloat)+meanFloat;
+				if(nextGauss<=rangeMax && nextGauss>=rangeMin){
+					return nextGauss+"";
+				}
+			}
+		}
+		return "";
 	}
 
 	@Override
@@ -68,12 +93,10 @@ public class NormalDistributionGenerator<T> implements ValueGenerator{
 		return 0;
 	}
 
-
 	@Override
 	public boolean fitsType(String type) {
 		if("Integer".equals(type)) return true;
-		if("Float".equals(type)) return true;
-		return false;
+		return "Float".equals(type);
 	}
 
 	@Override

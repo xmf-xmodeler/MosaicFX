@@ -5,13 +5,9 @@ import java.util.List;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
+import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGeneratorIncrementDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGeneratorStaticDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
@@ -80,13 +76,16 @@ public class AttributeGeneratorStaticDialog extends CustomDialog<AttributeGenera
 
 	@Override
 	public void setResult() {
-		setResultConverter(dlgBtn -> {		
-			if (attributeType.equals("Boolean")) {
-        		return new AttributeGeneratorStaticDialogResult(staticValueComboBox.getSelectionModel().getSelectedItem(), attributeType);
-        	} else {
-        		return new AttributeGeneratorStaticDialogResult(staticValueTextField.getText(), attributeType);
-        	}
-		});	
+		setResultConverter(dlgBtn -> {
+			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+				if (attributeType.equals("Boolean")) {
+					return new AttributeGeneratorStaticDialogResult(staticValueComboBox.getSelectionModel().getSelectedItem(), attributeType);
+				} else {
+					return new AttributeGeneratorStaticDialogResult(staticValueTextField.getText(), attributeType);
+				}
+			}
+			return null;
+		});
 	}
 
 	@Override

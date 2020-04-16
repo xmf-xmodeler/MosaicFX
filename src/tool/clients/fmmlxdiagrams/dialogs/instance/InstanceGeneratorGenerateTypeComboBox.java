@@ -29,7 +29,7 @@ public class InstanceGeneratorGenerateTypeComboBox extends ComboBox<ValueGenerat
 			IncrementGenerator incG = new IncrementGenerator(type);
 			StaticGenerator sGInt = new StaticGenerator("Integer");
 			ListGenerator<Integer> listGInt = new ListGenerator<Integer>("Integer" );
-			NormalDistributionGenerator<Integer> nDGenerator = new NormalDistributionGenerator<Integer>("Integer");
+			NormalDistributionGenerator nDGenerator = new NormalDistributionGenerator("Integer");
 			RandomGenerator rGenerator = new RandomGenerator("Integer");
 			return FXCollections.observableArrayList(incG, sGInt, listGInt, nDGenerator, rGenerator);
 		} else if(type.equals("Float")) {
@@ -37,7 +37,7 @@ public class InstanceGeneratorGenerateTypeComboBox extends ComboBox<ValueGenerat
 			StaticGenerator sGFloat = new StaticGenerator("Float");
 			ListGenerator<Float> listGFloat = new ListGenerator<Float>("Float");
 			RandomGenerator rGenerator = new RandomGenerator("Float");
-			NormalDistributionGenerator<Float> nDGenerator = new NormalDistributionGenerator<Float>("Float");
+			NormalDistributionGenerator nDGenerator = new NormalDistributionGenerator("Float");
 			return FXCollections.observableArrayList(incF, sGFloat, listGFloat, nDGenerator, rGenerator);
 		} else if(type.equals("String")) {
 			StaticGenerator sString = new StaticGenerator("String");

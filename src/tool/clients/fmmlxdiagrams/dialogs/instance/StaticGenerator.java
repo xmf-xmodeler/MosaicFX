@@ -9,7 +9,7 @@ import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGen
 public class StaticGenerator implements ValueGenerator{
 
 	private String value;
-	private String type;
+	private final String type;
 
 	public StaticGenerator(String type) {
 		super();
@@ -32,17 +32,16 @@ public class StaticGenerator implements ValueGenerator{
 	@Override
 	public void openDialog() {
 		if (value!=null) {
-			List<String> values = new ArrayList<String>();
+			List<String> values = new ArrayList<>();
 			values.add(value);
 			AttributeGeneratorStaticDialog dlg = new AttributeGeneratorStaticDialog(getName(), type, values);
-			dialogResult((AttributeGeneratorStaticDialog) dlg);
+			dialogResult(dlg);
 			
 		} else {
 			AttributeGeneratorStaticDialog dlg = new AttributeGeneratorStaticDialog(getName(), type);
-			dialogResult((AttributeGeneratorStaticDialog) dlg);
+			dialogResult(dlg);
 		}	
 	}
-
 	
 	private void dialogResult(AttributeGeneratorStaticDialog dlg) {
 		Optional<AttributeGeneratorStaticDialogResult> opt = dlg.showAndWait();
@@ -50,14 +49,19 @@ public class StaticGenerator implements ValueGenerator{
 		if (opt.isPresent()) {
 
 			AttributeGeneratorStaticDialogResult result = opt.get();
-			if (type.equals("Integer")) {
-				this.value =  result.getValueInt().toString();
-			} else if (type.equals("Float")) {
-				this.value =  result.getValueFloat().toString();
-			} else if (type.equals("Boolean")) {
-				this.value =  result.getValueBool().toString();	
-			} else if (type.equals("String")) {
-				this.value = result.getValueString();
+			switch (type) {
+				case "Integer":
+					this.value = result.getValueInt().toString();
+					break;
+				case "Float":
+					this.value = result.getValueFloat().toString();
+					break;
+				case "Boolean":
+					this.value = result.getValueBool().toString();
+					break;
+				case "String":
+					this.value = result.getValueString();
+					break;
 			}
 		}
 	}
@@ -77,8 +81,7 @@ public class StaticGenerator implements ValueGenerator{
 		if("Integer".equals(type)) return true;
 		if("Float".equals(type)) return true;
 		if("Boolean".equals(type)) return true;
-		if("String".equals(type)) return true;
-		return false;
+		return "String".equals(type);
 	}
 
 	@Override
