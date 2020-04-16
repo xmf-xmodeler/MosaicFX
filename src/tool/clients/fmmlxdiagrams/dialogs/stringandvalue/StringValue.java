@@ -156,7 +156,10 @@ public class StringValue {
 		public static final String incrementValue = "Increment Value";
 		public static final String valueList = "Value List";
 		public static final String randomValue = "Random Value";
-		
+
+        public static final String Mean = "Mean";
+		public static final String stdDeviation= "Standard Deviation";
+		public static final String Range= "Range";
 	}
 
 	public static class OperationStringValues {

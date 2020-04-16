@@ -50,7 +50,6 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 		
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		
 
 		dialogPane.setHeaderText("Edit Enumeration");
 

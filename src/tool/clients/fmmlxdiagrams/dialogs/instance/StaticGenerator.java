@@ -68,6 +68,11 @@ public class StaticGenerator implements ValueGenerator{
 	}
 
 	@Override
+	public int possibleGeneratedValue() {
+		return 0;
+	}
+
+	@Override
 	public boolean fitsType(String type) {
 		if("Integer".equals(type)) return true;
 		if("Float".equals(type)) return true;

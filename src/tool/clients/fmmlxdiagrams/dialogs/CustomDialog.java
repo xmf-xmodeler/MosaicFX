@@ -7,16 +7,13 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
 import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
+import tool.clients.fmmlxdiagrams.classbrowser.CustomStage;
 import tool.clients.fmmlxdiagrams.dialogs.instance.InstanceGeneratorGenerateTypeComboBox;
 import tool.clients.fmmlxdiagrams.dialogs.instance.ValueGenerator;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
@@ -32,6 +29,7 @@ public class CustomDialog<R> extends Dialog<R> {
 	protected GridPane grid;
 	protected Label errorLabel;
 	protected InputChecker inputChecker;
+	protected VBoxControl vBoxControl;
 
 	public CustomDialog() {
 		super();
@@ -42,7 +40,7 @@ public class CustomDialog<R> extends Dialog<R> {
 		flow.setHgap(3);
 		flow.setVgap(3);
 		flow.setPrefWrapLength(250);
-		
+		vBoxControl = new VBoxControl();
 		inputChecker = new InputChecker();
 		
 		flow.getChildren().add(grid);
@@ -399,6 +397,50 @@ public class CustomDialog<R> extends Dialog<R> {
         default:
             System.out.println("undifined Type");
         }
+	}
+
+	protected CustomDialog.VBoxControl getVBoxControl() {
+		return vBoxControl;
+	}
+
+	protected class VBoxControl{
+
+		public VBox joinNodeInVBox(Node node1, Node node2) {
+			VBox result = new VBox();
+			GridPane grid = new GridPane();
+			grid.add(node1, 0, 0);
+			grid.add(node2, 1, 0);
+
+			ColumnConstraints col1 = new ColumnConstraints();
+			col1.setPercentWidth(33);
+			ColumnConstraints col2 = new ColumnConstraints();
+			col2.setPercentWidth(68);
+
+			grid.getColumnConstraints().addAll(col1,col2);
+
+			result.getChildren().add(grid);
+			return result;
+		}
+
+		public VBox joinNodeInVBox(Node node1, Node node2, Node node3) {
+			VBox result = new VBox();
+			GridPane grid = new GridPane();
+			grid.add(node1, 0, 0);
+			grid.add(node2, 1, 0);
+			grid.add(node3, 2, 0);
+
+			ColumnConstraints col1 = new ColumnConstraints();
+			col1.setPercentWidth(45);
+			ColumnConstraints col2 = new ColumnConstraints();
+			col2.setPercentWidth(10);
+			ColumnConstraints col3 = new ColumnConstraints();
+			col3.setPercentWidth(45);
+
+			grid.getColumnConstraints().addAll(col1,col2,col3);
+
+			result.getChildren().add(grid);
+			return result;
+		}
 	}
 
 

@@ -1,26 +1,34 @@
 package tool.clients.fmmlxdiagrams.dialogs.instance;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
+import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.layout.VBox;
+import tool.clients.diagrams.Text;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGeneratorNormalDistributionDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 
 public class AttributeGeneratorNormalDistributionDialog extends CustomDialog<AttributeGeneratorNormalDistributionDialogResult>
 		implements AttributeGeneratorDialog {
 	
-	protected String attributeType;
+	private String attributeType;
 	
 	private DialogPane dialogPane;
 	
-	protected List<Node> labelNode;
-	protected List<Node> inputNode;
+	private List<Node> labelNode, inputNode;
+
+	private Label meanLabel, standardDeviationLabel, rangeLabel;
+
+	private TextField meanTextField, stdTextField,rangeMinTextField, rangeMaxTextField;
+
+	private VBox rangeVBox;
+
 
 	public <T> AttributeGeneratorNormalDistributionDialog(String valueGeneratorName, String attributeType,
 			List<T> value) {
@@ -53,8 +61,6 @@ public class AttributeGeneratorNormalDistributionDialog extends CustomDialog<Att
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		dialogPane.setHeaderText(valueGeneratorName + " : "+attributeType);
 		layoutContent();
-		addNodesToGrid(labelNode, 0);
-		addNodesToGrid(inputNode, 1);
 		dialogPane.setContent(flow);
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
@@ -85,8 +91,29 @@ public class AttributeGeneratorNormalDistributionDialog extends CustomDialog<Att
 
 	@Override
 	public void layoutContent() {
-		// TODO Auto-generated method stub
+		labelNode = new ArrayList<Node>();
+		inputNode = new ArrayList<Node>();
+		meanLabel = new Label(StringValue.LabelAndHeaderTitle.Mean);
+		standardDeviationLabel = new Label(StringValue.LabelAndHeaderTitle.stdDeviation);
+		rangeLabel = new Label(StringValue.LabelAndHeaderTitle.Range);
 
+		meanTextField = new TextField();
+		stdTextField = new TextField();
+		rangeMinTextField = new TextField();
+		rangeMaxTextField = new TextField();
+
+		rangeVBox = getVBoxControl().joinNodeInVBox(rangeMinTextField, new Label("  -"), rangeMaxTextField);
+
+		labelNode.add(meanLabel);
+		labelNode.add(standardDeviationLabel);
+		labelNode.add(rangeLabel);
+
+		inputNode.add(meanTextField);
+		inputNode.add(stdTextField);
+		inputNode.add(rangeVBox);
+
+		addNodesToGrid(labelNode, 0);
+		addNodesToGrid(inputNode, 1);
 	}
 
 }

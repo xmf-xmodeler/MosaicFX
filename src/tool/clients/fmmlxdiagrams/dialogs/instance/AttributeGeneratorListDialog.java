@@ -48,7 +48,9 @@ public class AttributeGeneratorListDialog extends CustomDialog<AttributeGenerato
 		});
 		
 		setResult();
-		//TODO insert value
+		for(int i = 0 ; i<=value.size(); i++ ){
+			listValue.getItems().add(value.get(i).toString());
+		}
 	}
 
 	public AttributeGeneratorListDialog(String valueGeneratorName, String attributeType) {

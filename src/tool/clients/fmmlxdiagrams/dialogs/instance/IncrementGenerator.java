@@ -62,7 +62,12 @@ public class IncrementGenerator<T> implements ValueGenerator{
 		return result;
 	}
 
-	@Override
+    @Override
+    public int possibleGeneratedValue() {
+        return 0;
+    }
+
+    @Override
 	public boolean fitsType(String type) {
 		if("Integer".equals(type)) return true;
 		if("Float".equals(type)) return true;
