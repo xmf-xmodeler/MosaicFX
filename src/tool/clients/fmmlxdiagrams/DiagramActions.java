@@ -62,8 +62,6 @@ public class DiagramActions {
 			});
 		}
 	}
-	
-
 
 	public void addMetaClassDialog() {
 //		CountDownLatch l = new CountDownLatch(2);
@@ -110,22 +108,17 @@ public class DiagramActions {
 			if (result.isPresent()) {
 				final MetaClassDialogResult mcdResult = result.get();
 
-
 				int x = (int) e.getX();
 				int y = (int) e.getY();
 
 				if (x > 0 && y > 0) {
-					diagram.getComm().addMetaClass(diagram, mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentIds(), mcdResult.isAbstract(), x, y);	
-
+					diagram.getComm().addMetaClass(diagram, mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentIds(), mcdResult.isAbstract(), x, y);
 					
 					diagram.updateDiagram();
 				}
-			
 			}
 		});
-		
 	}
-
 
 	public void addInstanceDialog() {
 		addInstanceDialog(null);
@@ -163,9 +156,7 @@ public class DiagramActions {
 					}
 				};
 				canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
-
 			}
-
 //			l.countDown();
 		});
 	}
@@ -178,7 +169,6 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				final AddInstanceDialogResult aidResult = result.get();
-				
 
 				int x = (int) e.getX();
 				int y = (int) e.getY();

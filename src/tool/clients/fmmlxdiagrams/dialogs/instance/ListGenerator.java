@@ -10,7 +10,7 @@ public class ListGenerator<T> implements ValueGenerator{
 	
 	private Vector<T> elements;
 	private String type;
-
+	private List<String> parameter;
 	private List<String> generatedValue;
 
 	public ListGenerator(String string) {
@@ -92,7 +92,17 @@ public class ListGenerator<T> implements ValueGenerator{
 		return getName();
 	}
 
-    @Override
+	@Override
+	public List<String> getParameter() {
+		return parameter;
+	}
+
+	@Override
+	public void setParameter(List<String> parameter) {
+		//TODO
+	}
+
+	@Override
     public List<String> getValues() {
         return generatedValue;
     }

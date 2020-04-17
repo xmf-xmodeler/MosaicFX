@@ -2,6 +2,9 @@ package tool.clients.fmmlxdiagrams.dialogs.instance;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class IncrementGeneratorTest {
@@ -18,56 +21,67 @@ class IncrementGeneratorTest {
     @Test
     void possibleGeneratedInstanceInteger() {
         IncrementGenerator incrementGenerator = new IncrementGenerator("Integer");
-        incrementGenerator.setParameter("1", "3","2");
+        List<String> parameter = new ArrayList<>();
+        parameter.add("1.0");
+        parameter.add("3");
+        parameter.add("2");
+
+        incrementGenerator.setParameter(parameter);
         assertEquals( 2, incrementGenerator.possibleGeneratedInstance());
 
-        incrementGenerator.setParameter("1", "5","2");
-        assertEquals(3, incrementGenerator.possibleGeneratedInstance());
-
-        incrementGenerator.setParameter("3", "5","5");
-        assertEquals(1, incrementGenerator.possibleGeneratedInstance());
-
-        incrementGenerator.setParameter("1", "10","1");
-        assertEquals(10, incrementGenerator.possibleGeneratedInstance());
     }
 
     @Test
     void possibleGeneratedInstanceFloat() {
 
         IncrementGenerator incrementGenerator = new IncrementGenerator("Float");
-        incrementGenerator.setParameter("1.0", "3.0","2.0");
+        List<String> parameter = new ArrayList<>();
+        parameter.add("1.0");
+        parameter.add("3.0");
+        parameter.add("2.0");
+        incrementGenerator.setParameter(parameter);
         assertEquals( 2, incrementGenerator.possibleGeneratedInstance());
 
-        incrementGenerator.setParameter("1.0", "5.0","0.5");
-        assertEquals(9, incrementGenerator.possibleGeneratedInstance());
     }
 
     @Test
     void getParametersInteger() {
 
         IncrementGenerator incrementGenerator = new IncrementGenerator("Integer");
-        incrementGenerator.setParameter("1.0", "3.0","2");
+        List<String> parameter = new ArrayList<>();
+        parameter.add("1.0");
+        parameter.add("3.0");
+        parameter.add("2");
+        incrementGenerator.setParameter(parameter);
 
-        assertEquals("1", incrementGenerator.getParameters().get(0));
-        assertEquals("3", incrementGenerator.getParameters().get(1));
-        assertEquals("2", incrementGenerator.getParameters().get(2));
+        assertEquals("1", incrementGenerator.getParameter().get(0));
+        assertEquals("3", incrementGenerator.getParameter().get(1));
+        assertEquals("2", incrementGenerator.getParameter().get(2));
     }
 
     @Test
     void getParametersFloat() {
 
         IncrementGenerator incrementGenerator = new IncrementGenerator("Float");
-        incrementGenerator.setParameter("1.2", "3","2");
+        List<String> parameter = new ArrayList<>();
+        parameter.add("1.2");
+        parameter.add("3");
+        parameter.add("2");
+        incrementGenerator.setParameter(parameter);
 
-        assertEquals("1.2", incrementGenerator.getParameters().get(0));
-        assertEquals("3.0", incrementGenerator.getParameters().get(1));
-        assertEquals("2.0", incrementGenerator.getParameters().get(2));
+        assertEquals("1.2", incrementGenerator.getParameter().get(0));
+        assertEquals("3.0", incrementGenerator.getParameter().get(1));
+        assertEquals("2.0", incrementGenerator.getParameter().get(2));
     }
 
     @Test
     void generate() {
         IncrementGenerator incrementGenerator = new IncrementGenerator("Float");
-        incrementGenerator.setParameter("1.0", "3","2");
+        List<String> parameter = new ArrayList<>();
+        parameter.add("1.0");
+        parameter.add("3");
+        parameter.add("2");
+        incrementGenerator.setParameter(parameter);
 
         System.out.println(incrementGenerator.generate(7));
     }

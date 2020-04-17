@@ -21,37 +21,52 @@ class NormalDistributionGeneratorTest {
     @Test
     void getParameterInteger() {
         NormalDistributionGenerator normalDistributionGenerator = new NormalDistributionGenerator("Integer");
-        normalDistributionGenerator.setParameters("4.0", "1","1", "10.0");
+        List<String> parameter = new ArrayList<>();
+        parameter.add("4.0");
+        parameter.add("1");
+        parameter.add("1");
+        parameter.add("10.0");
+        normalDistributionGenerator.setParameter(parameter);
         List<String> expected = new ArrayList<>();
         expected.add("4");
         expected.add("1");
         expected.add("1");
         expected.add("10");
 
-        System.out.println(normalDistributionGenerator.getParameters());
+        System.out.println(normalDistributionGenerator.getParameter());
 
-        assertEquals(expected, normalDistributionGenerator.getParameters());
+        assertEquals(expected, normalDistributionGenerator.getParameter());
     }
 
     @Test
     void getParameterFloat() {
         NormalDistributionGenerator normalDistributionGenerator = new NormalDistributionGenerator("Float");
-        normalDistributionGenerator.setParameters("4.5", "1","1.0", "10.6");
+        List<String> parameter = new ArrayList<>();
+        parameter.add("4.5");
+        parameter.add("1");
+        parameter.add("1.0");
+        parameter.add("10.6");
+        normalDistributionGenerator.setParameter(parameter);
         List<String> expected = new ArrayList<>();
         expected.add("4.5");
         expected.add("1.0");
         expected.add("1.0");
         expected.add("10.6");
 
-        System.out.println(normalDistributionGenerator.getParameters());
+        System.out.println(normalDistributionGenerator.getParameter());
 
-        assertEquals(expected, normalDistributionGenerator.getParameters());
+        assertEquals(expected, normalDistributionGenerator.getParameter());
     }
 
     @Test
     void generateInteger() {
         NormalDistributionGenerator normalDistributionGenerator = new NormalDistributionGenerator("Integer");
-        normalDistributionGenerator.setParameters("5.0","1","1.0","10");
+        List<String> parameter = new ArrayList<>();
+        parameter.add("5.0");
+        parameter.add("1");
+        parameter.add("1.0");
+        parameter.add("10");
+        normalDistributionGenerator.setParameter(parameter);
 
         System.out.println(normalDistributionGenerator.generate(10).toString());
     }
@@ -59,7 +74,12 @@ class NormalDistributionGeneratorTest {
     @Test
     void generateFloat() {
         NormalDistributionGenerator normalDistributionGenerator = new NormalDistributionGenerator("Float");
-        normalDistributionGenerator.setParameters("5.2","1","1.3","10");
+        List<String> parameter = new ArrayList<>();
+        parameter.add("5.2");
+        parameter.add("1");
+        parameter.add("1.3");
+        parameter.add("10");
+        normalDistributionGenerator.setParameter(parameter);
 
         System.out.println(normalDistributionGenerator.generate(10).toString());
     }

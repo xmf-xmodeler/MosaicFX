@@ -8,7 +8,7 @@ import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGen
 
 public class StaticGenerator implements ValueGenerator{
 
-	private String value;
+	private List<String> parameter;
 	private final String type;
 	private List<String> generatedValue;
 
@@ -28,10 +28,8 @@ public class StaticGenerator implements ValueGenerator{
 
 	@Override
 	public void openDialog() {
-		if (value!=null) {
-			List<String> values = new ArrayList<>();
-			values.add(value);
-			AttributeGeneratorStaticDialog dlg = new AttributeGeneratorStaticDialog(getName(), type, values);
+		if (parameter !=null) {
+			AttributeGeneratorStaticDialog dlg = new AttributeGeneratorStaticDialog(getName(), type, parameter);
 			dialogResult(dlg);
 			
 		} else {
@@ -42,21 +40,20 @@ public class StaticGenerator implements ValueGenerator{
 	
 	private void dialogResult(AttributeGeneratorStaticDialog dlg) {
 		Optional<AttributeGeneratorStaticDialogResult> opt = dlg.showAndWait();
-		
 		if (opt.isPresent()) {
 			AttributeGeneratorStaticDialogResult result = opt.get();
 			switch (type) {
 				case "Integer":
-					setValue(result.getValueInt().toString());
+					setParameter(result.getValueInt());
 					break;
 				case "Float":
-					setValue(result.getValueFloat().toString());
+					setParameter(result.getValueFloat());
 					break;
 				case "Boolean":
-					setValue(result.getValueBool().toString());
+					setParameter(result.getValueBool());
 					break;
 				case "String":
-					setValue(result.getValueString());
+					setParameter(result.getValueString());
 					break;
 			}
 		}
@@ -78,13 +75,30 @@ public class StaticGenerator implements ValueGenerator{
 		}
 	}
 
-	public void setValue(String value) {
+	private List<String> listToIntConverter(List<String> value){
+		List<String> result = new ArrayList<>();
+		for (String str : value){
+			result.add(integerConverter(str));
+		}
+		return result;
+	}
+
+	private List<String> listToFloatConverter(List<String> value){
+		List<String> result = new ArrayList<>();
+		for (String str : value){
+			result.add(floatConverter(str));
+		}
+		return result;
+	}
+
+	@Override
+	public void setParameter(List<String> parameter) {
 		if(type.equals("Integer")) {
-			this.value = integerConverter(value);
+			this.parameter = listToIntConverter(parameter);
 		} else if (type.equals("Float")){
-			this.value = floatConverter(value);
+			this.parameter = listToFloatConverter(parameter);
 		} else{
-			this.value = value;
+			this.parameter = parameter;
 		}
 	}
 
@@ -93,9 +107,8 @@ public class StaticGenerator implements ValueGenerator{
 		generatedValue = new ArrayList<>();
 
 		for (int i =0 ; i < numberOfInstance ; i++){
-			generatedValue.add(value);
+			generatedValue.add(parameter.get(0));
 		}
-
 		return generatedValue;
 	}
 
@@ -114,13 +127,18 @@ public class StaticGenerator implements ValueGenerator{
 
 	@Override
 	public String getName2() {
-		if(value==null) {
+		if(parameter ==null) {
 			return getName()+" (incomplete)";
 		}
 		return getName();
 	}
 
-    @Override
+	@Override
+	public List<String> getParameter() {
+		return parameter;
+	}
+
+	@Override
     public List<String> getValues() {
         return generatedValue;
     }

@@ -12,6 +12,9 @@ public class RandomGenerator implements ValueGenerator{
 
 //	private String value;
 	private String type;
+	private String minValueParameter;
+	private String maxValueParameter;
+	private String selectedScenario;
 	private List<String> generatedValue;
 	
 	public RandomGenerator(String string) {
@@ -105,8 +108,31 @@ public class RandomGenerator implements ValueGenerator{
 	}
 
 	@Override
+	public List<String> getParameter() {
+		List<String> result = new ArrayList<>();
+		result.add(minValueParameter);
+		result.add(maxValueParameter);
+		return result;
+	}
+
+	@Override
+	public void setParameter(List<String> parameter) {
+		this.minValueParameter = parameter.get(0);
+		this.maxValueParameter = parameter.get(1);
+	}
+
+	@Override
 	public List<String> getValues() {
 		return generatedValue;
 	}
+
+	public String getSelectedScenario() {
+		return selectedScenario;
+	}
+
+	public void setSelectedScenario(String selectedScenario) {
+		this.selectedScenario = selectedScenario;
+	}
+
 
 }

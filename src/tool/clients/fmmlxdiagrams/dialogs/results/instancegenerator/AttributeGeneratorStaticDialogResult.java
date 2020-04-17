@@ -3,42 +3,55 @@ package tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator;
 
 import tool.clients.fmmlxdiagrams.dialogs.results.DialogResult;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AttributeGeneratorStaticDialogResult extends DialogResult {
-	//For Integer
-	private Integer valueInt;
-	//For Float
-	private Float valueFloat;
-	//For Boolean
-	private Boolean valueBool;
-	//For String
-	private String valueString;	
+
+	private List<Integer> valueInt;
+
+	private List<Float> valueFloat;
+
+	private List<Boolean> valueBool;
+
+	private List<String> valueString;
 	
 	public AttributeGeneratorStaticDialogResult(String value, String type) {
 
 		if (type.equals("Boolean")) {
-			this.valueBool = Boolean.parseBoolean(value);
+			this.valueBool = new ArrayList<>();
+			valueBool.add(Boolean.parseBoolean(value));
 		} else if (type.equals("String")) {
-			this.valueString = value;
+			this.valueString = new ArrayList<>();
+			valueString.add(value);
 		} else if (type.equals("Integer")) {
-			this.valueInt= Integer.parseInt(value);
+			this.valueInt = new ArrayList<>();
+			valueInt.add(Integer.parseInt(value));
 		} else if (type.equals("Float")) {
-			this.valueFloat = Float.parseFloat(value);
+			this.valueFloat = new ArrayList<>();
+			valueFloat.add(Float.parseFloat(value));
 		}
 	}
 	
-	public Integer getValueInt() {
-		return valueInt;
+	public List<String> getValueInt() {
+		List<String> result = new ArrayList<>();
+		result.add(valueInt.get(0).toString());
+		return result;
 	}
 
-	public Float getValueFloat() {
-		return valueFloat;
+	public List<String> getValueFloat() {
+		List<String> result = new ArrayList<>();
+		result.add(valueFloat.get(0).toString());
+		return result;
 	}
 
-	public Boolean getValueBool() {
-		return valueBool;
+	public List<String> getValueBool() {
+		List<String> result = new ArrayList<>();
+		result.add(valueBool.get(0).toString());
+		return result;
 	}
 
-	public String getValueString() {
+	public List<String> getValueString() {
 		return valueString;
 	}
 

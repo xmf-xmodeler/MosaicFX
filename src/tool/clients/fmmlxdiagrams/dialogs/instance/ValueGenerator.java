@@ -9,6 +9,7 @@ public interface ValueGenerator {
 	public int possibleGeneratedInstance();
 	public boolean fitsType(String type);
 	public String getName2();
-
+	public List<String> getParameter();
+	public void setParameter(List<String> parameter);
 	public List<String> getValues();
 }

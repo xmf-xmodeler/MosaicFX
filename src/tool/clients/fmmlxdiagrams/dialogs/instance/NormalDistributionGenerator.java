@@ -20,19 +20,6 @@ public class NormalDistributionGenerator implements ValueGenerator{
 		this.type = type;
 	}
 
-	public List<String> getParameters() {
-		return parameters;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	@Override
-	public String getName() {
-		return "NORMAL DISTRIBUTION";
-	}
-
 	@Override
 	public void openDialog() {
 		if (parameters != null){
@@ -49,7 +36,7 @@ public class NormalDistributionGenerator implements ValueGenerator{
 
 		if (opt.isPresent()){
 			AttributeGeneratorNormalDistributionDialogResult result = opt.get();
-			setParameters(result.getMeanValue(), result.getStdDevValue(), result.getRangeMinValue(), result.getRangeMaxValue());
+			setParameter(result.getParameter());
 		}
 	}
 	private String floatConverter(String value) {
@@ -68,18 +55,23 @@ public class NormalDistributionGenerator implements ValueGenerator{
 		}
 	}
 
-	public void setParameters(String mean, String std, String min, String max) {
+	public List<String> getParameter() {
+		return parameters;
+	}
+
+	@Override
+	public void setParameter(List<String> param) {
 		this.parameters = new ArrayList<>();
 		if(type.equals("Integer")){
-			parameters.add(integerConverter(mean));
-			parameters.add(integerConverter(std));
-			parameters.add(integerConverter(min));
-			parameters.add(integerConverter(max));
+			parameters.add(integerConverter(param.get(0)));
+			parameters.add(integerConverter(param.get(1)));
+			parameters.add(integerConverter(param.get(2)));
+			parameters.add(integerConverter(param.get(3)));
 		} else if (type.equals("Float")){
-			parameters.add(floatConverter(mean));
-			parameters.add(floatConverter(std));
-			parameters.add(floatConverter(min));
-			parameters.add(floatConverter(max));
+			parameters.add(floatConverter(param.get(0)));
+			parameters.add(floatConverter(param.get(1)));
+			parameters.add(floatConverter(param.get(2)));
+			parameters.add(floatConverter(param.get(3)));
 		}
 	}
 
@@ -140,6 +132,16 @@ public class NormalDistributionGenerator implements ValueGenerator{
 		}
 		return getName();
 	}
+
+	public String getType() {
+		return type;
+	}
+
+	@Override
+	public String getName() {
+		return "NORMAL DISTRIBUTION";
+	}
+
 
 	@Override
 	public List<String> getValues() {

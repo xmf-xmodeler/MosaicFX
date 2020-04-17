@@ -47,7 +47,7 @@ public class IncrementGenerator implements ValueGenerator{
 		
 		if (opt.isPresent()) {
 			AttributeGeneratorIncrementDialogResult result = opt.get();
-			setParameter(result.getValueStart(), result.getValueEnd(), result.getIncrement());
+			setParameter(result.getParameter());
 		}
 	}
 
@@ -125,17 +125,17 @@ public class IncrementGenerator implements ValueGenerator{
 		return generatedValue;
 	}
 
-	public void setParameter(String startValue, String endValue, String inc){
+	public void setParameter(List<String> parameter){
 
 		if(type.equals("Integer")){
-			this.startValue = integerConverter(startValue);
-			this.endValue= integerConverter(endValue);
-			this.inc = integerConverter(inc);
+			this.startValue = integerConverter(parameter.get(0));
+			this.endValue= integerConverter(parameter.get(1));
+			this.inc = integerConverter(parameter.get(2));
 
 		} else if (type.equals("Float")){
-			this.startValue = floatConverter(startValue);
-			this.endValue = floatConverter(endValue);
-			this.inc = floatConverter(inc);
+			this.startValue = floatConverter(parameter.get(0));
+			this.endValue = floatConverter(parameter.get(1));
+			this.inc = floatConverter(parameter.get(2));
 		}
 	}
 
@@ -155,7 +155,7 @@ public class IncrementGenerator implements ValueGenerator{
 		}
 	}
 
-	public List<String> getParameters(){
+	public List<String> getParameter(){
 		List<String> parameter = new ArrayList<>();
 		parameter.add(startValue);
 		parameter.add(endValue);

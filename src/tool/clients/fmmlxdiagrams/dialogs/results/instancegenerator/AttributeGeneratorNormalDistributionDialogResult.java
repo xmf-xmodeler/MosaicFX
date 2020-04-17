@@ -2,6 +2,9 @@ package tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator;
 
 import tool.clients.fmmlxdiagrams.dialogs.results.DialogResult;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AttributeGeneratorNormalDistributionDialogResult extends DialogResult {
 
     private String attributeType, meanValue, stdDevValue, rangeMinValue, rangeMaxValue;
@@ -19,21 +22,14 @@ public class AttributeGeneratorNormalDistributionDialogResult extends DialogResu
         return attributeType;
     }
 
-    public String getMeanValue() {
-        return meanValue;
-    }
+    public List<String> getParameter(){
+        List<String> result = new ArrayList<>();
+        result.add(meanValue);
+        result.add(stdDevValue);
+        result.add(rangeMinValue);
+        result.add(rangeMaxValue);
 
-    public String getStdDevValue() {
-        return stdDevValue;
+        return result;
     }
-
-    public String getRangeMinValue() {
-        return rangeMinValue;
-    }
-
-    public String getRangeMaxValue() {
-        return rangeMaxValue;
-    }
-
 
 }
