@@ -10,16 +10,18 @@ import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGen
 
 public class NormalDistributionGenerator implements ValueGenerator{
 
-	private List<String> value;
+	private List<String> parameters;
 	private final String type;
+	private List<String> generatedValue;
+
 	
 	public NormalDistributionGenerator(String type) {
 		super();
 		this.type = type;
 	}
 
-	public List<String> getValue() {
-		return value;
+	public List<String> getParameters() {
+		return parameters;
 	}
 
 	public String getType() {
@@ -33,8 +35,8 @@ public class NormalDistributionGenerator implements ValueGenerator{
 
 	@Override
 	public void openDialog() {
-		if (value != null){
-			AttributeGeneratorNormalDistributionDialog dlg = new AttributeGeneratorNormalDistributionDialog(getName(), type, value);
+		if (parameters != null){
+			AttributeGeneratorNormalDistributionDialog dlg = new AttributeGeneratorNormalDistributionDialog(getName(), type, parameters);
 			dialogResult(dlg);
 		} else {
 			AttributeGeneratorNormalDistributionDialog dlg = new AttributeGeneratorNormalDistributionDialog(getName(), type);
@@ -47,40 +49,72 @@ public class NormalDistributionGenerator implements ValueGenerator{
 
 		if (opt.isPresent()){
 			AttributeGeneratorNormalDistributionDialogResult result = opt.get();
-			setValue(result.getAttributeType(), result.getMeanValue(), result.getStdDevValue(), result.getRangeMinValue(), result.getRangeMaxValue());
+			setParameters(result.getMeanValue(), result.getStdDevValue(), result.getRangeMinValue(), result.getRangeMaxValue());
+		}
+	}
+	private String floatConverter(String value) {
+		try {
+			return Float.parseFloat(value)+"";
+		} catch (Exception e){
+			return (float)Integer.parseInt(value)+"";
 		}
 	}
 
-	public void setValue(String attributeType, String mean, String std, String min, String max) {
-		this.value = new ArrayList<>();
-		value.add(mean);
-		value.add(std);
-		value.add(min);
-		value.add(max);
+	private String integerConverter(String value) {
+		try {
+			return Integer.parseInt(value)+"";
+		} catch (Exception e){
+			return Math.round(Float.parseFloat(value))+"";
+		}
+	}
+
+	public void setParameters(String mean, String std, String min, String max) {
+		this.parameters = new ArrayList<>();
+		if(type.equals("Integer")){
+			parameters.add(integerConverter(mean));
+			parameters.add(integerConverter(std));
+			parameters.add(integerConverter(min));
+			parameters.add(integerConverter(max));
+		} else if (type.equals("Float")){
+			parameters.add(floatConverter(mean));
+			parameters.add(floatConverter(std));
+			parameters.add(floatConverter(min));
+			parameters.add(floatConverter(max));
+		}
 	}
 
 	@Override
-	public String generate() {
-		return generateValue(type, value.get(0), value.get(1), Long.parseLong(value.get(2)), Long.parseLong(value.get(3)));
+	public List<String> generate(int numberOfInstance) {
+		generatedValue = new ArrayList<>();
+
+		for (int i =0 ; i < numberOfInstance ; i++){
+			generatedValue.add(generateValue(type, parameters.get(0), parameters.get(1),
+					parameters.get(2), parameters.get(3)));
+		}
+		return generatedValue;
 	}
 
-	public String generateValue(String attributeType, String mean, String stdDeviation, long rangeMin, long rangeMax){
+	public String generateValue(String attributeType, String mean, String stdDeviation, String rangeMin, String rangeMax){
 		Random random = new Random();
 		if(attributeType.equals("Integer")){
-			int meanInt = Integer.parseInt(mean);
-			int stdDevInt = Integer.parseInt(stdDeviation);
+			int meanInt = Integer.parseInt(integerConverter(mean));
+			int stdDevInt = Integer.parseInt(integerConverter(stdDeviation));
+			int rangeMinInt = Integer.parseInt(integerConverter(rangeMin));
+			int rangeMaxInt = Integer.parseInt(integerConverter(rangeMax));
 			while(true){
 				long nextGauss = Math.round((random.nextGaussian()*stdDevInt)+meanInt);
-				if(nextGauss<=rangeMax && nextGauss>=rangeMin){
+				if(nextGauss<=rangeMaxInt && nextGauss>=rangeMinInt){
 					return nextGauss+"";
 				}
 			}
 		} else if (attributeType.equals("Float")){
-			float meanFloat = Float.parseFloat(mean);
-			float stdDevFloat = Float.parseFloat(stdDeviation);
+			float meanFloat = Float.parseFloat(floatConverter(mean));
+			float stdDevFloat = Float.parseFloat(floatConverter(stdDeviation));
+			float rangeMinFloat = Float.parseFloat(integerConverter(rangeMin));
+			float rangeMaxFloat = Float.parseFloat(integerConverter(rangeMax));
 			while(true){
 				double nextGauss = (random.nextGaussian()*stdDevFloat)+meanFloat;
-				if(nextGauss<=rangeMax && nextGauss>=rangeMin){
+				if(nextGauss<=rangeMaxFloat && nextGauss>=rangeMinFloat){
 					return nextGauss+"";
 				}
 			}
@@ -89,7 +123,7 @@ public class NormalDistributionGenerator implements ValueGenerator{
 	}
 
 	@Override
-	public int possibleGeneratedValue() {
+	public int possibleGeneratedInstance() {
 		return 0;
 	}
 
@@ -101,10 +135,15 @@ public class NormalDistributionGenerator implements ValueGenerator{
 
 	@Override
 	public String getName2() {
-		if(value==null) {
+		if(parameters ==null) {
 			return getName()+" (incomplete)";
 		}
 		return getName();
+	}
+
+	@Override
+	public List<String> getValues() {
+		return generatedValue;
 	}
 
 }

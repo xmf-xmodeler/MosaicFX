@@ -2,50 +2,65 @@ package tool.clients.fmmlxdiagrams.dialogs.instance;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class NormalDistributionGeneratorTest {
 
     @Test
-    void getValue() {
-
-
+    void getType() {
         NormalDistributionGenerator normalDistributionGenerator = new NormalDistributionGenerator("Integer");
-        normalDistributionGenerator.setValue(normalDistributionGenerator.getType(),"0","1","1","2");
+        assertEquals(normalDistributionGenerator.getType(), "Integer");
 
-        System.out.println(normalDistributionGenerator.getValue().toString());
-        System.out.println("generated Value : "+ normalDistributionGenerator.generate());
-
-        System.out.println("");
-
-        NormalDistributionGenerator normalDistributionGenerator2 = new NormalDistributionGenerator("Float");
-        normalDistributionGenerator2.setValue(normalDistributionGenerator2.getType(), "0","1","1","2");
-
-        System.out.println(normalDistributionGenerator2.getValue().toString());
-        System.out.println("generated Value : "+ normalDistributionGenerator2.generate());
+        NormalDistributionGenerator normalDistributionGenerator1 = new NormalDistributionGenerator("Float");
+        assertEquals(normalDistributionGenerator1.getType(), "Float");
     }
 
     @Test
-    void generateValueInt() {
+    void getParameterInteger() {
         NormalDistributionGenerator normalDistributionGenerator = new NormalDistributionGenerator("Integer");
+        normalDistributionGenerator.setParameters("4.0", "1","1", "10.0");
+        List<String> expected = new ArrayList<>();
+        expected.add("4");
+        expected.add("1");
+        expected.add("1");
+        expected.add("10");
 
-        for (int i =0 ; i<5; i++){
-            int generatedValue = Integer.parseInt(normalDistributionGenerator.generateValue("Integer", "7","2",1,11));
-            System.out.println("generated Value : " +generatedValue);
-            assertTrue(generatedValue<=11 && generatedValue>=1);
-            System.out.println(" ");
-        }
+        System.out.println(normalDistributionGenerator.getParameters());
+
+        assertEquals(expected, normalDistributionGenerator.getParameters());
     }
 
     @Test
-    void generatedValueFloat() {
+    void getParameterFloat() {
         NormalDistributionGenerator normalDistributionGenerator = new NormalDistributionGenerator("Float");
+        normalDistributionGenerator.setParameters("4.5", "1","1.0", "10.6");
+        List<String> expected = new ArrayList<>();
+        expected.add("4.5");
+        expected.add("1.0");
+        expected.add("1.0");
+        expected.add("10.6");
 
-        for (int i =0 ; i<5; i++){
-            float generatedValue = Float.parseFloat(normalDistributionGenerator.generateValue("Float", "7","2",1,11));
-            System.out.println("generated Value : " +generatedValue);
-            assertTrue(generatedValue<=11.0 && generatedValue>=1.0);
-            System.out.println(" ");
-        }
+        System.out.println(normalDistributionGenerator.getParameters());
+
+        assertEquals(expected, normalDistributionGenerator.getParameters());
+    }
+
+    @Test
+    void generateInteger() {
+        NormalDistributionGenerator normalDistributionGenerator = new NormalDistributionGenerator("Integer");
+        normalDistributionGenerator.setParameters("5.0","1","1.0","10");
+
+        System.out.println(normalDistributionGenerator.generate(10).toString());
+    }
+
+    @Test
+    void generateFloat() {
+        NormalDistributionGenerator normalDistributionGenerator = new NormalDistributionGenerator("Float");
+        normalDistributionGenerator.setParameters("5.2","1","1.3","10");
+
+        System.out.println(normalDistributionGenerator.generate(10).toString());
     }
 }

@@ -99,7 +99,7 @@ public class AttributeGeneratorNormalDistributionDialog extends CustomDialog<Att
 	public boolean inputIsValid() {
 		switch (attributeType) {
 			case "Integer":
-				validateInteger(meanTextField, stdTextField, rangeMinTextField, rangeMaxTextField);
+				return validateInteger(meanTextField, stdTextField, rangeMinTextField, rangeMaxTextField);
 			case "Float":
 				return validateFloat(meanTextField, stdTextField, rangeMinTextField, rangeMaxTextField);
 			default:
@@ -200,20 +200,18 @@ public class AttributeGeneratorNormalDistributionDialog extends CustomDialog<Att
 	public String generateValue(String attributeType, String mean, String stdDeviation, long rangeMin, long rangeMax){
 		Random random = new Random();
 		if(attributeType.equals("Integer")){
-			Boolean boolValue = false;
 			int meanInt = Integer.parseInt(mean);
 			int stdDevInt = Integer.parseInt(stdDeviation);
-			while(!boolValue){
+			while(true){
 				long nextGauss = Math.round(random.nextGaussian());
 				if(nextGauss<=rangeMax && nextGauss>=rangeMin){
 					return ((nextGauss*stdDevInt)+meanInt)+"";
 				}
 			}
 		} else if (attributeType.equals("Float")){
-			Boolean boolValue = false;
 			float meanFloat = Float.parseFloat(mean);
 			float stdDevFloat = Float.parseFloat(stdDeviation);
-			while(!boolValue){
+			while(true){
 				double nextGauss = random.nextGaussian();
 				if(nextGauss<=rangeMax && nextGauss>=rangeMin){
 					return ((nextGauss*stdDevFloat)+meanFloat)+"";

@@ -10,14 +10,11 @@ public class StaticGenerator implements ValueGenerator{
 
 	private String value;
 	private final String type;
+	private List<String> generatedValue;
 
 	public StaticGenerator(String type) {
 		super();
 		this.type = type;
-	}
-
-	public String getValue() {
-		return value;
 	}
 
 	public String getType() {
@@ -47,33 +44,64 @@ public class StaticGenerator implements ValueGenerator{
 		Optional<AttributeGeneratorStaticDialogResult> opt = dlg.showAndWait();
 		
 		if (opt.isPresent()) {
-
 			AttributeGeneratorStaticDialogResult result = opt.get();
 			switch (type) {
 				case "Integer":
-					this.value = result.getValueInt().toString();
+					setValue(result.getValueInt().toString());
 					break;
 				case "Float":
-					this.value = result.getValueFloat().toString();
+					setValue(result.getValueFloat().toString());
 					break;
 				case "Boolean":
-					this.value = result.getValueBool().toString();
+					setValue(result.getValueBool().toString());
 					break;
 				case "String":
-					this.value = result.getValueString();
+					setValue(result.getValueString());
 					break;
 			}
 		}
 	}
 
-	@Override
-	public String generate() {		
-		return "STATIC : "+" ( "+value+" ) ";
+	private String floatConverter(String value) {
+		try {
+			return Float.parseFloat(value)+"";
+		} catch (Exception e){
+			return (float)Integer.parseInt(value)+"";
+		}
+	}
+
+	private String integerConverter(String value) {
+		try {
+			return Integer.parseInt(value)+"";
+		} catch (Exception e){
+			return Math.round(Float.parseFloat(value))+"";
+		}
+	}
+
+	public void setValue(String value) {
+		if(type.equals("Integer")) {
+			this.value = integerConverter(value);
+		} else if (type.equals("Float")){
+			this.value = floatConverter(value);
+		} else{
+			this.value = value;
+		}
 	}
 
 	@Override
-	public int possibleGeneratedValue() {
-		return 0;
+	public List<String> generate(int numberOfInstance) {
+		generatedValue = new ArrayList<>();
+
+		for (int i =0 ; i < numberOfInstance ; i++){
+			generatedValue.add(value);
+		}
+
+		return generatedValue;
+	}
+
+	@Override
+	public int possibleGeneratedInstance() {
+		return Integer.MAX_VALUE;
 	}
 
 	@Override
@@ -91,4 +119,9 @@ public class StaticGenerator implements ValueGenerator{
 		}
 		return getName();
 	}
+
+    @Override
+    public List<String> getValues() {
+        return generatedValue;
+    }
 }

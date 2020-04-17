@@ -7,13 +7,13 @@ import java.util.Optional;
 
 import tool.clients.fmmlxdiagrams.dialogs.results.instancegenerator.AttributeGeneratorIncrementDialogResult;
 
-public class IncrementGenerator<T> implements ValueGenerator{
+public class IncrementGenerator implements ValueGenerator{
 	
-	private T startValue;
-	private T endValue;
-	private T inc;
-	private String type;
-	
+	private String startValue;
+	private String endValue;
+	private String inc;
+	private final String type;
+	private List<String> generatedValue;
 
 	public IncrementGenerator(String type) {
 		super();
@@ -29,11 +29,11 @@ public class IncrementGenerator<T> implements ValueGenerator{
 	public void openDialog() {
 		
 		if (startValue != null && endValue!=null && inc!=null) {
-			List<T> values = new ArrayList<T>();
-			values.add(startValue);
-			values.add(endValue);
-			values.add(inc);
-			AttributeGeneratorIncrementDialog dlg = new AttributeGeneratorIncrementDialog(getName(), type, values );
+			List<String> parameter = new ArrayList<>();
+			parameter.add(startValue);
+			parameter.add(endValue);
+			parameter.add(inc);
+			AttributeGeneratorIncrementDialog dlg = new AttributeGeneratorIncrementDialog(getName(), type, parameter );
 			dialogResult(dlg);
 			
 		} else {
@@ -42,41 +42,71 @@ public class IncrementGenerator<T> implements ValueGenerator{
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void dialogResult(AttributeGeneratorIncrementDialog dlg) {
 		Optional<AttributeGeneratorIncrementDialogResult> opt = dlg.showAndWait();
 		
 		if (opt.isPresent()) {
-			AttributeGeneratorIncrementDialogResult result = opt.get();				
-			this.startValue = (T) result.getValueStart();
-			this.endValue = (T) result.getValueEnd();
-			this.inc = (T) result.getIncrement();
-			
+			AttributeGeneratorIncrementDialogResult result = opt.get();
+			setParameter(result.getValueStart(), result.getValueEnd(), result.getIncrement());
 		}
 	}
 
 	@Override
-	public String generate() {
-		String allvalue= "start : "+startValue+", "+"endValue : "+endValue+", "+"increment : "+inc;
-		String result = "INCREMENT : "+" ( "+ allvalue +" ) ";
-		return result;
+	public List<String> generate(int numberOfInstance) {
+		try {
+			int counter = 0;
+			generatedValue = new ArrayList<>();
+			if(type.equals("Integer")){
+				int subtotal= Integer.parseInt(startValue);
+				while(subtotal<=Integer.parseInt(endValue)){
+					generatedValue.add(subtotal+"");
+					subtotal+=Integer.parseInt(inc);
+					counter+=1;
+				}
+			}else if(type.equals("Float")){
+				float subtotal= Float.parseFloat(startValue);
+				while(subtotal<=Float.parseFloat(endValue)){
+					generatedValue.add(subtotal+"");
+					subtotal+=Float.parseFloat(inc);
+					counter+=1;
+				}
+			}
+
+			List<String> result = new ArrayList<>();
+			for(int i = 0 ; i<numberOfInstance; i++){
+				result.add(generatedValue.get(i));
+			}
+			return result;
+		} catch (Exception e){
+			return null;
+		}
 	}
 
     @Override
-    public int possibleGeneratedValue() {
-        return 0;
+    public int possibleGeneratedInstance() {
+		int counter = 0;
+
+		if(type.equals("Integer")){
+			int subtotal= Integer.parseInt(startValue);
+			while(subtotal<=Integer.parseInt(endValue)){
+				subtotal+=Integer.parseInt(inc);
+				counter+=1;
+			}
+		}else if(type.equals("Float")){
+			float subtotal= Float.parseFloat(startValue);
+			while(subtotal<=Float.parseFloat(endValue)){
+				subtotal+=Float.parseFloat(inc);
+				counter+=1;
+			}
+		}
+		return counter;
     }
 
     @Override
 	public boolean fitsType(String type) {
 		if("Integer".equals(type)) return true;
-		if("Float".equals(type)) return true;
-		return false;
+		return "Float".equals(type);
 	}
-
-	
-
-
 
 	public String getType() {
 		return type;
@@ -89,6 +119,49 @@ public class IncrementGenerator<T> implements ValueGenerator{
 		}
 		return getName();
 	}
-	
+
+	@Override
+	public List<String> getValues() {
+		return generatedValue;
+	}
+
+	public void setParameter(String startValue, String endValue, String inc){
+
+		if(type.equals("Integer")){
+			this.startValue = integerConverter(startValue);
+			this.endValue= integerConverter(endValue);
+			this.inc = integerConverter(inc);
+
+		} else if (type.equals("Float")){
+			this.startValue = floatConverter(startValue);
+			this.endValue = floatConverter(endValue);
+			this.inc = floatConverter(inc);
+		}
+	}
+
+	private String floatConverter(String value) {
+		try {
+			return Float.parseFloat(value)+"";
+		} catch (Exception e){
+			return (float)Integer.parseInt(value)+"";
+		}
+	}
+
+	private String integerConverter(String value) {
+		try {
+			return Integer.parseInt(value)+"";
+		} catch (Exception e){
+			return Math.round(Float.parseFloat(value))+"";
+		}
+	}
+
+	public List<String> getParameters(){
+		List<String> parameter = new ArrayList<>();
+		parameter.add(startValue);
+		parameter.add(endValue);
+		parameter.add(inc);
+
+		return parameter;
+	}
 
 }

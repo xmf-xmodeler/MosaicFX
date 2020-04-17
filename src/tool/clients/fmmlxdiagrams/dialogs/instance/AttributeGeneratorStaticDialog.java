@@ -102,7 +102,7 @@ public class AttributeGeneratorStaticDialog extends CustomDialog<AttributeGenera
 		switch(attributeType){
         case "Integer":
         	if(!inputChecker.validateInteger(string)) {
-        		errorLabel.setText("Please input valid String");
+        		errorLabel.setText("Please input valid Integer");
         	}
             return inputChecker.validateInteger(string);
         case "Float":
@@ -124,13 +124,13 @@ public class AttributeGeneratorStaticDialog extends CustomDialog<AttributeGenera
 
 	@Override
 	public void layoutContent() {
-		labelNode = new ArrayList<Node>();
-		inputNode = new ArrayList<Node>();
+		labelNode = new ArrayList<>();
+		inputNode = new ArrayList<>();
 			
 		staticValueLabel = new Label(StringValue.LabelAndHeaderTitle.value);
 		
 		if(attributeType.equals("Boolean")) {
-			staticValueComboBox = new ComboBox<String>(AllValueList.booleanList);
+			staticValueComboBox = new ComboBox<>(AllValueList.booleanList);
 			inputNode.add(staticValueComboBox);
 		} else {
 			staticValueTextField = new TextField();

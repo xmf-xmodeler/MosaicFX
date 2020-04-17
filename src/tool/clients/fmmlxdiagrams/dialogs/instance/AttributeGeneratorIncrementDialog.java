@@ -57,7 +57,7 @@ public class AttributeGeneratorIncrementDialog extends CustomDialog<AttributeGen
 		setResult();
 	}
 	
-	public <T> AttributeGeneratorIncrementDialog(String valueGeneratorName, String attributeType, List<T> value) {
+	public AttributeGeneratorIncrementDialog(String valueGeneratorName, String attributeType, List<String> parameter) {
 
 		this.attributeType = attributeType;
 		System.out.println();
@@ -75,11 +75,11 @@ public class AttributeGeneratorIncrementDialog extends CustomDialog<AttributeGen
 		});
 		
 		setResult();
-		this.startValue = value.get(0).toString();
+		this.startValue = parameter.get(0).toString();
     	this.startValueTextField.setText(startValue);
-    	this.endValue = value.get(1).toString();
+    	this.endValue = parameter.get(1).toString();
     	this.endValueTextField.setText(endValue);
-    	this.incValue = value.get(2).toString();
+    	this.incValue = parameter.get(2).toString();
     	this.incrementValueTextField.setText(incValue);
 	}
 
@@ -87,8 +87,9 @@ public class AttributeGeneratorIncrementDialog extends CustomDialog<AttributeGen
 	public void setResult() {
 		setResultConverter(dlgBtn -> {		
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				
-				return new AttributeGeneratorIncrementDialogResult(startValueTextField.getText(), endValueTextField.getText(), incrementValueTextField.getText(), attributeType);		        
+
+				return new AttributeGeneratorIncrementDialogResult(startValueTextField.getText(),
+						endValueTextField.getText(), incrementValueTextField.getText(), attributeType);
 			}
 			return null;
 		});		
@@ -102,8 +103,8 @@ public class AttributeGeneratorIncrementDialog extends CustomDialog<AttributeGen
 
 	@Override
 	public void layoutContent() {
-		labelNode = new ArrayList<Node>();
-		inputNode = new ArrayList<Node>();
+		labelNode = new ArrayList();
+		inputNode = new ArrayList();
 		
 		startValueLabel = new Label(StringValue.LabelAndHeaderTitle.startValue);
 		endValueLabel = new Label(StringValue.LabelAndHeaderTitle.endValue);

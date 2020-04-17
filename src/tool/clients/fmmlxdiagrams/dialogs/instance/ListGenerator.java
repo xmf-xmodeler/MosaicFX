@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.dialogs.instance;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
 
@@ -10,6 +11,7 @@ public class ListGenerator<T> implements ValueGenerator{
 	private Vector<T> elements;
 	private String type;
 
+	private List<String> generatedValue;
 
 	public ListGenerator(String string) {
 		super();
@@ -48,13 +50,12 @@ public class ListGenerator<T> implements ValueGenerator{
 	}
 
 	@Override
-	public String generate() {
-		// TODO Auto-generated method stub
+	public List<String> generate(int numberOfInstance) {
 		return null;
 	}
 
 	@Override
-	public int possibleGeneratedValue() {
+	public int possibleGeneratedInstance() {
 		return 0;
 	}
 
@@ -90,5 +91,10 @@ public class ListGenerator<T> implements ValueGenerator{
 		}
 		return getName();
 	}
+
+    @Override
+    public List<String> getValues() {
+        return generatedValue;
+    }
 
 }

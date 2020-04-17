@@ -50,15 +50,16 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 		setResult();
 	}
 
-	@SuppressWarnings("unchecked")
+
 	private void setResult() {
 		setResultConverter(dlgBtn -> {		
 		if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-			this.value = new HashMap<FmmlxAttribute, ValueGenerator>();
+			this.value = new HashMap<>();
 			int counter = 3;
 			for(FmmlxAttribute att : object.getAllAttributes()) {
 				Node node = inputNode.get(counter);
 				if(node instanceof ComboBox) {
+					((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem().generate(numberOfElementComboBox.getSelectionModel().getSelectedItem());
 					value.put(att, ((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem());
 				} else {
 					value.put(att, null);
@@ -108,10 +109,10 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 		numberOfElementComboBox.setConverter(new IntegerStringConverter());
 		numberOfElementComboBox.setEditable(true);
 		
-		labelNode = new ArrayList<Node>();
-		typeLabelNode = new ArrayList<Node>();
-		inputNode = new ArrayList<Node>();
-		editButtonNode = new ArrayList<Node>();
+		labelNode = new ArrayList<>();
+		typeLabelNode = new ArrayList<>();
+		inputNode = new ArrayList<>();
+		editButtonNode = new ArrayList<>();
 		
 		labelNode.add(ofLabel);
 		labelNode.add(numberOfElementLabel);

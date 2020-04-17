@@ -437,16 +437,33 @@ public class DiagramActions {
 			Optional<InstanceGeneratorDialogResult> igd = dlg.showAndWait();
 			
 			if (igd.isPresent()) {
-				final InstanceGeneratorDialogResult result = igd.get();
-				System.out.println("ID : "+result.getObject().getId());
-				System.out.println("Number of Instance : "+ result.getNumberOfInstance());
-				Iterator it = result.getValue().entrySet().iterator();			
+				InstanceGeneratorDialogResult result = igd.get();
+				System.out.println("======================================================================");
+				System.out.println();
+				System.out.println();
+				System.out.println("General Info");
+				System.out.println("----------------------------");
+				System.out.println();
+				System.out.println("Parent ID : "+result.getObject().getId());
+				System.out.println("Number of generated Instance : "+ result.getNumberOfInstance());
+				Iterator it = result.getValue().entrySet().iterator();
 				while (it.hasNext()) {
 			        Map.Entry pair = (Map.Entry)it.next();
-			        System.out.println(((FmmlxAttribute) pair.getKey()).getName() + " = " + ((ValueGenerator) pair.getValue()).generate());
-			        it.remove(); 
+			        System.out.println(((FmmlxAttribute) pair.getKey()).getName() + " = " + ((ValueGenerator) pair.getValue()).getName() + " : "+ ((ValueGenerator) pair.getValue()).getValues());
 			    }
 				System.out.println("========================================================================");
+
+				for(int i =0 ; i< result.getNumberOfInstance(); i++){
+					System.out.println();
+					System.out.println("Instance No : "+(i+1));
+
+					Iterator it1 = result.getValue().entrySet().iterator();
+
+					while (it1.hasNext()) {
+						Map.Entry pair1 = (Map.Entry)it1.next();
+						System.out.println(((FmmlxAttribute) pair1.getKey()).getName() + " = "+ ((ValueGenerator) pair1.getValue()).getValues().get(i));
+					}
+				}
 				diagram.getComm().instanceGenerator(diagram, result.getObject().getId(), result.getValue());
 			}
 		});
