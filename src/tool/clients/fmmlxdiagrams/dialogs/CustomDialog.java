@@ -13,9 +13,8 @@ import javafx.util.StringConverter;
 import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
-import tool.clients.fmmlxdiagrams.classbrowser.CustomStage;
-import tool.clients.fmmlxdiagrams.dialogs.instance.InstanceGeneratorGenerateTypeComboBox;
-import tool.clients.fmmlxdiagrams.dialogs.instance.ValueGenerator;
+import tool.clients.fmmlxdiagrams.instancegenerator.dialog.InstanceGeneratorGenerateTypeComboBox;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import java.util.List;
@@ -133,7 +132,7 @@ public class CustomDialog<R> extends Dialog<R> {
 			protected void updateItem(String object, boolean empty) {
 				super.updateItem(object, empty);
 
-				if (empty || object == null || object == "") {
+				if (empty || object == null || object.equals("") ) {
 					setText("");
 				} else {
 					setText(object);
@@ -247,16 +246,16 @@ public class CustomDialog<R> extends Dialog<R> {
 	}
 	
 	protected InstanceGeneratorGenerateTypeComboBox initializeComboBoxGeneratorList(FmmlxAttribute attribute) {
-		ComboBox<ValueGenerator> comboBox = new InstanceGeneratorGenerateTypeComboBox(attribute);
+		InstanceGeneratorGenerateTypeComboBox comboBox = new InstanceGeneratorGenerateTypeComboBox(attribute);
 		comboBox.setCellFactory(param -> new ListCell<ValueGenerator>() {
 			@Override
 			protected void updateItem(ValueGenerator item, boolean empty) {
 				super.updateItem(item, empty);
 
-				if (empty || isNullOrEmpty(item.getName())) {
+				if (empty || isNullOrEmpty(item.getValueGeneratorName())) {
 					setText(null);
 				} else {
-					setText(item.getName());
+					setText(item.getValueGeneratorName());
 				}
 			}
 		});
@@ -277,21 +276,14 @@ public class CustomDialog<R> extends Dialog<R> {
 			}
 		});
 		
-		comboBox.valueProperty().addListener(new ChangeListener<ValueGenerator>() {
-
-			@Override
-			public void changed(ObservableValue<? extends ValueGenerator> observable, ValueGenerator oldValue,
-					ValueGenerator newValue) {
-				newValue.openDialog();	
-			}
-		});
+		comboBox.valueProperty().addListener((observable, oldValue, newValue) -> newValue.openDialog());
 		
 		comboBox.setPrefWidth(COLUMN_WIDTH);
-		return (InstanceGeneratorGenerateTypeComboBox) comboBox;
+		return comboBox;
 	}
 	
 	public ComboBox<FmmlxEnum> initializeComboBoxEnum(ObservableList<FmmlxEnum> observableList) {
-		ComboBox<FmmlxEnum> comboBox = new ComboBox<FmmlxEnum>(observableList);
+		ComboBox<FmmlxEnum> comboBox = new ComboBox<>(observableList);
 		comboBox.setCellFactory(param -> new ListCell<FmmlxEnum>() {
 			@Override
 			protected void updateItem(FmmlxEnum item, boolean empty) {
@@ -361,7 +353,7 @@ public class CustomDialog<R> extends Dialog<R> {
 	
 	
 	public boolean validateIncrement(String startValue, String endValue, String increment, String attributeType) {
-		Boolean valid = false;
+		boolean valid;
 		switch(attributeType){
         case "Integer":   	
         	valid = inputChecker.validateInteger(startValue) && inputChecker.validateInteger(endValue) && inputChecker.validateInteger(increment);
@@ -379,24 +371,6 @@ public class CustomDialog<R> extends Dialog<R> {
            	return false;
         }
 		
-	}
-	
-	protected void generateRandomValue(TextField randomValueTextField, String attributeType) {
-		switch(attributeType){
-        case "Integer":
-            randomValueTextField.setText((int)Math.random()+"");
-            break;
-        case "Float":
-        	randomValueTextField.setText((float)Math.random()+"");
-            break;
-        case "Boolean":
-        	Random rd = new Random();
-        	Boolean bool = rd.nextBoolean();
-        	randomValueTextField.setText(bool.toString());
-            break;
-        default:
-            System.out.println("undifined Type");
-        }
 	}
 
 	protected CustomDialog.VBoxControl getVBoxControl() {

@@ -7,7 +7,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import tool.clients.fmmlxdiagrams.dialogs.instance.ValueGenerator;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
 import tool.clients.workbench.WorkbenchClient;
 import xos.Value;
 

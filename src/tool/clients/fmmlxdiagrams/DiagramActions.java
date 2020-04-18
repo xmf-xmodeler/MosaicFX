@@ -21,8 +21,8 @@ import tool.clients.fmmlxdiagrams.dialogs.enumeration.DeleteEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.enumeration.EditEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.instance.AddInstanceDialog;
 import tool.clients.fmmlxdiagrams.dialogs.instance.ChangeOfDialog;
-import tool.clients.fmmlxdiagrams.dialogs.instance.InstanceGeneratorDialog;
-import tool.clients.fmmlxdiagrams.dialogs.instance.ValueGenerator;
+import tool.clients.fmmlxdiagrams.instancegenerator.dialog.InstanceGeneratorDialog;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
 import tool.clients.fmmlxdiagrams.dialogs.operation.AddOperationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.operation.ChangeBodyDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
@@ -439,7 +439,7 @@ public class DiagramActions {
 				Iterator it = result.getValue().entrySet().iterator();
 				while (it.hasNext()) {
 			        Map.Entry pair = (Map.Entry)it.next();
-			        System.out.println(((FmmlxAttribute) pair.getKey()).getName() + " = " + ((ValueGenerator) pair.getValue()).getName() + " : "+ ((ValueGenerator) pair.getValue()).getValues());
+			        System.out.println(((FmmlxAttribute) pair.getKey()).getName() + " = " + ((ValueGenerator) pair.getValue()).getValueGeneratorName() + " : "+ ((ValueGenerator) pair.getValue()).getGeneratedValue());
 			    }
 				System.out.println("========================================================================");
 
@@ -451,7 +451,7 @@ public class DiagramActions {
 
 					while (it1.hasNext()) {
 						Map.Entry pair1 = (Map.Entry)it1.next();
-						System.out.println(((FmmlxAttribute) pair1.getKey()).getName() + " = "+ ((ValueGenerator) pair1.getValue()).getValues().get(i));
+						System.out.println(((FmmlxAttribute) pair1.getKey()).getName() + " = "+ ((ValueGenerator) pair1.getValue()).getGeneratedValue().get(i));
 					}
 				}
 				diagram.getComm().instanceGenerator(diagram, result.getObject().getId(), result.getValue());

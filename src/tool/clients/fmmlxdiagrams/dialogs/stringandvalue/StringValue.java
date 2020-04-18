@@ -162,7 +162,9 @@ public class StringValue {
         public static final String Mean = "Mean";
 		public static final String stdDeviation= "Standard Deviation";
 		public static final String Range= "Range";
-	}
+        public static final String scenario= "Scenario";
+        public static final String range= "Range";
+    }
 
 	public static class OperationStringValues {
 		public static final String emptyOperation =

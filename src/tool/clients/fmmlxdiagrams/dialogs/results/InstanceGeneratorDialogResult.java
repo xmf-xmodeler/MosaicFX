@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.dialogs.instance.ValueGenerator;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
 
 public class InstanceGeneratorDialogResult extends DialogResult{
 	
