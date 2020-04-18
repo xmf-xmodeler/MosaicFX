@@ -107,7 +107,7 @@ public class FmmlxDiagram{
 		this.diagramID = diagramID;
 		this.packagePath = packagePath;
 //		System.out.println("packagePath: " + packagePath);
-		
+
 		pane = new SplitPane();
 		mainView = new SplitPane();
 		canvas = new Canvas(canvasRawSize.getX(), canvasRawSize.getY());

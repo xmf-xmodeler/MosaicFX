@@ -1,13 +1,20 @@
-package tool.clients.fmmlxdiagrams.dialogs.instance;
+package tool.clients.fmmlxdiagrams.instancegenerator.dialog;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
 import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
@@ -16,6 +23,8 @@ import tool.clients.fmmlxdiagrams.dialogs.results.InstanceGeneratorDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue.LabelAndHeaderTitle;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorIncrement;
 
 public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialogResult>{
 
@@ -50,15 +59,16 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 		setResult();
 	}
 
-	@SuppressWarnings("unchecked")
+
 	private void setResult() {
 		setResultConverter(dlgBtn -> {		
 		if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-			this.value = new HashMap<FmmlxAttribute, ValueGenerator>();
+			this.value = new HashMap<>();
 			int counter = 3;
 			for(FmmlxAttribute att : object.getAllAttributes()) {
 				Node node = inputNode.get(counter);
 				if(node instanceof ComboBox) {
+					((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem().generate(numberOfElementComboBox.getSelectionModel().getSelectedItem());
 					value.put(att, ((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem());
 				} else {
 					value.put(att, null);
@@ -72,24 +82,46 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 	}
 
 	private boolean inputIsValid() {
-		return checkComboBoxes();
+		return checkComboBoxesAndLogic();
 	}
 
-	@SuppressWarnings("unchecked")
-	private boolean checkComboBoxes() {
+	public HashMap<FmmlxAttribute, ValueGenerator> getValue() {
+		return value;
+	}
+
+	private boolean checkLogic(int generatedInstance) {
+		int counter = 3;
+		for(FmmlxAttribute att : object.getAllAttributes()) {
+			Node node = inputNode.get(counter);
+			if(node instanceof ComboBox) {
+				if(((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem().getValueGeneratorName().equals("INCREMENT")){
+					((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem().generate(numberOfElementComboBox.getSelectionModel().getSelectedItem());
+					int possible = ((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem().possibleGeneratedInstance();
+					if(possible<generatedInstance){
+						errorLabel.setText(att.getName()+ "  : Maximum number of generated instance is " +possible );
+						return false;
+					}
+				}
+			}
+			counter++;
+		}
+
+		errorLabel.setText("");
+		return true;
+	}
+
+
+	private boolean checkComboBoxesAndLogic() {
 		if (numberOfElementComboBox.getSelectionModel().getSelectedItem()==null) {
 			errorLabel.setText("Please select number of Instance");
 			return false;
 		}
 		for(Node node : inputNode) {
 			if (node instanceof ComboBox) {
-				if (((ComboBox<ValueGenerator>) node).getSelectionModel()
-						.getSelectedItem() == null /*
-													 * || ((ComboBox<ValueGenerator>)
-													 * node).getSelectionModel().getSelectedItem().getName2().contains(
-													 * "incomplete")
-													 */) {
+				if (((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem() == null ) {
 					errorLabel.setText("Please input all required values");
+					return false;
+				} else if (!checkLogic(numberOfElementComboBox.getSelectionModel().getSelectedItem())){
 					return false;
 				}
 			}
@@ -108,10 +140,10 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 		numberOfElementComboBox.setConverter(new IntegerStringConverter());
 		numberOfElementComboBox.setEditable(true);
 		
-		labelNode = new ArrayList<Node>();
-		typeLabelNode = new ArrayList<Node>();
-		inputNode = new ArrayList<Node>();
-		editButtonNode = new ArrayList<Node>();
+		labelNode = new ArrayList<>();
+		typeLabelNode = new ArrayList<>();
+		inputNode = new ArrayList<>();
+		editButtonNode = new ArrayList<>();
 		
 		labelNode.add(ofLabel);
 		labelNode.add(numberOfElementLabel);

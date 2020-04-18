@@ -1,40 +1,43 @@
-package tool.clients.fmmlxdiagrams.dialogs.instance;
+package tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
 
-import tool.clients.fmmlxdiagrams.dialogs.results.AttributeGeneratorDialogResult;
+import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorListDialog;
+import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorListDialogResult;
 
-public class ListGenerator<T> implements ValueGenerator{
+public class ValueGeneratorList<T> implements ValueGenerator{
 	
 	private Vector<T> elements;
 	private String type;
+	private List<String> parameter;
+	private List<String> generatedValue;
 
-
-	public ListGenerator(String string) {
+	public ValueGeneratorList(String string) {
 		super();
 		this.type= string;
 	}
 
-	public ListGenerator(Vector<T> elements, String string) {
+	public ValueGeneratorList(Vector<T> elements, String string) {
 		super();
 		this.elements = elements;
 		this.type = string;
 	}
 
 	@Override
-	public String getName() {
-		return "List";
+	public String getValueGeneratorName() {
+		return "LIST";
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void openDialog() {
-		AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(InstanceGeneratorGenerateType.LIST, type);
-		Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
+		ValueGeneratorListDialog dlg = new ValueGeneratorListDialog(getValueGeneratorName(), type);
+		Optional<ValueGeneratorListDialogResult> opt = dlg.showAndWait();
 		
 		if (opt.isPresent()) {
-			AttributeGeneratorDialogResult result = opt.get();
+			ValueGeneratorListDialogResult result = opt.get();
 			if (type.equals("Integer")) {
 				this.elements = (Vector<T>) result.getIntValues();
 			} else if (type.equals("Float")) {
@@ -48,9 +51,13 @@ public class ListGenerator<T> implements ValueGenerator{
 	}
 
 	@Override
-	public String generate() {
-		// TODO Auto-generated method stub
+	public List<String> generate(int numberOfInstance) {
 		return null;
+	}
+
+	@Override
+	public int possibleGeneratedInstance() {
+		return 0;
 	}
 
 	@Override
@@ -81,9 +88,24 @@ public class ListGenerator<T> implements ValueGenerator{
 	@Override
 	public String getName2() {
 		if(elements==null) {
-			return getName()+" (incomplete)";
+			return getValueGeneratorName()+" (incomplete)";
 		}
-		return getName();
+		return getValueGeneratorName();
 	}
+
+	@Override
+	public List<String> getParameter() {
+		return parameter;
+	}
+
+	@Override
+	public void setParameter(List<String> parameter) {
+		//TODO
+	}
+
+	@Override
+    public List<String> getGeneratedValue() {
+        return generatedValue;
+    }
 
 }

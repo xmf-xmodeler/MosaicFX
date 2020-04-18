@@ -7,21 +7,18 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
 import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
-import tool.clients.fmmlxdiagrams.dialogs.instance.InstanceGeneratorGenerateTypeComboBox;
-import tool.clients.fmmlxdiagrams.dialogs.instance.ValueGenerator;
+import tool.clients.fmmlxdiagrams.instancegenerator.dialog.InstanceGeneratorGenerateTypeComboBox;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import java.util.List;
+import java.util.Random;
 
 public class CustomDialog<R> extends Dialog<R> {
 
@@ -30,6 +27,8 @@ public class CustomDialog<R> extends Dialog<R> {
 	protected FlowPane flow;
 	protected GridPane grid;
 	protected Label errorLabel;
+	protected InputChecker inputChecker;
+	protected VBoxControl vBoxControl;
 
 	public CustomDialog() {
 		super();
@@ -40,7 +39,8 @@ public class CustomDialog<R> extends Dialog<R> {
 		flow.setHgap(3);
 		flow.setVgap(3);
 		flow.setPrefWrapLength(250);
-		
+		vBoxControl = new VBoxControl();
+		inputChecker = new InputChecker();
 		
 		flow.getChildren().add(grid);
 
@@ -132,7 +132,7 @@ public class CustomDialog<R> extends Dialog<R> {
 			protected void updateItem(String object, boolean empty) {
 				super.updateItem(object, empty);
 
-				if (empty || object == null || object == "") {
+				if (empty || object == null || object.equals("") ) {
 					setText("");
 				} else {
 					setText(object);
@@ -246,16 +246,16 @@ public class CustomDialog<R> extends Dialog<R> {
 	}
 	
 	protected InstanceGeneratorGenerateTypeComboBox initializeComboBoxGeneratorList(FmmlxAttribute attribute) {
-		ComboBox<ValueGenerator> comboBox = new InstanceGeneratorGenerateTypeComboBox(attribute);
+		InstanceGeneratorGenerateTypeComboBox comboBox = new InstanceGeneratorGenerateTypeComboBox(attribute);
 		comboBox.setCellFactory(param -> new ListCell<ValueGenerator>() {
 			@Override
 			protected void updateItem(ValueGenerator item, boolean empty) {
 				super.updateItem(item, empty);
 
-				if (empty || isNullOrEmpty(item.getName())) {
+				if (empty || isNullOrEmpty(item.getValueGeneratorName())) {
 					setText(null);
 				} else {
-					setText(item.getName());
+					setText(item.getValueGeneratorName());
 				}
 			}
 		});
@@ -276,21 +276,14 @@ public class CustomDialog<R> extends Dialog<R> {
 			}
 		});
 		
-		comboBox.valueProperty().addListener(new ChangeListener<ValueGenerator>() {
-
-			@Override
-			public void changed(ObservableValue<? extends ValueGenerator> observable, ValueGenerator oldValue,
-					ValueGenerator newValue) {
-				newValue.openDialog();	
-			}
-		});
+		comboBox.valueProperty().addListener((observable, oldValue, newValue) -> newValue.openDialog());
 		
 		comboBox.setPrefWidth(COLUMN_WIDTH);
-		return (InstanceGeneratorGenerateTypeComboBox) comboBox;
+		return comboBox;
 	}
 	
 	public ComboBox<FmmlxEnum> initializeComboBoxEnum(ObservableList<FmmlxEnum> observableList) {
-		ComboBox<FmmlxEnum> comboBox = new ComboBox<FmmlxEnum>(observableList);
+		ComboBox<FmmlxEnum> comboBox = new ComboBox<>(observableList);
 		comboBox.setCellFactory(param -> new ListCell<FmmlxEnum>() {
 			@Override
 			protected void updateItem(FmmlxEnum item, boolean empty) {
@@ -347,6 +340,82 @@ public class CustomDialog<R> extends Dialog<R> {
 	}
 	
 	
+	public boolean validateString(String string) {
+
+		if (!InputChecker.getInstance().validateName(string)) {
+			errorLabel.setText("Enter valid String!");
+			return false;
+		} else {
+			errorLabel.setText("");
+			return true;
+		}
+	}
+	
+	
+	public boolean validateIncrement(String startValue, String endValue, String increment, String attributeType) {
+		boolean valid;
+		switch(attributeType){
+        case "Integer":   	
+        	valid = inputChecker.validateInteger(startValue) && inputChecker.validateInteger(endValue) && inputChecker.validateInteger(increment);
+        	if(!valid) {
+        		errorLabel.setText("Please input valid Integer-Value");
+        	}
+        	return valid;
+        case "Float":
+        	valid =  inputChecker.validateFloat(startValue) && inputChecker.validateFloat(endValue) && inputChecker.validateFloat(increment);
+        	if(!valid) {
+        		errorLabel.setText("Please input valid Float-Value");
+        	}
+        	return valid;
+        default:
+           	return false;
+        }
+		
+	}
+
+	protected CustomDialog.VBoxControl getVBoxControl() {
+		return vBoxControl;
+	}
+
+	protected class VBoxControl{
+
+		public VBox joinNodeInVBox(Node node1, Node node2) {
+			VBox result = new VBox();
+			GridPane grid = new GridPane();
+			grid.add(node1, 0, 0);
+			grid.add(node2, 1, 0);
+
+			ColumnConstraints col1 = new ColumnConstraints();
+			col1.setPercentWidth(33);
+			ColumnConstraints col2 = new ColumnConstraints();
+			col2.setPercentWidth(68);
+
+			grid.getColumnConstraints().addAll(col1,col2);
+
+			result.getChildren().add(grid);
+			return result;
+		}
+
+		public VBox joinNodeInVBox(Node node1, Node node2, Node node3) {
+			VBox result = new VBox();
+			GridPane grid = new GridPane();
+			grid.add(node1, 0, 0);
+			grid.add(node2, 1, 0);
+			grid.add(node3, 2, 0);
+
+			ColumnConstraints col1 = new ColumnConstraints();
+			col1.setPercentWidth(45);
+			ColumnConstraints col2 = new ColumnConstraints();
+			col2.setPercentWidth(10);
+			ColumnConstraints col3 = new ColumnConstraints();
+			col3.setPercentWidth(45);
+
+			grid.getColumnConstraints().addAll(col1,col2,col3);
+
+			result.getChildren().add(grid);
+			return result;
+		}
+	}
 
 
 }
