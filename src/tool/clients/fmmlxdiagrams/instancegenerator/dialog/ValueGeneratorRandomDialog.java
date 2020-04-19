@@ -17,21 +17,19 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRandomDialogResult> implements ValueGeneratorDialog {
 
 	private final String attributeType;
-	private DialogPane dialogPane;
 
-	private List<Node> labelNode;
-	private List<Node> inputNode;
-
-	private Label scenarioLabel;
-	private Label rangeLabel;
 	private ComboBox<String> scenarioComboBox;
 	private TextField rangeMinTextField, rangeMaxTextField;
-	private VBox rangeVBox;
+
+	private String scenario;
+	private String rangeMin;
+	private String rangeMax;
 
 	public ValueGeneratorRandomDialog(String valueGeneratorName, String attributeType, String scenario, List<String> parameter) {
 
 		this.attributeType = attributeType;
-		dialogPane = getDialogPane();
+		this.scenario =scenario;
+		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		dialogPane.setHeaderText(valueGeneratorName + " : "+attributeType);
 		dialogPane.setContent(flow);
@@ -45,29 +43,65 @@ public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRando
 		});
 		
 		setResult();
-		scenarioComboBox.setValue(scenario);
-		if(scenario!=null) {
-			if (!scenario.equals("Free")) {
-				rangeMinTextField.setText(parameter.get(0));
-				rangeMaxTextField.setText(parameter.get(1));
-			}
-		}
+		setScenario(scenario);
+		setStaticValue(parameter);
+
 	}
 
 	@Override
 	public void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				return new ValueGeneratorRandomDialogResult(attributeType, scenarioComboBox.getSelectionModel().getSelectedItem(), getParameter());
+				storeScenario();
+				storeParameter();
+				return new ValueGeneratorRandomDialogResult(getAttributeType(), getScenario(), getParameter());
 			}
 			return null;
 		});
 	}
 
-	private List<String> getParameter() {
+	private void storeScenario() {
+		this.scenario = scenarioComboBox.getSelectionModel().getSelectedItem();
+	}
+
+	@Override
+	public void setStaticValue(List<String> staticValue) {
+		if(getScenario()!=null) {
+			if (!getScenario().equals("Free")) {
+				this.rangeMin = staticValue.get(0);
+				this.rangeMinTextField.setText(rangeMin);
+				this.rangeMax = staticValue.get(1);
+				this.rangeMaxTextField.setText(rangeMax);
+			}
+		}
+	}
+
+	public void setScenario(String scenario) {
+		if (scenario!=null){
+			this.scenario = scenario;
+			scenarioComboBox.setValue(getScenario());
+		}
+	}
+
+	private String getScenario() {
+		return scenario;
+	}
+
+	@Override
+	public void storeParameter() {
+		this.rangeMin = rangeMinTextField.getText();
+		this.rangeMax = rangeMaxTextField.getText();
+	}
+
+	@Override
+	public String getAttributeType() {
+		return this.attributeType;
+	}
+
+	public List<String> getParameter() {
 		List<String> result = new ArrayList<>();
-		result.add(rangeMinTextField.getText());
-		result.add(rangeMaxTextField.getText());
+		result.add(this.rangeMin);
+		result.add(this.rangeMax);
 		return result;
 	}
 
@@ -138,18 +172,18 @@ public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRando
 
 	@Override
 	public void layoutContent() {
-		labelNode = new ArrayList<>();
-		inputNode = new ArrayList<>();
+		List<Node> labelNode = new ArrayList<>();
+		List<Node> inputNode = new ArrayList<>();
 
-		scenarioLabel = new Label(StringValue.LabelAndHeaderTitle.scenario);
-		rangeLabel = new Label(StringValue.LabelAndHeaderTitle.range);
+		Label scenarioLabel = new Label(StringValue.LabelAndHeaderTitle.scenario);
+		Label rangeLabel = new Label(StringValue.LabelAndHeaderTitle.range);
 
 		rangeMinTextField = new TextField();
 		rangeMinTextField.setDisable(true);
 		rangeMaxTextField = new TextField();
 		rangeMaxTextField.setDisable(true);
 
-		rangeVBox = getVBoxControl().joinNodeInVBox(rangeMinTextField, new Label("  -"), rangeMaxTextField);
+		VBox rangeVBox = getVBoxControl().joinNodeInVBox(rangeMinTextField, new Label("  -"), rangeMaxTextField);
 
 		ObservableList<String> typeList = FXCollections.observableArrayList("Range", "Free");
 		scenarioComboBox = new ComboBox<>(typeList);

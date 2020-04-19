@@ -55,21 +55,18 @@ public class ValueGeneratorIncrement implements ValueGenerator{
 	@Override
 	public List<String> generate(int numberOfInstance) {
 		try {
-			int counter = 0;
 			generatedValue = new ArrayList<>();
 			if(type.equals("Integer")){
 				int subtotal= Integer.parseInt(startValue);
 				while(subtotal<=Integer.parseInt(endValue)){
 					generatedValue.add(subtotal+"");
 					subtotal+=Integer.parseInt(inc);
-					counter+=1;
 				}
 			}else if(type.equals("Float")){
 				float subtotal= Float.parseFloat(startValue);
 				while(subtotal<=Float.parseFloat(endValue)){
 					generatedValue.add(subtotal+"");
 					subtotal+=Float.parseFloat(inc);
-					counter+=1;
 				}
 			}
 

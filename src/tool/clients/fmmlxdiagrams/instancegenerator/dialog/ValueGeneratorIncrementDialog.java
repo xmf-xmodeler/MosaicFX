@@ -19,17 +19,10 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 public class ValueGeneratorIncrementDialog extends CustomDialog<ValueGeneratorIncrementDialogResult> implements ValueGeneratorDialog {
 	
-	private String attributeType;
+	private final String attributeType;
 	
-	private DialogPane dialogPane;
-	
-	private List<Node> labelNode;
-	private List<Node> inputNode;
+	private final DialogPane dialogPane;
 
-	private Label startValueLabel;
-	private Label endValueLabel;
-	private Label incrementValueLabel;
-	
 	private TextField startValueTextField;
 	private TextField endValueTextField;
 	private TextField incrementValueTextField;
@@ -75,21 +68,46 @@ public class ValueGeneratorIncrementDialog extends CustomDialog<ValueGeneratorIn
 		});
 		
 		setResult();
-		this.startValue = parameter.get(0).toString();
-    	this.startValueTextField.setText(startValue);
-    	this.endValue = parameter.get(1).toString();
-    	this.endValueTextField.setText(endValue);
-    	this.incValue = parameter.get(2).toString();
-    	this.incrementValueTextField.setText(incValue);
+		setStaticValue(parameter);
+	}
+
+	@Override
+	public void setStaticValue(List<String> staticValue) {
+		this.startValue = staticValue.get(0);
+		this.startValueTextField.setText(startValue);
+		this.endValue = staticValue.get(1);
+		this.endValueTextField.setText(endValue);
+		this.incValue = staticValue.get(2);
+		this.incrementValueTextField.setText(incValue);
+	}
+
+	@Override
+	public void storeParameter() {
+		this.startValue = startValueTextField.getText();
+		this.endValue = endValueTextField.getText();
+		this.incValue = incrementValueTextField.getText();
+	}
+
+	@Override
+	public List<String> getParameter() {
+		List<String> result = new ArrayList<>();
+		result.add(this.startValue);
+		result.add(this.endValue);
+		result.add(this.incValue);
+		return result;
+	}
+
+	@Override
+	public String getAttributeType() {
+		return attributeType;
 	}
 
 	@Override
 	public void setResult() {
 		setResultConverter(dlgBtn -> {		
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-
-				return new ValueGeneratorIncrementDialogResult(startValueTextField.getText(),
-						endValueTextField.getText(), incrementValueTextField.getText(), attributeType);
+				storeParameter();
+				return new ValueGeneratorIncrementDialogResult(getParameter(), getAttributeType());
 			}
 			return null;
 		});		
@@ -97,18 +115,17 @@ public class ValueGeneratorIncrementDialog extends CustomDialog<ValueGeneratorIn
 
 	@Override
 	public boolean inputIsValid() {
-		
-		return validateIncrement(startValueTextField.getText(), endValueTextField.getText(), incrementValueTextField.getText(), attributeType); 
+		return validateIncrement(startValueTextField.getText(), endValueTextField.getText(), incrementValueTextField.getText(), getAttributeType());
 	}
 
 	@Override
 	public void layoutContent() {
-		labelNode = new ArrayList();
-		inputNode = new ArrayList();
-		
-		startValueLabel = new Label(StringValue.LabelAndHeaderTitle.startValue);
-		endValueLabel = new Label(StringValue.LabelAndHeaderTitle.endValue);
-		incrementValueLabel = new Label(StringValue.LabelAndHeaderTitle.incrementValue);
+		ArrayList<Node> labelNode = new ArrayList<>();
+		ArrayList<Node> inputNode = new ArrayList<>();
+
+		Label startValueLabel = new Label(StringValue.LabelAndHeaderTitle.startValue);
+		Label endValueLabel = new Label(StringValue.LabelAndHeaderTitle.endValue);
+		Label incrementValueLabel = new Label(StringValue.LabelAndHeaderTitle.incrementValue);
 		
 		startValueTextField = new TextField();
 		endValueTextField = new TextField();

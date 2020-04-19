@@ -2,27 +2,26 @@ package tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Vector;
 
 import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorListDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorListDialogResult;
 
 public class ValueGeneratorList<T> implements ValueGenerator{
 	
-	private Vector<T> elements;
-	private String type;
+	private List<String> elements;
+	private String attributeType;
 	private List<String> parameter;
 	private List<String> generatedValue;
 
-	public ValueGeneratorList(String string) {
+	public ValueGeneratorList(String attributeType) {
 		super();
-		this.type= string;
+		this.attributeType = attributeType;
 	}
 
-	public ValueGeneratorList(Vector<T> elements, String string) {
+	public ValueGeneratorList(List<String> elements, String attributeType) {
 		super();
 		this.elements = elements;
-		this.type = string;
+		this.attributeType = attributeType;
 	}
 
 	@Override
@@ -33,20 +32,12 @@ public class ValueGeneratorList<T> implements ValueGenerator{
 	@SuppressWarnings("unchecked")
 	@Override
 	public void openDialog() {
-		ValueGeneratorListDialog dlg = new ValueGeneratorListDialog(getValueGeneratorName(), type);
+		ValueGeneratorListDialog dlg = new ValueGeneratorListDialog(getValueGeneratorName(), attributeType);
 		Optional<ValueGeneratorListDialogResult> opt = dlg.showAndWait();
 		
 		if (opt.isPresent()) {
 			ValueGeneratorListDialogResult result = opt.get();
-			if (type.equals("Integer")) {
-				this.elements = (Vector<T>) result.getIntValues();
-			} else if (type.equals("Float")) {
-				this.elements = (Vector<T>) result.getFloatValues();
-			} else if (type.equals("Boolean")) {
-				this.elements = (Vector<T>) result.getBoolValues();		
-			} else if (type.equals("String")) {
-				this.elements  = (Vector<T>) result.getStringValues();
-			}
+			//TODO
 		}
 	}
 
@@ -69,20 +60,20 @@ public class ValueGeneratorList<T> implements ValueGenerator{
 		return false;
 	}
 
-	public Vector<T> getElements() {
+	public List<String> getElements() {
 		return elements;
 	}
 
-	public void setElements(Vector<T> elements) {
+	public void setElements(List<String> elements) {
 		this.elements = elements;
 	}
 
-	public String getType() {
-		return type;
+	public String getAttributeType() {
+		return attributeType;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setAttributeType(String attributeType) {
+		this.attributeType = attributeType;
 	}
 
 	@Override

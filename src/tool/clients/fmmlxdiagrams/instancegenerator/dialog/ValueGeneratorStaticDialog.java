@@ -13,42 +13,18 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 public class ValueGeneratorStaticDialog extends CustomDialog<ValueGeneratorStaticDialogResult> implements ValueGeneratorDialog {
 
-	private String attributeType;
-	
-	private DialogPane dialogPane;
-	
-	private List<Node> labelNode;
-	private List<Node> inputNode;
-	private Label staticValueLabel;
+	private final String attributeType;
+
 	private TextField staticValueTextField;
 	private ComboBox<String> staticValueComboBox;
 	
 	private String staticValue;
-
-	public ValueGeneratorStaticDialog(String valueGeneratorName, String attributeType) {
-
-		this.attributeType = attributeType;
-		
-		dialogPane = getDialogPane();
-		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialogPane.setHeaderText(valueGeneratorName + " : "+attributeType);
-		dialogPane.setContent(flow);
-		layoutContent();
-		
-		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
-		okButton.addEventFilter(ActionEvent.ACTION, e -> {
-			if (!inputIsValid()) {		
-				e.consume();
-			}
-		});
-		setResult();
-	}
 	
-	public <T> ValueGeneratorStaticDialog(String valueGeneratorName, String attributeType, List<T> value) {
+	public ValueGeneratorStaticDialog(String valueGeneratorName, String attributeType, List<String> parameter) {
 
 		this.attributeType = attributeType;
-		
-		dialogPane = getDialogPane();
+
+		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		dialogPane.setHeaderText(valueGeneratorName + " : "+attributeType);
 		dialogPane.setContent(flow);
@@ -61,30 +37,53 @@ public class ValueGeneratorStaticDialog extends CustomDialog<ValueGeneratorStati
 			}
 		});
 		
-		setResult();		
-		
-		if (attributeType.equals("Boolean")) {
-    		this.staticValue =  value.get(0).toString();
-    		staticValueComboBox.setValue(value.get(0).toString());
-    	} else {
-    		this.staticValue =  value.get(0).toString();
-        	staticValueTextField.setText(staticValue);
-    	}
-		
+		setResult();
+		setStaticValue(parameter);
 	}
 
 	@Override
 	public void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				if (attributeType.equals("Boolean")) {
-					return new ValueGeneratorStaticDialogResult(staticValueComboBox.getSelectionModel().getSelectedItem(), attributeType);
-				} else {
-					return new ValueGeneratorStaticDialogResult(staticValueTextField.getText(), attributeType);
-				}
+				storeParameter();
+				return new ValueGeneratorStaticDialogResult(getParameter(), attributeType);
 			}
 			return null;
 		});
+	}
+
+	@Override
+	public void setStaticValue(List<String> staticValue) {
+		if (staticValue !=null){
+			if (this.attributeType.equals("Boolean")) {
+				this.staticValue =  staticValue.get(0);
+				staticValueComboBox.setValue(staticValue.get(0));
+			} else {
+				this.staticValue =  staticValue.get(0);
+				staticValueTextField.setText(this.staticValue);
+			}
+		}
+	}
+
+	@Override
+	public void storeParameter() {
+		if(getAttributeType().equals("Boolean")){
+			this.staticValue = staticValueComboBox.getSelectionModel().getSelectedItem();
+		} else {
+			this.staticValue = staticValueTextField.getText();
+		}
+	}
+
+	@Override
+	public List<String> getParameter() {
+		List<String> result = new ArrayList<>();
+		result.add(this.staticValue);
+		return result;
+	}
+
+	@Override
+	public String getAttributeType() {
+		return attributeType;
 	}
 
 	@Override
@@ -123,10 +122,10 @@ public class ValueGeneratorStaticDialog extends CustomDialog<ValueGeneratorStati
 
 	@Override
 	public void layoutContent() {
-		labelNode = new ArrayList<>();
-		inputNode = new ArrayList<>();
-			
-		staticValueLabel = new Label(StringValue.LabelAndHeaderTitle.value);
+		ArrayList<Node> labelNode = new ArrayList<>();
+		ArrayList<Node> inputNode = new ArrayList<>();
+
+		Label staticValueLabel = new Label(StringValue.LabelAndHeaderTitle.value);
 		
 		if(attributeType.equals("Boolean")) {
 			staticValueComboBox = new ComboBox<>(AllValueList.booleanList);

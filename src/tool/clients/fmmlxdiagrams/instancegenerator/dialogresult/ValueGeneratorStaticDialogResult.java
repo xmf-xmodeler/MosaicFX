@@ -16,20 +16,25 @@ public class ValueGeneratorStaticDialogResult extends DialogResult {
 
 	private List<String> valueString;
 	
-	public ValueGeneratorStaticDialogResult(String value, String type) {
+	public ValueGeneratorStaticDialogResult(List<String> parameter, String type) {
 
-		if (type.equals("Boolean")) {
-			this.valueBool = new ArrayList<>();
-			valueBool.add(Boolean.parseBoolean(value));
-		} else if (type.equals("String")) {
-			this.valueString = new ArrayList<>();
-			valueString.add(value);
-		} else if (type.equals("Integer")) {
-			this.valueInt = new ArrayList<>();
-			valueInt.add(Integer.parseInt(value));
-		} else if (type.equals("Float")) {
-			this.valueFloat = new ArrayList<>();
-			valueFloat.add(Float.parseFloat(value));
+		switch (type) {
+			case "Boolean":
+				this.valueBool = new ArrayList<>();
+				valueBool.add(Boolean.parseBoolean(parameter.get(0)));
+				break;
+			case "String":
+				this.valueString = new ArrayList<>();
+				valueString.add(parameter.get(0));
+				break;
+			case "Integer":
+				this.valueInt = new ArrayList<>();
+				valueInt.add(Integer.parseInt(parameter.get(0)));
+				break;
+			case "Float":
+				this.valueFloat = new ArrayList<>();
+				valueFloat.add(Float.parseFloat(parameter.get(0)));
+				break;
 		}
 	}
 	

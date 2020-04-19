@@ -29,14 +29,8 @@ public class ValueGeneratorStatic implements ValueGenerator{
 
 	@Override
 	public void openDialog() {
-		if (parameter !=null) {
-			ValueGeneratorStaticDialog dlg = new ValueGeneratorStaticDialog(getValueGeneratorName(), type, parameter);
-			dialogResult(dlg);
-			
-		} else {
-			ValueGeneratorStaticDialog dlg = new ValueGeneratorStaticDialog(getValueGeneratorName(), type);
-			dialogResult(dlg);
-		}	
+		ValueGeneratorStaticDialog dlg = new ValueGeneratorStaticDialog(getValueGeneratorName(), type, parameter);
+		dialogResult(dlg);
 	}
 	
 	private void dialogResult(ValueGeneratorStaticDialog dlg) {

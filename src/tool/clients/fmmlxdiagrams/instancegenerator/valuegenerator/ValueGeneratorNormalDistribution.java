@@ -23,13 +23,8 @@ public class ValueGeneratorNormalDistribution implements ValueGenerator{
 
 	@Override
 	public void openDialog() {
-		if (parameters != null){
 			ValueGeneratorNormalDistributionDialog dlg = new ValueGeneratorNormalDistributionDialog(getValueGeneratorName(), attributeType, parameters);
 			dialogResult(dlg);
-		} else {
-			ValueGeneratorNormalDistributionDialog dlg = new ValueGeneratorNormalDistributionDialog(getValueGeneratorName(), attributeType);
-			dialogResult(dlg);
-		}
 	}
 
 	private void dialogResult(ValueGeneratorNormalDistributionDialog dlg) {
