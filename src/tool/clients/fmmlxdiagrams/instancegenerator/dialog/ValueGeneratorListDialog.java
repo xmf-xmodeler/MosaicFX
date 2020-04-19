@@ -64,7 +64,7 @@ public class ValueGeneratorListDialog extends CustomDialog<ValueGeneratorListDia
 	}
 
 	@Override
-	public void setStaticValue(List<String> staticValue) {
+	public void setParameter(List<String> staticValue) {
 
 	}
 
@@ -79,7 +79,7 @@ public class ValueGeneratorListDialog extends CustomDialog<ValueGeneratorListDia
 	}
 
 	public String getAttributeType() {
-		return attributeType;
+		return this.attributeType;
 	}
 
 	@Override
@@ -107,14 +107,14 @@ public class ValueGeneratorListDialog extends CustomDialog<ValueGeneratorListDia
 		List<Node> inputNode = new ArrayList<>();
 
 		Label valueListLabel = new Label(StringValue.LabelAndHeaderTitle.valueList);
-		listValue = new ListView<>();
+		this.listValue = new ListView<>();
 
 		Button addItemButton = new Button("Add");
 		Button removeItemButton = new Button("Remove");
 		
 		labelNode.add(valueListLabel);
 		
-		inputNode.add(listValue);
+		inputNode.add(this.listValue);
 		inputNode.add(joinNodeElementInHBox(addItemButton, removeItemButton));
 
 		addNodesToGrid(labelNode, 0);

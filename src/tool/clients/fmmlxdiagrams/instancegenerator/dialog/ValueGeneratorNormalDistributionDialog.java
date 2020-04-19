@@ -42,12 +42,12 @@ public class ValueGeneratorNormalDistributionDialog extends CustomDialog<ValueGe
 		setResult();
 
 		if(parameter!=null){
-			setStaticValue(parameter);
+			setParameter(parameter);
 		}
 	}
 
 	@Override
-	public void setStaticValue(List<String> staticValue) {
+	public void setParameter(List<String> staticValue) {
 		this.meanValue = staticValue.get(0);
 		meanTextField.setText(meanValue);
 		this.stdDevValue = staticValue.get(1);

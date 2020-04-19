@@ -44,7 +44,7 @@ public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRando
 		
 		setResult();
 		setScenario(scenario);
-		setStaticValue(parameter);
+		setParameter(parameter);
 
 	}
 
@@ -65,7 +65,7 @@ public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRando
 	}
 
 	@Override
-	public void setStaticValue(List<String> staticValue) {
+	public void setParameter(List<String> staticValue) {
 		if(getScenario()!=null) {
 			if (!getScenario().equals("Free")) {
 				this.rangeMin = staticValue.get(0);
@@ -79,18 +79,18 @@ public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRando
 	public void setScenario(String scenario) {
 		if (scenario!=null){
 			this.scenario = scenario;
-			scenarioComboBox.setValue(getScenario());
+			this.scenarioComboBox.setValue(getScenario());
 		}
 	}
 
 	private String getScenario() {
-		return scenario;
+		return this.scenario;
 	}
 
 	@Override
 	public void storeParameter() {
-		this.rangeMin = rangeMinTextField.getText();
-		this.rangeMax = rangeMaxTextField.getText();
+		this.rangeMin = this.rangeMinTextField.getText();
+		this.rangeMax = this.rangeMaxTextField.getText();
 	}
 
 	@Override
@@ -112,7 +112,7 @@ public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRando
 		} else if(!inputChecker.validateFloat(rangeMaxTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidFloatValue +" : Range (Max)");
 			return false;
-		} else if(!validateLogic(attributeType)){
+		} else if(!validateLogic(getAttributeType())){
 			return false;
 		}
 		errorLabel.setText("");
@@ -153,15 +153,15 @@ public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRando
 
 	@Override
 	public boolean inputIsValid() {
-			if(scenarioComboBox.getSelectionModel().getSelectedItem()== null){
+			if(this.scenarioComboBox.getSelectionModel().getSelectedItem()== null){
 				errorLabel.setText("Please select scenario");
 				return false;
-			} if(scenarioComboBox.getSelectionModel().getSelectedItem().equals("Range")){
-				switch (attributeType) {
+			} if(this.scenarioComboBox.getSelectionModel().getSelectedItem().equals("Range")){
+				switch (getAttributeType()) {
 					case "Integer":
-						return validateInteger(rangeMinTextField, rangeMaxTextField);
+						return validateInteger(this.rangeMinTextField, this.rangeMaxTextField);
 					case "Float":
-						return validateFloat(rangeMinTextField, rangeMaxTextField);
+						return validateFloat(this.rangeMinTextField, this.rangeMaxTextField);
 					default:
 						return false;
 				}
@@ -178,32 +178,34 @@ public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRando
 		Label scenarioLabel = new Label(StringValue.LabelAndHeaderTitle.scenario);
 		Label rangeLabel = new Label(StringValue.LabelAndHeaderTitle.range);
 
-		rangeMinTextField = new TextField();
-		rangeMinTextField.setDisable(true);
-		rangeMaxTextField = new TextField();
-		rangeMaxTextField.setDisable(true);
+		this.rangeMinTextField = new TextField();
+		this.rangeMinTextField.setDisable(true);
+		this.rangeMaxTextField = new TextField();
+		this.rangeMaxTextField.setDisable(true);
 
 		VBox rangeVBox = getVBoxControl().joinNodeInVBox(rangeMinTextField, new Label("  -"), rangeMaxTextField);
 
 		ObservableList<String> typeList = FXCollections.observableArrayList("Range", "Free");
-		scenarioComboBox = new ComboBox<>(typeList);
-		scenarioComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+		this.scenarioComboBox = new ComboBox<>(typeList);
+		this.scenarioComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if(!newValue.equals(oldValue)){
 				if(newValue.equals("Free")){
-					rangeMinTextField.setText("");
-					rangeMaxTextField.setText("");
-					rangeMinTextField.setDisable(true);
-					rangeMaxTextField.setDisable(true);
+					this.rangeMinTextField.setText("");
+					this.rangeMaxTextField.setText("");
+					this.rangeMin=null;
+					this.rangeMinTextField.setDisable(true);
+					this.rangeMaxTextField.setDisable(true);
+					this.rangeMax=null;
 				} else {
-					rangeMinTextField.setDisable(false);
-					rangeMaxTextField.setDisable(false);
+					this.rangeMinTextField.setDisable(false);
+					this.rangeMaxTextField.setDisable(false);
 				}
 			}
 		});
 
 		labelNode.add(scenarioLabel);
 		labelNode.add(rangeLabel);
-		inputNode.add(scenarioComboBox);
+		inputNode.add(this.scenarioComboBox);
 		inputNode.add(rangeVBox);
 		
 		addNodesToGrid(labelNode, 0);

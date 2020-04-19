@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface ValueGeneratorDialog {
 
-	void setStaticValue(List<String> staticValue);
+	void setParameter(List<String> staticValue);
 	void storeParameter();
 	List<String> getParameter();
 	String getAttributeType();
