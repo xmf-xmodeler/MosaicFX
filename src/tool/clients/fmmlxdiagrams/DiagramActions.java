@@ -35,6 +35,7 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Vector;
 //import java.util.concurrent.CountDownLatch;
@@ -436,9 +437,9 @@ public class DiagramActions {
 				System.out.println();
 				System.out.println("Parent ID : "+result.getObject().getId());
 				System.out.println("Number of generated Instance : "+ result.getNumberOfInstance());
-				Iterator it = result.getValue().entrySet().iterator();
+				Iterator<Entry<FmmlxAttribute, ValueGenerator>> it = result.getValue().entrySet().iterator();
 				while (it.hasNext()) {
-			        Map.Entry pair = (Map.Entry)it.next();
+			        Map.Entry<FmmlxAttribute, ValueGenerator> pair = (Entry<FmmlxAttribute, ValueGenerator>)it.next();
 			        System.out.println(((FmmlxAttribute) pair.getKey()).getName() + " = " + ((ValueGenerator) pair.getValue()).getValueGeneratorName() + " : "+ ((ValueGenerator) pair.getValue()).getGeneratedValue());
 			    }
 				System.out.println("========================================================================");
@@ -447,10 +448,10 @@ public class DiagramActions {
 					System.out.println();
 					System.out.println("Instance No : "+(i+1));
 
-					Iterator it1 = result.getValue().entrySet().iterator();
+					Iterator<Entry<FmmlxAttribute, ValueGenerator>> it1 = result.getValue().entrySet().iterator();
 
 					while (it1.hasNext()) {
-						Map.Entry pair1 = (Map.Entry)it1.next();
+						Map.Entry<FmmlxAttribute, ValueGenerator> pair1 = (Entry<FmmlxAttribute, ValueGenerator>)it1.next();
 						System.out.println(((FmmlxAttribute) pair1.getKey()).getName() + " = "+ ((ValueGenerator) pair1.getValue()).getGeneratedValue().get(i));
 					}
 				}
