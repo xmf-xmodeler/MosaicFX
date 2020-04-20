@@ -394,6 +394,25 @@ public class CustomDialog<R> extends Dialog<R> {
 			result.getChildren().add(grid);
 			return result;
 		}
+
+		public VBox joinNodeInVBox(Node node1, Node node2) {
+			VBox result = new VBox();
+			GridPane grid = new GridPane();
+			grid.add(node1, 0, 0);
+			grid.add(node2, 1, 0);
+
+
+			ColumnConstraints col1 = new ColumnConstraints();
+			col1.setPercentWidth(35);
+			ColumnConstraints col2 = new ColumnConstraints();
+			col2.setPercentWidth(65);
+
+
+			grid.getColumnConstraints().addAll(col1,col2);
+
+			result.getChildren().add(grid);
+			return result;
+		}
 	}
 
 

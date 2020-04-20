@@ -87,19 +87,26 @@ public class ValueGeneratorListDialog extends CustomDialog<ValueGeneratorListDia
 		this.listName = new TextField();
 		this.listValue = new ListView<>();
 
-		Button fetchButton = new Button();
+		Button fetchButton = new Button("Fetch Elements");
+		fetchButton.setOnAction(e -> fetchElement(listName.getText()));
 
 		labelNode.add(listNameLabel);
 		labelNode.add(valueListLabel);
 
-		inputNode.add(listName);
+		inputNode.add(getVBoxControl().joinNodeInVBox(listName, fetchButton));
 		inputNode.add(this.listValue);
 
 		addNodesToGrid(labelNode, 0);
 		addNodesToGrid(inputNode, 1);
 	}
 
-    @Override
+	private void fetchElement(String listName) {
+		if(listName!= null || !listName.equals("")){
+			//TODO fetch elements of the list
+		}
+	}
+
+	@Override
     public boolean validateLogic(String attributeType) {
         return false;
     }
