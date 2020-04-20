@@ -26,7 +26,8 @@ class ValueGeneratorRandomTest {
     void generateInteger() {
         ValueGeneratorRandom valueGeneratorRandom = new ValueGeneratorRandom("Integer");
         valueGeneratorRandom.setSelectedScenario("Free");
-        System.out.println(valueGeneratorRandom.generate(10));
+        valueGeneratorRandom.generate(10);
+        System.out.println(valueGeneratorRandom.getGeneratedValue().toString());
 
         ValueGeneratorRandom valueGeneratorRandom1 = new ValueGeneratorRandom("Integer");
         valueGeneratorRandom1.setSelectedScenario("Range");
@@ -34,14 +35,16 @@ class ValueGeneratorRandomTest {
         param.add("1");
         param.add("10");
         valueGeneratorRandom1.setParameter(param);
-        System.out.println(valueGeneratorRandom1.generate(10));
+        valueGeneratorRandom1.generate(10);
+        System.out.println(valueGeneratorRandom1.getGeneratedValue().toString());
     }
 
     @Test
     void generateFloat() {
         ValueGeneratorRandom valueGeneratorRandom = new ValueGeneratorRandom("Float");
         valueGeneratorRandom.setSelectedScenario("Free");
-        System.out.println(valueGeneratorRandom.generate(10));
+        valueGeneratorRandom.generate(10);
+        System.out.println(valueGeneratorRandom.getGeneratedValue().toString());
 
         ValueGeneratorRandom valueGeneratorRandom1 = new ValueGeneratorRandom("Float");
         valueGeneratorRandom1.setSelectedScenario("Range");
@@ -49,12 +52,14 @@ class ValueGeneratorRandomTest {
         param.add("1");
         param.add("10");
         valueGeneratorRandom1.setParameter(param);
-        System.out.println(valueGeneratorRandom1.generate(10));
+        valueGeneratorRandom1.generate(10);
+        System.out.println(valueGeneratorRandom1.getGeneratedValue().toString());
     }
 
     @Test
     void generateBoolean() {
         ValueGeneratorRandom valueGeneratorRandom = new ValueGeneratorRandom("Boolean");
-        System.out.println(valueGeneratorRandom.generate(10));
+        valueGeneratorRandom.generate(10);
+        System.out.println(valueGeneratorRandom.getGeneratedValue().toString());
     }
 }

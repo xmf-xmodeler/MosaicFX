@@ -67,7 +67,7 @@ public class ValueGeneratorStaticDialog extends CustomDialog<ValueGeneratorStati
 
 	@Override
 	public void storeParameter() {
-		if(getAttributeType().equals("Boolean")){
+		if(getAttributeType().equals(StringValue.TraditionalDataType.BOOLEAN)){
 			this.staticValue = staticValueComboBox.getSelectionModel().getSelectedItem();
 		} else {
 			this.staticValue = staticValueTextField.getText();
@@ -88,7 +88,7 @@ public class ValueGeneratorStaticDialog extends CustomDialog<ValueGeneratorStati
 
 	@Override
 	public boolean inputIsValid() {
-		if (attributeType.equals("Boolean")) {
+		if (attributeType.equals(StringValue.TraditionalDataType.BOOLEAN)) {
     		if (staticValueComboBox.getSelectionModel().getSelectedItem()!=null) {
     			return true;
     		}
@@ -98,19 +98,19 @@ public class ValueGeneratorStaticDialog extends CustomDialog<ValueGeneratorStati
 	
 	protected boolean validateStatic(String string) {
 		switch(attributeType){
-        case "Integer":
+        case StringValue.TraditionalDataType.INTEGER:
         	if(!inputChecker.validateInteger(string)) {
         		errorLabel.setText("Please input valid Integer");
         	}
             return inputChecker.validateInteger(string);
-        case "Float":
+        case StringValue.TraditionalDataType.FLOAT:
         	if(!inputChecker.validateFloat(string)) {
         		errorLabel.setText("Please input valid float value");
         	}
         	return inputChecker.validateFloat(string);
-        case "String":
+        case StringValue.TraditionalDataType.STRING:
         	return validateString(string);
-        case "Boolean":
+        case StringValue.TraditionalDataType.BOOLEAN:
         	if(!inputChecker.validateBoolean(string)) {
         		errorLabel.setText("Please select boolean value");
         	}
@@ -127,7 +127,7 @@ public class ValueGeneratorStaticDialog extends CustomDialog<ValueGeneratorStati
 
 		Label staticValueLabel = new Label(StringValue.LabelAndHeaderTitle.value);
 		
-		if(attributeType.equals("Boolean")) {
+		if(attributeType.equals(StringValue.TraditionalDataType.BOOLEAN)) {
 			staticValueComboBox = new ComboBox<>(AllValueList.booleanList);
 			inputNode.add(staticValueComboBox);
 		} else {

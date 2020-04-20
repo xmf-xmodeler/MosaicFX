@@ -11,6 +11,7 @@ import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.ArrayList;
 import java.util.Vector;
@@ -73,13 +74,13 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		}
 		ofComboBox.setPrefWidth(COLUMN_WIDTH);
 
-		grid.add(new Label("Name"), 0, 0);
+		grid.add(new Label(StringValue.LabelAndHeaderTitle.name), 0, 0);
 		grid.add(nameTextField, 1, 0);
-		grid.add(new Label("Of"), 0, 1);
+		grid.add(new Label(StringValue.LabelAndHeaderTitle.of), 0, 1);
 		grid.add(ofComboBox, 1, 1);
-		grid.add(new Label("Abstract"), 0, 3);
+		grid.add(new Label(StringValue.LabelAndHeaderTitle.abstractBig), 0, 3);
 		grid.add(abstractCheckBox, 1, 3);
-		grid.add(new Label("Parent"), 0, 4);
+		grid.add(new Label(StringValue.LabelAndHeaderTitle.parent), 0, 4);
 		grid.add(parentListView, 1, 4);
 	}
 
@@ -135,10 +136,10 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		String name = nameTextField.getText();
 
 		if (!InputChecker.getInstance().validateName(name)) {
-			errorLabel.setText("Enter valid name!");
+			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else if (!InputChecker.getInstance().classNameIsAvailable(name, diagram)) {
-			errorLabel.setText("Name already used");
+			errorLabel.setText(StringValue.ErrorMessage.nameAlreadyUsed);
 			return false;
 		} else {
 			errorLabel.setText("");
@@ -150,7 +151,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		Label errorLabel = getErrorLabel();
 
 		if (ofComboBox.getSelectionModel().getSelectedIndex() == -1) {
-			errorLabel.setText("Select Of!");
+			errorLabel.setText(StringValue.ErrorMessage.selectOf);
 			return false;
 		}
 		errorLabel.setText("");

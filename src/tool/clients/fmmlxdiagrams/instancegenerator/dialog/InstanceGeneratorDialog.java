@@ -41,7 +41,7 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 		createAndSetParentList();
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialogPane.setHeaderText("Instance Generator");
+		dialogPane.setHeaderText(LabelAndHeaderTitle.instanceGenerator);
 		layoutContent();
 		dialogPane.setContent(flow);
 		
@@ -57,9 +57,9 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 	private void setResult() {
 		setResultConverter(dlgBtn -> {		
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				setValue();
 				setNumberOfInstance(this.numberOfInstanceComboBox);
 				setSelectedParent(this.parentListView);
+				setValue();
 				return new InstanceGeneratorDialogResult(getObject(), getNumberOfInstance(), getSelectedParent(), getValue());
 			}
 			return null;
@@ -76,7 +76,7 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 			if(att.getLevel()==getObject().getLevel()-1){
 				Node node = inputNode.get(counter);
 				if(node instanceof ComboBox) {
-					if(((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem().getValueGeneratorName().equals("INCREMENT")){
+					if(((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem().getValueGeneratorName().equals(StringValue.ValueGeneratorName.INCREMENT)){
 						((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem().generate(numberOfInstanceComboBox.getSelectionModel().getSelectedItem());
 						int possible = ((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem().possibleGeneratedInstance();
 						if(possible<generatedInstance){

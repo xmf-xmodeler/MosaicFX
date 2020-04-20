@@ -47,6 +47,22 @@ public class StringValue {
 		public static final String enumAlreadyExist= "Enumeration with the same name already exist";
         public static final String pleaseInputValidIntegerValue= "Please input valid integer value";
 		public static final String pleaseInputValidFloatValue= "Please input valid Float value";
+        public static final String selectOf = "Select Of!";
+    }
+
+    public static class ValueGeneratorName{
+		public static final String INCREMENT = "INCREMENT";
+		public static final String LIST = "LIST";
+		public static final String RANDOM = "RANDOM";
+		public static final String NORMALDISTRIBUTION = "NORMAL DISTRIBUTION";
+		public static final String STATIC= "STATIC";
+	}
+
+	public static class TraditionalDataType{
+		public static final String INTEGER = "Integer";
+		public static final String FLOAT = "Float";
+		public static final String BOOLEAN = "Boolean";
+		public static final String STRING = "String";
 	}
 
 	public static class LabelAndHeaderTitle {
@@ -73,6 +89,7 @@ public class StringValue {
 		public static final String visible ="Visible";
 		public static final String symmetric ="Symmetric";
 		public static final String transitive ="Transitive";
+		public static final String abstractBig ="Abstract";
 
 		//Current
 		public static final String currentOwner = "Current Owner";
@@ -152,7 +169,7 @@ public class StringValue {
 		public static final String abstractSmall = "abstract";
 		public static final String withSmall = "with";
 		public static final String EDIT = "Edit";
-		public static final String instanceGenerator = "InstanceGenerator";
+		public static final String instanceGenerator = "Instance Generator";
 		public static final String startValue = "Start Value";
 		public static final String endValue = "End Value";
 		public static final String incrementValue = "Increment Value";

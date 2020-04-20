@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator;
 import java.util.List;
 import java.util.Optional;
 
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorListDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorListDialogResult;
 
@@ -26,7 +27,7 @@ public class ValueGeneratorList<T> implements ValueGenerator{
 
 	@Override
 	public String getValueGeneratorName() {
-		return "LIST";
+		return StringValue.ValueGeneratorName.LIST;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -42,8 +43,8 @@ public class ValueGeneratorList<T> implements ValueGenerator{
 	}
 
 	@Override
-	public List<String> generate(int numberOfInstance) {
-		return null;
+	public void generate(int numberOfInstance) {
+		//TODO
 	}
 
 	@Override

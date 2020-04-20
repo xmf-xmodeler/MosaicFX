@@ -8,7 +8,7 @@ public interface ValueGenerator {
 
 	public void openDialog();
 
-	public List<String> generate(int numberOfInstance);
+	public void generate(int numberOfInstance);
 
 	public int possibleGeneratedInstance();
 

@@ -83,7 +83,7 @@ class ValueGeneratorIncrementTest {
         parameter.add("3");
         parameter.add("2");
         valueGeneratorIncrement.setParameter(parameter);
-
-        System.out.println(valueGeneratorIncrement.generate(7));
+        valueGeneratorIncrement.generate(7);
+        System.out.println(valueGeneratorIncrement.getGeneratedValue());
     }
 }

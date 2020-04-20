@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator;
 
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorRandomDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorRandomDialogResult;
 
@@ -27,12 +28,12 @@ public class ValueGeneratorRandom implements ValueGenerator{
 
 	@Override
 	public String getValueGeneratorName() {
-		return "RANDOM";
+		return StringValue.ValueGeneratorName.RANDOM;
 	}
 
 	@Override
 	public void openDialog() {
-		if(!attributeType.equals("Boolean")){
+		if(!attributeType.equals(StringValue.TraditionalDataType.BOOLEAN)){
 			ValueGeneratorRandomDialog dlg = new ValueGeneratorRandomDialog(getValueGeneratorName(),
 					getAttributeType(), getSelectedScenario(), getParameter());
 			dialogResult(dlg);
@@ -57,21 +58,20 @@ public class ValueGeneratorRandom implements ValueGenerator{
 	}
 
 	@Override
-	public List<String> generate(int numberOfInstance) {
-		generatedValue = new ArrayList<>();
+	public void generate(int numberOfInstance) {
+		this.generatedValue = new ArrayList<>();
 		for(int i = 0 ; i<numberOfInstance; i++){
 			generatedValue.add(generateRandomValue(getAttributeType(), getSelectedScenario(), getParameter()));
 		}
-		return generatedValue;
 	}
 
 	protected String generateRandomValue(String attributeType, String selectedScenario, List<String> parameter) {
 		switch(attributeType){
-			case "Integer":
+			case StringValue.TraditionalDataType.INTEGER:
 				return generateRandomInteger(selectedScenario, parameter);
-			case "Float":
+			case StringValue.TraditionalDataType.FLOAT:
 				return generateRandomFloat(selectedScenario, parameter);
-			case "Boolean":
+			case StringValue.TraditionalDataType.BOOLEAN:
 				return generateRandomBoolean();
 			default:
 				return "";
@@ -134,15 +134,15 @@ public class ValueGeneratorRandom implements ValueGenerator{
 
 	@Override
 	public boolean fitsType(String type) {
-		if("Integer".equals(type)) return true;
-		if("Float".equals(type)) return true;
-		if("Boolean".equals(type)) return true;
-		return "String".equals(type);
+		if(StringValue.TraditionalDataType.INTEGER.equals(type)) return true;
+		if(StringValue.TraditionalDataType.FLOAT.equals(type)) return true;
+		if(StringValue.TraditionalDataType.BOOLEAN.equals(type)) return true;
+		return StringValue.TraditionalDataType.STRING.equals(type);
 	}
 
 	@Override
 	public String getName2() {
-		if(!getAttributeType().equals("Boolean")){
+		if(!getAttributeType().equals(StringValue.TraditionalDataType.BOOLEAN)){
 			if(getSelectedScenario().equals("")){
 				return getValueGeneratorName()+ " (incomplete)";
 			}
@@ -166,10 +166,10 @@ public class ValueGeneratorRandom implements ValueGenerator{
 				this.maxValueParameter=null;
 			}
 			if(parameter.get(0)!=null && parameter.get(1)!=null){
-				if(attributeType.equals("Integer")){
+				if(attributeType.equals(StringValue.TraditionalDataType.INTEGER)){
 					this.minValueParameter = integerConverter(parameter.get(0));
 					this.maxValueParameter = integerConverter(parameter.get(1));
-				} else if (attributeType.equals("Float")){
+				} else if (attributeType.equals(StringValue.TraditionalDataType.FLOAT)){
 					this.minValueParameter = floatConverter(parameter.get(0));
 					this.maxValueParameter = floatConverter(parameter.get(1));
 				}

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorIncrementDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorIncrementDialogResult;
 
@@ -23,7 +24,7 @@ public class ValueGeneratorIncrement implements ValueGenerator{
 
 	@Override
 	public String getValueGeneratorName() {
-		return "INCREMENT";
+		return StringValue.ValueGeneratorName.INCREMENT;
 	}
 
 	@Override
@@ -53,30 +54,24 @@ public class ValueGeneratorIncrement implements ValueGenerator{
 	}
 
 	@Override
-	public List<String> generate(int numberOfInstance) {
+	public void generate(int numberOfInstance) {
 		try {
-			generatedValue = new ArrayList<>();
-			if(type.equals("Integer")){
+			this.generatedValue = new ArrayList<>();
+			if(type.equals(StringValue.TraditionalDataType.INTEGER)){
 				int subtotal= Integer.parseInt(startValue);
 				while(subtotal<=Integer.parseInt(endValue)){
-					generatedValue.add(subtotal+"");
+					this.generatedValue.add(subtotal+"");
 					subtotal+=Integer.parseInt(inc);
 				}
-			}else if(type.equals("Float")){
+			}else if(type.equals(StringValue.TraditionalDataType.FLOAT)){
 				float subtotal= Float.parseFloat(startValue);
 				while(subtotal<=Float.parseFloat(endValue)){
-					generatedValue.add(subtotal+"");
+					this.generatedValue.add(subtotal+"");
 					subtotal+=Float.parseFloat(inc);
 				}
 			}
-
-			List<String> result = new ArrayList<>();
-			for(int i = 0 ; i<numberOfInstance; i++){
-				result.add(generatedValue.get(i));
-			}
-			return result;
 		} catch (Exception e){
-			return null;
+
 		}
 	}
 
@@ -84,13 +79,13 @@ public class ValueGeneratorIncrement implements ValueGenerator{
     public int possibleGeneratedInstance() {
 		int counter = 0;
 
-		if(type.equals("Integer")){
+		if(type.equals(StringValue.TraditionalDataType.INTEGER)){
 			int subtotal= Integer.parseInt(startValue);
 			while(subtotal<=Integer.parseInt(endValue)){
 				subtotal+=Integer.parseInt(inc);
 				counter+=1;
 			}
-		}else if(type.equals("Float")){
+		}else if(type.equals(StringValue.TraditionalDataType.FLOAT)){
 			float subtotal= Float.parseFloat(startValue);
 			while(subtotal<=Float.parseFloat(endValue)){
 				subtotal+=Float.parseFloat(inc);
@@ -102,8 +97,8 @@ public class ValueGeneratorIncrement implements ValueGenerator{
 
     @Override
 	public boolean fitsType(String type) {
-		if("Integer".equals(type)) return true;
-		return "Float".equals(type);
+		if(StringValue.TraditionalDataType.INTEGER.equals(type)) return true;
+		return StringValue.TraditionalDataType.FLOAT.equals(type);
 	}
 
 	public String getType() {
@@ -125,12 +120,12 @@ public class ValueGeneratorIncrement implements ValueGenerator{
 
 	public void setParameter(List<String> parameter){
 
-		if(type.equals("Integer")){
+		if(type.equals(StringValue.TraditionalDataType.INTEGER)){
 			this.startValue = integerConverter(parameter.get(0));
 			this.endValue= integerConverter(parameter.get(1));
 			this.inc = integerConverter(parameter.get(2));
 
-		} else if (type.equals("Float")){
+		} else if (type.equals(StringValue.TraditionalDataType.FLOAT)){
 			this.startValue = floatConverter(parameter.get(0));
 			this.endValue = floatConverter(parameter.get(1));
 			this.inc = floatConverter(parameter.get(2));

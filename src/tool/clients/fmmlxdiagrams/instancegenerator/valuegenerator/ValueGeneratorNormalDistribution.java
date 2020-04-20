@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorNormalDistributionDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorNormalDistributionDialogResult;
 
@@ -58,12 +59,12 @@ public class ValueGeneratorNormalDistribution implements ValueGenerator{
 	@Override
 	public void setParameter(List<String> param) {
 		this.parameters = new ArrayList<>();
-		if(attributeType.equals("Integer")){
+		if(attributeType.equals(StringValue.TraditionalDataType.INTEGER)){
 			parameters.add(integerConverter(param.get(0)));
 			parameters.add(integerConverter(param.get(1)));
 			parameters.add(integerConverter(param.get(2)));
 			parameters.add(integerConverter(param.get(3)));
-		} else if (attributeType.equals("Float")){
+		} else if (attributeType.equals(StringValue.TraditionalDataType.FLOAT)){
 			parameters.add(floatConverter(param.get(0)));
 			parameters.add(floatConverter(param.get(1)));
 			parameters.add(floatConverter(param.get(2)));
@@ -72,19 +73,18 @@ public class ValueGeneratorNormalDistribution implements ValueGenerator{
 	}
 
 	@Override
-	public List<String> generate(int numberOfInstance) {
-		generatedValue = new ArrayList<>();
+	public void generate(int numberOfInstance) {
+		this.generatedValue = new ArrayList<>();
 
 		for (int i =0 ; i < numberOfInstance ; i++){
 			generatedValue.add(generateValue(attributeType, parameters.get(0), parameters.get(1),
 					parameters.get(2), parameters.get(3)));
 		}
-		return generatedValue;
 	}
 
 	public String generateValue(String attributeType, String mean, String stdDeviation, String rangeMin, String rangeMax){
 		Random random = new Random();
-		if(attributeType.equals("Integer")){
+		if(attributeType.equals(StringValue.TraditionalDataType.INTEGER)){
 			int meanInt = Integer.parseInt(integerConverter(mean));
 			int stdDevInt = Integer.parseInt(integerConverter(stdDeviation));
 			int rangeMinInt = Integer.parseInt(integerConverter(rangeMin));
@@ -95,7 +95,7 @@ public class ValueGeneratorNormalDistribution implements ValueGenerator{
 					return nextGauss+"";
 				}
 			}
-		} else if (attributeType.equals("Float")){
+		} else if (attributeType.equals(StringValue.TraditionalDataType.FLOAT)){
 			float meanFloat = Float.parseFloat(floatConverter(mean));
 			float stdDevFloat = Float.parseFloat(floatConverter(stdDeviation));
 			float rangeMinFloat = Float.parseFloat(integerConverter(rangeMin));
@@ -117,8 +117,8 @@ public class ValueGeneratorNormalDistribution implements ValueGenerator{
 
 	@Override
 	public boolean fitsType(String type) {
-		if("Integer".equals(type)) return true;
-		return "Float".equals(type);
+		if(StringValue.TraditionalDataType.INTEGER.equals(type)) return true;
+		return StringValue.TraditionalDataType.FLOAT.equals(type);
 	}
 
 	@Override
@@ -135,7 +135,7 @@ public class ValueGeneratorNormalDistribution implements ValueGenerator{
 
 	@Override
 	public String getValueGeneratorName() {
-		return "NORMAL DISTRIBUTION";
+		return StringValue.ValueGeneratorName.NORMALDISTRIBUTION;
 	}
 
 
