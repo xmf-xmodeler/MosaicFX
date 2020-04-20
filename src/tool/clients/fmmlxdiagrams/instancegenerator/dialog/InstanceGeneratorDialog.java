@@ -123,7 +123,7 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 			if(att.getLevel()==getObject().getLevel()-1){
 				Node node = this.inputNode.get(counter);
 				if(node instanceof ComboBox) {
-					((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem().generate(numberOfInstanceComboBox.getSelectionModel().getSelectedItem());
+					((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem().generate(getNumberOfInstance());
 					this.value.put(att, ((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem());
 				} else {
 					this.value.put(att, null);

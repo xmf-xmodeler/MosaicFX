@@ -33,11 +33,8 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeParentDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
 
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Vector;
 //import java.util.concurrent.CountDownLatch;
 
 public class DiagramActions {
@@ -447,16 +444,19 @@ public class DiagramActions {
 
 				for(int i =0 ; i< result.getNumberOfInstance(); i++){
 					System.out.println();
-					System.out.println("Instance No : "+(i+1));
+					System.out.println("Instance Name : "+object.getName()+(i+1));
 					System.out.println("Parent : "+ result.getSelectedParent().toString());
 					Iterator<Entry<FmmlxAttribute, ValueGenerator>> it1 = result.getValue().entrySet().iterator();
-
 					while (it1.hasNext()) {
 						Map.Entry<FmmlxAttribute, ValueGenerator> pair1 = it1.next();
 						System.out.println(pair1.getKey().getName() + " = "+ pair1.getValue().getGeneratedValue().get(i));
 					}
+
+					diagram.getComm().addNewInstance(diagram, object.getId(), object.getName()+(i+1), object.getLevel()-1, result.getParentIDs(), false, 10+(i*2), 10+(i*2));
+
 				}
 				diagram.getComm().instanceGenerator(diagram, result.getObject().getId(), result.getValue());
+				diagram.updateDiagram();
 			}
 		});
 	

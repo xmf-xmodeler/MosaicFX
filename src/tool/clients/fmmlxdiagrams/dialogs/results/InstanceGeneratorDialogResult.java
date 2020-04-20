@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams.dialogs.results;
 
 import java.util.HashMap;
+import java.util.Vector;
 
 
 import javafx.collections.ObservableList;
@@ -37,6 +38,18 @@ public class InstanceGeneratorDialogResult extends DialogResult{
 
 	public int getNumberOfInstance() {
 		return numberOfInstance;
+	}
+
+	public Vector<Integer> getParentIDs(){
+
+    	Vector<Integer> parentIds = new Vector<>();
+
+    	if (!getSelectedParent().isEmpty()) {
+    		for (FmmlxObject o : getSelectedParent()) {
+    			parentIds.add(o.getId());
+    		}
+    	}
+    	return parentIds;
 	}
 
 }
