@@ -1,9 +1,9 @@
 package tool.clients.fmmlxdiagrams.instancegenerator.dialog;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -11,12 +11,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.paint.Color;
 import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.InstanceGeneratorDialogResult;
@@ -24,27 +21,25 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue.LabelAndHeaderTitle;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
-import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorIncrement;
 
 public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialogResult>{
 
-
-	private FmmlxObject object;
-	private Label ofLabel ;
-	private Label numberOfElementLabel;
-	private TextField ofTextField;
-	private ComboBox<Integer> numberOfElementComboBox;
-	private List<Node> labelNode;
-	private List<Node> typeLabelNode;
+	private final FmmlxDiagram diagram;
+	private final FmmlxObject object;
+	private ComboBox<Integer> numberOfInstanceComboBox;
 	private List<Node> inputNode;
-	private List<Node> editButtonNode;
-	private DialogPane dialogPane;
+	private ObservableList<FmmlxObject> possibleParentList;
+	private ObservableList<FmmlxObject> selectedParent;
+	private ListView<FmmlxObject> parentListView;
+	private int numberOfInstance;
 	
 	private HashMap<FmmlxAttribute, ValueGenerator> value;
 
-	public InstanceGeneratorDialog(FmmlxObject object) {
+	public InstanceGeneratorDialog(FmmlxDiagram diagram, FmmlxObject object) {
+		this.diagram = diagram;
 		this.object= object;
-		dialogPane = getDialogPane();
+		createAndSetParentList();
+		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		dialogPane.setHeaderText("Instance Generator");
 		layoutContent();
@@ -59,51 +54,39 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 		setResult();
 	}
 
-
 	private void setResult() {
 		setResultConverter(dlgBtn -> {		
-		if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-			this.value = new HashMap<>();
-			int counter = 3;
-			for(FmmlxAttribute att : object.getAllAttributes()) {
-				Node node = inputNode.get(counter);
-				if(node instanceof ComboBox) {
-					((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem().generate(numberOfElementComboBox.getSelectionModel().getSelectedItem());
-					value.put(att, ((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem());
-				} else {
-					value.put(att, null);
-				}
-				counter++;
+			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
+				setValue();
+				setNumberOfInstance(this.numberOfInstanceComboBox);
+				setSelectedParent(this.parentListView);
+				return new InstanceGeneratorDialogResult(getObject(), getNumberOfInstance(), getSelectedParent(), getValue());
 			}
-			return new InstanceGeneratorDialogResult(object, numberOfElementComboBox.getSelectionModel().getSelectedItem(), value);
-		}
-		return null;
-	});	
+			return null;
+		});
 	}
 
 	private boolean inputIsValid() {
 		return checkComboBoxesAndLogic();
 	}
 
-	public HashMap<FmmlxAttribute, ValueGenerator> getValue() {
-		return value;
-	}
-
 	private boolean checkLogic(int generatedInstance) {
-		int counter = 3;
+		int counter = 4;
 		for(FmmlxAttribute att : object.getAllAttributes()) {
-			Node node = inputNode.get(counter);
-			if(node instanceof ComboBox) {
-				if(((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem().getValueGeneratorName().equals("INCREMENT")){
-					((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem().generate(numberOfElementComboBox.getSelectionModel().getSelectedItem());
-					int possible = ((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem().possibleGeneratedInstance();
-					if(possible<generatedInstance){
-						errorLabel.setText(att.getName()+ "  : Maximum number of generated instance is " +possible );
-						return false;
+			if(att.getLevel()==getObject().getLevel()-1){
+				Node node = inputNode.get(counter);
+				if(node instanceof ComboBox) {
+					if(((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem().getValueGeneratorName().equals("INCREMENT")){
+						((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem().generate(numberOfInstanceComboBox.getSelectionModel().getSelectedItem());
+						int possible = ((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem().possibleGeneratedInstance();
+						if(possible<generatedInstance){
+							errorLabel.setText(att.getName()+ "  : Maximum number of generated instance is " +possible );
+							return false;
+						}
 					}
+					counter++;
 				}
 			}
-			counter++;
 		}
 
 		errorLabel.setText("");
@@ -112,7 +95,7 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 
 
 	private boolean checkComboBoxesAndLogic() {
-		if (numberOfElementComboBox.getSelectionModel().getSelectedItem()==null) {
+		if (numberOfInstanceComboBox.getSelectionModel().getSelectedItem()==null) {
 			errorLabel.setText("Please select number of Instance");
 			return false;
 		}
@@ -121,7 +104,7 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 				if (((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem() == null ) {
 					errorLabel.setText("Please input all required values");
 					return false;
-				} else if (!checkLogic(numberOfElementComboBox.getSelectionModel().getSelectedItem())){
+				} else if (!checkLogic(numberOfInstanceComboBox.getSelectionModel().getSelectedItem())){
 					return false;
 				}
 			}
@@ -129,38 +112,95 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 		return true;
 	}
 
+	public HashMap<FmmlxAttribute, ValueGenerator> getValue() {
+		return value;
+	}
+
+	public void setValue() {
+		this.value = new HashMap<>();
+		int counter = 4;
+		for(FmmlxAttribute att : getObject().getAllAttributes()) {
+			if(att.getLevel()==getObject().getLevel()-1){
+				Node node = this.inputNode.get(counter);
+				if(node instanceof ComboBox) {
+					((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem().generate(numberOfInstanceComboBox.getSelectionModel().getSelectedItem());
+					this.value.put(att, ((ComboBox<ValueGenerator>) node).getSelectionModel().getSelectedItem());
+				} else {
+					this.value.put(att, null);
+				}
+				counter++;
+			}
+		}
+	}
+
+	private void createAndSetParentList() {
+		if (getObject() != null) {
+			possibleParentList = getDiagram().getAllPossibleParents(getObject().getLevel() - 1);
+		}
+	}
+
 	public FmmlxObject getObject() {
 		return this.object;
 	}
 
+	public FmmlxDiagram getDiagram() {
+		return this.diagram;
+	}
+
+	public ObservableList<FmmlxObject> getPossibleParentList() {
+		return this.possibleParentList;
+	}
+
+	public ObservableList<FmmlxObject> getSelectedParent() {
+		return this.selectedParent;
+	}
+
+	public void setSelectedParent(ListView<FmmlxObject> selectedParent) {
+		this.selectedParent = selectedParent.getSelectionModel().getSelectedItems();
+	}
+
+	public int getNumberOfInstance() {
+		return this.numberOfInstance;
+	}
+
+	public void setNumberOfInstance(ComboBox<Integer> numberOfInstanceComboBox) {
+		this.numberOfInstance = numberOfInstanceComboBox.getSelectionModel().getSelectedItem();
+	}
+
 	private void layoutContent() {
-		ofLabel = new Label(LabelAndHeaderTitle.of);
-		numberOfElementLabel = new Label(LabelAndHeaderTitle.numberOfInstances);
-		
-		ofTextField = new TextField();
+		Label ofLabel = new Label(LabelAndHeaderTitle.of);
+		Label numberOfElementLabel = new Label(LabelAndHeaderTitle.numberOfInstances);
+		Label parentLabel = new Label(LabelAndHeaderTitle.parent);
+
+		TextField ofTextField = new TextField();
 		ofTextField.setText(object.getName());
 		ofTextField.setEditable(false);
-		numberOfElementComboBox = new ComboBox<>(AllValueList.generateLevelListToThreshold(1, 5));
-		numberOfElementComboBox.setConverter(new IntegerStringConverter());
-		numberOfElementComboBox.setEditable(true);
-		
-		labelNode = new ArrayList<>();
-		typeLabelNode = new ArrayList<>();
+		numberOfInstanceComboBox = new ComboBox<>(AllValueList.generateLevelListToThreshold(1, 5));
+		numberOfInstanceComboBox.setConverter(new IntegerStringConverter());
+		numberOfInstanceComboBox.setEditable(true);
+		parentListView = initializeListView(getPossibleParentList(), SelectionMode.MULTIPLE);
+
+		List<Node> labelNode = new ArrayList<>();
+		List<Node> typeLabelNode = new ArrayList<>();
 		inputNode = new ArrayList<>();
-		editButtonNode = new ArrayList<>();
+		List<Node> editButtonNode = new ArrayList<>();
 		
 		labelNode.add(ofLabel);
 		labelNode.add(numberOfElementLabel);
 		labelNode.add(new Label());
+		labelNode.add(parentLabel);
 		
 		typeLabelNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		typeLabelNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		typeLabelNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
+		typeLabelNode.add(new Label());
 		
 		inputNode.add(ofTextField);
-		inputNode.add(numberOfElementComboBox);
+		inputNode.add(numberOfInstanceComboBox);
 		inputNode.add(new Label());
+		inputNode.add(parentListView);
 		
+		editButtonNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		editButtonNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		editButtonNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		editButtonNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));

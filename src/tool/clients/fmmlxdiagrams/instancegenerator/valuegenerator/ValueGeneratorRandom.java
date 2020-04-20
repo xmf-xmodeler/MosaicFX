@@ -53,8 +53,6 @@ public class ValueGeneratorRandom implements ValueGenerator{
 				param.add(null);
 				setParameter(param);
 			}
-			System.out.println(getSelectedScenario());
-			System.out.println(getParameter().toString());
 		}
 	}
 

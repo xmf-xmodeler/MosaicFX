@@ -424,7 +424,7 @@ public class DiagramActions {
 		Platform.runLater(() -> {
 			
 			//TODO
-			InstanceGeneratorDialog dlg = new InstanceGeneratorDialog(object);
+			InstanceGeneratorDialog dlg = new InstanceGeneratorDialog(diagram, object);
 			Optional<InstanceGeneratorDialogResult> igd = dlg.showAndWait();
 			
 			if (igd.isPresent()) {
@@ -437,6 +437,7 @@ public class DiagramActions {
 				System.out.println();
 				System.out.println("Parent ID : "+result.getObject().getId());
 				System.out.println("Number of generated Instance : "+ result.getNumberOfInstance());
+				System.out.println("Parent : "+ result.getSelectedParent().toString());
 				Iterator<Entry<FmmlxAttribute, ValueGenerator>> it = result.getValue().entrySet().iterator();
 				while (it.hasNext()) {
 			        Map.Entry<FmmlxAttribute, ValueGenerator> pair = it.next();
@@ -447,7 +448,7 @@ public class DiagramActions {
 				for(int i =0 ; i< result.getNumberOfInstance(); i++){
 					System.out.println();
 					System.out.println("Instance No : "+(i+1));
-
+					System.out.println("Parent : "+ result.getSelectedParent().toString());
 					Iterator<Entry<FmmlxAttribute, ValueGenerator>> it1 = result.getValue().entrySet().iterator();
 
 					while (it1.hasNext()) {
