@@ -129,6 +129,10 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 		return true;
 	}
 
+	public FmmlxObject getObject() {
+		return this.object;
+	}
+
 	private void layoutContent() {
 		ofLabel = new Label(LabelAndHeaderTitle.of);
 		numberOfElementLabel = new Label(LabelAndHeaderTitle.numberOfInstances);
@@ -161,20 +165,24 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 		editButtonNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		editButtonNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		
-		for (FmmlxAttribute att : object.getAllAttributes()) {			
-			labelNode.add(new Label(att.getName()));	
-			typeLabelNode.add(new Label(": "+att.getType()));
-			
-			if(AllValueList.traditionalTypeList.contains(att.getType())) {
-				ComboBox<ValueGenerator> comboBox = initializeComboBoxGeneratorList(att);
-				inputNode.add(comboBox);
-				Button button = new InstanceGeneratorEditButton(StringValue.LabelAndHeaderTitle.EDIT, att);
-				button.setOnAction(e -> comboBox.getSelectionModel().getSelectedItem().openDialog());
-				editButtonNode.add(button);
-			} else {
-				inputNode.add(new Label(" "));
-				editButtonNode.add(new Label(" "));
+		for (FmmlxAttribute att : getObject().getAllAttributes()) {
+
+			if(getObject().getLevel()-1 == att.getLevel()){
+				labelNode.add(new Label(att.getName()));
+				typeLabelNode.add(new Label(": "+att.getType()));
+
+				if(AllValueList.traditionalTypeList.contains(att.getType())) {
+					ComboBox<ValueGenerator> comboBox = initializeComboBoxGeneratorList(att);
+					inputNode.add(comboBox);
+					Button button = new InstanceGeneratorEditButton(StringValue.LabelAndHeaderTitle.EDIT, att);
+					button.setOnAction(e -> comboBox.getSelectionModel().getSelectedItem().openDialog());
+					editButtonNode.add(button);
+				} else {
+					inputNode.add(new Label(" "));
+					editButtonNode.add(new Label(" "));
+				}
 			}
+
 		}
 		
 		addNodesToGrid(labelNode, 0);

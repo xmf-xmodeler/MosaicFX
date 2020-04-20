@@ -439,8 +439,8 @@ public class DiagramActions {
 				System.out.println("Number of generated Instance : "+ result.getNumberOfInstance());
 				Iterator<Entry<FmmlxAttribute, ValueGenerator>> it = result.getValue().entrySet().iterator();
 				while (it.hasNext()) {
-			        Map.Entry<FmmlxAttribute, ValueGenerator> pair = (Entry<FmmlxAttribute, ValueGenerator>)it.next();
-			        System.out.println(((FmmlxAttribute) pair.getKey()).getName() + " = " + ((ValueGenerator) pair.getValue()).getValueGeneratorName() + " : "+ ((ValueGenerator) pair.getValue()).getGeneratedValue());
+			        Map.Entry<FmmlxAttribute, ValueGenerator> pair = it.next();
+			        System.out.println(pair.getKey().getName() + " = " + pair.getValue().getValueGeneratorName() + " : "+ pair.getValue().getGeneratedValue());
 			    }
 				System.out.println("========================================================================");
 
@@ -451,8 +451,8 @@ public class DiagramActions {
 					Iterator<Entry<FmmlxAttribute, ValueGenerator>> it1 = result.getValue().entrySet().iterator();
 
 					while (it1.hasNext()) {
-						Map.Entry<FmmlxAttribute, ValueGenerator> pair1 = (Entry<FmmlxAttribute, ValueGenerator>)it1.next();
-						System.out.println(((FmmlxAttribute) pair1.getKey()).getName() + " = "+ ((ValueGenerator) pair1.getValue()).getGeneratedValue().get(i));
+						Map.Entry<FmmlxAttribute, ValueGenerator> pair1 = it1.next();
+						System.out.println(pair1.getKey().getName() + " = "+ pair1.getValue().getGeneratedValue().get(i));
 					}
 				}
 				diagram.getComm().instanceGenerator(diagram, result.getObject().getId(), result.getValue());
