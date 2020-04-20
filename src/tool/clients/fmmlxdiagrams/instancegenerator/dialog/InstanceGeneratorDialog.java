@@ -32,6 +32,7 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 	private ObservableList<FmmlxObject> selectedParent;
 	private ListView<FmmlxObject> parentListView;
 	private int numberOfInstance;
+	private List<String> generatedName;
 	
 	private HashMap<FmmlxAttribute, ValueGenerator> value;
 
@@ -60,7 +61,7 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 				setNumberOfInstance(this.numberOfInstanceComboBox);
 				setSelectedParent(this.parentListView);
 				setValue();
-				return new InstanceGeneratorDialogResult(getObject(), getNumberOfInstance(), getSelectedParent(), getValue());
+				return new InstanceGeneratorDialogResult(getObject(), getNumberOfInstance(), getGeneratedName(), getSelectedParent(), getValue());
 			}
 			return null;
 		});
@@ -119,6 +120,9 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 	public void setValue() {
 		this.value = new HashMap<>();
 		int counter = 4;
+
+		generateName();
+
 		for(FmmlxAttribute att : getObject().getAllAttributes()) {
 			if(att.getLevel()==getObject().getLevel()-1){
 				Node node = this.inputNode.get(counter);
@@ -137,6 +141,29 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 		if (getObject() != null) {
 			possibleParentList = getDiagram().getAllPossibleParents(getObject().getLevel() - 1);
 		}
+	}
+
+	private void generateName(){
+		generatedName = new ArrayList<>();
+		int j = 1;
+		for(int i=0; i<getNumberOfInstance();i++){
+			String objectName = getObject().getName();
+			if (getObject().getLevel() == 1) {
+				objectName = objectName.substring(0, 1).toLowerCase() + objectName.substring(1);
+			}
+			String instanceName;
+			boolean ok;
+			do {
+				instanceName = objectName + j;
+				ok = diagram.isNameAvailable(instanceName);
+				j++;
+			} while (!ok);
+			generatedName.add(instanceName);
+		}
+	}
+
+	public List<String> getGeneratedName() {
+		return generatedName;
 	}
 
 	public FmmlxObject getObject() {

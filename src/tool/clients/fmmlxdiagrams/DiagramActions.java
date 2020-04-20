@@ -434,6 +434,7 @@ public class DiagramActions {
 				System.out.println();
 				System.out.println("Parent ID : "+result.getObject().getId());
 				System.out.println("Number of generated Instance : "+ result.getNumberOfInstance());
+				System.out.println("Generated Name : " +result.getInstanceName().toString());
 				System.out.println("Parent : "+ result.getSelectedParent().toString());
 				Iterator<Entry<FmmlxAttribute, ValueGenerator>> it = result.getValue().entrySet().iterator();
 				while (it.hasNext()) {
@@ -444,7 +445,7 @@ public class DiagramActions {
 
 				for(int i =0 ; i< result.getNumberOfInstance(); i++){
 					System.out.println();
-					System.out.println("Instance Name : "+object.getName()+(i+1));
+					System.out.println("Instance Name : "+result.getInstanceName().get(i));
 					System.out.println("Parent : "+ result.getSelectedParent().toString());
 					Iterator<Entry<FmmlxAttribute, ValueGenerator>> it1 = result.getValue().entrySet().iterator();
 					while (it1.hasNext()) {
@@ -452,7 +453,8 @@ public class DiagramActions {
 						System.out.println(pair1.getKey().getName() + " = "+ pair1.getValue().getGeneratedValue().get(i));
 					}
 
-					diagram.getComm().addNewInstance(diagram, object.getId(), object.getName()+(i+1), object.getLevel()-1, result.getParentIDs(), false, 10+(i*2), 10+(i*2));
+					diagram.getComm().addNewInstance(diagram, object.getId(), result.getInstanceName().get(i), object.getLevel()-1,
+							result.getParentIDs(), false, 10+(i*2), 10+(i*2));
 
 				}
 				diagram.getComm().instanceGenerator(diagram, result.getObject().getId(), result.getValue());
