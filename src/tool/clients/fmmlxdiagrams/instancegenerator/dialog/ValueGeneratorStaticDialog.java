@@ -38,7 +38,7 @@ public class ValueGeneratorStaticDialog extends CustomDialog<ValueGeneratorStati
 		});
 		
 		setResult();
-		setStaticValue(parameter);
+		setParameter(parameter);
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class ValueGeneratorStaticDialog extends CustomDialog<ValueGeneratorStati
 	}
 
 	@Override
-	public void setStaticValue(List<String> staticValue) {
+	public void setParameter(List<String> staticValue) {
 		if (staticValue !=null){
 			if (this.attributeType.equals("Boolean")) {
 				this.staticValue =  staticValue.get(0);

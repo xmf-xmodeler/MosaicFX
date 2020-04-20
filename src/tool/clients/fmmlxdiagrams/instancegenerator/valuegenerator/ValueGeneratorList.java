@@ -33,12 +33,14 @@ public class ValueGeneratorList<T> implements ValueGenerator{
 	@SuppressWarnings("unchecked")
 	@Override
 	public void openDialog() {
-		ValueGeneratorListDialog dlg = new ValueGeneratorListDialog(getValueGeneratorName(), attributeType);
-		Optional<ValueGeneratorListDialogResult> opt = dlg.showAndWait();
-		
-		if (opt.isPresent()) {
-			ValueGeneratorListDialogResult result = opt.get();
-			//TODO
+		if(getFitsType(getAttributeType())){
+			ValueGeneratorListDialog dlg = new ValueGeneratorListDialog(getValueGeneratorName(), attributeType);
+			Optional<ValueGeneratorListDialogResult> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				ValueGeneratorListDialogResult result = opt.get();
+				//TODO
+			}
 		}
 	}
 
@@ -53,7 +55,7 @@ public class ValueGeneratorList<T> implements ValueGenerator{
 	}
 
 	@Override
-	public boolean fitsType(String type) {
+	public boolean getFitsType(String type) {
 		if("Integer".equals(type)) return true;
 		if("Float".equals(type)) return true;
 		if("Boolean".equals(type)) return true;
@@ -62,7 +64,7 @@ public class ValueGeneratorList<T> implements ValueGenerator{
 	}
 
 	public List<String> getElements() {
-		return elements;
+		return this.elements;
 	}
 
 	public void setElements(List<String> elements) {
@@ -70,7 +72,7 @@ public class ValueGeneratorList<T> implements ValueGenerator{
 	}
 
 	public String getAttributeType() {
-		return attributeType;
+		return this.attributeType;
 	}
 
 	public void setAttributeType(String attributeType) {
@@ -79,7 +81,7 @@ public class ValueGeneratorList<T> implements ValueGenerator{
 
 	@Override
 	public String getName2() {
-		if(elements==null) {
+		if(this.elements==null) {
 			return getValueGeneratorName()+" (incomplete)";
 		}
 		return getValueGeneratorName();
@@ -87,7 +89,7 @@ public class ValueGeneratorList<T> implements ValueGenerator{
 
 	@Override
 	public List<String> getParameter() {
-		return parameter;
+		return this.parameter;
 	}
 
 	@Override
@@ -97,7 +99,7 @@ public class ValueGeneratorList<T> implements ValueGenerator{
 
 	@Override
     public List<String> getGeneratedValue() {
-        return generatedValue;
+        return this.generatedValue;
     }
 
 }

@@ -12,7 +12,7 @@ import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorN
 
 public class ValueGeneratorNormalDistribution implements ValueGenerator{
 
-	private List<String> parameters;
+	private List<String> parameter;
 	private final String attributeType;
 	private List<String> generatedValue;
 
@@ -24,8 +24,11 @@ public class ValueGeneratorNormalDistribution implements ValueGenerator{
 
 	@Override
 	public void openDialog() {
-			ValueGeneratorNormalDistributionDialog dlg = new ValueGeneratorNormalDistributionDialog(getValueGeneratorName(), attributeType, parameters);
+		if(getFitsType(getAttributeType())){
+			ValueGeneratorNormalDistributionDialog dlg = new ValueGeneratorNormalDistributionDialog(getValueGeneratorName(),
+					getAttributeType(), getParameter());
 			dialogResult(dlg);
+		}
 	}
 
 	private void dialogResult(ValueGeneratorNormalDistributionDialog dlg) {
@@ -53,22 +56,22 @@ public class ValueGeneratorNormalDistribution implements ValueGenerator{
 	}
 
 	public List<String> getParameter() {
-		return parameters;
+		return this.parameter;
 	}
 
 	@Override
 	public void setParameter(List<String> param) {
-		this.parameters = new ArrayList<>();
-		if(attributeType.equals(StringValue.TraditionalDataType.INTEGER)){
-			parameters.add(integerConverter(param.get(0)));
-			parameters.add(integerConverter(param.get(1)));
-			parameters.add(integerConverter(param.get(2)));
-			parameters.add(integerConverter(param.get(3)));
-		} else if (attributeType.equals(StringValue.TraditionalDataType.FLOAT)){
-			parameters.add(floatConverter(param.get(0)));
-			parameters.add(floatConverter(param.get(1)));
-			parameters.add(floatConverter(param.get(2)));
-			parameters.add(floatConverter(param.get(3)));
+		this.parameter = new ArrayList<>();
+		if(getAttributeType().equals("Integer")){
+			this.parameter.add(integerConverter(param.get(0)));
+			this.parameter.add(integerConverter(param.get(1)));
+			this.parameter.add(integerConverter(param.get(2)));
+			this.parameter.add(integerConverter(param.get(3)));
+		} else if (getAttributeType().equals("Float")){
+			this.parameter.add(floatConverter(param.get(0)));
+			this.parameter.add(floatConverter(param.get(1)));
+			this.parameter.add(floatConverter(param.get(2)));
+			this.parameter.add(floatConverter(param.get(3)));
 		}
 	}
 
@@ -77,8 +80,8 @@ public class ValueGeneratorNormalDistribution implements ValueGenerator{
 		this.generatedValue = new ArrayList<>();
 
 		for (int i =0 ; i < numberOfInstance ; i++){
-			generatedValue.add(generateValue(attributeType, parameters.get(0), parameters.get(1),
-					parameters.get(2), parameters.get(3)));
+			this.generatedValue.add(generateValue(getAttributeType(), getParameter().get(0), getParameter().get(1),
+					getParameter().get(2), getParameter().get(3)));
 		}
 	}
 
@@ -116,21 +119,21 @@ public class ValueGeneratorNormalDistribution implements ValueGenerator{
 	}
 
 	@Override
-	public boolean fitsType(String type) {
-		if(StringValue.TraditionalDataType.INTEGER.equals(type)) return true;
-		return StringValue.TraditionalDataType.FLOAT.equals(type);
+	public boolean getFitsType(String type) {
+		if("Integer".equals(type)) return true;
+		return "Float".equals(type);
 	}
 
 	@Override
 	public String getName2() {
-		if(parameters ==null) {
+		if(this.parameter ==null) {
 			return getValueGeneratorName()+" (incomplete)";
 		}
 		return getValueGeneratorName();
 	}
 
 	public String getAttributeType() {
-		return attributeType;
+		return this.attributeType;
 	}
 
 	@Override
@@ -141,6 +144,6 @@ public class ValueGeneratorNormalDistribution implements ValueGenerator{
 
 	@Override
 	public List<String> getGeneratedValue() {
-		return generatedValue;
+		return this.generatedValue;
 	}
 }

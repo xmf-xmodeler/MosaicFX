@@ -14,9 +14,9 @@ public class ValueGeneratorStatic implements ValueGenerator{
 	private final String attributeType;
 	private List<String> generatedValue;
 
-	public ValueGeneratorStatic(String type) {
+	public ValueGeneratorStatic(String attributeType) {
 		super();
-		this.attributeType = type;
+		this.attributeType = attributeType;
 	}
 
 	public String getAttributeType() {
@@ -30,8 +30,10 @@ public class ValueGeneratorStatic implements ValueGenerator{
 
 	@Override
 	public void openDialog() {
-		ValueGeneratorStaticDialog dlg = new ValueGeneratorStaticDialog(getValueGeneratorName(), getAttributeType(), getParameter());
-		dialogResult(dlg);
+		if(getFitsType(getAttributeType())){
+			ValueGeneratorStaticDialog dlg = new ValueGeneratorStaticDialog(getValueGeneratorName(), getAttributeType(), getParameter());
+			dialogResult(dlg);
+		}
 	}
 	
 	private void dialogResult(ValueGeneratorStaticDialog dlg) {
@@ -103,7 +105,7 @@ public class ValueGeneratorStatic implements ValueGenerator{
 		this.generatedValue = new ArrayList<>();
 
 		for (int i =0 ; i < numberOfInstance ; i++){
-			this.generatedValue.add(parameter.get(0));
+			this.generatedValue.add(getParameter().get(0));
 		}
 	}
 
@@ -113,7 +115,7 @@ public class ValueGeneratorStatic implements ValueGenerator{
 	}
 
 	@Override
-	public boolean fitsType(String type) {
+	public boolean getFitsType(String type) {
 		if("Integer".equals(type)) return true;
 		if("Float".equals(type)) return true;
 		if("Boolean".equals(type)) return true;
@@ -122,7 +124,7 @@ public class ValueGeneratorStatic implements ValueGenerator{
 
 	@Override
 	public String getName2() {
-		if(parameter ==null) {
+		if(getParameter() ==null) {
 			return getValueGeneratorName()+" (incomplete)";
 		}
 		return getValueGeneratorName();
@@ -130,11 +132,11 @@ public class ValueGeneratorStatic implements ValueGenerator{
 
 	@Override
 	public List<String> getParameter() {
-		return parameter;
+		return this.parameter;
 	}
 
 	@Override
     public List<String> getGeneratedValue() {
-        return generatedValue;
+        return this.generatedValue;
     }
 }

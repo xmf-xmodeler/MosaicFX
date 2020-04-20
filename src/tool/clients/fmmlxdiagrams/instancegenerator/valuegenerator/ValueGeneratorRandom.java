@@ -23,7 +23,7 @@ public class ValueGeneratorRandom implements ValueGenerator{
 	}
 
 	public String getAttributeType() {
-		return attributeType;
+		return this.attributeType;
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class ValueGeneratorRandom implements ValueGenerator{
 
 	@Override
 	public void openDialog() {
-		if(!attributeType.equals(StringValue.TraditionalDataType.BOOLEAN)){
+		if(getFitsType(getAttributeType())){
 			ValueGeneratorRandomDialog dlg = new ValueGeneratorRandomDialog(getValueGeneratorName(),
 					getAttributeType(), getSelectedScenario(), getParameter());
 			dialogResult(dlg);
@@ -46,7 +46,7 @@ public class ValueGeneratorRandom implements ValueGenerator{
 		if (opt.isPresent()) {
 			ValueGeneratorRandomDialogResult result = opt.get();
 			setSelectedScenario(result.getSelectedScenario());
-			if(selectedScenario.equals("Range")){
+			if(getSelectedScenario().equals("Range")){
 				setParameter(result.getParameter());
 			} else {
 				List<String> param = new ArrayList<>();
@@ -61,7 +61,7 @@ public class ValueGeneratorRandom implements ValueGenerator{
 	public void generate(int numberOfInstance) {
 		this.generatedValue = new ArrayList<>();
 		for(int i = 0 ; i<numberOfInstance; i++){
-			generatedValue.add(generateRandomValue(getAttributeType(), getSelectedScenario(), getParameter()));
+			this.generatedValue.add(generateRandomValue(getAttributeType(), getSelectedScenario(), getParameter()));
 		}
 	}
 
@@ -133,11 +133,11 @@ public class ValueGeneratorRandom implements ValueGenerator{
 	}
 
 	@Override
-	public boolean fitsType(String type) {
-		if(StringValue.TraditionalDataType.INTEGER.equals(type)) return true;
-		if(StringValue.TraditionalDataType.FLOAT.equals(type)) return true;
-		if(StringValue.TraditionalDataType.BOOLEAN.equals(type)) return true;
-		return StringValue.TraditionalDataType.STRING.equals(type);
+	public boolean getFitsType(String type) {
+		if("Integer".equals(type)) return true;
+		if("Float".equals(type)) return true;
+		if("Boolean".equals(type)) return true;
+		return "String".equals(type);
 	}
 
 	@Override
@@ -153,8 +153,8 @@ public class ValueGeneratorRandom implements ValueGenerator{
 	@Override
 	public List<String> getParameter() {
 		List<String> result = new ArrayList<>();
-		result.add(minValueParameter);
-		result.add(maxValueParameter);
+		result.add(this.minValueParameter);
+		result.add(this.maxValueParameter);
 		return result;
 	}
 
@@ -179,11 +179,11 @@ public class ValueGeneratorRandom implements ValueGenerator{
 
 	@Override
 	public List<String> getGeneratedValue() {
-		return generatedValue;
+		return this.generatedValue;
 	}
 
 	public String getSelectedScenario() {
-		return selectedScenario;
+		return this.selectedScenario;
 	}
 
 	public void setSelectedScenario(String selectedScenario) {

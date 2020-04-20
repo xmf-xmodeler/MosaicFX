@@ -13,10 +13,10 @@ class ValueGeneratorIncrementTest {
     @Test
     void getType() {
         ValueGeneratorIncrement valueGeneratorIncrement = new ValueGeneratorIncrement("Integer");
-        assertEquals(valueGeneratorIncrement.getType(), "Integer");
+        assertEquals(valueGeneratorIncrement.getAttributeType(), "Integer");
 
         ValueGeneratorIncrement valueGeneratorIncrement1 = new ValueGeneratorIncrement("Float");
-        assertEquals(valueGeneratorIncrement1.getType(), "Float");
+        assertEquals(valueGeneratorIncrement1.getAttributeType(), "Float");
     }
 
     @Test

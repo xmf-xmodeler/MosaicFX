@@ -4,22 +4,22 @@ import java.util.List;
 
 public interface ValueGenerator {
 
-	public String getValueGeneratorName();
+	String getValueGeneratorName();
 
-	public void openDialog();
+	void openDialog();
 
-	public void generate(int numberOfInstance);
+	void generate(int numberOfInstance);
 
-	public int possibleGeneratedInstance();
+	int possibleGeneratedInstance();
 
-	public boolean fitsType(String type);
+	boolean getFitsType(String type);
 
-	public String getName2();
+	String getName2();
 
-	public List<String> getParameter();
+	List<String> getParameter();
 
-	public void setParameter(List<String> parameter);
+	void setParameter(List<String> parameter);
 
-	public List<String> getGeneratedValue();
+	List<String> getGeneratedValue();
 
 }
