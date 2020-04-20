@@ -35,7 +35,7 @@ public class NewFmmlxPalette {
 	public static HashMap<Integer, Paint> colors = null;
 	private TreeView<PaletteTool> tree;
 	private HashMap<String, PaletteGroup> paletteGroups = new HashMap<>();
-	private FmmlxDiagram fmmlxDiagram;
+	private final FmmlxDiagram fmmlxDiagram;
 	private TreeItem<PaletteTool> root; 
 	
 	public NewFmmlxPalette(FmmlxDiagram fmmlxDiagram) {
@@ -47,7 +47,7 @@ public class NewFmmlxPalette {
 
 	private void populateTree() {
 		PaletteTool rootTool = new ToolRoot(fmmlxDiagram, "Root", "root", "");
-		root = new TreeItem<PaletteTool>(rootTool);
+		root = new TreeItem<>(rootTool);
 		tree.setRoot(root);
 		tree.setShowRoot(false);
 		initGroup();
@@ -58,13 +58,11 @@ public class NewFmmlxPalette {
 	}
 
 	private void populateGroup() {
-		
-		Iterator<Entry<String, PaletteGroup>> it = paletteGroups.entrySet().iterator();
-	    while (it.hasNext()) {
-	        @SuppressWarnings("rawtypes")
-			Map.Entry pair = (Map.Entry)it.next();
-	        ((PaletteGroup) pair.getValue()).populate(fmmlxDiagram);    
-	    }
+
+		for (Entry<String, PaletteGroup> pair : paletteGroups.entrySet()) {
+
+			pair.getValue().populate(fmmlxDiagram);
+		}
 	}
 
 	private void initGroup() {			
@@ -99,7 +97,7 @@ public class NewFmmlxPalette {
 			protected void updateItem(PaletteTool item, boolean empty) {
 				super.updateItem(item, empty);
 				
-				Vector<Integer> textColorInt = new Vector<Integer>(Arrays.asList(2, 3, 4, 5));
+				Vector<Integer> textColorInt = new Vector<>(Arrays.asList(2, 3, 4, 5));
 				
 				if (empty || item == null || item.getLabel() == null) {
 					setText("");

@@ -62,7 +62,6 @@ public class ValueGeneratorIncrementDialog extends CustomDialog<ValueGeneratorIn
 		}
 	}
 
-	@Override
 	public void storeParameter() {
 		this.startValue = startValueTextField.getText();
 		this.endValue = endValueTextField.getText();

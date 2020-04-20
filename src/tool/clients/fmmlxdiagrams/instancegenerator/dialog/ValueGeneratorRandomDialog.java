@@ -87,7 +87,6 @@ public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRando
 		return this.scenario;
 	}
 
-	@Override
 	public void storeParameter() {
 		this.rangeMin = this.rangeMinTextField.getText();
 		this.rangeMax = this.rangeMaxTextField.getText();

@@ -10,7 +10,7 @@ public class InstanceGeneratorGenerateTypeComboBox extends ComboBox<ValueGenerat
 	
 	private FmmlxAttribute attribute;
 
-	public <T> InstanceGeneratorGenerateTypeComboBox(FmmlxAttribute attribute) {
+	public InstanceGeneratorGenerateTypeComboBox(FmmlxAttribute attribute) {
 		super(getGenerateTypeList(attribute.getType()));
 		this.attribute = attribute;
 
@@ -24,32 +24,35 @@ public class InstanceGeneratorGenerateTypeComboBox extends ComboBox<ValueGenerat
 		this.attribute = attribute;
 	}
 
-	@SuppressWarnings("rawtypes")
 	public static ObservableList<ValueGenerator> getGenerateTypeList(String type) {
-		if(type.equals("Integer")) {
-			ValueGeneratorIncrement incG = new ValueGeneratorIncrement(type);
-			ValueGeneratorStatic sGInt = new ValueGeneratorStatic("Integer");
-			ValueGeneratorList<Integer> listGInt = new ValueGeneratorList<Integer>("Integer" );
-			ValueGeneratorNormalDistribution nDGenerator = new ValueGeneratorNormalDistribution("Integer");
-			ValueGeneratorRandom rGenerator = new ValueGeneratorRandom("Integer");
-			return FXCollections.observableArrayList(incG, sGInt, listGInt, nDGenerator, rGenerator);
-		} else if(type.equals("Float")) {
-			ValueGeneratorIncrement incF = new ValueGeneratorIncrement("Float");
-			ValueGeneratorStatic sGFloat = new ValueGeneratorStatic("Float");
-			ValueGeneratorList<Float> listGFloat = new ValueGeneratorList<Float>("Float");
-			ValueGeneratorRandom rGenerator = new ValueGeneratorRandom("Float");
-			ValueGeneratorNormalDistribution nDGenerator = new ValueGeneratorNormalDistribution("Float");
-			return FXCollections.observableArrayList(incF, sGFloat, listGFloat, nDGenerator, rGenerator);
-		} else if(type.equals("String")) {
-			ValueGeneratorStatic sString = new ValueGeneratorStatic("String");
-			ValueGeneratorList<String> listString = new ValueGeneratorList<String>("String");
-			return FXCollections.observableArrayList(sString, listString);
-		} else if(type.equals("Boolean")) {
-			ValueGeneratorStatic sGBoolean = new ValueGeneratorStatic("Boolean");
-			ValueGeneratorList<Boolean> listGBoolean = new ValueGeneratorList<Boolean>("Boolean");
-			ValueGeneratorRandom rGenerator = new ValueGeneratorRandom("Boolean");
-			return FXCollections.observableArrayList(sGBoolean, listGBoolean, rGenerator);
-		} 
+		switch (type) {
+			case "Integer": {
+				ValueGeneratorIncrement incG = new ValueGeneratorIncrement(type);
+				ValueGeneratorStatic sGInt = new ValueGeneratorStatic("Integer");
+				ValueGeneratorList listGInt = new ValueGeneratorList("Integer");
+				ValueGeneratorNormalDistribution nDGenerator = new ValueGeneratorNormalDistribution("Integer");
+				ValueGeneratorRandom rGenerator = new ValueGeneratorRandom("Integer");
+				return FXCollections.observableArrayList(incG, sGInt, listGInt, nDGenerator, rGenerator);
+			}
+			case "Float": {
+				ValueGeneratorIncrement incF = new ValueGeneratorIncrement("Float");
+				ValueGeneratorStatic sGFloat = new ValueGeneratorStatic("Float");
+				ValueGeneratorList listGFloat = new ValueGeneratorList("Float");
+				ValueGeneratorRandom rGenerator = new ValueGeneratorRandom("Float");
+				ValueGeneratorNormalDistribution nDGenerator = new ValueGeneratorNormalDistribution("Float");
+				return FXCollections.observableArrayList(incF, sGFloat, listGFloat, nDGenerator, rGenerator);
+			}
+			case "String":
+				ValueGeneratorStatic sString = new ValueGeneratorStatic("String");
+				ValueGeneratorList listString = new ValueGeneratorList("String");
+				return FXCollections.observableArrayList(sString, listString);
+			case "Boolean": {
+				ValueGeneratorStatic sGBoolean = new ValueGeneratorStatic("Boolean");
+				ValueGeneratorList listGBoolean = new ValueGeneratorList("Boolean");
+				ValueGeneratorRandom rGenerator = new ValueGeneratorRandom("Boolean");
+				return FXCollections.observableArrayList(sGBoolean, listGBoolean, rGenerator);
+			}
+		}
 		return  null;
 	}
 	

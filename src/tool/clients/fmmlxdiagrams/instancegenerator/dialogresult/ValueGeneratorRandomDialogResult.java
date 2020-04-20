@@ -6,9 +6,9 @@ import java.util.List;
 
 public class ValueGeneratorRandomDialogResult extends DialogResult {
 
-		private String attributeType;
-		private String scenario;
-		private List<String> parameter;
+		private final String attributeType;
+		private final String scenario;
+		private final List<String> parameter;
 
 		public ValueGeneratorRandomDialogResult(String attributeType, String scenario, List<String> parameter) {
 			this.scenario = scenario;
