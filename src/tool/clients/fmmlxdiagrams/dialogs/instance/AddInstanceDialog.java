@@ -17,14 +17,14 @@ import java.util.Vector;
 
 public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
-	private FmmlxDiagram diagram;
+	private final FmmlxDiagram diagram;
 	private FmmlxObject selectedObject;
 	private TextField nameTextField;
 	private ListView<FmmlxObject> parentListView;
 	private ComboBox<FmmlxObject> ofComboBox;
 	private CheckBox abstractCheckBox;
 	private ObservableList<FmmlxObject> parentList;
-	private Vector<FmmlxObject> objects;
+	private final Vector<FmmlxObject> objects;
 
 	public AddInstanceDialog(final FmmlxDiagram diagram, FmmlxObject object) {
 		super();
@@ -60,7 +60,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		ofComboBox = (ComboBox<FmmlxObject>) initializeComboBox(ofList);
 		ofComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue != null) {
-				this.selectedObject = (FmmlxObject) newValue;
+				this.selectedObject = newValue;
 				createAndSetParentList();
 			}
 		});
