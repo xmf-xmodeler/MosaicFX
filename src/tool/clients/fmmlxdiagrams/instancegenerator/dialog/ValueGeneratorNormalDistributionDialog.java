@@ -69,7 +69,6 @@ public class ValueGeneratorNormalDistributionDialog extends CustomDialog<ValueGe
 		});
 	}
 
-	@Override
 	public void storeParameter() {
 		meanValue = meanTextField.getText();
 		stdDevValue = stdTextField.getText();

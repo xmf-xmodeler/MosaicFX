@@ -107,6 +107,9 @@ public class InstanceGenerator {
 
     public void setValue(HashMap<String, ValueGenerator> value) {
         HashMap<FmmlxAttribute, ValueGenerator> result = new HashMap<>();
+        for(Map.Entry<String, ValueGenerator> pair : value.entrySet()){
+            result.put(object.getAttributeByName(pair.getKey()), pair.getValue());
+        }
         this.value = result;
     }
 
@@ -118,6 +121,5 @@ public class InstanceGenerator {
 
         diagram.getComm().addNewInstance(diagram, object.getId(), name, object.getLevel() - 1,
                 getParentIDs(), false, positionX, positionY);
-
     }
 }

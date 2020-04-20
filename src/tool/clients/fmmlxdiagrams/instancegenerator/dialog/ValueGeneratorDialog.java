@@ -6,7 +6,6 @@ import java.util.List;
 public interface ValueGeneratorDialog {
 
 	void setParameter(List<String> staticValue);
-	void storeParameter();
 	List<String> getParameter();
 	String getAttributeType();
 	void setResult();

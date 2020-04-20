@@ -799,6 +799,15 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		return result;
 	}
 
+	public FmmlxAttribute getAttributeByName(String name){
+		for (FmmlxAttribute att : getAllAttributes()){
+			if (att.getName().equals(name)){
+				return att;
+			}
+		}
+		return null;
+	}
+
 	public List<String> getAllOperationsString() {
 		List<String> result = new LinkedList<String>();
 		

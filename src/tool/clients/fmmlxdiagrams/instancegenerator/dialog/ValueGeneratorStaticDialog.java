@@ -65,7 +65,7 @@ public class ValueGeneratorStaticDialog extends CustomDialog<ValueGeneratorStati
 		}
 	}
 
-	@Override
+
 	public void storeParameter() {
 		if(getAttributeType().equals(StringValue.TraditionalDataType.BOOLEAN)){
 			this.staticValue = staticValueComboBox.getSelectionModel().getSelectedItem();

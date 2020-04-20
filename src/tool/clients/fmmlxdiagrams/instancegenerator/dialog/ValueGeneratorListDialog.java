@@ -5,11 +5,7 @@ import java.util.List;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorListDialogResult;
@@ -18,16 +14,15 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 public class ValueGeneratorListDialog extends CustomDialog<ValueGeneratorListDialogResult> implements ValueGeneratorDialog {
 
 	private final String attributeType;
-	
-	private final DialogPane dialogPane;
 
+	private TextField listName;
 	private ListView<String> listValue;
 
-	public ValueGeneratorListDialog(String valueGeneratorName, String attributeType, List<String> value) {
+	public ValueGeneratorListDialog(String valueGeneratorName, String attributeType, List<String> parameter) {
 		
 		this.attributeType = attributeType;
 		System.out.println();
-		dialogPane = getDialogPane();
+		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		dialogPane.setHeaderText(valueGeneratorName + " : "+ attributeType);
 		layoutContent();
@@ -40,42 +35,24 @@ public class ValueGeneratorListDialog extends CustomDialog<ValueGeneratorListDia
 		});
 		
 		setResult();
-		for(int i = 0 ; i<=value.size(); i++ ){
-			listValue.getItems().add(value.get(i));
+
+		if(parameter!= null){
+			setParameter(parameter);
 		}
 	}
 
-	public ValueGeneratorListDialog(String valueGeneratorName, String attributeType) {
-		
-		this.attributeType = attributeType;
-		
-		dialogPane = getDialogPane();
-		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialogPane.setHeaderText(valueGeneratorName + " : "+ attributeType);
-		layoutContent();
-		dialogPane.setContent(flow);
-		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
-		okButton.addEventFilter(ActionEvent.ACTION, e -> {
-			if (!inputIsValid()) {		
-				e.consume();
-			}
-		});
-		setResult();
-	}
 
 	@Override
-	public void setParameter(List<String> staticValue) {
-
+	public void setParameter(List<String> parameter) {
+		listName.setText(parameter.get(0));
 	}
 
-	@Override
-	public void storeParameter() {
-
-	}
 
 	@Override
 	public List<String> getParameter() {
-		return null;
+		List<String> result = new ArrayList<>();
+		result.add(listName.getText());
+		return result;
 	}
 
 	public String getAttributeType() {
@@ -84,14 +61,12 @@ public class ValueGeneratorListDialog extends CustomDialog<ValueGeneratorListDia
 
 	@Override
 	public void setResult() {
-		setResultConverter(dlgBtn -> {		
+		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				//TODO
-//				return new AttributeGeneratorDialogResult(startValueTextField.getText(), 
-//						endValueTextField.getText(), incrementValueTextField.getText(), attributeType, type);
+				return new ValueGeneratorListDialogResult(getAttributeType(), getParameter(), listValue.getSelectionModel().getSelectedItems());
 			}
 			return null;
-		});	
+		});
 
 	}
 
@@ -106,16 +81,19 @@ public class ValueGeneratorListDialog extends CustomDialog<ValueGeneratorListDia
 		List<Node> labelNode = new ArrayList<>();
 		List<Node> inputNode = new ArrayList<>();
 
+		Label listNameLabel = new Label("Name of List");
 		Label valueListLabel = new Label(StringValue.LabelAndHeaderTitle.valueList);
+
+		this.listName = new TextField();
 		this.listValue = new ListView<>();
 
-		Button addItemButton = new Button("Add");
-		Button removeItemButton = new Button("Remove");
-		
+		Button fetchButton = new Button();
+
+		labelNode.add(listNameLabel);
 		labelNode.add(valueListLabel);
-		
+
+		inputNode.add(listName);
 		inputNode.add(this.listValue);
-		inputNode.add(joinNodeElementInHBox(addItemButton, removeItemButton));
 
 		addNodesToGrid(labelNode, 0);
 		addNodesToGrid(inputNode, 1);
