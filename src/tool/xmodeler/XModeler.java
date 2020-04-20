@@ -437,7 +437,6 @@ public class XModeler extends Application {
 	  ClassBrowserClient.start();
   }
   
-  
   public static void openXModeler() {
 		stage.show();
   }
@@ -451,6 +450,7 @@ public class XModeler extends Application {
 	  initClients();
       startClients();
 	  openXModeler();
+
   }	  
 	
   public void createXmodeler() throws Exception {
