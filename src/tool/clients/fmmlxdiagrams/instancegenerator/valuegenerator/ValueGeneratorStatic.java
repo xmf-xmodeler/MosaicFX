@@ -4,56 +4,53 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorStaticDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorStaticDialogResult;
 
 public class ValueGeneratorStatic implements ValueGenerator{
 
 	private List<String> parameter;
-	private final String type;
+	private final String attributeType;
 	private List<String> generatedValue;
 
-	public ValueGeneratorStatic(String type) {
+	public ValueGeneratorStatic(String attributeType) {
 		super();
-		this.type = type;
+		this.attributeType = attributeType;
 	}
 
-	public String getType() {
-		return type;
+	public String getAttributeType() {
+		return this.attributeType;
 	}
 
 	@Override
 	public String getValueGeneratorName() {
-		return "STATIC";
+		return StringValue.ValueGeneratorName.STATIC;
 	}
 
 	@Override
 	public void openDialog() {
-		if (parameter !=null) {
-			ValueGeneratorStaticDialog dlg = new ValueGeneratorStaticDialog(getValueGeneratorName(), type, parameter);
+		if(getFitsType(getAttributeType())){
+			ValueGeneratorStaticDialog dlg = new ValueGeneratorStaticDialog(getValueGeneratorName(), getAttributeType(), getParameter());
 			dialogResult(dlg);
-			
-		} else {
-			ValueGeneratorStaticDialog dlg = new ValueGeneratorStaticDialog(getValueGeneratorName(), type);
-			dialogResult(dlg);
-		}	
+		}
 	}
 	
 	private void dialogResult(ValueGeneratorStaticDialog dlg) {
 		Optional<ValueGeneratorStaticDialogResult> opt = dlg.showAndWait();
 		if (opt.isPresent()) {
 			ValueGeneratorStaticDialogResult result = opt.get();
-			switch (type) {
-				case "Integer":
+			switch (getAttributeType()) {
+				case StringValue.TraditionalDataType.INTEGER:
 					setParameter(result.getValueInt());
 					break;
-				case "Float":
+				case StringValue.TraditionalDataType.FLOAT:
 					setParameter(result.getValueFloat());
 					break;
-				case "Boolean":
+				case StringValue.TraditionalDataType.BOOLEAN:
 					setParameter(result.getValueBool());
 					break;
-				case "String":
+				case StringValue.TraditionalDataType.STRING:
 					setParameter(result.getValueString());
 					break;
 			}
@@ -94,9 +91,9 @@ public class ValueGeneratorStatic implements ValueGenerator{
 
 	@Override
 	public void setParameter(List<String> parameter) {
-		if(type.equals("Integer")) {
+		if(getAttributeType().equals(StringValue.TraditionalDataType.INTEGER)) {
 			this.parameter = listToIntConverter(parameter);
-		} else if (type.equals("Float")){
+		} else if (attributeType.equals(StringValue.TraditionalDataType.FLOAT)){
 			this.parameter = listToFloatConverter(parameter);
 		} else{
 			this.parameter = parameter;
@@ -104,13 +101,12 @@ public class ValueGeneratorStatic implements ValueGenerator{
 	}
 
 	@Override
-	public List<String> generate(int numberOfInstance) {
-		generatedValue = new ArrayList<>();
+	public void generate(int numberOfInstance) {
+		this.generatedValue = new ArrayList<>();
 
 		for (int i =0 ; i < numberOfInstance ; i++){
-			generatedValue.add(parameter.get(0));
+			this.generatedValue.add(getParameter().get(0));
 		}
-		return generatedValue;
 	}
 
 	@Override
@@ -119,7 +115,7 @@ public class ValueGeneratorStatic implements ValueGenerator{
 	}
 
 	@Override
-	public boolean fitsType(String type) {
+	public boolean getFitsType(String type) {
 		if("Integer".equals(type)) return true;
 		if("Float".equals(type)) return true;
 		if("Boolean".equals(type)) return true;
@@ -128,7 +124,7 @@ public class ValueGeneratorStatic implements ValueGenerator{
 
 	@Override
 	public String getName2() {
-		if(parameter ==null) {
+		if(getParameter() ==null) {
 			return getValueGeneratorName()+" (incomplete)";
 		}
 		return getValueGeneratorName();
@@ -136,11 +132,11 @@ public class ValueGeneratorStatic implements ValueGenerator{
 
 	@Override
 	public List<String> getParameter() {
-		return parameter;
+		return this.parameter;
 	}
 
 	@Override
     public List<String> getGeneratedValue() {
-        return generatedValue;
+        return this.generatedValue;
     }
 }

@@ -33,10 +33,8 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeParentDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Vector;
+import java.util.*;
+import java.util.Map.Entry;
 //import java.util.concurrent.CountDownLatch;
 
 public class DiagramActions {
@@ -423,7 +421,7 @@ public class DiagramActions {
 		Platform.runLater(() -> {
 			
 			//TODO
-			InstanceGeneratorDialog dlg = new InstanceGeneratorDialog(object);
+			InstanceGeneratorDialog dlg = new InstanceGeneratorDialog(diagram, object);
 			Optional<InstanceGeneratorDialogResult> igd = dlg.showAndWait();
 			
 			if (igd.isPresent()) {
@@ -436,25 +434,31 @@ public class DiagramActions {
 				System.out.println();
 				System.out.println("Parent ID : "+result.getObject().getId());
 				System.out.println("Number of generated Instance : "+ result.getNumberOfInstance());
-				Iterator it = result.getValue().entrySet().iterator();
+				System.out.println("Generated Name : " +result.getInstanceName().toString());
+				System.out.println("Parent : "+ result.getSelectedParent().toString());
+				Iterator<Entry<FmmlxAttribute, ValueGenerator>> it = result.getValue().entrySet().iterator();
 				while (it.hasNext()) {
-			        Map.Entry pair = (Map.Entry)it.next();
-			        System.out.println(((FmmlxAttribute) pair.getKey()).getName() + " = " + ((ValueGenerator) pair.getValue()).getValueGeneratorName() + " : "+ ((ValueGenerator) pair.getValue()).getGeneratedValue());
+			        Map.Entry<FmmlxAttribute, ValueGenerator> pair = it.next();
+			        System.out.println(pair.getKey().getName() + " = " + pair.getValue().getValueGeneratorName() + " : "+ pair.getValue().getGeneratedValue());
 			    }
 				System.out.println("========================================================================");
 
 				for(int i =0 ; i< result.getNumberOfInstance(); i++){
 					System.out.println();
-					System.out.println("Instance No : "+(i+1));
-
-					Iterator it1 = result.getValue().entrySet().iterator();
-
+					System.out.println("Instance Name : "+result.getInstanceName().get(i));
+					System.out.println("Parent : "+ result.getSelectedParent().toString());
+					Iterator<Entry<FmmlxAttribute, ValueGenerator>> it1 = result.getValue().entrySet().iterator();
 					while (it1.hasNext()) {
-						Map.Entry pair1 = (Map.Entry)it1.next();
-						System.out.println(((FmmlxAttribute) pair1.getKey()).getName() + " = "+ ((ValueGenerator) pair1.getValue()).getGeneratedValue().get(i));
+						Map.Entry<FmmlxAttribute, ValueGenerator> pair1 = it1.next();
+						System.out.println(pair1.getKey().getName() + " = "+ pair1.getValue().getGeneratedValue().get(i));
 					}
+
+					diagram.getComm().addNewInstance(diagram, object.getId(), result.getInstanceName().get(i), object.getLevel()-1,
+							result.getParentIDs(), false, 10+(i*2), 10+(i*2));
+
 				}
 				diagram.getComm().instanceGenerator(diagram, result.getObject().getId(), result.getValue());
+				diagram.updateDiagram();
 			}
 		});
 	

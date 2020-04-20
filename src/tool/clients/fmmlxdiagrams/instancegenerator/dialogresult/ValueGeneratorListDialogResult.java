@@ -5,6 +5,7 @@ import java.util.List;
 
 
 import tool.clients.fmmlxdiagrams.dialogs.results.DialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 public class ValueGeneratorListDialogResult extends DialogResult {
 	
@@ -15,19 +16,19 @@ public class ValueGeneratorListDialogResult extends DialogResult {
 	
 	public ValueGeneratorListDialogResult(List<String> values, String type) {
 
-		if(type.equals("Integer")) {
+		if(type.equals(StringValue.TraditionalDataType.INTEGER)) {
 			for(String str : values) {
 				intValues.add(Integer.parseInt(str));
 			}
-		} else if (type.equals("Float")) {
+		} else if (type.equals(StringValue.TraditionalDataType.FLOAT)) {
 			for(String str : values) {
 				floatValues.add(Float.parseFloat(str));
 			}
-		} else if (type.equals("Boolean")) {
+		} else if (type.equals(StringValue.TraditionalDataType.BOOLEAN)) {
 			for(String str : values) {
 				boolValues.add(Boolean.parseBoolean(str));
 			}
-		} else if (type.equals("String")) {
+		} else if (type.equals(StringValue.TraditionalDataType.STRING)) {
 			stringValues = values;
 		} 
 	}

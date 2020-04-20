@@ -17,28 +17,20 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 public class ValueGeneratorListDialog extends CustomDialog<ValueGeneratorListDialogResult> implements ValueGeneratorDialog {
 
-	private String attributeType;
+	private final String attributeType;
 	
-	private DialogPane dialogPane;
-	
-	private List<Node> labelNode;
-	private List<Node> inputNode;
-	
-	private Label valueListLabel;
-	private ListView<String> listValue;
-	private Button addItemButton;
-	private Button removeItemButton;
+	private final DialogPane dialogPane;
 
-	public <T> ValueGeneratorListDialog(String valueGeneratorName, String attributeType, List<T> value) {
+	private ListView<String> listValue;
+
+	public ValueGeneratorListDialog(String valueGeneratorName, String attributeType, List<String> value) {
 		
 		this.attributeType = attributeType;
 		System.out.println();
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-//		dialogPane.setHeaderText(type.toString());
+		dialogPane.setHeaderText(valueGeneratorName + " : "+ attributeType);
 		layoutContent();
-		addNodesToGrid(labelNode, 0);
-		addNodesToGrid(inputNode, 1);
 		dialogPane.setContent(flow);
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
@@ -49,7 +41,7 @@ public class ValueGeneratorListDialog extends CustomDialog<ValueGeneratorListDia
 		
 		setResult();
 		for(int i = 0 ; i<=value.size(); i++ ){
-			listValue.getItems().add(value.get(i).toString());
+			listValue.getItems().add(value.get(i));
 		}
 	}
 
@@ -59,10 +51,8 @@ public class ValueGeneratorListDialog extends CustomDialog<ValueGeneratorListDia
 		
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-//		dialogPane.setHeaderText(type.toString() + " : "+attributeType);
+		dialogPane.setHeaderText(valueGeneratorName + " : "+ attributeType);
 		layoutContent();
-		addNodesToGrid(labelNode, 0);
-		addNodesToGrid(inputNode, 1);
 		dialogPane.setContent(flow);
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
@@ -71,7 +61,25 @@ public class ValueGeneratorListDialog extends CustomDialog<ValueGeneratorListDia
 			}
 		});
 		setResult();
-		
+	}
+
+	@Override
+	public void setParameter(List<String> staticValue) {
+
+	}
+
+	@Override
+	public void storeParameter() {
+
+	}
+
+	@Override
+	public List<String> getParameter() {
+		return null;
+	}
+
+	public String getAttributeType() {
+		return this.attributeType;
 	}
 
 	@Override
@@ -95,19 +103,22 @@ public class ValueGeneratorListDialog extends CustomDialog<ValueGeneratorListDia
 
 	@Override
 	public void layoutContent() {
-		labelNode = new ArrayList<Node>();
-		inputNode = new ArrayList<Node>();
-		
-		valueListLabel = new Label(StringValue.LabelAndHeaderTitle.valueList);
-		listValue = new ListView<String>();
-		
-		addItemButton = new Button("Add");
-		removeItemButton = new Button("Remove");
+		List<Node> labelNode = new ArrayList<>();
+		List<Node> inputNode = new ArrayList<>();
+
+		Label valueListLabel = new Label(StringValue.LabelAndHeaderTitle.valueList);
+		this.listValue = new ListView<>();
+
+		Button addItemButton = new Button("Add");
+		Button removeItemButton = new Button("Remove");
 		
 		labelNode.add(valueListLabel);
 		
-		inputNode.add(listValue);
-		inputNode.add(joinNodeElementInHBox(addItemButton, removeItemButton));		
+		inputNode.add(this.listValue);
+		inputNode.add(joinNodeElementInHBox(addItemButton, removeItemButton));
+
+		addNodesToGrid(labelNode, 0);
+		addNodesToGrid(inputNode, 1);
 	}
 
     @Override

@@ -1,7 +1,5 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -98,12 +96,9 @@ public class CustomDialog<R> extends Dialog<R> {
 		return string == null || string.length() == 0;
 	}
 
-	public Integer getComboBoxIntegerValue(ComboBox<Integer> box) {
-		Integer result = null;
-		try {
-			result = Integer.parseInt(box.getEditor().getText());
-		} catch (NumberFormatException nfe) {
-		}
+	public Integer getComboBoxIntegerValue(ComboBox<Integer> box) throws NumberFormatException {
+		int result;
+		result = Integer.parseInt(box.getEditor().getText());
 		return result;
 	}
 	
@@ -373,28 +368,12 @@ public class CustomDialog<R> extends Dialog<R> {
 		
 	}
 
+
 	protected CustomDialog.VBoxControl getVBoxControl() {
 		return vBoxControl;
 	}
 
-	protected class VBoxControl{
-
-		public VBox joinNodeInVBox(Node node1, Node node2) {
-			VBox result = new VBox();
-			GridPane grid = new GridPane();
-			grid.add(node1, 0, 0);
-			grid.add(node2, 1, 0);
-
-			ColumnConstraints col1 = new ColumnConstraints();
-			col1.setPercentWidth(33);
-			ColumnConstraints col2 = new ColumnConstraints();
-			col2.setPercentWidth(68);
-
-			grid.getColumnConstraints().addAll(col1,col2);
-
-			result.getChildren().add(grid);
-			return result;
-		}
+	protected static class VBoxControl{
 
 		public VBox joinNodeInVBox(Node node1, Node node2, Node node3) {
 			VBox result = new VBox();

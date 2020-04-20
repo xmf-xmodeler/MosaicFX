@@ -85,12 +85,12 @@ public class ModellBrowserStage extends CustomStage {
 		mainGridPane.setPadding(new Insets(3, 3, 3, 3));
 		setColumnConstrain(mainGridPane);
 
-		modelListView = new ListView<String>();
-		fmmlxObjectListView = new ListView<String>();
-		fmmlxAttributeListView = new ListView<String>();
-		slotListView = new ListView<String>();
-		fmmlxAssociationListView = new ListView<String>();
-		fmmlxOperationListView = new ListView<String>();
+		modelListView = new ListView<>();
+		fmmlxObjectListView = new ListView<>();
+		fmmlxAttributeListView = new ListView<>();
+		slotListView = new ListView<>();
+		fmmlxAssociationListView = new ListView<>();
+		fmmlxOperationListView = new ListView<>();
 		
 		modellBrowserTextFied = new TextField();
 		classBrowserTextField = new TextField();
@@ -102,7 +102,7 @@ public class ModellBrowserStage extends CustomStage {
 		associationBrowserTextField = new TextField();
 		associationBrowserTextField.setEditable(false);
 		
-		abstractComboBox = new ComboBox<Boolean>(ValueList.booleanList);
+		abstractComboBox = new ComboBox<>(ValueList.booleanList);
 		
 		codeArea = new TextArea();
 		consoleContainerVBox= new VBox();
@@ -146,7 +146,7 @@ public class ModellBrowserStage extends CustomStage {
 
 	@Override
 	protected void addAllElementToPane() {
-		List<Node> modelNode = new ArrayList<Node>();
+		List<Node> modelNode = new ArrayList<>();
 		modelNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		modelNode.add(new Label(StringValue.LabelAndHeaderTitle.modell));
 		modelNode.add(modelListView);
@@ -154,14 +154,14 @@ public class ModellBrowserStage extends CustomStage {
 		modelNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		modelNode.add(new Label(StringValue.LabelAndHeaderTitle.code));
 		
-		List<Node> objectNode = new ArrayList<Node>();
+		List<Node> objectNode = new ArrayList<>();
 		objectNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		objectNode.add(new Label(StringValue.LabelAndHeaderTitle.objects));
 		objectNode.add(fmmlxObjectListView);
 		objectNode.add(classBrowserVBox);
 		objectNode.add(abstractVBox);
 		
-		List<Node> attributeNode = new ArrayList<Node>();
+		List<Node> attributeNode = new ArrayList<>();
 		attributeNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		attributeNode.add(new Label(StringValue.LabelAndHeaderTitle.attributes));
 		
@@ -177,14 +177,14 @@ public class ModellBrowserStage extends CustomStage {
 		attributeNode.add(attributeGridpane);
 		attributeNode.add(attributeBrowserVBox);	
 
-		List<Node> operationNode = new ArrayList<Node>();
+		List<Node> operationNode = new ArrayList<>();
 		operationNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		operationNode.add(new Label(StringValue.LabelAndHeaderTitle.operations));
 		operationNode.add(fmmlxOperationListView);
 		operationNode.add(operationOutputVBox);
 		operationNode.add(operationInputVBox);
 		
-		List<Node> associationNode = new ArrayList<Node>();
+		List<Node> associationNode = new ArrayList<>();
 		associationNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		associationNode.add(new Label(StringValue.LabelAndHeaderTitle.associations));
 		associationNode.add(fmmlxAssociationListView);
@@ -214,6 +214,7 @@ public class ModellBrowserStage extends CustomStage {
 				}
 			}					
 			operationInputTextField.setText(stringBuilder.toString());
+			assert op != null;
 			operationOutputTexField.setText(op.getType().split("::")[2]);
 			codeArea.setText(op.getBody());
 		}
