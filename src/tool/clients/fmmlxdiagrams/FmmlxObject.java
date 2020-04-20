@@ -855,4 +855,16 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 			return this.name.compareTo(anotherObject.getName());
 		}
 	}
+
+	public boolean notTraditionalDataTypeExists() {
+		Boolean result= false;
+		for (FmmlxAttribute att: getAllAttributes()) {
+			if(att.getType().equals("String") || att.getType().equals("Integer") || att.getType().equals("Float") || att.getType().equals("Boolean")) {
+				result = false;
+			} else {
+				return true;
+			}
+		}
+		return result;
+	}
 }

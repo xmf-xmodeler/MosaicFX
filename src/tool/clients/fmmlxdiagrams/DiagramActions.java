@@ -20,10 +20,9 @@ import tool.clients.fmmlxdiagrams.dialogs.enumeration.AddEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.enumeration.DeleteEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.enumeration.EditEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.instance.AddInstanceDialog;
-import tool.clients.fmmlxdiagrams.dialogs.instance.AttributeGeneratorDialog;
 import tool.clients.fmmlxdiagrams.dialogs.instance.ChangeOfDialog;
-import tool.clients.fmmlxdiagrams.dialogs.instance.InstanceGeneratorDialog;
-import tool.clients.fmmlxdiagrams.dialogs.instance.InstanceGeneratorGenerateType;
+import tool.clients.fmmlxdiagrams.instancegenerator.dialog.InstanceGeneratorDialog;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
 import tool.clients.fmmlxdiagrams.dialogs.operation.AddOperationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.operation.ChangeBodyDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
@@ -33,8 +32,9 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeOwnerDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeParentDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
-import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Vector;
 //import java.util.concurrent.CountDownLatch;
@@ -61,13 +61,6 @@ public class DiagramActions {
 				ClassBrowserClient.show(diagram);
 			});
 		}
-	}
-	
-	public void instanceGenerator(FmmlxObject object) {	
-		Platform.runLater(() -> {
-			InstanceGenerator.show(object);
-		});
-		
 	}
 
 	public void addMetaClassDialog() {
@@ -115,22 +108,17 @@ public class DiagramActions {
 			if (result.isPresent()) {
 				final MetaClassDialogResult mcdResult = result.get();
 
-
 				int x = (int) e.getX();
 				int y = (int) e.getY();
 
 				if (x > 0 && y > 0) {
-					diagram.getComm().addMetaClass(diagram, mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentIds(), mcdResult.isAbstract(), x, y);	
-
+					diagram.getComm().addMetaClass(diagram, mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentIds(), mcdResult.isAbstract(), x, y);
 					
 					diagram.updateDiagram();
 				}
-			
 			}
 		});
-		
 	}
-
 
 	public void addInstanceDialog() {
 		addInstanceDialog(null);
@@ -168,9 +156,7 @@ public class DiagramActions {
 					}
 				};
 				canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
-
 			}
-
 //			l.countDown();
 		});
 	}
@@ -183,7 +169,6 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				final AddInstanceDialogResult aidResult = result.get();
-				
 
 				int x = (int) e.getX();
 				int y = (int) e.getY();
@@ -434,13 +419,42 @@ public class DiagramActions {
 		});
 	}
 	
-	public void instanceGeneratorDialog(DiagramActions actions, FmmlxObject object) {
+	public void instanceGeneratorDialog(FmmlxObject object) {
 		Platform.runLater(() -> {
-			InstanceGeneratorDialog dlg = new InstanceGeneratorDialog(diagram, object, actions);
-			Optional<InstanceGeneratorDialogResult> igd = dlg.showAndWait();
-
-			if (igd.isPresent()) {
 			
+			//TODO
+			InstanceGeneratorDialog dlg = new InstanceGeneratorDialog(object);
+			Optional<InstanceGeneratorDialogResult> igd = dlg.showAndWait();
+			
+			if (igd.isPresent()) {
+				InstanceGeneratorDialogResult result = igd.get();
+				System.out.println("======================================================================");
+				System.out.println();
+				System.out.println();
+				System.out.println("General Info");
+				System.out.println("----------------------------");
+				System.out.println();
+				System.out.println("Parent ID : "+result.getObject().getId());
+				System.out.println("Number of generated Instance : "+ result.getNumberOfInstance());
+				Iterator it = result.getValue().entrySet().iterator();
+				while (it.hasNext()) {
+			        Map.Entry pair = (Map.Entry)it.next();
+			        System.out.println(((FmmlxAttribute) pair.getKey()).getName() + " = " + ((ValueGenerator) pair.getValue()).getValueGeneratorName() + " : "+ ((ValueGenerator) pair.getValue()).getGeneratedValue());
+			    }
+				System.out.println("========================================================================");
+
+				for(int i =0 ; i< result.getNumberOfInstance(); i++){
+					System.out.println();
+					System.out.println("Instance No : "+(i+1));
+
+					Iterator it1 = result.getValue().entrySet().iterator();
+
+					while (it1.hasNext()) {
+						Map.Entry pair1 = (Map.Entry)it1.next();
+						System.out.println(((FmmlxAttribute) pair1.getKey()).getName() + " = "+ ((ValueGenerator) pair1.getValue()).getGeneratedValue().get(i));
+					}
+				}
+				diagram.getComm().instanceGenerator(diagram, result.getObject().getId(), result.getValue());
 			}
 		});
 	
@@ -915,12 +929,12 @@ public class DiagramActions {
 		});
 	}
 
-	public void attributeGeneratorDialog(FmmlxAttribute tmp, InstanceGeneratorGenerateType selectedType) {
-		Platform.runLater(() -> {
-			if(selectedType!=null) {
-				AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(tmp, selectedType);
-				Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
-			}
-		});
-	}	
+//	public void attributeGeneratorDialog(FmmlxAttribute tmp, InstanceGeneratorGenerateType selectedType) {
+//		Platform.runLater(() -> {
+//			if(selectedType!=null) {
+//				AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(tmp, selectedType);
+//				Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
+//			}
+//		});
+//	}	
 }

@@ -50,7 +50,6 @@ import tool.clients.editors.EditorClient;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ModellBrowserStage;
-import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
 import tool.clients.forms.FormsClient;
 import tool.clients.menus.MenuClient;
 import tool.clients.oleBridge.OleBridgeClient;
@@ -436,7 +435,6 @@ public class XModeler extends Application {
 	  DiagramClient.start(editorTabs);
 	  FmmlxDiagramCommunicator.start(editorTabs);
 	  ClassBrowserClient.start();
-	  InstanceGenerator.start();
   }
   
   

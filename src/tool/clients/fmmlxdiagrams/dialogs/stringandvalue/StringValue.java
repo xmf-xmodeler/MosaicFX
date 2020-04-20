@@ -45,6 +45,8 @@ public class StringValue {
 		public static final String thereAreDuplicates= "There are Duplicates";
 		public static final String elementAlreadyExist = "Element with the same name already exist";
 		public static final String enumAlreadyExist= "Enumeration with the same name already exist";
+        public static final String pleaseInputValidIntegerValue= "Please input valid integer value";
+		public static final String pleaseInputValidFloatValue= "Please input valid Float value";
 	}
 
 	public static class LabelAndHeaderTitle {
@@ -155,8 +157,14 @@ public class StringValue {
 		public static final String endValue = "End Value";
 		public static final String incrementValue = "Increment Value";
 		public static final String valueList = "Value List";
-		
-	}
+		public static final String randomValue = "Random Value";
+
+        public static final String Mean = "Mean";
+		public static final String stdDeviation= "Standard Deviation";
+		public static final String Range= "Range";
+        public static final String scenario= "Scenario";
+        public static final String range= "Range";
+    }
 
 	public static class OperationStringValues {
 		public static final String emptyOperation =

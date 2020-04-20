@@ -7,6 +7,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
 import tool.clients.workbench.WorkbenchClient;
 import xos.Value;
 
@@ -1132,6 +1133,11 @@ public class FmmlxDiagramCommunicator {
 
 	public void openPackageBrowser() {
 		WorkbenchClient.theClient().send(handler, "openPackageBrowser()", new Value[] {});
+	}
+
+	public void instanceGenerator(FmmlxDiagram diagram, int id, HashMap<FmmlxAttribute, ValueGenerator> values) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

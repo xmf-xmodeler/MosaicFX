@@ -1,25 +1,24 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
 import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
-import tool.clients.fmmlxdiagrams.dialogs.instance.InstanceGeneratorGenerateType;
-import tool.clients.fmmlxdiagrams.dialogs.instance.InstanceGeneratorGenerateTypeComboBox;
+import tool.clients.fmmlxdiagrams.instancegenerator.dialog.InstanceGeneratorGenerateTypeComboBox;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import java.util.List;
+import java.util.Random;
 
 public class CustomDialog<R> extends Dialog<R> {
 
@@ -28,6 +27,8 @@ public class CustomDialog<R> extends Dialog<R> {
 	protected FlowPane flow;
 	protected GridPane grid;
 	protected Label errorLabel;
+	protected InputChecker inputChecker;
+	protected VBoxControl vBoxControl;
 
 	public CustomDialog() {
 		super();
@@ -38,7 +39,8 @@ public class CustomDialog<R> extends Dialog<R> {
 		flow.setHgap(3);
 		flow.setVgap(3);
 		flow.setPrefWrapLength(250);
-		
+		vBoxControl = new VBoxControl();
+		inputChecker = new InputChecker();
 		
 		flow.getChildren().add(grid);
 
@@ -57,8 +59,8 @@ public class CustomDialog<R> extends Dialog<R> {
 		ColumnConstraints cc;
 		for (int i = 0; i < 2; i++) {
 			cc = new ColumnConstraints();
-			//cc.setMaxWidth(COLUMN_WIDTH);
-			cc.setMinWidth(COLUMN_WIDTH);
+			cc.setMaxWidth(COLUMN_WIDTH);
+			cc.setMinWidth(50);
 			cc.setFillWidth(true);
 			cc.setHgrow(Priority.ALWAYS);
 			// double size for second column
@@ -130,7 +132,7 @@ public class CustomDialog<R> extends Dialog<R> {
 			protected void updateItem(String object, boolean empty) {
 				super.updateItem(object, empty);
 
-				if (empty || object == null || object == "") {
+				if (empty || object == null || object.equals("") ) {
 					setText("");
 				} else {
 					setText(object);
@@ -243,41 +245,45 @@ public class CustomDialog<R> extends Dialog<R> {
 		return comboBox;
 	}
 	
-	protected InstanceGeneratorGenerateTypeComboBox<InstanceGeneratorGenerateType> initializeComboBoxGeneratorList(ObservableList<InstanceGeneratorGenerateType> observableList, FmmlxAttribute attribute) {
-		ComboBox<InstanceGeneratorGenerateType> comboBox = new InstanceGeneratorGenerateTypeComboBox<InstanceGeneratorGenerateType>(observableList, attribute);
-		comboBox.setCellFactory(param -> new ListCell<InstanceGeneratorGenerateType>() {
+	protected InstanceGeneratorGenerateTypeComboBox initializeComboBoxGeneratorList(FmmlxAttribute attribute) {
+		InstanceGeneratorGenerateTypeComboBox comboBox = new InstanceGeneratorGenerateTypeComboBox(attribute);
+		comboBox.setCellFactory(param -> new ListCell<ValueGenerator>() {
 			@Override
-			protected void updateItem(InstanceGeneratorGenerateType item, boolean empty) {
+			protected void updateItem(ValueGenerator item, boolean empty) {
 				super.updateItem(item, empty);
 
-				if (empty || isNullOrEmpty(item.toString())) {
+				if (empty || isNullOrEmpty(item.getValueGeneratorName())) {
 					setText(null);
 				} else {
-					setText(item.toString());
+					setText(item.getValueGeneratorName());
 				}
 			}
 		});
-		comboBox.setConverter(new StringConverter<InstanceGeneratorGenerateType>() {
+
+		comboBox.setConverter(new StringConverter<ValueGenerator>() {
 			@Override
-			public String toString(InstanceGeneratorGenerateType object) {
+			public String toString(ValueGenerator object) {
 				if (object == null) {
 					return null;
 				} else {
-					return object.toString();
+					return object.getName2();
 				}
 			}
 
 			@Override
-			public InstanceGeneratorGenerateType fromString(String string) {
+			public ValueGenerator fromString(String string) {
 				return null;
 			}
 		});
+		
+		comboBox.valueProperty().addListener((observable, oldValue, newValue) -> newValue.openDialog());
+		
 		comboBox.setPrefWidth(COLUMN_WIDTH);
-		return (InstanceGeneratorGenerateTypeComboBox<InstanceGeneratorGenerateType>) comboBox;
+		return comboBox;
 	}
 	
 	public ComboBox<FmmlxEnum> initializeComboBoxEnum(ObservableList<FmmlxEnum> observableList) {
-		ComboBox<FmmlxEnum> comboBox = new ComboBox<FmmlxEnum>(observableList);
+		ComboBox<FmmlxEnum> comboBox = new ComboBox<>(observableList);
 		comboBox.setCellFactory(param -> new ListCell<FmmlxEnum>() {
 			@Override
 			protected void updateItem(FmmlxEnum item, boolean empty) {
@@ -329,19 +335,86 @@ public class CustomDialog<R> extends Dialog<R> {
 		button.setPrefWidth(COLUMN_WIDTH * 0.4);
 
 		hBox.getChildren().addAll(textField, button);
-
+		
 		return hBox;
 	}
 	
-	protected ObservableList<InstanceGeneratorGenerateType> getGenerateTypeList(String type) {
-		if(type.equals("Integer") || type.equals("Float")) {
-			return FXCollections.observableArrayList(InstanceGeneratorGenerateType.INCREMENT, InstanceGeneratorGenerateType.STATIC, InstanceGeneratorGenerateType.LIST);
-		} else if (type.equals("String")) {
-			return FXCollections.observableArrayList(InstanceGeneratorGenerateType.STATIC, InstanceGeneratorGenerateType.LIST);
-		} else if (type.equals("Boolean")) {
-			return FXCollections.observableArrayList(InstanceGeneratorGenerateType.STATIC, InstanceGeneratorGenerateType.LIST);
+	
+	public boolean validateString(String string) {
+
+		if (!InputChecker.getInstance().validateName(string)) {
+			errorLabel.setText("Enter valid String!");
+			return false;
+		} else {
+			errorLabel.setText("");
+			return true;
 		}
-		return  FXCollections.observableArrayList(InstanceGeneratorGenerateType.NULL);
+	}
+	
+	
+	public boolean validateIncrement(String startValue, String endValue, String increment, String attributeType) {
+		boolean valid;
+		switch(attributeType){
+        case "Integer":   	
+        	valid = inputChecker.validateInteger(startValue) && inputChecker.validateInteger(endValue) && inputChecker.validateInteger(increment);
+        	if(!valid) {
+        		errorLabel.setText("Please input valid Integer-Value");
+        	}
+        	return valid;
+        case "Float":
+        	valid =  inputChecker.validateFloat(startValue) && inputChecker.validateFloat(endValue) && inputChecker.validateFloat(increment);
+        	if(!valid) {
+        		errorLabel.setText("Please input valid Float-Value");
+        	}
+        	return valid;
+        default:
+           	return false;
+        }
+		
+	}
+
+	protected CustomDialog.VBoxControl getVBoxControl() {
+		return vBoxControl;
+	}
+
+	protected class VBoxControl{
+
+		public VBox joinNodeInVBox(Node node1, Node node2) {
+			VBox result = new VBox();
+			GridPane grid = new GridPane();
+			grid.add(node1, 0, 0);
+			grid.add(node2, 1, 0);
+
+			ColumnConstraints col1 = new ColumnConstraints();
+			col1.setPercentWidth(33);
+			ColumnConstraints col2 = new ColumnConstraints();
+			col2.setPercentWidth(68);
+
+			grid.getColumnConstraints().addAll(col1,col2);
+
+			result.getChildren().add(grid);
+			return result;
+		}
+
+		public VBox joinNodeInVBox(Node node1, Node node2, Node node3) {
+			VBox result = new VBox();
+			GridPane grid = new GridPane();
+			grid.add(node1, 0, 0);
+			grid.add(node2, 1, 0);
+			grid.add(node3, 2, 0);
+
+			ColumnConstraints col1 = new ColumnConstraints();
+			col1.setPercentWidth(45);
+			ColumnConstraints col2 = new ColumnConstraints();
+			col2.setPercentWidth(10);
+			ColumnConstraints col3 = new ColumnConstraints();
+			col3.setPercentWidth(45);
+
+			grid.getColumnConstraints().addAll(col1,col2,col3);
+
+			result.getChildren().add(grid);
+			return result;
+		}
 	}
 
 
