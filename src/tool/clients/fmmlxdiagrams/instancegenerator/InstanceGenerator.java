@@ -105,12 +105,8 @@ public class InstanceGenerator {
         return parentIds;
     }
 
-    public void setValue(HashMap<String, ValueGenerator> value) {
-        HashMap<FmmlxAttribute, ValueGenerator> result = new HashMap<>();
-        for(Map.Entry<String, ValueGenerator> pair : value.entrySet()){
-            result.put(object.getAttributeByName(pair.getKey()), pair.getValue());
-        }
-        this.value = result;
+    public void setValue(HashMap<FmmlxAttribute, ValueGenerator> value) {  
+        this.value = value;
     }
 
     public void generateInstance(String name, int positionX, int positionY){
