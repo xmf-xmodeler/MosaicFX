@@ -47,7 +47,7 @@ public class FmmlxDiagramCommunicator {
 	public void newDiagram(int diagramID, String diagramName, String packageName) {
 		this.name = diagramName;
 		CountDownLatch l = new CountDownLatch(1);
-		final String label = diagramName;//"getPackageName();";
+		final String label = diagramName + " " + diagramID;//"getPackageName();";
 		Platform.runLater(() -> {
 			if (DEBUG) System.err.println("Create FMMLx-Diagram ("+diagramName+") ...");
 
@@ -75,9 +75,9 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	private void close(int handler) {
-		throw new RuntimeException("Not implemented yet!");
-//		diagrams.remove(diagram);
-//		tabs.remove(this.handler);
+//		throw new RuntimeException("Not implemented yet!");
+		diagrams.remove(diagrams.get(handler));
+		tabs.remove(handler);
 	}
 
 	private Value[] createValueArray(Vector<Integer> vector) { // todo: make more generic
