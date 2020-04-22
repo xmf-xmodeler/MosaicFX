@@ -33,8 +33,11 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeParentDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Vector;
 //import java.util.concurrent.CountDownLatch;
@@ -436,9 +439,9 @@ public class DiagramActions {
 				System.out.println();
 				System.out.println("Parent ID : "+result.getObject().getId());
 				System.out.println("Number of generated Instance : "+ result.getNumberOfInstance());
-				Iterator it = result.getValue().entrySet().iterator();
+				Iterator<Entry<FmmlxAttribute, ValueGenerator>> it = result.getValue().entrySet().iterator();
 				while (it.hasNext()) {
-			        Map.Entry pair = (Map.Entry)it.next();
+			        Map.Entry<FmmlxAttribute, ValueGenerator> pair = (Map.Entry<FmmlxAttribute, ValueGenerator>)it.next();
 			        System.out.println(((FmmlxAttribute) pair.getKey()).getName() + " = " + ((ValueGenerator) pair.getValue()).getValueGeneratorName() + " : "+ ((ValueGenerator) pair.getValue()).getGeneratedValue());
 			    }
 				System.out.println("========================================================================");
@@ -447,14 +450,14 @@ public class DiagramActions {
 					System.out.println();
 					System.out.println("Instance No : "+(i+1));
 
-					Iterator it1 = result.getValue().entrySet().iterator();
+					Iterator<Entry<FmmlxAttribute, ValueGenerator>> it1 = result.getValue().entrySet().iterator();
 
 					while (it1.hasNext()) {
-						Map.Entry pair1 = (Map.Entry)it1.next();
+						Map.Entry<FmmlxAttribute, ValueGenerator> pair1 = (Map.Entry<FmmlxAttribute, ValueGenerator>)it1.next();
 						System.out.println(((FmmlxAttribute) pair1.getKey()).getName() + " = "+ ((ValueGenerator) pair1.getValue()).getGeneratedValue().get(i));
 					}
 				}
-				diagram.getComm().instanceGenerator(diagram, result.getObject().getId(), result.getValue());
+				diagram.getComm().addNewInstanceWithSlots(diagram, result.getObject().getId(), new Vector<>(),new HashMap<>(), 0, 0);
 			}
 		});
 	
@@ -927,6 +930,14 @@ public class DiagramActions {
 				}
 			}
 		});
+	}
+
+	public Vector<String> testEvalList(String text) {
+		try {
+			return diagram.getComm().evalList(diagram, text);
+		} catch (TimeOutException e) {
+			return new Vector<>(Arrays.asList(new String[] {"Time", "Out", "Exception"}));
+		}	
 	}
 
 //	public void attributeGeneratorDialog(FmmlxAttribute tmp, InstanceGeneratorGenerateType selectedType) {

@@ -1,8 +1,13 @@
 package tool.clients.fmmlxdiagrams.menus;
 
+import java.util.Optional;
+import java.util.Vector;
+
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextInputDialog;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 
 public class DefaultContextMenu extends ContextMenu {
@@ -44,7 +49,32 @@ public class DefaultContextMenu extends ContextMenu {
 		
 		enumeration.getItems().addAll(createEnumeration, editEnumeration, deleteEnumeration);
 		
-
 		getItems().addAll(addClassItem, addInstanceItem, addAssociationItem, levelMenu, enumeration, packageListView, packageListView_LOCAL);
+
+		{ // test
+			MenuItem testEvalList = new MenuItem("TEST EVAL LIST");
+			testEvalList.setOnAction(e -> {
+				TextInputDialog dialog = new TextInputDialog("x");
+				dialog.setTitle("evalList Test Dialog");
+//				dialog.setHeaderText("Look, a Text Input Dialog");
+				dialog.setContentText("Enter a reference:");
+
+				Optional<String> result = dialog.showAndWait();
+				if (result.isPresent()){
+				    Vector<String> list = actions.testEvalList(result.get());
+				    
+				    ChoiceDialog<String> dialog2 = new ChoiceDialog<>(null, list);
+				    dialog2.setTitle("Result Dialog");
+//				    dialog2.setHeaderText("Look, a Choice Dialog");
+				    dialog2.setContentText("Found this list:");
+
+				    //Optional<String> result2 = 
+				    	dialog2.showAndWait();
+				}
+
+			});
+			
+			getItems().addAll(testEvalList);
+		}
 	}
 }
