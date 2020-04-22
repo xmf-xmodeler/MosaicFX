@@ -21,7 +21,7 @@ import tool.clients.fmmlxdiagrams.dialogs.enumeration.DeleteEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.enumeration.EditEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.instance.AddInstanceDialog;
 import tool.clients.fmmlxdiagrams.dialogs.instance.ChangeOfDialog;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialog.InstanceGeneratorDialog;
+import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
 import tool.clients.fmmlxdiagrams.dialogs.operation.AddOperationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.operation.ChangeBodyDialog;
@@ -46,7 +46,7 @@ public class DiagramActions {
 
 	private final double zoomLevel = Math.sqrt(2);
 
-	private FmmlxDiagram diagram;
+	private final FmmlxDiagram diagram;
 
 	public DiagramActions(FmmlxDiagram diagram) {
 		this.diagram = diagram;
@@ -60,9 +60,7 @@ public class DiagramActions {
 		if(xmf)  {
 			diagram.getComm().openPackageBrowser();
 		} else {
-			Platform.runLater(() -> {
-				ClassBrowserClient.show(diagram);
-			});
+			Platform.runLater(() -> ClassBrowserClient.show(diagram));
 		}
 	}
 
@@ -424,18 +422,16 @@ public class DiagramActions {
 	
 	public void instanceGeneratorDialog(FmmlxObject object) {
 		Platform.runLater(() -> {
-			
-			//TODO
-			InstanceGeneratorDialog dlg = new InstanceGeneratorDialog(object);
-			Optional<InstanceGeneratorDialogResult> igd = dlg.showAndWait();
-			
-			if (igd.isPresent()) {
-				InstanceGeneratorDialogResult result = igd.get();
-				System.out.println("======================================================================");
-				System.out.println();
-				System.out.println();
-				System.out.println("General Info");
-				System.out.println("----------------------------");
+
+			InstanceGenerator instanceGenerator = new InstanceGenerator(diagram, object);
+			instanceGenerator.openDialog();
+
+			for(int i =0 ; i< instanceGenerator.getNumberOfInstance(); i++){
+				//instanceGenerator.generateInstance(instanceGenerator.getGeneratedInstanceName().get(i), 10 + (i*i), 10 + (i*i));
+
+				//print desired output (Just for Test)
+				//TODO Delete this part after dedicated communicator createc
+				//============================================================================================
 				System.out.println();
 				System.out.println("Parent ID : "+result.getObject().getId());
 				System.out.println("Number of generated Instance : "+ result.getNumberOfInstance());
@@ -457,8 +453,10 @@ public class DiagramActions {
 						System.out.println(((FmmlxAttribute) pair1.getKey()).getName() + " = "+ ((ValueGenerator) pair1.getValue()).getGeneratedValue().get(i));
 					}
 				}
-				diagram.getComm().addNewInstanceWithSlots(diagram, result.getObject().getId(), new Vector<>(),new HashMap<>(), 0, 0);
+				//diagram.getComm().addNewInstanceWithSlots(diagram, result.getObject().getId(), new Vector<>(),new HashMap<>(), 0, 0);
 			}
+			diagram.updateDiagram();
+
 		});
 	
 	}

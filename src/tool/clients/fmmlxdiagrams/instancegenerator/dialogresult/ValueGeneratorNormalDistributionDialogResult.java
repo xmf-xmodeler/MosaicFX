@@ -2,20 +2,17 @@ package tool.clients.fmmlxdiagrams.instancegenerator.dialogresult;
 
 import tool.clients.fmmlxdiagrams.dialogs.results.DialogResult;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ValueGeneratorNormalDistributionDialogResult extends DialogResult {
 
-    private String attributeType, meanValue, stdDevValue, rangeMinValue, rangeMaxValue;
+    private List<String> parameter;
+    private String attributeType;
 
-    public ValueGeneratorNormalDistributionDialogResult(String attributeType, String meanValue, String stdDevValue, String rangeMinValue, String rangeMaxValue) {
+    public ValueGeneratorNormalDistributionDialogResult(String attributeType, List<String> parameter) {
         super();
-        this.attributeType = attributeType;
-        this.meanValue= meanValue;
-        this.stdDevValue= stdDevValue;
-        this.rangeMinValue = rangeMinValue;
-        this.rangeMaxValue = rangeMaxValue;
+        this.attributeType=attributeType;
+        this.parameter=parameter;
     }
 
     public String getAttributeType() {
@@ -23,13 +20,7 @@ public class ValueGeneratorNormalDistributionDialogResult extends DialogResult {
     }
 
     public List<String> getParameter(){
-        List<String> result = new ArrayList<>();
-        result.add(meanValue);
-        result.add(stdDevValue);
-        result.add(rangeMinValue);
-        result.add(rangeMaxValue);
-
-        return result;
+        return parameter;
     }
 
 }

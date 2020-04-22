@@ -68,8 +68,8 @@ class ValueGeneratorNormalDistributionTest {
         parameter.add("1.0");
         parameter.add("10");
         valueGeneratorNormalDistribution.setParameter(parameter);
-
-        System.out.println(valueGeneratorNormalDistribution.generate(10).toString());
+        valueGeneratorNormalDistribution.generate(10);
+        System.out.println(valueGeneratorNormalDistribution.getGeneratedValue().toString());
     }
 
     @Test
@@ -81,7 +81,7 @@ class ValueGeneratorNormalDistributionTest {
         parameter.add("1.3");
         parameter.add("10");
         valueGeneratorNormalDistribution.setParameter(parameter);
-
-        System.out.println(valueGeneratorNormalDistribution.generate(10).toString());
+        valueGeneratorNormalDistribution.generate(10);
+        System.out.println(valueGeneratorNormalDistribution.getGeneratedValue().toString());
     }
 }

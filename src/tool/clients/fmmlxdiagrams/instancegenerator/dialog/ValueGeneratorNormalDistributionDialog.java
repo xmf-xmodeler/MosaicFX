@@ -16,26 +16,18 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 public class ValueGeneratorNormalDistributionDialog extends CustomDialog<ValueGeneratorNormalDistributionDialogResult>
 		implements ValueGeneratorDialog {
 	
-	private String attributeType;
-	
-	private DialogPane dialogPane;
-	
-	private List<Node> labelNode, inputNode;
-
-	private Label meanLabel, standardDeviationLabel, rangeLabel;
+	private final String attributeType;
 
 	private TextField meanTextField, stdTextField,rangeMinTextField, rangeMaxTextField;
-
-	private VBox rangeVBox;
 
 	private String meanValue, stdDevValue, rangeMinValue, rangeMaxValue;
 
 
 	public ValueGeneratorNormalDistributionDialog(String valueGeneratorName, String attributeType,
-												  List<String> value) {
+												  List<String> parameter) {
 
 		this.attributeType = attributeType;
-		dialogPane = getDialogPane();
+		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		dialogPane.setHeaderText(valueGeneratorName + " : "+ attributeType);
 		layoutContent();
@@ -49,48 +41,53 @@ public class ValueGeneratorNormalDistributionDialog extends CustomDialog<ValueGe
 		
 		setResult();
 
-		this.meanValue = value.get(0);
-		meanTextField.setText(meanValue);
-		this.stdDevValue = value.get(1);
-		stdTextField.setText(stdDevValue);
-		this.rangeMinValue = value.get(2);
-		rangeMinTextField.setText(rangeMinValue);
-		this.rangeMaxValue = value.get(3);
-		rangeMaxTextField.setText(rangeMaxValue);
+		if(parameter!=null){
+			setParameter(parameter);
+		}
 	}
 
-	public ValueGeneratorNormalDistributionDialog(String valueGeneratorName, String attributeType) {
-
-		this.attributeType = attributeType;
-		
-		dialogPane = getDialogPane();
-		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialogPane.setHeaderText(valueGeneratorName + " : "+attributeType);
-		layoutContent();
-		dialogPane.setContent(flow);
-		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
-		okButton.addEventFilter(ActionEvent.ACTION, e -> {
-			if (!inputIsValid()) {		
-				e.consume();
-			}
-		});
-		setResult();
+	@Override
+	public void setParameter(List<String> staticValue) {
+		this.meanValue = staticValue.get(0);
+		meanTextField.setText(meanValue);
+		this.stdDevValue = staticValue.get(1);
+		stdTextField.setText(stdDevValue);
+		this.rangeMinValue = staticValue.get(2);
+		rangeMinTextField.setText(rangeMinValue);
+		this.rangeMaxValue = staticValue.get(3);
+		rangeMaxTextField.setText(rangeMaxValue);
 	}
 
 	@Override
 	public void setResult() {
 		setResultConverter(dlgBtn -> {		
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-
-				meanValue = meanTextField.getText();
-				stdDevValue = stdTextField.getText();
-				rangeMinValue = rangeMinTextField.getText();
-				rangeMaxValue = rangeMaxTextField.getText();
-
-				return new ValueGeneratorNormalDistributionDialogResult(attributeType, meanValue, stdDevValue, rangeMinValue, rangeMaxValue);
+				storeParameter();
+				return new ValueGeneratorNormalDistributionDialogResult(getAttributeType(), getParameter());
 			}
 			return null;
 		});
+	}
+
+	public void storeParameter() {
+		meanValue = meanTextField.getText();
+		stdDevValue = stdTextField.getText();
+		rangeMinValue = rangeMinTextField.getText();
+		rangeMaxValue = rangeMaxTextField.getText();
+	}
+
+	@Override
+	public List<String> getParameter() {
+		List<String> result = new ArrayList<>();
+		result.add(this.meanValue);
+		result.add(this.stdDevValue);
+		result.add(this.rangeMinValue);
+		result.add(this.rangeMaxValue);
+		return result;
+	}
+
+	public String getAttributeType() {
+		return attributeType;
 	}
 
 	@Override
@@ -170,18 +167,18 @@ public class ValueGeneratorNormalDistributionDialog extends CustomDialog<ValueGe
 
 	@Override
 	public void layoutContent() {
-		labelNode = new ArrayList<>();
-		inputNode = new ArrayList<>();
-		meanLabel = new Label(StringValue.LabelAndHeaderTitle.Mean);
-		standardDeviationLabel = new Label(StringValue.LabelAndHeaderTitle.stdDeviation);
-		rangeLabel = new Label(StringValue.LabelAndHeaderTitle.Range);
+		ArrayList<Node> labelNode = new ArrayList<>();
+		ArrayList<Node> inputNode = new ArrayList<>();
+		Label meanLabel = new Label(StringValue.LabelAndHeaderTitle.Mean);
+		Label standardDeviationLabel = new Label(StringValue.LabelAndHeaderTitle.stdDeviation);
+		Label rangeLabel = new Label(StringValue.LabelAndHeaderTitle.Range);
 
 		meanTextField = new TextField();
 		stdTextField = new TextField();
 		rangeMinTextField = new TextField();
 		rangeMaxTextField = new TextField();
 
-		rangeVBox = getVBoxControl().joinNodeInVBox(rangeMinTextField, new Label("  -"), rangeMaxTextField);
+		VBox rangeVBox = getVBoxControl().joinNodeInVBox(rangeMinTextField, new Label("  -"), rangeMaxTextField);
 
 		labelNode.add(meanLabel);
 		labelNode.add(standardDeviationLabel);

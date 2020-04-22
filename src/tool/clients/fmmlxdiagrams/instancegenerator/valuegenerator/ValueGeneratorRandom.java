@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator;
 
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorRandomDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorRandomDialogResult;
 
@@ -22,17 +23,17 @@ public class ValueGeneratorRandom implements ValueGenerator{
 	}
 
 	public String getAttributeType() {
-		return attributeType;
+		return this.attributeType;
 	}
 
 	@Override
 	public String getValueGeneratorName() {
-		return "RANDOM";
+		return StringValue.ValueGeneratorName.RANDOM;
 	}
 
 	@Override
 	public void openDialog() {
-		if(!attributeType.equals("Boolean")){
+		if(getFitsType(getAttributeType())){
 			ValueGeneratorRandomDialog dlg = new ValueGeneratorRandomDialog(getValueGeneratorName(),
 					getAttributeType(), getSelectedScenario(), getParameter());
 			dialogResult(dlg);
@@ -45,7 +46,7 @@ public class ValueGeneratorRandom implements ValueGenerator{
 		if (opt.isPresent()) {
 			ValueGeneratorRandomDialogResult result = opt.get();
 			setSelectedScenario(result.getSelectedScenario());
-			if(selectedScenario.equals("Range")){
+			if(getSelectedScenario().equals("Range")){
 				setParameter(result.getParameter());
 			} else {
 				List<String> param = new ArrayList<>();
@@ -53,27 +54,24 @@ public class ValueGeneratorRandom implements ValueGenerator{
 				param.add(null);
 				setParameter(param);
 			}
-			System.out.println(getSelectedScenario());
-			System.out.println(getParameter().toString());
 		}
 	}
 
 	@Override
-	public List<String> generate(int numberOfInstance) {
-		generatedValue = new ArrayList<>();
+	public void generate(int numberOfInstance) {
+		this.generatedValue = new ArrayList<>();
 		for(int i = 0 ; i<numberOfInstance; i++){
-			generatedValue.add(generateRandomValue(getAttributeType(), getSelectedScenario(), getParameter()));
+			this.generatedValue.add(generateRandomValue(getAttributeType(), getSelectedScenario(), getParameter()));
 		}
-		return generatedValue;
 	}
 
 	protected String generateRandomValue(String attributeType, String selectedScenario, List<String> parameter) {
 		switch(attributeType){
-			case "Integer":
+			case StringValue.TraditionalDataType.INTEGER:
 				return generateRandomInteger(selectedScenario, parameter);
-			case "Float":
+			case StringValue.TraditionalDataType.FLOAT:
 				return generateRandomFloat(selectedScenario, parameter);
-			case "Boolean":
+			case StringValue.TraditionalDataType.BOOLEAN:
 				return generateRandomBoolean();
 			default:
 				return "";
@@ -135,7 +133,7 @@ public class ValueGeneratorRandom implements ValueGenerator{
 	}
 
 	@Override
-	public boolean fitsType(String type) {
+	public boolean getFitsType(String type) {
 		if("Integer".equals(type)) return true;
 		if("Float".equals(type)) return true;
 		if("Boolean".equals(type)) return true;
@@ -144,7 +142,7 @@ public class ValueGeneratorRandom implements ValueGenerator{
 
 	@Override
 	public String getName2() {
-		if(!getAttributeType().equals("Boolean")){
+		if(!getAttributeType().equals(StringValue.TraditionalDataType.BOOLEAN)){
 			if(getSelectedScenario().equals("")){
 				return getValueGeneratorName()+ " (incomplete)";
 			}
@@ -155,8 +153,8 @@ public class ValueGeneratorRandom implements ValueGenerator{
 	@Override
 	public List<String> getParameter() {
 		List<String> result = new ArrayList<>();
-		result.add(minValueParameter);
-		result.add(maxValueParameter);
+		result.add(this.minValueParameter);
+		result.add(this.maxValueParameter);
 		return result;
 	}
 
@@ -168,10 +166,10 @@ public class ValueGeneratorRandom implements ValueGenerator{
 				this.maxValueParameter=null;
 			}
 			if(parameter.get(0)!=null && parameter.get(1)!=null){
-				if(attributeType.equals("Integer")){
+				if(attributeType.equals(StringValue.TraditionalDataType.INTEGER)){
 					this.minValueParameter = integerConverter(parameter.get(0));
 					this.maxValueParameter = integerConverter(parameter.get(1));
-				} else if (attributeType.equals("Float")){
+				} else if (attributeType.equals(StringValue.TraditionalDataType.FLOAT)){
 					this.minValueParameter = floatConverter(parameter.get(0));
 					this.maxValueParameter = floatConverter(parameter.get(1));
 				}
@@ -181,11 +179,11 @@ public class ValueGeneratorRandom implements ValueGenerator{
 
 	@Override
 	public List<String> getGeneratedValue() {
-		return generatedValue;
+		return this.generatedValue;
 	}
 
 	public String getSelectedScenario() {
-		return selectedScenario;
+		return this.selectedScenario;
 	}
 
 	public void setSelectedScenario(String selectedScenario) {

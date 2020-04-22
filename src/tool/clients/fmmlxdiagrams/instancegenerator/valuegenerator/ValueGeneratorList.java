@@ -1,58 +1,47 @@
 package tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Vector;
 
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorListDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorListDialogResult;
 
-public class ValueGeneratorList<T> implements ValueGenerator{
-	
-	private Vector<T> elements;
-	private String type;
+public class ValueGeneratorList implements ValueGenerator{
+
+	private String attributeType;
 	private List<String> parameter;
 	private List<String> generatedValue;
 
-	public ValueGeneratorList(String string) {
-		super();
-		this.type= string;
-	}
 
-	public ValueGeneratorList(Vector<T> elements, String string) {
+	public ValueGeneratorList(String attributeType) {
 		super();
-		this.elements = elements;
-		this.type = string;
+		this.attributeType = attributeType;
 	}
 
 	@Override
 	public String getValueGeneratorName() {
-		return "LIST";
+		return StringValue.ValueGeneratorName.LIST;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void openDialog() {
-		ValueGeneratorListDialog dlg = new ValueGeneratorListDialog(getValueGeneratorName(), type);
-		Optional<ValueGeneratorListDialogResult> opt = dlg.showAndWait();
-		
-		if (opt.isPresent()) {
-			ValueGeneratorListDialogResult result = opt.get();
-			if (type.equals("Integer")) {
-				this.elements = (Vector<T>) result.getIntValues();
-			} else if (type.equals("Float")) {
-				this.elements = (Vector<T>) result.getFloatValues();
-			} else if (type.equals("Boolean")) {
-				this.elements = (Vector<T>) result.getBoolValues();		
-			} else if (type.equals("String")) {
-				this.elements  = (Vector<T>) result.getStringValues();
+		if(getFitsType(getAttributeType())){
+			ValueGeneratorListDialog dlg = new ValueGeneratorListDialog(getValueGeneratorName(), getAttributeType(), getParameter());
+			Optional<ValueGeneratorListDialogResult> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				ValueGeneratorListDialogResult result = opt.get();
+				setParameter(result.getParameter());
+				setGeneratedValue(result.getElements());
 			}
 		}
 	}
 
 	@Override
-	public List<String> generate(int numberOfInstance) {
-		return null;
+	public void generate(int numberOfInstance) {
+		//TODO
 	}
 
 	@Override
@@ -61,33 +50,72 @@ public class ValueGeneratorList<T> implements ValueGenerator{
 	}
 
 	@Override
-	public boolean fitsType(String type) {
-		if("Integer".equals(type)) return true;
-		if("Float".equals(type)) return true;
-		if("Boolean".equals(type)) return true;
-		if("String".equals(type)) return true;
-		return false;
+	public boolean getFitsType(String type) {
+		if(StringValue.TraditionalDataType.INTEGER.equals(type)) return true;
+		if(StringValue.TraditionalDataType.FLOAT.equals(type)) return true;
+		if(StringValue.TraditionalDataType.BOOLEAN.equals(type)) return true;
+		return StringValue.TraditionalDataType.STRING.equals(type);
 	}
 
-	public Vector<T> getElements() {
-		return elements;
+	private String integerConverter(String value) {
+		try {
+			return Integer.parseInt(value)+"";
+		} catch (Exception e){
+			return Math.round(Float.parseFloat(value))+"";
+		}
 	}
 
-	public void setElements(Vector<T> elements) {
-		this.elements = elements;
+	private String floatConverter(String value) {
+		try {
+			return Float.parseFloat(value)+"";
+		} catch (Exception e){
+			return (float)Integer.parseInt(value)+"";
+		}
 	}
 
-	public String getType() {
-		return type;
+	private String booleanConverter(String value) {
+		try {
+			return Boolean.parseBoolean(value)+"";
+		} catch (Exception e){
+			return "";
+		}
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setGeneratedValue(List<String> elements) {
+		this.generatedValue = new ArrayList<>();
+		switch (getAttributeType()) {
+			case StringValue.TraditionalDataType.INTEGER:
+				for (String value : elements) {
+					this.generatedValue.add(integerConverter(value));
+				}
+				break;
+			case StringValue.TraditionalDataType.FLOAT:
+				for (String value : elements) {
+					this.generatedValue.add(floatConverter(value));
+				}
+				break;
+			case StringValue.TraditionalDataType.BOOLEAN:
+				for (String value : elements) {
+					this.generatedValue.add(booleanConverter(value));
+				}
+				break;
+			case StringValue.TraditionalDataType.STRING:
+				this.generatedValue.addAll(elements);
+				break;
+		}
+	}
+
+	public String getAttributeType() {
+		return this.attributeType;
+	}
+
+	public void setAttributeType(String attributeType) {
+		this.attributeType = attributeType;
 	}
 
 	@Override
 	public String getName2() {
-		if(elements==null) {
+		if(this.parameter==null) {
 			return getValueGeneratorName()+" (incomplete)";
 		}
 		return getValueGeneratorName();
@@ -95,17 +123,17 @@ public class ValueGeneratorList<T> implements ValueGenerator{
 
 	@Override
 	public List<String> getParameter() {
-		return parameter;
+		return this.parameter;
 	}
 
 	@Override
-	public void setParameter(List<String> parameter) {
-		//TODO
+	public void setParameter(List<String> listName) {
+		this.parameter = listName;
 	}
 
 	@Override
     public List<String> getGeneratedValue() {
-        return generatedValue;
+        return this.generatedValue;
     }
 
 }

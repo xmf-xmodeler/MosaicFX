@@ -1,11 +1,16 @@
 package tool.clients.fmmlxdiagrams.instancegenerator.dialog;
 
 
+import java.util.List;
+
 public interface ValueGeneratorDialog {
-	
-	public void setResult();
-	public boolean inputIsValid();
-	public void layoutContent();
-	public boolean validateLogic(String attributeType);
+
+	void setParameter(List<String> staticValue);
+	List<String> getParameter();
+	String getAttributeType();
+	void setResult();
+	boolean inputIsValid();
+	void layoutContent();
+	boolean validateLogic(String attributeType);
 	
 }
