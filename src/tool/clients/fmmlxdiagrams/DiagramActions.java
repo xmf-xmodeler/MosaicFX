@@ -427,33 +427,21 @@ public class DiagramActions {
 			instanceGenerator.openDialog();
 
 			for(int i =0 ; i< instanceGenerator.getNumberOfInstance(); i++){
-				//instanceGenerator.generateInstance(instanceGenerator.getGeneratedInstanceName().get(i), 10 + (i*i), 10 + (i*i));
+//				instanceGenerator.generateInstance(instanceGenerator.getGeneratedInstanceName().get(i), 10 + (i*i), 10 + (i*i));
 
 				//print desired output (Just for Test)
 				//TODO Delete this part after dedicated communicator createc
 				//============================================================================================
 				System.out.println();
-				System.out.println("Parent ID : "+result.getObject().getId());
-				System.out.println("Number of generated Instance : "+ result.getNumberOfInstance());
-				Iterator<Entry<FmmlxAttribute, ValueGenerator>> it = result.getValue().entrySet().iterator();
-				while (it.hasNext()) {
-			        Map.Entry<FmmlxAttribute, ValueGenerator> pair = (Map.Entry<FmmlxAttribute, ValueGenerator>)it.next();
-			        System.out.println(((FmmlxAttribute) pair.getKey()).getName() + " = " + ((ValueGenerator) pair.getValue()).getValueGeneratorName() + " : "+ ((ValueGenerator) pair.getValue()).getGeneratedValue());
-			    }
+				System.out.println("Instance Name : "+instanceGenerator.getGeneratedInstanceName().get(i));
+				System.out.println("Parent : "+ instanceGenerator.getSelectedParent().toString());
+				for (Entry<FmmlxAttribute, ValueGenerator> pair1 : instanceGenerator.getValue().entrySet()) {
+					System.out.println(pair1.getKey().getName() + " = " + pair1.getValue().getGeneratedValue().get(i));
+
+				}
 				System.out.println("========================================================================");
 
-				for(int i =0 ; i< result.getNumberOfInstance(); i++){
-					System.out.println();
-					System.out.println("Instance No : "+(i+1));
-
-					Iterator<Entry<FmmlxAttribute, ValueGenerator>> it1 = result.getValue().entrySet().iterator();
-
-					while (it1.hasNext()) {
-						Map.Entry<FmmlxAttribute, ValueGenerator> pair1 = (Map.Entry<FmmlxAttribute, ValueGenerator>)it1.next();
-						System.out.println(((FmmlxAttribute) pair1.getKey()).getName() + " = "+ ((ValueGenerator) pair1.getValue()).getGeneratedValue().get(i));
-					}
-				}
-				//diagram.getComm().addNewInstanceWithSlots(diagram, result.getObject().getId(), new Vector<>(),new HashMap<>(), 0, 0);
+				diagram.getComm().addNewInstanceWithSlots(diagram, object.getId(), new Vector<>(),new HashMap<>(), 10 + (i*i), 10 + (i*i));
 			}
 			diagram.updateDiagram();
 
