@@ -33,8 +33,13 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeParentDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Vector;
 //import java.util.concurrent.CountDownLatch;
 
 public class DiagramActions {
@@ -422,7 +427,7 @@ public class DiagramActions {
 			instanceGenerator.openDialog();
 
 			for(int i =0 ; i< instanceGenerator.getNumberOfInstance(); i++){
-				instanceGenerator.generateInstance(instanceGenerator.getGeneratedInstanceName().get(i), 10 + (i*i), 10 + (i*i));
+//				instanceGenerator.generateInstance(instanceGenerator.getGeneratedInstanceName().get(i), 10 + (i*i), 10 + (i*i));
 
 				//print desired output (Just for Test)
 				//TODO Delete this part after dedicated communicator createc
@@ -434,7 +439,9 @@ public class DiagramActions {
 					System.out.println(pair1.getKey().getName() + " = " + pair1.getValue().getGeneratedValue().get(i));
 
 				}
-				//===========================================================================================
+				System.out.println("========================================================================");
+
+				diagram.getComm().addNewInstanceWithSlots(diagram, object.getId(), new Vector<>(),new HashMap<>(), 10 + (i*i), 10 + (i*i));
 			}
 			diagram.updateDiagram();
 
@@ -909,6 +916,14 @@ public class DiagramActions {
 				}
 			}
 		});
+	}
+
+	public Vector<String> testEvalList(String text) {
+		try {
+			return diagram.getComm().evalList(diagram, text);
+		} catch (TimeOutException e) {
+			return new Vector<>(Arrays.asList(new String[] {"Time", "Out", "Exception"}));
+		}	
 	}
 
 //	public void attributeGeneratorDialog(FmmlxAttribute tmp, InstanceGeneratorGenerateType selectedType) {

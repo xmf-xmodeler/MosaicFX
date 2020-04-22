@@ -11,6 +11,7 @@ import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerato
 import tool.clients.workbench.WorkbenchClient;
 import xos.Value;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -48,7 +49,7 @@ public class FmmlxDiagramCommunicator {
 	public void newDiagram(int diagramID, String diagramName, String packageName) {
 		this.name = diagramName;
 		CountDownLatch l = new CountDownLatch(1);
-		final String label = diagramName;//"getPackageName();";
+		final String label = diagramName + " " + diagramID;//"getPackageName();";
 		Platform.runLater(() -> {
 			if (DEBUG) System.err.println("Create FMMLx-Diagram ("+diagramName+") ...");
 
@@ -76,9 +77,9 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	private void close(int handler) {
-		throw new RuntimeException("Not implemented yet!");
-//		diagrams.remove(diagram);
-//		tabs.remove(this.handler);
+//		throw new RuntimeException("Not implemented yet!");
+		diagrams.remove(diagrams.get(handler));
+		tabs.remove(handler);
 	}
 
 	private Value[] createValueArray(Vector<Integer> vector) { // todo: make more generic
@@ -593,13 +594,37 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("addMetaClass", message);
 	}
 
-	public void addNewInstance(FmmlxDiagram diagram, int of, String name, int level, Vector<Integer> parents, boolean isAbstract, int x,
+	public void addNewInstance(FmmlxDiagram diagram, int classID, String name, int level, Vector<Integer> parents, boolean isAbstract, int x,
 							   int y) {
 		Value[] parentsArray = createValueArray(parents);
 
-		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagram.getID()), new Value(of), new Value(name),
-				// new Value(level),
-				new Value(parentsArray), new Value(isAbstract), new Value(x), new Value(y)};
+		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagram.getID()), new Value(classID), new Value(name),
+				new Value(parentsArray), new Value(isAbstract), new Value(x), new Value(y), new Value(new Value[] {})};
+		sendMessage("addInstance", message);
+	}
+	
+
+	public void addNewInstanceWithSlots(
+			FmmlxDiagram diagram, 
+			int classID, 
+			Vector<Integer> parents, 
+			HashMap<FmmlxAttribute, String> slotValues, 
+			int x, int y) {
+		Value[] parentsArray = createValueArray(parents);
+		
+		Value[] slotList = new Value[slotValues.size()];
+		
+		int i = 0;
+		for(FmmlxAttribute att : slotValues.keySet()) {
+			Value name = new Value(att.name);
+			Value value = new Value(slotValues.get(att));
+			Value pair = new Value(new Value[] {name, value});
+			slotList[i] = pair;
+			i++;
+		}
+		
+		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagram.getID()), new Value(classID), new Value(name),
+				new Value(parentsArray), new Value(false), new Value(x), new Value(y), new Value(slotList)};
 		sendMessage("addInstance", message);
 	}
 
@@ -1135,10 +1160,19 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "openPackageBrowser()", new Value[] {});
 	}
 
-	public void instanceGenerator(FmmlxDiagram diagram, int id, HashMap<FmmlxAttribute, ValueGenerator> values) {
-		// TODO Auto-generated method stub
+	public Vector<String> evalList(FmmlxDiagram diagram, String text) throws TimeOutException {
+		Vector<Object> response = xmfRequest(handler, diagram, "evalList", new Value[]{new Value(text)});
+		@SuppressWarnings("unchecked")
+		Vector<Object> list = (Vector<Object>) (response.get(0));
+		Vector<String> result = new Vector<String>();
+		for (Object o : list) {
+//			Vector<Object> auxV = (Vector<Object>) auxO;
+			String listElement = (String) (o);
+			result.add(listElement);
+		}
+		return result;
+		
 		
 	}
-
 
 }

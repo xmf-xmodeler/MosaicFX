@@ -60,7 +60,6 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 		});
 	}
 
-
 	private boolean validateUserInput() {
 		return true;
 	}
@@ -81,9 +80,6 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 		currentParentsListView.setDisable(true);
 		newParentListView = initializeListView(possibleParents, SelectionMode.MULTIPLE);
 		
-
-		
-		
 		possibleParents = diagram.getAllPossibleParents(object.getLevel());
 		if(possibleParents.contains(object)) {
 			possibleParents.remove(object);
@@ -93,15 +89,10 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 		if (possibleParents.size() == 0) {
 			newParentListView.setDisable(true);
 		}
-		
-//		int[] parentIndices = new int[currentParentList.size()]; 
+		 
 		for(int i = 0; i < currentParentList.size(); i++) {
-			System.err.println("selecting parent " + currentParentList.get(i).getName());
 			newParentListView.getSelectionModel().select(currentParentList.get(i));
-			System.err.println("selected " + newParentListView.getSelectionModel().getSelectedIndices());
-//			parentIndices[i] = newParentListView.getItems().indexOf(currentParentList.get(i));
 		}
-//		newParentListView.getSelectionModel().selectIndices(parentIndices.length, parentIndices);
 		
 		grid.add(selectedObjectLabel, 0, 0);
 		grid.add(selectedObjectTextField, 1, 0);
