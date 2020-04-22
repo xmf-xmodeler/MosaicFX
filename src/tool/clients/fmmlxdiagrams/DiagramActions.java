@@ -415,7 +415,7 @@ public class DiagramActions {
 		});
 	}
 	
-	public void instanceGeneratorDialog(FmmlxObject object) {
+	public void runInstanceGenerator(FmmlxObject object) {
 		Platform.runLater(() -> {
 
 			InstanceGenerator instanceGenerator = new InstanceGenerator(diagram, object);
@@ -425,7 +425,7 @@ public class DiagramActions {
 				instanceGenerator.generateInstance(instanceGenerator.getGeneratedInstanceName().get(i), 10 + (i*i), 10 + (i*i));
 
 				//print desired output (Just for Test)
-				//TODO Delete this part after dedicated communicator createc
+				//TODO Delete this part after dedicated communicator created
 				//============================================================================================
 				System.out.println();
 				System.out.println("Instance Name : "+instanceGenerator.getGeneratedInstanceName().get(i));

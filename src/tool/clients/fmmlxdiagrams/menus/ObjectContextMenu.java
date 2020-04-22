@@ -41,7 +41,7 @@ public class ObjectContextMenu extends ContextMenu {
 		
 		MenuItem instanceGenerator = new MenuItem("Instance Generator");
 
-		instanceGenerator.setOnAction(e -> actions.instanceGeneratorDialog(object));
+		instanceGenerator.setOnAction(e -> actions.runInstanceGenerator(object));
 		if(object.notTraditionalDataTypeExists() || object.getLevel()<=0){
 			instanceGenerator.setDisable(true);
 		}
