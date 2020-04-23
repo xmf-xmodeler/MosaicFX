@@ -6,21 +6,17 @@ import java.util.List;
 
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorIncrementDialog;
+import tool.clients.fmmlxdiagrams.instancegenerator.view.ValueGeneratorIncrementDialog;
 
-public class ValueGeneratorIncrement implements ValueGenerator{
+public class ValueGeneratorIncrement extends ValueGenerator implements IValueGenerator {
 
-	private final String attributeType;
-	private FmmlxDiagram diagram;
 	private String startValue;
 	private String endValue;
 	private String inc;
-
 	private List<String> generatedValue;
 
 	public ValueGeneratorIncrement(String attributeType) {
-		super();
-		this.attributeType = attributeType;
+		super(attributeType);
 	}
 
 	@Override
@@ -29,12 +25,46 @@ public class ValueGeneratorIncrement implements ValueGenerator{
 	}
 
 	@Override
+	public String getName2() {
+		if(this.startValue==null || this.endValue==null || this.inc==null) {
+			return getValueGeneratorName()+" (incomplete)";
+		}
+		return getValueGeneratorName();
+	}
+
+	@Override
+	public boolean getFitsType(String type) {
+		if("Integer".equals(type)) return true;
+		return "Float".equals(type);
+	}
+
+	@Override
 	public void openDialog(FmmlxDiagram diagram) {
-		this.diagram = diagram;
+		setDiagram(diagram);
 		if (getFitsType(getAttributeType())){
 			ValueGeneratorIncrementDialog dlg = new ValueGeneratorIncrementDialog(this);
 			dlg.showAndWait();
 		}
+	}
+
+	@Override
+	public int possibleGeneratedInstance() {
+		int counter = 0;
+
+		if(getAttributeType().equals("Integer")){
+			int subtotal= Integer.parseInt(getParameter().get(0));
+			while(subtotal<=Integer.parseInt(getParameter().get(1))){
+				subtotal+=Integer.parseInt(getParameter().get(2));
+				counter+=1;
+			}
+		}else if(getAttributeType().equals("Float")){
+			float subtotal= Float.parseFloat(getParameter().get(0));
+			while(subtotal<=Float.parseFloat(getParameter().get(1))){
+				subtotal+=Float.parseFloat(getParameter().get(2));
+				counter+=1;
+			}
+		}
+		return counter;
 	}
 
 	@Override
@@ -60,49 +90,6 @@ public class ValueGeneratorIncrement implements ValueGenerator{
 		}
 	}
 
-    @Override
-    public int possibleGeneratedInstance() {
-		int counter = 0;
-
-		if(getAttributeType().equals("Integer")){
-			int subtotal= Integer.parseInt(getParameter().get(0));
-			while(subtotal<=Integer.parseInt(getParameter().get(1))){
-				subtotal+=Integer.parseInt(getParameter().get(2));
-				counter+=1;
-			}
-		}else if(getAttributeType().equals("Float")){
-			float subtotal= Float.parseFloat(getParameter().get(0));
-			while(subtotal<=Float.parseFloat(getParameter().get(1))){
-				subtotal+=Float.parseFloat(getParameter().get(2));
-				counter+=1;
-			}
-		}
-		return counter;
-    }
-
-    @Override
-	public boolean getFitsType(String type) {
-		if("Integer".equals(type)) return true;
-		return "Float".equals(type);
-	}
-
-	public String getAttributeType() {
-		return this.attributeType;
-	}
-
-	@Override
-	public String getName2() {
-		if(this.startValue==null || this.endValue==null || this.inc==null) {
-			return getValueGeneratorName()+" (incomplete)";
-		}
-		return getValueGeneratorName();
-	}
-
-	@Override
-	public List<String> getGeneratedValue() {
-		return this.generatedValue;
-	}
-
 	public void setParameter(List<String> parameter){
 		if(getAttributeType().equals("Integer")){
 			this.startValue = integerConverter(parameter.get(0));
@@ -116,22 +103,6 @@ public class ValueGeneratorIncrement implements ValueGenerator{
 		}
 	}
 
-	private String floatConverter(String value) {
-		try {
-			return Float.parseFloat(value)+"";
-		} catch (Exception e){
-			return (float)Integer.parseInt(value)+"";
-		}
-	}
-
-	private String integerConverter(String value) {
-		try {
-			return Integer.parseInt(value)+"";
-		} catch (Exception e){
-			return Math.round(Float.parseFloat(value))+"";
-		}
-	}
-
 	public List<String> getParameter(){
 		List<String> parameter = new ArrayList<>();
 		parameter.add(this.startValue);
@@ -139,6 +110,11 @@ public class ValueGeneratorIncrement implements ValueGenerator{
 		parameter.add(this.inc);
 
 		return parameter;
+	}
+
+	@Override
+	public List<String> getGeneratedValue() {
+		return this.generatedValue;
 	}
 
 }

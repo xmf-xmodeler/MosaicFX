@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.instancegenerator.dialog;
+package tool.clients.fmmlxdiagrams.instancegenerator.view;
 
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorRandom;
 
-public class ValueGeneratorRandomDialog extends CustomDialog implements ValueGeneratorDialog {
+public class ValueGeneratorRandomDialog extends CustomDialog<String> implements ValueGeneratorDialog {
 
 	private final ValueGeneratorRandom valueGeneratorRandom;
 
@@ -45,7 +45,7 @@ public class ValueGeneratorRandomDialog extends CustomDialog implements ValueGen
 	@Override
 	public void setResult() {
 		setResultConverter(dlgBtn -> {
-			if (dlgBtn != null && ((ButtonType)dlgBtn).getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
 				storeScenario();
 				if (!scenarioComboBox.getSelectionModel().getSelectedItem().equals("Free")){
 					storeParameter();

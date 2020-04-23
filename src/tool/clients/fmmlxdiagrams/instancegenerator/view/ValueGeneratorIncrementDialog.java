@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.instancegenerator.dialog;
+package tool.clients.fmmlxdiagrams.instancegenerator.view;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorIncrement;
 
 
-public class ValueGeneratorIncrementDialog extends CustomDialog implements ValueGeneratorDialog {
+public class ValueGeneratorIncrementDialog extends CustomDialog<List<String>> implements ValueGeneratorDialog {
 
 	private final ValueGeneratorIncrement valueGenerator;
 	private TextField startValueTextField;
@@ -65,7 +65,7 @@ public class ValueGeneratorIncrementDialog extends CustomDialog implements Value
 	@Override
 	public void setResult() {
 		setResultConverter(dlgBtn -> {		
-			if (dlgBtn != null && ((ButtonType)dlgBtn).getButtonData() == ButtonData.OK_DONE) {
+			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				storeParameter();
 			}
 			return null;

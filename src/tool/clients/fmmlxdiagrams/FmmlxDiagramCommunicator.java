@@ -7,11 +7,9 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
 import tool.clients.workbench.WorkbenchClient;
 import xos.Value;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -606,7 +604,8 @@ public class FmmlxDiagramCommunicator {
 
 	public void addNewInstanceWithSlots(
 			FmmlxDiagram diagram, 
-			int classID, 
+			int classID,
+			String instanceName,
 			Vector<Integer> parents, 
 			HashMap<FmmlxAttribute, String> slotValues, 
 			int x, int y) {
@@ -623,7 +622,7 @@ public class FmmlxDiagramCommunicator {
 			i++;
 		}
 		
-		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagram.getID()), new Value(classID), new Value(name),
+		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagram.getID()), new Value(classID), new Value(instanceName),
 				new Value(parentsArray), new Value(false), new Value(x), new Value(y), new Value(slotList)};
 		sendMessage("addInstance", message);
 	}
@@ -1172,5 +1171,4 @@ public class FmmlxDiagramCommunicator {
 		}
 		return result;
 	}
-
 }

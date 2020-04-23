@@ -6,64 +6,53 @@ import java.util.Random;
 
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorNormalDistributionDialog;
+import tool.clients.fmmlxdiagrams.instancegenerator.view.ValueGeneratorNormalDistributionDialog;
 
 
-public class ValueGeneratorNormalDistribution implements ValueGenerator{
+public class ValueGeneratorNormalDistribution extends ValueGenerator implements IValueGenerator {
 
-	private List<String> parameter;
-	private final String attributeType;
+	private String mean;
+	private String stdDeviation;
+	private String rangeMin;
+	private String rangeMax;
 	private List<String> generatedValue;
-	private FmmlxDiagram diagram;
 
-	
+
 	public ValueGeneratorNormalDistribution(String attributeType) {
-		super();
-		this.attributeType = attributeType;
+		super(attributeType);
 	}
 
 	@Override
 	public void openDialog(FmmlxDiagram diagram) {
-		this.diagram = diagram;
+		setDiagram(diagram);
 		if(getFitsType(getAttributeType())){
 			ValueGeneratorNormalDistributionDialog dlg = new ValueGeneratorNormalDistributionDialog(this);
 			dlg.showAndWait();
 		}
 	}
 
-	private String floatConverter(String value) {
-		try {
-			return Float.parseFloat(value)+"";
-		} catch (Exception e){
-			return (float)Integer.parseInt(value)+"";
-		}
-	}
-
-	private String integerConverter(String value) {
-		try {
-			return Integer.parseInt(value)+"";
-		} catch (Exception e){
-			return Math.round(Float.parseFloat(value))+"";
-		}
-	}
-
 	public List<String> getParameter() {
-		return this.parameter;
+		List<String> parameter = new ArrayList<>();
+		parameter.add(this.mean);
+		parameter.add(this.stdDeviation);
+		parameter.add(this.rangeMin);
+		parameter.add(this.rangeMax);
+
+		return parameter;
 	}
 
 	@Override
 	public void setParameter(List<String> param) {
-		this.parameter = new ArrayList<>();
 		if(getAttributeType().equals("Integer")){
-			this.parameter.add(integerConverter(param.get(0)));
-			this.parameter.add(integerConverter(param.get(1)));
-			this.parameter.add(integerConverter(param.get(2)));
-			this.parameter.add(integerConverter(param.get(3)));
+			this.mean = integerConverter(param.get(0)) ;
+			this.stdDeviation = integerConverter(param.get(1));
+			this.rangeMin = integerConverter(param.get(2));
+			this.rangeMax = integerConverter(param.get(3));
 		} else if (getAttributeType().equals("Float")){
-			this.parameter.add(floatConverter(param.get(0)));
-			this.parameter.add(floatConverter(param.get(1)));
-			this.parameter.add(floatConverter(param.get(2)));
-			this.parameter.add(floatConverter(param.get(3)));
+			this.mean = floatConverter(param.get(0)) ;
+			this.stdDeviation = floatConverter(param.get(1));
+			this.rangeMin = floatConverter(param.get(2));
+			this.rangeMax = floatConverter(param.get(3));
 		}
 	}
 
@@ -118,14 +107,12 @@ public class ValueGeneratorNormalDistribution implements ValueGenerator{
 
 	@Override
 	public String getName2() {
-		if(this.parameter ==null) {
-			return getValueGeneratorName()+" (incomplete)";
+		for(String param: getParameter()){
+			if(param==null){
+				return getValueGeneratorName()+" (incomplete)";
+			}
 		}
 		return getValueGeneratorName();
-	}
-
-	public String getAttributeType() {
-		return this.attributeType;
 	}
 
 	@Override

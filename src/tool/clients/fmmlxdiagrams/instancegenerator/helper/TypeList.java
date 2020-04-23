@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.instancegenerator.dialog;
+package tool.clients.fmmlxdiagrams.instancegenerator.helper;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -6,7 +6,7 @@ import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.*;
 
 public class TypeList {
 
-    public static ObservableList<ValueGenerator> getGenerateTypeList(String type) {
+    public static ObservableList<IValueGenerator> getGenerateTypeList(String type) {
         switch (type) {
             case "Integer": {
                 ValueGeneratorIncrement incG = new ValueGeneratorIncrement(type);

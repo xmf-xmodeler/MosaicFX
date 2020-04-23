@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.instancegenerator.dialog;
+package tool.clients.fmmlxdiagrams.instancegenerator.helper;
 
 import javafx.scene.control.Button;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;

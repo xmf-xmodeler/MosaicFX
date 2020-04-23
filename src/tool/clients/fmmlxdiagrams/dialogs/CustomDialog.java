@@ -9,8 +9,8 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
 import tool.clients.fmmlxdiagrams.*;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialog.InstanceGeneratorGenerateTypeComboBox;
-import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
+import tool.clients.fmmlxdiagrams.instancegenerator.view.InstanceGeneratorGenerateTypeComboBox;
 
 import java.util.List;
 
@@ -239,9 +239,9 @@ public class CustomDialog<R> extends Dialog<R> {
 	
 	protected InstanceGeneratorGenerateTypeComboBox initializeComboBoxGeneratorList(FmmlxDiagram diagram, FmmlxAttribute attribute) {
 		InstanceGeneratorGenerateTypeComboBox comboBox = new InstanceGeneratorGenerateTypeComboBox(attribute);
-		comboBox.setCellFactory(param -> new ListCell<ValueGenerator>() {
+		comboBox.setCellFactory(param -> new ListCell<IValueGenerator>() {
 			@Override
-			protected void updateItem(ValueGenerator item, boolean empty) {
+			protected void updateItem(IValueGenerator item, boolean empty) {
 				super.updateItem(item, empty);
 
 				if (empty || isNullOrEmpty(item.getValueGeneratorName())) {
@@ -252,9 +252,9 @@ public class CustomDialog<R> extends Dialog<R> {
 			}
 		});
 
-		comboBox.setConverter(new StringConverter<ValueGenerator>() {
+		comboBox.setConverter(new StringConverter<IValueGenerator>() {
 			@Override
-			public String toString(ValueGenerator object) {
+			public String toString(IValueGenerator object) {
 				if (object == null) {
 					return null;
 				} else {
@@ -263,7 +263,7 @@ public class CustomDialog<R> extends Dialog<R> {
 			}
 
 			@Override
-			public ValueGenerator fromString(String string) {
+			public IValueGenerator fromString(String string) {
 				return null;
 			}
 		});

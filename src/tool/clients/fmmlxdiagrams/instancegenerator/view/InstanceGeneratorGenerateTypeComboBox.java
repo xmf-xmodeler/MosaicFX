@@ -1,13 +1,12 @@
-package tool.clients.fmmlxdiagrams.instancegenerator.dialog;
+package tool.clients.fmmlxdiagrams.instancegenerator.view;
 
 import javafx.scene.control.ComboBox;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.*;
 
-import static tool.clients.fmmlxdiagrams.instancegenerator.dialog.TypeList.*;
+import static tool.clients.fmmlxdiagrams.instancegenerator.helper.TypeList.*;
 
-public class InstanceGeneratorGenerateTypeComboBox extends ComboBox<ValueGenerator>{
+public class InstanceGeneratorGenerateTypeComboBox extends ComboBox<IValueGenerator>{
 	
 	private FmmlxAttribute attribute;
 

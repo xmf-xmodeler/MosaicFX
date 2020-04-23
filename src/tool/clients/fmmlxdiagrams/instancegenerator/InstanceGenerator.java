@@ -4,12 +4,12 @@ import javafx.collections.ObservableList;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialog.InstanceGeneratorDialog;
-import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
+import tool.clients.fmmlxdiagrams.instancegenerator.view.InstanceGeneratorDialog;
 
 import java.util.*;
 
-public class InstanceGenerator {
+public class InstanceGenerator implements IInstanceGenerator{
 
     private FmmlxDiagram diagram;
     private final FmmlxObject object;
@@ -17,8 +17,7 @@ public class InstanceGenerator {
     private boolean isAbstract;
     private ObservableList<FmmlxObject> selectedParent;
     private List<String> generatedName;
-
-    private HashMap<FmmlxAttribute, ValueGenerator> value;
+    private HashMap<FmmlxAttribute, IValueGenerator> value;
 
     public InstanceGenerator(FmmlxObject object) {
         this.object = object;
@@ -67,14 +66,15 @@ public class InstanceGenerator {
         return generatedName;
     }
 
-    public HashMap<FmmlxAttribute, String> getSlotValue(int instanceNumber) {
-        HashMap<FmmlxAttribute, String> slotValue = new HashMap<>();
-        for (Map.Entry<FmmlxAttribute, ValueGenerator> pair1 : value.entrySet()) {
-            slotValue.put(pair1.getKey(), pair1.getValue().getGeneratedValue().get(instanceNumber));
-        }
-        return slotValue;
+    public HashMap<FmmlxAttribute, IValueGenerator> getValue() {
+        return this.value;
     }
 
+    public void setValue(HashMap<FmmlxAttribute, IValueGenerator> value) {
+        this.value = value;
+    }
+
+    @Override
     public Vector<Integer> getParentIDs(){
 
         Vector<Integer> parentIds = new Vector<>();
@@ -87,15 +87,17 @@ public class InstanceGenerator {
         return parentIds;
     }
 
-    public HashMap<FmmlxAttribute, ValueGenerator> getValue() {
-        return this.value;
+    @Override
+    public HashMap<FmmlxAttribute, String> getSlotValuesMap(int instanceNumber) {
+        HashMap<FmmlxAttribute, String> slotValue = new HashMap<>();
+        for (Map.Entry<FmmlxAttribute, IValueGenerator> pair1 : value.entrySet()) {
+            slotValue.put(pair1.getKey(), pair1.getValue().getGeneratedValue().get(instanceNumber));
+        }
+        return slotValue;
     }
 
-    public void setValue(HashMap<FmmlxAttribute, ValueGenerator> value) {  
-        this.value = value;
-    }
-
-    private void generateName(){
+    @Override
+    public void generateName(){
         this.generatedName = new ArrayList<>();
         int j = 1;
         for(int i=0; i<getNumberOfInstance();i++){
@@ -114,13 +116,12 @@ public class InstanceGenerator {
         }
     }
 
+    @Override
     public void generateInstance(int instanceNumber, String name, int positionX, int positionY){
 
 //        diagram.getComm().addNewInstance(diagram, object.getId(), name, object.getLevel()-1, getParentIDs(), false, positionX, positionY);
         //TODO ask : instanceName;
-//        diagram.getComm().addNewInstanceWithSlots(diagram, object.getId(),
-//                getParentIDs(), getSlotValue(instanceNumber), positionX, positionY);
+        diagram.getComm().addNewInstanceWithSlots(diagram, object.getId(), name,
+                getParentIDs(), getSlotValuesMap(instanceNumber), positionX, positionY);
     }
-
-
 }

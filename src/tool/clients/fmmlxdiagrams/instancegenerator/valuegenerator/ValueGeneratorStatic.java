@@ -5,22 +5,15 @@ import java.util.List;
 
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorStaticDialog;
+import tool.clients.fmmlxdiagrams.instancegenerator.view.ValueGeneratorStaticDialog;
 
-public class ValueGeneratorStatic implements ValueGenerator{
+public class ValueGeneratorStatic extends ValueGenerator implements IValueGenerator {
 
-	private List<String> parameter;
-	private final String attributeType;
+	private String staticValue;
 	private List<String> generatedValue;
-	private FmmlxDiagram diagram;
 
 	public ValueGeneratorStatic(String attributeType) {
-		super();
-		this.attributeType = attributeType;
-	}
-
-	public String getAttributeType() {
-		return this.attributeType;
+		super(attributeType);
 	}
 
 	@Override
@@ -30,54 +23,23 @@ public class ValueGeneratorStatic implements ValueGenerator{
 
 	@Override
 	public void openDialog(FmmlxDiagram diagram) {
-		this.diagram = diagram;
+		setDiagram(diagram);
 		if(getFitsType(getAttributeType())){
 			ValueGeneratorStaticDialog dlg = new ValueGeneratorStaticDialog(this);
 			dlg.showAndWait();
 		}
 	}
 
-
-	private String floatConverter(String value) {
-		try {
-			return Float.parseFloat(value)+"";
-		} catch (Exception e){
-			return (float)Integer.parseInt(value)+"";
-		}
-	}
-
-	private String integerConverter(String value) {
-		try {
-			return Integer.parseInt(value)+"";
-		} catch (Exception e){
-			return Math.round(Float.parseFloat(value))+"";
-		}
-	}
-
-	private List<String> listToIntConverter(List<String> value){
-		List<String> result = new ArrayList<>();
-		for (String str : value){
-			result.add(integerConverter(str));
-		}
-		return result;
-	}
-
-	private List<String> listToFloatConverter(List<String> value){
-		List<String> result = new ArrayList<>();
-		for (String str : value){
-			result.add(floatConverter(str));
-		}
-		return result;
-	}
-
 	@Override
 	public void setParameter(List<String> parameter) {
 		if(getAttributeType().equals(StringValue.TraditionalDataType.INTEGER)) {
-			this.parameter = listToIntConverter(parameter);
-		} else if (attributeType.equals(StringValue.TraditionalDataType.FLOAT)){
-			this.parameter = listToFloatConverter(parameter);
-		} else{
-			this.parameter = parameter;
+			this.staticValue = integerConverter(parameter.get(0));
+		} else if (getAttributeType().equals(StringValue.TraditionalDataType.FLOAT)){
+			this.staticValue = floatConverter(parameter.get(0));
+		} else if (getAttributeType().equals(StringValue.TraditionalDataType.BOOLEAN)){
+			this.staticValue = booleanConverter(parameter.get(0));
+		} else {
+			this.staticValue = parameter.get(0);
 		}
 	}
 
@@ -113,7 +75,10 @@ public class ValueGeneratorStatic implements ValueGenerator{
 
 	@Override
 	public List<String> getParameter() {
-		return this.parameter;
+		List<String> parameter = new ArrayList<>();
+		parameter.add(this.staticValue);
+
+		return parameter;
 	}
 
 	@Override

@@ -32,7 +32,6 @@ class ValueGeneratorIncrementTest {
 
         valueGeneratorIncrement.setParameter(parameter);
         assertEquals( 2, valueGeneratorIncrement.possibleGeneratedInstance());
-
     }
 
     @Test

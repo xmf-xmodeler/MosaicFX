@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.instancegenerator.dialog;
+package tool.clients.fmmlxdiagrams.instancegenerator.view;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorList;
 
-public class ValueGeneratorListDialog extends CustomDialog implements ValueGeneratorDialog {
+public class ValueGeneratorListDialog extends CustomDialog<List<String>> implements ValueGeneratorDialog {
 	private final ValueGeneratorList valueGeneratorList;
 
 	private TextField listName;
@@ -37,7 +37,12 @@ public class ValueGeneratorListDialog extends CustomDialog implements ValueGener
 
 		if(valueGeneratorList.getParameter()!= null){
 			setParameter(valueGeneratorList.getParameter());
+			setFetchedList(valueGeneratorList.getGeneratedValue());
 		}
+	}
+
+	private void setFetchedList(List<String> fetchedList) {
+		listValue.setItems(FXCollections.observableArrayList(fetchedList));
 	}
 
 
@@ -50,12 +55,12 @@ public class ValueGeneratorListDialog extends CustomDialog implements ValueGener
 	@Override
 	public void setResult() {
 		setResultConverter(dlgBtn -> {
-			if (dlgBtn != null && ((ButtonType)dlgBtn).getButtonData() == ButtonData.OK_DONE) {
+			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				storeParameter();
+				fetchElement(listName.getText());
 			}
 			return null;
 		});
-
 	}
 
 	@Override
@@ -63,17 +68,25 @@ public class ValueGeneratorListDialog extends CustomDialog implements ValueGener
 		List<String> parameter = new ArrayList<>();
 		parameter.add(listName.getText());
 		valueGeneratorList.setParameter(parameter);
-		valueGeneratorList.setGeneratedValue(listValue.getSelectionModel().getSelectedItems());
 	}
 
 	@Override
 	public boolean inputIsValid() {
-		if (listName.getText().equals("") || listName.getText()==null) {
+		if (listName.getText().equals("")) {
 			errorLabel.setText("Please input name of the list!");
 			return false;
+		} else if (valueGeneratorList.getGeneratedValue()==null){
+			errorLabel.setText("Please fetch a list");
+			return false;
+		} else {
+			fetchElement(listName.getText());
+			if (valueGeneratorList.getGeneratedValue().get(0).equals("UnboundVar("+listName.getText()+",1)")){
+				errorLabel.setText("List doesn't exist");
+				return false;
+			}
+			errorLabel.setText("");
+			return true;
 		}
-		errorLabel.setText("");
-		return true;
 	}
 
 	@Override
@@ -101,9 +114,15 @@ public class ValueGeneratorListDialog extends CustomDialog implements ValueGener
 	}
 
 	private void fetchElement(String listName) {
-		if(listName!= null || !listName.equals("")){
+		if(!listName.equals("")){
 			valueGeneratorList.fetchList(listName);
-			listValue.setItems(FXCollections.observableArrayList(valueGeneratorList.getFetchedList()));
+			if (valueGeneratorList.getGeneratedValue().get(0).equals("UnboundVar("+listName+",1)")){
+				errorLabel.setText("List doesn't exist");
+			} else {
+				listValue.setItems(FXCollections.observableArrayList(valueGeneratorList.getGeneratedValue()));
+			}
+		} else {
+			errorLabel.setText("Please input name of the list!");
 		}
 	}
 

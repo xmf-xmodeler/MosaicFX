@@ -22,7 +22,7 @@ import tool.clients.fmmlxdiagrams.dialogs.enumeration.EditEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.instance.AddInstanceDialog;
 import tool.clients.fmmlxdiagrams.dialogs.instance.ChangeOfDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
-import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
 import tool.clients.fmmlxdiagrams.dialogs.operation.AddOperationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.operation.ChangeBodyDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
@@ -32,6 +32,7 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeOwnerDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeParentDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -423,16 +424,13 @@ public class DiagramActions {
 
 			InstanceGenerator instanceGenerator = new InstanceGenerator(object);
 			instanceGenerator.openDialog(diagram);
-			System.out.println("Generated Instance "+ instanceGenerator.getNumberOfInstance());
-
 
 			for(int i =0 ; i< instanceGenerator.getNumberOfInstance(); i++){
 				System.out.println("Name : "+instanceGenerator.getGeneratedInstanceName().get(i));
-				Iterator it = instanceGenerator.getValue().entrySet().iterator();
-				while (it.hasNext()){
-					Map.Entry pair = (Map.Entry)it.next();
+				for (Map.Entry<FmmlxAttribute, IValueGenerator> fmmlxAttributeIValueGeneratorEntry : instanceGenerator.getValue().entrySet()) {
+					Map.Entry<FmmlxAttribute, ValueGenerator> pair = (Map.Entry) fmmlxAttributeIValueGeneratorEntry;
 					System.out.println(instanceGenerator.getSelectedParent());
-					System.out.println(((FmmlxAttribute)pair.getKey()).getName() +" : "+((ValueGenerator)pair.getValue()).getGeneratedValue().get(i));
+					System.out.println(pair.getKey().getName() + " : " + ((IValueGenerator) pair.getValue()).getGeneratedValue().get(i));
 				}
 				instanceGenerator.generateInstance(i, instanceGenerator.getGeneratedInstanceName().get(i), 15, 15);
 			}
@@ -440,7 +438,6 @@ public class DiagramActions {
 				diagram.updateDiagram();
 			}
 		});
-	
 	}
 
 	public void changeOfDialog(FmmlxObject object) {
