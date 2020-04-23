@@ -2,13 +2,11 @@ package tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorNormalDistributionDialog;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorNormalDistributionDialogResult;
 
 
 public class ValueGeneratorNormalDistribution implements ValueGenerator{
@@ -29,18 +27,10 @@ public class ValueGeneratorNormalDistribution implements ValueGenerator{
 		this.diagram = diagram;
 		if(getFitsType(getAttributeType())){
 			ValueGeneratorNormalDistributionDialog dlg = new ValueGeneratorNormalDistributionDialog(this);
-			dialogResult(dlg);
+			dlg.showAndWait();
 		}
 	}
 
-	private void dialogResult(ValueGeneratorNormalDistributionDialog dlg) {
-		Optional<ValueGeneratorNormalDistributionDialogResult> opt = dlg.showAndWait();
-
-		if (opt.isPresent()){
-			ValueGeneratorNormalDistributionDialogResult result = opt.get();
-			setParameter(result.getParameter());
-		}
-	}
 	private String floatConverter(String value) {
 		try {
 			return Float.parseFloat(value)+"";

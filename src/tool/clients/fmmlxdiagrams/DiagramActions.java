@@ -423,11 +423,22 @@ public class DiagramActions {
 
 			InstanceGenerator instanceGenerator = new InstanceGenerator(object);
 			instanceGenerator.openDialog(diagram);
+			System.out.println("Generated Instance "+ instanceGenerator.getNumberOfInstance());
+
 
 			for(int i =0 ; i< instanceGenerator.getNumberOfInstance(); i++){
+				System.out.println("Name : "+instanceGenerator.getGeneratedInstanceName().get(i));
+				Iterator it = instanceGenerator.getValue().entrySet().iterator();
+				while (it.hasNext()){
+					Map.Entry pair = (Map.Entry)it.next();
+					System.out.println(instanceGenerator.getSelectedParent());
+					System.out.println(((FmmlxAttribute)pair.getKey()).getName() +" : "+((ValueGenerator)pair.getValue()).getGeneratedValue().get(i));
+				}
 				instanceGenerator.generateInstance(i, instanceGenerator.getGeneratedInstanceName().get(i), 15, 15);
 			}
-			diagram.updateDiagram();
+			if(instanceGenerator.getNumberOfInstance()>0){
+				diagram.updateDiagram();
+			}
 		});
 	
 	}

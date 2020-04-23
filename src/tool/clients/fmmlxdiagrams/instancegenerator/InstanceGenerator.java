@@ -5,7 +5,6 @@ import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialog.InstanceGeneratorDialog;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.InstanceGeneratorDialogResult;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
 
 import java.util.*;

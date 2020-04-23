@@ -9,12 +9,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.VBox;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorNormalDistributionDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorNormalDistribution;
 
 
-public class ValueGeneratorNormalDistributionDialog extends CustomDialog<ValueGeneratorNormalDistributionDialogResult>
+public class ValueGeneratorNormalDistributionDialog extends CustomDialog
 		implements ValueGeneratorDialog {
 	
 	private final ValueGeneratorNormalDistribution valueGeneratorNormalDistribution;
@@ -56,14 +55,14 @@ public class ValueGeneratorNormalDistributionDialog extends CustomDialog<ValueGe
 	@Override
 	public void setResult() {
 		setResultConverter(dlgBtn -> {		
-			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
+			if (dlgBtn != null && ((ButtonType)dlgBtn).getButtonData() == ButtonData.OK_DONE) {
 				storeParameter();
-				return new ValueGeneratorNormalDistributionDialogResult(valueGeneratorNormalDistribution.getAttributeType(), valueGeneratorNormalDistribution.getParameter());
 			}
 			return null;
 		});
 	}
 
+	@Override
 	public void storeParameter() {
 		List<String> parameter = new ArrayList<>();
 		parameter.add(meanTextField.getText());
@@ -98,7 +97,7 @@ public class ValueGeneratorNormalDistributionDialog extends CustomDialog<ValueGe
 		} else if(!inputChecker.validateInteger(rangeMaxTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidIntegerValue +" : Range (Max)");
 			return false;
-		} else if(!validateLogic(valueGeneratorNormalDistribution.getAttributeType())){
+		} else if(!validateLogic()){
 			return false;
 		}
 		meanTextField.setText(Integer.parseInt(meanTextField.getText())+"");
@@ -109,13 +108,14 @@ public class ValueGeneratorNormalDistributionDialog extends CustomDialog<ValueGe
 		return true;
 	}
 
-	public boolean validateLogic(String attributeType) {
-		if(attributeType.equals("Integer")){
+	@Override
+	public boolean validateLogic() {
+		if(valueGeneratorNormalDistribution.getAttributeType().equals("Integer")){
 			if(Integer.parseInt(rangeMinTextField.getText())>=Integer.parseInt(rangeMaxTextField.getText())){
 				errorLabel.setText("Minimum range-value is bigger or same as maximum range-value");
 				return false;
 			}
-		} else if (attributeType.equals("Float")){
+		} else if (valueGeneratorNormalDistribution.getAttributeType().equals("Float")){
 			if(Float.parseFloat(rangeMinTextField.getText())>=Float.parseFloat(rangeMaxTextField.getText())){
 				errorLabel.setText("Minimum range-value is bigger or same as maximum range-value");
 				return false;
@@ -137,7 +137,7 @@ public class ValueGeneratorNormalDistributionDialog extends CustomDialog<ValueGe
 		} else if(!inputChecker.validateFloat(rangeMaxTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidFloatValue +" : Range (Max)");
 			return false;
-		} else if(!validateLogic(valueGeneratorNormalDistribution.getAttributeType())){
+		} else if(!validateLogic()){
 			return false;
 		}
 		meanTextField.setText(Float.parseFloat(meanTextField.getText())+"");

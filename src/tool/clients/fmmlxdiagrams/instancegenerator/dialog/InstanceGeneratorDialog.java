@@ -19,17 +19,16 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue.LabelAndHeaderTitle;
 import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.InstanceGeneratorDialogResult;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
 
-public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialogResult>{
+public class InstanceGeneratorDialog extends CustomDialog {
 
 	private final InstanceGenerator instanceGenerator;
 	private ComboBox<Integer> numberOfInstanceComboBox;
 	private List<Node> inputNode;
 	private ListView<FmmlxObject> parentListView;
 
-	public InstanceGeneratorDialog(InstanceGenerator instanceGenerator) {
+	public InstanceGeneratorDialog(InstanceGenerator instanceGenerator){
 		this.instanceGenerator = instanceGenerator;
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -47,12 +46,9 @@ public class InstanceGeneratorDialog extends CustomDialog<InstanceGeneratorDialo
 	}
 
 	private void setResult() {
-		setResultConverter(dlgBtn -> {		
-			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
+		setResultConverter(button -> {
+			if (button != null && ((ButtonType)button).getButtonData() == ButtonData.OK_DONE) {
 				storeValue();
-				return new InstanceGeneratorDialogResult(
-						instanceGenerator.getObject(), instanceGenerator.getNumberOfInstance(),
-						instanceGenerator.getSelectedParent(), instanceGenerator.getValue());
 			}
 			return null;
 		});

@@ -7,12 +7,11 @@ import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorStaticDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorStatic;
 
-public class ValueGeneratorStaticDialog extends CustomDialog<ValueGeneratorStaticDialogResult> implements ValueGeneratorDialog {
+public class ValueGeneratorStaticDialog extends CustomDialog implements ValueGeneratorDialog {
 
 	private final ValueGeneratorStatic valueGeneratorStatic;
 
@@ -42,9 +41,8 @@ public class ValueGeneratorStaticDialog extends CustomDialog<ValueGeneratorStati
 	@Override
 	public void setResult() {
 		setResultConverter(dlgBtn -> {
-			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+			if (dlgBtn != null && ((ButtonType)dlgBtn).getButtonData() == ButtonBar.ButtonData.OK_DONE) {
 				storeParameter();
-//				return new ValueGeneratorStaticDialogResult(valueGeneratorStatic.getParameter(), valueGeneratorStatic.getAttributeType() );
 			}
 			return null;
 		});
@@ -62,6 +60,7 @@ public class ValueGeneratorStaticDialog extends CustomDialog<ValueGeneratorStati
 	}
 
 
+	@Override
 	public void storeParameter() {
 		List<String> parameter = new ArrayList<>();
 		if(valueGeneratorStatic.getAttributeType().equals(StringValue.TraditionalDataType.BOOLEAN)){
@@ -129,7 +128,7 @@ public class ValueGeneratorStaticDialog extends CustomDialog<ValueGeneratorStati
 	}
 
 	@Override
-	public boolean validateLogic(String attributeType) {
+	public boolean validateLogic() {
 		return false;
 	}
 

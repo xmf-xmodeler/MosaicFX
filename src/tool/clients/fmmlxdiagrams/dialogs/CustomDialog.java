@@ -13,7 +13,7 @@ import tool.clients.fmmlxdiagrams.instancegenerator.dialog.InstanceGeneratorGene
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
 
 import java.util.List;
-import java.util.Random;
+
 
 public class CustomDialog<R> extends Dialog<R> {
 

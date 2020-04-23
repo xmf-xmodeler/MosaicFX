@@ -9,11 +9,10 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorListDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorList;
 
-public class ValueGeneratorListDialog extends CustomDialog<ValueGeneratorListDialogResult> implements ValueGeneratorDialog {
+public class ValueGeneratorListDialog extends CustomDialog implements ValueGeneratorDialog {
 	private final ValueGeneratorList valueGeneratorList;
 
 	private TextField listName;
@@ -51,19 +50,20 @@ public class ValueGeneratorListDialog extends CustomDialog<ValueGeneratorListDia
 	@Override
 	public void setResult() {
 		setResultConverter(dlgBtn -> {
-			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
+			if (dlgBtn != null && ((ButtonType)dlgBtn).getButtonData() == ButtonData.OK_DONE) {
 				storeParameter();
-				return new ValueGeneratorListDialogResult(valueGeneratorList.getAttributeType(), valueGeneratorList.getParameter(), listValue.getSelectionModel().getSelectedItems());
 			}
 			return null;
 		});
 
 	}
 
-	private void storeParameter() {
+	@Override
+	public void storeParameter() {
 		List<String> parameter = new ArrayList<>();
 		parameter.add(listName.getText());
 		valueGeneratorList.setParameter(parameter);
+		valueGeneratorList.setGeneratedValue(listValue.getSelectionModel().getSelectedItems());
 	}
 
 	@Override
@@ -108,7 +108,7 @@ public class ValueGeneratorListDialog extends CustomDialog<ValueGeneratorListDia
 	}
 
 	@Override
-    public boolean validateLogic(String attributeType) {
+    public boolean validateLogic() {
         return false;
     }
 

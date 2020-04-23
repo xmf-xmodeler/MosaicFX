@@ -11,12 +11,10 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorRandomDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
-import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorRandom;
 
-public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRandomDialogResult> implements ValueGeneratorDialog {
+public class ValueGeneratorRandomDialog extends CustomDialog implements ValueGeneratorDialog {
 
 	private final ValueGeneratorRandom valueGeneratorRandom;
 
@@ -47,10 +45,11 @@ public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRando
 	@Override
 	public void setResult() {
 		setResultConverter(dlgBtn -> {
-			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+			if (dlgBtn != null && ((ButtonType)dlgBtn).getButtonData() == ButtonBar.ButtonData.OK_DONE) {
 				storeScenario();
-				storeParameter();
-				return new ValueGeneratorRandomDialogResult(valueGeneratorRandom.getAttributeType(), valueGeneratorRandom.getSelectedScenario(), valueGeneratorRandom.getParameter());
+				if (!scenarioComboBox.getSelectionModel().getSelectedItem().equals("Free")){
+					storeParameter();
+				}
 			}
 			return null;
 		});
@@ -76,11 +75,14 @@ public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRando
 		}
 	}
 
+	@Override
 	public void storeParameter() {
-		List<String> parameter = new ArrayList<>();
-		parameter.add(this.rangeMinTextField.getText());
-		parameter.add(this.rangeMaxTextField.getText());
-		valueGeneratorRandom.setParameter(parameter);
+		if(!valueGeneratorRandom.getAttributeType().equals(StringValue.TraditionalDataType.BOOLEAN)){
+			List<String> parameter = new ArrayList<>();
+			parameter.add(this.rangeMinTextField.getText());
+			parameter.add(this.rangeMaxTextField.getText());
+			valueGeneratorRandom.setParameter(parameter);
+		}
 	}
 
 	private boolean validateFloat(TextField rangeMinTextField, TextField rangeMaxTextField) {
@@ -90,7 +92,7 @@ public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRando
 		} else if(!inputChecker.validateFloat(rangeMaxTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidFloatValue +" : Range (Max)");
 			return false;
-		} else if(!validateLogic(valueGeneratorRandom.getAttributeType())){
+		} else if(!validateLogic()){
 			return false;
 		}
 		errorLabel.setText("");
@@ -104,7 +106,7 @@ public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRando
 		} else if(!inputChecker.validateInteger(rangeMaxTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidIntegerValue +" : Range (Max)");
 			return false;
-		} else if(!validateLogic(valueGeneratorRandom.getAttributeType())){
+		} else if(!validateLogic()){
 			return false;
 		}
 
@@ -114,13 +116,14 @@ public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRando
 		return true;
 	}
 
-	public boolean validateLogic(String attributeType) {
-		if(attributeType.equals("Integer")){
+	@Override
+	public boolean validateLogic() {
+		if(valueGeneratorRandom.getAttributeType().equals("Integer")){
 			if(Integer.parseInt(rangeMinTextField.getText())>=Integer.parseInt(rangeMaxTextField.getText())){
 				errorLabel.setText("Minimum range-value is bigger or same as maximum range-value");
 				return false;
 			}
-		} else if (attributeType.equals("Float")){
+		} else if (valueGeneratorRandom.getAttributeType().equals("Float")){
 			if(Float.parseFloat(rangeMinTextField.getText())>=Float.parseFloat(rangeMaxTextField.getText())){
 				errorLabel.setText("Minimum range-value is bigger or same as maximum range-value");
 				return false;

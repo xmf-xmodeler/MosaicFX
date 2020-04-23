@@ -2,13 +2,12 @@ package tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
 
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.TimeOutException;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorListDialog;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorListDialogResult;
 
 public class ValueGeneratorList implements ValueGenerator{
 
@@ -34,13 +33,7 @@ public class ValueGeneratorList implements ValueGenerator{
 		this.diagram = diagram;
 		if(getFitsType(getAttributeType())){
 			ValueGeneratorListDialog dlg = new ValueGeneratorListDialog(this);
-			Optional<ValueGeneratorListDialogResult> opt = dlg.showAndWait();
-
-			if (opt.isPresent()) {
-				ValueGeneratorListDialogResult result = opt.get();
-				setParameter(result.getParameter());
-				setGeneratedValue(result.getElements());
-			}
+			dlg.showAndWait();
 		}
 	}
 

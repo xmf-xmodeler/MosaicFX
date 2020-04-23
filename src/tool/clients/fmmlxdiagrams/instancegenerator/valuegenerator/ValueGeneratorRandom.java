@@ -3,11 +3,9 @@ package tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorRandomDialog;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorRandomDialogResult;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -35,29 +33,15 @@ public class ValueGeneratorRandom implements ValueGenerator{
 
 	@Override
 	public void openDialog(FmmlxDiagram diagram) {
-		this.diagram = diagram;
 		if(getFitsType(getAttributeType())){
-			ValueGeneratorRandomDialog dlg = new ValueGeneratorRandomDialog(this);
-			dialogResult(dlg);
-		}
-	}
-
-	private void dialogResult(ValueGeneratorRandomDialog dlg) {
-		Optional<ValueGeneratorRandomDialogResult> opt = dlg.showAndWait();
-
-		if (opt.isPresent()) {
-			ValueGeneratorRandomDialogResult result = opt.get();
-			setSelectedScenario(result.getSelectedScenario());
-			if(getSelectedScenario().equals("Range")){
-				setParameter(result.getParameter());
-			} else {
-				List<String> param = new ArrayList<>();
-				param.add(null);
-				param.add(null);
-				setParameter(param);
+			this.diagram = diagram;
+			if(getFitsType(getAttributeType())){
+				ValueGeneratorRandomDialog dlg = new ValueGeneratorRandomDialog(this);
+				dlg.showAndWait();
 			}
 		}
 	}
+
 
 	@Override
 	public void generate(int numberOfInstance) {
@@ -138,7 +122,6 @@ public class ValueGeneratorRandom implements ValueGenerator{
 	public boolean getFitsType(String type) {
 		if("Integer".equals(type)) return true;
 		if("Float".equals(type)) return true;
-		if("Boolean".equals(type)) return true;
 		return "String".equals(type);
 	}
 

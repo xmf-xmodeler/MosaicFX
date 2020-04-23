@@ -2,13 +2,11 @@ package tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorIncrementDialog;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorIncrementDialogResult;
 
 public class ValueGeneratorIncrement implements ValueGenerator{
 
@@ -35,16 +33,7 @@ public class ValueGeneratorIncrement implements ValueGenerator{
 		this.diagram = diagram;
 		if (getFitsType(getAttributeType())){
 			ValueGeneratorIncrementDialog dlg = new ValueGeneratorIncrementDialog(this);
-			dialogResult(dlg);
-		}
-	}
-
-	private void dialogResult(ValueGeneratorIncrementDialog dlg) {
-		Optional<ValueGeneratorIncrementDialogResult> opt = dlg.showAndWait();
-		
-		if (opt.isPresent()) {
-			ValueGeneratorIncrementDialogResult result = opt.get();
-			setParameter(result.getParameter());
+			dlg.showAndWait();
 		}
 	}
 

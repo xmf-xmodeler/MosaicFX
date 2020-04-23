@@ -11,13 +11,13 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
+
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorIncrementDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorIncrement;
 
 
-public class ValueGeneratorIncrementDialog extends CustomDialog<ValueGeneratorIncrementDialogResult> implements ValueGeneratorDialog {
+public class ValueGeneratorIncrementDialog extends CustomDialog implements ValueGeneratorDialog {
 
 	private final ValueGeneratorIncrement valueGenerator;
 	private TextField startValueTextField;
@@ -53,6 +53,7 @@ public class ValueGeneratorIncrementDialog extends CustomDialog<ValueGeneratorIn
 		}
 	}
 
+	@Override
 	public void storeParameter() {
 		List<String> parameter = new ArrayList<>();
 		parameter.add(startValueTextField.getText());
@@ -64,13 +65,13 @@ public class ValueGeneratorIncrementDialog extends CustomDialog<ValueGeneratorIn
 	@Override
 	public void setResult() {
 		setResultConverter(dlgBtn -> {		
-			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
+			if (dlgBtn != null && ((ButtonType)dlgBtn).getButtonData() == ButtonData.OK_DONE) {
 				storeParameter();
-				return new ValueGeneratorIncrementDialogResult(valueGenerator.getParameter());
 			}
 			return null;
 		});		
 	}
+
 
 	@Override
 	public boolean inputIsValid() {
@@ -104,7 +105,7 @@ public class ValueGeneratorIncrementDialog extends CustomDialog<ValueGeneratorIn
 	}
 
     @Override
-    public boolean validateLogic(String attributeType) {
+    public boolean validateLogic() {
 		return false;
     }
 
