@@ -876,4 +876,14 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		}
 		return result;
 	}
+
+    public int getAttributeCountByLevel(int level) {
+		int count = 0;
+		for(FmmlxAttribute attribute : getAllAttributes()){
+			if(attribute.getLevel()==level){
+				count++;
+			}
+		}
+		return count;
+    }
 }

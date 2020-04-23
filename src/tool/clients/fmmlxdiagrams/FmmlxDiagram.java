@@ -102,7 +102,7 @@ public class FmmlxDiagram{
 
 
 
-	FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String label, String packagePath) {
+	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String label, String packagePath) {
 		this.comm = comm;
 		this.diagramID = diagramID;
 		this.packagePath = packagePath;

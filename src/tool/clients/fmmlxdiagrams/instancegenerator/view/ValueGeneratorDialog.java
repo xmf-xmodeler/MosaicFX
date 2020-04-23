@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.instancegenerator.dialog;
+package tool.clients.fmmlxdiagrams.instancegenerator.view;
 
 
 import java.util.List;
@@ -6,11 +6,10 @@ import java.util.List;
 public interface ValueGeneratorDialog {
 
 	void setParameter(List<String> staticValue);
-	List<String> getParameter();
-	String getAttributeType();
+	void storeParameter();
 	void setResult();
 	boolean inputIsValid();
 	void layoutContent();
-	boolean validateLogic(String attributeType);
+	boolean validateLogic();
 	
 }

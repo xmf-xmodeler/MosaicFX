@@ -2,22 +2,20 @@ package tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
+
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.TimeOutException;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorListDialog;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorListDialogResult;
+import tool.clients.fmmlxdiagrams.instancegenerator.view.ValueGeneratorListDialog;
 
-public class ValueGeneratorList implements ValueGenerator{
+public class ValueGeneratorList extends ValueGenerator implements IValueGenerator {
 
-	private String attributeType;
 	private List<String> parameter;
 	private List<String> generatedValue;
 
-
 	public ValueGeneratorList(String attributeType) {
-		super();
-		this.attributeType = attributeType;
+		super(attributeType);
 	}
 
 	@Override
@@ -26,16 +24,11 @@ public class ValueGeneratorList implements ValueGenerator{
 	}
 
 	@Override
-	public void openDialog() {
+	public void openDialog(FmmlxDiagram diagram) {
+		setDiagram(diagram);
 		if(getFitsType(getAttributeType())){
-			ValueGeneratorListDialog dlg = new ValueGeneratorListDialog(getValueGeneratorName(), getAttributeType(), getParameter());
-			Optional<ValueGeneratorListDialogResult> opt = dlg.showAndWait();
-
-			if (opt.isPresent()) {
-				ValueGeneratorListDialogResult result = opt.get();
-				setParameter(result.getParameter());
-				setGeneratedValue(result.getElements());
-			}
+			ValueGeneratorListDialog dlg = new ValueGeneratorListDialog(this);
+			dlg.showAndWait();
 		}
 	}
 
@@ -46,7 +39,7 @@ public class ValueGeneratorList implements ValueGenerator{
 
 	@Override
 	public int possibleGeneratedInstance() {
-		return 0;
+		return generatedValue.size();
 	}
 
 	@Override
@@ -55,30 +48,6 @@ public class ValueGeneratorList implements ValueGenerator{
 		if(StringValue.TraditionalDataType.FLOAT.equals(type)) return true;
 		if(StringValue.TraditionalDataType.BOOLEAN.equals(type)) return true;
 		return StringValue.TraditionalDataType.STRING.equals(type);
-	}
-
-	private String integerConverter(String value) {
-		try {
-			return Integer.parseInt(value)+"";
-		} catch (Exception e){
-			return Math.round(Float.parseFloat(value))+"";
-		}
-	}
-
-	private String floatConverter(String value) {
-		try {
-			return Float.parseFloat(value)+"";
-		} catch (Exception e){
-			return (float)Integer.parseInt(value)+"";
-		}
-	}
-
-	private String booleanConverter(String value) {
-		try {
-			return Boolean.parseBoolean(value)+"";
-		} catch (Exception e){
-			return "";
-		}
 	}
 
 	public void setGeneratedValue(List<String> elements) {
@@ -105,14 +74,6 @@ public class ValueGeneratorList implements ValueGenerator{
 		}
 	}
 
-	public String getAttributeType() {
-		return this.attributeType;
-	}
-
-	public void setAttributeType(String attributeType) {
-		this.attributeType = attributeType;
-	}
-
 	@Override
 	public String getName2() {
 		if(this.parameter==null) {
@@ -131,9 +92,15 @@ public class ValueGeneratorList implements ValueGenerator{
 		this.parameter = listName;
 	}
 
-	@Override
-    public List<String> getGeneratedValue() {
-        return this.generatedValue;
-    }
+	public List<String> getGeneratedValue() {
+		return generatedValue;
+	}
 
+	public void fetchList(String listName) {
+		try {
+			setGeneratedValue(getDiagram().getComm().evalList(getDiagram(), listName));
+		} catch (TimeOutException e) {
+			e.printStackTrace();
+		}
+	}
 }

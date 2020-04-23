@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.instancegenerator.dialog;
+package tool.clients.fmmlxdiagrams.instancegenerator.view;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,27 +9,25 @@ import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.VBox;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorNormalDistributionDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorNormalDistribution;
 
 
-public class ValueGeneratorNormalDistributionDialog extends CustomDialog<ValueGeneratorNormalDistributionDialogResult>
+public class ValueGeneratorNormalDistributionDialog extends CustomDialog<List<String>>
 		implements ValueGeneratorDialog {
 	
-	private final String attributeType;
+	private final ValueGeneratorNormalDistribution valueGeneratorNormalDistribution;
 
 	private TextField meanTextField, stdTextField,rangeMinTextField, rangeMaxTextField;
 
-	private String meanValue, stdDevValue, rangeMinValue, rangeMaxValue;
 
+	public ValueGeneratorNormalDistributionDialog(ValueGeneratorNormalDistribution valueGeneratorNormalDistribution) {
 
-	public ValueGeneratorNormalDistributionDialog(String valueGeneratorName, String attributeType,
-												  List<String> parameter) {
-
-		this.attributeType = attributeType;
+		this.valueGeneratorNormalDistribution = valueGeneratorNormalDistribution;
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialogPane.setHeaderText(valueGeneratorName + " : "+ attributeType);
+		dialogPane.setHeaderText(valueGeneratorNormalDistribution.getValueGeneratorName() + " : "
+				+ valueGeneratorNormalDistribution.getAttributeType());
 		layoutContent();
 		dialogPane.setContent(flow);
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
@@ -41,21 +39,17 @@ public class ValueGeneratorNormalDistributionDialog extends CustomDialog<ValueGe
 		
 		setResult();
 
-		if(parameter!=null){
-			setParameter(parameter);
+		if(valueGeneratorNormalDistribution.getParameter()!=null){
+			setParameter(valueGeneratorNormalDistribution.getParameter());
 		}
 	}
 
 	@Override
 	public void setParameter(List<String> staticValue) {
-		this.meanValue = staticValue.get(0);
-		meanTextField.setText(meanValue);
-		this.stdDevValue = staticValue.get(1);
-		stdTextField.setText(stdDevValue);
-		this.rangeMinValue = staticValue.get(2);
-		rangeMinTextField.setText(rangeMinValue);
-		this.rangeMaxValue = staticValue.get(3);
-		rangeMaxTextField.setText(rangeMaxValue);
+		meanTextField.setText(valueGeneratorNormalDistribution.getParameter().get(0));
+		stdTextField.setText(valueGeneratorNormalDistribution.getParameter().get(1));
+		rangeMinTextField.setText(valueGeneratorNormalDistribution.getParameter().get(2));
+		rangeMaxTextField.setText(valueGeneratorNormalDistribution.getParameter().get(3));
 	}
 
 	@Override
@@ -63,36 +57,24 @@ public class ValueGeneratorNormalDistributionDialog extends CustomDialog<ValueGe
 		setResultConverter(dlgBtn -> {		
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				storeParameter();
-				return new ValueGeneratorNormalDistributionDialogResult(getAttributeType(), getParameter());
 			}
 			return null;
 		});
 	}
 
-	public void storeParameter() {
-		meanValue = meanTextField.getText();
-		stdDevValue = stdTextField.getText();
-		rangeMinValue = rangeMinTextField.getText();
-		rangeMaxValue = rangeMaxTextField.getText();
-	}
-
 	@Override
-	public List<String> getParameter() {
-		List<String> result = new ArrayList<>();
-		result.add(this.meanValue);
-		result.add(this.stdDevValue);
-		result.add(this.rangeMinValue);
-		result.add(this.rangeMaxValue);
-		return result;
-	}
-
-	public String getAttributeType() {
-		return attributeType;
+	public void storeParameter() {
+		List<String> parameter = new ArrayList<>();
+		parameter.add(meanTextField.getText());
+		parameter.add(stdTextField.getText());
+		parameter.add(rangeMinTextField.getText());
+		parameter.add(rangeMaxTextField.getText());
+		valueGeneratorNormalDistribution.setParameter(parameter);
 	}
 
 	@Override
 	public boolean inputIsValid() {
-		switch (attributeType) {
+		switch (valueGeneratorNormalDistribution.getAttributeType()) {
 			case "Integer":
 				return validateInteger(meanTextField, stdTextField, rangeMinTextField, rangeMaxTextField);
 			case "Float":
@@ -115,7 +97,7 @@ public class ValueGeneratorNormalDistributionDialog extends CustomDialog<ValueGe
 		} else if(!inputChecker.validateInteger(rangeMaxTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidIntegerValue +" : Range (Max)");
 			return false;
-		} else if(!validateLogic(attributeType)){
+		} else if(!validateLogic()){
 			return false;
 		}
 		meanTextField.setText(Integer.parseInt(meanTextField.getText())+"");
@@ -126,13 +108,14 @@ public class ValueGeneratorNormalDistributionDialog extends CustomDialog<ValueGe
 		return true;
 	}
 
-	public boolean validateLogic(String attributeType) {
-		if(attributeType.equals("Integer")){
+	@Override
+	public boolean validateLogic() {
+		if(valueGeneratorNormalDistribution.getAttributeType().equals("Integer")){
 			if(Integer.parseInt(rangeMinTextField.getText())>=Integer.parseInt(rangeMaxTextField.getText())){
 				errorLabel.setText("Minimum range-value is bigger or same as maximum range-value");
 				return false;
 			}
-		} else if (attributeType.equals("Float")){
+		} else if (valueGeneratorNormalDistribution.getAttributeType().equals("Float")){
 			if(Float.parseFloat(rangeMinTextField.getText())>=Float.parseFloat(rangeMaxTextField.getText())){
 				errorLabel.setText("Minimum range-value is bigger or same as maximum range-value");
 				return false;
@@ -154,7 +137,7 @@ public class ValueGeneratorNormalDistributionDialog extends CustomDialog<ValueGe
 		} else if(!inputChecker.validateFloat(rangeMaxTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidFloatValue +" : Range (Max)");
 			return false;
-		} else if(!validateLogic(attributeType)){
+		} else if(!validateLogic()){
 			return false;
 		}
 		meanTextField.setText(Float.parseFloat(meanTextField.getText())+"");

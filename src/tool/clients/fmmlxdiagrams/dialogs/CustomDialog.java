@@ -8,15 +8,12 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
-import tool.clients.fmmlxdiagrams.FmmlxLink;
-import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.FmmlxProperty;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialog.InstanceGeneratorGenerateTypeComboBox;
-import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
-import tool.clients.fmmlxdiagrams.FmmlxAttribute;
-import tool.clients.fmmlxdiagrams.FmmlxEnum;
+import tool.clients.fmmlxdiagrams.*;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
+import tool.clients.fmmlxdiagrams.instancegenerator.view.InstanceGeneratorGenerateTypeComboBox;
+
 import java.util.List;
-import java.util.Random;
+
 
 public class CustomDialog<R> extends Dialog<R> {
 
@@ -240,11 +237,11 @@ public class CustomDialog<R> extends Dialog<R> {
 		return comboBox;
 	}
 	
-	protected InstanceGeneratorGenerateTypeComboBox initializeComboBoxGeneratorList(FmmlxAttribute attribute) {
+	protected InstanceGeneratorGenerateTypeComboBox initializeComboBoxGeneratorList(FmmlxDiagram diagram, FmmlxAttribute attribute) {
 		InstanceGeneratorGenerateTypeComboBox comboBox = new InstanceGeneratorGenerateTypeComboBox(attribute);
-		comboBox.setCellFactory(param -> new ListCell<ValueGenerator>() {
+		comboBox.setCellFactory(param -> new ListCell<IValueGenerator>() {
 			@Override
-			protected void updateItem(ValueGenerator item, boolean empty) {
+			protected void updateItem(IValueGenerator item, boolean empty) {
 				super.updateItem(item, empty);
 
 				if (empty || isNullOrEmpty(item.getValueGeneratorName())) {
@@ -255,9 +252,9 @@ public class CustomDialog<R> extends Dialog<R> {
 			}
 		});
 
-		comboBox.setConverter(new StringConverter<ValueGenerator>() {
+		comboBox.setConverter(new StringConverter<IValueGenerator>() {
 			@Override
-			public String toString(ValueGenerator object) {
+			public String toString(IValueGenerator object) {
 				if (object == null) {
 					return null;
 				} else {
@@ -266,12 +263,12 @@ public class CustomDialog<R> extends Dialog<R> {
 			}
 
 			@Override
-			public ValueGenerator fromString(String string) {
+			public IValueGenerator fromString(String string) {
 				return null;
 			}
 		});
 		
-		comboBox.valueProperty().addListener((observable, oldValue, newValue) -> newValue.openDialog());
+		comboBox.valueProperty().addListener((observable, oldValue, newValue) -> newValue.openDialog(diagram));
 		
 		comboBox.setPrefWidth(COLUMN_WIDTH);
 		return comboBox;

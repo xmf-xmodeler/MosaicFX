@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams.dialogs.instance;
 
 import org.junit.jupiter.api.Test;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorIncrement;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ class ValueGeneratorIncrementTest {
 
     @Test
     void getType() {
+
         ValueGeneratorIncrement valueGeneratorIncrement = new ValueGeneratorIncrement("Integer");
         assertEquals(valueGeneratorIncrement.getAttributeType(), "Integer");
 
@@ -21,6 +23,7 @@ class ValueGeneratorIncrementTest {
 
     @Test
     void possibleGeneratedInstanceInteger() {
+
         ValueGeneratorIncrement valueGeneratorIncrement = new ValueGeneratorIncrement("Integer");
         List<String> parameter = new ArrayList<>();
         parameter.add("1.0");
@@ -29,13 +32,12 @@ class ValueGeneratorIncrementTest {
 
         valueGeneratorIncrement.setParameter(parameter);
         assertEquals( 2, valueGeneratorIncrement.possibleGeneratedInstance());
-
     }
 
     @Test
     void possibleGeneratedInstanceFloat() {
 
-        ValueGeneratorIncrement valueGeneratorIncrement = new ValueGeneratorIncrement("Float");
+        ValueGeneratorIncrement valueGeneratorIncrement = new ValueGeneratorIncrement( "Float");
         List<String> parameter = new ArrayList<>();
         parameter.add("1.0");
         parameter.add("3.0");
@@ -47,7 +49,6 @@ class ValueGeneratorIncrementTest {
 
     @Test
     void getParametersInteger() {
-
         ValueGeneratorIncrement valueGeneratorIncrement = new ValueGeneratorIncrement("Integer");
         List<String> parameter = new ArrayList<>();
         parameter.add("1.0");
@@ -62,7 +63,6 @@ class ValueGeneratorIncrementTest {
 
     @Test
     void getParametersFloat() {
-
         ValueGeneratorIncrement valueGeneratorIncrement = new ValueGeneratorIncrement("Float");
         List<String> parameter = new ArrayList<>();
         parameter.add("1.2");

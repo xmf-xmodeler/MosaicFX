@@ -4,46 +4,42 @@ import javafx.collections.ObservableList;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialog.InstanceGeneratorDialog;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.InstanceGeneratorDialogResult;
-import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
+import tool.clients.fmmlxdiagrams.instancegenerator.view.InstanceGeneratorDialog;
 
 import java.util.*;
 
-public class InstanceGenerator {
+public class InstanceGenerator implements IInstanceGenerator{
 
-    private final FmmlxDiagram diagram;
+    private FmmlxDiagram diagram;
     private final FmmlxObject object;
     private int numberOfInstance;
+    private boolean isAbstract;
     private ObservableList<FmmlxObject> selectedParent;
     private List<String> generatedName;
+    private HashMap<FmmlxAttribute, IValueGenerator> value;
 
-    private HashMap<FmmlxAttribute, ValueGenerator> value;
-
-    public InstanceGenerator(FmmlxDiagram diagram, FmmlxObject object) {
-        this.diagram = diagram;
+    public InstanceGenerator(FmmlxObject object) {
         this.object = object;
     }
 
-    public void openDialog(){
-        InstanceGeneratorDialog dlg = new InstanceGeneratorDialog(diagram, object);
-        setDialogResult(dlg);
-    }
-
-    private void setDialogResult(InstanceGeneratorDialog dlg) {
-        Optional<InstanceGeneratorDialogResult> igd = dlg.showAndWait();
-
-        if(igd.isPresent()){
-            InstanceGeneratorDialogResult result =igd.get();
-            setNumberOfInstance(result.getNumberOfInstance());
-            generateName();
-            setSelectedParent(result.getSelectedParent());
-            setValue(result.getValue());
-        }
+    public void openDialog(FmmlxDiagram diagram){
+        this.diagram = diagram;
+        InstanceGeneratorDialog dlg = new InstanceGeneratorDialog(this);
+        dlg.showAndWait();
+        generateName();
     }
 
     public FmmlxDiagram getDiagram() {
         return diagram;
+    }
+
+    public boolean isAbstract() {
+        return isAbstract;
+    }
+
+    public void setAbstract(boolean isAbstract) {
+        this.isAbstract = isAbstract;
     }
 
     public FmmlxObject getObject() {
@@ -66,7 +62,42 @@ public class InstanceGenerator {
         this.selectedParent = selectedParent;
     }
 
-    private void generateName(){
+    public List<String> getGeneratedInstanceName() {
+        return generatedName;
+    }
+
+    public HashMap<FmmlxAttribute, IValueGenerator> getValue() {
+        return this.value;
+    }
+
+    public void setValue(HashMap<FmmlxAttribute, IValueGenerator> value) {
+        this.value = value;
+    }
+
+    @Override
+    public Vector<Integer> getParentIDs(){
+
+        Vector<Integer> parentIds = new Vector<>();
+
+        if (!getSelectedParent().isEmpty()) {
+            for (FmmlxObject o : getSelectedParent()) {
+                parentIds.add(o.getId());
+            }
+        }
+        return parentIds;
+    }
+
+    @Override
+    public HashMap<FmmlxAttribute, String> getSlotValuesMap(int instanceNumber) {
+        HashMap<FmmlxAttribute, String> slotValue = new HashMap<>();
+        for (Map.Entry<FmmlxAttribute, IValueGenerator> pair1 : value.entrySet()) {
+            slotValue.put(pair1.getKey(), pair1.getValue().getGeneratedValue().get(instanceNumber));
+        }
+        return slotValue;
+    }
+
+    @Override
+    public void generateName(){
         this.generatedName = new ArrayList<>();
         int j = 1;
         for(int i=0; i<getNumberOfInstance();i++){
@@ -85,37 +116,12 @@ public class InstanceGenerator {
         }
     }
 
-    public List<String> getGeneratedInstanceName() {
-        return generatedName;
-    }
+    @Override
+    public void generateInstance(int instanceNumber, String name, int positionX, int positionY){
 
-    public HashMap<FmmlxAttribute, ValueGenerator> getValue() {
-        return value;
-    }
-
-    public Vector<Integer> getParentIDs(){
-
-        Vector<Integer> parentIds = new Vector<>();
-
-        if (!getSelectedParent().isEmpty()) {
-            for (FmmlxObject o : getSelectedParent()) {
-                parentIds.add(o.getId());
-            }
-        }
-        return parentIds;
-    }
-
-    public void setValue(HashMap<FmmlxAttribute, ValueGenerator> value) {  
-        this.value = value;
-    }
-
-    public void generateInstance(String name, int positionX, int positionY){
-
-        //TODO
-        // this communicator is originally for normal add instance
-        // still need another communicator that include slotValue
-
-        diagram.getComm().addNewInstance(diagram, object.getId(), name, object.getLevel() - 1,
-                getParentIDs(), false, positionX, positionY);
+//        diagram.getComm().addNewInstance(diagram, object.getId(), name, object.getLevel()-1, getParentIDs(), false, positionX, positionY);
+        //TODO ask : instanceName;
+        diagram.getComm().addNewInstanceWithSlots(diagram, object.getId(), name,
+                getParentIDs(), getSlotValuesMap(instanceNumber), positionX, positionY);
     }
 }

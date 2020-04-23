@@ -1,25 +1,68 @@
 package tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator;
 
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+
+import java.util.ArrayList;
 import java.util.List;
 
-public interface ValueGenerator {
+public class ValueGenerator {
 
-	String getValueGeneratorName();
+    private final String attributeType;
+    private FmmlxDiagram diagram;
 
-	void openDialog();
+    public ValueGenerator(String attributeType) {
+        this.attributeType = attributeType;
+    }
 
-	void generate(int numberOfInstance);
+    public String getAttributeType() {
+        return attributeType;
+    }
 
-	int possibleGeneratedInstance();
+    public FmmlxDiagram getDiagram() {
+        return diagram;
+    }
 
-	boolean getFitsType(String type);
+    public void setDiagram(FmmlxDiagram diagram) {
+        this.diagram = diagram;
+    }
 
-	String getName2();
+    protected String floatConverter(String value) {
+        try {
+            return Float.parseFloat(value)+"";
+        } catch (Exception e){
+            return (float)Integer.parseInt(value)+"";
+        }
+    }
 
-	List<String> getParameter();
+    protected String integerConverter(String value) {
+        try {
+            return Integer.parseInt(value)+"";
+        } catch (Exception e){
+            return Math.round(Float.parseFloat(value))+"";
+        }
+    }
 
-	void setParameter(List<String> parameter);
+    protected String booleanConverter(String value) {
+        try {
+            return Boolean.parseBoolean(value)+"";
+        } catch (Exception e){
+            return "";
+        }
+    }
 
-	List<String> getGeneratedValue();
+    protected List<String> listToIntConverter(List<String> value){
+        List<String> result = new ArrayList<>();
+        for (String str : value){
+            result.add(integerConverter(str));
+        }
+        return result;
+    }
 
+    protected List<String> listToFloatConverter(List<String> value){
+        List<String> result = new ArrayList<>();
+        for (String str : value){
+            result.add(floatConverter(str));
+        }
+        return result;
+    }
 }

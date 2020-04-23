@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams.dialogs.instance;
 
 import org.junit.jupiter.api.Test;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorNormalDistribution;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ class ValueGeneratorNormalDistributionTest {
 
     @Test
     void getType() {
+
         ValueGeneratorNormalDistribution valueGeneratorNormalDistribution = new ValueGeneratorNormalDistribution("Integer");
         assertEquals(valueGeneratorNormalDistribution.getAttributeType(), "Integer");
 
@@ -21,6 +23,7 @@ class ValueGeneratorNormalDistributionTest {
 
     @Test
     void getParameterInteger() {
+
         ValueGeneratorNormalDistribution valueGeneratorNormalDistribution = new ValueGeneratorNormalDistribution("Integer");
         List<String> parameter = new ArrayList<>();
         parameter.add("4.0");
@@ -41,7 +44,8 @@ class ValueGeneratorNormalDistributionTest {
 
     @Test
     void getParameterFloat() {
-        ValueGeneratorNormalDistribution valueGeneratorNormalDistribution = new ValueGeneratorNormalDistribution("Float");
+        FmmlxDiagram diagram = new FmmlxDiagram(null, 0, "", "");
+        ValueGeneratorNormalDistribution valueGeneratorNormalDistribution = new ValueGeneratorNormalDistribution( "Float");
         List<String> parameter = new ArrayList<>();
         parameter.add("4.5");
         parameter.add("1");
@@ -61,6 +65,7 @@ class ValueGeneratorNormalDistributionTest {
 
     @Test
     void generateInteger() {
+        FmmlxDiagram diagram = new FmmlxDiagram(null, 0, "", "");
         ValueGeneratorNormalDistribution valueGeneratorNormalDistribution = new ValueGeneratorNormalDistribution("Integer");
         List<String> parameter = new ArrayList<>();
         parameter.add("5.0");
@@ -74,6 +79,7 @@ class ValueGeneratorNormalDistributionTest {
 
     @Test
     void generateFloat() {
+        FmmlxDiagram diagram = new FmmlxDiagram(null, 0, "", "");
         ValueGeneratorNormalDistribution valueGeneratorNormalDistribution = new ValueGeneratorNormalDistribution("Float");
         List<String> parameter = new ArrayList<>();
         parameter.add("5.2");

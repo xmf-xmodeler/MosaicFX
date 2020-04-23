@@ -1,29 +1,23 @@
 package tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator;
 
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorRandomDialog;
-import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorRandomDialogResult;
+import tool.clients.fmmlxdiagrams.instancegenerator.view.ValueGeneratorRandomDialog;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class ValueGeneratorRandom implements ValueGenerator{
+public class ValueGeneratorRandom extends ValueGenerator implements IValueGenerator {
 
-	private final String attributeType;
 	private String minValueParameter;
 	private String maxValueParameter;
 	private String selectedScenario;
 	private List<String> generatedValue;
 	
 	public ValueGeneratorRandom(String attributeType) {
-		this.attributeType = attributeType;
-	}
-
-	public String getAttributeType() {
-		return this.attributeType;
+		super(attributeType);
 	}
 
 	@Override
@@ -32,27 +26,12 @@ public class ValueGeneratorRandom implements ValueGenerator{
 	}
 
 	@Override
-	public void openDialog() {
+	public void openDialog(FmmlxDiagram diagram) {
 		if(getFitsType(getAttributeType())){
-			ValueGeneratorRandomDialog dlg = new ValueGeneratorRandomDialog(getValueGeneratorName(),
-					getAttributeType(), getSelectedScenario(), getParameter());
-			dialogResult(dlg);
-		}
-	}
-
-	private void dialogResult(ValueGeneratorRandomDialog dlg) {
-		Optional<ValueGeneratorRandomDialogResult> opt = dlg.showAndWait();
-
-		if (opt.isPresent()) {
-			ValueGeneratorRandomDialogResult result = opt.get();
-			setSelectedScenario(result.getSelectedScenario());
-			if(getSelectedScenario().equals("Range")){
-				setParameter(result.getParameter());
-			} else {
-				List<String> param = new ArrayList<>();
-				param.add(null);
-				param.add(null);
-				setParameter(param);
+			setDiagram(diagram);
+			if(getFitsType(getAttributeType())){
+				ValueGeneratorRandomDialog dlg = new ValueGeneratorRandomDialog(this);
+				dlg.showAndWait();
 			}
 		}
 	}
@@ -75,22 +54,6 @@ public class ValueGeneratorRandom implements ValueGenerator{
 				return generateRandomBoolean();
 			default:
 				return "";
-		}
-	}
-
-	private String integerConverter(String value) {
-		try {
-			return Integer.parseInt(value)+"";
-		} catch (Exception e){
-			return Math.round(Float.parseFloat(value))+"";
-		}
-	}
-
-	private String floatConverter(String value) {
-		try {
-			return Float.parseFloat(value)+"";
-		} catch (Exception e){
-			return (float)Integer.parseInt(value)+"";
 		}
 	}
 
@@ -136,7 +99,6 @@ public class ValueGeneratorRandom implements ValueGenerator{
 	public boolean getFitsType(String type) {
 		if("Integer".equals(type)) return true;
 		if("Float".equals(type)) return true;
-		if("Boolean".equals(type)) return true;
 		return "String".equals(type);
 	}
 
@@ -166,14 +128,18 @@ public class ValueGeneratorRandom implements ValueGenerator{
 				this.maxValueParameter=null;
 			}
 			if(parameter.get(0)!=null && parameter.get(1)!=null){
-				if(attributeType.equals(StringValue.TraditionalDataType.INTEGER)){
+				if(getAttributeType().equals(StringValue.TraditionalDataType.INTEGER)){
 					this.minValueParameter = integerConverter(parameter.get(0));
 					this.maxValueParameter = integerConverter(parameter.get(1));
-				} else if (attributeType.equals(StringValue.TraditionalDataType.FLOAT)){
+				} else if (getAttributeType().equals(StringValue.TraditionalDataType.FLOAT)){
 					this.minValueParameter = floatConverter(parameter.get(0));
 					this.maxValueParameter = floatConverter(parameter.get(1));
 				}
 			}
+		}
+		else {
+			this.minValueParameter = null;
+			this.maxValueParameter = null;
 		}
 	}
 
