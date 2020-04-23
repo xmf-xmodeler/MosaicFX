@@ -7,9 +7,9 @@ import java.util.List;
 
 public class ValueGeneratorIncrementDialogResult extends DialogResult {
 
-	private List<String> parameter;
+	private final List<String> parameter;
 
-	public ValueGeneratorIncrementDialogResult(List<String> parameter, String attributeType) {
+	public ValueGeneratorIncrementDialogResult(List<String> parameter) {
 		this.parameter=parameter;
 	}
 

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorNormalDistributionDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorNormalDistributionDialogResult;
@@ -15,6 +16,7 @@ public class ValueGeneratorNormalDistribution implements ValueGenerator{
 	private List<String> parameter;
 	private final String attributeType;
 	private List<String> generatedValue;
+	private FmmlxDiagram diagram;
 
 	
 	public ValueGeneratorNormalDistribution(String attributeType) {
@@ -23,10 +25,10 @@ public class ValueGeneratorNormalDistribution implements ValueGenerator{
 	}
 
 	@Override
-	public void openDialog() {
+	public void openDialog(FmmlxDiagram diagram) {
+		this.diagram = diagram;
 		if(getFitsType(getAttributeType())){
-			ValueGeneratorNormalDistributionDialog dlg = new ValueGeneratorNormalDistributionDialog(getValueGeneratorName(),
-					getAttributeType(), getParameter());
+			ValueGeneratorNormalDistributionDialog dlg = new ValueGeneratorNormalDistributionDialog(this);
 			dialogResult(dlg);
 		}
 	}

@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams.dialogs.instance;
 
 import org.junit.jupiter.api.Test;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorRandom;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ class ValueGeneratorRandomTest {
 
     @Test
     void getType() {
+
         ValueGeneratorRandom valueGeneratorRandom = new ValueGeneratorRandom("Integer");
         assertEquals("Integer", valueGeneratorRandom.getAttributeType());
 
@@ -24,6 +26,7 @@ class ValueGeneratorRandomTest {
 
     @Test
     void generateInteger() {
+
         ValueGeneratorRandom valueGeneratorRandom = new ValueGeneratorRandom("Integer");
         valueGeneratorRandom.setSelectedScenario("Free");
         valueGeneratorRandom.generate(10);
@@ -41,6 +44,7 @@ class ValueGeneratorRandomTest {
 
     @Test
     void generateFloat() {
+
         ValueGeneratorRandom valueGeneratorRandom = new ValueGeneratorRandom("Float");
         valueGeneratorRandom.setSelectedScenario("Free");
         valueGeneratorRandom.generate(10);
@@ -58,6 +62,7 @@ class ValueGeneratorRandomTest {
 
     @Test
     void generateBoolean() {
+
         ValueGeneratorRandom valueGeneratorRandom = new ValueGeneratorRandom("Boolean");
         valueGeneratorRandom.generate(10);
         System.out.println(valueGeneratorRandom.getGeneratedValue().toString());

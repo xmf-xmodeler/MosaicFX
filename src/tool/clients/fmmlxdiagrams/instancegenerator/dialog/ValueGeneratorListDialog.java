@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams.instancegenerator.dialog;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -10,21 +11,20 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorListDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorList;
 
 public class ValueGeneratorListDialog extends CustomDialog<ValueGeneratorListDialogResult> implements ValueGeneratorDialog {
-
-	private final String attributeType;
+	private final ValueGeneratorList valueGeneratorList;
 
 	private TextField listName;
 	private ListView<String> listValue;
 
-	public ValueGeneratorListDialog(String valueGeneratorName, String attributeType, List<String> parameter) {
-		
-		this.attributeType = attributeType;
+	public ValueGeneratorListDialog(ValueGeneratorList valueGeneratorList) {
+		this.valueGeneratorList = valueGeneratorList;
 		System.out.println();
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialogPane.setHeaderText(valueGeneratorName + " : "+ attributeType);
+		dialogPane.setHeaderText(valueGeneratorList.getValueGeneratorName() + " : "+ valueGeneratorList.getAttributeType());
 		layoutContent();
 		dialogPane.setContent(flow);
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
@@ -33,11 +33,11 @@ public class ValueGeneratorListDialog extends CustomDialog<ValueGeneratorListDia
 				e.consume();
 			}
 		});
-		
+
 		setResult();
 
-		if(parameter!= null){
-			setParameter(parameter);
+		if(valueGeneratorList.getParameter()!= null){
+			setParameter(valueGeneratorList.getParameter());
 		}
 	}
 
@@ -49,31 +49,31 @@ public class ValueGeneratorListDialog extends CustomDialog<ValueGeneratorListDia
 
 
 	@Override
-	public List<String> getParameter() {
-		List<String> result = new ArrayList<>();
-		result.add(listName.getText());
-		return result;
-	}
-
-	public String getAttributeType() {
-		return this.attributeType;
-	}
-
-	@Override
 	public void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				return new ValueGeneratorListDialogResult(getAttributeType(), getParameter(), listValue.getSelectionModel().getSelectedItems());
+				storeParameter();
+				return new ValueGeneratorListDialogResult(valueGeneratorList.getAttributeType(), valueGeneratorList.getParameter(), listValue.getSelectionModel().getSelectedItems());
 			}
 			return null;
 		});
 
 	}
 
+	private void storeParameter() {
+		List<String> parameter = new ArrayList<>();
+		parameter.add(listName.getText());
+		valueGeneratorList.setParameter(parameter);
+	}
+
 	@Override
 	public boolean inputIsValid() {
-		// TODO Auto-generated method stub
-		return false;
+		if (listName.getText().equals("") || listName.getText()==null) {
+			errorLabel.setText("Please input name of the list!");
+			return false;
+		}
+		errorLabel.setText("");
+		return true;
 	}
 
 	@Override
@@ -102,7 +102,8 @@ public class ValueGeneratorListDialog extends CustomDialog<ValueGeneratorListDia
 
 	private void fetchElement(String listName) {
 		if(listName!= null || !listName.equals("")){
-			//TODO fetch elements of the list
+			valueGeneratorList.fetchList(listName);
+			listValue.setItems(FXCollections.observableArrayList(valueGeneratorList.getFetchedList()));
 		}
 	}
 

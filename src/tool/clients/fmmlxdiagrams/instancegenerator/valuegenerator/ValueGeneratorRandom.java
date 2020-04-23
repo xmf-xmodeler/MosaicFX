@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator;
 
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorRandomDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorRandomDialogResult;
@@ -12,6 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class ValueGeneratorRandom implements ValueGenerator{
 
+	private FmmlxDiagram diagram;
 	private final String attributeType;
 	private String minValueParameter;
 	private String maxValueParameter;
@@ -32,10 +34,10 @@ public class ValueGeneratorRandom implements ValueGenerator{
 	}
 
 	@Override
-	public void openDialog() {
+	public void openDialog(FmmlxDiagram diagram) {
+		this.diagram = diagram;
 		if(getFitsType(getAttributeType())){
-			ValueGeneratorRandomDialog dlg = new ValueGeneratorRandomDialog(getValueGeneratorName(),
-					getAttributeType(), getSelectedScenario(), getParameter());
+			ValueGeneratorRandomDialog dlg = new ValueGeneratorRandomDialog(this);
 			dialogResult(dlg);
 		}
 	}
@@ -174,6 +176,10 @@ public class ValueGeneratorRandom implements ValueGenerator{
 					this.maxValueParameter = floatConverter(parameter.get(1));
 				}
 			}
+		}
+		else {
+			this.minValueParameter = null;
+			this.maxValueParameter = null;
 		}
 	}
 

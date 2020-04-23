@@ -13,25 +13,21 @@ import javafx.scene.layout.VBox;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorRandomDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorRandom;
 
 public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRandomDialogResult> implements ValueGeneratorDialog {
 
-	private final String attributeType;
+	private final ValueGeneratorRandom valueGeneratorRandom;
 
 	private ComboBox<String> scenarioComboBox;
 	private TextField rangeMinTextField, rangeMaxTextField;
 
-	private String scenario;
-	private String rangeMin;
-	private String rangeMax;
-
-	public ValueGeneratorRandomDialog(String valueGeneratorName, String attributeType, String scenario, List<String> parameter) {
-
-		this.attributeType = attributeType;
-		this.scenario =scenario;
+	public ValueGeneratorRandomDialog(ValueGeneratorRandom valueGeneratorRandom) {
+		this.valueGeneratorRandom = valueGeneratorRandom;
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialogPane.setHeaderText(valueGeneratorName + " : "+attributeType);
+		dialogPane.setHeaderText(valueGeneratorRandom.getValueGeneratorName() + " : "+valueGeneratorRandom.getAttributeType());
 		dialogPane.setContent(flow);
 		layoutContent();
 
@@ -43,8 +39,8 @@ public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRando
 		});
 		
 		setResult();
-		setScenario(scenario);
-		setParameter(parameter);
+		setScenario(valueGeneratorRandom.getSelectedScenario());
+		setParameter(valueGeneratorRandom.getParameter());
 
 	}
 
@@ -54,54 +50,37 @@ public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRando
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
 				storeScenario();
 				storeParameter();
-				return new ValueGeneratorRandomDialogResult(getAttributeType(), getScenario(), getParameter());
+				return new ValueGeneratorRandomDialogResult(valueGeneratorRandom.getAttributeType(), valueGeneratorRandom.getSelectedScenario(), valueGeneratorRandom.getParameter());
 			}
 			return null;
 		});
 	}
 
 	private void storeScenario() {
-		this.scenario = scenarioComboBox.getSelectionModel().getSelectedItem();
+		valueGeneratorRandom.setSelectedScenario(scenarioComboBox.getSelectionModel().getSelectedItem());
 	}
 
 	@Override
 	public void setParameter(List<String> staticValue) {
-		if(getScenario()!=null) {
-			if (!getScenario().equals("Free")) {
-				this.rangeMin = staticValue.get(0);
-				this.rangeMinTextField.setText(rangeMin);
-				this.rangeMax = staticValue.get(1);
-				this.rangeMaxTextField.setText(rangeMax);
+		if(valueGeneratorRandom.getSelectedScenario()!=null) {
+			if (!valueGeneratorRandom.getSelectedScenario().equals("Free")) {
+				this.rangeMinTextField.setText(valueGeneratorRandom.getParameter().get(0));
+				this.rangeMaxTextField.setText(valueGeneratorRandom.getParameter().get(1));
 			}
 		}
 	}
 
 	public void setScenario(String scenario) {
 		if (scenario!=null){
-			this.scenario = scenario;
-			this.scenarioComboBox.setValue(getScenario());
+			this.scenarioComboBox.setValue(valueGeneratorRandom.getSelectedScenario());
 		}
 	}
 
-	private String getScenario() {
-		return this.scenario;
-	}
-
 	public void storeParameter() {
-		this.rangeMin = this.rangeMinTextField.getText();
-		this.rangeMax = this.rangeMaxTextField.getText();
-	}
-
-	@Override
-	public String getAttributeType() {
-		return this.attributeType;
-	}
-
-	public List<String> getParameter() {
-		List<String> result = new ArrayList<>();
-		result.add(this.rangeMin);
-		result.add(this.rangeMax);
-		return result;
+		List<String> parameter = new ArrayList<>();
+		parameter.add(this.rangeMinTextField.getText());
+		parameter.add(this.rangeMaxTextField.getText());
+		valueGeneratorRandom.setParameter(parameter);
 	}
 
 	private boolean validateFloat(TextField rangeMinTextField, TextField rangeMaxTextField) {
@@ -111,7 +90,7 @@ public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRando
 		} else if(!inputChecker.validateFloat(rangeMaxTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidFloatValue +" : Range (Max)");
 			return false;
-		} else if(!validateLogic(getAttributeType())){
+		} else if(!validateLogic(valueGeneratorRandom.getAttributeType())){
 			return false;
 		}
 		errorLabel.setText("");
@@ -125,7 +104,7 @@ public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRando
 		} else if(!inputChecker.validateInteger(rangeMaxTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidIntegerValue +" : Range (Max)");
 			return false;
-		} else if(!validateLogic(attributeType)){
+		} else if(!validateLogic(valueGeneratorRandom.getAttributeType())){
 			return false;
 		}
 
@@ -156,7 +135,7 @@ public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRando
 				errorLabel.setText("Please select scenario");
 				return false;
 			} if(this.scenarioComboBox.getSelectionModel().getSelectedItem().equals("Range")){
-				switch (getAttributeType()) {
+				switch (valueGeneratorRandom.getAttributeType()) {
 					case "Integer":
 						return validateInteger(this.rangeMinTextField, this.rangeMaxTextField);
 					case "Float":
@@ -191,10 +170,9 @@ public class ValueGeneratorRandomDialog extends CustomDialog<ValueGeneratorRando
 				if(newValue.equals("Free")){
 					this.rangeMinTextField.setText("");
 					this.rangeMaxTextField.setText("");
-					this.rangeMin=null;
 					this.rangeMinTextField.setDisable(true);
 					this.rangeMaxTextField.setDisable(true);
-					this.rangeMax=null;
+					valueGeneratorRandom.setParameter(null);
 				} else {
 					this.rangeMinTextField.setDisable(false);
 					this.rangeMaxTextField.setDisable(false);

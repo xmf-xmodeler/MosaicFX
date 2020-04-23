@@ -14,28 +14,22 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorIncrementDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
-
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorIncrement;
 
 
 public class ValueGeneratorIncrementDialog extends CustomDialog<ValueGeneratorIncrementDialogResult> implements ValueGeneratorDialog {
-	
-	private final String attributeType;
 
+	private final ValueGeneratorIncrement valueGenerator;
 	private TextField startValueTextField;
 	private TextField endValueTextField;
 	private TextField incrementValueTextField;
-	
-	private String startValue;
-	private String endValue;
-	private String incValue;
-	
-	public ValueGeneratorIncrementDialog(String valueGeneratorName, String attributeType, List<String> parameter) {
 
-		this.attributeType = attributeType;
-		System.out.println();
+	public ValueGeneratorIncrementDialog(ValueGeneratorIncrement valueGenerator) {
+		this.valueGenerator =valueGenerator;
+
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialogPane.setHeaderText(valueGeneratorName + " : "+ attributeType);
+		dialogPane.setHeaderText(valueGenerator.getValueGeneratorName() + " : "+ valueGenerator.getAttributeType());
 		layoutContent();
 		
 		dialogPane.setContent(flow);
@@ -47,39 +41,24 @@ public class ValueGeneratorIncrementDialog extends CustomDialog<ValueGeneratorIn
 		});
 		
 		setResult();
-		setParameter(parameter);
+		setParameter(valueGenerator.getParameter());
 	}
 
 	@Override
 	public void setParameter(List<String> parameter) {
 		if (parameter!=null){
-			this.startValue = parameter.get(0);
-			this.startValueTextField.setText(this.startValue);
-			this.endValue = parameter.get(1);
-			this.endValueTextField.setText(this.endValue);
-			this.incValue = parameter.get(2);
-			this.incrementValueTextField.setText(this.incValue);
+			this.startValueTextField.setText(valueGenerator.getParameter().get(0));
+			this.endValueTextField.setText(valueGenerator.getParameter().get(1));
+			this.incrementValueTextField.setText(valueGenerator.getParameter().get(2));
 		}
 	}
 
 	public void storeParameter() {
-		this.startValue = startValueTextField.getText();
-		this.endValue = endValueTextField.getText();
-		this.incValue = incrementValueTextField.getText();
-	}
-
-	@Override
-	public List<String> getParameter() {
-		List<String> result = new ArrayList<>();
-		result.add(this.startValue);
-		result.add(this.endValue);
-		result.add(this.incValue);
-		return result;
-	}
-
-	@Override
-	public String getAttributeType() {
-		return this.attributeType;
+		List<String> parameter = new ArrayList<>();
+		parameter.add(startValueTextField.getText());
+		parameter.add(endValueTextField.getText());
+		parameter.add(incrementValueTextField.getText());
+		valueGenerator.setParameter(parameter);
 	}
 
 	@Override
@@ -87,7 +66,7 @@ public class ValueGeneratorIncrementDialog extends CustomDialog<ValueGeneratorIn
 		setResultConverter(dlgBtn -> {		
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				storeParameter();
-				return new ValueGeneratorIncrementDialogResult(getParameter(), getAttributeType());
+				return new ValueGeneratorIncrementDialogResult(valueGenerator.getParameter());
 			}
 			return null;
 		});		
@@ -95,7 +74,7 @@ public class ValueGeneratorIncrementDialog extends CustomDialog<ValueGeneratorIn
 
 	@Override
 	public boolean inputIsValid() {
-		return validateIncrement(this.startValueTextField.getText(), this.endValueTextField.getText(), this.incrementValueTextField.getText(), getAttributeType());
+		return validateIncrement(this.startValueTextField.getText(), this.endValueTextField.getText(), this.incrementValueTextField.getText(), valueGenerator.getAttributeType());
 	}
 
 	@Override

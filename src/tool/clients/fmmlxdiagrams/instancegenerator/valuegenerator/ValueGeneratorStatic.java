@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorStaticDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorStaticDialogResult;
@@ -13,6 +14,7 @@ public class ValueGeneratorStatic implements ValueGenerator{
 	private List<String> parameter;
 	private final String attributeType;
 	private List<String> generatedValue;
+	private FmmlxDiagram diagram;
 
 	public ValueGeneratorStatic(String attributeType) {
 		super();
@@ -29,33 +31,14 @@ public class ValueGeneratorStatic implements ValueGenerator{
 	}
 
 	@Override
-	public void openDialog() {
+	public void openDialog(FmmlxDiagram diagram) {
+		this.diagram = diagram;
 		if(getFitsType(getAttributeType())){
-			ValueGeneratorStaticDialog dlg = new ValueGeneratorStaticDialog(getValueGeneratorName(), getAttributeType(), getParameter());
-			dialogResult(dlg);
+			ValueGeneratorStaticDialog dlg = new ValueGeneratorStaticDialog(this);
+			dlg.showAndWait();
 		}
 	}
-	
-	private void dialogResult(ValueGeneratorStaticDialog dlg) {
-		Optional<ValueGeneratorStaticDialogResult> opt = dlg.showAndWait();
-		if (opt.isPresent()) {
-			ValueGeneratorStaticDialogResult result = opt.get();
-			switch (getAttributeType()) {
-				case StringValue.TraditionalDataType.INTEGER:
-					setParameter(result.getValueInt());
-					break;
-				case StringValue.TraditionalDataType.FLOAT:
-					setParameter(result.getValueFloat());
-					break;
-				case StringValue.TraditionalDataType.BOOLEAN:
-					setParameter(result.getValueBool());
-					break;
-				case StringValue.TraditionalDataType.STRING:
-					setParameter(result.getValueString());
-					break;
-			}
-		}
-	}
+
 
 	private String floatConverter(String value) {
 		try {

@@ -4,14 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.TimeOutException;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorListDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorListDialogResult;
 
 public class ValueGeneratorList implements ValueGenerator{
 
-	private String attributeType;
+	private FmmlxDiagram diagram;
+	private final String attributeType;
 	private List<String> parameter;
+	private List<String> fetchedList;
 	private List<String> generatedValue;
 
 
@@ -26,9 +30,10 @@ public class ValueGeneratorList implements ValueGenerator{
 	}
 
 	@Override
-	public void openDialog() {
+	public void openDialog(FmmlxDiagram diagram) {
+		this.diagram = diagram;
 		if(getFitsType(getAttributeType())){
-			ValueGeneratorListDialog dlg = new ValueGeneratorListDialog(getValueGeneratorName(), getAttributeType(), getParameter());
+			ValueGeneratorListDialog dlg = new ValueGeneratorListDialog(this);
 			Optional<ValueGeneratorListDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
@@ -46,7 +51,7 @@ public class ValueGeneratorList implements ValueGenerator{
 
 	@Override
 	public int possibleGeneratedInstance() {
-		return 0;
+		return generatedValue.size();
 	}
 
 	@Override
@@ -109,10 +114,6 @@ public class ValueGeneratorList implements ValueGenerator{
 		return this.attributeType;
 	}
 
-	public void setAttributeType(String attributeType) {
-		this.attributeType = attributeType;
-	}
-
 	@Override
 	public String getName2() {
 		if(this.parameter==null) {
@@ -136,4 +137,16 @@ public class ValueGeneratorList implements ValueGenerator{
         return this.generatedValue;
     }
 
+	public List<String> getFetchedList() {
+		return fetchedList;
+	}
+
+	public void fetchList(String listName) {
+		try {
+			fetchedList = new ArrayList<>();
+			fetchedList.addAll(diagram.getComm().evalList(diagram, listName));
+		} catch (TimeOutException e) {
+			e.printStackTrace();
+		}
+	}
 }

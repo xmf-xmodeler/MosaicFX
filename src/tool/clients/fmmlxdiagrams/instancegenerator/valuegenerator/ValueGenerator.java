@@ -1,12 +1,14 @@
 package tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator;
 
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+
 import java.util.List;
 
 public interface ValueGenerator {
 
 	String getValueGeneratorName();
 
-	void openDialog();
+	void openDialog(FmmlxDiagram fmmlxDiagram);
 
 	void generate(int numberOfInstance);
 

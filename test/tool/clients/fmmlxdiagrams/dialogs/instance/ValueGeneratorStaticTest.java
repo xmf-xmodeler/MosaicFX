@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams.dialogs.instance;
 
 import org.junit.jupiter.api.Test;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorStatic;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ class ValueGeneratorStaticTest {
 
     @Test
     void getType() {
+
         ValueGeneratorStatic valueGeneratorStatic = new ValueGeneratorStatic("Integer");
         assertEquals("Integer", valueGeneratorStatic.getAttributeType());
 
@@ -27,6 +29,7 @@ class ValueGeneratorStaticTest {
 
     @Test
     void generate() {
+
         ValueGeneratorStatic valueGeneratorStatic = new ValueGeneratorStatic("Integer");
         List<String> parameter = new ArrayList<>();
         parameter.add("3.0");
@@ -55,7 +58,7 @@ class ValueGeneratorStaticTest {
         valueGeneratorStatic3.generate(3);
         System.out.println(valueGeneratorStatic3.getGeneratedValue().toString());
 
-        ValueGeneratorStatic valueGeneratorStatic4 = new ValueGeneratorStatic("String");
+        ValueGeneratorStatic valueGeneratorStatic4 = new ValueGeneratorStatic( "String");
         List<String> parameter4 = new ArrayList<>();
         parameter4.add("Hallo World");
         valueGeneratorStatic4.setParameter(parameter4);

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialog.ValueGeneratorIncrementDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorIncrementDialogResult;
@@ -12,7 +13,7 @@ import tool.clients.fmmlxdiagrams.instancegenerator.dialogresult.ValueGeneratorI
 public class ValueGeneratorIncrement implements ValueGenerator{
 
 	private final String attributeType;
-
+	private FmmlxDiagram diagram;
 	private String startValue;
 	private String endValue;
 	private String inc;
@@ -30,9 +31,10 @@ public class ValueGeneratorIncrement implements ValueGenerator{
 	}
 
 	@Override
-	public void openDialog() {
+	public void openDialog(FmmlxDiagram diagram) {
+		this.diagram = diagram;
 		if (getFitsType(getAttributeType())){
-			ValueGeneratorIncrementDialog dlg = new ValueGeneratorIncrementDialog(getValueGeneratorName(), getAttributeType(), getParameter() );
+			ValueGeneratorIncrementDialog dlg = new ValueGeneratorIncrementDialog(this);
 			dialogResult(dlg);
 		}
 	}

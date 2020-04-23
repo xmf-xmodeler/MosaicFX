@@ -34,13 +34,11 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Vector;
-//import java.util.concurrent.CountDownLatch;
+
 
 public class DiagramActions {
 
@@ -423,28 +421,13 @@ public class DiagramActions {
 	public void runInstanceGenerator(FmmlxObject object) {
 		Platform.runLater(() -> {
 
-			InstanceGenerator instanceGenerator = new InstanceGenerator(diagram, object);
-			instanceGenerator.openDialog();
+			InstanceGenerator instanceGenerator = new InstanceGenerator(object);
+			instanceGenerator.openDialog(diagram);
 
 			for(int i =0 ; i< instanceGenerator.getNumberOfInstance(); i++){
-//				instanceGenerator.generateInstance(instanceGenerator.getGeneratedInstanceName().get(i), 10 + (i*i), 10 + (i*i));
-
-				//print desired output (Just for Test)
-				//TODO Delete this part after dedicated communicator created
-				//============================================================================================
-				System.out.println();
-				System.out.println("Instance Name : "+instanceGenerator.getGeneratedInstanceName().get(i));
-				System.out.println("Parent : "+ instanceGenerator.getSelectedParent().toString());
-				for (Entry<FmmlxAttribute, ValueGenerator> pair1 : instanceGenerator.getValue().entrySet()) {
-					System.out.println(pair1.getKey().getName() + " = " + pair1.getValue().getGeneratedValue().get(i));
-
-				}
-				System.out.println("========================================================================");
-
-				diagram.getComm().addNewInstanceWithSlots(diagram, object.getId(), new Vector<>(),new HashMap<>(), 10 + (i*i), 10 + (i*i));
+				instanceGenerator.generateInstance(i, instanceGenerator.getGeneratedInstanceName().get(i), 15, 15);
 			}
 			diagram.updateDiagram();
-
 		});
 	
 	}

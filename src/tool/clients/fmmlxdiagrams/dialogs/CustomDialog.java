@@ -8,13 +8,10 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
-import tool.clients.fmmlxdiagrams.FmmlxLink;
-import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.FmmlxProperty;
+import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.instancegenerator.dialog.InstanceGeneratorGenerateTypeComboBox;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
-import tool.clients.fmmlxdiagrams.FmmlxAttribute;
-import tool.clients.fmmlxdiagrams.FmmlxEnum;
+
 import java.util.List;
 import java.util.Random;
 
@@ -240,7 +237,7 @@ public class CustomDialog<R> extends Dialog<R> {
 		return comboBox;
 	}
 	
-	protected InstanceGeneratorGenerateTypeComboBox initializeComboBoxGeneratorList(FmmlxAttribute attribute) {
+	protected InstanceGeneratorGenerateTypeComboBox initializeComboBoxGeneratorList(FmmlxDiagram diagram, FmmlxAttribute attribute) {
 		InstanceGeneratorGenerateTypeComboBox comboBox = new InstanceGeneratorGenerateTypeComboBox(attribute);
 		comboBox.setCellFactory(param -> new ListCell<ValueGenerator>() {
 			@Override
@@ -271,7 +268,7 @@ public class CustomDialog<R> extends Dialog<R> {
 			}
 		});
 		
-		comboBox.valueProperty().addListener((observable, oldValue, newValue) -> newValue.openDialog());
+		comboBox.valueProperty().addListener((observable, oldValue, newValue) -> newValue.openDialog(diagram));
 		
 		comboBox.setPrefWidth(COLUMN_WIDTH);
 		return comboBox;

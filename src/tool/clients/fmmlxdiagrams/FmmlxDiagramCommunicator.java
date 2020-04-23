@@ -1171,8 +1171,6 @@ public class FmmlxDiagramCommunicator {
 			result.add(listElement);
 		}
 		return result;
-		
-		
 	}
 
 }
