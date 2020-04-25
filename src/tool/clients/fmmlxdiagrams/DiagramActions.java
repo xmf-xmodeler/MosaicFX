@@ -769,6 +769,18 @@ public class DiagramActions {
 		diagram.storeLastClick(source.getCenterX(), source.getCenterY());
 		diagram.deselectAll();
 	}
+	
+	public void addDelegation(FmmlxObject delegateFrom, FmmlxObject delegateTo) {
+		if (delegateFrom != null && delegateTo != null) { // just for safety
+			diagram.getComm().addDelegation(diagram, delegateFrom.id, delegateTo.id);
+		}		
+	}
+	
+	public void setRoleFiller(FmmlxObject delegateFrom, FmmlxObject delegateTo) {
+		if (delegateFrom != null && delegateTo != null) { // just for safety
+			diagram.getComm().setRoleFiller(diagram, delegateFrom.id, delegateTo.id);
+		}		
+	}
 
 	public void addAssociationInstance(FmmlxObject source, FmmlxObject target) {
 		if (source != null && target != null) {
@@ -916,6 +928,8 @@ public class DiagramActions {
 			return new Vector<>(Arrays.asList(new String[] {"Time", "Out", "Exception"}));
 		}	
 	}
+
+
 
 //	public void attributeGeneratorDialog(FmmlxAttribute tmp, InstanceGeneratorGenerateType selectedType) {
 //		Platform.runLater(() -> {

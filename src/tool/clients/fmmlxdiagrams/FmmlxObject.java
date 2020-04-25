@@ -33,6 +33,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	private int width;
 	private int height;
 	Object highlightedElement;
+//	Integer delegatesTo;
+//	Integer roleFiller;
     
 	private final static NodeLabel.Action NO_ACTION = () -> {};
 	
@@ -108,7 +110,11 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 				new Stop(6. / 6, Color.valueOf("#ff4444"))));
 	}
 
-	public FmmlxObject(Integer id, String name, int level, Integer of, Vector<Integer> parents, Boolean isAbstract, Integer lastKnownX, Integer lastKnownY, FmmlxDiagram diagram) {
+	public FmmlxObject(Integer id, String name, int level, Integer of, 
+			Vector<Integer> parents, Boolean isAbstract,
+			Integer lastKnownX, Integer lastKnownY, 
+//			Integer delegatesTo, Integer roleFiller, 
+			FmmlxDiagram diagram) {
 		this.name = name;
 		this.id = id;
 		this.diagram = diagram;
@@ -130,6 +136,9 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		this.isAbstract = isAbstract;
 		this.of = of;
 		this.parents = parents;
+		
+//		this.delegatesTo = delegatesTo;
+//		this.roleFiller = roleFiller;
 
 		this.showOperations = diagram.isShowOperations();
 		this.showOperationValues = diagram.isShowOperationValues();
