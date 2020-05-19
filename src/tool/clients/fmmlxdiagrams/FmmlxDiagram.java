@@ -21,11 +21,13 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
-import tool.clients.fmmlxdiagrams.Palette;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ import java.util.TimerTask;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
+@XmlRootElement
 public class FmmlxDiagram{
 
 	enum MouseMode {
@@ -106,7 +109,6 @@ public class FmmlxDiagram{
 		this.comm = comm;
 		this.diagramID = diagramID;
 		this.packagePath = packagePath;
-//		System.out.println("packagePath: " + packagePath);
 
 		pane = new SplitPane();
 		mainView = new SplitPane();
@@ -139,8 +141,6 @@ public class FmmlxDiagram{
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-
-		//redraw();
 		
 		java.util.Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -150,17 +150,12 @@ public class FmmlxDiagram{
 				redraw();
 			}
 		}, 25, 25);
-		
 	}
 
 	// Only used to set the mouse pointer. Find a better solution
 	@Deprecated
 	public Canvas getCanvas() {
 		return canvas;
-	}
-
-	public Vector<FmmlxEnum> getEnums() {
-		return enums;
 	}
 	
 	public void deselectPalette() {
@@ -185,10 +180,6 @@ public class FmmlxDiagram{
 		this.edgeCreationType = null;
 		getCanvas().setCursor(Cursor.CROSSHAIR);
 	}
-	
-
-//	public void setEnums(Vector<FmmlxEnum> enums) {
-//	}
 
 	private void fetchDiagramData() {
 		if(suppressRedraw) {
@@ -199,7 +190,7 @@ public class FmmlxDiagram{
 		try {
 			
 	//		System.err.println("suppressRedraw");
-			
+
 			objects.clear();
 			edges.clear();
 			labels.clear();
@@ -211,7 +202,8 @@ public class FmmlxDiagram{
 			objects.addAll(fetchedObjects);
 			
 			issues.addAll(comm.fetchIssues(this));
-			
+
+
 			for(FmmlxObject o : objects) {
 				o.fetchDataDefinitions(comm);
 			}
@@ -342,6 +334,7 @@ public class FmmlxDiagram{
 	////////////////////////////////////////////////////////////////////
 	////						MouseListener						////
 	////////////////////////////////////////////////////////////////////
+
 	private void mousePressed(MouseEvent e) {
 		if(suppressRedraw) return; 
         suppressRedraw = false;
@@ -488,7 +481,9 @@ public class FmmlxDiagram{
 	}
 
 	private boolean isLeftButton(MouseEvent e) {return e.getButton() == MouseButton.PRIMARY;}
+
 	private boolean isRightButton(MouseEvent e) {return e.getButton() == MouseButton.SECONDARY;}
+
 //	private boolean isMiddleClick(MouseEvent e) {return e.getButton() == MouseButton.MIDDLE;}
 
 	private CanvasElement getElementAt(double x, double y) {
@@ -652,7 +647,6 @@ public class FmmlxDiagram{
 		showContextMenu(e);
 	}
 
-
 	private void handleScroll(ScrollEvent e) {
 		if (e.isControlDown()) {
 			double delta = e.getDeltaY();
@@ -796,30 +790,9 @@ public class FmmlxDiagram{
 	public Font getPaletteFontKursiv() {
 		return paletteFontKursiv;
 	}
-
-	
-	public Vector<FmmlxLink> getAssociationInstance(){
-		Vector<FmmlxLink> result = new Vector<FmmlxLink>();
-		for (Edge tmp : edges) {
-			if (tmp instanceof FmmlxLink) {
-				result.add((FmmlxLink) tmp);
-			}
-		}
-		return result; // read-only
-	}
 	
 	@Deprecated
 	//needs filter
-	public Vector<FmmlxAssociation> getAssociations() {
-		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
-		for (Edge tmp : edges) {
-			if (tmp instanceof FmmlxAssociation) {
-				result.add((FmmlxAssociation) tmp);
-			}
-		} 
-		return result; // read-only
-	}
-
 	/**
 	 * Calculates the height of the text. Because that depends of the font size and the screen resolution
 	 * @return the text height
@@ -898,17 +871,61 @@ public class FmmlxDiagram{
 
 
 	// Some useful methods for queries:
-	
+	@XmlAttribute
+	public int getID() {
+		return diagramID;
+	}
+
+	@XmlElement
+	public Vector<FmmlxEnum> getEnums() {
+		return enums;
+	}
+
+	@XmlElement
 	public Vector<FmmlxObject> getObjects() {
 		return new Vector<FmmlxObject>(objects); // read-only
 	}
-	
-	public Vector<Edge> getEdges() {
-		return new Vector<Edge>(edges); // read-only
+
+	@XmlElement
+	public Vector<FmmlxAssociation> getAssociations() {
+		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
+		for (Edge tmp : edges) {
+			if (tmp instanceof FmmlxAssociation) {
+				result.add((FmmlxAssociation) tmp);
+			}
+		}
+		return result; // read-only
 	}
-	
+
+	@XmlElement
+	public Vector<FmmlxLink> getAssociationInstance(){
+		Vector<FmmlxLink> result = new Vector<FmmlxLink>();
+		for (Edge tmp : edges) {
+			if (tmp instanceof FmmlxLink) {
+				result.add((FmmlxLink) tmp);
+			}
+		}
+		return result; // read-only
+	}
+
+	@XmlElement
+	public InheritanceEdge getInheritanceEdge(FmmlxObject child, FmmlxObject parent) {
+		for(Edge e : edges) {
+			if(e instanceof InheritanceEdge) {
+				InheritanceEdge i = (InheritanceEdge) e;
+				if(i.isStartNode(child) && i.isEndNode(parent)) return i;
+			}
+		}
+		return null;
+	}
+
+	@XmlElement
 	public Vector<DiagramEdgeLabel> getLabels() {
 		return new Vector<DiagramEdgeLabel>(labels); // read-only
+	}
+
+	public Vector<Edge> getEdges() {
+		return new Vector<Edge>(edges); // read-only
 	}
 
 	public FmmlxObject getObjectById(int id) {
@@ -982,10 +999,6 @@ public class FmmlxDiagram{
 	public boolean isShowGetterAndSetter() {return this.showGetterAndSetter;}
 	public boolean isShowDerivedOperations() {return this.showDerivedOperations;}
 	public boolean isShowDerivedAttributes() {return this.showDerivedAttributes;}
-
-	public int getID() {
-		return diagramID;
-	}
 
 	public Vector<String> getAvailableTypes() {
 		Vector<String> types = new Vector<String>();
@@ -1066,16 +1079,6 @@ public class FmmlxDiagram{
 			}
 		}
 		return result;
-	}
-
-	public InheritanceEdge getInheritanceEdge(FmmlxObject child, FmmlxObject parent) {
-		for(Edge e : edges) {
-			if(e instanceof InheritanceEdge) {
-				InheritanceEdge i = (InheritanceEdge) e;
-				if(i.isStartNode(child) && i.isEndNode(parent)) return i;
-			}
-		}
-		return null;
 	}
 
 	public DiagramActions getActions() {
