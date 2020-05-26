@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs.instance;
+package tool.clients.fmmlxdiagrams.instancegenerator;
 
 import org.junit.jupiter.api.Test;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;

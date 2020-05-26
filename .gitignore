@@ -27,3 +27,6 @@
 
 # /build/.gitignore
 /build/output/
+
+# Test
+/mappingTest.xml

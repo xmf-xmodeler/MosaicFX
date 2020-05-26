@@ -1,7 +1,9 @@
 package tool.clients.fmmlxdiagrams.xmldecoder;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -36,8 +38,21 @@ public class XmlReader {
         return doc;
     }
 
-    public Node getRootNode(){
+    public Element getRootElement(){
         return document.getDocumentElement();
+    }
+
+    public Element getChildrenById(Node parentNode, String id){
+        NodeList nodeList = parentNode.getChildNodes();
+        for(int i = 0 ; i< nodeList.getLength(); i++){
+            if(nodeList.item(i).getNodeType() == Node.ELEMENT_NODE){
+                Element element = (Element) nodeList.item(i);
+                if(element.getAttribute("id").equals(id)){
+                    return element;
+                }
+            }
+        }
+        return null;
     }
 
 }
