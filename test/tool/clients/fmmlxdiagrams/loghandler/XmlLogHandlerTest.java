@@ -1,45 +1,45 @@
-package tool.clients.fmmlxdiagrams.xmldecoder;
+package tool.clients.fmmlxdiagrams.loghandler;
 
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class XmlReaderTest {
+class XmlLogHandlerTest {
 
     @Test
     void xmlReaderTest(){
-        XmlReader xmlReader = new XmlReader("mappingTest.xml");
-        assertNotNull(xmlReader);
+        XmlLogHandler xmlLogHandler = new XmlLogHandler("mappingTest.xml");
+        assertNotNull(xmlLogHandler);
     }
 
     @Test
     void getRootElementTest(){
-        XmlReader xmlReader = new XmlReader("mappingTest.xml");
-        assertNotNull(xmlReader);
+        XmlLogHandler xmlLogHandler = new XmlLogHandler("mappingTest.xml");
+        assertNotNull(xmlLogHandler);
 
-        Element root = xmlReader.getRootElement();
+        Element root = (Element) xmlLogHandler.getRootNode();
         assertNotNull(root);
         assertEquals("mapping", root.getTagName());
     }
 
     @Test void getChildrenByIdTest(){
-        XmlReader xmlReader = new XmlReader("mappingTest.xml");
-        assertNotNull(xmlReader);
+        XmlLogHandler xmlLogHandler = new XmlLogHandler("mappingTest.xml");
+        assertNotNull(xmlLogHandler);
 
-        Node root = xmlReader.getRootElement();
+        Node root = xmlLogHandler.getRootNode();
         assertNotNull(root);
 
-        Element element = xmlReader.getChildrenById(root, "2");
+        Element element = (Element) xmlLogHandler.getChildrenById(root, "2");
         assertEquals("object", element.getTagName());
         assertEquals("2", element.getAttribute("id"));
     }
 
     @Test void getMappingListToStringTest(){
-        XmlReader xmlReader = new XmlReader("mappingTest.xml");
-        assertNotNull(xmlReader);
+        XmlLogHandler xmlLogHandler = new XmlLogHandler("mappingTest.xml");
+        assertNotNull(xmlLogHandler);
 
-        Element root = xmlReader.getRootElement();
+        Element root = (Element) xmlLogHandler.getRootNode();
         assertNotNull(root);
 
         NodeList nodeList = root.getChildNodes();

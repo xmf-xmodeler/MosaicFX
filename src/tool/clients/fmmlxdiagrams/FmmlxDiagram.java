@@ -25,9 +25,6 @@ import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -38,7 +35,6 @@ import java.util.TimerTask;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
-@XmlRootElement
 public class FmmlxDiagram{
 
 	enum MouseMode {
@@ -871,22 +867,18 @@ public class FmmlxDiagram{
 
 
 	// Some useful methods for queries:
-	@XmlAttribute
 	public int getID() {
 		return diagramID;
 	}
 
-	@XmlElement
 	public Vector<FmmlxEnum> getEnums() {
 		return enums;
 	}
 
-	@XmlElement
 	public Vector<FmmlxObject> getObjects() {
 		return new Vector<FmmlxObject>(objects); // read-only
 	}
 
-	@XmlElement
 	public Vector<FmmlxAssociation> getAssociations() {
 		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
 		for (Edge tmp : edges) {
@@ -897,7 +889,6 @@ public class FmmlxDiagram{
 		return result; // read-only
 	}
 
-	@XmlElement
 	public Vector<FmmlxLink> getAssociationInstance(){
 		Vector<FmmlxLink> result = new Vector<FmmlxLink>();
 		for (Edge tmp : edges) {
@@ -908,7 +899,6 @@ public class FmmlxDiagram{
 		return result; // read-only
 	}
 
-	@XmlElement
 	public InheritanceEdge getInheritanceEdge(FmmlxObject child, FmmlxObject parent) {
 		for(Edge e : edges) {
 			if(e instanceof InheritanceEdge) {
@@ -919,7 +909,6 @@ public class FmmlxDiagram{
 		return null;
 	}
 
-	@XmlElement
 	public Vector<DiagramEdgeLabel> getLabels() {
 		return new Vector<DiagramEdgeLabel>(labels); // read-only
 	}
