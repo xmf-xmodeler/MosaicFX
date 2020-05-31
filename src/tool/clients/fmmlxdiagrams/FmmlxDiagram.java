@@ -105,6 +105,7 @@ public class FmmlxDiagram{
 		this.comm = comm;
 		this.diagramID = diagramID;
 		this.packagePath = packagePath;
+		System.out.println("packagePath: " + packagePath);
 
 		pane = new SplitPane();
 		mainView = new SplitPane();
@@ -214,6 +215,8 @@ public class FmmlxDiagram{
 	
 			edges.addAll(fetchedEdges);
 			edges.addAll(comm.getAllInheritanceEdges(this));
+			edges.addAll(comm.getAllDelegationEdges(this));
+			edges.addAll(comm.getAllRoleFillerEdges(this));
 
 			enums = comm.fetchAllEnums(this);
 			auxTypes = comm.fetchAllAuxTypes(this);
@@ -508,6 +511,7 @@ public class FmmlxDiagram{
 						actions.addAssociationDialog(newEdgeSource, newEdgeTarget);
 						break;
 					case AssociationInstance:
+					{
 						final FmmlxObject obj1 = newEdgeSource;
 						final FmmlxObject obj2 = newEdgeTarget;
 						Platform.runLater(() -> {
@@ -515,6 +519,27 @@ public class FmmlxDiagram{
 							updateDiagramLater();
 						});						
 						break;
+					}
+					case Delegation:
+					{
+						final FmmlxObject delegateFrom = newEdgeSource;
+						final FmmlxObject delegateTo = newEdgeTarget;
+						Platform.runLater(() -> {
+							actions.addDelegation(delegateFrom, delegateTo);
+							updateDiagramLater();
+						});						
+						break;
+					}
+					case RoleFiller:
+					{
+						final FmmlxObject delegateFrom = newEdgeSource;
+						final FmmlxObject delegateTo = newEdgeTarget;
+						Platform.runLater(() -> {
+							actions.setRoleFiller(delegateFrom, delegateTo);
+							updateDiagramLater();
+						});						
+						break;
+					}
 					default:
 						break;
 				}
@@ -549,6 +574,11 @@ public class FmmlxDiagram{
 					case AssociationInstance:
 						mouseMode = MouseMode.STANDARD;
 						actions.addAssociationInstance(newEdgeSource, null);
+						break;
+					case Delegation:
+					case RoleFiller:
+						mouseMode = MouseMode.STANDARD;
+						// no dialog if clicked into the void: actions.addDelegation(newEdgeSource, null);
 						break;
 					default:
 						break;

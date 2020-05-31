@@ -235,10 +235,10 @@ public class ObjectContextMenu extends ContextMenu {
 	
 	private Menu createDelegationSubMenu() {
 		Menu delegationMenu = new Menu("Delegate");
-		addNewMenuItem(delegationMenu, "add Delegate to", e -> System.out.println("add Delegate to not yet implemented."), ALWAYS);
-		addNewMenuItem(delegationMenu, "remove Delegate to", e -> System.out.println("remove Delegate to not yet implemented."), ALWAYS);
-		addNewMenuItem(delegationMenu, "add Rolefiller", e -> System.out.println("add Rolefiller not yet implemented."), ALWAYS);
-		addNewMenuItem(delegationMenu, "remove Rolefiller", e -> System.out.println("remove Rolefiller not yet implemented."), ALWAYS);
+		addNewMenuItem(delegationMenu, "add Delegate to", e -> actions.setDrawEdgeMode(object, PropertyType.Delegation), ALWAYS);
+		addNewMenuItem(delegationMenu, "remove Delegate to", e -> System.out.println("remove Delegate to not yet implemented."), () -> FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+		addNewMenuItem(delegationMenu, "change Role Filler", e -> actions.setDrawEdgeMode(object, PropertyType.RoleFiller), ALWAYS);
+//		addNewMenuItem(delegationMenu, "remove Rolefiller", e -> System.out.println("remove Rolefiller not yet implemented."), ALWAYS);
 		return delegationMenu;
 	}
 
@@ -249,12 +249,14 @@ public class ObjectContextMenu extends ContextMenu {
 	
 	private void addNewMenuItem(Menu parentMenu, String name, EventHandler<ActionEvent> action, Enabler enabler) {
 		MenuItem item = new MenuItem(name);
+		item.setOnAction(action);
 		item.setDisable(!enabler.isEnabled());
 		parentMenu.getItems().add(item);
 	}
 	
 	private void addNewMenuItem(ContextMenu parentMenu, String name, EventHandler<ActionEvent> action, Enabler enabler) {
 		MenuItem item = new MenuItem(name);
+		item.setOnAction(action);
 		item.setDisable(!enabler.isEnabled());
 		parentMenu.getItems().add(item);
 	}

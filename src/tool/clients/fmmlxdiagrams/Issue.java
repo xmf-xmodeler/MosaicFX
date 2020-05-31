@@ -101,7 +101,20 @@ public class Issue {
 		 
 		        alert.showAndWait();
 			});	        
-		} else { System.err.println("Solution not recognized: " + solution.get(0));
+		} else if("addRoleFiller".equals(actionName)) { 
+			FmmlxObject obj = diagram.getObjectById((Integer) solution.get(1));
+			FmmlxObject roleFillerOf = diagram.getObjectById((Integer) solution.get(2));
+			Platform.runLater(()->{
+		        Alert alert = new Alert(AlertType.ERROR);
+		        alert.setTitle("Role filler required");
+		 
+		        // Header Text: null
+		        alert.setHeaderText(null);
+		        alert.setContentText("The object "+obj.getName()+" requires a role filler of type "+ roleFillerOf.getName()+". Use Delegation -> Set Rolefiller.");
+		 
+		        alert.showAndWait();
+			});	
+	    } else { System.err.println("Solution not recognized: " + solution.get(0));
 			
 //		} else { // NOT IN AUTO-MODE
 //	        Alert alert = new Alert(AlertType.INFORMATION);

@@ -9,6 +9,8 @@ public enum PropertyType {
 	AssociationInstance("AssociationInstance"),
 	Slot("Slot"),
 	Selection("Selection"),
+	Delegation("Delegation"),
+	RoleFiller("RoleFiller"),
 	Issue("Issue");
 
 	private String name;
