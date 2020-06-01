@@ -74,6 +74,8 @@ public class XmlLogHandler {
                         this.currentLog = null;
                         return;
                     } else if(element.getAttributes().getNamedItem("current").getNodeValue().equals("1")){
+                        setAllLogCurrentStateValueToNull();
+                        nodeList.item(latestPosition).getAttributes().getNamedItem("current").setNodeValue("1");
                         this.currentLog = nodeList.item(latestPosition);
                         return;
                     }
@@ -85,7 +87,28 @@ public class XmlLogHandler {
 
     public void moveCurrentStateForward() {
         if(currentLog!=null){
-            //TODO
+            Node actionNode = getActionLogNode();
+            NodeList nodeList = actionNode.getChildNodes();
+            int latestPosition=0;
+
+            for(int i = 0; i<nodeList.getLength(); i++){
+                if(nodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
+                    Element element = (Element) nodeList.item(i);
+                    if(element.getAttributes().getNamedItem("current").getNodeValue().equals("1")){
+                        latestPosition = i;
+                        break;
+                    }
+                }
+            }
+
+            for(int i = latestPosition; i<nodeList.getLength(); i++){
+                if(nodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
+                    Element element = (Element) nodeList.item(i);
+                    setAllLogCurrentStateValueToNull();
+                    element.getAttributes().getNamedItem("current").setNodeValue("1");
+                    this.currentLog = element;
+                }
+            }
         }
     }
 
@@ -111,12 +134,14 @@ public class XmlLogHandler {
 
     public Node getLatestSaveNode() {
         Node root = getRootNode();
-        return getChildrenByAttributeValue(root, "type", "LATESTSAVE");
+        return getChildrenByAttributeValue(root,
+                "type", "LATESTSAVE");
     }
 
     private Node getActionLogNode() {
         Node root = getRootNode();
-        return getChildrenByAttributeValue(root, "type", "PROCESS");
+        return getChildrenByAttributeValue(root,
+                "type", "PROCESS");
     }
 
     protected Node getChildrenById(Node parentNode, String id){
@@ -145,31 +170,12 @@ public class XmlLogHandler {
         return null;
     }
 
-    private void removeLastChild(Node parentNode){
-        NodeList nodeList = parentNode.getChildNodes();
-        Node lastItem = nodeList.item(nodeList.getLength()-1);
-        Element element = (Element) parentNode;
-        element.removeChild(lastItem);
-    }
-
     private void removeAllChildren(Node parentNode){
         NodeList nodeList = parentNode.getChildNodes();
         Element parent = (Element) parentNode;
         for(int i = 0 ; i< nodeList.getLength(); i++){
             Element element = (Element) nodeList.item(i);
             parent.removeChild(element);
-        }
-    }
-
-    public void removeNodeByTag(Node parentNode, String tag){
-        NodeList nodeList = parentNode.getChildNodes();
-        for(int i = 0 ; i< nodeList.getLength(); i++){
-            if(nodeList.item(i).getNodeType() == Node.ELEMENT_NODE){
-                Element element = (Element) nodeList.item(i);
-                if(element.getTagName().equals(tag)){
-                    element.getParentNode().removeChild(element);
-                }
-            }
         }
     }
 
