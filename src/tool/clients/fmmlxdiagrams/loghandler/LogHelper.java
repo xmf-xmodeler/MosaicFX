@@ -7,7 +7,8 @@ public interface LogHelper {
     void back();
     void forward();
     void addLog(Node node);
-    void backToOriginal();
+    void backToLatestSave();
     void saveState();
     Element getCurrentState();
+    Element getLatestSave();
 }

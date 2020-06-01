@@ -11,6 +11,7 @@ class XmlLogHandlerTest {
     void xmlReaderTest(){
         XmlLogHandler xmlLogHandler = new XmlLogHandler("mappingTest.xml");
         assertNotNull(xmlLogHandler);
+        System.out.println(xmlLogHandler.toString());
     }
 
     @Test

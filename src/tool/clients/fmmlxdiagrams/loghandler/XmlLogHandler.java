@@ -15,9 +15,11 @@ import java.io.IOException;
 public class XmlLogHandler {
 
     private final Document document;
+    private Node currentLog;
 
     public XmlLogHandler(String sourcePath) {
         this.document = buildDocument(sourcePath);
+        this.currentLog = null;
     }
 
     private Document buildDocument(String sourcePath) {
@@ -42,10 +44,11 @@ public class XmlLogHandler {
 
     public void backToLatestSave(){
         setAllLogCurrentStateValueToNull();
+        this.currentLog = null;
     }
 
     private void setAllLogCurrentStateValueToNull() {
-        Node logNode = getActionLog();
+        Node logNode = getActionLogNode();
         NodeList logs = logNode.getChildNodes();
 
         for (int i = 0 ; i<logs.getLength(); i++){
@@ -58,56 +61,65 @@ public class XmlLogHandler {
         }
     }
 
-    public void backToBeforeLatestActionNode(){
-        Node actionNode = getActionLog();
-        NodeList nodeList = actionNode.getChildNodes();
-        setAllLogCurrentStateValueToNull();
-        Node beforeLatestActionNode = nodeList.item(nodeList.getLength()-2);
-        Element beforeLatestAction = (Element) beforeLatestActionNode;
-        beforeLatestAction.getAttributes().getNamedItem("current").setNodeValue("1");
+    public void moveCurrentStateBackward(){
+        if(currentLog!=null){
+            Node actionNode = getActionLogNode();
+            NodeList nodeList = actionNode.getChildNodes();
+            int latestPosition=0;
+
+            for(int i = 0; i<nodeList.getLength(); i++){
+                if(nodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
+                    Element element = (Element) nodeList.item(i);
+                    if(element.getAttributes().getNamedItem("current").getNodeValue().equals("1") && latestPosition==0){
+                        this.currentLog = null;
+                        return;
+                    } else if(element.getAttributes().getNamedItem("current").getNodeValue().equals("1")){
+                        this.currentLog = nodeList.item(latestPosition);
+                        return;
+                    }
+                    latestPosition = i;
+                }
+            }
+        }
+    }
+
+    public void moveCurrentStateForward() {
+        if(currentLog!=null){
+            //TODO
+        }
     }
 
     public void saveState() {
-        //TODO
+
+        //TODO save all mapping element to Latest Save
+
+        currentLog = null;
+        removeAllChildren(getActionLogNode());
     }
 
     public void addXmlLogElement(Node node) {
-        Node actionLog = getActionLog();
-        //TODO
-    }
-
-    private Node getActionLog() {
-        Node root = getRootNode();
-        return getChildrenByAttributeValue(root, "type", "PROCESS");
+        setAllLogCurrentStateValueToNull();
+        Element actionLog = (Element) getActionLogNode();
+        node.getAttributes().getNamedItem("current").setNodeValue("1");
+        actionLog.appendChild(node);
+        currentLog=node;
     }
 
     public Node getCurrentLog() {
-        Node logNode = getLogNode();
-        if(logNode!=null){
-            //TODO
-        }
-        return null;
+        return currentLog;
     }
 
-    private Node getLatestSaveNode() {
+    public Node getLatestSaveNode() {
         Node root = getRootNode();
         return getChildrenByAttributeValue(root, "type", "LATESTSAVE");
     }
 
-    private Node getLogNode() {
+    private Node getActionLogNode() {
         Node root = getRootNode();
-        Node logNode = getChildrenByAttributeValue(root, "type", "PROCESS");
-        NodeList logs = logNode.getChildNodes();
-
-        for (int i = 0 ; i<logs.getLength(); i++){
-            if(logs.item(i).getNodeType() == Node.ELEMENT_NODE){
-                return logNode;
-            }
-        }
-        return null;
+        return getChildrenByAttributeValue(root, "type", "PROCESS");
     }
 
-    public Node getChildrenById(Node parentNode, String id){
+    protected Node getChildrenById(Node parentNode, String id){
         NodeList nodeList = parentNode.getChildNodes();
         for(int i = 0 ; i< nodeList.getLength(); i++){
             if(nodeList.item(i).getNodeType() == Node.ELEMENT_NODE){
@@ -120,12 +132,12 @@ public class XmlLogHandler {
         return null;
     }
 
-    public Node getChildrenByAttributeValue(Node parentNode, String attributeType, String attributeValue){
+    private Node getChildrenByAttributeValue(Node parentNode, String attributeName, String attributeValue){
         NodeList nodeList = parentNode.getChildNodes();
         for(int i = 0 ; i< nodeList.getLength(); i++){
             if(nodeList.item(i).getNodeType() == Node.ELEMENT_NODE){
                 Element element = (Element) nodeList.item(i);
-                if(element.getAttribute(attributeType).equals(attributeValue)){
+                if(element.getAttribute(attributeName).equals(attributeValue)){
                     return nodeList.item(i);
                 }
             }
@@ -133,14 +145,14 @@ public class XmlLogHandler {
         return null;
     }
 
-    public void removeLastChild(Node parentNode){
+    private void removeLastChild(Node parentNode){
         NodeList nodeList = parentNode.getChildNodes();
         Node lastItem = nodeList.item(nodeList.getLength()-1);
         Element element = (Element) parentNode;
         element.removeChild(lastItem);
     }
 
-    public void removeAllChildren(Node parentNode){
+    private void removeAllChildren(Node parentNode){
         NodeList nodeList = parentNode.getChildNodes();
         Element parent = (Element) parentNode;
         for(int i = 0 ; i< nodeList.getLength(); i++){
@@ -159,5 +171,29 @@ public class XmlLogHandler {
                 }
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        try{
+            document.getDocumentElement().normalize();
+            stringBuilder.append("Root element : ").append(getRootNode().getNodeName());
+
+            NodeList nList = getRootNode().getChildNodes();
+
+            stringBuilder.append("\n----------------------------");
+            for (int temp = 0; temp < nList.getLength(); temp++) {
+
+                Node nNode = nList.item(temp);
+                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element eElement = (Element) nNode;
+                    stringBuilder.append("\nName : ").append(eElement.getTagName());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return stringBuilder.toString();
     }
 }

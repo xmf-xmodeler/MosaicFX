@@ -12,12 +12,12 @@ public class Log implements LogHelper {
 
     @Override
     public void back() {
-        xmlLogHandler.backToBeforeLatestActionNode();
+        xmlLogHandler.moveCurrentStateBackward();
     }
 
     @Override
     public void forward() {
-        //TODO
+        xmlLogHandler.moveCurrentStateForward();
     }
 
     @Override
@@ -26,7 +26,7 @@ public class Log implements LogHelper {
     }
 
     @Override
-    public void backToOriginal() {
+    public void backToLatestSave() {
         xmlLogHandler.backToLatestSave();
     }
 
@@ -38,5 +38,17 @@ public class Log implements LogHelper {
     @Override
     public Element getCurrentState() {
         return (Element) xmlLogHandler.getCurrentLog();
+    }
+
+    @Override
+    public Element getLatestSave() {
+        return (Element) xmlLogHandler.getLatestSaveNode();
+    }
+
+    @Override
+    public String toString() {
+        return "Log{" +
+                "xmlLogHandler=" + xmlLogHandler.toString() +
+                '}';
     }
 }
