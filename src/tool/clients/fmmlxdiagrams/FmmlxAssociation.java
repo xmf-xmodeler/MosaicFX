@@ -346,4 +346,9 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 
 	public boolean isSymmetric() {return symmetric;}
 	public boolean isTransitive() {return transitive;}
+
+	@Override
+	public String toString() {
+		return "FmmlxAssociation [name=" + name + "]";
+	}
 }

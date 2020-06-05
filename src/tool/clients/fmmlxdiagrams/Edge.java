@@ -281,10 +281,12 @@ public abstract class Edge implements CanvasElement {
 			break;
 
 		case CIRCLE: {
-			double size = 16;
+			double size = 14;
 			g.setFill(Color.WHITE);
-			g.fillOval(pointForEdge.getX() - size / 2, pointForEdge.getY() + 1, size, size);
-			g.strokeOval(pointForEdge.getX() - size / 2, pointForEdge.getY() + 1, size, size);
+			g.setLineWidth(2);
+			g.fillOval(pointForEdge.getX() - size / 2, pointForEdge.getY() + 2, size, size);
+			g.strokeOval(pointForEdge.getX() - size / 2, pointForEdge.getY() + 2, size, size);
+			g.setLineWidth(1);
 		}
 			break;
 		default:

@@ -96,6 +96,8 @@ public class XModeler extends Application {
   static MenuBar		 menuBar			 = null;
   static Pane			 notificationPane 	 = null;
   
+  private ControlCenter  newStage            = null;
+  
   public static String attributeValue(Node node, String name) {
     NamedNodeMap attrs = node.getAttributes();
     for (int i = 0; i < attrs.getLength(); i++) {
@@ -431,7 +433,7 @@ public class XModeler extends Application {
 	  ModelBrowserClient.start(browserTab);
 	  EditorClient.start(editorTabs);
 	  FormsClient.start(propertyTabs);
-	  Console.start(propertyTabs); // only one which does more
+	  Console.start(singleton.newStage.getStageForConsole());
 	  DiagramClient.start(editorTabs);
 	  FmmlxDiagramCommunicator.start(editorTabs);
 	  ClassBrowserClient.start();
@@ -443,9 +445,11 @@ public class XModeler extends Application {
   
   @Override
   public void start(Stage primaryStage) throws Exception {
+	  startXOS(copyOfArgs[0]);
 	  singleton = this;
 	  stage = primaryStage;
-	  startXOS(copyOfArgs[0]);
+	  newStage = new ControlCenter();
+	  newStage.show();
 	  createXmodeler();
 	  initClients();
       startClients();
@@ -505,29 +509,7 @@ public class XModeler extends Application {
 					  event.consume();
 //					  event.doit = false;
 				  }
-		  });
-			//propertyManager.getUserInterface(); //comment out to see the Interface
-			
-//TODO Why timer? Can we intergrate it properly?
-//			XModeler.getDisplay().timerExec(3000, 
-//					new Runnable() {
-//			      public void run() {
-			
-			/*MenuItem itemVMPanic = new MenuItem("VM Panic");
-			itemVMPanic.setOnAction(new EventHandler<ActionEvent>() {
-	            public void handle(ActionEvent t) {
-	            	Machine.interrupt = true;
-	            }
-	        }); 
-
-			Menu menuDebug = new Menu("Debug");
-			menuDebug.getItems().add(itemVMPanic);
-			menuBar.getMenus().add(menuDebug);
-			
-			 */
-//			      }});			
-
-			
+		  });			
   }
   
   public static void loadImage(){
