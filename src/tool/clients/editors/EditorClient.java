@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
 import org.w3c.dom.Document;
@@ -15,10 +16,17 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javafx.application.Platform;
+import javafx.event.Event;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -29,6 +37,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import tool.clients.Client;
 import tool.clients.EventHandler;
+import tool.clients.diagrams.DiagramClient;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
@@ -55,18 +64,8 @@ public class EditorClient extends Client {
   }
   
   public static void start(Stage stage) {
-	 EditorClientView editorClientView = new EditorClientView();
 	 TabPane tabPane = new TabPane();
-	 //HBox hBox = new HBox(editorClientView.getView());
-	 HBox.setHgrow(editorClientView.getView(), Priority.ALWAYS);
-//	 GridPane grid = new GridPane();
-	 Tab tab = new Tab();
-	 tab.setText("Welcome Page");
-	 tab.setContent(new Rectangle(200,200, Color.DARKBLUE));
-	 Tab tab2 = new Tab();
-	 tab2.setText("Texteditor");
-	 tab2.setContent(new Rectangle(200,200, Color.DARKRED));
-	 tabPane.getTabs().addAll(tab,tab2);
+	 EditorClient.tabPane = tabPane;
 	 Scene scene = new Scene(tabPane, 800, 500);
 	 stage.setScene(scene);
 	 stage.setTitle("Editor");
@@ -221,29 +220,49 @@ public class EditorClient extends Client {
 	  }
   }
 
-//  public void close(CTabFolderEvent event) { //TODO: consider reimplementing in javafx
-//    // Careful because the diagrams and files share the same tab folder...
-//    CTabItem item = (CTabItem) event.item;
-//    String id = getId(item);
-//    if (id != null && (editors.containsKey(id) || browsers.containsKey(id))) {
-//      EventHandler handler = getHandler();
-//      Message message = handler.newMessage("textClosed", 1);
-//      message.args[0] = new Value(id);
-//      handler.raiseEvent(message);
-//      editors.remove(id);
-//      browsers.remove(id);
-//      tabs.remove(id);
-//    } else {
-////      DiagramClient.theClient().close(event);
-//    }
-//  }
+  public void close(Tab item, Event wevent) { //TODO: consider reimplementing in javafx
+    // Careful because the diagrams and files share the same tab folder...
+    //CTabItem item = (CTabItem) item.item;
+    String id = getId(item);
+    if (id != null && (editors.containsKey(id) || browsers.containsKey(id))) {
+      
+    	Alert alert = new Alert(AlertType.CONFIRMATION);
 
-//
-//  private String getId(Tab item) {
-//    for (String id : tabs.keySet())
-//      if (tabs.get(id) == item) return id;
-//    return null;
-//  }
+    	ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+    	ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
+    	ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+    	alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
+		// alert.show();
+		alert.setTitle("Open Tab in seperate window instead?");
+		alert.setHeaderText(null);
+		
+
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get() == ButtonType.YES) {
+			System.err.println("TEST new Tab Window");
+			
+		} else if (result.get() == ButtonType.CANCEL) {
+			wevent.consume();
+		} else {
+	  EventHandler handler = getHandler();
+      Message message = handler.newMessage("textClosed", 1);
+      message.args[0] = new Value(id);
+      handler.raiseEvent(message);
+      editors.remove(id);
+      browsers.remove(id);
+      tabs.remove(id);
+		}
+		} else {
+      DiagramClient.theClient().close(id); //TODO: consider reimplementing in javafx
+    }
+  }
+
+
+  private String getId(Tab item) {
+    for (String id : tabs.keySet())
+      if (tabs.get(id) == item) return id;
+    return null;
+  }
 
   private Value getText(final Message message) {
     final String id = message.args[0].strValue();
@@ -323,6 +342,7 @@ public class EditorClient extends Client {
     String toolTip = message.args[2].strValue();
     boolean editable = message.args[3].boolValue;
     newNewTextEditor(id, label, toolTip, editable, true, "");
+    
   }
 
   private void newNewTextEditor(final String id, final String label, final String toolTip, final boolean editable, final boolean lineNumbers, final String text) {
@@ -330,9 +350,11 @@ public class EditorClient extends Client {
 //      public void run() {
 	  CountDownLatch l = new CountDownLatch(1);
 	  Platform.runLater(()->{
-        Tab tab = new Tab(label);
+        Tab tab = new Tab(label.length()<30? label : ("..."+label.substring(label.length()-30)));
+        tab.setContextMenu(new ContextMenu(new MenuItem("go")));
         tab.setTooltip(new Tooltip(toolTip));
         tab.setClosable(true);
+        tab.setOnCloseRequest((e)->close(tab,e));
         tabs.put(id, tab);
         try {
           Class<?> textEditorClass = Class.forName(XModeler.textEditorClass);
@@ -375,7 +397,9 @@ public class EditorClient extends Client {
 //  public void restore(CTabFolderEvent event) {
 //  }
 
-  public void sendMessage(final Message message) {
+ 
+
+public void sendMessage(final Message message) {
     if (message.hasName("newBrowser"))
       newBrowser(message);
     else if (message.hasName("setUrl"))
