@@ -29,11 +29,10 @@ public class Console {
       BorderPane border = new BorderPane();
       ConsoleView consoleView = new ConsoleView(stage);
       setConsoleView(consoleView);
-      HBox hBox = new HBox(consoleView.getView());
-	  HBox.setHgrow(consoleView.getView(), Priority.ALWAYS);
-	  
+      //HBox hBox = new HBox(consoleView.getView());
+	  //HBox.setHgrow(consoleView.getView(), Priority.ALWAYS);
 //		GridPane grid = new GridPane();
-	  border.setCenter(hBox);
+	  border.setCenter(consoleView.getView());
 	  Scene scene = new Scene(border, 1000, 605);
 	  stage.setScene(scene);
 	  stage.setTitle("Console");
