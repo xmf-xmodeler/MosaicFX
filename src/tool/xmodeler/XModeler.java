@@ -431,7 +431,7 @@ public class XModeler extends Application {
   
   public static void initClients() { // only sets the tab pane
 	  ModelBrowserClient.start(browserTab);
-	  EditorClient.start(editorTabs);
+	  EditorClient.start(singleton.newStage.getStageForEditor());
 	  FormsClient.start(propertyTabs);
 	  Console.start(singleton.newStage.getStageForConsole());
 	  DiagramClient.start(editorTabs);
@@ -465,7 +465,8 @@ public class XModeler extends Application {
 			
 			rightSplitPane = new SplitPane();
 			rightSplitPane.setOrientation(Orientation.VERTICAL);
-			rightSplitPane.setDividerPosition(0, 0.66);
+			rightSplitPane.setDividerPosition(0, 0.88);
+			rightSplitPane.setPrefHeight(1000);
 			
 			editorTabs = new TabPane();// welcomeTab ,new Tab("Diagram", new DiagramPanel()));
 			propertyTabs = new TabPane();

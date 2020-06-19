@@ -24,8 +24,10 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 import tool.clients.consoleInterface.EscapeHandler;
 import tool.clients.dialogs.notifier.NotificationType;
 import tool.clients.dialogs.notifier.NotifierDialog;
@@ -47,62 +49,44 @@ public class ConsoleView {
   }
 
   static EscapeHandler escape          = null;
-
-//  StyledText           text            = null;
   History              history         = new History();
   int                  inputStart      = 0;
-//  FontData             fontData;
-// Font textFont = new Font(Display.getCurrent(), "Monaco", 14, SWT.NORMAL);
-  Color                backgroundColor = Color.WHEAT;//new Color(org.eclipse.swt.widgets.Display.getCurrent(), 255, 255, 255); 
-  Color                foregroundColor = Color.CHOCOLATE;//new Color(org.eclipse.swt.widgets.Display.getCurrent(), 0, 0, 0);
+  Color                backgroundColor = new Color(.1,.1,.1,1.);
   int                  waterMark       = 1000;
   PrintStream          out             = null;
   Object               overflowLock    = new Object();
-  AutoComplete         autoComplete    = AutoComplete.newDefault();                    // de-activated for now for better usability
-
+  AutoComplete         autoComplete    = AutoComplete.newDefault();// de-activated for now for better usability
+  Region				region = null;
   private final ScrollPane scrollpane; 
   private final TextArea textArea;
   
-  public ConsoleView() {
+  Stage owner;
+  
+  
+  public ConsoleView(Stage owner) {
 	scrollpane = new ScrollPane();
 	textArea = new TextArea();
+	textArea.setPrefHeight(600);
 	scrollpane.setContent(textArea);
 	scrollpane.setFitToWidth(true);
 	scrollpane.setFitToHeight(true);
-	
+	this.owner=owner;
 	textArea.setWrapText(true);
-	textArea.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
-	//	Region node = textArea.lookup("content");
-	
-//	System.err.println(node);
-//	node.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
-	
-	//    setFont("fonts/DejaVuSansMono.ttf", "DejaVu Sans Mono");
-    addVerifyListener(textArea);
+	addVerifyListener(textArea);
     setFont(textArea.getFont().getSize());
-//    tabItem.setControl(c1);
-	
-//	textArea.textProperty().addListener(new ChangeListener<String>() {
-//	    @Override
-//	    public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
-//	    	Region r = (Region) textArea.lookup(".content");
-//	    	r.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
-//	    }
-//	});
   }
   
   private void setFont(double size) {
 	    try {
 	        Font f = Font.loadFont(new FileInputStream(new File("resources/fonts/DejaVuSansMono.ttf")), size);
-			textArea.setFont(f);
+	        textArea.setFont(f);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}	
 }
 
 public Node getView() {
-	// TODO Auto-generated method stub
-	return scrollpane;
+		return scrollpane;
   }
 
   public final void setFont(String fileName, String name) {
@@ -407,6 +391,16 @@ public Node getView() {
   }
 
 	public void processInput(String input) {
+		
+		if (region==null) {  //Set backgroundColor and fontColor of the console
+			try {
+				region=(Region)textArea.lookup(".content");
+				region.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
+				textArea.setStyle("-fx-text-fill: #cccccc;");
+			} catch(Exception e) {}
+		}
+		
+		
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			appendText(input);
@@ -496,7 +490,7 @@ public Node getView() {
     
 	public void dot2(final Message message) {
 		try {
-			String insertText = new AutoCompleteBox(XModeler.getStage(), message).show(100, 100);
+			String insertText = new AutoCompleteBox(owner, message).show(100, 100);
 			if (insertText != null)
 				insert(insertText);
 		} catch (Throwable t) {
@@ -511,7 +505,7 @@ public Node getView() {
               String name = message.args[0].values[i].strValue();
               message.args[0].values[i].values = new Value[] {new Value(name),new Value(name)};
             }
-            String insertText = new AutoCompleteBox(XModeler.getStage(), message).show(100,100);
+            String insertText = new AutoCompleteBox(owner, message).show(100,100);
             if (insertText != null) insert(insertText);
           } catch (Throwable t) {
             t.printStackTrace();

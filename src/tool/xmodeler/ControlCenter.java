@@ -29,4 +29,8 @@ public class ControlCenter extends Stage {
 		return new Stage();
 	}
 	
+	public Stage getStageForEditor() {
+		return new Stage();
+	}
+	
 }

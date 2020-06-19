@@ -1,5 +1,7 @@
 package tool.clients.editors;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -13,12 +15,18 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javafx.application.Platform;
+import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 import tool.clients.Client;
 import tool.clients.EventHandler;
 import tool.xmodeler.XModeler;
@@ -36,14 +44,33 @@ public class EditorClient extends Client {
 
   static EditorClient                   theClient;
   static TabPane   						tabPane;
+  
 
   static Hashtable<String, Tab>    tabs           = new Hashtable<String, Tab>(); //TODO: rewrite completely and introduce Browser object
   static Hashtable<String, ITextEditor> editors        = new Hashtable<String, ITextEditor>();
   static Hashtable<String, WebBrowser> browsers        = new Hashtable<String, WebBrowser>();
-
-
+  
   public static void start(TabPane tabPane) {
     EditorClient.tabPane = tabPane;
+  }
+  
+  public static void start(Stage stage) {
+	 EditorClientView editorClientView = new EditorClientView();
+	 TabPane tabPane = new TabPane();
+	 //HBox hBox = new HBox(editorClientView.getView());
+	 HBox.setHgrow(editorClientView.getView(), Priority.ALWAYS);
+//	 GridPane grid = new GridPane();
+	 Tab tab = new Tab();
+	 tab.setText("Welcome Page");
+	 tab.setContent(new Rectangle(200,200, Color.DARKBLUE));
+	 Tab tab2 = new Tab();
+	 tab2.setText("Texteditor");
+	 tab2.setContent(new Rectangle(200,200, Color.DARKRED));
+	 tabPane.getTabs().addAll(tab,tab2);
+	 Scene scene = new Scene(tabPane, 800, 500);
+	 stage.setScene(scene);
+	 stage.setTitle("Editor");
+	 stage.show();
   }
 
   public static EditorClient theClient() {

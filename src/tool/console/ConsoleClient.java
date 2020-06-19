@@ -108,7 +108,7 @@ public class ConsoleClient extends Thread {
     if (item.getNodeName().equals("Command")) Console.addCommand(XModeler.attributeValue(item, "text"));
   }
 
-  public void dot(Message message) {
+  public void dot(Message message) { //method call for Auto-Completion
     view.dot(message);
   }
 

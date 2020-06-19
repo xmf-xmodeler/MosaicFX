@@ -9,6 +9,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
+import tool.xmodeler.XModeler;
 
 public class Console {
 
@@ -17,7 +18,7 @@ public class Console {
 
   public static void start(TabPane tabPane) {
     Tab tabItem = new Tab(CONSOLE_LABEL);
-    ConsoleView consoleView = new ConsoleView();
+    ConsoleView consoleView = new ConsoleView(XModeler.getStage());
     setConsoleView(consoleView);
     tabItem.setContent(consoleView.getView());
     tabPane.getTabs().add(tabItem);
@@ -26,17 +27,18 @@ public class Console {
   
   public static void start(Stage stage) {
       BorderPane border = new BorderPane();
-      ConsoleView consoleView = new ConsoleView();
+      ConsoleView consoleView = new ConsoleView(stage);
       setConsoleView(consoleView);
       HBox hBox = new HBox(consoleView.getView());
 	  HBox.setHgrow(consoleView.getView(), Priority.ALWAYS);
+	  
 //		GridPane grid = new GridPane();
-	  border.setTop(hBox);
-	  Scene scene = new Scene(border, 800, 300);
+	  border.setCenter(hBox);
+	  Scene scene = new Scene(border, 1000, 605);
 	  stage.setScene(scene);
 	  stage.setTitle("Console");
 	  stage.show();
-  }
+	  }
 
   public static ConsoleView getConsoleView() {
     return consoleView;
