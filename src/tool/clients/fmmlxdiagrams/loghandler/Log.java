@@ -3,52 +3,42 @@ package tool.clients.fmmlxdiagrams.loghandler;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-public class Log implements LogHelper {
-    private final XmlLogHandler xmlLogHandler;
+public class Log implements ILog {
+    private final XmlHandler xmlHandler;
 
-    public Log(String xmlPath) {
-        this.xmlLogHandler = new XmlLogHandler(xmlPath);
+    public Log() {
+        this.xmlHandler = XmlHandler.getInstance();
     }
 
     @Override
     public void back() {
-        xmlLogHandler.moveCurrentStateBackward();
+        xmlHandler.moveCurrentStateBackward();
     }
 
     @Override
     public void forward() {
-        xmlLogHandler.moveCurrentStateForward();
+        xmlHandler.moveCurrentStateForward();
     }
 
     @Override
     public void addLog(Node node) {
-        xmlLogHandler.addXmlLogElement(node);
+        xmlHandler.addXmlLogElement(node);
     }
 
     @Override
     public void backToLatestSave() {
-        xmlLogHandler.backToLatestSave();
-    }
-
-    @Override
-    public void saveState() {
-        xmlLogHandler.saveState();
+        xmlHandler.getLatestSave();
     }
 
     @Override
     public Element getCurrentState() {
-        return (Element) xmlLogHandler.getCurrentLog();
-    }
-
-    @Override
-    public Element getLatestSave() {
-        return (Element) xmlLogHandler.getLatestSaveNode();
+        return (Element) xmlHandler.getCurrentLog();
     }
 
     @Override
     public String toString() {
         return "Log{" +
-                "xmlLogHandler=" + xmlLogHandler.toString() +
+                "xmlLogHandler=" + xmlHandler.toString() +
                 '}';
     }
 }

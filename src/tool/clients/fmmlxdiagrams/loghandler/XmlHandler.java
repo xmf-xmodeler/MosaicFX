@@ -12,12 +12,20 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 
-public class XmlLogHandler {
+public class XmlHandler {
 
     private final Document document;
     private Node currentLog;
+    private static XmlHandler instance;
 
-    public XmlLogHandler(String sourcePath) {
+    public static synchronized XmlHandler getInstance(){
+        if(instance==null){
+            instance = new XmlHandler("logTest.txt");
+        }
+        return instance;
+    }
+
+    public XmlHandler(String sourcePath) {
         this.document = buildDocument(sourcePath);
         this.currentLog = null;
     }
@@ -42,9 +50,13 @@ public class XmlLogHandler {
         return document.getDocumentElement();
     }
 
-    public void backToLatestSave(){
+    public Element getLatestSave(){
         setAllLogCurrentStateValueToNull();
         this.currentLog = null;
+
+        //TODO
+
+        return null;
     }
 
     private void setAllLogCurrentStateValueToNull() {
@@ -130,12 +142,6 @@ public class XmlLogHandler {
 
     public Node getCurrentLog() {
         return currentLog;
-    }
-
-    public Node getLatestSaveNode() {
-        Node root = getRootNode();
-        return getChildrenByAttributeValue(root,
-                "type", "LATESTSAVE");
     }
 
     private Node getActionLogNode() {
