@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.loghandler;
+package tool.clients.fmmlxdiagrams.serializer;
 
 public class Serializer implements ISerializer{
     private final XmlHandler xmlHandler;
@@ -8,13 +8,13 @@ public class Serializer implements ISerializer{
     }
 
     @Override
-    public void saveState(String path) {
+    public void saveState() {
         this.xmlHandler.saveState();
     }
 
     @Override
-    public void loadState(String path) {
-        this.xmlHandler.getLatestSave();
+    public void loadState(int diagramId) {
+        this.xmlHandler.getLatestSave(diagramId);
 
         //TODO bind to Diagram
     }

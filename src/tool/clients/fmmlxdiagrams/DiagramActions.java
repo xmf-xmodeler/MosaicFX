@@ -10,6 +10,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.association.AssociationDialog;
@@ -33,9 +35,10 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeParentDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
+import tool.clients.fmmlxdiagrams.serializer.Logger;
+import tool.clients.fmmlxdiagrams.serializer.XmlHandler;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Vector;
@@ -88,8 +91,8 @@ public class DiagramActions {
 
 							canvas.setCursor(Cursor.DEFAULT);
 							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
-
 							diagram.updateDiagram();
+
 //							l.countDown();
 						}
 					}

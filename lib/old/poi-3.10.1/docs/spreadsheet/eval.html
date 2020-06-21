@@ -574,7 +574,7 @@ for(int sheetNum = 0; sheetNum &lt; wb.getNumberOfSheets(); sheetNum++) {
 <pre class="code">
 	// activate logging to console
 	System.setProperty("org.apache.poi.util.POILogger", "org.apache.poi.util.SystemOutLogger");
-	System.setProperty("poi.log.level", POILogger.INFO + "");
+	System.setProperty("poi.logger.level", POILogger.INFO + "");
 
 	// open your file
 	Workbook wb = new HSSFWorkbook(new FileInputStream("foobar.xls"));
@@ -590,8 +590,8 @@ for(int sheetNum = 0; sheetNum &lt; wb.getNumberOfSheets(); sheetNum++) {
 		</pre>
 		
 <p>The special Logger called "POI.FormulaEval" is used (useful if you use the CommonsLogger and a detailed logging configuration).
-		The used log levels are WARN and INFO (for detailed parameter info and results) - the level are so high to allow this
-		special logging without beeing disturbed by the bunch of DEBUG log entries from other classes.</p>
+		The used logger levels are WARN and INFO (for detailed parameter info and results) - the level are so high to allow this
+		special logging without beeing disturbed by the bunch of DEBUG logger entries from other classes.</p>
 	
   
 

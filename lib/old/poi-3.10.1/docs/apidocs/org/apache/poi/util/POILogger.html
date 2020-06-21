@@ -101,8 +101,8 @@ java.lang.Object
 
 <P>
 A logger interface that strives to make it as easy as possible for
- developers to write log calls, while simultaneously making those
- calls as cheap as possible by performing lazy evaluation of the log
+ developers to write logger calls, while simultaneously making those
+ calls as cheap as possible by performing lazy evaluation of the logger
  message.<p>
 <P>
 
@@ -160,7 +160,7 @@ A logger interface that strives to make it as easy as possible for
 <TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#LEVEL_STRINGS">LEVEL_STRINGS</A></B></CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Long strings for numeric log level.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Long strings for numeric logger level.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -168,7 +168,7 @@ A logger interface that strives to make it as easy as possible for
 <TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#LEVEL_STRINGS_SHORT">LEVEL_STRINGS_SHORT</A></B></CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Short strings for numeric log level.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Short strings for numeric logger level.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -194,7 +194,7 @@ A logger interface that strives to make it as easy as possible for
 <TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#check(int)">check</A></B>(int&nbsp;level)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Check if a logger is enabled to log at the specified level</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Check if a logger is enabled to logger at the specified level</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -207,7 +207,7 @@ A logger interface that strives to make it as easy as possible for
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>abstract &nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#log(int, java.lang.Object)">log</A></B>(int&nbsp;level,
+<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object)">logger</A></B>(int&nbsp;level,
     java.lang.Object&nbsp;obj1)</CODE>
 
 <BR>
@@ -216,7 +216,7 @@ A logger interface that strives to make it as easy as possible for
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#log(int, java.lang.Object, java.lang.Object)">log</A></B>(int&nbsp;level,
+<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object)">logger</A></B>(int&nbsp;level,
     java.lang.Object&nbsp;obj1,
     java.lang.Object&nbsp;obj2)</CODE>
 
@@ -226,7 +226,7 @@ A logger interface that strives to make it as easy as possible for
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#log(int, java.lang.Object, java.lang.Object, java.lang.Object)">log</A></B>(int&nbsp;level,
+<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object)">logger</A></B>(int&nbsp;level,
     java.lang.Object&nbsp;obj1,
     java.lang.Object&nbsp;obj2,
     java.lang.Object&nbsp;obj3)</CODE>
@@ -237,7 +237,7 @@ A logger interface that strives to make it as easy as possible for
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">log</A></B>(int&nbsp;level,
+<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">logger</A></B>(int&nbsp;level,
     java.lang.Object&nbsp;obj1,
     java.lang.Object&nbsp;obj2,
     java.lang.Object&nbsp;obj3,
@@ -249,7 +249,7 @@ A logger interface that strives to make it as easy as possible for
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">log</A></B>(int&nbsp;level,
+<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">logger</A></B>(int&nbsp;level,
     java.lang.Object&nbsp;obj1,
     java.lang.Object&nbsp;obj2,
     java.lang.Object&nbsp;obj3,
@@ -262,7 +262,7 @@ A logger interface that strives to make it as easy as possible for
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">log</A></B>(int&nbsp;level,
+<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">logger</A></B>(int&nbsp;level,
     java.lang.Object&nbsp;obj1,
     java.lang.Object&nbsp;obj2,
     java.lang.Object&nbsp;obj3,
@@ -276,7 +276,7 @@ A logger interface that strives to make it as easy as possible for
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">log</A></B>(int&nbsp;level,
+<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">logger</A></B>(int&nbsp;level,
     java.lang.Object&nbsp;obj1,
     java.lang.Object&nbsp;obj2,
     java.lang.Object&nbsp;obj3,
@@ -291,7 +291,7 @@ A logger interface that strives to make it as easy as possible for
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">log</A></B>(int&nbsp;level,
+<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">logger</A></B>(int&nbsp;level,
     java.lang.Object&nbsp;obj1,
     java.lang.Object&nbsp;obj2,
     java.lang.Object&nbsp;obj3,
@@ -307,7 +307,7 @@ A logger interface that strives to make it as easy as possible for
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">log</A></B>(int&nbsp;level,
+<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">logger</A></B>(int&nbsp;level,
     java.lang.Object&nbsp;obj1,
     java.lang.Object&nbsp;obj2,
     java.lang.Object&nbsp;obj3,
@@ -324,7 +324,7 @@ A logger interface that strives to make it as easy as possible for
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">log</A></B>(int&nbsp;level,
+<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">logger</A></B>(int&nbsp;level,
     java.lang.Object&nbsp;obj1,
     java.lang.Object&nbsp;obj2,
     java.lang.Object&nbsp;obj3,
@@ -340,7 +340,7 @@ A logger interface that strives to make it as easy as possible for
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">log</A></B>(int&nbsp;level,
+<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">logger</A></B>(int&nbsp;level,
     java.lang.Object&nbsp;obj1,
     java.lang.Object&nbsp;obj2,
     java.lang.Object&nbsp;obj3,
@@ -355,7 +355,7 @@ A logger interface that strives to make it as easy as possible for
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">log</A></B>(int&nbsp;level,
+<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">logger</A></B>(int&nbsp;level,
     java.lang.Object&nbsp;obj1,
     java.lang.Object&nbsp;obj2,
     java.lang.Object&nbsp;obj3,
@@ -369,7 +369,7 @@ A logger interface that strives to make it as easy as possible for
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">log</A></B>(int&nbsp;level,
+<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">logger</A></B>(int&nbsp;level,
     java.lang.Object&nbsp;obj1,
     java.lang.Object&nbsp;obj2,
     java.lang.Object&nbsp;obj3,
@@ -382,7 +382,7 @@ A logger interface that strives to make it as easy as possible for
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">log</A></B>(int&nbsp;level,
+<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">logger</A></B>(int&nbsp;level,
     java.lang.Object&nbsp;obj1,
     java.lang.Object&nbsp;obj2,
     java.lang.Object&nbsp;obj3,
@@ -394,7 +394,7 @@ A logger interface that strives to make it as easy as possible for
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#log(int, java.lang.Object, java.lang.Object, java.lang.Throwable)">log</A></B>(int&nbsp;level,
+<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Throwable)">logger</A></B>(int&nbsp;level,
     java.lang.Object&nbsp;obj1,
     java.lang.Object&nbsp;obj2,
     java.lang.Throwable&nbsp;exception)</CODE>
@@ -405,7 +405,7 @@ A logger interface that strives to make it as easy as possible for
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>abstract &nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#log(int, java.lang.Object, java.lang.Throwable)">log</A></B>(int&nbsp;level,
+<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Throwable)">logger</A></B>(int&nbsp;level,
     java.lang.Object&nbsp;obj1,
     java.lang.Throwable&nbsp;exception)</CODE>
 
@@ -415,7 +415,7 @@ A logger interface that strives to make it as easy as possible for
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#log(int, java.lang.Throwable)">log</A></B>(int&nbsp;level,
+<TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Throwable)">logger</A></B>(int&nbsp;level,
     java.lang.Throwable&nbsp;exception)</CODE>
 
 <BR>
@@ -545,7 +545,7 @@ LEVEL_STRINGS_SHORT</H3>
 <PRE>
 protected static final java.lang.String[] <B>LEVEL_STRINGS_SHORT</B></PRE>
 <DL>
-<DD>Short strings for numeric log level. Use level as array index.
+<DD>Short strings for numeric logger level. Use level as array index.
 <P>
 <DL>
 </DL>
@@ -557,7 +557,7 @@ LEVEL_STRINGS</H3>
 <PRE>
 protected static final java.lang.String[] <B>LEVEL_STRINGS</B></PRE>
 <DL>
-<DD>Long strings for numeric log level. Use level as array index.
+<DD>Long strings for numeric logger level. Use level as array index.
 <P>
 <DL>
 </DL>
@@ -584,31 +584,31 @@ public abstract void <B>initialize</B>(java.lang.String&nbsp;cat)</PRE>
 </DL>
 <HR>
 
-<A NAME="log(int, java.lang.Object)"><!-- --></A><H3>
-log</H3>
+<A NAME="logger(int, java.lang.Object)"><!-- --></A><H3>
+logger</H3>
 <PRE>
-public abstract void <B>log</B>(int&nbsp;level,
+public abstract void <B>logger</B>(int&nbsp;level,
                          java.lang.Object&nbsp;obj1)</PRE>
 <DL>
 <DD>Log a message
 <P>
 <DD><DL>
-<DT><B>Parameters:</B><DD><CODE>level</CODE> - One of DEBUG, INFO, WARN, ERROR, FATAL<DD><CODE>obj1</CODE> - The object to log.  This is converted to a string.</DL>
+<DT><B>Parameters:</B><DD><CODE>level</CODE> - One of DEBUG, INFO, WARN, ERROR, FATAL<DD><CODE>obj1</CODE> - The object to logger.  This is converted to a string.</DL>
 </DD>
 </DL>
 <HR>
 
-<A NAME="log(int, java.lang.Object, java.lang.Throwable)"><!-- --></A><H3>
-log</H3>
+<A NAME="logger(int, java.lang.Object, java.lang.Throwable)"><!-- --></A><H3>
+logger</H3>
 <PRE>
-public abstract void <B>log</B>(int&nbsp;level,
+public abstract void <B>logger</B>(int&nbsp;level,
                          java.lang.Object&nbsp;obj1,
                          java.lang.Throwable&nbsp;exception)</PRE>
 <DL>
 <DD>Log a message
 <P>
 <DD><DL>
-<DT><B>Parameters:</B><DD><CODE>level</CODE> - One of DEBUG, INFO, WARN, ERROR, FATAL<DD><CODE>obj1</CODE> - The object to log.  This is converted to a string.<DD><CODE>exception</CODE> - An exception to be logged</DL>
+<DT><B>Parameters:</B><DD><CODE>level</CODE> - One of DEBUG, INFO, WARN, ERROR, FATAL<DD><CODE>obj1</CODE> - The object to logger.  This is converted to a string.<DD><CODE>exception</CODE> - An exception to be logged</DL>
 </DD>
 </DL>
 <HR>
@@ -618,7 +618,7 @@ check</H3>
 <PRE>
 public abstract boolean <B>check</B>(int&nbsp;level)</PRE>
 <DL>
-<DD>Check if a logger is enabled to log at the specified level
+<DD>Check if a logger is enabled to logger at the specified level
 <P>
 <DD><DL>
 <DT><B>Parameters:</B><DD><CODE>level</CODE> - One of DEBUG, INFO, WARN, ERROR, FATAL</DL>
@@ -626,10 +626,10 @@ public abstract boolean <B>check</B>(int&nbsp;level)</PRE>
 </DL>
 <HR>
 
-<A NAME="log(int, java.lang.Object, java.lang.Object)"><!-- --></A><H3>
-log</H3>
+<A NAME="logger(int, java.lang.Object, java.lang.Object)"><!-- --></A><H3>
+logger</H3>
 <PRE>
-public void <B>log</B>(int&nbsp;level,
+public void <B>logger</B>(int&nbsp;level,
                 java.lang.Object&nbsp;obj1,
                 java.lang.Object&nbsp;obj2)</PRE>
 <DL>
@@ -641,10 +641,10 @@ public void <B>log</B>(int&nbsp;level,
 </DL>
 <HR>
 
-<A NAME="log(int, java.lang.Object, java.lang.Object, java.lang.Object)"><!-- --></A><H3>
-log</H3>
+<A NAME="logger(int, java.lang.Object, java.lang.Object, java.lang.Object)"><!-- --></A><H3>
+logger</H3>
 <PRE>
-public void <B>log</B>(int&nbsp;level,
+public void <B>logger</B>(int&nbsp;level,
                 java.lang.Object&nbsp;obj1,
                 java.lang.Object&nbsp;obj2,
                 java.lang.Object&nbsp;obj3)</PRE>
@@ -657,10 +657,10 @@ public void <B>log</B>(int&nbsp;level,
 </DL>
 <HR>
 
-<A NAME="log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)"><!-- --></A><H3>
-log</H3>
+<A NAME="logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)"><!-- --></A><H3>
+logger</H3>
 <PRE>
-public void <B>log</B>(int&nbsp;level,
+public void <B>logger</B>(int&nbsp;level,
                 java.lang.Object&nbsp;obj1,
                 java.lang.Object&nbsp;obj2,
                 java.lang.Object&nbsp;obj3,
@@ -674,10 +674,10 @@ public void <B>log</B>(int&nbsp;level,
 </DL>
 <HR>
 
-<A NAME="log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)"><!-- --></A><H3>
-log</H3>
+<A NAME="logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)"><!-- --></A><H3>
+logger</H3>
 <PRE>
-public void <B>log</B>(int&nbsp;level,
+public void <B>logger</B>(int&nbsp;level,
                 java.lang.Object&nbsp;obj1,
                 java.lang.Object&nbsp;obj2,
                 java.lang.Object&nbsp;obj3,
@@ -692,10 +692,10 @@ public void <B>log</B>(int&nbsp;level,
 </DL>
 <HR>
 
-<A NAME="log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)"><!-- --></A><H3>
-log</H3>
+<A NAME="logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)"><!-- --></A><H3>
+logger</H3>
 <PRE>
-public void <B>log</B>(int&nbsp;level,
+public void <B>logger</B>(int&nbsp;level,
                 java.lang.Object&nbsp;obj1,
                 java.lang.Object&nbsp;obj2,
                 java.lang.Object&nbsp;obj3,
@@ -711,10 +711,10 @@ public void <B>log</B>(int&nbsp;level,
 </DL>
 <HR>
 
-<A NAME="log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)"><!-- --></A><H3>
-log</H3>
+<A NAME="logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)"><!-- --></A><H3>
+logger</H3>
 <PRE>
-public void <B>log</B>(int&nbsp;level,
+public void <B>logger</B>(int&nbsp;level,
                 java.lang.Object&nbsp;obj1,
                 java.lang.Object&nbsp;obj2,
                 java.lang.Object&nbsp;obj3,
@@ -731,10 +731,10 @@ public void <B>log</B>(int&nbsp;level,
 </DL>
 <HR>
 
-<A NAME="log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)"><!-- --></A><H3>
-log</H3>
+<A NAME="logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)"><!-- --></A><H3>
+logger</H3>
 <PRE>
-public void <B>log</B>(int&nbsp;level,
+public void <B>logger</B>(int&nbsp;level,
                 java.lang.Object&nbsp;obj1,
                 java.lang.Object&nbsp;obj2,
                 java.lang.Object&nbsp;obj3,
@@ -752,10 +752,10 @@ public void <B>log</B>(int&nbsp;level,
 </DL>
 <HR>
 
-<A NAME="log(int, java.lang.Throwable)"><!-- --></A><H3>
-log</H3>
+<A NAME="logger(int, java.lang.Throwable)"><!-- --></A><H3>
+logger</H3>
 <PRE>
-public void <B>log</B>(int&nbsp;level,
+public void <B>logger</B>(int&nbsp;level,
                 java.lang.Throwable&nbsp;exception)</PRE>
 <DL>
 <DD>Log an exception, without a message
@@ -766,10 +766,10 @@ public void <B>log</B>(int&nbsp;level,
 </DL>
 <HR>
 
-<A NAME="log(int, java.lang.Object, java.lang.Object, java.lang.Throwable)"><!-- --></A><H3>
-log</H3>
+<A NAME="logger(int, java.lang.Object, java.lang.Object, java.lang.Throwable)"><!-- --></A><H3>
+logger</H3>
 <PRE>
-public void <B>log</B>(int&nbsp;level,
+public void <B>logger</B>(int&nbsp;level,
                 java.lang.Object&nbsp;obj1,
                 java.lang.Object&nbsp;obj2,
                 java.lang.Throwable&nbsp;exception)</PRE>
@@ -782,10 +782,10 @@ public void <B>log</B>(int&nbsp;level,
 </DL>
 <HR>
 
-<A NAME="log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)"><!-- --></A><H3>
-log</H3>
+<A NAME="logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)"><!-- --></A><H3>
+logger</H3>
 <PRE>
-public void <B>log</B>(int&nbsp;level,
+public void <B>logger</B>(int&nbsp;level,
                 java.lang.Object&nbsp;obj1,
                 java.lang.Object&nbsp;obj2,
                 java.lang.Object&nbsp;obj3,
@@ -799,10 +799,10 @@ public void <B>log</B>(int&nbsp;level,
 </DL>
 <HR>
 
-<A NAME="log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)"><!-- --></A><H3>
-log</H3>
+<A NAME="logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)"><!-- --></A><H3>
+logger</H3>
 <PRE>
-public void <B>log</B>(int&nbsp;level,
+public void <B>logger</B>(int&nbsp;level,
                 java.lang.Object&nbsp;obj1,
                 java.lang.Object&nbsp;obj2,
                 java.lang.Object&nbsp;obj3,
@@ -817,10 +817,10 @@ public void <B>log</B>(int&nbsp;level,
 </DL>
 <HR>
 
-<A NAME="log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)"><!-- --></A><H3>
-log</H3>
+<A NAME="logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)"><!-- --></A><H3>
+logger</H3>
 <PRE>
-public void <B>log</B>(int&nbsp;level,
+public void <B>logger</B>(int&nbsp;level,
                 java.lang.Object&nbsp;obj1,
                 java.lang.Object&nbsp;obj2,
                 java.lang.Object&nbsp;obj3,
@@ -836,10 +836,10 @@ public void <B>log</B>(int&nbsp;level,
 </DL>
 <HR>
 
-<A NAME="log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)"><!-- --></A><H3>
-log</H3>
+<A NAME="logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)"><!-- --></A><H3>
+logger</H3>
 <PRE>
-public void <B>log</B>(int&nbsp;level,
+public void <B>logger</B>(int&nbsp;level,
                 java.lang.Object&nbsp;obj1,
                 java.lang.Object&nbsp;obj2,
                 java.lang.Object&nbsp;obj3,
@@ -856,10 +856,10 @@ public void <B>log</B>(int&nbsp;level,
 </DL>
 <HR>
 
-<A NAME="log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)"><!-- --></A><H3>
-log</H3>
+<A NAME="logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)"><!-- --></A><H3>
+logger</H3>
 <PRE>
-public void <B>log</B>(int&nbsp;level,
+public void <B>logger</B>(int&nbsp;level,
                 java.lang.Object&nbsp;obj1,
                 java.lang.Object&nbsp;obj2,
                 java.lang.Object&nbsp;obj3,
@@ -877,10 +877,10 @@ public void <B>log</B>(int&nbsp;level,
 </DL>
 <HR>
 
-<A NAME="log(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)"><!-- --></A><H3>
-log</H3>
+<A NAME="logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)"><!-- --></A><H3>
+logger</H3>
 <PRE>
-public void <B>log</B>(int&nbsp;level,
+public void <B>logger</B>(int&nbsp;level,
                 java.lang.Object&nbsp;obj1,
                 java.lang.Object&nbsp;obj2,
                 java.lang.Object&nbsp;obj3,
@@ -926,7 +926,7 @@ public void <B>logFormatted</B>(int&nbsp;level,
  logged specially.
 <P>
 <DD><DL>
-<DT><B>Parameters:</B><DD><CODE>level</CODE> - One of DEBUG, INFO, WARN, ERROR, FATAL<DD><CODE>message</CODE> - The message to log.<DD><CODE>obj1</CODE> - The first object to match against.</DL>
+<DT><B>Parameters:</B><DD><CODE>level</CODE> - One of DEBUG, INFO, WARN, ERROR, FATAL<DD><CODE>message</CODE> - The message to logger.<DD><CODE>obj1</CODE> - The first object to match against.</DL>
 </DD>
 </DL>
 <HR>
@@ -959,7 +959,7 @@ public void <B>logFormatted</B>(int&nbsp;level,
  logged specially.
 <P>
 <DD><DL>
-<DT><B>Parameters:</B><DD><CODE>level</CODE> - One of DEBUG, INFO, WARN, ERROR, FATAL<DD><CODE>message</CODE> - The message to log.<DD><CODE>obj1</CODE> - The first object to match against.<DD><CODE>obj2</CODE> - The second object to match against.</DL>
+<DT><B>Parameters:</B><DD><CODE>level</CODE> - One of DEBUG, INFO, WARN, ERROR, FATAL<DD><CODE>message</CODE> - The message to logger.<DD><CODE>obj1</CODE> - The first object to match against.<DD><CODE>obj2</CODE> - The second object to match against.</DL>
 </DD>
 </DL>
 <HR>
@@ -993,7 +993,7 @@ public void <B>logFormatted</B>(int&nbsp;level,
  logged specially.
 <P>
 <DD><DL>
-<DT><B>Parameters:</B><DD><CODE>level</CODE> - One of DEBUG, INFO, WARN, ERROR, FATAL<DD><CODE>message</CODE> - The message to log.<DD><CODE>obj1</CODE> - The first object to match against.<DD><CODE>obj2</CODE> - The second object to match against.<DD><CODE>obj3</CODE> - The third object to match against.</DL>
+<DT><B>Parameters:</B><DD><CODE>level</CODE> - One of DEBUG, INFO, WARN, ERROR, FATAL<DD><CODE>message</CODE> - The message to logger.<DD><CODE>obj1</CODE> - The first object to match against.<DD><CODE>obj2</CODE> - The second object to match against.<DD><CODE>obj3</CODE> - The third object to match against.</DL>
 </DD>
 </DL>
 <HR>
@@ -1028,7 +1028,7 @@ public void <B>logFormatted</B>(int&nbsp;level,
  logged specially.
 <P>
 <DD><DL>
-<DT><B>Parameters:</B><DD><CODE>level</CODE> - One of DEBUG, INFO, WARN, ERROR, FATAL<DD><CODE>message</CODE> - The message to log.<DD><CODE>obj1</CODE> - The first object to match against.<DD><CODE>obj2</CODE> - The second object to match against.<DD><CODE>obj3</CODE> - The third object to match against.<DD><CODE>obj4</CODE> - The forth object to match against.</DL>
+<DT><B>Parameters:</B><DD><CODE>level</CODE> - One of DEBUG, INFO, WARN, ERROR, FATAL<DD><CODE>message</CODE> - The message to logger.<DD><CODE>obj1</CODE> - The first object to match against.<DD><CODE>obj2</CODE> - The second object to match against.<DD><CODE>obj3</CODE> - The third object to match against.<DD><CODE>obj4</CODE> - The forth object to match against.</DL>
 </DD>
 </DL>
 <!-- ========= END OF CLASS DATA ========= -->
