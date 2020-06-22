@@ -8,6 +8,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import org.w3c.dom.Element;
@@ -803,8 +804,18 @@ public class DiagramActions {
 			FmmlxAssociation association = null;
 			Vector<FmmlxAssociation> associations = diagram.findAssociations(source, target);
 			if (associations.size() > 1) {
-				new Alert(AlertType.ERROR, "The programmer was too lazy to implement the dialog here. Proceed with random Association.", ButtonType.OK).showAndWait();
-				association = associations.firstElement();
+				ChoiceDialog<FmmlxAssociation> dialog = new ChoiceDialog<>(associations.firstElement(), associations);
+				dialog.setTitle("Choose Association Dialog");
+				dialog.setHeaderText("More than one matching association found");
+				dialog.setContentText("Choose an association:");
+
+				// Traditional way to get the response value.
+				Optional<FmmlxAssociation> result = dialog.showAndWait();
+				if (result.isPresent()){
+				    association = result.get();
+				} else {
+					// do nothing
+				}
 			} else if (associations.size() == 1) {
 				association = associations.firstElement();
 			} else {
