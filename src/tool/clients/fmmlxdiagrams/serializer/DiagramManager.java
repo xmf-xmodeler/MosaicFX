@@ -9,7 +9,7 @@ public class DiagramManager {
     private final XmlHandler xmlHandler;
 
     public DiagramManager(){
-        this.xmlHandler = new XmlHandler("logTest.xml");
+        this.xmlHandler = new XmlHandler();
     }
 
     public Node createDiagram(String name) {

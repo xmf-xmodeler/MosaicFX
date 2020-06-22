@@ -9,7 +9,7 @@ public class LogManager implements ILog {
     private final XmlHandler xmlHandler;
 
     public LogManager() {
-        this.xmlHandler = new XmlHandler("logTest.xml");
+        this.xmlHandler = new XmlHandler();
     }
 
     public LogManager(XmlHandler xmlHandler) {

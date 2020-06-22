@@ -9,7 +9,7 @@ public class ObjectManager {
     private final XmlHandler xmlHandler;
 
     public ObjectManager(){
-        this.xmlHandler = new XmlHandler("logTest.xml");
+        this.xmlHandler = new XmlHandler();
     }
 
     public Node createObject() {

@@ -29,4 +29,5 @@
 /build/output/
 
 # Test
-/logTest.xml
+/userXmlFile.xml
+

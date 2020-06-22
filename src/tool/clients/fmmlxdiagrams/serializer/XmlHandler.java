@@ -18,11 +18,21 @@ public class XmlHandler {
     private final Document document;
     private final XmlHelper xmlHelper;
     private Node currentLog;
+    private final String sourcePath;
 
-    public XmlHandler(String sourcePath) {
+    public XmlHandler() {
+        this.sourcePath = XMLCreator.getPath();
         this.document = buildDocument(sourcePath);
         this.xmlHelper = new XmlHelper(getDocument());
         this.currentLog = null;
+    }
+
+    public void clearAllChildren(){
+        xmlHelper.removeAllChildren(getCategoriesNode());
+        xmlHelper.removeAllChildren(getPackagesNode());
+        xmlHelper.removeAllChildren(getDiagramsNode());
+        xmlHelper.removeAllChildren(getObjectsNode());
+        xmlHelper.removeAllChildren(getLogsNode());
     }
 
     private Document buildDocument(String sourcePath) {
@@ -49,6 +59,16 @@ public class XmlHandler {
         return document;
     }
 
+    public Node getCategoriesNode(){
+        Node root = xmlHelper.getRootNode();
+        return xmlHelper.getNodeByTag(root, "Categories");
+    }
+
+    public Node getPackagesNode(){
+        Node root = xmlHelper.getRootNode();
+        return xmlHelper.getNodeByTag(root, "Packages");
+    }
+
     public Node getDiagramsNode() {
         Node root = xmlHelper.getRootNode();
         return xmlHelper.getNodeByTag(root, "Diagrams");
@@ -57,6 +77,11 @@ public class XmlHandler {
     public Node getObjectsNode() {
         Node root = xmlHelper.getRootNode();
         return xmlHelper.getNodeByTag(root, "Objects");
+    }
+
+    protected Node getLogsNode() {
+        Node root = xmlHelper.getRootNode();
+        return xmlHelper.getNodeByTag(root, "Logs");
     }
 
     protected Node createElement(String name){
@@ -150,11 +175,6 @@ public class XmlHandler {
         return currentLog;
     }
 
-    protected Node getLogsNode() {
-        Node root = xmlHelper.getRootNode();
-        return xmlHelper.getNodeByTag(root, "Logs");
-    }
-
     protected void saveState() {
 
         //TODO save all mapping element to Latest Save
@@ -201,7 +221,7 @@ public class XmlHandler {
                 Node nNode = nList.item(temp);
                 if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                     Element eElement = (Element) nNode;
-                    stringBuilder.append("\n"+eElement.getTagName());
+                    stringBuilder.append("\n").append(eElement.getTagName());
                 }
             }
         } catch (Exception e) {
@@ -235,7 +255,7 @@ public class XmlHandler {
         }
 
         public Node createElement(String tagName){
-            Node item = null;
+            Node item;
             item = document.createElement(tagName);
             return item;
         }
@@ -250,7 +270,7 @@ public class XmlHandler {
 
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
-            StreamResult result = new StreamResult("logTest.xml");
+            StreamResult result = new StreamResult(sourcePath);
             transformer.transform(source, result);
         }
 
@@ -258,8 +278,10 @@ public class XmlHandler {
             NodeList nodeList = parentNode.getChildNodes();
             Element parent = (Element) parentNode;
             for(int i = 0 ; i< nodeList.getLength(); i++){
-                Element element = (Element) nodeList.item(i);
-                parent.removeChild(element);
+                if(nodeList.item(i).getNodeType() == Node.ELEMENT_NODE){
+                    Element element = (Element) nodeList.item(i);
+                    parent.removeChild(element);
+                }
             }
         }
 

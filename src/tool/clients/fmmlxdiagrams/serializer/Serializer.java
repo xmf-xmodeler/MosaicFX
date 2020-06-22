@@ -4,7 +4,7 @@ public class Serializer implements ISerializer{
     private final XmlHandler xmlHandler;
 
     public Serializer() {
-        this.xmlHandler = new XmlHandler("logTest..xml");
+        this.xmlHandler = new XmlHandler();
     }
 
     @Override
