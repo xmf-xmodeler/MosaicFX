@@ -124,7 +124,7 @@ Provides logging without clients having to mess with
 <TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogFactory.html#getLogger(java.lang.Class)">getLogger</A></B>(java.lang.Class&lt;?&gt;&nbsp;theclass)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Get a logger, based on a class name</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Get a logManager, based on a class name</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -132,7 +132,7 @@ Provides logging without clients having to mess with
 <TD><CODE><B><A HREF="../../../../org/apache/poi/util/POILogFactory.html#getLogger(java.lang.String)">getLogger</A></B>(java.lang.String&nbsp;cat)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Get a logger, based on a String</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Get a logManager, based on a String</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
@@ -162,10 +162,10 @@ getLogger</H3>
 <PRE>
 public static <A HREF="../../../../org/apache/poi/util/POILogger.html" title="class in org.apache.poi.util">POILogger</A> <B>getLogger</B>(java.lang.Class&lt;?&gt;&nbsp;theclass)</PRE>
 <DL>
-<DD>Get a logger, based on a class name
+<DD>Get a logManager, based on a class name
 <P>
 <DD><DL>
-<DT><B>Parameters:</B><DD><CODE>theclass</CODE> - the class whose name defines the logger
+<DT><B>Parameters:</B><DD><CODE>theclass</CODE> - the class whose name defines the logManager
 <DT><B>Returns:</B><DD>a POILogger for the specified class</DL>
 </DD>
 </DL>
@@ -176,10 +176,10 @@ getLogger</H3>
 <PRE>
 public static <A HREF="../../../../org/apache/poi/util/POILogger.html" title="class in org.apache.poi.util">POILogger</A> <B>getLogger</B>(java.lang.String&nbsp;cat)</PRE>
 <DL>
-<DD>Get a logger, based on a String
+<DD>Get a logManager, based on a String
 <P>
 <DD><DL>
-<DT><B>Parameters:</B><DD><CODE>cat</CODE> - the String that defines the logger
+<DT><B>Parameters:</B><DD><CODE>cat</CODE> - the String that defines the logManager
 <DT><B>Returns:</B><DD>a POILogger for the specified class</DL>
 </DD>
 </DL>

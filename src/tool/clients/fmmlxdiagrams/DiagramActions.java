@@ -11,7 +11,6 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.association.AssociationDialog;
@@ -35,8 +34,8 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeParentDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
-import tool.clients.fmmlxdiagrams.serializer.Logger;
-import tool.clients.fmmlxdiagrams.serializer.XmlHandler;
+import tool.clients.fmmlxdiagrams.serializer.LogManager;
+import tool.clients.fmmlxdiagrams.serializer.ObjectManager;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -72,6 +71,7 @@ public class DiagramActions {
 		Platform.runLater(() -> {
 			CreateMetaClassDialog dlg = new CreateMetaClassDialog(diagram);
 			dlg.setTitle("Add metaclass");
+			String objectName="";
 			Optional<MetaClassDialogResult> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
@@ -79,6 +79,8 @@ public class DiagramActions {
 
 				Canvas canvas = diagram.getCanvas();
 				canvas.setCursor(Cursor.CROSSHAIR);
+
+				objectName = mcdResult.getName();
 
 				EventHandler<MouseEvent> chooseLocation = new EventHandler<MouseEvent>() {
 					public void handle(MouseEvent e) {
@@ -92,13 +94,22 @@ public class DiagramActions {
 							canvas.setCursor(Cursor.DEFAULT);
 							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
 							diagram.updateDiagram();
-
 //							l.countDown();
 						}
 					}
 				};
 				canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
 			}
+
+			LogManager logManager = new LogManager();
+			Element log = (Element) logManager.createLog("AddMetaClass");
+			log.setAttribute("object_name", objectName);
+			logManager.addLog(log);
+			ObjectManager objectManager = new ObjectManager();
+			Element object = (Element) objectManager.createObject();
+			object.setAttribute("object_name", objectName);
+			objectManager.addOwner(object, diagram.getID(), 0, 0, 0, 0);
+			objectManager.addObject(object);
 		});
 	}
 	

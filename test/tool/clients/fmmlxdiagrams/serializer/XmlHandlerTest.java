@@ -24,9 +24,10 @@ class XmlHandlerTest {
     @Test
     void addXmlLogElement(){
         XmlHandler xmlHandler = new XmlHandler("logTest.xml");
-        Logger logger = new Logger(xmlHandler);
-        Element log = (Element) logger.createLog("test");
-        log.setAttribute("object_name", "object1");
-        logger.addLog(log);
+        LogManager logManager = new LogManager(xmlHandler);
+        Element log = (Element) logManager.createLog("AddMetaClass");
+        log.setAttribute("object_name", "metaclass2");
+        log.setAttribute("diagramId", "1");
+        logManager.addLog(log);
     }
 }

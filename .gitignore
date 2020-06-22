@@ -1,7 +1,7 @@
 # java
 /bin/
 /out/
-*.logger
+*.logManager
 /out/
 # idea
 .idea

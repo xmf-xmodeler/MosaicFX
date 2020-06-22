@@ -5,42 +5,44 @@ import org.w3c.dom.Node;
 
 import javax.xml.transform.TransformerException;
 
-public class Logger implements ILog {
+public class LogManager implements ILog {
     private final XmlHandler xmlHandler;
 
-    public Logger() {
-        this.xmlHandler = XmlHandler.getInstance();
+    public LogManager() {
+        this.xmlHandler = new XmlHandler("logTest.xml");
     }
 
-    public Logger(XmlHandler xmlHandler) {
+    public LogManager(XmlHandler xmlHandler) {
         this.xmlHandler = xmlHandler;
     }
 
-    public XmlHandler getXmlHandler() {
-        return xmlHandler;
-    }
-
     @Override
-    public void back(int diagramId) {
+    public synchronized void back(int diagramId) {
         xmlHandler.moveCurrentStateBackward(diagramId);
     }
 
     @Override
-    public void forward(int diagramId) {
+    public synchronized void forward(int diagramId) {
         xmlHandler.moveCurrentStateForward(diagramId);
     }
 
     @Override
-    public void addLog(Node node) {
+    public synchronized Node createLog(String name) {
+        return xmlHandler.createElement(name);
+    }
+
+    @Override
+    public synchronized void addLog(Node node) {
+        Node logs = xmlHandler.getLogsNode();
         try {
-            xmlHandler.addXmlLogElement(node);
+            xmlHandler.addXmlElement(logs, node);
         } catch (TransformerException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void backToLatestSave(int diaramId) {
+    public synchronized void backToLatestSave(int diaramId) {
         xmlHandler.getLatestSave(diaramId);
     }
 
@@ -54,10 +56,5 @@ public class Logger implements ILog {
         return "Log{" +
                 "xmlLogHandler=" + xmlHandler.toString() +
                 '}';
-    }
-
-    @Override
-    public Node createLog(String name) {
-        return xmlHandler.createLog(name);
     }
 }

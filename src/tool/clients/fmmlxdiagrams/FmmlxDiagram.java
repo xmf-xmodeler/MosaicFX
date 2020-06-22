@@ -21,9 +21,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
+import org.w3c.dom.Element;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
+import tool.clients.fmmlxdiagrams.serializer.DiagramManager;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -138,6 +140,11 @@ public class FmmlxDiagram{
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+
+		DiagramManager diagramManager = new DiagramManager();
+		Element diagram = (Element) diagramManager.createDiagram("Diagram");
+		diagram.setAttribute("id", diagramID+"");
+		diagramManager.addDiagram(diagram);
 		
 		java.util.Timer timer = new Timer();
 		timer.schedule(new TimerTask() {

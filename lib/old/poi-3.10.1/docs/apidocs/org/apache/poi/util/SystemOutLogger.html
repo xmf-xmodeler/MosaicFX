@@ -98,9 +98,9 @@ java.lang.Object
 </PRE>
 
 <P>
-A logger class that strives to make it as easy as possible for
- developers to write logger calls, while simultaneously making those
- calls as cheap as possible by performing lazy evaluation of the logger
+A logManager class that strives to make it as easy as possible for
+ developers to write logManager calls, while simultaneously making those
+ calls as cheap as possible by performing lazy evaluation of the logManager
  message.
 <P>
 
@@ -161,7 +161,7 @@ A logger class that strives to make it as easy as possible for
 <TD><CODE><B><A HREF="../../../../org/apache/poi/util/SystemOutLogger.html#check(int)">check</A></B>(int&nbsp;level)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Check if a logger is enabled to logger at the specified level</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Check if a logManager is enabled to logManager at the specified level</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -174,7 +174,7 @@ A logger class that strives to make it as easy as possible for
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/apache/poi/util/SystemOutLogger.html#logger(int, java.lang.Object)">logger</A></B>(int&nbsp;level,
+<TD><CODE><B><A HREF="../../../../org/apache/poi/util/SystemOutLogger.html#logManager(int, java.lang.Object)">logManager</A></B>(int&nbsp;level,
     java.lang.Object&nbsp;obj1)</CODE>
 
 <BR>
@@ -183,7 +183,7 @@ A logger class that strives to make it as easy as possible for
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/apache/poi/util/SystemOutLogger.html#logger(int, java.lang.Object, java.lang.Throwable)">logger</A></B>(int&nbsp;level,
+<TD><CODE><B><A HREF="../../../../org/apache/poi/util/SystemOutLogger.html#logManager(int, java.lang.Object, java.lang.Throwable)">logManager</A></B>(int&nbsp;level,
     java.lang.Object&nbsp;obj1,
     java.lang.Throwable&nbsp;exception)</CODE>
 
@@ -197,7 +197,7 @@ A logger class that strives to make it as easy as possible for
 <TH ALIGN="left"><B>Methods inherited from class org.apache.poi.util.<A HREF="../../../../org/apache/poi/util/POILogger.html" title="class in org.apache.poi.util">POILogger</A></B></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object)">logger</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object)">logger</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">logger</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">logger</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">logger</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">logger</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">logger</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">logger</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">logger</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">logger</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">logger</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">logger</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">logger</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Object, java.lang.Throwable)">logger</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Throwable)">logger</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logFormatted(int, java.lang.String, java.lang.Object)">logFormatted</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logFormatted(int, java.lang.String, java.lang.Object, java.lang.Object)">logFormatted</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logFormatted(int, java.lang.String, java.lang.Object, java.lang.Object, java.lang.Object)">logFormatted</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logFormatted(int, java.lang.String, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">logFormatted</A></CODE></TD>
+<TD><CODE><A HREF="../../../../org/apache/poi/util/POILogger.html#logManager(int, java.lang.Object, java.lang.Object)">logManager</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logManager(int, java.lang.Object, java.lang.Object, java.lang.Object)">logManager</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logManager(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">logManager</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logManager(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">logManager</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logManager(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">logManager</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logManager(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">logManager</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logManager(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">logManager</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logManager(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">logManager</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logManager(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">logManager</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logManager(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">logManager</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logManager(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">logManager</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logManager(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">logManager</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logManager(int, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Throwable)">logManager</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logManager(int, java.lang.Object, java.lang.Object, java.lang.Throwable)">logManager</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logManager(int, java.lang.Throwable)">logManager</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logFormatted(int, java.lang.String, java.lang.Object)">logFormatted</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logFormatted(int, java.lang.String, java.lang.Object, java.lang.Object)">logFormatted</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logFormatted(int, java.lang.String, java.lang.Object, java.lang.Object, java.lang.Object)">logFormatted</A>, <A HREF="../../../../org/apache/poi/util/POILogger.html#logFormatted(int, java.lang.String, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object)">logFormatted</A></CODE></TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
@@ -253,37 +253,37 @@ public void <B>initialize</B>(java.lang.String&nbsp;cat)</PRE>
 </DL>
 <HR>
 
-<A NAME="logger(int, java.lang.Object)"><!-- --></A><H3>
-logger</H3>
+<A NAME="logManager(int, java.lang.Object)"><!-- --></A><H3>
+logManager</H3>
 <PRE>
-public void <B>logger</B>(int&nbsp;level,
+public void <B>logManager</B>(int&nbsp;level,
                 java.lang.Object&nbsp;obj1)</PRE>
 <DL>
 <DD>Log a message
 <P>
 <DD><DL>
-<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object)">logger</A></CODE> in class <CODE><A HREF="../../../../org/apache/poi/util/POILogger.html" title="class in org.apache.poi.util">POILogger</A></CODE></DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/apache/poi/util/POILogger.html#logManager(int, java.lang.Object)">logManager</A></CODE> in class <CODE><A HREF="../../../../org/apache/poi/util/POILogger.html" title="class in org.apache.poi.util">POILogger</A></CODE></DL>
 </DD>
 <DD><DL>
-<DT><B>Parameters:</B><DD><CODE>level</CODE> - One of DEBUG, INFO, WARN, ERROR, FATAL<DD><CODE>obj1</CODE> - The object to logger.</DL>
+<DT><B>Parameters:</B><DD><CODE>level</CODE> - One of DEBUG, INFO, WARN, ERROR, FATAL<DD><CODE>obj1</CODE> - The object to logManager.</DL>
 </DD>
 </DL>
 <HR>
 
-<A NAME="logger(int, java.lang.Object, java.lang.Throwable)"><!-- --></A><H3>
-logger</H3>
+<A NAME="logManager(int, java.lang.Object, java.lang.Throwable)"><!-- --></A><H3>
+logManager</H3>
 <PRE>
-public void <B>logger</B>(int&nbsp;level,
+public void <B>logManager</B>(int&nbsp;level,
                 java.lang.Object&nbsp;obj1,
                 java.lang.Throwable&nbsp;exception)</PRE>
 <DL>
 <DD>Log a message
 <P>
 <DD><DL>
-<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/apache/poi/util/POILogger.html#logger(int, java.lang.Object, java.lang.Throwable)">logger</A></CODE> in class <CODE><A HREF="../../../../org/apache/poi/util/POILogger.html" title="class in org.apache.poi.util">POILogger</A></CODE></DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/apache/poi/util/POILogger.html#logManager(int, java.lang.Object, java.lang.Throwable)">logManager</A></CODE> in class <CODE><A HREF="../../../../org/apache/poi/util/POILogger.html" title="class in org.apache.poi.util">POILogger</A></CODE></DL>
 </DD>
 <DD><DL>
-<DT><B>Parameters:</B><DD><CODE>level</CODE> - One of DEBUG, INFO, WARN, ERROR, FATAL<DD><CODE>obj1</CODE> - The object to logger.  This is converted to a string.<DD><CODE>exception</CODE> - An exception to be logged</DL>
+<DT><B>Parameters:</B><DD><CODE>level</CODE> - One of DEBUG, INFO, WARN, ERROR, FATAL<DD><CODE>obj1</CODE> - The object to logManager.  This is converted to a string.<DD><CODE>exception</CODE> - An exception to be logged</DL>
 </DD>
 </DL>
 <HR>
@@ -293,7 +293,7 @@ check</H3>
 <PRE>
 public boolean <B>check</B>(int&nbsp;level)</PRE>
 <DL>
-<DD>Check if a logger is enabled to logger at the specified level
+<DD>Check if a logManager is enabled to logManager at the specified level
 <P>
 <DD><DL>
 <DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/apache/poi/util/POILogger.html#check(int)">check</A></CODE> in class <CODE><A HREF="../../../../org/apache/poi/util/POILogger.html" title="class in org.apache.poi.util">POILogger</A></CODE></DL>

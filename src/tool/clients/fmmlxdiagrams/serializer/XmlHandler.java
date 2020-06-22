@@ -16,20 +16,12 @@ import java.io.IOException;
 
 public class XmlHandler {
     private final Document document;
-    private XmlHelper xmlHelper;
+    private final XmlHelper xmlHelper;
     private Node currentLog;
-    private static XmlHandler instance;
-
-    protected static synchronized XmlHandler getInstance(){
-        if(instance==null){
-            instance = new XmlHandler("logTest.txt");
-        }
-        return instance;
-    }
 
     public XmlHandler(String sourcePath) {
         this.document = buildDocument(sourcePath);
-        this.xmlHelper = new XmlHelper(document);
+        this.xmlHelper = new XmlHelper(getDocument());
         this.currentLog = null;
     }
 
@@ -41,7 +33,7 @@ public class XmlHandler {
         return document;
     }
 
-    protected Node createLog(String name){
+    protected Node createElement(String name){
         return xmlHelper.createElement(name);
     }
 
@@ -64,7 +56,7 @@ public class XmlHandler {
     //Logging
     protected void moveCurrentStateBackward(int diagramId){
         if(currentLog!=null){
-            Node actionNode = getLogNode();
+            Node actionNode = getLogsNode();
             assert actionNode != null;
             NodeList nodeList = actionNode.getChildNodes();
             int latestPosition=0;
@@ -89,7 +81,7 @@ public class XmlHandler {
 
     protected void moveCurrentStateForward(int diagramId) {
         if(currentLog!=null){
-            Node actionNode = getLogNode();
+            Node actionNode = getLogsNode();
             assert actionNode != null;
             NodeList nodeList = actionNode.getChildNodes();
             int latestPosition=0;
@@ -115,11 +107,11 @@ public class XmlHandler {
         }
     }
 
-    protected void addXmlLogElement(Node node) throws TransformerException {
+    protected void addXmlElement(Node parent, Node node) throws TransformerException {
         setAllLogCurrentStateValueToNull();
-        Element log = (Element) getLogNode();
-        assert log != null;
-        log.appendChild(node);
+        Element parent1 = (Element) parent;
+        assert parent1 != null;
+        parent1.appendChild(node);
 
         DOMSource source = new DOMSource(document);
 
@@ -133,7 +125,7 @@ public class XmlHandler {
         return currentLog;
     }
 
-    protected Node getLogNode() {
+    protected Node getLogsNode() {
         Node root = xmlHelper.getRootNode();
         return xmlHelper.getNodeByTag(root, "Logs");
     }
@@ -144,8 +136,8 @@ public class XmlHandler {
         //TODO save all mapping element to Latest Save
 
         currentLog = null;
-        assert getLogNode() != null;
-        xmlHelper.removeAllChildren(getLogNode());
+        assert getLogsNode() != null;
+        xmlHelper.removeAllChildren(getLogsNode());
     }
 
     protected void getLatestSave(int diagramId){
@@ -157,7 +149,7 @@ public class XmlHandler {
 
     //Helper
     private void setAllLogCurrentStateValueToNull() {
-        Node logNode = getLogNode();
+        Node logNode = getLogsNode();
         assert logNode != null;
         NodeList logs = logNode.getChildNodes();
         //TODO
@@ -193,6 +185,16 @@ public class XmlHandler {
             e.printStackTrace();
         }
         return stringBuilder.toString();
+    }
+
+    public Node getDiagramsNode() {
+        Node root = xmlHelper.getRootNode();
+        return xmlHelper.getNodeByTag(root, "Diagrams");
+    }
+
+    public Node getObjectsNode() {
+        Node root = xmlHelper.getRootNode();
+        return xmlHelper.getNodeByTag(root, "Objects");
     }
 
     public class XmlHelper {
