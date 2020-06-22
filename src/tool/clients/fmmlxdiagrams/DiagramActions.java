@@ -79,7 +79,6 @@ public class DiagramActions {
 
 				Canvas canvas = diagram.getCanvas();
 				canvas.setCursor(Cursor.CROSSHAIR);
-
 				objectName = mcdResult.getName();
 
 				EventHandler<MouseEvent> chooseLocation = new EventHandler<MouseEvent>() {
@@ -87,7 +86,6 @@ public class DiagramActions {
 
 						int x = (int) e.getX();
 						int y = (int) e.getY();
-
 						if (x > 0 && y > 0) {
 							diagram.getComm().addMetaClass(diagram, mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentIds(), mcdResult.isAbstract(), x, y);
 
@@ -104,11 +102,12 @@ public class DiagramActions {
 			LogManager logManager = new LogManager();
 			Element log = (Element) logManager.createLog("AddMetaClass");
 			log.setAttribute("object_name", objectName);
+			log.setAttribute("owner", diagram.getID()+"");
 			logManager.addLog(log);
 			ObjectManager objectManager = new ObjectManager();
 			Element object = (Element) objectManager.createObject();
 			object.setAttribute("object_name", objectName);
-			objectManager.addOwner(object, diagram.getID(), 0, 0, 0, 0);
+			objectManager.addOwner(object, diagram.getID(), diagram.getDiagramLabel(), 0, 0 );
 			objectManager.addObject(object);
 		});
 	}

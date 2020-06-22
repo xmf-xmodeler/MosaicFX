@@ -35,7 +35,7 @@ public class LogManager implements ILog {
     public synchronized void addLog(Node node) {
         Node logs = xmlHandler.getLogsNode();
         try {
-            xmlHandler.addXmlElement(logs, node);
+            xmlHandler.addLogElement(logs, node);
         } catch (TransformerException e) {
             e.printStackTrace();
         }

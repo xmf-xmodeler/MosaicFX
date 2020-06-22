@@ -17,16 +17,15 @@ public class ObjectManager {
         return object;
     }
 
-    public void addOwner(Node node, int diagramId, int x, int y, int width, int length){
+    public void addOwner(Node node, int diagramId, String diagramLabel, int x, int y){
         Element object = (Element) node;
         Element owner = (Element) xmlHandler.createElement("Owner");
         owner.setAttribute("diagram_id", diagramId+"");
+        owner.setAttribute("label", diagramLabel);
         owner.setAttribute("x", x+"");
         owner.setAttribute("y", y+"");
-        owner.setAttribute("width", width+"");
-        owner.setAttribute("length", length+"");
         try {
-            xmlHandler.addXmlElement(object, owner);
+            xmlHandler.addObjectOwnerElement(object, owner);
         } catch (TransformerException e) {
             e.printStackTrace();
         }
@@ -35,7 +34,7 @@ public class ObjectManager {
     public void addObject(Node node) {
         Node objects = xmlHandler.getObjectsNode();
         try {
-            xmlHandler.addXmlElement(objects, node);
+            xmlHandler.addObjectElement(objects, node);
         } catch (TransformerException e) {
             e.printStackTrace();
         }

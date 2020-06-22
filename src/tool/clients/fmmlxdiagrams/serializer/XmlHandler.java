@@ -25,18 +25,6 @@ public class XmlHandler {
         this.currentLog = null;
     }
 
-    public XmlHelper getXmlHelper() {
-        return xmlHelper;
-    }
-
-    public Document getDocument() {
-        return document;
-    }
-
-    protected Node createElement(String name){
-        return xmlHelper.createElement(name);
-    }
-
     private Document buildDocument(String sourcePath) {
         Document doc = null;
         try {
@@ -53,7 +41,28 @@ public class XmlHandler {
         return doc;
     }
 
-    //Logging
+    public XmlHelper getXmlHelper() {
+        return xmlHelper;
+    }
+
+    public Document getDocument() {
+        return document;
+    }
+
+    public Node getDiagramsNode() {
+        Node root = xmlHelper.getRootNode();
+        return xmlHelper.getNodeByTag(root, "Diagrams");
+    }
+
+    public Node getObjectsNode() {
+        Node root = xmlHelper.getRootNode();
+        return xmlHelper.getNodeByTag(root, "Objects");
+    }
+
+    protected Node createElement(String name){
+        return xmlHelper.createElement(name);
+    }
+
     protected void moveCurrentStateBackward(int diagramId){
         if(currentLog!=null){
             Node actionNode = getLogsNode();
@@ -107,18 +116,34 @@ public class XmlHandler {
         }
     }
 
-    protected void addXmlElement(Node parent, Node node) throws TransformerException {
-        setAllLogCurrentStateValueToNull();
-        Element parent1 = (Element) parent;
-        assert parent1 != null;
-        parent1.appendChild(node);
+    protected void addLogElement(Node logs, Node log)
+            throws TransformerException {
+        xmlHelper.addXmlElement(logs, log);
+    }
 
-        DOMSource source = new DOMSource(document);
+    public void addObjectOwnerElement(Element object, Element owner)
+            throws TransformerException {
+        xmlHelper.addXmlElement(object, owner);
+    }
 
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        StreamResult result = new StreamResult("logTest.xml");
-        transformer.transform(source, result);
+    public void addObjectElement(Node objects, Node object)
+            throws TransformerException {
+        xmlHelper.addXmlElement(objects, object);
+    }
+
+    public void addDiagramElement(Node diagrams, Node diagram)
+            throws TransformerException {
+        xmlHelper.addXmlElement(diagrams, diagram);
+    }
+
+    public void addDiagramOwnersElement(Element diagram, Node owners)
+            throws TransformerException {
+        xmlHelper.addXmlElement(diagram, owners);
+    }
+
+    public void addDiagramCategoriesElement(Element diagram, Node categories)
+            throws TransformerException {
+        xmlHelper.addXmlElement(diagram, categories);
     }
 
     protected Node getCurrentLog() {
@@ -130,7 +155,6 @@ public class XmlHandler {
         return xmlHelper.getNodeByTag(root, "Logs");
     }
 
-    //Serialize
     protected void saveState() {
 
         //TODO save all mapping element to Latest Save
@@ -147,7 +171,6 @@ public class XmlHandler {
         //TODO
     }
 
-    //Helper
     private void setAllLogCurrentStateValueToNull() {
         Node logNode = getLogsNode();
         assert logNode != null;
@@ -187,18 +210,8 @@ public class XmlHandler {
         return stringBuilder.toString();
     }
 
-    public Node getDiagramsNode() {
-        Node root = xmlHelper.getRootNode();
-        return xmlHelper.getNodeByTag(root, "Diagrams");
-    }
-
-    public Node getObjectsNode() {
-        Node root = xmlHelper.getRootNode();
-        return xmlHelper.getNodeByTag(root, "Objects");
-    }
-
     public class XmlHelper {
-        private Document document;
+        private final Document document;
 
         public XmlHelper(Document document) {
             this.document = document;
@@ -227,8 +240,18 @@ public class XmlHandler {
             return item;
         }
 
-        public void addXmlElement(Node parentNode, Node node){
-            parentNode.appendChild(node);
+        protected void addXmlElement(Node parent, Node node) throws TransformerException {
+            setAllLogCurrentStateValueToNull();
+            Element parent1 = (Element) parent;
+            assert parent1 != null;
+            parent1.appendChild(node);
+
+            DOMSource source = new DOMSource(document);
+
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            StreamResult result = new StreamResult("logTest.xml");
+            transformer.transform(source, result);
         }
 
         public void removeAllChildren(Node parentNode){

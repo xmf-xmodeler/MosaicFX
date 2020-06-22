@@ -92,6 +92,7 @@ public class FmmlxDiagram{
 	private boolean showDerivedAttributes=true;
 	
 	private final int diagramID;
+	private final String diagramLabel;
 	private transient boolean suppressRedraw;
 	private final NewFmmlxPalette newFmmlxPalette;
 	private String packagePath = null;
@@ -106,6 +107,7 @@ public class FmmlxDiagram{
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String label, String packagePath) {
 		this.comm = comm;
 		this.diagramID = diagramID;
+		this.diagramLabel = label;
 		this.packagePath = packagePath;
 		System.out.println("packagePath: " + packagePath);
 
@@ -144,6 +146,7 @@ public class FmmlxDiagram{
 		DiagramManager diagramManager = new DiagramManager();
 		Element diagram = (Element) diagramManager.createDiagram("Diagram");
 		diagram.setAttribute("id", diagramID+"");
+		diagram.setAttribute("label", label);
 		diagramManager.addDiagram(diagram);
 		
 		java.util.Timer timer = new Timer();
@@ -906,6 +909,10 @@ public class FmmlxDiagram{
 	// Some useful methods for queries:
 	public int getID() {
 		return diagramID;
+	}
+
+	public String getDiagramLabel() {
+		return diagramLabel;
 	}
 
 	public Vector<FmmlxEnum> getEnums() {

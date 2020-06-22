@@ -17,8 +17,8 @@ public class DiagramManager {
         Node categories = xmlHandler.createElement("Categories");
         Node owners = xmlHandler.createElement("Owners");
         try {
-            xmlHandler.addXmlElement(diagram, categories);
-            xmlHandler.addXmlElement(diagram, owners);
+            xmlHandler.addDiagramCategoriesElement(diagram, categories);
+            xmlHandler.addDiagramOwnersElement(diagram, owners);
         } catch (TransformerException e) {
             e.printStackTrace();
         }
@@ -28,7 +28,7 @@ public class DiagramManager {
     public void addDiagram(Node node) {
         Node diagrams = xmlHandler.getDiagramsNode();
         try {
-            xmlHandler.addXmlElement(diagrams, node);
+            xmlHandler.addDiagramElement(diagrams, node);
         } catch (TransformerException e) {
             e.printStackTrace();
         }
