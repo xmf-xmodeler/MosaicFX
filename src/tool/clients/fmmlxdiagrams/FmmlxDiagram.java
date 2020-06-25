@@ -25,7 +25,7 @@ import org.w3c.dom.Element;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
-import tool.clients.fmmlxdiagrams.serializer.DiagramManager;
+import tool.clients.serializer.DiagramXmlManager;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -143,11 +143,9 @@ public class FmmlxDiagram{
 			e.printStackTrace();
 		}
 
-		DiagramManager diagramManager = new DiagramManager();
-		Element diagram = (Element) diagramManager.createDiagram("Diagram");
-		diagram.setAttribute("id", diagramID+"");
-		diagram.setAttribute("label", label);
-		diagramManager.addDiagram(diagram);
+		DiagramXmlManager diagramManager = new DiagramXmlManager();
+		Element diagram = (Element) diagramManager.createDiagram(diagramID, label, packagePath);
+		diagramManager.add(diagram);
 		
 		java.util.Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -913,6 +911,10 @@ public class FmmlxDiagram{
 
 	public String getDiagramLabel() {
 		return diagramLabel;
+	}
+
+	public String getPackagePath() {
+		return packagePath;
 	}
 
 	public Vector<FmmlxEnum> getEnums() {

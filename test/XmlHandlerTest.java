@@ -1,7 +1,8 @@
-package tool.clients.fmmlxdiagrams.serializer;
-
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
+import tool.clients.serializer.LogXmlManager;
+import tool.clients.serializer.XmlCreator;
+import tool.clients.serializer.XmlHandler;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -12,20 +13,20 @@ class XmlHandlerTest {
 
     @Test
     void xmlCreateTest() throws TransformerException, ParserConfigurationException {
-        XMLCreator xmlCreator = new XMLCreator();
+        XmlCreator xmlCreator = new XmlCreator();
         xmlCreator.create();
     }
 
     @Test
     void checkXmlFile() throws TransformerException, ParserConfigurationException {
-        XMLCreator xmlCreator = new XMLCreator();
+        XmlCreator xmlCreator = new XmlCreator();
         xmlCreator.create();
         assertTrue(xmlCreator.checkFileExist());
     }
 
     @Test
     void deleteXmlFileTest(){
-        XMLCreator xmlCreator = new XMLCreator();
+        XmlCreator xmlCreator = new XmlCreator();
         if(xmlCreator.checkFileExist()){
             xmlCreator.deleteUserXmlfile();
         }
@@ -39,7 +40,7 @@ class XmlHandlerTest {
 
     @Test
     void xmlReaderTest() throws TransformerException, ParserConfigurationException {
-        XMLCreator xmlCreator = new XMLCreator();
+        XmlCreator xmlCreator = new XmlCreator();
         xmlCreator.create();
         XmlHandler xmlHandler = new XmlHandler();
         assertNotNull(xmlHandler);
@@ -48,7 +49,7 @@ class XmlHandlerTest {
 
     @Test
     void getRootElementTest() throws TransformerException, ParserConfigurationException {
-        XMLCreator xmlCreator = new XMLCreator();
+        XmlCreator xmlCreator = new XmlCreator();
         xmlCreator.create();
         XmlHandler xmlHandler = new XmlHandler();
         assertNotNull(xmlHandler);
@@ -57,13 +58,13 @@ class XmlHandlerTest {
 
     @Test
     void addXmlLogElement() throws TransformerException, ParserConfigurationException {
-        XMLCreator xmlCreator = new XMLCreator();
+        XmlCreator xmlCreator = new XmlCreator();
         xmlCreator.create();
         XmlHandler xmlHandler = new XmlHandler();
-        LogManager logManager = new LogManager(xmlHandler);
-        Element log = (Element) logManager.createLog("AddMetaClass");
+        LogXmlManager logManager = new LogXmlManager(xmlHandler);
+        Element log = (Element) logManager.createNewMetaClassLog("AddMetaClass", 1);
         log.setAttribute("object_name", "metaclass2");
         log.setAttribute("diagramId", "1");
-        logManager.addLog(log);
+        logManager.add(log);
     }
 }

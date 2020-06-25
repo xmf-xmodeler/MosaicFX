@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.serializer;
+package tool.clients.serializer;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
@@ -6,6 +6,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -21,7 +22,7 @@ public class XmlHandler {
     private final String sourcePath;
 
     public XmlHandler() {
-        this.sourcePath = XMLCreator.getPath();
+        this.sourcePath = XmlCreator.getPath();
         this.document = buildDocument(sourcePath);
         this.xmlHelper = new XmlHelper(getDocument());
         this.currentLog = null;
@@ -29,7 +30,7 @@ public class XmlHandler {
 
     public void clearAllChildren(){
         xmlHelper.removeAllChildren(getCategoriesNode());
-        xmlHelper.removeAllChildren(getPackagesNode());
+        xmlHelper.removeAllChildren(getProjectsNode());
         xmlHelper.removeAllChildren(getDiagramsNode());
         xmlHelper.removeAllChildren(getObjectsNode());
         xmlHelper.removeAllChildren(getLogsNode());
@@ -61,27 +62,27 @@ public class XmlHandler {
 
     public Node getCategoriesNode(){
         Node root = xmlHelper.getRootNode();
-        return xmlHelper.getNodeByTag(root, "Categories");
+        return xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_CATEGORIES);
     }
 
-    public Node getPackagesNode(){
+    public Node getProjectsNode(){
         Node root = xmlHelper.getRootNode();
-        return xmlHelper.getNodeByTag(root, "Packages");
+        return xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_PROJECTS);
     }
 
     public Node getDiagramsNode() {
         Node root = xmlHelper.getRootNode();
-        return xmlHelper.getNodeByTag(root, "Diagrams");
+        return xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_DIAGRAMS);
     }
 
     public Node getObjectsNode() {
         Node root = xmlHelper.getRootNode();
-        return xmlHelper.getNodeByTag(root, "Objects");
+        return xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_OBJECTS);
     }
 
     protected Node getLogsNode() {
         Node root = xmlHelper.getRootNode();
-        return xmlHelper.getNodeByTag(root, "Logs");
+        return xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_LOGS);
     }
 
     protected Node createElement(String name){
@@ -146,9 +147,12 @@ public class XmlHandler {
         xmlHelper.addXmlElement(logs, log);
     }
 
-    public void addObjectOwnerElement(Element object, Element owner)
-            throws TransformerException {
-        xmlHelper.addXmlElement(object, owner);
+    public void addElement(Node parents, Node node) throws TransformerException {
+        xmlHelper.addXmlElement(parents, node);
+    }
+
+    public void addDiagramObjectsElement(Element diagram, Node objects) throws TransformerException {
+        xmlHelper.addXmlElement(diagram, objects);
     }
 
     public void addObjectElement(Node objects, Node object)
@@ -184,7 +188,7 @@ public class XmlHandler {
         xmlHelper.removeAllChildren(getLogsNode());
     }
 
-    protected void getLatestSave(int diagramId){
+    protected void getLatestSave(int diagramId, String diagramLabel){
         setAllLogCurrentStateValueToNull();
         this.currentLog = null;
 
@@ -230,6 +234,9 @@ public class XmlHandler {
         return stringBuilder.toString();
     }
 
+
+
+
     public class XmlHelper {
         private final Document document;
 
@@ -270,6 +277,8 @@ public class XmlHandler {
 
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             StreamResult result = new StreamResult(sourcePath);
             transformer.transform(source, result);
         }

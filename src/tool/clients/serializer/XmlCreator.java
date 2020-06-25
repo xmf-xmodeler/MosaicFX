@@ -1,10 +1,11 @@
-package tool.clients.fmmlxdiagrams.serializer;
+package tool.clients.serializer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -14,11 +15,11 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class XMLCreator {
-    private static final String path= "userXmlFile.xml";
+public class XmlCreator {
+    private static final String path= XmlConstant.USER_XML_FILE_NAME;
     private static final int version = 1;
 
-    public XMLCreator() {
+    public XmlCreator() {
     }
 
     public static String getPath() {
@@ -39,31 +40,30 @@ public class XMLCreator {
 
             Document document = documentBuilder.newDocument();
 
-            Element root = document.createElement("XModeler");
+            Element root = document.createElement(XmlConstant.TAG_NAME_ROOT);
             document.appendChild(root);
 
-            Element formatVersion = document.createElement("Version");
+            Element formatVersion = document.createElement(XmlConstant.TAG_NAME_VERSION);
             formatVersion.setTextContent(String.valueOf(version));
 
-            Element categories = document.createElement("Categories");
-            Element packages = document.createElement("Packages");
-            Element diagrams = document.createElement("Diagrams");
-            Element objects = document.createElement("Objects");
-            Element logs = document.createElement("Logs");
+            Element categories = document.createElement(XmlConstant.TAG_NAME_CATEGORIES);
+            Element projects = document.createElement(XmlConstant.TAG_NAME_PROJECTS);
+            Element diagrams = document.createElement(XmlConstant.TAG_NAME_DIAGRAMS);
+            Element logs = document.createElement(XmlConstant.TAG_NAME_LOGS);
 
             root.appendChild(formatVersion);
             root.appendChild(categories);
-            root.appendChild(packages);
+            root.appendChild(projects);
             root.appendChild(diagrams);
-            root.appendChild(objects);
             root.appendChild(logs);
-
 
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
             DOMSource domSource = new DOMSource(document);
             StreamResult streamResult = new StreamResult(new File(path));
-
             transformer.transform(domSource, streamResult);
         } else {
             //All this Codes are just for Test purpose

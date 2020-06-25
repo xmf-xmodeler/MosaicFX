@@ -11,7 +11,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
-import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.association.AssociationDialog;
@@ -35,8 +35,8 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeParentDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
-import tool.clients.fmmlxdiagrams.serializer.LogManager;
-import tool.clients.fmmlxdiagrams.serializer.ObjectManager;
+import tool.clients.serializer.LogXmlManager;
+import tool.clients.serializer.ObjectXmlManager;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -98,18 +98,15 @@ public class DiagramActions {
 					}
 				};
 				canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
-			}
 
-			LogManager logManager = new LogManager();
-			Element log = (Element) logManager.createLog("AddMetaClass");
-			log.setAttribute("object_name", objectName);
-			log.setAttribute("owner", diagram.getID()+"");
-			logManager.addLog(log);
-			ObjectManager objectManager = new ObjectManager();
-			Element object = (Element) objectManager.createObject();
-			object.setAttribute("object_name", objectName);
-			objectManager.addOwner(object, diagram.getID(), diagram.getDiagramLabel(), 0, 0 );
-			objectManager.addObject(object);
+				ObjectXmlManager objectXmlManager = new ObjectXmlManager();
+				Node newObject = objectXmlManager.createObject(objectName, diagram.getPackagePath(), diagram.getID(), 0, 0);
+				objectXmlManager.add(newObject);
+
+				LogXmlManager logXmlManager = new LogXmlManager();
+				Node newLog = logXmlManager.createNewMetaClassLog(objectName, diagram.getID());
+				logXmlManager.add(newLog);
+			}
 		});
 	}
 	
