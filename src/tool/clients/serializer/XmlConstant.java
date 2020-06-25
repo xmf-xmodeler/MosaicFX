@@ -16,6 +16,7 @@ public class XmlConstant {
     public static final String TAG_NAME_LOGS = "Logs";
     public static final String TAG_NAME_LOG = "Log";
     public static final String TAG_NAME_OWNERS = "Owners";
+    public static final String TAG_NAME_PREFERENCES = "Preferences";
 
     public static final String ATTRIBUTE_ID = "id";
     public static final String ATTRIBUTE_NAME = "name";
@@ -25,4 +26,5 @@ public class XmlConstant {
     public static final String ATTRIBUTE_LABEL = "label";
     public static final String ATTRIBUTE_COORDINAT_X = "x";
     public static final String ATTRIBUTE_COORDINAT_Y = "y";
+
 }

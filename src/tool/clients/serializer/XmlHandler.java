@@ -175,6 +175,10 @@ public class XmlHandler {
         xmlHelper.addXmlElement(diagram, categories);
     }
 
+    public void addDiagramPreferencesElemet(Element diagram, Node preferences) throws TransformerException {
+        xmlHelper.addXmlElement(diagram, preferences);
+    }
+
     protected Node getCurrentLog() {
         return currentLog;
     }
@@ -233,9 +237,6 @@ public class XmlHandler {
         }
         return stringBuilder.toString();
     }
-
-
-
 
     public class XmlHelper {
         private final Document document;

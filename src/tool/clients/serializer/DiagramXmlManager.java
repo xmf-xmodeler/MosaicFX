@@ -22,10 +22,12 @@ public class DiagramXmlManager implements IXmlManager {
         Node categories = xmlHandler.createElement(XmlConstant.TAG_NAME_CATEGORIES);
         Node owners = xmlHandler.createElement(XmlConstant.TAG_NAME_OWNERS);
         Node objects = xmlHandler.createElement(XmlConstant.TAG_NAME_OBJECTS);
+        Node preferences = xmlHandler.createElement(XmlConstant.TAG_NAME_PREFERENCES);
         try {
             xmlHandler.addDiagramCategoriesElement(diagram, categories);
             xmlHandler.addDiagramOwnersElement(diagram, owners);
             xmlHandler.addDiagramObjectsElement(diagram, objects);
+            xmlHandler.addDiagramPreferencesElemet(diagram, preferences);
         } catch (TransformerException e) {
             e.printStackTrace();
         }
