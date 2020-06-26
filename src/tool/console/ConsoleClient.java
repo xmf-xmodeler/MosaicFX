@@ -24,7 +24,6 @@ public class ConsoleClient extends Thread {
   static ConsoleClient theConsole;
 
   public ConsoleClient(InputStream in, OutputStream out) {
-	System.err.println("ConsoleClient test");
     this.in = new BufferedReader(new InputStreamReader(in));
     this.out = new PrintStream(new BufferedOutputStream(out));
     theConsole = this;
