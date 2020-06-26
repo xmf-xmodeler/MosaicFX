@@ -26,6 +26,7 @@ public class Console {
   }
   
   public static void start(Stage stage) {
+	  stage = new Stage();
       BorderPane border = new BorderPane();
       ConsoleView consoleView = new ConsoleView(stage);
       setConsoleView(consoleView);

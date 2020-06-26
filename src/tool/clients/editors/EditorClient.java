@@ -57,16 +57,10 @@ public class EditorClient extends Client {
   public static void start(Stage stage) {
 	 EditorClientView editorClientView = new EditorClientView();
 	 TabPane tabPane = new TabPane();
+	    EditorClient.tabPane = tabPane;
 	 //HBox hBox = new HBox(editorClientView.getView());
 	 HBox.setHgrow(editorClientView.getView(), Priority.ALWAYS);
 //	 GridPane grid = new GridPane();
-	 Tab tab = new Tab();
-	 tab.setText("Welcome Page");
-	 tab.setContent(new Rectangle(200,200, Color.DARKBLUE));
-	 Tab tab2 = new Tab();
-	 tab2.setText("Texteditor");
-	 tab2.setContent(new Rectangle(200,200, Color.DARKRED));
-	 tabPane.getTabs().addAll(tab,tab2);
 	 Scene scene = new Scene(tabPane, 800, 500);
 	 stage.setScene(scene);
 	 stage.setTitle("Editor");
