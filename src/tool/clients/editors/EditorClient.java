@@ -27,6 +27,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -38,6 +39,7 @@ import javafx.stage.Stage;
 import tool.clients.Client;
 import tool.clients.EventHandler;
 import tool.clients.diagrams.DiagramClient;
+import tool.clients.workbench.SceneContainer;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
@@ -55,22 +57,22 @@ public class EditorClient extends Client {
   static TabPane   						tabPane;
   
 
-  static Hashtable<String, Tab>    tabs           = new Hashtable<String, Tab>(); //TODO: rewrite completely and introduce Browser object
-  static Hashtable<String, ITextEditor> editors        = new Hashtable<String, ITextEditor>();
-  static Hashtable<String, WebBrowser> browsers        = new Hashtable<String, WebBrowser>();
+  public static Hashtable<String, Tab>    tabs           = new Hashtable<String, Tab>(); //TODO: rewrite completely and introduce Browser object
+  public static Hashtable<String, ITextEditor> editors        = new Hashtable<String, ITextEditor>(); //unorthodox TODO:
+  public static Hashtable<String, WebBrowser> browsers        = new Hashtable<String, WebBrowser>(); // unorthodox TODO:
   
   public static void start(TabPane tabPane) {
     EditorClient.tabPane = tabPane;
   }
   
-  public static void start(Stage stage) {
-	 TabPane tabPane = new TabPane();
-	 EditorClient.tabPane = tabPane;
-	 Scene scene = new Scene(tabPane, 800, 500);
-	 stage.setScene(scene);
-	 stage.setTitle("Editor");
-	 stage.show();
-  }
+//  public static void start(Stage stage) {
+////	 TabPane tabPane = new TabPane();
+////	 //EditorClient.tabPane = tabPane;
+////	 Scene scene = new Scene(tabPane, 800, 500);
+////	 stage.setScene(scene);
+////	 stage.setTitle("Editor");
+////	 stage.show();
+//  }
 
   public static EditorClient theClient() {
     return theClient;
@@ -258,7 +260,7 @@ public class EditorClient extends Client {
   }
 
 
-  private String getId(Tab item) {
+  public static String getId(Tab item) { // TODO: Undo public & static
     for (String id : tabs.keySet())
       if (tabs.get(id) == item) return id;
     return null;
@@ -350,36 +352,27 @@ public class EditorClient extends Client {
 //      public void run() {
 	  CountDownLatch l = new CountDownLatch(1);
 	  Platform.runLater(()->{
-        Tab tab = new Tab(label.length()<30? label : ("..."+label.substring(label.length()-30)));
-        tab.setContextMenu(new ContextMenu(new MenuItem("go")));
-        tab.setTooltip(new Tooltip(toolTip));
-        tab.setClosable(true);
-        tab.setOnCloseRequest((e)->close(tab,e));
-        tabs.put(id, tab);
+		
+        //Tab tab = new Tab(label.length()<30? label : ("..."+label.substring(label.length()-30)));
+        //tab.setContextMenu(new ContextMenu(new MenuItem("go")));
+        //tab.setTooltip(new Tooltip(toolTip));
+        //tab.setClosable(true);
+       // tab.setOnCloseRequest((e)->close(tab,e));
+        //tabs.put(id, tab); //wichtig!!!
         try {
           Class<?> textEditorClass = Class.forName(XModeler.textEditorClass);
           Constructor<?> cnstr = textEditorClass.getConstructor(new Class<?>[] { String.class, String.class, TabPane.class, Boolean.TYPE, Boolean.TYPE, String.class });
           ITextEditor editor = (ITextEditor) cnstr.newInstance(id, label, tabPane, editable, lineNumbers, text);
           // ITextEditor editor = new TextEditor(id, label, tabFolder, editable, lineNumbers, text);
-          tab.setContent(editor.getText());
+          //SceneContainer sceneContainer = SceneContainer.createAndShow(editor.getText(), false, label ,tabPane, getHandler(), id);  
+          //tab.setContent(editor.getText());
+          createTab(editor.getText(), label, id);
           editors.put(id, editor);
-          tabPane.getTabs().add(tab);
-          tabPane.getSelectionModel().select(tab);
-        } catch (ClassNotFoundException e) {
+          //tabPane.getTabs().add(tab);
+          //tabPane.getSelectionModel().select(tab);
+        } catch (Exception e) {
           e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-          e.printStackTrace();
-        } catch (SecurityException e) {
-          e.printStackTrace();
-        } catch (InstantiationException e) {
-          e.printStackTrace();
-        } catch (IllegalAccessException e) {
-          e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-          e.printStackTrace();
-        } catch (InvocationTargetException e) {
-          e.printStackTrace();
-        }
+        } 
         l.countDown();
 //      }
     });
@@ -806,9 +799,12 @@ public void sendMessage(final Message message) {
   public void writeXML(PrintStream out) {
     out.print("<Editors>");
     for (String id : editors.keySet()) {
-      Tab item = tabs.get(id);
-      ITextEditor editor = editors.get(id);
-      editor.writeXML(out, item.isSelected(), item.getText(), item.getTooltip().getText());
+      
+    	Tab item = tabs.get(id);
+    	ITextEditor editor = editors.get(id);
+    	if(item!=null) {
+    	     editor.writeXML(out, item.isSelected(), item.getText(), item.getTooltip().getText());
+    	}
     }
     /*for (String id : browsers.keySet()) {
       Tab tab = tabs.get(id);
@@ -956,10 +952,99 @@ public void sendMessage(final Message message) {
 //    return null;
 //  }
 
+	@Override
+	public boolean processMessage(Message message) {
+		return false;
+	}
 
+	// _____________________________________
 
-@Override
-public boolean processMessage(Message message) {
-	return false;
-}
+	private void createStage(javafx.scene.Node node, String name, String id) {
+		Stage stage = new Stage();
+		BorderPane border = new BorderPane();
+		border.setCenter(node);
+		Scene scene = new Scene(border, 1000, 605);
+		stage.setScene(scene);
+		stage.setTitle(name);
+		stage.show();
+		stage.setOnCloseRequest((e) -> closeScene(stage, e, id, name, node));
+	}
+
+	private void createTab(javafx.scene.Node node, String name, String id) {
+		Tab tab = new Tab(name);
+		tab.setTooltip(new Tooltip(name)); 
+		//TODO tooltip: Tab.setTooltip.setText() 
+		tab.setContent(node);
+		tab.setClosable(true);
+		EditorClient.tabs.put(id, tab);
+		tabPane.getTabs().add(tab);
+		tabPane.getSelectionModel().selectLast();
+		tab.setOnCloseRequest((e)->closeTab(tab,e, id, name, node));
+	}
+	
+	private void closeTab(Tab item, Event wevent, String id, String name, javafx.scene.Node node) { 
+		// Careful because the diagrams and files share the same tab folder...
+		
+		if (id != null && (EditorClient.editors.containsKey(id) || EditorClient.browsers.containsKey(id))) {
+
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+
+			ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+			ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
+			ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+			alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
+			alert.setTitle("Open tab in separate window instead?");
+			alert.setHeaderText(null);
+
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.get().getButtonData() == ButtonData.YES) {
+				EditorClient.tabs.remove(id);
+				createStage(node, name, id);
+
+			} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
+				wevent.consume();
+			} else {
+				Message message = getHandler().newMessage("textClosed", 1);
+				message.args[0] = new Value(id);
+				getHandler().raiseEvent(message);
+				EditorClient.editors.remove(id);
+				EditorClient.browsers.remove(id);
+				EditorClient.tabs.remove(id);
+			}
+		} else {
+			DiagramClient.theClient().close(id); // TODO: consider reimplementing in javafx
+		}
+	}
+	
+	private void closeScene(Stage stage, Event wevent, String id, String name, javafx.scene.Node node) { 
+		// Careful because the diagrams and files share the same tab folder...
+		
+		if (id != null && (EditorClient.editors.containsKey(id) || EditorClient.browsers.containsKey(id))) {
+
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+
+			ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+			ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
+			ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+			alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
+			alert.setTitle("Open stage as tab in editor instead?");
+			alert.setHeaderText(null);
+
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.get().getButtonData() == ButtonData.YES) {
+				createTab(node, name, id);
+			} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
+				wevent.consume();
+			} else {
+				Message message = getHandler().newMessage("textClosed", 1);
+				message.args[0] = new Value(id);
+				getHandler().raiseEvent(message);
+				EditorClient.editors.remove(id);
+				EditorClient.browsers.remove(id);
+			}
+		} else {
+			DiagramClient.theClient().close(id); // TODO: consider reimplementing in javafx
+		}
+	}
+
 }

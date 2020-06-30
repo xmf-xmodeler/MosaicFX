@@ -431,7 +431,7 @@ public class XModeler extends Application {
   
   public static void initClients() { // only sets the tab pane
 	  ModelBrowserClient.start(browserTab);
-	  EditorClient.start(singleton.newStage.getStageForEditor());
+	  EditorClient.start(editorTabs);
 	  FormsClient.start(propertyTabs);
 	  Console.start(singleton.newStage.getStageForConsole());
 	  DiagramClient.start(editorTabs);
