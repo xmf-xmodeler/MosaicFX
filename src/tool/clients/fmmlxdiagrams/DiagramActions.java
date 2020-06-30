@@ -940,6 +940,12 @@ public class DiagramActions {
 		}	
 	}
 
+	public void getFaXML() {
+		try {
+			System.err.println(diagram.getComm().getDiagramData(diagram));
+		} catch (TimeOutException e) {}
+	}
+
 
 
 //	public void attributeGeneratorDialog(FmmlxAttribute tmp, InstanceGeneratorGenerateType selectedType) {

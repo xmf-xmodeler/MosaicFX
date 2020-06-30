@@ -1267,6 +1267,13 @@ public class FmmlxDiagramCommunicator {
 		}
 		return result;
 	}
+	
+	public FaXML getDiagramData(FmmlxDiagram diagram) throws TimeOutException {
+		Vector<Object> response = xmfRequest(handler, diagram, "getDiagramData", new Value[]{});
+		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+
+		return new FaXML(responseContent);
+	}
 
 
 }
