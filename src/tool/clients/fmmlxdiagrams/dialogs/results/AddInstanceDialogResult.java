@@ -5,7 +5,7 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 import java.util.Vector;
 
-public class AddInstanceDialogResult extends DialogResult {
+public class AddInstanceDialogResult {
 
 	private String name;
 	private int level;

@@ -2,7 +2,7 @@ package tool.clients.fmmlxdiagrams.dialogs.results;
 
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 
-public class ChangeOfDialogResult extends DialogResult{
+public class ChangeOfDialogResult {
 	
 	private final FmmlxObject object;
 	private int oldOfId;

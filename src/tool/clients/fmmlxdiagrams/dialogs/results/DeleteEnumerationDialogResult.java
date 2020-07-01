@@ -5,7 +5,7 @@ import java.util.Vector;
 import javafx.collections.ObservableList;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 
-public class DeleteEnumerationDialogResult extends DialogResult{
+public class DeleteEnumerationDialogResult {
 	
 	private ObservableList<FmmlxEnum> enumList;
 	

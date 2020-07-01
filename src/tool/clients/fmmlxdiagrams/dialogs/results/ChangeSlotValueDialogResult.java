@@ -3,7 +3,7 @@ package tool.clients.fmmlxdiagrams.dialogs.results;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
 
-public class ChangeSlotValueDialogResult extends DialogResult {
+public class ChangeSlotValueDialogResult {
 	private FmmlxObject object;
 	private FmmlxSlot slot;
 	private String newValue;

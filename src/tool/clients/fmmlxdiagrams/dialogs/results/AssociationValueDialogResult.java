@@ -1,6 +1,6 @@
 package tool.clients.fmmlxdiagrams.dialogs.results;
 
-public class AssociationValueDialogResult extends DialogResult{
+public class AssociationValueDialogResult {
 	
 	
 

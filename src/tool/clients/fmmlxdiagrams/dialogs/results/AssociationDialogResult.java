@@ -4,7 +4,7 @@ import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 
-public class AssociationDialogResult extends DialogResult {
+public class AssociationDialogResult {
 
 	private final FmmlxAssociation selectedAssociation;
 	private FmmlxObject source;

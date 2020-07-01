@@ -4,7 +4,7 @@ import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
-public class ChangeTargetDialogResult extends DialogResult{
+public class ChangeTargetDialogResult {
 	
 	private final PropertyType type;
 	private FmmlxAssociation association;

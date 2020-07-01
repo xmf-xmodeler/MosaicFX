@@ -6,7 +6,7 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
-public class ChangeTypeDialogResult extends DialogResult{
+public class ChangeTypeDialogResult {
 	
 	private final PropertyType type;
 	private FmmlxObject object;

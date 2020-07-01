@@ -803,7 +803,9 @@ public void sendMessage(final Message message) {
     	Tab item = tabs.get(id);
     	ITextEditor editor = editors.get(id);
     	if(item!=null) {
-    	     editor.writeXML(out, item.isSelected(), item.getText(), item.getTooltip().getText());
+    	    editor.writeXML(out, item.isSelected(), item.getText(), item.getTooltip().getText());
+    	}else {
+    		editor.writeXML(out, false, editor.getLabel(), editor.getLabel());
     	}
     }
     /*for (String id : browsers.keySet()) {
