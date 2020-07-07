@@ -3,8 +3,6 @@ package tool.clients.fmmlxdiagrams.newpalette;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Vector;
 import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
@@ -33,8 +31,8 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 public class NewFmmlxPalette {
 	
 	public static HashMap<Integer, Paint> colors = null;
-	private TreeView<PaletteTool> tree;
-	private HashMap<String, PaletteGroup> paletteGroups = new HashMap<>();
+	private final TreeView<PaletteTool> tree;
+	private final HashMap<String, PaletteGroup> paletteGroups = new HashMap<>();
 	private final FmmlxDiagram fmmlxDiagram;
 	private TreeItem<PaletteTool> root; 
 	
@@ -177,11 +175,10 @@ public class NewFmmlxPalette {
 	}
 
 	public void clearAllGroup() {
-		Iterator<Entry<String, PaletteGroup>> groupIterator = paletteGroups.entrySet().iterator();
-		
-		while(groupIterator.hasNext()) {
+
+		for (Entry<String, PaletteGroup> stringPaletteGroupEntry : paletteGroups.entrySet()) {
 			@SuppressWarnings("rawtypes")
-			Map.Entry pair = (Entry) groupIterator.next();
+			Entry pair = (Entry) stringPaletteGroupEntry;
 			((PaletteGroup) pair.getValue()).clearTreeItem();
 			((PaletteGroup) pair.getValue()).clearTool();
 		}

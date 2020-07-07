@@ -51,7 +51,7 @@ public class LogXmlManager implements ILog, IXmlManager {
     }
 
     public synchronized Node createNewMetaClassLog(String name, int Owner) {
-        Element node = (Element) xmlHandler.createElement(XmlConstant.TAG_NAME_OBJECT);
+        Element node = (Element) xmlHandler.createElement(XmlConstant.TAG_NAME_ADD_METACLASS);
         node.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
         node.setAttribute(XmlConstant.ATTRIBUTE_OWNER, Owner+"");
         return node;

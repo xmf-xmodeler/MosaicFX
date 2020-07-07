@@ -21,7 +21,7 @@ public class ProjectXmlManager implements IXmlManager {
         project.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
         return project;
     }
-
+    
     public Node get(String name){
         Node projects = xmlHandler.getProjectsNode();
         return xmlHandler.getXmlHelper().getChildrenByAttributeValue(projects, XmlConstant.ATTRIBUTE_NAME, name);

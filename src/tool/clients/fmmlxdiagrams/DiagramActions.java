@@ -72,7 +72,7 @@ public class DiagramActions {
 		Platform.runLater(() -> {
 			CreateMetaClassDialog dlg = new CreateMetaClassDialog(diagram);
 			dlg.setTitle("Add metaclass");
-			String objectName="";
+			String objectName;
 			Optional<MetaClassDialogResult> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
@@ -114,10 +114,13 @@ public class DiagramActions {
 		Platform.runLater(() -> {
 			CreateMetaClassDialog dlg = new CreateMetaClassDialog(diagram);
 			dlg.setTitle("Add metaclass");
+			String objectName="";
 			Optional<MetaClassDialogResult> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
 				final MetaClassDialogResult mcdResult = result.get();
+
+				objectName = mcdResult.getName();
 
 				int x = (int) e.getX();
 				int y = (int) e.getY();
@@ -127,6 +130,13 @@ public class DiagramActions {
 					
 					diagram.updateDiagram();
 				}
+				ObjectXmlManager objectXmlManager = new ObjectXmlManager();
+				Node newObject = objectXmlManager.createObject(objectName, diagram.getPackagePath(), diagram.getID(), x, y);
+				objectXmlManager.add(newObject);
+
+				LogXmlManager logXmlManager = new LogXmlManager();
+				Node newLog = logXmlManager.createNewMetaClassLog(objectName, diagram.getID());
+				logXmlManager.add(newLog);
 			}
 		});
 	}
