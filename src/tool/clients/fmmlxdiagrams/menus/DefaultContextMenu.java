@@ -79,6 +79,10 @@ public class DefaultContextMenu extends ContextMenu {
 			MenuItem testGetFaXML = new MenuItem("get FaXML");
 			testGetFaXML.setOnAction(e -> actions.getFaXML());
 			getItems().addAll(testGetFaXML);
+			
+			MenuItem openFavoriteDialog = new MenuItem("open implementation dialog");
+			openFavoriteDialog.setOnAction(e -> actions.openFindImplementationDialog());
+			getItems().addAll(openFavoriteDialog);
 		}
 	}
 }

@@ -11,6 +11,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
+import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.association.AssociationDialog;
@@ -946,6 +947,15 @@ public class DiagramActions {
 		} catch (TimeOutException e) {}
 	}
 
+	public Object openFindImplementationDialog() {
+		Platform.runLater(() -> {
+
+			FindImplementationDialog dlg = new FindImplementationDialog();
+			Optional<Object> opt = dlg.showAndWait();
+
+		});
+		return null;
+	}
 
 
 //	public void attributeGeneratorDialog(FmmlxAttribute tmp, InstanceGeneratorGenerateType selectedType) {
