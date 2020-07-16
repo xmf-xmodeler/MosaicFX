@@ -80,9 +80,17 @@ public class DefaultContextMenu extends ContextMenu {
 			testGetFaXML.setOnAction(e -> actions.getFaXML());
 			getItems().addAll(testGetFaXML);
 			
-			MenuItem openFavoriteDialog = new MenuItem("open implementation dialog");
-			openFavoriteDialog.setOnAction(e -> actions.openFindImplementationDialog());
-			getItems().addAll(openFavoriteDialog);
+			MenuItem openFindImplementationDialog = new MenuItem("Search for Implementation");
+			openFindImplementationDialog.setOnAction(e -> actions.openFindImplementationDialog());
+			getItems().addAll(openFindImplementationDialog);
+			
+			MenuItem openFindClassDialog = new MenuItem("Search for Class");
+			openFindClassDialog.setOnAction(e -> actions.openFindClassDialog());
+			getItems().addAll(openFindClassDialog);
+			
+			MenuItem openFindSendersOfMessages = new MenuItem("Search for Senders");
+			openFindSendersOfMessages.setOnAction(e -> actions.openFindSendersDialog());
+			getItems().addAll(openFindSendersOfMessages);
 		}
 	}
 }
