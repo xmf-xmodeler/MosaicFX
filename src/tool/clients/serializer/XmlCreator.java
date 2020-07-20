@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 
 public class XmlCreator {
     private static final String path= XmlConstant.USER_XML_FILE_NAME;
-    private static final int version = 1;
+    private static final int version = XmlConstant.SERIALIZER_VERSION;
 
     public XmlCreator() {
     }

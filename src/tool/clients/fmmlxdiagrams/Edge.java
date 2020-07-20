@@ -92,6 +92,8 @@ public abstract class Edge implements CanvasElement {
 		return newTargetPortRegion;
 	}
 
+
+
 	private PortRegion determineInitialPort(FmmlxObject node, Point2D nextPoint, PortRegion defaultRegion) {
 		if (nextPoint == null) {
 			return defaultRegion;

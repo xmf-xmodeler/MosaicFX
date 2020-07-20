@@ -2,11 +2,11 @@ package tool.clients.serializer;
 
 public class XmlConstant {
     public static final String USER_XML_FILE_NAME = "userXmlFile.xml";
+    public static final int SERIALIZER_VERSION = 2;
 
     public static final String TAG_NAME_ROOT = "XModeler";
     public static final String TAG_NAME_VERSION = "Version";
     public static final String TAG_NAME_CATEGORIES = "Categories";
-    public static final String TAG_NAME_CATEGORY = "Category";
     public static final String TAG_NAME_PROJECTS = "Projects";
     public static final String TAG_NAME_PROJECT = "Project";
     public static final String TAG_NAME_DIAGRAMS = "Diagrams";
@@ -43,5 +43,7 @@ public class XmlConstant {
     public static final String ATTRIBUTE_PARENT_ASSOCIATION = "parent_association";
     public static final String ATTRIBUTE_MULTIPLICITY_START_TO_END = "multiplicity_start_to_end";
     public static final String ATTRIBUTE_MULTIPLICITY_END_TO_START = "multiplicity_end_to_start";
+
+    public static final String ATTRIBUTE_INTERMEDIATE_POINTS = "intermediate_points";
 
 }
