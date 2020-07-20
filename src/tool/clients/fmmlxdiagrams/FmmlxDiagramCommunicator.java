@@ -12,6 +12,7 @@ import xos.Value;
 
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
@@ -1266,6 +1267,13 @@ public class FmmlxDiagramCommunicator {
 			result.add(listElement);
 		}
 		return result;
+	}
+	
+	public FaXML getDiagramData(FmmlxDiagram diagram) throws TimeOutException {
+		Vector<Object> response = xmfRequest(handler, diagram, "getDiagramData", new Value[]{});
+		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+
+		return new FaXML(responseContent);
 	}
 
 

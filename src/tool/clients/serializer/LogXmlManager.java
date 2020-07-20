@@ -2,6 +2,7 @@ package tool.clients.serializer;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import tool.clients.fmmlxdiagrams.FaXML;
 import tool.clients.serializer.interfaces.ILog;
 import tool.clients.serializer.interfaces.IXmlManager;
 
@@ -14,7 +15,6 @@ public class LogXmlManager implements ILog, IXmlManager {
     public LogXmlManager() {
         this.xmlHandler = new XmlHandler();
     }
-
     public LogXmlManager(XmlHandler xmlHandler) {
         this.xmlHandler = xmlHandler;
     }
@@ -50,11 +50,23 @@ public class LogXmlManager implements ILog, IXmlManager {
         xmlHandler.moveCurrentStateForward(diagramId);
     }
 
-    public synchronized Node createNewMetaClassLog(String name, int Owner) {
-        Element node = (Element) xmlHandler.createElement(XmlConstant.TAG_NAME_ADD_METACLASS);
-        node.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
-        node.setAttribute(XmlConstant.ATTRIBUTE_OWNER, Owner+"");
+//    public synchronized Node createNewMetaClassLog(String name, int Owner) {
+//        Element node = (Element) xmlHandler.createElement(XmlConstant.TAG_NAME_ADD_METACLASS);
+//        node.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
+//        node.setAttribute(XmlConstant.ATTRIBUTE_OWNER, Owner+"");
+//        return node;
+//    }
+
+    public synchronized Node createNewLogFromFaXML(FaXML faXML){
+        Element node = (Element) xmlHandler.createElement(faXML.getName());
+        for(String attName : faXML.getAttributes()){
+            node.setAttribute(attName, faXML.getAttributeValue(attName));
+        }
         return node;
+    }
+
+    public synchronized void clearLog(){
+        xmlHandler.clearLogs();
     }
 
     @Override

@@ -141,10 +141,6 @@ public class FmmlxDiagram{
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-
-		DiagramXmlManager diagramManager = new DiagramXmlManager();
-		Element diagram = (Element) diagramManager.createDiagram(diagramID, label, packagePath);
-		diagramManager.add(diagram);
 		
 		java.util.Timer timer = new Timer();
 		timer.schedule(new TimerTask() {

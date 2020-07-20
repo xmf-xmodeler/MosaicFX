@@ -22,7 +22,27 @@ public class FmmlxLink extends Edge {
 		this.diagram = diagram;
 //		layout();
 	}
-	
+
+	public FmmlxObject getStartNode() {
+		return sourceNode;
+	}
+
+	public FmmlxObject getEndNode() {
+		return targetNode;
+	}
+
+	public PortRegion getSourcePort(){
+		return super.getSourcePortRegion();
+	}
+
+	public PortRegion getTargetPort(){
+		return super.getSourcePortRegion();
+	}
+
+	public int getOfId() {
+		return ofId;
+	}
+
 	private enum Anchor {SOURCE,CENTRE,TARGET};
 
 	@Override protected void layoutLabels() {

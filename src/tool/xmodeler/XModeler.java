@@ -429,7 +429,7 @@ public class XModeler extends Application {
 	  ModelBrowserClient.start(browserTab);
 	  EditorClient.start(editorTabs);
 	  FormsClient.start(propertyTabs);
-	  Console.start(singleton.newStage.getStageForConsole());
+	  Console.start(propertyTabs);
 	  DiagramClient.start(editorTabs);
 	  FmmlxDiagramCommunicator.start(editorTabs);
 	  ClassBrowserClient.start();
@@ -448,15 +448,9 @@ public class XModeler extends Application {
 	  newStage.show();
 	  createXmodeler();
 	  initClients();
-      initUserXMLFile();
       startClients();
 	  openXModeler();
   }
-
-    private void initUserXMLFile() throws TransformerException, ParserConfigurationException {
-        XmlCreator xmlCreator = new XmlCreator();
-        xmlCreator.create();
-    }
 
     public void createXmodeler() throws Exception {
 	  		outerSplitPane = new SplitPane();

@@ -1,5 +1,7 @@
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import tool.clients.serializer.LogXmlManager;
 import tool.clients.serializer.XmlCreator;
 import tool.clients.serializer.XmlHandler;
@@ -57,14 +59,18 @@ class XmlHandlerTest {
     }
 
     @Test
-    void addXmlLogElement() throws TransformerException, ParserConfigurationException {
+    void getDiagramsElementTest(){
+        XmlHandler xmlHandler = new XmlHandler();
+        System.out.println(xmlHandler.getDiagramsNode().getNodeName());
+    }
+
+    @Test
+    void removeProjectsNodeTest() throws TransformerException, ParserConfigurationException {
         XmlCreator xmlCreator = new XmlCreator();
         xmlCreator.create();
         XmlHandler xmlHandler = new XmlHandler();
-        LogXmlManager logManager = new LogXmlManager(xmlHandler);
-        Element log = (Element) logManager.createNewMetaClassLog("AddMetaClass", 1);
-        log.setAttribute("object_name", "metaclass2");
-        log.setAttribute("diagramId", "1");
-        logManager.add(log);
+        Node root = xmlHandler.getXmlHelper().getRootNode();
+        Node Projects = xmlHandler.getProjectsNode();
+        xmlHandler.getXmlHelper().removeNodeByTag(root, "Version");
     }
 }

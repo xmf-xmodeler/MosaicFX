@@ -3,10 +3,13 @@ package tool.clients.serializer;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.serializer.interfaces.IXmlManager;
 
 import javax.xml.transform.TransformerException;
 import java.util.List;
+import java.util.Vector;
 
 public class ObjectXmlManager implements IXmlManager {
     private final XmlHandler xmlHandler;
@@ -15,13 +18,25 @@ public class ObjectXmlManager implements IXmlManager {
         this.xmlHandler = new XmlHandler();
     }
 
-    public Node createObject(String name, String projectPath, int owner, int x, int y) {
+    public Node createObject(FmmlxDiagram diagram, FmmlxObject fmmlxObject) {
+        int id = fmmlxObject.getId();
+        String name = fmmlxObject.getName();
+        int level= fmmlxObject.getLevel();
+        Vector<Integer> parents = fmmlxObject.getParents();
+        String projectPath = diagram.getPackagePath()+"::"+name;
+        int owner = diagram.getID();
+        double x = fmmlxObject.getX();
+        double y = fmmlxObject.getY();
+
         Element object = (Element) xmlHandler.createElement(XmlConstant.TAG_NAME_OBJECT);
+        object.setAttribute(XmlConstant.ATTRIBUTE_ID, id+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
-        object.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath+"::"+name);
+        object.setAttribute(XmlConstant.ATTRIBUTE_LEVEL, level+"");
+        object.setAttribute(XmlConstant.ATTRIBUTE_PARENTS, parents+"");
+        object.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
         object.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner+"");
-        object.setAttribute(XmlConstant.ATTRIBUTE_COORDINAT_X, x+"");
-        object.setAttribute(XmlConstant.ATTRIBUTE_COORDINAT_Y, y+"");
+        object.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, x+"");
+        object.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, y+"");
         return object;
     }
 

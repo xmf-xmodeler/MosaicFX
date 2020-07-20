@@ -8,7 +8,6 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.scene.transform.Affine;
-import tool.clients.fmmlxdiagrams.PortRegion;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -77,6 +76,21 @@ public abstract class Edge implements CanvasElement {
 
 	}
 
+	protected FmmlxObject getSourceNode() {
+		return sourceNode;
+	}
+
+	protected FmmlxObject getTargetNode() {
+		return targetNode;
+	}
+
+	protected PortRegion getSourcePortRegion() {
+		return newSourcePortRegion;
+	}
+
+	protected PortRegion getTargetPortRegion() {
+		return newTargetPortRegion;
+	}
 
 	private PortRegion determineInitialPort(FmmlxObject node, Point2D nextPoint, PortRegion defaultRegion) {
 		if (nextPoint == null) {

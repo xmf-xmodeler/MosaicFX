@@ -6,14 +6,12 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 
 public class XmlHandler {
     private final Document document;
@@ -32,7 +30,10 @@ public class XmlHandler {
         xmlHelper.removeAllChildren(getCategoriesNode());
         xmlHelper.removeAllChildren(getProjectsNode());
         xmlHelper.removeAllChildren(getDiagramsNode());
-        xmlHelper.removeAllChildren(getObjectsNode());
+        xmlHelper.removeAllChildren(getLogsNode());
+    }
+
+    public void clearLogs(){
         xmlHelper.removeAllChildren(getLogsNode());
     }
 
@@ -160,6 +161,11 @@ public class XmlHandler {
         xmlHelper.addXmlElement(objects, object);
     }
 
+    public void addEdgeElement(Element edges, Element newObject)
+            throws TransformerException {
+        xmlHelper.addXmlElement(edges, newObject);
+    }
+
     public void addDiagramElement(Node diagrams, Node diagram)
             throws TransformerException {
         xmlHelper.addXmlElement(diagrams, diagram);
@@ -175,6 +181,11 @@ public class XmlHandler {
         xmlHelper.addXmlElement(diagram, categories);
     }
 
+    public void addDiagramEdgesElement(Element diagram, Node edges)
+            throws TransformerException {
+        xmlHelper.addXmlElement(diagram, edges);
+    }
+
     public void addDiagramPreferencesElemet(Element diagram, Node preferences) throws TransformerException {
         xmlHelper.addXmlElement(diagram, preferences);
     }
@@ -183,12 +194,10 @@ public class XmlHandler {
         return currentLog;
     }
 
-    protected void saveState() {
-
-        //TODO save all mapping element to Latest Save
-
-        currentLog = null;
-        assert getLogsNode() != null;
+    protected void clearAllXmlChildren() {
+        xmlHelper.removeAllChildren(getProjectsNode());
+        xmlHelper.removeAllChildren(getCategoriesNode());
+        xmlHelper.removeAllChildren(getDiagramsNode());
         xmlHelper.removeAllChildren(getLogsNode());
     }
 
@@ -238,6 +247,13 @@ public class XmlHandler {
         return stringBuilder.toString();
     }
 
+    public void removeDiagramsChildren() {
+        xmlHelper.removeAllChildren(getDiagramsNode());
+    }
+
+
+
+
     public class XmlHelper {
         private final Document document;
 
@@ -269,7 +285,6 @@ public class XmlHandler {
         }
 
         protected void addXmlElement(Node parent, Node node) throws TransformerException {
-            setAllLogCurrentStateValueToNull();
             Element parent1 = (Element) parent;
             assert parent1 != null;
             parent1.appendChild(node);
@@ -286,11 +301,9 @@ public class XmlHandler {
 
         public void removeAllChildren(Node parentNode){
             NodeList nodeList = parentNode.getChildNodes();
-            Element parent = (Element) parentNode;
             for(int i = 0 ; i< nodeList.getLength(); i++){
                 if(nodeList.item(i).getNodeType() == Node.ELEMENT_NODE){
-                    Element element = (Element) nodeList.item(i);
-                    parent.removeChild(element);
+                    parentNode.removeChild(nodeList.item(i));
                 }
             }
         }
@@ -323,7 +336,7 @@ public class XmlHandler {
             return null;
         }
 
-        public void removeNodeByTag(Node parentNode, String tagName){
+        public void removeNodeByTag(Node parentNode, String tagName) throws TransformerException {
             NodeList childNodes = parentNode.getChildNodes();
             for(int i = 0 ; i< childNodes.getLength(); i++){
                 if(childNodes.item(i).getNodeName().equals(tagName)){
@@ -331,6 +344,15 @@ public class XmlHandler {
                     return;
                 }
             }
+
+            parentNode.normalize();
+
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+            StreamResult result = new StreamResult(new StringWriter());
+            DOMSource source = new DOMSource(document);
+            transformer.transform(source, result);
         }
 
         public void removeNodeByAttributeValue(Node parentNode, String attributeName, String attributeValue){

@@ -37,7 +37,10 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
 import tool.clients.serializer.LogXmlManager;
 import tool.clients.serializer.ObjectXmlManager;
+import tool.clients.serializer.Serializer;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
@@ -99,13 +102,6 @@ public class DiagramActions {
 				};
 				canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
 
-				ObjectXmlManager objectXmlManager = new ObjectXmlManager();
-				Node newObject = objectXmlManager.createObject(objectName, diagram.getPackagePath(), diagram.getID(), 0, 0);
-				objectXmlManager.add(newObject);
-
-				LogXmlManager logXmlManager = new LogXmlManager();
-				Node newLog = logXmlManager.createNewMetaClassLog(objectName, diagram.getID());
-				logXmlManager.add(newLog);
 			}
 		});
 	}
@@ -130,13 +126,6 @@ public class DiagramActions {
 					
 					diagram.updateDiagram();
 				}
-				ObjectXmlManager objectXmlManager = new ObjectXmlManager();
-				Node newObject = objectXmlManager.createObject(objectName, diagram.getPackagePath(), diagram.getID(), x, y);
-				objectXmlManager.add(newObject);
-
-				LogXmlManager logXmlManager = new LogXmlManager();
-				Node newLog = logXmlManager.createNewMetaClassLog(objectName, diagram.getID());
-				logXmlManager.add(newLog);
 			}
 		});
 	}
@@ -943,7 +932,7 @@ public class DiagramActions {
 
 			if(solution.isPresent()) {
 				if(solution.get().createNew) {
-					addInstanceDialog(solution.get().selection);				
+					addInstanceDialog(solution.get().selection);
 				} else {
 					diagram.getComm().addAssociationInstance(diagram, obj.getId(), solution.get().selection.getId(), assoc.getId());
 					diagram.updateDiagram();
@@ -960,6 +949,18 @@ public class DiagramActions {
 		}	
 	}
 
+	public void save() {
+		Platform.runLater(() -> {
+			Serializer serializer = new Serializer();
+			try {
+				serializer.saveState(diagram);
+			} catch (TransformerException e) {
+				e.printStackTrace();
+			} catch (ParserConfigurationException e) {
+				e.printStackTrace();
+			}
+		});
+	}
 
 
 //	public void attributeGeneratorDialog(FmmlxAttribute tmp, InstanceGeneratorGenerateType selectedType) {
