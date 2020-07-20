@@ -1,17 +1,23 @@
 package tool.clients.serializer;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 
 public class XmlHandler {
     private final Document document;
@@ -251,7 +257,39 @@ public class XmlHandler {
         xmlHelper.removeAllChildren(getDiagramsNode());
     }
 
+    public void removeProjectsNode() {
+        Node projects = getProjectsNode();
+        getXmlHelper().getRootNode().removeChild(projects);
+    }
 
+    public void replaceNode(Node projectsNode, String hallo) throws TransformerException {
+        Node newNode = xmlHelper.createElement(hallo);
+        xmlHelper.getRootNode().replaceChild(newNode, projectsNode);
+
+        xmlHelper.getRootNode().normalize();
+
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+        StreamResult result = new StreamResult(new File(XmlConstant.USER_XML_FILE_NAME));
+        DOMSource source = new DOMSource(document);
+        transformer.transform(source, result);
+    }
+
+    public void removeDiagram(FmmlxDiagram diagram) throws TransformerException {
+        Node diagrams = getDiagramsNode();
+        NodeList diagramsChildNodes = diagrams.getChildNodes();
+
+        for(int i = 0 ; i< diagramsChildNodes.getLength(); i++){
+            if(diagramsChildNodes.item(i).getNodeType() == Node.ELEMENT_NODE){
+                Element element = (Element) diagramsChildNodes.item(i);
+                if(element.getAttribute(XmlConstant.ATTRIBUTE_ID).equals(diagram.getID()+"")
+                        && element.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(diagram.getDiagramLabel())){
+                    xmlHelper.removeChild(diagrams, element);
+                }
+            }
+        }
+    }
 
 
     public class XmlHelper {
@@ -270,7 +308,8 @@ public class XmlHandler {
             for(int i = 0 ; i< nodeList.getLength(); i++){
                 if(nodeList.item(i).getNodeType() == Node.ELEMENT_NODE){
                     Element element = (Element) nodeList.item(i);
-                    if(element.getAttribute(attributeName).equals(attributeValue)){
+                    if(element
+                            .getAttribute(attributeName).equals(attributeValue)){
                         return nodeList.item(i);
                     }
                 }
@@ -322,20 +361,6 @@ public class XmlHandler {
             return null;
         }
 
-        public Node getNodeByValue(Node parentNode, String value){
-            NodeList nodeList = parentNode.getChildNodes();
-
-            for(int i = 0 ; i < nodeList.getLength(); i++){
-                if(nodeList.item(i).getNodeType() == Node.ELEMENT_NODE){
-                    Element element = (Element) nodeList.item(i);
-                    if(element.getNodeValue().equals(value)){
-                        return nodeList.item(i);
-                    }
-                }
-            }
-            return null;
-        }
-
         public void removeNodeByTag(Node parentNode, String tagName) throws TransformerException {
             NodeList childNodes = parentNode.getChildNodes();
             for(int i = 0 ; i< childNodes.getLength(); i++){
@@ -350,15 +375,35 @@ public class XmlHandler {
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
-            StreamResult result = new StreamResult(new StringWriter());
+            StreamResult result = new StreamResult(new File(XmlConstant.USER_XML_FILE_NAME));
             DOMSource source = new DOMSource(document);
             transformer.transform(source, result);
         }
 
-        public void removeNodeByAttributeValue(Node parentNode, String attributeName, String attributeValue){
+        public void removeNodeByAttributeValue(Node parentNode, String attributeName, String attributeValue)
+                throws TransformerException {
             parentNode.removeChild(getChildrenByAttributeValue(parentNode, attributeName, attributeValue));
+            parentNode.normalize();
+
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+            StreamResult result = new StreamResult(new File(XmlConstant.USER_XML_FILE_NAME));
+            DOMSource source = new DOMSource(document);
+            transformer.transform(source, result);
         }
 
 
+        public void removeChild(Node parent, Node node) throws TransformerException {
+            parent.removeChild(node);
+            parent.normalize();
+
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+            StreamResult result = new StreamResult(new File(XmlConstant.USER_XML_FILE_NAME));
+            DOMSource source = new DOMSource(document);
+            transformer.transform(source, result);
+        }
     }
 }

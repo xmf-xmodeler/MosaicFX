@@ -42,18 +42,18 @@ public class DiagramXmlManager implements IXmlManager {
         return diagram;
     }
 
-    public boolean exists(int id, String diagramLabel, String packagePath) {
+    public boolean isExist(FmmlxDiagram diagram) {
         Node diagrams = xmlHandler.getDiagramsNode();
-        NodeList children = diagrams.getChildNodes();
 
-        for(int i=0 ; i< children.getLength(); i++){
-            Element element = (Element) children.item(i);
-            String idAtt = element.getAttribute(XmlConstant.ATTRIBUTE_ID);
-            String labelAtt = element.getAttribute(XmlConstant.ATTRIBUTE_LABEL);
-            String packagePathAtt = element.getAttribute(XmlConstant.ATTRIBUTE_PACKAGE_PATH);
+        NodeList diagramList = diagrams.getChildNodes();
 
-            if(idAtt.equals(id+"") && labelAtt.equals(diagramLabel) && packagePathAtt.equals(packagePath)){
-                return true;
+        for(int i =0; i<diagramList.getLength(); i++){
+            if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
+                Element element = (Element) diagramList.item(i);
+                if(element.getAttribute(XmlConstant.ATTRIBUTE_ID).equals(diagram.getID()+"")
+                        && element.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(diagram.getDiagramLabel())){
+                    return true;
+                }
             }
         }
         return false;
@@ -77,5 +77,13 @@ public class DiagramXmlManager implements IXmlManager {
     @Override
     public List<Node> getAll() {
         return null;
+    }
+
+    public void replace(Node diagramNode) {
+
+    }
+
+    public void remove(FmmlxDiagram diagram) throws TransformerException {
+        xmlHandler.removeDiagram(diagram);
     }
 }

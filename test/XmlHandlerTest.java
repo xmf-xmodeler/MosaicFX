@@ -66,11 +66,8 @@ class XmlHandlerTest {
 
     @Test
     void removeProjectsNodeTest() throws TransformerException, ParserConfigurationException {
-        XmlCreator xmlCreator = new XmlCreator();
-        xmlCreator.create();
         XmlHandler xmlHandler = new XmlHandler();
-        Node root = xmlHandler.getXmlHelper().getRootNode();
-        Node Projects = xmlHandler.getProjectsNode();
-        xmlHandler.getXmlHelper().removeNodeByTag(root, "Version");
+        assertNotNull(xmlHandler.getProjectsNode());
+        xmlHandler.replaceNode(xmlHandler.getProjectsNode(), "Hallo");
     }
 }

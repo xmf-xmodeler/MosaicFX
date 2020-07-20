@@ -65,11 +65,6 @@ public class XmlCreator {
             DOMSource domSource = new DOMSource(document);
             StreamResult streamResult = new StreamResult(new File(path));
             transformer.transform(domSource, streamResult);
-        } else {
-            //All this Codes are just for Test purpose
-            deleteUserXmlfile();
-            create();
-            //----------------------------------------
         }
     }
 

@@ -19,7 +19,6 @@ public class Serializer implements ISerializer {
     @Override
     public synchronized void saveState(FmmlxDiagram diagram) throws TransformerException, ParserConfigurationException {
         initUserXMLFile();
-        xmlHandler.clearAllChildren();
 
         saveDiagram(diagram);
         saveLog(diagram);
@@ -72,7 +71,6 @@ public class Serializer implements ISerializer {
 
     private void saveObjects(FmmlxDiagram diagram) {
         ObjectXmlManager objectXmlManager = new ObjectXmlManager();
-
         Vector<FmmlxObject> objects = diagram.getObjects();
         for (FmmlxObject object : objects){
             Node objectNode = objectXmlManager.createObject(diagram, object);
@@ -80,14 +78,18 @@ public class Serializer implements ISerializer {
         }
     }
 
-    private void saveDiagram(FmmlxDiagram diagram) {
+    private void saveDiagram(FmmlxDiagram diagram) throws TransformerException {
         DiagramXmlManager diagramXmlManager = new DiagramXmlManager();
-
         Node diagramNode = diagramXmlManager.createDiagram(diagram);
+
+        if (diagramXmlManager.isExist(diagram)) {
+            diagramXmlManager.remove(diagram);
+        }
         diagramXmlManager.add(diagramNode);
         saveObjects(diagram);
         saveEdges(diagram);
     }
+
 
     @Override
     public synchronized void loadState(int diagramId, String diagramLabel) {
