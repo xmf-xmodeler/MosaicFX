@@ -7,5 +7,5 @@ public interface ILog {
     void back(int diagramId);
     void forward(int diagramId);
     void backToLatestSave(int diagramId, String diagramLabel);
-    Element getCurrentState();
+
 }

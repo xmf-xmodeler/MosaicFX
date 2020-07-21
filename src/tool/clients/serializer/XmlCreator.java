@@ -68,7 +68,7 @@ public class XmlCreator {
         }
     }
 
-    public void deleteUserXmlfile(){
+    public void deleteUserXmlFile(){
         File file = new File(path);
         file.delete();
     }

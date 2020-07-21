@@ -13,7 +13,7 @@ public class DiagramXmlManager implements IXmlManager {
     private final XmlHandler xmlHandler;
 
     public DiagramXmlManager(){
-        this.xmlHandler = new XmlHandler();
+        this.xmlHandler = XmlHandler.getXmlHandlerInstance();
     }
 
     public Node createDiagram(FmmlxDiagram fmmlxDiagram) {
@@ -35,7 +35,7 @@ public class DiagramXmlManager implements IXmlManager {
             xmlHandler.addDiagramOwnersElement(diagram, owners);
             xmlHandler.addDiagramObjectsElement(diagram, objects);
             xmlHandler.addDiagramEdgesElement(diagram, edges);
-            xmlHandler.addDiagramPreferencesElemet(diagram, preferences);
+            xmlHandler.addDiagramPreferencesElement(diagram, preferences);
         } catch (TransformerException e) {
             e.printStackTrace();
         }
@@ -79,9 +79,6 @@ public class DiagramXmlManager implements IXmlManager {
         return null;
     }
 
-    public void replace(Node diagramNode) {
-
-    }
 
     public void remove(FmmlxDiagram diagram) throws TransformerException {
         xmlHandler.removeDiagram(diagram);

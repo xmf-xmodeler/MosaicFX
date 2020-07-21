@@ -10,16 +10,13 @@ import java.util.Vector;
 
 
 public class Serializer implements ISerializer {
-    private final XmlHandler xmlHandler;
 
     public Serializer() {
-        this.xmlHandler = new XmlHandler();
     }
 
     @Override
-    public synchronized void saveState(FmmlxDiagram diagram) throws TransformerException, ParserConfigurationException {
+    public void saveState(FmmlxDiagram diagram) throws TransformerException, ParserConfigurationException {
         initUserXMLFile();
-
         saveDiagram(diagram);
         saveLog(diagram);
     }
@@ -92,9 +89,7 @@ public class Serializer implements ISerializer {
 
 
     @Override
-    public synchronized void loadState(int diagramId, String diagramLabel) {
-        this.xmlHandler.getLatestSave(diagramId, diagramLabel);
-
-        //TODO bind to Diagram
+    public void loadState(int diagramId, String diagramLabel) {
+        //TODO
     }
 }

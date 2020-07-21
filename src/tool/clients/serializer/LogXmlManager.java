@@ -13,10 +13,7 @@ public class LogXmlManager implements ILog, IXmlManager {
     private final XmlHandler xmlHandler;
 
     public LogXmlManager() {
-        this.xmlHandler = new XmlHandler();
-    }
-    public LogXmlManager(XmlHandler xmlHandler) {
-        this.xmlHandler = xmlHandler;
+        this.xmlHandler = XmlHandler.getXmlHandlerInstance();
     }
 
     @Override
@@ -41,23 +38,16 @@ public class LogXmlManager implements ILog, IXmlManager {
     }
 
     @Override
-    public synchronized void back(int diagramId) {
-        xmlHandler.moveCurrentStateBackward(diagramId);
+    public void back(int diagramId) {
+        //TODO
     }
 
     @Override
-    public synchronized void forward(int diagramId) {
-        xmlHandler.moveCurrentStateForward(diagramId);
+    public void forward(int diagramId) {
+        //TODO
     }
 
-//    public synchronized Node createNewMetaClassLog(String name, int Owner) {
-//        Element node = (Element) xmlHandler.createElement(XmlConstant.TAG_NAME_ADD_METACLASS);
-//        node.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
-//        node.setAttribute(XmlConstant.ATTRIBUTE_OWNER, Owner+"");
-//        return node;
-//    }
-
-    public synchronized Node createNewLogFromFaXML(FaXML faXML){
+    public Node createNewLogFromFaXML(FaXML faXML){
         Element node = (Element) xmlHandler.createElement(faXML.getName());
         for(String attName : faXML.getAttributes()){
             node.setAttribute(attName, faXML.getAttributeValue(attName));
@@ -65,18 +55,13 @@ public class LogXmlManager implements ILog, IXmlManager {
         return node;
     }
 
-    public synchronized void clearLog(){
+    public synchronized void clearLog() throws TransformerException {
         xmlHandler.clearLogs();
     }
 
     @Override
     public synchronized void backToLatestSave(int diagramId, String diagramLabel) {
-        xmlHandler.getLatestSave(diagramId, diagramLabel);
-    }
-
-    @Override
-    public Element getCurrentState() {
-        return (Element) xmlHandler.getCurrentLog();
+        //TODO
     }
 
     @Override

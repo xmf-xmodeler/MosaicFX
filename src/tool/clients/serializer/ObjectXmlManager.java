@@ -15,13 +15,14 @@ public class ObjectXmlManager implements IXmlManager {
     private final XmlHandler xmlHandler;
 
     public ObjectXmlManager(){
-        this.xmlHandler = new XmlHandler();
+        this.xmlHandler = XmlHandler.getXmlHandlerInstance();
     }
 
     public Node createObject(FmmlxDiagram diagram, FmmlxObject fmmlxObject) {
         int id = fmmlxObject.getId();
         String name = fmmlxObject.getName();
         int level= fmmlxObject.getLevel();
+        int of = fmmlxObject.getOf();
         Vector<Integer> parents = fmmlxObject.getParents();
         String projectPath = diagram.getPackagePath()+"::"+name;
         int owner = diagram.getID();
@@ -32,6 +33,7 @@ public class ObjectXmlManager implements IXmlManager {
         object.setAttribute(XmlConstant.ATTRIBUTE_ID, id+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
         object.setAttribute(XmlConstant.ATTRIBUTE_LEVEL, level+"");
+        object.setAttribute(XmlConstant.ATTRIBUTE_OF, of+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_PARENTS, parents+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
         object.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner+"");

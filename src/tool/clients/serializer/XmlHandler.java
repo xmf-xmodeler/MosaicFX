@@ -22,24 +22,31 @@ import java.io.IOException;
 public class XmlHandler {
     private final Document document;
     private final XmlHelper xmlHelper;
-    private Node currentLog;
     private final String sourcePath;
 
-    public XmlHandler() {
+    private static XmlHandler xmlHandlerInstance;
+
+    public static synchronized XmlHandler getXmlHandlerInstance(){
+        if(xmlHandlerInstance == null){
+            xmlHandlerInstance = new XmlHandler();
+        }
+        return xmlHandlerInstance;
+    }
+
+    private XmlHandler() {
         this.sourcePath = XmlCreator.getPath();
         this.document = buildDocument(sourcePath);
         this.xmlHelper = new XmlHelper(getDocument());
-        this.currentLog = null;
     }
 
-    public void clearAllChildren(){
+    public void clearAllChildren() throws TransformerException {
         xmlHelper.removeAllChildren(getCategoriesNode());
         xmlHelper.removeAllChildren(getProjectsNode());
         xmlHelper.removeAllChildren(getDiagramsNode());
         xmlHelper.removeAllChildren(getLogsNode());
     }
 
-    public void clearLogs(){
+    public void clearLogs() throws TransformerException {
         xmlHelper.removeAllChildren(getLogsNode());
     }
 
@@ -82,11 +89,6 @@ public class XmlHandler {
         return xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_DIAGRAMS);
     }
 
-    public Node getObjectsNode() {
-        Node root = xmlHelper.getRootNode();
-        return xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_OBJECTS);
-    }
-
     protected Node getLogsNode() {
         Node root = xmlHelper.getRootNode();
         return xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_LOGS);
@@ -94,59 +96,6 @@ public class XmlHandler {
 
     protected Node createElement(String name){
         return xmlHelper.createElement(name);
-    }
-
-    protected void moveCurrentStateBackward(int diagramId){
-        if(currentLog!=null){
-            Node actionNode = getLogsNode();
-            assert actionNode != null;
-            NodeList nodeList = actionNode.getChildNodes();
-            int latestPosition=0;
-
-            for(int i = 0; i<nodeList.getLength(); i++){
-                if(nodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
-                    Element element = (Element) nodeList.item(i);
-                    if(element.getAttributes().getNamedItem("current").getNodeValue().equals("1") && latestPosition==0){
-                        this.currentLog = null;
-                        return;
-                    } else if(element.getAttributes().getNamedItem("current").getNodeValue().equals("1")){
-                        setAllLogCurrentStateValueToNull();
-                        nodeList.item(latestPosition).getAttributes().getNamedItem("current").setNodeValue("1");
-                        this.currentLog = nodeList.item(latestPosition);
-                        return;
-                    }
-                    latestPosition = i;
-                }
-            }
-        }
-    }
-
-    protected void moveCurrentStateForward(int diagramId) {
-        if(currentLog!=null){
-            Node actionNode = getLogsNode();
-            assert actionNode != null;
-            NodeList nodeList = actionNode.getChildNodes();
-            int latestPosition=0;
-
-            for(int i = 0; i<nodeList.getLength(); i++){
-                if(nodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
-                    Element element = (Element) nodeList.item(i);
-                    if(element.getAttributes().getNamedItem("current").getNodeValue().equals("1")){
-                        latestPosition = i;
-                        break;
-                    }
-                }
-            }
-
-            for(int i = latestPosition; i<nodeList.getLength(); i++){
-                if(nodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
-                    Element element = (Element) nodeList.item(i);
-                    setAllLogCurrentStateValueToNull();
-                    element.getAttributes().getNamedItem("current").setNodeValue("1");
-                    this.currentLog = element;
-                }
-            }
-        }
     }
 
     protected void addLogElement(Node logs, Node log)
@@ -192,41 +141,8 @@ public class XmlHandler {
         xmlHelper.addXmlElement(diagram, edges);
     }
 
-    public void addDiagramPreferencesElemet(Element diagram, Node preferences) throws TransformerException {
+    public void addDiagramPreferencesElement(Element diagram, Node preferences) throws TransformerException {
         xmlHelper.addXmlElement(diagram, preferences);
-    }
-
-    protected Node getCurrentLog() {
-        return currentLog;
-    }
-
-    protected void clearAllXmlChildren() {
-        xmlHelper.removeAllChildren(getProjectsNode());
-        xmlHelper.removeAllChildren(getCategoriesNode());
-        xmlHelper.removeAllChildren(getDiagramsNode());
-        xmlHelper.removeAllChildren(getLogsNode());
-    }
-
-    protected void getLatestSave(int diagramId, String diagramLabel){
-        setAllLogCurrentStateValueToNull();
-        this.currentLog = null;
-
-        //TODO
-    }
-
-    private void setAllLogCurrentStateValueToNull() {
-        Node logNode = getLogsNode();
-        assert logNode != null;
-        NodeList logs = logNode.getChildNodes();
-        //TODO
-//        for (int i = 0 ; i<logs.getLength(); i++){
-//            if(logs.item(i).getNodeType() == Node.ELEMENT_NODE){
-//                Element element = (Element) logs.item(i);
-//                if(element.getAttributes().getNamedItem("current").getNodeValue().equals("1")){
-//                    element.getAttributes().getNamedItem("current").setNodeValue("0");
-//                }
-//            }
-//        }
     }
 
     @Override
@@ -251,15 +167,6 @@ public class XmlHandler {
             e.printStackTrace();
         }
         return stringBuilder.toString();
-    }
-
-    public void removeDiagramsChildren() {
-        xmlHelper.removeAllChildren(getDiagramsNode());
-    }
-
-    public void removeProjectsNode() {
-        Node projects = getProjectsNode();
-        getXmlHelper().getRootNode().removeChild(projects);
     }
 
     public void replaceNode(Node projectsNode, String hallo) throws TransformerException {
@@ -338,13 +245,20 @@ public class XmlHandler {
             transformer.transform(source, result);
         }
 
-        public void removeAllChildren(Node parentNode){
+        public void removeAllChildren(Node parentNode) throws TransformerException {
             NodeList nodeList = parentNode.getChildNodes();
             for(int i = 0 ; i< nodeList.getLength(); i++){
                 if(nodeList.item(i).getNodeType() == Node.ELEMENT_NODE){
                     parentNode.removeChild(nodeList.item(i));
                 }
             }
+
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+            StreamResult result = new StreamResult(new File(XmlConstant.USER_XML_FILE_NAME));
+            DOMSource source = new DOMSource(document);
+            transformer.transform(source, result);
         }
 
         public Node getNodeByTag(Node parentNode, String tagName) {
@@ -369,22 +283,6 @@ public class XmlHandler {
                     return;
                 }
             }
-
-            parentNode.normalize();
-
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-
-            StreamResult result = new StreamResult(new File(XmlConstant.USER_XML_FILE_NAME));
-            DOMSource source = new DOMSource(document);
-            transformer.transform(source, result);
-        }
-
-        public void removeNodeByAttributeValue(Node parentNode, String attributeName, String attributeValue)
-                throws TransformerException {
-            parentNode.removeChild(getChildrenByAttributeValue(parentNode, attributeName, attributeValue));
-            parentNode.normalize();
-
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
@@ -396,8 +294,6 @@ public class XmlHandler {
 
         public void removeChild(Node parent, Node node) throws TransformerException {
             parent.removeChild(node);
-            parent.normalize();
-
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 

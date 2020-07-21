@@ -16,7 +16,7 @@ public class EdgeXmlManager implements IXmlManager {
     private final XmlHandler xmlHandler;
 
     public EdgeXmlManager(){
-        this.xmlHandler = new XmlHandler();
+        this.xmlHandler = XmlHandler.getXmlHandlerInstance();
     }
 
     public Node createAssociationXmlNode(FmmlxDiagram fmmlxDiagram, FmmlxAssociation fmmlxAssociation) {

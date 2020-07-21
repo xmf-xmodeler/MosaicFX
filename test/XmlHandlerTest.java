@@ -1,8 +1,4 @@
 import org.junit.jupiter.api.Test;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import tool.clients.serializer.LogXmlManager;
 import tool.clients.serializer.XmlCreator;
 import tool.clients.serializer.XmlHandler;
 
@@ -30,13 +26,13 @@ class XmlHandlerTest {
     void deleteXmlFileTest(){
         XmlCreator xmlCreator = new XmlCreator();
         if(xmlCreator.checkFileExist()){
-            xmlCreator.deleteUserXmlfile();
+            xmlCreator.deleteUserXmlFile();
         }
     }
 
     @Test
-    void clearAllChildrenTest(){
-        XmlHandler xmlHandler = new XmlHandler();
+    void clearAllChildrenTest() throws TransformerException {
+        XmlHandler xmlHandler = XmlHandler.getXmlHandlerInstance();
         xmlHandler.clearAllChildren();
     }
 
@@ -44,7 +40,7 @@ class XmlHandlerTest {
     void xmlReaderTest() throws TransformerException, ParserConfigurationException {
         XmlCreator xmlCreator = new XmlCreator();
         xmlCreator.create();
-        XmlHandler xmlHandler = new XmlHandler();
+        XmlHandler xmlHandler = XmlHandler.getXmlHandlerInstance();
         assertNotNull(xmlHandler);
         System.out.println(xmlHandler.toString());
     }
@@ -53,20 +49,20 @@ class XmlHandlerTest {
     void getRootElementTest() throws TransformerException, ParserConfigurationException {
         XmlCreator xmlCreator = new XmlCreator();
         xmlCreator.create();
-        XmlHandler xmlHandler = new XmlHandler();
+        XmlHandler xmlHandler = XmlHandler.getXmlHandlerInstance();
         assertNotNull(xmlHandler);
         System.out.println(xmlHandler.getXmlHelper().getRootNode().getNodeName());
     }
 
     @Test
     void getDiagramsElementTest(){
-        XmlHandler xmlHandler = new XmlHandler();
+        XmlHandler xmlHandler = XmlHandler.getXmlHandlerInstance();
         System.out.println(xmlHandler.getDiagramsNode().getNodeName());
     }
 
     @Test
     void removeProjectsNodeTest() throws TransformerException, ParserConfigurationException {
-        XmlHandler xmlHandler = new XmlHandler();
+        XmlHandler xmlHandler = XmlHandler.getXmlHandlerInstance();
         assertNotNull(xmlHandler.getProjectsNode());
         xmlHandler.replaceNode(xmlHandler.getProjectsNode(), "Hallo");
     }
