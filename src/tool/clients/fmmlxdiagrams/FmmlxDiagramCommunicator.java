@@ -12,7 +12,6 @@ import xos.Value;
 
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 

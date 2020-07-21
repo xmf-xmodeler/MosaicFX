@@ -29,6 +29,7 @@ public class Serializer implements ISerializer {
     private void saveLog(FmmlxDiagram diagram) {
         try {
             LogXmlManager logXmlManager = new LogXmlManager();
+            logXmlManager.clearLog();
             FaXML protocol = diagram.getComm().getDiagramData(diagram);
 
             Vector<FaXML> logs = protocol.getChildren();
@@ -36,7 +37,7 @@ public class Serializer implements ISerializer {
                 Node newLogNode = logXmlManager.createNewLogFromFaXML(log);
                 logXmlManager.add(newLogNode);
             }
-        } catch (TimeOutException e) {
+        } catch (TimeOutException | TransformerException e) {
             e.printStackTrace();
         }
     }
@@ -77,7 +78,7 @@ public class Serializer implements ISerializer {
 
     private void saveDiagram(FmmlxDiagram diagram) throws TransformerException {
         DiagramXmlManager diagramXmlManager = new DiagramXmlManager();
-        Node diagramNode = diagramXmlManager.createDiagram(diagram);
+        Node diagramNode = diagramXmlManager.createDiagramNode(diagram);
 
         if (diagramXmlManager.isExist(diagram)) {
             diagramXmlManager.remove(diagram);

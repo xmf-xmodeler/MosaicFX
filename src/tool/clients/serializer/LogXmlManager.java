@@ -48,7 +48,7 @@ public class LogXmlManager implements ILog, IXmlManager {
     }
 
     public Node createNewLogFromFaXML(FaXML faXML){
-        Element node = (Element) xmlHandler.createElement(faXML.getName());
+        Element node = (Element) xmlHandler.createXmlElement(faXML.getName());
         for(String attName : faXML.getAttributes()){
             node.setAttribute(attName, faXML.getAttributeValue(attName));
         }

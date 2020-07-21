@@ -29,7 +29,7 @@ public class ObjectXmlManager implements IXmlManager {
         double x = fmmlxObject.getX();
         double y = fmmlxObject.getY();
 
-        Element object = (Element) xmlHandler.createElement(XmlConstant.TAG_NAME_OBJECT);
+        Element object = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OBJECT);
         object.setAttribute(XmlConstant.ATTRIBUTE_ID, id+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
         object.setAttribute(XmlConstant.ATTRIBUTE_LEVEL, level+"");

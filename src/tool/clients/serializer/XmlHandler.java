@@ -39,17 +39,6 @@ public class XmlHandler {
         this.xmlHelper = new XmlHelper(getDocument());
     }
 
-    public void clearAllChildren() throws TransformerException {
-        xmlHelper.removeAllChildren(getCategoriesNode());
-        xmlHelper.removeAllChildren(getProjectsNode());
-        xmlHelper.removeAllChildren(getDiagramsNode());
-        xmlHelper.removeAllChildren(getLogsNode());
-    }
-
-    public void clearLogs() throws TransformerException {
-        xmlHelper.removeAllChildren(getLogsNode());
-    }
-
     private Document buildDocument(String sourcePath) {
         Document doc = null;
         try {
@@ -94,8 +83,8 @@ public class XmlHandler {
         return xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_LOGS);
     }
 
-    protected Node createElement(String name){
-        return xmlHelper.createElement(name);
+    protected Node createXmlElement(String name){
+        return xmlHelper.createXmlElement(name);
     }
 
     protected void addLogElement(Node logs, Node log)
@@ -145,32 +134,8 @@ public class XmlHandler {
         xmlHelper.addXmlElement(diagram, preferences);
     }
 
-    @Override
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        try{
-            document.getDocumentElement().normalize();
-            stringBuilder.append("Root element : ").append(xmlHelper.getRootNode().getNodeName());
-
-            NodeList nList = xmlHelper.getRootNode().getChildNodes();
-
-            stringBuilder.append("\n----------------------------");
-            for (int temp = 0; temp < nList.getLength(); temp++) {
-
-                Node nNode = nList.item(temp);
-                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                    Element eElement = (Element) nNode;
-                    stringBuilder.append("\n").append(eElement.getTagName());
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return stringBuilder.toString();
-    }
-
     public void replaceNode(Node projectsNode, String hallo) throws TransformerException {
-        Node newNode = xmlHelper.createElement(hallo);
+        Node newNode = xmlHelper.createXmlElement(hallo);
         xmlHelper.getRootNode().replaceChild(newNode, projectsNode);
 
         xmlHelper.getRootNode().normalize();
@@ -196,6 +161,41 @@ public class XmlHandler {
                 }
             }
         }
+    }
+
+    public void clearAllChildren() throws TransformerException {
+        xmlHelper.removeAllChildren(getCategoriesNode());
+        xmlHelper.removeAllChildren(getProjectsNode());
+        xmlHelper.removeAllChildren(getDiagramsNode());
+        xmlHelper.removeAllChildren(getLogsNode());
+    }
+
+    public void clearLogs() throws TransformerException {
+        xmlHelper.removeAllChildren(getLogsNode());
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        try{
+            document.getDocumentElement().normalize();
+            stringBuilder.append("Root element : ").append(xmlHelper.getRootNode().getNodeName());
+
+            NodeList nList = xmlHelper.getRootNode().getChildNodes();
+
+            stringBuilder.append("\n----------------------------");
+            for (int temp = 0; temp < nList.getLength(); temp++) {
+
+                Node nNode = nList.item(temp);
+                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element eElement = (Element) nNode;
+                    stringBuilder.append("\n").append(eElement.getTagName());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return stringBuilder.toString();
     }
 
 
@@ -224,7 +224,7 @@ public class XmlHandler {
             return null;
         }
 
-        public Node createElement(String tagName){
+        public Node createXmlElement(String tagName){
             Node item;
             item = document.createElement(tagName);
             return item;
@@ -274,23 +274,6 @@ public class XmlHandler {
             }
             return null;
         }
-
-        public void removeNodeByTag(Node parentNode, String tagName) throws TransformerException {
-            NodeList childNodes = parentNode.getChildNodes();
-            for(int i = 0 ; i< childNodes.getLength(); i++){
-                if(childNodes.item(i).getNodeName().equals(tagName)){
-                    parentNode.removeChild(childNodes.item(i));
-                    return;
-                }
-            }
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-
-            StreamResult result = new StreamResult(new File(XmlConstant.USER_XML_FILE_NAME));
-            DOMSource source = new DOMSource(document);
-            transformer.transform(source, result);
-        }
-
 
         public void removeChild(Node parent, Node node) throws TransformerException {
             parent.removeChild(node);

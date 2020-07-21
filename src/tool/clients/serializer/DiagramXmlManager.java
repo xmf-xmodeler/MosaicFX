@@ -16,20 +16,20 @@ public class DiagramXmlManager implements IXmlManager {
         this.xmlHandler = XmlHandler.getXmlHandlerInstance();
     }
 
-    public Node createDiagram(FmmlxDiagram fmmlxDiagram) {
+    public Node createDiagramNode(FmmlxDiagram fmmlxDiagram) {
         int id = fmmlxDiagram.getID();
         String label =fmmlxDiagram.getDiagramLabel();
         String path = fmmlxDiagram.getPackagePath();
 
-        Element diagram = (Element) xmlHandler.createElement(XmlConstant.TAG_NAME_DIAGRAM);
+        Element diagram = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_DIAGRAM);
         diagram.setAttribute(XmlConstant.ATTRIBUTE_ID, id+"");
         diagram.setAttribute(XmlConstant.ATTRIBUTE_LABEL, label);
         diagram.setAttribute(XmlConstant.ATTRIBUTE_PACKAGE_PATH, path);
-        Node categories = xmlHandler.createElement(XmlConstant.TAG_NAME_CATEGORIES);
-        Node owners = xmlHandler.createElement(XmlConstant.TAG_NAME_OWNERS);
-        Node objects = xmlHandler.createElement(XmlConstant.TAG_NAME_OBJECTS);
-        Node edges = xmlHandler.createElement(XmlConstant.TAG_NAME_EDGES);
-        Node preferences = xmlHandler.createElement(XmlConstant.TAG_NAME_PREFERENCES);
+        Node categories = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_CATEGORIES);
+        Node owners = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OWNERS);
+        Node objects = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OBJECTS);
+        Node edges = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGES);
+        Node preferences = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_PREFERENCES);
         try {
             xmlHandler.addDiagramCategoriesElement(diagram, categories);
             xmlHandler.addDiagramOwnersElement(diagram, owners);

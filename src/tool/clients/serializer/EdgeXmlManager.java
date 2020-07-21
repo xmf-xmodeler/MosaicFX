@@ -37,7 +37,7 @@ public class EdgeXmlManager implements IXmlManager {
         Multiplicity multiplicityStartToEnd = fmmlxAssociation.getMultiplicityStartToEnd();
         Multiplicity multiplicityEndToStart = fmmlxAssociation.getMultiplicityEndToStart();
 
-        Element edge = (Element) xmlHandler.createElement(XmlConstant.TAG_NAME_EDGE);
+        Element edge = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGE);
         edge.setAttribute(XmlConstant.ATTRIBUTE_ID, id+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
@@ -68,7 +68,7 @@ public class EdgeXmlManager implements IXmlManager {
         String projectPath = fmmlxDiagram.getPackagePath();
         int owner = fmmlxDiagram.getID();
 
-        Element edge = (Element) xmlHandler.createElement(XmlConstant.TAG_NAME_EDGE);
+        Element edge = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGE);
         edge.setAttribute(XmlConstant.ATTRIBUTE_ID, id+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
@@ -94,7 +94,7 @@ public class EdgeXmlManager implements IXmlManager {
         String projectPath = fmmlxDiagram.getPackagePath();
         int owner = fmmlxDiagram.getID();
 
-        Element edge = (Element) xmlHandler.createElement(XmlConstant.TAG_NAME_EDGE);
+        Element edge = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGE);
         edge.setAttribute(XmlConstant.ATTRIBUTE_ID, id+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
@@ -120,7 +120,7 @@ public class EdgeXmlManager implements IXmlManager {
         String projectPath = fmmlxDiagram.getPackagePath();
         int owner = fmmlxDiagram.getID();
 
-        Element edge = (Element) xmlHandler.createElement(XmlConstant.TAG_NAME_EDGE);
+        Element edge = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGE);
         edge.setAttribute(XmlConstant.ATTRIBUTE_ID, id+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);

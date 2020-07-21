@@ -17,7 +17,7 @@ public class ProjectXmlManager implements IXmlManager {
     }
 
     public Node createProject(String name){
-        Element project = (Element) xmlHandler.createElement(XmlConstant.TAG_NAME_PROJECT);
+        Element project = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_PROJECT);
         project.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
         return project;
     }
