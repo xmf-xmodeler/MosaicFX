@@ -28,7 +28,7 @@ public class DelegationEdge extends Edge {
 	}
 
 	public PortRegion getTargetPort(){
-		return super.getSourcePortRegion();
+		return super.getTargetPortRegion();
 	}
 
 

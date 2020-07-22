@@ -15,7 +15,7 @@ public class Serializer implements ISerializer {
     }
 
     @Override
-    public void saveState(FmmlxDiagram diagram) throws TransformerException, ParserConfigurationException {
+    public synchronized void saveState(FmmlxDiagram diagram) throws TransformerException, ParserConfigurationException {
         initUserXMLFile();
         saveDiagram(diagram);
         saveLog(diagram);
@@ -42,7 +42,7 @@ public class Serializer implements ISerializer {
         }
     }
 
-    private void saveEdges(FmmlxDiagram diagram) {
+    private void saveEdges(FmmlxDiagram diagram) throws TransformerException {
 
         Vector<Edge> edges = diagram.getEdges();
         EdgeXmlManager edgeXmlManager = new EdgeXmlManager();

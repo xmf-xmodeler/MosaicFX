@@ -36,7 +36,7 @@ public class FmmlxLink extends Edge {
 	}
 
 	public PortRegion getTargetPort(){
-		return super.getSourcePortRegion();
+		return super.getTargetPortRegion();
 	}
 
 	public int getOfId() {

@@ -13,11 +13,11 @@ public class LogXmlManager implements ILog, IXmlManager {
     private final XmlHandler xmlHandler;
 
     public LogXmlManager() {
-        this.xmlHandler = XmlHandler.getXmlHandlerInstance();
+        this.xmlHandler = new XmlHandler();
     }
 
     @Override
-    public synchronized void add(Node node) {
+    public void add(Node node) {
         Node logs = xmlHandler.getLogsNode();
         try {
             xmlHandler.addLogElement(logs, node);
@@ -55,12 +55,12 @@ public class LogXmlManager implements ILog, IXmlManager {
         return node;
     }
 
-    public synchronized void clearLog() throws TransformerException {
+    public void clearLog() throws TransformerException {
         xmlHandler.clearLogs();
     }
 
     @Override
-    public synchronized void backToLatestSave(int diagramId, String diagramLabel) {
+    public void backToLatestSave(int diagramId, String diagramLabel) {
         //TODO
     }
 

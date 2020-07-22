@@ -32,7 +32,7 @@ class XmlHandlerTest {
 
     @Test
     void clearAllChildrenTest() throws TransformerException {
-        XmlHandler xmlHandler = XmlHandler.getXmlHandlerInstance();
+        XmlHandler xmlHandler =new XmlHandler();
         xmlHandler.clearAllChildren();
     }
 
@@ -40,7 +40,7 @@ class XmlHandlerTest {
     void xmlReaderTest() throws TransformerException, ParserConfigurationException {
         XmlCreator xmlCreator = new XmlCreator();
         xmlCreator.create();
-        XmlHandler xmlHandler = XmlHandler.getXmlHandlerInstance();
+        XmlHandler xmlHandler = new XmlHandler();
         assertNotNull(xmlHandler);
         System.out.println(xmlHandler.toString());
     }
@@ -49,20 +49,20 @@ class XmlHandlerTest {
     void getRootElementTest() throws TransformerException, ParserConfigurationException {
         XmlCreator xmlCreator = new XmlCreator();
         xmlCreator.create();
-        XmlHandler xmlHandler = XmlHandler.getXmlHandlerInstance();
+        XmlHandler xmlHandler = new XmlHandler();
         assertNotNull(xmlHandler);
         System.out.println(xmlHandler.getXmlHelper().getRootNode().getNodeName());
     }
 
     @Test
     void getDiagramsElementTest(){
-        XmlHandler xmlHandler = XmlHandler.getXmlHandlerInstance();
+        XmlHandler xmlHandler = new XmlHandler();
         System.out.println(xmlHandler.getDiagramsNode().getNodeName());
     }
 
     @Test
     void removeProjectsNodeTest() throws TransformerException, ParserConfigurationException {
-        XmlHandler xmlHandler = XmlHandler.getXmlHandlerInstance();
+        XmlHandler xmlHandler = new XmlHandler();
         assertNotNull(xmlHandler.getProjectsNode());
         xmlHandler.replaceNode(xmlHandler.getProjectsNode(), "Hallo");
     }

@@ -18,6 +18,8 @@ public class XmlConstant {
     public static final String TAG_NAME_PREFERENCES = "Preferences";
     public static final String TAG_NAME_EDGE = "Edge";
     public static final String TAG_NAME_EDGES = "Edges";
+    public static final String TAG_NAME_INTERMEDIATE_POINTS = "IntermediatePoints";
+    public static final String TAG_NAME_INTERMEDIATE_POINT = "IntermediatePoint";
 
     public static final String ATTRIBUTE_ID = "id";
     public static final String ATTRIBUTE_NAME = "name";
@@ -44,6 +46,6 @@ public class XmlConstant {
     public static final String ATTRIBUTE_MULTIPLICITY_START_TO_END = "multiplicity_start_to_end";
     public static final String ATTRIBUTE_MULTIPLICITY_END_TO_START = "multiplicity_end_to_start";
 
-    public static final String ATTRIBUTE_INTERMEDIATE_POINTS = "intermediate_points";
+
 
 }

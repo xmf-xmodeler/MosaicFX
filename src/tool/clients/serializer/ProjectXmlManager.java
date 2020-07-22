@@ -13,7 +13,7 @@ public class ProjectXmlManager implements IXmlManager {
     private final XmlHandler xmlHandler;
 
     public ProjectXmlManager() {
-        this.xmlHandler = XmlHandler.getXmlHandlerInstance();
+        this.xmlHandler = new XmlHandler();
     }
 
     public Node createProject(String name){

@@ -81,7 +81,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	}
 
 	public PortRegion getTargetPort(){
-		return super.getSourcePortRegion();
+		return super.getTargetPortRegion();
 	}
 
 	public Integer getParentAssociationId() {

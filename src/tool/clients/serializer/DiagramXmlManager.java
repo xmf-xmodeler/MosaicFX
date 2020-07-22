@@ -13,7 +13,7 @@ public class DiagramXmlManager implements IXmlManager {
     private final XmlHandler xmlHandler;
 
     public DiagramXmlManager(){
-        this.xmlHandler = XmlHandler.getXmlHandlerInstance();
+        this.xmlHandler = new XmlHandler();
     }
 
     public Node createDiagramNode(FmmlxDiagram fmmlxDiagram) {

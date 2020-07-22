@@ -16,10 +16,10 @@ public class EdgeXmlManager implements IXmlManager {
     private final XmlHandler xmlHandler;
 
     public EdgeXmlManager(){
-        this.xmlHandler = XmlHandler.getXmlHandlerInstance();
+        this.xmlHandler = new XmlHandler();
     }
 
-    public Node createAssociationXmlNode(FmmlxDiagram fmmlxDiagram, FmmlxAssociation fmmlxAssociation) {
+    public Node createAssociationXmlNode(FmmlxDiagram fmmlxDiagram, FmmlxAssociation fmmlxAssociation) throws TransformerException {
 
         int id = fmmlxAssociation.getId();
         String name = fmmlxAssociation.getName();
@@ -42,7 +42,6 @@ public class EdgeXmlManager implements IXmlManager {
         edge.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
         edge.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
-        edge.setAttribute(XmlConstant.ATTRIBUTE_INTERMEDIATE_POINTS, intermediatePoints.toString());
         edge.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE, sourceNode.getId()+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE, targetNode.getId()+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT, sourcePort+"");
@@ -53,10 +52,20 @@ public class EdgeXmlManager implements IXmlManager {
         edge.setAttribute(XmlConstant.ATTRIBUTE_LEVEL_END_TO_START, levelEndToStart+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_MULTIPLICITY_START_TO_END, multiplicityStartToEnd.toString());
         edge.setAttribute(XmlConstant.ATTRIBUTE_MULTIPLICITY_END_TO_START, multiplicityEndToStart.toString());
+
+        Node intermediatePointsNode = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_INTERMEDIATE_POINTS);
+        for(Point2D point2D : intermediatePoints){
+            Element intermediatePoint = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_INTERMEDIATE_POINT);
+            intermediatePoint.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, point2D.getX()+"");
+            intermediatePoint.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, point2D.getY()+"");
+            intermediatePointsNode.appendChild(intermediatePoint);
+        }
+
+        xmlHandler.addIntermediatePointsElement(edge, intermediatePointsNode);
         return edge;
     }
 
-    public Node createDelegationXmlNode(FmmlxDiagram fmmlxDiagram, DelegationEdge delegationEdge) {
+    public Node createDelegationXmlNode(FmmlxDiagram fmmlxDiagram, DelegationEdge delegationEdge) throws TransformerException {
 
         int id = delegationEdge.getId();
         String type = "delegation";
@@ -73,16 +82,25 @@ public class EdgeXmlManager implements IXmlManager {
         edge.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
         edge.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
-        edge.setAttribute(XmlConstant.ATTRIBUTE_INTERMEDIATE_POINTS, intermediatePoints.toString());
         edge.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE, childNode.getId()+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE, parentNode.getId()+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT, sourcePort+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_TARGET_PORT, targetPort+"");
 
+        Node intermediatePointsNode = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_INTERMEDIATE_POINTS);
+        for(Point2D point2D : intermediatePoints){
+            Element intermediatePoint = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_INTERMEDIATE_POINT);
+            intermediatePoint.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, point2D.getX()+"");
+            intermediatePoint.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, point2D.getY()+"");
+            intermediatePointsNode.appendChild(intermediatePoint);
+        }
+
+        xmlHandler.addIntermediatePointsElement(edge, intermediatePointsNode);
+
         return edge;
     }
 
-    public Node createInheritanceXmlNode(FmmlxDiagram fmmlxDiagram, InheritanceEdge inheritanceEdge) {
+    public Node createInheritanceXmlNode(FmmlxDiagram fmmlxDiagram, InheritanceEdge inheritanceEdge) throws TransformerException {
 
         int id = inheritanceEdge.getId();
         String type = "inheritance";
@@ -99,11 +117,20 @@ public class EdgeXmlManager implements IXmlManager {
         edge.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
         edge.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
-        edge.setAttribute(XmlConstant.ATTRIBUTE_INTERMEDIATE_POINTS, intermediatePoints.toString());
         edge.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE, childNode.getId()+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE, parentNode.getId()+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT, sourcePort+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_TARGET_PORT, targetPort+"");
+
+        Node intermediatePointsNode = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_INTERMEDIATE_POINTS);
+        for(Point2D point2D : intermediatePoints){
+            Element intermediatePoint = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_INTERMEDIATE_POINT);
+            intermediatePoint.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, point2D.getX()+"");
+            intermediatePoint.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, point2D.getY()+"");
+            intermediatePointsNode.appendChild(intermediatePoint);
+        }
+
+        xmlHandler.addIntermediatePointsElement(edge, intermediatePointsNode);
         return edge;
     }
 
@@ -125,7 +152,7 @@ public class EdgeXmlManager implements IXmlManager {
         edge.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
         edge.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
-        edge.setAttribute(XmlConstant.ATTRIBUTE_INTERMEDIATE_POINTS, intermediatePoints.toString());
+        edge.setAttribute(XmlConstant.TAG_NAME_INTERMEDIATE_POINTS, intermediatePoints.toString());
         edge.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE, childNode.getId()+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE, parentNode.getId()+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT, sourcePort+"");
@@ -159,7 +186,7 @@ public class EdgeXmlManager implements IXmlManager {
 
     @Override
     public void remove(Node node) {
-
+        //TODO
     }
 
     @Override

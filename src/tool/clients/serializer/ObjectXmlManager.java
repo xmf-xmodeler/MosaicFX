@@ -15,7 +15,7 @@ public class ObjectXmlManager implements IXmlManager {
     private final XmlHandler xmlHandler;
 
     public ObjectXmlManager(){
-        this.xmlHandler = XmlHandler.getXmlHandlerInstance();
+        this.xmlHandler = new XmlHandler();
     }
 
     public Node createObject(FmmlxDiagram diagram, FmmlxObject fmmlxObject) {

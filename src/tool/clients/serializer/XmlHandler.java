@@ -24,16 +24,7 @@ public class XmlHandler {
     private final XmlHelper xmlHelper;
     private final String sourcePath;
 
-    private static XmlHandler xmlHandlerInstance;
-
-    public static synchronized XmlHandler getXmlHandlerInstance(){
-        if(xmlHandlerInstance == null){
-            xmlHandlerInstance = new XmlHandler();
-        }
-        return xmlHandlerInstance;
-    }
-
-    private XmlHandler() {
+    public XmlHandler() {
         this.sourcePath = XmlCreator.getPath();
         this.document = buildDocument(sourcePath);
         this.xmlHelper = new XmlHelper(getDocument());
@@ -196,6 +187,10 @@ public class XmlHandler {
             e.printStackTrace();
         }
         return stringBuilder.toString();
+    }
+
+    public void addIntermediatePointsElement(Element edge, Node intermediatePointsNode) throws TransformerException {
+        xmlHelper.addXmlElement(edge, intermediatePointsNode);
     }
 
 
