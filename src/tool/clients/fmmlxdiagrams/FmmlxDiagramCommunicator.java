@@ -7,6 +7,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import tool.clients.serializer.Serializer;
 import tool.clients.workbench.WorkbenchClient;
 import xos.Value;
 
@@ -1249,6 +1250,11 @@ public class FmmlxDiagramCommunicator {
 				new Value(-1), // arity
 				};
 		sendMessage("showBody", message);
+	}
+
+	public void openXmlFile(String fileName){
+		Serializer serializer = new Serializer();
+		serializer.loadState(fileName);
 	}
 
 	public void openPackageBrowser() {

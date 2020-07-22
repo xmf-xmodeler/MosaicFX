@@ -30,6 +30,12 @@ public class XmlHandler {
         this.xmlHelper = new XmlHelper(getDocument());
     }
 
+    public XmlHandler(String sourcePath){
+        this.sourcePath = sourcePath;
+        this.document = buildDocument(sourcePath);
+        this.xmlHelper = new XmlHelper(getDocument());
+    }
+
     private Document buildDocument(String sourcePath) {
         Document doc = null;
         try {

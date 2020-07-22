@@ -15,6 +15,7 @@ public class DiagramXmlManager implements IXmlManager {
     public DiagramXmlManager(){
         this.xmlHandler = new XmlHandler();
     }
+    public DiagramXmlManager(String path){ this.xmlHandler = new XmlHandler(path);}
 
     public Node createDiagramNode(FmmlxDiagram fmmlxDiagram) {
         int id = fmmlxDiagram.getID();
@@ -82,5 +83,9 @@ public class DiagramXmlManager implements IXmlManager {
 
     public void remove(FmmlxDiagram diagram) throws TransformerException {
         xmlHandler.removeDiagram(diagram);
+    }
+
+    public Node getDiagramsNode() {
+        return xmlHandler.getDiagramsNode();
     }
 }

@@ -1,6 +1,8 @@
 package tool.clients.serializer;
 
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.serializer.interfaces.ISerializer;
 
@@ -11,11 +13,20 @@ import java.util.Vector;
 
 public class Serializer implements ISerializer {
 
+    private static Serializer instance;
+
+    public synchronized static Serializer getInstance() {
+        if(instance==null){
+            instance = new Serializer();
+        }
+        return instance;
+    }
+
     public Serializer() {
     }
 
     @Override
-    public synchronized void saveState(FmmlxDiagram diagram) throws TransformerException, ParserConfigurationException {
+    public void saveState(FmmlxDiagram diagram) throws TransformerException, ParserConfigurationException {
         initUserXMLFile();
         saveDiagram(diagram);
         saveLog(diagram);
@@ -88,9 +99,13 @@ public class Serializer implements ISerializer {
         saveEdges(diagram);
     }
 
-
     @Override
-    public void loadState(int diagramId, String diagramLabel) {
+    public void loadState(String path) {
+        DiagramXmlManager diagramXmlManager = new DiagramXmlManager(path);
+
+
+
         //TODO
+
     }
 }
