@@ -49,8 +49,25 @@ import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 		classNameTextfield.textProperty().addListener( (e, oldText, newText) -> {keyTyped();});
 		levelTextfield.textProperty().addListener( (e, oldText, newText) -> {keyTyped();});
 		includesAttributeTextfield.textProperty().addListener( (e, oldText, newText) -> {keyTyped();});
+		modelsListView.getSelectionModel().selectedItemProperty().addListener((e, oldText, newText) -> {classSelected(newText);});
+
 	}
 
+
+	private void classSelected(String newText) {
+		if(newText != null) {
+			classesListView.getSelectionModel().getSelectedItem();
+			
+		}}
+			//setText(result.get(newText));
+
+
+	/*private void keyTyped() {
+	result = fmmlxDiagramCommunicator.findImplementation(nameTextfield.getText(), modelTextfield.getText(), numberOfParamsTextfield.getText(), returnTypeTextfield.getText());
+	classesListView.getItems().clear();
+	classesListView.getItems().addAll(result.keySet());
+	*/
+	
 	
 	
 	private void keyTyped() {

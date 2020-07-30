@@ -1275,5 +1275,13 @@ public class FmmlxDiagramCommunicator {
 		return new FaXML(responseContent);
 	}
 
+	public HashMap<String, String> findImplementation(String text, String text2, String text3, String text4) {
+	
+		HashMap<String, String> result = new HashMap<>();
+		result.put("ergebnis", "@Operation SaveAsXML() \n  Do Something... \nend");
+		result.put("ergebnis2", "@Operation SaveAsXML() \n  Do Something Else... \nend");
+
+		return result;
+	}
 
 }

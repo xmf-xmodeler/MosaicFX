@@ -949,14 +949,13 @@ public class DiagramActions {
 		} catch (TimeOutException e) {}
 	}
 
-	public Object openFindImplementationDialog() {
+	public void openFindImplementationDialog() {
 		Platform.runLater(() -> {
 
-			FindImplementationDialog dlg = new FindImplementationDialog();
+			FindImplementationDialog dlg = new FindImplementationDialog(diagram.getComm());
 			Optional<Object> opt = dlg.showAndWait();
 
 		});
-		return null;
 	}
 
 	public Object openFindClassDialog() {

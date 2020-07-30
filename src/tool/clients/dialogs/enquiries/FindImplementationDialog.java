@@ -2,7 +2,9 @@ package tool.clients.dialogs.enquiries;
 
 import java.beans.EventHandler;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Vector;
 
 import org.eclipse.draw2d.GridData;
 
@@ -14,6 +16,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 
 public class FindImplementationDialog extends CustomDialog<Object> {
@@ -30,8 +33,11 @@ public class FindImplementationDialog extends CustomDialog<Object> {
 	private TextField returnTypeTextfield = new TextField();
 	ListView<String> classesListView = new ListView<String>();
 	TextArea codeBox = new TextArea();
-
-	public FindImplementationDialog() {
+	HashMap<String, String>  result = new HashMap<String, String>();
+	
+	private final FmmlxDiagramCommunicator fmmlxDiagramCommunicator;
+	public FindImplementationDialog(FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
+		this.fmmlxDiagramCommunicator = fmmlxDiagramCommunicator;
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
@@ -64,15 +70,22 @@ public class FindImplementationDialog extends CustomDialog<Object> {
 		modelTextfield.textProperty().addListener( (e, oldText, newText) -> {keyTyped();});
 		numberOfParamsTextfield.textProperty().addListener( (e, oldText, newText) -> {keyTyped();});
 		returnTypeTextfield.textProperty().addListener( (e, oldText, newText) -> {keyTyped();});
+		classesListView.getSelectionModel().selectedItemProperty().addListener((e, oldText, newText) -> {classSelected(newText);});
 	}
 
 	
 	
+	private void classSelected(String newText) {
+		if(newText != null) {
+		codeBox.setText(result.get(newText));
+	}}
+
 	private void keyTyped() {
-		System.err.println("The user wants to know more about " + nameTextfield.getText());
-		System.err.println("The user wants to know more about " + modelTextfield.getText());
-		System.err.println("The user wants to know more about " + numberOfParamsTextfield.getText());
-		System.err.println("The user wants to know more about " + returnTypeTextfield.getText());
+		result = fmmlxDiagramCommunicator.findImplementation(nameTextfield.getText(), modelTextfield.getText(), numberOfParamsTextfield.getText(), returnTypeTextfield.getText());
+		classesListView.getItems().clear();
+		classesListView.getItems().addAll(result.keySet());
+		
+		
 		
 	}
 	
