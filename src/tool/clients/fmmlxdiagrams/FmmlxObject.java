@@ -790,8 +790,11 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	}
 
 	public Vector<FmmlxObject> getAllChildren() {
-		System.err.println("FmmlxObject::getAllChildren() not yet implemented.");
-		return new Vector<FmmlxObject>();
+		Vector<FmmlxObject> result = new Vector<FmmlxObject>();
+		for(FmmlxObject child : diagram.getObjects()) {
+			if(child.getAllAncestors() .contains(this)) result.add(child);
+		}
+		return result;
 	}
 
 	@Override

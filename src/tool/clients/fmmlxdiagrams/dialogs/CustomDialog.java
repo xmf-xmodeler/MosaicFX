@@ -95,8 +95,13 @@ public class CustomDialog<R> extends Dialog<R> {
 
 	public Integer getComboBoxIntegerValue(ComboBox<Integer> box) throws NumberFormatException {
 		int result;
-		result = Integer.parseInt(box.getEditor().getText());
-		return result;
+		try {
+			result = Integer.parseInt(box.getEditor().getText());
+			return result;
+		} catch (java.lang.NumberFormatException e) {
+			return null;
+		}
+
 	}
 	
 	protected void updateNodeInsideGrid(Node oldNode, Node newNode, int column, int row) {
