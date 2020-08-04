@@ -1,7 +1,7 @@
 # java
 /bin/
 /out/
-*.log
+*.logManager
 /out/
 # idea
 .idea
@@ -27,4 +27,6 @@
 
 # /build/.gitignore
 /build/output/
+
+# Test
 /userXmlFile.xml

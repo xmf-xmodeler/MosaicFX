@@ -22,12 +22,32 @@ public class FmmlxLink extends Edge {
 		this.diagram = diagram;
 //		layout();
 	}
-	
+
+	public FmmlxObject getStartNode() {
+		return sourceNode;
+	}
+
+	public FmmlxObject getEndNode() {
+		return targetNode;
+	}
+
+	public PortRegion getSourcePort(){
+		return super.getSourcePortRegion();
+	}
+
+	public PortRegion getTargetPort(){
+		return super.getTargetPortRegion();
+	}
+
+	public int getOfId() {
+		return ofId;
+	}
+
 	private enum Anchor {SOURCE,CENTRE,TARGET};
 
 	@Override protected void layoutLabels() {
 		try{
-			createLabel(getOfAssociation().getName(), 0, Anchor.CENTRE, ()->{System.err.println("Huhu!");}, 0);
+			createLabel(getOfAssociation().getName(), 0, Anchor.CENTRE, ()->{}, 0);
 			layoutingFinishedSuccesfully = true;
 		} catch(Exception e) {layoutingFinishedSuccesfully = false;}
 //		if(reverseName != null) 

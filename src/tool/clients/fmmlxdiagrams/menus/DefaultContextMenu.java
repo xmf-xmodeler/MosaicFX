@@ -75,6 +75,10 @@ public class DefaultContextMenu extends ContextMenu {
 			});
 			
 			getItems().addAll(testEvalList);
+
+			MenuItem testSave = new MenuItem("test Save");
+			testSave.setOnAction(a -> actions.save());
+			getItems().addAll(testSave);
 		}
 	}
 }

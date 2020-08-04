@@ -2,8 +2,13 @@ package tool.console;
 
 import java.io.PrintStream;
 
+import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.stage.Stage;
 
 public class Console {
 
@@ -17,6 +22,20 @@ public class Console {
     tabItem.setContent(consoleView.getView());
     tabPane.getTabs().add(tabItem);
     tabPane.toFront();
+  }
+  
+  public static void start(Stage stage) {
+      BorderPane border = new BorderPane();
+      ConsoleView consoleView = new ConsoleView();
+      setConsoleView(consoleView);
+      HBox hBox = new HBox(consoleView.getView());
+	  HBox.setHgrow(consoleView.getView(), Priority.ALWAYS);
+//		GridPane grid = new GridPane();
+	  border.setTop(hBox);
+	  Scene scene = new Scene(border, 800, 300);
+	  stage.setScene(scene);
+	  stage.setTitle("Console");
+	  stage.show();
   }
 
   public static ConsoleView getConsoleView() {

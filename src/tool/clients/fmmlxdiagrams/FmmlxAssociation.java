@@ -21,6 +21,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	private String accessNameEndToStart;
 	private Integer levelStartToEnd;
 	private Integer levelEndToStart;
+	private Integer parentAssociationId;
 	private Multiplicity multiplicityStartToEnd;
 	private Multiplicity multiplicityEndToStart;
 	protected boolean sourceFromTargetVisible;
@@ -59,6 +60,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		super(id, diagram.getObjectById(startId), diagram.getObjectById(endId), points, startPortRegion, endPortRegion, labelPositions, diagram);
 
 		this.name = name;
+		this.parentAssociationId = parentAssociationId;
 		this.reverseName = reverseName;
 		this.accessNameStartToEnd = accessNameStartToEnd;
 		this.accessNameEndToStart = accessNameEndToStart;
@@ -73,7 +75,19 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 				
 //		layout();
 	}
-	
+
+	public PortRegion getSourcePort(){
+		return super.getSourcePortRegion();
+	}
+
+	public PortRegion getTargetPort(){
+		return super.getTargetPortRegion();
+	}
+
+	public Integer getParentAssociationId() {
+		return parentAssociationId;
+	}
+
 	private enum Anchor {CENTRE_MOVABLE, SOURCE_LEVEL, TARGET_LEVEL, SOURCE_MULTI, TARGET_MULTI,CENTRE_SELFASSOCIATION};
 
 	@Override protected void layoutLabels() {
@@ -122,7 +136,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			PortRegion dir;
 			if(anchor == Anchor.SOURCE_LEVEL || anchor == Anchor.SOURCE_MULTI) {
 				p = getSourceNode().getPointForEdge(sourceEnd, true);
-				dir = getSourceNode().getDirectionForEdge(sourceEnd, true); 
+				dir = getSourceNode().getDirectionForEdge(sourceEnd, true);
 				anchors.add(getSourceNode());
 			} else {
 				p = getTargetNode().getPointForEdge(targetEnd, false);
@@ -346,4 +360,9 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 
 	public boolean isSymmetric() {return symmetric;}
 	public boolean isTransitive() {return transitive;}
+
+	@Override
+	public String toString() {
+		return "FmmlxAssociation [name=" + name + "]";
+	}
 }
