@@ -203,7 +203,7 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				AddAttributeDialogResult aad = result.get();
-				diagram.getComm().addAttribute(diagram, aad.getClassID(), aad.getName(), aad.getLevel(), aad.getType(), aad.getMultiplicity());
+				diagram.getComm().addAttribute(diagram, aad.className, aad.name, aad.level, aad.type, aad.multi);
 			}
 			diagram.updateDiagram();
 //			l.countDown();

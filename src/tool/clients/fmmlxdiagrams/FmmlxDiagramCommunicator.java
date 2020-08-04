@@ -754,10 +754,10 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("setAssociationEndVisibility", message);
 	}
 
-	public void addAttribute(FmmlxDiagram diagram, int classID, String name, int level, String type, Multiplicity multi) {
+	public void addAttribute(FmmlxDiagram diagram, String className, String name, int level, String type, Multiplicity multi) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(classID),
+				new Value(className),
 				new Value(name),
 				new Value(level),
 				new Value(type),
