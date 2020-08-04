@@ -1,8 +1,6 @@
 package tool.clients.serializer;
 
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.serializer.interfaces.ISerializer;
 
@@ -12,6 +10,7 @@ import java.util.Vector;
 
 
 public class Serializer implements ISerializer {
+    public static final String TAG = Serializer.class.getSimpleName();
 
     private static Serializer instance;
 
@@ -28,6 +27,7 @@ public class Serializer implements ISerializer {
     @Override
     public void saveState(FmmlxDiagram diagram) throws TransformerException, ParserConfigurationException {
         initUserXMLFile();
+        saveProject(diagram);
         saveDiagram(diagram);
         saveLog(diagram);
     }
@@ -99,13 +99,22 @@ public class Serializer implements ISerializer {
         saveEdges(diagram);
     }
 
+    private void saveProject(FmmlxDiagram diagram) throws TransformerException {
+        ProjectXmlManager projectXmlManager = new ProjectXmlManager();
+        Node projectNode =  projectXmlManager.createProjectNode(diagram);
+
+        if(projectXmlManager.isExist()) {
+            projectXmlManager.remove();
+        }
+
+        projectXmlManager.add(projectNode);
+    }
+
     @Override
-    public void loadState(String path) {
-        DiagramXmlManager diagramXmlManager = new DiagramXmlManager(path);
-
-
-
+    public void loadState(String path, FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
+        ProjectXmlManager projectXmlManager = new ProjectXmlManager(path);
+        String projectName = projectXmlManager.getProjectName();
+        fmmlxDiagramCommunicator.loadProjectFromXml(projectName);
         //TODO
-
     }
 }

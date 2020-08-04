@@ -3,6 +3,7 @@ package tool.clients.serializer;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.serializer.interfaces.IXmlManager;
 
 import javax.xml.transform.TransformerException;
@@ -10,10 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectXmlManager implements IXmlManager {
+    public static final String TAG = ProjectXmlManager.class.getSimpleName();
     private final XmlHandler xmlHandler;
 
     public ProjectXmlManager() {
         this.xmlHandler = new XmlHandler();
+    }
+
+    public ProjectXmlManager(String path) {
+        this.xmlHandler = new XmlHandler(path);
     }
 
     public Node createProject(String name){
@@ -52,5 +58,44 @@ public class ProjectXmlManager implements IXmlManager {
             }
         }
         return projects;
+    }
+
+    public String getProjectName() {
+        String projectPath = "";
+        List<Node> projectList = getAll();
+        if(projectList.size()==1){
+            Element tmp = (Element) projectList.get(0);
+            projectPath = tmp.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+        }
+
+        return getProjectName(projectPath);
+    }
+
+    private String getProjectName(String projectPath) {
+        String[] projectPathSplit= projectPath.split("::");
+        return projectPathSplit[1];
+    }
+
+    public Node getProjectsNode() {
+        return xmlHandler.getProjectsNode();
+    }
+
+    public boolean isExist() {
+        Node projects = xmlHandler.getProjectsNode();
+
+        NodeList diagramList = projects.getChildNodes();
+
+        return diagramList.getLength() > 1;
+    }
+
+    public void remove() throws TransformerException {
+        xmlHandler.removeAllProject();
+    }
+
+    public Node createProjectNode(FmmlxDiagram diagram) {
+        Element project = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_PROJECT);
+        System.out.println(TAG+" "+"packagepath: "+diagram.getPackagePath());
+        project.setAttribute(XmlConstant.ATTRIBUTE_NAME, diagram.getPackagePath());
+        return project;
     }
 }

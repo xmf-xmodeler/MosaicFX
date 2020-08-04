@@ -199,6 +199,10 @@ public class XmlHandler {
         xmlHelper.addXmlElement(edge, intermediatePointsNode);
     }
 
+    public void removeAllProject() throws TransformerException {
+        xmlHelper.removeAllChildren(getProjectsNode());
+    }
+
 
     public class XmlHelper {
         private final Document document;
