@@ -7,6 +7,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import tool.clients.serializer.Serializer;
 import tool.clients.workbench.WorkbenchClient;
 import xos.Value;
 
@@ -16,6 +17,9 @@ import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
 public class FmmlxDiagramCommunicator {
+	public static final String TAG = FmmlxDiagram.class.getSimpleName();
+
+
 	private int handler;
 	int idCounter = 0;
 	private HashMap<Integer, Vector<Object>> results = new HashMap<>();
@@ -1249,6 +1253,19 @@ public class FmmlxDiagramCommunicator {
 				new Value(-1), // arity
 				};
 		sendMessage("showBody", message);
+	}
+
+	public void loadProjectFromXml( String projectName){
+		Value[] message = new Value[]{
+				new Value(-1),
+				new Value(projectName)
+		};
+		sendMessage("loadProjectFromXml", message);
+	}
+
+	public void openXmlFile(String fileName){
+		Serializer serializer = new Serializer();
+		serializer.loadState(fileName, this);
 	}
 
 	public void openPackageBrowser() {

@@ -7,8 +7,8 @@ import java.util.Vector;
 public class FaXML {
 	
 	private final String name;	
-	private final Vector<FaXML> children = new Vector<FaXML>();
-	private final HashMap<String, String> attributes = new HashMap<String, String>();
+	private final Vector<FaXML> children = new Vector<>();
+	private final HashMap<String, String> attributes = new HashMap<>();
 	
 	public FaXML(Vector<Object> content) {
 		System.err.println("reading " + content);
@@ -17,29 +17,26 @@ public class FaXML {
 			if(! (content.get(i) instanceof Vector<?>)) throw new RuntimeException("FaXML message invalid.");
 			@SuppressWarnings("unchecked")
 			Vector<Object> child = (Vector<Object>) (content.get(i));
-//			if(child.size() >= 1) {
-//				if(! (child.get(0) instanceof String)) throw new RuntimeException("FaXML message invalid.");
 			if(child.size() == 2 && child.get(0) instanceof String && child.get(1) instanceof String) {
 				attributes.put((String)child.get(0),(String)child.get(1));
 			} else {
 				children.add(new FaXML(child));
 			}
-//			}
 		}
 	}
 	
 	public String getName() { return name; }
-	public Vector<FaXML> getChildren() { return new Vector<FaXML>(children); }
+	public Vector<FaXML> getChildren() { return new Vector<>(children); }
 	public Set<String> getAttributes() { return attributes.keySet(); }
 	public String getAttributeValue(String attributeName) { return attributes.get(attributeName); }
 	
 	@Override public String toString() { return toString(""); }
 	
 	public String toString(String prefix) {
-		String attString = "";
-		for(String key : getAttributes()) attString += " " + key + "=\"" + getAttributeValue(key) + "\"";
-		String childrenString = "";
-		for(FaXML child : children) childrenString += child.toString(prefix + "  ");
+		StringBuilder attString = new StringBuilder();
+		for(String key : getAttributes()) attString.append(" ").append(key).append("=\"").append(getAttributeValue(key)).append("\"");
+		StringBuilder childrenString = new StringBuilder();
+		for(FaXML child : children) childrenString.append(child.toString(prefix + "  "));
 		return prefix + "<" + name + attString + (children.size()>0?(">\n"+childrenString+"</" + name):"/")  + ">\n";
 	}
 }

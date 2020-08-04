@@ -4,12 +4,8 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.dialogs.*;
@@ -22,21 +18,18 @@ import tool.clients.fmmlxdiagrams.dialogs.enumeration.DeleteEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.enumeration.EditEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.instance.AddInstanceDialog;
 import tool.clients.fmmlxdiagrams.dialogs.instance.ChangeOfDialog;
-import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
-import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
 import tool.clients.fmmlxdiagrams.dialogs.operation.AddOperationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.operation.ChangeBodyDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
-import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeLevelDialog;
-import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeNameDialog;
-import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeOwnerDialog;
-import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeParentDialog;
-import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
-import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
+import tool.clients.fmmlxdiagrams.dialogs.shared.*;
+import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
+import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
+import tool.clients.serializer.Serializer;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Vector;
@@ -70,6 +63,7 @@ public class DiagramActions {
 		Platform.runLater(() -> {
 			CreateMetaClassDialog dlg = new CreateMetaClassDialog(diagram);
 			dlg.setTitle("Add metaclass");
+			String objectName;
 			Optional<MetaClassDialogResult> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
@@ -77,25 +71,25 @@ public class DiagramActions {
 
 				Canvas canvas = diagram.getCanvas();
 				canvas.setCursor(Cursor.CROSSHAIR);
+				objectName = mcdResult.getName();
 
 				EventHandler<MouseEvent> chooseLocation = new EventHandler<MouseEvent>() {
 					public void handle(MouseEvent e) {
 
 						int x = (int) e.getX();
 						int y = (int) e.getY();
-
 						if (x > 0 && y > 0) {
 							diagram.getComm().addMetaClass(diagram, mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentIds(), mcdResult.isAbstract(), x, y);
 
 							canvas.setCursor(Cursor.DEFAULT);
 							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
-
 							diagram.updateDiagram();
 //							l.countDown();
 						}
 					}
 				};
 				canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
+
 			}
 		});
 	}
@@ -104,10 +98,13 @@ public class DiagramActions {
 		Platform.runLater(() -> {
 			CreateMetaClassDialog dlg = new CreateMetaClassDialog(diagram);
 			dlg.setTitle("Add metaclass");
+			String objectName="";
 			Optional<MetaClassDialogResult> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
 				final MetaClassDialogResult mcdResult = result.get();
+
+				objectName = mcdResult.getName();
 
 				int x = (int) e.getX();
 				int y = (int) e.getY();
@@ -923,7 +920,7 @@ public class DiagramActions {
 
 			if(solution.isPresent()) {
 				if(solution.get().createNew) {
-					addInstanceDialog(solution.get().selection);				
+					addInstanceDialog(solution.get().selection);
 				} else {
 					diagram.getComm().addAssociationInstance(diagram, obj.getId(), solution.get().selection.getId(), assoc.getId());
 					diagram.updateDiagram();
@@ -940,12 +937,18 @@ public class DiagramActions {
 		}	
 	}
 
-	public void getFaXML() {
-		try {
-			System.err.println(diagram.getComm().getDiagramData(diagram));
-		} catch (TimeOutException e) {}
+	public void save() {
+		Platform.runLater(() -> {
+			Serializer serializer = new Serializer();
+			try {
+				serializer.saveState(diagram);
+			} catch (TransformerException e) {
+				e.printStackTrace();
+			} catch (ParserConfigurationException e) {
+				e.printStackTrace();
+			}
+		});
 	}
-
 
 
 //	public void attributeGeneratorDialog(FmmlxAttribute tmp, InstanceGeneratorGenerateType selectedType) {

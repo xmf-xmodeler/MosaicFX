@@ -75,10 +75,10 @@ public class DefaultContextMenu extends ContextMenu {
 			});
 			
 			getItems().addAll(testEvalList);
-			
-			MenuItem testGetFaXML = new MenuItem("get FaXML");
-			testGetFaXML.setOnAction(e -> actions.getFaXML());
-			getItems().addAll(testGetFaXML);
+
+			MenuItem testSave = new MenuItem("test Save");
+			testSave.setOnAction(a -> actions.save());
+			getItems().addAll(testSave);
 		}
 	}
 }
