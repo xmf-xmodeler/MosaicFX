@@ -131,6 +131,10 @@ public class XmlHandler {
         xmlHelper.addXmlElement(diagram, preferences);
     }
 
+    public void addOperationsElement(Element object, Node operations) throws TransformerException {
+        xmlHelper.addXmlElement(object, operations);
+    }
+
     public void replaceNode(Node projectsNode, String hallo) throws TransformerException {
         Node newNode = xmlHelper.createXmlElement(hallo);
         xmlHelper.getRootNode().replaceChild(newNode, projectsNode);
@@ -201,6 +205,22 @@ public class XmlHandler {
 
     public void removeAllProject() throws TransformerException {
         xmlHelper.removeAllChildren(getProjectsNode());
+    }
+
+    public void addParamElement(Element operation, Node paramNode) throws TransformerException {
+        xmlHelper.addXmlElement(operation, paramNode);
+    }
+
+    public void addBodyElement(Element operation, Element body) throws TransformerException {
+        xmlHelper.addXmlElement(operation, body);
+    }
+
+    public void addAttributesElement(Element object, Node attributes) throws TransformerException {
+        xmlHelper.addXmlElement(object, attributes);
+    }
+
+    public void addOperationElement(Element operations, Element newOperation) throws TransformerException {
+        xmlHelper.addXmlElement(operations, newOperation);
     }
 
 

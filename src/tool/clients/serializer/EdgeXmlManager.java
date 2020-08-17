@@ -163,21 +163,22 @@ public class EdgeXmlManager implements IXmlManager {
 
     @Override
     public void add(Node node) {
-        assert node != null;
-        Element newEdge = (Element) node;
+        if(node!=null){
+            Element newEdge = (Element) node;
 
-        Node diagrams = xmlHandler.getDiagramsNode();
-        NodeList diagramNodeList = diagrams.getChildNodes();
+            Node diagrams = xmlHandler.getDiagramsNode();
+            NodeList diagramNodeList = diagrams.getChildNodes();
 
-        for(int i=0 ; i<diagramNodeList.getLength(); i++){
-            if(diagramNodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
-                Element diagram = (Element) diagramNodeList.item(i);
-                if(diagram.getAttribute(XmlConstant.ATTRIBUTE_ID).equals(newEdge.getAttribute(XmlConstant.ATTRIBUTE_OWNER))){
-                    Element edges = (Element) getEdgesNode(diagram);
-                    try {
-                        xmlHandler.addEdgeElement(edges, newEdge);
-                    } catch (TransformerException e) {
-                        e.printStackTrace();
+            for(int i=0 ; i<diagramNodeList.getLength(); i++){
+                if(diagramNodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
+                    Element diagram = (Element) diagramNodeList.item(i);
+                    if(diagram.getAttribute(XmlConstant.ATTRIBUTE_ID).equals(newEdge.getAttribute(XmlConstant.ATTRIBUTE_OWNER))){
+                        Element edges = (Element) getEdgesNode(diagram);
+                        try {
+                            xmlHandler.addEdgeElement(edges, newEdge);
+                        } catch (TransformerException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }

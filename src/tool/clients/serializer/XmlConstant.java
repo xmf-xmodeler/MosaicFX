@@ -20,6 +20,13 @@ public class XmlConstant {
     public static final String TAG_NAME_EDGES = "Edges";
     public static final String TAG_NAME_INTERMEDIATE_POINTS = "IntermediatePoints";
     public static final String TAG_NAME_INTERMEDIATE_POINT = "IntermediatePoint";
+    public static final String TAG_NAME_OPERATION = "Operation";
+    public static final String TAG_PARAM = "Parameters";
+    public static final String TAG_NAME_OPERATIONS = "Operations";
+    public static final String TAG_NAME_ATTRIBUTES = "Attributes";
+    public static final String TAG_PARAM_NAME = "Param";
+    public static final String TAG_NAME_BODY = "Body";
+    public static final String TAG_NAME_ATTRIBUTE = "Attribute";
 
     public static final String ATTRIBUTE_ID = "id";
     public static final String ATTRIBUTE_NAME = "name";
@@ -29,6 +36,8 @@ public class XmlConstant {
     public static final String ATTRIBUTE_LABEL = "label";
     public static final String ATTRIBUTE_COORDINATE_X = "x";
     public static final String ATTRIBUTE_COORDINATE_Y = "y";
+    public static final String ATTRIBUTE_IS_MONITORED = "is_monitored";
+
 
 
     public static final String ATTRIBUTE_LEVEL = "level";
@@ -47,5 +56,8 @@ public class XmlConstant {
     public static final String ATTRIBUTE_MULTIPLICITY_END_TO_START = "multiplicity_end_to_start";
 
 
+
+    public static final String ATTRIBUTE_DIAGRAM_OWNER = "diagram_owner";
+    public static final String ATTRIBUTE_MULTIPLICITY = "multiplicity";
 
 }

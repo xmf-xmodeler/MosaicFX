@@ -10,15 +10,15 @@ public class AddInstanceDialogResult extends DialogResult {
 	private String name;
 	private int level;
 	private ObservableList<FmmlxObject> parents;
-	private int of;
+	private String ofName;
 	private boolean isAbstract;
 
-	public AddInstanceDialogResult(String name, int level, ObservableList<FmmlxObject> parents, int of,
+	public AddInstanceDialogResult(String name, int level, ObservableList<FmmlxObject> parents, String ofName,
 								   boolean isAbstract) {
 		this.name = name;
 		this.level = level;
 		this.parents = parents;
-		this.of = of;
+		this.ofName = ofName;
 		this.isAbstract = isAbstract;
 	}
 
@@ -45,8 +45,8 @@ public class AddInstanceDialogResult extends DialogResult {
 		return parentIds;
 	}
 
-	public int getOf() {
-		return of;
+	public String getOfName() {
+		return ofName;
 	}
 
 	public boolean isAbstract() {

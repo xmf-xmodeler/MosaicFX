@@ -121,7 +121,7 @@ public class InstanceGenerator implements IInstanceGenerator{
 
 //        diagram.getComm().addNewInstance(diagram, object.getId(), name, object.getLevel()-1, getParentIDs(), false, positionX, positionY);
         //TODO ask : instanceName;
-        diagram.getComm().addNewInstanceWithSlots(diagram, object.getId(), name,
+        diagram.getComm().addNewInstanceWithSlots(diagram, object.getName(), name,
                 getParentIDs(), getSlotValuesMap(instanceNumber), positionX, positionY);
     }
 }

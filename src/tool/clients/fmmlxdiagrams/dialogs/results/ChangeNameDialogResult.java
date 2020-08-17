@@ -12,7 +12,7 @@ public class ChangeNameDialogResult extends DialogResult {
 	private String oldName;
 	private String newName;
 
-	// Result to change class name
+	// Result to change class name 
 	public ChangeNameDialogResult(FmmlxObject object, String newName) {
 		this.type = PropertyType.Class;
 		this.object = object;
@@ -53,5 +53,9 @@ public class ChangeNameDialogResult extends DialogResult {
 
 	public String toString() {
 		return ("Type:" + type + " Object: " + object.getName() + " Old: " + oldName + " New: " + newName);
+	}
+
+	public String getObjectName() {
+		return object.getName();
 	}
 }

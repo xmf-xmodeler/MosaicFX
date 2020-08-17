@@ -100,7 +100,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				return new AddInstanceDialogResult(nameTextField.getText(), selectedObject.getLevel() - 1,
-						parentListView.getSelectionModel().getSelectedItems(), selectedObject.getId(),
+						parentListView.getSelectionModel().getSelectedItems(), selectedObject.getName(),
 						abstractCheckBox.isSelected());
 			}
 			return null;
