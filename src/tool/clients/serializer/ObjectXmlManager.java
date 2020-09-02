@@ -63,7 +63,7 @@ public class ObjectXmlManager implements IXmlManager {
 
         Element operation = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OPERATION);
         operation.setAttribute(XmlConstant.ATTRIBUTE_DIAGRAM_OWNER, diagramOwner);
-        operation.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner+"");
+        operation.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
         operation.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
         operation.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
         operation.setAttribute(XmlConstant.ATTRIBUTE_LEVEL, level+"");
@@ -96,7 +96,7 @@ public class ObjectXmlManager implements IXmlManager {
 
         Element attributeNode = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_ATTRIBUTE);
         attributeNode.setAttribute(XmlConstant.ATTRIBUTE_DIAGRAM_OWNER, diagramOwner);
-        attributeNode.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner+"");
+        attributeNode.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
         attributeNode.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
         attributeNode.setAttribute(XmlConstant.ATTRIBUTE_LEVEL, level+"");
         attributeNode.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
@@ -115,7 +115,7 @@ public class ObjectXmlManager implements IXmlManager {
         for(int i=0 ; i<diagramNodeList.getLength(); i++){
             if(diagramNodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
                 Element diagram = (Element) diagramNodeList.item(i);
-                if(diagram.getAttribute(XmlConstant.ATTRIBUTE_ID).equals(newObject.getAttribute(XmlConstant.ATTRIBUTE_OWNER))){
+                if(diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(newObject.getAttribute(XmlConstant.ATTRIBUTE_OWNER))){
                     Element objects = (Element) getObjectsNode(diagram);
                     try {
                         xmlHandler.addObjectElement(objects, newObject);

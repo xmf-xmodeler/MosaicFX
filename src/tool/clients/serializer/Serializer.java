@@ -86,17 +86,17 @@ public class Serializer implements ISerializer {
         for (FmmlxObject object : objects){
             Node objectNode = objectXmlManager.createObject(diagram, object);
 
-            Vector<FmmlxOperation> operations = object.getOwnOperations();
-            for(FmmlxOperation operation : operations){
-                Node operationNode = objectXmlManager.createOperationXmlNode(diagram, object, operation);
-                objectXmlManager.addOperation(objectNode, operationNode);
-            }
-
-            Vector<FmmlxAttribute> attributes = object.getOwnAttributes();
-            for(FmmlxAttribute attribute : attributes){
-                Node attributeNode = objectXmlManager.createAttributeXmlNode(diagram, object, attribute);
-                objectXmlManager.addAttribute(objectNode, attributeNode);
-            }
+//            Vector<FmmlxOperation> operations = object.getOwnOperations();
+//            for(FmmlxOperation operation : operations){
+//                Node operationNode = objectXmlManager.createOperationXmlNode(diagram, object, operation);
+//                objectXmlManager.addOperation(objectNode, operationNode);
+//            }
+//
+//            Vector<FmmlxAttribute> attributes = object.getOwnAttributes();
+//            for(FmmlxAttribute attribute : attributes){
+//                Node attributeNode = objectXmlManager.createAttributeXmlNode(diagram, object, attribute);
+//                objectXmlManager.addAttribute(objectNode, attributeNode);
+//            }
 
             objectXmlManager.add(objectNode);
         }
