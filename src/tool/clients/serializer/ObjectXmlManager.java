@@ -24,7 +24,7 @@ public class ObjectXmlManager implements IXmlManager {
         int of = fmmlxObject.getOf();
         Vector<Integer> parents = fmmlxObject.getParents();
         String projectPath = diagram.getPackagePath()+"::"+name;
-        int owner = diagram.getID();
+        String owner = diagram.getDiagramLabel();
         double x = fmmlxObject.getX();
         double y = fmmlxObject.getY();
 
@@ -35,7 +35,7 @@ public class ObjectXmlManager implements IXmlManager {
         object.setAttribute(XmlConstant.ATTRIBUTE_OF, of+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_PARENTS, parents+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
-        object.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner+"");
+        object.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
         object.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, x+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, y+"");
         Node attributes = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_ATTRIBUTES);

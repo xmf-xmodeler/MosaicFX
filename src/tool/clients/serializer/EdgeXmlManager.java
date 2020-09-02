@@ -21,7 +21,6 @@ public class EdgeXmlManager implements IXmlManager {
 
     public Node createAssociationXmlNode(FmmlxDiagram fmmlxDiagram, FmmlxAssociation fmmlxAssociation) throws TransformerException {
 
-        int id = fmmlxAssociation.getId();
         String name = fmmlxAssociation.getName();
         String type = "association";
         Vector<Point2D> intermediatePoints = fmmlxAssociation.getIntermediatePoints();
@@ -33,13 +32,12 @@ public class EdgeXmlManager implements IXmlManager {
         PortRegion sourcePort = fmmlxAssociation.getSourcePort();
         PortRegion targetPort = fmmlxAssociation.getTargetPort();
         String projectPath = fmmlxDiagram.getPackagePath();
-        int owner = fmmlxDiagram.getID();
+        String owner = fmmlxDiagram.getDiagramLabel();
         Multiplicity multiplicityStartToEnd = fmmlxAssociation.getMultiplicityStartToEnd();
         Multiplicity multiplicityEndToStart = fmmlxAssociation.getMultiplicityEndToStart();
 
         Element edge = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGE);
-        edge.setAttribute(XmlConstant.ATTRIBUTE_ID, id+"");
-        edge.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner+"");
+        edge.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
         edge.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
         edge.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
         edge.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE, sourceNode.getId()+"");
@@ -67,7 +65,6 @@ public class EdgeXmlManager implements IXmlManager {
 
     public Node createDelegationXmlNode(FmmlxDiagram fmmlxDiagram, DelegationEdge delegationEdge) throws TransformerException {
 
-        int id = delegationEdge.getId();
         String type = "delegation";
         Vector<Point2D> intermediatePoints = delegationEdge.getIntermediatePoints();
         FmmlxObject childNode = delegationEdge.getChild();
@@ -75,11 +72,10 @@ public class EdgeXmlManager implements IXmlManager {
         PortRegion sourcePort = delegationEdge.getSourcePort();
         PortRegion targetPort = delegationEdge.getTargetPort();
         String projectPath = fmmlxDiagram.getPackagePath();
-        int owner = fmmlxDiagram.getID();
+        String owner = fmmlxDiagram.getDiagramLabel();
 
         Element edge = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGE);
-        edge.setAttribute(XmlConstant.ATTRIBUTE_ID, id+"");
-        edge.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner+"");
+        edge.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
         edge.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
         edge.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
         edge.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE, childNode.getId()+"");
@@ -102,7 +98,6 @@ public class EdgeXmlManager implements IXmlManager {
 
     public Node createInheritanceXmlNode(FmmlxDiagram fmmlxDiagram, InheritanceEdge inheritanceEdge) throws TransformerException {
 
-        int id = inheritanceEdge.getId();
         String type = "inheritance";
         Vector<Point2D> intermediatePoints = inheritanceEdge.getIntermediatePoints();
         FmmlxObject childNode = inheritanceEdge.getChild();
@@ -110,11 +105,10 @@ public class EdgeXmlManager implements IXmlManager {
         PortRegion sourcePort = inheritanceEdge.getSourcePort();
         PortRegion targetPort = inheritanceEdge.getTargetPort();
         String projectPath = fmmlxDiagram.getPackagePath();
-        int owner = fmmlxDiagram.getID();
+        String owner = fmmlxDiagram.getDiagramLabel();
 
         Element edge = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGE);
-        edge.setAttribute(XmlConstant.ATTRIBUTE_ID, id+"");
-        edge.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner+"");
+        edge.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
         edge.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
         edge.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
         edge.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE, childNode.getId()+"");
@@ -136,7 +130,6 @@ public class EdgeXmlManager implements IXmlManager {
 
     public Node createLinkXmlNode(FmmlxDiagram fmmlxDiagram, FmmlxLink fmmlxLink) {
 
-        int id = fmmlxLink.getId();
         String type = "link";
         int ofId = fmmlxLink.getOfId();
         Vector<Point2D> intermediatePoints = fmmlxLink.getIntermediatePoints();
@@ -148,7 +141,6 @@ public class EdgeXmlManager implements IXmlManager {
         int owner = fmmlxDiagram.getID();
 
         Element edge = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGE);
-        edge.setAttribute(XmlConstant.ATTRIBUTE_ID, id+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
         edge.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
@@ -172,7 +164,7 @@ public class EdgeXmlManager implements IXmlManager {
             for(int i=0 ; i<diagramNodeList.getLength(); i++){
                 if(diagramNodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
                     Element diagram = (Element) diagramNodeList.item(i);
-                    if(diagram.getAttribute(XmlConstant.ATTRIBUTE_ID).equals(newEdge.getAttribute(XmlConstant.ATTRIBUTE_OWNER))){
+                    if(diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(newEdge.getAttribute(XmlConstant.ATTRIBUTE_DIAGRAM_OWNER))){
                         Element edges = (Element) getEdgesNode(diagram);
                         try {
                             xmlHandler.addEdgeElement(edges, newEdge);
