@@ -38,14 +38,10 @@ public class ObjectXmlManager implements IXmlManager {
         object.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
         object.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, x+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, y+"");
-        Node attributes = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_ATTRIBUTES);
-        Node operations = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OPERATIONS);
-        try {
-            xmlHandler.addOperationsElement(object, operations);
-            xmlHandler.addAttributesElement(object, attributes);
-        } catch (TransformerException e) {
-            e.printStackTrace();
-        }
+        //Node attributes = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_ATTRIBUTES);
+        //Node operations = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OPERATIONS);
+        //xmlHandler.addOperationsElement(object, operations);
+        //xmlHandler.addAttributesElement(object, attributes);
         return object;
     }
 
