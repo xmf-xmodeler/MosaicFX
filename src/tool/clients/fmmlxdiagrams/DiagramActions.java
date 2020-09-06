@@ -952,7 +952,7 @@ public class DiagramActions {
 	public void openFindImplementationDialog() {
 		Platform.runLater(() -> {
 
-			FindImplementationDialog dlg = new FindImplementationDialog(diagram.getComm());
+			FindImplementationDialog dlg = new FindImplementationDialog(diagram, diagram.getComm());
 			Optional<Object> opt = dlg.showAndWait();
 
 		});

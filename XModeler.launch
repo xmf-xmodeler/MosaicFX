@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
-<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/MosaicFX/src/tool/xmodeler/XModeler.java"/>
-</listAttribute>
-<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
-<listEntry value="1"/>
-</listAttribute>
-<booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="tool.xmodeler.XModeler"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="./ini3.txt"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="MosaicFX"/>
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+        <listEntry value="/MosaicFX/src/tool/xmodeler/XModeler.java"/>
+    </listAttribute>
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+        <listEntry value="1"/>
+    </listAttribute>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_CLASSPATH_ONLY_JAR" value="false"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="tool.xmodeler.XModeler"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="MosaicFX"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="./ini3.txt"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="MosaicFX"/>
+    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="--module-path &quot;C:\Program Files\JavaFx\javafx-sdk-14.0.2.1\lib&quot; --add-modules javafx.controls"/>
 </launchConfiguration>

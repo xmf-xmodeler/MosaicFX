@@ -2,6 +2,7 @@ package tool.clients.dialogs.enquiries;
 
 import java.beans.EventHandler;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
@@ -16,7 +17,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
+import tool.clients.fmmlxdiagrams.TimeOutException;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 
 public class FindImplementationDialog extends CustomDialog<Object> {
@@ -34,10 +37,11 @@ public class FindImplementationDialog extends CustomDialog<Object> {
 	ListView<String> classesListView = new ListView<String>();
 	TextArea codeBox = new TextArea();
 	HashMap<String, String>  result = new HashMap<String, String>();
-	
+	FmmlxDiagram diagram;
 	private final FmmlxDiagramCommunicator fmmlxDiagramCommunicator;
-	public FindImplementationDialog(FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
+	public FindImplementationDialog(FmmlxDiagram diagram, FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
 		this.fmmlxDiagramCommunicator = fmmlxDiagramCommunicator;
+		this.diagram = diagram;
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
@@ -81,9 +85,19 @@ public class FindImplementationDialog extends CustomDialog<Object> {
 	}}
 
 	private void keyTyped() {
-		result = fmmlxDiagramCommunicator.findImplementation(nameTextfield.getText(), modelTextfield.getText(), numberOfParamsTextfield.getText(), returnTypeTextfield.getText());
-		classesListView.getItems().clear();
-		classesListView.getItems().addAll(result.keySet());
+		try {	
+			result = fmmlxDiagramCommunicator.findImplementation(diagram, nameTextfield.getText(), modelTextfield.getText(), numberOfParamsTextfield.getText(), returnTypeTextfield.getText());
+
+			classesListView.getItems().clear();
+			Vector <String> keys = new Vector<>();
+			keys.addAll(result.keySet());
+			Collections.sort(keys);
+			classesListView.getItems().addAll(keys);
+		
+		} catch (TimeOutException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 		
