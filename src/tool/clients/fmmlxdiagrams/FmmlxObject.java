@@ -6,6 +6,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.*;
+import kodkod.engine.bool.Int;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteTool;
@@ -225,6 +226,13 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		return result;
 	}
 
+	public Vector<String> getParentNames() {
+		Vector<String> parentNames = new Vector<>();
+		for(Integer id : parents){
+			parentNames.add(diagram.getObjectById(id).getName());
+		}
+		return parentNames;
+	}
 	public Vector<Integer> getParents() {
 		return parents;
 	}

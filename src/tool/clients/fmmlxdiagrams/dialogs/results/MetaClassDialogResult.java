@@ -31,14 +31,14 @@ public class MetaClassDialogResult extends DialogResult {
 		return isAbstract;
 	}
 
-	public Vector<Integer> getParentIds() {
-		Vector<Integer> parentIds = new Vector<>();
+	public Vector<String> getParentIds() {
+		Vector<String> parentNames = new Vector<>();
 
 		if (parent.size() > 0) {
 			for (FmmlxObject object : parent) {
-				parentIds.add(object.getId());
+				parentNames.add(object.getName());
 			}
 		}
-		return parentIds;
+		return parentNames;
 	}
 }

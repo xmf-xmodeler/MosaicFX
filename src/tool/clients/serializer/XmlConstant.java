@@ -60,4 +60,5 @@ public class XmlConstant {
     public static final String ATTRIBUTE_DIAGRAM_OWNER = "diagram_owner";
     public static final String ATTRIBUTE_MULTIPLICITY = "multiplicity";
 
+    public static final String ATTRIBUTE_IS_ABSTRACT = "abstract";
 }

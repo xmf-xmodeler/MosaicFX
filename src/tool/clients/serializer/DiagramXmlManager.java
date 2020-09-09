@@ -85,4 +85,8 @@ public class DiagramXmlManager implements IXmlManager {
     public Node getDiagramsNode() {
         return xmlHandler.getDiagramsNode();
     }
+
+    public List getAllDiagrams() {
+        return null;
+    }
 }

@@ -25,6 +25,7 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.*;
 import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
+import tool.clients.serializer.Deserializer;
 import tool.clients.serializer.Serializer;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -144,7 +145,7 @@ public class DiagramActions {
 
 						if (x > 0 && y > 0) {
 							diagram.getComm().addNewInstance(diagram, aidResult.getOfName(), aidResult.getName(), aidResult.getLevel(),
-									aidResult.getParentId(), false, x, y);
+									aidResult.getParentNames(), false, x, y);
 
 							canvas.setCursor(Cursor.DEFAULT);
 							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
@@ -173,7 +174,7 @@ public class DiagramActions {
 				
 				if (x > 0 && y > 0) {
 					diagram.getComm().addNewInstance(diagram, aidResult.getOfName(), aidResult.getName(), aidResult.getLevel(),
-							aidResult.getParentId(), false, x, y);
+							aidResult.getParentNames(), false, x, y);
 
 					diagram.updateDiagram();
 				}
@@ -500,7 +501,7 @@ public class DiagramActions {
 
 			if (cpd.isPresent()) {
 				ChangeParentDialogResult result = cpd.get();
-				diagram.getComm().changeParent(diagram, result.getObject().getName(), result.getCurrentParentIds(), result.getNewParentIds());
+				diagram.getComm().changeParent(diagram, result.getObject().getName(), result.getCurrentParentNames(), result.getNewParentNames());
 				diagram.updateDiagram();
 			}
 
@@ -945,6 +946,17 @@ public class DiagramActions {
 			} catch (TransformerException e) {
 				e.printStackTrace();
 			} catch (ParserConfigurationException e) {
+				e.printStackTrace();
+			}
+		});
+	}
+
+	public void loadLogs() {
+		Platform.runLater(()-> {
+			Deserializer deserializer = new Deserializer();
+			try {
+				deserializer.getAllDiagramElement(diagram);
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		});

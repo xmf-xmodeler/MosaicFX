@@ -39,7 +39,7 @@ public class Serializer implements ISerializer {
 
     private void saveLog(FmmlxDiagram diagram) {
         try {
-            LogXmlManager logXmlManager = new LogXmlManager();
+            LogXmlManager logXmlManager = new LogXmlManager(diagram);
             logXmlManager.clearLog();
             FaXML protocol = diagram.getComm().getDiagramData(diagram);
 
@@ -123,13 +123,5 @@ public class Serializer implements ISerializer {
         }
 
         projectXmlManager.add(projectNode);
-    }
-
-    @Override
-    public void loadState(String path, FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
-        ProjectXmlManager projectXmlManager = new ProjectXmlManager(path);
-        String projectName = projectXmlManager.getProjectName();
-        fmmlxDiagramCommunicator.loadProjectFromXml(projectName);
-        //TODO
     }
 }

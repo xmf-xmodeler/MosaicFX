@@ -16,5 +16,5 @@ public interface IInstanceGenerator {
 
     HashMap<FmmlxAttribute, String> getSlotValuesMap(int instanceNumber);
 
-    Vector<Integer> getParentIDs();
+    Vector<String> getParentNames();
 }

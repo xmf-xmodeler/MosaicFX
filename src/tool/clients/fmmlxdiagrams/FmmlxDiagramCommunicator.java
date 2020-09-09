@@ -7,6 +7,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import tool.clients.serializer.Deserializer;
 import tool.clients.serializer.Serializer;
 import tool.clients.workbench.WorkbenchClient;
 import xos.Value;
@@ -84,7 +85,7 @@ public class FmmlxDiagramCommunicator {
 		tabs.remove(handler);
 	}
 
-	private Value[] createValueArray(Vector<Integer> vector) { // todo: make more generic
+	private Value[] createValueArray(Vector<String> vector) { // todo: make more generic
 		Value[] result = new Value[vector.size()];
 		for (int i = 0; i < result.length; i++) {
 			result[i] = new Value(vector.get(i));
@@ -665,7 +666,7 @@ public class FmmlxDiagramCommunicator {
 	/// Operations requesting data to be manipulated ///
 	////////////////////////////////////////////////////
 
-	public void addMetaClass(FmmlxDiagram diagram, String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
+	public void addMetaClass(FmmlxDiagram diagram, String name, int level, Vector<String> parents, boolean isAbstract, int x, int y) {
 		Value[] parentsArray = createValueArray(parents);
 
 		Value[] message = new Value[]{
@@ -678,7 +679,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("addMetaClass", message);
 	}
 
-	public void addNewInstance(FmmlxDiagram diagram, String className, String name, int level, Vector<Integer> parents, boolean isAbstract, int x,
+	public void addNewInstance(FmmlxDiagram diagram, String className, String name, int level, Vector<String> parents, boolean isAbstract, int x,
 							   int y) {
 		Value[] parentsArray = createValueArray(parents);
 
@@ -692,7 +693,7 @@ public class FmmlxDiagramCommunicator {
 			FmmlxDiagram diagram, 
 			String className,
 			String instanceName,
-			Vector<Integer> parents, 
+			Vector<String> parents,
 			HashMap<FmmlxAttribute, String> slotValues, 
 			int x, int y) {
 		Value[] parentsArray = createValueArray(parents);
@@ -931,7 +932,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("changeOf", message);
 	}
 
-	public void changeParent(FmmlxDiagram diagram, String objectName, Vector<Integer> currentParents, Vector<Integer> newParents) {
+	public void changeParent(FmmlxDiagram diagram, String objectName, Vector<String> currentParents, Vector<String> newParents) {
 		Value[] parentsArray = createValueArray(currentParents);
 		Value[] newParentsArray = createValueArray(newParents);
 
@@ -1257,7 +1258,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("showBody", message);
 	}
 
-	public void loadProjectFromXml( String projectName){
+	public void loadProjectNameFromXml(String projectName){
 		Value[] message = new Value[]{
 				new Value(-1),
 				new Value(projectName)
@@ -1266,8 +1267,8 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void openXmlFile(String fileName){
-		Serializer serializer = new Serializer();
-		serializer.loadState(fileName, this);
+		Deserializer deserializer = new Deserializer();
+		deserializer.loadState(fileName, this);
 	}
 
 	public void openPackageBrowser() {

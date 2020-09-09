@@ -19,8 +19,8 @@ public class ChangeParentDialogResult extends DialogResult{
 		return object;
 	}
 
-	public Vector<Integer> getCurrentParentIds() {
-		return object.getParents();
+	public Vector<String> getCurrentParentNames() {
+		return object.getParentNames();
 	}
 
 	public Vector<Integer> getNewParentIds() {
@@ -32,6 +32,17 @@ public class ChangeParentDialogResult extends DialogResult{
 			}
 		}
 		return parentIds;
+	}
+
+	public Vector<String> getNewParentNames() {
+		Vector<String> parentNames = new Vector<>();
+
+		if (newParent.size() > 0) {
+			for (FmmlxObject object : newParent) {
+				parentNames.add(object.getName());
+			}
+		}
+		return parentNames;
 	}
 
 }

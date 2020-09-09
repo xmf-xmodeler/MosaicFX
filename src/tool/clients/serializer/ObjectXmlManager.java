@@ -147,7 +147,6 @@ public class ObjectXmlManager implements IXmlManager {
         }
     }
 
-
     private Node getOperationsNode(Element objectNode) {
         return xmlHandler.getXmlHelper().getNodeByTag(objectNode, XmlConstant.TAG_NAME_OPERATIONS);
     }
