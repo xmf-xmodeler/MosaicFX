@@ -39,6 +39,11 @@ import java.util.concurrent.CountDownLatch;
 
 public class FmmlxDiagram{
 
+
+	public Vector<FmmlxObject> getAllObjects() {
+		return objects;
+	}
+
 	enum MouseMode {
 		MULTISELECT, STANDARD, DRAW_EDGE
 	}
@@ -66,7 +71,7 @@ public class FmmlxDiagram{
 	// Temporary variables storing the current state of user interactions
 	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
 	private ContextMenu activeContextMenu;
-	private transient boolean objectsMoved = false;
+	public transient boolean objectsMoved = false;
 	private transient PropertyType drawEdgeType = null;
 	private transient Point2D lastPoint;
 	private transient Point2D currentPoint;

@@ -986,10 +986,10 @@ public class FmmlxDiagramCommunicator {
 //		sendMessage("changeMultiplicity", message);
 //	}
 
-	public void changeOperationBody(FmmlxDiagram diagram, int objectId, String operationName, String body) {
+	public void changeOperationBody(FmmlxDiagram diagram, String objectName, String operationName, String body) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(objectId),
+				new Value(objectName),
 				new Value(operationName),
 				new Value(body)};
 		sendMessage("changeOperationBody", message);

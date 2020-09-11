@@ -31,7 +31,18 @@ public class MetaClassDialogResult extends DialogResult {
 		return isAbstract;
 	}
 
-	public Vector<String> getParentIds() {
+	public Vector<Integer> getParentIds() {
+		Vector<Integer> parentIds = new Vector<>();
+
+		if (parent.size() > 0) {
+			for (FmmlxObject object : parent) {
+				parentIds.add(object.getId());
+			}
+		}
+		return parentIds;
+	}
+
+	public Vector<String> getParentNames() {
 		Vector<String> parentNames = new Vector<>();
 
 		if (parent.size() > 0) {

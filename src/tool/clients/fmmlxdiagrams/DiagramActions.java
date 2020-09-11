@@ -80,7 +80,7 @@ public class DiagramActions {
 						int x = (int) e.getX();
 						int y = (int) e.getY();
 						if (x > 0 && y > 0) {
-							diagram.getComm().addMetaClass(diagram, mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentIds(), mcdResult.isAbstract(), x, y);
+							diagram.getComm().addMetaClass(diagram, mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentNames(), mcdResult.isAbstract(), x, y);
 
 							canvas.setCursor(Cursor.DEFAULT);
 							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
@@ -111,7 +111,7 @@ public class DiagramActions {
 				int y = (int) e.getY();
 
 				if (x > 0 && y > 0) {
-					diagram.getComm().addMetaClass(diagram, mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentIds(), mcdResult.isAbstract(), x, y);
+					diagram.getComm().addMetaClass(diagram, mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentNames(), mcdResult.isAbstract(), x, y);
 					
 					diagram.updateDiagram();
 				}
@@ -680,7 +680,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final ChangeBodyDialogResult result = opt.get();
-				diagram.getComm().changeOperationBody(diagram, result.getObject().getId(), result.getSelectedItem().getName(), result.getBody());
+				diagram.getComm().changeOperationBody(diagram, result.getObject().getName(), result.getSelectedItem().getName(), result.getBody());
 				diagram.updateDiagram();
 			}
 //			latch.countDown();
@@ -961,7 +961,6 @@ public class DiagramActions {
 			}
 		});
 	}
-
 
 //	public void attributeGeneratorDialog(FmmlxAttribute tmp, InstanceGeneratorGenerateType selectedType) {
 //		Platform.runLater(() -> {

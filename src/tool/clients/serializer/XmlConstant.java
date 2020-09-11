@@ -28,7 +28,6 @@ public class XmlConstant {
     public static final String TAG_NAME_BODY = "Body";
     public static final String TAG_NAME_ATTRIBUTE = "Attribute";
 
-    public static final String ATTRIBUTE_ID = "id";
     public static final String ATTRIBUTE_NAME = "name";
     public static final String ATTRIBUTE_OWNER = "owner";
     public static final String ATTRIBUTE_PACKAGE_PATH = "package_path";
@@ -37,8 +36,6 @@ public class XmlConstant {
     public static final String ATTRIBUTE_COORDINATE_X = "x";
     public static final String ATTRIBUTE_COORDINATE_Y = "y";
     public static final String ATTRIBUTE_IS_MONITORED = "is_monitored";
-
-
 
     public static final String ATTRIBUTE_LEVEL = "level";
     public static final String ATTRIBUTE_PARENTS = "parents";
@@ -55,10 +52,16 @@ public class XmlConstant {
     public static final String ATTRIBUTE_MULTIPLICITY_START_TO_END = "multiplicity_start_to_end";
     public static final String ATTRIBUTE_MULTIPLICITY_END_TO_START = "multiplicity_end_to_start";
 
-
-
     public static final String ATTRIBUTE_DIAGRAM_OWNER = "diagram_owner";
     public static final String ATTRIBUTE_MULTIPLICITY = "multiplicity";
 
     public static final String ATTRIBUTE_IS_ABSTRACT = "abstract";
+    public static final String ATTRIBUTE_BODY = "body";
+    public static final String ATTRIBUTE_CLASS = "class";
+    public static final String ATTRIBUTE_OLD_NAME = "oldName";
+    public static final String ATTRIBUTE_NEW_NAME = "newName";
+    public static final String ATTRIBUTE_OLD_LEVEL = "oldLevel";
+    public static final String ATTRIBUTE_NEW_LEVEL = "newLevel";
+    public static final String ATTRIBUTE_NEW_TYPE = "newType";
+    public static final String ATTRIBUTE_OLD_TYPE = "oldType";
 }

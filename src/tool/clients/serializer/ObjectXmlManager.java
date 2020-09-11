@@ -18,7 +18,6 @@ public class ObjectXmlManager implements IXmlManager {
     }
 
     public Node createObject(FmmlxDiagram diagram, FmmlxObject fmmlxObject) {
-        int id = fmmlxObject.getId();
         String name = fmmlxObject.getName();
         int level= fmmlxObject.getLevel();
         int of = fmmlxObject.getOf();
@@ -29,7 +28,6 @@ public class ObjectXmlManager implements IXmlManager {
         double y = fmmlxObject.getY();
 
         Element object = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OBJECT);
-        object.setAttribute(XmlConstant.ATTRIBUTE_ID, id+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
         object.setAttribute(XmlConstant.ATTRIBUTE_LEVEL, level+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_OF, of+"");
@@ -38,10 +36,6 @@ public class ObjectXmlManager implements IXmlManager {
         object.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
         object.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, x+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, y+"");
-        //Node attributes = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_ATTRIBUTES);
-        //Node operations = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OPERATIONS);
-        //xmlHandler.addOperationsElement(object, operations);
-        //xmlHandler.addAttributesElement(object, attributes);
         return object;
     }
 
@@ -162,5 +156,84 @@ public class ObjectXmlManager implements IXmlManager {
 
     private Node getAttributesNode(Node objectNode) {
         return xmlHandler.getXmlHelper().getNodeByTag(objectNode, XmlConstant.TAG_NAME_ATTRIBUTES);
+    }
+
+    public void alignObjects(FmmlxDiagram fmmlxDiagram) {
+        Node diagrams = xmlHandler.getDiagramsNode();
+        NodeList diagramList = diagrams.getChildNodes();
+
+        Node diagramNode = null;
+
+        for (int i = 0 ; i< diagramList.getLength(); i++){
+            if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
+                Element tmp = (Element) diagramList.item(i);
+                if (tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(fmmlxDiagram.getDiagramLabel())){
+                    diagramNode = tmp;
+                }
+            }
+        }
+
+        Vector<FmmlxObject> allObjects = fmmlxDiagram.getAllObjects();
+
+        for(FmmlxObject object : allObjects){
+            System.out.println(object.getName());
+            Coordinate coordinate = getCoordinate(diagramNode, object.getName());
+            System.out.println(object.getName()+", coordinate : "+coordinate.getX()+", "+coordinate.getY());
+            //object.moveTo(coordinate.getX(), coordinate.getY(), fmmlxDiagram);
+        }
+        //fmmlxDiagram.objectsMoved = true;
+    }
+
+    private Coordinate getCoordinate(Node diagramNone, String name) {
+        Node objectsNode = xmlHandler.getChildWithName(diagramNone, "Objects");
+        NodeList objectList = objectsNode.getChildNodes();
+        Coordinate coordinate = new Coordinate(0.0, 0.0);
+
+        for (int i = 0 ; i< objectList.getLength() ; i++){
+            if (objectList.item(i).getNodeType() == Node.ELEMENT_NODE){
+                Element object_tmp = (Element) objectList.item(i);
+                if(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_NAME).equals(name)){
+                    double x = Double.parseDouble(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
+                    double y = Double.parseDouble(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
+                    coordinate.setX(x);
+                    coordinate.setY(y);
+                }
+            }
+        }
+        return coordinate;
+    }
+
+    private class Coordinate {
+        double x;
+        double y;
+
+        public Coordinate(double x, double y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public double getX() {
+            return x;
+        }
+
+        public void setX(double x) {
+            this.x = x;
+        }
+
+        public double getY() {
+            return y;
+        }
+
+        public void setY(double y) {
+            this.y = y;
+        }
+
+        @Override
+        public String toString() {
+            return "Coordinat{" +
+                    "x=" + x +
+                    ", y=" + y +
+                    '}';
+        }
     }
 }

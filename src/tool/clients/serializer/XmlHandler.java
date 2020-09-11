@@ -156,7 +156,7 @@ public class XmlHandler {
         for(int i = 0 ; i< diagramsChildNodes.getLength(); i++){
             if(diagramsChildNodes.item(i).getNodeType() == Node.ELEMENT_NODE){
                 Element element = (Element) diagramsChildNodes.item(i);
-                if(element.getAttribute(XmlConstant.ATTRIBUTE_ID).equals(diagram.getID()+"")
+                if(element.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(diagram.getDiagramLabel())
                         && element.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(diagram.getDiagramLabel())){
                     xmlHelper.removeChild(diagrams, element);
                 }
@@ -221,6 +221,10 @@ public class XmlHandler {
 
     public void addOperationElement(Element operations, Element newOperation) throws TransformerException {
         xmlHelper.addXmlElement(operations, newOperation);
+    }
+
+    public Node getChildWithName(Node diagramNone, String child) {
+        return xmlHelper.getNodeByTag(diagramNone, child);
     }
 
 

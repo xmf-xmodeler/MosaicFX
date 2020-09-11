@@ -1,5 +1,6 @@
 package tool.clients.serializer;
 
+import tool.clients.diagrams.Node;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 
@@ -21,6 +22,13 @@ public class Deserializer {
 
     public void getAllDiagramElement(FmmlxDiagram fmmlxDiagram){
         LogXmlManager logXmlManager = new LogXmlManager(fmmlxDiagram);
-        logXmlManager.reproduceFromLog();
+        logXmlManager.reproduceFromLog(fmmlxDiagram.getDiagramLabel());
+        alignCoordinate(fmmlxDiagram);
+        fmmlxDiagram.updateDiagram();
+    }
+
+    public void alignCoordinate(FmmlxDiagram fmmlxDiagram) {
+        ObjectXmlManager objectXmlManager = new ObjectXmlManager();
+        objectXmlManager.alignObjects(fmmlxDiagram);
     }
 }

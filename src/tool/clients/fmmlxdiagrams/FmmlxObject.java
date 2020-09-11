@@ -903,4 +903,22 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		}
 		return count;
     }
+
+	public boolean isAttributeExists(String name) {
+		for(FmmlxAttribute attribute : getAllAttributes()){
+			if(attribute.getName().equals(name)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean operationIsExists(String name) {
+		for(FmmlxOperation operation : getAllOperations()){
+			if(operation.getName().equals(name)){
+				return true;
+			}
+		}
+		return false;
+	}
 }

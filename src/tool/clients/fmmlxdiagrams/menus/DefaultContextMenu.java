@@ -80,7 +80,7 @@ public class DefaultContextMenu extends ContextMenu {
 			testSave.setOnAction(a -> actions.save());
 			MenuItem testLoad = new MenuItem("test Load");
 			testLoad.setOnAction(a -> actions.loadLogs());
-			getItems().addAll(testSave);
+			getItems().addAll(testSave, testLoad);
 		}
 	}
 }

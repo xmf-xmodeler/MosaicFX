@@ -15,7 +15,7 @@ public class FaXML {
 		System.err.println("reading " + content);
 		name = (String) content.get(0);
 
-		if (name.equals("addOperation2")){
+		if (name.equals("addOperation2") || name.equals("changeOperationBody")){
 			for(int i = 1; i < content.size(); i++) {
 				if(! (content.get(i) instanceof Vector<?>)) throw new RuntimeException("FaXML message invalid.");
 				@SuppressWarnings("unchecked")
