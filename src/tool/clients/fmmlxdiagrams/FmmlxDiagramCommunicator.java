@@ -722,10 +722,10 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("removeClass", message);
 	}
 
-	public void removeAssociation(FmmlxDiagram diagram, int assocId, int strategy) {
+	public void removeAssociation(FmmlxDiagram diagram, String associationName, int strategy) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(assocId)};
+				new Value(associationName)}; //TODO still has to change id-dependency
 		sendMessage("removeAssociation", message);
 	}
 
@@ -850,12 +850,12 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("changeOperationLevel", message);
 	}
 
-	public void changeOperationOwner(FmmlxDiagram diagram, String objectName, String name, Integer newOwnerID) {
+	public void changeOperationOwner(FmmlxDiagram diagram, String objectName, String name, String newOwnerName) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(objectName),
 				new Value(name),
-				new Value(newOwnerID)};
+				new Value(newOwnerName)};
 		sendMessage("changeOperationOwner", message);
 	}
 

@@ -173,8 +173,8 @@ public class ObjectXmlManager implements IXmlManager {
             }
         }
 
-        Vector<FmmlxObject> allObjects = fmmlxDiagram.getAllObjects();
-
+        List<FmmlxObject>allObjects = fmmlxDiagram.getSortedObject(SortedValue.REVERSE);
+        System.out.println(allObjects.size());
         for(FmmlxObject object : allObjects){
             System.out.println(object.getName());
             Coordinate coordinate = getCoordinate(diagramNode, object.getName());

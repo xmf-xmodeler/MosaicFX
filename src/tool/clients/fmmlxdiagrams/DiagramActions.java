@@ -295,7 +295,7 @@ public class DiagramActions {
 						diagram.getComm().removeAttribute(diagram, result.getObject().getName(), result.getAttribute().getName(), 0);
 						break;
 					case Association:
-						diagram.getComm().removeAssociation(diagram, result.getAssociation().getId(), 0);
+						diagram.getComm().removeAssociation(diagram, result.getAssociation().getName(), 0);
 					default:
 						System.err.println("ChangeNameDialogResult: No matching content type!");
 				}
@@ -475,10 +475,10 @@ public class DiagramActions {
 				final ChangeOwnerDialogResult result = opt.get();
 				switch (result.getType()) {
 					case Attribute:
-						diagram.getComm().changeAttributeOwner(diagram, result.getObject().getName(), result.getAttribute().getName(), result.getNewOwnerID());
+						diagram.getComm().changeAttributeOwner(diagram, result.getObject().getName(), result.getAttribute().getName(), result.getNewOwner());
 						break;
 					case Operation:
-						diagram.getComm().changeOperationOwner(diagram, result.getObject().getName(), result.getOperation().getName(), result.getNewOwnerID());
+						diagram.getComm().changeOperationOwner(diagram, result.getObject().getName(), result.getOperation().getName(), result.getNewOwnerName());
 						break;
 					default:
 						System.err.println("ChangeOwnerDialogResult: No matching content type!");
@@ -841,7 +841,7 @@ public class DiagramActions {
 	}
 
 	public void removeAssociation(FmmlxAssociation association) {
-		diagram.getComm().removeAssociation(diagram, association.id, -1);
+		diagram.getComm().removeAssociation(diagram, association.getName(), -1);
 		diagram.updateDiagram();
 	}
 

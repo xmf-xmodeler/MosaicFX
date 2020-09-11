@@ -23,7 +23,6 @@ public class Deserializer {
     public void getAllDiagramElement(FmmlxDiagram fmmlxDiagram){
         LogXmlManager logXmlManager = new LogXmlManager(fmmlxDiagram);
         logXmlManager.reproduceFromLog(fmmlxDiagram.getDiagramLabel());
-        alignCoordinate(fmmlxDiagram);
         fmmlxDiagram.updateDiagram();
     }
 

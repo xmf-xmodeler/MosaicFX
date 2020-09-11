@@ -64,4 +64,10 @@ public class XmlConstant {
     public static final String ATTRIBUTE_NEW_LEVEL = "newLevel";
     public static final String ATTRIBUTE_NEW_TYPE = "newType";
     public static final String ATTRIBUTE_OLD_TYPE = "oldType";
+    public static final String ATTRIBUTE_OLD_MULTIPLICITY = "oldMul";
+    public static final String ATTRIBUTE_NEW_MULTIPLICITY = "newMul";
+    public static final String ATTRIBUTE_OLD_CLASS = "class_old";
+    public static final String ATTRIBUTE_NEW_CLASS = "class_new";
+    public static final String ATTRIBUTE_SLOT_NAME = "slotName";
+    public static final String ATTRIBUTE_VALUE_TOBE_PARSED = "valueToBeParsed";
 }

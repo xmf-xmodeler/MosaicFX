@@ -39,11 +39,6 @@ import java.util.concurrent.CountDownLatch;
 
 public class FmmlxDiagram{
 
-
-	public Vector<FmmlxObject> getAllObjects() {
-		return objects;
-	}
-
 	enum MouseMode {
 		MULTISELECT, STANDARD, DRAW_EDGE
 	}

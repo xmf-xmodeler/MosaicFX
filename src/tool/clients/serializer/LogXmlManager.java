@@ -142,6 +142,12 @@ public class LogXmlManager implements ILog, IXmlManager {
                     break;
                 }
                 case "setClassAbstract" : {
+                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String[] classPathArray = classpath.split("::");
+                    String className = classPathArray[classPathArray.length-1];
+                    boolean abstractValue = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_ABSTRACT));
+                    diagram.getComm().setClassAbstract(diagram, className, abstractValue);
+                    break;
 
                 }
                 case "changeParent" : {
@@ -169,7 +175,12 @@ public class LogXmlManager implements ILog, IXmlManager {
                     break;
                 }
                 case "removeAttribute" : {
-                    //TODO
+                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String[] classPathArray = classpath.split("::");
+                    String className = classPathArray[classPathArray.length-1];
+                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+                    diagram.getComm().removeAttribute(diagram, className, name, 0);
+                    break;
                 }
                 case "changeAttributeName" : {
                     String oldName = logElement.getAttribute(XmlConstant.ATTRIBUTE_OLD_NAME);
@@ -202,14 +213,37 @@ public class LogXmlManager implements ILog, IXmlManager {
                     break;
                 }
                 case "changeAttributeMultiplicity" : {
-                    //TODO
+                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String[] classPathArray = classpath.split("::");
+                    String className = classPathArray[classPathArray.length-1];
+
+                    String multiplicityString = logElement.getAttribute(XmlConstant.ATTRIBUTE_OLD_MULTIPLICITY);
+                    String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
+                    String[] multiplicityArray =  multiplicitySubString.split(",");
+                    int upper = Integer.parseInt(multiplicityArray[0]);
+                    int under = Integer.parseInt(multiplicityArray[1]);
+                    boolean upperLimit = Boolean.parseBoolean(multiplicityArray[2]);
+                    boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
+                    Multiplicity multiplicity = new Multiplicity(upper, under, upperLimit, ordered, false);
+
+                    String multiplicityString1 = logElement.getAttribute(XmlConstant.ATTRIBUTE_NEW_MULTIPLICITY);
+                    String multiplicitySubString1 = multiplicityString1.substring(4, multiplicityString1.length()-1);
+                    String[] multiplicityArray1 =  multiplicitySubString1.split(",");
+                    int upper1 = Integer.parseInt(multiplicityArray1[0]);
+                    int under1 = Integer.parseInt(multiplicityArray1[1]);
+                    boolean upperLimit1 = Boolean.parseBoolean(multiplicityArray1[2]);
+                    boolean ordered1 = Boolean.parseBoolean(multiplicityArray1[3]);
+                    Multiplicity multiplicity1 = new Multiplicity(upper1, under1, upperLimit1, ordered1, false);
+
+                    diagram.getComm().changeAttributeMultiplicity(diagram, className, name, multiplicity, multiplicity1);
+                    break;
                 }
                 case "addOperation2": {
                     String classPath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
                     String[] classPathArray = classPath.split("::");
                     String className = classPathArray[classPathArray.length-1];
                     String body = parseBase64(logElement.getAttribute(XmlConstant.ATTRIBUTE_BODY));
-                    String name = "";
                     int level = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_LEVEL));
                     diagram.getComm().addOperation2(diagram, className, level, body);
                     break;
@@ -234,31 +268,63 @@ public class LogXmlManager implements ILog, IXmlManager {
                     int x = (int) Math.round(coordinate.getX());
                     int y = (int) Math.round(coordinate.getY());
                     diagram.getComm().addNewInstance(diagram, ofName, name, level, parents, isAbstract, x, y);
-
-
                     break;
                 }
                 case "changeOperationBody" : {
-                    //TODO
-
+                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+                    String className = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String body = parseBase64(logElement.getAttribute(XmlConstant.ATTRIBUTE_BODY));
+                    diagram.getComm().changeOperationBody(diagram, className, name, body);
+                    break;
                 }
                 case "changeOperationLevel" : {
-
+                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String[] classPathArray = classpath.split("::");
+                    String className = classPathArray[classPathArray.length-1];
+                    int oldLevel = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_OLD_LEVEL));
+                    int newLevel = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_NEW_LEVEL));
+                    diagram.getComm().changeOperationLevel(diagram, className, name, oldLevel, newLevel);
+                    break;
                 }
                 case "changeOperationOwner" : {
+                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
 
+                    String oldClasspath = logElement.getAttribute(XmlConstant.ATTRIBUTE_OLD_CLASS);
+                    String[] oldClassPathArray = oldClasspath.split("::");
+                    String oldClassName = oldClassPathArray[oldClassPathArray.length-1];
+
+                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_NEW_CLASS);
+                    String[] classPathArray = classpath.split("::");
+                    String className = classPathArray[classPathArray.length-1];
+
+                    diagram.getComm().changeOperationOwner(diagram, name, oldClassName, className);
+                    break;
                 }
                 case "removeOperation" : {
-
+                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String[] classPathArray = classpath.split("::");
+                    String className = classPathArray[classPathArray.length-1];
+                    diagram.getComm().removeOperation(diagram, className, name, 0);
+                    break;
                 }
                 case "changeSlotValue" : {
-
+                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String[] classPathArray = classpath.split("::");
+                    String className = classPathArray[classPathArray.length-1];
+                    String slotName = logElement.getAttribute(XmlConstant.ATTRIBUTE_SLOT_NAME);
+                    String valueToBeParsed = logElement.getAttribute(XmlConstant.ATTRIBUTE_VALUE_TOBE_PARSED);
+                    diagram.getComm().changeSlotValue(diagram, className, slotName, valueToBeParsed);
+                    break;
                 }
                 case "addAssociation" : {
 
                 }
                 case "removeAssociation" : {
-
+                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+                    diagram.getComm().removeAssociation(diagram, name, 0);
+                    break;
                 }
                 case "changeAssociationForwardName" : {
 
