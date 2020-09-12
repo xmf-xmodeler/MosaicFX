@@ -725,7 +725,7 @@ public class FmmlxDiagramCommunicator {
 	public void removeAssociation(FmmlxDiagram diagram, String associationName, int strategy) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(associationName)}; //TODO still has to change id-dependency
+				new Value(associationName)};
 		sendMessage("removeAssociation", message);
 	}
 
@@ -1032,7 +1032,7 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(object1Name),
 				new Value(object2Name),
-				new Value(associationName)}; //TODO still id in xmf
+				new Value(associationName)};
 		sendMessage("addAssociationInstance", message);
 	}
 
@@ -1061,7 +1061,7 @@ public class FmmlxDiagramCommunicator {
 	public void changeAssociationForwardName(FmmlxDiagram diagram, String associationName, String newFwName) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(associationName),  //TODO still use ID
+				new Value(associationName),
 				new Value(newFwName)};
 		sendMessage("changeAssociationForwardName", message);
 	}
