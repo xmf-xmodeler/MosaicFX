@@ -88,6 +88,18 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		return parentAssociationId;
 	}
 
+	public String getParentAssociationName() {
+		return getParentAssociationNameWithId();
+	}
+
+	private String getParentAssociationNameWithId() {
+		FmmlxAssociation parent = diagram.getAssociationById(parentAssociationId);
+		if(parent==null){
+			return "-1";
+		}
+		return parent.getName();
+	}
+
 	private enum Anchor {CENTRE_MOVABLE, SOURCE_LEVEL, TARGET_LEVEL, SOURCE_MULTI, TARGET_MULTI,CENTRE_SELFASSOCIATION};
 
 	@Override protected void layoutLabels() {
@@ -199,6 +211,21 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 
 	public int getId() {
 		return id;
+	}
+
+	@Override
+	public void setIntermediatePoints(Vector<Point2D> intermediatePoints) {
+		super.intermediatePoints = intermediatePoints;
+	}
+
+	@Override
+	public void setSourcePort(PortRegion portRegion) {
+		super.sourcePortRegion = portRegion;
+	}
+
+	@Override
+	public void setTargetPort(PortRegion portRegion) {
+		super.targetPortRegion = portRegion;
 	}
 
 	public FmmlxObject getSourceNode() {

@@ -32,6 +32,21 @@ public class RoleFillerEdge extends Edge {
 	}
 
 	@Override
+	public void setIntermediatePoints(Vector<Point2D> intermediatePoints) {
+		super.intermediatePoints = intermediatePoints;
+	}
+
+	@Override
+	public void setSourcePort(PortRegion valueOf) {
+		super.sourcePortRegion = valueOf;
+	}
+
+	@Override
+	public void setTargetPort(PortRegion valueOf) {
+		super.targetPortRegion = valueOf;
+	}
+
+	@Override
 	public HeadStyle getTargetDecoration() {
 		return HeadStyle.NO_ARROW;
 	}

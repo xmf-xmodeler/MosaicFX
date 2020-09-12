@@ -184,6 +184,13 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	public double getRightX() { return x + width; }
 	public double getBottomY() { return y + height; }
 	public int getOf() { return of; }
+	public String getOfName() {
+		FmmlxObject ofObject = diagram.getObjectById(of);
+		if(ofObject==null){
+			return "-1";
+		}
+		return ofObject.getName();
+	}
 
 	public Vector<FmmlxAttribute> getOwnAttributes() {
 		return new Vector<FmmlxAttribute>(ownAttributes);
@@ -235,6 +242,14 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	}
 	public Vector<Integer> getParents() {
 		return parents;
+	}
+	public Vector<String> getParentsNames() {
+		Vector<String> parentsName = new Vector<>();
+		for(Integer i : parents){
+			FmmlxObject o = diagram.getObjectById(i);
+			parentsName.add(o.getName());
+		}
+		return parentsName;
 	}
 
 	public Vector<FmmlxObject> getInstances() {

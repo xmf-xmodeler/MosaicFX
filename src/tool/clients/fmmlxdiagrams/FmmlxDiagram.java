@@ -25,6 +25,7 @@ import org.w3c.dom.Element;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
+import tool.clients.serializer.Deserializer;
 import tool.clients.serializer.DiagramXmlManager;
 
 import java.io.FileInputStream;
@@ -233,13 +234,21 @@ public class FmmlxDiagram{
 			e.printStackTrace();
 		}
 		suppressRedraw = false;
+		alignAllComponents(this);
 		redraw();
+
 
 		newFmmlxPalette.update();
 		
 		if(issues.size() > 0) {
 			issues.firstElement().performResolveAction(this);
 		}
+
+	}
+
+	private void alignAllComponents(FmmlxDiagram fmmlxDiagram) {
+		Deserializer deserializer = new Deserializer();
+		deserializer.alignCoordinate(fmmlxDiagram);
 	}
 
 	// This operation resets the size of the canvas when needed

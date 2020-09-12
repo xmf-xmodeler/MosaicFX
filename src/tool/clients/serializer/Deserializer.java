@@ -1,6 +1,5 @@
 package tool.clients.serializer;
 
-import tool.clients.diagrams.Node;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 
@@ -29,5 +28,7 @@ public class Deserializer {
     public void alignCoordinate(FmmlxDiagram fmmlxDiagram) {
         ObjectXmlManager objectXmlManager = new ObjectXmlManager();
         objectXmlManager.alignObjects(fmmlxDiagram);
+        EdgeXmlManager edgeXmlManager = new EdgeXmlManager();
+        edgeXmlManager.alignEdges(fmmlxDiagram);
     }
 }

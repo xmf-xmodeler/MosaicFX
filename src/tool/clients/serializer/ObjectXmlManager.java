@@ -20,8 +20,8 @@ public class ObjectXmlManager implements IXmlManager {
     public Node createObject(FmmlxDiagram diagram, FmmlxObject fmmlxObject) {
         String name = fmmlxObject.getName();
         int level= fmmlxObject.getLevel();
-        int of = fmmlxObject.getOf();
-        Vector<Integer> parents = fmmlxObject.getParents();
+        String ofName = fmmlxObject.getOfName();
+        Vector<String> parents = fmmlxObject.getParentsNames();
         String projectPath = diagram.getPackagePath()+"::"+name;
         String owner = diagram.getDiagramLabel();
         double x = fmmlxObject.getX();
@@ -30,7 +30,7 @@ public class ObjectXmlManager implements IXmlManager {
         Element object = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OBJECT);
         object.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
         object.setAttribute(XmlConstant.ATTRIBUTE_LEVEL, level+"");
-        object.setAttribute(XmlConstant.ATTRIBUTE_OF, of+"");
+        object.setAttribute(XmlConstant.ATTRIBUTE_OF, ofName+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_PARENTS, parents+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
         object.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
@@ -173,19 +173,16 @@ public class ObjectXmlManager implements IXmlManager {
             }
         }
 
-        List<FmmlxObject>allObjects = fmmlxDiagram.getSortedObject(SortedValue.REVERSE);
-        System.out.println(allObjects.size());
+        List<FmmlxObject>allObjects = fmmlxDiagram.getObjects();
         for(FmmlxObject object : allObjects){
-            System.out.println(object.getName());
             Coordinate coordinate = getCoordinate(diagramNode, object.getName());
-            System.out.println(object.getName()+", coordinate : "+coordinate.getX()+", "+coordinate.getY());
-            //object.moveTo(coordinate.getX(), coordinate.getY(), fmmlxDiagram);
+            object.moveTo(coordinate.getX(), coordinate.getY(), fmmlxDiagram);
         }
-        //fmmlxDiagram.objectsMoved = true;
+        fmmlxDiagram.objectsMoved = true;
     }
 
     private Coordinate getCoordinate(Node diagramNone, String name) {
-        Node objectsNode = xmlHandler.getChildWithName(diagramNone, "Objects");
+        Node objectsNode = xmlHandler.getChildWithName(diagramNone, XmlConstant.TAG_NAME_OBJECTS);
         NodeList objectList = objectsNode.getChildNodes();
         Coordinate coordinate = new Coordinate(0.0, 0.0);
 
