@@ -71,7 +71,6 @@ public class Serializer implements ISerializer {
             } else {
                 edgeNode = null;
             }
-
             if(edgeNode!= null){
                 edgeXmlManager.add(edgeNode);
             }

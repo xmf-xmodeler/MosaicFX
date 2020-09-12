@@ -360,7 +360,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     String fwName = logElement.getAttribute(XmlConstant.ATTRIBUTE_FW_NAME);
                     String reverseName = logElement.getAttribute(XmlConstant.ATTRIBUTE_REVERSE_NAME);
 
-                    String multiplicityString = logElement.getAttribute(XmlConstant.ATTRIBUTE_OLD_MULTIPLICITY);
+                    String multiplicityString = logElement.getAttribute(XmlConstant.ATTRIBUTE_1_MULTIPLICITY);
                     String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
                     String[] multiplicityArray =  multiplicitySubString.split(",");
                     int upper = Integer.parseInt(multiplicityArray[0]);
@@ -369,7 +369,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
                     Multiplicity multiplicity = new Multiplicity(upper, under, upperLimit, ordered, false);
 
-                    String multiplicityString1 = logElement.getAttribute(XmlConstant.ATTRIBUTE_NEW_MULTIPLICITY);
+                    String multiplicityString1 = logElement.getAttribute(XmlConstant.ATTRIBUTE_2_MULTIPLICITY);
                     String multiplicitySubString1 = multiplicityString1.substring(4, multiplicityString1.length()-1);
                     String[] multiplicityArray1 =  multiplicitySubString1.split(",");
                     int upper1 = Integer.parseInt(multiplicityArray1[0]);

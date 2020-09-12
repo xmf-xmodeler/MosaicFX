@@ -164,7 +164,7 @@ public class EdgeXmlManager implements IXmlManager {
             for(int i=0 ; i<diagramNodeList.getLength(); i++){
                 if(diagramNodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
                     Element diagram = (Element) diagramNodeList.item(i);
-                    if(diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(newEdge.getAttribute(XmlConstant.ATTRIBUTE_DIAGRAM_OWNER))){
+                    if(diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(newEdge.getAttribute(XmlConstant.ATTRIBUTE_OWNER))){
                         Element edges = (Element) getEdgesNode(diagram);
                         try {
                             xmlHandler.addEdgeElement(edges, newEdge);
