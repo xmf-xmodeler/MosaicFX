@@ -70,4 +70,22 @@ public class XmlConstant {
     public static final String ATTRIBUTE_NEW_CLASS = "class_new";
     public static final String ATTRIBUTE_SLOT_NAME = "slotName";
     public static final String ATTRIBUTE_VALUE_TOBE_PARSED = "valueToBeParsed";
+    public static final String ATTRIBUTE_FW_NAME = "fwName";
+
+    public static final String ATTRIBUTE_REVERSE_NAME = "reverseName";
+
+    public static final String ATTRIBUTE_1_MULTIPLICITY = "multiplicity1";
+    public static final String ATTRIBUTE_2_MULTIPLICITY = "multiplicity2";
+    public static final String ATTRIBUTE_INST_LEVEL_1 = "instLevel1";
+    public static final String ATTRIBUTE_INST_LEVEL_2 = "instLevel2";
+    public static final String ATTRIBUTE_SOURCE_VISIBLE = "sourceVisibleFromTarget";
+    public static final String ATTRIBUTE_TARGET_VISIBLE = "targetVisibleFromSource";
+    public static final String ATTRIBUTE_IS_SIMETRIC = "isSymmetric";
+    public static final String ATTRIBUTE_IS_TRANSITIVE = "isTransitive";
+    public static final String ATTRIBUTE_ACCESS_SOURCE_FROM_TARGET = "accessSourceFromTargetName";
+    public static final String ATTRIBUTE_ACCESS_TARGET_FROM_SOURCE = "accessTargetFromSourceName";
+    public static final String ATTRIBUTE_DELEGATE_FROM = "delegateFrom";
+    public static final String ATTRIBUTE_DELEGATE_TO = "delegateTo";
+    public static final String ATTRIBUTE_CLASS_1 = "class1";
+    public static final String ATTRIBUTE_CLASS_2 = "class2";
 }

@@ -1027,12 +1027,12 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("editAssociation", message);
 	}
 
-	public void addAssociationInstance(FmmlxDiagram diagram, String object1Name, String object2Name, int associationID) {
+	public void addAssociationInstance(FmmlxDiagram diagram, String object1Name, String object2Name, String associationName) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(object1Name),
 				new Value(object2Name),
-				new Value(associationID)};
+				new Value(associationName)}; //TODO still id in xmf
 		sendMessage("addAssociationInstance", message);
 	}
 
@@ -1058,11 +1058,11 @@ public class FmmlxDiagramCommunicator {
 		//xmfRequest(handler, "storeLabelInfo",l.getInfo4XMF());
 	}
 
-	public void changeAssociationForwardName(FmmlxDiagram diagram, int associationId, String newName) {
+	public void changeAssociationForwardName(FmmlxDiagram diagram, String associationName, String newFwName) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(associationId),
-				new Value(newName)};
+				new Value(associationName),  //TODO still use ID
+				new Value(newFwName)};
 		sendMessage("changeAssociationForwardName", message);
 	}
 

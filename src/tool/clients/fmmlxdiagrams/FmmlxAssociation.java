@@ -275,7 +275,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		td.setHeaderText("Change Forward Association Name");
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
-			diagram.getComm().changeAssociationForwardName(diagram, this.id, result.get());
+			diagram.getComm().changeAssociationForwardName(diagram, this.getName(), result.get());
 			diagram.updateDiagram();
 		}
 	};

@@ -319,7 +319,53 @@ public class LogXmlManager implements ILog, IXmlManager {
                     break;
                 }
                 case "addAssociation" : {
+                    String classpath1 = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS_1);
+                    String[] classPathArray1 = classpath1.split("::");
+                    String className1 = classPathArray1[classPathArray1.length-1];
 
+                    String classpath2 = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS_2);
+                    String[] classPathArray2 = classpath2.split("::");
+                    String className2 = classPathArray2[classPathArray2.length-1];
+
+                    String accessSourceFromTargetName = logElement.getAttribute(XmlConstant.ATTRIBUTE_ACCESS_SOURCE_FROM_TARGET);
+                    String accessTargetFromSourceName = logElement.getAttribute(XmlConstant.ATTRIBUTE_ACCESS_TARGET_FROM_SOURCE);
+
+                    String fwName = logElement.getAttribute(XmlConstant.ATTRIBUTE_FW_NAME);
+                    String reverseName = logElement.getAttribute(XmlConstant.ATTRIBUTE_REVERSE_NAME);
+
+                    String multiplicityString = logElement.getAttribute(XmlConstant.ATTRIBUTE_OLD_MULTIPLICITY);
+                    String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
+                    String[] multiplicityArray =  multiplicitySubString.split(",");
+                    int upper = Integer.parseInt(multiplicityArray[0]);
+                    int under = Integer.parseInt(multiplicityArray[1]);
+                    boolean upperLimit = Boolean.parseBoolean(multiplicityArray[2]);
+                    boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
+                    Multiplicity multiplicity = new Multiplicity(upper, under, upperLimit, ordered, false);
+
+                    String multiplicityString1 = logElement.getAttribute(XmlConstant.ATTRIBUTE_NEW_MULTIPLICITY);
+                    String multiplicitySubString1 = multiplicityString1.substring(4, multiplicityString1.length()-1);
+                    String[] multiplicityArray1 =  multiplicitySubString1.split(",");
+                    int upper1 = Integer.parseInt(multiplicityArray1[0]);
+                    int under1 = Integer.parseInt(multiplicityArray1[1]);
+                    boolean upperLimit1 = Boolean.parseBoolean(multiplicityArray1[2]);
+                    boolean ordered1 = Boolean.parseBoolean(multiplicityArray1[3]);
+                    Multiplicity multiplicity1 = new Multiplicity(upper1, under1, upperLimit1, ordered1, false);
+
+                    int instLevel1 = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_INST_LEVEL_1));
+                    int instLevel2 = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_INST_LEVEL_2));
+
+                    boolean sourceVisibleFromTarget= Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_VISIBLE));
+                    boolean targetVisibleFromSource = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_VISIBLE));
+
+                    boolean isSymmetric = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_SIMETRIC));
+                    boolean isTransitive = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_TRANSITIVE));
+
+                    diagram.getComm().addAssociation(diagram, className1, className2,
+                            accessSourceFromTargetName, accessTargetFromSourceName,
+                            fwName, reverseName, multiplicity, multiplicity1,
+                            instLevel1, instLevel2, sourceVisibleFromTarget,
+                            targetVisibleFromSource, isSymmetric, isTransitive);
+                    break;
                 }
                 case "removeAssociation" : {
                     String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
@@ -327,7 +373,10 @@ public class LogXmlManager implements ILog, IXmlManager {
                     break;
                 }
                 case "changeAssociationForwardName" : {
-
+                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+                    String newFwName = logElement.getAttribute("newFwName");
+                    diagram.getComm().changeAssociationForwardName(diagram, name, newFwName);
+                    break;
                 }
                 case "changeAssociationEnd2StartMultiplicity" : {
 
@@ -336,16 +385,40 @@ public class LogXmlManager implements ILog, IXmlManager {
 
                 }
                 case "addLink" : {
+                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
 
+                    String classpath1 = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS_1);
+                    String[] classPathArray1 = classpath1.split("::");
+                    String className1 = classPathArray1[classPathArray1.length-1];
+
+                    String classpath2 = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS_2);
+                    String[] classPathArray2 = classpath2.split("::");
+                    String className2 = classPathArray2[classPathArray2.length-1];
+
+                    diagram.getComm().addAssociationInstance(diagram, className1, className2, name);
+                    break;
                 }
                 case "removeLink" : {
 
                 }
                 case "addDelegation" : {
+                    String delegationFromPath = logElement.getAttribute(XmlConstant.ATTRIBUTE_DELEGATE_FROM);
+                    String[] delegationFromPathArray = delegationFromPath.split("::");
+                    String delegationFromName = delegationFromPathArray[delegationFromPathArray.length-1];
+
+                    String delegationToPath = logElement.getAttribute(XmlConstant.ATTRIBUTE_DELEGATE_TO);
+                    String[] delegationToPathArray = delegationToPath.split("::");
+                    String delegationToName = delegationToPathArray[delegationToPathArray.length-1];
+
+                    diagram.getComm().addDelegation(diagram, delegationFromName, delegationToName);
+                    break;
+                }
+                case "setRoleFiller" : {
 
                 }
                 default:
                     System.out.println(tagName + " not implemented yet");
+                    break;
             }
         }
     }

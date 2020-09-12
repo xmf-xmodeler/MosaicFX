@@ -754,7 +754,7 @@ public class DiagramActions {
 				
 				if(!result.getAssociation().getName().equals(result.getNewDisplayName())) {
 					System.err.println("getName:" +result.getAssociation().getName()  + "--> " + result.getNewDisplayName());
-					diagram.getComm().changeAssociationForwardName(diagram, result.getAssociation().id, result.getNewDisplayName());
+					diagram.getComm().changeAssociationForwardName(diagram, result.getAssociation().getName(), result.getNewDisplayName());
 				}
 					
 				diagram.updateDiagram();
@@ -814,7 +814,7 @@ public class DiagramActions {
 //				CountDownLatch l = new CountDownLatch(1);
 
 //				Platform.runLater(() -> {
-				diagram.getComm().addAssociationInstance(diagram, sourceF.getName(), targetF.getName(), associationF.id);
+				diagram.getComm().addAssociationInstance(diagram, sourceF.getName(), targetF.getName(), associationF.getName());
 //					l.countDown();
 //				    });			
 //				diagram.updateDiagram();
@@ -923,7 +923,7 @@ public class DiagramActions {
 				if(solution.get().createNew) {
 					addInstanceDialog(solution.get().selection);
 				} else {
-					diagram.getComm().addAssociationInstance(diagram, obj.getName(), solution.get().selection.getName(), assoc.getId());
+					diagram.getComm().addAssociationInstance(diagram, obj.getName(), solution.get().selection.getName(), assoc.getName());
 					diagram.updateDiagram();
 				}
 			}
