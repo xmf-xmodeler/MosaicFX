@@ -746,10 +746,10 @@ public class DiagramActions {
 				}
 				
 				if(!result.getAssociation().getMultiplicityEndToStart().equals(result.getMultiplicitySource())) {
-					diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram, result.getAssociation().id, result.getMultiplicitySource());
+					diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram, result.getAssociation().getName(), result.getMultiplicitySource());
 				}
 				if(!result.getAssociation().getMultiplicityStartToEnd().equals(result.getMultiplicityTarget())) {
-					diagram.getComm().changeAssociationStart2EndMultiplicity(diagram, result.getAssociation().id, result.getMultiplicityTarget());
+					diagram.getComm().changeAssociationStart2EndMultiplicity(diagram, result.getAssociation().getName(), result.getMultiplicityTarget());
 				}
 				
 				if(!result.getAssociation().getName().equals(result.getNewDisplayName())) {

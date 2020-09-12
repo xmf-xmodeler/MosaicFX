@@ -151,7 +151,34 @@ public class LogXmlManager implements ILog, IXmlManager {
 
                 }
                 case "changeParent" : {
+                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String[] classPathArray = classpath.split("::");
+                    String className = classPathArray[classPathArray.length-1];
 
+                    String oldParentPathsString = logElement.getAttribute("old");
+                    Vector<String> oldParents = new Vector<>();
+                    if(!oldParentPathsString.equals("")){
+                        String[] oldParentPathsArray = oldParentPathsString.split(",");
+
+                        for (String s : oldParentPathsArray) {
+                            String[] parentPathArray = s.split("::");
+                            oldParents.add(parentPathArray[parentPathArray.length - 1]);
+                        }
+                    }
+
+                    String newParentPathsString = logElement.getAttribute("new");
+                    Vector<String> newParents = new Vector<>();
+                    if(!newParentPathsString.equals("")){
+                        String[] newParentPathsArray = newParentPathsString.split(",");
+
+                        for (String s : newParentPathsArray) {
+                            String[] newParentPathArray = s.split("::");
+                            newParents.add(newParentPathArray[newParentPathArray.length - 1]);
+                        }
+                    }
+
+                    diagram.getComm().changeParent(diagram, className, oldParents, newParents);
+                    break;
                 }
                 case "addAttribute" : {
                     String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
@@ -379,10 +406,34 @@ public class LogXmlManager implements ILog, IXmlManager {
                     break;
                 }
                 case "changeAssociationEnd2StartMultiplicity" : {
+                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
 
+                    String multiplicityString = logElement.getAttribute(XmlConstant.ATTRIBUTE_MULTIPLICITY);
+                    String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
+                    String[] multiplicityArray =  multiplicitySubString.split(",");
+                    int upper = Integer.parseInt(multiplicityArray[0]);
+                    int under = Integer.parseInt(multiplicityArray[1]);
+                    boolean upperLimit = Boolean.parseBoolean(multiplicityArray[2]);
+                    boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
+                    Multiplicity multiplicity = new Multiplicity(upper, under, upperLimit, ordered, false);
+
+                    diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram, name, multiplicity);
+                    break;
                 }
                 case "changeAssociationStart2EndMultiplicity" : {
+                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
 
+                    String multiplicityString = logElement.getAttribute(XmlConstant.ATTRIBUTE_MULTIPLICITY);
+                    String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
+                    String[] multiplicityArray =  multiplicitySubString.split(",");
+                    int upper = Integer.parseInt(multiplicityArray[0]);
+                    int under = Integer.parseInt(multiplicityArray[1]);
+                    boolean upperLimit = Boolean.parseBoolean(multiplicityArray[2]);
+                    boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
+                    Multiplicity multiplicity = new Multiplicity(upper, under, upperLimit, ordered, false);
+
+                    diagram.getComm().changeAssociationStart2EndMultiplicity(diagram, name, multiplicity);
+                    break;
                 }
                 case "addLink" : {
                     String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
@@ -399,7 +450,9 @@ public class LogXmlManager implements ILog, IXmlManager {
                     break;
                 }
                 case "removeLink" : {
-
+                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+                    //TODO still using id :: diagram.getComm().removeAssociationInstance(diagram, name);
+                    break;
                 }
                 case "addDelegation" : {
                     String delegationFromPath = logElement.getAttribute(XmlConstant.ATTRIBUTE_DELEGATE_FROM);
@@ -414,6 +467,16 @@ public class LogXmlManager implements ILog, IXmlManager {
                     break;
                 }
                 case "setRoleFiller" : {
+                    String rolePath = logElement.getAttribute("role");
+                    String[] rolePathArray1 = rolePath.split("::");
+                    String role = rolePathArray1[rolePathArray1.length-1];
+
+                    String roleFillerPath = logElement.getAttribute("roleFiller");
+                    String[] roleFillerPathArray = roleFillerPath.split("::");
+                    String roleFiller = roleFillerPathArray[roleFillerPathArray.length-1];
+
+                    diagram.getComm().setRoleFiller(diagram, role, roleFiller);
+                    break;
 
                 }
                 default:

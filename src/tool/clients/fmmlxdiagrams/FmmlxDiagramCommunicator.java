@@ -1098,18 +1098,18 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("changeAssociationEnd2StartAccessName", message);
 	}
 
-	public void changeAssociationStart2EndMultiplicity(FmmlxDiagram diagram, int associationId, Multiplicity newMultiplicity) {
+	public void changeAssociationStart2EndMultiplicity(FmmlxDiagram diagram, String associationName, Multiplicity newMultiplicity) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(associationId),
+				new Value(associationName),
 				new Value(newMultiplicity.toValue())};
 		sendMessage("changeAssociationStart2EndMultiplicity", message);
 	}
 
-	public void changeAssociationEnd2StartMultiplicity(FmmlxDiagram diagram, int associationId, Multiplicity newMultiplicity) {
+	public void changeAssociationEnd2StartMultiplicity(FmmlxDiagram diagram, String associationName, Multiplicity newMultiplicity) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(associationId),
+				new Value(associationName),
 				new Value(newMultiplicity.toValue())};
 		sendMessage("changeAssociationEnd2StartMultiplicity", message);
 	}
