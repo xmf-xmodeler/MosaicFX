@@ -35,6 +35,8 @@ public class XmlCreator {
         if(!checkFileExist()){
 
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            documentBuilderFactory.setValidating(true);
+            documentBuilderFactory.setIgnoringElementContentWhitespace(true);
 
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 

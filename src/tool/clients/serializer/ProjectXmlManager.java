@@ -88,7 +88,7 @@ public class ProjectXmlManager implements IXmlManager {
         return diagramList.getLength() > 1;
     }
 
-    public void remove() throws TransformerException {
+    public void removeAll() throws TransformerException {
         xmlHandler.removeAllProject();
     }
 

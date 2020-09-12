@@ -205,6 +205,9 @@ public class XmlHandler {
 
     public void removeAllProject() throws TransformerException {
         xmlHelper.removeAllChildren(getProjectsNode());
+        while(getProjectsNode().hasChildNodes()){
+            getProjectsNode().removeChild(getProjectsNode().getFirstChild());
+        }
     }
 
     public void addParamElement(Element operation, Node paramNode) throws TransformerException {
@@ -275,13 +278,9 @@ public class XmlHandler {
         }
 
         public void removeAllChildren(Node parentNode) throws TransformerException {
-            NodeList nodeList = parentNode.getChildNodes();
-            for(int i = 0 ; i< nodeList.getLength(); i++){
-                if(nodeList.item(i).getNodeType() == Node.ELEMENT_NODE){
-                    parentNode.removeChild(nodeList.item(i));
-                }
+            while(parentNode.hasChildNodes()){
+                parentNode.removeChild(parentNode.getFirstChild());
             }
-
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
@@ -306,6 +305,13 @@ public class XmlHandler {
 
         public void removeChild(Node parent, Node node) throws TransformerException {
             parent.removeChild(node);
+            int i = 0;
+            while (parent.getChildNodes().item(i)!=null) {
+                if (parent.getChildNodes().item(i).getNodeName().equalsIgnoreCase("#text")) {
+                    parent.removeChild(parent.getChildNodes().item(i));
+                }
+                i=i+1;
+            }
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 

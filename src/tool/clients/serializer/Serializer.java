@@ -118,7 +118,7 @@ public class Serializer implements ISerializer {
         Node projectNode =  projectXmlManager.createProjectNode(diagram);
 
         if(projectXmlManager.isExist()) {
-            projectXmlManager.remove();
+            projectXmlManager.removeAll();
         }
 
         projectXmlManager.add(projectNode);
