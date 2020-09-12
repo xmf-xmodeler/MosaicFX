@@ -90,6 +90,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                 Element tmp = (Element) diagramList.item(i);
                 if (tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(diagramLabel)){
                     diagramNode = tmp;
+                    break;
                 }
             }
         }
@@ -500,6 +501,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                 Element object_tmp = (Element) objectList.item(i);
                 if(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_NAME).equals(name)){
                     level = Integer.parseInt(XmlConstant.ATTRIBUTE_LEVEL);
+                    return level;
                 }
             }
         }
@@ -525,6 +527,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     coordinate.setX(x);
                     coordinate.setY(y);
                 }
+                return coordinate;
             }
         }
         return coordinate;
