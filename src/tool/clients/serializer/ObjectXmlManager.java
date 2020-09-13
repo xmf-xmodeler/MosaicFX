@@ -169,7 +169,6 @@ public class ObjectXmlManager implements IXmlManager {
                 Element tmp = (Element) diagramList.item(i);
                 if (tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(fmmlxDiagram.getDiagramLabel())){
                     diagramNode = tmp;
-                    break;
                 }
             }
         }
@@ -196,7 +195,6 @@ public class ObjectXmlManager implements IXmlManager {
                     coordinate.setX(x);
                     coordinate.setY(y);
                 }
-                return coordinate;
             }
         }
         return coordinate;
