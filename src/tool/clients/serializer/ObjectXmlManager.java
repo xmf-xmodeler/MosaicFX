@@ -175,16 +175,17 @@ public class ObjectXmlManager implements IXmlManager {
 
         List<FmmlxObject>allObjects = fmmlxDiagram.getObjects();
         for(FmmlxObject object : allObjects){
-            Coordinate coordinate = getCoordinate(diagramNode, object.getName());
+            Coordinate initCoordingate = new Coordinate(object.getX(), object.getY());
+            Coordinate coordinate = getCoordinate(diagramNode, object.getName(),initCoordingate);
             object.moveTo(coordinate.getX(), coordinate.getY(), fmmlxDiagram);
         }
         fmmlxDiagram.objectsMoved = true;
     }
 
-    private Coordinate getCoordinate(Node diagramNone, String name) {
+    private Coordinate getCoordinate(Node diagramNone, String name, Coordinate initCoordingate) {
         Node objectsNode = xmlHandler.getChildWithName(diagramNone, XmlConstant.TAG_NAME_OBJECTS);
         NodeList objectList = objectsNode.getChildNodes();
-        Coordinate coordinate = new Coordinate(0.0, 0.0);
+        Coordinate coordinate = initCoordingate;
 
         for (int i = 0 ; i< objectList.getLength() ; i++){
             if (objectList.item(i).getNodeType() == Node.ELEMENT_NODE){
