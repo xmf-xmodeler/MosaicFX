@@ -53,7 +53,7 @@ public class Serializer implements ISerializer {
         }
     }
 
-    private void saveEdges(FmmlxDiagram diagram) throws TransformerException {
+    public void saveEdges(FmmlxDiagram diagram) throws TransformerException {
 
         Vector<Edge> edges = diagram.getEdges();
         EdgeXmlManager edgeXmlManager = new EdgeXmlManager();
@@ -77,31 +77,18 @@ public class Serializer implements ISerializer {
         }
     }
 
-    private void saveObjects(FmmlxDiagram diagram) throws TransformerException {
+    public void saveObjects(FmmlxDiagram diagram) {
         ObjectXmlManager objectXmlManager = new ObjectXmlManager();
 
         Vector<FmmlxObject> objects = diagram.getObjects();
 
         for (FmmlxObject object : objects){
             Node objectNode = objectXmlManager.createObject(diagram, object);
-
-//            Vector<FmmlxOperation> operations = object.getOwnOperations();
-//            for(FmmlxOperation operation : operations){
-//                Node operationNode = objectXmlManager.createOperationXmlNode(diagram, object, operation);
-//                objectXmlManager.addOperation(objectNode, operationNode);
-//            }
-//
-//            Vector<FmmlxAttribute> attributes = object.getOwnAttributes();
-//            for(FmmlxAttribute attribute : attributes){
-//                Node attributeNode = objectXmlManager.createAttributeXmlNode(diagram, object, attribute);
-//                objectXmlManager.addAttribute(objectNode, attributeNode);
-//            }
-
             objectXmlManager.add(objectNode);
         }
     }
 
-    private void saveDiagram(FmmlxDiagram diagram) throws TransformerException {
+    public void saveDiagram(FmmlxDiagram diagram) throws TransformerException {
         DiagramXmlManager diagramXmlManager = new DiagramXmlManager();
         Node diagramNode = diagramXmlManager.createDiagramNode(diagram);
 

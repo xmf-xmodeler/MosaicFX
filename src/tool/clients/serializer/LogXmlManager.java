@@ -122,7 +122,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                         }
                     }
                     boolean isAbstract = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_ABSTRACT));
-                    Coordinate coordinate = getCoordinate(diagramNode, name);
+                    Coordinate coordinate = new Coordinate(0.0, 0.0);
                     int x = (int) Math.round(coordinate.getX());
                     int y = (int) Math.round(coordinate.getY());
                     diagram.getComm().addMetaClass(diagram, name, level, parents, isAbstract, x, y);
@@ -291,7 +291,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                         }
                     }
                     boolean isAbstract = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_ABSTRACT));
-                    Coordinate coordinate = getCoordinate(diagramNode, name);
+                    Coordinate coordinate = new Coordinate(0.0, 0.0);
                     int x = (int) Math.round(coordinate.getX());
                     int y = (int) Math.round(coordinate.getY());
                     diagram.getComm().addNewInstance(diagram, ofName, name, level, parents, isAbstract, x, y);

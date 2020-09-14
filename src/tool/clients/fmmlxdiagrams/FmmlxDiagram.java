@@ -27,7 +27,10 @@ import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
 import tool.clients.serializer.Deserializer;
 import tool.clients.serializer.DiagramXmlManager;
+import tool.clients.serializer.Serializer;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -102,10 +105,12 @@ public class FmmlxDiagram{
 	
 	String edgeCreationType = null;
 	String nodeCreationType = null;
+	boolean aNew = false;
 
 
 
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String label, String packagePath) {
+		this.aNew = aNew;
 		this.comm = comm;
 		this.diagramID = diagramID;
 		this.diagramLabel = label;
@@ -204,7 +209,6 @@ public class FmmlxDiagram{
 			
 			issues.addAll(comm.fetchIssues(this));
 
-
 			for(FmmlxObject o : objects) {
 				o.fetchDataDefinitions(comm);
 			}
@@ -224,8 +228,7 @@ public class FmmlxDiagram{
 
 			enums = comm.fetchAllEnums(this);
 			auxTypes = comm.fetchAllAuxTypes(this);
-			
-			
+
 			triggerOverallReLayout();
 			
 			resizeCanvas();
@@ -234,21 +237,21 @@ public class FmmlxDiagram{
 			e.printStackTrace();
 		}
 		suppressRedraw = false;
+
 		alignAllComponents(this);
 		redraw();
-
-
 		newFmmlxPalette.update();
 		
 		if(issues.size() > 0) {
 			issues.firstElement().performResolveAction(this);
 		}
+		triggerOverallReLayout();
 
 	}
 
-	private void alignAllComponents(FmmlxDiagram fmmlxDiagram) {
+	private void alignAllComponents(FmmlxDiagram diagram) {
 		Deserializer deserializer = new Deserializer();
-		deserializer.alignCoordinate(fmmlxDiagram);
+		deserializer.alignCoordinate(diagram);
 	}
 
 	// This operation resets the size of the canvas when needed
@@ -472,14 +475,29 @@ public class FmmlxDiagram{
 			for (CanvasElement s : selectedObjects)
 				if (s instanceof FmmlxObject) {
 					FmmlxObject o = (FmmlxObject) s;
+					Platform.runLater(() -> {
+						Serializer serializer = new Serializer();
+						try {
+							serializer.saveDiagram(this);
+						} catch (TransformerException e) {
+							e.printStackTrace();
+						}
+					});
 					comm.sendCurrentPosition(this, o);
 					for(Edge e : edges) {
 						if(e.isStartNode(o) || e.isEndNode(o)) {
+							Platform.runLater(() -> {
+								Serializer serializer = new Serializer();
+								try {
+									serializer.saveDiagram(this);
+								} catch (TransformerException d) {
+									d.printStackTrace();
+								}
+							});
 							comm.sendCurrentPositions(this, e);
 						}
 					}
 				} else if (s instanceof Edge) {
-
 					comm.sendCurrentPositions(this, (Edge) s);
 				} else if (s instanceof DiagramEdgeLabel) {
 					DiagramEdgeLabel del = (DiagramEdgeLabel) s;

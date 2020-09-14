@@ -8,7 +8,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import tool.clients.serializer.Deserializer;
-import tool.clients.serializer.Serializer;
 import tool.clients.workbench.WorkbenchClient;
 import xos.Value;
 
