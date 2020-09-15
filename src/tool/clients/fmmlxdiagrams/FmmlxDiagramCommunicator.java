@@ -25,7 +25,7 @@ public class FmmlxDiagramCommunicator {
 	private HashMap<Integer, Vector<Object>> results = new HashMap<>();
 	private static Hashtable<Integer, Tab> tabs = new Hashtable<Integer, Tab>();
 	private static Vector<FmmlxDiagram> diagrams = new Vector<FmmlxDiagram>();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	private static Vector<FmmlxDiagramCommunicator> communicators = new Vector<FmmlxDiagramCommunicator>();
 	static TabPane tabPane;
 	private String name;
@@ -1294,5 +1294,24 @@ public class FmmlxDiagramCommunicator {
 		return new FaXML(responseContent);
 	}
 
+	public HashMap<String, String> findImplementation(FmmlxDiagram diagram, Vector<String> names, String model, Integer arity, String text4) throws TimeOutException {
+		Vector<Object> response = xmfRequest(handler, diagram, "findOperationUsage", new Value[]{
+				new Value(createValueArrayString(names)), // opNames
+				new Value(arity),// arity
+				new Value(model),// model
+				new Value(text4)// param4
+				});
+		
+		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+		
+		HashMap<String, String> result = new HashMap<>();
+		for(Object resultItemO : responseContent) {
+			Vector<Object> resultItem = (Vector<Object>) (resultItemO);
+//			System.err.println(resultItem);
+			result.put((String) resultItem.get(0), (String)resultItem.get(6));
+		}
+		
+		return result;
+	}
 
 }

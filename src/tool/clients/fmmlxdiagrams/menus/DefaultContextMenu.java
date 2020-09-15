@@ -79,6 +79,18 @@ public class DefaultContextMenu extends ContextMenu {
 			MenuItem testSave = new MenuItem("test Save");
 			testSave.setOnAction(a -> actions.save());
 			getItems().addAll(testSave);
+			
+			MenuItem openFindImplementationDialog = new MenuItem("Search for Implementation");
+			openFindImplementationDialog.setOnAction(e -> actions.openFindImplementationDialog());
+			getItems().addAll(openFindImplementationDialog);
+			
+			MenuItem openFindClassDialog = new MenuItem("Search for Class");
+			openFindClassDialog.setOnAction(e -> actions.openFindClassDialog());
+			getItems().addAll(openFindClassDialog);
+			
+			MenuItem openFindSendersOfMessages = new MenuItem("Search for Senders");
+			openFindSendersOfMessages.setOnAction(e -> actions.openFindSendersDialog());
+			getItems().addAll(openFindSendersOfMessages);
 		}
 	}
 }

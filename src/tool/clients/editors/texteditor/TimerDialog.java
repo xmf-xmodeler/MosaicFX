@@ -5,9 +5,9 @@ public class TimerDialog {
   int    delay;
 //  Slider slider;
 
-  public TimerDialog(Object parent, int delay, int style) {
+  public TimerDialog(Object parent, double delay, int style) {
 //    super(parent, style);
-//    this.delay = delay;
+//    this.delay = delay;   
   }
 
   public int open(int x,int y) {

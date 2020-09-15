@@ -7,6 +7,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
+import tool.clients.dialogs.enquiries.FindClassDialog;
+import tool.clients.dialogs.enquiries.FindImplementationDialog;
+import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.association.AssociationDialog;
@@ -950,6 +953,36 @@ public class DiagramActions {
 		});
 	}
 
+	public void openFindImplementationDialog() {
+		Platform.runLater(() -> {
+
+			FindImplementationDialog dlg = new FindImplementationDialog(diagram, diagram.getComm());
+			Optional<Object> opt = dlg.showAndWait();
+
+		});
+	}
+
+	public Object openFindClassDialog() {
+		Platform.runLater(() -> {
+
+			FindClassDialog dialog = new FindClassDialog();
+			Optional<Object> optional = dialog.showAndWait();
+
+		});
+		return null; 
+	
+	}
+	
+	public Object openFindSendersDialog() {
+		Platform.runLater(() -> {
+
+			FindSendersOfMessages dialog = new FindSendersOfMessages();
+			Optional<Object> optional = dialog.showAndWait();
+
+		});
+		return null; 
+
+}}
 
 //	public void attributeGeneratorDialog(FmmlxAttribute tmp, InstanceGeneratorGenerateType selectedType) {
 //		Platform.runLater(() -> {
@@ -959,4 +992,4 @@ public class DiagramActions {
 //			}
 //		});
 //	}	
-}
+
