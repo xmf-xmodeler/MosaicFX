@@ -1294,12 +1294,12 @@ public class FmmlxDiagramCommunicator {
 		return new FaXML(responseContent);
 	}
 
-	public HashMap<String, String> findImplementation(FmmlxDiagram diagram, Vector<String> names, String model, Integer arity, String text4) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram, "findOperationUsage", new Value[]{
+	public HashMap<String, String> findImplementation(FmmlxDiagram diagram, Vector<String> names, String model, Integer arity, String returnType) throws TimeOutException {
+		Vector<Object> response = xmfRequest(handler, diagram, "findOperationImplementation", new Value[]{
 				new Value(createValueArrayString(names)), // opNames
 				new Value(arity),// arity
 				new Value(model),// model
-				new Value(text4)// param4
+				new Value(returnType)// param4
 				});
 		
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
@@ -1308,6 +1308,23 @@ public class FmmlxDiagramCommunicator {
 		for(Object resultItemO : responseContent) {
 			Vector<Object> resultItem = (Vector<Object>) (resultItemO);
 //			System.err.println(resultItem);
+			result.put((String) resultItem.get(0), (String)resultItem.get(6));
+		}
+		
+		return result;
+	}
+
+	public HashMap<String, String> findOperationUsage(FmmlxDiagram diagram, String name, String model) throws TimeOutException {
+		Vector<Object> response = xmfRequest(handler, diagram, "findOperationUsage", new Value[]{
+			new Value(name), // opNames
+			new Value(model)// model
+			});
+		
+		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+		
+		HashMap<String, String> result = new HashMap<>();
+		for(Object resultItemO : responseContent) {
+			Vector<Object> resultItem = (Vector<Object>) (resultItemO);
 			result.put((String) resultItem.get(0), (String)resultItem.get(6));
 		}
 		
