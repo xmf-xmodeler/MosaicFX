@@ -6,6 +6,9 @@ import tool.clients.serializer.interfaces.ISerializer;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Vector;
 
 
@@ -39,7 +42,7 @@ public class Serializer implements ISerializer {
 
     private void saveLog(FmmlxDiagram diagram) {
         try {
-            LogXmlManager logXmlManager = new LogXmlManager();
+            LogXmlManager logXmlManager = new LogXmlManager(diagram);
             logXmlManager.clearLog();
             FaXML protocol = diagram.getComm().getDiagramData(diagram);
 
@@ -53,7 +56,7 @@ public class Serializer implements ISerializer {
         }
     }
 
-    private void saveEdges(FmmlxDiagram diagram) throws TransformerException {
+    public void saveEdges(FmmlxDiagram diagram) throws TransformerException {
 
         Vector<Edge> edges = diagram.getEdges();
         EdgeXmlManager edgeXmlManager = new EdgeXmlManager();
@@ -71,65 +74,61 @@ public class Serializer implements ISerializer {
             } else {
                 edgeNode = null;
             }
-
             if(edgeNode!= null){
                 edgeXmlManager.add(edgeNode);
             }
         }
     }
 
-    private void saveObjects(FmmlxDiagram diagram) throws TransformerException {
+    public void saveObjects(FmmlxDiagram diagram) {
         ObjectXmlManager objectXmlManager = new ObjectXmlManager();
 
         Vector<FmmlxObject> objects = diagram.getObjects();
 
         for (FmmlxObject object : objects){
             Node objectNode = objectXmlManager.createObject(diagram, object);
-
-            Vector<FmmlxOperation> operations = object.getOwnOperations();
-            for(FmmlxOperation operation : operations){
-                Node operationNode = objectXmlManager.createOperationXmlNode(diagram, object, operation);
-                objectXmlManager.addOperation(objectNode, operationNode);
-            }
-
-            Vector<FmmlxAttribute> attributes = object.getOwnAttributes();
-            for(FmmlxAttribute attribute : attributes){
-                Node attributeNode = objectXmlManager.createAttributeXmlNode(diagram, object, attribute);
-                objectXmlManager.addAttribute(objectNode, attributeNode);
-            }
-
             objectXmlManager.add(objectNode);
         }
     }
 
-    private void saveDiagram(FmmlxDiagram diagram) throws TransformerException {
-        DiagramXmlManager diagramXmlManager = new DiagramXmlManager();
-        Node diagramNode = diagramXmlManager.createDiagramNode(diagram);
+    public boolean checkFileExist(){
+        return Files.exists(Paths.get(XmlCreator.path));
+    }
+    
+    public void saveDiagram(FmmlxDiagram diagram) throws TransformerException {
+    	if(checkFileExist()) {
+    		DiagramXmlManager diagramXmlManager = new DiagramXmlManager();
+            Node diagramNode = diagramXmlManager.createDiagramNode(diagram);
 
-        if (diagramXmlManager.isExist(diagram)) {
-            diagramXmlManager.remove(diagram);
-        }
-        diagramXmlManager.add(diagramNode);
-        saveObjects(diagram);
-        saveEdges(diagram);
+            if (diagramXmlManager.isExist(diagram)) {
+                diagramXmlManager.remove(diagram);
+            }
+            diagramXmlManager.add(diagramNode);
+            saveObjects(diagram);
+            saveEdges(diagram);
+            saveLabels(diagram);
+    	}
     }
 
-    private void saveProject(FmmlxDiagram diagram) throws TransformerException {
+    private void saveLabels(FmmlxDiagram diagram) throws TransformerException {
+		LabelXmlManager labelXmlManager = new LabelXmlManager();
+		Vector<DiagramEdgeLabel> labels = diagram.getLabels();
+		
+		for (DiagramEdgeLabel label : labels){
+            Node labelNode = labelXmlManager.createLabel(diagram, label);
+            labelXmlManager.add(labelNode);
+        }
+		
+	}
+
+	private void saveProject(FmmlxDiagram diagram) throws TransformerException {
         ProjectXmlManager projectXmlManager = new ProjectXmlManager();
         Node projectNode =  projectXmlManager.createProjectNode(diagram);
 
         if(projectXmlManager.isExist()) {
-            projectXmlManager.remove();
+            projectXmlManager.removeAll();
         }
 
         projectXmlManager.add(projectNode);
-    }
-
-    @Override
-    public void loadState(String path, FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
-        ProjectXmlManager projectXmlManager = new ProjectXmlManager(path);
-        String projectName = projectXmlManager.getProjectName();
-        fmmlxDiagramCommunicator.loadProjectFromXml(projectName);
-        //TODO
     }
 }

@@ -88,6 +88,18 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		return parentAssociationId;
 	}
 
+	public String getParentAssociationName() {
+		return getParentAssociationNameWithId();
+	}
+
+	private String getParentAssociationNameWithId() {
+		FmmlxAssociation parent = diagram.getAssociationById(parentAssociationId);
+		if(parent==null){
+			return "-1";
+		}
+		return parent.getName();
+	}
+
 	private enum Anchor {CENTRE_MOVABLE, SOURCE_LEVEL, TARGET_LEVEL, SOURCE_MULTI, TARGET_MULTI,CENTRE_SELFASSOCIATION};
 
 	@Override protected void layoutLabels() {
@@ -201,6 +213,21 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		return id;
 	}
 
+	@Override
+	public void setIntermediatePoints(Vector<Point2D> intermediatePoints) {
+		super.intermediatePoints = intermediatePoints;
+	}
+
+	@Override
+	public void setSourcePort(PortRegion portRegion) {
+		super.sourcePortRegion = portRegion;
+	}
+
+	@Override
+	public void setTargetPort(PortRegion portRegion) {
+		super.targetPortRegion = portRegion;
+	}
+
 	public FmmlxObject getSourceNode() {
 		return sourceNode;
 	}
@@ -275,7 +302,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		td.setHeaderText("Change Forward Association Name");
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
-			diagram.getComm().changeAssociationForwardName(diagram, this.id, result.get());
+			diagram.getComm().changeAssociationForwardName(diagram, this.getName(), result.get());
 			diagram.updateDiagram();
 		}
 	};
@@ -309,7 +336,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		MultiplicityDialog md = new MultiplicityDialog(multiplicityStartToEnd);
 		Optional<MultiplicityDialogResult> mr = md.showAndWait();
 		if(mr.isPresent()) {
-			diagram.getComm().changeAssociationStart2EndMultiplicity(diagram, this.id, mr.get().convertToMultiplicity());
+			diagram.getComm().changeAssociationStart2EndMultiplicity(diagram, this.getName(), mr.get().convertToMultiplicity());
 			diagram.updateDiagram();
 		}
 	};
@@ -343,7 +370,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		MultiplicityDialog md = new MultiplicityDialog(multiplicityEndToStart);
 		Optional<MultiplicityDialogResult> mr = md.showAndWait();
 		if(mr.isPresent()) {
-			diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram, this.id, mr.get().convertToMultiplicity());
+			diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram, this.getName(), mr.get().convertToMultiplicity());
 			diagram.updateDiagram();
 		}
 	};

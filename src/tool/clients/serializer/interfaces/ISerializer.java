@@ -8,5 +8,4 @@ import javax.xml.transform.TransformerException;
 
 public interface ISerializer {
     void saveState(FmmlxDiagram diagram) throws TransformerException, ParserConfigurationException;
-    void loadState(String path, FmmlxDiagramCommunicator fmmlxDiagramCommunicator);
 }

@@ -6,6 +6,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.*;
+import kodkod.engine.bool.Int;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteTool;
@@ -187,6 +188,13 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	public double getRightX() { return x + width; }
 	public double getBottomY() { return y + height; }
 	@Deprecated public int getOf() { return of; }
+	public String getOfName() {
+		FmmlxObject ofObject = diagram.getObjectById(of);
+		if(ofObject==null){
+			return "-1";
+		}
+		return ofObject.getName();
+	}
 
 	public Vector<FmmlxAttribute> getOwnAttributes() {
 		return new Vector<FmmlxAttribute>(ownAttributes);
@@ -229,8 +237,23 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		return result;
 	}
 
+	public Vector<String> getParentNames() {
+		Vector<String> parentNames = new Vector<>();
+		for(Integer id : parents){
+			parentNames.add(diagram.getObjectById(id).getName());
+		}
+		return parentNames;
+	}
 	public Vector<Integer> getParents() {
 		return parents;
+	}
+	public Vector<String> getParentsNames() {
+		Vector<String> parentsName = new Vector<>();
+		for(Integer i : parents){
+			FmmlxObject o = diagram.getObjectById(i);
+			parentsName.add(o.getName());
+		}
+		return parentsName;
 	}
 
 	public Vector<FmmlxObject> getInstances() {
@@ -900,4 +923,22 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		}
 		return count;
     }
+
+	public boolean isAttributeExists(String name) {
+		for(FmmlxAttribute attribute : getAllAttributes()){
+			if(attribute.getName().equals(name)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean operationIsExists(String name) {
+		for(FmmlxOperation operation : getAllOperations()){
+			if(operation.getName().equals(name)){
+				return true;
+			}
+		}
+		return false;
+	}
 }

@@ -18,34 +18,24 @@ public class ObjectXmlManager implements IXmlManager {
     }
 
     public Node createObject(FmmlxDiagram diagram, FmmlxObject fmmlxObject) {
-        int id = fmmlxObject.getId();
         String name = fmmlxObject.getName();
         int level= fmmlxObject.getLevel();
-        int of = fmmlxObject.getOf();
-        Vector<Integer> parents = fmmlxObject.getParents();
+        String ofName = fmmlxObject.getOfName();
+        Vector<String> parents = fmmlxObject.getParentsNames();
         String projectPath = diagram.getPackagePath()+"::"+name;
         String owner = diagram.getDiagramLabel();
         double x = fmmlxObject.getX();
         double y = fmmlxObject.getY();
 
         Element object = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OBJECT);
-        object.setAttribute(XmlConstant.ATTRIBUTE_ID, id+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
         object.setAttribute(XmlConstant.ATTRIBUTE_LEVEL, level+"");
-        object.setAttribute(XmlConstant.ATTRIBUTE_OF, of+"");
+        object.setAttribute(XmlConstant.ATTRIBUTE_OF, ofName+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_PARENTS, parents+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
         object.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
         object.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, x+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, y+"");
-        Node attributes = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_ATTRIBUTES);
-        Node operations = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OPERATIONS);
-        try {
-            xmlHandler.addOperationsElement(object, operations);
-            xmlHandler.addAttributesElement(object, attributes);
-        } catch (TransformerException e) {
-            e.printStackTrace();
-        }
         return object;
     }
 
@@ -63,7 +53,7 @@ public class ObjectXmlManager implements IXmlManager {
 
         Element operation = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OPERATION);
         operation.setAttribute(XmlConstant.ATTRIBUTE_DIAGRAM_OWNER, diagramOwner);
-        operation.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner+"");
+        operation.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
         operation.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
         operation.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
         operation.setAttribute(XmlConstant.ATTRIBUTE_LEVEL, level+"");
@@ -96,7 +86,7 @@ public class ObjectXmlManager implements IXmlManager {
 
         Element attributeNode = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_ATTRIBUTE);
         attributeNode.setAttribute(XmlConstant.ATTRIBUTE_DIAGRAM_OWNER, diagramOwner);
-        attributeNode.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner+"");
+        attributeNode.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
         attributeNode.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
         attributeNode.setAttribute(XmlConstant.ATTRIBUTE_LEVEL, level+"");
         attributeNode.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
@@ -115,7 +105,7 @@ public class ObjectXmlManager implements IXmlManager {
         for(int i=0 ; i<diagramNodeList.getLength(); i++){
             if(diagramNodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
                 Element diagram = (Element) diagramNodeList.item(i);
-                if(diagram.getAttribute(XmlConstant.ATTRIBUTE_ID).equals(newObject.getAttribute(XmlConstant.ATTRIBUTE_OWNER))){
+                if(diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(newObject.getAttribute(XmlConstant.ATTRIBUTE_OWNER))){
                     Element objects = (Element) getObjectsNode(diagram);
                     try {
                         xmlHandler.addObjectElement(objects, newObject);
@@ -151,7 +141,6 @@ public class ObjectXmlManager implements IXmlManager {
         }
     }
 
-
     private Node getOperationsNode(Element objectNode) {
         return xmlHandler.getXmlHelper().getNodeByTag(objectNode, XmlConstant.TAG_NAME_OPERATIONS);
     }
@@ -167,5 +156,82 @@ public class ObjectXmlManager implements IXmlManager {
 
     private Node getAttributesNode(Node objectNode) {
         return xmlHandler.getXmlHelper().getNodeByTag(objectNode, XmlConstant.TAG_NAME_ATTRIBUTES);
+    }
+
+    public void alignObjects(FmmlxDiagram fmmlxDiagram) {
+        Node diagrams = xmlHandler.getDiagramsNode();
+        NodeList diagramList = diagrams.getChildNodes();
+
+        Node diagramNode = null;
+
+        for (int i = 0 ; i< diagramList.getLength(); i++){
+            if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
+                Element tmp = (Element) diagramList.item(i);
+                if (tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(fmmlxDiagram.getDiagramLabel())){
+                    diagramNode = tmp;
+                }
+            }
+        }
+
+        List<FmmlxObject>allObjects = fmmlxDiagram.getObjects();
+        for(FmmlxObject object : allObjects){
+            Coordinate initCoordingate = new Coordinate(object.getX(), object.getY());
+            Coordinate coordinate = getCoordinate(diagramNode, object.getName(),initCoordingate);
+            object.moveTo(coordinate.getX(), coordinate.getY(), fmmlxDiagram);
+        }
+        fmmlxDiagram.objectsMoved = true;
+    }
+
+    private Coordinate getCoordinate(Node diagramNone, String name, Coordinate initCoordingate) {
+        Node objectsNode = xmlHandler.getChildWithName(diagramNone, XmlConstant.TAG_NAME_OBJECTS);
+        NodeList objectList = objectsNode.getChildNodes();
+        Coordinate coordinate = initCoordingate;
+
+        for (int i = 0 ; i< objectList.getLength() ; i++){
+            if (objectList.item(i).getNodeType() == Node.ELEMENT_NODE){
+                Element object_tmp = (Element) objectList.item(i);
+                if(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_NAME).equals(name)){
+                    double x = Double.parseDouble(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
+                    double y = Double.parseDouble(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
+                    coordinate.setX(x);
+                    coordinate.setY(y);
+                }
+            }
+        }
+        return coordinate;
+    }
+
+    private class Coordinate {
+        double x;
+        double y;
+
+        public Coordinate(double x, double y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public double getX() {
+            return x;
+        }
+
+        public void setX(double x) {
+            this.x = x;
+        }
+
+        public double getY() {
+            return y;
+        }
+
+        public void setY(double y) {
+            this.y = y;
+        }
+
+        @Override
+        public String toString() {
+            return "Coordinat{" +
+                    "x=" + x +
+                    ", y=" + y +
+                    '}';
+        }
     }
 }
