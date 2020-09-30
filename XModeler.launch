@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
-<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/MosaicFX/src/tool/xmodeler/XModeler.java"/>
-</listAttribute>
-<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
-<listEntry value="1"/>
-</listAttribute>
-<booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="tool.xmodeler.XModeler"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="./ini3.txt"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="MosaicFX"/>
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+        <listEntry value="/MosaicFX/src/tool/xmodeler/XModeler.java"/>
+    </listAttribute>
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+        <listEntry value="1"/>
+    </listAttribute>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_SHOW_CODEDETAILS_IN_EXCEPTION_MESSAGES" value="true"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_CLASSPATH_ONLY_JAR" value="false"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="tool.xmodeler.XModeler"/>
+    <listAttribute key="org.eclipse.jdt.launching.MODULEPATH">
+        <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry externalArchive=&quot;/home/wahid/Development/javafx-sdk-11.0.2/lib/javafx-swt.jar&quot; path=&quot;4&quot; type=&quot;2&quot;/&gt;&#10;"/>
+    </listAttribute>
+    <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="MosaicFX"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="./ini3.txt"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="MosaicFX"/>
+    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="--module-path &quot;/home/wahid/Development/javafx-sdk-11.0.2/lib&quot;&#10;--add-modules javafx.graphics,javafx.base,javafx.fxml,javafx.swing,javafx.web,javafx.media,javafx.controls&#10;--add-exports javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED&#10;--add-exports javafx.graphics/com.sun.javafx.text=ALL-UNNAMED&#10;--add-exports javafx.graphics/com.sun.javafx.scene.text=ALL-UNNAMED&#10;--add-opens javafx.graphics/javafx.scene.text=ALL-UNNAMED&#10;--add-opens javafx.graphics/com.sun.javafx.text=ALL-UNNAMED"/>
 </launchConfiguration>

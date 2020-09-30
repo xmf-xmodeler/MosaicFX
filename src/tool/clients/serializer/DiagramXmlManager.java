@@ -28,12 +28,14 @@ public class DiagramXmlManager implements IXmlManager {
         Node owners = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OWNERS);
         Node objects = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OBJECTS);
         Node edges = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGES);
+        Node labels = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_LABELS);
         Node preferences = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_PREFERENCES);
         try {
             xmlHandler.addDiagramCategoriesElement(diagram, categories);
             xmlHandler.addDiagramOwnersElement(diagram, owners);
             xmlHandler.addDiagramObjectsElement(diagram, objects);
             xmlHandler.addDiagramEdgesElement(diagram, edges);
+            xmlHandler.addDiagramLabelsElement(diagram, labels);
             xmlHandler.addDiagramPreferencesElement(diagram, preferences);
         } catch (TransformerException e) {
             e.printStackTrace();

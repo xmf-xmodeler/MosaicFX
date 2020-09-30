@@ -27,6 +27,8 @@ public class XmlConstant {
     public static final String TAG_PARAM_NAME = "Param";
     public static final String TAG_NAME_BODY = "Body";
     public static final String TAG_NAME_ATTRIBUTE = "Attribute";
+	public static final String TAG_NAME_LABELS = "Labels";
+	public static final String TAG_NAME_LABEL = "Label";
 
     public static final String ATTRIBUTE_NAME = "name";
     public static final String ATTRIBUTE_OWNER = "owner";
@@ -88,4 +90,7 @@ public class XmlConstant {
     public static final String ATTRIBUTE_DELEGATE_TO = "delegateTo";
     public static final String ATTRIBUTE_CLASS_1 = "class1";
     public static final String ATTRIBUTE_CLASS_2 = "class2";
+	public static final String ATTRIBUTE_TEXT = "text";
+
+
 }

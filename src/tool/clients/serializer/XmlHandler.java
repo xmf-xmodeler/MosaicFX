@@ -106,6 +106,11 @@ public class XmlHandler {
             throws TransformerException {
         xmlHelper.addXmlElement(edges, newObject);
     }
+    
+    public void addLabelElement(Node labels, Node label)
+            throws TransformerException {
+        xmlHelper.addXmlElement(labels, label);
+    }
 
     public void addDiagramElement(Node diagrams, Node diagram)
             throws TransformerException {
@@ -126,6 +131,12 @@ public class XmlHandler {
             throws TransformerException {
         xmlHelper.addXmlElement(diagram, edges);
     }
+    
+
+	public void addDiagramLabelsElement(Element diagram, Node labels) throws TransformerException {
+		xmlHelper.addXmlElement(diagram, labels);
+		
+	}
 
     public void addDiagramPreferencesElement(Element diagram, Node preferences) throws TransformerException {
         xmlHelper.addXmlElement(diagram, preferences);
@@ -320,4 +331,6 @@ public class XmlHandler {
             transformer.transform(source, result);
         }
     }
+
+
 }

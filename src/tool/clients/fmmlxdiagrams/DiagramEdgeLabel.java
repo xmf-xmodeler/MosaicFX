@@ -67,6 +67,14 @@ public class DiagramEdgeLabel implements CanvasElement {
 		}
 	}
 
+	public Edge getOwner() {
+		return owner;
+	}
+
+	public String getText() {
+		return text;
+	}
+
 	private double getReferenceX() {
 		double x = 0;
 		for(FmmlxObject o : anchors) {
@@ -83,6 +91,22 @@ public class DiagramEdgeLabel implements CanvasElement {
 		}
 		y /= anchors.size();
 		return y;
+	}
+
+	public double getRelativeX() {
+		return relativeX;
+	}
+
+	public double getRelativeY() {
+		return relativeY;
+	}
+
+	public void setRelativeX(double relativeX) {
+		this.relativeX = relativeX;
+	}
+
+	public void setRelativeY(double relativeY) {
+		this.relativeY = relativeY;
 	}
 
 	@Override
