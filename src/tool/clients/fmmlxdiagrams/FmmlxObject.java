@@ -23,18 +23,22 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 
 	public static HashMap<Integer, Paint> colors = null;
 	private String name;
-	int id;
+	
+	@Deprecated int id;
+	@Deprecated Integer of;
+	@Deprecated private Vector<Integer> parents;
+	
+	String ownPath;
+	String ofPath;
+	Vector<String> parentsPaths;
+	
 	private double x;
 	private double y;
 	private boolean isAbstract;
 	int level;
-	Integer of;
-	private Vector<Integer> parents;
 	private int width;
 	private int height;
 	Object highlightedElement;
-//	Integer delegatesTo;
-//	Integer roleFiller;
     
 	private final static NodeLabel.Action NO_ACTION = () -> {};
 	
@@ -173,7 +177,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 
 	public String getName() { return name; }
 	public int getLevel() { return level; }
-	public int getId() { return id; }
+	@Deprecated public int getId() { return id; }
 	public double getX() { return x; }
 	public double getY() { return y; }
 	public int getWidth() { return width; }
@@ -182,7 +186,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	public double getCenterY() { return y + height / 2.; }
 	public double getRightX() { return x + width; }
 	public double getBottomY() { return y + height; }
-	public int getOf() { return of; }
+	@Deprecated public int getOf() { return of; }
 
 	public Vector<FmmlxAttribute> getOwnAttributes() {
 		return new Vector<FmmlxAttribute>(ownAttributes);
@@ -330,13 +334,14 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		int headerLines = /*hasParents()*/(!"".equals(parentString)) ? 3 : 2;
 		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * headerLines + EXTRA_Y_PER_LINE, getLevelBackgroundColor(), Color.BLACK, (x) -> {return 1.;}, PropertyType.Class);
 		nodeElements.addElement(header);
-		String ofName;
+		
+		FmmlxObject ofObj = null;
 		try {
-			ofName = diagram.getObjectById(of).name;
+			ofObj = diagram.getObjectById(of);
 		} catch (Exception e) {
-			ofName = e.getMessage();
+			e.printStackTrace();
 		}
-		if (ofName == null) ofName = "MetaClass";
+		String ofName = (ofObj == null) ? "MetaClass" : ofObj.name;
 		
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, Color.valueOf(getLevelFontColor() + "75"), null, this, NO_ACTION, "^" + ofName + "^", false) ;
 		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight, Color.valueOf(getLevelFontColor() + "75"), null, this, NO_ACTION, "" + level, false);
