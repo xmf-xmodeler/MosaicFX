@@ -987,7 +987,7 @@ public class DiagramActions {
 			Optional<Object> optional = dialog.showAndWait();
 		});
 		return null;
-}}
+	}
 
 
 //	public void attributeGeneratorDialog(FmmlxAttribute tmp, InstanceGeneratorGenerateType selectedType) {
