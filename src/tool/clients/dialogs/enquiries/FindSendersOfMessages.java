@@ -2,7 +2,11 @@ package tool.clients.dialogs.enquiries;
 
 
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Vector;
+
+import com.sun.media.jfxmediaimpl.platform.Platform;
 
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
@@ -21,10 +25,20 @@ import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 	private Label numberOfParamsLabel = new Label("number of Params");
 	private Label classesLabel = new Label("Classes");
 	private Label operationsLabel = new Label("Operations");
+	private Label statusLabel = new Label("");
 	
 	private TextField messageNameTextfield = new TextField();
 	private TextField modelTextfield = new TextField();
 	private TextField numberOfParamsTextfield = new TextField();
+	
+	private enum Status{
+		READY, WAITING, DIRTY, 
+	}
+	
+	private Status status = Status.READY;
+	
+	
+	
 	
 	ListView<String> classesListView = new ListView<String>();
 	ListView<String> operationsListView = new ListView<String>();
@@ -32,8 +46,6 @@ import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 	private final FmmlxDiagramCommunicator fmmlxDiagramCommunicator;
 	
 	HashMap<String, String>  result = new HashMap<String, String>();
-
-	@Deprecated public FindSendersOfMessages() {this(null, null);}
 	
 	public FindSendersOfMessages(FmmlxDiagram diagram, FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
 		this.fmmlxDiagramCommunicator = fmmlxDiagramCommunicator;
@@ -49,7 +61,7 @@ import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 	}
 
 	private void layout() {
-		
+		statusLabel.setText(status + "");
 		grid.add(messageNameLabel, 0, 1);
 		grid.add(modelLabel, 0, 2);
 		grid.add(numberOfParamsLabel, 0, 3);
@@ -59,33 +71,84 @@ import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 		grid.add(numberOfParamsTextfield, 1, 3);
 		
 		grid.add(classesLabel, 2, 0);
-		grid.add(classesListView, 2, 1, 1, 4);
+		grid.add(classesListView, 2, 1, 1, 5);
 		
 		grid.add(operationsLabel, 3, 0);
-		grid.add(operationsListView, 3, 1, 1, 4);
+		grid.add(operationsListView, 3, 1, 1, 5);
+		
+		grid.add(statusLabel, 0, 4, 2, 1);
 		
 		messageNameTextfield.textProperty().addListener( (e, oldText, newText) -> {keyTyped();});
 		modelTextfield.textProperty().addListener( (e, oldText, newText) -> {keyTyped();});
 		numberOfParamsTextfield.textProperty().addListener( (e, oldText, newText) -> {keyTyped();});
+		
 	}
 	
-	private void keyTyped() {
+	private void keyTyped() 
+	{
+		javafx.application.Platform.runLater(()->
+		{
+		switch (status) 
+		{
+		case READY:
+			
+			if(messageNameTextfield.getText().length()>3) 
+			{
+				status =Status.WAITING;
+				statusLabel.setText(status + "");
+				sendRequest();
+			}
+			break;
+			
+		case WAITING:
+			status = Status.DIRTY;
+			statusLabel.setText(status + "");
+			break;
+		
+		
+		default:
+			break;
+		}
+		});
+	}
+	
+
+	private void sendRequest() {
 		System.err.println("The user wants to know more about " + messageNameTextfield.getText());
 		System.err.println("The user wants to know more about " + modelTextfield.getText());
 		System.err.println("The user wants to know more about " + numberOfParamsTextfield.getText());
 		if(messageNameTextfield.getText().length()>3) {
-			try {
-				result = fmmlxDiagramCommunicator.findOperationUsage(
-						diagram, 
+	//		javafx.application.Platform.runLater(()->{
+			Thread thread = new Thread(()->{
+			
+				fmmlxDiagramCommunicator.findOperationUsage(
+						diagram, this,
 						messageNameTextfield.getText(), 
 						modelTextfield.getText());
-			System.err.println("result: " + result);
-			} catch (TimeOutException e) {
-				e.printStackTrace();
-			}
+			});
+			thread.start();
+		}	else {
+			status = Status.READY;
+			statusLabel.setText(status + "");
 		}
-		
-		
+	}
+
+	public void sendResponse(HashMap<String, String> result2) {
+		this.result = result2;
+		classesListView.getItems().clear();
+		Vector <String> keys = new Vector<>();
+		keys.addAll(result.keySet());
+		Collections.sort(keys);
+		classesListView.getItems().addAll(keys);
+		if(status == Status.DIRTY) {
+			status = Status.WAITING;
+			statusLabel.setText(status + "");
+			sendRequest();
+		}else {
+		status = Status.READY;
+		statusLabel.setText(status + "");
+
+		}
 	}
 	
 }
