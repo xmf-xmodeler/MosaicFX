@@ -353,13 +353,13 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		int headerLines = /*hasParents()*/(!"".equals(parentString)) ? 3 : 2;
 		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * headerLines + EXTRA_Y_PER_LINE, getLevelBackgroundColor(), Color.BLACK, (x) -> {return 1.;}, PropertyType.Class);
 		nodeElements.addElement(header);
-		String ofName;
+		FmmlxObject ofObj = null;
 		try {
-			ofName = diagram.getObjectById(of).name;
+		ofObj = diagram.getObjectById(of);
 		} catch (Exception e) {
-			ofName = e.getMessage();
+		e.printStackTrace();
 		}
-		if (ofName == null) ofName = "MetaClass";
+		String ofName = (ofObj == null) ? "MetaClass" : ofObj.name;
 		
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, Color.valueOf(getLevelFontColor() + "75"), null, this, NO_ACTION, "^" + ofName + "^", false) ;
 		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight, Color.valueOf(getLevelFontColor() + "75"), null, this, NO_ACTION, "" + level, false);
