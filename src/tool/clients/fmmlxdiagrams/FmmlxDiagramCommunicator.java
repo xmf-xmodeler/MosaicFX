@@ -7,6 +7,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import tool.clients.dialogs.enquiries.FindSendersOfMessages;
+import tool.clients.serializer.Serializer;
 import tool.clients.serializer.Deserializer;
 import tool.clients.workbench.WorkbenchClient;
 import xos.Value;
@@ -1314,6 +1316,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(returnType)// param4
 				});
 		
+		
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		
 		HashMap<String, String> result = new HashMap<>();
@@ -1325,7 +1328,25 @@ public class FmmlxDiagramCommunicator {
 		
 		return result;
 	}
-
+	
+	public HashMap<String, String> findAllOperations(FmmlxDiagram diagram) throws TimeOutException {
+		Vector<Object> response = xmfRequest(handler, diagram, "findAllOperations", new Value[]{
+			
+				});
+		
+		
+		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+		
+		HashMap<String, String> result = new HashMap<>();
+		for(Object resultItemO : responseContent) {
+			Vector<Object> resultItem = (Vector<Object>) (resultItemO);
+//			System.err.println(resultItem);
+			result.put((String) resultItem.get(0), (String)resultItem.get(6));
+		}
+		
+		return result;		
+	}
+	
 	public HashMap<String, String> findOperationUsage(FmmlxDiagram diagram, String name, String model) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram, "findOperationUsage", new Value[]{
 			new Value(name), // opNames
@@ -1342,5 +1363,34 @@ public class FmmlxDiagramCommunicator {
 		
 		return result;
 	}
+
+	public void findOperationUsage(FmmlxDiagram diagram, FindSendersOfMessages findSendersOfMessages, String name,
+			String model) {
+		Vector<Object> response;
+		try {
+			response = xmfRequest(handler, diagram, "findOperationUsage", new Value[]{
+					new Value(name), 
+					new Value(model)
+					});
+
+			
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			
+			HashMap<String, String> result = new HashMap<>();
+			for(Object resultItemO : responseContent) {
+				Vector<Object> resultItem = (Vector<Object>) (resultItemO);
+				result.put((String) resultItem.get(0), (String)resultItem.get(6));
+				
+			}Platform.runLater(()->{
+				findSendersOfMessages.sendResponse(result);
+			});
+			
+		} catch (TimeOutException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	
 
 }

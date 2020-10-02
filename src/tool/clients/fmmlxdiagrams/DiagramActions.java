@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Vector;
 
-
 public class DiagramActions {
 
 	private final double zoomLevel = Math.sqrt(2);
@@ -954,17 +953,6 @@ public class DiagramActions {
 		});
 	}
 
-	public void loadLogs() {
-		Platform.runLater(()-> {
-			Deserializer deserializer = new Deserializer();
-			try {
-				deserializer.getAllDiagramElement(diagram);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});
-	}
-
 	public void openFindImplementationDialog() {
 
 		Platform.runLater(() -> {
@@ -990,12 +978,14 @@ public class DiagramActions {
 	}
 
 
-//	public void attributeGeneratorDialog(FmmlxAttribute tmp, InstanceGeneratorGenerateType selectedType) {
-//		Platform.runLater(() -> {
-//			if(selectedType!=null) {
-//				AttributeGeneratorDialog dlg = new AttributeGeneratorDialog(tmp, selectedType);
-//				Optional<AttributeGeneratorDialogResult> opt = dlg.showAndWait();
-//			}
-//		});
-//	}	
+	public void loadLogs() {
+		Platform.runLater(()-> {
+			Deserializer deserializer = new Deserializer();
+			try {
+				deserializer.getAllDiagramElement(diagram);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+	}
 }
