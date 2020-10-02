@@ -971,7 +971,7 @@ public class DiagramActions {
 
 	public Object openFindSendersDialog() {
 		Platform.runLater(() -> {
-			FindSendersOfMessages dialog = new FindSendersOfMessages();
+			FindSendersOfMessages dialog = new FindSendersOfMessages(diagram, diagram.getComm());
 			Optional<Object> optional = dialog.showAndWait();
 		});
 		return null;
