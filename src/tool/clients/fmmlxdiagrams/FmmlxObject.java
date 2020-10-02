@@ -115,8 +115,16 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 				new Stop(6. / 6, Color.valueOf("#ff4444"))));
 	}
 
-	public FmmlxObject(Integer id, String name, int level, Integer of, 
-			Vector<Integer> parents, Boolean isAbstract,
+	public FmmlxObject(
+			Integer id, 
+			String name, 
+			int level, 
+			Integer of, 
+			Vector<Integer> parents, 
+			String ownPath,
+			String ofPath,
+			Vector<String> parentPaths,
+			Boolean isAbstract,
 			Integer lastKnownX, Integer lastKnownY, 
 //			Integer delegatesTo, Integer roleFiller, 
 			FmmlxDiagram diagram) {

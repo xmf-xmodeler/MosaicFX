@@ -223,18 +223,30 @@ public class FmmlxDiagramCommunicator {
 		for (Object responseObject : responseContent) {
 			Vector<Object> responseObjectList = (Vector<Object>) (responseObject);
 
+			// deprecated, replaced by String
 			Vector<Object> parentListO = (Vector<Object>) responseObjectList.get(4);
 			Vector<Integer> parentListI = new Vector<Integer>();
 			for (Object o : parentListO) {
 				parentListI.add((Integer) o);
 			}
-
+			
+			Vector<Object> parentListO2 = (Vector<Object>) responseObjectList.get(12);
+			Vector<String> parentListS = new Vector<String>();
+			for (Object o : parentListO2) {
+				parentListS.add((String) o);
+			}
+			
+			System.err.println("parentListS: " + parentListS);
+			
 			FmmlxObject object = new FmmlxObject(
-					(Integer) responseObjectList.get(0), // id
+					(Integer) responseObjectList.get(0), // id*
 					(String)  responseObjectList.get(1), // name
 					(Integer) responseObjectList.get(2), // level
-					(Integer) responseObjectList.get(3), // of
-					parentListI, // parents
+					(Integer) responseObjectList.get(3), // of*
+					parentListI,                          // parents*
+					(String)  responseObjectList.get(10), // ownPath
+					(String)  responseObjectList.get(11), // ofPath
+					parentListS,                          // parentsPath
 					(Boolean) responseObjectList.get(5),
 					(Integer) responseObjectList.get(6), // x-Position
 					(Integer) responseObjectList.get(7), // y-Position 
