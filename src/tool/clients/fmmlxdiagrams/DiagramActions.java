@@ -962,6 +962,19 @@ public class DiagramActions {
 		});
 	}
 
+	public void testReAlign() {
+		Platform.runLater(()-> {
+			alignAllComponents(diagram);
+			diagram.triggerOverallReLayout();
+			diagram.redraw();
+		});
+	}
+
+	private void alignAllComponents(FmmlxDiagram diagram) {
+		Deserializer deserializer = new Deserializer();
+		deserializer.alignCoordinate(diagram);
+	}
+
 //	public void attributeGeneratorDialog(FmmlxAttribute tmp, InstanceGeneratorGenerateType selectedType) {
 //		Platform.runLater(() -> {
 //			if(selectedType!=null) {

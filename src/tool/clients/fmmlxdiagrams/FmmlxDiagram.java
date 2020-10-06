@@ -238,14 +238,14 @@ public class FmmlxDiagram{
 		}
 		suppressRedraw = false;
 
-		alignAllComponents(this);
+		//alignAllComponents(this);
 		redraw();
 		newFmmlxPalette.update();
 		
 		if(issues.size() > 0) {
 			issues.firstElement().performResolveAction(this);
 		}
-		triggerOverallReLayout();
+		//triggerOverallReLayout();
 
 	}
 
@@ -456,7 +456,7 @@ public class FmmlxDiagram{
 		redraw();
 	}
 
-	private void triggerOverallReLayout() {
+	public void triggerOverallReLayout() {
 		for(int i = 0; i < 3; i++) {
 			for(FmmlxObject o : objects) {
 				o.layout(this);
@@ -475,25 +475,9 @@ public class FmmlxDiagram{
 			for (CanvasElement s : selectedObjects)
 				if (s instanceof FmmlxObject) {
 					FmmlxObject o = (FmmlxObject) s;
-					Platform.runLater(() -> {
-						Serializer serializer = new Serializer();
-						try {
-							serializer.saveDiagram(this);
-						} catch (TransformerException e) {
-							e.printStackTrace();
-						}
-					});
 					comm.sendCurrentPosition(this, o);
 					for(Edge e : edges) {
 						if(e.isStartNode(o) || e.isEndNode(o)) {
-							Platform.runLater(() -> {
-								Serializer serializer = new Serializer();
-								try {
-									serializer.saveDiagram(this);
-								} catch (TransformerException d) {
-									d.printStackTrace();
-								}
-							});
 							comm.sendCurrentPositions(this, e);
 						}
 					}

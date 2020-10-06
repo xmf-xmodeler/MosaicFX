@@ -38,9 +38,6 @@ public class LabelXmlManager implements ILog, IXmlManager{
         label.setAttribute(XmlConstant.ATTRIBUTE_DIAGRAM_OWNER, diagram.getDiagramLabel());
         label.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, x+"");
         label.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, y+"");
-        System.out.println("----------------------------------------------");
-        System.out.println(1+" "+text+" "+x+" "+y);
-        System.out.println("----------------------------------------------");
         return label;
     }
 
@@ -126,8 +123,10 @@ public class LabelXmlManager implements ILog, IXmlManager{
                 label.setRelativeY(coordinate.getY());
                 label.getOwner().updatePosition(label);
                 fmmlxDiagram.getComm().storeLabelInfo(fmmlxDiagram, label);
-                System.out.println(2+" "+label.getText()+" "+label.relativeX+" "+label.relativeY);
             }
+
+            label.getOwner().updatePosition(label);
+            fmmlxDiagram.getComm().storeLabelInfo(fmmlxDiagram, label);
         }
         fmmlxDiagram.objectsMoved = true;
 	}
