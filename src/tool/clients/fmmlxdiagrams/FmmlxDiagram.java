@@ -71,6 +71,7 @@ public class FmmlxDiagram{
 	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
 	private ContextMenu activeContextMenu;
 	public transient boolean objectsMoved = false;
+	public transient boolean loadProcess = false;
 	private transient PropertyType drawEdgeType = null;
 	private transient Point2D lastPoint;
 	private transient Point2D currentPoint;
@@ -238,15 +239,16 @@ public class FmmlxDiagram{
 		}
 		suppressRedraw = false;
 
-		//alignAllComponents(this);
+		if(loadProcess){
+			alignAllComponents(this);
+			triggerOverallReLayout();
+		}
 		redraw();
 		newFmmlxPalette.update();
 		
 		if(issues.size() > 0) {
 			issues.firstElement().performResolveAction(this);
 		}
-		//triggerOverallReLayout();
-
 	}
 
 	private void alignAllComponents(FmmlxDiagram diagram) {
@@ -428,7 +430,6 @@ public class FmmlxDiagram{
 		for(Edge e : edges) {e.align();}
 
 		redraw();
-		
 	}
 
 	private void mouseReleased(MouseEvent e) {

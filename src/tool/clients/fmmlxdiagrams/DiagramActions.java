@@ -953,6 +953,7 @@ public class DiagramActions {
 
 	public void loadLogs() {
 		Platform.runLater(()-> {
+			diagram.loadProcess = true;
 			Deserializer deserializer = new Deserializer();
 			try {
 				deserializer.getAllDiagramElement(diagram);
@@ -960,19 +961,17 @@ public class DiagramActions {
 				e.printStackTrace();
 			}
 		});
+		diagram.loadProcess = false;
 	}
 
 	public void testReAlign() {
 		Platform.runLater(()-> {
-			alignAllComponents(diagram);
+
+			Deserializer deserializer = new Deserializer();
+			deserializer.alignCoordinate(diagram);
 			diagram.triggerOverallReLayout();
 			diagram.redraw();
 		});
-	}
-
-	private void alignAllComponents(FmmlxDiagram diagram) {
-		Deserializer deserializer = new Deserializer();
-		deserializer.alignCoordinate(diagram);
 	}
 
 //	public void attributeGeneratorDialog(FmmlxAttribute tmp, InstanceGeneratorGenerateType selectedType) {
