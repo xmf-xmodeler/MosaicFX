@@ -226,6 +226,7 @@ public class EdgeXmlManager implements IXmlManager {
                                                 intermediatePoints.add(point2D);
                                             }
                                         }
+                                        fmmlxDiagram.getComm().sendCurrentPositions(fmmlxDiagram, edge);
                                         break;
                                     }
                                 }
@@ -268,6 +269,7 @@ public class EdgeXmlManager implements IXmlManager {
                                                 intermediatePoints.add(point2D);
                                             }
                                         }
+                                        fmmlxDiagram.getComm().sendCurrentPositions(fmmlxDiagram, edge);
                                         break;
                                     }
                                 }
@@ -312,6 +314,7 @@ public class EdgeXmlManager implements IXmlManager {
                                                 intermediatePoints.add(point2D);
                                             }
                                         }
+                                        fmmlxDiagram.getComm().sendCurrentPositions(fmmlxDiagram, edge);
                                         break;
                                     }
                                 }
@@ -354,6 +357,7 @@ public class EdgeXmlManager implements IXmlManager {
                                                 intermediatePoints.add(point2D);
                                             }
                                         }
+                                        fmmlxDiagram.getComm().sendCurrentPositions(fmmlxDiagram, edge);
                                         break;
                                     }
                                 }

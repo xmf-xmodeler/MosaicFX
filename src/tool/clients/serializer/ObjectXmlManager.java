@@ -178,8 +178,8 @@ public class ObjectXmlManager implements IXmlManager {
             Coordinate initCoordingate = new Coordinate(object.getX(), object.getY());
             Coordinate coordinate = getCoordinate(diagramNode, object.getName(),initCoordingate);
             object.moveTo(coordinate.getX(), coordinate.getY(), fmmlxDiagram);
+            fmmlxDiagram.getComm().sendCurrentPosition(fmmlxDiagram, object);
         }
-        fmmlxDiagram.objectsMoved = true;
     }
 
     private Coordinate getCoordinate(Node diagramNone, String name, Coordinate initCoordingate) {

@@ -71,6 +71,7 @@ public class FmmlxDiagram{
 	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
 	private ContextMenu activeContextMenu;
 	public transient boolean objectsMoved = false;
+	public transient boolean loadProcess = false;
 	private transient PropertyType drawEdgeType = null;
 	private transient Point2D lastPoint;
 	private transient Point2D currentPoint;
@@ -238,15 +239,16 @@ public class FmmlxDiagram{
 		}
 		suppressRedraw = false;
 
-		alignAllComponents(this);
+		if(loadProcess){
+			alignAllComponents(this);
+			triggerOverallReLayout();
+		}
 		redraw();
 		newFmmlxPalette.update();
 		
 		if(issues.size() > 0) {
 			issues.firstElement().performResolveAction(this);
 		}
-		triggerOverallReLayout();
-
 	}
 
 	private void alignAllComponents(FmmlxDiagram diagram) {
@@ -428,7 +430,6 @@ public class FmmlxDiagram{
 		for(Edge e : edges) {e.align();}
 
 		redraw();
-		
 	}
 
 	private void mouseReleased(MouseEvent e) {
@@ -456,7 +457,7 @@ public class FmmlxDiagram{
 		redraw();
 	}
 
-	private void triggerOverallReLayout() {
+	public void triggerOverallReLayout() {
 		for(int i = 0; i < 3; i++) {
 			for(FmmlxObject o : objects) {
 				o.layout(this);
@@ -475,25 +476,9 @@ public class FmmlxDiagram{
 			for (CanvasElement s : selectedObjects)
 				if (s instanceof FmmlxObject) {
 					FmmlxObject o = (FmmlxObject) s;
-					Platform.runLater(() -> {
-						Serializer serializer = new Serializer();
-						try {
-							serializer.saveDiagram(this);
-						} catch (TransformerException e) {
-							e.printStackTrace();
-						}
-					});
 					comm.sendCurrentPosition(this, o);
 					for(Edge e : edges) {
 						if(e.isStartNode(o) || e.isEndNode(o)) {
-							Platform.runLater(() -> {
-								Serializer serializer = new Serializer();
-								try {
-									serializer.saveDiagram(this);
-								} catch (TransformerException d) {
-									d.printStackTrace();
-								}
-							});
 							comm.sendCurrentPositions(this, e);
 						}
 					}

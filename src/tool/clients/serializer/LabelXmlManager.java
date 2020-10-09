@@ -117,10 +117,38 @@ public class LabelXmlManager implements ILog, IXmlManager{
         for(DiagramEdgeLabel label : labels){
             Coordinate initCoordingate = new Coordinate(label.getRelativeX(), label.getRelativeY());
             Coordinate coordinate = getCoordinate(diagramNode, label.getText(), initCoordingate);
-            label.moveTo(coordinate.getX(), coordinate.getY(), fmmlxDiagram);
+            if(validateName(label.getText())){
+            	
+                label.setRelativeX(coordinate.getX());
+                label.setRelativeY(coordinate.getY());
+                label.getOwner().updatePosition(label);
+                fmmlxDiagram.getComm().storeLabelInfo(fmmlxDiagram, label);
+            }
+
+            label.getOwner().updatePosition(label);
+            fmmlxDiagram.getComm().storeLabelInfo(fmmlxDiagram, label);
         }
         fmmlxDiagram.objectsMoved = true;
-		
+	}
+	
+	public boolean validateName(String name) {
+		if (name.equals("")) {
+			return false;
+		} else if (checkFirstStringIsDigit(name)) {
+			return false;
+		} else if (name.contains(" ")) {
+			return false;
+		}
+		return true;
+	}
+
+	private boolean checkFirstStringIsDigit(String name) {
+		char[] c = name.toCharArray();
+
+		if (Character.isDigit(c[0])) {
+			return true;
+		}
+		return false;
 	}
 	
 	private Coordinate getCoordinate(Node diagramNone, String text, Coordinate initCoordingate) {
@@ -130,15 +158,21 @@ public class LabelXmlManager implements ILog, IXmlManager{
 
         for (int i = 0 ; i< labelList.getLength() ; i++){
             if (labelList.item(i).getNodeType() == Node.ELEMENT_NODE){
-                Element object_tmp = (Element) labelList.item(i);
-                if(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_TEXT).equals(text)){
-                    double x = Double.parseDouble(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
-                    double y = Double.parseDouble(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
-                    coordinate.setX(x);
-                    coordinate.setY(y);
+                Element label_tmp = (Element) labelList.item(i);
+                if(validateName(text)) {
+                	if(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_TEXT).equals(text)){
+                        double x = Double.parseDouble(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
+                        double y = Double.parseDouble(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
+                        coordinate.setX(x);
+                        coordinate.setY(y);
+                    }
+                } else {
+                	continue;
                 }
+                
             }
         }
+     
         return coordinate;
     }
 	

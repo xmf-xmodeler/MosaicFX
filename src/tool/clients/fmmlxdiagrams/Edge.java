@@ -374,7 +374,6 @@ public abstract class Edge implements CanvasElement {
 			} else {
 				System.err.println("Unexpected initial edge alignment");
 			}
-			
 		}
 		
 		

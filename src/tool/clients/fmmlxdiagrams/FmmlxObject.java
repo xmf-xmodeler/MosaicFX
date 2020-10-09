@@ -365,7 +365,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		int headerLines = /*hasParents()*/(!"".equals(parentString)) ? 3 : 2;
 		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * headerLines + EXTRA_Y_PER_LINE, getLevelBackgroundColor(), Color.BLACK, (x) -> {return 1.;}, PropertyType.Class);
 		nodeElements.addElement(header);
-		
 		FmmlxObject ofObj = null;
 		try {
 			ofObj = diagram.getObjectById(of);

@@ -980,12 +980,24 @@ public class DiagramActions {
 
 	public void loadLogs() {
 		Platform.runLater(()-> {
+			diagram.loadProcess = true;
 			Deserializer deserializer = new Deserializer();
 			try {
 				deserializer.getAllDiagramElement(diagram);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		});
+		diagram.loadProcess = false;
+	}
+
+	public void testReAlign() {
+		Platform.runLater(()-> {
+
+			Deserializer deserializer = new Deserializer();
+			deserializer.alignCoordinate(diagram);
+			diagram.triggerOverallReLayout();
+			diagram.redraw();
 		});
 	}
 }

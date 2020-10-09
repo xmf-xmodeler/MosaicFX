@@ -80,8 +80,7 @@ public class DefaultContextMenu extends ContextMenu {
 			testSave.setOnAction(a -> actions.save());
 			MenuItem testLoad = new MenuItem("test Load");
 			testLoad.setOnAction(a -> actions.loadLogs());
-			getItems().addAll(testSave, testLoad);
-
+		
 			MenuItem openFindImplementationDialog = new MenuItem("Search for Implementation");
 			openFindImplementationDialog.setOnAction(e -> actions.openFindImplementationDialog());
 			getItems().addAll(openFindImplementationDialog);
@@ -93,6 +92,10 @@ public class DefaultContextMenu extends ContextMenu {
 			MenuItem openFindSendersOfMessages = new MenuItem("Search for Senders");
 			openFindSendersOfMessages.setOnAction(e -> actions.openFindSendersDialog());
 			getItems().addAll(openFindSendersOfMessages);
+
+			MenuItem testReAlign = new MenuItem("test reAlign");
+			testReAlign.setOnAction(a -> actions.testReAlign());
+			getItems().addAll(testSave, testLoad, testReAlign);
 
 		}
 	}
