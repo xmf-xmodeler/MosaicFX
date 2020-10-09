@@ -125,22 +125,4 @@ public class FmmlxLink extends Edge {
 	public void setIntermediatePoints(Vector<Point2D> intermediatePoints) {
 		super.intermediatePoints = intermediatePoints;
 	}
-
-	@Override
-	public void setSourcePort(PortRegion valueOf) {
-		super.sourcePortRegion = valueOf;
-	}
-
-	@Override
-	public void setTargetPort(PortRegion valueOf) {
-		super.targetPortRegion = valueOf;
-	}
-
-	public FmmlxObject getSourceNode() {
-		return sourceNode;
-	}
-	
-	public FmmlxObject getTargetNode() {
-		return targetNode;
-	}
 }

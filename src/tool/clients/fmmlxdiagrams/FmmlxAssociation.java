@@ -209,31 +209,9 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		return propertyType;
 	}
 
-	public int getId() {
-		return id;
-	}
-
 	@Override
 	public void setIntermediatePoints(Vector<Point2D> intermediatePoints) {
 		super.intermediatePoints = intermediatePoints;
-	}
-
-	@Override
-	public void setSourcePort(PortRegion portRegion) {
-		super.sourcePortRegion = portRegion;
-	}
-
-	@Override
-	public void setTargetPort(PortRegion portRegion) {
-		super.targetPortRegion = portRegion;
-	}
-
-	public FmmlxObject getSourceNode() {
-		return sourceNode;
-	}
-
-	public FmmlxObject getTargetNode() {
-		return targetNode;
 	}
 
 	public Integer getLevelStartToEnd() {

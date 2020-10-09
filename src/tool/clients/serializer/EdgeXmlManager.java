@@ -198,7 +198,6 @@ public class EdgeXmlManager implements IXmlManager {
         for(Edge edge : edges){
             if(edge instanceof FmmlxAssociation){
                 String name = ((FmmlxAssociation) edge).getName();
-                Vector<Point2D> intermediatePoints = new Vector<>();
 
                 for(int i=0 ; i<diagramNodeList.getLength(); i++){
                     if(diagramNodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
@@ -212,11 +211,14 @@ public class EdgeXmlManager implements IXmlManager {
                                     Element edgeElement = (Element) edgeList.item(j);
                                     if(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_NAME).equals(name) &&
                                             edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE).equals("association")){ //Edge Found
-                                        edge.setSourcePort(PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT)));
-                                        edge.setTargetPort(PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_PORT)));
+                                    	edge.getSourceNode().setDirectionForEdge(edge.sourceEnd, true, PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT)));
+                                    	edge.getTargetNode().setDirectionForEdge(edge.targetEnd, false, PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_PORT)));
+//                                        edge.setSourcePort(PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT)));
+//                                        edge.setTargetPort(PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_PORT)));
                                         Node intermediatePointsNode = xmlHandler.getChildWithName(edgeElement, XmlConstant.TAG_NAME_INTERMEDIATE_POINTS);
                                         NodeList intermediatePointList = intermediatePointsNode.getChildNodes();
 
+                                        Vector<Point2D> intermediatePoints = new Vector<>();
                                         for(int k = 0 ; k<intermediatePointList.getLength(); k++){
                                             if(intermediatePointList.item(k).getNodeType()==Node.ELEMENT_NODE){
                                                 Element intermediatePointElement = (Element) intermediatePointList.item(k);
@@ -226,6 +228,7 @@ public class EdgeXmlManager implements IXmlManager {
                                                 intermediatePoints.add(point2D);
                                             }
                                         }
+                                        edge.setIntermediatePoints(intermediatePoints);
                                         fmmlxDiagram.getComm().sendCurrentPositions(fmmlxDiagram, edge);
                                         break;
                                     }
@@ -235,7 +238,6 @@ public class EdgeXmlManager implements IXmlManager {
                         }
                     }
                 }
-                edge.setIntermediatePoints(intermediatePoints);
 
             } else if (edge instanceof DelegationEdge){
                 String name_parent = ((DelegationEdge) edge).getParent().getName();
@@ -255,8 +257,8 @@ public class EdgeXmlManager implements IXmlManager {
                                     if(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE).equals(name_child) &&
                                             edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE).equals(name_parent) &&
                                             edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE).equals("delegation")){ //Edge Found
-                                        edge.setSourcePort(PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT)));
-                                        edge.setTargetPort(PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_PORT)));
+                                    	edge.getSourceNode().setDirectionForEdge(edge.sourceEnd, true, PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT)));
+                                    	edge.getTargetNode().setDirectionForEdge(edge.targetEnd, false, PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_PORT)));
                                         Node intermediatePointsNode = xmlHandler.getChildWithName(edgeElement, XmlConstant.TAG_NAME_INTERMEDIATE_POINTS);
                                         NodeList intermediatePointList = intermediatePointsNode.getChildNodes();
 
@@ -300,8 +302,8 @@ public class EdgeXmlManager implements IXmlManager {
                                             edgeElement.getAttribute(XmlConstant.ATTRIBUTE_OF).equals(ofName) &&
                                             edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE).equals(name_parent) &&
                                             edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE).equals("link")){ //Edge Found
-                                        edge.setSourcePort(PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT)));
-                                        edge.setTargetPort(PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_PORT)));
+                                    	edge.getSourceNode().setDirectionForEdge(edge.sourceEnd, true, PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT)));
+                                    	edge.getTargetNode().setDirectionForEdge(edge.targetEnd, false, PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_PORT)));
                                         Node intermediatePointsNode = xmlHandler.getChildWithName(edgeElement, XmlConstant.TAG_NAME_INTERMEDIATE_POINTS);
                                         NodeList intermediatePointList = intermediatePointsNode.getChildNodes();
 
@@ -343,8 +345,8 @@ public class EdgeXmlManager implements IXmlManager {
                                     if(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE).equals(name_child) &&
                                             edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE).equals(name_parent) &&
                                             edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE).equals("inheritance")){ //Edge Found
-                                        edge.setSourcePort(PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT)));
-                                        edge.setTargetPort(PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_PORT)));
+                                    	edge.getSourceNode().setDirectionForEdge(edge.sourceEnd, true, PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT)));
+                                    	edge.getTargetNode().setDirectionForEdge(edge.targetEnd, false, PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_PORT)));
                                         Node intermediatePointsNode = xmlHandler.getChildWithName(edgeElement, XmlConstant.TAG_NAME_INTERMEDIATE_POINTS);
                                         NodeList intermediatePointList = intermediatePointsNode.getChildNodes();
 

@@ -668,6 +668,7 @@ public class FmmlxDiagramCommunicator {
 			pointE[2] = new Value(0);
 			listOfPoints[listOfPoints.length-1] = new Value(pointE);
 		}
+
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(e.id), 

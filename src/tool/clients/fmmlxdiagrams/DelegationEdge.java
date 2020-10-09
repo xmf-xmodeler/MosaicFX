@@ -54,16 +54,6 @@ public class DelegationEdge extends Edge {
 	}
 
 	@Override
-	public void setSourcePort(PortRegion valueOf) {
-		super.sourcePortRegion = valueOf;
-	}
-
-	@Override
-	public void setTargetPort(PortRegion valueOf) {
-		super.targetPortRegion = valueOf;
-	}
-
-	@Override
 	public HeadStyle getTargetDecoration() {
 		return HeadStyle.NO_ARROW;
 	}
