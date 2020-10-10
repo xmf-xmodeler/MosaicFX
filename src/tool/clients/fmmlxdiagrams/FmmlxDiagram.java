@@ -242,6 +242,7 @@ public class FmmlxDiagram{
 		if(loadProcess){
 			alignAllComponents(this);
 			triggerOverallReLayout();
+			loadProcess = false;
 		}
 		redraw();
 		newFmmlxPalette.update();

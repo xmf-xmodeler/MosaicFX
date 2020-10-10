@@ -34,7 +34,7 @@ public class Deserializer {
     		ObjectXmlManager objectXmlManager = new ObjectXmlManager();
             objectXmlManager.alignObjects(fmmlxDiagram);
             EdgeXmlManager edgeXmlManager = new EdgeXmlManager();
-            edgeXmlManager.alignEdges(fmmlxDiagram);
+            edgeXmlManager.alignEdges2(fmmlxDiagram);
             LabelXmlManager labelXmlManager = new LabelXmlManager();
             labelXmlManager.alignLabel(fmmlxDiagram);
     	}
