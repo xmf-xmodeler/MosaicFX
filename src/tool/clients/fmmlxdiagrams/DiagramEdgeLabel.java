@@ -26,9 +26,9 @@ public class DiagramEdgeLabel implements CanvasElement {
 	private transient double mouseMoveOffsetY;
 //	private transient double lastValidRelativeX;
 //	private transient double lastValidRelativeY;
-
+	private transient boolean highlighted = false;
 	private final Color bgColor;
-	private final Color fontColor;
+	private Color fontColor;
 	private final static int MARGIN = 1;
 
 	public DiagramEdgeLabel(Edge owner, int localID, Runnable action, ContextMenu menu, Vector<FmmlxObject> anchors, String value, 
@@ -54,7 +54,7 @@ public class DiagramEdgeLabel implements CanvasElement {
 		g.setFill(bgColor);
 		g.fillRect(this.getReferenceX() + relativeX, this.getReferenceY() + relativeY, this.width, this.height);
 		
-		g.setFill(fontColor);
+		g.setFill(highlighted ? new Color(1.,0.,0.,1.):fontColor);
 		g.fillText(this.text, this.getReferenceX() + relativeX + MARGIN, this.getReferenceY() + relativeY + height - MARGIN-2);
 		if(anchors.size()>=2) {
 			if(anchors.firstElement().getCenterX() <= anchors.elementAt(1).getCenterX()) {		
@@ -64,7 +64,13 @@ public class DiagramEdgeLabel implements CanvasElement {
 				g.fillPolygon(new double[] { this.getReferenceX()+relativeX, this.getReferenceX()+relativeX - size+5, this.getReferenceX()+relativeX },
 						      new double[] { this.getReferenceY()+relativeY, this.getReferenceY()+relativeY + size /2, this.getReferenceY()+relativeY+ size}, 3);
 			}
+		if (highlighted) {
+			g.setStroke(Color.RED);
+			g.strokeLine(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX(), anchors.get(0).getPointForEdge(owner.sourceEnd, true).getY(), this.getReferenceX() + relativeX, this.getReferenceY() + relativeY + height - 4);
+			g.strokeLine(anchors.get(1).getPointForEdge(owner.targetEnd, false).getX(), anchors.get(1).getPointForEdge(owner.targetEnd, false).getY(), this.getReferenceX() + relativeX, this.getReferenceY() + relativeY + height - 4);
 		}
+		}
+		
 	}
 
 	public Edge getOwner() {
@@ -118,10 +124,14 @@ public class DiagramEdgeLabel implements CanvasElement {
 	public void moveTo(double x, double y, FmmlxDiagram diagram) {
 		this.relativeX = x;// - getReferenceX();
 		this.relativeY = y;// - getReferenceY();
+		
 	}
+	
 
 	@Override
-	public void highlightElementAt(Point2D p) {} // do nothing
+	public void highlightElementAt(Point2D p) {
+		this.highlighted=true;
+	}
 
 	@Override
 	public boolean isHit(double mouseX, double mouseY) {
@@ -155,7 +165,12 @@ public class DiagramEdgeLabel implements CanvasElement {
 			new Value((float)relativeX),
 			new Value((float)relativeY)};
 	}
+	
+
 
 	@Override
-	public void unHighlight() {}
+	public void unHighlight() {
+	this.highlighted=false;	
+	}
+
 }
