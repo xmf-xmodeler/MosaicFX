@@ -252,22 +252,6 @@ public class FmmlxDiagram{
 		if(issues.size() > 0) {
 			issues.firstElement().performResolveAction(this);
 		}
-
-//		if(nullPortRegionExists()){
-//			System.out.println("null exists");
-//			EdgeXmlManager edgeXmlManager = new EdgeXmlManager();
-//			edgeXmlManager.alignEdges(this);
-//		}
-	}
-
-	private boolean nullPortRegionExists() {
-		Vector<Edge> edges = getEdges();
-		for (Edge e : edges){
-			if(e.targetPortRegion==null || e.sourcePortRegion==null){
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private void alignAllComponents(FmmlxDiagram diagram) {

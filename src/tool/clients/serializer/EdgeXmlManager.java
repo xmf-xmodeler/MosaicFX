@@ -31,7 +31,6 @@ public class EdgeXmlManager implements IXmlManager {
         FmmlxObject targetNode = fmmlxAssociation.getTargetNode();
         PortRegion sourcePort = fmmlxAssociation.getSourcePort();
         PortRegion targetPort = fmmlxAssociation.getTargetPort();
-        System.out.println(name + " : source "+sourcePort +" , target : "+targetPort);
         String projectPath = fmmlxDiagram.getPackagePath();
         String owner = fmmlxDiagram.getDiagramLabel();
         Multiplicity multiplicityStartToEnd = fmmlxAssociation.getMultiplicityStartToEnd();
