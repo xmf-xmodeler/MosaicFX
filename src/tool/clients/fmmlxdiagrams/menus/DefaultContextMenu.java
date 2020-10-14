@@ -93,9 +93,9 @@ public class DefaultContextMenu extends ContextMenu {
 			openFindSendersOfMessages.setOnAction(e -> actions.openFindSendersDialog());
 			getItems().addAll(openFindSendersOfMessages);
 
-			MenuItem testReAlign = new MenuItem("test reAlign");
-			testReAlign.setOnAction(a -> actions.testReAlign());
-			getItems().addAll(testSave, testLoad, testReAlign);
+			MenuItem getPortRegion = new MenuItem("test get PortRegion");
+			getPortRegion.setOnAction(a -> actions.getPortRegion());
+			getItems().addAll(testSave, testLoad, getPortRegion);
 
 		}
 	}

@@ -27,6 +27,7 @@ import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
 import tool.clients.serializer.Deserializer;
 import tool.clients.serializer.DiagramXmlManager;
+import tool.clients.serializer.EdgeXmlManager;
 import tool.clients.serializer.Serializer;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -244,12 +245,29 @@ public class FmmlxDiagram{
 			triggerOverallReLayout();
 			loadProcess = false;
 		}
+
 		redraw();
 		newFmmlxPalette.update();
 		
 		if(issues.size() > 0) {
 			issues.firstElement().performResolveAction(this);
 		}
+
+//		if(nullPortRegionExists()){
+//			System.out.println("null exists");
+//			EdgeXmlManager edgeXmlManager = new EdgeXmlManager();
+//			edgeXmlManager.alignEdges(this);
+//		}
+	}
+
+	private boolean nullPortRegionExists() {
+		Vector<Edge> edges = getEdges();
+		for (Edge e : edges){
+			if(e.targetPortRegion==null || e.sourcePortRegion==null){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void alignAllComponents(FmmlxDiagram diagram) {
