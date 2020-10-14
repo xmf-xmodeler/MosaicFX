@@ -23,15 +23,6 @@ public class DelegationEdge extends Edge {
 		return super.getTargetNode();
 	}
 
-	public PortRegion getSourcePort(){
-		return super.getSourcePortRegion();
-	}
-
-	public PortRegion getTargetPort(){
-		return super.getTargetPortRegion();
-	}
-
-
 	protected void checkVisibilityMode() {visible = true;}
 	
 	@Override

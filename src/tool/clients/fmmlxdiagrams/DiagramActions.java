@@ -996,7 +996,7 @@ public class DiagramActions {
 			Vector<Edge> edges = diagram.getEdges();
 
 			for(Edge e : edges){
-				System.out.println(e.id+" | "+e.sourcePortRegion+", "+e.targetPortRegion);
+				System.out.println(e.id+" | "+e.getSourcePortRegion()+", "+e.getTargetPortRegion());
 			}
 		});
 	}

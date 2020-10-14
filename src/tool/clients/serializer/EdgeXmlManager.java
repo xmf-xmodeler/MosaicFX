@@ -22,15 +22,15 @@ public class EdgeXmlManager implements IXmlManager {
     public Node createAssociationXmlNode(FmmlxDiagram fmmlxDiagram, FmmlxAssociation fmmlxAssociation) throws TransformerException {
 
         String name = fmmlxAssociation.getName();
-        String type = "association";
+        String type = XmlConstant.EdgeType.ASSOCIATION;
         Vector<Point2D> intermediatePoints = fmmlxAssociation.getIntermediatePoints();
         String parentAssociationName = fmmlxAssociation.getParentAssociationName();
         int levelStartToEnd = fmmlxAssociation.getLevelStartToEnd();
         int levelEndToStart = fmmlxAssociation.getLevelEndToStart();
         FmmlxObject sourceNode = fmmlxAssociation.getSourceNode();
         FmmlxObject targetNode = fmmlxAssociation.getTargetNode();
-        PortRegion sourcePort = fmmlxAssociation.getSourcePort();
-        PortRegion targetPort = fmmlxAssociation.getTargetPort();
+        PortRegion sourcePort = fmmlxAssociation.getSourcePortRegion();
+        PortRegion targetPort = fmmlxAssociation.getTargetPortRegion();
         String projectPath = fmmlxDiagram.getPackagePath();
         String owner = fmmlxDiagram.getDiagramLabel();
         Multiplicity multiplicityStartToEnd = fmmlxAssociation.getMultiplicityStartToEnd();
@@ -65,12 +65,12 @@ public class EdgeXmlManager implements IXmlManager {
 
     public Node createDelegationXmlNode(FmmlxDiagram fmmlxDiagram, DelegationEdge delegationEdge) throws TransformerException {
 
-        String type = "delegation";
+        String type = XmlConstant.EdgeType.DELEGATION;
         Vector<Point2D> intermediatePoints = delegationEdge.getIntermediatePoints();
         FmmlxObject childNode = delegationEdge.getChild();
         FmmlxObject parentNode = delegationEdge.getParent();
-        PortRegion sourcePort = delegationEdge.getSourcePort();
-        PortRegion targetPort = delegationEdge.getTargetPort();
+        PortRegion sourcePort = delegationEdge.getSourcePortRegion();
+        PortRegion targetPort = delegationEdge.getTargetPortRegion();
         String projectPath = fmmlxDiagram.getPackagePath();
         String owner = fmmlxDiagram.getDiagramLabel();
 
@@ -98,12 +98,12 @@ public class EdgeXmlManager implements IXmlManager {
 
     public Node createInheritanceXmlNode(FmmlxDiagram fmmlxDiagram, InheritanceEdge inheritanceEdge) throws TransformerException {
 
-        String type = "inheritance";
+        String type = XmlConstant.EdgeType.INHERITANCE;
         Vector<Point2D> intermediatePoints = inheritanceEdge.getIntermediatePoints();
         FmmlxObject childNode = inheritanceEdge.getChild();
         FmmlxObject parentNode = inheritanceEdge.getParent();
-        PortRegion sourcePort = inheritanceEdge.getSourcePort();
-        PortRegion targetPort = inheritanceEdge.getTargetPort();
+        PortRegion sourcePort = inheritanceEdge.getSourcePortRegion();
+        PortRegion targetPort = inheritanceEdge.getTargetPortRegion();
         String projectPath = fmmlxDiagram.getPackagePath();
         String owner = fmmlxDiagram.getDiagramLabel();
 
@@ -130,13 +130,13 @@ public class EdgeXmlManager implements IXmlManager {
 
     public Node createLinkXmlNode(FmmlxDiagram fmmlxDiagram, FmmlxLink fmmlxLink) {
 
-        String type = "link";
+        String type = XmlConstant.EdgeType.LINK;
         String ofName = fmmlxLink.getOfName();
         Vector<Point2D> intermediatePoints = fmmlxLink.getIntermediatePoints();
         FmmlxObject childNode = fmmlxLink.getStartNode();
         FmmlxObject parentNode = fmmlxLink.getEndNode();
-        PortRegion sourcePort = fmmlxLink.getSourcePort();
-        PortRegion targetPort = fmmlxLink.getTargetPort();
+        PortRegion sourcePort = fmmlxLink.getSourcePortRegion();
+        PortRegion targetPort = fmmlxLink.getTargetPortRegion();
         String projectPath = fmmlxDiagram.getPackagePath();
         String owner = fmmlxDiagram.getDiagramLabel();
 

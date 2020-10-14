@@ -31,14 +31,6 @@ public class FmmlxLink extends Edge {
 		return targetNode;
 	}
 
-	public PortRegion getSourcePort(){
-		return super.getSourcePortRegion();
-	}
-
-	public PortRegion getTargetPort(){
-		return super.getTargetPortRegion();
-	}
-
 	public int getOfId() {
 		return ofId;
 	}
