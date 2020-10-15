@@ -27,6 +27,7 @@ import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
 import tool.clients.serializer.Deserializer;
 import tool.clients.serializer.DiagramXmlManager;
+import tool.clients.serializer.EdgeXmlManager;
 import tool.clients.serializer.Serializer;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -242,7 +243,9 @@ public class FmmlxDiagram{
 		if(loadProcess){
 			alignAllComponents(this);
 			triggerOverallReLayout();
+			loadProcess = false;
 		}
+
 		redraw();
 		newFmmlxPalette.update();
 		

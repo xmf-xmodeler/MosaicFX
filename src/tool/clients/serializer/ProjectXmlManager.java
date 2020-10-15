@@ -94,7 +94,6 @@ public class ProjectXmlManager implements IXmlManager {
 
     public Node createProjectNode(FmmlxDiagram diagram) {
         Element project = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_PROJECT);
-        System.out.println(TAG+" "+"packagepath: "+diagram.getPackagePath());
         project.setAttribute(XmlConstant.ATTRIBUTE_NAME, diagram.getPackagePath());
         return project;
     }

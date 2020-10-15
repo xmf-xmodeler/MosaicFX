@@ -23,14 +23,6 @@ public class InheritanceEdge extends Edge {
 		return super.getTargetNode();
 	}
 
-	public PortRegion getSourcePort(){
-		return super.getSourcePortRegion();
-	}
-
-	public PortRegion getTargetPort(){
-		return super.getTargetPortRegion();
-	}
-
 	protected void checkVisibilityMode() {visible = targetNode.getPointForEdge(targetEnd, false).distance(sourceNode.getPointForEdge(sourceEnd, true))<1000;}
 	
 	@Override

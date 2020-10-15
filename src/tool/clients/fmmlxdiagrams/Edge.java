@@ -109,12 +109,12 @@ public abstract class Edge implements CanvasElement {
 		return targetNode;
 	}
 
-	protected PortRegion getSourcePortRegion() {
-		return sourcePortRegion;
+	public PortRegion getSourcePortRegion() {
+		return sourceNode.getDirectionForEdge(this.sourceEnd, true);
 	}
 
-	protected PortRegion getTargetPortRegion() {
-		return targetPortRegion;
+	public PortRegion getTargetPortRegion() {
+		return targetNode.getDirectionForEdge(this.targetEnd, false);
 	}
 
 	private PortRegion determineInitialPort(FmmlxObject node, Point2D nextPoint, PortRegion defaultRegion) {

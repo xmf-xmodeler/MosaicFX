@@ -93,4 +93,10 @@ public class XmlConstant {
 	public static final String ATTRIBUTE_TEXT = "text";
 
 
+    public class EdgeType {
+        public static final String ASSOCIATION = "association";
+        public static final String DELEGATION = "delegation";
+        public static final String INHERITANCE = "inheritance";
+        public static final String LINK = "link";
+    }
 }

@@ -988,16 +988,16 @@ public class DiagramActions {
 				e.printStackTrace();
 			}
 		});
-		diagram.loadProcess = false;
 	}
 
-	public void testReAlign() {
+	public void getPortRegion() {
 		Platform.runLater(()-> {
 
-			Deserializer deserializer = new Deserializer();
-			deserializer.alignCoordinate(diagram);
-			diagram.triggerOverallReLayout();
-			diagram.redraw();
+			Vector<Edge> edges = diagram.getEdges();
+
+			for(Edge e : edges){
+				System.out.println(e.id+" | "+e.getSourcePortRegion()+", "+e.getTargetPortRegion());
+			}
 		});
 	}
 }
