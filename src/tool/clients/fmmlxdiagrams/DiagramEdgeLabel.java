@@ -64,14 +64,54 @@ public class DiagramEdgeLabel implements CanvasElement {
 				g.fillPolygon(new double[] { this.getReferenceX()+relativeX, this.getReferenceX()+relativeX - size+5, this.getReferenceX()+relativeX },
 						      new double[] { this.getReferenceY()+relativeY, this.getReferenceY()+relativeY + size /2, this.getReferenceY()+relativeY+ size}, 3);
 			}
-		if (highlighted) {
-			g.setStroke(Color.RED);
-			g.strokeLine(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX(), anchors.get(0).getPointForEdge(owner.sourceEnd, true).getY(), this.getReferenceX() + relativeX, this.getReferenceY() + relativeY + height - 4);
-			g.strokeLine(anchors.get(1).getPointForEdge(owner.targetEnd, false).getX(), anchors.get(1).getPointForEdge(owner.targetEnd, false).getY(), this.getReferenceX() + relativeX, this.getReferenceY() + relativeY + height - 4);
+		if (highlighted) { 
+			//This will highlight the edge label when you hover over it and lines from the label to the ports from the associations are drawn. 
+			g.setStroke(Color.TOMATO);
+			if(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX()< anchors.get(1).getPointForEdge(owner.targetEnd,true).getX()) {
+				if(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX() < relativeX+this.getReferenceX() ) {
+					g.strokeLine(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX(), anchors.get(0).getPointForEdge(owner.sourceEnd, true).getY(), this.getReferenceX()+relativeX-2*MARGIN, this.getReferenceY()+relativeY+0.5*height);
+				}
+				if(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX() > relativeX+this.getReferenceX() ) {
+					g.strokeLine(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX(), anchors.get(0).getPointForEdge(owner.sourceEnd, true).getY(), this.getReferenceX()+relativeX+18*MARGIN+width, this.getReferenceY()+relativeY+0.5*height);
+				}
+				if(anchors.get(1).getPointForEdge(owner.targetEnd, true).getX() < relativeX+this.getReferenceX() ) {
+					g.strokeLine(anchors.get(1).getPointForEdge(owner.targetEnd, true).getX(), anchors.get(1).getPointForEdge(owner.targetEnd, true).getY(), this.getReferenceX()+relativeX-2*MARGIN, this.getReferenceY()+relativeY+0.5*height);
+				}
+				if(anchors.get(1).getPointForEdge(owner.targetEnd, true).getX() > relativeX+this.getReferenceX()) {
+					g.strokeLine(anchors.get(1).getPointForEdge(owner.targetEnd, true).getX(), anchors.get(1).getPointForEdge(owner.targetEnd, true).getY(), this.getReferenceX()+relativeX+18*MARGIN+width, this.getReferenceY()+relativeY+0.5*height);
+				}
+			}else if(anchors.get(0).getId()==anchors.get(1).getId()) {
+				if(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX() < relativeX+this.getReferenceX() ) {
+					g.strokeLine(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX(), anchors.get(0).getPointForEdge(owner.sourceEnd, true).getY(), this.getReferenceX()+relativeX-2*MARGIN, this.getReferenceY()+relativeY+0.5*height);
+				}
+				if(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX() > relativeX+this.getReferenceX() ) {
+					g.strokeLine(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX(), anchors.get(0).getPointForEdge(owner.sourceEnd, true).getY(), this.getReferenceX()+relativeX+18*MARGIN+width, this.getReferenceY()+relativeY+0.5*height);
+				}
+				if(anchors.get(1).getPointForEdge(owner.targetEnd, true).getX() > relativeX+this.getReferenceX() ) {
+					g.strokeLine(anchors.get(1).getPointForEdge(owner.targetEnd, true).getX(), anchors.get(1).getPointForEdge(owner.targetEnd, true).getY(), this.getReferenceX()+relativeX+18*MARGIN+width, this.getReferenceY()+relativeY+0.5*height);
+				}
+				if(anchors.get(1).getPointForEdge(owner.targetEnd, true).getX() < relativeX+this.getReferenceX() ) {
+					g.strokeLine(anchors.get(1).getPointForEdge(owner.targetEnd, true).getX(), anchors.get(1).getPointForEdge(owner.targetEnd, true).getY(), this.getReferenceX()+relativeX-2*MARGIN, this.getReferenceY()+relativeY+0.5*height);
+				}
+			}else {
+				if(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX() < relativeX+this.getReferenceX() ) {
+					g.strokeLine(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX(), anchors.get(0).getPointForEdge(owner.sourceEnd, true).getY(), this.getReferenceX()+relativeX-18*MARGIN, this.getReferenceY()+relativeY+0.5*height);
+				}
+				if(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX() > relativeX+this.getReferenceX() ) {
+					g.strokeLine(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX(), anchors.get(0).getPointForEdge(owner.sourceEnd, true).getY(), this.getReferenceX()+relativeX+width+2*MARGIN, this.getReferenceY()+relativeY+0.5*height);
+				}
+				if(anchors.get(1).getPointForEdge(owner.targetEnd, true).getX() > relativeX+this.getReferenceX() ) {
+					g.strokeLine(anchors.get(1).getPointForEdge(owner.targetEnd, true).getX(), anchors.get(1).getPointForEdge(owner.targetEnd, true).getY(), this.getReferenceX()+relativeX+2*MARGIN+width, this.getReferenceY()+relativeY+0.5*height);
+				}
+				if(anchors.get(1).getPointForEdge(owner.targetEnd, true).getX() < relativeX+this.getReferenceX() ) {
+					g.strokeLine(anchors.get(1).getPointForEdge(owner.targetEnd, true).getX(), anchors.get(1).getPointForEdge(owner.targetEnd, true).getY(), this.getReferenceX()+relativeX-18*MARGIN, this.getReferenceY()+relativeY+0.5*height);
+				}
+			}
 		}
 		}
-		
 	}
+		
+	
 
 	public Edge getOwner() {
 		return owner;
