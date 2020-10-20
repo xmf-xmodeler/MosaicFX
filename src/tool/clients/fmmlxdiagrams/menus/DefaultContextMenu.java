@@ -92,10 +92,7 @@ public class DefaultContextMenu extends ContextMenu {
 			MenuItem openFindSendersOfMessages = new MenuItem("Search for Senders");
 			openFindSendersOfMessages.setOnAction(e -> actions.openFindSendersDialog());
 			getItems().addAll(openFindSendersOfMessages);
-
-			MenuItem getPortRegion = new MenuItem("test get PortRegion");
-			getPortRegion.setOnAction(a -> actions.getPortRegion());
-			getItems().addAll(testSave, testLoad, getPortRegion);
+			getItems().addAll(testSave, testLoad);
 
 		}
 	}

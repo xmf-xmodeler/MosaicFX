@@ -989,15 +989,4 @@ public class DiagramActions {
 			}
 		});
 	}
-
-	public void getPortRegion() {
-		Platform.runLater(()-> {
-
-			Vector<Edge> edges = diagram.getEdges();
-
-			for(Edge e : edges){
-				System.out.println(e.id+" | "+e.getSourcePortRegion()+", "+e.getTargetPortRegion());
-			}
-		});
-	}
 }
