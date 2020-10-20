@@ -61,7 +61,7 @@ class XmlHandlerTest {
     }
 
     @Test
-    void removeProjectsNodeTest() throws TransformerException, ParserConfigurationException {
+    void removeProjectsNodeTest() throws TransformerException {
         XmlHandler xmlHandler = new XmlHandler();
         assertNotNull(xmlHandler.getProjectsNode());
         xmlHandler.replaceNode(xmlHandler.getProjectsNode(), "Hallo");

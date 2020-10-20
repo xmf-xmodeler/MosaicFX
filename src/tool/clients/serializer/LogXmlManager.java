@@ -385,7 +385,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     boolean sourceVisibleFromTarget= Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_VISIBLE));
                     boolean targetVisibleFromSource = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_VISIBLE));
 
-                    boolean isSymmetric = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_SIMETRIC));
+                    boolean isSymmetric = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_SYMMETRIC));
                     boolean isTransitive = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_TRANSITIVE));
 
                     diagram.getComm().addAssociation(diagram, className1, className2,

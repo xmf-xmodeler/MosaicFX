@@ -80,10 +80,6 @@ public class XmlHandler {
         return xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_LOGS);
     }
 
-    protected Node createXmlElement(String name){
-        return xmlHelper.createXmlElement(name);
-    }
-
     protected void addLogElement(Node logs, Node log)
             throws TransformerException {
         xmlHelper.addXmlElement(logs, log);
@@ -131,12 +127,26 @@ public class XmlHandler {
             throws TransformerException {
         xmlHelper.addXmlElement(diagram, edges);
     }
-    
 
 	public void addDiagramLabelsElement(Element diagram, Node labels) throws TransformerException {
 		xmlHelper.addXmlElement(diagram, labels);
-		
 	}
+
+    public void addParamElement(Element operation, Node paramNode) throws TransformerException {
+        xmlHelper.addXmlElement(operation, paramNode);
+    }
+
+    public void addBodyElement(Element operation, Element body) throws TransformerException {
+        xmlHelper.addXmlElement(operation, body);
+    }
+
+    public void addAttributesElement(Element object, Node attributes) throws TransformerException {
+        xmlHelper.addXmlElement(object, attributes);
+    }
+
+    public void addOperationElement(Element operations, Element newOperation) throws TransformerException {
+        xmlHelper.addXmlElement(operations, newOperation);
+    }
 
     public void addDiagramPreferencesElement(Element diagram, Node preferences) throws TransformerException {
         xmlHelper.addXmlElement(diagram, preferences);
@@ -146,18 +156,15 @@ public class XmlHandler {
         xmlHelper.addXmlElement(object, operations);
     }
 
-    public void replaceNode(Node projectsNode, String hallo) throws TransformerException {
-        Node newNode = xmlHelper.createXmlElement(hallo);
-        xmlHelper.getRootNode().replaceChild(newNode, projectsNode);
+    public void addIntermediatePointsElement(Element edge, Node intermediatePointsNode) throws TransformerException {
+        xmlHelper.addXmlElement(edge, intermediatePointsNode);
+    }
 
-        xmlHelper.getRootNode().normalize();
-
-        Transformer transformer = TransformerFactory.newInstance().newTransformer();
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-
-        StreamResult result = new StreamResult(new File(XmlConstant.USER_XML_FILE_NAME));
-        DOMSource source = new DOMSource(document);
-        transformer.transform(source, result);
+    public void removeAllProject() throws TransformerException {
+        xmlHelper.removeAllChildren(getProjectsNode());
+        while(getProjectsNode().hasChildNodes()){
+            getProjectsNode().removeChild(getProjectsNode().getFirstChild());
+        }
     }
 
     public void removeDiagram(FmmlxDiagram diagram) throws TransformerException {
@@ -186,6 +193,29 @@ public class XmlHandler {
         xmlHelper.removeAllChildren(getLogsNode());
     }
 
+
+    protected Node createXmlElement(String name){
+        return xmlHelper.createXmlElement(name);
+    }
+
+    public void replaceNode(Node projectsNode, String newNodeName) throws TransformerException {
+        Node newNode = xmlHelper.createXmlElement(newNodeName);
+        xmlHelper.getRootNode().replaceChild(newNode, projectsNode);
+
+        xmlHelper.getRootNode().normalize();
+
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+        StreamResult result = new StreamResult(new File(XmlConstant.USER_XML_FILE_NAME));
+        DOMSource source = new DOMSource(document);
+        transformer.transform(source, result);
+    }
+
+    public Node getChildWithName(Node diagramNone, String child) {
+        return xmlHelper.getNodeByTag(diagramNone, child);
+    }
+
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
@@ -208,37 +238,6 @@ public class XmlHandler {
             e.printStackTrace();
         }
         return stringBuilder.toString();
-    }
-
-    public void addIntermediatePointsElement(Element edge, Node intermediatePointsNode) throws TransformerException {
-        xmlHelper.addXmlElement(edge, intermediatePointsNode);
-    }
-
-    public void removeAllProject() throws TransformerException {
-        xmlHelper.removeAllChildren(getProjectsNode());
-        while(getProjectsNode().hasChildNodes()){
-            getProjectsNode().removeChild(getProjectsNode().getFirstChild());
-        }
-    }
-
-    public void addParamElement(Element operation, Node paramNode) throws TransformerException {
-        xmlHelper.addXmlElement(operation, paramNode);
-    }
-
-    public void addBodyElement(Element operation, Element body) throws TransformerException {
-        xmlHelper.addXmlElement(operation, body);
-    }
-
-    public void addAttributesElement(Element object, Node attributes) throws TransformerException {
-        xmlHelper.addXmlElement(object, attributes);
-    }
-
-    public void addOperationElement(Element operations, Element newOperation) throws TransformerException {
-        xmlHelper.addXmlElement(operations, newOperation);
-    }
-
-    public Node getChildWithName(Node diagramNone, String child) {
-        return xmlHelper.getNodeByTag(diagramNone, child);
     }
 
 

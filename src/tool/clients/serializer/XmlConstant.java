@@ -38,10 +38,8 @@ public class XmlConstant {
     public static final String ATTRIBUTE_COORDINATE_X = "x";
     public static final String ATTRIBUTE_COORDINATE_Y = "y";
     public static final String ATTRIBUTE_IS_MONITORED = "is_monitored";
-
     public static final String ATTRIBUTE_LEVEL = "level";
     public static final String ATTRIBUTE_PARENTS = "parents";
-
     public static final String ATTRIBUTE_TYPE = "type";
     public static final String ATTRIBUTE_LEVEL_START_TO_END = "level_start_to_end";
     public static final String ATTRIBUTE_LEVEL_END_TO_START = "level_end_to_start";
@@ -53,10 +51,8 @@ public class XmlConstant {
     public static final String ATTRIBUTE_PARENT_ASSOCIATION = "parent_association";
     public static final String ATTRIBUTE_MULTIPLICITY_START_TO_END = "multiplicity_start_to_end";
     public static final String ATTRIBUTE_MULTIPLICITY_END_TO_START = "multiplicity_end_to_start";
-
     public static final String ATTRIBUTE_DIAGRAM_OWNER = "diagram_owner";
     public static final String ATTRIBUTE_MULTIPLICITY = "multiplicity";
-
     public static final String ATTRIBUTE_IS_ABSTRACT = "abstract";
     public static final String ATTRIBUTE_BODY = "body";
     public static final String ATTRIBUTE_CLASS = "class";
@@ -73,16 +69,14 @@ public class XmlConstant {
     public static final String ATTRIBUTE_SLOT_NAME = "slotName";
     public static final String ATTRIBUTE_VALUE_TOBE_PARSED = "valueToBeParsed";
     public static final String ATTRIBUTE_FW_NAME = "fwName";
-
     public static final String ATTRIBUTE_REVERSE_NAME = "reverseName";
-
     public static final String ATTRIBUTE_1_MULTIPLICITY = "multiplicity1";
     public static final String ATTRIBUTE_2_MULTIPLICITY = "multiplicity2";
     public static final String ATTRIBUTE_INST_LEVEL_1 = "instLevel1";
     public static final String ATTRIBUTE_INST_LEVEL_2 = "instLevel2";
     public static final String ATTRIBUTE_SOURCE_VISIBLE = "sourceVisibleFromTarget";
     public static final String ATTRIBUTE_TARGET_VISIBLE = "targetVisibleFromSource";
-    public static final String ATTRIBUTE_IS_SIMETRIC = "isSymmetric";
+    public static final String ATTRIBUTE_IS_SYMMETRIC = "isSymmetric";
     public static final String ATTRIBUTE_IS_TRANSITIVE = "isTransitive";
     public static final String ATTRIBUTE_ACCESS_SOURCE_FROM_TARGET = "accessSourceFromTargetName";
     public static final String ATTRIBUTE_ACCESS_TARGET_FROM_SOURCE = "accessTargetFromSourceName";
