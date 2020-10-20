@@ -16,12 +16,12 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 
 	private final PropertyType propertyType = PropertyType.Association;
 	private String name;
-	private String reverseName;
+	private final String reverseName;
 	private String accessNameStartToEnd;
 	private String accessNameEndToStart;
 	private Integer levelStartToEnd;
 	private Integer levelEndToStart;
-	private Integer parentAssociationId;
+	private final Integer parentAssociationId;
 	private Multiplicity multiplicityStartToEnd;
 	private Multiplicity multiplicityEndToStart;
 	protected boolean sourceFromTargetVisible;
@@ -92,24 +92,24 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		return parent.getName();
 	}
 
-	private enum Anchor {CENTRE_MOVABLE, SOURCE_LEVEL, TARGET_LEVEL, SOURCE_MULTI, TARGET_MULTI,CENTRE_SELFASSOCIATION};
+	private enum Anchor {CENTRE_MOVABLE, SOURCE_LEVEL, TARGET_LEVEL, SOURCE_MULTI, TARGET_MULTI,CENTRE_SELFASSOCIATION}
 
 	@Override protected void layoutLabels() {
 		if( sourceNode == targetNode) {
-			createLabel(name, 0, Anchor.CENTRE_SELFASSOCIATION, showChangeFwNameDialog, 0, BLACK, TRANSPARENT);
+			createLabel(name, 0, Anchor.CENTRE_SELFASSOCIATION, showChangeFwNameDialog, BLACK, TRANSPARENT);
 		}else {
-		createLabel(name, 0, Anchor.CENTRE_MOVABLE, showChangeFwNameDialog, 0, BLACK, TRANSPARENT);
+		createLabel(name, 0, Anchor.CENTRE_MOVABLE, showChangeFwNameDialog, BLACK, TRANSPARENT);
 		}
 //		if(reverseName != null) 
 //	    createLabel(reverseName, 1, Anchor.CENTRE, showChangeRvNameDialog, -20, BLACK, TRANSPARENT);
-		createLabel(""+levelStartToEnd, 2, Anchor.TARGET_LEVEL, showChangeS2ELevelDialog, 0, WHITE, BLACK);
-		createLabel(""+levelEndToStart, 3, Anchor.SOURCE_LEVEL, showChangeE2SLevelDialog, 0, WHITE, BLACK);
-		createLabel(multiplicityStartToEnd.toString(), 4, Anchor.TARGET_MULTI, showChangeS2EMultDialog, 0, BLACK, TRANSPARENT);
-		createLabel(multiplicityEndToStart.toString(), 5, Anchor.SOURCE_MULTI, showChangeE2SMultDialog, 0, BLACK, TRANSPARENT);
+		createLabel(""+levelStartToEnd, 2, Anchor.TARGET_LEVEL, showChangeS2ELevelDialog, WHITE, BLACK);
+		createLabel(""+levelEndToStart, 3, Anchor.SOURCE_LEVEL, showChangeE2SLevelDialog, WHITE, BLACK);
+		createLabel(multiplicityStartToEnd.toString(), 4, Anchor.TARGET_MULTI, showChangeS2EMultDialog, BLACK, TRANSPARENT);
+		createLabel(multiplicityEndToStart.toString(), 5, Anchor.SOURCE_MULTI, showChangeE2SMultDialog, BLACK, TRANSPARENT);
 		layoutingFinishedSuccesfully = true;
 	}
 	
-	private void createLabel(String value, int localId, Anchor anchor, Runnable action, int yDiff, Color textColor, Color bgColor) {
+	private void createLabel(String value, int localId, Anchor anchor, Runnable action, Color textColor, Color bgColor) {
 		double w = FmmlxDiagram.calculateTextWidth(value);
 		double h = FmmlxDiagram.calculateTextHeight();
 		
@@ -252,9 +252,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		if(source==null || target == null) return false;
 		if (source.isInstanceOf(getSourceNode(), levelEndToStart) && target.isInstanceOf(getTargetNode(), levelStartToEnd))
 			return true;
-		if (target.isInstanceOf(getSourceNode(), levelEndToStart) && source.isInstanceOf(getTargetNode(), levelStartToEnd))
-			return true;
-		return false;
+		return target.isInstanceOf(getSourceNode(), levelEndToStart) && source.isInstanceOf(getTargetNode(), levelStartToEnd);
 	}
 
 	@Override
@@ -264,10 +262,10 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 
 	@Override
 	protected Double getLineDashes() {
-		return new Double(0);
+		return (double) 0;
 	}
 
-	private Runnable showChangeFwNameDialog = () -> { 
+	private final Runnable showChangeFwNameDialog = () -> {
 		TextInputDialog td = new TextInputDialog(name);
 		td.setHeaderText("Change Forward Association Name");
 		Optional<String> result = td.showAndWait();
@@ -277,7 +275,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		}
 	};
 	
-	private Runnable showChangeS2ELevelDialog = () -> {
+	private final Runnable showChangeS2ELevelDialog = () -> {
 		TextInputDialog td = new TextInputDialog(levelStartToEnd+"");
 		td.setHeaderText("Change Start to End Level");
 		Optional<String> result = td.showAndWait();
@@ -292,7 +290,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		}
 	};
 	
-	private Runnable showChangeS2ENameDialog = () -> { 
+	private final Runnable showChangeS2ENameDialog = () -> {
 		TextInputDialog td = new TextInputDialog(accessNameStartToEnd);
 		td.setHeaderText("Change Start to End Access Name");
 		Optional<String> result = td.showAndWait();
@@ -302,7 +300,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		}
 	};
 	
-	private Runnable showChangeS2EMultDialog = () -> {
+	private final Runnable showChangeS2EMultDialog = () -> {
 		MultiplicityDialog md = new MultiplicityDialog(multiplicityStartToEnd);
 		Optional<MultiplicityDialogResult> mr = md.showAndWait();
 		if(mr.isPresent()) {
@@ -311,7 +309,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		}
 	};
 	
-	private Runnable showChangeE2SLevelDialog = () -> {
+	private final Runnable showChangeE2SLevelDialog = () -> {
 		TextInputDialog td = new TextInputDialog(levelEndToStart+"");
 		td.setHeaderText("Change End to Start Level");
 		Optional<String> result = td.showAndWait();
@@ -326,7 +324,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		}
 	};
 	
-	private Runnable showChangeE2SNameDialog = () -> { 
+	private final Runnable showChangeE2SNameDialog = () -> {
 		TextInputDialog td = new TextInputDialog(accessNameEndToStart);
 		td.setHeaderText("Change End to Start Access Name");
 		Optional<String> result = td.showAndWait();
@@ -336,7 +334,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		}
 	};
 	
-	private Runnable showChangeE2SMultDialog = () -> {
+	private final Runnable showChangeE2SMultDialog = () -> {
 		MultiplicityDialog md = new MultiplicityDialog(multiplicityEndToStart);
 		Optional<MultiplicityDialogResult> mr = md.showAndWait();
 		if(mr.isPresent()) {

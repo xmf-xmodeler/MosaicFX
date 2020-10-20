@@ -89,7 +89,7 @@ public class NewFmmlxPalette {
 	
 	public TreeView<PaletteTool> initCustomTreeView() {
 
-		TreeView<PaletteTool> treeView = new TreeView<PaletteTool>();
+		TreeView<PaletteTool> treeView = new TreeView<>();
 		
 		treeView.setCellFactory(param -> new TreeCell<PaletteTool>() {
 			protected void updateItem(PaletteTool item, boolean empty) {
@@ -111,14 +111,12 @@ public class NewFmmlxPalette {
 					if (!item.getIcon().equals("")) {
 						ImageView imageView = new ImageView(new javafx.scene.image.Image(new File(item.getIcon()).toURI().toString()));
 						setGraphic(imageView);
-						setBorder(new Border(new BorderStroke(null, null, null, null,null)));
-						setBackground(new Background(new BackgroundFill(null, null, null)));
 					} else {
 						setGraphic(null);
-						setBorder(new Border(new BorderStroke(null, null, null, null,null)));
-						setBackground(new Background(new BackgroundFill(null, null, null)));
-					}	
-					
+					}
+					setBorder(new Border(new BorderStroke(null, null, null, null,null)));
+					setBackground(new Background(new BackgroundFill(null, null, null)));
+
 					if(item.getLevel()==1000) {
 						setText(item.getLabel());
 						if(item.getId().equals("metaClass")) {
@@ -149,28 +147,20 @@ public class NewFmmlxPalette {
 					}
 					
 				}
-			};
+			}
 		});
 		
-		treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<PaletteTool>>() {
-		
+		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
-	        @Override
-	        public void changed(
-	        		ObservableValue<? extends TreeItem<PaletteTool>> observable, 
-	        		TreeItem<PaletteTool> oldValue,
-	        		TreeItem<PaletteTool> newValue) {
-	        	
-	        	if(newValue == null) return;
-	        
-	            if(newValue.getChildren().isEmpty()) {
-	            	TreeItem<PaletteTool> parent = newValue.getParent();
-	            	if(parent instanceof PaletteGroup) {
-	            		newValue.getValue().widgetSelected();
-	            	}
-	            }
-	        }
-		  });
+			if(newValue == null) return;
+
+			if(newValue.getChildren().isEmpty()) {
+				TreeItem<PaletteTool> parent = newValue.getParent();
+				if(parent instanceof PaletteGroup) {
+					newValue.getValue().widgetSelected();
+				}
+			}
+		});
 		return treeView;
 	}
 
@@ -178,7 +168,7 @@ public class NewFmmlxPalette {
 
 		for (Entry<String, PaletteGroup> stringPaletteGroupEntry : paletteGroups.entrySet()) {
 			@SuppressWarnings("rawtypes")
-			Entry pair = (Entry) stringPaletteGroupEntry;
+			Entry pair = stringPaletteGroupEntry;
 			((PaletteGroup) pair.getValue()).clearTreeItem();
 			((PaletteGroup) pair.getValue()).clearTool();
 		}

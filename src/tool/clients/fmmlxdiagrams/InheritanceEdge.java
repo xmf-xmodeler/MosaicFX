@@ -15,14 +15,6 @@ public class InheritanceEdge extends Edge {
 				diagram);
 	}
 
-	public FmmlxObject getChild(){
-		return super.getSourceNode();
-	}
-
-	public FmmlxObject getParent(){
-		return super.getTargetNode();
-	}
-
 	protected void checkVisibilityMode() {visible = targetNode.getPointForEdge(targetEnd, false).distance(sourceNode.getPointForEdge(sourceEnd, true))<1000;}
 	
 	@Override

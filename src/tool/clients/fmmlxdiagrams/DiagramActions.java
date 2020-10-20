@@ -146,8 +146,8 @@ public class DiagramActions {
 						int y = (int) e.getY();
 
 						if (x > 0 && y > 0) {
-							diagram.getComm().addNewInstance(diagram, aidResult.getOfName(), aidResult.getName(), aidResult.getLevel(),
-									aidResult.getParentNames(), false, x, y);
+							diagram.getComm().addNewInstance(diagram, aidResult.getOfName(), aidResult.getName(),
+                                    aidResult.getParentNames(), false, x, y);
 
 							canvas.setCursor(Cursor.DEFAULT);
 							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
@@ -175,8 +175,8 @@ public class DiagramActions {
 				int y = (int) e.getY();
 				
 				if (x > 0 && y > 0) {
-					diagram.getComm().addNewInstance(diagram, aidResult.getOfName(), aidResult.getName(), aidResult.getLevel(),
-							aidResult.getParentNames(), false, x, y);
+					diagram.getComm().addNewInstance(diagram, aidResult.getOfName(), aidResult.getName(),
+                            aidResult.getParentNames(), false, x, y);
 
 					diagram.updateDiagram();
 				}

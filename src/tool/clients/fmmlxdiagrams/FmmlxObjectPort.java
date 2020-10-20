@@ -14,9 +14,9 @@ public class FmmlxObjectPort {
 	public FmmlxObjectPort(FmmlxObject owner) {
 		super();
 		this.owner = owner;
-		edges = new HashMap<PortRegion, Vector<Edge.End>>();
+		edges = new HashMap<>();
 		for(PortRegion direction : PortRegion.values()) {
-			edges.put(direction, new Vector<Edge.End>());
+			edges.put(direction, new Vector<>());
 		}
 	}
 	
@@ -38,11 +38,7 @@ public class FmmlxObjectPort {
 	
 	private void sortPorts(final PortRegion direction) {
 		Vector<Edge.End> ports = edges.get(direction);
-		Collections.sort(ports, new Comparator<Edge.End>() {
-			@Override public int compare(Edge.End e1, Edge.End e2) {
-				return getAngle(e1.edge, direction).compareTo(getAngle(e2.edge, direction));
-			}
-		});
+		ports.sort(Comparator.comparing(e -> getAngle(e.edge, direction)));
 	}
 	
 	private Double getAngle(Edge edge, PortRegion direction) {

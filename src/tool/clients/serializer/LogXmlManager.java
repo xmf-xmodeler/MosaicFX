@@ -295,7 +295,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     Point2D coordinate = new Point2D(0.0,0.0);
                     int x = (int) Math.round(coordinate.getX());
                     int y = (int) Math.round(coordinate.getY());
-                    diagram.getComm().addNewInstance(diagram, ofName, name, level, parents, isAbstract, x, y);
+                    diagram.getComm().addNewInstance(diagram, ofName, name, parents, isAbstract, x, y);
                     break;
                 }
                 case "changeOperationBody" : {

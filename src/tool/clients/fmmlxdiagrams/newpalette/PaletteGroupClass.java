@@ -9,7 +9,7 @@ import tool.clients.fmmlxdiagrams.SortedValue;
 
 public class PaletteGroupClass extends PaletteGroup {
 	
-	private Vector<PaletteItem> items= new Vector<PaletteItem>();
+	private Vector<PaletteItem> items= new Vector<>();
 
 	public PaletteGroupClass(PaletteTool value) {
 		super(value);

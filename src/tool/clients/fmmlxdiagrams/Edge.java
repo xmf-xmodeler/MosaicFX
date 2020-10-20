@@ -176,13 +176,7 @@ public abstract class Edge implements CanvasElement {
 					Point2D now = first.getX() < last.getX() ? first : last;
 					Point2D endOfLine = first.getX() < last.getX() ? last : first;
 
-					Collections.sort(intersections, new Comparator<Point2D>() {
-
-						@Override
-						public int compare(Point2D o1, Point2D o2) {
-							return o1.getX() < o2.getX() ? -1 : o1.getX() == o2.getX() ? 0 : 1;
-						}
-					});
+					intersections.sort(Comparator.comparingDouble(Point2D::getX));
 
 					boolean tunnelMode = false;
 					final int R = 5;
@@ -345,7 +339,7 @@ public abstract class Edge implements CanvasElement {
 	}
 
 	protected Vector<Point2D> getAllPoints() {
-		Vector<Point2D> allPoints = new Vector<Point2D>();
+		Vector<Point2D> allPoints = new Vector<>();
 		allPoints.add(sourceNode.getPointForEdge(sourceEnd, true));
 		allPoints.addAll(intermediatePoints);
 		allPoints.add(targetNode.getPointForEdge(targetEnd, false));
@@ -625,7 +619,7 @@ public abstract class Edge implements CanvasElement {
 	}
 
 	public Vector<Point2D> getIntermediatePoints() {
-		return new Vector<Point2D>(intermediatePoints);
+		return new Vector<>(intermediatePoints);
 	}
 
 	protected Point2D getCentreAnchor() {

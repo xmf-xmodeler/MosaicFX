@@ -23,14 +23,6 @@ public class FmmlxLink extends Edge {
 //		layout();
 	}
 
-	public FmmlxObject getStartNode() {
-		return sourceNode;
-	}
-
-	public FmmlxObject getEndNode() {
-		return targetNode;
-	}
-
 	public int getOfId() {
 		return ofId;
 	}
