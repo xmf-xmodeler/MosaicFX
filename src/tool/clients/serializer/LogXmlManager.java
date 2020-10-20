@@ -1,5 +1,6 @@
 package tool.clients.serializer;
 
+import javafx.geometry.Point2D;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -122,7 +123,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                         }
                     }
                     boolean isAbstract = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_ABSTRACT));
-                    Coordinate coordinate = new Coordinate(0.0, 0.0);
+                    Point2D coordinate = new Point2D(0.0,0.0);
                     int x = (int) Math.round(coordinate.getX());
                     int y = (int) Math.round(coordinate.getY());
                     diagram.getComm().addMetaClass(diagram, name, level, parents, isAbstract, x, y);
@@ -291,7 +292,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                         }
                     }
                     boolean isAbstract = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_ABSTRACT));
-                    Coordinate coordinate = new Coordinate(0.0, 0.0);
+                    Point2D coordinate = new Point2D(0.0,0.0);
                     int x = (int) Math.round(coordinate.getX());
                     int y = (int) Math.round(coordinate.getY());
                     diagram.getComm().addNewInstance(diagram, ofName, name, level, parents, isAbstract, x, y);
@@ -509,58 +510,5 @@ public class LogXmlManager implements ILog, IXmlManager {
     private String parseBase64(String body) {
         byte[] decodedBytes = Base64.getDecoder().decode(body);
         return new String(decodedBytes);
-    }
-
-    private Coordinate getCoordinate(Node diagramNone, String name) {
-        Node objectsNode = xmlHandler.getChildWithName(diagramNone, "Objects");
-        NodeList objectList = objectsNode.getChildNodes();
-        Coordinate coordinate = new Coordinate(0.0, 0.0);
-
-        for (int i = 0 ; i< objectList.getLength() ; i++){
-            if (objectList.item(i).getNodeType() == Node.ELEMENT_NODE){
-                Element object_tmp = (Element) objectList.item(i);
-                if(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_NAME).equals(name)){
-                    double x = Double.parseDouble(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
-                    double y = Double.parseDouble(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
-                    coordinate.setX(x);
-                    coordinate.setY(y);
-                }
-            }
-        }
-        return coordinate;
-    }
-
-    private class Coordinate {
-        double x;
-        double y;
-
-        public Coordinate(double x, double y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public double getX() {
-            return x;
-        }
-
-        public void setX(double x) {
-            this.x = x;
-        }
-
-        public double getY() {
-            return y;
-        }
-
-        public void setY(double y) {
-            this.y = y;
-        }
-
-        @Override
-        public String toString() {
-            return "Coordinat{" +
-                    "x=" + x +
-                    ", y=" + y +
-                    '}';
-        }
     }
 }

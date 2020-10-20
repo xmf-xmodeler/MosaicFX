@@ -110,7 +110,7 @@ public class Serializer implements ISerializer {
     	}
     }
 
-    private void saveLabels(FmmlxDiagram diagram) throws TransformerException {
+    private void saveLabels(FmmlxDiagram diagram) {
 		LabelXmlManager labelXmlManager = new LabelXmlManager();
 		Vector<DiagramEdgeLabel> labels = diagram.getLabels();
 		

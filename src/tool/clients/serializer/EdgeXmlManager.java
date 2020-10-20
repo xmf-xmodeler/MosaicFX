@@ -19,136 +19,78 @@ public class EdgeXmlManager implements IXmlManager {
         this.xmlHandler = new XmlHandler();
     }
 
-    public Node createAssociationXmlNode(FmmlxDiagram fmmlxDiagram, FmmlxAssociation fmmlxAssociation) throws TransformerException {
+    public Node createEdgeXmlNode(FmmlxDiagram fmmlxDiagram, Edge edge) throws TransformerException {
+        Vector<Point2D> intermediatePoints = edge.getIntermediatePoints();
+        FmmlxObject sourceNode = edge.getSourceNode();
+        FmmlxObject targetNode = edge.getTargetNode();
+        PortRegion sourcePort = edge.getSourcePortRegion();
+        PortRegion targetPort = edge.getTargetPortRegion();
+        String projectPath = fmmlxDiagram.getPackagePath();
+        String owner = fmmlxDiagram.getDiagramLabel();
 
+        Element edgeElement = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGE);
+        edgeElement.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
+        edgeElement.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
+        edgeElement.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE, sourceNode.getName()+"");
+        edgeElement.setAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE, targetNode.getName()+"");
+        edgeElement.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT, sourcePort+"");
+        edgeElement.setAttribute(XmlConstant.ATTRIBUTE_TARGET_PORT, targetPort+"");
+
+        Node intermediatePointsNode = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_INTERMEDIATE_POINTS);
+        for(Point2D point2D : intermediatePoints){
+            Element intermediatePoint = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_INTERMEDIATE_POINT);
+            intermediatePoint.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, point2D.getX()+"");
+            intermediatePoint.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, point2D.getY()+"");
+            intermediatePointsNode.appendChild(intermediatePoint);
+        }
+        xmlHandler.addIntermediatePointsElement(edgeElement, intermediatePointsNode);
+
+        return edgeElement;
+    }
+
+    public Node createAssociationXmlNode(FmmlxDiagram fmmlxDiagram, FmmlxAssociation fmmlxAssociation) throws TransformerException {
         String name = fmmlxAssociation.getName();
         String type = XmlConstant.EdgeType.ASSOCIATION;
-        Vector<Point2D> intermediatePoints = fmmlxAssociation.getIntermediatePoints();
         String parentAssociationName = fmmlxAssociation.getParentAssociationName();
         int levelStartToEnd = fmmlxAssociation.getLevelStartToEnd();
         int levelEndToStart = fmmlxAssociation.getLevelEndToStart();
-        FmmlxObject sourceNode = fmmlxAssociation.getSourceNode();
-        FmmlxObject targetNode = fmmlxAssociation.getTargetNode();
-        PortRegion sourcePort = fmmlxAssociation.getSourcePortRegion();
-        PortRegion targetPort = fmmlxAssociation.getTargetPortRegion();
-        String projectPath = fmmlxDiagram.getPackagePath();
-        String owner = fmmlxDiagram.getDiagramLabel();
         Multiplicity multiplicityStartToEnd = fmmlxAssociation.getMultiplicityStartToEnd();
         Multiplicity multiplicityEndToStart = fmmlxAssociation.getMultiplicityEndToStart();
 
-        Element edge = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGE);
-        edge.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
-        edge.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
+        Element edge = (Element) createEdgeXmlNode(fmmlxDiagram, fmmlxAssociation);
         edge.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
-        edge.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE, sourceNode.getName()+"");
-        edge.setAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE, targetNode.getName()+"");
-        edge.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT, sourcePort+"");
-        edge.setAttribute(XmlConstant.ATTRIBUTE_TARGET_PORT, targetPort+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
         edge.setAttribute(XmlConstant.ATTRIBUTE_PARENT_ASSOCIATION, parentAssociationName+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_LEVEL_START_TO_END, levelStartToEnd+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_LEVEL_END_TO_START, levelEndToStart+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_MULTIPLICITY_START_TO_END, multiplicityStartToEnd.toString());
         edge.setAttribute(XmlConstant.ATTRIBUTE_MULTIPLICITY_END_TO_START, multiplicityEndToStart.toString());
-
-        Node intermediatePointsNode = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_INTERMEDIATE_POINTS);
-        for(Point2D point2D : intermediatePoints){
-            Element intermediatePoint = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_INTERMEDIATE_POINT);
-            intermediatePoint.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, point2D.getX()+"");
-            intermediatePoint.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, point2D.getY()+"");
-            intermediatePointsNode.appendChild(intermediatePoint);
-        }
-
-        xmlHandler.addIntermediatePointsElement(edge, intermediatePointsNode);
         return edge;
     }
 
     public Node createDelegationXmlNode(FmmlxDiagram fmmlxDiagram, DelegationEdge delegationEdge) throws TransformerException {
-
         String type = XmlConstant.EdgeType.DELEGATION;
-        Vector<Point2D> intermediatePoints = delegationEdge.getIntermediatePoints();
-        FmmlxObject childNode = delegationEdge.getChild();
-        FmmlxObject parentNode = delegationEdge.getParent();
-        PortRegion sourcePort = delegationEdge.getSourcePortRegion();
-        PortRegion targetPort = delegationEdge.getTargetPortRegion();
-        String projectPath = fmmlxDiagram.getPackagePath();
-        String owner = fmmlxDiagram.getDiagramLabel();
 
-        Element edge = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGE);
-        edge.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
-        edge.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
+        Element edge = (Element) createEdgeXmlNode(fmmlxDiagram, delegationEdge);
         edge.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
-        edge.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE, childNode.getName()+"");
-        edge.setAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE, parentNode.getName()+"");
-        edge.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT, sourcePort+"");
-        edge.setAttribute(XmlConstant.ATTRIBUTE_TARGET_PORT, targetPort+"");
-
-        Node intermediatePointsNode = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_INTERMEDIATE_POINTS);
-        for(Point2D point2D : intermediatePoints){
-            Element intermediatePoint = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_INTERMEDIATE_POINT);
-            intermediatePoint.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, point2D.getX()+"");
-            intermediatePoint.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, point2D.getY()+"");
-            intermediatePointsNode.appendChild(intermediatePoint);
-        }
-
-        xmlHandler.addIntermediatePointsElement(edge, intermediatePointsNode);
-
         return edge;
     }
 
     public Node createInheritanceXmlNode(FmmlxDiagram fmmlxDiagram, InheritanceEdge inheritanceEdge) throws TransformerException {
-
         String type = XmlConstant.EdgeType.INHERITANCE;
-        Vector<Point2D> intermediatePoints = inheritanceEdge.getIntermediatePoints();
-        FmmlxObject childNode = inheritanceEdge.getChild();
-        FmmlxObject parentNode = inheritanceEdge.getParent();
-        PortRegion sourcePort = inheritanceEdge.getSourcePortRegion();
-        PortRegion targetPort = inheritanceEdge.getTargetPortRegion();
-        String projectPath = fmmlxDiagram.getPackagePath();
-        String owner = fmmlxDiagram.getDiagramLabel();
 
-        Element edge = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGE);
-        edge.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
-        edge.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
+        Element edge = (Element) createEdgeXmlNode(fmmlxDiagram, inheritanceEdge);
         edge.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
-        edge.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE, childNode.getName()+"");
-        edge.setAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE, parentNode.getName()+"");
-        edge.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT, sourcePort+"");
-        edge.setAttribute(XmlConstant.ATTRIBUTE_TARGET_PORT, targetPort+"");
-
-        Node intermediatePointsNode = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_INTERMEDIATE_POINTS);
-        for(Point2D point2D : intermediatePoints){
-            Element intermediatePoint = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_INTERMEDIATE_POINT);
-            intermediatePoint.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, point2D.getX()+"");
-            intermediatePoint.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, point2D.getY()+"");
-            intermediatePointsNode.appendChild(intermediatePoint);
-        }
-
-        xmlHandler.addIntermediatePointsElement(edge, intermediatePointsNode);
         return edge;
     }
 
-    public Node createLinkXmlNode(FmmlxDiagram fmmlxDiagram, FmmlxLink fmmlxLink) {
+    public Node createLinkXmlNode(FmmlxDiagram fmmlxDiagram, FmmlxLink fmmlxLink) throws TransformerException {
 
         String type = XmlConstant.EdgeType.LINK;
         String ofName = fmmlxLink.getOfName();
-        Vector<Point2D> intermediatePoints = fmmlxLink.getIntermediatePoints();
-        FmmlxObject childNode = fmmlxLink.getStartNode();
-        FmmlxObject parentNode = fmmlxLink.getEndNode();
-        PortRegion sourcePort = fmmlxLink.getSourcePortRegion();
-        PortRegion targetPort = fmmlxLink.getTargetPortRegion();
-        String projectPath = fmmlxDiagram.getPackagePath();
-        String owner = fmmlxDiagram.getDiagramLabel();
 
-        Element edge = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGE);
-        edge.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner+"");
-        edge.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
+        Element edge = (Element) createEdgeXmlNode(fmmlxDiagram, fmmlxLink);
         edge.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
-        edge.setAttribute(XmlConstant.TAG_NAME_INTERMEDIATE_POINTS, intermediatePoints.toString());
-        edge.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE, childNode.getName()+"");
-        edge.setAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE, parentNode.getName()+"");
-        edge.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT, sourcePort+"");
-        edge.setAttribute(XmlConstant.ATTRIBUTE_TARGET_PORT, targetPort+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_OF, ofName+"");
         return edge;
     }
