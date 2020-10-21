@@ -29,7 +29,7 @@ public class DiagramXmlManager implements IXmlManager {
         Element objects = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OBJECTS);
         Element edges = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGES);
         Element labels = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_LABELS);
-        Node preferences = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_PREFERENCES);
+        Element preferences = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_PREFERENCES);
         try {
             xmlHandler.addDiagramCategoriesElement(diagram, categories);
             xmlHandler.addDiagramOwnersElement(diagram, owners);
