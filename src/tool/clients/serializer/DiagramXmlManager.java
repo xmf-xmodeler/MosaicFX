@@ -17,18 +17,18 @@ public class DiagramXmlManager implements IXmlManager {
     }
     public DiagramXmlManager(String path){ this.xmlHandler = new XmlHandler(path);}
 
-    public Node createDiagramNode(FmmlxDiagram fmmlxDiagram) {
+    public Element createDiagramElement(FmmlxDiagram fmmlxDiagram) {
         String label =fmmlxDiagram.getDiagramLabel();
         String path = fmmlxDiagram.getPackagePath();
 
-        Element diagram = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_DIAGRAM);
+        Element diagram = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_DIAGRAM);
         diagram.setAttribute(XmlConstant.ATTRIBUTE_LABEL, label);
         diagram.setAttribute(XmlConstant.ATTRIBUTE_PACKAGE_PATH, path);
-        Node categories = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_CATEGORIES);
-        Node owners = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OWNERS);
-        Node objects = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OBJECTS);
-        Node edges = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGES);
-        Node labels = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_LABELS);
+        Element categories = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_CATEGORIES);
+        Element owners = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OWNERS);
+        Element objects = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OBJECTS);
+        Element edges = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGES);
+        Element labels = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_LABELS);
         Node preferences = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_PREFERENCES);
         try {
             xmlHandler.addDiagramCategoriesElement(diagram, categories);
@@ -60,17 +60,17 @@ public class DiagramXmlManager implements IXmlManager {
     }
 
     @Override
-    public void add(Node node) {
+    public void add(Element element) {
         Node diagrams = xmlHandler.getDiagramsNode();
         try {
-            xmlHandler.addDiagramElement(diagrams, node);
+            xmlHandler.addDiagramElement(diagrams, element);
         } catch (TransformerException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void remove(Node node) {
+    public void remove(Element element) {
 
     }
 

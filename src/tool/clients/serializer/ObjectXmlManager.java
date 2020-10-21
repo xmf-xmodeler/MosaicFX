@@ -18,7 +18,7 @@ public class ObjectXmlManager implements IXmlManager {
         this.xmlHandler = new XmlHandler();
     }
 
-    public Node createObject(FmmlxDiagram diagram, FmmlxObject fmmlxObject) {
+    public Element createObjectElement(FmmlxDiagram diagram, FmmlxObject fmmlxObject) {
         String name = fmmlxObject.getName();
         int level= fmmlxObject.getLevel();
         String ofName = fmmlxObject.getOfName();
@@ -28,7 +28,7 @@ public class ObjectXmlManager implements IXmlManager {
         double x = fmmlxObject.getX();
         double y = fmmlxObject.getY();
 
-        Element object = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OBJECT);
+        Element object = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OBJECT);
         object.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
         object.setAttribute(XmlConstant.ATTRIBUTE_LEVEL, level+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_OF, ofName+"");
@@ -40,7 +40,7 @@ public class ObjectXmlManager implements IXmlManager {
         return object;
     }
 
-    public Node createOperationXmlNode(FmmlxDiagram fmmlxDiagram, FmmlxObject object, FmmlxOperation fmmlxOperation) throws TransformerException {
+    public Element createOperationXmlNode(FmmlxDiagram fmmlxDiagram, FmmlxObject object, FmmlxOperation fmmlxOperation) throws TransformerException {
         String name = fmmlxOperation.getName();
         String owner = object.getName();
         String diagramOwner = fmmlxDiagram.getDiagramLabel();
@@ -52,7 +52,7 @@ public class ObjectXmlManager implements IXmlManager {
         Vector<String> paramNames= fmmlxOperation.getParamNames();
         Vector<String> paramTypes= fmmlxOperation.getParamTypes();
 
-        Element operation = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OPERATION);
+        Element operation = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OPERATION);
         operation.setAttribute(XmlConstant.ATTRIBUTE_DIAGRAM_OWNER, diagramOwner);
         operation.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
         operation.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
@@ -61,23 +61,23 @@ public class ObjectXmlManager implements IXmlManager {
         operation.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
         operation.setAttribute(XmlConstant.ATTRIBUTE_IS_MONITORED, isMonitored+"");
 
-        Node paramNode = xmlHandler.createXmlElement(XmlConstant.TAG_PARAM);
+        Element paramElement = xmlHandler.createXmlElement(XmlConstant.TAG_PARAM);
         for(int i=0; i<paramNames.size(); i++){
-            Element paramNameElement = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_PARAM_NAME);
+            Element paramNameElement = xmlHandler.createXmlElement(XmlConstant.TAG_PARAM_NAME);
             paramNameElement.setAttribute(XmlConstant.ATTRIBUTE_NAME, paramNames.get(i));
             paramNameElement.setAttribute(XmlConstant.ATTRIBUTE_TYPE, paramTypes.get(i));
-            paramNode.appendChild(paramNameElement);
+            paramElement.appendChild(paramNameElement);
         }
 
-        Element bodyNode = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_BODY);
-        bodyNode.setTextContent(body);
+        Element bodyElement = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_BODY);
+        bodyElement.setTextContent(body);
 
-        xmlHandler.addParamElement(operation, paramNode);
-        xmlHandler.addBodyElement(operation, bodyNode);
+        xmlHandler.addParamElement(operation, paramElement);
+        xmlHandler.addBodyElement(operation, bodyElement);
         return operation;
     }
 
-    public Node createAttributeXmlNode(FmmlxDiagram fmmlxDiagram, FmmlxObject object, FmmlxAttribute attribute) {
+    public Element createAttributeXmlNode(FmmlxDiagram fmmlxDiagram, FmmlxObject object, FmmlxAttribute attribute) {
         String name = attribute.getName();
         String owner = object.getName();
         String diagramOwner = fmmlxDiagram.getDiagramLabel();
@@ -85,20 +85,19 @@ public class ObjectXmlManager implements IXmlManager {
         String type = attribute.getType();
         Multiplicity multiplicity = attribute.getMultiplicity();
 
-        Element attributeNode = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_ATTRIBUTE);
-        attributeNode.setAttribute(XmlConstant.ATTRIBUTE_DIAGRAM_OWNER, diagramOwner);
-        attributeNode.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
-        attributeNode.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
-        attributeNode.setAttribute(XmlConstant.ATTRIBUTE_LEVEL, level+"");
-        attributeNode.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
-        attributeNode.setAttribute(XmlConstant.ATTRIBUTE_MULTIPLICITY, multiplicity.toString());
+        Element attributeElement = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_ATTRIBUTE);
+        attributeElement.setAttribute(XmlConstant.ATTRIBUTE_DIAGRAM_OWNER, diagramOwner);
+        attributeElement.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
+        attributeElement.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
+        attributeElement.setAttribute(XmlConstant.ATTRIBUTE_LEVEL, level+"");
+        attributeElement.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
+        attributeElement.setAttribute(XmlConstant.ATTRIBUTE_MULTIPLICITY, multiplicity.toString());
 
-        return attributeNode;
+        return attributeElement;
     }
 
     @Override
-    public void add(Node node) {
-        Element newObject = (Element) node;
+    public void add(Element element) {
 
         Node diagrams = xmlHandler.getDiagramsNode();
         NodeList diagramNodeList = diagrams.getChildNodes();
@@ -106,10 +105,10 @@ public class ObjectXmlManager implements IXmlManager {
         for(int i=0 ; i<diagramNodeList.getLength(); i++){
             if(diagramNodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
                 Element diagram = (Element) diagramNodeList.item(i);
-                if(diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(newObject.getAttribute(XmlConstant.ATTRIBUTE_OWNER))){
+                if(diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(element.getAttribute(XmlConstant.ATTRIBUTE_OWNER))){
                     Element objects = (Element) getObjectsNode(diagram);
                     try {
-                        xmlHandler.addObjectElement(objects, newObject);
+                        xmlHandler.addObjectElement(objects, element);
                     } catch (TransformerException e) {
                         e.printStackTrace();
                     }
@@ -123,7 +122,7 @@ public class ObjectXmlManager implements IXmlManager {
     }
 
     @Override
-    public void remove(Node node) {
+    public void remove(Element element) {
         //TODO
     }
 

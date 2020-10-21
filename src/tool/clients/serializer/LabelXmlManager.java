@@ -23,7 +23,7 @@ public class LabelXmlManager implements ILog, IXmlManager{
         this.xmlHandler = new XmlHandler();
     }
     
-    public Node createLabel(FmmlxDiagram diagram, DiagramEdgeLabel edgeLabel) {
+    public Element createLabelElement(FmmlxDiagram diagram, DiagramEdgeLabel edgeLabel) {
         String text = edgeLabel.getText();
         String owner = "-1";
         FmmlxAssociation association = diagram.getAssociationById(edgeLabel.getOwner().getId());
@@ -33,7 +33,7 @@ public class LabelXmlManager implements ILog, IXmlManager{
         double x = edgeLabel.getRelativeX();
         double y = edgeLabel.getRelativeY();
 
-        Element label = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_LABEL);
+        Element label = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_LABEL);
         label.setAttribute(XmlConstant.ATTRIBUTE_TEXT, text);
         label.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
         label.setAttribute(XmlConstant.ATTRIBUTE_DIAGRAM_OWNER, diagram.getDiagramLabel());
@@ -43,8 +43,7 @@ public class LabelXmlManager implements ILog, IXmlManager{
     }
 
 	@Override
-	public void add(Node node) {
-		Element newLabel = (Element) node;
+	public void add(Element element) {
 
         Node diagrams = xmlHandler.getDiagramsNode();
         NodeList diagramNodeList = diagrams.getChildNodes();
@@ -52,10 +51,10 @@ public class LabelXmlManager implements ILog, IXmlManager{
         for(int i=0 ; i<diagramNodeList.getLength(); i++){
             if(diagramNodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
                 Element diagram = (Element) diagramNodeList.item(i);
-                if(diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(newLabel.getAttribute(XmlConstant.ATTRIBUTE_DIAGRAM_OWNER))){
+                if(diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(element.getAttribute(XmlConstant.ATTRIBUTE_DIAGRAM_OWNER))){
                     Element labels = (Element) getLabelsNode(diagram);
                     try {
-                        xmlHandler.addLabelElement(labels, newLabel);
+                        xmlHandler.addLabelElement(labels, element);
                     } catch (TransformerException e) {
                         e.printStackTrace();
                     }
@@ -70,7 +69,7 @@ public class LabelXmlManager implements ILog, IXmlManager{
 	}
 
 	@Override
-	public void remove(Node node) {
+	public void remove(Element element) {
 		// TODO Auto-generated method stub
 		
 	}

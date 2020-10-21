@@ -25,17 +25,17 @@ public class LogXmlManager implements ILog, IXmlManager {
     }
 
     @Override
-    public void add(Node node) {
+    public void add(Element element) {
         Node logs = xmlHandler.getLogsNode();
         try {
-            xmlHandler.addLogElement(logs, node);
+            xmlHandler.addLogElement(logs, element);
         } catch (TransformerException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void remove(Node node) {
+    public void remove(Element element) {
         //TODO
     }
 
@@ -55,12 +55,12 @@ public class LogXmlManager implements ILog, IXmlManager {
         //TODO
     }
 
-    public Node createNewLogFromFaXML(FaXML faXML){
-        Element node = (Element) xmlHandler.createXmlElement(faXML.getName());
+    public Element createNewLogFromFaXML(FaXML faXML){
+        Element element = xmlHandler.createXmlElement(faXML.getName());
         for(String attName : faXML.getAttributes()){
-            node.setAttribute(attName, faXML.getAttributeValue(attName));
+            element.setAttribute(attName, faXML.getAttributeValue(attName));
         }
-        return node;
+        return element;
     }
 
     public void clearLog() throws TransformerException {
@@ -279,7 +279,6 @@ public class LogXmlManager implements ILog, IXmlManager {
                 case "addInstance": {
                     String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
                     String ofName = parseOf(logElement.getAttribute(XmlConstant.ATTRIBUTE_OF));
-                    int level = getInstanceLevel(diagramNode, name);
                     String parentPathsString = logElement.getAttribute(XmlConstant.ATTRIBUTE_PARENTS);
                     Vector<String> parents = new Vector<>();
 
@@ -490,21 +489,6 @@ public class LogXmlManager implements ILog, IXmlManager {
     private String parseOf(String ofString) {
         String[] ofStringArray = ofString.split("::");
         return ofStringArray[2];
-    }
-
-    private int getInstanceLevel(Node diagramNone, String name) {
-        int level = 0;
-        NodeList objectList = diagramNone.getChildNodes();
-
-        for (int i = 0 ; i< objectList.getLength() ; i++){
-            if (objectList.item(i).getNodeType() == Node.ELEMENT_NODE){
-                Element object_tmp = (Element) objectList.item(i);
-                if(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_NAME).equals(name)){
-                    level = Integer.parseInt(XmlConstant.ATTRIBUTE_LEVEL);
-                }
-            }
-        }
-        return level;
     }
 
     private String parseBase64(String body) {

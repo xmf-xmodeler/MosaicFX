@@ -19,7 +19,7 @@ public class EdgeXmlManager implements IXmlManager {
         this.xmlHandler = new XmlHandler();
     }
 
-    public Node createEdgeXmlNode(FmmlxDiagram fmmlxDiagram, Edge edge) throws TransformerException {
+    public Element createEdgeXmlElement(FmmlxDiagram fmmlxDiagram, Edge edge) throws TransformerException {
         Vector<Point2D> intermediatePoints = edge.getIntermediatePoints();
         FmmlxObject sourceNode = edge.getSourceNode();
         FmmlxObject targetNode = edge.getTargetNode();
@@ -28,7 +28,7 @@ public class EdgeXmlManager implements IXmlManager {
         String projectPath = fmmlxDiagram.getPackagePath();
         String owner = fmmlxDiagram.getDiagramLabel();
 
-        Element edgeElement = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGE);
+        Element edgeElement = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGE);
         edgeElement.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
         edgeElement.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
         edgeElement.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE, sourceNode.getName()+"");
@@ -36,9 +36,9 @@ public class EdgeXmlManager implements IXmlManager {
         edgeElement.setAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT, sourcePort+"");
         edgeElement.setAttribute(XmlConstant.ATTRIBUTE_TARGET_PORT, targetPort+"");
 
-        Node intermediatePointsNode = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_INTERMEDIATE_POINTS);
+        Element intermediatePointsNode = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_INTERMEDIATE_POINTS);
         for(Point2D point2D : intermediatePoints){
-            Element intermediatePoint = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_INTERMEDIATE_POINT);
+            Element intermediatePoint = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_INTERMEDIATE_POINT);
             intermediatePoint.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, point2D.getX()+"");
             intermediatePoint.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, point2D.getY()+"");
             intermediatePointsNode.appendChild(intermediatePoint);
@@ -48,7 +48,7 @@ public class EdgeXmlManager implements IXmlManager {
         return edgeElement;
     }
 
-    public Node createAssociationXmlNode(FmmlxDiagram fmmlxDiagram, FmmlxAssociation fmmlxAssociation) throws TransformerException {
+    public Element createAssociationXmlElement(FmmlxDiagram fmmlxDiagram, FmmlxAssociation fmmlxAssociation) throws TransformerException {
         String name = fmmlxAssociation.getName();
         String type = XmlConstant.EdgeType.ASSOCIATION;
         String parentAssociationName = fmmlxAssociation.getParentAssociationName();
@@ -57,7 +57,7 @@ public class EdgeXmlManager implements IXmlManager {
         Multiplicity multiplicityStartToEnd = fmmlxAssociation.getMultiplicityStartToEnd();
         Multiplicity multiplicityEndToStart = fmmlxAssociation.getMultiplicityEndToStart();
 
-        Element edge = (Element) createEdgeXmlNode(fmmlxDiagram, fmmlxAssociation);
+        Element edge = createEdgeXmlElement(fmmlxDiagram, fmmlxAssociation);
         edge.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
         edge.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
         edge.setAttribute(XmlConstant.ATTRIBUTE_PARENT_ASSOCIATION, parentAssociationName+"");
@@ -68,37 +68,36 @@ public class EdgeXmlManager implements IXmlManager {
         return edge;
     }
 
-    public Node createDelegationXmlNode(FmmlxDiagram fmmlxDiagram, DelegationEdge delegationEdge) throws TransformerException {
+    public Element createDelegationXmlElement(FmmlxDiagram fmmlxDiagram, DelegationEdge delegationEdge) throws TransformerException {
         String type = XmlConstant.EdgeType.DELEGATION;
 
-        Element edge = (Element) createEdgeXmlNode(fmmlxDiagram, delegationEdge);
+        Element edge = createEdgeXmlElement(fmmlxDiagram, delegationEdge);
         edge.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
         return edge;
     }
 
-    public Node createInheritanceXmlNode(FmmlxDiagram fmmlxDiagram, InheritanceEdge inheritanceEdge) throws TransformerException {
+    public Element createInheritanceXmlElement(FmmlxDiagram fmmlxDiagram, InheritanceEdge inheritanceEdge) throws TransformerException {
         String type = XmlConstant.EdgeType.INHERITANCE;
 
-        Element edge = (Element) createEdgeXmlNode(fmmlxDiagram, inheritanceEdge);
+        Element edge = createEdgeXmlElement(fmmlxDiagram, inheritanceEdge);
         edge.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
         return edge;
     }
 
-    public Node createLinkXmlNode(FmmlxDiagram fmmlxDiagram, FmmlxLink fmmlxLink) throws TransformerException {
+    public Element createLinkXmlElement(FmmlxDiagram fmmlxDiagram, FmmlxLink fmmlxLink) throws TransformerException {
 
         String type = XmlConstant.EdgeType.LINK;
         String ofName = fmmlxLink.getOfName();
 
-        Element edge = (Element) createEdgeXmlNode(fmmlxDiagram, fmmlxLink);
+        Element edge = createEdgeXmlElement(fmmlxDiagram, fmmlxLink);
         edge.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
         edge.setAttribute(XmlConstant.ATTRIBUTE_OF, ofName+"");
         return edge;
     }
 
     @Override
-    public void add(Node node) {
-        if(node!=null){
-            Element newEdge = (Element) node;
+    public void add(Element element) {
+        if(element!=null){
 
             Node diagrams = xmlHandler.getDiagramsNode();
             NodeList diagramNodeList = diagrams.getChildNodes();
@@ -106,10 +105,10 @@ public class EdgeXmlManager implements IXmlManager {
             for(int i=0 ; i<diagramNodeList.getLength(); i++){
                 if(diagramNodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
                     Element diagram = (Element) diagramNodeList.item(i);
-                    if(diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(newEdge.getAttribute(XmlConstant.ATTRIBUTE_OWNER))){
+                    if(diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(element.getAttribute(XmlConstant.ATTRIBUTE_OWNER))){
                         Element edges = (Element) getEdgesNode(diagram);
                         try {
-                            xmlHandler.addEdgeElement(edges, newEdge);
+                            xmlHandler.addEdgeElement(edges, element);
                         } catch (TransformerException e) {
                             e.printStackTrace();
                         }
@@ -120,7 +119,7 @@ public class EdgeXmlManager implements IXmlManager {
     }
 
     @Override
-    public void remove(Node node) {
+    public void remove(Element element) {
         //TODO
     }
 

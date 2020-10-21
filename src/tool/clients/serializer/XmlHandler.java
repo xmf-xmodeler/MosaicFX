@@ -85,17 +85,17 @@ public class XmlHandler {
         xmlHelper.addXmlElement(logs, log);
     }
 
-    public void addElement(Node parents, Node node) throws TransformerException {
-        xmlHelper.addXmlElement(parents, node);
+    public void addElement(Node parents, Element element) throws TransformerException {
+        xmlHelper.addXmlElement(parents, element);
     }
 
-    public void addDiagramObjectsElement(Element diagram, Node objects) throws TransformerException {
-        xmlHelper.addXmlElement(diagram, objects);
+    public void addDiagramObjectsElement(Element diagram, Element objectsElement) throws TransformerException {
+        xmlHelper.addXmlElement(diagram, objectsElement);
     }
 
-    public void addObjectElement(Node objects, Node object)
+    public void addObjectElement(Node objects, Element objectElement)
             throws TransformerException {
-        xmlHelper.addXmlElement(objects, object);
+        xmlHelper.addXmlElement(objects, objectElement);
     }
 
     public void addEdgeElement(Element edges, Element newObject)
@@ -103,61 +103,61 @@ public class XmlHandler {
         xmlHelper.addXmlElement(edges, newObject);
     }
     
-    public void addLabelElement(Node labels, Node label)
+    public void addLabelElement(Node labels, Element labelElement)
             throws TransformerException {
-        xmlHelper.addXmlElement(labels, label);
+        xmlHelper.addXmlElement(labels, labelElement);
     }
 
-    public void addDiagramElement(Node diagrams, Node diagram)
+    public void addDiagramElement(Node diagrams, Element diagramElement)
             throws TransformerException {
-        xmlHelper.addXmlElement(diagrams, diagram);
+        xmlHelper.addXmlElement(diagrams, diagramElement);
     }
 
-    public void addDiagramOwnersElement(Element diagram, Node owners)
+    public void addDiagramOwnersElement(Element diagram, Element ownersElement)
             throws TransformerException {
-        xmlHelper.addXmlElement(diagram, owners);
+        xmlHelper.addXmlElement(diagram, ownersElement);
     }
 
-    public void addDiagramCategoriesElement(Element diagram, Node categories)
+    public void addDiagramCategoriesElement(Element diagram, Element categoriesElement)
             throws TransformerException {
-        xmlHelper.addXmlElement(diagram, categories);
+        xmlHelper.addXmlElement(diagram, categoriesElement);
     }
 
-    public void addDiagramEdgesElement(Element diagram, Node edges)
+    public void addDiagramEdgesElement(Element diagram, Element edgesElement)
             throws TransformerException {
-        xmlHelper.addXmlElement(diagram, edges);
+        xmlHelper.addXmlElement(diagram, edgesElement);
     }
 
-	public void addDiagramLabelsElement(Element diagram, Node labels) throws TransformerException {
-		xmlHelper.addXmlElement(diagram, labels);
+	public void addDiagramLabelsElement(Element diagram, Element labelsElement) throws TransformerException {
+		xmlHelper.addXmlElement(diagram, labelsElement);
 	}
 
-    public void addParamElement(Element operation, Node paramNode) throws TransformerException {
-        xmlHelper.addXmlElement(operation, paramNode);
+    public void addParamElement(Element operation, Element paramElement) throws TransformerException {
+        xmlHelper.addXmlElement(operation, paramElement);
     }
 
-    public void addBodyElement(Element operation, Element body) throws TransformerException {
-        xmlHelper.addXmlElement(operation, body);
+    public void addBodyElement(Element operation, Element bodyElement) throws TransformerException {
+        xmlHelper.addXmlElement(operation, bodyElement);
     }
 
-    public void addAttributesElement(Element object, Node attributes) throws TransformerException {
-        xmlHelper.addXmlElement(object, attributes);
+    public void addAttributesElement(Element object, Element attributesElement) throws TransformerException {
+        xmlHelper.addXmlElement(object, attributesElement);
     }
 
-    public void addOperationElement(Element operations, Element newOperation) throws TransformerException {
-        xmlHelper.addXmlElement(operations, newOperation);
+    public void addOperationElement(Element operations, Element newOperationElement) throws TransformerException {
+        xmlHelper.addXmlElement(operations, newOperationElement);
     }
 
-    public void addDiagramPreferencesElement(Element diagram, Node preferences) throws TransformerException {
-        xmlHelper.addXmlElement(diagram, preferences);
+    public void addDiagramPreferencesElement(Element diagram, Element preferencesElement) throws TransformerException {
+        xmlHelper.addXmlElement(diagram, preferencesElement);
     }
 
-    public void addOperationsElement(Element object, Node operations) throws TransformerException {
-        xmlHelper.addXmlElement(object, operations);
+    public void addOperationsElement(Element object, Element operationsElement) throws TransformerException {
+        xmlHelper.addXmlElement(object, operationsElement);
     }
 
-    public void addIntermediatePointsElement(Element edge, Node intermediatePointsNode) throws TransformerException {
-        xmlHelper.addXmlElement(edge, intermediatePointsNode);
+    public void addIntermediatePointsElement(Element edge, Element intermediatePointsElement) throws TransformerException {
+        xmlHelper.addXmlElement(edge, intermediatePointsElement);
     }
 
     public void removeAllProject() throws TransformerException {
@@ -194,7 +194,7 @@ public class XmlHandler {
     }
 
 
-    protected Node createXmlElement(String name){
+    protected Element createXmlElement(String name){
         return xmlHelper.createXmlElement(name);
     }
 
@@ -266,16 +266,16 @@ public class XmlHandler {
             return null;
         }
 
-        public Node createXmlElement(String tagName){
-            Node item;
+        public Element createXmlElement(String tagName){
+            Element item;
             item = document.createElement(tagName);
             return item;
         }
 
-        protected void addXmlElement(Node parent, Node node) throws TransformerException {
+        protected void addXmlElement(Node parent, Node newNode) throws TransformerException {
             Element parent1 = (Element) parent;
             assert parent1 != null;
-            parent1.appendChild(node);
+            parent1.appendChild(newNode);
 
             DOMSource source = new DOMSource(document);
 

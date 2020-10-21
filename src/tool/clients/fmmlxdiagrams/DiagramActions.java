@@ -550,7 +550,9 @@ public class DiagramActions {
 		for (FmmlxObject o : diagram.getObjects()) {
 			o.setShowOperations(show);
 		}
+		diagram.triggerOverallReLayout();
 		diagram.redraw();
+
 	}
 	
 	public void setShowGettersAndSetters(CheckBox box) {
@@ -559,6 +561,7 @@ public class DiagramActions {
 		for (FmmlxObject o : diagram.getObjects()) {
 			o.setShowGettersAndSetters(show);
 		}
+		diagram.triggerOverallReLayout();
 		diagram.redraw();
 		
 	}
@@ -570,6 +573,7 @@ public class DiagramActions {
 		for (FmmlxObject o : diagram.getObjects()) {
 			o.setShowOperationValues(show);
 		}
+		diagram.triggerOverallReLayout();
 		diagram.redraw();
 	}
 
@@ -579,6 +583,7 @@ public class DiagramActions {
 		for (FmmlxObject o : diagram.getObjects()) {
 			o.setShowSlots(show);
 		}
+		diagram.triggerOverallReLayout();
 		diagram.redraw();
 	}
 	
@@ -588,6 +593,7 @@ public class DiagramActions {
 		for (FmmlxObject o : diagram.getObjects()) {
 			o.setShowDerivedOperations(show);
 		}
+		diagram.triggerOverallReLayout();
 		diagram.redraw();
 		
 	}
@@ -598,6 +604,7 @@ public class DiagramActions {
 		for (FmmlxObject o : diagram.getObjects()) {
 			o.setShowDerivedAttributes(show);
 		}
+		diagram.triggerOverallReLayout();
 		diagram.redraw();
 	}
 

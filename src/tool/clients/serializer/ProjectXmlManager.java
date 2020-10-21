@@ -23,7 +23,7 @@ public class ProjectXmlManager implements IXmlManager {
     }
 
     public Node createProject(String name){
-        Element project = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_PROJECT);
+        Element project = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_PROJECT);
         project.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
         return project;
     }
@@ -34,15 +34,15 @@ public class ProjectXmlManager implements IXmlManager {
     }
 
     @Override
-    public void add(Node node) throws TransformerException {
+    public void add(Element element) throws TransformerException {
         Node projects = xmlHandler.getProjectsNode();
-        xmlHandler.addElement(projects, node);
+        xmlHandler.addElement(projects, element);
     }
 
     @Override
-    public void remove(Node node){
+    public void remove(Element element){
         Node projects = xmlHandler.getProjectsNode();
-        projects.removeChild(node);
+        projects.removeChild(element);
     }
 
     @Override
@@ -92,8 +92,8 @@ public class ProjectXmlManager implements IXmlManager {
         xmlHandler.removeAllProject();
     }
 
-    public Node createProjectNode(FmmlxDiagram diagram) {
-        Element project = (Element) xmlHandler.createXmlElement(XmlConstant.TAG_NAME_PROJECT);
+    public Element createProjectElement(FmmlxDiagram diagram) {
+        Element project = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_PROJECT);
         project.setAttribute(XmlConstant.ATTRIBUTE_NAME, diagram.getPackagePath());
         return project;
     }
