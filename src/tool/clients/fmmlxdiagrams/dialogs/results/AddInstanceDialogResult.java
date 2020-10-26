@@ -53,4 +53,14 @@ public class AddInstanceDialogResult extends DialogResult {
 		return isAbstract;
 	}
 
+	public Vector<String> getParentNames() {
+		Vector<String> parentnames = new Vector<>();
+
+		if (!parents.isEmpty()) {
+			for (FmmlxObject o : parents) {
+				parentnames.add(o.getName());
+			}
+		}
+		return parentnames;
+	}
 }

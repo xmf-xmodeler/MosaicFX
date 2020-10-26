@@ -9,6 +9,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.Serializer;
+import tool.clients.serializer.Deserializer;
 import tool.clients.workbench.WorkbenchClient;
 import xos.Value;
 
@@ -85,7 +86,7 @@ public class FmmlxDiagramCommunicator {
 		tabs.remove(handler);
 	}
 
-	private Value[] createValueArray(Vector<Integer> vector) { // todo: make more generic
+	private Value[] createValueArray(Vector<String> vector) { // todo: make more generic
 		Value[] result = new Value[vector.size()];
 		for (int i = 0; i < result.length; i++) {
 			result[i] = new Value(vector.get(i));
@@ -224,18 +225,30 @@ public class FmmlxDiagramCommunicator {
 		for (Object responseObject : responseContent) {
 			Vector<Object> responseObjectList = (Vector<Object>) (responseObject);
 
+			// deprecated, replaced by String
 			Vector<Object> parentListO = (Vector<Object>) responseObjectList.get(4);
 			Vector<Integer> parentListI = new Vector<Integer>();
 			for (Object o : parentListO) {
 				parentListI.add((Integer) o);
 			}
-
+			
+			Vector<Object> parentListO2 = (Vector<Object>) responseObjectList.get(12);
+			Vector<String> parentListS = new Vector<String>();
+			for (Object o : parentListO2) {
+				parentListS.add((String) o);
+			}
+			
+			System.err.println("parentListS: " + parentListS);
+			
 			FmmlxObject object = new FmmlxObject(
-					(Integer) responseObjectList.get(0), // id
+					(Integer) responseObjectList.get(0), // id*
 					(String)  responseObjectList.get(1), // name
 					(Integer) responseObjectList.get(2), // level
-					(Integer) responseObjectList.get(3), // of
-					parentListI, // parents
+					(Integer) responseObjectList.get(3), // of*
+					parentListI,                          // parents*
+					(String)  responseObjectList.get(10), // ownPath
+					(String)  responseObjectList.get(11), // ofPath
+					parentListS,                          // parentsPath
 					(Boolean) responseObjectList.get(5),
 					(Integer) responseObjectList.get(6), // x-Position
 					(Integer) responseObjectList.get(7), // y-Position 
@@ -655,6 +668,7 @@ public class FmmlxDiagramCommunicator {
 			pointE[2] = new Value(0);
 			listOfPoints[listOfPoints.length-1] = new Value(pointE);
 		}
+
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(e.id), 
@@ -666,7 +680,7 @@ public class FmmlxDiagramCommunicator {
 	/// Operations requesting data to be manipulated ///
 	////////////////////////////////////////////////////
 
-	public void addMetaClass(FmmlxDiagram diagram, String name, int level, Vector<Integer> parents, boolean isAbstract, int x, int y) {
+	public void addMetaClass(FmmlxDiagram diagram, String name, int level, Vector<String> parents, boolean isAbstract, int x, int y) {
 		Value[] parentsArray = createValueArray(parents);
 
 		Value[] message = new Value[]{
@@ -679,7 +693,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("addMetaClass", message);
 	}
 
-	public void addNewInstance(FmmlxDiagram diagram, String className, String name, int level, Vector<Integer> parents, boolean isAbstract, int x,
+	public void addNewInstance(FmmlxDiagram diagram, String className, String name, int level, Vector<String> parents, boolean isAbstract, int x,
 							   int y) {
 		Value[] parentsArray = createValueArray(parents);
 
@@ -693,7 +707,7 @@ public class FmmlxDiagramCommunicator {
 			FmmlxDiagram diagram, 
 			String className,
 			String instanceName,
-			Vector<Integer> parents, 
+			Vector<String> parents,
 			HashMap<FmmlxAttribute, String> slotValues, 
 			int x, int y) {
 		Value[] parentsArray = createValueArray(parents);
@@ -722,10 +736,10 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("removeClass", message);
 	}
 
-	public void removeAssociation(FmmlxDiagram diagram, int assocId, int strategy) {
+	public void removeAssociation(FmmlxDiagram diagram, String associationName, int strategy) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(assocId)};
+				new Value(associationName)};
 		sendMessage("removeAssociation", message);
 	}
 
@@ -850,12 +864,12 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("changeOperationLevel", message);
 	}
 
-	public void changeOperationOwner(FmmlxDiagram diagram, String objectName, String name, Integer newOwnerID) {
+	public void changeOperationOwner(FmmlxDiagram diagram, String objectName, String name, String newOwnerName) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(objectName),
 				new Value(name),
-				new Value(newOwnerID)};
+				new Value(newOwnerName)};
 		sendMessage("changeOperationOwner", message);
 	}
 
@@ -932,7 +946,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("changeOf", message);
 	}
 
-	public void changeParent(FmmlxDiagram diagram, String objectName, Vector<Integer> currentParents, Vector<Integer> newParents) {
+	public void changeParent(FmmlxDiagram diagram, String objectName, Vector<String> currentParents, Vector<String> newParents) {
 		Value[] parentsArray = createValueArray(currentParents);
 		Value[] newParentsArray = createValueArray(newParents);
 
@@ -986,10 +1000,10 @@ public class FmmlxDiagramCommunicator {
 //		sendMessage("changeMultiplicity", message);
 //	}
 
-	public void changeOperationBody(FmmlxDiagram diagram, int objectId, String operationName, String body) {
+	public void changeOperationBody(FmmlxDiagram diagram, String objectName, String operationName, String body) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(objectId),
+				new Value(objectName),
 				new Value(operationName),
 				new Value(body)};
 		sendMessage("changeOperationBody", message);
@@ -1027,12 +1041,12 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("editAssociation", message);
 	}
 
-	public void addAssociationInstance(FmmlxDiagram diagram, String object1Name, String object2Name, int associationID) {
+	public void addAssociationInstance(FmmlxDiagram diagram, String object1Name, String object2Name, String associationName) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(object1Name),
 				new Value(object2Name),
-				new Value(associationID)};
+				new Value(associationName)};
 		sendMessage("addAssociationInstance", message);
 	}
 
@@ -1058,11 +1072,11 @@ public class FmmlxDiagramCommunicator {
 		//xmfRequest(handler, "storeLabelInfo",l.getInfo4XMF());
 	}
 
-	public void changeAssociationForwardName(FmmlxDiagram diagram, int associationId, String newName) {
+	public void changeAssociationForwardName(FmmlxDiagram diagram, String associationName, String newFwName) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(associationId),
-				new Value(newName)};
+				new Value(associationName),
+				new Value(newFwName)};
 		sendMessage("changeAssociationForwardName", message);
 	}
 
@@ -1098,18 +1112,18 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("changeAssociationEnd2StartAccessName", message);
 	}
 
-	public void changeAssociationStart2EndMultiplicity(FmmlxDiagram diagram, int associationId, Multiplicity newMultiplicity) {
+	public void changeAssociationStart2EndMultiplicity(FmmlxDiagram diagram, String associationName, Multiplicity newMultiplicity) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(associationId),
+				new Value(associationName),
 				new Value(newMultiplicity.toValue())};
 		sendMessage("changeAssociationStart2EndMultiplicity", message);
 	}
 
-	public void changeAssociationEnd2StartMultiplicity(FmmlxDiagram diagram, int associationId, Multiplicity newMultiplicity) {
+	public void changeAssociationEnd2StartMultiplicity(FmmlxDiagram diagram, String associationName, Multiplicity newMultiplicity) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(associationId),
+				new Value(associationName),
 				new Value(newMultiplicity.toValue())};
 		sendMessage("changeAssociationEnd2StartMultiplicity", message);
 	}
@@ -1258,7 +1272,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("showBody", message);
 	}
 
-	public void loadProjectFromXml( String projectName){
+	public void loadProjectNameFromXml(String projectName){
 		Value[] message = new Value[]{
 				new Value(-1),
 				new Value(projectName)
@@ -1267,8 +1281,8 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void openXmlFile(String fileName){
-		Serializer serializer = new Serializer();
-		serializer.loadState(fileName, this);
+		Deserializer deserializer = new Deserializer();
+		deserializer.loadState(fileName, this);
 	}
 
 	public void openPackageBrowser() {

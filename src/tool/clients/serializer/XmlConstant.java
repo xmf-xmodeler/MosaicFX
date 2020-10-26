@@ -27,8 +27,9 @@ public class XmlConstant {
     public static final String TAG_PARAM_NAME = "Param";
     public static final String TAG_NAME_BODY = "Body";
     public static final String TAG_NAME_ATTRIBUTE = "Attribute";
+	public static final String TAG_NAME_LABELS = "Labels";
+	public static final String TAG_NAME_LABEL = "Label";
 
-    public static final String ATTRIBUTE_ID = "id";
     public static final String ATTRIBUTE_NAME = "name";
     public static final String ATTRIBUTE_OWNER = "owner";
     public static final String ATTRIBUTE_PACKAGE_PATH = "package_path";
@@ -37,8 +38,6 @@ public class XmlConstant {
     public static final String ATTRIBUTE_COORDINATE_X = "x";
     public static final String ATTRIBUTE_COORDINATE_Y = "y";
     public static final String ATTRIBUTE_IS_MONITORED = "is_monitored";
-
-
 
     public static final String ATTRIBUTE_LEVEL = "level";
     public static final String ATTRIBUTE_PARENTS = "parents";
@@ -55,9 +54,43 @@ public class XmlConstant {
     public static final String ATTRIBUTE_MULTIPLICITY_START_TO_END = "multiplicity_start_to_end";
     public static final String ATTRIBUTE_MULTIPLICITY_END_TO_START = "multiplicity_end_to_start";
 
-
-
     public static final String ATTRIBUTE_DIAGRAM_OWNER = "diagram_owner";
     public static final String ATTRIBUTE_MULTIPLICITY = "multiplicity";
+
+    public static final String ATTRIBUTE_IS_ABSTRACT = "abstract";
+    public static final String ATTRIBUTE_BODY = "body";
+    public static final String ATTRIBUTE_CLASS = "class";
+    public static final String ATTRIBUTE_OLD_NAME = "oldName";
+    public static final String ATTRIBUTE_NEW_NAME = "newName";
+    public static final String ATTRIBUTE_OLD_LEVEL = "oldLevel";
+    public static final String ATTRIBUTE_NEW_LEVEL = "newLevel";
+    public static final String ATTRIBUTE_NEW_TYPE = "newType";
+    public static final String ATTRIBUTE_OLD_TYPE = "oldType";
+    public static final String ATTRIBUTE_OLD_MULTIPLICITY = "oldMul";
+    public static final String ATTRIBUTE_NEW_MULTIPLICITY = "newMul";
+    public static final String ATTRIBUTE_OLD_CLASS = "class_old";
+    public static final String ATTRIBUTE_NEW_CLASS = "class_new";
+    public static final String ATTRIBUTE_SLOT_NAME = "slotName";
+    public static final String ATTRIBUTE_VALUE_TOBE_PARSED = "valueToBeParsed";
+    public static final String ATTRIBUTE_FW_NAME = "fwName";
+
+    public static final String ATTRIBUTE_REVERSE_NAME = "reverseName";
+
+    public static final String ATTRIBUTE_1_MULTIPLICITY = "multiplicity1";
+    public static final String ATTRIBUTE_2_MULTIPLICITY = "multiplicity2";
+    public static final String ATTRIBUTE_INST_LEVEL_1 = "instLevel1";
+    public static final String ATTRIBUTE_INST_LEVEL_2 = "instLevel2";
+    public static final String ATTRIBUTE_SOURCE_VISIBLE = "sourceVisibleFromTarget";
+    public static final String ATTRIBUTE_TARGET_VISIBLE = "targetVisibleFromSource";
+    public static final String ATTRIBUTE_IS_SIMETRIC = "isSymmetric";
+    public static final String ATTRIBUTE_IS_TRANSITIVE = "isTransitive";
+    public static final String ATTRIBUTE_ACCESS_SOURCE_FROM_TARGET = "accessSourceFromTargetName";
+    public static final String ATTRIBUTE_ACCESS_TARGET_FROM_SOURCE = "accessTargetFromSourceName";
+    public static final String ATTRIBUTE_DELEGATE_FROM = "delegateFrom";
+    public static final String ATTRIBUTE_DELEGATE_TO = "delegateTo";
+    public static final String ATTRIBUTE_CLASS_1 = "class1";
+    public static final String ATTRIBUTE_CLASS_2 = "class2";
+	public static final String ATTRIBUTE_TEXT = "text";
+
 
 }

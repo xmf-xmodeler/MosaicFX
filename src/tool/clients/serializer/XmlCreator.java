@@ -16,7 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class XmlCreator {
-    private static final String path= XmlConstant.USER_XML_FILE_NAME;
+    public static final String path= XmlConstant.USER_XML_FILE_NAME;
     private static final int version = XmlConstant.SERIALIZER_VERSION;
 
     public XmlCreator() {
@@ -35,6 +35,8 @@ public class XmlCreator {
         if(!checkFileExist()){
 
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            documentBuilderFactory.setValidating(true);
+            documentBuilderFactory.setIgnoringElementContentWhitespace(true);
 
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 

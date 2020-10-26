@@ -43,6 +43,10 @@ public class FmmlxLink extends Edge {
 		return ofId;
 	}
 
+	public String getOfName() {
+		return diagram.getAssociationById(ofId).getName();
+	}
+
 	private enum Anchor {SOURCE,CENTRE,TARGET};
 
 	@Override protected void layoutLabels() {
@@ -116,12 +120,9 @@ public class FmmlxLink extends Edge {
 	
 	@Override
 	public void unHighlight() {	}
-	
-	public FmmlxObject getSourceNode() {
-		return sourceNode;
-	}
-	
-	public FmmlxObject getTargetNode() {
-		return targetNode;
+
+	@Override
+	public void setIntermediatePoints(Vector<Point2D> intermediatePoints) {
+		super.intermediatePoints = intermediatePoints;
 	}
 }

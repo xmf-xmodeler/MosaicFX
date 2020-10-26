@@ -19,11 +19,7 @@
 	<classpathentry kind="lib" path="lib/jacob-1.14.3.jar"/>
 	<classpathentry kind="lib" path="lib/kodkod.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.draw2d_3.5.0.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JavaFx">
-		<accessrules>
-			<accessrule kind="accessible" pattern="javafx/**"/>
-		</accessrules>
-	</classpathentry>
 	<classpathentry kind="lib" path="lib/richtextfx-fat-0.8.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JavaFX"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

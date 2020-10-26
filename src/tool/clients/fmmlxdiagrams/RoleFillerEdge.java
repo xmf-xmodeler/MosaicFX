@@ -32,6 +32,11 @@ public class RoleFillerEdge extends Edge {
 	}
 
 	@Override
+	public void setIntermediatePoints(Vector<Point2D> intermediatePoints) {
+		super.intermediatePoints = intermediatePoints;
+	}
+
+	@Override
 	public HeadStyle getTargetDecoration() {
 		return HeadStyle.NO_ARROW;
 	}

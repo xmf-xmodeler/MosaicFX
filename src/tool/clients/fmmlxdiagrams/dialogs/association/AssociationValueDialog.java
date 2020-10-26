@@ -140,7 +140,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 	}
 
 	private void addAssociationInstance(FmmlxObject startNode, FmmlxObject endNode){		
-		diagram.getComm().addAssociationInstance(diagram, startNode.getName(), endNode.getName(), selectAssociationComboBox.getSelectionModel().getSelectedItem().id);
+		diagram.getComm().addAssociationInstance(diagram, startNode.getName(), endNode.getName(), selectAssociationComboBox.getSelectionModel().getSelectedItem().getName());
 		diagram.updateDiagram();
 		updateAssociationListView(selectAssociationComboBox.getSelectionModel().getSelectedItem());
 	}

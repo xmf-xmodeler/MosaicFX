@@ -31,10 +31,16 @@ public abstract class Edge implements CanvasElement {
 	private transient PortRegion newSourcePortRegion;
 	private transient PortRegion newTargetPortRegion;
 
-	private PortRegion sourcePortRegion;
-	private PortRegion targetPortRegion;
+	protected transient PortRegion sourcePortRegion;
+	protected transient PortRegion targetPortRegion;
 	private transient Point2D lastMousePosition;
-	
+
+	public abstract void setIntermediatePoints(Vector<Point2D> intermediatePoints);
+
+//	public abstract void setSourcePort(PortRegion valueOf);
+//
+//	public abstract void setTargetPort(PortRegion valueOf);
+
 	public static abstract class End {public final Edge edge; private End(Edge edge) {this.edge = edge;} public abstract FmmlxObject getNode();};
 	public static class Source extends End{private Source(Edge edge) {super(edge);} public FmmlxObject getNode() {return edge.sourceNode;}};
 	public static class Target extends End{private Target(Edge edge) {super(edge);} public FmmlxObject getNode() {return edge.targetNode;}};
@@ -95,11 +101,11 @@ public abstract class Edge implements CanvasElement {
 
 	}
 
-	protected FmmlxObject getSourceNode() {
+	public FmmlxObject getSourceNode() {
 		return sourceNode;
 	}
 
-	protected FmmlxObject getTargetNode() {
+	public FmmlxObject getTargetNode() {
 		return targetNode;
 	}
 
@@ -348,7 +354,7 @@ public abstract class Edge implements CanvasElement {
 
 	protected abstract void layoutLabels();
 
-	protected void align() {
+	public void align() {
 		checkVisibilityMode();
 		if(intermediatePoints.size() < 2) {
 			if(sourceNode.getDirectionForEdge(sourceEnd, true).isHorizontal() == targetNode.getDirectionForEdge(targetEnd, false).isHorizontal()) {
@@ -368,7 +374,6 @@ public abstract class Edge implements CanvasElement {
 			} else {
 				System.err.println("Unexpected initial edge alignment");
 			}
-			
 		}
 		
 		
