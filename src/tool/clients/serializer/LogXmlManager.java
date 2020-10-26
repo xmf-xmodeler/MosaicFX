@@ -7,6 +7,7 @@ import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.FaXML;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.Multiplicity;
+import tool.clients.fmmlxdiagrams.TimeOutException;
 import tool.clients.serializer.interfaces.ILog;
 import tool.clients.serializer.interfaces.IXmlManager;
 
@@ -476,6 +477,23 @@ public class LogXmlManager implements ILog, IXmlManager {
                     String roleFiller = roleFillerPathArray[roleFillerPathArray.length-1];
 
                     diagram.getComm().setRoleFiller(diagram, role, roleFiller);
+                    break;
+
+                }
+                case "addEnumeration" : {
+                    String enumName = logElement.getAttribute("name");
+                    diagram.getComm().addEnumeration(diagram, enumName);
+                    break;
+
+                }
+                case "addEnumerationValue" : {
+                    String enumName = logElement.getAttribute("enum_name");
+                    String itemName = logElement.getAttribute("enum_value_name");
+                    try {
+                        diagram.getComm().addEnumerationItem(diagram, enumName, itemName);
+                    } catch (TimeOutException e) {
+                        e.printStackTrace();
+                    }
                     break;
 
                 }

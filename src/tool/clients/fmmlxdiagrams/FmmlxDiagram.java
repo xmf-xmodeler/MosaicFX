@@ -999,7 +999,7 @@ public class FmmlxDiagram{
 		Vector<FmmlxAssociation> result = new Vector<>();
 		for (Edge tmp : edges) {
 			if (tmp instanceof FmmlxAssociation) {
-				if (tmp.sourceNode.getId() == object.getId() || tmp.targetNode.getId() == object.getId()) {
+				if (tmp.sourceNode.getName().equals(object.getName()) || tmp.targetNode.getName().equals(object.getName())) {
 					result.add((FmmlxAssociation) tmp);
 				}
 			}
