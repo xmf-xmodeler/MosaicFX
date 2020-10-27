@@ -12,6 +12,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
@@ -23,8 +24,8 @@ import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 	private Label messageNameLabel = new Label("Message name:");
 	private Label modelLabel = new Label("Model");
 	private Label numberOfParamsLabel = new Label("number of Params");
-	private Label classesLabel = new Label("Classes");
-	private Label operationsLabel = new Label("Operations");
+	private Label classesLabel = new Label("Operations");
+	private Label operationsLabel = new Label("Code");
 	private Label statusLabel = new Label("");
 	
 	private TextField messageNameTextfield = new TextField();
@@ -41,7 +42,7 @@ import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 	
 	
 	ListView<String> classesListView = new ListView<String>();
-	ListView<String> operationsListView = new ListView<String>();
+	TextArea operationsTextarea = new TextArea();
 	FmmlxDiagram diagram;
 	private final FmmlxDiagramCommunicator fmmlxDiagramCommunicator;
 	
@@ -74,15 +75,21 @@ import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 		grid.add(classesListView, 2, 1, 1, 5);
 		
 		grid.add(operationsLabel, 3, 0);
-		grid.add(operationsListView, 3, 1, 1, 5);
+		grid.add(operationsTextarea, 3, 1, 1, 5);
 		
 		grid.add(statusLabel, 0, 4, 2, 1);
 		
 		messageNameTextfield.textProperty().addListener( (e, oldText, newText) -> {keyTyped();});
 		modelTextfield.textProperty().addListener( (e, oldText, newText) -> {keyTyped();});
 		numberOfParamsTextfield.textProperty().addListener( (e, oldText, newText) -> {keyTyped();});
-		
+		classesListView.getSelectionModel().selectedItemProperty().addListener((e, oldText, newText) -> {classSelected(newText);});
+
 	}
+	
+	private void classSelected(String newText) {
+		if(newText != null) {
+			operationsTextarea.setText(result.get(newText));
+	}}
 	
 	private void keyTyped() 
 	{
