@@ -1354,7 +1354,7 @@ public class FmmlxDiagramCommunicator {
 			HashMap<String, String> result = new HashMap<>();
 			for(Object resultItemO : responseContent) {
 				Vector<Object> resultItem = (Vector<Object>) (resultItemO);
-				result.put((String) resultItem.get(0), (String)resultItem.get(6));
+				result.put(((String) resultItem.get(0)) + "::" + ((String)resultItem.get(2)), (String)resultItem.get(7));
 				
 			}Platform.runLater(()->{
 				findSendersOfMessages.sendResponse(result);
