@@ -70,7 +70,10 @@ public class Serializer implements ISerializer {
                 edgeElement = edgeXmlManager.createLinkXmlElement(diagram, (FmmlxLink) edge);
             } else if(edge instanceof InheritanceEdge){
                 edgeElement = edgeXmlManager.createInheritanceXmlElement(diagram, (InheritanceEdge) edge);
-            } else {
+            } else if(edge instanceof RoleFillerEdge){
+                edgeElement = edgeXmlManager.createRoleFillerEdgeXmlElement(diagram, (RoleFillerEdge) edge);
+            }
+            else {
                 edgeElement = null;
             }
             if(edgeElement!= null){

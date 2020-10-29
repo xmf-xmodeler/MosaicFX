@@ -223,7 +223,8 @@ public class FmmlxDiagramCommunicator {
 			for (Object o : parentListO) {
 				parentListI.add((Integer) o);
 			}
-			
+			System.err.println(responseObjectList.size());
+			System.err.println(responseObjectList);
 			Vector<Object> parentListO2 = (Vector<Object>) responseObjectList.get(12);
 			Vector<String> parentListS = new Vector<>();
 			for (Object o : parentListO2) {

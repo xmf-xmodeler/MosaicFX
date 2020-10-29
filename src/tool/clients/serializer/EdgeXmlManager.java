@@ -76,6 +76,15 @@ public class EdgeXmlManager implements IXmlManager {
         return edge;
     }
 
+    public Element createRoleFillerEdgeXmlElement(FmmlxDiagram diagram, RoleFillerEdge roleFillerEdge) throws TransformerException {
+        String type = XmlConstant.EdgeType.ROLEFILLEREDGE;
+
+        Element edge = createEdgeXmlElement(diagram, roleFillerEdge);
+        edge.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
+        return edge;
+    }
+
+
     public Element createInheritanceXmlElement(FmmlxDiagram fmmlxDiagram, InheritanceEdge inheritanceEdge) throws TransformerException {
         String type = XmlConstant.EdgeType.INHERITANCE;
 
@@ -94,6 +103,8 @@ public class EdgeXmlManager implements IXmlManager {
         edge.setAttribute(XmlConstant.ATTRIBUTE_OF, ofName+"");
         return edge;
     }
+
+
 
     @Override
     public void add(Element element) {
@@ -155,14 +166,14 @@ public class EdgeXmlManager implements IXmlManager {
                         if (edge instanceof FmmlxAssociation) {
                             String name = ((FmmlxAssociation) edge).getName();
                             if(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_NAME).equals(name) &&
-                                    edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE).equals("association")){
+                                    edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE).equals(XmlConstant.EdgeType.ASSOCIATION)){
                                 setDirectionsAndIntermediatePoints(fmmlxDiagram, edge, edgeElement);
                                 break;
                             }
                         } else if (edge instanceof DelegationEdge){
                             if(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE).equals(name_child) &&
                                     edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE).equals(name_parent) &&
-                                    edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE).equals("delegation")){
+                                    edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE).equals(XmlConstant.EdgeType.DELEGATION)){
                                 setDirectionsAndIntermediatePoints(fmmlxDiagram, edge, edgeElement);
                                 break;
                             }
@@ -171,16 +182,22 @@ public class EdgeXmlManager implements IXmlManager {
                             if(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE).equals(name_child) &&
                                     edgeElement.getAttribute(XmlConstant.ATTRIBUTE_OF).equals(ofName) &&
                                     edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE).equals(name_parent) &&
-                                    edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE).equals("link")){
+                                    edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE).equals(XmlConstant.EdgeType.LINK)){
                                 setDirectionsAndIntermediatePoints(fmmlxDiagram, edge, edgeElement);
                                 break;
                             }
                         } else if (edge instanceof InheritanceEdge) {
                             if(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE).equals(name_child) &&
                                     edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE).equals(name_parent) &&
-                                    edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE).equals("inheritance")){
+                                    edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE).equals(XmlConstant.EdgeType.INHERITANCE)){
                                 setDirectionsAndIntermediatePoints(fmmlxDiagram, edge, edgeElement);
                                 break;
+                            }
+                        } else if (edge instanceof RoleFillerEdge) {
+                            if(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE).equals(name_child) &&
+                                    edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE).equals(name_parent) &&
+                                    edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE).equals(XmlConstant.EdgeType.ROLEFILLEREDGE)){
+                                setDirectionsAndIntermediatePoints(fmmlxDiagram, edge, edgeElement);
                             }
                         }
                     }
@@ -222,5 +239,6 @@ public class EdgeXmlManager implements IXmlManager {
         edge.setIntermediatePoints(intermediatePoints);
         fmmlxDiagram.getComm().sendCurrentPositions(fmmlxDiagram, edge);
     }
+
 
 }

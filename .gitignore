@@ -6,6 +6,7 @@
 # idea
 .idea
 *.iml
+/resources/tmp4ops/*
 
 # user
 /ini_Bjoern_win_multi.txt

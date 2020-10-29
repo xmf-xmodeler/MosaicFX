@@ -92,5 +92,7 @@ public class XmlConstant {
         public static final String DELEGATION = "delegation";
         public static final String INHERITANCE = "inheritance";
         public static final String LINK = "link";
+
+        public static final String ROLEFILLEREDGE = "rolefilleredge";
     }
 }

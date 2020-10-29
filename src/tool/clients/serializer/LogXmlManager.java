@@ -326,7 +326,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     String[] classPathArray = classpath.split("::");
                     String className = classPathArray[classPathArray.length-1];
 
-                    diagram.getComm().changeOperationOwner(diagram, name, oldClassName, className);
+                    diagram.getComm().changeOperationOwner(diagram, oldClassName, name, className);
                     break;
                 }
                 case "removeOperation" : {
