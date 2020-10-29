@@ -229,14 +229,13 @@ public class FmmlxDiagram{
 		}
 		suppressRedraw = false;
 
+		newFmmlxPalette.update();
 		if(loadProcess){
 			alignAllComponents(this);
 			triggerOverallReLayout();
 			loadProcess = false;
 		}
-
 		redraw();
-		newFmmlxPalette.update();
 		
 		if(issues.size() > 0) {
 			issues.firstElement().performResolveAction(this);
