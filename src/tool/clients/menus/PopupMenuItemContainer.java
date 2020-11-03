@@ -5,7 +5,7 @@ import java.util.Vector;
 public class PopupMenuItemContainer {
 
   String                id;
-  Vector<PopupMenuItem> children = new Vector<PopupMenuItem>();
+  Vector<PopupMenuItem> children = new Vector<>();
 
   public Vector<PopupMenuItem> getChildren() {
     return children;

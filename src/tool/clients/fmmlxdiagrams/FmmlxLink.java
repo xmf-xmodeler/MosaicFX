@@ -31,7 +31,7 @@ public class FmmlxLink extends Edge {
 		return diagram.getAssociationById(ofId).getName();
 	}
 
-	private enum Anchor {SOURCE,CENTRE,TARGET};
+	private enum Anchor {SOURCE,CENTRE,TARGET}
 
 	@Override protected void layoutLabels() {
 		try{
@@ -98,8 +98,8 @@ public class FmmlxLink extends Edge {
 	}
 
 	public void edit(FmmlxObject selectedItem, FmmlxObject selectedItem2) {
-		this.sourceNode=diagram.getObjectById(selectedItem.getId());
-		this.targetNode= diagram.getObjectById(selectedItem2.getId());
+		this.sourceNode=diagram.getObjectByName(selectedItem.getName());
+		this.targetNode= diagram.getObjectByName(selectedItem2.getName());
 	}
 	
 	@Override

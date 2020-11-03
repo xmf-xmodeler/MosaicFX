@@ -89,8 +89,8 @@ public class FmmlxObjectPort {
 	public PortRegion getDirectionForEdge(Edge.End edgeEnd, boolean isStartNode) {
 		for(PortRegion direction : PortRegion.values()) {
 			Vector<Edge.End> edgesOnOneSide = edges.get(direction);
-			for(int i = 0; i < edgesOnOneSide.size(); i++) {
-				if(edgesOnOneSide.get(i) == edgeEnd && edgeEnd.getNode() == owner) {//(isStartNode?edge.sourceNode:edge.targetNode) == owner) {
+			for (Edge.End end : edgesOnOneSide) {
+				if (end == edgeEnd && edgeEnd.getNode() == owner) {//(isStartNode?edge.sourceNode:edge.targetNode) == owner) {
 					return direction;
 				}
 			}

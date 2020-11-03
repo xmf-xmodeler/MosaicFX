@@ -61,8 +61,8 @@ public class ChangeTargetDialog extends CustomDialog<ChangeTargetDialogResult>{
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				
 				//TODO current targetID still 0, implement get current TargetId
-				return new ChangeTargetDialogResult(type, object, selectAssociationComboBox.getSelectionModel().getSelectedItem(), 0, 
-						newTargetComboBox.getSelectionModel().getSelectedItem().getId());
+				return new ChangeTargetDialogResult(type, object, selectAssociationComboBox.getSelectionModel().getSelectedItem(), "oldName",
+						newTargetComboBox.getSelectionModel().getSelectedItem().getName());
 			}
 			return null;
 		});
@@ -73,9 +73,8 @@ public class ChangeTargetDialog extends CustomDialog<ChangeTargetDialogResult>{
 		if (selectAssociationComboBox.getSelectionModel().getSelectedItem()==null) {
 			errorLabel.setText(StringValue.ErrorMessage.selectAssociation);
 			return false;
-		}else if(newTargetComboBox.getSelectionModel().getSelectedItem()==null || 
-				newTargetComboBox.getSelectionModel().getSelectedItem().getName()==
-				currentTargetTextField.getText()) {
+		}else if(newTargetComboBox.getSelectionModel().getSelectedItem()==null ||
+				newTargetComboBox.getSelectionModel().getSelectedItem().getName().equals(currentTargetTextField.getText())) {
 			errorLabel.setText(StringValue.ErrorMessage.selectNewTarget);
 			return false;
 		}
@@ -92,10 +91,10 @@ public class ChangeTargetDialog extends CustomDialog<ChangeTargetDialogResult>{
 		classTextField = new TextField();
 		classTextField.setText(object.getName());
 		classTextField.setDisable(true);
-		selectAssociationComboBox = new ComboBox<FmmlxAssociation>();
+		selectAssociationComboBox = new ComboBox<>();
 		currentTargetTextField = new TextField();
 		currentTargetTextField.setDisable(true);
-		newTargetComboBox = new ComboBox<FmmlxObject>();
+		newTargetComboBox = new ComboBox<>();
 		
 		newTargetComboBox.setPrefWidth(COLUMN_WIDTH);
 		selectAssociationComboBox.setPrefWidth(COLUMN_WIDTH);

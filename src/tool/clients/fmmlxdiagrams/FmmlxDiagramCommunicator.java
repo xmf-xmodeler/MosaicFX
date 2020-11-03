@@ -856,7 +856,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("changeOperationOwner", message);
 	}
 
-	public void changeOperationType(FmmlxDiagram diagram, String objectName, String operationName, String oldType, String newType) {
+	public void changeOperationType(FmmlxDiagram diagram, String objectName, String operationName, String newType) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(objectName),
@@ -892,7 +892,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("changeClassName", message);
 	}
 
-	public void changeClassLevel(FmmlxDiagram diagram, String objectName, int oldLevel, int newLevel) {
+	public void changeClassLevel(FmmlxDiagram diagram, String objectName, int newLevel) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(objectName),
@@ -992,13 +992,13 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("changeOperationBody", message);
 	}
 
-	public void changeAssociationTarget(FmmlxDiagram diagram, int objectId, String associationName, Integer oldTargetID, Integer newTargetID) {
+	public void changeAssociationTarget(FmmlxDiagram diagram, String associationName, String oldTargetName, String newTargetName) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
-//				new Value(objectId),
+//				new Value(objectName),
 				new Value(associationName),
-				new Value(oldTargetID),
-				new Value(newTargetID)};
+				new Value(oldTargetName),
+				new Value(newTargetName)};
 		sendMessage("changeAssociationTarget", message);
 	}
 
@@ -1354,7 +1354,7 @@ public class FmmlxDiagramCommunicator {
 			HashMap<String, String> result = new HashMap<>();
 			for(Object resultItemO : responseContent) {
 				Vector<Object> resultItem = (Vector<Object>) (resultItemO);
-				result.put(((String) resultItem.get(0)) + "::" + ((String)resultItem.get(2)), (String)resultItem.get(7));
+				result.put(resultItem.get(0) + "::" + resultItem.get(2), (String)resultItem.get(7));
 				
 			}Platform.runLater(()->{
 				findSendersOfMessages.sendResponse(result);

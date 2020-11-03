@@ -17,7 +17,7 @@ public class Issue {
 	private String type;
 	private String text;
 	private Vector<Object> solution;
-	private Vector<Integer> affectedObjects = new Vector<Integer>();
+	private Vector<Integer> affectedObjects = new Vector<>();
 
 	public static class IssueNotReadableException extends Exception {
 		private static final long serialVersionUID = 1L;

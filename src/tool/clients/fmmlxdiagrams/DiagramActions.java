@@ -66,7 +66,6 @@ public class DiagramActions {
 		Platform.runLater(() -> {
 			CreateMetaClassDialog dlg = new CreateMetaClassDialog(diagram);
 			dlg.setTitle("Add metaclass");
-			String objectName;
 			Optional<MetaClassDialogResult> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
@@ -74,7 +73,6 @@ public class DiagramActions {
 
 				Canvas canvas = diagram.getCanvas();
 				canvas.setCursor(Cursor.CROSSHAIR);
-				objectName = mcdResult.getName();
 
 				EventHandler<MouseEvent> chooseLocation = new EventHandler<MouseEvent>() {
 					public void handle(MouseEvent e) {
@@ -101,13 +99,10 @@ public class DiagramActions {
 		Platform.runLater(() -> {
 			CreateMetaClassDialog dlg = new CreateMetaClassDialog(diagram);
 			dlg.setTitle("Add metaclass");
-			String objectName="";
 			Optional<MetaClassDialogResult> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
 				final MetaClassDialogResult mcdResult = result.get();
-
-				objectName = mcdResult.getName();
 
 				int x = (int) e.getX();
 				int y = (int) e.getY();
@@ -367,7 +362,7 @@ public class DiagramActions {
 	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type) {
 		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
 		
-		if (selectedProperty != null && selectedProperty instanceof FmmlxAttribute && type == PropertyType.Attribute) {
+		if (selectedProperty instanceof FmmlxAttribute && type == PropertyType.Attribute) {
 			FmmlxAttribute att = (FmmlxAttribute) selectedProperty;
 			Multiplicity oldMul = att.getMultiplicity();
 			
@@ -399,7 +394,7 @@ public class DiagramActions {
 				final ChangeLevelDialogResult result = opt.get();
 				switch (result.getType()) {
 					case Class:
-						diagram.getComm().changeClassLevel(diagram, result.getObjectName(), result.getOldLevel(), result.getNewLevel());
+						diagram.getComm().changeClassLevel(diagram, result.getObjectName(), result.getNewLevel());
 						break;
 					case Attribute:
 						diagram.getComm().changeAttributeLevel(diagram, result.getObjectName(), result.getName(), result.getOldLevel(), result.getNewLevel());
@@ -647,7 +642,7 @@ public class DiagramActions {
 						break;
 					case Operation:
 						diagram.getComm().changeOperationType(diagram, result.getObject().getName(), result.getOperation().getName(),
-								result.getOldType(), result.getNewType());
+								result.getNewType());
 						break;
 //					case Association:
 //						diagram.getComm().changeAssociationType(result.getObject().getId(), result.getAssociation().getName(),
@@ -672,7 +667,7 @@ public class DiagramActions {
 
 			if (opt.isPresent()) {
 				final ChangeTargetDialogResult result = opt.get();
-				diagram.getComm().changeAssociationTarget(diagram, result.getObject().getId(), result.getAssociationName(), result.getOldTargetID(), result.getNewTargetID());
+				diagram.getComm().changeAssociationTarget(diagram, result.getAssociationName(), result.getOldTargetName(), result.getNewTargetName());
 				diagram.updateDiagram();
 			}
 
@@ -817,13 +812,10 @@ public class DiagramActions {
 				new Alert(AlertType.ERROR, "The selected objects don't fit any Association definition.", ButtonType.OK).showAndWait();
 			}
 			if (association != null) {
-				final FmmlxObject sourceF = source;
-				final FmmlxObject targetF = target;
-				final FmmlxAssociation associationF = association;
-//				CountDownLatch l = new CountDownLatch(1);
+				//				CountDownLatch l = new CountDownLatch(1);
 
 //				Platform.runLater(() -> {
-				diagram.getComm().addAssociationInstance(diagram, sourceF.getName(), targetF.getName(), associationF.getName());
+				diagram.getComm().addAssociationInstance(diagram, source.getName(), target.getName(), association.getName());
 //					l.countDown();
 //				    });			
 //				diagram.updateDiagram();
@@ -913,9 +905,8 @@ public class DiagramActions {
 		dialog.setHeaderText("Global Variable Name:");
 		 
 		Optional<String> result = dialog.showAndWait();
-		 
-		if (result.isPresent()) 		 
-			diagram.getComm().assignToGlobal(diagram, object, result.get());
+
+		result.ifPresent(s -> diagram.getComm().assignToGlobal(diagram, object, s));
 	}
 
 
@@ -943,7 +934,7 @@ public class DiagramActions {
 		try {
 			return diagram.getComm().evalList(diagram, text);
 		} catch (TimeOutException e) {
-			return new Vector<>(Arrays.asList(new String[] {"Time", "Out", "Exception"}));
+			return new Vector<>(Arrays.asList("Time", "Out", "Exception"));
 		}	
 	}
 
@@ -952,9 +943,7 @@ public class DiagramActions {
 			Serializer serializer = new Serializer();
 			try {
 				serializer.saveState(diagram);
-			} catch (TransformerException e) {
-				e.printStackTrace();
-			} catch (ParserConfigurationException e) {
+			} catch (TransformerException | ParserConfigurationException e) {
 				e.printStackTrace();
 			}
 		});
@@ -987,12 +976,14 @@ public class DiagramActions {
 
 	public void loadLogs() {
 		Platform.runLater(()-> {
-			diagram.loadProcess = true;
-			Deserializer deserializer = new Deserializer();
-			try {
-				deserializer.getAllDiagramElement(diagram);
-			} catch (Exception e) {
-				e.printStackTrace();
+			if(diagram.getObjects().size()==0){
+				diagram.loadProcess = true;
+				Deserializer deserializer = new Deserializer();
+				try {
+					deserializer.getAllDiagramElement(diagram);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		});
 	}

@@ -9,15 +9,15 @@ public class ChangeTargetDialogResult extends DialogResult{
 	private final PropertyType type;
 	private FmmlxAssociation association;
 	private FmmlxObject object;
-	private Integer oldTargetID;
-	private Integer newTargetID;
+	private String oldTargetName;
+	private String newTargetName;
 	
 	
-	public ChangeTargetDialogResult(PropertyType type, FmmlxObject object, FmmlxAssociation association, Integer oldTargetID, Integer newTargetID) {
+	public ChangeTargetDialogResult(PropertyType type, FmmlxObject object, FmmlxAssociation association, String oldTargetName, String newTargetName) {
 		this.type=type;
 		this.object=object;
-		this.oldTargetID=oldTargetID;
-		this.newTargetID= newTargetID;
+		this.oldTargetName =oldTargetName;
+		this.newTargetName = newTargetName;
 	}
 
 	public PropertyType getType() {
@@ -28,12 +28,12 @@ public class ChangeTargetDialogResult extends DialogResult{
 		return object;
 	}
 
-	public Integer getOldTargetID() {
-		return oldTargetID;
+	public String getOldTargetName() {
+		return oldTargetName;
 	}
 
-	public Integer getNewTargetID() {
-		return newTargetID;
+	public String getNewTargetName() {
+		return newTargetName;
 	}
 
 	public String getAssociationName() {
