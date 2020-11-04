@@ -5,12 +5,12 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 public class ChangeOfDialogResult extends DialogResult{
 	
 	private final FmmlxObject object;
-	private int oldOfId;
+	private String oldOfName;
 	private FmmlxObject newOf;
 	
-	public ChangeOfDialogResult(FmmlxObject object, int oldOfId, FmmlxObject newOf) {
+	public ChangeOfDialogResult(FmmlxObject object, String oldOfName, FmmlxObject newOf) {
 		this.object = object;
-		this.oldOfId = oldOfId;
+		this.oldOfName = oldOfName;
 		this.newOf = newOf;
 	}
 
@@ -22,16 +22,8 @@ public class ChangeOfDialogResult extends DialogResult{
 		return newOf;
 	}
 
-	public int getObjectId() {
-		return object.getId();
-	}
-
-	public int getNewOfId() {
-		return newOf.getId();
-	}
-
-	public int getOldOfId() {
-		return oldOfId;
+	public String getOldOfName() {
+		return oldOfName;
 	}
 	
 

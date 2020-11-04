@@ -920,12 +920,12 @@ public class FmmlxDiagramCommunicator {
 //	}
 
 
-	public void changeOf(FmmlxDiagram diagram, int objectId, int oldOfId, int newOfId) {
+	public void changeOf(FmmlxDiagram diagram, String objectName, String oldOfName, String newOfName) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(objectId),
-				new Value(oldOfId),
-				new Value(newOfId)};
+				new Value(objectName),
+				new Value(oldOfName),
+				new Value(newOfName)};
 		sendMessage("changeOf", message);
 	}
 

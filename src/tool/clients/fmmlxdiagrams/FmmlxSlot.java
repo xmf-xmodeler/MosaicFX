@@ -43,7 +43,7 @@ public class FmmlxSlot implements FmmlxProperty {
 		while (next != null) {
 			allAttributes.addAll(next.getOwnAttributes());
 			allAttributes.addAll(next.getOtherAttributes());
-			next = diagram.getObjectById(next.getOf());
+			next = diagram.getObjectByName(next.getOfName());
 		}
 
 		for (FmmlxAttribute attribute : allAttributes) {

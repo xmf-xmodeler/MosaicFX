@@ -185,19 +185,10 @@ public class FmmlxDiagram{
 		}
 		suppressRedraw = true;
 		try {
-			
-	//		System.err.println("suppressRedraw");
-
-			objects.clear();
-			edges.clear();
-			labels.clear();
-			issues.clear();
-//			enums.clear();
-//			auxTypes.clear();
+			this.clearDiagram();
 	
 			Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
 			objects.addAll(fetchedObjects);
-			
 			issues.addAll(comm.fetchIssues(this));
 
 			for(FmmlxObject o : objects) {
@@ -221,7 +212,6 @@ public class FmmlxDiagram{
 			auxTypes = comm.fetchAllAuxTypes(this);
 
 			triggerOverallReLayout();
-			
 			resizeCanvas();
 			
 		} catch (TimeOutException e) {
@@ -239,6 +229,15 @@ public class FmmlxDiagram{
 		if(issues.size() > 0) {
 			issues.firstElement().performResolveAction(this);
 		}
+	}
+
+	public void clearDiagram(){
+		objects.clear();
+		edges.clear();
+		labels.clear();
+		issues.clear();
+//			enums.clear();
+//			auxTypes.clear();
 	}
 
 	private void alignAllComponents(FmmlxDiagram diagram) {
@@ -342,8 +341,7 @@ public class FmmlxDiagram{
 	////////////////////////////////////////////////////////////////////
 
 	private void mousePressed(MouseEvent e) {
-		if(suppressRedraw) return; 
-        suppressRedraw = false;
+		if(suppressRedraw) return;
 		Point2D p = scale(e);
 		clearContextMenus();
 
@@ -621,7 +619,7 @@ public class FmmlxDiagram{
 			if (nodeCreationType.equals("metaClass")) {
 				actions.addMetaClassDialog(e);
 			} else {
-				actions.addInstanceDialog(getObjectById(Integer.parseInt(nodeCreationType)),e);
+				actions.addInstanceDialog(getObjectByName((nodeCreationType)),e);
 			}
 			getCanvas().setCursor(Cursor.DEFAULT);
 			deselectAll();
