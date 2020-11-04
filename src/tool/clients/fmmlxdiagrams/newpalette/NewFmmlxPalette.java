@@ -186,8 +186,10 @@ public class NewFmmlxPalette {
 	}
 
 	public synchronized void update() {
-		clearAllGroup();
-		populate();		
+		Platform.runLater(() -> {
+			clearAllGroup();
+			populate();
+		});
 	}
 
 }

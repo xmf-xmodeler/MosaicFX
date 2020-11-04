@@ -228,7 +228,6 @@ public class FmmlxDiagram{
 			e.printStackTrace();
 		}
 		suppressRedraw = false;
-
 		newFmmlxPalette.update();
 		if(loadProcess){
 			alignAllComponents(this);
