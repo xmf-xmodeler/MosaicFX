@@ -93,8 +93,8 @@ public class FmmlxLink extends Edge {
 	
 	public String toPair() {
 		String firstString = this.sourceNode.getName();
-		String seconString = this.targetNode.getName();
-		return "( "+firstString+" ; "+seconString+" )";
+		String secondString = this.targetNode.getName();
+		return "( "+firstString+" ; "+secondString+" )";
 	}
 
 	public void edit(FmmlxObject selectedItem, FmmlxObject selectedItem2) {
@@ -108,5 +108,10 @@ public class FmmlxLink extends Edge {
 	@Override
 	public void setIntermediatePoints(Vector<Point2D> intermediatePoints) {
 		super.intermediatePoints = intermediatePoints;
+	}
+
+	@Override
+	public String getName() {
+		return getOfName()+"#"+this.sourceNode.getName()+"#"+this.targetNode.getName();
 	}
 }

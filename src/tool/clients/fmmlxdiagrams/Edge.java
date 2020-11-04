@@ -722,4 +722,6 @@ public abstract class Edge implements CanvasElement {
 		labelPositions.put(del.localID, new Point2D(del.relativeX, del.relativeY));
 		
 	}
+
+	public abstract String getName();
 }

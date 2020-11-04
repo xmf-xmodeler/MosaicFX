@@ -25,11 +25,8 @@ public class LabelXmlManager implements ILog, IXmlManager{
     
     public Element createLabelElement(FmmlxDiagram diagram, DiagramEdgeLabel edgeLabel) {
         String text = edgeLabel.getText();
-        String owner = "-1";
-        FmmlxAssociation association = diagram.getAssociationById(edgeLabel.getOwner().getId());
-        if(association!= null) {
-        	owner = association.getName();
-        }
+        String owner = edgeLabel.getOwner().getName();
+
         double x = edgeLabel.getRelativeX();
         double y = edgeLabel.getRelativeY();
 

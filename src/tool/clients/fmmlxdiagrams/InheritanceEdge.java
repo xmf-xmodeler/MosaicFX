@@ -49,4 +49,9 @@ public class InheritanceEdge extends Edge {
 	public boolean isVisible() {
 		return visible;
 	}
+
+	@Override
+	public String getName() {
+		return "doesNotMatter";
+	}
 }

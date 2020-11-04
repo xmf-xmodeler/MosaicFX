@@ -49,4 +49,9 @@ public class DelegationEdge extends Edge {
 	public boolean isVisible() {
 		return visible;
 	}
+	
+	@Override
+	public String getName() {
+		return "doesNotMatter";
+	}
 }
