@@ -616,7 +616,7 @@ public class FmmlxDiagram{
 				}
 			}
 		} else {
-			if (nodeCreationType.equals("metaClass")) {
+			if (nodeCreationType.equals("MetaClass")) {
 				actions.addMetaClassDialog(e);
 			} else {
 				actions.addInstanceDialog(getObjectByName((nodeCreationType)),e);

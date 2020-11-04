@@ -56,7 +56,7 @@ public class NewFmmlxPalette {
 	private void initGroup() {			
 		
 //		PaletteTool modelsGroupTooL = new ToolGroup(fmmlxDiagram, "Models", "models", "");
-		PaletteTool relationshipGroupTool = new ToolGroup(fmmlxDiagram, "Relationships", "relationsship", "");
+		PaletteTool relationshipGroupTool = new ToolGroup(fmmlxDiagram, "Relationships", "relationship", "");
 		PaletteTool classGroupTool = new ToolGroup(fmmlxDiagram, "Classes/Object", "classes", "");
 		
 //		PaletteGroup modelsGroup = new PaletteGroupModels(modelsGroupTooL);
