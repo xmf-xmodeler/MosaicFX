@@ -20,7 +20,7 @@ public class ChangeParentDialogResult {
 	}
 
 	public Vector<String> getCurrentParentNames() {
-		return object.getParentNames();
+		return object.getParentsNames();
 	}
 
 	public Vector<Integer> getNewParentIds() {

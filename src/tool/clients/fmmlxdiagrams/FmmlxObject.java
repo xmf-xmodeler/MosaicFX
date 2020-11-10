@@ -20,7 +20,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	private String name;
 	
 	@Deprecated int id;
-	@Deprecated Integer of;
+	@Deprecated private Integer of;
 	@Deprecated private Vector<Integer> parents;
 	
 	String ownPath;
@@ -157,12 +157,11 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		this.ports = new FmmlxObjectPort(this);
 	}
 
-	private String getParentsListString(FmmlxDiagram diagram) {
+	private String getParentsList(FmmlxDiagram diagram) {
 		StringBuilder parentsList = new StringBuilder("extends ");
-		for (Integer parentID : getParents()) {
-			String parentName;
+		for (String parentName : getParentsNames()) {
 			try {
-				FmmlxObject parent = diagram.getObjectById(parentID);
+				FmmlxObject parent = diagram.getObjectByName(parentName);
 				InheritanceEdge edge = diagram.getInheritanceEdge(this, parent);
 				if(edge != null && !edge.visible) {
 					parentName = parent.name;
@@ -189,7 +188,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	public double getCenterY() { return y + height / 2.; }
 	public double getRightX() { return x + width; }
 	public double getBottomY() { return y + height; }
-	@Deprecated public int getOf() { return of; }
+//	@Deprecated private int getOf() { return of; }
+//
 	public String getOfName() {
 		FmmlxObject ofObject = diagram.getObjectById(of);
 		if(ofObject==null){
@@ -236,13 +236,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		return result;
 	}
 
-	public Vector<String> getParentNames() {
-		Vector<String> parentNames = new Vector<>();
-		for(Integer id : parents){
-			parentNames.add(diagram.getObjectById(id).getName());
-		}
-		return parentNames;
-	}
 	public Vector<Integer> getParents() {
 		return parents;
 	}
@@ -258,7 +251,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	public Vector<FmmlxObject> getInstances() {
 		Vector<FmmlxObject> result = new Vector<>();
 		for (FmmlxObject object : diagram.getObjects()) {
-			if (object.getOf() == this.getId()) {
+			if (object.getOfName() == this.getName()) {
 				result.add(object);
 			}
 		}
@@ -352,13 +345,13 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
 		double currentY = 0;		
 
-		String parentString = getParentsListString(diagram);
+		String parentString = getParentsList(diagram);
 		int headerLines = /*hasParents()*/(!"".equals(parentString)) ? 3 : 2;
 		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * headerLines + EXTRA_Y_PER_LINE, getLevelBackgroundColor(), Color.BLACK, (x) -> 1., PropertyType.Class);
 		nodeElements.addElement(header);
 		FmmlxObject ofObj = null;
 		try {
-			ofObj = diagram.getObjectById(of);
+			ofObj = diagram.getObjectByName(getOfName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -538,7 +531,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		double neededWidth = FmmlxDiagram.calculateTextWidth(name);
 
 		if (of >= 0) {
-			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(getLevel() + "^" + diagram.getObjectById(of).name + "^") + 16);
+			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(getLevel() + "^" + diagram.getObjectByName(getOfName()).name + "^") + 16);
 		} else {
 			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(getLevel() + "^MetaClass^") + 16);
 		}
@@ -582,7 +575,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		}
 
 		if (hasParents()) {
-			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(getParentsListString(diagram)), neededWidth);
+			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(getParentsList(diagram)), neededWidth);
 		}
 //
 //		//determine maximal width of operation values
@@ -690,9 +683,9 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	private Vector<FmmlxObject> getAllAncestors() {
 		Vector<FmmlxObject> result1 = new Vector<>();
 		if (of != null && of >= 0)
-			result1.add(diagram.getObjectById(of));
-		for (Integer p : parents)
-			result1.add(diagram.getObjectById(p));
+			result1.add(diagram.getObjectByName(getOfName()));
+		for (String p : getParentsNames())
+			result1.add(diagram.getObjectByName(p));
 		Vector<FmmlxObject> result2 = new Vector<>(result1);
 		for (FmmlxObject o : result1) {
 			result2.addAll(o.getAllAncestors());

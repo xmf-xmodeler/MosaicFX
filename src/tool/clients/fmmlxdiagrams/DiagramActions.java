@@ -446,7 +446,7 @@ public class DiagramActions {
 
 			if (cod.isPresent()) {
 				final ChangeOfDialogResult result = cod.get();
-				diagram.getComm().changeOf(diagram, result.getObjectId(), result.getOldOfId(), result.getNewOfId());
+				diagram.getComm().changeOf(diagram, result.getObject().getName(), result.getOldOfName(), result.getNewOf().getName());
 				diagram.updateDiagram();
 			}
 //			l.countDown();

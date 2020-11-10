@@ -200,7 +200,7 @@ public class PropertyManager {
 
 	private void fillPropGrid() {
 		addRow(generalGrid, "TOOL_X", getProperty("TOOL_X", 100));
-		addRow(generalGrid, "TOOL_Y", getProperty("TOOL_X", 100));
+		addRow(generalGrid, "TOOL_Y", getProperty("TOOL_Y", 100));
 		addRow(generalGrid, "TOOL_WIDTH",  getProperty("TOOL_WIDTH", 1200));
 		addRow(generalGrid, "TOOL_HEIGHT", getProperty("TOOL_HEIGHT", 900));
 		addRow(generalGrid, "fileDialogPath", getProperty("fileDialogPath", ""));

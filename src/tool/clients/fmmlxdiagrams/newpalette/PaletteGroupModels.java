@@ -27,10 +27,10 @@ public class PaletteGroupModels extends PaletteGroup {
 	}
 
 	private void initTools(FmmlxDiagram fmmlxDiagram) {
-		PaletteTool auxillaryTools = new ToolModels(fmmlxDiagram, "Auxillary Classes", "auxillary", "");
+		PaletteTool auxiliaryTools = new ToolModels(fmmlxDiagram, "Auxiliary Classes", "auxiliary", "");
 		PaletteTool ordersTool = new ToolModels(fmmlxDiagram, "Orders", "orders", "");
 
-		PaletteItem associationPaletteItem = new PaletteItem(auxillaryTools);
+		PaletteItem associationPaletteItem = new PaletteItem(auxiliaryTools);
 		PaletteItem associationInstancePaletteItem = new PaletteItem(ordersTool);
 
 		items.add(associationPaletteItem);

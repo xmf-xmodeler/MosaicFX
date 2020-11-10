@@ -56,7 +56,7 @@ public class NewFmmlxPalette {
 	private void initGroup() {			
 		
 //		PaletteTool modelsGroupTooL = new ToolGroup(fmmlxDiagram, "Models", "models", "");
-		PaletteTool relationshipGroupTool = new ToolGroup(fmmlxDiagram, "Relationships", "relationsship", "");
+		PaletteTool relationshipGroupTool = new ToolGroup(fmmlxDiagram, "Relationships", "relationship", "");
 		PaletteTool classGroupTool = new ToolGroup(fmmlxDiagram, "Classes/Object", "classes", "");
 		
 //		PaletteGroup modelsGroup = new PaletteGroupModels(modelsGroupTooL);
@@ -87,7 +87,7 @@ public class NewFmmlxPalette {
 
 				Vector<Integer> textColorInt = new Vector<>(Arrays.asList(2, 3, 4, 5));
 
-				if (empty || item == null || item.getLabel() == null) {
+				if (empty || item == null || item.getName() == null) {
 					setText("");
 					setGraphic(null);
 					setBorder(new Border(new BorderStroke(null, null, null, null, null)));
@@ -108,7 +108,7 @@ public class NewFmmlxPalette {
 					setBackground(new Background(new BackgroundFill(null, null, null)));
 
 					if(item.getLevel()==1000) {
-						setText(item.getLabel());
+						setText(item.getName());
 						if(item.getId().equals("metaClass")) {
 							setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.DASHED, new CornerRadii(10), new BorderWidths(2),new Insets(2, 5, 2, 25))));
 							setBackground(new Background(new BackgroundFill(Color.WHITE,new CornerRadii(10), new Insets(2, 5, 2, 25))));
@@ -119,7 +119,7 @@ public class NewFmmlxPalette {
 						setTextFill(Color.valueOf("000000"));
 
 					} else {
-						setText(item.getLabel());
+						setText(item.getName());
 						if(item.getLevel()==1) {
 							setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(10), new BorderWidths(1),new Insets(2, 5, 2, 25))));
 							setBackground(new Background(new BackgroundFill(Color.WHITE,new CornerRadii(10), new Insets(2, 5, 2, 25))));

@@ -68,24 +68,12 @@ public class FmmlxDiagramCommunicator {
 
 			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, label, packageName);
 			
-			if(!PropertyManager.getProperty("diagramsInSeparateTab", false )) {
-			createTab(diagram.getView(), label, this.handler);
+			if(!PropertyManager.getProperty("diagramsInSeparateTab", true)) {
+				createTab(diagram.getView(), label, this.handler);
 			}else {
-			createStage(diagram.getView(), label, this.handler);	
+				createStage(diagram.getView(), label, this.handler);	
 			}
-//			Tab tab = new Tab(label);
-//			tab.setContent(diagram.getView());
-//			tab.setClosable(true);
-//			tabs.put(this.handler, tab);
 			diagrams.add(diagram);
-//			tabPane.getTabs().add(tab);
-//			tabPane.getSelectionModel().selectLast();
-//			tab.setOnCloseRequest(new javafx.event.EventHandler<javafx.event.Event>() {
-//				@Override
-//				public void handle(javafx.event.Event arg0) {
-//					close(FmmlxDiagramCommunicator.this.handler);
-//				}
-//			});
 			l.countDown();
 		});
 		try {
@@ -941,12 +929,12 @@ public class FmmlxDiagramCommunicator {
 //	}
 
 
-	public void changeOf(FmmlxDiagram diagram, int objectId, int oldOfId, int newOfId) {
+	public void changeOf(FmmlxDiagram diagram, String objectName, String oldOfName, String newOfName) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(objectId),
-				new Value(oldOfId),
-				new Value(newOfId)};
+				new Value(objectName),
+				new Value(oldOfName),
+				new Value(newOfName)};
 		sendMessage("changeOf", message);
 	}
 
