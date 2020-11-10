@@ -40,6 +40,7 @@ import tool.clients.Client;
 import tool.clients.EventHandler;
 import tool.clients.diagrams.DiagramClient;
 import tool.clients.workbench.SceneContainer;
+import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
@@ -348,33 +349,24 @@ public class EditorClient extends Client {
   }
 
   private void newNewTextEditor(final String id, final String label, final String toolTip, final boolean editable, final boolean lineNumbers, final String text) {
-//    Display.getDefault().syncExec(new Runnable() {
-//      public void run() {
 	  CountDownLatch l = new CountDownLatch(1);
 	  Platform.runLater(()->{
 		
-        //Tab tab = new Tab(label.length()<30? label : ("..."+label.substring(label.length()-30)));
-        //tab.setContextMenu(new ContextMenu(new MenuItem("go")));
-        //tab.setTooltip(new Tooltip(toolTip));
-        //tab.setClosable(true);
-       // tab.setOnCloseRequest((e)->close(tab,e));
-        //tabs.put(id, tab); //wichtig!!!
         try {
           Class<?> textEditorClass = Class.forName(XModeler.textEditorClass);
           Constructor<?> cnstr = textEditorClass.getConstructor(new Class<?>[] { String.class, String.class, TabPane.class, Boolean.TYPE, Boolean.TYPE, String.class });
           ITextEditor editor = (ITextEditor) cnstr.newInstance(id, label, tabPane, editable, lineNumbers, text);
-          // ITextEditor editor = new TextEditor(id, label, tabFolder, editable, lineNumbers, text);
-          //SceneContainer sceneContainer = SceneContainer.createAndShow(editor.getText(), false, label ,tabPane, getHandler(), id);  
-          //tab.setContent(editor.getText());
-          createTab(editor.getText(), label, id);
+          if(PropertyManager.getProperty("editorsSeparately", true)) {
+        	  createStage(editor.getText(), label, id); 
+          } else{
+        	  createTab(editor.getText(), label, id);
+          }
+        	  
           editors.put(id, editor);
-          //tabPane.getTabs().add(tab);
-          //tabPane.getSelectionModel().select(tab);
         } catch (Exception e) {
           e.printStackTrace();
         } 
         l.countDown();
-//      }
     });
 	  try {
 		l.await();
@@ -1001,8 +993,8 @@ public void sendMessage(final Message message) {
 			Optional<ButtonType> result = alert.showAndWait();
 			if (result.get().getButtonData() == ButtonData.YES) {
 				EditorClient.tabs.remove(id);
+				PropertyManager.setProperty("editorsSeparately", "true");
 				createStage(node, name, id);
-
 			} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
 				wevent.consume();
 			} else {
@@ -1034,6 +1026,7 @@ public void sendMessage(final Message message) {
 
 			Optional<ButtonType> result = alert.showAndWait();
 			if (result.get().getButtonData() == ButtonData.YES) {
+				PropertyManager.setProperty("editorsSeparately", "false");
 				createTab(node, name, id);
 			} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
 				wevent.consume();
