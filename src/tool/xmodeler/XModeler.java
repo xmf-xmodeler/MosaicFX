@@ -92,7 +92,7 @@ public class XModeler extends Application {
   static SplitPane       rightSplitPane      = null;
   static TabPane 		 browserTab 		 = null;
   static TabPane 		 editorTabs 		 = null;
-  static TabPane 		 propertyTabs 		 = null;
+  public static TabPane 		 propertyTabs 		 = null;
   static MenuBar		 menuBar			 = null;
   static Pane			 notificationPane 	 = null;
   
@@ -433,7 +433,7 @@ public class XModeler extends Application {
 	  ModelBrowserClient.start(browserTab);
 	  EditorClient.start(editorTabs);
 	  FormsClient.start(propertyTabs);
-	  Console.start(singleton.newStage.getStageForConsole());
+	  Console.start(propertyTabs,PropertyManager.getProperty("showConsoleSeparately", false), PropertyManager.getProperty("consoleVisible", false));
 	  DiagramClient.start(editorTabs);
 	  FmmlxDiagramCommunicator.start(editorTabs);
 	  ClassBrowserClient.start();

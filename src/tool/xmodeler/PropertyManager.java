@@ -272,7 +272,7 @@ public class PropertyManager {
 		return button;
 	}
 
-	private int getGridLength(GridPane gridPane) {
+	private int getGridLength(GridPane gridPane) { //TODO: Reimplementing. Does not work for JAVA 14!
 		int rows = 0;
 		try {
 			Method method = gridPane.getClass().getDeclaredMethod("getNumberOfRows");

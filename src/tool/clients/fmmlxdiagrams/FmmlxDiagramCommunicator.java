@@ -15,6 +15,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
 import tool.clients.workbench.WorkbenchClient;
+import tool.xmodeler.PropertyManager;
 import xos.Message;
 import xos.Value;
 
@@ -62,8 +63,11 @@ public class FmmlxDiagramCommunicator {
 
 			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, label, packageName);
 			
+			if(!PropertyManager.getProperty("diagramsInSeparateTab", false )) {
 			createTab(diagram.getView(), label, this.handler);
-			
+			}else {
+			createStage(diagram.getView(), label, this.handler);	
+			}
 //			Tab tab = new Tab(label);
 //			tab.setContent(diagram.getView());
 //			tab.setClosable(true);
@@ -1318,6 +1322,7 @@ public class FmmlxDiagramCommunicator {
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get().getButtonData() == ButtonData.YES) {
 			tabs.remove(id);
+			PropertyManager.setProperty("diagramsInSeparateTab", "true");
 			createStage(node, name, id);
 
 		} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
@@ -1344,6 +1349,7 @@ public class FmmlxDiagramCommunicator {
 
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get().getButtonData() == ButtonData.YES) {
+			PropertyManager.setProperty("diagramsInSeparateTab", "false");
 			createTab(node, name, id);
 		} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
 			wevent.consume();

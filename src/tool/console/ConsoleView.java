@@ -15,16 +15,25 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.CustomMenuItem;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -59,24 +68,74 @@ public class ConsoleView {
   Region				region = null;
   private final ScrollPane scrollpane; 
   private final TextArea textArea;
+  private final VBox vBox;
+
   
   Stage owner;
   
   
-  public ConsoleView(Stage owner) {
+  public ConsoleView() {
+	
+	vBox = new VBox();
+	Menu menu = new Menu("View");
+	CheckMenuItem consoleSeparateItem = new CheckMenuItem("Docked");
+	consoleSeparateItem.setSelected(true);
+	
+	MenuItem hideItem = new MenuItem("Hide!");
+	MenuBar menuBar = new MenuBar();
+	//ColorPicker colorPicker = new ColorPicker();
+	//colorPicker.setValue(Color.RED);
+	//colorPicker.setStyle("-fx-background-color: white;");
+	//MenuItem fgColorItem = new MenuItem(null,colorPicker);
+	menu.getItems().addAll(consoleSeparateItem,hideItem);
+	menuBar.getMenus().add(menu);
+	
+	consoleSeparateItem.setOnAction(e->separateConsole(((CheckMenuItem)e.getSource()).isSelected()));
+	hideItem.setOnAction(e->hideConsole());
+	vBox.getChildren().add(menuBar);
+	  
 	scrollpane = new ScrollPane();
 	textArea = new TextArea();
 	textArea.setPrefHeight(600);
 	scrollpane.setContent(textArea);
 	scrollpane.setFitToWidth(true);
 	scrollpane.setFitToHeight(true);
-	this.owner=owner;
 	textArea.setWrapText(true);
 	addVerifyListener(textArea);
     setFont(textArea.getFont().getSize());
+    vBox.getChildren().add(scrollpane);
   }
   
-  private void setFont(double size) {
+  private void hideConsole() {
+	  if(!Console.separate) {
+		  XModeler.propertyTabs.getTabs().remove(Console.tab);  
+	  } else {
+		  Console.stage.close();
+	  }
+	  PropertyManager.setProperty("consoleVisible", "false");
+  }
+  
+private void separateConsole(boolean docking) {
+	System.out.println(docking);
+	if(docking) {
+		if(Console.separate) {
+			System.out.println("Docking!");
+			PropertyManager.setProperty("showConsoleSeparately", "false");
+			Console.showInTab(XModeler.propertyTabs);
+			Console.stage.close();
+			
+		}
+	}else {
+		if(!Console.separate) {
+		System.out.println("Undocking!");
+		PropertyManager.setProperty("showConsoleSeparately", "true");
+		Console.showInStage();
+		XModeler.propertyTabs.getTabs().remove(Console.tab);
+		}
+	} 
+}
+
+private void setFont(double size) {
 	    try {
 	        Font f = Font.loadFont(new FileInputStream(new File("resources/fonts/DejaVuSansMono.ttf")), size);
 	        textArea.setFont(f);
@@ -86,7 +145,7 @@ public class ConsoleView {
 }
 
 public Node getView() {
-		return scrollpane;
+		return vBox;
   }
 
   public final void setFont(String fileName, String name) {
