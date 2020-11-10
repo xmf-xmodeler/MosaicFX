@@ -4,48 +4,34 @@ import java.io.PrintStream;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
-//import org.eclipse.swt.SWT;
-//import org.eclipse.swt.custom.CTabFolder;
-//import org.eclipse.swt.custom.CTabFolder2Adapter;
-//import org.eclipse.swt.custom.CTabFolder2Listener;
-//import org.eclipse.swt.custom.CTabFolderEvent;
-//import org.eclipse.swt.custom.CTabItem;
-//import org.eclipse.swt.custom.TreeEditor;
-//import org.eclipse.swt.events.KeyEvent;
-//import org.eclipse.swt.events.KeyListener;
-//import org.eclipse.swt.events.MouseEvent;
-//import org.eclipse.swt.events.MouseListener;
-//import org.eclipse.swt.graphics.Color;
-//import org.eclipse.swt.graphics.Font;
-//import org.eclipse.swt.graphics.FontData;
-//import org.eclipse.swt.graphics.GC;
-//import org.eclipse.swt.graphics.Image;
-//import org.eclipse.swt.graphics.ImageData;
-//import org.eclipse.swt.graphics.Point;
-//import org.eclipse.swt.graphics.Rectangle;
-//import org.eclipse.swt.widgets.Composite;
-//import org.eclipse.swt.widgets.Display;
-//import org.eclipse.swt.widgets.Event;
-//import org.eclipse.swt.widgets.Listener;
-//import org.eclipse.swt.widgets.Text;
-//import org.eclipse.swt.widgets.Tree;
-//import org.eclipse.swt.widgets.TreeItem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import javafx.application.Platform;
+import javafx.event.Event;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 import tool.clients.Client;
 import tool.clients.menus.MenuClient;
 import tool.helper.IconGenerator;
+import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
@@ -54,55 +40,28 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
 
   private static TabPane tabPane; 	
 	
-  static ModelBrowserClient          theClient;
-  static Hashtable<String, Tab> tabs               = new Hashtable<String, Tab>();
-  static Hashtable<String, TreeView<String>>     trees              = new Hashtable<String, TreeView<String>>();
-  static Hashtable<String, TreeItem<String>> items              = new Hashtable<String, TreeItem<String>>();
-  static Hashtable<String, String>   images             = new Hashtable<String, String>();
+  static ModelBrowserClient          				theClient;
+  static Hashtable<String, Tab> 					tabs               = new Hashtable<String, Tab>();
+  static Hashtable<String, TreeView<String>>     	trees              = new Hashtable<String, TreeView<String>>();
+  static Hashtable<String, TreeItem<String>> 		items              = new Hashtable<String, TreeItem<String>>();
+  static Hashtable<String, String>   				images             = new Hashtable<String, String>();
+  static Hashtable<String, String>   				treeChildrenList   = new Hashtable<String, String>(); // child -> tree
+  boolean                            				rendering          = true;
+  HashSet<TreeItem<String>>                  		deferredExpansions = new HashSet<TreeItem<String>>();
   
-  static Hashtable<String, String>   treeChildrenList   = new Hashtable<String, String>(); // child -> tree
-  
-  boolean                            rendering          = true;
-  HashSet<TreeItem<String>>                  deferredExpansions = new HashSet<TreeItem<String>>();
-  
-  static Font font = null;//Font.loadFont("file:fonts/DejaVuSans.ttf", 10);
-  
-//  public static CTabFolder getTabFolder() {
-//    return tabFolder;
-//  }
+  static Font font = null;  
 
   public static void start(TabPane tabPane){
 	  ModelBrowserClient.tabPane = tabPane;
   }
-  
-//  public static void start(CTabFolder tabFolder, int style) {
-//    ModelBrowserClient.tabFolder = tabFolder;
-//  }
 
   public static ModelBrowserClient theClient() {
     return theClient;
   }
 
-  // static Font labelFont = new Font(XModeler.getXModeler().getDisplay(), new FontData("Monaco", 12, SWT.NONE));
-
-//  final static int                   RIGHT_BUTTON       = 3;
-//  static CTabFolder                  tabFolder;
-//  static ModelBrowserClient          theClient;
-//  FontData                           fontData;
-//  boolean                            rendering          = true;
-//  HashSet<TreeItem>                  deferredExpansions = new HashSet<TreeItem>();
-//  static Font                        labelFont;
-//  static Hashtable<String, TreeItem> items              = new Hashtable<String, TreeItem>();
-//  static Hashtable<String, CTabItem> tabs               = new Hashtable<String, CTabItem>();
-//  static Hashtable<String, Tree>     trees              = new Hashtable<String, Tree>();
-//  static Hashtable<String, String>   images             = new Hashtable<String, String>();
-//  static Hashtable<Tree, TreeItem>   selections         = new Hashtable<Tree, TreeItem>();
-
   public ModelBrowserClient() {
     super("com.ceteva.modelBrowser");
     theClient = this;
-//    tabFolder.addCTabFolder2Listener(this);
-//    setFont("fonts/DejaVuSans.ttf", "DejaVu Sans");
   }
 
   private void addNodeWithIcon(Message message) {
@@ -164,41 +123,6 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
 			e.printStackTrace();
 		}
 		  
-//      runOnDisplay(new Runnable() {
-//        public void run() {
-//          TreeItem parent = items.get(parentId);
-//          if (!rendering) {
-//            parent.setExpanded(false);
-//            // Careful about the dummy nodes added to directories to ensure they
-//            // show the handles...
-//            if (text.trim().length() != 0) deferredExpansions.add(parent);
-//          }
-//          String iconFile = "icons/" + icon + ".gif";
-//          ImageData data = new ImageData(iconFile);
-//          Image image = new Image(XModeler.getXModeler().getDisplay(), data);
-//          TreeItem item = new TreeItem(parent, SWT.NONE, (index == -1) ? parent.getItemCount() : index);
-//          images.put(nodeId, icon);
-//          items.put(nodeId, item);
-//          item.setText(text);
-//          item.setImage(image);
-//          item.setExpanded(expanded);
-//          item.setFont(labelFont);
-          // automatically open root-node, if child-node is created.
-//          if (parent.getParentItem() == null) {
-//            if (rendering)
-//              parent.setExpanded(true);
-//            else {
-//              parent.setExpanded(false);
-//              // Careful about the dummy nodes added to directories to ensure they
-//              // show the handles...
-//              if (text.trim().length() != 0) deferredExpansions.add(parent);
-//            }
-//          }
-//          for (String id : trees.keySet())
-//            for (TreeItem i : trees.get(id).getItems())
-//              if (i == item) tabFolder.setSelection(tabs.get(id));
-//        }
-//      });
     } else System.err.println("ModelBrowserClient.addNodeWithIcon: cannot find node " + parentId);
   }
 
@@ -226,209 +150,122 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
 	} catch (InterruptedException e) {
 		e.printStackTrace();
 	}
-//	  Display.getDefault().syncExec(new Runnable() {
-//      public void run() {
-//
-//        TreeItem item = new TreeItem(tree, SWT.NONE, (index == -1) ? tree.getItemCount() : index);
-//        images.put(nodeId, icon);
-//        items.put(nodeId, item);
-//        item.setText(text);
-//        item.setImage(image);
-//        item.setExpanded(expanded);
-//        item.setFont(labelFont);
-//        tabFolder.setSelection(tabs.get(parentId));
-//      }
-//    });
   }
 
-  private void addTree(final String id, final String name) {
-	  CountDownLatch l = new CountDownLatch(1);
-	  Platform.runLater(()->{
-		  Tab tab = new Tab(name);
-		  tabs.put(id,tab);
-		  tab.setOnClosed((e)->{
-              Message m = getHandler().newMessage("modelBrowserClosed", 1);
-              m.args[0] = new Value(id);
-              getHandler().raiseEvent(m);
-		  });
-		  
-		  TreeView<String> tv = new TreeView<String>();
-		  tab.setContent(tv);
-		  trees.put(id, tv);
-		  
-		  
-		  tv.setCellFactory((p)->{
-        	 return new TreeItemInteractionHandler();
-		  });
-		  		 
-		  tabPane.getTabs().add(tab);
-		  tabPane.getSelectionModel().select(tab);
-		  l.countDown();
-	  });
-	  try {
-		l.await();
-	} catch (InterruptedException e) {
-		e.printStackTrace();
+	private void addTree(final String id, final String name) {
+		CountDownLatch l = new CountDownLatch(1);
+		Platform.runLater(() -> {
+			TreeView<String> tv = new TreeView<String>();
+			trees.put(id, tv);
+			tv.setCellFactory((p) -> {
+				return new TreeItemInteractionHandler();
+			});
+
+			if (PropertyManager.getProperty("treeBrowsersSeparately", true)) {
+				createStage(tv, name, id);
+			} else {
+				createTab(tv, name, id);
+			}
+
+			l.countDown();
+		});
+		try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
-//	runOnDisplay(new Runnable() {
-//      public void run() {
-//        final CTabItem tabItem = new CTabItem(tabFolder, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.CLOSE);
-//        tabItem.setText(name);
-//        tabs.put(id, tabItem);
-//        Tree tree = new Tree(tabFolder, SWT.VIRTUAL);
-//        tree.addKeyListener(ModelBrowserClient.this);
-//        tabItem.setControl(tree);
-//        trees.put(id, tree);
-//        tree.addMouseListener(ModelBrowserClient.this);
-//        tree.addListener(SWT.Expand, ModelBrowserClient.this);
-//        tree.addListener(SWT.Selection, ModelBrowserClient.this);
-//        tabFolder.setSelection(tabItem);
 
-//        tabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
-//          public void close(CTabFolderEvent event) {
-//            if (event.item.equals(tabItem)) {
-//
-//              Message m = getHandler().newMessage("modelBrowserClosed", 1);
-//              m.args[0] = new Value(id);
-//              getHandler().raiseEvent(m);
-//            }
-//          }
-//        });
-        // tabItem.getDisplay().addFilter(SWT.KeyDown, new Listener() {
-        // public void handleEvent(Event event) {
-        // if(event.stateMask == SWT.CTRL) {
-        // if((int)(event.character) == 23) { // Ctrl + W
-        // tabItem.dispose();
-        // Message m = getHandler().newMessage("modelBrowserClosed", 1);
-        // m.args[0] = new Value(id);
-        // getHandler().raiseEvent(m);
-        // }
-        // }
-        // }
-        // }
-        // );
+	private void createTab(TreeView<String> tv, String name, String id) {
+		Tab tab = new Tab(name);
+		tab.setTooltip(new Tooltip(name));
+		tab.setContent(tv);
+		tab.setClosable(true);
+		tabs.put(id, tab);
+		tab.setOnCloseRequest((e) -> closeTab(tab, e, id, name, tv));
+		tabPane.getTabs().add(tab);
+		tabPane.getSelectionModel().select(tab);
+	}
 
-//      }
-//    });
-  }
+	private void closeTab(Tab item, Event wevent, String id, String name, TreeView<String> tv) {
 
-//  public void editText(final Tree tree, final TreeItem item) {
-//
-//    // Called to create an editable area over the tree item and
-//    // raise a textChanged event if the text is modified...
-//
-//    final Color black = XModeler.getXModeler().getDisplay().getSystemColor(SWT.COLOR_BLACK);
-//    final TreeItem[] lastItem = new TreeItem[1];
-//    final TreeEditor editor = new TreeEditor(tree);
-//    boolean showBorder = true;
-//    final Composite composite = new Composite(tree, SWT.NONE);
-//    if (showBorder) composite.setBackground(black);
-//    final Text text = new Text(composite, SWT.NONE);
-//    final int inset = showBorder ? 1 : 0;
-//    composite.addListener(SWT.Resize, new Listener() {
-//      public void handleEvent(Event e) {
-//        Rectangle rect = composite.getClientArea();
-//        text.setBounds(rect.x + inset, rect.y + inset, rect.width - inset * 2, rect.height - inset * 2);
-//      }
-//    });
-//    Listener textListener = new Listener() {
-//      public void handleEvent(final Event e) {
-//        switch (e.type) {
-//          case SWT.FocusOut:
-//            updateText(item, text.getText());
-//            composite.dispose();
-//            break;
-//          case SWT.Verify:
-//            String newText = text.getText();
-//            String leftText = newText.substring(0, e.start);
-//            String rightText = newText.substring(e.end, newText.length());
-//            GC gc = new GC(text);
-//            Point size = gc.textExtent(leftText + e.text + rightText);
-//            gc.dispose();
-//            size = text.computeSize(size.x, SWT.DEFAULT);
-//            editor.horizontalAlignment = SWT.LEFT;
-//            Rectangle itemRect = item.getBounds(), rect = tree.getClientArea();
-//            editor.minimumWidth = Math.max(size.x, itemRect.width) + inset * 2;
-//            int left = itemRect.x, right = rect.x + rect.width;
-//            editor.minimumWidth = Math.min(editor.minimumWidth, right - left);
-//            editor.minimumHeight = size.y + inset * 2;
-//            editor.layout();
-//            break;
-//          case SWT.Traverse:
-//            switch (e.detail) {
-//              case SWT.TRAVERSE_RETURN:
-//                updateText(item, text.getText());
-//                // fall through.
-//              case SWT.TRAVERSE_ESCAPE:
-//                composite.dispose();
-//                e.doit = false;
-//            }
-//            break;
-//        }
-//      }
-//    };
-//    text.addListener(SWT.FocusOut, textListener);
-//    text.addListener(SWT.Traverse, textListener);
-//    text.addListener(SWT.Verify, textListener);
-//    editor.setEditor(composite, item);
-//    text.setText(item.getText());
-//    text.selectAll();
-//    text.setFocus();
-//  }
+		Alert alert = new Alert(AlertType.CONFIRMATION);
 
-  private void expand(final String id) {
-	CountDownLatch l = new CountDownLatch(1);
-	Platform.runLater(()->{
-		items.get(id).setExpanded(true);
-		l.countDown();
-	});
-	try {
-		l.await();
-	} catch (InterruptedException e) {
-		e.printStackTrace();
-	}  
-//    runOnDisplay(new Runnable() {
-//      public void run() {
-//        items.get(id).setExpanded(true);
-//        tabFolder.redraw();
-//      }
-//    });
-  }
+		ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+		ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
+		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+		alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
+		alert.setTitle("Open tab in separate window instead?");
+		alert.setHeaderText(null);
 
-//  private String getId(TreeView<String> tree) {
-//    for (String id : trees.keySet())
-//      if (trees.get(id) == tree) return id;
-//    return null;
-//  }
-//
-//  private String getId(TreeItem<String> item) {
-//    for (String id : items.keySet())
-//      if (items.get(id) == item) return id;
-//    return null;
-//  }
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get().getButtonData() == ButtonData.YES) {
+			tabs.remove(id);
+			PropertyManager.setProperty("treeBrowsersSeparately", "true");
+			createStage(tv, name, id);
+		} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
+			wevent.consume();
+		} else {
+			Message message = getHandler().newMessage("modelBrowserClosed", 1);
+			message.args[0] = new Value(id);
+			getHandler().raiseEvent(message);
+			trees.remove(id);
+			tabs.remove(id);
+		}
 
-//  public void handleEvent(Event event) {
-//    if (event.type == SWT.Expand) {
-//      Message m = getHandler().newMessage("expanded", 1);
-//      TreeItem item = (TreeItem) event.item;
-//      Value v1 = null;
-//      for (String id : items.keySet())
-//        if (items.get(id) == item) v1 = new Value(id);
-//      m.args[0] = v1;
-//      getHandler().raiseEvent(m);
-//    }
-//    if (event.type == SWT.Selection) {
-//      Tree tree = (Tree) event.widget;
-//      TreeItem item = selections.get(tree);
-//      if (tree.getSelectionCount() == 1) {
-//        if (item != null && tree.getSelection()[0] == item) {
-//          editText(tree, item);
-//        } else selections.put(tree, tree.getSelection()[0]);
-//      }
-//    }
-//  }
+	}
 
-  	public void sendMessageExpanded(TreeItem<String> item) {
+	private void createStage(TreeView<String> tv, String name, String id) {
+
+		Stage stage = new Stage();
+		BorderPane border = new BorderPane();
+		border.setCenter(tv);
+		Scene scene = new Scene(border, 300, 605);
+		stage.setScene(scene);
+		stage.setTitle(name);
+		stage.show();
+		stage.setOnCloseRequest((e) -> closeScene(stage, e, id, name, tv));
+	}
+
+	private void closeScene(Stage stage, Event wevent, String id, String name, TreeView<String> tv) {
+
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+
+		ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+		ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
+		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+		alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
+		alert.setTitle("Open stage as tab in tree pane instead?");
+		alert.setHeaderText(null);
+
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get().getButtonData() == ButtonData.YES) {
+			PropertyManager.setProperty("treeBrowsersSeparately", "false");
+			createTab(tv, name, id);
+		} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
+			wevent.consume();
+		} else {
+			Message message = getHandler().newMessage("modelBrowserClosed", 1);
+			message.args[0] = new Value(id);
+			getHandler().raiseEvent(message);
+			trees.remove(id);
+		}
+	}
+
+	private void expand(final String id) {
+		CountDownLatch l = new CountDownLatch(1);
+		Platform.runLater(() -> {
+			items.get(id).setExpanded(true);
+			l.countDown();
+		});
+		try {
+			l.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+  public void sendMessageExpanded(TreeItem<String> item) {
   		  Message m = getHandler().newMessage("expanded", 1);
 	      Value v1 = null;
 	      for (String id : items.keySet())
@@ -484,18 +321,6 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
     } else System.err.println("expecting exactly 1 model browser got: " + modelBrowsers.getLength());
   }
 
-//  private boolean isCommand(MouseEvent event) {
-//    return (event.stateMask & SWT.COMMAND) != 0;
-//  }
-//
-//  private boolean isRightClick(MouseEvent event) {
-//    return event.button == RIGHT_BUTTON;
-//  }
-//
-//  private boolean isCtrl(MouseEvent event) {
-//    return (event.stateMask & SWT.CTRL) != 0;
-//  }
-
   public String itemId(TreeItem<String> item) {
     for (String id : items.keySet())
       if (items.get(id) == item) return id;
@@ -515,35 +340,11 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
 	      getHandler().raiseEvent(m);
  }
   
-//  public void mouseDoubleClick(MouseEvent event) {
-//    Tree tree = (Tree) event.widget;
-//    if (tree.getSelectionCount() == 1) {
-//      TreeItem item = tree.getSelection()[0];
-//      String id = itemId(item);
-//      Message m = getHandler().newMessage("doubleSelected", 1);
-//      m.args[0] = new Value(id);
-//      getHandler().raiseEvent(m);
-//    }
+//  public void openContextMenu(TreeItem<String> item, javafx.scene.Node anchor, int x, int y){
+//	  for (String id : items.keySet())
+//          if (items.get(id) == item) MenuClient.popup(id, anchor, x, y);
 //  }
 
-//  public void mouseDown(MouseEvent event) {
-//    if (isRightClick(event) || isCommand(event) || isCtrl(event)) {
-//      Tree tree = (Tree) event.widget;
-//      if (tree.getSelectionCount() == 1) {
-//        TreeItem item = tree.getSelection()[0];
-//        for (String id : items.keySet())
-//          if (items.get(id) == item) MenuClient.popup(id, event.x, event.y);
-//      }
-//    }
-//  }
-  
-  public void openContextMenu(TreeItem<String> item, javafx.scene.Node anchor, int x, int y){
-	  for (String id : items.keySet())
-          if (items.get(id) == item) MenuClient.popup(id, anchor, x, y);
-  }
-
-//  public void mouseUp(MouseEvent event) {
-//  }
 
   private void newModelBrowser(Message message) {
     final Value id = message.args[0];
@@ -576,12 +377,6 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-//      Display.getDefault().syncExec(new Runnable() {
-//        public void run() {
-//          TreeItem item = items.get(id.strValue());
-//          item.dispose();
-//        }
-//      });
     } else System.err.println("ModelBrowserClient.removeNode: cannnot remove node with id " + id);
   }
 
@@ -596,11 +391,6 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
 	} catch (InterruptedException e) {
 		e.printStackTrace();
 	}
-//    runOnDisplay(new Runnable() {
-//      public void run() {
-//        tabFolder.setSelection(tabs.get(id));
-//      }
-//    });
   }
 
   private void selectNode(Message message, boolean select) {
@@ -672,14 +462,6 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
 	} catch (InterruptedException e) {
 		e.printStackTrace();
 	}
-//    runOnDisplay(new Runnable() {
-//      public void run() {
-//        for (TreeItem item : deferredExpansions) {
-//          item.setExpanded(true);
-//        }
-//      }
-//    });
-//    deferredExpansions.clear();
   }
 
   private void setFocus(Message message) {
@@ -696,13 +478,6 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-//    	Display.getDefault().syncExec(new Runnable() {
-//        public void run() {
-//          CTabItem tab = tabs.get(id.strValue());
-//          tabFolder.setFocus();
-//          tabFolder.setSelection(tab);
-//        }
-//      });
     } else System.err.println("cannot find tab " + id);
   }
 
@@ -721,12 +496,6 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-//      Display.getDefault().syncExec(new Runnable() {
-//        public void run() {
-//          TreeItem item = items.get(id.strValue());
-//          item.setText(text.strValue());
-//        }
-//      });
     } else System.err.println("ModelBrowserClienr.setText: cannot find tree item " + id.strValue());
   }
 
@@ -747,12 +516,6 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-//      Display.getDefault().syncExec(new Runnable() {
-//        public void run() {
-//          CTabItem item = tabs.get(id.strValue());
-//          tabFolder.setSelection(item);
-//        }
-//      });
     } else System.err.println("cannot select tab " + id);
   }
 
@@ -778,10 +541,6 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
     	out.print("<Tree id='" + id + "' selected='" + (tab.isSelected()) + "'>");
         writeXMLTreeRootItems(tree.getRoot(), out);
         
-//      Tree tree = trees.get(id);
-//      CTabItem tab = tabs.get(id);
-//      out.print("<Tree id='" + id + "' selected='" + (tabFolder.getSelection() == tab) + "'>");
-//      writeXMLTreeItems(tree.getItems(), out);
       out.print("</Tree>");
     }
     out.print("</ModelBrowser>");
@@ -812,37 +571,4 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
       out.print("</Item>");
     }
   }
-
-//  public void close(CTabFolderEvent event) {
-//  }
-//
-//  public void maximize(CTabFolderEvent event) {
-//
-//  }
-//
-//  public void minimize(CTabFolderEvent event) {
-//
-//  }
-//
-//  public void restore(CTabFolderEvent event) {
-//
-//  }
-//
-//  public void showList(CTabFolderEvent event) {
-//
-//  }
-
-//  public final void setFont(String fileName, String name) {
-//    // int oldHeight = fontData==null?10:fontData.getHeight();
-//    // System.out.println("oldHeight: " + oldHeight + "("+(fontData!=null)+")");
-//    FontData[] fontData = Display.getDefault().getSystemFont().getFontData();
-//    // oldHeight = fontData==null?10:fontData[0].getHeight();
-//    // int oldHeight =
-//    // System.out.println("oldHeight: " + oldHeight + "("+(fontData!=null)+")");
-//    this.fontData = fontData[0];
-//    XModeler.getXModeler().getDisplay().loadFont(fileName);
-//    this.fontData.setName(name);
-//    // this.fontData.setHeight(oldHeight);
-//    labelFont = new Font(XModeler.getXModeler().getDisplay(), fontData);
-//  }
 }

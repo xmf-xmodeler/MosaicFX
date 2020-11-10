@@ -1,6 +1,8 @@
 package tool.clients.browser;
 
+
 import javafx.application.Platform;
+import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
@@ -71,25 +73,23 @@ public class TreeItemInteractionHandler extends TreeCell<String> {
             setGraphic(null);
             this.setOnMouseClicked(null);
         } else {
-//            if (isEditing()) {
-//                if (textField != null) {
-//                    textField.setText(getString());
-//                }
-//                setText(null);
-//                setGraphic(textField);
-//            } else {
                 setText(getString());
                 setGraphic(getTreeItem().getGraphic());
         		this.setOnMouseClicked((MouseEvent me)->{
         			if(me.getButton() == MouseButton.PRIMARY && me.getClickCount() == 1 && justSelected && me.isControlDown()){ //enough for command of MAC?
         				//First Click
-        				if (currentContextMenu == null) {
-        					currentContextMenu = MenuClient.popup(ModelBrowserClient.theClient().itemId(this.getTreeItem()), this, (new Double(me.getSceneX()).intValue()), (new Double(me.getSceneY()).intValue()));
+        				if (currentContextMenu != null) {
+        					currentContextMenu.hide();	
         				}
-        				else {
-        					currentContextMenu.hide();
-        					currentContextMenu = MenuClient.popup(ModelBrowserClient.theClient().itemId(this.getTreeItem()), this, (new Double(me.getSceneX()).intValue()), (new Double(me.getSceneY()).intValue()));	
-        				}
+        				System.err.println("TreeItemInteractionhandler: " +  this);
+        				System.err.println("TreeItem: " +  this.getTreeItem());
+        				System.err.println("X: " +  me.getX());
+        				System.err.println("Y: " +  me.getY());
+    					currentContextMenu = MenuClient.popup(
+    						ModelBrowserClient.theClient().itemId(this.getTreeItem()), 
+    						this, 
+    						(new Double(me.getX()).intValue()), 
+    						(new Double(me.getY()).intValue()));
         			}else
         			if(me.getButton() == MouseButton.PRIMARY && me.getClickCount() == 1 && !justSelected){
         				//Second Click
@@ -140,13 +140,16 @@ public class TreeItemInteractionHandler extends TreeCell<String> {
         			justSelected = true;
         		});
         		this.setOnContextMenuRequested((e)->{
-        			if (currentContextMenu == null) {
-    					currentContextMenu = MenuClient.popup(ModelBrowserClient.theClient().itemId(this.getTreeItem()), this, (new Double(e.getSceneX()).intValue()), (new Double(e.getSceneY()).intValue()));
-    				}
-    				else {
+        			if (currentContextMenu != null) {
     					currentContextMenu.hide();
-    					currentContextMenu = MenuClient.popup(ModelBrowserClient.theClient().itemId(this.getTreeItem()), this, (new Double(e.getSceneX()).intValue()), (new Double(e.getSceneY()).intValue()));
-    				}
+        			}
+        			
+    					currentContextMenu = MenuClient.popup(
+    							ModelBrowserClient.theClient().itemId(this.getTreeItem()), 
+    							this.getTreeItem().getGraphic().getParent(), 
+        						(new Double(e.getX()).intValue()), 
+        						(new Double(e.getY()).intValue()));
+    				   				
         			});
 //            }
         }

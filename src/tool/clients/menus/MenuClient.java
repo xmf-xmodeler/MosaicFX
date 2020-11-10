@@ -17,10 +17,12 @@ import org.w3c.dom.NodeList;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.geometry.Side;
 import javafx.scene.control.ContextMenu;
 //import javafx.event.EventHandler;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.stage.Stage;
 import tool.clients.Client;
 import tool.clients.EventHandler;
 import tool.xmodeler.XModeler;
@@ -437,16 +439,21 @@ l.countDown();
 //    } else System.err.println("no menu for " + id);
   }
 
-  public static ContextMenu popup(String id, javafx.scene.Node anchor, int x, int y) 
-  {
+  public static ContextMenu popup(String id, javafx.scene.Node anchor, int x, int y) {
+//	  return MenuClient.popup(id, anchor, XModeler.getStage(), x, y);
+//  }
+//  
+//  
+//  public static ContextMenu popup(String id, javafx.scene.Node anchor, Stage stage, int x, int y) 
+//  {
 	  if (popupAssignments.containsKey(id)) {
       PopupMenu pmenu = popupAssignments.get(id);
       ContextMenu contextmenu = pmenu.popup(id);
       contextmenu.setAutoHide(true);
       
-      contextmenu.show(anchor,
-    			  x + XModeler.getStage().getX() + XModeler.getVerticalBorderSize() ,
-    			  y + XModeler.getStage().getY() + XModeler.getHorizontalBorderSize(true));
+      contextmenu.show(anchor, Side.RIGHT, x, y);
+//    			  x + stage.getX() + XModeler.getVerticalBorderSize() ,
+//    			  y + stage.getY() + XModeler.getHorizontalBorderSize(true));
     	  return contextmenu;
     	  
     } else {System.err.println("no menu for " + id); return null;}

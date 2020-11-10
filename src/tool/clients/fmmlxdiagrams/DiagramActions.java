@@ -742,11 +742,11 @@ public class DiagramActions {
 				
 				if(!result.getAssociation().getLevelEndToStart().equals(result.getNewInstLevelSource())) {
 					System.err.println("getLevelEndToStart:" + result.getAssociation().getLevelEndToStart() + "--> " + result.getNewInstLevelSource());
-					diagram.getComm().changeAssociationStart2EndLevel(diagram, result.getAssociation().id, result.getNewInstLevelSource());
+					diagram.getComm().changeAssociationEnd2StartLevel(diagram, result.getAssociation().id, result.getNewInstLevelSource());
 				}
 				if(!result.getAssociation().getLevelStartToEnd().equals(result.getNewInstLevelTarget())) {
 					System.err.println("getLevelStartToEnd:" + result.getAssociation().getLevelStartToEnd() + "--> " + result.getNewInstLevelTarget());
-					diagram.getComm().changeAssociationEnd2StartLevel(diagram, result.getAssociation().id, result.getNewInstLevelTarget());
+					diagram.getComm().changeAssociationStart2EndLevel(diagram, result.getAssociation().id, result.getNewInstLevelTarget());
 				}
 				
 				if(!result.getAssociation().getMultiplicityEndToStart().equals(result.getMultiplicitySource())) {
