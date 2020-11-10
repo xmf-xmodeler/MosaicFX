@@ -94,7 +94,7 @@ public class PopupMenuItem extends PopupMenuItemContainer {
 //  }
 
   public MenuItem popup(final String id) {
-	  MenuItem item = null;
+	  MenuItem item;
 	  if (!getChildren().isEmpty()) {
 		  item = new Menu(getName());
 	  }else{

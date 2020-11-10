@@ -11,13 +11,13 @@ public class ChangeOwnerDialogResult {
 	private FmmlxObject object;
 	private FmmlxAttribute attribute;
 	private FmmlxOperation operation;
-	private Integer newOwnerID;
+	private FmmlxObject newOwner;
 
 	public ChangeOwnerDialogResult(PropertyType type, FmmlxObject object, FmmlxAttribute fmmlxAttribute, FmmlxObject newOwner) {
 		this.type = type;
 		this.object = object;
 		this.attribute = fmmlxAttribute;
-		this.newOwnerID= newOwner.getId();
+		this.newOwner = newOwner;
 	}
 
 	public ChangeOwnerDialogResult(PropertyType type, FmmlxObject object, FmmlxOperation selectedItem,
@@ -25,7 +25,7 @@ public class ChangeOwnerDialogResult {
 		this.type = type;
 		this.object = object;
 		this.operation = selectedItem;
-		this.newOwnerID= newOwner.getId();
+		this.newOwner = newOwner;
 	}
 	public PropertyType getType() {
 		return type;
@@ -33,8 +33,8 @@ public class ChangeOwnerDialogResult {
 	public FmmlxObject getObject() {
 		return object;
 	}
-	public Integer getNewOwnerID() {
-		return newOwnerID;
+	public Integer getNewOwner() {
+		return newOwner.getId();
 	}
 	public FmmlxAttribute getAttribute() {
 		return attribute;
@@ -42,7 +42,9 @@ public class ChangeOwnerDialogResult {
 	public FmmlxOperation getOperation() {
 		return operation;
 	}
-	
-	
 
+
+	public String getNewOwnerName() {
+		return newOwner.getName();
+	}
 }

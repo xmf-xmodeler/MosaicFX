@@ -75,16 +75,16 @@ public class InstanceGenerator implements IInstanceGenerator{
     }
 
     @Override
-    public Vector<Integer> getParentIDs(){
+    public Vector<String> getParentNames(){
 
-        Vector<Integer> parentIds = new Vector<>();
+        Vector<String> parentNames = new Vector<>();
 
         if (!getSelectedParent().isEmpty()) {
             for (FmmlxObject o : getSelectedParent()) {
-                parentIds.add(o.getId());
+                parentNames.add(o.getName());
             }
         }
-        return parentIds;
+        return parentNames;
     }
 
     @Override
@@ -121,7 +121,7 @@ public class InstanceGenerator implements IInstanceGenerator{
 
 //        diagram.getComm().addNewInstance(diagram, object.getId(), name, object.getLevel()-1, getParentIDs(), false, positionX, positionY);
         //TODO ask : instanceName;
-        diagram.getComm().addNewInstanceWithSlots(diagram, object.getId(), name,
-                getParentIDs(), getSlotValuesMap(instanceNumber), positionX, positionY);
+        diagram.getComm().addNewInstanceWithSlots(diagram, object.getName(), name,
+                getParentNames(), getSlotValuesMap(instanceNumber), positionX, positionY);
     }
 }

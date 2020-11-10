@@ -1,11 +1,12 @@
 # java
 /bin/
 /out/
-*.log
+*.logManager
 /out/
 # idea
 .idea
 *.iml
+/resources/tmp4ops/*
 
 # user
 /ini_Bjoern_win_multi.txt
@@ -27,3 +28,6 @@
 
 # /build/.gitignore
 /build/output/
+
+# Test
+/userXmlFile.xml

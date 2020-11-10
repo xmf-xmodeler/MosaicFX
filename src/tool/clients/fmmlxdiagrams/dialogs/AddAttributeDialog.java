@@ -70,10 +70,9 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				int classId = selectedObject.getId();
 
 				return new AddAttributeDialogResult(
-						classId,
+						selectedObject.getName(),
 						nameTextField.getText(),
 						levelComboBox.getSelectionModel().getSelectedItem(),
 						getComboBoxStringValue(typeComboBox),

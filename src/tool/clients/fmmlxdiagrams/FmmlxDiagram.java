@@ -21,19 +21,14 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
-import tool.clients.fmmlxdiagrams.Palette;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
+import tool.clients.serializer.Deserializer;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 public class FmmlxDiagram{
@@ -65,7 +60,8 @@ public class FmmlxDiagram{
 	// Temporary variables storing the current state of user interactions
 	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
 	private ContextMenu activeContextMenu;
-	private transient boolean objectsMoved = false;
+	public transient boolean objectsMoved = false;
+	public transient boolean loadProcess = false;
 	private transient PropertyType drawEdgeType = null;
 	private transient Point2D lastPoint;
 	private transient Point2D currentPoint;
@@ -91,20 +87,24 @@ public class FmmlxDiagram{
 	private boolean showDerivedAttributes=true;
 	
 	private final int diagramID;
+	private final String diagramLabel;
 	private transient boolean suppressRedraw;
 	private final NewFmmlxPalette newFmmlxPalette;
-	private String packagePath = null;
+	private final String packagePath;
 	
 	public String updateID = null;
 	
 	String edgeCreationType = null;
 	String nodeCreationType = null;
+	boolean aNew = false;
 
 
 
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String label, String packagePath) {
+		this.aNew = aNew;
 		this.comm = comm;
 		this.diagramID = diagramID;
+		this.diagramLabel = label;
 		this.packagePath = packagePath;
 
 		pane = new SplitPane();
@@ -138,8 +138,6 @@ public class FmmlxDiagram{
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-
-		//redraw();
 		
 		java.util.Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -149,17 +147,12 @@ public class FmmlxDiagram{
 				redraw();
 			}
 		}, 25, 25);
-		
 	}
 
 	// Only used to set the mouse pointer. Find a better solution
 	@Deprecated
 	public Canvas getCanvas() {
 		return canvas;
-	}
-
-	public Vector<FmmlxEnum> getEnums() {
-		return enums;
 	}
 	
 	public void deselectPalette() {
@@ -184,10 +177,6 @@ public class FmmlxDiagram{
 		this.edgeCreationType = null;
 		getCanvas().setCursor(Cursor.CROSSHAIR);
 	}
-	
-
-//	public void setEnums(Vector<FmmlxEnum> enums) {
-//	}
 
 	private void fetchDiagramData() {
 		if(suppressRedraw) {
@@ -198,7 +187,7 @@ public class FmmlxDiagram{
 		try {
 			
 	//		System.err.println("suppressRedraw");
-			
+
 			objects.clear();
 			edges.clear();
 			labels.clear();
@@ -210,7 +199,7 @@ public class FmmlxDiagram{
 			objects.addAll(fetchedObjects);
 			
 			issues.addAll(comm.fetchIssues(this));
-			
+
 			for(FmmlxObject o : objects) {
 				o.fetchDataDefinitions(comm);
 			}
@@ -230,8 +219,7 @@ public class FmmlxDiagram{
 
 			enums = comm.fetchAllEnums(this);
 			auxTypes = comm.fetchAllAuxTypes(this);
-			
-			
+
 			triggerOverallReLayout();
 			
 			resizeCanvas();
@@ -240,13 +228,22 @@ public class FmmlxDiagram{
 			e.printStackTrace();
 		}
 		suppressRedraw = false;
-		redraw();
-
 		newFmmlxPalette.update();
+		if(loadProcess){
+			alignAllComponents(this);
+			triggerOverallReLayout();
+			loadProcess = false;
+		}
+		redraw();
 		
 		if(issues.size() > 0) {
 			issues.firstElement().performResolveAction(this);
 		}
+	}
+
+	private void alignAllComponents(FmmlxDiagram diagram) {
+		Deserializer deserializer = new Deserializer();
+		deserializer.alignCoordinate(diagram);
 	}
 
 	// This operation resets the size of the canvas when needed
@@ -343,6 +340,7 @@ public class FmmlxDiagram{
 	////////////////////////////////////////////////////////////////////
 	////						MouseListener						////
 	////////////////////////////////////////////////////////////////////
+
 	private void mousePressed(MouseEvent e) {
 		if(suppressRedraw) return; 
         suppressRedraw = false;
@@ -381,7 +379,7 @@ public class FmmlxDiagram{
 	private transient CanvasElement lastElementUnderMouse = null;
 	
 	private void mouseMoved(MouseEvent e) {
-		Point2D p = scale(e);;
+		Point2D p = scale(e);
 		if (mouseMode == MouseMode.DRAW_EDGE) {
 			storeCurrentPoint(p.getX(), p.getY());
 			redraw();
@@ -422,7 +420,6 @@ public class FmmlxDiagram{
 		for(Edge e : edges) {e.align();}
 
 		redraw();
-		
 	}
 
 	private void mouseReleased(MouseEvent e) {
@@ -450,7 +447,7 @@ public class FmmlxDiagram{
 		redraw();
 	}
 
-	private void triggerOverallReLayout() {
+	public void triggerOverallReLayout() {
 		for(int i = 0; i < 3; i++) {
 			for(FmmlxObject o : objects) {
 				o.layout(this);
@@ -476,7 +473,6 @@ public class FmmlxDiagram{
 						}
 					}
 				} else if (s instanceof Edge) {
-
 					comm.sendCurrentPositions(this, (Edge) s);
 				} else if (s instanceof DiagramEdgeLabel) {
 					DiagramEdgeLabel del = (DiagramEdgeLabel) s;
@@ -489,7 +485,9 @@ public class FmmlxDiagram{
 	}
 
 	private boolean isLeftButton(MouseEvent e) {return e.getButton() == MouseButton.PRIMARY;}
+
 	private boolean isRightButton(MouseEvent e) {return e.getButton() == MouseButton.SECONDARY;}
+
 //	private boolean isMiddleClick(MouseEvent e) {return e.getButton() == MouseButton.MIDDLE;}
 
 	private CanvasElement getElementAt(double x, double y) {
@@ -606,29 +604,27 @@ public class FmmlxDiagram{
 			handleLeftPressedDefault(e, hitObject);		
 			
 		} else if (edgeCreationType != null) {			
-			if (edgeCreationType=="association") {
+			if (edgeCreationType.equals("association")) {
 				hitObject = getElementAt(p.getX(), p.getY());
 				if(hitObject instanceof FmmlxObject) {		
 					actions.setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Association);
 					getCanvas().setCursor(Cursor.DEFAULT);
 					
 				}
-			} else if (edgeCreationType=="associationInstance") {
+			} else if (edgeCreationType.equals("associationInstance")) {
 				if(hitObject instanceof FmmlxObject) {
 					actions.setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.AssociationInstance);
 					getCanvas().setCursor(Cursor.DEFAULT);
 				}
 			}
-		} else if (nodeCreationType != null) {
-			if (nodeCreationType=="metaClass") {
+		} else {
+			if (nodeCreationType.equals("metaClass")) {
 				actions.addMetaClassDialog(e);
-				getCanvas().setCursor(Cursor.DEFAULT);
-				deselectAll();
 			} else {
 				actions.addInstanceDialog(getObjectById(Integer.parseInt(nodeCreationType)),e);
-				getCanvas().setCursor(Cursor.DEFAULT);
-				deselectAll();
 			}
+			getCanvas().setCursor(Cursor.DEFAULT);
+			deselectAll();
 		}
 	}
 
@@ -651,7 +647,7 @@ public class FmmlxDiagram{
 	}
 
 	private void handleDoubleClickOnNodeElement(Point2D p, CanvasElement hitObject) {
-		if (hitObject != null && hitObject instanceof FmmlxObject) {
+		if (hitObject instanceof FmmlxObject) {
 			FmmlxObject obj = (FmmlxObject) hitObject;
 			Point2D relativePoint = new Point2D(p.getX() - obj.getX(), p.getY() - obj.getY());
 			obj.performDoubleClickAction(relativePoint);
@@ -679,7 +675,6 @@ public class FmmlxDiagram{
 		}
 		showContextMenu(e);
 	}
-
 
 	private void handleScroll(ScrollEvent e) {
 		if (e.isControlDown()) {
@@ -824,30 +819,9 @@ public class FmmlxDiagram{
 	public Font getPaletteFontKursiv() {
 		return paletteFontKursiv;
 	}
-
-	
-	public Vector<FmmlxLink> getAssociationInstance(){
-		Vector<FmmlxLink> result = new Vector<FmmlxLink>();
-		for (Edge tmp : edges) {
-			if (tmp instanceof FmmlxLink) {
-				result.add((FmmlxLink) tmp);
-			}
-		}
-		return result; // read-only
-	}
 	
 	@Deprecated
 	//needs filter
-	public Vector<FmmlxAssociation> getAssociations() {
-		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
-		for (Edge tmp : edges) {
-			if (tmp instanceof FmmlxAssociation) {
-				result.add((FmmlxAssociation) tmp);
-			}
-		} 
-		return result; // read-only
-	}
-
 	/**
 	 * Calculates the height of the text. Because that depends of the font size and the screen resolution
 	 * @return the text height
@@ -866,7 +840,7 @@ public class FmmlxDiagram{
 
 	// TODO: delete and use method with level
 	public ObservableList<FmmlxObject> getAllPossibleParentList() {
-		ArrayList<FmmlxObject> objectList = new ArrayList<FmmlxObject>();
+		ArrayList<FmmlxObject> objectList = new ArrayList<>();
 
 		if (!objects.isEmpty()) {
 			for (FmmlxObject object : objects) {
@@ -875,8 +849,7 @@ public class FmmlxDiagram{
 				}
 			}
 		}
-		ObservableList<FmmlxObject> result = FXCollections.observableArrayList(objectList);
-		return result;
+		return FXCollections.observableArrayList(objectList);
 	}
 
 	public ObservableList<FmmlxObject> getAllPossibleParents(Integer level) {
@@ -889,8 +862,7 @@ public class FmmlxDiagram{
 				}
 			}
 		}
-		ObservableList<FmmlxObject> result = FXCollections.observableArrayList(objectList);
-		return result;
+		return FXCollections.observableArrayList(objectList);
 	}
 	
 	public void addLabel(DiagramEdgeLabel diagramLabel) {
@@ -911,7 +883,7 @@ public class FmmlxDiagram{
 	}
 	
 	public Vector<FmmlxAssociation> findAssociations(FmmlxObject source, FmmlxObject target) {
-		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
+		Vector<FmmlxAssociation> result = new Vector<>();
 		for (Edge e : edges)
 			if (e instanceof FmmlxAssociation) {
 				FmmlxAssociation association = (FmmlxAssociation) e;
@@ -926,17 +898,62 @@ public class FmmlxDiagram{
 
 
 	// Some useful methods for queries:
-	
+	public int getID() {
+		return diagramID;
+	}
+
+	public String getDiagramLabel() {
+		return diagramLabel;
+	}
+
+	public String getPackagePath() {
+		return packagePath;
+	}
+
+	public Vector<FmmlxEnum> getEnums() {
+		return enums;
+	}
+
 	public Vector<FmmlxObject> getObjects() {
-		return new Vector<FmmlxObject>(objects); // read-only
+		return new Vector<>(objects); // read-only
 	}
-	
-	public Vector<Edge> getEdges() {
-		return new Vector<Edge>(edges); // read-only
+
+	public Vector<FmmlxAssociation> getAssociations() {
+		Vector<FmmlxAssociation> result = new Vector<>();
+		for (Edge tmp : edges) {
+			if (tmp instanceof FmmlxAssociation) {
+				result.add((FmmlxAssociation) tmp);
+			}
+		}
+		return result; // read-only
 	}
-	
+
+	public Vector<FmmlxLink> getAssociationInstance(){
+		Vector<FmmlxLink> result = new Vector<>();
+		for (Edge tmp : edges) {
+			if (tmp instanceof FmmlxLink) {
+				result.add((FmmlxLink) tmp);
+			}
+		}
+		return result; // read-only
+	}
+
+	public InheritanceEdge getInheritanceEdge(FmmlxObject child, FmmlxObject parent) {
+		for(Edge e : edges) {
+			if(e instanceof InheritanceEdge) {
+				InheritanceEdge i = (InheritanceEdge) e;
+				if(i.isStartNode(child) && i.isEndNode(parent)) return i;
+			}
+		}
+		return null;
+	}
+
 	public Vector<DiagramEdgeLabel> getLabels() {
-		return new Vector<DiagramEdgeLabel>(labels); // read-only
+		return new Vector<>(labels); // read-only
+	}
+
+	public Vector<Edge> getEdges() {
+		return new Vector<>(edges); // read-only
 	}
 
 	public FmmlxObject getObjectById(int id) {
@@ -948,7 +965,7 @@ public class FmmlxDiagram{
 	}
 	
 	public Vector<FmmlxObject> getObjectsByLevel(int level){
-		Vector<FmmlxObject> result = new Vector<FmmlxObject>();
+		Vector<FmmlxObject> result = new Vector<>();
 		
 		for (FmmlxObject object : objects) {
 			if (object.getLevel()==level) {
@@ -967,7 +984,7 @@ public class FmmlxDiagram{
 	}
 	
 	public Object getAllMetaClass() {
-		Vector<FmmlxObject> result = new Vector<FmmlxObject>();
+		Vector<FmmlxObject> result = new Vector<>();
 		for (FmmlxObject object : getObjects()) {
 			if (object.getLevel() != 0) {
 				result.add(object);
@@ -977,10 +994,10 @@ public class FmmlxDiagram{
 	}
 	
 	public Vector<FmmlxAssociation> getRelatedAssociationByObject(FmmlxObject object) {
-		Vector<FmmlxAssociation> result = new Vector<FmmlxAssociation>();
+		Vector<FmmlxAssociation> result = new Vector<>();
 		for (Edge tmp : edges) {
 			if (tmp instanceof FmmlxAssociation) {
-				if (tmp.sourceNode.getId() == object.getId() || tmp.targetNode.getId() == object.getId()) {
+				if (tmp.sourceNode.getName().equals(object.getName()) || tmp.targetNode.getName().equals(object.getName())) {
 					result.add((FmmlxAssociation) tmp);
 				}
 			}
@@ -1011,19 +1028,13 @@ public class FmmlxDiagram{
 	public boolean isShowDerivedOperations() {return this.showDerivedOperations;}
 	public boolean isShowDerivedAttributes() {return this.showDerivedAttributes;}
 
-	public int getID() {
-		return diagramID;
-	}
-
 	public Vector<String> getAvailableTypes() {
-		Vector<String> types = new Vector<String>();
+		Vector<String> types = new Vector<>();
 		types.add("Boolean");
 		types.add("Integer");
 		types.add("Float");
 		types.add("String");
-		for(String s : auxTypes) {
-			types.add(s);
-		}
+		types.addAll(auxTypes);
 		for(FmmlxEnum e : enums) {
 			types.add(e.getName());
 		}
@@ -1071,7 +1082,7 @@ public class FmmlxDiagram{
 	}
 
 	public Vector<Point2D> findEdgeIntersections(Point2D a, Point2D b) { // only interested in a-b horizontal crossing c-d vertical
-		Vector<Point2D> result = new Vector<Point2D>();
+		Vector<Point2D> result = new Vector<>();
 		for(Edge e : edges) {
 			if(e.isVisible()) {
 				Vector<Point2D> otherPoints = e.getAllPoints();
@@ -1096,16 +1107,6 @@ public class FmmlxDiagram{
 		return result;
 	}
 
-	public InheritanceEdge getInheritanceEdge(FmmlxObject child, FmmlxObject parent) {
-		for(Edge e : edges) {
-			if(e instanceof InheritanceEdge) {
-				InheritanceEdge i = (InheritanceEdge) e;
-				if(i.isStartNode(child) && i.isEndNode(parent)) return i;
-			}
-		}
-		return null;
-	}
-
 	public DiagramActions getActions() {
 		return actions;
 	}
@@ -1121,7 +1122,7 @@ public class FmmlxDiagram{
 	}
 
 	public Vector<Issue> getIssues(FmmlxObject fmmlxObject) {
-		Vector<Issue> result = new Vector<Issue>();
+		Vector<Issue> result = new Vector<>();
 		if(issues != null) for(Issue issue : issues) { 
 			if(issue.isAffected(fmmlxObject)) {
 				result.add(issue);
@@ -1149,12 +1150,9 @@ public class FmmlxDiagram{
 	}
 
 	public List<FmmlxObject> getSortedObject(SortedValue sortedValue) {
-		List<FmmlxObject> result = new ArrayList<FmmlxObject>();
-		for (FmmlxObject obj : getObjects()) {
-			result.add(obj);
-		}		
+		List<FmmlxObject> result = new ArrayList<>(getObjects());
 		if(sortedValue == SortedValue.REVERSE) {
-			Collections.sort(result, Collections.reverseOrder());
+			result.sort(Collections.reverseOrder());
 		}else {
 			Collections.sort(result);
 		}		

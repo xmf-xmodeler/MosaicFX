@@ -1,25 +1,21 @@
 package tool.xmodeler;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 //import com.ceteva.oleBridge.OleBridgeClient;
 //import com.ceteva.undo.UndoClient;
@@ -49,7 +45,7 @@ import tool.clients.dialogs.DialogsClient;
 import tool.clients.editors.EditorClient;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
-import tool.clients.fmmlxdiagrams.classbrowser.ModellBrowserStage;
+import tool.clients.serializer.XmlCreator;
 import tool.clients.forms.FormsClient;
 import tool.clients.menus.MenuClient;
 import tool.clients.oleBridge.OleBridgeClient;
@@ -454,10 +450,9 @@ public class XModeler extends Application {
 	  initClients();
       startClients();
 	  openXModeler();
+  }
 
-  }	  
-	
-  public void createXmodeler() throws Exception {
+    public void createXmodeler() throws Exception {
 	  		outerSplitPane = new SplitPane();
 			
 			// Tabs for projects

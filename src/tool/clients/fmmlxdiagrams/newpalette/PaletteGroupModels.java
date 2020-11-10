@@ -6,7 +6,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 public class PaletteGroupModels extends PaletteGroup {
 	
-	private Vector<PaletteItem> items= new Vector<PaletteItem>();
+	private Vector<PaletteItem> items= new Vector<>();
 
 	public PaletteGroupModels(PaletteTool value) {
 		super(value);

@@ -22,8 +22,16 @@ public class FmmlxLink extends Edge {
 		this.diagram = diagram;
 //		layout();
 	}
-	
-	private enum Anchor {SOURCE,CENTRE,TARGET};
+
+	public int getOfId() {
+		return ofId;
+	}
+
+	public String getOfName() {
+		return diagram.getAssociationById(ofId).getName();
+	}
+
+	private enum Anchor {SOURCE,CENTRE,TARGET}
 
 	@Override protected void layoutLabels() {
 		try{
@@ -85,23 +93,25 @@ public class FmmlxLink extends Edge {
 	
 	public String toPair() {
 		String firstString = this.sourceNode.getName();
-		String seconString = this.targetNode.getName();
-		return "( "+firstString+" ; "+seconString+" )";
+		String secondString = this.targetNode.getName();
+		return "( "+firstString+" ; "+secondString+" )";
 	}
 
 	public void edit(FmmlxObject selectedItem, FmmlxObject selectedItem2) {
-		this.sourceNode=diagram.getObjectById(selectedItem.getId());
-		this.targetNode= diagram.getObjectById(selectedItem2.getId());
+		this.sourceNode=diagram.getObjectByName(selectedItem.getName());
+		this.targetNode= diagram.getObjectByName(selectedItem2.getName());
 	}
 	
 	@Override
 	public void unHighlight() {	}
-	
-	public FmmlxObject getSourceNode() {
-		return sourceNode;
+
+	@Override
+	public void setIntermediatePoints(Vector<Point2D> intermediatePoints) {
+		super.intermediatePoints = intermediatePoints;
 	}
-	
-	public FmmlxObject getTargetNode() {
-		return targetNode;
+
+	@Override
+	public String getName() {
+		return getOfName()+"#"+this.sourceNode.getName()+"#"+this.targetNode.getName();
 	}
 }

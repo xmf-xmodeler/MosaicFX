@@ -38,7 +38,9 @@ public class ChangeLevelDialogResult {
 	public int getOldLevel() {
 		return currentlevel;
 	}
-	
-	
 
+
+	public String getObjectName() {
+		return object.getName();
+	}
 }

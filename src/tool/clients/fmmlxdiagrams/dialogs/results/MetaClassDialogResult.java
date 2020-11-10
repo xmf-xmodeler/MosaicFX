@@ -41,4 +41,15 @@ public class MetaClassDialogResult {
 		}
 		return parentIds;
 	}
+
+	public Vector<String> getParentNames() {
+		Vector<String> parentNames = new Vector<>();
+
+		if (parent.size() > 0) {
+			for (FmmlxObject object : parent) {
+				parentNames.add(object.getName());
+			}
+		}
+		return parentNames;
+	}
 }

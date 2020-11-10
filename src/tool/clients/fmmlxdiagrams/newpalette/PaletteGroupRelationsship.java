@@ -6,7 +6,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 public class PaletteGroupRelationsship extends PaletteGroup {
 	
-	private Vector<PaletteItem> items= new Vector<PaletteItem>();
+	private Vector<PaletteItem> items= new Vector<>();
 
 	public PaletteGroupRelationsship(PaletteTool value) {
 		super(value);

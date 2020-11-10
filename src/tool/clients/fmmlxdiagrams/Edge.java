@@ -8,7 +8,6 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.scene.transform.Affine;
-import tool.clients.fmmlxdiagrams.PortRegion;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,7 +26,21 @@ public abstract class Edge implements CanvasElement {
 	
 	public final Edge.End sourceEnd = new Edge.Source(this);
 	public final Edge.End targetEnd = new Edge.Target(this);
-	
+
+	private transient MoveMode moveMode;
+	private transient PortRegion newSourcePortRegion;
+	private transient PortRegion newTargetPortRegion;
+
+	protected transient PortRegion sourcePortRegion;
+	protected transient PortRegion targetPortRegion;
+	private transient Point2D lastMousePosition;
+
+	public abstract void setIntermediatePoints(Vector<Point2D> intermediatePoints);
+
+//	public abstract void setSourcePort(PortRegion valueOf);
+//
+//	public abstract void setTargetPort(PortRegion valueOf);
+
 	public static abstract class End {public final Edge edge; private End(Edge edge) {this.edge = edge;} public abstract FmmlxObject getNode();};
 	public static class Source extends End{private Source(Edge edge) {super(edge);} public FmmlxObject getNode() {return edge.sourceNode;}};
 	public static class Target extends End{private Target(Edge edge) {super(edge);} public FmmlxObject getNode() {return edge.targetNode;}};
@@ -38,6 +51,15 @@ public abstract class Edge implements CanvasElement {
 
 	protected enum HeadStyle {
 		NO_ARROW, ARROW, FULL_TRIANGLE, CIRCLE;
+	}
+
+	private transient Vector<Point2D> latestValidPointConfiguration = new Vector<>();
+	private transient int pointToBeMoved = -1;
+	private transient boolean movementDirectionHorizontal;
+	private Integer firstHoverPointIndex;
+
+	private enum MoveMode {
+		normal, moveSourcePortArea, moveTargetPortArea
 	}
 
 	public Edge(int id, 
@@ -63,6 +85,7 @@ public abstract class Edge implements CanvasElement {
 			sourcePortRegion = determineInitialPort(startNode,
 				this.intermediatePoints.size() < 1 ? null : this.intermediatePoints.firstElement(),
 				startNode.getCenterX() < endNode.getCenterX() ? PortRegion.EAST : PortRegion.WEST);
+			this.sourcePortRegion = sourcePortRegion;
 		}
 		if(targetPortRegion==null) {
 			if(this instanceof InheritanceEdge) targetPortRegion = PortRegion.SOUTH;
@@ -71,12 +94,28 @@ public abstract class Edge implements CanvasElement {
 			targetPortRegion = determineInitialPort(endNode,
 				this.intermediatePoints.size() < 1 ? null : this.intermediatePoints.lastElement(),
 				startNode.getCenterX() < endNode.getCenterX() ? PortRegion.WEST : PortRegion.EAST);
+			this.targetPortRegion = targetPortRegion;
 		}
         startNode.addEdgeEnd(this.sourceEnd, sourcePortRegion);
         endNode.addEdgeEnd(this.targetEnd, targetPortRegion);
 
 	}
 
+	public FmmlxObject getSourceNode() {
+		return sourceNode;
+	}
+
+	public FmmlxObject getTargetNode() {
+		return targetNode;
+	}
+
+	public PortRegion getSourcePortRegion() {
+		return sourceNode.getDirectionForEdge(this.sourceEnd, true);
+	}
+
+	public PortRegion getTargetPortRegion() {
+		return targetNode.getDirectionForEdge(this.targetEnd, false);
+	}
 
 	private PortRegion determineInitialPort(FmmlxObject node, Point2D nextPoint, PortRegion defaultRegion) {
 		if (nextPoint == null) {
@@ -137,13 +176,7 @@ public abstract class Edge implements CanvasElement {
 					Point2D now = first.getX() < last.getX() ? first : last;
 					Point2D endOfLine = first.getX() < last.getX() ? last : first;
 
-					Collections.sort(intersections, new Comparator<Point2D>() {
-
-						@Override
-						public int compare(Point2D o1, Point2D o2) {
-							return o1.getX() < o2.getX() ? -1 : o1.getX() == o2.getX() ? 0 : 1;
-						}
-					});
+					intersections.sort(Comparator.comparingDouble(Point2D::getX));
 
 					boolean tunnelMode = false;
 					final int R = 5;
@@ -306,7 +339,7 @@ public abstract class Edge implements CanvasElement {
 	}
 
 	protected Vector<Point2D> getAllPoints() {
-		Vector<Point2D> allPoints = new Vector<Point2D>();
+		Vector<Point2D> allPoints = new Vector<>();
 		allPoints.add(sourceNode.getPointForEdge(sourceEnd, true));
 		allPoints.addAll(intermediatePoints);
 		allPoints.add(targetNode.getPointForEdge(targetEnd, false));
@@ -315,7 +348,7 @@ public abstract class Edge implements CanvasElement {
 
 	protected abstract void layoutLabels();
 
-	protected void align() {
+	public void align() {
 		checkVisibilityMode();
 		if(intermediatePoints.size() < 2) {
 			if(sourceNode.getDirectionForEdge(sourceEnd, true).isHorizontal() == targetNode.getDirectionForEdge(targetEnd, false).isHorizontal()) {
@@ -335,7 +368,6 @@ public abstract class Edge implements CanvasElement {
 			} else {
 				System.err.println("Unexpected initial edge alignment");
 			}
-			
 		}
 		
 		
@@ -435,8 +467,10 @@ public abstract class Edge implements CanvasElement {
 			}
 		} else if (moveMode == MoveMode.moveSourcePortArea) {
 			newSourcePortRegion = findBestRegion(sourceNode, x, y);
+			this.sourcePortRegion = newSourcePortRegion;
 		} else if (moveMode == MoveMode.moveTargetPortArea) {
 			newTargetPortRegion = findBestRegion(targetNode, x, y);
+			this.targetPortRegion = newTargetPortRegion;
 		}
 	}
 
@@ -475,19 +509,7 @@ public abstract class Edge implements CanvasElement {
 		latestValidPointConfiguration.addAll(intermediatePoints);
 	}
 
-	private transient Vector<Point2D> latestValidPointConfiguration = new Vector<>();
-	private transient int pointToBeMoved = -1;
-	private transient boolean movementDirectionHorizontal;
-	private Integer firstHoverPointIndex;
 
-	private enum MoveMode {
-		normal, moveSourcePortArea, moveTargetPortArea
-	}
-
-	private transient MoveMode moveMode;
-	private transient PortRegion newSourcePortRegion;
-	private transient PortRegion newTargetPortRegion;
-	private transient Point2D lastMousePosition;
 
 	public void setPointAtToBeMoved(Point2D mousePoint) {
 		Vector<Point2D> points = getAllPoints();
@@ -597,7 +619,7 @@ public abstract class Edge implements CanvasElement {
 	}
 
 	public Vector<Point2D> getIntermediatePoints() {
-		return new Vector<Point2D>(intermediatePoints);
+		return new Vector<>(intermediatePoints);
 	}
 
 	protected Point2D getCentreAnchor() {
@@ -700,4 +722,6 @@ public abstract class Edge implements CanvasElement {
 		labelPositions.put(del.localID, new Point2D(del.relativeX, del.relativeY));
 		
 	}
+
+	public abstract String getName();
 }
