@@ -5,7 +5,7 @@ import java.util.Vector;
 import javafx.collections.ObservableList;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 
-public class ChangeParentDialogResult extends DialogResult{
+public class ChangeParentDialogResult {
 	
 	private FmmlxObject object;
 	private ObservableList<FmmlxObject> newParent;

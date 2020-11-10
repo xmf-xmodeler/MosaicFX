@@ -24,7 +24,6 @@ public class ConsoleClient extends Thread {
   static ConsoleClient theConsole;
 
   public ConsoleClient(InputStream in, OutputStream out) {
-	System.err.println("ConsoleClient test");
     this.in = new BufferedReader(new InputStreamReader(in));
     this.out = new PrintStream(new BufferedOutputStream(out));
     theConsole = this;
@@ -108,7 +107,7 @@ public class ConsoleClient extends Thread {
     if (item.getNodeName().equals("Command")) Console.addCommand(XModeler.attributeValue(item, "text"));
   }
 
-  public void dot(Message message) {
+  public void dot(Message message) { //method call for Auto-Completion
     view.dot(message);
   }
 

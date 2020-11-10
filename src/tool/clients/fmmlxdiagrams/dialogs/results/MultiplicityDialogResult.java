@@ -5,7 +5,7 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
-public class MultiplicityDialogResult extends DialogResult {
+public class MultiplicityDialogResult {
 
 	private FmmlxObject object;
 	private FmmlxAttribute selectedAttribute;

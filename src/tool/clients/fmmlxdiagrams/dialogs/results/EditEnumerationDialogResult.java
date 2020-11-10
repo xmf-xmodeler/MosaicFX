@@ -2,7 +2,7 @@ package tool.clients.fmmlxdiagrams.dialogs.results;
 
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 
-public class EditEnumerationDialogResult extends DialogResult{
+public class EditEnumerationDialogResult {
 	
 	private String oldEnumName;
 	private FmmlxEnum newEditedEnum;

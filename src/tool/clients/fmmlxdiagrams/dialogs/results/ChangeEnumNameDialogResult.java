@@ -1,6 +1,6 @@
 package tool.clients.fmmlxdiagrams.dialogs.results;
 
-public class ChangeEnumNameDialogResult extends DialogResult{
+public class ChangeEnumNameDialogResult {
 
 	String oldName;
 	String newName;

@@ -3,7 +3,7 @@ package tool.clients.fmmlxdiagrams.dialogs.results;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
-public class AddOperationDialogResult extends DialogResult {
+public class AddOperationDialogResult {
 
 	// General fields used for all types
 	private final PropertyType type;

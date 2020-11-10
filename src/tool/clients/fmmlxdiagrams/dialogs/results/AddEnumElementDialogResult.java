@@ -2,7 +2,7 @@ package tool.clients.fmmlxdiagrams.dialogs.results;
 
 import tool.clients.fmmlxdiagrams.EnumElement;
 
-public class AddEnumElementDialogResult extends DialogResult{
+public class AddEnumElementDialogResult {
 
 	private String name;
 	

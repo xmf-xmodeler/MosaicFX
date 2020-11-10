@@ -2,7 +2,7 @@ package tool.clients.fmmlxdiagrams.dialogs.results;
 
 import tool.clients.fmmlxdiagrams.Multiplicity;
 
-public class AddAttributeDialogResult extends DialogResult {
+public class AddAttributeDialogResult {
 	
 	public final String name;
 	public final String type;

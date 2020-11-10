@@ -88,7 +88,7 @@ public class XModeler extends Application {
   static SplitPane       rightSplitPane      = null;
   static TabPane 		 browserTab 		 = null;
   static TabPane 		 editorTabs 		 = null;
-  static TabPane 		 propertyTabs 		 = null;
+  public static TabPane 		 propertyTabs 		 = null;
   static MenuBar		 menuBar			 = null;
   static Pane			 notificationPane 	 = null;
   
@@ -429,7 +429,7 @@ public class XModeler extends Application {
 	  ModelBrowserClient.start(browserTab);
 	  EditorClient.start(editorTabs);
 	  FormsClient.start(propertyTabs);
-	  Console.start(propertyTabs);
+	  Console.start(propertyTabs,PropertyManager.getProperty("showConsoleSeparately", false), PropertyManager.getProperty("consoleVisible", false));
 	  DiagramClient.start(editorTabs);
 	  FmmlxDiagramCommunicator.start(editorTabs);
 	  ClassBrowserClient.start();
@@ -460,7 +460,8 @@ public class XModeler extends Application {
 			
 			rightSplitPane = new SplitPane();
 			rightSplitPane.setOrientation(Orientation.VERTICAL);
-			rightSplitPane.setDividerPosition(0, 0.66);
+			rightSplitPane.setDividerPosition(0, 0.88);
+			rightSplitPane.setPrefHeight(1000);
 			
 			editorTabs = new TabPane();// welcomeTab ,new Tab("Diagram", new DiagramPanel()));
 			propertyTabs = new TabPane();

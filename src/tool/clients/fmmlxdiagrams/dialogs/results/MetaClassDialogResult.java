@@ -5,7 +5,7 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 import java.util.Vector;
 
-public class MetaClassDialogResult extends DialogResult {
+public class MetaClassDialogResult {
 
 	private String name;
 	private int level;

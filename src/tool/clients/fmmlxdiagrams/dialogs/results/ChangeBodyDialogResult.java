@@ -3,7 +3,7 @@ package tool.clients.fmmlxdiagrams.dialogs.results;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 
-public class ChangeBodyDialogResult extends DialogResult{
+public class ChangeBodyDialogResult {
 	
 	private final FmmlxObject object;
 	private final FmmlxOperation selectedItem;

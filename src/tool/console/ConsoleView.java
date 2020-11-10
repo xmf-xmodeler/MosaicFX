@@ -15,17 +15,28 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.CustomMenuItem;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 import tool.clients.consoleInterface.EscapeHandler;
 import tool.clients.dialogs.notifier.NotificationType;
 import tool.clients.dialogs.notifier.NotifierDialog;
@@ -47,62 +58,94 @@ public class ConsoleView {
   }
 
   static EscapeHandler escape          = null;
-
-//  StyledText           text            = null;
   History              history         = new History();
   int                  inputStart      = 0;
-//  FontData             fontData;
-// Font textFont = new Font(Display.getCurrent(), "Monaco", 14, SWT.NORMAL);
-  Color                backgroundColor = Color.WHEAT;//new Color(org.eclipse.swt.widgets.Display.getCurrent(), 255, 255, 255); 
-  Color                foregroundColor = Color.CHOCOLATE;//new Color(org.eclipse.swt.widgets.Display.getCurrent(), 0, 0, 0);
+  Color                backgroundColor = new Color(.1,.1,.1,1.);
   int                  waterMark       = 1000;
   PrintStream          out             = null;
   Object               overflowLock    = new Object();
-  AutoComplete         autoComplete    = AutoComplete.newDefault();                    // de-activated for now for better usability
-
+  AutoComplete         autoComplete    = AutoComplete.newDefault();// de-activated for now for better usability
+  Region				region = null;
   private final ScrollPane scrollpane; 
   private final TextArea textArea;
+  private final VBox vBox;
+
+  
+  Stage owner;
+  
   
   public ConsoleView() {
+	
+	vBox = new VBox();
+	Menu menu = new Menu("View");
+	CheckMenuItem consoleSeparateItem = new CheckMenuItem("Docked");
+	consoleSeparateItem.setSelected(true);
+	
+	MenuItem hideItem = new MenuItem("Hide!");
+	MenuBar menuBar = new MenuBar();
+	//ColorPicker colorPicker = new ColorPicker();
+	//colorPicker.setValue(Color.RED);
+	//colorPicker.setStyle("-fx-background-color: white;");
+	//MenuItem fgColorItem = new MenuItem(null,colorPicker);
+	menu.getItems().addAll(consoleSeparateItem,hideItem);
+	menuBar.getMenus().add(menu);
+	
+	consoleSeparateItem.setOnAction(e->separateConsole(((CheckMenuItem)e.getSource()).isSelected()));
+	hideItem.setOnAction(e->hideConsole());
+	vBox.getChildren().add(menuBar);
+	  
 	scrollpane = new ScrollPane();
 	textArea = new TextArea();
+	textArea.setPrefHeight(600);
 	scrollpane.setContent(textArea);
 	scrollpane.setFitToWidth(true);
 	scrollpane.setFitToHeight(true);
-	
 	textArea.setWrapText(true);
-	textArea.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
-	//	Region node = textArea.lookup("content");
-	
-//	System.err.println(node);
-//	node.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
-	
-	//    setFont("fonts/DejaVuSansMono.ttf", "DejaVu Sans Mono");
-    addVerifyListener(textArea);
+	addVerifyListener(textArea);
     setFont(textArea.getFont().getSize());
-//    tabItem.setControl(c1);
-	
-//	textArea.textProperty().addListener(new ChangeListener<String>() {
-//	    @Override
-//	    public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
-//	    	Region r = (Region) textArea.lookup(".content");
-//	    	r.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
-//	    }
-//	});
+    vBox.getChildren().add(scrollpane);
   }
   
-  private void setFont(double size) {
+  private void hideConsole() {
+	  if(!Console.separate) {
+		  XModeler.propertyTabs.getTabs().remove(Console.tab);  
+	  } else {
+		  Console.stage.close();
+	  }
+	  PropertyManager.setProperty("consoleVisible", "false");
+  }
+  
+private void separateConsole(boolean docking) {
+	System.out.println(docking);
+	if(docking) {
+		if(Console.separate) {
+			System.out.println("Docking!");
+			PropertyManager.setProperty("showConsoleSeparately", "false");
+			Console.showInTab(XModeler.propertyTabs);
+			Console.stage.close();
+			
+		}
+	}else {
+		if(!Console.separate) {
+		System.out.println("Undocking!");
+		PropertyManager.setProperty("showConsoleSeparately", "true");
+		Console.showInStage();
+		XModeler.propertyTabs.getTabs().remove(Console.tab);
+		}
+	} 
+}
+
+private void setFont(double size) {
 	    try {
 	        Font f = Font.loadFont(new FileInputStream(new File("resources/fonts/DejaVuSansMono.ttf")), size);
-			textArea.setFont(f);
+	        textArea.setFont(f);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}	
 }
 
 public Node getView() {
-	// TODO Auto-generated method stub
-	return scrollpane;
+		return vBox;
   }
 
   public final void setFont(String fileName, String name) {
@@ -305,10 +348,20 @@ public Node getView() {
           backup(1);
           revertInput();
         } else if (keyEvent.getCharacter().charAt(0) == '\"' && autoComplete.isApostropheAddQuotes()) {
-          // Insert the corresponding close string...
+            // Insert the corresponding close string...
           insert("\"\"");
           backup(1);
           revertInput();
+        } else if (keyEvent.getCode() == KeyCode.DIGIT0 && keyEvent.isControlDown()) { textArea.setStyle("-fx-text-fill: #000000;"); 
+        } else if (keyEvent.getCode() == KeyCode.DIGIT1 && keyEvent.isControlDown()) { textArea.setStyle("-fx-text-fill: #ff0000;"); 
+        } else if (keyEvent.getCode() == KeyCode.DIGIT2 && keyEvent.isControlDown()) { textArea.setStyle("-fx-text-fill: #ffff00;"); 
+        } else if (keyEvent.getCode() == KeyCode.DIGIT3 && keyEvent.isControlDown()) { textArea.setStyle("-fx-text-fill: #00ff00;"); 
+        } else if (keyEvent.getCode() == KeyCode.DIGIT4 && keyEvent.isControlDown()) { textArea.setStyle("-fx-text-fill: #00ffff;"); 
+        } else if (keyEvent.getCode() == KeyCode.DIGIT5 && keyEvent.isControlDown()) { textArea.setStyle("-fx-text-fill: #0000ff;"); 
+        } else if (keyEvent.getCode() == KeyCode.DIGIT6 && keyEvent.isControlDown()) { textArea.setStyle("-fx-text-fill: #ff00ff;"); 
+        } else if (keyEvent.getCode() == KeyCode.DIGIT7 && keyEvent.isControlDown()) { textArea.setStyle("-fx-text-fill: #cccccc;"); 
+        } else if (keyEvent.getCode() == KeyCode.DIGIT8 && keyEvent.isControlDown()) { textArea.setStyle("-fx-text-fill: #88ff00;"); 
+        } else if (keyEvent.getCode() == KeyCode.DIGIT9 && keyEvent.isControlDown()) { textArea.setStyle("-fx-text-fill: #cccccc;"); 
         } else prepareTopLevelCommand();
       }
     });
@@ -407,6 +460,16 @@ public Node getView() {
   }
 
 	public void processInput(String input) {
+		
+		if (region==null) {  //Set backgroundColor and fontColor of the console
+			try {
+				region=(Region)textArea.lookup(".content");
+				region.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
+				textArea.setStyle("-fx-text-fill: #cccccc;");
+			} catch(Exception e) {}
+		}
+		
+		
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			appendText(input);
@@ -496,7 +559,7 @@ public Node getView() {
     
 	public void dot2(final Message message) {
 		try {
-			String insertText = new AutoCompleteBox(XModeler.getStage(), message).show(100, 100);
+			String insertText = new AutoCompleteBox(owner, message).show(100, 100);
 			if (insertText != null)
 				insert(insertText);
 		} catch (Throwable t) {
@@ -511,7 +574,7 @@ public Node getView() {
               String name = message.args[0].values[i].strValue();
               message.args[0].values[i].values = new Value[] {new Value(name),new Value(name)};
             }
-            String insertText = new AutoCompleteBox(XModeler.getStage(), message).show(100,100);
+            String insertText = new AutoCompleteBox(owner, message).show(100,100);
             if (insertText != null) insert(insertText);
           } catch (Throwable t) {
             t.printStackTrace();

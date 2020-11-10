@@ -2,7 +2,7 @@ package tool.clients.fmmlxdiagrams.dialogs.results;
 
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 
-public class AddEnumerationDialogResult extends DialogResult{
+public class AddEnumerationDialogResult {
 	
 	private FmmlxEnum enumeration;
 	

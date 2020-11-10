@@ -1,19 +1,29 @@
 package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
+import javafx.event.Event;
 import javafx.geometry.Point2D;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.Tooltip;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.Deserializer;
 import tool.clients.workbench.WorkbenchClient;
+import tool.xmodeler.PropertyManager;
+import xos.Message;
 import xos.Value;
 
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Optional;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
@@ -57,14 +67,25 @@ public class FmmlxDiagramCommunicator {
 			if (DEBUG) System.err.println("Create FMMLx-Diagram ("+diagramName+") ...");
 
 			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, label, packageName);
-			Tab tab = new Tab(label);
-			tab.setContent(diagram.getView());
-			tab.setClosable(true);
-			tabs.put(this.handler, tab);
+			
+			if(!PropertyManager.getProperty("diagramsInSeparateTab", false )) {
+			createTab(diagram.getView(), label, this.handler);
+			}else {
+			createStage(diagram.getView(), label, this.handler);	
+			}
+//			Tab tab = new Tab(label);
+//			tab.setContent(diagram.getView());
+//			tab.setClosable(true);
+//			tabs.put(this.handler, tab);
 			diagrams.add(diagram);
-			tabPane.getTabs().add(tab);
-			tabPane.getSelectionModel().selectLast();
-			tab.setOnCloseRequest(arg0 -> close(FmmlxDiagramCommunicator.this.handler));
+//			tabPane.getTabs().add(tab);
+//			tabPane.getSelectionModel().selectLast();
+//			tab.setOnCloseRequest(new javafx.event.EventHandler<javafx.event.Event>() {
+//				@Override
+//				public void handle(javafx.event.Event arg0) {
+//					close(FmmlxDiagramCommunicator.this.handler);
+//				}
+//			});
 			l.countDown();
 		});
 		try {
@@ -1369,5 +1390,78 @@ public class FmmlxDiagramCommunicator {
 
 
 
+	// ########################## Tab ### Stage #######################
+
+	private void createStage(javafx.scene.Node node, String name, int id) {
+		Stage stage = new Stage();
+		BorderPane border = new BorderPane();
+		border.setCenter(node);
+		Scene scene = new Scene(border, 1000, 605);
+		stage.setScene(scene);
+		stage.setTitle(name);
+		stage.show();
+		stage.setOnCloseRequest((e) -> closeScene(stage, e, id, name, node));
+	}
+
+	private void createTab(javafx.scene.Node node, String name, int id) {
+		Tab tab = new Tab(name);
+		tab.setTooltip(new Tooltip(name));
+		tab.setContent(node);
+		tab.setClosable(true);
+		tabs.put(id, tab);
+		tabPane.getTabs().add(tab);
+		tabPane.getSelectionModel().selectLast();
+		tab.setOnCloseRequest((e) -> closeTab(tab, e, id, name, node));
+	}
+
+	private void closeTab(Tab item, Event wevent, int id, String name, javafx.scene.Node node) {
+
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+
+		ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+		ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
+		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+		alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
+		alert.setTitle("Open tab in separate window instead?");
+		alert.setHeaderText(null);
+
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get().getButtonData() == ButtonData.YES) {
+			tabs.remove(id);
+			PropertyManager.setProperty("diagramsInSeparateTab", "true");
+			createStage(node, name, id);
+
+		} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
+			wevent.consume();
+		} else {
+//			Message message = getHandler().newMessage("textClosed", 1);
+//			message.args[0] = new Value(id);
+//			getHandler().raiseEvent(message);
+			close(FmmlxDiagramCommunicator.this.handler);
+			tabs.remove(id);
+
+		}
+	}
+
+	private void closeScene(Stage stage, Event wevent, int id, String name, javafx.scene.Node node) {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+
+		ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+		ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
+		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+		alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
+		alert.setTitle("Open stage as tab in editor instead?");
+		alert.setHeaderText(null);
+
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get().getButtonData() == ButtonData.YES) {
+			PropertyManager.setProperty("diagramsInSeparateTab", "false");
+			createTab(node, name, id);
+		} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
+			wevent.consume();
+		} else {
+			close(FmmlxDiagramCommunicator.this.handler);
+		}
+	}
 
 }
