@@ -30,25 +30,25 @@ import java.util.concurrent.CountDownLatch;
 public class FmmlxDiagramCommunicator {
 	public static final String TAG = FmmlxDiagram.class.getSimpleName();
 
-
 	private int handler;
 	int idCounter = 0;
 	private final HashMap<Integer, Vector<Object>> results = new HashMap<>();
 	private static final Hashtable<Integer, Tab> tabs = new Hashtable<>();
 	private static final Vector<FmmlxDiagram> diagrams = new Vector<>();
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	private static final Vector<FmmlxDiagramCommunicator> communicators = new Vector<>();
 	static TabPane tabPane;
 	private String name;
 	private Value getNoReturnExpectedMessageID(int diagramID) {return new Value(new Value[] {new Value(diagramID), new Value(-1)});}
-
+	private FmmlxDiagram diagram;
+	
 	public FmmlxDiagramCommunicator() {
 	  communicators.add(this);
 	}
 
-	public static Vector<FmmlxDiagram> getDiagrams() { // TODO Ask
-		return diagrams;
-	}
+//	public static Vector<FmmlxDiagram> getDiagrams() { // TODO Ask
+//		return diagrams;
+//	}
 
 	public static void start(TabPane tabPane) {
 		FmmlxDiagramCommunicator.tabPane = tabPane;
@@ -74,6 +74,8 @@ public class FmmlxDiagramCommunicator {
 				createStage(diagram.getView(), label, this.handler);	
 			}
 			diagrams.add(diagram);
+			this.diagram = diagram;
+//			System.err.println("diagrams: " + diagrams);
 			l.countDown();
 		});
 		try {
@@ -84,9 +86,11 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	private void close(int handler) {
-//		throw new RuntimeException("Not implemented yet!");
-		diagrams.remove(diagrams.get(handler));
-		tabs.remove(handler);
+		diagrams.remove(diagram);
+//		Value[] message = new Value[]{
+//				getNoReturnExpectedMessageID(diagram.getID()),
+//				new Value(handler)};
+//		sendMessage("closeDiagram", message);
 	}
 
 	private Value[] createValueArray(Vector<String> vector) { // todo: make more generic
@@ -425,8 +429,8 @@ public class FmmlxDiagramCommunicator {
 					(String) edgeInfoAsList.get(6), // name 2
 					(String) edgeInfoAsList.get(7), // name source->target
 					(String) edgeInfoAsList.get(8), // name target->source
-					(Integer) edgeInfoAsList.get(9), // level source->target
-					(Integer) edgeInfoAsList.get(10), // level target->source
+					(Integer) edgeInfoAsList.get(9), // level source
+					(Integer) edgeInfoAsList.get(10), // level target
 					Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(11)), //mul source->target
 					Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(12)), //mul target->source
 					(Boolean) edgeInfoAsList.get(14), // visibility target->source
@@ -969,17 +973,17 @@ public class FmmlxDiagramCommunicator {
 			String class1Name, String class2Name,
 			String accessSourceFromTargetName, String accessTargetFromSourceName,
 			String fwName, String reverseName,
-			Multiplicity mul1, Multiplicity mul2,
-			Integer instLevel1, Integer instLevel2, boolean sourceVisible, boolean targetVisible,
+			Multiplicity multTargetToSource, Multiplicity multSourceToTarget,
+			Integer instLevelSource, Integer instLevelTarget, boolean sourceVisible, boolean targetVisible,
 			boolean isSymmetric, boolean isTransitive) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
 				new Value(class1Name), new Value(class2Name),
 				new Value(accessSourceFromTargetName), new Value(accessTargetFromSourceName),
 				new Value(fwName), reverseName == null ? new Value(-1) : new Value(reverseName),
-				new Value(mul1.toValue()),
-				new Value(mul2.toValue()), // multiplicity,
-				new Value(instLevel1), new Value(instLevel2),
+				new Value(multTargetToSource.toValue()),
+				new Value(multSourceToTarget.toValue()), // multiplicity,
+				new Value(instLevelSource), new Value(instLevelTarget),
 				new Value(sourceVisible), new Value(targetVisible), new Value(isSymmetric), new Value(isTransitive) };
 		sendMessage("addAssociation", message);
 	}

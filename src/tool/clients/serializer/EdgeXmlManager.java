@@ -52,8 +52,8 @@ public class EdgeXmlManager implements IXmlManager {
         String name = fmmlxAssociation.getName();
         String type = XmlConstant.EdgeType.ASSOCIATION;
         String parentAssociationName = fmmlxAssociation.getParentAssociationName();
-        int levelStartToEnd = fmmlxAssociation.getLevelStartToEnd();
-        int levelEndToStart = fmmlxAssociation.getLevelEndToStart();
+        int levelTarget = fmmlxAssociation.getLevelTarget();
+        int levelSource = fmmlxAssociation.getLevelSource();
         Multiplicity multiplicityStartToEnd = fmmlxAssociation.getMultiplicityStartToEnd();
         Multiplicity multiplicityEndToStart = fmmlxAssociation.getMultiplicityEndToStart();
 
@@ -61,8 +61,8 @@ public class EdgeXmlManager implements IXmlManager {
         edge.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
         edge.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
         edge.setAttribute(XmlConstant.ATTRIBUTE_PARENT_ASSOCIATION, parentAssociationName+"");
-        edge.setAttribute(XmlConstant.ATTRIBUTE_LEVEL_START_TO_END, levelStartToEnd+"");
-        edge.setAttribute(XmlConstant.ATTRIBUTE_LEVEL_END_TO_START, levelEndToStart+"");
+        edge.setAttribute(XmlConstant.ATTRIBUTE_LEVEL_TARGET, levelTarget+"");
+        edge.setAttribute(XmlConstant.ATTRIBUTE_LEVEL_SOURCE, levelSource+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_MULTIPLICITY_START_TO_END, multiplicityStartToEnd.toString());
         edge.setAttribute(XmlConstant.ATTRIBUTE_MULTIPLICITY_END_TO_START, multiplicityEndToStart.toString());
         return edge;

@@ -41,8 +41,8 @@ public class XmlConstant {
     public static final String ATTRIBUTE_LEVEL = "level";
     public static final String ATTRIBUTE_PARENTS = "parents";
     public static final String ATTRIBUTE_TYPE = "type";
-    public static final String ATTRIBUTE_LEVEL_START_TO_END = "level_start_to_end";
-    public static final String ATTRIBUTE_LEVEL_END_TO_START = "level_end_to_start";
+    public static final String ATTRIBUTE_LEVEL_TARGET = "level_target";
+    public static final String ATTRIBUTE_LEVEL_SOURCE = "level_source";
     public static final String ATTRIBUTE_SOURCE_NODE = "source_node";
     public static final String ATTRIBUTE_TARGET_NODE = "target_node";
     public static final String ATTRIBUTE_OF = "of";
@@ -70,10 +70,10 @@ public class XmlConstant {
     public static final String ATTRIBUTE_VALUE_TOBE_PARSED = "valueToBeParsed";
     public static final String ATTRIBUTE_FW_NAME = "fwName";
     public static final String ATTRIBUTE_REVERSE_NAME = "reverseName";
-    public static final String ATTRIBUTE_1_MULTIPLICITY = "multiplicity1";
-    public static final String ATTRIBUTE_2_MULTIPLICITY = "multiplicity2";
-    public static final String ATTRIBUTE_INST_LEVEL_1 = "instLevel1";
-    public static final String ATTRIBUTE_INST_LEVEL_2 = "instLevel2";
+    public static final String ATTRIBUTE_T2S_MULTIPLICITY = "multTargetToSource";
+    public static final String ATTRIBUTE_S2T_MULTIPLICITY = "multSourceToTarget";
+    public static final String ATTRIBUTE_INST_LEVEL_SOURCE = "instLevelSource";
+    public static final String ATTRIBUTE_INST_LEVEL_TARGET = "instLevelTarget";
     public static final String ATTRIBUTE_SOURCE_VISIBLE = "sourceVisibleFromTarget";
     public static final String ATTRIBUTE_TARGET_VISIBLE = "targetVisibleFromSource";
     public static final String ATTRIBUTE_IS_SYMMETRIC = "isSymmetric";
@@ -82,8 +82,8 @@ public class XmlConstant {
     public static final String ATTRIBUTE_ACCESS_TARGET_FROM_SOURCE = "accessTargetFromSourceName";
     public static final String ATTRIBUTE_DELEGATE_FROM = "delegateFrom";
     public static final String ATTRIBUTE_DELEGATE_TO = "delegateTo";
-    public static final String ATTRIBUTE_CLASS_1 = "class1";
-    public static final String ATTRIBUTE_CLASS_2 = "class2";
+    public static final String ATTRIBUTE_CLASS_SOURCE = "classSource";
+    public static final String ATTRIBUTE_CLASS_TARGET = "classTarget";
 	public static final String ATTRIBUTE_TEXT = "text";
 
 

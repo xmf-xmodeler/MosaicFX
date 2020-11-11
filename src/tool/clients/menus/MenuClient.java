@@ -451,7 +451,7 @@ l.countDown();
       ContextMenu contextmenu = pmenu.popup(id);
       contextmenu.setAutoHide(true);
       
-      contextmenu.show(anchor, Side.RIGHT, x, y);
+      contextmenu.show(anchor, Side.LEFT, x, y);
 //    			  x + stage.getX() + XModeler.getVerticalBorderSize() ,
 //    			  y + stage.getY() + XModeler.getHorizontalBorderSize(true));
     	  return contextmenu;

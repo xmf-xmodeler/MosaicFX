@@ -170,8 +170,8 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 		selectAssociationComboBox = (ComboBox<FmmlxAssociation>) initializeComboBox(associationList);
 		selectAssociationComboBox.valueProperty().addListener((observable, oldValue,
 				newValue) -> { 		
-					classALabel.setText("Level : "+selectAssociationComboBox.getSelectionModel().getSelectedItem().getLevelStartToEnd());
-					classBLabel.setText("Level : "+selectAssociationComboBox.getSelectionModel().getSelectedItem().getLevelEndToStart());
+					classALabel.setText("Level : "+selectAssociationComboBox.getSelectionModel().getSelectedItem().getLevelSource());
+					classBLabel.setText("Level : "+selectAssociationComboBox.getSelectionModel().getSelectedItem().getLevelTarget());
 					refreshAllDialogElement(newValue); 
 			});
 
@@ -235,12 +235,12 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 
 
 	private void updateMetaClassListView(FmmlxAssociation newValue) {
-		instancesA = newValue.getSourceNode().getInstancesByLevel(newValue.getLevelStartToEnd());
+		instancesA = newValue.getSourceNode().getInstancesByLevel(newValue.getLevelTarget());
 		ObservableList<FmmlxObject> instanceOfClassA = FXCollections.observableList(instancesA); 
 		classAListView = initializeListView(instanceOfClassA, SelectionMode.SINGLE);
 		updateNodeInsideGrid(classAListView, classAListView, 0, 5);
 		
-		instancesB = newValue.getTargetNode().getInstancesByLevel(newValue.getLevelEndToStart());
+		instancesB = newValue.getTargetNode().getInstancesByLevel(newValue.getLevelSource());
 		ObservableList<FmmlxObject> instanceOfClassB = FXCollections.observableList(instancesB); 
 		classBListView = initializeListView(instanceOfClassB, SelectionMode.SINGLE);
 		updateNodeInsideGrid(classBListView, classBListView, 2, 5);
