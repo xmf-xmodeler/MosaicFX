@@ -348,12 +348,12 @@ public class LogXmlManager implements ILog, IXmlManager {
                 }
                 case "addAssociation" : {
                     String classpath1 = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS_SOURCE);
-                    String[] classPathArray1 = classpath1.split("::");
-                    String className1 = classPathArray1[classPathArray1.length-1];
+//                    String[] classPathArray1 = classpath1.split("::");
+                    String classSourceName = classpath1;//classPathArray1[classPathArray1.length-1];
 
                     String classpath2 = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS_TARGET);
-                    String[] classPathArray2 = classpath2.split("::");
-                    String className2 = classPathArray2[classPathArray2.length-1];
+//                    String[] classPathArray2 = classpath2.split("::");
+                    String classTargetName = classpath2;//classPathArray2[classPathArray2.length-1];
 
                     String accessSourceFromTargetName = logElement.getAttribute(XmlConstant.ATTRIBUTE_ACCESS_SOURCE_FROM_TARGET);
                     String accessTargetFromSourceName = logElement.getAttribute(XmlConstant.ATTRIBUTE_ACCESS_TARGET_FROM_SOURCE);
@@ -393,7 +393,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     boolean isSymmetric = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_SYMMETRIC));
                     boolean isTransitive = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_TRANSITIVE));
 
-                    diagram.getComm().addAssociation(diagram, className1, className2,
+                    diagram.getComm().addAssociation(diagram, classSourceName, classTargetName,
                             accessSourceFromTargetName, accessTargetFromSourceName,
                             fwName, reverseName, multiplicityT2S, multiplicityS2T,
                             instLevelSource, instLevelTarget, sourceVisibleFromTarget,

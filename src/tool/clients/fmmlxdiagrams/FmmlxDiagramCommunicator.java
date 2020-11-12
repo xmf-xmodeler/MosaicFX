@@ -970,7 +970,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void addAssociation(FmmlxDiagram diagram, 
-			String class1Name, String class2Name,
+			String classSourceName, String classTargetName,
 			String accessSourceFromTargetName, String accessTargetFromSourceName,
 			String fwName, String reverseName,
 			Multiplicity multTargetToSource, Multiplicity multSourceToTarget,
@@ -978,7 +978,7 @@ public class FmmlxDiagramCommunicator {
 			boolean isSymmetric, boolean isTransitive) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(class1Name), new Value(class2Name),
+				new Value(classSourceName), new Value(classTargetName),
 				new Value(accessSourceFromTargetName), new Value(accessTargetFromSourceName),
 				new Value(fwName), reverseName == null ? new Value(-1) : new Value(reverseName),
 				new Value(multTargetToSource.toValue()),

@@ -655,7 +655,7 @@ public void sendMessage(final Message message) {
 //    runOnDisplay(new Runnable() {
 //      public void run() {
         editor.setDirty(false);
-        tab.setText(editor.getLabel());
+        if(tab != null ) tab.setText(editor.getLabel());
         l.countDown();
 //      }
     });
@@ -679,7 +679,7 @@ public void sendMessage(final Message message) {
 //    runOnDisplay(new Runnable() {
 //      public void run() {
         editor.setDirty(true);
-        tab.setText("*" + editor.getLabel());
+        if(tab != null) tab.setText("*" + editor.getLabel());
         l.countDown();
 //      }
     });
