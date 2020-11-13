@@ -19,8 +19,8 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	private final String reverseName;
 	private String accessNameStartToEnd;
 	private String accessNameEndToStart;
-	private Integer levelStartToEnd;
-	private Integer levelEndToStart;
+	private Integer levelStart;
+	private Integer levelEnd;
 	private final Integer parentAssociationId;
 	private Multiplicity multiplicityStartToEnd;
 	private Multiplicity multiplicityEndToStart;
@@ -46,8 +46,8 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			String reverseName,
 			String accessNameStartToEnd,
 			String accessNameEndToStart,
-			int levelStartToEnd,
-			int levelEndToStart,
+			int levelStart,
+			int levelEnd,
 			Multiplicity multiplicityStartToEnd,
 			Multiplicity multiplicityEndToStart,
 			boolean sourceFromTargetVisible,
@@ -64,8 +64,8 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		this.reverseName = reverseName;
 		this.accessNameStartToEnd = accessNameStartToEnd;
 		this.accessNameEndToStart = accessNameEndToStart;
-		this.levelStartToEnd = levelStartToEnd;
-		this.levelEndToStart = levelEndToStart;
+		this.levelStart = levelStart;
+		this.levelEnd = levelEnd;
 		this.multiplicityStartToEnd = multiplicityStartToEnd;
 		this.multiplicityEndToStart = multiplicityEndToStart;
 		this.sourceFromTargetVisible = sourceFromTargetVisible;
@@ -102,8 +102,9 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		}
 //		if(reverseName != null) 
 //	    createLabel(reverseName, 1, Anchor.CENTRE, showChangeRvNameDialog, -20, BLACK, TRANSPARENT);
-		createLabel(""+levelStartToEnd, 2, Anchor.TARGET_LEVEL, showChangeS2ELevelDialog, WHITE, BLACK);
-		createLabel(""+levelEndToStart, 3, Anchor.SOURCE_LEVEL, showChangeE2SLevelDialog, WHITE, BLACK);
+		
+		createLabel(""+levelEnd, 2, Anchor.TARGET_LEVEL, showChangeS2ELevelDialog, WHITE, BLACK);
+		createLabel(""+levelStart, 3, Anchor.SOURCE_LEVEL, showChangeE2SLevelDialog, WHITE, BLACK); 
 		createLabel(multiplicityStartToEnd.toString(), 4, Anchor.TARGET_MULTI, showChangeS2EMultDialog, BLACK, TRANSPARENT);
 		createLabel(multiplicityEndToStart.toString(), 5, Anchor.SOURCE_MULTI, showChangeE2SMultDialog, BLACK, TRANSPARENT);
 		layoutingFinishedSuccesfully = true;
@@ -206,12 +207,12 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		super.intermediatePoints = intermediatePoints;
 	}
 
-	public Integer getLevelStartToEnd() {
-		return levelStartToEnd;
+	public Integer getLevelSource() {
+		return levelStart;
 	}
 
-	public Integer getLevelEndToStart() {
-		return levelEndToStart;
+	public Integer getLevelTarget() {
+		return levelEnd;
 	}
 
 	public String getAccessNameStartToEnd() {
@@ -250,9 +251,9 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	
 	public boolean doObjectsFit(FmmlxObject source, FmmlxObject target) {
 		if(source==null || target == null) return false;
-		if (source.isInstanceOf(getSourceNode(), levelEndToStart) && target.isInstanceOf(getTargetNode(), levelStartToEnd))
+		if (source.isInstanceOf(getSourceNode(), levelStart) && target.isInstanceOf(getTargetNode(), levelEnd))
 			return true;
-		return target.isInstanceOf(getSourceNode(), levelEndToStart) && source.isInstanceOf(getTargetNode(), levelStartToEnd);
+		return target.isInstanceOf(getSourceNode(), levelStart) && source.isInstanceOf(getTargetNode(), levelEnd);
 	}
 
 	@Override
@@ -276,7 +277,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	};
 	
 	private final Runnable showChangeS2ELevelDialog = () -> {
-		TextInputDialog td = new TextInputDialog(levelStartToEnd+"");
+		TextInputDialog td = new TextInputDialog(levelEnd+"");
 		td.setHeaderText("Change Start to End Level");
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
@@ -310,7 +311,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	};
 	
 	private final Runnable showChangeE2SLevelDialog = () -> {
-		TextInputDialog td = new TextInputDialog(levelEndToStart+"");
+		TextInputDialog td = new TextInputDialog(levelStart+"");
 		td.setHeaderText("Change End to Start Level");
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {

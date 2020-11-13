@@ -338,14 +338,13 @@ public class EditorClient extends Client {
       }
     } else System.err.println("expecting exactly 1 editor client got: " + editorClients.getLength());
   }
-
+  
   private void newNewTextEditor(Message message) {
     String id = message.args[0].strValue();
     String label = message.args[1].strValue();
     String toolTip = message.args[2].strValue();
     boolean editable = message.args[3].boolValue;
     newNewTextEditor(id, label, toolTip, editable, true, "");
-    
   }
 
   private void newNewTextEditor(final String id, final String label, final String toolTip, final boolean editable, final boolean lineNumbers, final String text) {
@@ -656,7 +655,7 @@ public void sendMessage(final Message message) {
 //    runOnDisplay(new Runnable() {
 //      public void run() {
         editor.setDirty(false);
-        tab.setText(editor.getLabel());
+        if(tab != null ) tab.setText(editor.getLabel());
         l.countDown();
 //      }
     });
@@ -680,7 +679,7 @@ public void sendMessage(final Message message) {
 //    runOnDisplay(new Runnable() {
 //      public void run() {
         editor.setDirty(true);
-        tab.setText("*" + editor.getLabel());
+        if(tab != null) tab.setText("*" + editor.getLabel());
         l.countDown();
 //      }
     });
@@ -967,7 +966,6 @@ public void sendMessage(final Message message) {
 	private void createTab(javafx.scene.Node node, String name, String id) {
 		Tab tab = new Tab(name);
 		tab.setTooltip(new Tooltip(name)); 
-		//TODO tooltip: Tab.setTooltip.setText() 
 		tab.setContent(node);
 		tab.setClosable(true);
 		EditorClient.tabs.put(id, tab);

@@ -38,9 +38,9 @@ public class AddMissingLinkDialog extends CustomDialog<AddMissingLinkDialogResul
 	
 	public AddMissingLinkDialog(final FmmlxDiagram diagram, final FmmlxObject obj, final FmmlxAssociation assoc) {
 		
-		objIsSource = obj.isInstanceOf(assoc.getSourceNode(), assoc.getLevelEndToStart());
+		objIsSource = obj.isInstanceOf(assoc.getSourceNode(), assoc.getLevelSource());
 		classAtOtherEnd = objIsSource?assoc.getTargetNode():assoc.getSourceNode();
-		levelAtOtherEnd = objIsSource?assoc.getLevelStartToEnd():assoc.getLevelEndToStart();
+		levelAtOtherEnd = objIsSource?assoc.getLevelTarget():assoc.getLevelSource();
 		
 		listOfPossibleLinkEnds = classAtOtherEnd.getInstancesByLevel(levelAtOtherEnd);
 		listOfPossibleClassesForCreateAndLink = classAtOtherEnd.getInstancesByLevel(levelAtOtherEnd+1);

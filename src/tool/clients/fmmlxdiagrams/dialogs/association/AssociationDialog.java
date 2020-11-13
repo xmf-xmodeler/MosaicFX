@@ -55,8 +55,6 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 	private CheckBox symmetricBox;
 	private CheckBox transitiveBox;
 	
-	private Multiplicity multiplicitySource;
-	private Multiplicity multiplicityTarget;	
 	private MultiplicityBox multTargetToSourceBox;
 	private MultiplicityBox multSourceToTargetBox;
 
@@ -78,7 +76,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		layoutContent();
-		setClasses();
+		presetClassesInCombobox();
 		dialogPane.setContent(flow);
 		
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
@@ -88,7 +86,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 			}
 		});
 
-		setResult();
+		setResultConverter();
 		
 		
 		
@@ -100,24 +98,19 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 		this.diagram = diagram;
 		this.source = source;
 		this.target = target;
-		multiplicitySource = Multiplicity.OPTIONAL;
-		multiplicityTarget = Multiplicity.OPTIONAL;
-
 
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		dialogPane.setHeaderText("Add Association");
 
 		layoutContent();
-		setClasses();
+		presetClassesInCombobox();
 		dialogPane.setContent(flow);
-		setValidation();
-		setResult();
+		addValidationListener();
+		setResultConverter();
 	}
 	
-
-
-	private void setValidation() {
+	private void addValidationListener() {
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
 			if (!validateUserInput()) {
@@ -196,8 +189,8 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 			
 			newTypeSource.getSelectionModel().select(startNode);				
 			newTypeTarget.getSelectionModel().select(targetNode);
-			newInstLevelSource.getSelectionModel().select(association.getLevelStartToEnd());
-			newInstLevelTarget.getSelectionModel().select(association.getLevelEndToStart());
+			newInstLevelSource.getSelectionModel().select(association.getLevelSource());
+			newInstLevelTarget.getSelectionModel().select(association.getLevelTarget());
 					
 			newDisplayName.setText(association.getName());
 			
@@ -379,7 +372,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 		textField.setText(name.length() > 1 ? (name.substring(0, 1).toLowerCase() + name.substring(1)) : name.toLowerCase());
 	}
 	
-	private void setClasses() {
+	private void presetClassesInCombobox() {
 		if (source != null) {
 			newTypeSource.getSelectionModel().select(source);
 		}
@@ -388,7 +381,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 		}
 	}
 	
-	private void setResult() {
+	private void setResultConverter() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
 				return new AssociationDialogResult(association,

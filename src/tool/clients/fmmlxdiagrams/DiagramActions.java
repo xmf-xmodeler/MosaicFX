@@ -692,7 +692,6 @@ public class DiagramActions {
 	}
 
 	public void addAssociationDialog(FmmlxObject source, FmmlxObject target) {
-//		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			AssociationDialog dlg = new AssociationDialog(diagram, source, target, false);
@@ -702,17 +701,16 @@ public class DiagramActions {
 			if (opt.isPresent()) {
 				final AssociationDialogResult result = opt.get();
 				diagram.getComm().addAssociation(diagram,
-						result.getSource().getName(), result.getTarget().getName(),
-						result.getNewIdentifierSource(), result.getNewIdentifierTarget(),
-						result.getNewDisplayName(),
-						null, result.getMultiplicitySource(), result.getMultiplicityTarget(),
-						result.getNewInstLevelSource(), result.getNewInstLevelTarget(),
-						result.isSourceVisibleFromTarget(),  result.isTargetVisibleFromSource(), 
-						result.isSymmetric(), result.isTransitive()
+						result.source.getName(), result.target.getName(),
+						result.newIdentifierSource, result.newIdentifierTarget,
+						result.newDisplayName,
+						null, result.multTargetToSource, result.multSourceToTarget,
+						result.newInstLevelSource, result.newInstLevelTarget,
+						result.sourceVisibleFromTarget,  result.targetVisibleFromSource, 
+						result.symmetric, result.transitive
 						);
 				diagram.updateDiagram();
 			}
-//			latch.countDown();
 		});
 	}
 
@@ -724,41 +722,41 @@ public class DiagramActions {
 			if (opt.isPresent()) {
 				final AssociationDialogResult result = opt.get();
 				
-				if(result.getAssociation().isSourceVisible() != result.isSourceVisibleFromTarget()) {
-					diagram.getComm().setAssociationEndVisibility(diagram, result.getAssociation().id, false, result.isSourceVisibleFromTarget());				
+				if(result.selectedAssociation.isSourceVisible() != result.sourceVisibleFromTarget) {
+					diagram.getComm().setAssociationEndVisibility(diagram, result.selectedAssociation.id, false, result.sourceVisibleFromTarget);				
 				}
-				if(result.getAssociation().isTargetVisible() != result.isTargetVisibleFromSource()) {
-					diagram.getComm().setAssociationEndVisibility(diagram, result.getAssociation().id, true, result.isTargetVisibleFromSource());				
-				}
-				
-				if(!result.getAssociation().getAccessNameEndToStart().equals(result.getNewIdentifierSource())) {
-					System.err.println("getAccessNameEndToStart:" + result.getAssociation().getAccessNameEndToStart() + "--> " + result.getNewIdentifierSource());
-					diagram.getComm().changeAssociationStart2EndAccessName(diagram, result.getAssociation().id, result.getNewIdentifierSource());
-				}
-				if(!result.getAssociation().getAccessNameStartToEnd().equals(result.getNewIdentifierTarget())) {
-					System.err.println("getAccessNameStartToEnd:" + result.getAssociation().getAccessNameStartToEnd() + "--> " + result.getNewIdentifierTarget());
-					diagram.getComm().changeAssociationEnd2StartAccessName(diagram, result.getAssociation().id, result.getNewIdentifierTarget());
+				if(result.selectedAssociation.isTargetVisible() != result.targetVisibleFromSource) {
+					diagram.getComm().setAssociationEndVisibility(diagram, result.selectedAssociation.id, true, result.targetVisibleFromSource);				
 				}
 				
-				if(!result.getAssociation().getLevelEndToStart().equals(result.getNewInstLevelSource())) {
-					System.err.println("getLevelEndToStart:" + result.getAssociation().getLevelEndToStart() + "--> " + result.getNewInstLevelSource());
-					diagram.getComm().changeAssociationStart2EndLevel(diagram, result.getAssociation().id, result.getNewInstLevelSource());
+				if(!result.selectedAssociation.getAccessNameEndToStart().equals(result.newIdentifierSource)) {
+					System.err.println("getAccessNameEndToStart:" + result.selectedAssociation.getAccessNameEndToStart() + "--> " + result.newIdentifierSource);
+					diagram.getComm().changeAssociationStart2EndAccessName(diagram, result.selectedAssociation.id, result.newIdentifierSource);
 				}
-				if(!result.getAssociation().getLevelStartToEnd().equals(result.getNewInstLevelTarget())) {
-					System.err.println("getLevelStartToEnd:" + result.getAssociation().getLevelStartToEnd() + "--> " + result.getNewInstLevelTarget());
-					diagram.getComm().changeAssociationEnd2StartLevel(diagram, result.getAssociation().id, result.getNewInstLevelTarget());
-				}
-				
-				if(!result.getAssociation().getMultiplicityEndToStart().equals(result.getMultiplicitySource())) {
-					diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram, result.getAssociation().getName(), result.getMultiplicitySource());
-				}
-				if(!result.getAssociation().getMultiplicityStartToEnd().equals(result.getMultiplicityTarget())) {
-					diagram.getComm().changeAssociationStart2EndMultiplicity(diagram, result.getAssociation().getName(), result.getMultiplicityTarget());
+				if(!result.selectedAssociation.getAccessNameStartToEnd().equals(result.newIdentifierTarget)) {
+					System.err.println("getAccessNameStartToEnd:" + result.selectedAssociation.getAccessNameStartToEnd() + "--> " + result.newIdentifierTarget);
+					diagram.getComm().changeAssociationEnd2StartAccessName(diagram, result.selectedAssociation.id, result.newIdentifierTarget);
 				}
 				
-				if(!result.getAssociation().getName().equals(result.getNewDisplayName())) {
-					System.err.println("getName:" +result.getAssociation().getName()  + "--> " + result.getNewDisplayName());
-					diagram.getComm().changeAssociationForwardName(diagram, result.getAssociation().getName(), result.getNewDisplayName());
+				if(!result.selectedAssociation.getLevelSource().equals(result.newInstLevelSource)) {
+					System.err.println("getLevelEndToStart:" + result.selectedAssociation.getLevelSource() + "--> " + result.newInstLevelSource);
+					diagram.getComm().changeAssociationEnd2StartLevel(diagram, result.selectedAssociation.id, result.newInstLevelSource);
+				}
+				if(!result.selectedAssociation.getLevelTarget().equals(result.newInstLevelTarget)) {
+					System.err.println("getLevelStartToEnd:" + result.selectedAssociation.getLevelTarget() + "--> " + result.newInstLevelTarget);
+					diagram.getComm().changeAssociationStart2EndLevel(diagram, result.selectedAssociation.id, result.newInstLevelTarget);
+				}
+				
+				if(!result.selectedAssociation.getMultiplicityEndToStart().equals(result.multTargetToSource)) {
+					diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram, result.selectedAssociation.getName(), result.multTargetToSource);
+				}
+				if(!result.selectedAssociation.getMultiplicityStartToEnd().equals(result.multSourceToTarget)) {
+					diagram.getComm().changeAssociationStart2EndMultiplicity(diagram, result.selectedAssociation.getName(), result.multSourceToTarget);
+				}
+				
+				if(!result.selectedAssociation.getName().equals(result.newDisplayName)) {
+					System.err.println("getName:" +result.selectedAssociation.getName()  + "--> " + result.newDisplayName);
+					diagram.getComm().changeAssociationForwardName(diagram, result.selectedAssociation.getName(), result.newDisplayName);
 				}
 					
 				diagram.updateDiagram();
