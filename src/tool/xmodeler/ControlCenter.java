@@ -1,6 +1,6 @@
 package tool.xmodeler;
 
-import java.time.LocalDate;
+import java.util.Vector;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,19 +21,22 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class ControlCenter extends Stage {
-
-	ControlCenterClient controlCenterClient = new ControlCenterClient();
-	ObservableList<String> categoryList = FXCollections.observableArrayList();
-	ListView<String> categoryLV = new ListView<String>();
-	ObservableList<String> projectList = FXCollections.observableArrayList();
-	ListView<String> projectLV = new ListView<String>();
-	ObservableList<String> modelList = FXCollections.observableArrayList();
-	ListView<String> modelLV = new ListView<String>();
-	ObservableList<String> diagramList = FXCollections.observableArrayList();
-	ListView<String> diagramLV = new ListView<String>();
+	
+	private final ControlCenterClient controlCenterClient;
+	private final ObservableList<String> categoryList = FXCollections.observableArrayList();
+	private final ListView<String> categoryLV = new ListView<String>();
+	private final ObservableList<String> projectList = FXCollections.observableArrayList();
+	private final ListView<String> projectLV = new ListView<String>();
+	private final ObservableList<String> modelList = FXCollections.observableArrayList();
+	private final ListView<String> modelLV = new ListView<String>();
+	private final ObservableList<String> diagramList = FXCollections.observableArrayList();
+	private final ListView<String> diagramLV = new ListView<String>();
 			
 	public ControlCenter() {
 		setTitle("XModeler ML Control Center");
+		
+		ControlCenterClient.init(this);
+		controlCenterClient = ControlCenterClient.getClient();
 
 		VBox vBox = new VBox();
 		HBox hBox = new HBox();
@@ -100,6 +103,8 @@ public class ControlCenter extends Stage {
 		vBox.getChildren().addAll(hBox, grid);
 		Scene scene = new Scene(vBox, 900, 300);
 		setScene(scene);
+		
+		newProject.setOnAction((e) -> {controlCenterClient.getAllProjects();});
 	}
 	
 	private void categorySelected(String nEWW) {
@@ -139,6 +144,12 @@ public class ControlCenter extends Stage {
 		private void setCreated(String created) {
 			this.created.setText(created);
 		}
+	}
+
+	public void setAllProjects(Vector<String> vec) {
+		projectLV.getItems().clear();
+		projectLV.getItems().addAll(vec);
+		
 	}
 	
 }
