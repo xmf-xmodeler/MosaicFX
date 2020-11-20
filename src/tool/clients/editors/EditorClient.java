@@ -22,6 +22,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -56,6 +58,8 @@ public class EditorClient extends Client {
 
   static EditorClient                   theClient;
   static TabPane   						tabPane;
+ 
+  
   
 
   public static Hashtable<String, Tab>    tabs           = new Hashtable<String, Tab>(); //TODO: rewrite completely and introduce Browser object

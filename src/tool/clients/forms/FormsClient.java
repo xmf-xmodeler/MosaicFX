@@ -2,6 +2,7 @@ package tool.clients.forms;
 
 import java.io.PrintStream;
 import java.util.Hashtable;
+import java.util.Optional;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
@@ -10,10 +11,22 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javafx.application.Platform;
+import javafx.event.Event;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 import tool.clients.Client;
 import tool.clients.EventHandler;
+import tool.clients.diagrams.DiagramClient;
+import tool.clients.editors.EditorClient;
+import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
@@ -22,7 +35,7 @@ public class FormsClient extends Client {
 
 	public FormsClient() {
 		super("com.ceteva.forms");
-
+		
 		setDebug(true);
 		theClient = this;
 	}
@@ -416,15 +429,14 @@ public class FormsClient extends Client {
 
 	private void newForm(final String id, final String label, final boolean selected) {
 		CountDownLatch l = new CountDownLatch(1);
-
 		Platform.runLater(() -> {
-			Tab tabItem = new Tab(label);
-			tabFolder.getTabs().add(tabItem);
-			tabs.put(id, tabItem);
-			Form form = new Form(tabItem, id);
-
+			Form form = new Form(id);
 			forms.add(form);
-
+			if(PropertyManager.getProperty("formsSeparately", true)) {
+				createStage(form.getView(),label,id, form);
+			} else {
+				createTab(form,id,label);
+			}
 			l.countDown();
 		});
 		try {
@@ -432,6 +444,73 @@ public class FormsClient extends Client {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void createStage(javafx.scene.Node node, String name, String id, Form form) {
+		Stage stage = new Stage();
+		BorderPane border = new BorderPane();
+		border.setCenter(node);
+		Scene scene = new Scene(border, 1000, 605);
+		stage.setScene(scene);
+		stage.setTitle(name);
+		stage.show();
+		stage.setOnCloseRequest((e) -> closeStage(stage, e, id, name, node,form));
+	}
+	
+	private void createTab(Form form, String id, String label) {
+		Tab tabItem = new Tab(label);
+		tabFolder.getTabs().add(tabItem);
+		tabs.put(id, tabItem);
+		tabItem.setContent(form.getView());
+		tabItem.setOnCloseRequest((e)->closeTab(e, id, label, form));
+	}
+	
+	private void closeStage(Stage stage, Event wevent, String id, String name, javafx.scene.Node node, Form form) {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+		ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
+		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+		alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
+		alert.setTitle("Open form as tab instead?");
+		alert.setHeaderText(null);
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get().getButtonData() == ButtonData.YES) {
+			PropertyManager.setProperty("formsSeparately", "false");
+			createTab(form, id, name);
+		} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
+			wevent.consume();
+		} else {
+			close(form);
+		}
+	}
+	
+	private void closeTab(Event wevent, String id, String name, Form form) {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+		ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
+		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+		alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
+		alert.setTitle("Open form in stage instead?");
+		alert.setHeaderText(null);
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get().getButtonData() == ButtonData.YES) {
+			PropertyManager.setProperty("formsSeparately", "true");
+			createStage(form.getView(),name,id,form);
+			tabs.remove(id);
+		} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
+			wevent.consume();
+		} else {
+			close(form);
+			tabs.remove(id);
+		}
+	}
+	
+	private void close(Form form) {
+		forms.remove(form);
+		EventHandler handler = FormsClient.theClient().getHandler();
+		Message message = handler.newMessage("formClosed", 1);
+		message.args[0] = new Value(form.getId());
+		handler.raiseEvent(message);
 	}
 
 	private void newList(Message message) {
