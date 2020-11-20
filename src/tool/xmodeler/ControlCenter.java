@@ -99,6 +99,7 @@ public class ControlCenter extends Stage {
 		
 		init();
 		categoryLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->categorySelected(NEWW));
+		projectLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->controlCenterClient.getProjectModels(NEWW));
 		
 		vBox.getChildren().addAll(hBox, grid);
 		Scene scene = new Scene(vBox, 900, 300);
@@ -107,9 +108,7 @@ public class ControlCenter extends Stage {
 		newProject.setOnAction((e) -> {controlCenterClient.getAllProjects();});
 	}
 	
-	private void categorySelected(String nEWW) {
-		;
-	}
+	private void categorySelected(String nEWW) {}
 
 	private void init() {
 		categoryLV.getItems().clear();
@@ -149,7 +148,11 @@ public class ControlCenter extends Stage {
 	public void setAllProjects(Vector<String> vec) {
 		projectLV.getItems().clear();
 		projectLV.getItems().addAll(vec);
-		
+	}
+
+	public void setProjectModels(Vector<String> vec) {
+		modelLV.getItems().clear();
+		modelLV.getItems().addAll(vec);
 	}
 	
 }

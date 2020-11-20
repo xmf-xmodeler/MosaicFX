@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import tool.clients.workbench.WorkbenchClient;
 import xos.Message;
+import xos.Value;
 
 public class ControlCenterClient {
 	
@@ -37,14 +38,27 @@ public class ControlCenterClient {
 	}
 
 	public void setAllProjects(Message message) {
-		System.err.println("message.args[0].values[0]: " + message.args[0].values[0]);
 		Vector<String> vec = new Vector<String>();
 		for(int i = 0; i < message.args[0].values.length; i++) {
 			vec.add(message.args[0].values[i].strValue());
 		}
 		Collections.sort(vec);
-		controlCenter.setAllProjects(vec);
-		
+		controlCenter.setAllProjects(vec);		
 	}
-
+	
+	public void getProjectModels(String projectPath) {
+	    Message message = WorkbenchClient.theClient().getHandler().newMessage("getProjectModels", 1);
+	    message.args[0] = new Value(projectPath);
+	    WorkbenchClient.theClient().getHandler().raiseEvent(message);
+	}
+	
+	public void setProjectModels(Message message) {
+		Vector<String> vec = new Vector<String>();
+		for(int i = 0; i < message.args[0].values.length; i++) {
+			vec.add(message.args[0].values[i].strValue());
+		}
+//		Collections.sort(vec);
+		controlCenter.setProjectModels(vec);		
+	}
+ 
 }
