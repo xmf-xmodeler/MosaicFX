@@ -1,5 +1,6 @@
 package tool.clients.serializer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -11,8 +12,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import tool.clients.fmmlxdiagrams.DiagramEdgeLabel;
-import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.serializer.interfaces.ILog;
 import tool.clients.serializer.interfaces.IXmlManager;
 
@@ -26,6 +27,8 @@ public class LabelXmlManager implements ILog, IXmlManager{
     public Element createLabelElement(FmmlxDiagram diagram, DiagramEdgeLabel edgeLabel) {
         String text = edgeLabel.getText();
         String owner = edgeLabel.getOwner().getName();
+        Vector<FmmlxObject> anchors = edgeLabel.getAnchors();
+        String anchorsString = createAnchorsString(anchors);
 
         double x = edgeLabel.getRelativeX();
         double y = edgeLabel.getRelativeY();
@@ -36,10 +39,25 @@ public class LabelXmlManager implements ILog, IXmlManager{
         label.setAttribute(XmlConstant.ATTRIBUTE_DIAGRAM_OWNER, diagram.getDiagramLabel());
         label.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, x+"");
         label.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, y+"");
+        label.setAttribute(XmlConstant.ATTRIBUTE_ANCHORS, anchorsString);
         return label;
     }
 
-	@Override
+    private String createAnchorsString(Vector<FmmlxObject> anchors) {
+        StringBuilder anchorsStringBuilder = new StringBuilder();
+
+        for(FmmlxObject anchor : anchors){
+            if(!anchorsStringBuilder.toString().contains(anchor.getName())){
+                anchorsStringBuilder.append(anchor.getName());
+                anchorsStringBuilder.append(",");
+            }
+        }
+
+        String anchorsString = anchorsStringBuilder.toString();
+        return anchorsString.substring(0, anchorsString.length()-1);
+    }
+
+    @Override
 	public void add(Element element) {
 
         Node diagrams = xmlHandler.getDiagramsNode();
@@ -113,7 +131,7 @@ public class LabelXmlManager implements ILog, IXmlManager{
         Vector<DiagramEdgeLabel>labels = fmmlxDiagram.getLabels();
         for(DiagramEdgeLabel label : labels){
             Point2D initCoordinate = new Point2D(label.getRelativeX(), label.getRelativeY());
-            Point2D coordinate = getCoordinate(diagramNode, label.getText(), initCoordinate);
+            Point2D coordinate = getCoordinate(diagramNode, label, initCoordinate);
             if(validateName(label.getText())){
             	
                 label.setRelativeX(coordinate.getX());
@@ -141,14 +159,17 @@ public class LabelXmlManager implements ILog, IXmlManager{
         return Character.isDigit(c[0]);
     }
 	
-	private Point2D getCoordinate(Node diagramNone, String text, Point2D initCoordinate) {
+	private Point2D getCoordinate(Node diagramNone, DiagramEdgeLabel label, Point2D initCoordinate) {
         Node labelsNode = xmlHandler.getChildWithName(diagramNone, XmlConstant.TAG_NAME_LABELS);
+        String text = label.getText();
+        Vector<FmmlxObject> anchors = label.getAnchors();
         NodeList labelList = labelsNode.getChildNodes();
 
         for (int i = 0 ; i< labelList.getLength() ; i++){
             if (labelList.item(i).getNodeType() == Node.ELEMENT_NODE){
                 Element label_tmp = (Element) labelList.item(i);
-                if(validateName(text)) {
+                String[] anchorsString = label_tmp.getAttribute(XmlConstant.ATTRIBUTE_ANCHORS).split(",");
+                if(validateName(text) && validateEdgeLabel(anchorsString, anchors)) {
                 	if(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_TEXT).equals(text)){
                         double x = Double.parseDouble(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
                         double y = Double.parseDouble(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
@@ -159,6 +180,20 @@ public class LabelXmlManager implements ILog, IXmlManager{
             }
         }
         return initCoordinate;
+    }
+
+    private boolean validateEdgeLabel(String[] anchorsString, Vector<FmmlxObject> anchors) {
+        List<String> anchorsList = new ArrayList<>();
+        for(FmmlxObject object : anchors){
+            anchorsList.add(object.getName().trim());
+        }
+
+        for(String anchorString : anchorsString){
+            if(!anchorsList.contains(anchorString.trim())){
+                return false;
+            }
+        }
+        return true;
     }
 
 

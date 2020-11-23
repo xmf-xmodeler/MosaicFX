@@ -205,8 +205,10 @@ public class DiagramEdgeLabel implements CanvasElement {
 			new Value((float)relativeX),
 			new Value((float)relativeY)};
 	}
-	
 
+	public Vector<FmmlxObject> getAnchors() {
+		return anchors;
+	}
 
 	@Override
 	public void unHighlight() {
