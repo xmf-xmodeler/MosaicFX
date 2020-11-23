@@ -444,8 +444,8 @@ public class XModeler extends Application {
 	  startXOS(copyOfArgs[0]);
 	  singleton = this;
 	  stage = primaryStage;
-//	  newStage = new ControlCenter();
-//	  newStage.show();
+	  newStage = new ControlCenter();
+	  newStage.show();
 	  createXmodeler();
 	  initClients();
       startClients();
@@ -460,7 +460,7 @@ public class XModeler extends Application {
 			
 			rightSplitPane = new SplitPane();
 			rightSplitPane.setOrientation(Orientation.VERTICAL);
-			rightSplitPane.setDividerPosition(0, 0.88);
+			rightSplitPane.setDividerPosition(0, 0.68);
 			rightSplitPane.setPrefHeight(1000);
 			
 			editorTabs = new TabPane();// welcomeTab ,new Tab("Diagram", new DiagramPanel()));

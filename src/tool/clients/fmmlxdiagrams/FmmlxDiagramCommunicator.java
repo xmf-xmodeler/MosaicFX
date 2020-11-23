@@ -65,9 +65,7 @@ public class FmmlxDiagramCommunicator {
 		final String label = diagramName + " " + diagramID;//"getPackageName();";
 		Platform.runLater(() -> {
 			if (DEBUG) System.err.println("Create FMMLx-Diagram ("+diagramName+") ...");
-
 			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, label, packageName);
-			
 			if(!PropertyManager.getProperty("diagramsInSeparateTab", true)) {
 				createTab(diagram.getView(), label, this.handler);
 			}else {

@@ -2,6 +2,7 @@ package tool.clients.workbench;
 
 import tool.clients.Client;
 import tool.console.ConsoleClient;
+import tool.xmodeler.ControlCenterClient;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
@@ -29,7 +30,20 @@ public class WorkbenchClient extends Client {
       consoleNamespace(message);
     else if (message.hasName("loadImage"))
     	loadImage(message);
+    else if (message.hasName("setAllProjects"))
+    	setAllProjects(message);
+    else if (message.hasName("setProjectModels"))
+    	setProjectModels(message);
     else super.sendMessage(message);
+  }
+
+
+  private void setAllProjects(Message message) {
+	ControlCenterClient.getClient().setAllProjects(message);
+  }
+
+  private void setProjectModels(Message message) {
+	ControlCenterClient.getClient().setProjectModels(message);
   }
 
   private void consoleDot(Message message) {

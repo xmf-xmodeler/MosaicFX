@@ -60,8 +60,8 @@ public class Form {
 	private Hashtable<String, TreeItem<String>> items = new Hashtable<String, TreeItem<String>>();
 	private Hashtable<String, String> images = new Hashtable<String, String>();
 
-	public Form(Tab parent, String id) {
-		System.err.println("new Form(): " + id + " on " + parent);
+	public Form(String id) {
+		System.err.println("new Form(): " + id + " on ");
 		this.id = id;
 
 		form = new ScrollPane();
@@ -81,7 +81,7 @@ public class Form {
 		form.setFitToHeight(true);
 		form.setFitToWidth(true);
 
-		parent.setContent(form);
+		//parent.setContent(form);
 
 	}
 
@@ -98,7 +98,6 @@ public class Form {
 			cc.setMaxWidth(maxWidth);
 			grid.getColumnConstraints().add(cc);
 		}
-
 		return grid;
 	}
 
@@ -701,6 +700,10 @@ public class Form {
 		}
 		out.print("</Item>");
 //	    }
+	}
+	
+	public ScrollPane getView() {
+		return form;
 	}
 
 	public String getText(String id) {

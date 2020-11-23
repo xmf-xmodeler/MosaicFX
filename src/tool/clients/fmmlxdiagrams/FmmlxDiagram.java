@@ -10,11 +10,15 @@ import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -44,7 +48,11 @@ public class FmmlxDiagram{
 	private SplitPane mainView;
 	private Canvas canvas;
 	private ScrollPane scrollerCanvas;
-	
+	private VBox vBox;
+	private Menu menu;
+	private MenuBar menuBar;
+	private MenuItem loadXML;
+	private MenuItem saveXML;
 	// The communication to the xmf and other actions
 	private final FmmlxDiagramCommunicator comm;
 	private DiagramActions actions;
@@ -106,8 +114,15 @@ public class FmmlxDiagram{
 		this.diagramID = diagramID;
 		this.diagramLabel = label;
 		this.packagePath = packagePath;
-
+		vBox = new VBox();
+		menu = new Menu("Test");
+		menuBar = new MenuBar();
+		loadXML = new MenuItem("Load Diagram via XML");
+		saveXML = new MenuItem("Save Diagram as XML");
+		menu.getItems().addAll(loadXML, saveXML);
+		menuBar.getMenus().add(menu);
 		pane = new SplitPane();
+		vBox.getChildren().addAll(menuBar, pane);
 		mainView = new SplitPane();
 		canvas = new Canvas(canvasRawSize.getX(), canvasRawSize.getY());
 		actions = new DiagramActions(this);
@@ -266,8 +281,8 @@ public class FmmlxDiagram{
 
 	// Only used to set the diagram into the tab. Find a better solution
 	@Deprecated
-	public SplitPane getView() {
-		return pane;
+	public VBox getView() {
+		return vBox;
 	}
 	
 	public FmmlxDiagramCommunicator getComm() {
