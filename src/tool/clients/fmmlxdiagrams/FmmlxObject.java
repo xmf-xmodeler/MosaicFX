@@ -646,8 +646,9 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 
 	@Override
 	public void moveTo(double x, double y, FmmlxDiagram diagram) {
-	    this.x = x;
-	    this.y = y;
+		this.x = Math.max(x, 0.0);
+		this.y = Math.max(y, 0.0);
+
 //		for(Edge edge : diagram.getEdges()) {
 //			if (edge.isStartNode(this)) edge.moveStartPoint(x + width/2, y + height/2);
 //			if (edge.isEndNode(this)) edge.moveEndPoint(x + width/2, y + height/2);

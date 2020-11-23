@@ -1,6 +1,7 @@
 package tool.clients.serializer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
@@ -183,10 +184,7 @@ public class LabelXmlManager implements ILog, IXmlManager{
     }
 
     private boolean validateEdgeLabel(String[] anchorsString, Vector<FmmlxObject> anchors) {
-        List<String> anchorsList = new ArrayList<>();
-        for(FmmlxObject object : anchors){
-            anchorsList.add(object.getName().trim());
-        }
+        List<String> anchorsList = Arrays.asList(anchorsString);
 
         for(String anchorString : anchorsString){
             if(!anchorsList.contains(anchorString.trim())){
