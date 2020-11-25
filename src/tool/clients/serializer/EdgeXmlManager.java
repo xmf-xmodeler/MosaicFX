@@ -19,6 +19,10 @@ public class EdgeXmlManager implements IXmlManager {
         this.xmlHandler = new XmlHandler();
     }
 
+    public EdgeXmlManager(String file) {
+        this.xmlHandler = new XmlHandler(file);
+    }
+
     public Element createEdgeXmlElement(FmmlxDiagram fmmlxDiagram, Edge edge) throws TransformerException {
         Vector<Point2D> intermediatePoints = edge.getIntermediatePoints();
         FmmlxObject sourceNode = edge.getSourceNode();
@@ -164,7 +168,7 @@ public class EdgeXmlManager implements IXmlManager {
                         String name_child = edge.getSourceNode().getName();
 
                         if (edge instanceof FmmlxAssociation) {
-                            String name = ((FmmlxAssociation) edge).getName();
+                            String name = edge.getName();
                             if(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_NAME).equals(name) &&
                                     edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE).equals(XmlConstant.EdgeType.ASSOCIATION)){
                                 setDirectionsAndIntermediatePoints(fmmlxDiagram, edge, edgeElement);

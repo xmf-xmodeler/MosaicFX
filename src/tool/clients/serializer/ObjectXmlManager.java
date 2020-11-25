@@ -18,6 +18,10 @@ public class ObjectXmlManager implements IXmlManager {
         this.xmlHandler = new XmlHandler();
     }
 
+    public ObjectXmlManager(String file) {
+        this.xmlHandler =  new XmlHandler(file);
+    }
+
     public Element createObjectElement(FmmlxDiagram diagram, FmmlxObject fmmlxObject) {
         String name = fmmlxObject.getName();
         int level= fmmlxObject.getLevel();

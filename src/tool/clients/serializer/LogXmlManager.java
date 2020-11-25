@@ -25,6 +25,11 @@ public class LogXmlManager implements ILog, IXmlManager {
         this.diagram = fmmlxDiagram;
     }
 
+    public LogXmlManager(FmmlxDiagram diagram, String file) {
+        this.xmlHandler = new XmlHandler(file);
+        this.diagram = diagram;
+    }
+
     @Override
     public void add(Element element) {
         Node logs = xmlHandler.getLogsNode();

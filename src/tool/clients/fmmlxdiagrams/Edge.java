@@ -604,7 +604,6 @@ public abstract class Edge implements CanvasElement {
 			}
 		}
 
-
 		storeLatestValidPointConfiguration();
 
 		if(pointToBeMoved != -1 || newSourcePortRegion!= null || newTargetPortRegion != null) {

@@ -22,13 +22,6 @@ class XmlHandlerTest {
         assertTrue(xmlCreator.checkFileExist());
     }
 
-    @Test
-    void deleteXmlFileTest(){
-        XmlCreator xmlCreator = new XmlCreator();
-        if(xmlCreator.checkFileExist()){
-            xmlCreator.deleteUserXmlFile();
-        }
-    }
 
     @Test
     void clearAllChildrenTest() throws TransformerException {

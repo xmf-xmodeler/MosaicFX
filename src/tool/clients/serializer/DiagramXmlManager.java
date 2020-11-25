@@ -15,7 +15,9 @@ public class DiagramXmlManager implements IXmlManager {
     public DiagramXmlManager(){
         this.xmlHandler = new XmlHandler();
     }
-    public DiagramXmlManager(String path){ this.xmlHandler = new XmlHandler(path);}
+    public DiagramXmlManager(String path){
+        this.xmlHandler = new XmlHandler(path);
+    }
 
     public Element createDiagramElement(FmmlxDiagram fmmlxDiagram) {
         String label =fmmlxDiagram.getDiagramLabel();

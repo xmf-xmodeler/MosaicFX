@@ -207,7 +207,7 @@ public class XmlHandler {
         Transformer transformer = TransformerFactory.newInstance().newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
-        StreamResult result = new StreamResult(new File(XmlConstant.USER_XML_FILE_NAME));
+        StreamResult result = new StreamResult(new File(sourcePath));
         DOMSource source = new DOMSource(document);
         transformer.transform(source, result);
     }
@@ -294,7 +294,7 @@ public class XmlHandler {
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
-            StreamResult result = new StreamResult(new File(XmlConstant.USER_XML_FILE_NAME));
+            StreamResult result = new StreamResult(new File(sourcePath));
             DOMSource source = new DOMSource(document);
             transformer.transform(source, result);
         }
@@ -325,7 +325,7 @@ public class XmlHandler {
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
-            StreamResult result = new StreamResult(new File(XmlConstant.USER_XML_FILE_NAME));
+            StreamResult result = new StreamResult(new File(sourcePath));
             DOMSource source = new DOMSource(document);
             transformer.transform(source, result);
         }

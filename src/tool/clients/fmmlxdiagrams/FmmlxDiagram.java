@@ -424,6 +424,15 @@ public class FmmlxDiagram{
 				}
 			} else if (s instanceof DiagramEdgeLabel) {
 				DiagramEdgeLabel o = (DiagramEdgeLabel) s;
+//				if(o.getReferenceX()+o.getRelativeX()<0.0 && o.getReferenceY()+o.getRelativeY()<0.0){
+//					s.moveTo(0.5, 0.5, this);
+//				} else if (o.getReferenceX()+o.getRelativeX()<0.0){
+//					s.moveTo(0.5, p.getY() - o.getMouseMoveOffsetY(), this);
+//				} else if (o.getReferenceY()+o.getRelativeY()<0.0){
+//					s.moveTo(p.getX() - o.getMouseMoveOffsetX(), 0.5, this);
+//				} else {
+//					s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
+//				}
 				s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
 			} else { // must be edge
 				s.moveTo(p.getX(), p.getY(), this);

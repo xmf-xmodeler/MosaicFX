@@ -164,7 +164,6 @@ public class DiagramEdgeLabel implements CanvasElement {
 	public void moveTo(double x, double y, FmmlxDiagram diagram) {
 		this.relativeX = x;// - getReferenceX();
 		this.relativeY = y;// - getReferenceY();
-		
 	}
 	
 
