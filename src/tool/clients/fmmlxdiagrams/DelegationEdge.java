@@ -46,10 +46,6 @@ public class DelegationEdge extends Edge {
 		return HeadStyle.CIRCLE;
 	}
 	
-	public boolean isVisible() {
-		return visible;
-	}
-	
 	@Override
 	public String getName() {
 		return "doesNotMatter";

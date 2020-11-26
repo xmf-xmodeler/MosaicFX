@@ -45,10 +45,6 @@ public class InheritanceEdge extends Edge {
 	public HeadStyle getSourceDecoration() {
 		return HeadStyle.NO_ARROW;
 	}
-	
-	public boolean isVisible() {
-		return visible;
-	}
 
 	@Override
 	public String getName() {

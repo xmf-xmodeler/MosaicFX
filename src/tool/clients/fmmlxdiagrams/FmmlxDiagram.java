@@ -103,13 +103,12 @@ public class FmmlxDiagram{
 	public String updateID = null;
 	
 	String edgeCreationType = null;
-	String nodeCreationType = null;
-	boolean aNew = false;
+	String nodeCreationType = null;	
 
+	public LevelColorScheme levelColorScheme = new LevelColorScheme.DefaultLevelColorScheme();
 
 
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String label, String packagePath) {
-		this.aNew = aNew;
 		this.comm = comm;
 		this.diagramID = diagramID;
 		this.diagramLabel = label;
@@ -204,6 +203,9 @@ public class FmmlxDiagram{
 	
 			Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
 			objects.addAll(fetchedObjects);
+
+//			levelColorScheme = new LevelColorScheme.GrayLevelColorScheme(objects);
+			
 			issues.addAll(comm.fetchIssues(this));
 
 			for(FmmlxObject o : objects) {

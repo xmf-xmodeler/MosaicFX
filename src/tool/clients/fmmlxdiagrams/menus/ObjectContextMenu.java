@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams.menus;
 
+import java.util.Vector;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -97,7 +99,11 @@ public class ObjectContextMenu extends ContextMenu {
 
 		getItems().addAll(attributeMenu, associationMenu, operationMenu, delegationMenu, slotMenu, associationInstanceMenu, levelMenu, showMenu, assignItem);
 		
-		addNewMenuItem(this, "Hide", e -> System.out.println("Hide not yet implemented."), ALWAYS);
+		addNewMenuItem(this, "Hide", e -> {
+			Vector<FmmlxObject> v = new Vector<FmmlxObject>(); 
+			v.add(object); 
+			actions.hide(v, true);
+		}, ALWAYS);
 	}
 
 	private Menu createAttributeSubMenu() {

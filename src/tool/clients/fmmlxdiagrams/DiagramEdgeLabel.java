@@ -15,8 +15,6 @@ public class DiagramEdgeLabel implements CanvasElement {
 	private final Runnable action;
 	private final String text;
 	private final ContextMenu menu;
-//	private double x; 
-//	private double y;
 	public double relativeX;
 	public double relativeY;
 	private double width;
@@ -24,8 +22,6 @@ public class DiagramEdgeLabel implements CanvasElement {
 	private Vector<FmmlxObject> anchors;
 	private transient double mouseMoveOffsetX;
 	private transient double mouseMoveOffsetY;
-//	private transient double lastValidRelativeX;
-//	private transient double lastValidRelativeY;
 	private transient boolean highlighted = false;
 	private final Color bgColor;
 	private Color fontColor;
@@ -50,6 +46,7 @@ public class DiagramEdgeLabel implements CanvasElement {
 
 	@Override
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
+		if(!owner.isVisible()) return;		
 		int size=16;
 		g.setFill(bgColor);
 		g.fillRect(this.getReferenceX() + relativeX, this.getReferenceY() + relativeY, this.width, this.height);
@@ -176,6 +173,7 @@ public class DiagramEdgeLabel implements CanvasElement {
 	@Override
 	public boolean isHit(double mouseX, double mouseY) {
 		return
+			owner.isVisible() &&
 			mouseX > getReferenceX() + relativeX &&
 			mouseY > getReferenceY() + relativeY &&
 			mouseX < getReferenceX() + relativeX + width &&

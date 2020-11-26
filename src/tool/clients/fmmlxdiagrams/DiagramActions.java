@@ -985,4 +985,9 @@ public class DiagramActions {
 			}
 		});
 	}
+
+	public void hide(Vector<FmmlxObject> objects, boolean hide) {
+		diagram.getComm().hideElements(diagram, objects, hide);
+		diagram.updateDiagram();
+	}
 }

@@ -68,24 +68,6 @@ public class NodeLabel implements NodeElement {
 		
 	}
 
-	/*public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
-					 String text) {
-		super();
-		this.alignment = alignment;
-		this.x = x;
-		this.y = y;
-		this.fgColor = fgColor;
-		this.bgColor = bgColor;
-		this.actionObject = actionObject;
-		this.text = text;
-		this.isAbstract = false;
-		this.selected = false;
-		this.action = action;
-		
-		textWidth = FmmlxDiagram.calculateTextWidth(text);
-		textHeight = FmmlxDiagram.calculateTextHeight();
-	}*/
-
 	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
 					 String text, boolean isAbstract) {
 		super();
