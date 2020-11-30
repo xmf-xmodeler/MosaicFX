@@ -85,19 +85,13 @@ public class NewFmmlxPalette {
 			protected void updateItem(PaletteTool item, boolean empty) {
 				super.updateItem(item, empty);
 
-				Vector<Integer> textColorInt = new Vector<>(Arrays.asList(2, 3, 4, 5));
-
 				if (empty || item == null || item.getName() == null) {
 					setText("");
 					setGraphic(null);
 					setBorder(new Border(new BorderStroke(null, null, null, null, null)));
 					setBackground(new Background(new BackgroundFill(null, null, null)));
 				} else {
-					if (textColorInt.contains(item.getLevel())) {
-						setTextFill(Color.valueOf("ffffff"));
-					} else {
-						setTextFill(Color.valueOf("000000"));
-					}
+					setTextFill(fmmlxDiagram.levelColorScheme.getLevelFgColor(item.getLevel(), 1.));
 					if (!item.getIcon().equals("")) {
 						ImageView imageView = new ImageView(new javafx.scene.image.Image(new File(item.getIcon()).toURI().toString()));
 						setGraphic(imageView);
@@ -120,13 +114,16 @@ public class NewFmmlxPalette {
 
 					} else {
 						setText(item.getName());
-						if(item.getLevel()==1) {
-							setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(10), new BorderWidths(1),new Insets(2, 5, 2, 25))));
-							setBackground(new Background(new BackgroundFill(Color.WHITE,new CornerRadii(10), new Insets(2, 5, 2, 25))));
-						} else {
-							setBorder(new Border(new BorderStroke(FmmlxObject.colors.get(item.getLevel()), BorderStrokeStyle.SOLID, new CornerRadii(10), new BorderWidths(1),new Insets(2, 5, 2, 25))));
-							setBackground(new Background(new BackgroundFill(FmmlxObject.colors.get(item.getLevel()),new CornerRadii(10), new Insets(2, 5, 2, 25))));
-						}
+//						if(item.getLevel()==1) {
+//							setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(10), new BorderWidths(1),new Insets(2, 5, 2, 25))));
+//							setBackground(new Background(new BackgroundFill(Color.WHITE,new CornerRadii(10), new Insets(2, 5, 2, 25))));
+//						} else {
+//						if(item.getLevel()==1) 
+//							setBorder(new Border(new BorderStroke(fmmlxDiagram.levelColorScheme.getLevelFgColor(item.getLevel(),1.), BorderStrokeStyle.SOLID, new CornerRadii(10), new BorderWidths(1),new Insets(2, 5, 2, 25))));
+//						else
+							setBorder(new Border(new BorderStroke(fmmlxDiagram.levelColorScheme.getLevelBgColor(item.getLevel()), BorderStrokeStyle.SOLID, new CornerRadii(10), new BorderWidths(1),new Insets(2, 5, 2, 25))));
+						setBackground(new Background(new BackgroundFill(fmmlxDiagram.levelColorScheme.getLevelBgColor(item.getLevel()),new CornerRadii(10), new Insets(2, 5, 2, 25))));
+//						}
 					}
 
 					if(item.isAbstract()) {

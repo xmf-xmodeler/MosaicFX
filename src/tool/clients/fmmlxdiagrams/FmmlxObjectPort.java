@@ -1,6 +1,5 @@
 package tool.clients.fmmlxdiagrams;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Vector;
@@ -61,7 +60,7 @@ public class FmmlxObjectPort {
 			Vector<Edge.End> edgesOnOneSide = edges.get(direction);
 			int visibleEdgeCount = 0;
 			for(int i = 0; i < edgesOnOneSide.size(); i++) {
-				if(edgesOnOneSide.get(i).edge.visible) visibleEdgeCount++;
+				if(edgesOnOneSide.get(i).edge.isVisible()) visibleEdgeCount++;
 				if(edgesOnOneSide.get(i) == edgeEnd && edgeEnd.getNode() == owner) {//(isStartNode?edgeEnd.startNode:edgeEnd.endNode) == owner) {
 					double maxX = direction == PortRegion.NORTH || direction == PortRegion.WEST ? owner.getX() : owner.getRightX();
 					double minX = direction == PortRegion.SOUTH || direction == PortRegion.WEST ? owner.getX() : owner.getRightX();
@@ -72,9 +71,9 @@ public class FmmlxObjectPort {
 					double diffY = maxY - minY;
 					
 					int visibleEdges = 0;
-					for(Edge.End E : edgesOnOneSide) if(E.edge.visible) visibleEdges++;
+					for(Edge.End E : edgesOnOneSide) if(E.edge.isVisible()) visibleEdges++;
 					
-					if(edgeEnd.edge.visible) {
+					if(edgeEnd.edge.isVisible()) {
 						double share = 1. / (visibleEdges + 1);
 						return new Point2D(minX + diffX * share * (visibleEdgeCount), minY + diffY * share * (visibleEdgeCount));
 					}	else {

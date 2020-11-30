@@ -9,7 +9,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.scene.transform.Affine;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Vector;
@@ -36,10 +35,6 @@ public abstract class Edge implements CanvasElement {
 	private transient Point2D lastMousePosition;
 
 	public abstract void setIntermediatePoints(Vector<Point2D> intermediatePoints);
-
-//	public abstract void setSourcePort(PortRegion valueOf);
-//
-//	public abstract void setTargetPort(PortRegion valueOf);
 
 	public static abstract class End {public final Edge edge; private End(Edge edge) {this.edge = edge;} public abstract FmmlxObject getNode();};
 	public static class Source extends End{private Source(Edge edge) {super(edge);} public FmmlxObject getNode() {return edge.sourceNode;}};
@@ -135,8 +130,8 @@ public abstract class Edge implements CanvasElement {
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
-		if(!visible) return;
+	public final void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
+		if(!isVisible()) return;
 		if(!layoutingFinishedSuccesfully) {
 			layoutLabels(); diagram.redraw();
 		} else {
@@ -403,7 +398,7 @@ public abstract class Edge implements CanvasElement {
 	}
 
 	public boolean isHit(double x, double y) {
-		if(!visible) return false;
+		if(!isVisible()) return false;
 		return null != isHit(new Point2D(x, y), 2.5);
 	}
 
@@ -712,11 +707,10 @@ public abstract class Edge implements CanvasElement {
 		}
 	}
 
-	public boolean isVisible() {
-		return true;
+	public final boolean isVisible() {
+		return visible && !sourceNode.isHidden() && !targetNode.isHidden();
 	}
-
-
+	
 	public void updatePosition(DiagramEdgeLabel del) {
 		labelPositions.put(del.localID, new Point2D(del.relativeX, del.relativeY));
 		

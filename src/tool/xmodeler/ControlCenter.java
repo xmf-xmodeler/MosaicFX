@@ -2,6 +2,8 @@ package tool.xmodeler;
 
 import java.util.Vector;
 
+import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -12,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 //import javafx.scene.layout.GridPane;
@@ -37,7 +40,7 @@ public class ControlCenter extends Stage {
 		
 		ControlCenterClient.init(this);
 		controlCenterClient = ControlCenterClient.getClient();
-
+		
 		VBox vBox = new VBox();
 		HBox hBox = new HBox();
 		GridPane grid = new GridPane();
@@ -45,7 +48,6 @@ public class ControlCenter extends Stage {
 		Button newCategorie = new Button("new");
 		Label categorieLabel = new Label("Categories");
 		
-				
 		Button newProject = new Button("new");
 		Label projectLabel = new Label("Projects");
 		CreatedModifiedGridPane projectGridPane = new CreatedModifiedGridPane();
@@ -101,15 +103,26 @@ public class ControlCenter extends Stage {
 		categoryLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->categorySelected(NEWW));
 		projectLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->controlCenterClient.getProjectModels(NEWW));
 		
+				
 		vBox.getChildren().addAll(hBox, grid);
 		Scene scene = new Scene(vBox, 900, 300);
 		setScene(scene);
+		this.setOnShown((event) -> {controlCenterClient.getAllProjects();});
+			
+	}	
+	
+	private void categorySelected(String nEWW) {
 		
-		newProject.setOnAction((e) -> {controlCenterClient.getAllProjects();});
 	}
 	
-	private void categorySelected(String nEWW) {}
-
+	public void getModelsFromProject() {
+		
+	}
+	
+	public void getDiagramsFromModel() {
+		
+	}
+	
 	private void init() {
 		categoryLV.getItems().clear();
 		categoryLV.getItems().addAll(controlCenterClient.getAllCategories());
@@ -146,13 +159,20 @@ public class ControlCenter extends Stage {
 	}
 
 	public void setAllProjects(Vector<String> vec) {
+		Platform.runLater(()->{
 		projectLV.getItems().clear();
 		projectLV.getItems().addAll(vec);
+		});
 	}
 
 	public void setProjectModels(Vector<String> vec) {
-		modelLV.getItems().clear();
-		modelLV.getItems().addAll(vec);
+		Platform.runLater(()->{
+			modelLV.getItems().clear();
+			modelLV.getItems().addAll(vec);
+		});
+		
 	}
+	
+	
 	
 }

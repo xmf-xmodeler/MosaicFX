@@ -88,10 +88,10 @@ public class FmmlxDiagramCommunicator {
 
 	private void close(int handler) {
 		diagrams.remove(diagram);
-//		Value[] message = new Value[]{
-//				getNoReturnExpectedMessageID(diagram.getID()),
-//				new Value(handler)};
-//		sendMessage("closeDiagram", message);
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagram.getID()),
+				new Value(handler)};
+			sendMessage("closeDiagram", message);
 	}
 
 	private Value[] createValueArray(Vector<String> vector) { // todo: make more generic
@@ -237,16 +237,13 @@ public class FmmlxDiagramCommunicator {
 			for (Object o : parentListO) {
 				parentListI.add((Integer) o);
 			}
-			System.err.println(responseObjectList.size());
-			System.err.println(responseObjectList);
+			
 			Vector<Object> parentListO2 = (Vector<Object>) responseObjectList.get(12);
 			Vector<String> parentListS = new Vector<>();
 			for (Object o : parentListO2) {
 				parentListS.add((String) o);
 			}
-			
-			System.err.println("parentListS: " + parentListS);
-			
+						
 			FmmlxObject object = new FmmlxObject(
 					(Integer) responseObjectList.get(0), // id*
 					(String)  responseObjectList.get(1), // name
@@ -259,8 +256,7 @@ public class FmmlxDiagramCommunicator {
 					(Boolean) responseObjectList.get(5),
 					(Integer) responseObjectList.get(6), // x-Position
 					(Integer) responseObjectList.get(7), // y-Position 
-//					(Integer) responseObjectList.get(8), // delegatesTo
-//					(Integer) responseObjectList.get(9), // roleFiller
+					(Boolean) responseObjectList.get(8),
 					diagram);
 			result.add(object);
 
@@ -1248,6 +1244,18 @@ public class FmmlxDiagramCommunicator {
 		}
 		return result;
 	}
+	
+	public void hideElements(FmmlxDiagram fmmlxDiagram, Vector<FmmlxObject> objects, Boolean hide) {
+		Value[] vec = new Value[objects.size()];
+		for (int i = 0; i < vec.length; i++) {
+			vec[i] = new Value(objects.get(i).getPath());
+		}
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(fmmlxDiagram.getID()),
+				new Value(vec),
+				new Value(hide)};
+		sendMessage("hideElements", message);
+	}
 
 	public void assignToGlobal(FmmlxDiagram fmmlxDiagram, FmmlxObject object, String varName) {
 		Value[] message = new Value[]{
@@ -1454,9 +1462,6 @@ public class FmmlxDiagramCommunicator {
 		} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
 			wevent.consume();
 		} else {
-//			Message message = getHandler().newMessage("textClosed", 1);
-//			message.args[0] = new Value(id);
-//			getHandler().raiseEvent(message);
 			close(FmmlxDiagramCommunicator.this.handler);
 			tabs.remove(id);
 

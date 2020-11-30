@@ -445,11 +445,11 @@ public class XModeler extends Application {
 	  singleton = this;
 	  stage = primaryStage;
 	  newStage = new ControlCenter();
-	  newStage.show();
 	  createXmodeler();
 	  initClients();
       startClients();
 	  openXModeler();
+	  newStage.show();
   }
 
     public void createXmodeler() throws Exception {

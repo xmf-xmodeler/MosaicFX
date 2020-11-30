@@ -16,19 +16,20 @@ import java.util.*;
 
 public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<FmmlxObject> {
 
-	public static HashMap<Integer, Paint> colors = null;
+//	public static HashMap<Integer, Paint> colors = null;
 	private String name;
 	
 	@Deprecated int id;
 	@Deprecated private Integer of;
 	@Deprecated private Vector<Integer> parents;
 	
-	String ownPath;
-	String ofPath;
-	Vector<String> parentsPaths;
+	private String ownPath;
+	private String ofPath;
+	private Vector<String> parentsPaths;
 	
 	private double x;
 	private double y;
+	private boolean hidden;
 	private boolean isAbstract;
 	int level;
 	private int width;
@@ -77,36 +78,9 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	private FmmlxDiagram diagram;
 	private PropertyType propertyType = PropertyType.Class;
 	private transient boolean requiresReLayout;
-	
+		
 	public void triggerLayout() {
 		this.requiresReLayout = true;
-	}
-	
-	static {
-		colors = new HashMap<>();
-//		private String[] levelBackgroundColors = {"#8C8C8C", "#FFFFFF", "#000000", "#3111DB", "#dd2244", "#119955"};
-		colors.put(0, Color.valueOf("#8C8C8C"));
-		colors.put(1, Color.valueOf("#FFFFFF"));
-		colors.put(2, Color.valueOf("#000000"));
-		colors.put(3, Color.valueOf("#3111DB"));
-		colors.put(4, Color.valueOf("#BB1133"));
-		colors.put(5, Color.valueOf("#119955"));
-		colors.put(6, new LinearGradient(0, 0, 20, 10, false, CycleMethod.REPEAT,
-				new Stop(.24, Color.valueOf("#22cc55")),
-				new Stop(.26, Color.valueOf("#ffdd00")),
-				new Stop(.74, Color.valueOf("#ffdd00")),
-				new Stop(.76, Color.valueOf("#22cc55"))));
-		colors.put(7, new LinearGradient(0, 0, 60, 25, false, CycleMethod.REPEAT,
-				new Stop(0. / 6, Color.valueOf("#ff4444")),
-				new Stop(0.8 / 6, Color.valueOf("#ffff00")),
-				new Stop(1.2 / 6, Color.valueOf("#ffff00")),
-				new Stop(2. / 6, Color.valueOf("#44ff44")),
-				new Stop(2.8 / 6, Color.valueOf("#00ffff")),
-				new Stop(3.2 / 6, Color.valueOf("#00ffff")),
-				new Stop(4. / 6, Color.valueOf("#6666ff")),
-				new Stop(4.8 / 6, Color.valueOf("#ff22ff")),
-				new Stop(5.2 / 6, Color.valueOf("#ff22ff")),
-				new Stop(6. / 6, Color.valueOf("#ff4444"))));
 	}
 
 	public FmmlxObject(
@@ -119,11 +93,10 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 			String ofPath,
 			Vector<String> parentPaths,
 			Boolean isAbstract,
-			Integer lastKnownX, Integer lastKnownY, 
+			Integer lastKnownX, Integer lastKnownY, Boolean hidden,
 //			Integer delegatesTo, Integer roleFiller, 
 			FmmlxDiagram diagram) {
 		this.name = name;
-		this.id = id;
 		this.diagram = diagram;
 		if (lastKnownX != null && lastKnownX != 0) {
 			x = lastKnownX;
@@ -136,11 +109,19 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		} else {
 			y = 10;
 		}
+		
+		this.hidden = hidden;
 
 		width = 150;
 		height = 80;
 		this.level = level;
 		this.isAbstract = isAbstract;
+
+		this.ownPath = ownPath;
+		this.ofPath = ofPath;
+		this.parentsPaths = parentPaths;
+		
+		this.id = id;
 		this.of = of;
 		this.parents = parents;
 		
@@ -163,7 +144,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 			try {
 				FmmlxObject parent = diagram.getObjectByName(parentName);
 				InheritanceEdge edge = diagram.getInheritanceEdge(this, parent);
-				if(edge != null && !edge.visible) {
+				if(edge != null && !edge.isVisible()) {
 					parentName = parent.name;
 					parentsList.append(parentName).append(", ");
 				} 
@@ -278,11 +259,13 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	}
 
 	public Paint getLevelBackgroundColor() {
-		return colors.containsKey(level) ? colors.get(level) : Color.valueOf("#ffaa00");
+		return diagram.levelColorScheme.getLevelBgColor(level);
+		//return colors.containsKey(level) ? colors.get(level) : Color.valueOf("#ffaa00");
 	}
 
-	public String getLevelFontColor() {
-		return new Vector<>(Arrays.asList(2, 3, 4, 5)).contains(level) ? "#ffffff" : "000000";
+	public Color getLevelFontColor(double opacity) {
+		return diagram.levelColorScheme.getLevelFgColor(level, opacity);
+		///return new Vector<>(Arrays.asList(2, 3, 4, 5)).contains(level) ? "#ffffff" : "000000";
 	}
 
 	public boolean getShowOperations() {
@@ -357,15 +340,15 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		}
 		String ofName = (ofObj == null) ? "MetaClass" : ofObj.name;
 		
-		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, Color.valueOf(getLevelFontColor() + "75"), null, this, NO_ACTION, "^" + ofName + "^", false) ;
-		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight, Color.valueOf(getLevelFontColor() + "75"), null, this, NO_ACTION, "" + level, false);
-		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, Color.valueOf(getLevelFontColor()), null, this, NO_ACTION, name, isAbstract);
+		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65), null, this, NO_ACTION, "^" + ofName + "^", false) ;
+		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight, getLevelFontColor(.65), null, this, NO_ACTION, "" + level, false);
+		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, getLevelFontColor(1.), null, this, NO_ACTION, name, isAbstract);
 		header.nodeElements.add(metaclassLabel);
 		header.nodeElements.add(levelLabel);
 		header.nodeElements.add(nameLabel);
 
 		if ((!"".equals(parentString))) {
-			NodeLabel parentsLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 3, Color.valueOf(getLevelFontColor()), null, this, NO_ACTION, parentString, isAbstract);
+			NodeLabel parentsLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 3, getLevelFontColor(1.), null, this, NO_ACTION, parentString, isAbstract);
 			header.nodeElements.add(parentsLabel);
 		}
 
@@ -593,6 +576,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram diagram) {
 		
+		if(hidden) return;
+		
 		if(requiresReLayout) layout(diagram);
 
 		boolean selected = diagram.isSelected(this);
@@ -632,6 +617,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 
 	public boolean isHit(double mouseX, double mouseY) {
 		return
+	        !hidden && 
 			mouseX > x &&
 			mouseY > y &&
 			mouseX < x + width &&
@@ -933,5 +919,13 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 			}
 		}
 		return false;
+	}
+
+	public String getPath() {
+		return ownPath;
+	}
+
+	public boolean isHidden() {
+		return hidden;
 	}
 }
