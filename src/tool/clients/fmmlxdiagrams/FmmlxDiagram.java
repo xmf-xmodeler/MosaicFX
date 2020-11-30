@@ -99,6 +99,7 @@ public class FmmlxDiagram{
 	private transient boolean suppressRedraw;
 	private final NewFmmlxPalette newFmmlxPalette;
 	private final String packagePath;
+	private String filePath;
 	
 	public String updateID = null;
 	
@@ -193,6 +194,14 @@ public class FmmlxDiagram{
 		getCanvas().setCursor(Cursor.CROSSHAIR);
 	}
 
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
+	}
+
 	private void fetchDiagramData() {
 		if(suppressRedraw) {
 			System.err.println("\talready fetching diagram data");
@@ -256,8 +265,8 @@ public class FmmlxDiagram{
 	}
 
 	private void alignAllComponents(FmmlxDiagram diagram) {
-		Deserializer deserializer = new Deserializer();
-		deserializer.alignCoordinate(diagram);
+//		Deserializer deserializer = new Deserializer();
+//		deserializer.alignCoordinate(diagram);
 	}
 
 	// This operation resets the size of the canvas when needed

@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
@@ -1281,19 +1282,29 @@ public class FmmlxDiagramCommunicator {
 
 	public void saveXmlFile(String fileName, String packageString) {
 		String packageName = packageString.substring(1,packageString.length()-1).split(" ")[1];
-		Platform.runLater(() -> {
-			Serializer serializer = new Serializer();
-			try {
-				for(FmmlxDiagram diagram : diagrams){
-					String tmp_packageName = diagram.getPackagePath().split("::")[1];
-					if(packageName.equals(tmp_packageName)){
-						serializer.saveAsXml(diagram, fileName);
+
+		Task<Void> task = new Task<Void>() {
+
+			@Override
+			protected Void call() throws Exception {
+				Serializer serializer = new Serializer();
+				try {
+					for(FmmlxDiagram diagram : diagrams){
+						String tmp_packageName = diagram.getPackagePath().split("::")[1];
+						if(packageName.equals(tmp_packageName)){
+							serializer.saveAsXml(diagram, fileName);
+							return null;
+						}
 					}
+				} catch (TransformerException | ParserConfigurationException e) {
+					e.printStackTrace();
 				}
-			} catch (TransformerException | ParserConfigurationException e) {
-				e.printStackTrace();
+				return null;
 			}
-		});
+
+		};
+
+		new Thread(task).start();
 	}
 	public void openPackageBrowser() {
 		WorkbenchClient.theClient().send(handler, "openPackageBrowser()");

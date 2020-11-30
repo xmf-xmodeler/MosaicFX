@@ -15,10 +15,6 @@ public class EdgeXmlManager implements IXmlManager {
 
     private final XmlHandler xmlHandler;
 
-    public EdgeXmlManager(){
-        this.xmlHandler = new XmlHandler();
-    }
-
     public EdgeXmlManager(String file) {
         this.xmlHandler = new XmlHandler(file);
     }

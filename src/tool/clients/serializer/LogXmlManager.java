@@ -20,10 +20,6 @@ public class LogXmlManager implements ILog, IXmlManager {
     private final XmlHandler xmlHandler;
     FmmlxDiagram diagram;
 
-    public LogXmlManager(FmmlxDiagram fmmlxDiagram) {
-        this.xmlHandler = new XmlHandler();
-        this.diagram = fmmlxDiagram;
-    }
 
     public LogXmlManager(FmmlxDiagram diagram, String file) {
         this.xmlHandler = new XmlHandler(file);

@@ -7,5 +7,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 public interface ISerializer {
-    void saveState(FmmlxDiagram diagram) throws TransformerException, ParserConfigurationException;
+
+    void saveAsXml(FmmlxDiagram diagram, String file) throws TransformerException, ParserConfigurationException;
 }

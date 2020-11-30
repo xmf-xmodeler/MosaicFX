@@ -938,10 +938,9 @@ public class DiagramActions {
 
 	public void save() {
 		Platform.runLater(() -> {
-			Serializer serializer = new Serializer();
 			try {
-				serializer.saveState(diagram);
-			} catch (TransformerException | ParserConfigurationException e) {
+				System.out.println(diagram.getComm().getDiagramData(diagram).toString());
+			} catch (TimeOutException e) {
 				e.printStackTrace();
 			}
 		});
@@ -973,7 +972,7 @@ public class DiagramActions {
 
 
 	public void loadLogs() {
-		Platform.runLater(()-> {
+		/*Platform.runLater(()-> {
 			if(diagram.getObjects().size()==0){
 				diagram.loadProcess = true;
 				Deserializer deserializer = new Deserializer();
@@ -983,6 +982,6 @@ public class DiagramActions {
 					e.printStackTrace();
 				}
 			}
-		});
+		});*/
 	}
 }

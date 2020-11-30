@@ -1,7 +1,6 @@
 package tool.clients.serializer;
 
 public class XmlConstant {
-    public static final String USER_XML_FILE_NAME = "userXmlFile.xml";
     public static final int SERIALIZER_VERSION = 2;
 
     public static final String TAG_NAME_ROOT = "XModeler";

@@ -14,9 +14,6 @@ public class ProjectXmlManager implements IXmlManager {
     public static final String TAG = ProjectXmlManager.class.getSimpleName();
     private final XmlHandler xmlHandler;
 
-    public ProjectXmlManager() {
-        this.xmlHandler = new XmlHandler();
-    }
 
     public ProjectXmlManager(String path) {
         this.xmlHandler = new XmlHandler(path);

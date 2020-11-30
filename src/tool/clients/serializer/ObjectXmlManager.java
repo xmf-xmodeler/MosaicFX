@@ -14,10 +14,6 @@ import java.util.Vector;
 public class ObjectXmlManager implements IXmlManager {
     private final XmlHandler xmlHandler;
 
-    public ObjectXmlManager(){
-        this.xmlHandler = new XmlHandler();
-    }
-
     public ObjectXmlManager(String file) {
         this.xmlHandler =  new XmlHandler(file);
     }

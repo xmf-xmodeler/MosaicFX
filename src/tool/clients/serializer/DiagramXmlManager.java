@@ -12,9 +12,6 @@ import java.util.List;
 public class DiagramXmlManager implements IXmlManager {
     private final XmlHandler xmlHandler;
 
-    public DiagramXmlManager(){
-        this.xmlHandler = new XmlHandler();
-    }
     public DiagramXmlManager(String path){
         this.xmlHandler = new XmlHandler(path);
     }

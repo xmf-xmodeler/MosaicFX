@@ -19,10 +19,7 @@ import tool.clients.serializer.interfaces.IXmlManager;
 
 public class LabelXmlManager implements ILog, IXmlManager{
 	private final XmlHandler xmlHandler;
-    
-    public LabelXmlManager() {
-        this.xmlHandler = new XmlHandler();
-    }
+
 
     public LabelXmlManager(String file) {
         this.xmlHandler = new XmlHandler(file);
