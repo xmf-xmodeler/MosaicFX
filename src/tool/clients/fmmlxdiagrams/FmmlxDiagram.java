@@ -1174,4 +1174,13 @@ public class FmmlxDiagram{
 		return result;
 	}
 
+	public Vector<FmmlxObject> getHiddenElements() {
+		Vector<FmmlxObject> hiddenObjects = new Vector<FmmlxObject>();
+		for(FmmlxObject object : getObjects()) {
+			if(object.isHidden()) {
+			hiddenObjects.add(object);
+			}	
+		}
+		return hiddenObjects;	
+	}	
 }

@@ -49,7 +49,10 @@ public class DefaultContextMenu extends ContextMenu {
 		
 		enumeration.getItems().addAll(createEnumeration, editEnumeration, deleteEnumeration);
 		
-		getItems().addAll(addClassItem, addInstanceItem, addAssociationItem, levelMenu, enumeration, packageListView, packageListView_LOCAL);
+		MenuItem unhide = new MenuItem("Unhide Objects");
+		unhide.setOnAction(e-> actions.showUnhideObjectsDialog());
+		
+		getItems().addAll(addClassItem, addInstanceItem, addAssociationItem, levelMenu, enumeration, packageListView, packageListView_LOCAL, unhide);
 
 		{ // test
 			MenuItem testEvalList = new MenuItem("TEST EVAL LIST");

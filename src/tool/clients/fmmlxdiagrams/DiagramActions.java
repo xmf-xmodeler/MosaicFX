@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
@@ -990,4 +991,30 @@ public class DiagramActions {
 		diagram.getComm().hideElements(diagram, objects, hide);
 		diagram.updateDiagram();
 	}
+	
+	public void showUnhideObjectsDialog() {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle("Select Objects to unhide");
+		alert.setHeaderText("Select Objects to unhide");
+		alert.setContentText("Alert");
+		ListView<FmmlxObject> listViewHiddenObjects = new ListView<FmmlxObject>();
+		listViewHiddenObjects.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		Vector<FmmlxObject> items = diagram.getHiddenElements();
+		listViewHiddenObjects.getItems().addAll(items);
+		DialogPane dialogPane = alert.getDialogPane();
+		dialogPane.setContent(listViewHiddenObjects);
+		alert.getButtonTypes().clear();
+		alert.getButtonTypes().addAll(ButtonType.OK,ButtonType.CANCEL);
+		Optional<ButtonType> result = alert.showAndWait();		
+		if(result.isPresent() && result.get()==ButtonType.OK) {
+			ObservableList<FmmlxObject> selectedObjects = listViewHiddenObjects.getSelectionModel().getSelectedItems();
+			Vector<FmmlxObject> objects = new Vector<FmmlxObject>();
+			for(FmmlxObject o : selectedObjects) {
+				objects.add(o);
+			}
+			diagram.getComm().hideElements(diagram, objects, false);
+			diagram.updateDiagram();
+		}
+		//listViewHiddenObjects.getSelectionModel().selectedItemProperty().addListener((prop, old, newLV)->diagram.getComm().getHiddenObjects(diagram, objects, hide));
+		}
 }

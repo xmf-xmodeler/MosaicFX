@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
@@ -41,7 +42,7 @@ public class FmmlxDiagramCommunicator {
 	private String name;
 	private Value getNoReturnExpectedMessageID(int diagramID) {return new Value(new Value[] {new Value(diagramID), new Value(-1)});}
 	private FmmlxDiagram diagram;
-	
+
 	public FmmlxDiagramCommunicator() {
 	  communicators.add(this);
 	}
@@ -1252,7 +1253,8 @@ public class FmmlxDiagramCommunicator {
 				new Value(hide)};
 		sendMessage("hideElements", message);
 	}
-
+	
+	
 	public void assignToGlobal(FmmlxDiagram fmmlxDiagram, FmmlxObject object, String varName) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(fmmlxDiagram.getID()),
