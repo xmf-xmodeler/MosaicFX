@@ -1,5 +1,6 @@
 package tool.xmodeler;
 
+import java.util.Optional;
 import java.util.Vector;
 
 import javafx.application.Platform;
@@ -15,6 +16,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 //import javafx.scene.layout.GridPane;
@@ -22,6 +24,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 
 public class ControlCenter extends Stage {
 	
@@ -59,6 +62,19 @@ public class ControlCenter extends Stage {
 		Button newDiagram = new Button("new");
 		Label diagramLabel = new Label("Diagrams");
 		CreatedModifiedGridPane diagramsGridPane = new CreatedModifiedGridPane();
+		newDiagram.setOnAction(e -> {
+			TextInputDialog dialog = new TextInputDialog();
+			dialog.setTitle("Create new Diagram");
+			dialog.setContentText("New diagram name:");
+
+			Optional<String> result = dialog.showAndWait();
+			result.ifPresent(name -> 
+			    FmmlxDiagramCommunicator.getCommunicator().createDiagram(
+			        modelLV.getSelectionModel().getSelectedItem(), 
+			        name));
+			
+
+		});
 		
 		Menu file = new Menu("File");
 		Menu browsers = new Menu("Browser");
@@ -108,6 +124,7 @@ public class ControlCenter extends Stage {
 		Scene scene = new Scene(vBox, 900, 300);
 		setScene(scene);
 		this.setOnShown((event) -> {controlCenterClient.getAllProjects();});
+		newProject.setOnAction((event) -> {controlCenterClient.getAllProjects();});
 			
 	}	
 	

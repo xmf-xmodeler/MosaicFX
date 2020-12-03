@@ -107,7 +107,16 @@ public class FmmlxDiagram{
 
 	public LevelColorScheme levelColorScheme = new LevelColorScheme.DefaultLevelColorScheme();
 
-
+	public final static FmmlxDiagram NullDiagram = new FmmlxDiagram();
+	
+	private FmmlxDiagram() {
+		this.comm = null;
+		this.newFmmlxPalette = null;
+		this.diagramID = -1;
+		this.diagramLabel = null;
+		this.packagePath = null;
+	}
+	
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String label, String packagePath) {
 		this.comm = comm;
 		this.diagramID = diagramID;
