@@ -111,4 +111,9 @@ public class WorkbenchClient extends Client {
     message.args[0] = new Value(command);
     getHandler().raiseEvent(message);
   }
+  
+  public void startFmmlxClient() {
+    Message message = getHandler().newMessage("startFmmlxClient", 0);
+    getHandler().raiseEvent(message);
+  }
 }

@@ -47,6 +47,7 @@ public class ControlCenterClient {
 	}
 	
 	public void getProjectModels(String projectPath) {
+		if(projectPath == null) return;
 	    Message message = WorkbenchClient.theClient().getHandler().newMessage("getProjectModels", 1);
 	    message.args[0] = new Value(projectPath);
 	    WorkbenchClient.theClient().getHandler().raiseEvent(message);

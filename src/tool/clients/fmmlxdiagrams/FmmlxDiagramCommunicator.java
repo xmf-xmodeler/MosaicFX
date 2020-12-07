@@ -17,38 +17,45 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.Deserializer;
-import tool.clients.serializer.Serializer;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.PropertyManager;
+import xos.Message;
 import xos.Value;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Optional;
+import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
 public class FmmlxDiagramCommunicator {
 	public static final String TAG = FmmlxDiagram.class.getSimpleName();
 
+	private static FmmlxDiagramCommunicator self;
+	
 	private int handler;
 	int idCounter = 0;
 	private final HashMap<Integer, Vector<Object>> results = new HashMap<>();
 	private static final Hashtable<Integer, Tab> tabs = new Hashtable<>();
 	private static final Vector<FmmlxDiagram> diagrams = new Vector<>();
 	private static final boolean DEBUG = false;
-	private static final Vector<FmmlxDiagramCommunicator> communicators = new Vector<>();
 	static TabPane tabPane;
-	private String name;
+//	private String name;
 	private Value getNoReturnExpectedMessageID(int diagramID) {return new Value(new Value[] {new Value(diagramID), new Value(-1)});}
-	private FmmlxDiagram diagram;
 	
 	public FmmlxDiagramCommunicator() {
-	  communicators.add(this);
+		if(self != null) throw new IllegalStateException("FmmlxDiagramCommunicator must not be instantiated more than once.");
+		self = this;
 	}
-
-//	public static Vector<FmmlxDiagram> getDiagrams() { // TODO Ask
-//		return diagrams;
-//	}
+	
+	public static FmmlxDiagramCommunicator getCommunicator() {
+		if(self != null) return self;
+		throw new IllegalStateException("FmmlxDiagramCommunicator should have been instantiated. Run initCommunicator() first");		
+	}
+	
+	public static void initCommunicator() {
+		WorkbenchClient.theClient().startFmmlxClient();
+	}
 
 	public static void start(TabPane tabPane) {
 		FmmlxDiagramCommunicator.tabPane = tabPane;
@@ -60,19 +67,19 @@ public class FmmlxDiagramCommunicator {
 	
 	@SuppressWarnings("deprecation")
 	public void newDiagram(int diagramID, String diagramName, String packageName) {
-		this.name = diagramName;
+//		this.name = diagramName;
 		CountDownLatch l = new CountDownLatch(1);
-		final String label = diagramName + " " + diagramID;//"getPackageName();";
+//		final String label = diagramName;// + " " + diagramID;//"getPackageName();";
 		Platform.runLater(() -> {
 			if (DEBUG) System.err.println("Create FMMLx-Diagram ("+diagramName+") ...");
-			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, label, packageName);
+			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packageName);
 			if(!PropertyManager.getProperty("diagramsInSeparateTab", true)) {
-				createTab(diagram.getView(), label, this.handler);
+				createTab(diagram.getView(), diagramName, this.handler, diagram);
 			}else {
-				createStage(diagram.getView(), label, this.handler);	
+				createStage(diagram.getView(), diagramName, this.handler, diagram);	
 			}
 			diagrams.add(diagram);
-			this.diagram = diagram;
+//			this.diagram = diagram;
 //			System.err.println("diagrams: " + diagrams);
 			l.countDown();
 		});
@@ -83,7 +90,7 @@ public class FmmlxDiagramCommunicator {
 		}
 	}
 
-	private void close(int handler) {
+	private void close(FmmlxDiagram diagram) {
 		diagrams.remove(diagram);
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
@@ -147,7 +154,7 @@ public class FmmlxDiagramCommunicator {
 //			int diagramID = (Integer) (ids.get(0));
 //			if(diagramID != this.diagramID) return; // Ignore completely. Message not for this Diagram
 			int requestID = (Integer) (ids.get(1));
-			if (DEBUG) System.err.println(name + ": Receiving request " + requestID);
+			if (DEBUG) System.err.println(": Receiving request " + requestID);
 			msgAsVec.remove(0);
 			if (requestID == -1) {
 				if (DEBUG) System.err.println("v.get(0)= " + msgAsVec.get(0));
@@ -185,7 +192,7 @@ public class FmmlxDiagramCommunicator {
 	private Vector<Object> xmfRequest(int targetHandle, FmmlxDiagram diagram, String message, Value... args) throws TimeOutException {
 		Value[] args2 = new Value[args.length + 1];
 		int requestID = idCounter++;
-		if (DEBUG) System.err.println(name + ": Sending request " + message + "(" + requestID + ") handle" + targetHandle);
+		if (DEBUG) System.err.println(": Sending request " + message + "(" + requestID + ") handle" + targetHandle);
 		System.arraycopy(args, 0, args2, 1, args.length);
 		args2[0] = new Value(new Value[] {new Value(diagram==null?-1:diagram.getID()), new Value(requestID)});
 		boolean waiting = true;
@@ -212,7 +219,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	private void sendMessage(String command, Value[] message) {
-		if (DEBUG) System.err.println(name + ": Sending command " + command);
+		if (DEBUG) System.err.println(": Sending command " + command);
 		WorkbenchClient.theClient().send(handler, command, message);
 	}
 
@@ -635,7 +642,6 @@ public class FmmlxDiagramCommunicator {
 				System.err.println("Suspicious Y coordinate");
 			}
 		}
-
 
 		Value[] listOfPoints = new Value[points.size() + 2];
 		{
@@ -1272,12 +1278,10 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("showBody", message);
 	}
 
-	public void loadProjectFromXml(String projectName, Vector<String> diagramsString){
-		Value[] diagramLabelArray = createValueArrayString(diagramsString);
+	public void loadProjectNameFromXml(String projectName){
 		Value[] message = new Value[]{
 				new Value(-1),
-				new Value(projectName),
-				new Value(diagramLabelArray)
+				new Value(projectName)
 		};
 		sendMessage("loadProjectFromXml", message);
 	}
@@ -1287,32 +1291,39 @@ public class FmmlxDiagramCommunicator {
 		deserializer.loadState(fileName, this);
 	}
 
-	public void saveXmlFile(String fileName, String packageString) {
-		String packageName = packageString.substring(1,packageString.length()-1).split(" ")[1];
-
-		Task<Void> task = new Task<Void>() {
-
-			@Override
-			protected Void call() throws Exception {
-				Serializer serializer = new Serializer();
-				try {
-					for(FmmlxDiagram diagram : diagrams){
-						String tmp_packageName = diagram.getPackagePath().split("::")[1];
-						if(packageName.equals(tmp_packageName)){
-							serializer.saveAsXml(diagram, fileName);
-							return null;
-						}
-					}
-				} catch (TransformerException | ParserConfigurationException e) {
-					e.printStackTrace();
-				}
-				return null;
-			}
-
+	private transient Integer _newDiagramID = null;
+	public Integer createDiagram(String packagePath, String diagramName) {
+		Value[] message = new Value[]{
+				new Value(packagePath),
+				new Value(diagramName)
 		};
-
+		_newDiagramID = null;
+		int timeout = 0;
+		
+		Task<Void> task = new Task<Void>() { protected Void call() { sendMessage("createDiagramFromJava", message); return null; }};
 		new Thread(task).start();
+		
+		while(_newDiagramID == null && timeout < 10) {
+			System.err.println("timeout: " + timeout);
+			timeout++;
+			try { Thread.sleep(200); } catch (InterruptedException e) { e.printStackTrace(); }
+			
+		}
+		return _newDiagramID;
 	}
+	
+	public void openDiagram(String packagePath, String diagramName) {
+		Value[] message = new Value[]{
+				new Value(packagePath),
+				new Value(diagramName)
+		};
+		sendMessage("openDiagramFromJava", message);
+	}
+	
+	public void setNewDiagramId(int i) {
+		_newDiagramID = i;
+	}
+	
 	public void openPackageBrowser() {
 		WorkbenchClient.theClient().send(handler, "openPackageBrowser()");
 	}
@@ -1419,7 +1430,7 @@ public class FmmlxDiagramCommunicator {
 
 	// ########################## Tab ### Stage #######################
 
-	private void createStage(javafx.scene.Node node, String name, int id) {
+	private void createStage(javafx.scene.Node node, String name, int id, final  FmmlxDiagram diagram) {
 		Stage stage = new Stage();
 		BorderPane border = new BorderPane();
 		border.setCenter(node);
@@ -1427,10 +1438,10 @@ public class FmmlxDiagramCommunicator {
 		stage.setScene(scene);
 		stage.setTitle(name);
 		stage.show();
-		stage.setOnCloseRequest((e) -> closeScene(stage, e, id, name, node));
+		stage.setOnCloseRequest((e) -> closeScene(stage, e, id, name, node, diagram));
 	}
 
-	private void createTab(javafx.scene.Node node, String name, int id) {
+	private void createTab(javafx.scene.Node node, String name, int id, final FmmlxDiagram diagram) {
 		Tab tab = new Tab(name);
 		tab.setTooltip(new Tooltip(name));
 		tab.setContent(node);
@@ -1438,10 +1449,10 @@ public class FmmlxDiagramCommunicator {
 		tabs.put(id, tab);
 		tabPane.getTabs().add(tab);
 		tabPane.getSelectionModel().selectLast();
-		tab.setOnCloseRequest((e) -> closeTab(tab, e, id, name, node));
+		tab.setOnCloseRequest((e) -> closeTab(tab, e, id, name, node, diagram));
 	}
 
-	private void closeTab(Tab item, Event wevent, int id, String name, javafx.scene.Node node) {
+	private void closeTab(Tab item, Event wevent, int id, String name, javafx.scene.Node node, FmmlxDiagram diagram) {
 
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 
@@ -1456,18 +1467,18 @@ public class FmmlxDiagramCommunicator {
 		if (result.get().getButtonData() == ButtonData.YES) {
 			tabs.remove(id);
 			PropertyManager.setProperty("diagramsInSeparateTab", "true");
-			createStage(node, name, id);
+			createStage(node, name, id, diagram);
 
 		} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
 			wevent.consume();
 		} else {
-			close(FmmlxDiagramCommunicator.this.handler);
+			close(diagram);
 			tabs.remove(id);
 
 		}
 	}
 
-	private void closeScene(Stage stage, Event wevent, int id, String name, javafx.scene.Node node) {
+	private void closeScene(Stage stage, Event wevent, int id, String name, javafx.scene.Node node, FmmlxDiagram diagram) {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 
 		ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
@@ -1480,11 +1491,11 @@ public class FmmlxDiagramCommunicator {
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get().getButtonData() == ButtonData.YES) {
 			PropertyManager.setProperty("diagramsInSeparateTab", "false");
-			createTab(node, name, id);
+			createTab(node, name, id, diagram);
 		} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
 			wevent.consume();
 		} else {
-			close(FmmlxDiagramCommunicator.this.handler);
+			close(diagram);
 		}
 	}
 
