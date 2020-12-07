@@ -40,7 +40,7 @@ public class FmmlxDiagramCommunicator {
 	private static final Vector<FmmlxDiagram> diagrams = new Vector<>();
 	private static final boolean DEBUG = false;
 	static TabPane tabPane;
-	private String name;
+//	private String name;
 	private Value getNoReturnExpectedMessageID(int diagramID) {return new Value(new Value[] {new Value(diagramID), new Value(-1)});}
 	
 	public FmmlxDiagramCommunicator() {
@@ -67,16 +67,16 @@ public class FmmlxDiagramCommunicator {
 	
 	@SuppressWarnings("deprecation")
 	public void newDiagram(int diagramID, String diagramName, String packageName) {
-		this.name = diagramName;
+//		this.name = diagramName;
 		CountDownLatch l = new CountDownLatch(1);
-		final String label = diagramName + " " + diagramID;//"getPackageName();";
+//		final String label = diagramName;// + " " + diagramID;//"getPackageName();";
 		Platform.runLater(() -> {
 			if (DEBUG) System.err.println("Create FMMLx-Diagram ("+diagramName+") ...");
-			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, label, packageName);
+			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packageName);
 			if(!PropertyManager.getProperty("diagramsInSeparateTab", true)) {
-				createTab(diagram.getView(), label, this.handler, diagram);
+				createTab(diagram.getView(), diagramName, this.handler, diagram);
 			}else {
-				createStage(diagram.getView(), label, this.handler, diagram);	
+				createStage(diagram.getView(), diagramName, this.handler, diagram);	
 			}
 			diagrams.add(diagram);
 //			this.diagram = diagram;
@@ -154,7 +154,7 @@ public class FmmlxDiagramCommunicator {
 //			int diagramID = (Integer) (ids.get(0));
 //			if(diagramID != this.diagramID) return; // Ignore completely. Message not for this Diagram
 			int requestID = (Integer) (ids.get(1));
-			if (DEBUG) System.err.println(name + ": Receiving request " + requestID);
+			if (DEBUG) System.err.println(": Receiving request " + requestID);
 			msgAsVec.remove(0);
 			if (requestID == -1) {
 				if (DEBUG) System.err.println("v.get(0)= " + msgAsVec.get(0));
@@ -192,7 +192,7 @@ public class FmmlxDiagramCommunicator {
 	private Vector<Object> xmfRequest(int targetHandle, FmmlxDiagram diagram, String message, Value... args) throws TimeOutException {
 		Value[] args2 = new Value[args.length + 1];
 		int requestID = idCounter++;
-		if (DEBUG) System.err.println(name + ": Sending request " + message + "(" + requestID + ") handle" + targetHandle);
+		if (DEBUG) System.err.println(": Sending request " + message + "(" + requestID + ") handle" + targetHandle);
 		System.arraycopy(args, 0, args2, 1, args.length);
 		args2[0] = new Value(new Value[] {new Value(diagram==null?-1:diagram.getID()), new Value(requestID)});
 		boolean waiting = true;
@@ -219,7 +219,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	private void sendMessage(String command, Value[] message) {
-		if (DEBUG) System.err.println(name + ": Sending command " + command);
+		if (DEBUG) System.err.println(": Sending command " + command);
 		WorkbenchClient.theClient().send(handler, command, message);
 	}
 
@@ -1310,6 +1310,14 @@ public class FmmlxDiagramCommunicator {
 			
 		}
 		return _newDiagramID;
+	}
+	
+	public void openDiagram(String packagePath, String diagramName) {
+		Value[] message = new Value[]{
+				new Value(packagePath),
+				new Value(diagramName)
+		};
+		sendMessage("openDiagramFromJava", message);
 	}
 	
 	public void setNewDiagramId(int i) {

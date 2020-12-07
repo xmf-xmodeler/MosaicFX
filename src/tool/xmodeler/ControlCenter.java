@@ -17,6 +17,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 //import javafx.scene.layout.GridPane;
@@ -69,12 +70,25 @@ public class ControlCenter extends Stage {
 
 			Optional<String> result = dialog.showAndWait();
 			result.ifPresent(name -> 
-			    FmmlxDiagramCommunicator.getCommunicator().createDiagram(
+			    {Integer diagramID = FmmlxDiagramCommunicator.getCommunicator().createDiagram(
 			        modelLV.getSelectionModel().getSelectedItem(), 
-			        name));
-			
+			        name); System.err.println("diagramID "  +diagramID);});});
+		
+		diagramLV.setOnMouseClicked(me -> {
 
-		});
+		        if (me.getClickCount() == 2 && me.getButton() == MouseButton.PRIMARY) {
+		           String selectedDiagramString = diagramLV.getSelectionModel().getSelectedItem();
+		           if(selectedDiagramString != null) {
+		        	   String selectedModelString = modelLV.getSelectionModel().getSelectedItem();
+			           if(selectedModelString != null) {
+			        	  FmmlxDiagramCommunicator.getCommunicator().openDiagram(
+			        			  selectedModelString, 
+			        			  selectedDiagramString);
+			        	  
+			           }
+		           }
+		        }
+		    });
 		
 		Menu file = new Menu("File");
 		Menu browsers = new Menu("Browser");

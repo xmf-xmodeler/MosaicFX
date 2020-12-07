@@ -95,7 +95,7 @@ public class FmmlxDiagram{
 	private boolean showDerivedAttributes=true;
 	
 	private final int diagramID;
-	private final String diagramLabel;
+	private final String diagramName;
 	private transient boolean suppressRedraw;
 	private final NewFmmlxPalette newFmmlxPalette;
 	private final String packagePath;
@@ -113,14 +113,14 @@ public class FmmlxDiagram{
 		this.comm = null;
 		this.newFmmlxPalette = null;
 		this.diagramID = -1;
-		this.diagramLabel = null;
+		this.diagramName = null;
 		this.packagePath = null;
 	}
 	
-	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String label, String packagePath) {
+	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String name, String packagePath) {
 		this.comm = comm;
 		this.diagramID = diagramID;
-		this.diagramLabel = label;
+		this.diagramName = name;
 		this.packagePath = packagePath;
 		vBox = new VBox();
 		menu = new Menu("Test");
@@ -927,7 +927,7 @@ public class FmmlxDiagram{
 	}
 
 	public String getDiagramLabel() {
-		return diagramLabel;
+		return diagramName;
 	}
 
 	public String getPackagePath() {
