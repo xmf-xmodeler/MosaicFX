@@ -19,7 +19,6 @@ import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.Deserializer;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.PropertyManager;
-import xos.Message;
 import xos.Value;
 
 import java.util.HashMap;
@@ -1279,16 +1278,17 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void loadProjectNameFromXml(String projectName){
+
 		Value[] message = new Value[]{
 				new Value(-1),
-				new Value(projectName)
+				new Value(projectName),
 		};
 		sendMessage("loadProjectFromXml", message);
 	}
 
 	public void openXmlFile(String fileName){
 		Deserializer deserializer = new Deserializer();
-		deserializer.loadState(fileName, this);
+		deserializer.loadProject(fileName, this);
 	}
 
 	private transient Integer _newDiagramID = null;

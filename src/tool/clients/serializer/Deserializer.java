@@ -11,11 +11,10 @@ import java.util.Vector;
 public class Deserializer {
 	
 
-    public void loadState(String file, FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
+    public void loadProject(String file, FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
         ProjectXmlManager projectXmlManager = new ProjectXmlManager(file);
         String projectName = projectXmlManager.getProjectName();
-        Vector<String> diagramStrings= loadAllDiagrams(file);
-        fmmlxDiagramCommunicator.loadProjectFromXml(projectName, diagramStrings);
+        fmmlxDiagramCommunicator.loadProjectNameFromXml(projectName);
 
     }
 
