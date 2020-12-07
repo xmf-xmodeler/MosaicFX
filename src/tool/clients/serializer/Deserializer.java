@@ -5,42 +5,48 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
+import java.util.Vector;
 
 
 public class Deserializer {
 	
 
-    public void loadState(String path, FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
-        ProjectXmlManager projectXmlManager = new ProjectXmlManager(path);
+    public void loadState(String file, FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
+        ProjectXmlManager projectXmlManager = new ProjectXmlManager(file);
         String projectName = projectXmlManager.getProjectName();
-        fmmlxDiagramCommunicator.loadProjectNameFromXml(projectName);
-        loadAllDiagram();
+        Vector<String> diagramStrings= loadAllDiagrams(file);
+        fmmlxDiagramCommunicator.loadProjectFromXml(projectName, diagramStrings);
+
     }
 
-    private void loadAllDiagram(){
-//        DiagramXmlManager diagramXmlManager = new DiagramXmlManager();
-//        List<String> diagramList = diagramXmlManager.getAllDiagrams();
+    private Vector<String> loadAllDiagrams(String file){
+        DiagramXmlManager diagramXmlManager = new DiagramXmlManager(file);
+        return diagramXmlManager.getAllDiagrams();
     }
-//
-//    public void getAllDiagramElement(FmmlxDiagram fmmlxDiagram){
-//        LogXmlManager logXmlManager = new LogXmlManager(fmmlxDiagram);
-//        logXmlManager.reproduceFromLog(fmmlxDiagram.getDiagramLabel());
-//        fmmlxDiagram.updateDiagram();
-//    }
-//
-//    public void alignCoordinate(FmmlxDiagram fmmlxDiagram) {
-//    	if(checkFileExist()) {
-//    		ObjectXmlManager objectXmlManager = new ObjectXmlManager();
-//            objectXmlManager.alignObjects(fmmlxDiagram);
-//            EdgeXmlManager edgeXmlManager = new EdgeXmlManager();
-//            edgeXmlManager.alignEdges(fmmlxDiagram);
-//            LabelXmlManager labelXmlManager = new LabelXmlManager();
-//            labelXmlManager.alignLabel(fmmlxDiagram);
-//    	}
-//    }
-//
-    public boolean checkFileExist(){
-        return Files.exists(Paths.get(XmlCreator.path));
+
+    public void getAllDiagramElement(FmmlxDiagram fmmlxDiagram){
+        String file = fmmlxDiagram.getFilePath();
+        if(checkFileExist(file)){
+            LogXmlManager logXmlManager = new LogXmlManager(fmmlxDiagram, file);
+            logXmlManager.reproduceFromLog(fmmlxDiagram.getDiagramLabel());
+            fmmlxDiagram.updateDiagram();
+        }
+    }
+
+    public void alignCoordinate(FmmlxDiagram fmmlxDiagram) {
+        String file = fmmlxDiagram.getFilePath();
+    	if(checkFileExist(file)) {
+
+    		ObjectXmlManager objectXmlManager = new ObjectXmlManager(file);
+            objectXmlManager.alignObjects(fmmlxDiagram);
+            EdgeXmlManager edgeXmlManager = new EdgeXmlManager(file);
+            edgeXmlManager.alignEdges(fmmlxDiagram);
+            LabelXmlManager labelXmlManager = new LabelXmlManager(file);
+            labelXmlManager.alignLabel(fmmlxDiagram);
+    	}
+    }
+
+    public boolean checkFileExist(String file){
+        return Files.exists(Paths.get(file));
     }
 }

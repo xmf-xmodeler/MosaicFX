@@ -7,7 +7,9 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.serializer.interfaces.IXmlManager;
 
 import javax.xml.transform.TransformerException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 public class DiagramXmlManager implements IXmlManager {
     private final XmlHandler xmlHandler;
@@ -87,7 +89,18 @@ public class DiagramXmlManager implements IXmlManager {
         return xmlHandler.getDiagramsNode();
     }
 
-    public List getAllDiagrams() {
-        return null;
+    public Vector<String> getAllDiagrams() {
+        Vector<String> diagrams = new Vector<>();
+        Node diagramsNode = xmlHandler.getDiagramsNode();
+        NodeList diagramNodeList = diagramsNode.getChildNodes();
+
+        for(int i =0; i< diagramNodeList.getLength(); i++){
+            Node tmp = diagramNodeList.item(i);
+            if(tmp.getNodeType()==Node.ELEMENT_NODE){
+                String diagramLabel = ((Element) tmp).getAttribute(XmlConstant.ATTRIBUTE_LABEL);
+                diagrams.add(diagramLabel);
+            }
+        }
+        return diagrams;
     }
 }

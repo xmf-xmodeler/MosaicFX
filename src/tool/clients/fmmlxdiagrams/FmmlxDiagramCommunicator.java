@@ -24,10 +24,7 @@ import xos.Value;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Optional;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 public class FmmlxDiagramCommunicator {
@@ -1275,10 +1272,12 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("showBody", message);
 	}
 
-	public void loadProjectNameFromXml(String projectName){
+	public void loadProjectFromXml(String projectName, Vector<String> diagramsString){
+		Value[] diagramLabelArray = createValueArrayString(diagramsString);
 		Value[] message = new Value[]{
 				new Value(-1),
-				new Value(projectName)
+				new Value(projectName),
+				new Value(diagramLabelArray)
 		};
 		sendMessage("loadProjectFromXml", message);
 	}

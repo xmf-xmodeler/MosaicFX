@@ -267,8 +267,8 @@ public class FmmlxDiagram{
 	}
 
 	private void alignAllComponents(FmmlxDiagram diagram) {
-//		Deserializer deserializer = new Deserializer();
-//		deserializer.alignCoordinate(diagram);
+		Deserializer deserializer = new Deserializer();
+		deserializer.alignCoordinate(diagram);
 	}
 
 	// This operation resets the size of the canvas when needed
