@@ -264,7 +264,7 @@ public class FmmlxDiagramCommunicator {
 					diagram);
 			result.add(object);
 
-			sendCurrentPosition(diagram, object); // make sure to store position if newly created
+			sendCurrentPosition(diagram.getID(), object); // make sure to store position if newly created
 		}
 		return result;
 	}
@@ -619,18 +619,18 @@ public class FmmlxDiagramCommunicator {
 	/// Operations storing graphical info to xmf ///
 	////////////////////////////////////////////////
 
-	public void sendCurrentPosition(FmmlxDiagram diagram, FmmlxObject o) {
+	public void sendCurrentPosition(int diagramID, FmmlxObject o) {
 //		Vector<Object> response = xmfRequest(handler, "sendNewPosition",
 //				new Value[]{});
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(o.id),
 				new Value((int)(o.getX())), 
 				new Value((int)(o.getY()))};
 		sendMessage("sendNewPosition", message);
 	}
 
-	public void sendCurrentPositions(FmmlxDiagram diagram, Edge e) {
+	public void sendCurrentPositions(int diagramID, Edge e) {
 		Vector<Point2D> points = e.getIntermediatePoints();
 		
 		if(points.size() < 2) System.err.println("Suspicious edge alignment");
@@ -667,7 +667,7 @@ public class FmmlxDiagramCommunicator {
 		}
 
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(e.id), 
 				new Value(listOfPoints)};
 		sendMessage("sendNewPositions", message);

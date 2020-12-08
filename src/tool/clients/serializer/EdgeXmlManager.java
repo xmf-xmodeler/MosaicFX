@@ -237,7 +237,7 @@ public class EdgeXmlManager implements IXmlManager {
             }
         }
         edge.setIntermediatePoints(intermediatePoints);
-        fmmlxDiagram.getComm().sendCurrentPositions(fmmlxDiagram, edge);
+        fmmlxDiagram.getComm().sendCurrentPositions(fmmlxDiagram.getID(), edge);
     }
 
 

@@ -490,14 +490,14 @@ public class FmmlxDiagram{
 			for (CanvasElement s : selectedObjects)
 				if (s instanceof FmmlxObject) {
 					FmmlxObject o = (FmmlxObject) s;
-					comm.sendCurrentPosition(this, o);
+					comm.sendCurrentPosition(this.getID(), o);
 					for(Edge e : edges) {
 						if(e.isStartNode(o) || e.isEndNode(o)) {
-							comm.sendCurrentPositions(this, e);
+							comm.sendCurrentPositions(this.getID(), e);
 						}
 					}
 				} else if (s instanceof Edge) {
-					comm.sendCurrentPositions(this, (Edge) s);
+					comm.sendCurrentPositions(this.getID(), (Edge) s);
 				} else if (s instanceof DiagramEdgeLabel) {
 					DiagramEdgeLabel del = (DiagramEdgeLabel) s;
 					del.owner.updatePosition(del);
