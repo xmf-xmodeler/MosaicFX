@@ -178,7 +178,7 @@ public class ObjectXmlManager implements IXmlManager {
             Point2D initCoordinate = new Point2D(object.getX(), object.getY());
             Point2D coordinate = getCoordinate(diagramNode, object.getName(),initCoordinate);
             object.moveTo(coordinate.getX(), coordinate.getY(), fmmlxDiagram);
-            fmmlxDiagram.getComm().sendCurrentPosition(fmmlxDiagram, object);
+            fmmlxDiagram.getComm().sendCurrentPosition(fmmlxDiagram.getID(), object);
         }
     }
 

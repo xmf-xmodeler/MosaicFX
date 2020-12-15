@@ -602,7 +602,7 @@ public abstract class Edge implements CanvasElement {
 		storeLatestValidPointConfiguration();
 
 		if(pointToBeMoved != -1 || newSourcePortRegion!= null || newTargetPortRegion != null) {
-				diagram.getComm().sendCurrentPositions(diagram, this);
+				diagram.getComm().sendCurrentPositions(diagram.getID(), this);
 		}
 		 
 		pointToBeMoved = -1;
