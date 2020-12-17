@@ -17,10 +17,13 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.Deserializer;
+import tool.clients.serializer.Serializer;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.PropertyManager;
 import xos.Value;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Optional;
@@ -1497,6 +1500,33 @@ public class FmmlxDiagramCommunicator {
 		} else {
 			close(diagram);
 		}
+	}
+
+	public void saveXmlFile(String fileName, String packageString) {
+		String packageName = packageString.substring(1,packageString.length()-1).split(" ")[1];
+
+		Task<Void> task = new Task<Void>() {
+
+			@Override
+			protected Void call() {
+				Serializer serializer = new Serializer();
+				try {
+					for(FmmlxDiagram diagram : diagrams){
+						String tmp_packageName = diagram.getPackagePath().split("::")[1];
+						if(packageName.equals(tmp_packageName)){
+							serializer.saveAsXml(diagram, fileName);
+							return null;
+						}
+					}
+				} catch (TransformerException | ParserConfigurationException e) {
+					e.printStackTrace();
+				}
+				return null;
+			}
+
+		};
+
+		new Thread(task).start();
 	}
 
 }
