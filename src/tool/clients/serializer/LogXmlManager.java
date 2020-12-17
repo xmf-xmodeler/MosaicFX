@@ -352,14 +352,8 @@ public class LogXmlManager implements ILog, IXmlManager {
                     break;
                 }
                 case "addAssociation" : {
-                    String classpath1 = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS_SOURCE);
-//                    String[] classPathArray1 = classpath1.split("::");
-                    String classSourceName = classpath1;//classPathArray1[classPathArray1.length-1];
-
+                    String classSourceName = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS_SOURCE);//classPathArray1[classPathArray1.length-1];
                     String classpath2 = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS_TARGET);
-//                    String[] classPathArray2 = classpath2.split("::");
-                    String classTargetName = classpath2;//classPathArray2[classPathArray2.length-1];
-
                     String accessSourceFromTargetName = logElement.getAttribute(XmlConstant.ATTRIBUTE_ACCESS_SOURCE_FROM_TARGET);
                     String accessTargetFromSourceName = logElement.getAttribute(XmlConstant.ATTRIBUTE_ACCESS_TARGET_FROM_SOURCE);
 
@@ -398,7 +392,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     boolean isSymmetric = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_SYMMETRIC));
                     boolean isTransitive = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_TRANSITIVE));
 
-                    comm.addAssociation(diagramID, classSourceName, classTargetName,
+                    comm.addAssociation(diagramID, classSourceName, classpath2,
                             accessSourceFromTargetName, accessTargetFromSourceName,
                             fwName, reverseName, multiplicityT2S, multiplicityS2T,
                             instLevelSource, instLevelTarget, sourceVisibleFromTarget,

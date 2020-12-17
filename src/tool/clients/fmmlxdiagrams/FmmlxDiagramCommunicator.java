@@ -15,6 +15,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
+import sun.security.krb5.internal.crypto.Des;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.Deserializer;
 import tool.clients.serializer.Serializer;
@@ -1468,17 +1469,18 @@ public class FmmlxDiagramCommunicator {
 		alert.setHeaderText(null);
 
 		Optional<ButtonType> result = alert.showAndWait();
-		if (result.get().getButtonData() == ButtonData.YES) {
-			tabs.remove(id);
-			PropertyManager.setProperty("diagramsInSeparateTab", "true");
-			createStage(node, name, id, diagram);
+		if(result.isPresent()){
+			if (result.get().getButtonData() == ButtonData.YES) {
+				tabs.remove(id);
+				PropertyManager.setProperty("diagramsInSeparateTab", "true");
+				createStage(node, name, id, diagram);
 
-		} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
-			wevent.consume();
-		} else {
-			close(diagram);
-			tabs.remove(id);
-
+			} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
+				wevent.consume();
+			} else {
+				close(diagram);
+				tabs.remove(id);
+			}
 		}
 	}
 
@@ -1493,14 +1495,17 @@ public class FmmlxDiagramCommunicator {
 		alert.setHeaderText(null);
 
 		Optional<ButtonType> result = alert.showAndWait();
-		if (result.get().getButtonData() == ButtonData.YES) {
-			PropertyManager.setProperty("diagramsInSeparateTab", "false");
-			createTab(node, name, id, diagram);
-		} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
-			wevent.consume();
-		} else {
-			close(diagram);
+		if (result.isPresent()){
+			if (result.get().getButtonData() == ButtonData.YES) {
+				PropertyManager.setProperty("diagramsInSeparateTab", "false");
+				createTab(node, name, id, diagram);
+			} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
+				wevent.consume();
+			} else {
+				close(diagram);
+			}
 		}
+
 	}
 
 	public void saveXmlFile(String fileName, String packageString) {
@@ -1530,10 +1535,29 @@ public class FmmlxDiagramCommunicator {
 		new Thread(task).start();
 	}
 
-	public void populateDiagram() throws TimeOutException {
-
+	public void populateDiagram() {
+		FmmlxDiagram fmmlxDiagram = getDiagramByID(_newDiagramID);
 		System.out.println(_newDiagramID);
+		Platform.runLater(()-> {
+			if(fmmlxDiagram.getObjects().size()==0){
+				fmmlxDiagram.loadProcess = true;
+				Deserializer deserializer = new Deserializer();
+				try {
+					deserializer.getAllDiagramElement(fmmlxDiagram);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 
+	private FmmlxDiagram getDiagramByID(Integer newDiagramID) {
+		for (FmmlxDiagram diagram : diagrams){
+			if(diagram.getID()==newDiagramID){
+				return diagram;
+			}
+		}
+		return null;
 	}
 
 }
