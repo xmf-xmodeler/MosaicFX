@@ -6,6 +6,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.FaXML;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.TimeOutException;
 import tool.clients.serializer.interfaces.ILog;
@@ -107,6 +108,9 @@ public class LogXmlManager implements ILog, IXmlManager {
     }
 
     private void reproduceDiagramElement(Node diagramNode, Element logElement) {
+    	int diagramID = this.diagram.getID();
+    	FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator();
+    	
         if(diagramNode!= null){
             String tagName = logElement.getTagName();
             switch (tagName) {
@@ -127,20 +131,20 @@ public class LogXmlManager implements ILog, IXmlManager {
                     Point2D coordinate = new Point2D(0.0,0.0);
                     int x = (int) Math.round(coordinate.getX());
                     int y = (int) Math.round(coordinate.getY());
-                    diagram.getComm().addMetaClass(diagram, name, level, parents, isAbstract, x, y);
+                    comm.addMetaClass(diagramID, name, level, parents, isAbstract, x, y);
                     break;
                 }
                 case "removeClass" : {
                     String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
                     String[] classPathArray = classpath.split("::");
                     String className = classPathArray[classPathArray.length-1];
-                    diagram.getComm().removeClass(diagram, className, 0);
+                    comm.removeClass(diagramID, className, 0);
                     break;
                 }
                 case "changeClassName" : {
                     String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
                     String newName = logElement.getAttribute(XmlConstant.ATTRIBUTE_NEW_NAME);
-                    diagram.getComm().changeClassName(diagram, name, newName);
+                    comm.changeClassName(diagramID, name, newName);
                     break;
                 }
                 case "setClassAbstract" : {
@@ -148,7 +152,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     String[] classPathArray = classpath.split("::");
                     String className = classPathArray[classPathArray.length-1];
                     boolean abstractValue = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_ABSTRACT));
-                    diagram.getComm().setClassAbstract(diagram, className, abstractValue);
+                    comm.setClassAbstract(diagramID, className, abstractValue);
                     break;
 
                 }
@@ -179,7 +183,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                         }
                     }
 
-                    diagram.getComm().changeParent(diagram, className, oldParents, newParents);
+                    comm.changeParent(diagramID, className, oldParents, newParents);
                     break;
                 }
                 case "addAttribute" : {
@@ -200,7 +204,7 @@ public class LogXmlManager implements ILog, IXmlManager {
 
                     String[] typePathArray = typePath.split("::");
                     String typeName = typePathArray[typePathArray.length-1];
-                    diagram.getComm().addAttribute(diagram, className, name, level, typeName, multiplicity);
+                    comm.addAttribute(diagramID, className, name, level, typeName, multiplicity);
                     break;
                 }
                 case "removeAttribute" : {
@@ -208,7 +212,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     String[] classPathArray = classpath.split("::");
                     String className = classPathArray[classPathArray.length-1];
                     String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
-                    diagram.getComm().removeAttribute(diagram, className, name, 0);
+                    comm.removeAttribute(diagramID, className, name, 0);
                     break;
                 }
                 case "changeAttributeName" : {
@@ -217,7 +221,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
                     String[] classPathArray = classpath.split("::");
                     String className = classPathArray[classPathArray.length-1];
-                    diagram.getComm().changeAttributeName(diagram, className, oldName, newName);
+                    comm.changeAttributeName(diagramID, className, oldName, newName);
                     break;
                 }
                 case "changeAttributeLevel" : {
@@ -227,7 +231,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     String className = classPathArray[classPathArray.length-1];
                     int oldLevel = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_OLD_LEVEL));
                     int newLevel = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_NEW_LEVEL));
-                    diagram.getComm().changeAttributeLevel(diagram, className, name, oldLevel, newLevel);
+                    comm.changeAttributeLevel(diagramID, className, name, oldLevel, newLevel);
                     break;
 
                 }
@@ -238,7 +242,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     String className = classPathArray[classPathArray.length-1];
                     String oldType = logElement.getAttribute(XmlConstant.ATTRIBUTE_OLD_TYPE);
                     String newType = logElement.getAttribute(XmlConstant.ATTRIBUTE_NEW_TYPE);
-                    diagram.getComm().changeAttributeType(diagram, className, name, oldType, newType);
+                    comm.changeAttributeType(diagramID, className, name, oldType, newType);
                     break;
                 }
                 case "changeAttributeMultiplicity" : {
@@ -265,7 +269,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     boolean ordered1 = Boolean.parseBoolean(multiplicityArray1[3]);
                     Multiplicity multiplicity1 = new Multiplicity(upper1, under1, upperLimit1, ordered1, false);
 
-                    diagram.getComm().changeAttributeMultiplicity(diagram, className, name, multiplicity, multiplicity1);
+                    comm.changeAttributeMultiplicity(diagramID, className, name, multiplicity, multiplicity1);
                     break;
                 }
                 case "addOperation2": {
@@ -274,7 +278,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     String className = classPathArray[classPathArray.length-1];
                     String body = parseBase64(logElement.getAttribute(XmlConstant.ATTRIBUTE_BODY));
                     int level = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_LEVEL));
-                    diagram.getComm().addOperation2(diagram, className, level, body);
+                    comm.addOperation2(diagramID, className, level, body);
                     break;
                 }
                 case "addInstance": {
@@ -295,14 +299,14 @@ public class LogXmlManager implements ILog, IXmlManager {
                     Point2D coordinate = new Point2D(0.0,0.0);
                     int x = (int) Math.round(coordinate.getX());
                     int y = (int) Math.round(coordinate.getY());
-                    diagram.getComm().addNewInstance(diagram, ofName, name, parents, isAbstract, x, y);
+                    comm.addNewInstance(diagramID, ofName, name, parents, isAbstract, x, y);
                     break;
                 }
                 case "changeOperationBody" : {
                     String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
                     String className = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
                     String body = parseBase64(logElement.getAttribute(XmlConstant.ATTRIBUTE_BODY));
-                    diagram.getComm().changeOperationBody(diagram, className, name, body);
+                    comm.changeOperationBody(diagramID, className, name, body);
                     break;
                 }
                 case "changeOperationLevel" : {
@@ -312,7 +316,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     String className = classPathArray[classPathArray.length-1];
                     int oldLevel = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_OLD_LEVEL));
                     int newLevel = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_NEW_LEVEL));
-                    diagram.getComm().changeOperationLevel(diagram, className, name, oldLevel, newLevel);
+                    comm.changeOperationLevel(diagramID, className, name, oldLevel, newLevel);
                     break;
                 }
                 case "changeOperationOwner" : {
@@ -326,7 +330,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     String[] classPathArray = classpath.split("::");
                     String className = classPathArray[classPathArray.length-1];
 
-                    diagram.getComm().changeOperationOwner(diagram, oldClassName, name, className);
+                    comm.changeOperationOwner(diagramID, oldClassName, name, className);
                     break;
                 }
                 case "removeOperation" : {
@@ -334,7 +338,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
                     String[] classPathArray = classpath.split("::");
                     String className = classPathArray[classPathArray.length-1];
-                    diagram.getComm().removeOperation(diagram, className, name, 0);
+                    comm.removeOperation(diagramID, className, name, 0);
                     break;
                 }
                 case "changeSlotValue" : {
@@ -343,7 +347,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     String className = classPathArray[classPathArray.length-1];
                     String slotName = logElement.getAttribute(XmlConstant.ATTRIBUTE_SLOT_NAME);
                     String valueToBeParsed = logElement.getAttribute(XmlConstant.ATTRIBUTE_VALUE_TOBE_PARSED);
-                    diagram.getComm().changeSlotValue(diagram, className, slotName, valueToBeParsed);
+                    comm.changeSlotValue(diagramID, className, slotName, valueToBeParsed);
                     break;
                 }
                 case "addAssociation" : {
@@ -393,7 +397,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     boolean isSymmetric = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_SYMMETRIC));
                     boolean isTransitive = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_TRANSITIVE));
 
-                    diagram.getComm().addAssociation(diagram, classSourceName, classTargetName,
+                    comm.addAssociation(diagramID, classSourceName, classTargetName,
                             accessSourceFromTargetName, accessTargetFromSourceName,
                             fwName, reverseName, multiplicityT2S, multiplicityS2T,
                             instLevelSource, instLevelTarget, sourceVisibleFromTarget,
@@ -402,13 +406,13 @@ public class LogXmlManager implements ILog, IXmlManager {
                 }
                 case "removeAssociation" : {
                     String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
-                    diagram.getComm().removeAssociation(diagram, name, 0);
+                    comm.removeAssociation(diagramID, name, 0);
                     break;
                 }
                 case "changeAssociationForwardName" : {
                     String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
                     String newFwName = logElement.getAttribute("newFwName");
-                    diagram.getComm().changeAssociationForwardName(diagram, name, newFwName);
+                    comm.changeAssociationForwardName(diagramID, name, newFwName);
                     break;
                 }
                 case "changeAssociationEnd2StartMultiplicity" : {
@@ -423,7 +427,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
                     Multiplicity multiplicity = new Multiplicity(upper, under, upperLimit, ordered, false);
 
-                    diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram, name, multiplicity);
+                    comm.changeAssociationEnd2StartMultiplicity(diagramID, name, multiplicity);
                     break;
                 }
                 case "changeAssociationStart2EndMultiplicity" : {
@@ -438,7 +442,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
                     Multiplicity multiplicity = new Multiplicity(upper, under, upperLimit, ordered, false);
 
-                    diagram.getComm().changeAssociationStart2EndMultiplicity(diagram, name, multiplicity);
+                    comm.changeAssociationStart2EndMultiplicity(diagramID, name, multiplicity);
                     break;
                 }
                 case "addLink" : {
@@ -452,7 +456,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     String[] classPathArray2 = classpath2.split("::");
                     String className2 = classPathArray2[classPathArray2.length-1];
 
-                    diagram.getComm().addAssociationInstance(diagram, className1, className2, name);
+                    comm.addAssociationInstance(diagramID, className1, className2, name);
                     break;
                 }
                 case "removeLink" : {
@@ -469,7 +473,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     String[] delegationToPathArray = delegationToPath.split("::");
                     String delegationToName = delegationToPathArray[delegationToPathArray.length-1];
 
-                    diagram.getComm().addDelegation(diagram, delegationFromName, delegationToName);
+                    comm.addDelegation(diagramID, delegationFromName, delegationToName);
                     break;
                 }
                 case "setRoleFiller" : {
@@ -481,13 +485,13 @@ public class LogXmlManager implements ILog, IXmlManager {
                     String[] roleFillerPathArray = roleFillerPath.split("::");
                     String roleFiller = roleFillerPathArray[roleFillerPathArray.length-1];
 
-                    diagram.getComm().setRoleFiller(diagram, role, roleFiller);
+                    comm.setRoleFiller(diagramID, role, roleFiller);
                     break;
 
                 }
                 case "addEnumeration" : {
                     String enumName = logElement.getAttribute("name");
-                    diagram.getComm().addEnumeration(diagram, enumName);
+                    comm.addEnumeration(diagramID, enumName);
                     break;
 
                 }
@@ -495,7 +499,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     String enumName = logElement.getAttribute("enum_name");
                     String itemName = logElement.getAttribute("enum_value_name");
                     try {
-                        diagram.getComm().addEnumerationItem(diagram, enumName, itemName);
+                    	comm.addEnumerationItem(diagramID, enumName, itemName);
                     } catch (TimeOutException e) {
                         e.printStackTrace();
                     }
