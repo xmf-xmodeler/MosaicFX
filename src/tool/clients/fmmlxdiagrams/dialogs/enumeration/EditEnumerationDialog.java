@@ -162,7 +162,7 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 
 		if (opt.isPresent()) {
 			ChangeEnumNameDialogResult result = opt.get();
-			diagram.getComm().changeEnumerationName(diagram, result.getOldName(), result.getNewName());
+			diagram.getComm().changeEnumerationName(diagram.getID(), result.getOldName(), result.getNewName());
 		}
 		
 	}
@@ -181,7 +181,7 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 				@Override
 				protected Void call() throws Exception {
 					try {				
-						diagram.getComm().removeEnumerationItem(diagram, chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), string);
+						diagram.getComm().removeEnumerationItem(diagram.getID(), chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), string);
 						diagram.updateEnums();
 					} catch (TimeOutException e) {
 						e.printStackTrace();
@@ -222,7 +222,7 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 					protected Void call() throws Exception {
 						try { 
 					        diagram.getComm().addEnumerationItem(
-							diagram, 
+							diagram.getID(), 
 							chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), 
 							result.getName());
 					        diagram.updateEnums();

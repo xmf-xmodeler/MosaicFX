@@ -271,7 +271,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		td.setHeaderText("Change Forward Association Name");
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
-			diagram.getComm().changeAssociationForwardName(diagram, this.getName(), result.get());
+			diagram.getComm().changeAssociationForwardName(diagram.getID(), this.getName(), result.get());
 			diagram.updateDiagram();
 		}
 	};
@@ -283,7 +283,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		if(result.isPresent()) {
 			try {
 				Integer level = Integer.parseInt(result.get());
-				diagram.getComm().changeAssociationStart2EndLevel(diagram, this.id, level);
+				diagram.getComm().changeAssociationStart2EndLevel(diagram.getID(), this.id, level);
 				diagram.updateDiagram();
 			} catch (Exception e) {
 				System.err.println("Number not readable. Change Nothing.");
@@ -296,7 +296,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		td.setHeaderText("Change Start to End Access Name");
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
-			diagram.getComm().changeAssociationStart2EndAccessName(diagram, this.id, result.get());
+			diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), this.id, result.get());
 			diagram.updateDiagram();
 		}
 	};
@@ -305,7 +305,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		MultiplicityDialog md = new MultiplicityDialog(multiplicityStartToEnd);
 		Optional<MultiplicityDialogResult> mr = md.showAndWait();
 		if(mr.isPresent()) {
-			diagram.getComm().changeAssociationStart2EndMultiplicity(diagram, this.getName(), mr.get().convertToMultiplicity());
+			diagram.getComm().changeAssociationStart2EndMultiplicity(diagram.getID(), this.getName(), mr.get().convertToMultiplicity());
 			diagram.updateDiagram();
 		}
 	};
@@ -317,7 +317,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		if(result.isPresent()) {
 			try {
 				Integer level = Integer.parseInt(result.get());
-				diagram.getComm().changeAssociationEnd2StartLevel(diagram, this.id, level);
+				diagram.getComm().changeAssociationEnd2StartLevel(diagram.getID(), this.id, level);
 				diagram.updateDiagram();
 			} catch (Exception e) {
 				System.err.println("Number not readable. Change Nothing.");
@@ -330,7 +330,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		td.setHeaderText("Change End to Start Access Name");
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
-			diagram.getComm().changeAssociationEnd2StartAccessName(diagram, this.id, result.get());
+			diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), this.id, result.get());
 			diagram.updateDiagram();
 		}
 	};
@@ -339,7 +339,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		MultiplicityDialog md = new MultiplicityDialog(multiplicityEndToStart);
 		Optional<MultiplicityDialogResult> mr = md.showAndWait();
 		if(mr.isPresent()) {
-			diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram, this.getName(), mr.get().convertToMultiplicity());
+			diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram.getID(), this.getName(), mr.get().convertToMultiplicity());
 			diagram.updateDiagram();
 		}
 	};

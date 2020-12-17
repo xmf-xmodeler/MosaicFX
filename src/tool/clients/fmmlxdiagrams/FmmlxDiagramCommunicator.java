@@ -150,15 +150,15 @@ public class FmmlxDiagramCommunicator {
 		if (msgAsObj instanceof java.util.Vector) {
 			java.util.Vector<Object> msgAsVec = (java.util.Vector<Object>) msgAsObj;
 			java.util.Vector<Object> ids = (java.util.Vector<Object>) msgAsVec.get(0);
-//			int diagramID = (Integer) (ids.get(0));
-//			if(diagramID != this.diagramID) return; // Ignore completely. Message not for this Diagram
+			int diagramID = (Integer) (ids.get(0));
+			if(diagramID == -1) return; // Ignore completely for now. Message not for any open diagram
 			int requestID = (Integer) (ids.get(1));
 			if (DEBUG) System.err.println(": Receiving request " + requestID);
 			msgAsVec.remove(0);
 			if (requestID == -1) {
 				if (DEBUG) System.err.println("v.get(0)= " + msgAsVec.get(0));
 				java.util.Vector<Object> err = (java.util.Vector<Object>) msgAsVec.get(0);
-				if (err != null && err.size() > 0 && err.get(0) != null) {
+				if (err != null && err.size() > 0 && err.get(0) != null ) {
 					CountDownLatch l = new CountDownLatch(1);
 					Platform.runLater(() -> {
 						Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
@@ -188,12 +188,12 @@ public class FmmlxDiagramCommunicator {
 	 * @param args         the arguments of that operation
 	 * @return
 	 */
-	private Vector<Object> xmfRequest(int targetHandle, FmmlxDiagram diagram, String message, Value... args) throws TimeOutException {
+	private Vector<Object> xmfRequest(int targetHandle, int diagramID, String message, Value... args) throws TimeOutException {
 		Value[] args2 = new Value[args.length + 1];
 		int requestID = idCounter++;
 		if (DEBUG) System.err.println(": Sending request " + message + "(" + requestID + ") handle" + targetHandle);
 		System.arraycopy(args, 0, args2, 1, args.length);
-		args2[0] = new Value(new Value[] {new Value(diagram==null?-1:diagram.getID()), new Value(requestID)});
+		args2[0] = new Value(new Value[] {new Value(diagramID), new Value(requestID)});
 		boolean waiting = true;
 		WorkbenchClient.theClient().send(targetHandle, message, args2);
 		int attempts = 0;
@@ -228,7 +228,7 @@ public class FmmlxDiagramCommunicator {
 
 	@SuppressWarnings("unchecked")
 	public Vector<FmmlxObject> getAllObjects(FmmlxDiagram diagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram, "getAllObjects");
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllObjects");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<FmmlxObject> result = new Vector<>();
 		for (Object responseObject : responseContent) {
@@ -270,7 +270,7 @@ public class FmmlxDiagramCommunicator {
 
 	@SuppressWarnings("unchecked")
 	public Vector<Edge> getAllInheritanceEdges(FmmlxDiagram diagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram, "getAllInheritanceEdges");
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllInheritanceEdges");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
 
@@ -310,7 +310,7 @@ public class FmmlxDiagramCommunicator {
 	
 	@SuppressWarnings("unchecked")
 	public Vector<Edge> getAllDelegationEdges(FmmlxDiagram diagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram, "getAllDelegationEdges");
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllDelegationEdges");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
 
@@ -350,7 +350,7 @@ public class FmmlxDiagramCommunicator {
 	
 	@SuppressWarnings("unchecked")
 	public Vector<Edge> getAllRoleFillerEdges(FmmlxDiagram diagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram, "getAllRoleFillerEdges");
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllRoleFillerEdges");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
 
@@ -390,7 +390,7 @@ public class FmmlxDiagramCommunicator {
 	
 	@SuppressWarnings("unchecked")
 	public Vector<Edge> getAllAssociations(FmmlxDiagram diagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram, "getAllAssociations");
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllAssociations");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
 
@@ -449,7 +449,7 @@ public class FmmlxDiagramCommunicator {
 
 	@SuppressWarnings("unchecked")
 	public Vector<Edge> getAllAssociationsInstances(FmmlxDiagram diagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram, "getAllAssociationInstances");
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllAssociationInstances");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
 
@@ -493,7 +493,7 @@ public class FmmlxDiagramCommunicator {
 
 	@SuppressWarnings("unchecked")
 	public Vector<Vector<FmmlxAttribute>> fetchAttributes(FmmlxDiagram diagram, String className) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram, "getAllAttributes", new Value(className));
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllAttributes", new Value(className));
 		Vector<Object> twoLists = (Vector<Object>) (response.get(0));
 		Vector<FmmlxAttribute> resultOwn = new Vector<>();
 		Vector<FmmlxAttribute> resultOther = new Vector<>();
@@ -528,7 +528,7 @@ public class FmmlxDiagramCommunicator {
 
 	@SuppressWarnings("unchecked")
 	public Vector<FmmlxOperation> fetchOperations(FmmlxDiagram diagram, String className) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram, "getOwnOperations", new Value(className));
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getOwnOperations", new Value(className));
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxOperation> result = new Vector<>();
 		for (Object o : response0) {
@@ -566,7 +566,7 @@ public class FmmlxDiagramCommunicator {
 	@SuppressWarnings("unchecked")
 	public Vector<FmmlxSlot> fetchSlots(FmmlxDiagram diagram, FmmlxObject owner, Vector<String> slotNames) throws TimeOutException {
 		Value[] slotNameArray = createValueArrayString(slotNames);
-		Vector<Object> response = xmfRequest(handler, diagram, "getSlots", new Value(owner.getName()), new Value(slotNameArray));
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getSlots", new Value(owner.getName()), new Value(slotNameArray));
 		Vector<Object> slotList = (Vector<Object>) (response.get(0));
 		Vector<FmmlxSlot> result = new Vector<>();
 		for (Object slotO : slotList) {
@@ -581,7 +581,7 @@ public class FmmlxDiagramCommunicator {
 	@SuppressWarnings("unchecked")
 	public Vector<FmmlxOperationValue> fetchOperationValues(FmmlxDiagram diagram, String objectName, Vector<String> monitoredOperationsNames) throws TimeOutException {
 		Value[] monitoredOperationsNameArray = createValueArrayString(monitoredOperationsNames);
-		Vector<Object> response = xmfRequest(handler, diagram, "getOperationValues", new Value(objectName), new Value(monitoredOperationsNameArray));
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getOperationValues", new Value(objectName), new Value(monitoredOperationsNameArray));
 		Vector<Object> returnValuesList = (Vector<Object>) (response.get(0));
 		Vector<FmmlxOperationValue> result = new Vector<>();
 		for (Object returnValueO : returnValuesList) {
@@ -597,7 +597,7 @@ public class FmmlxDiagramCommunicator {
 
 	@SuppressWarnings("unchecked")
 	public Vector<FmmlxEnum> fetchAllEnums(FmmlxDiagram diagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram, "getAllEnums");
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllEnums");
 		Vector<Object> enumList = (Vector<Object>) (response.get(0));
 		Vector<FmmlxEnum> result = new Vector<>();
 		for (Object enumO : enumList) {
@@ -676,11 +676,11 @@ public class FmmlxDiagramCommunicator {
 	/// Operations requesting data to be manipulated ///
 	////////////////////////////////////////////////////
 
-	public void addMetaClass(FmmlxDiagram diagram, String name, int level, Vector<String> parents, boolean isAbstract, int x, int y) {
+	public void addMetaClass(int diagramID, String name, int level, Vector<String> parents, boolean isAbstract, int x, int y) {
 		Value[] parentsArray = createValueArray(parents);
 
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(name),
 				new Value(level),
 				new Value(parentsArray),
@@ -688,19 +688,19 @@ public class FmmlxDiagramCommunicator {
 				new Value(x), new Value(y)};
 		sendMessage("addMetaClass", message);
 	}
-
-	public void addNewInstance(FmmlxDiagram diagram, String className, String name, Vector<String> parents, boolean isAbstract, int x,
+	
+	public void addNewInstance(int diagramID, String className, String name, Vector<String> parents, boolean isAbstract, int x,
 							   int y) {
 		Value[] parentsArray = createValueArray(parents);
 
-		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagram.getID()), new Value(className), new Value(name),
+		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID), new Value(className), new Value(name),
 				new Value(parentsArray), new Value(isAbstract), new Value(x), new Value(y), new Value(new Value[] {})};
 		sendMessage("addInstance", message);
 	}
 	
 
 	public void addNewInstanceWithSlots(
-			FmmlxDiagram diagram, 
+			int diagramID, 
 			String className,
 			String instanceName,
 			Vector<String> parents,
@@ -719,38 +719,38 @@ public class FmmlxDiagramCommunicator {
 			i++;
 		}
 		
-		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagram.getID()), new Value(className), new Value(instanceName),
+		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID), new Value(className), new Value(instanceName),
 				new Value(parentsArray), new Value(false), new Value(x), new Value(y), new Value(slotList)};
 		sendMessage("addInstance", message);
 	}
 
-	public void removeClass(FmmlxDiagram diagram, String className, int strategy) {
+	public void removeClass(int diagramID, String className, int strategy) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(className),
 				new Value(strategy)};
 		sendMessage("removeClass", message);
 	}
 
-	public void removeAssociation(FmmlxDiagram diagram, String associationName, int strategy) {
+	public void removeAssociation(int diagramID, String associationName, int strategy) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(associationName)};
 		sendMessage("removeAssociation", message);
 	}
 
-	public void setAssociationEndVisibility(FmmlxDiagram diagram, int assocId, boolean targetEnd, boolean newVisbility) {
+	public void setAssociationEndVisibility(int diagramID, int assocId, boolean targetEnd, boolean newVisbility) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(assocId),
 				new Value(targetEnd),
 				new Value(newVisbility)};
 		sendMessage("setAssociationEndVisibility", message);
 	}
 
-	public void addAttribute(FmmlxDiagram diagram, String className, String name, int level, String type, Multiplicity multi) {
+	public void addAttribute(int diagramID, String className, String name, int level, String type, Multiplicity multi) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(className),
 				new Value(name),
 				new Value(level),
@@ -759,18 +759,18 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("addAttribute", message);
 	}
 
-	public void changeAttributeName(FmmlxDiagram diagram, String className, String oldName, String newName) {
+	public void changeAttributeName(int diagramID, String className, String oldName, String newName) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(className),
 				new Value(oldName),
 				new Value(newName)};
 		sendMessage("changeAttributeName", message);
 	}
 
-	public void changeAttributeLevel(FmmlxDiagram diagram, String objectName, String attName, int oldLevel, int newLevel) {
+	public void changeAttributeLevel(int diagramID, String objectName, String attName, int oldLevel, int newLevel) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectName),
 				new Value(attName),
 				new Value(oldLevel),
@@ -778,10 +778,10 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("changeAttributeLevel", message);
 	}
 
-	public void changeAttributeMultiplicity(FmmlxDiagram diagram, String objectName, String name, Multiplicity oldMul,
+	public void changeAttributeMultiplicity(int diagramID, String objectName, String name, Multiplicity oldMul,
 											Multiplicity newMul) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectName),
 				new Value(name),
 				new Value(oldMul.toValue()),
@@ -790,18 +790,18 @@ public class FmmlxDiagramCommunicator {
 
 	}
 
-	public void changeAttributeOwner(FmmlxDiagram diagram, String objectName, String name, Integer newOwnerID) {
+	public void changeAttributeOwner(int diagramID, String objectName, String name, Integer newOwnerID) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectName),
 				new Value(name),
 				new Value(newOwnerID)};
 		sendMessage("changeAttributeOwner", message);
 	}
 
-	public void changeAttributeType(FmmlxDiagram diagram, String objectName, String attributeName, String oldType, String newType) {
+	public void changeAttributeType(int diagramID, String objectName, String attributeName, String oldType, String newType) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectName),
 				new Value(attributeName),
 				new Value(oldType),
@@ -810,9 +810,9 @@ public class FmmlxDiagramCommunicator {
 
 	}
 
-	public void removeAttribute(FmmlxDiagram diagram, String className, String name, int strategy) {
+	public void removeAttribute(int diagramID, String className, String name, int strategy) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(className),
 				new Value(name),
 				new Value(strategy)};
@@ -831,9 +831,9 @@ public class FmmlxDiagramCommunicator {
 //		sendMessage("addOperation", message);
 //	}
 
-	public void addOperation2(FmmlxDiagram diagram, String objectName, int level, String body) {
+	public void addOperation2(int diagramID, String objectName, int level, String body) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectName),
 				new Value(level),
 				new Value(body)
@@ -841,18 +841,18 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("addOperation2", message);
 	}
 
-	public void changeOperationName(FmmlxDiagram diagram, String objectName, String oldName, String newName) {
+	public void changeOperationName(int diagramID, String objectName, String oldName, String newName) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectName),
 				new Value(oldName),
 				new Value(newName)};
 		sendMessage("changeOperationName", message);
 	}
 
-	public void changeOperationLevel(FmmlxDiagram diagram, String objectName, String opName, int oldLevel, int newLevel) {
+	public void changeOperationLevel(int diagramID, String objectName, String opName, int oldLevel, int newLevel) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectName),
 				new Value(opName),
 				new Value(oldLevel),
@@ -860,18 +860,18 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("changeOperationLevel", message);
 	}
 
-	public void changeOperationOwner(FmmlxDiagram diagram, String objectName, String name, String newOwnerName) {
+	public void changeOperationOwner(int diagramID, String objectName, String name, String newOwnerName) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectName),
 				new Value(name),
 				new Value(newOwnerName)};
 		sendMessage("changeOperationOwner", message);
 	}
 
-	public void changeOperationType(FmmlxDiagram diagram, String objectName, String operationName, String newType) {
+	public void changeOperationType(int diagramID, String objectName, String operationName, String newType) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectName),
 				new Value(operationName),
 //				new Value(oldType),
@@ -888,35 +888,35 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("checkOperationBody", message);
 	}
 
-	public void removeOperation(FmmlxDiagram diagram, String objectName, String name, int strategy) {
+	public void removeOperation(int diagramID, String objectName, String name, int strategy) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectName),
 				new Value(name)};
 		sendMessage("removeOperation", message);
 	}
 
 
-	public void changeClassName(FmmlxDiagram diagram, String className, String newName) {
+	public void changeClassName(int diagramID, String className, String newName) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(className),
 				new Value(newName)};
 		sendMessage("changeClassName", message);
 	}
 
-	public void changeClassLevel(FmmlxDiagram diagram, String objectName, int newLevel) {
+	public void changeClassLevel(int diagramID, String objectName, int newLevel) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectName),
 				new Value(newLevel)};
 		sendMessage("changeClassLevel", message);
 	}
 
 	
-	public void changeSlotValue(FmmlxDiagram diagram, String className, String slotName, String aParsableText) {
+	public void changeSlotValue(int diagramID, String className, String slotName, String aParsableText) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(className),
 				new Value(slotName),
 				new Value(aParsableText)};
@@ -933,21 +933,21 @@ public class FmmlxDiagramCommunicator {
 //	}
 
 
-	public void changeOf(FmmlxDiagram diagram, String objectName, String oldOfName, String newOfName) {
+	public void changeOf(int diagramID, String objectName, String oldOfName, String newOfName) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectName),
 				new Value(oldOfName),
 				new Value(newOfName)};
 		sendMessage("changeOf", message);
 	}
 
-	public void changeParent(FmmlxDiagram diagram, String objectName, Vector<String> currentParents, Vector<String> newParents) {
+	public void changeParent(int diagramID, String objectName, Vector<String> currentParents, Vector<String> newParents) {
 		Value[] parentsArray = createValueArray(currentParents);
 		Value[] newParentsArray = createValueArray(newParents);
 
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectName),
 				new Value(parentsArray),
 				new Value(newParentsArray)};
@@ -955,21 +955,21 @@ public class FmmlxDiagramCommunicator {
 
 	}
 	
-	public void addDelegation(FmmlxDiagram diagram, String delegateFromName, String deledgateToName) {
+	public void addDelegation(int diagramID, String delegateFromName, String deledgateToName) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(delegateFromName), new Value(deledgateToName)};
 		sendMessage("addDelegation", message);
 	}	
 	
-	public void setRoleFiller(FmmlxDiagram diagram, String delegateFromName, String delegateToName) {
+	public void setRoleFiller(int diagramID, String delegateFromName, String delegateToName) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(delegateFromName), new Value(delegateToName)};
 		sendMessage("setRoleFiller", message);
 	}
 
-	public void addAssociation(FmmlxDiagram diagram, 
+	public void addAssociation(int diagramID, 
 			String classSourceName, String classTargetName,
 			String accessSourceFromTargetName, String accessTargetFromSourceName,
 			String fwName, String reverseName,
@@ -977,7 +977,7 @@ public class FmmlxDiagramCommunicator {
 			Integer instLevelSource, Integer instLevelTarget, boolean sourceVisible, boolean targetVisible,
 			boolean isSymmetric, boolean isTransitive) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(classSourceName), new Value(classTargetName),
 				new Value(accessSourceFromTargetName), new Value(accessTargetFromSourceName),
 				new Value(fwName), reverseName == null ? new Value(-1) : new Value(reverseName),
@@ -996,18 +996,18 @@ public class FmmlxDiagramCommunicator {
 //		sendMessage("changeMultiplicity", message);
 //	}
 
-	public void changeOperationBody(FmmlxDiagram diagram, String objectName, String operationName, String body) {
+	public void changeOperationBody(int diagramID, String objectName, String operationName, String body) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectName),
 				new Value(operationName),
 				new Value(body)};
 		sendMessage("changeOperationBody", message);
 	}
 
-	public void changeAssociationTarget(FmmlxDiagram diagram, String associationName, String oldTargetName, String newTargetName) {
+	public void changeAssociationTarget(int diagramID, String associationName, String oldTargetName, String newTargetName) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 //				new Value(objectName),
 				new Value(associationName),
 				new Value(oldTargetName),
@@ -1017,12 +1017,12 @@ public class FmmlxDiagramCommunicator {
 
 	// to be discussed how this may work anyway
 	@Deprecated
-	public void editAssociation(FmmlxDiagram diagram, int associationId, FmmlxObject source, FmmlxObject target, int newInstLevelSource,
+	public void editAssociation(int diagramID, int associationId, FmmlxObject source, FmmlxObject target, int newInstLevelSource,
 								int newInstLevelTarget, String newDisplayNameSource, String newDisplayNameTarget,
 								String newIdentifierSource, String newIdentifierTarget, Multiplicity multiSource,
 								Multiplicity multiTarget) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(associationId),
 				new Value(source.getId()),
 				new Value(target.getId()),
@@ -1037,26 +1037,26 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("editAssociation", message);
 	}
 
-	public void addAssociationInstance(FmmlxDiagram diagram, String object1Name, String object2Name, String associationName) {
+	public void addAssociationInstance(int diagramID, String object1Name, String object2Name, String associationName) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(object1Name),
 				new Value(object2Name),
 				new Value(associationName)};
 		sendMessage("addAssociationInstance", message);
 	}
 
-	public void removeAssociationInstance(FmmlxDiagram diagram, int assocInstId) {
+	public void removeAssociationInstance(int diagramID, int assocInstId) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(assocInstId)
 		};
 		sendMessage("removeAssociationInstance", message);
 	}
 
-	public void updateAssociationInstance(FmmlxDiagram diagram, int associationInstanceId, int startObjectId, int endObjectId) {
+	public void updateAssociationInstance(int diagramID, int associationInstanceId, int startObjectId, int endObjectId) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(associationInstanceId),
 				new Value(startObjectId),
 				new Value(endObjectId)};
@@ -1068,109 +1068,109 @@ public class FmmlxDiagramCommunicator {
 		//xmfRequest(handler, "storeLabelInfo",l.getInfo4XMF());
 	}
 
-	public void changeAssociationForwardName(FmmlxDiagram diagram, String associationName, String newFwName) {
+	public void changeAssociationForwardName(int diagramID, String associationName, String newFwName) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(associationName),
 				new Value(newFwName)};
 		sendMessage("changeAssociationForwardName", message);
 	}
 
-	public void changeAssociationStart2EndLevel(FmmlxDiagram diagram, int associationId, Integer newLevel) {
+	public void changeAssociationStart2EndLevel(int diagramID, int associationId, Integer newLevel) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(associationId),
 				new Value(newLevel)};
 		sendMessage("changeAssociationStart2EndLevel", message);
 	}
 
-	public void changeAssociationEnd2StartLevel(FmmlxDiagram diagram, int associationId, Integer newLevel) {
+	public void changeAssociationEnd2StartLevel(int diagramID, int associationId, Integer newLevel) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(associationId),
 				new Value(newLevel)};
 		sendMessage("changeAssociationEnd2StartLevel", message);
 	}
 
-	public void changeAssociationStart2EndAccessName(FmmlxDiagram diagram, int associationId, String newName) {
+	public void changeAssociationStart2EndAccessName(int diagramID, int associationId, String newName) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(associationId),
 				new Value(newName)};
 		sendMessage("changeAssociationStart2EndAccessName", message);
 	}
 
-	public void changeAssociationEnd2StartAccessName(FmmlxDiagram diagram, int associationId, String newName) {
+	public void changeAssociationEnd2StartAccessName(int diagramID, int associationId, String newName) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(associationId),
 				new Value(newName)};
 		sendMessage("changeAssociationEnd2StartAccessName", message);
 	}
 
-	public void changeAssociationStart2EndMultiplicity(FmmlxDiagram diagram, String associationName, Multiplicity newMultiplicity) {
+	public void changeAssociationStart2EndMultiplicity(int diagramID, String associationName, Multiplicity newMultiplicity) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(associationName),
 				new Value(newMultiplicity.toValue())};
 		sendMessage("changeAssociationStart2EndMultiplicity", message);
 	}
 
-	public void changeAssociationEnd2StartMultiplicity(FmmlxDiagram diagram, String associationName, Multiplicity newMultiplicity) {
+	public void changeAssociationEnd2StartMultiplicity(int diagramID, String associationName, Multiplicity newMultiplicity) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(associationName),
 				new Value(newMultiplicity.toValue())};
 		sendMessage("changeAssociationEnd2StartMultiplicity", message);
 	}
 
-	public void setClassAbstract(FmmlxDiagram diagram, String className, boolean b) {
+	public void setClassAbstract(int diagramID, String className, boolean b) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(className),
 				new Value(b)};
 		sendMessage("setClassAbstract", message);		
 	}
 
-	public void levelRaiseAll(FmmlxDiagram diagram) {
-		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagram.getID()), new Value(1)};
+	public void levelRaiseAll(int diagramID) {
+		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID), new Value(1)};
 		sendMessage("levelRaiseAll", message);		
 	}
 
-	public void levelLowerAll(FmmlxDiagram diagram) {
-		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagram.getID()), new Value(-1)};
+	public void levelLowerAll(int diagramID) {
+		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID), new Value(-1)};
 		sendMessage("levelRaiseAll", message);		
 	}
 
-	public void printProtocol(FmmlxDiagram diagram) {
-		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagram.getID())};
+	public void printProtocol(int diagramID) {
+		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID)};
 		sendMessage("printProtocol", message);		
 	}
 
-	public void addEnumeration(FmmlxDiagram diagram, String newEnumName) {
+	public void addEnumeration(int diagramID, String newEnumName) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(newEnumName)};
 		sendMessage("addEnumeration", message);
 	}
 
-	public void changeEnumerationName(FmmlxDiagram diagram, String oldEnumName, String newEnumName) {
+	public void changeEnumerationName(int diagramID, String oldEnumName, String newEnumName) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(oldEnumName),
 				new Value(newEnumName)};
 		sendMessage("changeEnumerationName", message);
 	}
 	
-	public void removeEnumeration(FmmlxDiagram diagram, String enumName) {
+	public void removeEnumeration(int diagramID, String enumName) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(enumName)};
 		sendMessage("removeEnumeration", message);
 	}
 	
-	public void addEnumerationItem(FmmlxDiagram diagram, String enumName, String newEnumValueName) throws TimeOutException {
-		Vector<Object> result = xmfRequest(handler, diagram, "addEnumerationValue", new Value(enumName),
+	public void addEnumerationItem(int diagramID, String enumName, String newEnumValueName) throws TimeOutException {
+		Vector<Object> result = xmfRequest(handler, diagramID, "addEnumerationValue", new Value(enumName),
 				new Value(newEnumValueName));
 		showErrorMessage(result);
 	}
@@ -1195,22 +1195,22 @@ public class FmmlxDiagramCommunicator {
 		
 	}
 
-	public void changeEnumerationItemName(FmmlxDiagram diagram, String enumName, String oldEnumValueName, String newEnumValueName) throws TimeOutException {
-		xmfRequest(handler, diagram, "changeEnumerationValueName", new Value(enumName),
+	public void changeEnumerationItemName(int diagramID, String enumName, String oldEnumValueName, String newEnumValueName) throws TimeOutException {
+		xmfRequest(handler, diagramID, "changeEnumerationValueName", new Value(enumName),
 				new Value(oldEnumValueName),
 				new Value(newEnumValueName));
 	}
 	
-	public void removeEnumerationItem(FmmlxDiagram diagram, String enumName, String enumValueName) throws TimeOutException {
-		xmfRequest(handler, diagram, "removeEnumerationValue", new Value(enumName),
+	public void removeEnumerationItem(int diagramID, String enumName, String enumValueName) throws TimeOutException {
+		xmfRequest(handler, diagramID, "removeEnumerationValue", new Value(enumName),
 				new Value(enumValueName));
 	}
 
-	public void editEnumeration(FmmlxDiagram diagram, String enumName, Vector<String> elements) {
+	public void editEnumeration(int diagramID, String enumName, Vector<String> elements) {
 		Value[] elementArray = createValueArrayString(elements);
 		
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(enumName),
 				new Value(elementArray)};
 		sendMessage("editEnum", message);
@@ -1219,7 +1219,7 @@ public class FmmlxDiagramCommunicator {
 	
 	@SuppressWarnings("unchecked")
 	public Vector<Issue> fetchIssues(FmmlxDiagram fmmlxDiagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, fmmlxDiagram, "getAllIssues");
+		Vector<Object> response = xmfRequest(handler, fmmlxDiagram.getID(), "getAllIssues");
 		Vector<Object> issueList = (Vector<Object>) (response.get(0));
 		Vector<Issue> result = new Vector<>();
 		for (Object issueO : issueList) {
@@ -1236,7 +1236,7 @@ public class FmmlxDiagramCommunicator {
 	
 	@SuppressWarnings("unchecked")
 	public Vector<String> fetchAllAuxTypes(FmmlxDiagram fmmlxDiagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, fmmlxDiagram, "getAllAuxTypes");
+		Vector<Object> response = xmfRequest(handler, fmmlxDiagram.getID(), "getAllAuxTypes");
 		Vector<Object> auxList = (Vector<Object>) (response.get(0));
 		Vector<String> result = new Vector<>();
 		for (Object auxO : auxList) {
@@ -1247,21 +1247,21 @@ public class FmmlxDiagramCommunicator {
 		return result;
 	}
 	
-	public void hideElements(FmmlxDiagram fmmlxDiagram, Vector<FmmlxObject> objects, Boolean hide) {
+	public void hideElements(int diagramID, Vector<FmmlxObject> objects, Boolean hide) {
 		Value[] vec = new Value[objects.size()];
 		for (int i = 0; i < vec.length; i++) {
 			vec[i] = new Value(objects.get(i).getPath());
 		}
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(fmmlxDiagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(vec),
 				new Value(hide)};
 		sendMessage("hideElements", message);
 	}
 
-	public void assignToGlobal(FmmlxDiagram fmmlxDiagram, FmmlxObject object, String varName) {
+	public void assignToGlobal(int diagramID, FmmlxObject object, String varName) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(fmmlxDiagram.getID()),
+				getNoReturnExpectedMessageID(diagramID),
 				new Value(object.id),
 				new Value(varName)};
 		sendMessage("assignToGlobal", message);
@@ -1329,7 +1329,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public Vector<String> evalList(FmmlxDiagram diagram, String text) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram, "evalList", new Value(text));
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "evalList", new Value(text));
 		@SuppressWarnings("unchecked")
 		Vector<Object> list = (Vector<Object>) (response.get(0));
 		Vector<String> result = new Vector<>();
@@ -1342,14 +1342,14 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	public FaXML getDiagramData(FmmlxDiagram diagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram, "getDiagramData");
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getDiagramData");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 
 		return new FaXML(responseContent);
 	}
 
 	public HashMap<String, String> findImplementation(FmmlxDiagram diagram, Vector<String> names, String model, Integer arity, String returnType) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram, "findOperationImplementation", new Value(createValueArrayString(names)), // opNames
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "findOperationImplementation", new Value(createValueArrayString(names)), // opNames
 				new Value(arity),// arity
 				new Value(model),// model
 				new Value(returnType)// param4
@@ -1369,7 +1369,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	public HashMap<String, String> findAllOperations(FmmlxDiagram diagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram, "findAllOperations");
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "findAllOperations");
 		
 		
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
@@ -1385,7 +1385,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	public HashMap<String, String> findOperationUsage(FmmlxDiagram diagram, String name, String model) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram, "findOperationUsage", new Value(name), // opNames
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "findOperationUsage", new Value(name), // opNames
 				new Value(model)// model
 		);
 		
@@ -1404,7 +1404,7 @@ public class FmmlxDiagramCommunicator {
 			String model) {
 		Vector<Object> response;
 		try {
-			response = xmfRequest(handler, diagram, "findOperationUsage", new Value(name),
+			response = xmfRequest(handler, diagram.getID(), "findOperationUsage", new Value(name),
 					new Value(model));
 
 			
