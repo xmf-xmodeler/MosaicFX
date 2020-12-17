@@ -1280,11 +1280,12 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("showBody", message);
 	}
 
-	public void loadProjectNameFromXml(String projectName){
-
+	public void loadProjectNameFromXml(String projectName, Vector<String> diagramNames){
+		Value[] diagramNamesValue = createValueArrayString(diagramNames);
 		Value[] message = new Value[]{
 				new Value(-1),
 				new Value(projectName),
+				new Value(diagramNamesValue)
 		};
 		sendMessage("loadProjectFromXml", message);
 	}
@@ -1527,6 +1528,12 @@ public class FmmlxDiagramCommunicator {
 		};
 
 		new Thread(task).start();
+	}
+
+	public void populateDiagram() throws TimeOutException {
+
+		System.out.println(_newDiagramID);
+
 	}
 
 }

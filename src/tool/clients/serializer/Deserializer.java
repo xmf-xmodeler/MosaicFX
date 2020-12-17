@@ -14,8 +14,9 @@ public class Deserializer {
     public void loadProject(String file, FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
         ProjectXmlManager projectXmlManager = new ProjectXmlManager(file);
         String projectName = projectXmlManager.getProjectName();
-        fmmlxDiagramCommunicator.loadProjectNameFromXml(projectName);
-
+        DiagramXmlManager diagramXmlManager = new DiagramXmlManager(file);
+        Vector<String> diagramNames = diagramXmlManager.getAllDiagrams();
+        fmmlxDiagramCommunicator.loadProjectNameFromXml(projectName, diagramNames);
     }
 
     private Vector<String> loadAllDiagrams(String file){
