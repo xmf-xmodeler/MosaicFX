@@ -5,7 +5,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.FaXML;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.TimeOutException;
@@ -19,12 +18,9 @@ import java.util.Vector;
 
 public class LogXmlManager implements ILog, IXmlManager {
     private final XmlHandler xmlHandler;
-    FmmlxDiagram diagram;
 
-
-    public LogXmlManager(FmmlxDiagram diagram, String file) {
-        this.xmlHandler = new XmlHandler(file);
-        this.diagram = diagram;
+    public LogXmlManager(String file) {
+        this.xmlHandler = new XmlHandler((file));
     }
 
     @Override
@@ -82,37 +78,20 @@ public class LogXmlManager implements ILog, IXmlManager {
                 '}';
     }
 
-    public void reproduceFromLog(String diagramLabel) {
+    public void reproduceFromLog(Integer newDiagramID) {
         Node logs = xmlHandler.getLogsNode();
-        Node diagrams = xmlHandler.getDiagramsNode();
-        NodeList diagramList = diagrams.getChildNodes();
-
-        Node diagramNode = null;
-
-        for (int i = 0 ; i< diagramList.getLength(); i++){
-            if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
-                Element tmp = (Element) diagramList.item(i);
-                if (tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(diagramLabel)){
-                    diagramNode = tmp;
-                }
-            }
-        }
-
         NodeList logList = logs.getChildNodes();
 
         for(int i = 0 ; i<logList.getLength(); i++){
             if(logList.item(i).getNodeType()==Node.ELEMENT_NODE){
                 Element logElement = (Element) logList.item(i);
-                reproduceDiagramElement(diagramNode, logElement);
+                reproduceDiagramElement(newDiagramID, logElement);
             }
         }
     }
 
-    private void reproduceDiagramElement(Node diagramNode, Element logElement) {
-    	int diagramID = this.diagram.getID();
+    private void reproduceDiagramElement(Integer diagramID, Element logElement) {
     	FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator();
-    	
-        if(diagramNode!= null){
             String tagName = logElement.getTagName();
             switch (tagName) {
                 case "addMetaClass": {
@@ -505,7 +484,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     System.out.println(tagName + " not implemented yet");
                     break;
             }
-        }
+
     }
 
     private String parseOf(String ofString) {

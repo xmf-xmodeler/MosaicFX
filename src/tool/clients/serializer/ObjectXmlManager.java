@@ -198,5 +198,4 @@ public class ObjectXmlManager implements IXmlManager {
         }
         return initCoordingate;
     }
-
 }

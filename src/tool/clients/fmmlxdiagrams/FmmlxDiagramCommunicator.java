@@ -15,9 +15,11 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
+import org.junit.platform.commons.util.StringUtils;
 import sun.security.krb5.internal.crypto.Des;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.Deserializer;
+import tool.clients.serializer.DiagramXmlManager;
 import tool.clients.serializer.Serializer;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.PropertyManager;
@@ -1281,12 +1283,13 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("showBody", message);
 	}
 
-	public void loadProjectNameFromXml(String projectName, Vector<String> diagramNames){
+	public void loadProjectNameFromXml(String projectName, Vector<String> diagramNames, String file){
 		Value[] diagramNamesValue = createValueArrayString(diagramNames);
 		Value[] message = new Value[]{
 				new Value(-1),
 				new Value(projectName),
-				new Value(diagramNamesValue)
+				new Value(diagramNamesValue),
+				new Value(file)
 		};
 		sendMessage("loadProjectFromXml", message);
 	}
@@ -1535,29 +1538,23 @@ public class FmmlxDiagramCommunicator {
 		new Thread(task).start();
 	}
 
-	public void populateDiagram() {
-		FmmlxDiagram fmmlxDiagram = getDiagramByID(_newDiagramID);
-		System.out.println(_newDiagramID);
+	public void populateDiagram(String file, String diagramName) {
 		Platform.runLater(()-> {
-			if(fmmlxDiagram.getObjects().size()==0){
-				fmmlxDiagram.loadProcess = true;
-				Deserializer deserializer = new Deserializer();
-				try {
-					deserializer.getAllDiagramElement(fmmlxDiagram);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+			Deserializer deserializer = new Deserializer();
+			int id = getDiagramIdFromName(diagramName);
+			try {
+				deserializer.getAllDiagramElement(file, id);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		});
 	}
 
-	private FmmlxDiagram getDiagramByID(Integer newDiagramID) {
-		for (FmmlxDiagram diagram : diagrams){
-			if(diagram.getID()==newDiagramID){
-				return diagram;
-			}
-		}
-		return null;
+	private int getDiagramIdFromName(String diagramName) {
+		String[] nameArray = diagramName.split(" ");
+		String	idDirt = nameArray[nameArray.length-1];
+		String id = idDirt.substring(0, idDirt.length()-1);
+		return Integer.parseInt(id);
 	}
 
 }

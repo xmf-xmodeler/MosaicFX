@@ -69,7 +69,7 @@ public class FmmlxDiagram{
 	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
 	private ContextMenu activeContextMenu;
 	public transient boolean objectsMoved = false;
-	public transient boolean loadProcess = false;
+	public boolean loadProcess = false;
 	private transient PropertyType drawEdgeType = null;
 	private transient Point2D lastPoint;
 	private transient Point2D currentPoint;

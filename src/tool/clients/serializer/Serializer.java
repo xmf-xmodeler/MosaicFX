@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Vector;
 
-
 public class Serializer implements ISerializer {
     public static final String TAG = Serializer.class.getSimpleName();
 
@@ -109,7 +108,7 @@ public class Serializer implements ISerializer {
 
     private void saveLog(FmmlxDiagram diagram, String file) {
         try {
-            LogXmlManager logXmlManager = new LogXmlManager(diagram, file);
+            LogXmlManager logXmlManager = new LogXmlManager(file);
             logXmlManager.clearLog();
             FaXML protocol = diagram.getComm().getDiagramData(diagram);
 
@@ -121,10 +120,6 @@ public class Serializer implements ISerializer {
         } catch (TimeOutException | TransformerException e) {
             e.printStackTrace();
         }
-    }
-
-    public boolean checkFileExist(){
-        return Files.exists(Paths.get(XmlCreator.path));
     }
 
     private boolean checkFileExist(String file) {
