@@ -17,7 +17,7 @@ public class Issue {
 	private String type;
 	private String text;
 	private Vector<Object> solution;
-	private Vector<Integer> affectedObjects = new Vector<>();
+	private Vector<String> affectedObjects = new Vector<>();
 
 	public static class IssueNotReadableException extends Exception {
 		private static final long serialVersionUID = 1L;
@@ -38,7 +38,7 @@ public class Issue {
 			i.text = (String) message.get(1);
 			Vector<Object> objList = (Vector<Object>) (message.get(2));
 			for(Object o : objList) {
-				i.affectedObjects.add((Integer) o);
+				i.affectedObjects.add((String) o);
 			}
 			i.solution = (Vector<Object>) message.get(3);
 			
@@ -52,7 +52,7 @@ public class Issue {
 	
 	public static boolean isAffected(Vector<Issue> issues, FmmlxObject o) {
 		for(Issue issue : issues) {
-			if(issue.affectedObjects.contains(o.id)) {
+			if(issue.affectedObjects.contains(o.getOwnPath())) {
 				return true;
 			}
 		}
@@ -60,7 +60,7 @@ public class Issue {
 	}
 	
 	public boolean isAffected(FmmlxObject o) {
-		return affectedObjects.contains(o.id); 
+		return affectedObjects.contains(o.getOwnPath());
 	}
 
 	public String getText() {
@@ -70,12 +70,12 @@ public class Issue {
 	public void performResolveAction(FmmlxDiagram diagram) {
 		String actionName = (String) solution.get(0);
 		if("setSlotValue".equals(actionName)) {
-			FmmlxObject obj = diagram.getObjectById((Integer) solution.get(1));
+			FmmlxObject obj = diagram.getObjectByName((String) solution.get(1));
 			String slotName = (String) solution.get(2);
 			FmmlxSlot slot = obj.getSlot(slotName);
 			diagram.getActions().changeSlotValue(obj, slot);
 		} else if("addMissingLink".equals(actionName)) { 
-			FmmlxObject obj = diagram.getObjectById((Integer) solution.get(1));
+			FmmlxObject obj = diagram.getObjectByName((String) solution.get(1));
 			FmmlxAssociation assoc = diagram.getAssociationById((Integer) solution.get(2));
 			diagram.getActions().addMissingLink(obj, assoc);
 //			Platform.runLater(()->{
@@ -89,7 +89,7 @@ public class Issue {
 //		        alert.showAndWait();
 //			});
 		} else if("removeTooManyLinks".equals(actionName)) { 
-			FmmlxObject obj = diagram.getObjectById((Integer) solution.get(1));
+			FmmlxObject obj = diagram.getObjectByName((String) solution.get(1));
 			FmmlxAssociation assoc = diagram.getAssociationById((Integer) solution.get(2));
 			Platform.runLater(()->{
 		        Alert alert = new Alert(AlertType.ERROR);
@@ -102,8 +102,8 @@ public class Issue {
 		        alert.showAndWait();
 			});	        
 		} else if("addRoleFiller".equals(actionName)) { 
-			FmmlxObject obj = diagram.getObjectById((Integer) solution.get(1));
-			FmmlxObject roleFillerOf = diagram.getObjectById((Integer) solution.get(2));
+			FmmlxObject obj = diagram.getObjectByName((String) solution.get(1));
+			FmmlxObject roleFillerOf = diagram.getObjectByName((String) solution.get(2));
 			Platform.runLater(()->{
 		        Alert alert = new Alert(AlertType.ERROR);
 		        alert.setTitle("Role filler required");

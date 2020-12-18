@@ -104,7 +104,7 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 
 	private ObservableList<FmmlxObject> getCurrentParents() {
 		ArrayList<FmmlxObject> resultList = new ArrayList<>();
-		Vector<String> parentNames = object.getParentsNames();
+		Vector<String> parentNames = object.getParentsPaths();
 
 		for (String name : parentNames) {
 			FmmlxObject o = diagram.getObjectByName(name);

@@ -23,8 +23,8 @@ public class ChangeLevelDialogResult {
 		return type;
 	}
 
-	public int getObjectId() {
-		return object.getId();
+	public String getObjectPath() {
+		return object.getOwnPath();
 	}
 
 	public int getNewLevel() {

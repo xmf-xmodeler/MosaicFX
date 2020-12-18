@@ -998,13 +998,6 @@ public class FmmlxDiagram{
 		return new Vector<>(edges); // read-only
 	}
 
-	public FmmlxObject getObjectById(int id) {
-		for (FmmlxObject object : objects) {
-			if (object.getId() == id)
-				return object;
-		}
-		return null;
-	}
 	
 	public Vector<FmmlxObject> getObjectsByLevel(int level){
 		Vector<FmmlxObject> result = new Vector<>();
@@ -1175,7 +1168,7 @@ public class FmmlxDiagram{
 
 	public FmmlxObject getObjectByName(String name) {
 		for(FmmlxObject obj : getObjects()) {
-			if (obj.getName().equals(name)){
+			if (obj.getOwnPath().equals(name)){
 				return obj;
 			}
 		}

@@ -39,8 +39,8 @@ public class AddOperationDialogResult {
 		return object;
 	}
 
-	public int getObjectId() {
-		return object.getId();
+	public String getObjectPath() {
+		return object.getOwnPath();
 	}
 
 

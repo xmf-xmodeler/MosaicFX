@@ -21,8 +21,8 @@ public class ObjectXmlManager implements IXmlManager {
     public Element createObjectElement(FmmlxDiagram diagram, FmmlxObject fmmlxObject) {
         String name = fmmlxObject.getName();
         int level= fmmlxObject.getLevel();
-        String ofName = fmmlxObject.getOfName();
-        Vector<String> parents = fmmlxObject.getParentsNames();
+        String ofName = fmmlxObject.getOfPath();
+        Vector<String> parents = fmmlxObject.getParentsPaths();
         String projectPath = diagram.getPackagePath()+"::"+name;
         String owner = diagram.getDiagramLabel();
         double x = fmmlxObject.getX();

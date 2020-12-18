@@ -35,8 +35,8 @@ public class ChangeNameDialogResult {
 		this.newName = newName;
 	}
 
-	public int getObjectId() {
-		return object.getId();
+	public String getObjectId() {
+		return object.getOwnPath();
 	}
 
 	public PropertyType getType() {

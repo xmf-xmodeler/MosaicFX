@@ -31,15 +31,15 @@ public class MetaClassDialogResult {
 		return isAbstract;
 	}
 
-	public Vector<Integer> getParentIds() {
-		Vector<Integer> parentIds = new Vector<>();
+	public Vector<String> getParentPaths() {
+		Vector<String> parentPaths = new Vector<>();
 
 		if (parent.size() > 0) {
 			for (FmmlxObject object : parent) {
-				parentIds.add(object.getId());
+				parentPaths.add(object.getOwnPath());
 			}
 		}
-		return parentIds;
+		return parentPaths;
 	}
 
 	public Vector<String> getParentNames() {

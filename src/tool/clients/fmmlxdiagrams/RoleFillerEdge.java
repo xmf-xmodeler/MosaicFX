@@ -8,10 +8,10 @@ import javafx.scene.paint.Color;
 
 public class RoleFillerEdge extends Edge {
 
-	public RoleFillerEdge(int id, int childID, int parentID, Vector<Point2D> intermediatePoints,
+	public RoleFillerEdge(int id, String childPath, String parentID, Vector<Point2D> intermediatePoints,
 			PortRegion startPortRegion, PortRegion endPortRegion,
 			FmmlxDiagram diagram) {
-		super(id, diagram.getObjectById(childID), diagram.getObjectById(parentID), intermediatePoints, startPortRegion, endPortRegion, new Vector<>(),
+		super(id, diagram.getObjectByName(childPath), diagram.getObjectByName(parentID), intermediatePoints, startPortRegion, endPortRegion, new Vector<>(),
 				diagram);
 	}
 

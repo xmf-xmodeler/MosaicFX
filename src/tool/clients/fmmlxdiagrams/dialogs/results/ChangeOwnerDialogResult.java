@@ -33,8 +33,8 @@ public class ChangeOwnerDialogResult {
 	public FmmlxObject getObject() {
 		return object;
 	}
-	public Integer getNewOwner() {
-		return newOwner.getId();
+	public String getNewOwner() {
+		return newOwner.getOwnPath();
 	}
 	public FmmlxAttribute getAttribute() {
 		return attribute;

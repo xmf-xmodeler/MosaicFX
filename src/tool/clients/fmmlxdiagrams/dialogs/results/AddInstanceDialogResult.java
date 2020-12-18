@@ -34,15 +34,15 @@ public class AddInstanceDialogResult {
 		return parents;
 	}
 
-	public Vector<Integer> getParentId() {
-		Vector<Integer> parentIds = new Vector<>();
+	public Vector<String> getParentPaths() {
+		Vector<String> parentPaths = new Vector<>();
 
 		if (!parents.isEmpty()) {
 			for (FmmlxObject o : parents) {
-				parentIds.add(o.getId());
+				parentPaths.add(o.getOwnPath());
 			}
 		}
-		return parentIds;
+		return parentPaths;
 	}
 
 	public String getOfName() {

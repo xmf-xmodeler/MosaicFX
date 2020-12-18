@@ -20,18 +20,18 @@ public class ChangeParentDialogResult {
 	}
 
 	public Vector<String> getCurrentParentNames() {
-		return object.getParentsNames();
+		return object.getParentsPaths();
 	}
 
-	public Vector<Integer> getNewParentIds() {
-		Vector<Integer> parentIds = new Vector<>();
+	public Vector<String> getNewParentPaths() {
+		Vector<String> parentPaths = new Vector<>();
 
 		if (newParent.size() > 0) {
 			for (FmmlxObject object : newParent) {
-				parentIds.add(object.getId());
+				parentPaths.add(object.getOwnPath());
 			}
 		}
-		return parentIds;
+		return parentPaths;
 	}
 
 	public Vector<String> getNewParentNames() {

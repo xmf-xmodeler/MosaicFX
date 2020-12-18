@@ -153,7 +153,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 
 	private void editAssociationInstance(FmmlxLink selectedAssociationInstance, FmmlxObject newStartObject,
 			FmmlxObject newEndObject) {
-		diagram.getComm().updateAssociationInstance(diagram.getID(), selectedAssociationInstance.id, newStartObject.getId(), newEndObject.getId());
+		diagram.getComm().updateAssociationInstance(diagram.getID(), selectedAssociationInstance.id, newStartObject.getOwnPath(), newEndObject.getOwnPath());
 		selectedAssociationInstance.edit(newStartObject, newEndObject);
 		updateAssociationListView(selectAssociationComboBox.getSelectionModel().getSelectedItem());
 	}

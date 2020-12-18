@@ -50,7 +50,7 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult> {
 
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				return new ChangeOfDialogResult(object, object.getOfName(), newOfComboBox.getSelectionModel().getSelectedItem());
+				return new ChangeOfDialogResult(object, object.getOfPath(), newOfComboBox.getSelectionModel().getSelectedItem());
 			}
 			return null;
 		});
@@ -88,7 +88,7 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult> {
 		currentOfTextField = new TextField();
 
 		for (FmmlxObject fmmlxObject : diagram.getObjects()) {
-			if (object.getOfName().equals(fmmlxObject.getName())) {
+			if (object.getOfPath().equals(fmmlxObject.getName())) {
 				currentOfTextField.setText(fmmlxObject.getName());
 			}
 		}

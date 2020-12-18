@@ -10,14 +10,14 @@ public class FmmlxOperation implements FmmlxProperty, Comparable<FmmlxOperation>
 	private String name;
 	private int level;
 	private String type;
-	private int owner;
+	private String owner;
 	private boolean isMonitored;
 	private String body;
 	private Vector<String> paramNames;
 	private Vector<String> paramTypes;
 
 
-	public FmmlxOperation(String name, Vector<String> paramNames, Vector<String> paramTypes, Integer level, String type, String body, Integer owner, Multiplicity multiplicity, boolean isMonitored) {
+	public FmmlxOperation(String name, Vector<String> paramNames, Vector<String> paramTypes, Integer level, String type, String body, String owner, Multiplicity multiplicity, boolean isMonitored) {
 		this.name = name;
 		this.level = level;
 		this.type = type;
@@ -33,12 +33,9 @@ public class FmmlxOperation implements FmmlxProperty, Comparable<FmmlxOperation>
 		return paramNames;
 	}
 
-
-
 	public Vector<String> getParamTypes() {
 		return paramTypes;
 	}
-
 
 
 	public String getName() {
@@ -57,7 +54,7 @@ public class FmmlxOperation implements FmmlxProperty, Comparable<FmmlxOperation>
 		return type;
 	}
 
-	public Integer getOwner() {
+	public String getOwner() {
 		return owner;
 	}
 

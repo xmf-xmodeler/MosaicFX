@@ -5,21 +5,13 @@ import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.Tooltip;
-import org.junit.platform.commons.util.StringUtils;
-import sun.security.krb5.internal.crypto.Des;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.Deserializer;
-import tool.clients.serializer.DiagramXmlManager;
 import tool.clients.serializer.Serializer;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.PropertyManager;
@@ -252,7 +244,6 @@ public class FmmlxDiagramCommunicator {
 			for (Object o : parentListO2) {
 				parentListS.add((String) o);
 			}
-						
 			FmmlxObject object = new FmmlxObject(
 					(Integer) responseObjectList.get(0), // id*
 					(String)  responseObjectList.get(1), // name
@@ -304,8 +295,8 @@ public class FmmlxDiagramCommunicator {
 
 			Edge object = new InheritanceEdge(
 					(Integer) edgeInfoAsList.get(0), // id
-					(Integer) edgeInfoAsList.get(1), // startId
-					(Integer) edgeInfoAsList.get(2), // endId
+					(String) edgeInfoAsList.get(1), //TODO startId
+					(String) edgeInfoAsList.get(2), //TODO endId
 					listOfPoints, // points
 					startRegion, endRegion,
 					diagram);
@@ -344,8 +335,8 @@ public class FmmlxDiagramCommunicator {
 
 			Edge object = new DelegationEdge(
 					(Integer) edgeInfoAsList.get(0), // id
-					(Integer) edgeInfoAsList.get(1), // startId
-					(Integer) edgeInfoAsList.get(2), // endId
+					(String) edgeInfoAsList.get(1), //TODO startId
+					(String) edgeInfoAsList.get(2), //TODO endId
 					listOfPoints, // points
 					startRegion, endRegion,
 					diagram);
@@ -384,8 +375,8 @@ public class FmmlxDiagramCommunicator {
 
 			Edge object = new RoleFillerEdge(
 					(Integer) edgeInfoAsList.get(0), // id
-					(Integer) edgeInfoAsList.get(1), // startId
-					(Integer) edgeInfoAsList.get(2), // endId
+					(String) edgeInfoAsList.get(1), //TODO startId
+					(String) edgeInfoAsList.get(2), //TODO endId
 					listOfPoints, // points
 					startRegion, endRegion,
 					diagram);
@@ -426,8 +417,8 @@ public class FmmlxDiagramCommunicator {
 			
 			Edge object = new FmmlxAssociation(
 					(Integer) edgeInfoAsList.get(0), // id
-					(Integer) edgeInfoAsList.get(1), // startId
-					(Integer) edgeInfoAsList.get(2), // endId
+					(String) edgeInfoAsList.get(1), //TODO startId
+					(String) edgeInfoAsList.get(2), //TODO endId
 					(Integer) edgeInfoAsList.get(3), // parentId
 					listOfPoints, // points
 					startRegion, endRegion,
@@ -485,9 +476,9 @@ public class FmmlxDiagramCommunicator {
 			
 			Edge object = new FmmlxLink(
 					(Integer) edgeInfoAsList.get(0), // id
-					(Integer) edgeInfoAsList.get(1), // startId
-					(Integer) edgeInfoAsList.get(2), // endId
-					(Integer) edgeInfoAsList.get(3), // ofId
+					(String) edgeInfoAsList.get(1), // startId //TODO
+					(String) edgeInfoAsList.get(2), // endId //TODO
+					(Integer) edgeInfoAsList.get(3), // ofId	//TODO
 					listOfPoints, // points
 					startRegion, endRegion,
 					labelPositions,
@@ -512,7 +503,7 @@ public class FmmlxDiagramCommunicator {
 					(String) attInfo.get(0),
 					(Integer) attInfo.get(2),
 					(String) attInfo.get(1),
-					(Integer) attInfo.get(4),
+					(String) attInfo.get(4),
 					Multiplicity.parseMultiplicity((Vector<Object>) attInfo.get(3)));
 			resultOwn.add(object);
 		}
@@ -522,7 +513,7 @@ public class FmmlxDiagramCommunicator {
 					(String) attInfo.get(0),
 					(Integer) attInfo.get(2),
 					(String) attInfo.get(1),
-					(Integer) attInfo.get(4),
+					(String) attInfo.get(4),
 					Multiplicity.parseMultiplicity((Vector<Object>) attInfo.get(3)));
 			resultOther.add(object);
 		}
@@ -560,7 +551,7 @@ public class FmmlxDiagramCommunicator {
 					(Integer) opInfo.get(3), // level
 					(String) opInfo.get(4), // type
 					(String) opInfo.get(5), // body
-					(Integer) opInfo.get(6), // owner
+					(String) opInfo.get(6), // owner
 					null, // multiplicity
 					(Boolean) opInfo.get(8) // isMonitored
 				);
@@ -629,7 +620,8 @@ public class FmmlxDiagramCommunicator {
 //				new Value[]{});
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(o.id),
+				new Value(o.getOwnPath()),
+				//TODO new Value(o.id),
 				new Value((int)(o.getX())), 
 				new Value((int)(o.getY()))};
 		sendMessage("sendNewPosition", message);
@@ -796,12 +788,13 @@ public class FmmlxDiagramCommunicator {
 
 	}
 
-	public void changeAttributeOwner(int diagramID, String objectName, String name, Integer newOwnerID) {
+	public void changeAttributeOwner(int diagramID, String objectName, String name, String newOwnerPath) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectName),
 				new Value(name),
-				new Value(newOwnerID)};
+				//TODO new Value(newOwnerID),
+				new Value(newOwnerPath)};
 		sendMessage("changeAttributeOwner", message);
 	}
 
@@ -1030,8 +1023,10 @@ public class FmmlxDiagramCommunicator {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(associationId),
-				new Value(source.getId()),
-				new Value(target.getId()),
+				//TODO new Value(source.getId()),
+				//TODO new Value(target.getId()),
+				new Value(source.getOwnPath()),
+				new Value(target.getOwnPath()),
 				new Value(newInstLevelSource),
 				new Value(newInstLevelTarget),
 				new Value(newDisplayNameSource),
@@ -1060,12 +1055,14 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("removeAssociationInstance", message);
 	}
 
-	public void updateAssociationInstance(int diagramID, int associationInstanceId, int startObjectId, int endObjectId) {
+	public void updateAssociationInstance(int diagramID, int associationInstanceId, String startObjectPath, String endObjectPath) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(associationInstanceId),
-				new Value(startObjectId),
-				new Value(endObjectId)};
+				//TODO new Value(startObjectId),
+				new Value(startObjectPath),
+				//new Value(endObjectId)};
+				new Value(endObjectPath)};
 		sendMessage("updateAssociationInstance", message);
 	}
 
@@ -1268,7 +1265,8 @@ public class FmmlxDiagramCommunicator {
 	public void assignToGlobal(int diagramID, FmmlxObject object, String varName) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(object.id),
+				new Value(object.getOwnPath()),
+				//TODO new Value(object.id),
 				new Value(varName)};
 		sendMessage("assignToGlobal", message);
 	}
@@ -1276,7 +1274,8 @@ public class FmmlxDiagramCommunicator {
 	public void showBody(FmmlxDiagram fmmlxDiagram, FmmlxObject object, FmmlxOperation operation) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(fmmlxDiagram.getID()),
-				new Value(object.id),
+				new Value(object.getOwnPath()),
+				//TODO new Value(object.id),
 				new Value(operation.getName()),
 				new Value(-1), // arity
 				};
