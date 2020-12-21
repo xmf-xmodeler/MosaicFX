@@ -51,7 +51,7 @@ public class EdgeXmlManager implements IXmlManager {
     public Element createAssociationXmlElement(FmmlxDiagram fmmlxDiagram, FmmlxAssociation fmmlxAssociation) throws TransformerException {
         String name = fmmlxAssociation.getName();
         String type = XmlConstant.EdgeType.ASSOCIATION;
-        String parentAssociationName = fmmlxAssociation.getParentAssociationName();
+//        String parentAssociationName = fmmlxAssociation.getParentAssociationName();
         int levelTarget = fmmlxAssociation.getLevelTarget();
         int levelSource = fmmlxAssociation.getLevelSource();
         Multiplicity multiplicityStartToEnd = fmmlxAssociation.getMultiplicityStartToEnd();
@@ -60,7 +60,7 @@ public class EdgeXmlManager implements IXmlManager {
         Element edge = createEdgeXmlElement(fmmlxDiagram, fmmlxAssociation);
         edge.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
         edge.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
-        edge.setAttribute(XmlConstant.ATTRIBUTE_PARENT_ASSOCIATION, parentAssociationName+"");
+        edge.setAttribute(XmlConstant.ATTRIBUTE_PARENT_ASSOCIATION, "VOID");
         edge.setAttribute(XmlConstant.ATTRIBUTE_LEVEL_TARGET, levelTarget+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_LEVEL_SOURCE, levelSource+"");
         edge.setAttribute(XmlConstant.ATTRIBUTE_MULTIPLICITY_START_TO_END, multiplicityStartToEnd.toString());

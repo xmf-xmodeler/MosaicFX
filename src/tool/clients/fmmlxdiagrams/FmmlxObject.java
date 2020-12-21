@@ -84,11 +84,11 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	}
 
 	public FmmlxObject(
-			Integer id, 
+			@Deprecated Integer _id, 
 			String name, 
 			int level, 
-			Integer of, 
-			Vector<Integer> parents, 
+			@Deprecated Integer _of, 
+			@Deprecated Vector<Integer> _parents, 
 			String ownPath,
 			String ofPath,
 			Vector<String> parentPaths,

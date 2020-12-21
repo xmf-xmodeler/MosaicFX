@@ -146,14 +146,14 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 	}
 	
 	private void removeAssociationInstance(FmmlxLink selectedItem) {
-		diagram.getComm().removeAssociationInstance(diagram.getID(), selectedItem.id);
+		diagram.getComm().removeAssociationInstance(diagram.getID(), selectedItem.path);
 		associationListView.getItems().remove(selectedItem);
 		diagram.updateDiagram();
 	}
 
 	private void editAssociationInstance(FmmlxLink selectedAssociationInstance, FmmlxObject newStartObject,
 			FmmlxObject newEndObject) {
-		diagram.getComm().updateAssociationInstance(diagram.getID(), selectedAssociationInstance.id, newStartObject.getOwnPath(), newEndObject.getOwnPath());
+		diagram.getComm().updateAssociationInstance(diagram.getID(), selectedAssociationInstance.path, newStartObject.getOwnPath(), newEndObject.getOwnPath());
 		selectedAssociationInstance.edit(newStartObject, newEndObject);
 		updateAssociationListView(selectAssociationComboBox.getSelectionModel().getSelectedItem());
 	}
@@ -226,7 +226,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 	}
 	
 	private void updateAssociationListView(FmmlxAssociation newValue) {
-		FmmlxAssociation association = (FmmlxAssociation) diagram.getAssociationById(newValue.getId());
+		FmmlxAssociation association = (FmmlxAssociation) diagram.getAssociationByName(newValue.getPath());
 		associationInstances = association.getInstance();
 		ObservableList<FmmlxLink> instanceOfAssociation = FXCollections.observableList(associationInstances);
 		associationListView = initializeListViewAssociation(instanceOfAssociation, SelectionMode.SINGLE);

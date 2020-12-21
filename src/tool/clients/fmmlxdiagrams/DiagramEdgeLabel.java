@@ -197,7 +197,7 @@ public class DiagramEdgeLabel implements CanvasElement {
 	public Value[] getInfo4XMF() {
 		return new Value[]{
 			new Value(new Value[] {new Value(owner.diagram.getID()), new Value(-1)}),
-			new Value(owner.id),
+			new Value(owner.path),
 			new Value(localID),
 			new Value((float)relativeX),
 			new Value((float)relativeY)};

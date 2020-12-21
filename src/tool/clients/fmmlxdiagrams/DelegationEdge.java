@@ -8,10 +8,10 @@ import javafx.scene.paint.Color;
 
 public class DelegationEdge extends Edge {
 
-	public DelegationEdge(int id, String childPath, String parentPath, Vector<Point2D> intermediatePoints,
+	public DelegationEdge(String path, String childPath, String parentPath, Vector<Point2D> intermediatePoints,
 			PortRegion startPortRegion, PortRegion endPortRegion,
 			FmmlxDiagram diagram) {
-		super(id, diagram.getObjectByName(childPath), diagram.getObjectByName(parentPath), intermediatePoints, startPortRegion, endPortRegion, new Vector<>(),
+		super(path, diagram.getObjectByName(childPath), diagram.getObjectByName(parentPath), intermediatePoints, startPortRegion, endPortRegion, new Vector<>(),
 				diagram);
 	}
 
