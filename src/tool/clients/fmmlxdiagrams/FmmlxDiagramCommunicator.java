@@ -260,7 +260,7 @@ public class FmmlxDiagramCommunicator {
 					diagram);
 			result.add(object);
 
-			sendCurrentPosition(diagram.getID(), object); // make sure to store position if newly created
+			sendCurrentPosition(diagram.getID(), object.getOwnPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY())); // make sure to store position if newly created
 		}
 		return result;
 	}
@@ -617,15 +617,12 @@ public class FmmlxDiagramCommunicator {
 	/// Operations storing graphical info to xmf ///
 	////////////////////////////////////////////////
 
-	public void sendCurrentPosition(int diagramID, FmmlxObject o) {
-//		Vector<Object> response = xmfRequest(handler, "sendNewPosition",
-//				new Value[]{});
+	public void sendCurrentPosition(int diagramID, String objectPath, int x, int y) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(o.getName()),
-				//TODO new Value(o.id),
-				new Value((int)(o.getX())), 
-				new Value((int)(o.getY()))};
+				new Value(objectPath), //TODO value still Id in xmf
+				new Value(x),
+				new Value(y)};
 		sendMessage("sendNewPosition", message);
 	}
 
@@ -667,7 +664,7 @@ public class FmmlxDiagramCommunicator {
 
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(edge.path), 
+				new Value(edge.path), //TODO still id in xmf
 				new Value(listOfPoints)};
 		sendMessage("sendNewPositions", message);
 	}
@@ -1545,13 +1542,14 @@ public class FmmlxDiagramCommunicator {
 			int id = getDiagramIdFromName(diagramName);
 			try {
 				deserializer.getAllDiagramElement(file, id);
+				deserializer.alignCoordinate(file, diagramName, this);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		});
 	}
 
-	private int getDiagramIdFromName(String diagramName) {
+	public int getDiagramIdFromName(String diagramName) {
 		String[] nameArray = diagramName.split(" ");
 		String	idDirt = nameArray[nameArray.length-1];
 		String id = idDirt.substring(0, idDirt.length()-1);

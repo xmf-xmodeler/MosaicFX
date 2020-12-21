@@ -19,19 +19,6 @@ public class Deserializer {
         fmmlxDiagramCommunicator.loadProjectNameFromXml(projectName, diagramNames, file);
     }
 
-    public void alignCoordinate(FmmlxDiagram fmmlxDiagram) {
-        String file = fmmlxDiagram.getFilePath();
-    	if(checkFileExist(file)) {
-
-    		ObjectXmlManager objectXmlManager = new ObjectXmlManager(file);
-            objectXmlManager.alignObjects(fmmlxDiagram);
-            EdgeXmlManager edgeXmlManager = new EdgeXmlManager(file);
-            edgeXmlManager.alignEdges(fmmlxDiagram);
-            LabelXmlManager labelXmlManager = new LabelXmlManager(file);
-            labelXmlManager.alignLabel(fmmlxDiagram);
-    	}
-    }
-
     public boolean checkFileExist(String file){
         return Files.exists(Paths.get(file));
     }
@@ -40,6 +27,18 @@ public class Deserializer {
         if(checkFileExist(file)){
             LogXmlManager logXmlManager = new LogXmlManager(file);
             logXmlManager.reproduceFromLog(newDiagramID);
+        }
+    }
+
+    public void alignCoordinate(String file, String diagramName, FmmlxDiagramCommunicator communicator) {
+        if(checkFileExist(file)) {
+
+            ObjectXmlManager objectXmlManager = new ObjectXmlManager(file);
+            objectXmlManager.alignObjects(diagramName, communicator);
+            EdgeXmlManager edgeXmlManager = new EdgeXmlManager(file);
+            edgeXmlManager.alignEdges(diagramName, communicator);
+            LabelXmlManager labelXmlManager = new LabelXmlManager(file);
+            labelXmlManager.alignLabel(diagramName, communicator);
         }
     }
 }

@@ -13,6 +13,7 @@ import org.w3c.dom.NodeList;
 
 import tool.clients.fmmlxdiagrams.DiagramEdgeLabel;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.serializer.interfaces.ILog;
 import tool.clients.serializer.interfaces.IXmlManager;
@@ -195,4 +196,34 @@ public class LabelXmlManager implements ILog, IXmlManager{
     }
 
 
+    public void alignLabel(String diagramName, FmmlxDiagramCommunicator communicator) {
+        Node diagrams = xmlHandler.getDiagramsNode();
+        NodeList diagramList = diagrams.getChildNodes();
+
+        Node diagramNode = null;
+
+        for (int i = 0 ; i< diagramList.getLength(); i++){
+            if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
+                Element tmp = (Element) diagramList.item(i);
+                if (tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(diagramName)){
+                    diagramNode = tmp;
+                }
+            }
+        }
+
+        Node labelsNode = xmlHandler.getChildWithName(diagramNode, XmlConstant.TAG_NAME_LABELS);
+        NodeList labelList = labelsNode.getChildNodes();
+
+        for (int i = 0 ; i< labelList.getLength() ; i++){
+            if (labelList.item(i).getNodeType() == Node.ELEMENT_NODE){
+                Element label_tmp = (Element) labelList.item(i);
+                String[] anchorsString = label_tmp.getAttribute(XmlConstant.ATTRIBUTE_ANCHORS).split(",");
+
+                double x = Double.parseDouble(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
+                double y = Double.parseDouble(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
+
+                //TODO
+            }
+        }
+    }
 }
