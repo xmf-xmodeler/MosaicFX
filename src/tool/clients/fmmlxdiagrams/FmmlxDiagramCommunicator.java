@@ -232,12 +232,12 @@ public class FmmlxDiagramCommunicator {
 		for (Object responseObject : responseContent) {
 			Vector<Object> responseObjectList = (Vector<Object>) (responseObject);
 
-			// deprecated, replaced by String
-			Vector<Object> parentListO = (Vector<Object>) responseObjectList.get(4);
-			Vector<Integer> parentListI = new Vector<>();
-			for (Object o : parentListO) {
-				parentListI.add((Integer) o);
-			}
+//			// deprecated, replaced by String
+//			Vector<Object> parentListO = (Vector<Object>) responseObjectList.get(4);
+//			Vector<Integer> parentListI = new Vector<>();
+//			for (Object o : parentListO) {
+//				parentListI.add((Integer) o);
+//			}
 			
 			Vector<Object> parentListO2 = (Vector<Object>) responseObjectList.get(12);
 			Vector<String> parentListS = new Vector<>();
@@ -245,11 +245,11 @@ public class FmmlxDiagramCommunicator {
 				parentListS.add((String) o);
 			}
 			FmmlxObject object = new FmmlxObject(
-					(Integer) responseObjectList.get(0), // id*
+					null, // (Integer) responseObjectList.get(0), // id*
 					(String)  responseObjectList.get(1), // name
 					(Integer) responseObjectList.get(2), // level
-					(Integer) responseObjectList.get(3), // of*
-					parentListI,                          // parents*
+					null, //(Integer) responseObjectList.get(3), // of*
+					null, //parentListI,                          // parents*
 					(String)  responseObjectList.get(10), // ownPath
 					(String)  responseObjectList.get(11), // ofPath
 					parentListS,                          // parentsPath
@@ -294,7 +294,7 @@ public class FmmlxDiagramCommunicator {
 			}
 
 			Edge object = new InheritanceEdge(
-					(Integer) edgeInfoAsList.get(0), // id
+					(String) edgeInfoAsList.get(0), // id
 					(String) edgeInfoAsList.get(1), //TODO startId
 					(String) edgeInfoAsList.get(2), //TODO endId
 					listOfPoints, // points
@@ -334,7 +334,7 @@ public class FmmlxDiagramCommunicator {
 			}
 
 			Edge object = new DelegationEdge(
-					(Integer) edgeInfoAsList.get(0), // id
+					(String) edgeInfoAsList.get(0), // id
 					(String) edgeInfoAsList.get(1), //TODO startId
 					(String) edgeInfoAsList.get(2), //TODO endId
 					listOfPoints, // points
@@ -374,7 +374,7 @@ public class FmmlxDiagramCommunicator {
 			}
 
 			Edge object = new RoleFillerEdge(
-					(Integer) edgeInfoAsList.get(0), // id
+					(String) edgeInfoAsList.get(0), // id
 					(String) edgeInfoAsList.get(1), //TODO startId
 					(String) edgeInfoAsList.get(2), //TODO endId
 					listOfPoints, // points
@@ -415,10 +415,12 @@ public class FmmlxDiagramCommunicator {
 			
 			Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(13);
 			
+			System.err.println("edgeInfoAsList.get(0): " + edgeInfoAsList.get(0));
+			
 			Edge object = new FmmlxAssociation(
-					(Integer) edgeInfoAsList.get(0), // id
-					(String) edgeInfoAsList.get(1), //TODO startId
-					(String) edgeInfoAsList.get(2), //TODO endId
+					(String) edgeInfoAsList.get(0), // id
+					(String) edgeInfoAsList.get(1), // startId
+					(String) edgeInfoAsList.get(2), // endId
 					(Integer) edgeInfoAsList.get(3), // parentId
 					listOfPoints, // points
 					startRegion, endRegion,
@@ -475,10 +477,10 @@ public class FmmlxDiagramCommunicator {
 			Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(5);
 			
 			Edge object = new FmmlxLink(
-					(Integer) edgeInfoAsList.get(0), // id
+					(String) edgeInfoAsList.get(0), // id
 					(String) edgeInfoAsList.get(1), // startId //TODO
 					(String) edgeInfoAsList.get(2), // endId //TODO
-					(Integer) edgeInfoAsList.get(3), // ofId	//TODO
+					(String) edgeInfoAsList.get(3), // ofId	//TODO
 					listOfPoints, // points
 					startRegion, endRegion,
 					labelPositions,
@@ -627,8 +629,8 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("sendNewPosition", message);
 	}
 
-	public void sendCurrentPositions(int diagramID, Edge e) {
-		Vector<Point2D> points = e.getIntermediatePoints();
+	public void sendCurrentPositions(int diagramID, Edge edge) {
+		Vector<Point2D> points = edge.getIntermediatePoints();
 		
 		if(points.size() < 2) System.err.println("Suspicious edge alignment");
 		for(Point2D p : points) {
@@ -644,7 +646,7 @@ public class FmmlxDiagramCommunicator {
 		{
 			Value[] pointS = new Value[3];
 			pointS[0] = new Value("startNode");
-			pointS[1] = new Value(e.sourceNode.getDirectionForEdge(e.sourceEnd, true).toString());
+			pointS[1] = new Value(edge.sourceNode.getDirectionForEdge(edge.sourceEnd, true).toString());
 			pointS[2] = new Value(0);
 			listOfPoints[0] = new Value(pointS);
 		}
@@ -658,14 +660,14 @@ public class FmmlxDiagramCommunicator {
 		{
 			Value[] pointE = new Value[3];
 			pointE[0] = new Value("endNode");
-			pointE[1] = new Value(e.targetNode.getDirectionForEdge(e.targetEnd, false).toString());
+			pointE[1] = new Value(edge.targetNode.getDirectionForEdge(edge.targetEnd, false).toString());
 			pointE[2] = new Value(0);
 			listOfPoints[listOfPoints.length-1] = new Value(pointE);
 		}
 
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(e.id), 
+				new Value(edge.path), 
 				new Value(listOfPoints)};
 		sendMessage("sendNewPositions", message);
 	}
@@ -737,7 +739,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("removeAssociation", message);
 	}
 
-	public void setAssociationEndVisibility(int diagramID, int assocId, boolean targetEnd, boolean newVisbility) {
+	public void setAssociationEndVisibility(int diagramID, String assocId, boolean targetEnd, boolean newVisbility) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(assocId),
@@ -1047,7 +1049,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("addAssociationInstance", message);
 	}
 
-	public void removeAssociationInstance(int diagramID, int assocInstId) {
+	public void removeAssociationInstance(int diagramID, String assocInstId) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(assocInstId)
@@ -1055,7 +1057,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("removeAssociationInstance", message);
 	}
 
-	public void updateAssociationInstance(int diagramID, int associationInstanceId, String startObjectPath, String endObjectPath) {
+	public void updateAssociationInstance(int diagramID, String associationInstanceId, String startObjectPath, String endObjectPath) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(associationInstanceId),
@@ -1079,7 +1081,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("changeAssociationForwardName", message);
 	}
 
-	public void changeAssociationStart2EndLevel(int diagramID, int associationId, Integer newLevel) {
+	public void changeAssociationStart2EndLevel(int diagramID, String associationId, Integer newLevel) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(associationId),
@@ -1087,7 +1089,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("changeAssociationStart2EndLevel", message);
 	}
 
-	public void changeAssociationEnd2StartLevel(int diagramID, int associationId, Integer newLevel) {
+	public void changeAssociationEnd2StartLevel(int diagramID, String associationId, Integer newLevel) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(associationId),
@@ -1095,7 +1097,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("changeAssociationEnd2StartLevel", message);
 	}
 
-	public void changeAssociationStart2EndAccessName(int diagramID, int associationId, String newName) {
+	public void changeAssociationStart2EndAccessName(int diagramID, String associationId, String newName) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(associationId),
@@ -1103,7 +1105,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("changeAssociationStart2EndAccessName", message);
 	}
 
-	public void changeAssociationEnd2StartAccessName(int diagramID, int associationId, String newName) {
+	public void changeAssociationEnd2StartAccessName(int diagramID, String associationId, String newName) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(associationId),

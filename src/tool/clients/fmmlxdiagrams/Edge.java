@@ -15,7 +15,7 @@ import java.util.Vector;
 
 public abstract class Edge implements CanvasElement {
 
-	final public int id;
+	final public String path;
 	protected Vector<Point2D> intermediatePoints = new Vector<>();
 	protected FmmlxObject sourceNode;
 	protected FmmlxObject targetNode;
@@ -57,14 +57,14 @@ public abstract class Edge implements CanvasElement {
 		normal, moveSourcePortArea, moveTargetPortArea
 	}
 
-	public Edge(int id, 
+	public Edge(String path, 
 			FmmlxObject startNode, FmmlxObject endNode, 
 			Vector<Point2D> intermediatePoints,
 			PortRegion sourcePortRegion, PortRegion targetPortRegion,
 			Vector<Object> labelPositions, FmmlxDiagram diagram) {
 		layoutingFinishedSuccesfully = false;
 		initLabelPositionMap(labelPositions);
-		this.id = id;
+		this.path = path;
 		this.diagram = diagram;
 		this.sourceNode = startNode;
 		this.targetNode = endNode;
@@ -623,8 +623,8 @@ public abstract class Edge implements CanvasElement {
 				(points.get(n).getY() + points.get(n - 1).getY()) / 2);
 	}
 
-	public int getId() {
-		return id;
+	public String getPath() {
+		return path;
 	}
 
 	@Override

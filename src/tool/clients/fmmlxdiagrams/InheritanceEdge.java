@@ -8,10 +8,10 @@ import javafx.scene.paint.Color;
 
 public class InheritanceEdge extends Edge {
 
-	public InheritanceEdge(int id, String childPath, String parentPath, Vector<Point2D> intermediatePoints,
+	public InheritanceEdge(String path, String childPath, String parentPath, Vector<Point2D> intermediatePoints,
 			PortRegion startPortRegion, PortRegion endPortRegion,
 			FmmlxDiagram diagram) {
-		super(id, diagram.getObjectByName(childPath), diagram.getObjectByName(parentPath), intermediatePoints, startPortRegion, endPortRegion, new Vector<>(),
+		super(path, diagram.getObjectByName(childPath), diagram.getObjectByName(parentPath), intermediatePoints, startPortRegion, endPortRegion, new Vector<>(),
 				diagram);
 	}
 

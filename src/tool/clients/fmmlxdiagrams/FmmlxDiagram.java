@@ -1010,13 +1010,13 @@ public class FmmlxDiagram{
 		return result;
 	}
 	
-	public FmmlxAssociation getAssociationById(int id) {
-		for (Edge tmp : edges) {
-			if (tmp.getId() == id)
-				return (FmmlxAssociation) tmp;
-		}
-		return null;
-	}
+//	public FmmlxAssociation getAssociationById(int id) {
+//		for (Edge tmp : edges) {
+//			if (tmp.getId() == id)
+//				return (FmmlxAssociation) tmp;
+//		}
+//		return null;
+//	}
 	
 	public Object getAllMetaClass() {
 		Vector<FmmlxObject> result = new Vector<>();

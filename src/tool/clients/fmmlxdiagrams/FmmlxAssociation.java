@@ -36,7 +36,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	private final static Color WHITE = new Color(1, 1, 1, 1);
 
 	FmmlxAssociation(
-			Integer id,
+			String path,
 			String startPath,
 			String endPath,
 			Integer parentAssociationId,
@@ -57,7 +57,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			Vector<Object> labelPositions,
 			FmmlxDiagram diagram) {
 
-		super(id, diagram.getObjectByName(startPath), diagram.getObjectByName(endPath), points, startPortRegion, endPortRegion, labelPositions, diagram);
+		super(path, diagram.getObjectByName(startPath), diagram.getObjectByName(endPath), points, startPortRegion, endPortRegion, labelPositions, diagram);
 
 		this.name = name;
 		this.parentAssociationId = parentAssociationId;
@@ -80,17 +80,17 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		return parentAssociationId;
 	}
 
-	public String getParentAssociationName() {
-		return getParentAssociationNameWithId();
-	}
+//	public String getParentAssociationName() {
+//		return getParentAssociationNameWithId();
+//	}
 
-	private String getParentAssociationNameWithId() {
-		FmmlxAssociation parent = diagram.getAssociationById(parentAssociationId);
-		if(parent==null){
-			return "-1";
-		}
-		return parent.getName();
-	}
+//	private String getParentAssociationNameWithId() {
+//		FmmlxAssociation parent = diagram.getAssociationByName(parentAssociationId);
+//		if(parent==null){
+//			return "-1";
+//		}
+//		return parent.getName();
+//	}
 
 	private enum Anchor {CENTRE_MOVABLE, SOURCE_LEVEL, TARGET_LEVEL, SOURCE_MULTI, TARGET_MULTI,CENTRE_SELFASSOCIATION}
 
@@ -283,7 +283,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		if(result.isPresent()) {
 			try {
 				Integer level = Integer.parseInt(result.get());
-				diagram.getComm().changeAssociationStart2EndLevel(diagram.getID(), this.id, level);
+				diagram.getComm().changeAssociationStart2EndLevel(diagram.getID(), this.path, level);
 				diagram.updateDiagram();
 			} catch (Exception e) {
 				System.err.println("Number not readable. Change Nothing.");
@@ -296,7 +296,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		td.setHeaderText("Change Start to End Access Name");
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
-			diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), this.id, result.get());
+			diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), this.path, result.get());
 			diagram.updateDiagram();
 		}
 	};
@@ -317,7 +317,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		if(result.isPresent()) {
 			try {
 				Integer level = Integer.parseInt(result.get());
-				diagram.getComm().changeAssociationEnd2StartLevel(diagram.getID(), this.id, level);
+				diagram.getComm().changeAssociationEnd2StartLevel(diagram.getID(), this.path, level);
 				diagram.updateDiagram();
 			} catch (Exception e) {
 				System.err.println("Number not readable. Change Nothing.");
@@ -330,7 +330,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		td.setHeaderText("Change End to Start Access Name");
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
-			diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), this.id, result.get());
+			diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), this.path, result.get());
 			diagram.updateDiagram();
 		}
 	};

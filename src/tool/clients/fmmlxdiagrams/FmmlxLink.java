@@ -10,25 +10,25 @@ import java.util.Vector;
 public class FmmlxLink extends Edge {
 
 //	FmmlxAssociation ofAssociation;
-	int ofId;
+	String ofPath;
 	private FmmlxDiagram diagram;
 
-	public FmmlxLink(int id, String startPath, String endPath, int ofId, Vector<Point2D> points,
+	public FmmlxLink(String path, String startPath, String endPath, String ofPath, Vector<Point2D> points,
 				PortRegion sourcePort, PortRegion targetPort, 
 				Vector<Object> labelPositions, FmmlxDiagram diagram) {
-		super(id, diagram.getObjectByName(startPath), diagram.getObjectByName(endPath), points, sourcePort, targetPort, labelPositions, diagram);
+		super(path, diagram.getObjectByName(startPath), diagram.getObjectByName(endPath), points, sourcePort, targetPort, labelPositions, diagram);
 //		this.ofAssociation = (FmmlxAssociation) diagram.getAssociationById(ofId);
-		this.ofId = ofId;
+		this.ofPath = ofPath;
 		this.diagram = diagram;
 //		layout();
 	}
 
-	public int getOfId() {
-		return ofId;
+	public String getOfPath() {
+		return ofPath;
 	}
 
 	public String getOfName() {
-		return diagram.getAssociationById(ofId).getName();
+		return diagram.getAssociationByName(ofPath).getName();
 	}
 
 	private enum Anchor {SOURCE,CENTRE,TARGET}
@@ -49,7 +49,7 @@ public class FmmlxLink extends Edge {
 	}
 
 	private FmmlxAssociation getOfAssociation() {
-		return (FmmlxAssociation) diagram.getAssociationById(ofId);
+		return (FmmlxAssociation) diagram.getAssociationByName(ofPath);
 	}
 
 	private void createLabel(String value, int localId, Anchor anchor, Runnable action, int yDiff) {

@@ -76,7 +76,7 @@ public class Issue {
 			diagram.getActions().changeSlotValue(obj, slot);
 		} else if("addMissingLink".equals(actionName)) { 
 			FmmlxObject obj = diagram.getObjectByName((String) solution.get(1));
-			FmmlxAssociation assoc = diagram.getAssociationById((Integer) solution.get(2));
+			FmmlxAssociation assoc = diagram.getAssociationByName((String) solution.get(2));
 			diagram.getActions().addMissingLink(obj, assoc);
 //			Platform.runLater(()->{
 //		        Alert alert = new Alert(AlertType.INFORMATION);
@@ -90,7 +90,7 @@ public class Issue {
 //			});
 		} else if("removeTooManyLinks".equals(actionName)) { 
 			FmmlxObject obj = diagram.getObjectByName((String) solution.get(1));
-			FmmlxAssociation assoc = diagram.getAssociationById((Integer) solution.get(2));
+			FmmlxAssociation assoc = diagram.getAssociationByName((String) solution.get(2));
 			Platform.runLater(()->{
 		        Alert alert = new Alert(AlertType.ERROR);
 		        alert.setTitle("Too many links");
