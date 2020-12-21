@@ -620,7 +620,7 @@ public class FmmlxDiagramCommunicator {
 //				new Value[]{});
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(o.getOwnPath()),
+				new Value(o.getName()),
 				//TODO new Value(o.id),
 				new Value((int)(o.getX())), 
 				new Value((int)(o.getY()))};
