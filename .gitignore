@@ -30,5 +30,7 @@
 /build/output/
 
 # Test
-/userXmlFile.xml
 /XModeler2.launch
+
+#wahidClassPath
+/.classpath
