@@ -1322,7 +1322,7 @@ public class FmmlxDiagramCommunicator {
 		
 		HashMap<String, String> result = new HashMap<>();
 		for(Object resultItemO : responseContent) {
-			Vector<Object> resultItem = (Vector<Object>) (resultItemO);
+			Vector<Object> resultItem = (Vector<Object>) (resultItemO); //if arity = null || arity = -1 arity = (Integer) resultItem.get(2); Typ ist 5
 //			System.err.println(resultItem);
 			result.put((String) resultItem.get(0), (String)resultItem.get(6));
 		}
