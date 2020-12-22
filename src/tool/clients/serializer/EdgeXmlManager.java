@@ -262,9 +262,9 @@ public class EdgeXmlManager implements IXmlManager {
         for(int i = 0 ; i < edgeList.getLength(); i++){
             if(edgeList.item(i).getNodeType() == Node.ELEMENT_NODE){
                 Element edgeElement = (Element) edgeList.item(i);
-                String targetNode = edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE);
-                String sourceNode = edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE);
-
+                String edgePath = edgeElement.getAttribute(XmlConstant.ATTRIBUTE_REFERENCE);
+                String sourcePort = edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT);
+                String targetPort = edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_PORT);
                 Node intermediatePointsNode = xmlHandler.getChildWithName(edgeElement, XmlConstant.TAG_NAME_INTERMEDIATE_POINTS);
                 NodeList intermediatePointList = intermediatePointsNode.getChildNodes();
 
@@ -278,9 +278,13 @@ public class EdgeXmlManager implements IXmlManager {
                         intermediatePoints.add(point2D);
                     }
                 }
-                //TODO still has to implement getDirectionForEdge in communicator and using path instead of id in xmf
-                //setDirectionsAndIntermediatePoints(diagramId, edge, edgeElement);
+                communicator.sendEdgePositionsFromXml(diagramId,
+                        edgePath,
+                        intermediatePoints,
+                        sourcePort,
+                        targetPort);
             }
         }
+        System.out.println("align edges in "+diagramName+" : finished ");
     }
 }

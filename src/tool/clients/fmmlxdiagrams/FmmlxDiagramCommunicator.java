@@ -12,6 +12,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.Deserializer;
+import tool.clients.serializer.DiagramXmlManager;
+import tool.clients.serializer.ProjectXmlManager;
 import tool.clients.serializer.Serializer;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.PropertyManager;
@@ -664,7 +666,49 @@ public class FmmlxDiagramCommunicator {
 
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(edge.path), //TODO still id in xmf
+				new Value(edge.path),
+				new Value(listOfPoints)};
+		sendMessage("sendNewPositions", message);
+	}
+
+	public void sendEdgePositionsFromXml(int diagramID, String edgePath, Vector<Point2D> intermediatePoints, String sourcePort, String targetPort) {
+
+		if(intermediatePoints.size() < 2) System.err.println("Suspicious edge alignment");
+		for(Point2D p : intermediatePoints) {
+			if(!Double.isFinite(p.getX())) {
+				System.err.println("Suspicious X coordinate");
+			}
+			if(!Double.isFinite(p.getY())) {
+				System.err.println("Suspicious Y coordinate");
+			}
+		}
+
+		Value[] listOfPoints = new Value[intermediatePoints.size() + 2];
+		{
+			Value[] pointS = new Value[3];
+			pointS[0] = new Value("startNode");
+			pointS[1] = new Value(sourcePort);
+			pointS[2] = new Value(0);
+			listOfPoints[0] = new Value(pointS);
+		}
+		for (int i = 0; i < intermediatePoints.size(); i++) {
+			Value[] point = new Value[3];
+			point[0] = new Value("defaultPoint");
+			point[1] = new Value((float) (intermediatePoints.get(i).getX()));
+			point[2] = new Value((float) (intermediatePoints.get(i).getY()));
+			listOfPoints[i+1] = new Value(point);
+		}
+		{
+			Value[] pointE = new Value[3];
+			pointE[0] = new Value("endNode");
+			pointE[1] = new Value(targetPort);
+			pointE[2] = new Value(0);
+			listOfPoints[listOfPoints.length-1] = new Value(pointE);
+		}
+
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(edgePath), //TODO still id in xmf
 				new Value(listOfPoints)};
 		sendMessage("sendNewPositions", message);
 	}
@@ -1068,6 +1112,16 @@ public class FmmlxDiagramCommunicator {
 	public void storeLabelInfo(FmmlxDiagram diagram, DiagramEdgeLabel l) {		
 		sendMessage("storeLabelInfo",l.getInfo4XMF());
 		//xmfRequest(handler, "storeLabelInfo",l.getInfo4XMF());
+	}
+
+	public void storeLabelInfoFromXml(int diagramId, double relativeX, double relativeY) {
+		Value[] message = new Value[]{
+				new Value(new Value[] {new Value(diagramId), new Value(-1)}),
+				new Value("ownerPath"),
+				new Value("localID"), //TODO ???
+				new Value((float)relativeX),
+				new Value((float)relativeY)};
+		sendMessage("storeLabelInfo",message);
 	}
 
 	public void changeAssociationForwardName(int diagramID, String associationName, String newFwName) {
@@ -1539,12 +1593,19 @@ public class FmmlxDiagramCommunicator {
 	public void populateDiagram(String file, String diagramName) {
 		Platform.runLater(()-> {
 			Deserializer deserializer = new Deserializer();
+			ProjectXmlManager projectXmlManager = new ProjectXmlManager(file);
+			DiagramXmlManager diagramXmlManager = new DiagramXmlManager(file);
 			int id = getDiagramIdFromName(diagramName);
 			try {
 				deserializer.getAllDiagramElement(file, id);
-				deserializer.alignCoordinate(file, diagramName, this);
+				for (String diagram : diagramXmlManager.getAllDiagrams()){
+					deserializer.alignCoordinate(file, diagram, this);
+				}
+				String projectName = projectXmlManager.getProjectName();
+				System.out.println("load  "+projectName+" : finished ");
 			} catch (Exception e) {
 				e.printStackTrace();
+				System.err.println("load xml file failed");
 			}
 		});
 	}

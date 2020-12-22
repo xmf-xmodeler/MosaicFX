@@ -77,7 +77,6 @@ public class XmlHandler {
 
     protected Node getLogsNode() {
         Node root = xmlHelper.getRootNode();
-        System.out.println("return logs-node");
         return xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_LOGS);
     }
 
@@ -192,7 +191,6 @@ public class XmlHandler {
 
     public void clearLogs() throws TransformerException {
         xmlHelper.removeAllChildren(getLogsNode());
-        System.out.println("logs cleared");
     }
 
 

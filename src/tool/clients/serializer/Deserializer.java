@@ -27,12 +27,13 @@ public class Deserializer {
         if(checkFileExist(file)){
             LogXmlManager logXmlManager = new LogXmlManager(file);
             logXmlManager.reproduceFromLog(newDiagramID);
+
+            System.out.println("recreate all objects : finished ");
         }
     }
 
     public void alignCoordinate(String file, String diagramName, FmmlxDiagramCommunicator communicator) {
         if(checkFileExist(file)) {
-
             ObjectXmlManager objectXmlManager = new ObjectXmlManager(file);
             objectXmlManager.alignObjects(diagramName, communicator);
             EdgeXmlManager edgeXmlManager = new EdgeXmlManager(file);

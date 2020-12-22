@@ -39,62 +39,6 @@ public class ObjectXmlManager implements IXmlManager {
         return object;
     }
 
-    public Element createOperationXmlNode(FmmlxDiagram fmmlxDiagram, FmmlxObject object, FmmlxOperation fmmlxOperation) throws TransformerException {
-        String name = fmmlxOperation.getName();
-        String owner = object.getName();
-        String diagramOwner = fmmlxDiagram.getDiagramLabel();
-        int level = fmmlxOperation.getLevel();
-        boolean isMonitored = fmmlxOperation.isMonitored();
-        String type = fmmlxOperation.getType();
-        String body = fmmlxOperation.getBody();
-        String projectPath = fmmlxDiagram.getPackagePath();
-        Vector<String> paramNames= fmmlxOperation.getParamNames();
-        Vector<String> paramTypes= fmmlxOperation.getParamTypes();
-
-        Element operation = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OPERATION);
-        operation.setAttribute(XmlConstant.ATTRIBUTE_DIAGRAM_OWNER, diagramOwner);
-        operation.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
-        operation.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
-        operation.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
-        operation.setAttribute(XmlConstant.ATTRIBUTE_LEVEL, level+"");
-        operation.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
-        operation.setAttribute(XmlConstant.ATTRIBUTE_IS_MONITORED, isMonitored+"");
-
-        Element paramElement = xmlHandler.createXmlElement(XmlConstant.TAG_PARAM);
-        for(int i=0; i<paramNames.size(); i++){
-            Element paramNameElement = xmlHandler.createXmlElement(XmlConstant.TAG_PARAM_NAME);
-            paramNameElement.setAttribute(XmlConstant.ATTRIBUTE_NAME, paramNames.get(i));
-            paramNameElement.setAttribute(XmlConstant.ATTRIBUTE_TYPE, paramTypes.get(i));
-            paramElement.appendChild(paramNameElement);
-        }
-
-        Element bodyElement = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_BODY);
-        bodyElement.setTextContent(body);
-
-        xmlHandler.addParamElement(operation, paramElement);
-        xmlHandler.addBodyElement(operation, bodyElement);
-        return operation;
-    }
-
-    public Element createAttributeXmlNode(FmmlxDiagram fmmlxDiagram, FmmlxObject object, FmmlxAttribute attribute) {
-        String name = attribute.getName();
-        String owner = object.getName();
-        String diagramOwner = fmmlxDiagram.getDiagramLabel();
-        int level = attribute.getLevel();
-        String type = attribute.getType();
-        Multiplicity multiplicity = attribute.getMultiplicity();
-
-        Element attributeElement = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_ATTRIBUTE);
-        attributeElement.setAttribute(XmlConstant.ATTRIBUTE_DIAGRAM_OWNER, diagramOwner);
-        attributeElement.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
-        attributeElement.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
-        attributeElement.setAttribute(XmlConstant.ATTRIBUTE_LEVEL, level+"");
-        attributeElement.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
-        attributeElement.setAttribute(XmlConstant.ATTRIBUTE_MULTIPLICITY, multiplicity.toString());
-
-        return attributeElement;
-    }
-
     @Override
     public void add(Element element) {
 
@@ -175,7 +119,7 @@ public class ObjectXmlManager implements IXmlManager {
         Node objectsNode = xmlHandler.getChildWithName(diagramNode, XmlConstant.TAG_NAME_OBJECTS);
         NodeList objectList = objectsNode.getChildNodes();
         for(int i = 0 ; i < objectList.getLength(); i++){
-            if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
+            if(objectList.item(i).getNodeType() == Node.ELEMENT_NODE){
                 Element tmp = (Element) objectList.item(i);
                 double x = Double.parseDouble(tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
                 double y = Double.parseDouble(tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
@@ -183,5 +127,6 @@ public class ObjectXmlManager implements IXmlManager {
                 communicator.sendCurrentPosition(communicator.getDiagramIdFromName(diagramName), objectPath, (int)Math.round(x), (int)Math.round(y));
             }
         }
+        System.out.println("align objects in "+diagramName+" : finished ");
     }
 }
