@@ -69,7 +69,6 @@ public class FmmlxDiagram{
 	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
 	private ContextMenu activeContextMenu;
 	public transient boolean objectsMoved = false;
-	public boolean loadProcess = false;
 	private transient PropertyType drawEdgeType = null;
 	private transient Point2D lastPoint;
 	private transient Point2D currentPoint;
@@ -254,11 +253,6 @@ public class FmmlxDiagram{
 		}
 		suppressRedraw = false;
 		newFmmlxPalette.update();
-		if(loadProcess){
-			alignAllComponents(this);
-			triggerOverallReLayout();
-			loadProcess = false;
-		}
 		redraw();
 		
 		if(issues.size() > 0) {
@@ -273,11 +267,6 @@ public class FmmlxDiagram{
 		issues.clear();
 //			enums.clear();
 //			auxTypes.clear();
-	}
-
-	private void alignAllComponents(FmmlxDiagram diagram) {
-		Deserializer deserializer = new Deserializer();
-		deserializer.alignCoordinate(diagram);
 	}
 
 	// This operation resets the size of the canvas when needed
@@ -508,7 +497,7 @@ public class FmmlxDiagram{
 			for (CanvasElement s : selectedObjects)
 				if (s instanceof FmmlxObject) {
 					FmmlxObject o = (FmmlxObject) s;
-					comm.sendCurrentPosition(this.getID(), o);
+					comm.sendCurrentPosition(this.getID(), o.getOwnPath(), (int)Math.round(o.getX()), (int)Math.round(o.getY()));
 					for(Edge e : edges) {
 						if(e.isStartNode(o) || e.isEndNode(o)) {
 							comm.sendCurrentPositions(this.getID(), e);
