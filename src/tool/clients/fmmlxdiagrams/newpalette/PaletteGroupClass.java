@@ -25,7 +25,7 @@ public class PaletteGroupClass extends PaletteGroup {
 
 	private void initTools(FmmlxDiagram fmmlxDiagram) {
 		
-		PaletteTool metaClassTool = new ToolClass(fmmlxDiagram, "MetaClass", "metaClass", 1000, false, "");
+		PaletteTool metaClassTool = new ToolClass(fmmlxDiagram, "MetaClass", "MetaClass", 1000, false, "");
 		PaletteItem metaClassPaletteItem = new PaletteItem(metaClassTool);
 		items.add(metaClassPaletteItem);
 		

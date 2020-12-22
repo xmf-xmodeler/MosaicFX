@@ -28,7 +28,7 @@ public class FmmlxLink extends Edge {
 	}
 
 	public String getOfName() {
-		return diagram.getAssociationByName(ofPath).getName();
+		return diagram.getAssociationByPath(ofPath).getName();
 	}
 
 	private enum Anchor {SOURCE,CENTRE,TARGET}
@@ -37,7 +37,9 @@ public class FmmlxLink extends Edge {
 		try{
 			createLabel(getOfAssociation().getName(), 0, Anchor.CENTRE, ()->{}, 0);
 			layoutingFinishedSuccesfully = true;
-		} catch(Exception e) {layoutingFinishedSuccesfully = false;}
+		} catch(Exception e) {
+			//layoutingFinishedSuccesfully = false;
+		}
 //		if(reverseName != null) 
 //	    createLabel(reverseName, Anchor.CENTRE, ()->{System.err.println("Huhu!");}, 20);
 //		createLabel(accessNameStartToEnd, Anchor.TARGET, ()->{System.err.println("Huhu!");}, 0);
@@ -49,7 +51,7 @@ public class FmmlxLink extends Edge {
 	}
 
 	private FmmlxAssociation getOfAssociation() {
-		return (FmmlxAssociation) diagram.getAssociationByName(ofPath);
+		return (FmmlxAssociation) diagram.getAssociationByPath(ofPath);
 	}
 
 	private void createLabel(String value, int localId, Anchor anchor, Runnable action, int yDiff) {

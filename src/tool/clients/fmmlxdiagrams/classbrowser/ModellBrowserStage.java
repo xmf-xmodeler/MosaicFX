@@ -251,7 +251,7 @@ public class ModellBrowserStage extends CustomStage {
 	}
 
 	private void onAssociationListViewNewValue(String oldValue, String newValue) {
-		FmmlxAssociation association = diagram.getAssociationByName(newValue);	
+		FmmlxAssociation association = diagram.getAssociationByPath(newValue);	
 		if (association!=null) {
 			if(association.getSourceNode().getName().equals(selectedObject.getName())){
 				associationBrowserTextField.setText("("+association.getTargetNode().getLevel()+")"+" "+association.getTargetNode().getName());

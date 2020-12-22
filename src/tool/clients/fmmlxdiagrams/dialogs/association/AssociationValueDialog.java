@@ -226,7 +226,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 	}
 	
 	private void updateAssociationListView(FmmlxAssociation newValue) {
-		FmmlxAssociation association = (FmmlxAssociation) diagram.getAssociationByName(newValue.getPath());
+		FmmlxAssociation association = (FmmlxAssociation) diagram.getAssociationByPath(newValue.getPath());
 		associationInstances = association.getInstance();
 		ObservableList<FmmlxLink> instanceOfAssociation = FXCollections.observableList(associationInstances);
 		associationListView = initializeListViewAssociation(instanceOfAssociation, SelectionMode.SINGLE);

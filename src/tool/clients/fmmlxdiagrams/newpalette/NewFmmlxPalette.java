@@ -103,7 +103,7 @@ public class NewFmmlxPalette {
 
 					if(item.getLevel()==1000) {
 						setText(item.getName());
-						if(item.getId().equals("metaClass")) {
+						if(item.getId().equals("MetaClass")) {
 							setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.DASHED, new CornerRadii(10), new BorderWidths(2),new Insets(2, 5, 2, 25))));
 							setBackground(new Background(new BackgroundFill(Color.WHITE,new CornerRadii(10), new Insets(2, 5, 2, 25))));
 						} else {

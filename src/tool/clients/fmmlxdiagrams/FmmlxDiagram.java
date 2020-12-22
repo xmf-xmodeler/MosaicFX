@@ -1175,9 +1175,9 @@ public class FmmlxDiagram{
 		return null;
 	}
 
-	public FmmlxAssociation getAssociationByName(String name) {
+	public FmmlxAssociation getAssociationByPath(String path) {
 		for(FmmlxAssociation as : getAssociations()) {
-			if(as.getName().equals(name)) {
+			if(as.getPath().equals(path)) {
 				return as;
 			}
 		}

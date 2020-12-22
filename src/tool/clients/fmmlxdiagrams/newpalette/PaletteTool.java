@@ -5,7 +5,7 @@ public abstract class PaletteTool {
 	
 		private FmmlxDiagram diagram;	
 		private String name;
-		private String  id;
+		private String  path;
 		private String  icon;
 		private final int level;
 		private final boolean isAbstract;
@@ -14,7 +14,7 @@ public abstract class PaletteTool {
 		    super();
 		    this.diagram = diagram;
 		    this.name = name;
-		    this.id = id;
+		    this.path = id;
 		    this.level= level;
 		    this.isAbstract=isAbstract;
 		    this.icon = icon;
@@ -38,11 +38,11 @@ public abstract class PaletteTool {
 		
 		  
 		public void setID(String text) {
-			this.id = text;
+			this.path = text;
 		}
 
 		public String getId() {
-			return id;
+			return path;
 		}
 
 		public boolean isAbstract() {
