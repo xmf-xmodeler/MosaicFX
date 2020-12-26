@@ -2,7 +2,6 @@
 /bin/
 /out/
 *.logManager
-/out/
 # idea
 .idea
 *.iml
