@@ -201,6 +201,27 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	public Vector<FmmlxOperation> getOtherOperations() {
 		return otherOperations;
 	}
+	
+	public Vector<FmmlxOperation> getDelegatedOperations() {
+		Vector<FmmlxOperation> delegatedOperations = new Vector<>();
+		FmmlxObject delegatesTo = getDelegatesTo();
+		if(delegatesTo != null) {
+			delegatedOperations.addAll(delegatesTo.getAllOperations());
+		}
+		return delegatedOperations;
+	}
+	
+	private FmmlxObject getDelegatesTo() {
+		for(Edge e : diagram.getEdges()) {
+			if(e instanceof DelegationEdge) {
+				DelegationEdge de = (DelegationEdge) e;
+				if(de.sourceNode == this) {
+					return de.targetNode;
+				}
+			}
+		}
+		return null;
+	}
 
 	public Vector<FmmlxOperation> getAllOperations() {
 		Vector<FmmlxOperation> result = new Vector<>();
@@ -408,13 +429,26 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 			}
 			for (FmmlxOperation o : otherOperations) {
 				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
-				if(showDerivedOperations) {
-				opsY += lineHeight;
-				NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByName(o.getOwner()).name + ")", false);
-				opsBox.nodeElements.add(oLabel);
-				NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "", false);
-				opsBox.nodeElements.add(oLevelLabel);
+					if(showDerivedOperations) {
+					opsY += lineHeight;
+					NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByName(o.getOwner()).name + ")", false);
+					opsBox.nodeElements.add(oLabel);
+					NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "", false);
+					opsBox.nodeElements.add(oLevelLabel);
+					}
 				}
+			}
+			for (FmmlxOperation o : getDelegatedOperations()) {
+				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
+					if(showDerivedOperations) {
+					opsY += lineHeight;
+					NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 26, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByName(o.getOwner()).name + ")", false);
+					opsBox.nodeElements.add(oLabel);
+					NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "", false);
+					opsBox.nodeElements.add(oLevelLabel);
+					NodeLabel oDelLabel = new NodeLabel(Pos.BASELINE_CENTER, 19, opsY, Color.WHITE, Color.DARKBLUE, o, NO_ACTION, "D", false);
+					opsBox.nodeElements.add(oDelLabel);
+					}
 				}
 			}
 		}
@@ -476,8 +510,16 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 			counter++;	
 			}
 		}
-		
+
 		for (FmmlxOperation o : otherOperations) {
+			if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
+				if(showDerivedOperations) {
+				counter++;
+				}
+			}
+		}
+		
+		for (FmmlxOperation o : getDelegatedOperations()) {
 			if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
 				if(showDerivedOperations) {
 				counter++;
@@ -524,13 +566,18 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 			}	
 			for (FmmlxOperation o : otherOperations) {
 				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
-				if(showDerivedOperations) {
-
-
-				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + diagram.getObjectByName(o.getOwner()).name + ")") + INST_LEVEL_WIDTH, neededWidth);
-						}
+					if(showDerivedOperations) {
+						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + diagram.getObjectByName(o.getOwner()).name + ")") + INST_LEVEL_WIDTH, neededWidth);
 					}
 				}
+			}	
+			for (FmmlxOperation o : getDelegatedOperations()) {
+				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
+					if(showDerivedOperations) {
+						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + diagram.getObjectByName(o.getOwner()).name + ")") + 3 * INST_LEVEL_WIDTH, neededWidth);
+					}
+				}
+			}
 		}
 		//determine maximal width of slots
 		if (showSlots && slots.size() > 0) {
@@ -587,7 +634,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		ownOperations = new Vector<>();
 		otherOperations = new Vector<>();
 		for (FmmlxOperation o : operations) {
-			if (o.getOwner() == this.ownPath) {
+			if (o.getOwner().equals(this.ownPath)) {
 				ownOperations.add(o);
 				ownOperations.sort(Collections.reverseOrder());
 			} else {
