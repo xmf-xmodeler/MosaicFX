@@ -13,6 +13,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
+import tool.clients.fmmlxdiagrams.NodeBaseElement;
 import tool.clients.fmmlxdiagrams.NodeLabel;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
@@ -25,7 +26,7 @@ public class ObjectContextMenu extends ContextMenu {
 	public ObjectContextMenu(FmmlxObject object, DiagramActions actions, Point2D relativePoint) {
 		this.actions = actions;
 		this.object = object;
-		NodeLabel nl = this.object.getHitLabel(relativePoint);
+		NodeBaseElement nl = this.object.getHitLabel(relativePoint);
 		activeProperty = nl==null?null:nl.getActionObject();
 		setAutoHide(true);
 

@@ -70,12 +70,12 @@ public class Issue {
 	public void performResolveAction(FmmlxDiagram diagram) {
 		String actionName = (String) solution.get(0);
 		if("setSlotValue".equals(actionName)) {
-			FmmlxObject obj = diagram.getObjectByName((String) solution.get(1));
+			FmmlxObject obj = diagram.getObjectByPath((String) solution.get(1));
 			String slotName = (String) solution.get(2);
 			FmmlxSlot slot = obj.getSlot(slotName);
 			diagram.getActions().changeSlotValue(obj, slot);
 		} else if("addMissingLink".equals(actionName)) { 
-			FmmlxObject obj = diagram.getObjectByName((String) solution.get(1));
+			FmmlxObject obj = diagram.getObjectByPath((String) solution.get(1));
 			FmmlxAssociation assoc = diagram.getAssociationByPath((String) solution.get(2));
 			diagram.getActions().addMissingLink(obj, assoc);
 //			Platform.runLater(()->{
@@ -89,7 +89,7 @@ public class Issue {
 //		        alert.showAndWait();
 //			});
 		} else if("removeTooManyLinks".equals(actionName)) { 
-			FmmlxObject obj = diagram.getObjectByName((String) solution.get(1));
+			FmmlxObject obj = diagram.getObjectByPath((String) solution.get(1));
 			FmmlxAssociation assoc = diagram.getAssociationByPath((String) solution.get(2));
 			Platform.runLater(()->{
 		        Alert alert = new Alert(AlertType.ERROR);
@@ -102,8 +102,8 @@ public class Issue {
 		        alert.showAndWait();
 			});	        
 		} else if("addRoleFiller".equals(actionName)) { 
-			FmmlxObject obj = diagram.getObjectByName((String) solution.get(1));
-			FmmlxObject roleFillerOf = diagram.getObjectByName((String) solution.get(2));
+			FmmlxObject obj = diagram.getObjectByPath((String) solution.get(1));
+			FmmlxObject roleFillerOf = diagram.getObjectByPath((String) solution.get(2));
 			Platform.runLater(()->{
 		        Alert alert = new Alert(AlertType.ERROR);
 		        alert.setTitle("Role filler required");

@@ -6,26 +6,17 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-public class NodeLabel implements NodeElement {
-	
-	public interface Action{
-		public void perform();
-	}
+public class NodeLabel extends NodeBaseElement implements NodeElement {
 	
 	private Pos alignment;
-	private double x;
-	private double y;
-	private boolean isAbstract;
+	private boolean fontItalic;
 	private Color fgColor = Color.BLACK;
 	private Color bgColor = null;
-	private FmmlxProperty actionObject; // Change to interface ~ HasContextMenu
 	private String text;
 	private double textWidth;
 	private double textHeight;
 	private final static int Y_BASELINE_DIFF = 3;
 	private final static int BOX_GAP = 1;
-	private boolean selected;
-	private Action action;
 	
 	private boolean special = false;
 	private double availableWidth;
@@ -57,7 +48,7 @@ public class NodeLabel implements NodeElement {
 		}
 
 		// Changing font to oblique(italic)
-		if (isAbstract) {
+		if (fontItalic) {
 			g.setFont(diagram.getFontKursiv());
 		} else {
 			g.setFont(diagram.getFont());
@@ -69,18 +60,14 @@ public class NodeLabel implements NodeElement {
 	}
 
 	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
-					 String text, boolean isAbstract) {
-		super();
+					 String text, boolean fontItalic) {
+		super(x, y, actionObject, action);
 		this.alignment = alignment;
-		this.x = x;
-		this.y = y;
 		this.fgColor = fgColor;
 		this.bgColor = bgColor;
-		this.actionObject = actionObject;
 		this.text = text;
-		this.isAbstract = isAbstract;
+		this.fontItalic = fontItalic;
 		this.selected = false;
-		this.action = action;
 		
 		textWidth = FmmlxDiagram.calculateTextWidth(text);
 		textHeight = FmmlxDiagram.calculateTextHeight();
@@ -106,32 +93,8 @@ public class NodeLabel implements NodeElement {
 		return rec.contains(mouseX, mouseY);
 	}
 
-	public void setSelected() {
-		selected = true;
-	}
-
-	public void setDeselected() {
-		selected = false;
-	}
-
-	public FmmlxProperty getActionObject() {
-		return actionObject;
-	}
-
 	public String getText() {
 		return text;
-	}
-	
-	@Override public double getX() {return x;}
-	@Override public double getY() {return y;}	
-	
-	@Override public NodeLabel getHitLabel(Point2D pointRelativeToParent) {
-		if(isHit(pointRelativeToParent.getX(), pointRelativeToParent.getY()))
-			return this; return null;
-	}
-
-	public void performDoubleClickAction() {
-		action.perform();		
 	}
 
 	public void activateSpecialMode(double availableWidth) {

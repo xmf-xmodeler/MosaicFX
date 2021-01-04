@@ -239,7 +239,7 @@ public class ModellBrowserStage extends CustomStage {
 	private void onObjectListViewNewValue(String oldValue, String newValue) {
 		if (newValue != null) {
 			
-			selectedObject=diagram.getObjectByName(newValue.split(" ")[1]);		
+			selectedObject=diagram.getObjectByPath(newValue.split(" ")[1]);		
 			clearAll(ClearSelectionMode.OBJECT);
 			
 			fmmlxAttributeListView.getItems().addAll(selectedObject.getAllAttributesString());

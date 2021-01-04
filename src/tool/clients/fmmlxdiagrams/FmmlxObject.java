@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.*;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
@@ -12,6 +13,7 @@ import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteTool;
 import tool.clients.fmmlxdiagrams.newpalette.ToolClass;
 
+import java.io.File;
 import java.util.*;
 
 public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<FmmlxObject> {
@@ -36,7 +38,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	private int height;
 	Object highlightedElement;
     
-	private final static NodeLabel.Action NO_ACTION = () -> {};
+	private final static NodeBaseElement.Action NO_ACTION = () -> {};
 	
 	private transient double mouseMoveOffsetX;
 	private transient double mouseMoveOffsetY;
@@ -139,7 +141,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		StringBuilder parentsList = new StringBuilder("extends ");
 		for (String parentName : getParentsPaths()) {
 			try {
-				FmmlxObject parent = diagram.getObjectByName(parentName);
+				FmmlxObject parent = diagram.getObjectByPath(parentName);
 				InheritanceEdge edge = diagram.getInheritanceEdge(this, parent);
 				if(edge != null && !edge.isVisible()) {
 					parentName = parent.name;
@@ -208,6 +210,14 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		if(delegatesTo != null) {
 			delegatedOperations.addAll(delegatesTo.getAllOperations());
 		}
+
+		for(FmmlxObject ancestor : getAllAncestors()) {
+			Vector<FmmlxOperation> opsFromAncestors = ancestor.getDelegatedOperations();
+			for(FmmlxOperation o : opsFromAncestors) {
+
+				if(o.getLevel() < level &&! delegatedOperations.contains(o)) delegatedOperations.add(o);
+			}
+		}
 		return delegatedOperations;
 	}
 	
@@ -231,18 +241,19 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	}
 
 	public Vector<String> getParentsPaths() {
-		Vector<String> parentsName = new Vector<>();
-		for(String i : parentsPaths){
-			FmmlxObject o = diagram.getObjectByName(i);
-			parentsName.add(o.getName());
-		}
-		return parentsName;
+//		Vector<String> parentsName = new Vector<>();
+//		for(String i : parentsPaths){
+//			FmmlxObject o = diagram.getObjectByPath(i);
+//			parentsName.add(o.getName());
+//		}
+//		return parentsName;
+		return parentsPaths;
 	}
 
 	public Vector<FmmlxObject> getInstances() {
 		Vector<FmmlxObject> result = new Vector<>();
 		for (FmmlxObject object : diagram.getObjects()) {
-			if (object.getOfPath() == this.getName()) {
+			if (object.getOfPath() == this.ownPath) {
 				result.add(object);
 			}
 		}
@@ -340,7 +351,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		nodeElements.addElement(header);
 		FmmlxObject ofObj = null;
 		try {
-			ofObj = diagram.getObjectByName(getOfPath());
+			ofObj = diagram.getObjectByPath(getOfPath());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -398,7 +409,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		for (FmmlxAttribute att : otherAttributes) {
 			if(showDerivedAttributes) {
 			attY += lineHeight;
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, NO_ACTION, att.getName() + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + diagram.getObjectByName(att.owner).name + ")", false);
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, NO_ACTION, att.getName() + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + diagram.getObjectByPath(att.owner).name + ")", false);
 			attBox.nodeElements.add(attLabel);
 			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.GRAY, att, NO_ACTION, att.level + "", false);
 			attBox.nodeElements.add(attLevelLabel);
@@ -431,10 +442,12 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 					if(showDerivedOperations) {
 					opsY += lineHeight;
-					NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByName(o.getOwner()).name + ")", false);
+					NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 30, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")", false);
 					opsBox.nodeElements.add(oLabel);
 					NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "", false);
 					opsBox.nodeElements.add(oLevelLabel);
+					NodeImage inhIcon = new NodeImage(14, opsY, (diagram.getObjectByPath(o.getOwner()).getLevel() == level) ? "resources/gif/Inheritance.gif" : "resources/gif/Dependency.gif", o, NO_ACTION);
+					opsBox.nodeElements.add(inhIcon);
 					}
 				}
 			}
@@ -442,12 +455,19 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 					if(showDerivedOperations) {
 					opsY += lineHeight;
-					NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 26, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByName(o.getOwner()).name + ")", false);
+					NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 30, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")", false);
 					opsBox.nodeElements.add(oLabel);
 					NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "", false);
 					opsBox.nodeElements.add(oLevelLabel);
-					NodeLabel oDelLabel = new NodeLabel(Pos.BASELINE_CENTER, 19, opsY, Color.WHITE, Color.DARKBLUE, o, NO_ACTION, "D", false);
-					opsBox.nodeElements.add(oDelLabel);
+					String iconS = 
+							// check whether next step is delegation
+							diagram.getObjectByPath(o.getOwner()) == getDelegatesTo() ? "resources/gif/XCore/delegation.png" :
+							// otherwise delegation has been somewhere before
+							// if level of owner is the same then inheritance otherwise metaclass
+							diagram.getObjectByPath(o.getOwner()).getLevel() == level ? "resources/gif/Inheritance.gif" : "resources/gif/Dependency.gif";
+					
+					NodeImage delIcon = new NodeImage(14, opsY, iconS, o, NO_ACTION);
+					opsBox.nodeElements.add(delIcon);
 					}
 				}
 			}
@@ -540,7 +560,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	private double calculateNeededWidth(FmmlxDiagram diagram) {
 		double neededWidth = FmmlxDiagram.calculateTextWidth(name);
 
-		FmmlxObject of = diagram.getObjectByName(ofPath);
+		FmmlxObject of = diagram.getObjectByPath(ofPath);
 		if (of!=null) {
 			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(getLevel() + "^" + of.name + "^") + 16);
 		} else {
@@ -553,7 +573,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		}
 		for (FmmlxAttribute att : otherAttributes) {
 			if(showDerivedAttributes) {
-			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + diagram.getObjectByName(att.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
+			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + diagram.getObjectByPath(att.owner).name + ")") + INST_LEVEL_WIDTH, neededWidth);
 			}
 		}
 //		//determine maximal width of operations
@@ -567,14 +587,14 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 			for (FmmlxOperation o : otherOperations) {
 				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
 					if(showDerivedOperations) {
-						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + diagram.getObjectByName(o.getOwner()).name + ")") + INST_LEVEL_WIDTH, neededWidth);
+						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")") + 4 * INST_LEVEL_WIDTH, neededWidth);
 					}
 				}
 			}	
 			for (FmmlxOperation o : getDelegatedOperations()) {
 				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
 					if(showDerivedOperations) {
-						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + diagram.getObjectByName(o.getOwner()).name + ")") + 3 * INST_LEVEL_WIDTH, neededWidth);
+						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")") + 4 * INST_LEVEL_WIDTH, neededWidth);
 					}
 				}
 			}
@@ -705,13 +725,13 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	private Vector<FmmlxObject> getAllAncestors() {
 		Vector<FmmlxObject> result1 = new Vector<>();
 		if (ofPath != null) {
-			FmmlxObject of = diagram.getObjectByName(getOfPath());
+			FmmlxObject of = diagram.getObjectByPath(getOfPath());
 			if(of!=null){
 				result1.add(of);
 			}
 		}
 		for (String p : getParentsPaths()) {
-			FmmlxObject parent = diagram.getObjectByName(p);
+			FmmlxObject parent = diagram.getObjectByPath(p);
 
 			if(parent!=null){
 				result1.add(parent);
@@ -801,7 +821,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 			lastClick = null; return null;
  		}
 		lastClick = relativePoint;
-		NodeLabel hitLabel = getHitLabel(relativePoint);
+		NodeBaseElement hitLabel = getHitLabel(relativePoint);
 		if (hitLabel != null) {
 			if (hitLabel.getActionObject().getPropertyType() != PropertyType.Class) {
 				hitLabel.setSelected();
@@ -811,8 +831,8 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		return null;
 	}
 
-	public NodeLabel getHitLabel(Point2D relativePoint) {
-		NodeLabel hitLabel = null;
+	public NodeBaseElement getHitLabel(Point2D relativePoint) {
+		NodeBaseElement hitLabel = null;
 		for(NodeElement e : nodeElements) if(hitLabel == null) {
 			 hitLabel =  e.getHitLabel(relativePoint);//new Point2D(relativePoint.getX() - e.getX(), relativePoint.getY() - e.getY()));
 		}
@@ -821,7 +841,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 
 	public void performDoubleClickAction(Point2D p) {
 		if(p == null) return;
-		NodeLabel hitLabel = getHitLabel(p);
+		NodeBaseElement hitLabel = getHitLabel(p);
 		if(hitLabel != null) hitLabel.performDoubleClickAction();
 	}
 

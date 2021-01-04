@@ -11,7 +11,7 @@ public class DelegationEdge extends Edge {
 	public DelegationEdge(String path, String childPath, String parentPath, Vector<Point2D> intermediatePoints,
 			PortRegion startPortRegion, PortRegion endPortRegion,
 			FmmlxDiagram diagram) {
-		super(path, diagram.getObjectByName(childPath), diagram.getObjectByName(parentPath), intermediatePoints, startPortRegion, endPortRegion, new Vector<>(),
+		super(path, diagram.getObjectByPath(childPath), diagram.getObjectByPath(parentPath), intermediatePoints, startPortRegion, endPortRegion, new Vector<>(),
 				diagram);
 	}
 

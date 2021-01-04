@@ -652,7 +652,7 @@ public class FmmlxDiagram{
 			if (nodeCreationType.equals("MetaClass")) {
 				actions.addMetaClassDialog(e);
 			} else {
-				actions.addInstanceDialog(getObjectByName((nodeCreationType)),e);
+				actions.addInstanceDialog(getObjectByPath((nodeCreationType)),e);
 			}
 			getCanvas().setCursor(Cursor.DEFAULT);
 			deselectAll();
@@ -1155,9 +1155,9 @@ public class FmmlxDiagram{
 		return result;
 	}
 
-	public FmmlxObject getObjectByName(String name) {
+	public FmmlxObject getObjectByPath(String path) {
 		for(FmmlxObject obj : getObjects()) {
-			if (obj.getOwnPath().equals(name)){
+			if (obj.getOwnPath().equals(path)){
 				return obj;
 			}
 		}

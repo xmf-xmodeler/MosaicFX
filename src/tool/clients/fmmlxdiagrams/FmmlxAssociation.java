@@ -57,7 +57,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			Vector<Object> labelPositions,
 			FmmlxDiagram diagram) {
 
-		super(path, diagram.getObjectByName(startPath), diagram.getObjectByName(endPath), points, startPortRegion, endPortRegion, labelPositions, diagram);
+		super(path, diagram.getObjectByPath(startPath), diagram.getObjectByPath(endPath), points, startPortRegion, endPortRegion, labelPositions, diagram);
 
 		this.name = name;
 		this.parentAssociationId = parentAssociationId;
