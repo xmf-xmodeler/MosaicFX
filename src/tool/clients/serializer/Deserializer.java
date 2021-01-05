@@ -27,7 +27,6 @@ public class Deserializer {
         if(checkFileExist(file)){
             LogXmlManager logXmlManager = new LogXmlManager(file);
             logXmlManager.reproduceFromLog(newDiagramID);
-
             System.out.println("recreate all objects : finished ");
         }
     }

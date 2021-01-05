@@ -1,37 +1,12 @@
 package tool.xmodeler;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.concurrent.CountDownLatch;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
-
-//import com.ceteva.oleBridge.OleBridgeClient;
-//import com.ceteva.undo.UndoClient;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -39,13 +14,17 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 import tool.clients.browser.ModelBrowserClient;
 import tool.clients.diagrams.DiagramClient;
 import tool.clients.dialogs.DialogsClient;
 import tool.clients.editors.EditorClient;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
-import tool.clients.serializer.XmlCreator;
 import tool.clients.forms.FormsClient;
 import tool.clients.menus.MenuClient;
 import tool.clients.oleBridge.OleBridgeClient;
@@ -55,6 +34,19 @@ import tool.console.Console;
 import tool.console.ConsoleClient;
 import tool.helper.IconGenerator;
 import xos.OperatingSystem;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
+
+//import com.ceteva.oleBridge.OleBridgeClient;
+//import com.ceteva.undo.UndoClient;
 
 public class XModeler extends Application {
 
@@ -116,7 +108,7 @@ public class XModeler extends Application {
     int len = str.length();
     if (len == 0) return str;
 
-    StringBuffer encoded = new StringBuffer();
+    StringBuilder encoded = new StringBuilder();
     for (int i = 0; i < len; i++) {
       char c = str.charAt(i);
       char cc = (i + 1) < (len - 1) ? str.charAt(i + 1) : 0;
@@ -158,11 +150,7 @@ public class XModeler extends Application {
   private static boolean getImageDialog(String[] args) {
     for (int i = 0; i < args.length; i++) {
       if (args[i].equals("-imagedialog")) {
-        if (args[i + 1].equalsIgnoreCase("true")) {
-          return true;
-        } else {
-          return false;
-        }
+          return args[i + 1].equalsIgnoreCase("true");
       }
     }
     return true;
@@ -173,9 +161,11 @@ public class XModeler extends Application {
   }
 
   private static String getVersion(String[] args) {
-    for (int i = 0; i < args.length; i++) {
-      if (args[i].startsWith("version:")) { return args[i].replace("version:", ""); }
-    }
+      for (String arg : args) {
+          if (arg.startsWith("version:")) {
+              return arg.replace("version:", "");
+          }
+      }
     return "";
   }
   
@@ -216,10 +206,10 @@ public class XModeler extends Application {
         String root = doc.getDocumentElement().getNodeName();
         Node node = doc.getDocumentElement();
         if (root.equals("XModeler")) {
-          final int x = Integer.parseInt(attributeValue(node, "x"));
-          final int y = Integer.parseInt(attributeValue(node, "y"));
-          final int width = Integer.parseInt(attributeValue(node, "width"));
-          final int height = Integer.parseInt(attributeValue(node, "height"));
+          final int x = Integer.parseInt(Objects.requireNonNull(attributeValue(node, "x")));
+          final int y = Integer.parseInt(Objects.requireNonNull(attributeValue(node, "y")));
+          final int width = Integer.parseInt(Objects.requireNonNull(attributeValue(node, "width")));
+          final int height = Integer.parseInt(Objects.requireNonNull(attributeValue(node, "height")));
           stage.setX(x);
           stage.setY(y);
           stage.setHeight(height);
@@ -232,14 +222,8 @@ public class XModeler extends Application {
           FormsClient.theClient().inflateXML(doc);
         }
       }
-    } catch (IOException e) {
+    } catch (Throwable e) {
       e.printStackTrace(System.err);
-    } catch (ParserConfigurationException e) {
-      e.printStackTrace(System.err);
-    } catch (SAXException e) {
-      e.printStackTrace(System.err);
-    } catch (Throwable t) {
-      t.printStackTrace(System.err);
     }
   }
 
