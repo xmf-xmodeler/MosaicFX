@@ -557,7 +557,8 @@ public class FmmlxDiagramCommunicator {
 					(String) opInfo.get(5), // body
 					(String) opInfo.get(6), // owner
 					null, // multiplicity
-					(Boolean) opInfo.get(8) // isMonitored
+					(Boolean) opInfo.get(8), // isMonitored
+					(Boolean) opInfo.get(9) // delToClass
 				);
 			result.add(op);
 		}

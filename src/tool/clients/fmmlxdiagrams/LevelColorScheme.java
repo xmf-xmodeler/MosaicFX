@@ -84,7 +84,47 @@ public abstract class LevelColorScheme {
 			double b = 1-(1. * (level-min)) / (max-min);
 			return new Color(b, b, b, 1);
 		}
+	}
+	
+	public static final class RedLevelColorScheme extends LevelColorScheme {
+		private final int min;
+		private final int max;
+		
+		public RedLevelColorScheme(Vector<FmmlxObject> objects) {
+			int MIN = Integer.MAX_VALUE;
+			int MAX = Integer.MIN_VALUE;
+			for(FmmlxObject o : objects) {
+				if(o.level < MIN) MIN = o.level;
+				if(o.level > MAX) MAX = o.level;
+			}
+			if(MAX-MIN < 0) throw new IllegalArgumentException();
+			if(MAX-MIN == 0) {MAX++; MIN--;}
+			min = MIN;
+			max = MAX;
+		}
+
+		@Override
+		public Color getLevelFgColor(int level, double opacity) {
+			if(level > max) level = max;
+			if(level < min) level = min;
+			double b = (1-(1. * (level-min)) / (max-min) > 1./2) ? 0 : 1;
+			return new Color(b, b, b, 1);
+		}
+
+		@Override
+		public Paint getLevelBgColor(int level) {
+			if(level > max) level = max;
+			if(level < min) level = min;
+			double b = 1-(1. * (level-min)) / (max-min);
+		    // high: 0 --- low 1;
+			return Color.hsb(
+					-40 + 120 * b, 
+					Math.min(1,4*(1-b)),
+					Math.min(0.95,b*2+.3));
+//			return new Color(b, b, b, 1);
+		}
 	
 	}
+
 
 }
