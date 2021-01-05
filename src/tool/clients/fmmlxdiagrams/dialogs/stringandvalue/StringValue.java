@@ -153,7 +153,7 @@ public class StringValue {
 		public static final String selectMetaClassB = "Select Meta-Class B";
 
 		public static final String numberOfInstances = "Number Of Instance";
-		public static final String modell = "Modell";
+		public static final String model = "Model";
 		public static final String code = "code";
 		public static final String objects = "Objects";
 		public static final String attributes = "Attributes";
@@ -161,7 +161,7 @@ public class StringValue {
 		public static final String protocols = "Protocols";
 		public static final String operations = "Operations";
 		public static final String empty = "";
-		public static final String modellBrowser = "Modell Browser";
+		public static final String modelBrowser = "Model Browser";
 		public static final String aClassSmall = "class";
 		public static final String project = "Project";
 		public static final String output = "Output";
@@ -185,7 +185,7 @@ public class StringValue {
 
 	public static class OperationStringValues {
 		public static final String emptyOperation =
-				"@Operation op0():XCore::Element\n" +
+				"@Operation op0[monitor=false,delToClassAllowed=false]():XCore::Element\n" +
 						"  null\n" +
 						"end";
 	}

@@ -11,9 +11,9 @@ public class ClassBrowserClient{
 	    classBrowserClientInstance = this;
 	}
 
-	public static void start() {
-		ClassBrowserClient.stage = new ModellBrowserStage();
-	}
+	//public static void start() {
+	//	ClassBrowserClient.stage = new ModelBrowser();
+	//}
 	
 	public static ClassBrowserClient getInstance() {
 		if(classBrowserClientInstance==null) {
@@ -23,6 +23,7 @@ public class ClassBrowserClient{
 	 }
 
 	public static void show(FmmlxDiagram diagram) {
+		ClassBrowserClient.stage = new ModellBrowserStage();
 		stage.show();
 		stage.toFront();
 		stage.updateDiagram(diagram);

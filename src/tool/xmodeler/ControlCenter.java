@@ -18,6 +18,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 //import javafx.scene.layout.GridPane;
@@ -26,6 +27,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
+import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
+import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 
 public class ControlCenter extends Stage {
 	
@@ -38,6 +41,7 @@ public class ControlCenter extends Stage {
 	private final ListView<String> modelLV = new ListView<String>();
 	private final ObservableList<String> diagramList = FXCollections.observableArrayList();
 	private final ListView<String> diagramLV = new ListView<String>();
+	private ModelBrowser stage;
 			
 	public ControlCenter() {
 		setTitle("XModeler ML Control Center");
@@ -121,6 +125,8 @@ public class ControlCenter extends Stage {
 		modelLV.setPrefSize(200, 150);
 		grid.add(modelLV, 3, 2);
 		grid.add(modelGridPane, 3, 3);
+		modelLV.setOnMouseClicked(e->{if (e.getClickCount()==2 && e.getButton()==MouseButton.PRIMARY) modelDoubleClick(e);});
+		
 		
 		grid.add(diagramLabel, 4, 1);
 		grid.add(newDiagram, 4, 1);
@@ -129,6 +135,8 @@ public class ControlCenter extends Stage {
 		grid.add(diagramLV, 4, 2);
 		grid.add(diagramsGridPane, 4, 3);
 		
+		
+
 		init();
 		categoryLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->categorySelected(NEWW));
 		projectLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->controlCenterClient.getProjectModels(NEWW));
@@ -142,6 +150,12 @@ public class ControlCenter extends Stage {
 			
 	}	
 	
+	private void modelDoubleClick(MouseEvent e) {
+		ModelBrowser stage = new ModelBrowser(projectLV.getSelectionModel().getSelectedItem(), modelLV.getSelectionModel().getSelectedItem(), modelLV.getItems() );
+		stage.show();
+		
+	}
+
 	private void categorySelected(String nEWW) {
 		
 	}
