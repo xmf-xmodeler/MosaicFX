@@ -31,14 +31,17 @@ public class Deserializer {
         }
     }
 
-    public void alignCoordinate(String file, String diagramName, FmmlxDiagramCommunicator communicator) {
+    public void alignObjectsCoordinate(String file, String diagramName, FmmlxDiagramCommunicator communicator) {
         if(checkFileExist(file)) {
             ObjectXmlManager objectXmlManager = new ObjectXmlManager(file);
             objectXmlManager.alignObjects(diagramName, communicator);
-            EdgeXmlManager edgeXmlManager = new EdgeXmlManager(file);
-            edgeXmlManager.alignEdges(diagramName, communicator);
-            LabelXmlManager labelXmlManager = new LabelXmlManager(file);
-            labelXmlManager.alignLabel(diagramName, communicator);
         }
+    }
+
+    public void alignEdgesAndLabelsCoordinate(FmmlxDiagram diagram) {
+        EdgeXmlManager edgeXmlManager = new EdgeXmlManager(diagram.getFilePath());
+        edgeXmlManager.alignEdges(diagram);
+        LabelXmlManager labelXmlManager = new LabelXmlManager(diagram.getFilePath());
+        labelXmlManager.alignLabel(diagram);
     }
 }

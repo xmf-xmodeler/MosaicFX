@@ -88,7 +88,7 @@ public class NewFmmlxPalette {
 					setBorder(new Border(new BorderStroke(null, null, null, null, null)));
 					setBackground(new Background(new BackgroundFill(null, null, null)));
 				} else {
-					setTextFill(fmmlxDiagram.levelColorScheme.getLevelFgColor(item.getLevel()-1, 1.));
+					setTextFill(fmmlxDiagram.levelColorScheme.getLevelFgColor(item.getLevel(), 1.));
 					if (!item.getIcon().equals("")) {
 						ImageView imageView = new ImageView(new javafx.scene.image.Image(new File(item.getIcon()).toURI().toString()));
 						setGraphic(imageView);
@@ -118,8 +118,8 @@ public class NewFmmlxPalette {
 //						if(item.getLevel()==1) 
 //							setBorder(new Border(new BorderStroke(fmmlxDiagram.levelColorScheme.getLevelFgColor(item.getLevel(),1.), BorderStrokeStyle.SOLID, new CornerRadii(10), new BorderWidths(1),new Insets(2, 5, 2, 25))));
 //						else
-							setBorder(new Border(new BorderStroke(fmmlxDiagram.levelColorScheme.getLevelBgColor(item.getLevel()-1), BorderStrokeStyle.SOLID, new CornerRadii(10), new BorderWidths(1),new Insets(2, 5, 2, 25))));
-						setBackground(new Background(new BackgroundFill(fmmlxDiagram.levelColorScheme.getLevelBgColor(item.getLevel()-1),new CornerRadii(10), new Insets(2, 5, 2, 25))));
+							setBorder(new Border(new BorderStroke(fmmlxDiagram.levelColorScheme.getLevelBgColor(item.getLevel()), BorderStrokeStyle.SOLID, new CornerRadii(10), new BorderWidths(1),new Insets(2, 5, 2, 25))));
+						setBackground(new Background(new BackgroundFill(fmmlxDiagram.levelColorScheme.getLevelBgColor(item.getLevel()),new CornerRadii(10), new Insets(2, 5, 2, 25))));
 //						}
 					}
 

@@ -99,6 +99,7 @@ public class FmmlxDiagram{
 	private final NewFmmlxPalette newFmmlxPalette;
 	private final String packagePath;
 	private String filePath;
+	boolean justLoaded = false;
 	
 	public String updateID = null;
 	
@@ -216,8 +217,12 @@ public class FmmlxDiagram{
 		}
 		suppressRedraw = true;
 		try {
+
+			if(objects.size()==0){
+				justLoaded = true;
+			}
 			this.clearDiagram();
-	
+
 			Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
 			objects.addAll(fetchedObjects);
 
@@ -253,11 +258,24 @@ public class FmmlxDiagram{
 		}
 		suppressRedraw = false;
 		newFmmlxPalette.update();
+		if(justLoaded){
+			if(filePath !=null && filePath.length()>0){
+				alignAllEdgesAndLabels(this);
+				triggerOverallReLayout();
+			}
+			justLoaded = false;
+		}
+
 		redraw();
 		
 		if(issues.size() > 0) {
 			issues.firstElement().performResolveAction(this);
 		}
+	}
+
+	private void alignAllEdgesAndLabels(FmmlxDiagram diagram) {
+		Deserializer deserializer = new Deserializer();
+		deserializer.alignEdgesAndLabelsCoordinate(diagram);
 	}
 
 	public void clearDiagram(){

@@ -65,13 +65,16 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void newDiagram(int diagramID, String diagramName, String packageName) {
+	public void newDiagram(int diagramID, String diagramName, String packageName, String file) {
 //		this.name = diagramName;
 		CountDownLatch l = new CountDownLatch(1);
 //		final String label = diagramName;// + " " + diagramID;//"getPackageName();";
 		Platform.runLater(() -> {
 			if (DEBUG) System.err.println("Create FMMLx-Diagram ("+diagramName+") ...");
 			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packageName);
+			if(file != null && file.length()>0){
+				diagram.setFilePath(file);
+			}
 			if(!PropertyManager.getProperty("diagramsInSeparateTab", true)) {
 				createTab(diagram.getView(), diagramName, this.handler, diagram);
 			}else {
@@ -418,7 +421,7 @@ public class FmmlxDiagramCommunicator {
 			Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(13);
 			
 			System.err.println("edgeInfoAsList.get(0): " + edgeInfoAsList.get(0));
-			
+
 			Edge object = new FmmlxAssociation(
 					(String) edgeInfoAsList.get(0), // id
 					(String) edgeInfoAsList.get(1), // startId
@@ -444,6 +447,7 @@ public class FmmlxDiagramCommunicator {
 					//(Integer) edgeInfoAsList.get(14) // targetHead
 			);
 			result.add(object);
+
 		}
 		return result;
 	}
@@ -708,7 +712,7 @@ public class FmmlxDiagramCommunicator {
 
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(edgePath), //TODO still id in xmf
+				new Value(edgePath),
 				new Value(listOfPoints)};
 		sendMessage("sendNewPositions", message);
 	}
@@ -1352,10 +1356,11 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	private transient Integer _newDiagramID = null;
-	public Integer createDiagram(String packagePath, String diagramName) {
+	public Integer createDiagram(String packagePath, String diagramName, String file) {
 		Value[] message = new Value[]{
 				new Value(packagePath),
-				new Value(diagramName)
+				new Value(diagramName),
+				new Value(file)
 		};
 		_newDiagramID = null;
 		int timeout = 0;
@@ -1599,13 +1604,14 @@ public class FmmlxDiagramCommunicator {
 			try {
 				deserializer.getAllDiagramElement(file, id);
 				for (String diagram : diagramXmlManager.getAllDiagrams()){
-					deserializer.alignCoordinate(file, diagram, this);
+					deserializer.alignObjectsCoordinate(file, diagram, this);
 				}
 				String projectName = projectXmlManager.getProjectName();
 				System.out.println("load  "+projectName+" : finished ");
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.err.println("load xml file failed");
+
 			}
 		});
 	}
@@ -1617,4 +1623,7 @@ public class FmmlxDiagramCommunicator {
 		return Integer.parseInt(id);
 	}
 
+	public void saveXmlFile() {
+		//sendMessage("openDiagramFromJava", message);
+	}
 }

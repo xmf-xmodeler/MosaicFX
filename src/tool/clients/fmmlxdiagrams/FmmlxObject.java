@@ -221,7 +221,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	public Vector<FmmlxObject> getInstances() {
 		Vector<FmmlxObject> result = new Vector<>();
 		for (FmmlxObject object : diagram.getObjects()) {
-			if (object.getOfPath() == this.getName()) {
+			if (object.getOfPath().equals(this.getName())) {
 				result.add(object);
 			}
 		}
@@ -587,7 +587,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		ownOperations = new Vector<>();
 		otherOperations = new Vector<>();
 		for (FmmlxOperation o : operations) {
-			if (o.getOwner() == this.ownPath) {
+			if (o.getOwner().equals(this.ownPath)) {
 				ownOperations.add(o);
 				ownOperations.sort(Collections.reverseOrder());
 			} else {

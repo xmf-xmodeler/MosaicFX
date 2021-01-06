@@ -939,8 +939,11 @@ public class DiagramActions {
 	public void save() {
 		Platform.runLater(() -> {
 			try {
-				System.out.println(diagram.getComm().getDiagramData(diagram).toString());
-			} catch (TimeOutException e) {
+				Serializer serializer = new Serializer();
+				serializer.save(diagram);
+				System.out.println(diagram.getDiagramLabel() + " saved");
+
+			} catch (TransformerException e) {
 				e.printStackTrace();
 			}
 		});

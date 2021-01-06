@@ -125,4 +125,13 @@ public class Serializer implements ISerializer {
     private boolean checkFileExist(String file) {
         return Files.exists(Paths.get(file));
     }
+
+    public void save(FmmlxDiagram diagram) throws TransformerException {
+        if(diagram.getFilePath()!=null && diagram.getFilePath().length()>0){
+            saveDiagram(diagram, diagram.getFilePath());
+        } else {
+            diagram.getComm().saveXmlFile();
+            System.out.println("Please save the diagram in a xml file first");
+        }
+    }
 }
