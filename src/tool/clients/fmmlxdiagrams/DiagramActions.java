@@ -941,7 +941,6 @@ public class DiagramActions {
 			try {
 				Serializer serializer = new Serializer();
 				serializer.save(diagram);
-				System.out.println(diagram.getDiagramLabel() + " saved");
 
 			} catch (TransformerException e) {
 				e.printStackTrace();

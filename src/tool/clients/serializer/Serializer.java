@@ -129,6 +129,7 @@ public class Serializer implements ISerializer {
     public void save(FmmlxDiagram diagram) throws TransformerException {
         if(diagram.getFilePath()!=null && diagram.getFilePath().length()>0){
             saveDiagram(diagram, diagram.getFilePath());
+            System.out.println(diagram.getDiagramLabel() + " saved");
         } else {
             diagram.getComm().saveXmlFile();
             System.out.println("Please save the diagram in a xml file first");
