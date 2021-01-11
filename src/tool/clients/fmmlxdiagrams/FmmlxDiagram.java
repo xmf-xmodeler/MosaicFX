@@ -260,6 +260,7 @@ public class FmmlxDiagram{
 		newFmmlxPalette.update();
 		if(justLoaded){
 			if(filePath !=null && filePath.length()>0){
+
 				alignAllEdgesAndLabels(this);
 				triggerOverallReLayout();
 			}

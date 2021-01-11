@@ -65,15 +65,17 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void newDiagram(int diagramID, String diagramName, String packageName, String file) {
+	public void newDiagram(int diagramID, String diagramName, String packagePath, String file) {
 //		this.name = diagramName;
 		CountDownLatch l = new CountDownLatch(1);
 //		final String label = diagramName;// + " " + diagramID;//"getPackageName();";
 		Platform.runLater(() -> {
 			if (DEBUG) System.err.println("Create FMMLx-Diagram ("+diagramName+") ...");
-			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packageName);
+			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packagePath);
 			if(file != null && file.length()>0){
 				diagram.setFilePath(file);
+			} else {
+				diagram.setFilePath(copyFilePath(packagePath));
 			}
 			if(!PropertyManager.getProperty("diagramsInSeparateTab", true)) {
 				createTab(diagram.getView(), diagramName, this.handler, diagram);
@@ -91,6 +93,19 @@ public class FmmlxDiagramCommunicator {
 			e.printStackTrace();
 		}
 	}
+
+	private String copyFilePath(String packagePath) {
+		for (FmmlxDiagram diagram: diagrams){
+			if(diagram.getPackagePath().equals(packagePath)){
+				String file = diagram.getFilePath();
+				if(file != null && file.length()>0){
+					return file;
+				}
+			}
+		}
+		return "";
+	}
+
 
 	private void close(FmmlxDiagram diagram) {
 		diagrams.remove(diagram);
@@ -1570,18 +1585,20 @@ public class FmmlxDiagramCommunicator {
 
 	public void saveXmlFile(String fileName, String packageString) {
 		String packageName = packageString.substring(1,packageString.length()-1).split(" ")[1];
-
+		System.out.println("size" + diagrams.size());
+		System.out.println(packageString);
 		Task<Void> task = new Task<Void>() {
 
 			@Override
 			protected Void call() {
 				Serializer serializer = new Serializer();
+				int saveLogCount = 0;
 				try {
 					for(FmmlxDiagram diagram : diagrams){
 						String tmp_packageName = diagram.getPackagePath().split("::")[1];
 						if(packageName.equals(tmp_packageName)){
-							serializer.saveAsXml(diagram, fileName);
-							return null;
+							serializer.saveAsXml(diagram, fileName, saveLogCount);
+							saveLogCount++;
 						}
 					}
 				} catch (TransformerException | ParserConfigurationException e) {
@@ -1596,24 +1613,30 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void populateDiagram(String file, String diagramName) {
-		Platform.runLater(()-> {
-			Deserializer deserializer = new Deserializer();
-			ProjectXmlManager projectXmlManager = new ProjectXmlManager(file);
-			DiagramXmlManager diagramXmlManager = new DiagramXmlManager(file);
-			int id = getDiagramIdFromName(diagramName);
-			try {
-				deserializer.getAllDiagramElement(file, id);
-				for (String diagram : diagramXmlManager.getAllDiagrams()){
-					deserializer.alignObjectsCoordinate(file, diagram, this);
+		FmmlxDiagramCommunicator communicator = this;
+		Task<Void> task = new Task<Void>() {
+			@Override
+			protected Void call() {
+				Deserializer deserializer = new Deserializer();
+				ProjectXmlManager projectXmlManager = new ProjectXmlManager(file);
+				DiagramXmlManager diagramXmlManager = new DiagramXmlManager(file);
+				int id = getDiagramIdFromName(diagramName);
+				try {
+					deserializer.getAllDiagramElement(file, id);
+					for (String diagram : diagramXmlManager.getAllDiagrams()){
+						deserializer.alignObjectsCoordinate(file, diagram, communicator);
+					}
+					String projectName = projectXmlManager.getProjectName();
+					System.out.println("load  "+projectName+" : finished ");
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.err.println("load xml file failed");
 				}
-				String projectName = projectXmlManager.getProjectName();
-				System.out.println("load  "+projectName+" : finished ");
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.err.println("load xml file failed");
-
+				return null;
 			}
-		});
+		};
+
+		new Thread(task).start();
 	}
 
 	public int getDiagramIdFromName(String diagramName) {
@@ -1623,7 +1646,21 @@ public class FmmlxDiagramCommunicator {
 		return Integer.parseInt(id);
 	}
 
-	public void saveXmlFile() {
-		//sendMessage("openDiagramFromJava", message);
+	public void saveXmlFile(FmmlxDiagram diagram) {
+		String packagePath = diagram.getPackagePath();
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagram.getID()),
+				new Value(packagePath),
+				new Value(packagePath.split("::")[1])
+		};
+		sendMessage("saveAsXml", message);
+	}
+
+	public void listingDiagrams() {
+		for(FmmlxDiagram diagram: diagrams){
+			System.out.println("file Path :"+diagram.getFilePath());
+			System.out.println("diagram Name :"+diagram.getDiagramLabel());
+			System.out.println("packagePath :"+diagram.getPackagePath());
+		}
 	}
 }

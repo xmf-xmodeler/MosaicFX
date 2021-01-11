@@ -17,12 +17,14 @@ public class Serializer implements ISerializer {
     }
 
     @Override
-    public void saveAsXml(FmmlxDiagram diagram, String file) throws TransformerException, ParserConfigurationException {
+    public void saveAsXml(FmmlxDiagram diagram, String file, int saveLogCount) throws TransformerException, ParserConfigurationException {
         initUserXMLFile(file);
         diagram.setFilePath(file);
-        saveProject(diagram, file);
         saveDiagram(diagram, file);
-        saveLog(diagram, file);
+        if(saveLogCount==0){
+            saveProject(diagram, file);
+            saveLog(diagram, file);
+        }
     }
 
 
@@ -131,8 +133,7 @@ public class Serializer implements ISerializer {
             saveDiagram(diagram, diagram.getFilePath());
             System.out.println(diagram.getDiagramLabel() + " saved");
         } else {
-            diagram.getComm().saveXmlFile();
-            System.out.println("Please save the diagram in a xml file first");
+            diagram.getComm().saveXmlFile(diagram);
         }
     }
 }

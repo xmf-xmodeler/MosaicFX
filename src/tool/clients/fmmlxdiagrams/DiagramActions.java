@@ -976,18 +976,8 @@ public class DiagramActions {
 	}
 
 
-	public void loadLogs() {
-		/*Platform.runLater(()-> {
-			if(diagram.getObjects().size()==0){
-				diagram.loadProcess = true;
-				Deserializer deserializer = new Deserializer();
-				try {
-					deserializer.getAllDiagramElement(diagram);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});*/
+	public void checkDiagram() {
+		diagram.getComm().listingDiagrams();
 	}
 
 	public void hide(Vector<FmmlxObject> objects, boolean hide) {

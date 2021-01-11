@@ -39,9 +39,22 @@ public class Deserializer {
     }
 
     public void alignEdgesAndLabelsCoordinate(FmmlxDiagram diagram) {
-        EdgeXmlManager edgeXmlManager = new EdgeXmlManager(diagram.getFilePath());
-        edgeXmlManager.alignEdges(diagram);
-        LabelXmlManager labelXmlManager = new LabelXmlManager(diagram.getFilePath());
-        labelXmlManager.alignLabel(diagram);
+        if(diagramInXmlExists(diagram)){
+            EdgeXmlManager edgeXmlManager = new EdgeXmlManager(diagram.getFilePath());
+            edgeXmlManager.alignEdges(diagram);
+            LabelXmlManager labelXmlManager = new LabelXmlManager(diagram.getFilePath());
+            labelXmlManager.alignLabel(diagram);
+        }
+    }
+
+    private boolean diagramInXmlExists(FmmlxDiagram diagram) {
+        DiagramXmlManager diagramXmlManager = new DiagramXmlManager(diagram.getFilePath());
+        Vector<String> diagrams = diagramXmlManager.getAllDiagrams();
+        for (String diagramLabel : diagrams) {
+            if(diagram.getDiagramLabel().equals(diagramLabel)){
+                return true;
+            }
+        }
+        return false;
     }
 }

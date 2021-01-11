@@ -78,8 +78,8 @@ public class DefaultContextMenu extends ContextMenu {
 
 			MenuItem save = new MenuItem("Save");
 			save.setOnAction(a -> actions.save());
-			//MenuItem testLoad = new MenuItem("test Load");
-			//testLoad.setOnAction(a -> actions.loadLogs());
+			//MenuItem checkDiagrams = new MenuItem("check diagrams");
+			//checkDiagrams.setOnAction(a -> actions.checkDiagram());
 		
 			MenuItem openFindImplementationDialog = new MenuItem("Search for Implementation");
 			openFindImplementationDialog.setOnAction(e -> actions.openFindImplementationDialog());
