@@ -65,13 +65,18 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void newDiagram(int diagramID, String diagramName, String packageName) {
+	public void newDiagram(int diagramID, String diagramName, String packagePath, String file) {
 //		this.name = diagramName;
 		CountDownLatch l = new CountDownLatch(1);
 //		final String label = diagramName;// + " " + diagramID;//"getPackageName();";
 		Platform.runLater(() -> {
 			if (DEBUG) System.err.println("Create FMMLx-Diagram ("+diagramName+") ...");
-			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packageName);
+			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packagePath);
+			if(file != null && file.length()>0){
+				diagram.setFilePath(file);
+			} else {
+				diagram.setFilePath(copyFilePath(packagePath));
+			}
 			if(!PropertyManager.getProperty("diagramsInSeparateTab", true)) {
 				createTab(diagram.getView(), diagramName, this.handler, diagram);
 			}else {
@@ -88,6 +93,19 @@ public class FmmlxDiagramCommunicator {
 			e.printStackTrace();
 		}
 	}
+
+	private String copyFilePath(String packagePath) {
+		for (FmmlxDiagram diagram: diagrams){
+			if(diagram.getPackagePath().equals(packagePath)){
+				String file = diagram.getFilePath();
+				if(file != null && file.length()>0){
+					return file;
+				}
+			}
+		}
+		return "";
+	}
+
 
 	private void close(FmmlxDiagram diagram) {
 		diagrams.remove(diagram);
@@ -419,7 +437,7 @@ public class FmmlxDiagramCommunicator {
 			Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(13);
 			
 			System.err.println("edgeInfoAsList.get(0): " + edgeInfoAsList.get(0));
-			
+
 			Edge object = new FmmlxAssociation(
 					(String) edgeInfoAsList.get(0), // id
 					(String) edgeInfoAsList.get(1), // startId
@@ -445,6 +463,7 @@ public class FmmlxDiagramCommunicator {
 					//(Integer) edgeInfoAsList.get(14) // targetHead
 			);
 			result.add(object);
+
 		}
 		return result;
 	}
@@ -624,7 +643,7 @@ public class FmmlxDiagramCommunicator {
 	public void sendCurrentPosition(int diagramID, String objectPath, int x, int y) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(objectPath), //TODO value still Id in xmf
+				new Value(objectPath),
 				new Value(x),
 				new Value(y)};
 		sendMessage("sendNewPosition", message);
@@ -710,7 +729,7 @@ public class FmmlxDiagramCommunicator {
 
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(edgePath), //TODO still id in xmf
+				new Value(edgePath),
 				new Value(listOfPoints)};
 		sendMessage("sendNewPositions", message);
 	}
@@ -1360,10 +1379,11 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	private transient Integer _newDiagramID = null;
-	public Integer createDiagram(String packagePath, String diagramName) {
+	public Integer createDiagram(String packagePath, String diagramName, String file) {
 		Value[] message = new Value[]{
 				new Value(packagePath),
-				new Value(diagramName)
+				new Value(diagramName),
+				new Value(file)
 		};
 		_newDiagramID = null;
 		int timeout = 0;
@@ -1573,18 +1593,18 @@ public class FmmlxDiagramCommunicator {
 
 	public void saveXmlFile(String fileName, String packageString) {
 		String packageName = packageString.substring(1,packageString.length()-1).split(" ")[1];
-
 		Task<Void> task = new Task<Void>() {
 
 			@Override
 			protected Void call() {
 				Serializer serializer = new Serializer();
+				int saveLogCount = 0;
 				try {
 					for(FmmlxDiagram diagram : diagrams){
 						String tmp_packageName = diagram.getPackagePath().split("::")[1];
 						if(packageName.equals(tmp_packageName)){
-							serializer.saveAsXml(diagram, fileName);
-							return null;
+							serializer.saveAsXml(diagram, fileName, saveLogCount);
+							saveLogCount++;
 						}
 					}
 				} catch (TransformerException | ParserConfigurationException e) {
@@ -1599,23 +1619,30 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void populateDiagram(String file, String diagramName) {
-		Platform.runLater(()-> {
-			Deserializer deserializer = new Deserializer();
-			ProjectXmlManager projectXmlManager = new ProjectXmlManager(file);
-			DiagramXmlManager diagramXmlManager = new DiagramXmlManager(file);
-			int id = getDiagramIdFromName(diagramName);
-			try {
-				deserializer.getAllDiagramElement(file, id);
-				for (String diagram : diagramXmlManager.getAllDiagrams()){
-					deserializer.alignCoordinate(file, diagram, this);
+		FmmlxDiagramCommunicator communicator = this;
+		Task<Void> task = new Task<Void>() {
+			@Override
+			protected Void call() {
+				Deserializer deserializer = new Deserializer();
+				ProjectXmlManager projectXmlManager = new ProjectXmlManager(file);
+				DiagramXmlManager diagramXmlManager = new DiagramXmlManager(file);
+				int id = getDiagramIdFromName(diagramName);
+				try {
+					deserializer.getAllDiagramElement(file, id);
+					for (String diagram : diagramXmlManager.getAllDiagrams()){
+						deserializer.alignObjectsCoordinate(file, diagram, communicator);
+					}
+					String projectName = projectXmlManager.getProjectName();
+					System.out.println("load  "+projectName+" : finished ");
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.err.println("load xml file failed");
 				}
-				String projectName = projectXmlManager.getProjectName();
-				System.out.println("load  "+projectName+" : finished ");
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.err.println("load xml file failed");
+				return null;
 			}
-		});
+		};
+
+		new Thread(task).start();
 	}
 
 	public int getDiagramIdFromName(String diagramName) {
@@ -1623,6 +1650,16 @@ public class FmmlxDiagramCommunicator {
 		String	idDirt = nameArray[nameArray.length-1];
 		String id = idDirt.substring(0, idDirt.length()-1);
 		return Integer.parseInt(id);
+	}
+
+	public void saveXmlFile(FmmlxDiagram diagram) {
+		String packagePath = diagram.getPackagePath();
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagram.getID()),
+				new Value(packagePath),
+				new Value(packagePath.split("::")[1])
+		};
+		sendMessage("saveAsXml", message);
 	}
 
 }

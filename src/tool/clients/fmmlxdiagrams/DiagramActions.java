@@ -939,8 +939,10 @@ public class DiagramActions {
 	public void save() {
 		Platform.runLater(() -> {
 			try {
-				System.out.println(diagram.getComm().getDiagramData(diagram).toString());
-			} catch (TimeOutException e) {
+				Serializer serializer = new Serializer();
+				serializer.save(diagram);
+
+			} catch (TransformerException e) {
 				e.printStackTrace();
 			}
 		});
@@ -971,21 +973,6 @@ public class DiagramActions {
 			dialog.showAndWait();
 		});
 		return null;
-	}
-
-
-	public void loadLogs() {
-		/*Platform.runLater(()-> {
-			if(diagram.getObjects().size()==0){
-				diagram.loadProcess = true;
-				Deserializer deserializer = new Deserializer();
-				try {
-					deserializer.getAllDiagramElement(diagram);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});*/
 	}
 
 	public void hide(Vector<FmmlxObject> objects, boolean hide) {

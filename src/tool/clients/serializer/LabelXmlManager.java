@@ -193,4 +193,57 @@ public class LabelXmlManager implements ILog, IXmlManager{
         }
         System.out.println("align labels in "+diagramName+" : finished ");
     }
+
+    public void alignLabel(FmmlxDiagram fmmlxDiagram) {
+        Node diagrams = xmlHandler.getDiagramsNode();
+        NodeList diagramList = diagrams.getChildNodes();
+
+        Node diagramNode = null;
+
+        for (int i = 0 ; i< diagramList.getLength(); i++){
+            if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
+                Element tmp = (Element) diagramList.item(i);
+                if (tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(fmmlxDiagram.getDiagramLabel())){
+                    diagramNode = tmp;
+                }
+            }
+        }
+
+        Vector<DiagramEdgeLabel>labels = fmmlxDiagram.getLabels();
+        for(DiagramEdgeLabel label : labels){
+            Point2D initCoordinate = new Point2D(label.getRelativeX(), label.getRelativeY());
+            Point2D coordinate = getCoordinate(diagramNode, label.getText(), initCoordinate);
+            if(validateName(label.getText())){
+
+                label.setRelativeX(coordinate.getX());
+                label.setRelativeY(coordinate.getY());
+                label.getOwner().updatePosition(label);
+                fmmlxDiagram.getComm().storeLabelInfo(fmmlxDiagram, label);
+            }
+
+            label.getOwner().updatePosition(label);
+            fmmlxDiagram.getComm().storeLabelInfo(fmmlxDiagram, label);
+        }
+        fmmlxDiagram.objectsMoved = true;
+    }
+
+    private Point2D getCoordinate(Node diagramNone, String text, Point2D initCoordinate) {
+        Node labelsNode = xmlHandler.getChildWithName(diagramNone, XmlConstant.TAG_NAME_LABELS);
+        NodeList labelList = labelsNode.getChildNodes();
+
+        for (int i = 0 ; i< labelList.getLength() ; i++){
+            if (labelList.item(i).getNodeType() == Node.ELEMENT_NODE){
+                Element label_tmp = (Element) labelList.item(i);
+                if(validateName(text)) {
+                    if(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_TEXT).equals(text)){
+                        double x = Double.parseDouble(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
+                        double y = Double.parseDouble(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
+                        return new Point2D(x, y);
+                    }
+                }
+
+            }
+        }
+        return initCoordinate;
+    }
 }

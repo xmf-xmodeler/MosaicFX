@@ -2,7 +2,6 @@
 /bin/
 /out/
 *.logManager
-/out/
 # idea
 .idea
 *.iml
@@ -30,5 +29,7 @@
 /build/output/
 
 # Test
-/userXmlFile.xml
 /XModeler2.launch
+
+#wahidClassPath
+/.classpath
