@@ -221,6 +221,23 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		return delegatedOperations;
 	}
 	
+	public Vector<FmmlxOperation> getDelegateToClassOperations() {
+		Vector<FmmlxOperation> delelegateToClassOperations = new Vector<>();
+		FmmlxObject of = diagram.getObjectByPath(ofPath);
+		if(of != null) {
+			Vector<FmmlxOperation> ofOps = new Vector<>(of.ownOperations);
+			ofOps.addAll(of.otherOperations);
+			ofOps.addAll(of.getDelegatedOperations());
+			
+			for(FmmlxOperation o : ofOps) {
+				if(o.isDelegateToClassAllowed() && o.getLevel() == this.level) {
+					delelegateToClassOperations.add(o);
+				}
+			}
+		}
+		return delelegateToClassOperations;
+	}
+	
 	private FmmlxObject getDelegatesTo() {
 		for(Edge e : diagram.getEdges()) {
 			if(e instanceof DelegationEdge) {
@@ -237,16 +254,12 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		Vector<FmmlxOperation> result = new Vector<>();
 		result.addAll(ownOperations);
 		result.addAll(otherOperations);
+		result.addAll(getDelegatedOperations());
+		result.addAll(getDelegateToClassOperations());
 		return result;
 	}
 
 	public Vector<String> getParentsPaths() {
-//		Vector<String> parentsName = new Vector<>();
-//		for(String i : parentsPaths){
-//			FmmlxObject o = diagram.getObjectByPath(i);
-//			parentsName.add(o.getName());
-//		}
-//		return parentsName;
 		return parentsPaths;
 	}
 
@@ -430,24 +443,36 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 			for (FmmlxOperation o : ownOperations) {
 				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 					opsY += lineHeight;
-					NodeLabel.Action changeOpNameAction = () -> diagram.getActions().changeNameDialog(this, PropertyType.Operation, o);
-					NodeLabel opLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, opsY, Color.BLACK, null, o, changeOpNameAction, o.getFullString(diagram), false);
-					opsBox.nodeElements.add(opLabel);
 					NodeLabel.Action changeOpLevelAction = () -> diagram.getActions().changeLevelDialog(this, PropertyType.Operation);
 					NodeLabel opLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.BLACK, o, changeOpLevelAction, o.getLevelString() + "", false);
 					opsBox.nodeElements.add(opLevelLabel);
+					int labelX = 14;
+					if(o.isDelegateToClassAllowed()) {
+						NodeImage delIcon = new NodeImage(14, opsY, "resources/gif/XCore/delegationDown.png", o, NO_ACTION);
+						opsBox.nodeElements.add(delIcon);
+						labelX +=16;
+					}					
+					NodeLabel.Action changeOpNameAction = () -> diagram.getActions().changeNameDialog(this, PropertyType.Operation, o);
+					NodeLabel opLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.BLACK, null, o, changeOpNameAction, o.getFullString(diagram), false);
+					opsBox.nodeElements.add(opLabel);
 				}
 			}
 			for (FmmlxOperation o : otherOperations) {
 				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 					if(showDerivedOperations) {
 					opsY += lineHeight;
-					NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 30, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")", false);
-					opsBox.nodeElements.add(oLabel);
 					NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "", false);
 					opsBox.nodeElements.add(oLevelLabel);
 					NodeImage inhIcon = new NodeImage(14, opsY, (diagram.getObjectByPath(o.getOwner()).getLevel() == level) ? "resources/gif/Inheritance.gif" : "resources/gif/Dependency.gif", o, NO_ACTION);
 					opsBox.nodeElements.add(inhIcon);
+					int labelX = 30;
+					if(o.isDelegateToClassAllowed()) {
+						NodeImage delIcon = new NodeImage(30, opsY, "resources/gif/XCore/delegationDown.png", o, NO_ACTION);
+						opsBox.nodeElements.add(delIcon);
+						labelX +=16;
+					}	
+					NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")", false);
+					opsBox.nodeElements.add(oLabel);
 					}
 				}
 			}
@@ -455,19 +480,41 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 					if(showDerivedOperations) {
 					opsY += lineHeight;
-					NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 30, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")", false);
-					opsBox.nodeElements.add(oLabel);
 					NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "", false);
 					opsBox.nodeElements.add(oLevelLabel);
-					String iconS = 
-							// check whether next step is delegation
-							diagram.getObjectByPath(o.getOwner()) == getDelegatesTo() ? "resources/gif/XCore/delegation.png" :
-							// otherwise delegation has been somewhere before
-							// if level of owner is the same then inheritance otherwise metaclass
-							diagram.getObjectByPath(o.getOwner()).getLevel() == level ? "resources/gif/Inheritance.gif" : "resources/gif/Dependency.gif";
-					
+//					String iconS = 
+//							// check whether next step is delegation
+//							diagram.getObjectByPath(o.getOwner()) == getDelegatesTo() ? "resources/gif/XCore/delegation.png" :
+//							// otherwise delegation has been somewhere before
+//							// if level of owner is the same then inheritance otherwise metaclass
+//							diagram.getObjectByPath(o.getOwner()).getLevel() == level ? "resources/gif/Inheritance.gif" : "resources/gif/Dependency.gif";
+					String iconS = "resources/gif/Inheritance.gif";
+					if(diagram.getObjectByPath(ofPath) != null && diagram.getObjectByPath(ofPath).getAllOperations().contains(o)) iconS = "resources/gif/Dependency.gif";
+					if(getDelegatesTo() != null && getDelegatesTo().getAllOperations().contains(o)) iconS = "resources/gif/XCore/delegation.png";
+						
 					NodeImage delIcon = new NodeImage(14, opsY, iconS, o, NO_ACTION);
 					opsBox.nodeElements.add(delIcon);
+					int labelX = 30;
+					if(o.isDelegateToClassAllowed()) {
+						NodeImage del2Icon = new NodeImage(30, opsY, "resources/gif/XCore/delegationDown.png", o, NO_ACTION);
+						opsBox.nodeElements.add(del2Icon);
+						labelX +=16;
+					}	
+					NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")", false);
+					opsBox.nodeElements.add(oLabel);
+					}
+				}
+			}			
+			for (FmmlxOperation o : getDelegateToClassOperations()) {
+				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
+					if(showDerivedOperations) {
+						opsY += lineHeight;
+						NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 30, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")", false);
+						opsBox.nodeElements.add(oLabel);
+						NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "", false);
+						opsBox.nodeElements.add(oLevelLabel);
+						NodeImage delIcon = new NodeImage(14, opsY, "resources/gif/XCore/delegationUp.png", o, NO_ACTION);
+						opsBox.nodeElements.add(delIcon);
 					}
 				}
 			}
@@ -537,9 +584,15 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 				counter++;
 				}
 			}
-		}
-		
+		}		
 		for (FmmlxOperation o : getDelegatedOperations()) {
+			if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
+				if(showDerivedOperations) {
+				counter++;
+				}
+			}
+		}		
+		for (FmmlxOperation o : getDelegateToClassOperations()) {
 			if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
 				if(showDerivedOperations) {
 				counter++;
@@ -581,17 +634,24 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 			for (FmmlxOperation o : ownOperations) {
 				if(showGettersAndSetters  ||  !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 				String text = o.getFullString(diagram);
-				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(text) + INST_LEVEL_WIDTH, neededWidth);
+				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(text) + INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0), neededWidth);
 				}
 			}	
 			for (FmmlxOperation o : otherOperations) {
 				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
 					if(showDerivedOperations) {
-						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")") + 4 * INST_LEVEL_WIDTH, neededWidth);
+						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")") + 4 * INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0), neededWidth);
 					}
 				}
 			}	
 			for (FmmlxOperation o : getDelegatedOperations()) {
+				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
+					if(showDerivedOperations) {
+						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")") + 4 * INST_LEVEL_WIDTH + (o.isDelegateToClassAllowed()?16:0), neededWidth);
+					}
+				}
+			}
+			for (FmmlxOperation o : getDelegateToClassOperations()) {
 				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))){
 					if(showDerivedOperations) {
 						neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")") + 4 * INST_LEVEL_WIDTH, neededWidth);

@@ -92,8 +92,6 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 //		return parent.getName();
 //	}
 
-	private enum Anchor {CENTRE_MOVABLE, SOURCE_LEVEL, TARGET_LEVEL, SOURCE_MULTI, TARGET_MULTI,CENTRE_SELFASSOCIATION}
-
 	@Override protected void layoutLabels() {
 		if( sourceNode == targetNode) {
 			createLabel(name, 0, Anchor.CENTRE_SELFASSOCIATION, showChangeFwNameDialog, BLACK, TRANSPARENT);
@@ -108,84 +106,6 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		createLabel(multiplicityStartToEnd.toString(), 4, Anchor.TARGET_MULTI, showChangeS2EMultDialog, BLACK, TRANSPARENT);
 		createLabel(multiplicityEndToStart.toString(), 5, Anchor.SOURCE_MULTI, showChangeE2SMultDialog, BLACK, TRANSPARENT);
 		layoutingFinishedSuccesfully = true;
-	}
-	
-	private void createLabel(String value, int localId, Anchor anchor, Runnable action, Color textColor, Color bgColor) {
-		double w = FmmlxDiagram.calculateTextWidth(value);
-		double h = FmmlxDiagram.calculateTextHeight();
-		
-		if(Anchor.CENTRE_MOVABLE == anchor) {
-			Point2D storedPostion = getLabelPosition(localId);
-			Vector<FmmlxObject> anchors = new Vector<>();
-			anchors.add(getSourceNode());
-			anchors.add(getTargetNode());
-			if(storedPostion != null) {
-				diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, storedPostion.getX(), storedPostion.getY(), w, h, textColor, bgColor));
-			} else {
-				diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, 0, -h*1.5, w, h, textColor, bgColor));
-			}
-		} else if (Anchor.CENTRE_SELFASSOCIATION==anchor) {
-			Point2D storedPostion = getLabelPosition(localId);
-			Vector<FmmlxObject> anchors = new Vector<>();
-			anchors.add(getSourceNode());
-			anchors.add(getTargetNode());
-			if(storedPostion != null) {
-				diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, storedPostion.getX(), storedPostion.getY(), w, h, textColor, bgColor));
-			} else {
-				diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, sourceNode.getWidth()/2, -4*h-0.5*sourceNode.getHeight(), w, h, textColor, bgColor));
-			}
-		} else {
-			Vector<FmmlxObject> anchors = new Vector<>();
-			double x,y;
-			Point2D p;
-			PortRegion dir;
-			if(anchor == Anchor.SOURCE_LEVEL || anchor == Anchor.SOURCE_MULTI) {
-				p = getSourceNode().getPointForEdge(sourceEnd, true);
-				dir = getSourceNode().getDirectionForEdge(sourceEnd, true);
-				anchors.add(getSourceNode());
-			} else {
-				p = getTargetNode().getPointForEdge(targetEnd, false);
-				dir = getTargetNode().getDirectionForEdge(targetEnd, false); 
-				anchors.add(getTargetNode());
-			}
-			FmmlxObject node = anchors.firstElement();
-
-			final double TEXT_X_DIFF = 10;
-			final double TEXT_Y_DIFF = 10;
-			switch(anchor) {
-			case SOURCE_LEVEL:
-			case TARGET_LEVEL: {
-				if(dir == PortRegion.SOUTH) {
-					y = TEXT_Y_DIFF;
-				} else {
-					y = -TEXT_Y_DIFF-h;
-				}
-				if(dir == PortRegion.EAST) {
-					x = TEXT_X_DIFF;
-				} else {
-					x = -TEXT_X_DIFF - w;
-				}
-				break;}
-			case SOURCE_MULTI: 
-			case TARGET_MULTI: {
-				if(dir == PortRegion.NORTH) {
-					y = -TEXT_Y_DIFF-h;
-				} else {
-					y = TEXT_Y_DIFF;
-				}
-				if(dir == PortRegion.WEST) {
-					x = -TEXT_X_DIFF - w;
-				} else {
-					x = TEXT_X_DIFF;
-				}
-				break;}
-			default: {x=0;y=0;break;}
-			}
-			diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, 
-					p.getX() - node.getCenterX() + x, 
-					p.getY() - node.getCenterY() + y, 
-					w, h, textColor, bgColor));
-		}
 	}
 	
 	@Override

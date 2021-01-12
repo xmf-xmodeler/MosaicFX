@@ -221,7 +221,7 @@ public class FmmlxDiagram{
 			Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
 			objects.addAll(fetchedObjects);
 
-//			levelColorScheme = new LevelColorScheme.GrayLevelColorScheme(objects);
+			levelColorScheme = new LevelColorScheme.RedLevelColorScheme(objects);
 			
 			issues.addAll(comm.fetchIssues(this));
 

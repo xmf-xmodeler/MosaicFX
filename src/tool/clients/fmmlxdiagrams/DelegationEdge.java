@@ -8,17 +8,22 @@ import javafx.scene.paint.Color;
 
 public class DelegationEdge extends Edge {
 
-	public DelegationEdge(String path, String childPath, String parentPath, Vector<Point2D> intermediatePoints,
+	public DelegationEdge(String path, String childPath, String parentPath, Integer level, Vector<Point2D> intermediatePoints,
 			PortRegion startPortRegion, PortRegion endPortRegion,
 			FmmlxDiagram diagram) {
 		super(path, diagram.getObjectByPath(childPath), diagram.getObjectByPath(parentPath), intermediatePoints, startPortRegion, endPortRegion, new Vector<>(),
 				diagram);
+		this.level = level;
 	}
+	
+	private Integer level;
 
 	protected void checkVisibilityMode() {visible = true;}
 	
 	@Override
 	protected void layoutLabels() {
+		createLabel(""+level, 2, Anchor.TARGET_LEVEL, ()->{}, Color.WHITE, getPrimaryColor());
+
 		layoutingFinishedSuccesfully = true;
 	} // NONE
 
@@ -28,7 +33,7 @@ public class DelegationEdge extends Edge {
 	}
 
 	protected Color getPrimaryColor() {
-		return Color.DARKBLUE;
+		return new Color(.1, .2, .7, 1.);
 	}
 
 	@Override
