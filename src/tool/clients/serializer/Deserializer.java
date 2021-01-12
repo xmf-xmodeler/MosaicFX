@@ -31,15 +31,18 @@ public class Deserializer {
         }
     }
 
+    @Deprecated
     public void alignObjectsCoordinate(String file, String diagramName, FmmlxDiagramCommunicator communicator) {
         if(checkFileExist(file)) {
             ObjectXmlManager objectXmlManager = new ObjectXmlManager(file);
-            objectXmlManager.alignObjects(diagramName, communicator);
+            //objectXmlManager.alignObjects(diagramName, communicator);
         }
     }
 
-    public void alignEdgesAndLabelsCoordinate(FmmlxDiagram diagram) {
+    public void alignCoordinate(FmmlxDiagram diagram) {
         if(diagramInXmlExists(diagram)){
+            ObjectXmlManager objectXmlManager = new ObjectXmlManager(diagram.getFilePath());
+            objectXmlManager.alignObjects(diagram);
             EdgeXmlManager edgeXmlManager = new EdgeXmlManager(diagram.getFilePath());
             edgeXmlManager.alignEdges(diagram);
             LabelXmlManager labelXmlManager = new LabelXmlManager(diagram.getFilePath());

@@ -975,11 +975,6 @@ public class DiagramActions {
 		return null;
 	}
 
-
-	public void checkDiagram() {
-		diagram.getComm().listingDiagrams();
-	}
-
 	public void hide(Vector<FmmlxObject> objects, boolean hide) {
 		diagram.getComm().hideElements(diagram.getID(), objects, hide);
 		diagram.updateDiagram();

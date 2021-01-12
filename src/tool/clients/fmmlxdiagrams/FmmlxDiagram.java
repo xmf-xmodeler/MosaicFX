@@ -260,8 +260,8 @@ public class FmmlxDiagram{
 		newFmmlxPalette.update();
 		if(justLoaded){
 			if(filePath !=null && filePath.length()>0){
-
-				alignAllEdgesAndLabels(this);
+				Deserializer deserializer = new Deserializer();
+				deserializer.alignCoordinate(this);
 				triggerOverallReLayout();
 			}
 			justLoaded = false;
@@ -272,11 +272,6 @@ public class FmmlxDiagram{
 		if(issues.size() > 0) {
 			issues.firstElement().performResolveAction(this);
 		}
-	}
-
-	private void alignAllEdgesAndLabels(FmmlxDiagram diagram) {
-		Deserializer deserializer = new Deserializer();
-		deserializer.alignEdgesAndLabelsCoordinate(diagram);
 	}
 
 	public void clearDiagram(){

@@ -641,7 +641,7 @@ public class FmmlxDiagramCommunicator {
 	public void sendCurrentPosition(int diagramID, String objectPath, int x, int y) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(objectPath), //TODO value still Id in xmf
+				new Value(objectPath),
 				new Value(x),
 				new Value(y)};
 		sendMessage("sendNewPosition", message);
@@ -1585,8 +1585,6 @@ public class FmmlxDiagramCommunicator {
 
 	public void saveXmlFile(String fileName, String packageString) {
 		String packageName = packageString.substring(1,packageString.length()-1).split(" ")[1];
-		System.out.println("size" + diagrams.size());
-		System.out.println(packageString);
 		Task<Void> task = new Task<Void>() {
 
 			@Override
@@ -1656,11 +1654,4 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("saveAsXml", message);
 	}
 
-	public void listingDiagrams() {
-		for(FmmlxDiagram diagram: diagrams){
-			System.out.println("file Path :"+diagram.getFilePath());
-			System.out.println("diagram Name :"+diagram.getDiagramLabel());
-			System.out.println("packagePath :"+diagram.getPackagePath());
-		}
-	}
 }
