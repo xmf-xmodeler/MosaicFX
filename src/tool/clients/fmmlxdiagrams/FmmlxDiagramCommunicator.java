@@ -1016,10 +1016,10 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("changeParent", message);
 	}
 	
-	public void addDelegation(int diagramID, String delegateFromName, String deledgateToName, Integer delegateToLevel) {
+	public void addDelegation(int diagramID, String delegateFromName, String delegateToName, Integer delegateToLevel) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(delegateFromName), new Value(deledgateToName), new Value(delegateToLevel)};
+				new Value(delegateFromName), new Value(delegateToName), new Value(delegateToLevel)};
 		sendMessage("addDelegation", message);
 	}
 
