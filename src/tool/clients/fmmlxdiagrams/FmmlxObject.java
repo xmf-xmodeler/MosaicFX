@@ -266,7 +266,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	public Vector<FmmlxObject> getInstances() {
 		Vector<FmmlxObject> result = new Vector<>();
 		for (FmmlxObject object : diagram.getObjects()) {
-			if (object.getOfPath() == this.ownPath) {
+			if (object.getOfPath().equals(this.ownPath)) {
 				result.add(object);
 			}
 		}
