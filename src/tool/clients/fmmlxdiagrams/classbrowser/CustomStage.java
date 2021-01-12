@@ -37,7 +37,7 @@ public abstract class CustomStage extends Stage{
 		this.setOnShowing(e-> onShow());	
 	}
 	
-	protected abstract void initAllElement();
+	protected abstract void initAllElements();
 	
 	protected abstract void addAllElementToPane();
 	

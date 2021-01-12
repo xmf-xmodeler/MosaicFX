@@ -447,7 +447,7 @@ public class LogXmlManager implements ILog, IXmlManager {
                     String[] delegationToPathArray = delegationToPath.split("::");
                     String delegationToName = delegationToPathArray[delegationToPathArray.length-1];
 
-                    comm.addDelegation(diagramID, delegationFromName, delegationToName);
+                    comm.addDelegation(diagramID, delegationFromName, delegationToName, -1); // TODO -1
                     break;
                 }
                 case "setRoleFiller" : {

@@ -2,6 +2,9 @@ package tool.clients.fmmlxdiagrams.classbrowser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
+
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -22,10 +25,11 @@ import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.SortedValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
+import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.XModeler;
 
 
-public class ModellBrowserStage extends CustomStage {
+public class ModelBrowser extends CustomStage {
 
 	private TextArea codeArea;
 	private ListView<String> modelListView,fmmlxObjectListView, fmmlxAttributeListView, 
@@ -37,17 +41,20 @@ public class ModellBrowserStage extends CustomStage {
 						operationOutputVBox, operationInputVBox, associationBrowserVBox, consoleContainerVBox;
 	private SplitPane outerSplitPane;
 	private GridPane mainGridPane, attributeGridpane;	
-	private FmmlxDiagram diagram;
-	private FmmlxObject selectedObject;
+	ModelBrowserCommunicator communicator;
 	
-	public ModellBrowserStage() {
-		super(StringValue.LabelAndHeaderTitle.modelBrowser, XModeler.getStage(), 1100, 800);		
-		
+	public ModelBrowser(String project, String selectedModel, ObservableList<String> models) {
+		super(StringValue.LabelAndHeaderTitle.modelBrowser+" " + project, XModeler.getStage(), 1100, 800);
 		initAllElements();
 		addAllElementToPane();			
 		getContainer().getChildren().addAll(outerSplitPane);
-		
 		setOnCloseRequest(e -> onClose());
+		modelListView.getItems().clear();
+		modelListView.getItems().addAll(models);
+		modelListView.getSelectionModel().getSelectedItems().clear();
+		if (selectedModel!=null) {
+		modelListView.getSelectionModel().select(selectedModel);
+		}
 	}
 
 	public void onClose() {
@@ -198,118 +205,47 @@ public class ModellBrowserStage extends CustomStage {
 	}
 
 	private void onOperationListViewNewValue(String oldValue, String newValue) {
-		if (newValue != null) {		
-			FmmlxOperation op = selectedObject.getOperationByName(newValue.split(" ")[0]);
-			StringBuilder stringBuilder = new StringBuilder();
-			if(op!=null) {
-				if(op.getParamTypes()!=null) {
-					int paramLength= op.getParamTypes().size();
-					
-					for(int i =0 ; i<paramLength;i++) {			
-						stringBuilder.append(op.getParamTypes().get(i).split("::")[2]);
-						if(i!=paramLength-1) {
-							stringBuilder.append(", ");
-						}
-					}
-				}
-			}					
-			operationInputTextField.setText(stringBuilder.toString());
-			assert op != null;
-			operationOutputTexField.setText(op.getType().split("::")[2]);
-			codeArea.setText(op.getBody());
-		}
+
 	}
 	
 	private void modellBrowserListerner(ListView<String> modelListView2, String oldValue, String newValue) {
-		clearAll(ClearSelectionMode.MODEL);
-		//TODO
+		
 	}
 
 	private void classBrowserTextFieldListener(String oldValue, String newValue) {
-		clearAll(ClearSelectionMode.OBJECT);
-		fmmlxObjectListView.getItems().clear();
 		
-		for(FmmlxObject obj : diagram.getSortedObject(SortedValue.REVERSE)) {
-			if(obj.getName().toLowerCase().contains(newValue.toLowerCase())) {
-				fmmlxObjectListView.getItems().add("("+obj.getLevel()+") "+obj.getName());
-			}
-		}
 	}
 
 	private void onObjectListViewNewValue(String oldValue, String newValue) {
-		if (newValue != null) {
-			
-			selectedObject=diagram.getObjectByPath(newValue.split(" ")[1]);		
-			clearAll(ClearSelectionMode.OBJECT);
-			
-			fmmlxAttributeListView.getItems().addAll(selectedObject.getAllAttributesString());
-			slotListView.getItems().addAll(selectedObject.getAllSlotString());
-			fmmlxOperationListView.getItems().addAll(selectedObject.getAllOperationsString());
-			fmmlxAssociationListView.getItems().addAll(selectedObject.getAllRelatedAssociationsString());
-			abstractComboBox.setValue(selectedObject.isAbstract());
-		}
+		
 	}
 
 	private void onAssociationListViewNewValue(String oldValue, String newValue) {
-		FmmlxAssociation association = diagram.getAssociationByPath(newValue);	
-		if (association!=null) {
-			if(association.getSourceNode().getName().equals(selectedObject.getName())){
-				associationBrowserTextField.setText("("+association.getTargetNode().getLevel()+")"+" "+association.getTargetNode().getName());
-			} else {
-				associationBrowserTextField.setText("("+association.getSourceNode().getLevel()+")"+" "+association.getSourceNode().getName());
-			}
-		}
+		
 	}
 
 	private void onAbstractNewValue(Boolean oldValue, Boolean newValue) {
-		if(newValue != null) {
-			if(newValue!=oldValue) {
-				//TODO
-			}
-		}
+		
 	}
 
 	private void setColumnConstrain(GridPane gridPane) {
-		ColumnConstraints cc;
-		for (int i = 0; i < 6; i++) {
-			cc = new ColumnConstraints();
-			cc.setFillWidth(true);
-			cc.setHgrow(Priority.ALWAYS);
-			gridPane.getColumnConstraints().add(cc);
-		}
+		
 	}
 
 	public void updateDiagram(FmmlxDiagram diagram) {
-		clearAll(ClearSelectionMode.MODEL);
-		this.diagram=diagram;
 		
-		List<FmmlxObject> objects = diagram.getSortedObject(SortedValue.REVERSE);
-		
-		for(FmmlxObject obj : objects) {
-			fmmlxObjectListView.getItems().add("("+obj.getLevel()+") "+obj.getName());
-		}
 	}
 	
 	private void onModelListViewNewValue(String oldValue, String newValue) {
-		if (newValue != null) {
-			
-			clearAll(ClearSelectionMode.MODEL);
-						
-			//TODO if model selected			
-			//updateDiagram(newValue1);
-		}
+		
 	}	
 	
 	private void onSlotListViewNewValue(ListView<String> modelListView2, String oldValue, String newValue) {
-		if (newValue != null) {
-			// TODO if slotValue selected
-		}
+		
 	}
 	
 	private void onAttributeListViewNewValue(String oldValue, String newValue) {
-		if (newValue != null) {
-			//TODO if attribute selected
-		}
+		
 	}
 
 }

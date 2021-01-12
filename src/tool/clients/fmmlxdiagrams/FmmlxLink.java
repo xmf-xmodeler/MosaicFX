@@ -16,7 +16,7 @@ public class FmmlxLink extends Edge {
 	public FmmlxLink(String path, String startPath, String endPath, String ofPath, Vector<Point2D> points,
 				PortRegion sourcePort, PortRegion targetPort, 
 				Vector<Object> labelPositions, FmmlxDiagram diagram) {
-		super(path, diagram.getObjectByName(startPath), diagram.getObjectByName(endPath), points, sourcePort, targetPort, labelPositions, diagram);
+		super(path, diagram.getObjectByPath(startPath), diagram.getObjectByPath(endPath), points, sourcePort, targetPort, labelPositions, diagram);
 //		this.ofAssociation = (FmmlxAssociation) diagram.getAssociationById(ofId);
 		this.ofPath = ofPath;
 		this.diagram = diagram;
@@ -100,8 +100,8 @@ public class FmmlxLink extends Edge {
 	}
 
 	public void edit(FmmlxObject selectedItem, FmmlxObject selectedItem2) {
-		this.sourceNode=diagram.getObjectByName(selectedItem.getName());
-		this.targetNode= diagram.getObjectByName(selectedItem2.getName());
+		this.sourceNode=diagram.getObjectByPath(selectedItem.getName());
+		this.targetNode= diagram.getObjectByPath(selectedItem2.getName());
 	}
 	
 	@Override

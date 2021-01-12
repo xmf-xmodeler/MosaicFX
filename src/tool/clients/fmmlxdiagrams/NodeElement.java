@@ -13,6 +13,6 @@ public interface NodeElement {
 
 	double getY();
 
-	NodeLabel getHitLabel(Point2D pointRelativeToParent);
+	NodeBaseElement getHitLabel(Point2D pointRelativeToParent);
 
 }

@@ -45,7 +45,7 @@ public class DefaultContextMenu extends ContextMenu {
 		MenuItem packageListView_LOCAL = new MenuItem("Package ListView (Local)");
 		packageListView_LOCAL.setOnAction(e -> actions.classBrowserStage(false));
 		MenuItem packageListView = new MenuItem("Package ListView");
-		packageListView.setOnAction(e -> actions.classBrowserStage(true));
+		packageListView.setOnAction(e -> actions.classBrowserStage(false));
 		
 		enumeration.getItems().addAll(createEnumeration, editEnumeration, deleteEnumeration);
 		

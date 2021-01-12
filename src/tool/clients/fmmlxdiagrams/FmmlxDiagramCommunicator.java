@@ -334,7 +334,7 @@ public class FmmlxDiagramCommunicator {
 			Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
 
 			Vector<Point2D> listOfPoints = null;
-			Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(3);
+			Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(4);
 			PortRegion startRegion = null;
 			PortRegion endRegion = null;
 			if(pointsListO != null && pointsListO.size()>=2) {
@@ -354,8 +354,9 @@ public class FmmlxDiagramCommunicator {
 
 			Edge object = new DelegationEdge(
 					(String) edgeInfoAsList.get(0), // id
-					(String) edgeInfoAsList.get(1), //TODO startId
-					(String) edgeInfoAsList.get(2), //TODO endId
+					(String) edgeInfoAsList.get(1), // startId
+					(String) edgeInfoAsList.get(2), // endId
+					(Integer) edgeInfoAsList.get(3), // level
 					listOfPoints, // points
 					startRegion, endRegion,
 					diagram);
@@ -575,7 +576,8 @@ public class FmmlxDiagramCommunicator {
 					(String) opInfo.get(5), // body
 					(String) opInfo.get(6), // owner
 					null, // multiplicity
-					(Boolean) opInfo.get(8) // isMonitored
+					(Boolean) opInfo.get(8), // isMonitored
+					(Boolean) opInfo.get(9) // delToClass
 				);
 			result.add(op);
 		}
@@ -1012,14 +1014,20 @@ public class FmmlxDiagramCommunicator {
 				new Value(parentsArray),
 				new Value(newParentsArray)};
 		sendMessage("changeParent", message);
-
 	}
 	
-	public void addDelegation(int diagramID, String delegateFromName, String deledgateToName) {
+	public void addDelegation(int diagramID, String delegateFromName, String deledgateToName, Integer delegateToLevel) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(delegateFromName), new Value(deledgateToName)};
+				new Value(delegateFromName), new Value(deledgateToName), new Value(delegateToLevel)};
 		sendMessage("addDelegation", message);
+	}
+
+	public void removeDelegation(int diagramID, String delegateFromName) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(delegateFromName)};
+		sendMessage("removeDelegation", message);
 	}	
 	
 	public void setRoleFiller(int diagramID, String delegateFromName, String delegateToName) {

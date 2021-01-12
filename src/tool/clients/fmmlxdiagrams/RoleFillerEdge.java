@@ -11,7 +11,7 @@ public class RoleFillerEdge extends Edge {
 	public RoleFillerEdge(String path, String childPath, String parentID, Vector<Point2D> intermediatePoints,
 			PortRegion startPortRegion, PortRegion endPortRegion,
 			FmmlxDiagram diagram) {
-		super(path, diagram.getObjectByName(childPath), diagram.getObjectByName(parentID), intermediatePoints, startPortRegion, endPortRegion, new Vector<>(),
+		super(path, diagram.getObjectByPath(childPath), diagram.getObjectByPath(parentID), intermediatePoints, startPortRegion, endPortRegion, new Vector<>(),
 				diagram);
 	}
 

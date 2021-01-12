@@ -15,14 +15,16 @@ public class FmmlxOperation implements FmmlxProperty, Comparable<FmmlxOperation>
 	private String body;
 	private Vector<String> paramNames;
 	private Vector<String> paramTypes;
+	private boolean delegateToClassAllowed;
 
 
-	public FmmlxOperation(String name, Vector<String> paramNames, Vector<String> paramTypes, Integer level, String type, String body, String owner, Multiplicity multiplicity, boolean isMonitored) {
+	public FmmlxOperation(String name, Vector<String> paramNames, Vector<String> paramTypes, Integer level, String type, String body, String owner, Multiplicity multiplicity, boolean isMonitored, boolean delegateToClassAllowed) {
 		this.name = name;
 		this.level = level;
 		this.type = type;
 		this.owner = owner;
 //		this.multiplicity = multiplicity;
+		this.delegateToClassAllowed = delegateToClassAllowed;
 		this.isMonitored = isMonitored;
 		this.body = body;
 		this.paramNames = paramNames;
@@ -60,6 +62,10 @@ public class FmmlxOperation implements FmmlxProperty, Comparable<FmmlxOperation>
 
 	public boolean isMonitored() {
 		return isMonitored;
+	}
+
+	public boolean isDelegateToClassAllowed() {
+		return delegateToClassAllowed;
 	}
 
 	@Override

@@ -61,9 +61,9 @@ public class NodeBox implements NodeElement {
 	@Override public double getX() {return x;}
 	@Override public double getY() {return y;}
 	
-	@Override public NodeLabel getHitLabel(Point2D pointRelativeToParent) {
+	@Override public NodeBaseElement getHitLabel(Point2D pointRelativeToParent) {
 		if(isHit(pointRelativeToParent.getX(), pointRelativeToParent.getY())) {
-			NodeLabel hitLabel = null;
+			NodeBaseElement hitLabel = null;
 			for(NodeElement e : nodeElements) if(hitLabel == null) {
 				 hitLabel = e.getHitLabel(new Point2D(pointRelativeToParent.getX() - getX(), pointRelativeToParent.getY() - getY()));
 			}

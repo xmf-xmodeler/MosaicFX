@@ -107,7 +107,7 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 		Vector<String> parentNames = object.getParentsPaths();
 
 		for (String name : parentNames) {
-			FmmlxObject o = diagram.getObjectByName(name);
+			FmmlxObject o = diagram.getObjectByPath(name);
 			resultList.add(o);
 		}
 		

@@ -773,7 +773,7 @@ public class DiagramActions {
 	
 	public void addDelegation(FmmlxObject delegateFrom, FmmlxObject delegateTo) {
 		if (delegateFrom != null && delegateTo != null) { // just for safety
-			diagram.getComm().addDelegation(diagram.getID(), delegateFrom.getName(), delegateTo.getName());
+			diagram.getComm().addDelegation(diagram.getID(), delegateFrom.getName(), delegateTo.getName(), delegateFrom.level-1);
 		}		
 	}
 	
