@@ -1,5 +1,6 @@
 package tool.clients.serializer;
 
+import javafx.geometry.Point2D;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -148,15 +149,15 @@ public class ObjectXmlManager implements IXmlManager {
 
         List<FmmlxObject>allObjects = fmmlxDiagram.getObjects();
         for(FmmlxObject object : allObjects){
-            Coordinate initCoordinate = new Coordinate(object.getX(), object.getY());
-            Coordinate coordinate = getCoordinate(diagramNode, object.getName(),initCoordinate);
+            Point2D initCoordinate = new Point2D(object.getX(), object.getY());
+            Point2D coordinate = getCoordinate(diagramNode, object.getName(),initCoordinate);
             object.moveTo(coordinate.getX(), coordinate.getY(), fmmlxDiagram);
             fmmlxDiagram.getComm().sendCurrentPosition(fmmlxDiagram.getComm().getDiagramIdFromName(fmmlxDiagram.getDiagramLabel()), object.getOwnPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY()));
-            //fmmlxDiagram.getComm().sendCurrentPosition(fmmlxDiagram, object);
         }
+        System.out.println("align objects in "+fmmlxDiagram.getDiagramLabel()+" : finished ");
     }
 
-    private Coordinate getCoordinate(Node diagramNone, String name, Coordinate initCoordingate) {
+    private Point2D getCoordinate(Node diagramNone, String name, Point2D initCoordingate) {
         Node objectsNode = xmlHandler.getChildWithName(diagramNone, XmlConstant.TAG_NAME_OBJECTS);
         NodeList objectList = objectsNode.getChildNodes();
 
@@ -166,45 +167,10 @@ public class ObjectXmlManager implements IXmlManager {
                 if(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_NAME).equals(name)){
                     double x = Double.parseDouble(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
                     double y = Double.parseDouble(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
-                    initCoordingate.setX(x);
-                    initCoordingate.setY(y);
+                    return new Point2D(x, y);
                 }
             }
         }
         return initCoordingate;
-    }
-
-    private class Coordinate {
-        double x;
-        double y;
-
-        public Coordinate(double x, double y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public double getX() {
-            return x;
-        }
-
-        public void setX(double x) {
-            this.x = x;
-        }
-
-        public double getY() {
-            return y;
-        }
-
-        public void setY(double y) {
-            this.y = y;
-        }
-
-        @Override
-        public String toString() {
-            return "Coordinat{" +
-                    "x=" + x +
-                    ", y=" + y +
-                    '}';
-        }
     }
 }

@@ -11,7 +11,6 @@ public class ToolRoot extends PaletteTool {
 	@Override
 	public void widgetSelected() {
 		// TODO Auto-generated method stub
-
 	}
 
 }

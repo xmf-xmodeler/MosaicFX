@@ -7,7 +7,6 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.serializer.interfaces.IXmlManager;
 
 import javax.xml.transform.TransformerException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 

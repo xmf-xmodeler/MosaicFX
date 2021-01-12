@@ -12,7 +12,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.Deserializer;
-import tool.clients.serializer.DiagramXmlManager;
 import tool.clients.serializer.ProjectXmlManager;
 import tool.clients.serializer.Serializer;
 import tool.clients.workbench.WorkbenchClient;
@@ -1611,19 +1610,14 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void populateDiagram(String file, String diagramName) {
-		FmmlxDiagramCommunicator communicator = this;
 		Task<Void> task = new Task<Void>() {
 			@Override
 			protected Void call() {
 				Deserializer deserializer = new Deserializer();
 				ProjectXmlManager projectXmlManager = new ProjectXmlManager(file);
-				DiagramXmlManager diagramXmlManager = new DiagramXmlManager(file);
 				int id = getDiagramIdFromName(diagramName);
 				try {
 					deserializer.getAllDiagramElement(file, id);
-					for (String diagram : diagramXmlManager.getAllDiagrams()){
-						deserializer.alignObjectsCoordinate(file, diagram, communicator);
-					}
 					String projectName = projectXmlManager.getProjectName();
 					System.out.println("load  "+projectName+" : finished ");
 				} catch (Exception e) {
@@ -1633,7 +1627,6 @@ public class FmmlxDiagramCommunicator {
 				return null;
 			}
 		};
-
 		new Thread(task).start();
 	}
 

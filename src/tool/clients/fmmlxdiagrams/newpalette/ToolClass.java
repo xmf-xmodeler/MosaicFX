@@ -12,7 +12,6 @@ public class ToolClass extends PaletteTool{
 
 	@Override
 	public void widgetSelected() {
-//		System.err.println(getId());
 		getDiagram().setNodeCreationType(getId());
 	}
 }
