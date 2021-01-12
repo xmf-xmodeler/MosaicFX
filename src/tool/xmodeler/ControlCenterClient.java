@@ -26,7 +26,7 @@ public class ControlCenterClient {
 	}
 
 	public Vector<String> getAllCategories() {
-		Vector<String> v = new Vector<String>();
+		Vector<String> v = new Vector<>();
 		v.add("Sales");
 		v.add("Buying");
 		return v;
@@ -54,7 +54,7 @@ public class ControlCenterClient {
 	}
 	
 	public void setProjectModels(Message message) {
-		Vector<String> vec = new Vector<String>();
+		Vector<String> vec = new Vector<>();
 		for(int i = 0; i < message.args[0].values.length; i++) {
 			vec.add(message.args[0].values[i].strValue());
 		}

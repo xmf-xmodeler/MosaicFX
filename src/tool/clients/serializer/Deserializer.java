@@ -27,19 +27,37 @@ public class Deserializer {
         if(checkFileExist(file)){
             LogXmlManager logXmlManager = new LogXmlManager(file);
             logXmlManager.reproduceFromLog(newDiagramID);
-
             System.out.println("recreate all objects : finished ");
         }
     }
 
-    public void alignCoordinate(String file, String diagramName, FmmlxDiagramCommunicator communicator) {
+    @Deprecated
+    public void alignObjectsCoordinate(String file, String diagramName, FmmlxDiagramCommunicator communicator) {
         if(checkFileExist(file)) {
             ObjectXmlManager objectXmlManager = new ObjectXmlManager(file);
-            objectXmlManager.alignObjects(diagramName, communicator);
-            EdgeXmlManager edgeXmlManager = new EdgeXmlManager(file);
-            edgeXmlManager.alignEdges(diagramName, communicator);
-            LabelXmlManager labelXmlManager = new LabelXmlManager(file);
-            labelXmlManager.alignLabel(diagramName, communicator);
+            //objectXmlManager.alignObjects(diagramName, communicator);
         }
+    }
+
+    public void alignCoordinate(FmmlxDiagram diagram) {
+        if(diagramInXmlExists(diagram)){
+            ObjectXmlManager objectXmlManager = new ObjectXmlManager(diagram.getFilePath());
+            objectXmlManager.alignObjects(diagram);
+            EdgeXmlManager edgeXmlManager = new EdgeXmlManager(diagram.getFilePath());
+            edgeXmlManager.alignEdges(diagram);
+            LabelXmlManager labelXmlManager = new LabelXmlManager(diagram.getFilePath());
+            labelXmlManager.alignLabel(diagram);
+        }
+    }
+
+    private boolean diagramInXmlExists(FmmlxDiagram diagram) {
+        DiagramXmlManager diagramXmlManager = new DiagramXmlManager(diagram.getFilePath());
+        Vector<String> diagrams = diagramXmlManager.getAllDiagrams();
+        for (String diagramLabel : diagrams) {
+            if(diagram.getDiagramLabel().equals(diagramLabel)){
+                return true;
+            }
+        }
+        return false;
     }
 }

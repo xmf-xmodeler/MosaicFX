@@ -31,7 +31,9 @@ public class PaletteGroupClass extends PaletteGroup {
 		
 		List<FmmlxObject> objects = fmmlxDiagram.getSortedObject(SortedValue.REVERSE);
 		for (FmmlxObject tmp : objects) {
-			items.add(tmp.toPaletteItem(fmmlxDiagram));			
+			if(tmp.getLevel()>0){
+				items.add(tmp.toPaletteItem(fmmlxDiagram));
+			}
 		}		
 	}
 
