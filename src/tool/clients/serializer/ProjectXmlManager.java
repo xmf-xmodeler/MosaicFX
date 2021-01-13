@@ -6,7 +6,6 @@ import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.serializer.interfaces.IXmlManager;
 
-import javax.xml.transform.TransformerException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +28,7 @@ public class ProjectXmlManager implements IXmlManager {
     }
 
     @Override
-    public void add(Element element) throws TransformerException {
+    public void add(Element element) {
         Node projects = xmlHandler.getProjectsNode();
         xmlHandler.addElement(projects, element);
     }
@@ -90,7 +89,7 @@ public class ProjectXmlManager implements IXmlManager {
         return false;
     }
 
-    public void removeAll() throws TransformerException {
+    public void removeAll() {
         xmlHandler.removeAllProject();
     }
 

@@ -10,10 +10,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
@@ -82,94 +79,74 @@ public class XmlHandler {
         return xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_LOGS);
     }
 
-    protected void addLogElement(Node logs, Node log)
-            throws TransformerException {
+    protected void addLogElement(Node logs, Node log) {
         xmlHelper.addXmlElement(logs, log);
     }
 
-    public void addElement(Node parents, Element element) throws TransformerException {
+    public void addElement(Node parents, Element element) {
         xmlHelper.addXmlElement(parents, element);
     }
 
-    public void addDiagramObjectsElement(Element diagram, Element objectsElement) throws TransformerException {
+    public void addDiagramObjectsElement(Element diagram, Element objectsElement) {
         xmlHelper.addXmlElement(diagram, objectsElement);
     }
 
-    public void addObjectElement(Node objects, Element objectElement)
-            throws TransformerException {
+    public void addObjectElement(Node objects, Element objectElement) {
         xmlHelper.addXmlElement(objects, objectElement);
     }
 
-    public void addEdgeElement(Element edges, Element newObject)
-            throws TransformerException {
+    public void addEdgeElement(Element edges, Element newObject) {
         xmlHelper.addXmlElement(edges, newObject);
     }
     
-    public void addLabelElement(Node labels, Element labelElement)
-            throws TransformerException {
+    public void addLabelElement(Node labels, Element labelElement) {
         xmlHelper.addXmlElement(labels, labelElement);
     }
 
-    public void addDiagramElement(Node diagrams, Element diagramElement)
-            throws TransformerException {
+    public void addDiagramElement(Node diagrams, Element diagramElement) {
         xmlHelper.addXmlElement(diagrams, diagramElement);
     }
 
-    public void addDiagramOwnersElement(Element diagram, Element ownersElement)
-            throws TransformerException {
+    public void addDiagramOwnersElement(Element diagram, Element ownersElement) {
         xmlHelper.addXmlElement(diagram, ownersElement);
     }
 
-    public void addDiagramCategoriesElement(Element diagram, Element categoriesElement)
-            throws TransformerException {
+    public void addDiagramCategoriesElement(Element diagram, Element categoriesElement) {
         xmlHelper.addXmlElement(diagram, categoriesElement);
     }
 
-    public void addDiagramEdgesElement(Element diagram, Element edgesElement)
-            throws TransformerException {
+    public void addDiagramEdgesElement(Element diagram, Element edgesElement) {
         xmlHelper.addXmlElement(diagram, edgesElement);
     }
 
-	public void addDiagramLabelsElement(Element diagram, Element labelsElement) throws TransformerException {
+	public void addDiagramLabelsElement(Element diagram, Element labelsElement) {
 		xmlHelper.addXmlElement(diagram, labelsElement);
 	}
 
-    public void addParamElement(Element operation, Element paramElement) throws TransformerException {
-        xmlHelper.addXmlElement(operation, paramElement);
-    }
-
-    public void addBodyElement(Element operation, Element bodyElement) throws TransformerException {
-        xmlHelper.addXmlElement(operation, bodyElement);
-    }
-
-    public void addAttributesElement(Element object, Element attributesElement) throws TransformerException {
+    public void addAttributesElement(Element object, Element attributesElement) {
         xmlHelper.addXmlElement(object, attributesElement);
     }
 
-    public void addOperationElement(Element operations, Element newOperationElement) throws TransformerException {
-        xmlHelper.addXmlElement(operations, newOperationElement);
-    }
-
-    public void addDiagramPreferencesElement(Element diagram, Element preferencesElement) throws TransformerException {
+    public void addDiagramPreferencesElement(Element diagram, Element preferencesElement) {
         xmlHelper.addXmlElement(diagram, preferencesElement);
     }
 
-    public void addOperationsElement(Element object, Element operationsElement) throws TransformerException {
+    public void addOperationsElement(Element object, Element operationsElement) {
         xmlHelper.addXmlElement(object, operationsElement);
     }
 
-    public void addIntermediatePointsElement(Element edge, Element intermediatePointsElement) throws TransformerException {
+    public void addIntermediatePointsElement(Element edge, Element intermediatePointsElement) {
         xmlHelper.addXmlElement(edge, intermediatePointsElement);
     }
 
-    public void removeAllProject() throws TransformerException {
+    public void removeAllProject() {
         xmlHelper.removeAllChildren(getProjectsNode());
         while(getProjectsNode().hasChildNodes()){
             getProjectsNode().removeChild(getProjectsNode().getFirstChild());
         }
     }
 
-    public void removeDiagram(FmmlxDiagram diagram) throws TransformerException {
+    public void removeDiagram(FmmlxDiagram diagram) {
         Node diagrams = getDiagramsNode();
         NodeList diagramsChildNodes = diagrams.getChildNodes();
 
@@ -184,34 +161,25 @@ public class XmlHandler {
         }
     }
 
-    public void clearAllChildren() throws TransformerException {
+    public void clearAllChildren() {
         xmlHelper.removeAllChildren(getCategoriesNode());
         xmlHelper.removeAllChildren(getProjectsNode());
         xmlHelper.removeAllChildren(getDiagramsNode());
         xmlHelper.removeAllChildren(getLogsNode());
     }
 
-    public void clearLogs() throws TransformerException {
+    public void clearLogs() {
         xmlHelper.removeAllChildren(getLogsNode());
     }
-
 
     protected Element createXmlElement(String name){
         return xmlHelper.createXmlElement(name);
     }
 
-    public void replaceNode(Node projectsNode, String newNodeName) throws TransformerException {
+    public void replaceNode(Node projectsNode, String newNodeName) {
         Node newNode = xmlHelper.createXmlElement(newNodeName);
         xmlHelper.getRootNode().replaceChild(newNode, projectsNode);
-
         xmlHelper.getRootNode().normalize();
-
-        Transformer transformer = TransformerFactory.newInstance().newTransformer();
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-
-        StreamResult result = new StreamResult(new File(sourcePath));
-        DOMSource source = new DOMSource(document);
-        transformer.transform(source, result);
     }
 
     public Node getChildWithName(Node diagramNone, String child) {
@@ -242,6 +210,9 @@ public class XmlHandler {
         return stringBuilder.toString();
     }
 
+    public void flushData() throws TransformerException {
+        xmlHelper.flush();
+    }
 
     public static class XmlHelper {
         private final Document document;
@@ -274,31 +245,16 @@ public class XmlHandler {
             return item;
         }
 
-        protected void addXmlElement(Node parent, Node newNode) throws TransformerException {
+        protected void addXmlElement(Node parent, Node newNode) {
             Element parent1 = (Element) parent;
             assert parent1 != null;
             parent1.appendChild(newNode);
-
-            DOMSource source = new DOMSource(document);
-
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-            StreamResult result = new StreamResult(sourcePath);
-            transformer.transform(source, result);
         }
 
-        public void removeAllChildren(Node parentNode) throws TransformerException {
+        public void removeAllChildren(Node parentNode) {
             while(parentNode.hasChildNodes()){
                 parentNode.removeChild(parentNode.getFirstChild());
             }
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-
-            StreamResult result = new StreamResult(new File(sourcePath));
-            DOMSource source = new DOMSource(document);
-            transformer.transform(source, result);
         }
 
         public Node getNodeByTag(Node parentNode, String tagName) {
@@ -315,7 +271,7 @@ public class XmlHandler {
             return null;
         }
 
-        public void removeChild(Node parent, Node node) throws TransformerException {
+        public void removeChild(Node parent, Node node) {
             parent.removeChild(node);
             int i = 0;
             while (parent.getChildNodes().item(i)!=null) {
@@ -324,11 +280,18 @@ public class XmlHandler {
                 }
                 i=i+1;
             }
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        }
 
-            StreamResult result = new StreamResult(new File(sourcePath));
+        public void flush() throws TransformerException {
             DOMSource source = new DOMSource(document);
+
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+
+            assert transformer != null;
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+            StreamResult result = new StreamResult(sourcePath);
             transformer.transform(source, result);
         }
     }

@@ -6,12 +6,11 @@ import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.serializer.interfaces.IXmlManager;
 
-import javax.xml.transform.TransformerException;
 import java.util.List;
 import java.util.Vector;
 
 public class DiagramXmlManager implements IXmlManager {
-    private XmlHandler xmlHandler;
+    private final XmlHandler xmlHandler;
 
     protected DiagramXmlManager(XmlHandler xmlHandler){
         this.xmlHandler = xmlHandler;
@@ -30,16 +29,12 @@ public class DiagramXmlManager implements IXmlManager {
         Element edges = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGES);
         Element labels = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_LABELS);
         Element preferences = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_PREFERENCES);
-        try {
-            xmlHandler.addDiagramCategoriesElement(diagram, categories);
-            xmlHandler.addDiagramOwnersElement(diagram, owners);
-            xmlHandler.addDiagramObjectsElement(diagram, objects);
-            xmlHandler.addDiagramEdgesElement(diagram, edges);
-            xmlHandler.addDiagramLabelsElement(diagram, labels);
-            xmlHandler.addDiagramPreferencesElement(diagram, preferences);
-        } catch (TransformerException e) {
-            e.printStackTrace();
-        }
+        xmlHandler.addDiagramCategoriesElement(diagram, categories);
+        xmlHandler.addDiagramOwnersElement(diagram, owners);
+        xmlHandler.addDiagramObjectsElement(diagram, objects);
+        xmlHandler.addDiagramEdgesElement(diagram, edges);
+        xmlHandler.addDiagramLabelsElement(diagram, labels);
+        xmlHandler.addDiagramPreferencesElement(diagram, preferences);
         return diagram;
     }
 
@@ -62,11 +57,7 @@ public class DiagramXmlManager implements IXmlManager {
     @Override
     public void add(Element element) {
         Node diagrams = xmlHandler.getDiagramsNode();
-        try {
-            xmlHandler.addDiagramElement(diagrams, element);
-        } catch (TransformerException e) {
-            e.printStackTrace();
-        }
+        xmlHandler.addDiagramElement(diagrams, element);
     }
 
     @Override
@@ -80,7 +71,7 @@ public class DiagramXmlManager implements IXmlManager {
     }
 
 
-    public void remove(FmmlxDiagram diagram) throws TransformerException {
+    public void remove(FmmlxDiagram diagram)  {
         xmlHandler.removeDiagram(diagram);
     }
 

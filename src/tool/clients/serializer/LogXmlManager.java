@@ -11,7 +11,6 @@ import tool.clients.fmmlxdiagrams.TimeOutException;
 import tool.clients.serializer.interfaces.ILog;
 import tool.clients.serializer.interfaces.IXmlManager;
 
-import javax.xml.transform.TransformerException;
 import java.util.Base64;
 import java.util.List;
 import java.util.Vector;
@@ -26,11 +25,7 @@ public class LogXmlManager implements ILog, IXmlManager {
     @Override
     public void add(Element element) {
         Node logs = xmlHandler.getLogsNode();
-        try {
-            xmlHandler.addLogElement(logs, element);
-        } catch (TransformerException e) {
-            e.printStackTrace();
-        }
+        xmlHandler.addLogElement(logs, element);
     }
 
     @Override
@@ -62,7 +57,7 @@ public class LogXmlManager implements ILog, IXmlManager {
         return element;
     }
 
-    public void clearLog() throws TransformerException {
+    public void clearLog() {
         xmlHandler.clearLogs();
     }
 

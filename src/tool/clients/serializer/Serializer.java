@@ -30,6 +30,7 @@ public class Serializer implements ISerializer {
         if(saveLogCount==0){
             saveLog(diagram);
         }
+        this.xmlHandler.flushData();
     }
 
     private void saveDiagram(FmmlxDiagram diagram) throws TransformerException {
@@ -45,6 +46,7 @@ public class Serializer implements ISerializer {
             saveEdges(diagram);
             saveLabels(diagram);
             saveLog(diagram);
+            this.xmlHandler.flushData();
         }
     }
 

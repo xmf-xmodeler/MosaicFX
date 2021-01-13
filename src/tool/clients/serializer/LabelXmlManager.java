@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
-import javax.xml.transform.TransformerException;
-
 import javafx.geometry.Point2D;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -67,11 +65,7 @@ public class LabelXmlManager implements ILog, IXmlManager{
                 Element diagram = (Element) diagramNodeList.item(i);
                 if(diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(element.getAttribute(XmlConstant.ATTRIBUTE_DIAGRAM_OWNER))){
                     Element labels = (Element) getLabelsNode(diagram);
-                    try {
-                        xmlHandler.addLabelElement(labels, element);
-                    } catch (TransformerException e) {
-                        e.printStackTrace();
-                    }
+                    xmlHandler.addLabelElement(labels, element);
                 }
             }
         }

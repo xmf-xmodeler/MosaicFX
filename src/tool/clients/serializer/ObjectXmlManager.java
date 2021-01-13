@@ -7,7 +7,6 @@ import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.serializer.interfaces.IXmlManager;
 
-import javax.xml.transform.TransformerException;
 import java.util.List;
 import java.util.Vector;
 
@@ -51,11 +50,8 @@ public class ObjectXmlManager implements IXmlManager {
                 Element diagram = (Element) diagramNodeList.item(i);
                 if(diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(element.getAttribute(XmlConstant.ATTRIBUTE_OWNER))){
                     Element objects = (Element) getObjectsNode(diagram);
-                    try {
-                        xmlHandler.addObjectElement(objects, element);
-                    } catch (TransformerException e) {
-                        e.printStackTrace();
-                    }
+                    xmlHandler.addObjectElement(objects, element);
+
                 }
             }
         }
@@ -76,7 +72,7 @@ public class ObjectXmlManager implements IXmlManager {
         return null;
     }
 
-    public void addOperation(Node objectNode, Node newNode) throws TransformerException {
+    public void addOperation(Node objectNode, Node newNode)  {
         if(newNode!= null){
             Node operationsNode = getOperationsNode((Element) objectNode);
             Element newOperation= (Element) newNode;
@@ -89,7 +85,7 @@ public class ObjectXmlManager implements IXmlManager {
         return xmlHandler.getXmlHelper().getNodeByTag(objectNode, XmlConstant.TAG_NAME_OPERATIONS);
     }
 
-    public void addAttribute(Node objectNode, Node attributeNode) throws TransformerException {
+    public void addAttribute(Node objectNode, Node attributeNode)  {
         if(attributeNode!= null){
             Node attributesNode = getAttributesNode(objectNode);
             Element newAttribute = (Element) attributeNode;
