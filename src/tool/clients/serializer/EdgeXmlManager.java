@@ -15,8 +15,8 @@ public class EdgeXmlManager implements IXmlManager {
 
     private final XmlHandler xmlHandler;
 
-    public EdgeXmlManager(String file) {
-        this.xmlHandler = new XmlHandler(file);
+    protected EdgeXmlManager(XmlHandler xmlHandler) {
+        this.xmlHandler = xmlHandler;
     }
 
     public Element createEdgeXmlElement(FmmlxDiagram fmmlxDiagram, Edge edge) throws TransformerException {

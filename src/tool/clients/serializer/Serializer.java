@@ -11,40 +11,46 @@ import java.nio.file.Paths;
 import java.util.Vector;
 
 public class Serializer implements ISerializer {
-    public static final String TAG = Serializer.class.getSimpleName();
+    private final XmlHandler xmlHandler;
 
-    public Serializer() {
+    public Serializer(String file) {
+        try {
+            initUserXMLFile(file);
+        } catch (TransformerException | ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+        this.xmlHandler = XmlHandler.getInstance(file);
     }
 
     @Override
     public void saveAsXml(FmmlxDiagram diagram, String file, int saveLogCount) throws TransformerException, ParserConfigurationException {
-        initUserXMLFile(file);
-        saveProject(diagram, file);
         diagram.setFilePath(file);
-        saveDiagram(diagram, file);
-        saveLog(diagram, file);
+        saveProject(diagram);
+        saveDiagram(diagram);
+        if(saveLogCount==0){
+            saveLog(diagram);
+        }
     }
 
-
-    private void saveDiagram(FmmlxDiagram diagram, String file) throws TransformerException {
-        if(checkFileExist(file)) {
-            DiagramXmlManager diagramXmlManager = new DiagramXmlManager(file);
+    private void saveDiagram(FmmlxDiagram diagram) throws TransformerException {
+        if(checkFileExist(xmlHandler.getSourcePath())) {
+            DiagramXmlManager diagramXmlManager = new DiagramXmlManager(this.xmlHandler);
             Element diagramElement = diagramXmlManager.createDiagramElement(diagram);
 
             if (diagramXmlManager.isExist(diagram)) {
                 diagramXmlManager.remove(diagram);
             }
             diagramXmlManager.add(diagramElement);
-            saveObjects(diagram, file);
-            saveEdges(diagram, file);
-            saveLabels(diagram, file);
-            saveLog(diagram, file);
+            saveObjects(diagram);
+            saveEdges(diagram);
+            saveLabels(diagram);
+            saveLog(diagram);
         }
     }
 
 
-    private void saveLabels(FmmlxDiagram diagram, String file) {
-        LabelXmlManager labelXmlManager = new LabelXmlManager(file);
+    private void saveLabels(FmmlxDiagram diagram) {
+        LabelXmlManager labelXmlManager = new LabelXmlManager(this.xmlHandler);
         Vector<DiagramEdgeLabel> labels = diagram.getLabels();
 
         for (DiagramEdgeLabel label : labels){
@@ -53,10 +59,10 @@ public class Serializer implements ISerializer {
         }
     }
 
-    private void saveEdges(FmmlxDiagram diagram, String file) throws TransformerException {
+    private void saveEdges(FmmlxDiagram diagram) throws TransformerException {
 
         Vector<Edge> edges = diagram.getEdges();
-        EdgeXmlManager edgeXmlManager = new EdgeXmlManager(file);
+        EdgeXmlManager edgeXmlManager = new EdgeXmlManager(this.xmlHandler);
         Element edgeElement;
 
         for(Edge edge : edges){
@@ -80,9 +86,8 @@ public class Serializer implements ISerializer {
         }
     }
 
-    private void saveObjects(FmmlxDiagram diagram, String file) {
-        ObjectXmlManager objectXmlManager = new ObjectXmlManager(file);
-
+    private void saveObjects(FmmlxDiagram diagram) {
+        ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
         Vector<FmmlxObject> objects = diagram.getObjects();
 
         for (FmmlxObject object : objects){
@@ -91,15 +96,14 @@ public class Serializer implements ISerializer {
         }
     }
 
-    private void saveProject(FmmlxDiagram diagram, String file) throws TransformerException {
-        ProjectXmlManager projectXmlManager = new ProjectXmlManager(file);
+    private void saveProject(FmmlxDiagram diagram) throws TransformerException {
+        ProjectXmlManager projectXmlManager = new ProjectXmlManager(this.xmlHandler);
         Element projectElement =  projectXmlManager.createProjectElement(diagram);
 
-        if(projectXmlManager.isExist()) {
-            projectXmlManager.removeAll();
+        if(!projectXmlManager.projectIsExist(diagram.getPackagePath())) {
+            projectXmlManager.add(projectElement);
         }
 
-        projectXmlManager.add(projectElement);
     }
 
     private void initUserXMLFile(String file) throws TransformerException, ParserConfigurationException {
@@ -107,9 +111,9 @@ public class Serializer implements ISerializer {
         xmlCreator.create(file);
     }
 
-    private void saveLog(FmmlxDiagram diagram, String file) {
+    private void saveLog(FmmlxDiagram diagram) {
         try {
-            LogXmlManager logXmlManager = new LogXmlManager(file);
+            LogXmlManager logXmlManager = new LogXmlManager(this.xmlHandler);
             logXmlManager.clearLog();
             FaXML protocol = diagram.getComm().getDiagramData(diagram);
 
@@ -129,7 +133,7 @@ public class Serializer implements ISerializer {
 
     public void save(FmmlxDiagram diagram) throws TransformerException {
         if(diagram.getFilePath()!=null && diagram.getFilePath().length()>0){
-            saveDiagram(diagram, diagram.getFilePath());
+            saveDiagram(diagram);
             System.out.println(diagram.getDiagramLabel() + " saved");
         } else {
             diagram.getComm().saveXmlFile(diagram);

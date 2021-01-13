@@ -30,6 +30,7 @@ import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerat
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
 import tool.clients.serializer.Deserializer;
 import tool.clients.serializer.Serializer;
+import tool.clients.serializer.XmlHandler;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -939,9 +940,8 @@ public class DiagramActions {
 	public void save() {
 		Platform.runLater(() -> {
 			try {
-				Serializer serializer = new Serializer();
+				Serializer serializer = new Serializer(diagram.getFilePath());
 				serializer.save(diagram);
-
 			} catch (TransformerException e) {
 				e.printStackTrace();
 			}

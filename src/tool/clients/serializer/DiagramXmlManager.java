@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Vector;
 
 public class DiagramXmlManager implements IXmlManager {
-    private final XmlHandler xmlHandler;
+    private XmlHandler xmlHandler;
 
-    public DiagramXmlManager(String path){
-        this.xmlHandler = new XmlHandler(path);
+    protected DiagramXmlManager(XmlHandler xmlHandler){
+        this.xmlHandler = xmlHandler;
     }
 
     public Element createDiagramElement(FmmlxDiagram fmmlxDiagram) {

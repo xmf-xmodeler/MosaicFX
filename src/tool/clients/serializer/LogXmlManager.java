@@ -19,8 +19,8 @@ import java.util.Vector;
 public class LogXmlManager implements ILog, IXmlManager {
     private final XmlHandler xmlHandler;
 
-    public LogXmlManager(String file) {
-        this.xmlHandler = new XmlHandler((file));
+    public LogXmlManager(XmlHandler xmlHandler) {
+        this.xmlHandler = xmlHandler;
     }
 
     @Override

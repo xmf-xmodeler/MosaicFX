@@ -14,8 +14,8 @@ import java.util.Vector;
 public class ObjectXmlManager implements IXmlManager {
     private final XmlHandler xmlHandler;
 
-    public ObjectXmlManager(String file) {
-        this.xmlHandler =  new XmlHandler(file);
+    public ObjectXmlManager(XmlHandler xmlHandler) {
+        this.xmlHandler = xmlHandler ;
     }
 
     public Element createObjectElement(FmmlxDiagram diagram, FmmlxObject fmmlxObject) {
@@ -154,7 +154,6 @@ public class ObjectXmlManager implements IXmlManager {
             object.moveTo(coordinate.getX(), coordinate.getY(), fmmlxDiagram);
             fmmlxDiagram.getComm().sendCurrentPosition(fmmlxDiagram.getComm().getDiagramIdFromName(fmmlxDiagram.getDiagramLabel()), object.getOwnPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY()));
         }
-        System.out.println("align objects in "+fmmlxDiagram.getDiagramLabel()+" : finished ");
     }
 
     private Point2D getCoordinate(Node diagramNone, String name, Point2D initCoordingate) {

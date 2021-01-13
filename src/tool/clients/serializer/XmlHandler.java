@@ -22,18 +22,20 @@ import java.io.IOException;
 public class XmlHandler {
     private final Document document;
     private final XmlHelper xmlHelper;
-    private final String sourcePath;
+    private static String sourcePath;
 
-//    public XmlHandler() {
-//        this.sourcePath = XmlCreator.getPath();
-//        this.document = buildDocument(sourcePath);
-//        this.xmlHelper = new XmlHelper(getDocument());
-//    }
+    public static synchronized XmlHandler getInstance(String file) {
+        return new XmlHandler(file);
+    }
 
-    public XmlHandler(String sourcePath){
-        this.sourcePath = sourcePath;
+    private XmlHandler(String sourcePath){
+        XmlHandler.sourcePath = sourcePath;
         this.document = buildDocument(sourcePath);
         this.xmlHelper = new XmlHelper(getDocument());
+    }
+
+    public String getSourcePath() {
+        return sourcePath;
     }
 
     private Document buildDocument(String sourcePath) {
@@ -241,7 +243,7 @@ public class XmlHandler {
     }
 
 
-    public class XmlHelper {
+    public static class XmlHelper {
         private final Document document;
 
         public XmlHelper(Document document) {

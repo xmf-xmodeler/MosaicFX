@@ -11,12 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectXmlManager implements IXmlManager {
-    public static final String TAG = ProjectXmlManager.class.getSimpleName();
     private final XmlHandler xmlHandler;
 
-
-    public ProjectXmlManager(String path) {
-        this.xmlHandler = new XmlHandler(path);
+    public ProjectXmlManager(XmlHandler xmlHandler) {
+        this.xmlHandler = xmlHandler;
     }
 
     public Node createProject(String name){
@@ -64,7 +62,6 @@ public class ProjectXmlManager implements IXmlManager {
             Element tmp = (Element) projectList.get(0);
             projectPath = tmp.getAttribute(XmlConstant.ATTRIBUTE_NAME);
         }
-
         return getProjectName(projectPath);
     }
 
@@ -77,12 +74,20 @@ public class ProjectXmlManager implements IXmlManager {
         return xmlHandler.getProjectsNode();
     }
 
-    public boolean isExist() {
-        Node projects = xmlHandler.getProjectsNode();
+    public boolean projectIsExist(String packagePath) {
+        Node projects = getProjectsNode();
+        NodeList projectList = projects.getChildNodes();
 
-        NodeList diagramList = projects.getChildNodes();
-
-        return diagramList.getLength() > 1;
+        for(int i =0; i< projectList.getLength(); i++){
+            Node tmp = projectList.item(i);
+            if(tmp.getNodeType()==Node.ELEMENT_NODE){
+                Element projectElement = (Element) tmp;
+                if(projectElement.getAttribute(XmlConstant.ATTRIBUTE_NAME).equals(packagePath)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void removeAll() throws TransformerException {

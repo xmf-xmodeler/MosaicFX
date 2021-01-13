@@ -8,50 +8,53 @@ import java.nio.file.Paths;
 import java.util.Vector;
 
 public class Deserializer {
-    public Deserializer() {
+    private final XmlHandler xmlHandler;
+
+    public Deserializer(XmlHandler xmlHandler) {
+        this.xmlHandler = xmlHandler;
     }
 
-    public void loadProject(String file, FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
-        ProjectXmlManager projectXmlManager = new ProjectXmlManager(file);
+    public void loadProject(FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
+        ProjectXmlManager projectXmlManager = new ProjectXmlManager(this.xmlHandler);
         String projectName = projectXmlManager.getProjectName();
-        DiagramXmlManager diagramXmlManager = new DiagramXmlManager(file);
+        DiagramXmlManager diagramXmlManager = new DiagramXmlManager(this.xmlHandler);
         Vector<String> diagramNames = diagramXmlManager.getAllDiagrams();
-        fmmlxDiagramCommunicator.loadProjectNameFromXml(projectName, diagramNames, file);
+        fmmlxDiagramCommunicator.loadProjectNameFromXml(projectName, diagramNames, this.xmlHandler.getSourcePath());
     }
 
     public boolean checkFileExist(String file){
         return Files.exists(Paths.get(file));
     }
 
-    public void getAllDiagramElement(String file, Integer newDiagramID) {
-        if(checkFileExist(file)){
-            LogXmlManager logXmlManager = new LogXmlManager(file);
+    public void getAllDiagramElement(Integer newDiagramID) {
+        if(checkFileExist(xmlHandler.getSourcePath())){
+            LogXmlManager logXmlManager = new LogXmlManager(this.xmlHandler);
             logXmlManager.reproduceFromLog(newDiagramID);
-            System.out.println("recreate all objects : finished ");
+            System.out.println("re-create all objects : finished ");
         }
     }
 
     @Deprecated
     public void alignObjectsCoordinate(String file, String diagramName, FmmlxDiagramCommunicator communicator) {
         if(checkFileExist(file)) {
-            ObjectXmlManager objectXmlManager = new ObjectXmlManager(file);
+            ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
             //objectXmlManager.alignObjects(diagramName, communicator);
         }
     }
 
     public void alignCoordinate(FmmlxDiagram diagram) {
         if(diagramInXmlExists(diagram)){
-            ObjectXmlManager objectXmlManager = new ObjectXmlManager(diagram.getFilePath());
+            ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
             objectXmlManager.alignObjects(diagram);
-            EdgeXmlManager edgeXmlManager = new EdgeXmlManager(diagram.getFilePath());
+            EdgeXmlManager edgeXmlManager = new EdgeXmlManager(this.xmlHandler);
             edgeXmlManager.alignEdges(diagram);
-            LabelXmlManager labelXmlManager = new LabelXmlManager(diagram.getFilePath());
+            LabelXmlManager labelXmlManager = new LabelXmlManager(this.xmlHandler);
             labelXmlManager.alignLabel(diagram);
         }
     }
 
     private boolean diagramInXmlExists(FmmlxDiagram diagram) {
-        DiagramXmlManager diagramXmlManager = new DiagramXmlManager(diagram.getFilePath());
+        DiagramXmlManager diagramXmlManager = new DiagramXmlManager(this.xmlHandler);
         Vector<String> diagrams = diagramXmlManager.getAllDiagrams();
         for (String diagramLabel : diagrams) {
             if(diagram.getDiagramLabel().equals(diagramLabel)){
@@ -59,5 +62,10 @@ public class Deserializer {
             }
         }
         return false;
+    }
+
+    public String getProjectName() {
+        ProjectXmlManager projectXmlManager = new ProjectXmlManager(this.xmlHandler);
+        return projectXmlManager.getProjectName();
     }
 }

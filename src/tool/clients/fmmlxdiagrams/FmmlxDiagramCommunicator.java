@@ -12,8 +12,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.Deserializer;
-import tool.clients.serializer.ProjectXmlManager;
 import tool.clients.serializer.Serializer;
+import tool.clients.serializer.XmlHandler;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.PropertyManager;
 import xos.Value;
@@ -105,7 +105,6 @@ public class FmmlxDiagramCommunicator {
 		return "";
 	}
 
-
 	private void close(FmmlxDiagram diagram) {
 		diagrams.remove(diagram);
 		Value[] message = new Value[]{
@@ -152,8 +151,7 @@ public class FmmlxDiagramCommunicator {
 			diagram.updateDiagram();
 		}
 	}
-	
-	
+
 	/**
 	 * This operations is called by xmf, usually after a request from java.
 	 *
@@ -462,7 +460,6 @@ public class FmmlxDiagramCommunicator {
 					//(Integer) edgeInfoAsList.get(14) // targetHead
 			);
 			result.add(object);
-
 		}
 		return result;
 	}
@@ -1373,8 +1370,8 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void openXmlFile(String fileName){
-		Deserializer deserializer = new Deserializer();
-		deserializer.loadProject(fileName, this);
+		Deserializer deserializer = new Deserializer(XmlHandler.getInstance(fileName));
+		deserializer.loadProject(this);
 	}
 
 	private transient Integer _newDiagramID = null;
@@ -1442,7 +1439,6 @@ public class FmmlxDiagramCommunicator {
 				new Value(returnType)// param4
 		);
 		
-		
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		
 		HashMap<String, String> result = new HashMap<>();
@@ -1451,14 +1447,12 @@ public class FmmlxDiagramCommunicator {
 //			System.err.println(resultItem);
 			result.put((String) resultItem.get(0), (String)resultItem.get(6));
 		}
-		
 		return result;
 	}
 	
 	public HashMap<String, String> findAllOperations(FmmlxDiagram diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "findAllOperations");
 		
-		
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		
 		HashMap<String, String> result = new HashMap<>();
@@ -1467,8 +1461,7 @@ public class FmmlxDiagramCommunicator {
 //			System.err.println(resultItem);
 			result.put((String) resultItem.get(0), (String)resultItem.get(6));
 		}
-		
-		return result;		
+		return result;
 	}
 	
 	public HashMap<String, String> findOperationUsage(FmmlxDiagram diagram, String name, String model) throws TimeOutException {
@@ -1483,7 +1476,6 @@ public class FmmlxDiagramCommunicator {
 			Vector<Object> resultItem = (Vector<Object>) (resultItemO);
 			result.put((String) resultItem.get(0), (String)resultItem.get(6));
 		}
-		
 		return result;
 	}
 
@@ -1494,7 +1486,6 @@ public class FmmlxDiagramCommunicator {
 			response = xmfRequest(handler, diagram.getID(), "findOperationUsage", new Value(name),
 					new Value(model));
 
-			
 			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 			
 			HashMap<String, String> result = new HashMap<>();
@@ -1511,9 +1502,6 @@ public class FmmlxDiagramCommunicator {
 			e.printStackTrace();
 		}
 	}
-
-
-
 
 	// ########################## Tab ### Stage #######################
 
@@ -1587,7 +1575,6 @@ public class FmmlxDiagramCommunicator {
 				close(diagram);
 			}
 		}
-
 	}
 
 	public void saveXmlFile(String fileName, String packageString) {
@@ -1596,7 +1583,7 @@ public class FmmlxDiagramCommunicator {
 
 			@Override
 			protected Void call() {
-				Serializer serializer = new Serializer();
+				Serializer serializer = new Serializer(fileName);
 				int saveLogCount = 0;
 				try {
 					for(FmmlxDiagram diagram : diagrams){
@@ -1621,12 +1608,11 @@ public class FmmlxDiagramCommunicator {
 		Task<Void> task = new Task<Void>() {
 			@Override
 			protected Void call() {
-				Deserializer deserializer = new Deserializer();
-				ProjectXmlManager projectXmlManager = new ProjectXmlManager(file);
+				Deserializer deserializer = new Deserializer(XmlHandler.getInstance(file));
 				int id = getDiagramIdFromName(diagramName);
 				try {
-					deserializer.getAllDiagramElement(file, id);
-					String projectName = projectXmlManager.getProjectName();
+					deserializer.getAllDiagramElement(id);
+					String projectName = deserializer.getProjectName();
 					System.out.println("load  "+projectName+" : finished ");
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -1654,5 +1640,4 @@ public class FmmlxDiagramCommunicator {
 		};
 		sendMessage("saveAsXml", message);
 	}
-
 }

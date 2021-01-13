@@ -21,12 +21,11 @@ import tool.clients.serializer.interfaces.IXmlManager;
 public class LabelXmlManager implements ILog, IXmlManager{
 	private final XmlHandler xmlHandler;
 
-
-    public LabelXmlManager(String file) {
-        this.xmlHandler = new XmlHandler(file);
+    protected LabelXmlManager(XmlHandler xmlHandler) {
+        this.xmlHandler = xmlHandler;
     }
 
-    public Element createLabelElement(FmmlxDiagram diagram, DiagramEdgeLabel edgeLabel) {
+    protected Element createLabelElement(FmmlxDiagram diagram, DiagramEdgeLabel edgeLabel) {
         String text = edgeLabel.getText();
         String owner = edgeLabel.getOwner().getPath();
         Vector<FmmlxObject> anchors = edgeLabel.getAnchors();
@@ -45,7 +44,7 @@ public class LabelXmlManager implements ILog, IXmlManager{
         return label;
     }
 
-    private String createAnchorsString(Vector<FmmlxObject> anchors) {
+    protected String createAnchorsString(Vector<FmmlxObject> anchors) {
         StringBuilder anchorsStringBuilder = new StringBuilder();
 
         for(FmmlxObject anchor : anchors){
