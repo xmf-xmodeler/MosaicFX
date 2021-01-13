@@ -942,7 +942,7 @@ public class DiagramActions {
 			try {
 				Serializer serializer = new Serializer(diagram.getFilePath());
 				serializer.save(diagram);
-			} catch (TransformerException e) {
+			} catch (TransformerException | ParserConfigurationException e) {
 				e.printStackTrace();
 			}
 		});

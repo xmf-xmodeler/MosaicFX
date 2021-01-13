@@ -1582,18 +1582,19 @@ public class FmmlxDiagramCommunicator {
 		Task<Void> task = new Task<Void>() {
 
 			@Override
-			protected Void call() {
+			protected Void call() throws TransformerException, ParserConfigurationException {
+				Vector<FmmlxDiagram> diagramsToSave = new Vector<>();
 				Serializer serializer = new Serializer(fileName);
-				int saveLogCount = 0;
-				try {
-					for(FmmlxDiagram diagram : diagrams){
-						String tmp_packageName = diagram.getPackagePath().split("::")[1];
-						if(packageName.equals(tmp_packageName)){
-							serializer.saveAsXml(diagram, fileName, saveLogCount);
-							saveLogCount++;
-						}
+				serializer.clearAllData();
+				for(FmmlxDiagram diagram : diagrams){
+					String tmp_packageName = diagram.getPackagePath().split("::")[1];
+					if(packageName.equals(tmp_packageName)){
+						diagramsToSave.add(diagram);
 					}
-				} catch (TransformerException | ParserConfigurationException e) {
+				}
+				try {
+					serializer.saveAsXml(diagramsToSave, fileName);
+				} catch (TimeOutException e) {
 					e.printStackTrace();
 				}
 				return null;

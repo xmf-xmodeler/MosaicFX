@@ -13,27 +13,29 @@ import java.util.Vector;
 public class Serializer implements ISerializer {
     private final XmlHandler xmlHandler;
 
-    public Serializer(String file) {
-        try {
-            initUserXMLFile(file);
-        } catch (TransformerException | ParserConfigurationException e) {
-            e.printStackTrace();
-        }
+    public Serializer(String file) throws TransformerException, ParserConfigurationException {
+        initUserXMLFile(file);
         this.xmlHandler = XmlHandler.getInstance(file);
     }
 
     @Override
-    public void saveAsXml(FmmlxDiagram diagram, String file, int saveLogCount) throws TransformerException, ParserConfigurationException {
-        diagram.setFilePath(file);
-        saveProject(diagram);
-        saveDiagram(diagram);
-        if(saveLogCount==0){
-            saveLog(diagram);
+    public void saveAsXml(Vector<FmmlxDiagram> diagrams, String file) throws TimeOutException, TransformerException {
+        this.xmlHandler.clearAll();
+        int saveLogCount = 0;
+
+        for(FmmlxDiagram diagram : diagrams){
+            diagram.setFilePath(file);
+            saveProject(diagram);
+            saveDiagram(diagram);
+            if(saveLogCount==0){
+                saveLog(diagram);
+            }
+            saveLogCount++;
         }
         this.xmlHandler.flushData();
     }
 
-    private void saveDiagram(FmmlxDiagram diagram) throws TransformerException {
+    private void saveDiagram(FmmlxDiagram diagram) throws TransformerException, TimeOutException {
         if(checkFileExist(xmlHandler.getSourcePath())) {
             DiagramXmlManager diagramXmlManager = new DiagramXmlManager(this.xmlHandler);
             Element diagramElement = diagramXmlManager.createDiagramElement(diagram);
@@ -61,7 +63,7 @@ public class Serializer implements ISerializer {
         }
     }
 
-    private void saveEdges(FmmlxDiagram diagram) throws TransformerException {
+    private void saveEdges(FmmlxDiagram diagram)  {
 
         Vector<Edge> edges = diagram.getEdges();
         EdgeXmlManager edgeXmlManager = new EdgeXmlManager(this.xmlHandler);
@@ -98,7 +100,7 @@ public class Serializer implements ISerializer {
         }
     }
 
-    private void saveProject(FmmlxDiagram diagram) throws TransformerException {
+    private void saveProject(FmmlxDiagram diagram)  {
         ProjectXmlManager projectXmlManager = new ProjectXmlManager(this.xmlHandler);
         Element projectElement =  projectXmlManager.createProjectElement(diagram);
 
@@ -113,19 +115,15 @@ public class Serializer implements ISerializer {
         xmlCreator.create(file);
     }
 
-    private void saveLog(FmmlxDiagram diagram) {
-        try {
-            LogXmlManager logXmlManager = new LogXmlManager(this.xmlHandler);
-            logXmlManager.clearLog();
-            FaXML protocol = diagram.getComm().getDiagramData(diagram);
+    private void saveLog(FmmlxDiagram diagram) throws TimeOutException {
+        LogXmlManager logXmlManager = new LogXmlManager(this.xmlHandler);
+        logXmlManager.clearLog();
+        FaXML protocol = diagram.getComm().getDiagramData(diagram);
 
-            Vector<FaXML> logs = protocol.getChildren();
-            for (FaXML log : logs){
-                Element newLogElement = logXmlManager.createNewLogFromFaXML(log);
-                logXmlManager.add(newLogElement);
-            }
-        } catch (TimeOutException | TransformerException e) {
-            e.printStackTrace();
+        Vector<FaXML> logs = protocol.getChildren();
+        for (FaXML log : logs){
+            Element newLogElement = logXmlManager.createNewLogFromFaXML(log);
+            logXmlManager.add(newLogElement);
         }
     }
 
@@ -133,12 +131,20 @@ public class Serializer implements ISerializer {
         return Files.exists(Paths.get(file));
     }
 
-    public void save(FmmlxDiagram diagram) throws TransformerException {
+    public void save(FmmlxDiagram diagram)  {
         if(diagram.getFilePath()!=null && diagram.getFilePath().length()>0){
-            saveDiagram(diagram);
+            try {
+                saveDiagram(diagram);
+            } catch (TransformerException | TimeOutException e) {
+                e.printStackTrace();
+            }
             System.out.println(diagram.getDiagramLabel() + " saved");
         } else {
             diagram.getComm().saveXmlFile(diagram);
         }
+    }
+
+    public void clearAllData() {
+        xmlHandler.clearAll();
     }
 }

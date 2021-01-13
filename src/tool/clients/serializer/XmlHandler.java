@@ -28,7 +28,7 @@ public class XmlHandler {
     private XmlHandler(String sourcePath){
         XmlHandler.sourcePath = sourcePath;
         this.document = buildDocument(sourcePath);
-        this.xmlHelper = new XmlHelper(getDocument());
+        this.xmlHelper = XmlHelper.getInstance(getDocument());
     }
 
     public String getSourcePath() {
@@ -161,7 +161,7 @@ public class XmlHandler {
         }
     }
 
-    public void clearAllChildren() {
+    public void clearAll() {
         xmlHelper.removeAllChildren(getCategoriesNode());
         xmlHelper.removeAllChildren(getProjectsNode());
         xmlHelper.removeAllChildren(getDiagramsNode());
@@ -214,10 +214,18 @@ public class XmlHandler {
         xmlHelper.flush();
     }
 
+    public void clearDiagrams() {
+        xmlHelper.removeAllChildren(getDiagramsNode());
+    }
+
     public static class XmlHelper {
         private final Document document;
 
-        public XmlHelper(Document document) {
+        public static synchronized XmlHelper getInstance(Document document) {
+            return new XmlHelper(document);
+        }
+
+        private XmlHelper(Document document) {
             this.document = document;
         }
 

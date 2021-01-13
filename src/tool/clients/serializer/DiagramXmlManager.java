@@ -70,13 +70,8 @@ public class DiagramXmlManager implements IXmlManager {
         return null;
     }
 
-
     public void remove(FmmlxDiagram diagram)  {
         xmlHandler.removeDiagram(diagram);
-    }
-
-    public Node getDiagramsNode() {
-        return xmlHandler.getDiagramsNode();
     }
 
     public Vector<String> getAllDiagrams() {
@@ -92,5 +87,9 @@ public class DiagramXmlManager implements IXmlManager {
             }
         }
         return diagrams;
+    }
+
+    public void removeAllDiagrams() {
+        xmlHandler.clearDiagrams();
     }
 }
