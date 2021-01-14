@@ -36,7 +36,7 @@ public class MetaClassDialogResult {
 
 		if (parent.size() > 0) {
 			for (FmmlxObject object : parent) {
-				parentPaths.add(object.getOwnPath());
+				parentPaths.add(object.getPath());
 			}
 		}
 		return parentPaths;

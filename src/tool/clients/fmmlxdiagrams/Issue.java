@@ -31,6 +31,7 @@ public class Issue {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public static Issue readIssue(Vector<Object> message) throws IssueNotReadableException {
 		try {
 			Issue i = new Issue();
@@ -52,7 +53,7 @@ public class Issue {
 	
 	public static boolean isAffected(Vector<Issue> issues, FmmlxObject o) {
 		for(Issue issue : issues) {
-			if(issue.affectedObjects.contains(o.getOwnPath())) {
+			if(issue.affectedObjects.contains(o.getPath())) {
 				return true;
 			}
 		}
@@ -60,7 +61,7 @@ public class Issue {
 	}
 	
 	public boolean isAffected(FmmlxObject o) {
-		return affectedObjects.contains(o.getOwnPath());
+		return affectedObjects.contains(o.getPath());
 	}
 
 	public String getText() {

@@ -34,7 +34,7 @@ public class ChangeOwnerDialogResult {
 		return object;
 	}
 	public String getNewOwner() {
-		return newOwner.getOwnPath();
+		return newOwner.getPath();
 	}
 	public FmmlxAttribute getAttribute() {
 		return attribute;

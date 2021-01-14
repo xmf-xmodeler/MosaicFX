@@ -4,8 +4,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.*;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
@@ -13,44 +11,19 @@ import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteTool;
 import tool.clients.fmmlxdiagrams.newpalette.ToolClass;
 
-import java.io.File;
 import java.util.*;
 
-public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<FmmlxObject> {
+public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, Comparable<FmmlxObject> {
 
-//	public static HashMap<Integer, Paint> colors = null;
 	private String name;
-	
-	//@Deprecated int id;
-	//@Deprecated private Integer of;
-	//@Deprecated private Vector<Integer> parents;
-	
 	private String ownPath;
 	private String ofPath;
 	private Vector<String> parentsPaths;
 	
-	private double x;
-	private double y;
-	private boolean hidden;
 	private boolean isAbstract;
 	int level;
-	private int width;
-	private int height;
-	Object highlightedElement;
     
 	private final static NodeBaseElement.Action NO_ACTION = () -> {};
-	
-	private transient double mouseMoveOffsetX;
-	private transient double mouseMoveOffsetY;
-	
-	private transient Point2D lastClick = null;
-	
-	private FmmlxObjectPort ports;
-
-	boolean usePreferredWidth = false; //not implemented yet
-
-	int preferredWidth = 0;
-	int minWidth = 100;
 
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
@@ -66,7 +39,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	final int INST_LEVEL_WIDTH = 7;
 	final int MIN_BOX_HEIGHT = 4;
 	final int EXTRA_Y_PER_LINE = 3;
-	private Vector<NodeElement> nodeElements = new Vector<>();
 
 	Vector<FmmlxSlot> slots = new Vector<>();
 	Vector<FmmlxOperationValue> operationValues = new Vector<>();
@@ -79,11 +51,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 
 	private FmmlxDiagram diagram;
 	private PropertyType propertyType = PropertyType.Class;
-	private transient boolean requiresReLayout;
-		
-	public void triggerLayout() {
-		this.requiresReLayout = true;
-	}
+
 
 	public FmmlxObject(
 			@Deprecated Integer _id, 
@@ -96,7 +64,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 			Vector<String> parentPaths,
 			Boolean isAbstract,
 			Integer lastKnownX, Integer lastKnownY, Boolean hidden,
-//			Integer delegatesTo, Integer roleFiller, 
 			FmmlxDiagram diagram) {
 		this.name = name;
 		this.diagram = diagram;
@@ -122,10 +89,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		this.ownPath = ownPath;
 		this.ofPath = ofPath;
 		this.parentsPaths = parentPaths;
-
-		
-//		this.delegatesTo = delegatesTo;
-//		this.roleFiller = roleFiller;
 
 		this.showOperations = diagram.isShowOperations();
 		this.showOperationValues = diagram.isShowOperationValues();
@@ -159,16 +122,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 
 	public String getName() { return name; }
 	public int getLevel() { return level; }
-	public double getX() { return x; }
-	public double getY() { return y; }
-	public int getWidth() { return width; }
-	public int getHeight() { return height; }
-	public double getCenterX() { return x + width / 2.; }
-	public double getCenterY() { return y + height / 2.; }
-	public double getRightX() { return x + width; }
-	public double getBottomY() { return y + height; }
-//	@Deprecated private int getOf() { return of; }
-//
+
 	public String getOfPath() {
 		return ofPath;
 	}
@@ -433,7 +387,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		double yAfterOpsBox = currentY;
 
 		int opsSize = countOperationsToBeShown();
-//		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
 		double opsBoxHeight = Math.max(lineHeight * opsSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
 		double opsY = 0;
 		NodeBox opsBox = new NodeBox(0, currentY, neededWidth, opsBoxHeight, Color.WHITE, Color.BLACK, (x) -> 1., PropertyType.Operation);
@@ -689,21 +642,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		return Math.max(neededWidth + 2 * GAP, minWidth);
 	}
 
-	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram diagram) {
-		
-		if(hidden) return;
-		
-		if(requiresReLayout) layout(diagram);
-
-		boolean selected = diagram.isSelected(this);
-
-		g.setFont(diagram.getFont());
-
-		for (NodeElement e : nodeElements) {
-			e.paintOn(g, x + xOffset, y + yOffset, diagram, selected);
-		}
-	}
-
 	public void fetchDataDefinitions(FmmlxDiagramCommunicator comm) throws TimeOutException {
 		Vector<Vector<FmmlxAttribute>> attributeList = comm.fetchAttributes(diagram, this.name);
 		ownAttributes = attributeList.get(0);
@@ -730,30 +668,10 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		operationValues = comm.fetchOperationValues(diagram, this.name, this.getMonitoredOperationsNames());
 	}
 
-	public boolean isHit(double mouseX, double mouseY) {
-		return
-	        !hidden && 
-			mouseX > x &&
-			mouseY > y &&
-			mouseX < x + width &&
-			mouseY < y + height;
-	}
-
 	@Override
 	public ObjectContextMenu getContextMenu(DiagramActions actions, Point2D absolutePoint) {
 		Point2D relativePoint = new Point2D(absolutePoint.getX() - getX(), absolutePoint.getY() - getY());
 		return new ObjectContextMenu(this, actions, relativePoint);
-	}
-
-	@Override
-	public void moveTo(double x, double y, FmmlxDiagram diagram) {
-		this.x = Math.max(x, 0.0);
-		this.y = Math.max(y, 0.0);
-
-//		for(Edge edge : diagram.getEdges()) {
-//			if (edge.isStartNode(this)) edge.moveStartPoint(x + width/2, y + height/2);
-//			if (edge.isEndNode(this)) edge.moveEndPoint(x + width/2, y + height/2);
-//		}
 	}
 	
 	public boolean isAbstract() {return isAbstract;}
@@ -814,16 +732,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		return this.getAllAncestors().contains(theClass);
 	}
 
-	@Override
-	public void highlightElementAt(Point2D p) {
-//		if(p == null) highlightedElement = null; else {
-//			double X = p.getX() - this.x;
-//			double Y = p.getY() - this.y;
-//			for (NodeElement e : nodeElements) {
-//				e.isHit(mouseX, mouseY)
-//			}
-//		}
-	}
 
 	public String getAvailableInstanceName() {
 		String s = name;
@@ -840,17 +748,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		} while (!ok);
 		return t;
 	}
-
-	@Override
-	public void setOffsetAndStoreLastValidPosition(Point2D p) {
-		mouseMoveOffsetX = p.getX() - x;
-		mouseMoveOffsetY = p.getY() - y;
-//		lastValidX = x;
-//		lastValidY = y;
-	}
-
-	@Override public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
-	@Override public double getMouseMoveOffsetY() {return mouseMoveOffsetY;}
 
 	public Point2D getPointForEdge(Edge.End edge, boolean isStartNode) {
 		return ports.getPointForEdge(edge, isStartNode);
@@ -871,9 +768,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	public void updatePortOder() {
 		ports.sortAllPorts();
 	}
-
-	@Override
-	public void unHighlight() {	}
 	
 	public FmmlxProperty handlePressedOnNodeElement(Point2D relativePoint) {
 		if(relativePoint == null) return null;
@@ -920,11 +814,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 	public Vector<FmmlxObject> getAllChildren() {
 		System.err.println("FmmlxObject::getAllChildren() not yet implemented.");
 		return new Vector<>();
-	}
-
-	@Override
-	public String toString() {
-		return name;
 	}
 
 	public List<String> getAllAttributesString() {
@@ -990,7 +879,6 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		return result;
 	}
 
-	
 	@Override
 	public int compareTo(FmmlxObject anotherObject) {
 		if(this.getLevel()>anotherObject.getLevel()) {
@@ -1027,7 +915,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		return count;
     }
 
-	public boolean isAttributeExists(String name) {
+	public boolean attributeExists(String name) {
 		for(FmmlxAttribute attribute : getAllAttributes()){
 			if(attribute.getName().equals(name)){
 				return true;
@@ -1036,7 +924,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		return false;
 	}
 
-	public boolean operationIsExists(String name) {
+	public boolean operationExists(String name) {
 		for(FmmlxOperation operation : getAllOperations()){
 			if(operation.getName().equals(name)){
 				return true;
@@ -1045,15 +933,7 @@ public class FmmlxObject implements CanvasElement, FmmlxProperty, Comparable<Fmm
 		return false;
 	}
 
-	public String getPath() {
-		return ownPath;
-	}
+	public String getPath() { return ownPath; }
+	@Override public String toString() { return name; }
 
-	public boolean isHidden() {
-		return hidden;
-	}
-
-	public String getOwnPath() {
-		return ownPath ;
-	}
 }

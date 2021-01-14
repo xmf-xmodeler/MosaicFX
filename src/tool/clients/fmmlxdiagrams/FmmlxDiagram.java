@@ -511,7 +511,7 @@ public class FmmlxDiagram{
 			for (CanvasElement s : selectedObjects)
 				if (s instanceof FmmlxObject) {
 					FmmlxObject o = (FmmlxObject) s;
-					comm.sendCurrentPosition(this.getID(), o.getOwnPath(), (int)Math.round(o.getX()), (int)Math.round(o.getY()));
+					comm.sendCurrentPosition(this.getID(), o.getPath(), (int)Math.round(o.getX()), (int)Math.round(o.getY()));
 					for(Edge e : edges) {
 						if(e.isStartNode(o) || e.isEndNode(o)) {
 							comm.sendCurrentPositions(this.getID(), e);
@@ -1171,7 +1171,7 @@ public class FmmlxDiagram{
 
 	public FmmlxObject getObjectByPath(String path) {
 		for(FmmlxObject obj : getObjects()) {
-			if (obj.getOwnPath().equals(path)){
+			if (obj.getPath().equals(path)){
 				return obj;
 			}
 		}

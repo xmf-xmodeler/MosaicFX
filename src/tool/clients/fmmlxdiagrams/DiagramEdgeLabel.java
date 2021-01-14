@@ -77,7 +77,7 @@ public class DiagramEdgeLabel implements CanvasElement {
 				if(anchors.get(1).getPointForEdge(owner.targetEnd, true).getX() > relativeX+this.getReferenceX()) {
 					g.strokeLine(anchors.get(1).getPointForEdge(owner.targetEnd, true).getX(), anchors.get(1).getPointForEdge(owner.targetEnd, true).getY(), this.getReferenceX()+relativeX+18*MARGIN+width, this.getReferenceY()+relativeY+0.5*height);
 				}
-			}else if(anchors.get(0).getOwnPath().equals(anchors.get(1).getOwnPath())) {
+			}else if(anchors.get(0).getPath().equals(anchors.get(1).getPath())) {
 				if(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX() < relativeX+this.getReferenceX() ) {
 					g.strokeLine(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX(), anchors.get(0).getPointForEdge(owner.sourceEnd, true).getY(), this.getReferenceX()+relativeX-2*MARGIN, this.getReferenceY()+relativeY+0.5*height);
 				}

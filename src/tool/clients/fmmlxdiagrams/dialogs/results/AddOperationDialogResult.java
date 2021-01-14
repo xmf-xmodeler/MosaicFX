@@ -40,7 +40,7 @@ public class AddOperationDialogResult {
 	}
 
 	public String getObjectPath() {
-		return object.getOwnPath();
+		return object.getPath();
 	}
 
 
