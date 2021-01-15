@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator;
 
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 import java.util.ArrayList;
@@ -8,7 +9,7 @@ import java.util.List;
 public class ValueGenerator {
 
     private final String attributeType;
-    private FmmlxDiagram diagram;
+    private AbstractPackageViewer diagram;
 
     public ValueGenerator(String attributeType) {
         this.attributeType = attributeType;
@@ -18,11 +19,11 @@ public class ValueGenerator {
         return attributeType;
     }
 
-    public FmmlxDiagram getDiagram() {
+    public AbstractPackageViewer getDiagram() {
         return diagram;
     }
 
-    public void setDiagram(FmmlxDiagram diagram) {
+    public void setDiagram(AbstractPackageViewer diagram) {
         this.diagram = diagram;
     }
 

@@ -3,8 +3,7 @@ package tool.clients.fmmlxdiagrams.dialogs;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import tool.clients.fmmlxdiagrams.FmmlxAttribute;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeSlotValueDialogResult;
@@ -12,11 +11,10 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue.LabelAndHea
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogResult> {
 
-	private final FmmlxDiagram diagram;
+	private final AbstractPackageViewer diagram;
 	private final FmmlxObject object;
 	private final FmmlxSlot slot;
 	private final String type;
@@ -28,7 +26,7 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 	private enum Mode {DEFAULT, STRING, ENUM}
 	private final Mode mode;
 
-	public ChangeSlotValueDialog(FmmlxDiagram diagram, FmmlxObject object, FmmlxSlot slot) {
+	public ChangeSlotValueDialog(AbstractPackageViewer diagram, FmmlxObject object, FmmlxSlot slot) {
 		super();
 		this.diagram = diagram;
 		this.object = object;

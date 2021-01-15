@@ -140,14 +140,6 @@ public class FmmlxDiagramCommunicator {
 		}
 		return result;
 	}
-
-//	private Value[] createValueArrayString(Vector<String> vector) {
-//		Value[] result = new Value[vector.size()];
-//		for (int i = 0; i < result.length; i++) {
-//			result[i] = new Value(vector.get(i));
-//		}
-//		return result;
-//	}
 	
 	public void triggerUpdate() {
 		for(FmmlxDiagram diagram : diagrams) {
@@ -252,13 +244,6 @@ public class FmmlxDiagramCommunicator {
 		Vector<FmmlxObject> result = new Vector<>();
 		for (Object responseObject : responseContent) {
 			Vector<Object> responseObjectList = (Vector<Object>) (responseObject);
-
-//			// deprecated, replaced by String
-//			Vector<Object> parentListO = (Vector<Object>) responseObjectList.get(4);
-//			Vector<Integer> parentListI = new Vector<>();
-//			for (Object o : parentListO) {
-//				parentListI.add((Integer) o);
-//			}
 			
 			Vector<Object> parentListO2 = (Vector<Object>) responseObjectList.get(12);
 			Vector<String> parentListS = new Vector<>();
@@ -1340,7 +1325,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("assignToGlobal", message);
 	}
 
-	public void showBody(FmmlxDiagram fmmlxDiagram, FmmlxObject object, FmmlxOperation operation) {
+	public void showBody(AbstractPackageViewer fmmlxDiagram, FmmlxObject object, FmmlxOperation operation) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(fmmlxDiagram.getID()),
 				new Value(object.getPath()),
@@ -1370,7 +1355,7 @@ public class FmmlxDiagramCommunicator {
 		WorkbenchClient.theClient().send(handler, "openPackageBrowser()");
 	}
 
-	public Vector<String> evalList(FmmlxDiagram diagram, String text) throws TimeOutException {
+	public Vector<String> evalList(AbstractPackageViewer diagram, String text) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "evalList", new Value(text));
 		@SuppressWarnings("unchecked")
 		Vector<Object> list = (Vector<Object>) (response.get(0));
@@ -1392,7 +1377,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public HashMap<String, String> findImplementation(FmmlxDiagram diagram, Vector<String> names, String model, Integer arity, String returnType) throws TimeOutException {
+	public HashMap<String, String> findImplementation(AbstractPackageViewer diagram, Vector<String> names, String model, Integer arity, String returnType) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "findOperationImplementation", new Value(createValueArray(names)), // opNames
 				new Value(arity),// arity
 				new Value(model),// model
@@ -1447,7 +1432,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void findOperationUsage(FmmlxDiagram diagram, FindSendersOfMessages findSendersOfMessages, String name,
+	public void findOperationUsage(AbstractPackageViewer diagram, FindSendersOfMessages findSendersOfMessages, String name,
 			String model) {
 		Vector<Object> response;
 		try {

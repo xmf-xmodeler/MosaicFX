@@ -8,7 +8,7 @@ public interface CanvasElement {
 
 	void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram);
 
-	ContextMenu getContextMenu(DiagramActions actions, Point2D absolutePoint);
+	ContextMenu getContextMenu(FmmlxDiagram fmmlxDiagram, Point2D absolutePoint);
 
 	void moveTo(double d, double e, FmmlxDiagram diagram);
 	

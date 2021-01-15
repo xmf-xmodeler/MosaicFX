@@ -9,16 +9,18 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
 import tool.clients.fmmlxdiagrams.DiagramActions;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 public class DefaultContextMenu extends ContextMenu {
 
-	public DefaultContextMenu(DiagramActions actions) {
+	public DefaultContextMenu(FmmlxDiagram diagram) {
+		DiagramActions actions = diagram.getActions();
 		setAutoHide(true);
 
 		MenuItem addClassItem = new MenuItem("Add Class");
-		addClassItem.setOnAction(e -> actions.addMetaClassDialog());
+		addClassItem.setOnAction(e -> actions.addMetaClassDialog(diagram.getCanvas()));
 		MenuItem addInstanceItem = new MenuItem("Add Instance");
-		addInstanceItem.setOnAction(e -> actions.addInstanceDialog());
+		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(diagram.getCanvas()));
 		
 		// Submenu for association
 //		Menu associationMenu = new Menu("Association");
@@ -43,9 +45,9 @@ public class DefaultContextMenu extends ContextMenu {
 		MenuItem deleteEnumeration = new MenuItem("Delete Enumeration");
 		deleteEnumeration.setOnAction(e -> actions.deleteEnumerationDialog());
 		MenuItem packageListView_LOCAL = new MenuItem("Package ListView (Local)");
-		packageListView_LOCAL.setOnAction(e -> actions.classBrowserStage(false));
+		packageListView_LOCAL.setOnAction(e -> actions.openClassBrowserStage(false));
 		MenuItem packageListView = new MenuItem("Package ListView");
-		packageListView.setOnAction(e -> actions.classBrowserStage(false));
+		packageListView.setOnAction(e -> actions.openClassBrowserStage(false));
 		
 		enumeration.getItems().addAll(createEnumeration, editEnumeration, deleteEnumeration);
 		

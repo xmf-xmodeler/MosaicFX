@@ -153,7 +153,7 @@ public class DiagramEdgeLabel implements CanvasElement {
 	}
 
 	@Override
-	public ContextMenu getContextMenu(DiagramActions actions, Point2D absolutePoint) {
+	public ContextMenu getContextMenu(FmmlxDiagram diagram, Point2D absolutePoint) {
 		return menu;
 	}
 

@@ -237,7 +237,7 @@ public class CustomDialog<R> extends Dialog<R> {
 		return comboBox;
 	}
 	
-	protected InstanceGeneratorGenerateTypeComboBox initializeComboBoxGeneratorList(FmmlxDiagram diagram, FmmlxAttribute attribute) {
+	protected InstanceGeneratorGenerateTypeComboBox initializeComboBoxGeneratorList(AbstractPackageViewer diagram, FmmlxAttribute attribute) {
 		InstanceGeneratorGenerateTypeComboBox comboBox = new InstanceGeneratorGenerateTypeComboBox(attribute);
 		comboBox.setCellFactory(param -> new ListCell<IValueGenerator>() {
 			@Override

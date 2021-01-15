@@ -5,7 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
@@ -18,7 +18,7 @@ import java.util.Vector;
 
 public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 
-	private final FmmlxDiagram diagram;
+	private final AbstractPackageViewer diagram;
 	private FmmlxObject selectedObject;
 	private TextField nameTextField;
 	private ListView<FmmlxObject> parentListView;
@@ -27,7 +27,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	private ObservableList<FmmlxObject> parentList;
 	private final Vector<FmmlxObject> objects;
 
-	public AddInstanceDialog(final FmmlxDiagram diagram, FmmlxObject object) {
+	public AddInstanceDialog(final AbstractPackageViewer diagram, FmmlxObject object) {
 		super();
 
 		DialogPane dialog = getDialogPane();

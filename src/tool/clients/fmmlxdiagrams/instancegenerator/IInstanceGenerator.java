@@ -1,14 +1,14 @@
 package tool.clients.fmmlxdiagrams.instancegenerator;
 
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 import java.util.HashMap;
 import java.util.Vector;
 
 public interface IInstanceGenerator {
 
-    void openDialog(FmmlxDiagram diagram);
+    void openDialog(AbstractPackageViewer diagram);
 
     void generateName();
 

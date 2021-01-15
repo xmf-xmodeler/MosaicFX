@@ -1,8 +1,8 @@
 package tool.clients.fmmlxdiagrams.instancegenerator;
 
 import javafx.collections.ObservableList;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.view.InstanceGeneratorDialog;
@@ -11,7 +11,7 @@ import java.util.*;
 
 public class InstanceGenerator implements IInstanceGenerator{
 
-    private FmmlxDiagram diagram;
+    private AbstractPackageViewer diagram;
     private final FmmlxObject object;
     private int numberOfInstance;
     private boolean isAbstract;
@@ -23,14 +23,14 @@ public class InstanceGenerator implements IInstanceGenerator{
         this.object = object;
     }
 
-    public void openDialog(FmmlxDiagram diagram){
+    public void openDialog(AbstractPackageViewer diagram){
         this.diagram = diagram;
         InstanceGeneratorDialog dlg = new InstanceGeneratorDialog(this);
         dlg.showAndWait();
         generateName();
     }
 
-    public FmmlxDiagram getDiagram() {
+    public AbstractPackageViewer getDiagram() {
         return diagram;
     }
 

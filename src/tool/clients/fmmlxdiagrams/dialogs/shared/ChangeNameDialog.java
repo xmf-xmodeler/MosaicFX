@@ -16,7 +16,7 @@ import java.util.Vector;
 public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 
 	private final PropertyType type;
-	private final FmmlxDiagram diagram;
+	private final AbstractPackageViewer diagram;
 	private FmmlxObject object;
 	private FmmlxProperty selectedProperty;
 	private DialogPane dialog;
@@ -44,7 +44,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	private Vector<FmmlxOperation> operations;
 	private Vector<FmmlxAssociation> associations;
 
-	public ChangeNameDialog(final FmmlxDiagram diagram, FmmlxObject object, PropertyType type, FmmlxProperty selectedProperty) {
+	public ChangeNameDialog(final AbstractPackageViewer diagram, FmmlxObject object, PropertyType type, FmmlxProperty selectedProperty) {
 		super();
 		this.diagram = diagram;
 		this.type = type;

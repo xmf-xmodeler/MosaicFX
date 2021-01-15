@@ -5,7 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddOperationDialogResult;
@@ -17,7 +17,7 @@ import java.util.List;
 
 public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 	private DialogPane dialogPane;
-	private FmmlxDiagram diagram;
+	private AbstractPackageViewer diagram;
 	private FmmlxObject object;
 
 	private TextField classTextField; 
@@ -30,7 +30,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 	private ArrayList<Node> labelsNode;
 	private List<Node> mainNodes;
 
-	public AddOperationDialog(FmmlxDiagram diagram, FmmlxObject object) {
+	public AddOperationDialog(AbstractPackageViewer diagram, FmmlxObject object) {
 		super();
 		this.diagram = diagram;
 		this.object = object;
@@ -68,10 +68,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 		classTextField = new TextField();
 		classTextField.setText(object.getName());
 		classTextField.setDisable(true);
-//		nameTextField = new TextField();
-
-//		typeComboBox = new ComboBox<>(ElementList.elementList);
-//		typeComboBox.getSelectionModel().select("Element");
+		
 		levelComboBox = new ComboBox<>(AllValueList.generateLevelListToThreshold(0, object.getLevel()));
 		levelComboBox.getSelectionModel().selectLast();
 		monitorButton = new Button("Monitor Operation Values");
@@ -80,26 +77,16 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 		    }
 		);
 		bodyTextArea = new TextArea(StringValue.OperationStringValues.emptyOperation);
-//		updateOperationName2TextField(nameTextField, StringValueDialog.OperationStringValues.emptyOperation);
 		Button checkSyntaxButton = new Button(StringValue.LabelAndHeaderTitle.checkSyntax);
 		checkSyntaxButton.setOnAction(event -> AddOperationDialog.this.checkBodySyntax());
 		checkSyntaxButton.setPrefWidth(COLUMN_WIDTH * 0.5);
 		Button defaultOperationButton = new Button(StringValue.LabelAndHeaderTitle.defaultOperation);
 		defaultOperationButton.setOnAction(event -> {
-//			String name = nameTextField.getText();
 			AddOperationDialog.this.resetOperationBody("op0", false);
 		});
 		defaultOperationButton.setPrefWidth(COLUMN_WIDTH * 0.5);
 
 		levelComboBox.setPrefWidth(COLUMN_WIDTH);
-//		typeComboBox.setPrefWidth(COLUMN_WIDTH);
-		
-//		bodyTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
-//		    updateOperationName2TextField(nameTextField, newValue);
-//		});
-//		nameTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-//		    updateOperationName2TextArea(bodyTextArea, newValue);
-//		});
 
 		labelsNode = new ArrayList<>();
 		mainNodes = new ArrayList<>();
@@ -120,41 +107,6 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 		grid.add(monitorButton, 0, 4);
 	}
 
-//	private void updateOperationName2TextField(TextField textField, String body) {
-//		final String prefix = "@Operation ";
-//		final String error = "operation name not recognized";
-//		if(body.startsWith(prefix)) {
-//			body = body.substring(prefix.length());
-//			if(body.contains("(")) {
-//				body = body.substring(0, body.indexOf("("));
-//					if(body.contains("[")) {
-//					body = body.substring(0, body.indexOf("["));
-//				}
-//			    if(!textField.getText().equals(body)) textField.setText(body);
-////			} else {
-////				textField.setText(error);
-//			}
-////		} else {
-////		textField.setText(error);
-//		}
-//	}
-//
-//	private void updateOperationName2TextArea(TextArea textarea, String name) {
-//		String body = textarea.getText();
-//		String prefix = "@Operation ";
-//		int startSquare = body.indexOf("[");
-//		int startRound = body.indexOf("(");
-//		int startAny = startSquare<0?startRound:
-//			           startRound<0?startSquare:
-//			        startSquare<startRound?startSquare:startRound;
-//		if(startAny > 0) {
-//			String suffix = body.substring(startAny);
-//			String newBody = prefix + name + suffix;
-//			if(!body.equals(newBody)) 
-//				textarea.setText(newBody);
-//		}
-//	}
-//	
 		
 	private void checkBodySyntax() {
 		if (!isNullOrEmpty(bodyTextArea.getText()) && !bodyTextArea.getText().contentEquals(StringValue.OperationStringValues.emptyOperation)) {
@@ -173,18 +125,6 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialogResult> {
 
 	private boolean validateUserInput() {
 
-//		String name = nameTextField.getText();
-
-//		if (!InputChecker.getInstance().validateName(name)) {
-//			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
-//			return false;
-//		} else if (!InputChecker.getInstance().operationNameIsAvailable(name, object)) {
-//			errorLabel.setText(StringValueDialog.ErrorMessage.nameAlreadyUsed);
-//			return false;
-//		} else if (getComboBoxStringValue(typeComboBox) == null) {
-//			errorLabel.setText(StringValueDialog.ErrorMessage.selectType);
-//			return false;
-//		} else
 	    if (levelComboBox.getSelectionModel().getSelectedIndex() == -1) {
 			errorLabel.setText(StringValue.ErrorMessage.selectLevel);
 			return false;

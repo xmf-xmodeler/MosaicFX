@@ -20,7 +20,6 @@ import java.util.Vector;
 public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 
 	private final PropertyType type;
-	//private final FmmlxDiagram diagram;
 	private FmmlxObject object;
 	private Vector<FmmlxAttribute> attributes;
 	private Vector<FmmlxOperation> operations;
@@ -55,10 +54,9 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	private ComboBox<FmmlxOperation> selectOperationComboBox;
 
 
-	public ChangeLevelDialog(FmmlxDiagram diagram, FmmlxObject object, PropertyType type) {
+	public ChangeLevelDialog(FmmlxObject object, PropertyType type) {
 
 		super();
-		//this.diagram = diagram;
 		this.type = type;
 		this.object = object;
 

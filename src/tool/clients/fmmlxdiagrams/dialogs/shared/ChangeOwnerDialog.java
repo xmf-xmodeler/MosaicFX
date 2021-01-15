@@ -39,7 +39,7 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 	private Vector<FmmlxOperation> operations;
 
 
-	public ChangeOwnerDialog(FmmlxDiagram diagram, FmmlxObject object, PropertyType type) {
+	public ChangeOwnerDialog(AbstractPackageViewer diagram, FmmlxObject object, PropertyType type) {
 		super();
 		this.object = object;
 		this.type = type;

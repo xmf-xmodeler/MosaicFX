@@ -8,14 +8,14 @@ import javafx.scene.control.*;
 
 public class Palette extends ToolBar {
 
-	public Palette(DiagramActions actions) {
+	public Palette(FmmlxDiagram diagram) {
 		setPadding(new Insets(10, 10, 10, 10));
 		setOrientation(Orientation.HORIZONTAL);
 
 		getItems().add(new Label("Zoom"));
-		addButton("+", e -> actions.zoomIn());
-		addButton("100%", e -> actions.zoomOne());
-		addButton("-", e -> actions.zoomOut());
+		addButton("+", e -> diagram.zoomIn());
+		addButton("100%", e -> diagram.zoomOne());
+		addButton("-", e -> diagram.zoomOut());
 		getItems().add(new Separator());
 		getItems().add(new Label("Show: "));
 		CheckBox boxO = addCheckBox("Operations");
@@ -25,16 +25,16 @@ public class Palette extends ToolBar {
 		CheckBox boxDerivedOperations = addCheckBox("Derived Operations");
 		CheckBox boxDerivedAttributes = addCheckBox("Derived Attributes");
  		
-		boxO.setOnAction(e -> actions.setShowOperations(boxO));
-		boxOV.setOnAction(e -> actions.setShowOperationValues(boxOV));
-		boxS.setOnAction(e -> actions.setShowSlots(boxS));
-		boxGettersAndSetters.setOnAction(e-> actions.setShowGettersAndSetters(boxGettersAndSetters));
-		boxDerivedOperations.setOnAction(e-> actions.setShowDerivedOperations(boxDerivedOperations));
-		boxDerivedAttributes.setOnAction(e-> actions.setShowDerivedAttributes(boxDerivedAttributes));
+		boxO.setOnAction(e -> diagram.setShowOperations(boxO));
+		boxOV.setOnAction(e -> diagram.setShowOperationValues(boxOV));
+		boxS.setOnAction(e -> diagram.setShowSlots(boxS));
+		boxGettersAndSetters.setOnAction(e-> diagram.setShowGettersAndSetters(boxGettersAndSetters));
+		boxDerivedOperations.setOnAction(e-> diagram.setShowDerivedOperations(boxDerivedOperations));
+		boxDerivedAttributes.setOnAction(e-> diagram.setShowDerivedAttributes(boxDerivedAttributes));
 		
 		getItems().add(new Separator());
-		addButton("Update Diagram", e -> actions.updateDiagram());
-		addButton("Print Protocol", e -> actions.printProtocol());
+		addButton("Update Diagram", e -> diagram.updateDiagram());
+		addButton("Print Protocol", e -> diagram.actions.printProtocol());
 		
 		}
 

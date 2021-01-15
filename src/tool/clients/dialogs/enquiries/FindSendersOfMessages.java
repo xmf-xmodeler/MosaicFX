@@ -14,7 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.TimeOutException;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
@@ -43,12 +43,12 @@ import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 	
 	ListView<String> classesListView = new ListView<String>();
 	TextArea operationsTextarea = new TextArea();
-	FmmlxDiagram diagram;
+	AbstractPackageViewer diagram;
 	private final FmmlxDiagramCommunicator fmmlxDiagramCommunicator;
 	
 	HashMap<String, String>  result = new HashMap<String, String>();
 	
-	public FindSendersOfMessages(FmmlxDiagram diagram, FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
+	public FindSendersOfMessages(AbstractPackageViewer diagram, FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
 		this.fmmlxDiagramCommunicator = fmmlxDiagramCommunicator;
 		this.diagram = diagram;
 		DialogPane dialogPane = getDialogPane();

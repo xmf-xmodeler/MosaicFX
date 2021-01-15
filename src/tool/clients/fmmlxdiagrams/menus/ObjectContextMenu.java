@@ -20,18 +20,20 @@ import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 public class ObjectContextMenu extends ContextMenu {
 
 	private final FmmlxObject object;
-	private DiagramActions actions;
+	private final FmmlxDiagram diagram;
+	private final DiagramActions actions;
 	FmmlxProperty activeProperty;
 
-	public ObjectContextMenu(FmmlxObject object, DiagramActions actions, Point2D relativePoint) {
-		this.actions = actions;
+	public ObjectContextMenu(FmmlxObject object, FmmlxDiagram diagram, Point2D relativePoint) {
+		this.diagram = diagram;
+		this.actions = diagram.getActions();
 		this.object = object;
 		NodeBaseElement nl = this.object.getHitLabel(relativePoint);
 		activeProperty = nl==null?null:nl.getActionObject();
 		setAutoHide(true);
 
 		MenuItem addInstanceItem = new MenuItem("Add instance");
-		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object));
+		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object, diagram.getCanvas()));
 		if(object.getLevel() >= 1 && !object.isAbstract()) getItems().add(addInstanceItem);
 		
 		MenuItem removeItem = new MenuItem("Remove");
@@ -137,7 +139,7 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu associationMenu = new Menu("Association");
 
 		MenuItem addItem = new MenuItem("Add");
-		addItem.setOnAction(e -> actions.setDrawEdgeMode(object, PropertyType.Association));
+		addItem.setOnAction(e -> diagram.setDrawEdgeMode(object, PropertyType.Association));
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e_ -> actions.removeDialog(object, PropertyType.Association));
 //		MenuItem changeTargetItem = new MenuItem("Change target");
@@ -215,7 +217,7 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu associationInstanceMenu = new Menu("Association instance");
 
 		MenuItem addValueItem = new MenuItem("Add instance");
-		addValueItem.setOnAction(e -> actions.setDrawEdgeMode(object, PropertyType.AssociationInstance));
+		addValueItem.setOnAction(e -> diagram.setDrawEdgeMode(object, PropertyType.AssociationInstance));
 		MenuItem removeValueItem = new MenuItem("Remove instance");
 		removeValueItem.setOnAction(e -> System.out.println("OCM: remove association instance value called"));
 		removeValueItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
@@ -233,7 +235,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem operationsItem = new MenuItem("Operations");
 		operationsItem.setOnAction(e -> {
 			object.setShowOperations(true);
-			actions.redrawDiagram();
+			diagram.redraw();
 		});
 
 		showSubMenu.getItems().addAll(operationsItem);
@@ -242,9 +244,9 @@ public class ObjectContextMenu extends ContextMenu {
 	
 	private Menu createDelegationSubMenu() {
 		Menu delegationMenu = new Menu("Delegate");
-		addNewMenuItem(delegationMenu, "add Delegate to", e -> actions.setDrawEdgeMode(object, PropertyType.Delegation), ALWAYS);
+		addNewMenuItem(delegationMenu, "add Delegate to", e -> diagram.setDrawEdgeMode(object, PropertyType.Delegation), ALWAYS);
 		addNewMenuItem(delegationMenu, "remove Delegate to", e -> System.out.println("remove Delegate to not yet implemented."), () -> FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
-		addNewMenuItem(delegationMenu, "change Role Filler", e -> actions.setDrawEdgeMode(object, PropertyType.RoleFiller), ALWAYS);
+		addNewMenuItem(delegationMenu, "change Role Filler", e -> diagram.setDrawEdgeMode(object, PropertyType.RoleFiller), ALWAYS);
 //		addNewMenuItem(delegationMenu, "remove Rolefiller", e -> System.out.println("remove Rolefiller not yet implemented."), ALWAYS);
 		return delegationMenu;
 	}

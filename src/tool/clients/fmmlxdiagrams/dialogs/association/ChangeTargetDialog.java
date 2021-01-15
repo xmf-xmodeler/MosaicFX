@@ -1,7 +1,5 @@
 package tool.clients.fmmlxdiagrams.dialogs.association;
 
-import java.util.Vector;
-
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -11,7 +9,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
@@ -22,7 +19,6 @@ public class ChangeTargetDialog extends CustomDialog<ChangeTargetDialogResult>{
 	private DialogPane dialogPane;
 	private final PropertyType type;
 	private FmmlxObject object;
-	private Vector<FmmlxObject> objects;
 	
 	private Label classLabel;
 	private Label selectAssociationLabel;
@@ -34,11 +30,10 @@ public class ChangeTargetDialog extends CustomDialog<ChangeTargetDialogResult>{
 	private TextField currentTargetTextField;
 	private ComboBox<FmmlxObject> newTargetComboBox;
 
-	public ChangeTargetDialog(FmmlxDiagram diagram, FmmlxObject object, PropertyType type) {
+	public ChangeTargetDialog(FmmlxObject object, PropertyType type) {
 		super();
 		this.type=type;
 		this.object=object;
-		this.objects=diagram.getObjects();
 		
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);

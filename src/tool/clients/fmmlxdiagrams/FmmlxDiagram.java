@@ -9,6 +9,7 @@ import javafx.geometry.Side;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -35,7 +36,7 @@ import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
-public class FmmlxDiagram{
+public class FmmlxDiagram extends AbstractPackageViewer{
 
 	enum MouseMode {
 		MULTISELECT, STANDARD, DRAW_EDGE
@@ -54,8 +55,6 @@ public class FmmlxDiagram{
 	private MenuItem loadXML;
 	private MenuItem saveXML;
 	// The communication to the xmf and other actions
-	private final FmmlxDiagramCommunicator comm;
-	private DiagramActions actions;
 	
 	// The elements representing the model which is displayed in the GUI
 	private Vector<FmmlxObject> objects = new Vector<>();
@@ -111,7 +110,8 @@ public class FmmlxDiagram{
 	public final static FmmlxDiagram NullDiagram = new FmmlxDiagram();
 	
 	private FmmlxDiagram() {
-		this.comm = null;
+		super(null);
+//		this.comm = null;
 		this.newFmmlxPalette = null;
 		this.diagramID = -1;
 		this.diagramName = null;
@@ -119,7 +119,8 @@ public class FmmlxDiagram{
 	}
 	
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String name, String packagePath) {
-		this.comm = comm;
+//		this.comm = comm;
+		super(comm);
 		this.diagramID = diagramID;
 		this.diagramName = name;
 		this.packagePath = packagePath;
@@ -134,8 +135,7 @@ public class FmmlxDiagram{
 		vBox.getChildren().addAll(menuBar, pane);
 		mainView = new SplitPane();
 		canvas = new Canvas(canvasRawSize.getX(), canvasRawSize.getY());
-		actions = new DiagramActions(this);
-		Palette palette = new Palette(actions);
+		Palette palette = new Palette(this);
 		newFmmlxPalette = new NewFmmlxPalette(this);
 		scrollerCanvas = new ScrollPane(canvas);
 		pane.setOrientation(Orientation.HORIZONTAL);
@@ -306,10 +306,6 @@ public class FmmlxDiagram{
 	@Deprecated
 	public VBox getView() {
 		return vBox;
-	}
-	
-	public FmmlxDiagramCommunicator getComm() {
-		return comm;
 	}
 
 	private void updateDiagramLater() {
@@ -559,6 +555,7 @@ public class FmmlxDiagram{
 				switch (drawEdgeType) {
 					case Association:
 						actions.addAssociationDialog(newEdgeSource, newEdgeTarget);
+                        setStandardMouseMode();
 						break;
 					case AssociationInstance:
 					{
@@ -652,14 +649,14 @@ public class FmmlxDiagram{
 			if (edgeCreationType.equals("association")) {
 				hitObject = getElementAt(p.getX(), p.getY());
 				if(hitObject instanceof FmmlxObject) {		
-					actions.setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Association);
-					getCanvas().setCursor(Cursor.DEFAULT);
+					setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Association);
+					canvas.setCursor(Cursor.DEFAULT);
 					
 				}
 			} else if (edgeCreationType.equals("associationInstance")) {
 				if(hitObject instanceof FmmlxObject) {
-					actions.setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.AssociationInstance);
-					getCanvas().setCursor(Cursor.DEFAULT);
+					setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.AssociationInstance);
+					canvas.setCursor(Cursor.DEFAULT);
 				}
 			}
 		} else {
@@ -668,7 +665,7 @@ public class FmmlxDiagram{
 			} else {
 				actions.addInstanceDialog(getObjectByPath((nodeCreationType)),e);
 			}
-			getCanvas().setCursor(Cursor.DEFAULT);
+			canvas.setCursor(Cursor.DEFAULT);
 			deselectAll();
 		}
 	}
@@ -707,16 +704,16 @@ public class FmmlxDiagram{
 		CanvasElement hitObject = getElementAt(p.getX(), p.getY());
 		if (hitObject != null) {
 			if (hitObject instanceof FmmlxObject) {
-				activeContextMenu = hitObject.getContextMenu(actions, p);
+				activeContextMenu = hitObject.getContextMenu(this, p);
 			} else if (hitObject instanceof Edge) {
-				activeContextMenu = hitObject.getContextMenu(actions, p);
+				activeContextMenu = hitObject.getContextMenu(this, p);
 			}
 			if (!selectedObjects.contains(hitObject)) {
 				deselectAll();
 				selectedObjects.add(hitObject);
 			}
 		} else {
-			activeContextMenu = new DefaultContextMenu(actions);
+			activeContextMenu = new DefaultContextMenu(this);
 		}
 		showContextMenu(e);
 	}
@@ -725,11 +722,28 @@ public class FmmlxDiagram{
 		if (e.isControlDown()) {
 			double delta = e.getDeltaY();
 			if (delta > 0) {
-				actions.zoomIn();
+				zoomIn();
 			} else {
-				actions.zoomOut();
+				zoomOut();
 			}
 		}
+	}
+	
+	private final double ZOOM_STEP = Math.sqrt(2);
+	
+	public void zoomIn() {
+		setZoom(Math.min(2, getZoom() * ZOOM_STEP));
+		redraw();
+	}
+
+	public void zoomOut() {
+		setZoom(getZoom() / ZOOM_STEP);
+		redraw();
+	}
+
+	public void zoomOne() {
+		setZoom(1.);
+		redraw();
 	}
 
 	/* Setters for MouseMode */
@@ -742,6 +756,13 @@ public class FmmlxDiagram{
 
 	public void setStandardMouseMode() {
 		mouseMode = MouseMode.STANDARD;
+	}
+	
+	public void setDrawEdgeMode(FmmlxObject source, PropertyType type) {
+		setSelectedObject(source);
+		setDrawEdgeMouseMode(type, source);
+		storeLastClick(source.getCenterX(), source.getCenterY());
+		deselectAll();
 	}
 
 	////////////////////////////////////////////////////////////////////
@@ -1187,14 +1208,78 @@ public class FmmlxDiagram{
 		return null;
 	}
 
-	public List<FmmlxObject> getSortedObject(SortedValue sortedValue) {
-		List<FmmlxObject> result = new ArrayList<>(getObjects());
-		if(sortedValue == SortedValue.REVERSE) {
-			result.sort(Collections.reverseOrder());
-		}else {
-			Collections.sort(result);
-		}		
-		return result;
+//	public List<FmmlxObject> getSortedObject(SortedValue sortedValue) {
+//		List<FmmlxObject> result = new ArrayList<>(getObjects());
+//		if(sortedValue == SortedValue.REVERSE) {
+//			result.sort(Collections.reverseOrder());
+//		}else {
+//			Collections.sort(result);
+//		}		
+//		return result;
+//	}
+
+	public void setShowOperations(CheckBox box) {
+		boolean show = box.isSelected();
+		setShowOperations(show);
+		for (FmmlxObject o : getObjects()) {
+			o.setShowOperations(show);
+		}
+		triggerOverallReLayout();
+		redraw();
+
+	}
+	
+	public void setShowGettersAndSetters(CheckBox box) {
+		boolean show = box.isSelected();
+		setShowGettersAndSetters(show);
+		for (FmmlxObject o : getObjects()) {
+			o.setShowGettersAndSetters(show);
+		}
+		triggerOverallReLayout();
+		redraw();
+		
 	}
 
+
+	public void setShowOperationValues(CheckBox box) {
+		boolean show = box.isSelected();
+		setShowOperationValues(show);
+		for (FmmlxObject o : getObjects()) {
+			o.setShowOperationValues(show);
+		}
+		triggerOverallReLayout();
+		redraw();
+	}
+
+	public void setShowSlots(CheckBox box) {
+		boolean show = box.isSelected();
+		setShowSlots(show);
+		for (FmmlxObject o : getObjects()) {
+			o.setShowSlots(show);
+		}
+		triggerOverallReLayout();
+		redraw();
+	}
+	
+	public void setShowDerivedOperations(CheckBox box) {
+		boolean show = box.isSelected();
+		setShowDerivedOperations(show);
+		for (FmmlxObject o : getObjects()) {
+			o.setShowDerivedOperations(show);
+		}
+		triggerOverallReLayout();
+		redraw();
+		
+	}
+
+	public void setShowDerivedAttributes(CheckBox box) {
+		boolean show=box.isSelected();
+		setShowDerivedAttributes(show);
+		for (FmmlxObject o : getObjects()) {
+			o.setShowDerivedAttributes(show);
+		}
+		triggerOverallReLayout();
+		redraw();
+	}
+	
 }

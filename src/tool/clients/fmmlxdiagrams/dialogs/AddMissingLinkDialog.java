@@ -11,7 +11,6 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddMissingLinkDialogResult;
 
@@ -36,7 +35,7 @@ public class AddMissingLinkDialog extends CustomDialog<AddMissingLinkDialogResul
 	private final ComboBox<FmmlxObject> createComboBox;
 	private final ComboBox<FmmlxObject> pickComboBox;
 	
-	public AddMissingLinkDialog(final FmmlxDiagram diagram, final FmmlxObject obj, final FmmlxAssociation assoc) {
+	public AddMissingLinkDialog(final FmmlxObject obj, final FmmlxAssociation assoc) {
 		
 		objIsSource = obj.isInstanceOf(assoc.getSourceNode(), assoc.getLevelSource());
 		classAtOtherEnd = objIsSource?assoc.getTargetNode():assoc.getSourceNode();

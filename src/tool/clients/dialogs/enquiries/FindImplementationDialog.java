@@ -17,6 +17,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.TimeOutException;
@@ -37,9 +38,10 @@ public class FindImplementationDialog extends CustomDialog<Object> {
 	ListView<String> classesListView = new ListView<String>();
 	TextArea codeBox = new TextArea();
 	HashMap<String, String>  result = new HashMap<String, String>();
-	FmmlxDiagram diagram;
+	AbstractPackageViewer diagram;
 	private final FmmlxDiagramCommunicator fmmlxDiagramCommunicator;
-	public FindImplementationDialog(FmmlxDiagram diagram, FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
+	
+	public FindImplementationDialog(AbstractPackageViewer diagram, FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
 		this.fmmlxDiagramCommunicator = fmmlxDiagramCommunicator;
 		this.diagram = diagram;
 		DialogPane dialogPane = getDialogPane();

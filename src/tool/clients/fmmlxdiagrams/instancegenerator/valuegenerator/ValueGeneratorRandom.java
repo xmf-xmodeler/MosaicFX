@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator;
 
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.view.ValueGeneratorRandomDialog;
@@ -26,7 +27,7 @@ public class ValueGeneratorRandom extends ValueGenerator implements IValueGenera
 	}
 
 	@Override
-	public void openDialog(FmmlxDiagram diagram) {
+	public void openDialog(AbstractPackageViewer diagram) {
 		if(getFitsType(getAttributeType())){
 			setDiagram(diagram);
 			if(getFitsType(getAttributeType())){

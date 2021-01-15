@@ -78,7 +78,7 @@ public class Issue {
 		} else if("addMissingLink".equals(actionName)) { 
 			FmmlxObject obj = diagram.getObjectByPath((String) solution.get(1));
 			FmmlxAssociation assoc = diagram.getAssociationByPath((String) solution.get(2));
-			diagram.getActions().addMissingLink(obj, assoc);
+			diagram.getActions().addMissingLink(obj, assoc, diagram.getCanvas());
 //			Platform.runLater(()->{
 //		        Alert alert = new Alert(AlertType.INFORMATION);
 //		        alert.setTitle("Resolving Issue");

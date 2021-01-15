@@ -16,8 +16,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
@@ -31,7 +31,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 
 	private boolean editMode=false;
 	private DialogPane dialogPane;
-	private FmmlxDiagram diagram;
+	private AbstractPackageViewer diagram;
 	private FmmlxAssociation association;
 	private FmmlxObject source;	
 	private FmmlxObject target;
@@ -64,7 +64,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 	private List<Node> sourceNodes;
 	private List<Node> targetNodes;
 	
-	public AssociationDialog(FmmlxDiagram diagram, FmmlxAssociation association, boolean editMode) {
+	public AssociationDialog(AbstractPackageViewer diagram, FmmlxAssociation association, boolean editMode) {
 		
 		this.diagram=diagram;
 		this.association = association;
@@ -92,7 +92,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 		
 	}
 
-	public AssociationDialog(FmmlxDiagram diagram, FmmlxObject source, FmmlxObject target, boolean editMode) {
+	public AssociationDialog(AbstractPackageViewer diagram, FmmlxObject source, FmmlxObject target, boolean editMode) {
 		
 		this.editMode=editMode;
 		this.diagram = diagram;
