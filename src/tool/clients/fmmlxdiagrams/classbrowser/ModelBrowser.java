@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams.classbrowser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -18,8 +19,10 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.SortedValue;
@@ -41,10 +44,14 @@ public class ModelBrowser extends CustomStage {
 						operationOutputVBox, operationInputVBox, associationBrowserVBox, consoleContainerVBox;
 	private SplitPane outerSplitPane;
 	private GridPane mainGridPane, attributeGridpane;	
-	ModelBrowserCommunicator communicator;
+	FmmlxDiagramCommunicator communicator;
+	private AbstractPackageViewer activePackage;
+	
+	private HashMap<String,AbstractPackageViewer> models = new HashMap<>();
 	
 	public ModelBrowser(String project, String selectedModel, ObservableList<String> models) {
 		super(StringValue.LabelAndHeaderTitle.modelBrowser+" " + project, XModeler.getStage(), 1100, 800);
+		communicator = FmmlxDiagramCommunicator.getCommunicator();
 		initAllElements();
 		addAllElementToPane();			
 		getContainer().getChildren().addAll(outerSplitPane);
@@ -59,6 +66,9 @@ public class ModelBrowser extends CustomStage {
 
 	public void onClose() {
 		clearAll(ClearSelectionMode.MODEL);
+		for (String key:models.keySet()) {
+			communicator.closeDiagram(models.get(key).getID());
+		}
 		hide();
 	}
 
@@ -236,8 +246,21 @@ public class ModelBrowser extends CustomStage {
 		
 	}
 	
-	private void onModelListViewNewValue(String oldValue, String newValue) {
-		
+	private void onModelListViewNewValue(String oldValue, String selectedPath) {
+		if(!models.containsKey(selectedPath)) {
+			Integer newDiagramID=communicator.createDiagram(selectedPath, "Test", "");
+			ClassBrowserPackageViewer tempViewer = new ClassBrowserPackageViewer(communicator, newDiagramID, selectedPath);
+			models.put(selectedPath, tempViewer);
+		}
+		activePackage = models.get(selectedPath);
+		activePackage.updateDiagram();
+		Vector<FmmlxObject> objects = activePackage.getObjects();
+		Vector<String> names = new Vector<>();
+		for (FmmlxObject o:objects) {
+			names.add(o.getName());
+		}
+		fmmlxObjectListView.getItems().clear();
+		fmmlxObjectListView.getItems().addAll(names);
 	}	
 	
 	private void onSlotListViewNewValue(ListView<String> modelListView2, String oldValue, String newValue) {

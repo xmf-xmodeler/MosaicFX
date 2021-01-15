@@ -10,7 +10,7 @@ public class RoleFillerEdge extends Edge {
 
 	public RoleFillerEdge(String path, String childPath, String parentID, Vector<Point2D> intermediatePoints,
 			PortRegion startPortRegion, PortRegion endPortRegion,
-			FmmlxDiagram diagram) {
+			AbstractPackageViewer diagram) {
 		super(path, diagram.getObjectByPath(childPath), diagram.getObjectByPath(parentID), intermediatePoints, startPortRegion, endPortRegion, new Vector<>(),
 				diagram);
 	}
@@ -18,7 +18,7 @@ public class RoleFillerEdge extends Edge {
 	protected void checkVisibilityMode() {visible = true;}
 	
 	@Override
-	protected void layoutLabels() {
+	protected void layoutLabels(FmmlxDiagram diagram) {
 		layoutingFinishedSuccesfully = true;
 	} // NONE
 

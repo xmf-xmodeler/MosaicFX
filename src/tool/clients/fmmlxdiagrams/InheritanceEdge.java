@@ -10,7 +10,7 @@ public class InheritanceEdge extends Edge {
 
 	public InheritanceEdge(String path, String childPath, String parentPath, Vector<Point2D> intermediatePoints,
 			PortRegion startPortRegion, PortRegion endPortRegion,
-			FmmlxDiagram diagram) {
+			AbstractPackageViewer diagram) {
 		super(path, diagram.getObjectByPath(childPath), diagram.getObjectByPath(parentPath), intermediatePoints, startPortRegion, endPortRegion, new Vector<>(),
 				diagram);
 	}
@@ -18,7 +18,7 @@ public class InheritanceEdge extends Edge {
 	protected void checkVisibilityMode() {visible = targetNode.getPointForEdge(targetEnd, false).distance(sourceNode.getPointForEdge(sourceEnd, true))<1000;}
 	
 	@Override
-	protected void layoutLabels() {
+	protected void layoutLabels(FmmlxDiagram diagram) {
 		layoutingFinishedSuccesfully = true;
 	} // NONE
 

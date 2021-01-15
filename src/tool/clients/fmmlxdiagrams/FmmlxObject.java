@@ -49,7 +49,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	private Vector<FmmlxOperation> ownOperations = new Vector<>();
 	private Vector<FmmlxOperation> otherOperations = new Vector<>();
 
-	private FmmlxDiagram diagram;
+	private AbstractPackageViewer diagram;
 	private PropertyType propertyType = PropertyType.Class;
 
 
@@ -64,7 +64,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			Vector<String> parentPaths,
 			Boolean isAbstract,
 			Integer lastKnownX, Integer lastKnownY, Boolean hidden,
-			FmmlxDiagram diagram) {
+			AbstractPackageViewer diagram) {
 		this.name = name;
 		this.diagram = diagram;
 		if (lastKnownX != null && lastKnownX != 0) {
@@ -90,12 +90,12 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		this.ofPath = ofPath;
 		this.parentsPaths = parentPaths;
 
-		this.showOperations = diagram.isShowOperations();
-		this.showOperationValues = diagram.isShowOperationValues();
-		this.showSlots = diagram.isShowSlots();
-		this.showDerivedOperations = diagram.isShowDerivedOperations();
-		this.showDerivedAttributes = diagram.isShowDerivedAttributes();
-		this.showGettersAndSetters = diagram.isShowGetterAndSetter();
+		this.showOperations = true;
+		this.showOperationValues = true;
+		this.showSlots = true;
+		this.showDerivedOperations = true;
+		this.showDerivedAttributes = true;
+		this.showGettersAndSetters = true;
 		
 		this.ports = new FmmlxObjectPort(this);
 	}
@@ -242,12 +242,12 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return result;
 	}
 
-	public Paint getLevelBackgroundColor() {
+	public Paint getLevelBackgroundColor(FmmlxDiagram diagram) {
 		return diagram.levelColorScheme.getLevelBgColor(level);
 		//return colors.containsKey(level) ? colors.get(level) : Color.valueOf("#ffaa00");
 	}
 
-	public Color getLevelFontColor(double opacity) {
+	public Color getLevelFontColor(double opacity, FmmlxDiagram diagram) {
 		return diagram.levelColorScheme.getLevelFgColor(level, opacity);
 		///return new Vector<>(Arrays.asList(2, 3, 4, 5)).contains(level) ? "#ffffff" : "000000";
 	}
@@ -314,7 +314,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 		String parentString = getParentsList(diagram);
 		int headerLines = /*hasParents()*/(!"".equals(parentString)) ? 3 : 2;
-		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * headerLines + EXTRA_Y_PER_LINE, getLevelBackgroundColor(), Color.BLACK, (x) -> 1., PropertyType.Class);
+		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * headerLines + EXTRA_Y_PER_LINE, getLevelBackgroundColor(diagram), Color.BLACK, (x) -> 1., PropertyType.Class);
 		nodeElements.addElement(header);
 		FmmlxObject ofObj = null;
 		try {
@@ -324,15 +324,15 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		}
 		String ofName = (ofObj == null) ? "MetaClass" : ofObj.name;
 		
-		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65), null, this, NO_ACTION, "^" + ofName + "^", false) ;
-		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight, getLevelFontColor(.65), null, this, NO_ACTION, "" + level, false);
-		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, getLevelFontColor(1.), null, this, NO_ACTION, name, isAbstract);
+		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65, diagram), null, this, NO_ACTION, "^" + ofName + "^", false) ;
+		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight, getLevelFontColor(.65, diagram), null, this, NO_ACTION, "" + level, false);
+		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, getLevelFontColor(1., diagram), null, this, NO_ACTION, name, isAbstract);
 		header.nodeElements.add(metaclassLabel);
 		header.nodeElements.add(levelLabel);
 		header.nodeElements.add(nameLabel);
 
 		if ((!"".equals(parentString))) {
-			NodeLabel parentsLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 3, getLevelFontColor(1.), null, this, NO_ACTION, parentString, isAbstract);
+			NodeLabel parentsLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 3, getLevelFontColor(1., diagram), null, this, NO_ACTION, parentString, isAbstract);
 			header.nodeElements.add(parentsLabel);
 		}
 
@@ -520,7 +520,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		this.width = (int) neededWidth;
 		this.height = (int) currentY;
 
-		handlePressedOnNodeElement(lastClick);
+		handlePressedOnNodeElement(lastClick, diagram);
 	}
 
 	private int countOperationsToBeShown() {
@@ -769,7 +769,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		ports.sortAllPorts();
 	}
 	
-	public FmmlxProperty handlePressedOnNodeElement(Point2D relativePoint) {
+	public FmmlxProperty handlePressedOnNodeElement(Point2D relativePoint, FmmlxDiagram diagram) {
 		if(relativePoint == null) return null;
 		if(!diagram.isSelected(this)) {
 			lastClick = null; return null;

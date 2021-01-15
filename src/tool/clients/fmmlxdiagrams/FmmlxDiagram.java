@@ -57,8 +57,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	// The communication to the xmf and other actions
 	
 	// The elements representing the model which is displayed in the GUI
-	private Vector<FmmlxObject> objects = new Vector<>();
-	private Vector<Edge> edges = new Vector<>();
+	
 	private Vector<DiagramEdgeLabel> labels = new Vector<>();
 	private Vector<FmmlxEnum> enums = new Vector<>();
 	private Vector<String> auxTypes = new Vector<>();
@@ -92,13 +91,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private boolean showDerivedOperations=true;
 	private boolean showDerivedAttributes=true;
 	
-	private final int diagramID;
 	private final String diagramName;
-	private transient boolean suppressRedraw;
 	private final NewFmmlxPalette newFmmlxPalette;
-	private final String packagePath;
 	private String filePath;
-	boolean justLoaded = false;
+	
 	
 	public String updateID = null;
 	
@@ -110,20 +106,16 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public final static FmmlxDiagram NullDiagram = new FmmlxDiagram();
 	
 	private FmmlxDiagram() {
-		super(null);
+		super(null,-1,null);
 //		this.comm = null;
 		this.newFmmlxPalette = null;
-		this.diagramID = -1;
 		this.diagramName = null;
-		this.packagePath = null;
 	}
 	
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String name, String packagePath) {
 //		this.comm = comm;
-		super(comm);
-		this.diagramID = diagramID;
+		super(comm,diagramID,packagePath);
 		this.diagramName = name;
-		this.packagePath = packagePath;
 		vBox = new VBox();
 		menu = new Menu("Test");
 		menuBar = new MenuBar();
@@ -210,79 +202,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		this.filePath = filePath;
 	}
 
-	private void fetchDiagramData() {
-		if(suppressRedraw) {
-			System.err.println("\talready fetching diagram data");
-			return;
-		}
-		suppressRedraw = true;
-		try {
-
-			if(objects.size()==0){
-				justLoaded = true;
-			}
-			this.clearDiagram();
-
-			Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
-			objects.addAll(fetchedObjects);
-
-			levelColorScheme = new LevelColorScheme.RedLevelColorScheme(objects);
-			
-			issues.addAll(comm.fetchIssues(this));
-
-			for(FmmlxObject o : objects) {
-				o.fetchDataDefinitions(comm);
-			}
-			
-			for(FmmlxObject o : objects) {
-				o.fetchDataValues(comm);
-				o.layout(this);
-			}
-			
-			Vector<Edge> fetchedEdges = comm.getAllAssociations(this);
-			fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
-	
-			edges.addAll(fetchedEdges);
-			edges.addAll(comm.getAllInheritanceEdges(this));
-			edges.addAll(comm.getAllDelegationEdges(this));
-			edges.addAll(comm.getAllRoleFillerEdges(this));
-
-			enums = comm.fetchAllEnums(this);
-			auxTypes = comm.fetchAllAuxTypes(this);
-
-			triggerOverallReLayout();
-			resizeCanvas();
-			
-		} catch (TimeOutException e) {
-			e.printStackTrace();
-		}
-		suppressRedraw = false;
-		newFmmlxPalette.update();
-		if(justLoaded){
-			if(filePath !=null && filePath.length()>0){
-				Deserializer deserializer = new Deserializer();
-				deserializer.alignCoordinate(this);
-				triggerOverallReLayout();
-			}
-			justLoaded = false;
-		}
-
-		redraw();
-		
-		if(issues.size() > 0) {
-			issues.firstElement().performResolveAction(this);
-		}
-	}
-
-	public void clearDiagram(){
-		objects.clear();
-		edges.clear();
-		labels.clear();
-		issues.clear();
-//			enums.clear();
-//			auxTypes.clear();
-	}
-
 	// This operation resets the size of the canvas when needed
 	private void resizeCanvas() {
 		try {
@@ -313,7 +232,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 	
 	public void redraw() {
-		if (suppressRedraw) {
+		if (fetchingData) {
 			return;}
 		if (objects.size() <= 0) {return;}
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
@@ -375,7 +294,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	////////////////////////////////////////////////////////////////////
 
 	private void mousePressed(MouseEvent e) {
-		if(suppressRedraw) return;
+		if(fetchingData) return;
 		Point2D p = scale(e);
 		clearContextMenus();
 
@@ -475,7 +394,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		
 		for(Edge edge : edges) {
-			edge.dropPoint();
+			edge.dropPoint(this);
 		}
 		
 		triggerOverallReLayout();
@@ -495,7 +414,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
 			for(Edge edge : edges) {
 				edge.align();
-				edge.layoutLabels();
+				edge.layoutLabels(this);
 			}
 		}
 	}
@@ -684,7 +603,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		if (hitObject instanceof FmmlxObject) {
 			FmmlxObject obj = (FmmlxObject) hitObject;
 			Point2D relativePoint = new Point2D(p.getX() - obj.getX(), p.getY() - obj.getY());
-			lastHitProperty = obj.handlePressedOnNodeElement(relativePoint);
+			lastHitProperty = obj.handlePressedOnNodeElement(relativePoint, this);
 		}
 	}
 
@@ -813,10 +732,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		if (!selectedObjects.contains(o)) {
 			selectedObjects.add(o);
 		}
-	}
-
-	public void updateDiagram() {
-		new Thread(this::fetchDiagramData).start();
 	}
 
 	private void handleMultiSelect() {
@@ -948,15 +863,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		
 	}
 	
-	public Vector<FmmlxAssociation> findAssociations(FmmlxObject source, FmmlxObject target) {
-		Vector<FmmlxAssociation> result = new Vector<>();
-		for (Edge e : edges)
-			if (e instanceof FmmlxAssociation) {
-				FmmlxAssociation association = (FmmlxAssociation) e;
-				if (association.doObjectsFit(source, target)) result.add(association);
-			}
-		return result;
-	}
 	
 	////////////////////////////////////////////////////////////////////
 	////					Messages to XMF							////
@@ -964,44 +870,13 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 
 	// Some useful methods for queries:
-	public int getID() {
-		return diagramID;
-	}
-
+	
 	public String getDiagramLabel() {
 		return diagramName;
 	}
 
-	public String getPackagePath() {
-		return packagePath;
-	}
-
 	public Vector<FmmlxEnum> getEnums() {
 		return enums;
-	}
-
-	public Vector<FmmlxObject> getObjects() {
-		return new Vector<>(objects); // read-only
-	}
-
-	public Vector<FmmlxAssociation> getAssociations() {
-		Vector<FmmlxAssociation> result = new Vector<>();
-		for (Edge tmp : edges) {
-			if (tmp instanceof FmmlxAssociation) {
-				result.add((FmmlxAssociation) tmp);
-			}
-		}
-		return result; // read-only
-	}
-
-	public Vector<FmmlxLink> getAssociationInstance(){
-		Vector<FmmlxLink> result = new Vector<>();
-		for (Edge tmp : edges) {
-			if (tmp instanceof FmmlxLink) {
-				result.add((FmmlxLink) tmp);
-			}
-		}
-		return result; // read-only
 	}
 
 	public InheritanceEdge getInheritanceEdge(FmmlxObject child, FmmlxObject parent) {
@@ -1017,11 +892,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public Vector<DiagramEdgeLabel> getLabels() {
 		return new Vector<>(labels); // read-only
 	}
-
-	public Vector<Edge> getEdges() {
-		return new Vector<>(edges); // read-only
-	}
-
 	
 	public Vector<FmmlxObject> getObjectsByLevel(int level){
 		Vector<FmmlxObject> result = new Vector<>();
@@ -1052,23 +922,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return result;
 	}
 	
-	public Vector<FmmlxAssociation> getRelatedAssociationByObject(FmmlxObject object) {
-		Vector<FmmlxAssociation> result = new Vector<>();
-		for (Edge tmp : edges) {
-			if (tmp instanceof FmmlxAssociation) {
-				if (tmp.sourceNode.getName().equals(object.getName()) || tmp.targetNode.getName().equals(object.getName())) {
-					result.add((FmmlxAssociation) tmp);
-				}
-			}
-		}
-		return result;
-	}
-	
-	public boolean isNameAvailable(String t) {
-		for (FmmlxObject o : objects) if (o.getName().equals(t)) return false;
-		return true;
-	}
-
 	public void setCursor(Cursor c) {
 		canvas.setCursor(c);
 	}
@@ -1189,25 +1042,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		return result;
 	}
-
-	public FmmlxObject getObjectByPath(String path) {
-		for(FmmlxObject obj : getObjects()) {
-			if (obj.getPath().equals(path)){
-				return obj;
-			}
-		}
-		return null;
-	}
-
-	public FmmlxAssociation getAssociationByPath(String path) {
-		for(FmmlxAssociation as : getAssociations()) {
-			if(as.getPath().equals(path)) {
-				return as;
-			}
-		}
-		return null;
-	}
-
+	
 //	public List<FmmlxObject> getSortedObject(SortedValue sortedValue) {
 //		List<FmmlxObject> result = new ArrayList<>(getObjects());
 //		if(sortedValue == SortedValue.REVERSE) {
@@ -1280,6 +1115,44 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		triggerOverallReLayout();
 		redraw();
+	}
+
+	@Override
+	protected void clearDiagram_specific() {
+		labels.clear();
+		issues.clear();		
+	}
+
+	@Override
+	protected void fetchDiagramDataSpecific() throws TimeOutException {
+		levelColorScheme = new LevelColorScheme.RedLevelColorScheme(objects);
+		issues.addAll(comm.fetchIssues(this));
+		for(FmmlxObject o : objects) {
+			o.layout(this);
+		}
+		enums = comm.fetchAllEnums(this);
+		auxTypes = comm.fetchAllAuxTypes(this);
+
+		triggerOverallReLayout();
+		resizeCanvas();
+
+	}
+
+	@Override
+	protected void fetchDiagramDataSpecific2() {
+		newFmmlxPalette.update();
+		if(justLoaded){
+			if(filePath !=null && filePath.length()>0){
+				Deserializer deserializer = new Deserializer();
+				deserializer.alignCoordinate(this);
+				triggerOverallReLayout();
+			}
+			justLoaded = false;
+		}
+		redraw();
+		if(issues.size() > 0) {
+			issues.firstElement().performResolveAction(this);
+		}
 	}
 	
 }

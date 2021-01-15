@@ -55,7 +55,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			boolean symmetric,
 			boolean transitive,
 			Vector<Object> labelPositions,
-			FmmlxDiagram diagram) {
+			AbstractPackageViewer diagram) {
 
 		super(path, diagram.getObjectByPath(startPath), diagram.getObjectByPath(endPath), points, startPortRegion, endPortRegion, labelPositions, diagram);
 
@@ -92,19 +92,19 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 //		return parent.getName();
 //	}
 
-	@Override protected void layoutLabels() {
+	@Override protected void layoutLabels(FmmlxDiagram diagram) {
 		if( sourceNode == targetNode) {
-			createLabel(name, 0, Anchor.CENTRE_SELFASSOCIATION, showChangeFwNameDialog, BLACK, TRANSPARENT);
+			createLabel(name, 0, Anchor.CENTRE_SELFASSOCIATION, showChangeFwNameDialog, BLACK, TRANSPARENT, diagram);
 		}else {
-		createLabel(name, 0, Anchor.CENTRE_MOVABLE, showChangeFwNameDialog, BLACK, TRANSPARENT);
+		createLabel(name, 0, Anchor.CENTRE_MOVABLE, showChangeFwNameDialog, BLACK, TRANSPARENT, diagram);
 		}
 //		if(reverseName != null) 
 //	    createLabel(reverseName, 1, Anchor.CENTRE, showChangeRvNameDialog, -20, BLACK, TRANSPARENT);
 		
-		createLabel(""+levelEnd, 2, Anchor.TARGET_LEVEL, showChangeS2ELevelDialog, WHITE, BLACK);
-		createLabel(""+levelStart, 3, Anchor.SOURCE_LEVEL, showChangeE2SLevelDialog, WHITE, BLACK); 
-		createLabel(multiplicityStartToEnd.toString(), 4, Anchor.TARGET_MULTI, showChangeS2EMultDialog, BLACK, TRANSPARENT);
-		createLabel(multiplicityEndToStart.toString(), 5, Anchor.SOURCE_MULTI, showChangeE2SMultDialog, BLACK, TRANSPARENT);
+		createLabel(""+levelEnd, 2, Anchor.TARGET_LEVEL, showChangeS2ELevelDialog, WHITE, BLACK,diagram);
+		createLabel(""+levelStart, 3, Anchor.SOURCE_LEVEL, showChangeE2SLevelDialog, WHITE, BLACK, diagram); 
+		createLabel(multiplicityStartToEnd.toString(), 4, Anchor.TARGET_MULTI, showChangeS2EMultDialog, BLACK, TRANSPARENT, diagram);
+		createLabel(multiplicityEndToStart.toString(), 5, Anchor.SOURCE_MULTI, showChangeE2SMultDialog, BLACK, TRANSPARENT, diagram);
 		layoutingFinishedSuccesfully = true;
 	}
 	
@@ -165,9 +165,9 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		return "( " + firstString + " ; " + seconString + " )";
 	}
 	
-	public Vector<FmmlxLink> getInstance(){
-		return diagram.getAssociationInstance();
-	}	
+//	public Vector<FmmlxLink> getInstance(){
+//		return diagram.getAssociationInstance();
+//	}	
 	
 	public boolean doObjectsFit(FmmlxObject source, FmmlxObject target) {
 		if(source==null || target == null) return false;

@@ -93,6 +93,7 @@ public class FmmlxDiagramCommunicator {
 
 	private transient Integer _newDiagramID = null;
 	public Integer createDiagram(String packagePath, String diagramName, String file) {
+		//Creates a diagram which is not displayed yet.
 		Value[] message = new Value[]{
 				new Value(packagePath),
 				new Value(diagramName),
@@ -114,6 +115,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	public void openDiagram(String packagePath, String diagramName) {
+		//TODO: Not yet implemented. To open an existing diagram.
 		Value[] message = new Value[]{
 				new Value(packagePath),
 				new Value(diagramName)
@@ -238,7 +240,7 @@ public class FmmlxDiagramCommunicator {
 	/////////////////////////////////////////
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxObject> getAllObjects(FmmlxDiagram diagram) throws TimeOutException {
+	public Vector<FmmlxObject> getAllObjects(AbstractPackageViewer diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllObjects");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<FmmlxObject> result = new Vector<>();
@@ -272,7 +274,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<Edge> getAllInheritanceEdges(FmmlxDiagram diagram) throws TimeOutException {
+	public Vector<Edge> getAllInheritanceEdges(AbstractPackageViewer diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllInheritanceEdges");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
@@ -312,7 +314,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Vector<Edge> getAllDelegationEdges(FmmlxDiagram diagram) throws TimeOutException {
+	public Vector<Edge> getAllDelegationEdges(AbstractPackageViewer diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllDelegationEdges");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
@@ -353,7 +355,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Vector<Edge> getAllRoleFillerEdges(FmmlxDiagram diagram) throws TimeOutException {
+	public Vector<Edge> getAllRoleFillerEdges(AbstractPackageViewer diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllRoleFillerEdges");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
@@ -393,7 +395,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Vector<Edge> getAllAssociations(FmmlxDiagram diagram) throws TimeOutException {
+	public Vector<Edge> getAllAssociations(AbstractPackageViewer diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllAssociations");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
@@ -455,7 +457,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<Edge> getAllAssociationsInstances(FmmlxDiagram diagram) throws TimeOutException {
+	public Vector<Edge> getAllAssociationsInstances(AbstractPackageViewer diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllAssociationInstances");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
@@ -499,7 +501,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<Vector<FmmlxAttribute>> fetchAttributes(FmmlxDiagram diagram, String className) throws TimeOutException {
+	public Vector<Vector<FmmlxAttribute>> fetchAttributes(AbstractPackageViewer diagram, String className) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllAttributes", new Value(className));
 		Vector<Object> twoLists = (Vector<Object>) (response.get(0));
 		Vector<FmmlxAttribute> resultOwn = new Vector<>();
@@ -534,7 +536,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxOperation> fetchOperations(FmmlxDiagram diagram, String className) throws TimeOutException {
+	public Vector<FmmlxOperation> fetchOperations(AbstractPackageViewer diagram, String className) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getOwnOperations", new Value(className));
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxOperation> result = new Vector<>();
@@ -572,7 +574,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxSlot> fetchSlots(FmmlxDiagram diagram, FmmlxObject owner, Vector<String> slotNames) throws TimeOutException {
+	public Vector<FmmlxSlot> fetchSlots(AbstractPackageViewer diagram, FmmlxObject owner, Vector<String> slotNames) throws TimeOutException {
 		Value[] slotNameArray = createValueArray(slotNames);
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getSlots", new Value(owner.getName()), new Value(slotNameArray));
 		Vector<Object> slotList = (Vector<Object>) (response.get(0));
@@ -587,7 +589,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxOperationValue> fetchOperationValues(FmmlxDiagram diagram, String objectName, Vector<String> monitoredOperationsNames) throws TimeOutException {
+	public Vector<FmmlxOperationValue> fetchOperationValues(AbstractPackageViewer diagram, String objectName, Vector<String> monitoredOperationsNames) throws TimeOutException {
 		Value[] monitoredOperationsNameArray = createValueArray(monitoredOperationsNames);
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getOperationValues", new Value(objectName), new Value(monitoredOperationsNameArray));
 		Vector<Object> returnValuesList = (Vector<Object>) (response.get(0));
@@ -1611,5 +1613,10 @@ public class FmmlxDiagramCommunicator {
 			}
 		}
 		return "";
+	}
+
+	public void closeDiagram(int id) {
+		System.out.println("FmmlxDiagramCommunicator: Diagram should be closed here!");
+		//TODO: Implementation
 	}
 }
