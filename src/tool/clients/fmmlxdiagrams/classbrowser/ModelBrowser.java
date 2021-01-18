@@ -24,10 +24,12 @@ import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
+import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
+import tool.clients.fmmlxdiagrams.FmmlxSlot;
 import tool.clients.fmmlxdiagrams.SortedValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
@@ -38,10 +40,11 @@ import tool.xmodeler.XModeler;
 public class ModelBrowser extends CustomStage {
 
 	private TextArea codeArea;
-	private ListView<String> modelListView, fmmlxAttributeListView, 
-						fmmlxOperationListView, fmmlxAssociationListView, slotListView;
+	private ListView<String> modelListView,	fmmlxOperationListView, fmmlxAssociationListView;
 	
 	private ListView<FmmlxObject> fmmlxObjectListView;
+	private ListView<FmmlxAttribute> fmmlxAttributeListView;
+	private ListView<FmmlxSlot> slotListView;
 	private ComboBox<Boolean> abstractComboBox;
 	private TextField modellBrowserTextFied, classBrowserTextField, operationInputTextField, operationOutputTexField, 
 						associationBrowserTextField, attributeBrowserTextField;
@@ -51,6 +54,7 @@ public class ModelBrowser extends CustomStage {
 	private GridPane mainGridPane, attributeGridpane;	
 	FmmlxDiagramCommunicator communicator;
 	private AbstractPackageViewer activePackage;
+	
 	
 	private HashMap<String,AbstractPackageViewer> models = new HashMap<>();
 	
@@ -249,8 +253,14 @@ public class ModelBrowser extends CustomStage {
 		
 	}
 
-	private void onObjectListViewNewValue(FmmlxObject oldValue, FmmlxObject newValue) {
-		
+	private void onObjectListViewNewValue(FmmlxObject oldValue, FmmlxObject selectedObject) {
+		if (selectedObject != null ) {
+			fmmlxAttributeListView.getItems().clear();
+			fmmlxAttributeListView.getItems().addAll(selectedObject.getAllAttributes());
+			slotListView.getItems().clear();
+			slotListView.getItems().addAll(selectedObject.getAllSlots());
+			
+		}		
 	}
 
 	private void onAssociationListViewNewValue(String oldValue, String newValue) {
@@ -283,11 +293,11 @@ public class ModelBrowser extends CustomStage {
 		System.err.println("onModelListViewNewValue done");
 	}	
 
-	private void onSlotListViewNewValue(ListView<String> modelListView2, String oldValue, String newValue) {
+	private void onSlotListViewNewValue(ListView<String> modelListView2, FmmlxSlot oldValue, FmmlxSlot newValue) {
 		
 	}
 	
-	private void onAttributeListViewNewValue(String oldValue, String newValue) {
+	private void onAttributeListViewNewValue(FmmlxAttribute oldValue, FmmlxAttribute newValue) {
 		
 	}
 

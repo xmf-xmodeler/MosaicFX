@@ -878,6 +878,10 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		}
 		return result;
 	}
+	
+	public Vector<FmmlxSlot> getAllSlots(){
+		return new Vector<FmmlxSlot> (slots);
+	}
 
 	@Override
 	public int compareTo(FmmlxObject anotherObject) {
