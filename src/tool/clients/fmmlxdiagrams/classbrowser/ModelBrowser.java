@@ -10,6 +10,8 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -21,13 +23,18 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
+import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
+import tool.clients.fmmlxdiagrams.LevelColorScheme;
+import tool.clients.fmmlxdiagrams.LevelColorScheme.RedLevelColorScheme;
 import tool.clients.fmmlxdiagrams.SortedValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
@@ -53,6 +60,7 @@ public class ModelBrowser extends CustomStage {
 	private AbstractPackageViewer activePackage;
 	
 	private HashMap<String,AbstractPackageViewer> models = new HashMap<>();
+	private RedLevelColorScheme levelColorScheme;
 	
 	public ModelBrowser(String project, String selectedModel, ObservableList<String> models) {
 		super(StringValue.LabelAndHeaderTitle.modelBrowser+" " + project, XModeler.getStage(), 1100, 800);
@@ -175,9 +183,64 @@ public class ModelBrowser extends CustomStage {
 		            protected void updateItem(FmmlxObject o, boolean empty) {
 		                super.updateItem(o, empty);
 		                if (o != null) {
-		                    setText("[" + o.getLevel() + "] " + o.getName());
+		                    setText(o.getName());
+		                    setGraphic(getLevelGraphic(o.getLevel()));
+		                } else {
+		                	setText("");
+		                	setGraphic(null);
 		                }
 		            }
+
+					private Node getLevelGraphic(int level) {
+						double SIZE = 16;
+						Canvas canvas = new Canvas(SIZE, SIZE);
+						Text temp = new Text(level+"");
+						GraphicsContext g = canvas.getGraphicsContext2D();
+						g.setFill(levelColorScheme.getLevelBgColor(level));
+						g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/2, SIZE/2);
+						g.setFill(levelColorScheme.getLevelFgColor(level, 1.));
+						g.fillText(level+"", 
+								SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
+								SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
+						return canvas;
+					}
+		        };
+		        return cell;
+		    }
+		});
+	
+		fmmlxAttributeListView.setCellFactory(new Callback<ListView<FmmlxAttribute>, ListCell<FmmlxAttribute>>() {
+	
+		    @Override
+		    public ListCell<FmmlxAttribute> call(ListView<FmmlxAttribute> param) {
+		        ListCell<FmmlxAttribute> cell = new ListCell<FmmlxAttribute>() {
+	
+		            @Override
+		            protected void updateItem(FmmlxAttribute att, boolean empty) {
+		                super.updateItem(att, empty);
+		                FmmlxObject o = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+		                if (att != null && o != null) {
+		                    setText(att.getName());
+		                    setGraphic(getLevelGraphic(att.getLevel(), o.getOwnAttributes().contains(att)));
+		                } else {
+		                	setText("");
+		                	setGraphic(null);
+		                }
+		            }
+	
+					private Node getLevelGraphic(int level, boolean own) {
+						double SIZE = 16;
+						Canvas canvas = new Canvas(SIZE, SIZE);
+						Text temp = new Text(level+"");
+						GraphicsContext g = canvas.getGraphicsContext2D();
+						g.setFill(own?Color.BLACK:Color.GRAY);
+						g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/2, SIZE/2);
+						g.setFill(Color.WHITE);
+						g.fillText(level+"", 
+								SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
+								SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
+						return canvas;
+					}
 		        };
 		        return cell;
 		    }
@@ -293,7 +356,8 @@ public class ModelBrowser extends CustomStage {
 
 	public void notifyModelHasLoaded() {
 		Vector<FmmlxObject> objects = activePackage.getObjects();
-		Vector<String> names = new Vector<>();
+		levelColorScheme = new LevelColorScheme.RedLevelColorScheme(activePackage.getObjects());
+//		Vector<String> names = new Vector<>();
 //		for (FmmlxObject o:objects) {
 //			names.add(o.getName());
 //		}
