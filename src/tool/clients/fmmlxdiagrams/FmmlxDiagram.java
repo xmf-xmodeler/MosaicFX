@@ -1023,15 +1023,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return actions;
 	}
 	
-	public String convertPath2Short(String typePath) {
-		String[] prefixes = new String[]{packagePath, "Root::XCore", "Root::Auxiliary", "Root"};
-			for(String prefix : prefixes) {
-				if(typePath.startsWith(prefix)) {
-					return typePath.substring(prefix.length()+2);
-				}
-			}
-		return typePath;
-	}
 
 	public Vector<Issue> getIssues(FmmlxObject fmmlxObject) {
 		Vector<Issue> result = new Vector<>();
