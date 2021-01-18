@@ -4,12 +4,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
-import tool.clients.serializer.interfaces.IXmlManager;
+import tool.clients.serializer.interfaces.XmlManager;
 
 import java.util.List;
 import java.util.Vector;
 
-public class DiagramXmlManager implements IXmlManager {
+public class DiagramXmlManager implements XmlManager {
     private final XmlHandler xmlHandler;
 
     protected DiagramXmlManager(XmlHandler xmlHandler){

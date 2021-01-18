@@ -28,7 +28,7 @@ import javafx.scene.transform.NonInvertibleTransformException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
-import tool.clients.serializer.Deserializer;
+import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.XmlHandler;
 
 import java.io.FileInputStream;
@@ -261,8 +261,8 @@ public class FmmlxDiagram{
 		newFmmlxPalette.update();
 		if(justLoaded){
 			if(filePath !=null && filePath.length()>0){
-				Deserializer deserializer = new Deserializer(XmlHandler.getInstance(this.filePath));
-				deserializer.alignCoordinate(this);
+				FmmlxDeserializer fmmlxDeserializer = new FmmlxDeserializer(XmlHandler.getInstance(this.filePath));
+				fmmlxDeserializer.alignCoordinate(this);
 				triggerOverallReLayout();
 			}
 			justLoaded = false;

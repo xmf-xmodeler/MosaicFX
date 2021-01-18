@@ -5,12 +5,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.*;
-import tool.clients.serializer.interfaces.IXmlManager;
+import tool.clients.serializer.interfaces.XmlManager;
 
 import java.util.List;
 import java.util.Vector;
 
-public class EdgeXmlManager implements IXmlManager {
+public class EdgeXmlManager implements XmlManager {
 
     private final XmlHandler xmlHandler;
 

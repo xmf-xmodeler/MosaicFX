@@ -28,9 +28,8 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.*;
 import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
-import tool.clients.serializer.Deserializer;
-import tool.clients.serializer.Serializer;
-import tool.clients.serializer.XmlHandler;
+import tool.clients.serializer.FmmlxSerializer;
+import tool.clients.serializer.interfaces.Serializer;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -940,7 +939,7 @@ public class DiagramActions {
 	public void save() {
 		Platform.runLater(() -> {
 			try {
-				Serializer serializer = new Serializer(diagram.getFilePath());
+				Serializer serializer = new FmmlxSerializer(diagram.getFilePath());
 				serializer.save(diagram);
 			} catch (TransformerException | ParserConfigurationException e) {
 				e.printStackTrace();

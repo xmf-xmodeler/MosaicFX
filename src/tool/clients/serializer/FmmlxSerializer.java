@@ -2,7 +2,7 @@ package tool.clients.serializer;
 
 import org.w3c.dom.Element;
 import tool.clients.fmmlxdiagrams.*;
-import tool.clients.serializer.interfaces.ISerializer;
+import tool.clients.serializer.interfaces.Serializer;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -10,21 +10,28 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Vector;
 
-public class Serializer implements ISerializer {
+public class FmmlxSerializer implements Serializer {
     private final XmlHandler xmlHandler;
+    private final String file;
 
-    public Serializer(String file) throws TransformerException, ParserConfigurationException {
-        initUserXMLFile(file);
-        this.xmlHandler = XmlHandler.getInstance(file);
+    public FmmlxSerializer(String file) throws TransformerException, ParserConfigurationException {
+        this.file = initUserXMLFile(file);
+        this.xmlHandler = XmlHandler.getInstance(this.file);
     }
 
     @Override
-    public void saveAsXml(Vector<FmmlxDiagram> diagrams, String file) throws TimeOutException, TransformerException {
+    public String initUserXMLFile(String file) throws TransformerException, ParserConfigurationException {
+        XmlCreator xmlCreator = new XmlCreator();
+        return xmlCreator.create(file);
+    }
+
+    @Override
+    public void saveAsXml(Vector<FmmlxDiagram> diagrams) throws TimeOutException, TransformerException {
         this.xmlHandler.clearAll();
         int saveLogCount = 0;
 
         for(FmmlxDiagram diagram : diagrams){
-            diagram.setFilePath(file);
+            diagram.setFilePath(this.file);
             saveProject(diagram);
             saveDiagram(diagram);
             if(saveLogCount==0){
@@ -35,7 +42,31 @@ public class Serializer implements ISerializer {
         this.xmlHandler.flushData();
     }
 
-    private void saveDiagram(FmmlxDiagram diagram) throws TransformerException, TimeOutException {
+    @Override
+    public void save(FmmlxDiagram diagram)  {
+        if(diagram.getFilePath()!=null && diagram.getFilePath().length()>0){
+            try {
+                saveDiagram(diagram);
+                xmlHandler.flushData();
+            } catch (TransformerException | TimeOutException e) {
+                e.printStackTrace();
+            }
+            System.out.println(diagram.getDiagramLabel() + " saved");
+        } else {
+            diagram.getComm().saveXmlFile(diagram);
+        }
+    }
+
+    public void saveProject(FmmlxDiagram diagram)  {
+        ProjectXmlManager projectXmlManager = new ProjectXmlManager(this.xmlHandler);
+        Element projectElement =  projectXmlManager.createProjectElement(diagram);
+
+        if(!projectXmlManager.projectIsExist(diagram.getPackagePath())) {
+            projectXmlManager.add(projectElement);
+        }
+    }
+
+    public void saveDiagram(FmmlxDiagram diagram) throws TransformerException, TimeOutException {
         if(checkFileExist(xmlHandler.getSourcePath())) {
             DiagramXmlManager diagramXmlManager = new DiagramXmlManager(this.xmlHandler);
             Element diagramElement = diagramXmlManager.createDiagramElement(diagram);
@@ -48,23 +79,20 @@ public class Serializer implements ISerializer {
             saveEdges(diagram);
             saveLabels(diagram);
             saveLog(diagram);
-            this.xmlHandler.flushData();
         }
     }
 
+    public void saveObjects(FmmlxDiagram diagram) {
+        ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
+        Vector<FmmlxObject> objects = diagram.getObjects();
 
-    private void saveLabels(FmmlxDiagram diagram) {
-        LabelXmlManager labelXmlManager = new LabelXmlManager(this.xmlHandler);
-        Vector<DiagramEdgeLabel> labels = diagram.getLabels();
-
-        for (DiagramEdgeLabel label : labels){
-            Element labelElement = labelXmlManager.createLabelElement(diagram, label);
-            labelXmlManager.add(labelElement);
+        for (FmmlxObject object : objects){
+            Element objectElement = objectXmlManager.createObjectElement(diagram, object);
+            objectXmlManager.add(objectElement);
         }
     }
 
-    private void saveEdges(FmmlxDiagram diagram)  {
-
+    public void saveEdges(FmmlxDiagram diagram)  {
         Vector<Edge> edges = diagram.getEdges();
         EdgeXmlManager edgeXmlManager = new EdgeXmlManager(this.xmlHandler);
         Element edgeElement;
@@ -90,32 +118,17 @@ public class Serializer implements ISerializer {
         }
     }
 
-    private void saveObjects(FmmlxDiagram diagram) {
-        ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
-        Vector<FmmlxObject> objects = diagram.getObjects();
+    public void saveLabels(FmmlxDiagram diagram) {
+        LabelXmlManager labelXmlManager = new LabelXmlManager(this.xmlHandler);
+        Vector<DiagramEdgeLabel> labels = diagram.getLabels();
 
-        for (FmmlxObject object : objects){
-            Element objectElement = objectXmlManager.createObjectElement(diagram, object);
-            objectXmlManager.add(objectElement);
+        for (DiagramEdgeLabel label : labels){
+            Element labelElement = labelXmlManager.createLabelElement(diagram, label);
+            labelXmlManager.add(labelElement);
         }
     }
 
-    private void saveProject(FmmlxDiagram diagram)  {
-        ProjectXmlManager projectXmlManager = new ProjectXmlManager(this.xmlHandler);
-        Element projectElement =  projectXmlManager.createProjectElement(diagram);
-
-        if(!projectXmlManager.projectIsExist(diagram.getPackagePath())) {
-            projectXmlManager.add(projectElement);
-        }
-
-    }
-
-    private void initUserXMLFile(String file) throws TransformerException, ParserConfigurationException {
-        XmlCreator xmlCreator = new XmlCreator();
-        xmlCreator.create(file);
-    }
-
-    private void saveLog(FmmlxDiagram diagram) throws TimeOutException {
+    public void saveLog(FmmlxDiagram diagram) throws TimeOutException {
         LogXmlManager logXmlManager = new LogXmlManager(this.xmlHandler);
         logXmlManager.clearLog();
         FaXML protocol = diagram.getComm().getDiagramData(diagram);
@@ -127,23 +140,12 @@ public class Serializer implements ISerializer {
         }
     }
 
-    private boolean checkFileExist(String file) {
+    @Override
+    public boolean checkFileExist(String file) {
         return Files.exists(Paths.get(file));
     }
 
-    public void save(FmmlxDiagram diagram)  {
-        if(diagram.getFilePath()!=null && diagram.getFilePath().length()>0){
-            try {
-                saveDiagram(diagram);
-            } catch (TransformerException | TimeOutException e) {
-                e.printStackTrace();
-            }
-            System.out.println(diagram.getDiagramLabel() + " saved");
-        } else {
-            diagram.getComm().saveXmlFile(diagram);
-        }
-    }
-
+    @Override
     public void clearAllData() {
         xmlHandler.clearAll();
     }

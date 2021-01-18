@@ -2,18 +2,20 @@ package tool.clients.serializer;
 
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
+import tool.clients.serializer.interfaces.Deserializer;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Vector;
 
-public class Deserializer {
+public class FmmlxDeserializer implements Deserializer {
     private final XmlHandler xmlHandler;
 
-    public Deserializer(XmlHandler xmlHandler) {
+    public FmmlxDeserializer(XmlHandler xmlHandler) {
         this.xmlHandler = xmlHandler;
     }
 
+    @Override
     public void loadProject(FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
         ProjectXmlManager projectXmlManager = new ProjectXmlManager(this.xmlHandler);
         String projectName = projectXmlManager.getProjectName();
@@ -21,13 +23,9 @@ public class Deserializer {
         Vector<String> diagramNames = diagramXmlManager.getAllDiagrams();
         fmmlxDiagramCommunicator.loadProjectNameFromXml(projectName, diagramNames, this.xmlHandler.getSourcePath());
     }
-
-    public boolean checkFileExist(String file){
-        return Files.exists(Paths.get(file));
-    }
-
+    @Override
     public void getAllDiagramElement(Integer newDiagramID) {
-        if(checkFileExist(xmlHandler.getSourcePath())){
+        if(Files.exists(Paths.get(xmlHandler.getSourcePath()))){
             LogXmlManager logXmlManager = new LogXmlManager(this.xmlHandler);
             logXmlManager.reproduceFromLog(newDiagramID);
             System.out.println("re-create all objects : finished ");
@@ -35,13 +33,14 @@ public class Deserializer {
     }
 
     @Deprecated
-    public void alignObjectsCoordinate(String file, String diagramName, FmmlxDiagramCommunicator communicator) {
-        if(checkFileExist(file)) {
+    private void alignObjectsCoordinate(String file, String diagramName, FmmlxDiagramCommunicator communicator) {
+        if(Files.exists(Paths.get(file))) {
             ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
             //objectXmlManager.alignObjects(diagramName, communicator);
         }
     }
 
+    @Override
     public void alignCoordinate(FmmlxDiagram diagram) {
         if(diagramInXmlExists(diagram)){
             ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
@@ -64,6 +63,7 @@ public class Deserializer {
         return false;
     }
 
+    @Override
     public String getProjectName() {
         ProjectXmlManager projectXmlManager = new ProjectXmlManager(this.xmlHandler);
         return projectXmlManager.getProjectName();

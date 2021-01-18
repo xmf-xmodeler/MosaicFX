@@ -11,9 +11,11 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
-import tool.clients.serializer.Deserializer;
-import tool.clients.serializer.Serializer;
+import tool.clients.serializer.FmmlxDeserializer;
+import tool.clients.serializer.FmmlxSerializer;
 import tool.clients.serializer.XmlHandler;
+import tool.clients.serializer.interfaces.Deserializer;
+import tool.clients.serializer.interfaces.Serializer;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.PropertyManager;
 import xos.Value;
@@ -1370,8 +1372,8 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void openXmlFile(String fileName){
-		Deserializer deserializer = new Deserializer(XmlHandler.getInstance(fileName));
-		deserializer.loadProject(this);
+		FmmlxDeserializer fmmlxDeserializer = new FmmlxDeserializer(XmlHandler.getInstance(fileName));
+		fmmlxDeserializer.loadProject(this);
 	}
 
 	private transient Integer _newDiagramID = null;
@@ -1584,7 +1586,7 @@ public class FmmlxDiagramCommunicator {
 			@Override
 			protected Void call() throws TransformerException, ParserConfigurationException {
 				Vector<FmmlxDiagram> diagramsToSave = new Vector<>();
-				Serializer serializer = new Serializer(fileName);
+				Serializer serializer = new FmmlxSerializer(fileName);
 				serializer.clearAllData();
 				for(FmmlxDiagram diagram : diagrams){
 					String tmp_packageName = diagram.getPackagePath().split("::")[1];
@@ -1593,7 +1595,7 @@ public class FmmlxDiagramCommunicator {
 					}
 				}
 				try {
-					serializer.saveAsXml(diagramsToSave, fileName);
+					serializer.saveAsXml(diagramsToSave);
 				} catch (TimeOutException e) {
 					e.printStackTrace();
 				}
@@ -1609,7 +1611,7 @@ public class FmmlxDiagramCommunicator {
 		Task<Void> task = new Task<Void>() {
 			@Override
 			protected Void call() {
-				Deserializer deserializer = new Deserializer(XmlHandler.getInstance(file));
+				Deserializer deserializer = new FmmlxDeserializer(XmlHandler.getInstance(file));
 				int id = getDiagramIdFromName(diagramName);
 				try {
 					deserializer.getAllDiagramElement(id);
