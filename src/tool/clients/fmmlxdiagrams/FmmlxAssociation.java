@@ -163,11 +163,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		String firstString = this.getSourceNode().getName();
 		String seconString = this.getTargetNode().getName();
 		return "( " + firstString + " ; " + seconString + " )";
-	}
-	
-//	public Vector<FmmlxLink> getInstance(){
-//		return diagram.getAssociationInstance();
-//	}	
+	}	
 	
 	public boolean doObjectsFit(FmmlxObject source, FmmlxObject target) {
 		if(source==null || target == null) return false;

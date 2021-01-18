@@ -5,12 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
@@ -19,6 +21,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
@@ -35,8 +38,10 @@ import tool.xmodeler.XModeler;
 public class ModelBrowser extends CustomStage {
 
 	private TextArea codeArea;
-	private ListView<String> modelListView,fmmlxObjectListView, fmmlxAttributeListView, 
+	private ListView<String> modelListView, fmmlxAttributeListView, 
 						fmmlxOperationListView, fmmlxAssociationListView, slotListView;
+	
+	private ListView<FmmlxObject> fmmlxObjectListView;
 	private ComboBox<Boolean> abstractComboBox;
 	private TextField modellBrowserTextFied, classBrowserTextField, operationInputTextField, operationOutputTexField, 
 						associationBrowserTextField, attributeBrowserTextField;
@@ -58,9 +63,9 @@ public class ModelBrowser extends CustomStage {
 		setOnCloseRequest(e -> onClose());
 		modelListView.getItems().clear();
 		modelListView.getItems().addAll(models);
-		modelListView.getSelectionModel().getSelectedItems().clear();
+		modelListView.getSelectionModel().clearSelection();
 		if (selectedModel!=null) {
-		modelListView.getSelectionModel().select(selectedModel);
+			modelListView.getSelectionModel().select(selectedModel);
 		}
 	}
 
@@ -159,6 +164,24 @@ public class ModelBrowser extends CustomStage {
 				-> onOperationListViewNewValue(oldValue, newValue));
 		fmmlxAssociationListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onAssociationListViewNewValue(oldValue,newValue)); 
+		
+		fmmlxObjectListView.setCellFactory(new Callback<ListView<FmmlxObject>, ListCell<FmmlxObject>>() {
+
+		    @Override
+		    public ListCell<FmmlxObject> call(ListView<FmmlxObject> param) {
+		        ListCell<FmmlxObject> cell = new ListCell<FmmlxObject>() {
+
+		            @Override
+		            protected void updateItem(FmmlxObject o, boolean empty) {
+		                super.updateItem(o, empty);
+		                if (o != null) {
+		                    setText("[" + o.getLevel() + "] " + o.getName());
+		                }
+		            }
+		        };
+		        return cell;
+		    }
+		});
 	}
 
 	@Override
@@ -226,7 +249,7 @@ public class ModelBrowser extends CustomStage {
 		
 	}
 
-	private void onObjectListViewNewValue(String oldValue, String newValue) {
+	private void onObjectListViewNewValue(FmmlxObject oldValue, FmmlxObject newValue) {
 		
 	}
 
@@ -246,28 +269,45 @@ public class ModelBrowser extends CustomStage {
 		
 	}
 	
-	private void onModelListViewNewValue(String oldValue, String selectedPath) {
+	private void onModelListViewNewValue(String oldSelectedPath, String selectedPath) {
+		if(selectedPath == null || selectedPath.equals(oldSelectedPath)) return;
+		System.err.println("onModelListViewNewValue " + selectedPath);
 		if(!models.containsKey(selectedPath)) {
 			Integer newDiagramID=communicator.createDiagram(selectedPath, "Test", "");
-			ClassBrowserPackageViewer tempViewer = new ClassBrowserPackageViewer(communicator, newDiagramID, selectedPath);
+			ClassBrowserPackageViewer tempViewer = new ClassBrowserPackageViewer(communicator, newDiagramID, selectedPath, this);
 			models.put(selectedPath, tempViewer);
 		}
 		activePackage = models.get(selectedPath);
+		storeSelection();
 		activePackage.updateDiagram();
-		Vector<FmmlxObject> objects = activePackage.getObjects();
-		Vector<String> names = new Vector<>();
-		for (FmmlxObject o:objects) {
-			names.add(o.getName());
-		}
-		fmmlxObjectListView.getItems().clear();
-		fmmlxObjectListView.getItems().addAll(names);
+		System.err.println("onModelListViewNewValue done");
 	}	
-	
+
 	private void onSlotListViewNewValue(ListView<String> modelListView2, String oldValue, String newValue) {
 		
 	}
 	
 	private void onAttributeListViewNewValue(String oldValue, String newValue) {
+		
+	}
+
+	public void notifyModelHasLoaded() {
+		Vector<FmmlxObject> objects = activePackage.getObjects();
+		Vector<String> names = new Vector<>();
+//		for (FmmlxObject o:objects) {
+//			names.add(o.getName());
+//		}
+		fmmlxObjectListView.getItems().clear();
+		fmmlxObjectListView.getItems().addAll(objects);
+		
+		restoreSelection();
+	}
+
+	private void storeSelection() {
+		
+	}
+	
+	private void restoreSelection() {
 		
 	}
 

@@ -12,9 +12,11 @@ import tool.clients.fmmlxdiagrams.TimeOutException;
 
 public class ClassBrowserPackageViewer extends AbstractPackageViewer{
 
-	protected ClassBrowserPackageViewer(FmmlxDiagramCommunicator comm, int diagramID, String packagePath) {
+	private final ModelBrowser view;
+	
+	protected ClassBrowserPackageViewer(FmmlxDiagramCommunicator comm, int diagramID, String packagePath, ModelBrowser view) {
 		super(comm, diagramID, packagePath);
-		// TODO Auto-generated constructor stub
+		this.view = view;
 	}
 
 	@Override
@@ -61,7 +63,7 @@ public class ClassBrowserPackageViewer extends AbstractPackageViewer{
 	protected void fetchDiagramDataSpecific() throws TimeOutException {}
 
 	@Override
-	protected void fetchDiagramDataSpecific2() {}
+	protected void fetchDiagramDataSpecific2() {view.notifyModelHasLoaded();}
 
 	@Override
 	protected void clearDiagram_specific() {}
