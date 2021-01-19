@@ -25,7 +25,7 @@ import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumElementDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeEnumNameDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.EditEnumerationDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.TimeOutException;
 
@@ -40,11 +40,10 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 	private Button addItemButton;
 	private Button removeItemButton;
 	private Button changeNameButton;
-	private Vector<String> enumItems;
 	
-	private FmmlxDiagram diagram;
+	private AbstractPackageViewer diagram;
 	
-	public EditEnumerationDialog(FmmlxDiagram diagram) {
+	public EditEnumerationDialog(AbstractPackageViewer diagram) {
 		super();
 		this.diagram=diagram;
 		
@@ -113,7 +112,7 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 	private void layout() {
 		chooseEnumLabel = new Label("Choose Enumeration");
 		inputElementLabel = new Label("Items");
-		enumItems = new Vector<String>();
+//		enumItems = new Vector<String>();
 		
 		inputElementListview = initializeListView(0);
 		inputElementListview.setEditable(true);
@@ -207,7 +206,7 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 
 	private void addElement(FmmlxEnum selectedEnum, ListView<String> list) {
 		if(chooseEnumComboBox.getSelectionModel().getSelectedItem()!=null) {
-			AddEnumElement dlg = new AddEnumElement(diagram, selectedEnum, list);
+			AddEnumElement dlg = new AddEnumElement(selectedEnum, list);
 			Optional<AddEnumElementDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {

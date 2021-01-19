@@ -10,7 +10,7 @@ public class DelegationEdge extends Edge {
 
 	public DelegationEdge(String path, String childPath, String parentPath, Integer level, Vector<Point2D> intermediatePoints,
 			PortRegion startPortRegion, PortRegion endPortRegion,
-			FmmlxDiagram diagram) {
+			AbstractPackageViewer diagram) {
 		super(path, diagram.getObjectByPath(childPath), diagram.getObjectByPath(parentPath), intermediatePoints, startPortRegion, endPortRegion, new Vector<>(),
 				diagram);
 		this.level = level;
@@ -21,8 +21,8 @@ public class DelegationEdge extends Edge {
 	protected void checkVisibilityMode() {visible = true;}
 	
 	@Override
-	protected void layoutLabels() {
-		createLabel(""+level, 2, Anchor.TARGET_LEVEL, ()->{}, Color.WHITE, getPrimaryColor());
+	protected void layoutLabels(FmmlxDiagram diagram) {
+		createLabel(""+level, 2, Anchor.TARGET_LEVEL, ()->{}, Color.WHITE, getPrimaryColor(), diagram);
 
 		layoutingFinishedSuccesfully = true;
 	} // NONE

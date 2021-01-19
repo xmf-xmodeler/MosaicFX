@@ -40,8 +40,9 @@ public class FmmlxDiagramCommunicator {
 	private static final Vector<FmmlxDiagram> diagrams = new Vector<>();
 	private static final boolean DEBUG = false;
 	static TabPane tabPane;
-//	private String name;
 	private Value getNoReturnExpectedMessageID(int diagramID) {return new Value(new Value[] {new Value(diagramID), new Value(-1)});}
+	
+	/* Operations for setting up the Communicator */
 	
 	public FmmlxDiagramCommunicator() {
 		if(self != null) throw new IllegalStateException("FmmlxDiagramCommunicator must not be instantiated more than once.");
@@ -65,11 +66,10 @@ public class FmmlxDiagramCommunicator {
 		this.handler = handler;
 	}
 	
-	@SuppressWarnings("deprecation")
+	/* Setting up new or existing diagrams, as well as closing */
+	
 	public void newDiagram(int diagramID, String diagramName, String packagePath, String file) {
-//		this.name = diagramName;
 		CountDownLatch l = new CountDownLatch(1);
-//		final String label = diagramName;// + " " + diagramID;//"getPackageName();";
 		Platform.runLater(() -> {
 			if (DEBUG) System.err.println("Create FMMLx-Diagram ("+diagramName+") ...");
 			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packagePath);
@@ -84,8 +84,6 @@ public class FmmlxDiagramCommunicator {
 				createStage(diagram.getView(), diagramName, this.handler, diagram);	
 			}
 			diagrams.add(diagram);
-//			this.diagram = diagram;
-//			System.err.println("diagrams: " + diagrams);
 			l.countDown();
 		});
 		try {
@@ -95,16 +93,40 @@ public class FmmlxDiagramCommunicator {
 		}
 	}
 
-	private String copyFilePath(String packagePath) {
-		for (FmmlxDiagram diagram: diagrams){
-			if(diagram.getPackagePath().equals(packagePath)){
-				String file = diagram.getFilePath();
-				if(file != null && file.length()>0){
-					return file;
-				}
-			}
+	private transient Integer _newDiagramID = null;
+	public Integer createDiagram(String packagePath, String diagramName, String file) {
+		//Creates a diagram which is not displayed yet.
+		Value[] message = new Value[]{
+				new Value(packagePath),
+				new Value(diagramName),
+				new Value(file)
+		};
+		_newDiagramID = null;
+		int timeout = 0;
+		
+		Task<Void> task = new Task<Void>() { protected Void call() { sendMessage("createDiagramFromJava", message); return null; }};
+		new Thread(task).start();
+		
+		while(_newDiagramID == null && timeout < 10) {
+			System.err.println("timeout: " + timeout);
+			timeout++;
+			try { Thread.sleep(200); } catch (InterruptedException e) { e.printStackTrace(); }
+			
 		}
-		return "";
+		return _newDiagramID;
+	}
+	
+	public void openDiagram(String packagePath, String diagramName) {
+		//TODO: Not yet implemented. To open an existing diagram.
+		Value[] message = new Value[]{
+				new Value(packagePath),
+				new Value(diagramName)
+		};
+		sendMessage("openDiagramFromJava", message);
+	}
+	
+	public void setNewDiagramId(int i) {
+		_newDiagramID = i;
 	}
 
 	private void close(FmmlxDiagram diagram) {
@@ -118,31 +140,6 @@ public class FmmlxDiagramCommunicator {
 	private Value[] createValueArray(Vector<String> vector) { // todo: make more generic
 		Value[] result = new Value[vector.size()];
 		for (int i = 0; i < result.length; i++) {
-			result[i] = new Value(vector.get(i));
-		}
-		return result;
-	}
-
-	private Value[] createValueArrayString(Vector<String> vector) {
-		Value[] result = new Value[vector.size()];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = new Value(vector.get(i));
-		}
-		return result;
-	}
-	
-/*
- * 	private Value[] createValueArrayEnumElement(Vector<EnumElement> vector) {
-		Value[] result = new Value[vector.size()];
-		for(int i = 0; i < result.length; i++) {
-			result[i] = new Value(vector.get(i).getName());
-		}
-		return result;
-	}*/
-	
-	private Value[] createValueArrayEnum(Vector<String> vector) {
-		Value[] result = new Value[vector.size()];
-		for(int i = 0; i < result.length; i++) {
 			result[i] = new Value(vector.get(i));
 		}
 		return result;
@@ -244,19 +241,12 @@ public class FmmlxDiagramCommunicator {
 	/////////////////////////////////////////
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxObject> getAllObjects(FmmlxDiagram diagram) throws TimeOutException {
+	public Vector<FmmlxObject> getAllObjects(AbstractPackageViewer diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllObjects");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<FmmlxObject> result = new Vector<>();
 		for (Object responseObject : responseContent) {
 			Vector<Object> responseObjectList = (Vector<Object>) (responseObject);
-
-//			// deprecated, replaced by String
-//			Vector<Object> parentListO = (Vector<Object>) responseObjectList.get(4);
-//			Vector<Integer> parentListI = new Vector<>();
-//			for (Object o : parentListO) {
-//				parentListI.add((Integer) o);
-//			}
 			
 			Vector<Object> parentListO2 = (Vector<Object>) responseObjectList.get(12);
 			Vector<String> parentListS = new Vector<>();
@@ -279,13 +269,13 @@ public class FmmlxDiagramCommunicator {
 					diagram);
 			result.add(object);
 
-			sendCurrentPosition(diagram.getID(), object.getOwnPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY())); // make sure to store position if newly created
+			sendCurrentPosition(diagram.getID(), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY())); // make sure to store position if newly created
 		}
 		return result;
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<Edge> getAllInheritanceEdges(FmmlxDiagram diagram) throws TimeOutException {
+	public Vector<Edge> getAllInheritanceEdges(AbstractPackageViewer diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllInheritanceEdges");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
@@ -325,7 +315,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Vector<Edge> getAllDelegationEdges(FmmlxDiagram diagram) throws TimeOutException {
+	public Vector<Edge> getAllDelegationEdges(AbstractPackageViewer diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllDelegationEdges");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
@@ -366,7 +356,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Vector<Edge> getAllRoleFillerEdges(FmmlxDiagram diagram) throws TimeOutException {
+	public Vector<Edge> getAllRoleFillerEdges(AbstractPackageViewer diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllRoleFillerEdges");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
@@ -406,7 +396,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Vector<Edge> getAllAssociations(FmmlxDiagram diagram) throws TimeOutException {
+	public Vector<Edge> getAllAssociations(AbstractPackageViewer diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllAssociations");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
@@ -467,7 +457,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<Edge> getAllAssociationsInstances(FmmlxDiagram diagram) throws TimeOutException {
+	public Vector<Edge> getAllAssociationsInstances(AbstractPackageViewer diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllAssociationInstances");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		Vector<Edge> result = new Vector<>();
@@ -511,7 +501,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<Vector<FmmlxAttribute>> fetchAttributes(FmmlxDiagram diagram, String className) throws TimeOutException {
+	public Vector<Vector<FmmlxAttribute>> fetchAttributes(AbstractPackageViewer diagram, String className) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllAttributes", new Value(className));
 		Vector<Object> twoLists = (Vector<Object>) (response.get(0));
 		Vector<FmmlxAttribute> resultOwn = new Vector<>();
@@ -546,7 +536,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxOperation> fetchOperations(FmmlxDiagram diagram, String className) throws TimeOutException {
+	public Vector<FmmlxOperation> fetchOperations(AbstractPackageViewer diagram, String className) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getOwnOperations", new Value(className));
 		Vector<Object> response0 = (Vector<Object>) (response.get(0));
 		Vector<FmmlxOperation> result = new Vector<>();
@@ -584,8 +574,8 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxSlot> fetchSlots(FmmlxDiagram diagram, FmmlxObject owner, Vector<String> slotNames) throws TimeOutException {
-		Value[] slotNameArray = createValueArrayString(slotNames);
+	public Vector<FmmlxSlot> fetchSlots(AbstractPackageViewer diagram, FmmlxObject owner, Vector<String> slotNames) throws TimeOutException {
+		Value[] slotNameArray = createValueArray(slotNames);
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getSlots", new Value(owner.getName()), new Value(slotNameArray));
 		Vector<Object> slotList = (Vector<Object>) (response.get(0));
 		Vector<FmmlxSlot> result = new Vector<>();
@@ -599,8 +589,8 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxOperationValue> fetchOperationValues(FmmlxDiagram diagram, String objectName, Vector<String> monitoredOperationsNames) throws TimeOutException {
-		Value[] monitoredOperationsNameArray = createValueArrayString(monitoredOperationsNames);
+	public Vector<FmmlxOperationValue> fetchOperationValues(AbstractPackageViewer diagram, String objectName, Vector<String> monitoredOperationsNames) throws TimeOutException {
+		Value[] monitoredOperationsNameArray = createValueArray(monitoredOperationsNames);
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getOperationValues", new Value(objectName), new Value(monitoredOperationsNameArray));
 		Vector<Object> returnValuesList = (Vector<Object>) (response.get(0));
 		Vector<FmmlxOperationValue> result = new Vector<>();
@@ -1091,10 +1081,8 @@ public class FmmlxDiagramCommunicator {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(associationId),
-				//TODO new Value(source.getId()),
-				//TODO new Value(target.getId()),
-				new Value(source.getOwnPath()),
-				new Value(target.getOwnPath()),
+				new Value(source.getPath()),
+				new Value(target.getPath()),
 				new Value(newInstLevelSource),
 				new Value(newInstLevelTarget),
 				new Value(newDisplayNameSource),
@@ -1261,19 +1249,11 @@ public class FmmlxDiagramCommunicator {
 		if(msgAsVec.size() <= 0) return;
 		java.util.Vector<Object> err = (java.util.Vector<Object>) msgAsVec.get(0);
 		if (err != null && err.size() > 0 && err.get(0) != null) {
-//			CountDownLatch l = new CountDownLatch(1);
 			Platform.runLater(() -> {
 				Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
 				alert.showAndWait();
-//				l.countDown();
 			});
-//			try {
-//				l.await();
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
 		}
-		
 	}
 
 	public void changeEnumerationItemName(int diagramID, String enumName, String oldEnumValueName, String newEnumValueName) throws TimeOutException {
@@ -1288,14 +1268,13 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void editEnumeration(int diagramID, String enumName, Vector<String> elements) {
-		Value[] elementArray = createValueArrayString(elements);
+		Value[] elementArray = createValueArray(elements);
 		
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(enumName),
 				new Value(elementArray)};
 		sendMessage("editEnum", message);
-		
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -1343,17 +1322,15 @@ public class FmmlxDiagramCommunicator {
 	public void assignToGlobal(int diagramID, FmmlxObject object, String varName) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(object.getOwnPath()),
-				//TODO new Value(object.id),
+				new Value(object.getPath()),
 				new Value(varName)};
 		sendMessage("assignToGlobal", message);
 	}
 
-	public void showBody(FmmlxDiagram fmmlxDiagram, FmmlxObject object, FmmlxOperation operation) {
+	public void showBody(AbstractPackageViewer fmmlxDiagram, FmmlxObject object, FmmlxOperation operation) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(fmmlxDiagram.getID()),
-				new Value(object.getOwnPath()),
-				//TODO new Value(object.id),
+				new Value(object.getPath()),
 				new Value(operation.getName()),
 				new Value(-1), // arity
 				};
@@ -1361,7 +1338,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void loadProjectNameFromXml(String projectName, Vector<String> diagramNames, String file){
-		Value[] diagramNamesValue = createValueArrayString(diagramNames);
+		Value[] diagramNamesValue = createValueArray(diagramNames);
 		Value[] message = new Value[]{
 				new Value(-1),
 				new Value(projectName),
@@ -1376,45 +1353,11 @@ public class FmmlxDiagramCommunicator {
 		fmmlxDeserializer.loadProject(this);
 	}
 
-	private transient Integer _newDiagramID = null;
-	public Integer createDiagram(String packagePath, String diagramName, String file) {
-		Value[] message = new Value[]{
-				new Value(packagePath),
-				new Value(diagramName),
-				new Value(file)
-		};
-		_newDiagramID = null;
-		int timeout = 0;
-		
-		Task<Void> task = new Task<Void>() { protected Void call() { sendMessage("createDiagramFromJava", message); return null; }};
-		new Thread(task).start();
-		
-		while(_newDiagramID == null && timeout < 10) {
-			System.err.println("timeout: " + timeout);
-			timeout++;
-			try { Thread.sleep(200); } catch (InterruptedException e) { e.printStackTrace(); }
-			
-		}
-		return _newDiagramID;
-	}
-	
-	public void openDiagram(String packagePath, String diagramName) {
-		Value[] message = new Value[]{
-				new Value(packagePath),
-				new Value(diagramName)
-		};
-		sendMessage("openDiagramFromJava", message);
-	}
-	
-	public void setNewDiagramId(int i) {
-		_newDiagramID = i;
-	}
-	
 	public void openPackageBrowser() {
 		WorkbenchClient.theClient().send(handler, "openPackageBrowser()");
 	}
 
-	public Vector<String> evalList(FmmlxDiagram diagram, String text) throws TimeOutException {
+	public Vector<String> evalList(AbstractPackageViewer diagram, String text) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "evalList", new Value(text));
 		@SuppressWarnings("unchecked")
 		Vector<Object> list = (Vector<Object>) (response.get(0));
@@ -1427,6 +1370,7 @@ public class FmmlxDiagramCommunicator {
 		return result;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public FaXML getDiagramData(FmmlxDiagram diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getDiagramData");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
@@ -1434,8 +1378,9 @@ public class FmmlxDiagramCommunicator {
 		return new FaXML(responseContent);
 	}
 
-	public HashMap<String, String> findImplementation(FmmlxDiagram diagram, Vector<String> names, String model, Integer arity, String returnType) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram.getID(), "findOperationImplementation", new Value(createValueArrayString(names)), // opNames
+	@SuppressWarnings("unchecked")
+	public HashMap<String, String> findImplementation(AbstractPackageViewer diagram, Vector<String> names, String model, Integer arity, String returnType) throws TimeOutException {
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "findOperationImplementation", new Value(createValueArray(names)), // opNames
 				new Value(arity),// arity
 				new Value(model),// model
 				new Value(returnType)// param4
@@ -1452,6 +1397,7 @@ public class FmmlxDiagramCommunicator {
 		return result;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public HashMap<String, String> findAllOperations(FmmlxDiagram diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "findAllOperations");
 		
@@ -1466,6 +1412,7 @@ public class FmmlxDiagramCommunicator {
 		return result;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public HashMap<String, String> findOperationUsage(FmmlxDiagram diagram, String name, String model) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "findOperationUsage", new Value(name), // opNames
 				new Value(model)// model
@@ -1481,7 +1428,8 @@ public class FmmlxDiagramCommunicator {
 		return result;
 	}
 
-	public void findOperationUsage(FmmlxDiagram diagram, FindSendersOfMessages findSendersOfMessages, String name,
+	@SuppressWarnings("unchecked")
+	public void findOperationUsage(AbstractPackageViewer diagram, FindSendersOfMessages findSendersOfMessages, String name,
 			String model) {
 		Vector<Object> response;
 		try {
@@ -1642,5 +1590,39 @@ public class FmmlxDiagramCommunicator {
 				new Value(packagePath.split("::")[1])
 		};
 		sendMessage("saveAsXml", message);
+	}
+
+	
+	private String copyFilePath(String packagePath) {
+		for (FmmlxDiagram diagram: diagrams){
+			if(diagram.getPackagePath().equals(packagePath)){
+				String file = diagram.getFilePath();
+				if(file != null && file.length()>0){
+					return file;
+				}
+			}
+		}
+		return "";
+	}
+
+	public void closeDiagram(int id) {
+		System.out.println("FmmlxDiagramCommunicator: Diagram should be closed here!");
+		//TODO: Implementation
+	}
+	
+	public Vector<Integer> getAllDiagramIDs(String packagePath) {
+		Vector<Integer> result = new Vector<>();
+		try {
+			Vector<Object> response = xmfRequest(handler, -2, "getAllDiagrams", new Value(packagePath));
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			
+			for(Object e : responseContent) {
+				result.add((Integer) e);
+			}
+			return result;
+		} catch (TimeOutException e1) {
+			throw new RuntimeException(e1);
+		}
+
 	}
 }

@@ -11,17 +11,16 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
-import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumElementDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeEnumNameDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 public class ChangeEnumName extends CustomDialog<ChangeEnumNameDialogResult>{
 	
-	private FmmlxDiagram diagram;
+	private AbstractPackageViewer diagram;
 	private FmmlxEnum selectedItem;
 	private Label currentNameLabel;
 	private Label newNameLabel;
@@ -30,7 +29,7 @@ public class ChangeEnumName extends CustomDialog<ChangeEnumNameDialogResult>{
 	private TextField newNameTextField;
 	
 
-	public ChangeEnumName(FmmlxDiagram diagram, FmmlxEnum selectedItem) {
+	public ChangeEnumName(AbstractPackageViewer diagram, FmmlxEnum selectedItem) {
 		super();
 		this.selectedItem=selectedItem;
 		this.diagram=diagram;

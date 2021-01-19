@@ -13,7 +13,6 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumerationDialogResult;
@@ -27,7 +26,7 @@ public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResul
 
 	
 
-	public AddEnumerationDialog(FmmlxDiagram diagram) {
+	public AddEnumerationDialog() {
 		super();
 		DialogPane dialogPane = getDialogPane();
 

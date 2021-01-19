@@ -11,15 +11,15 @@ public class FmmlxLink extends Edge {
 
 //	FmmlxAssociation ofAssociation;
 	String ofPath;
-	private FmmlxDiagram diagram;
+	//private FmmlxDiagram diagram;
 
 	public FmmlxLink(String path, String startPath, String endPath, String ofPath, Vector<Point2D> points,
 				PortRegion sourcePort, PortRegion targetPort, 
-				Vector<Object> labelPositions, FmmlxDiagram diagram) {
+				Vector<Object> labelPositions, AbstractPackageViewer diagram) {
 		super(path, diagram.getObjectByPath(startPath), diagram.getObjectByPath(endPath), points, sourcePort, targetPort, labelPositions, diagram);
 //		this.ofAssociation = (FmmlxAssociation) diagram.getAssociationById(ofId);
 		this.ofPath = ofPath;
-		this.diagram = diagram;
+		//this.diagram = diagram;
 //		layout();
 	}
 
@@ -33,9 +33,9 @@ public class FmmlxLink extends Edge {
 
 	private enum Anchor {SOURCE,CENTRE,TARGET}
 
-	@Override protected void layoutLabels() {
+	@Override protected void layoutLabels(FmmlxDiagram diagram) {
 		try{
-			createLabel(getOfAssociation().getName(), 0, Anchor.CENTRE, ()->{}, 0);
+			createLabel(getOfAssociation().getName(), 0, Anchor.CENTRE, ()->{}, 0, diagram);
 			layoutingFinishedSuccesfully = true;
 		} catch(Exception e) {
 			//layoutingFinishedSuccesfully = false;
@@ -54,7 +54,7 @@ public class FmmlxLink extends Edge {
 		return (FmmlxAssociation) diagram.getAssociationByPath(ofPath);
 	}
 
-	private void createLabel(String value, int localId, Anchor anchor, Runnable action, int yDiff) {
+	private void createLabel(String value, int localId, Anchor anchor, Runnable action, int yDiff, FmmlxDiagram diagram) {
 //		double x = (getSourceNode().getX() + getSourceNode().getWidth()  / 2) * (anchor==Anchor.SOURCE?0.8:anchor==Anchor.TARGET?0.2:0.5)
 //				 + (getTargetNode().getX() + getTargetNode().getWidth()  / 2) * (anchor==Anchor.SOURCE?0.2:anchor==Anchor.TARGET?0.8:0.5);
 //		double y = (getSourceNode().getY() + getSourceNode().getHeight() / 2) * (anchor==Anchor.SOURCE?0.8:anchor==Anchor.TARGET?0.2:0.5)

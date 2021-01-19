@@ -40,19 +40,13 @@ import java.util.Vector;
 
 public class DiagramActions {
 
-	private final double zoomLevel = Math.sqrt(2);
+	private final AbstractPackageViewer diagram;
 
-	private final FmmlxDiagram diagram;
-
-	public DiagramActions(FmmlxDiagram diagram) {
+	public DiagramActions(AbstractPackageViewer diagram) {
 		this.diagram = diagram;
 	}
-
-	public void redrawDiagram() {
-		diagram.redraw();
-	}
 	
-	public void classBrowserStage(boolean xmf) {
+	public void openClassBrowserStage(boolean xmf) {
 		if(xmf)  {
 			diagram.getComm().openPackageBrowser();
 		} else {
@@ -60,8 +54,7 @@ public class DiagramActions {
 		}
 	}
 
-	public void addMetaClassDialog() {
-//		CountDownLatch l = new CountDownLatch(2);
+	public void addMetaClassDialog(Canvas canvas) {
 
 		Platform.runLater(() -> {
 			CreateMetaClassDialog dlg = new CreateMetaClassDialog(diagram);
@@ -71,25 +64,28 @@ public class DiagramActions {
 			if (result.isPresent()) {
 				final MetaClassDialogResult mcdResult = result.get();
 
-				Canvas canvas = diagram.getCanvas();
-				canvas.setCursor(Cursor.CROSSHAIR);
-
-				EventHandler<MouseEvent> chooseLocation = new EventHandler<MouseEvent>() {
-					public void handle(MouseEvent e) {
-
-						int x = (int) e.getX();
-						int y = (int) e.getY();
-						if (x > 0 && y > 0) {
-							diagram.getComm().addMetaClass(diagram.getID(), mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentNames(), mcdResult.isAbstract(), x, y);
-
-							canvas.setCursor(Cursor.DEFAULT);
-							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
-							diagram.updateDiagram();
-//							l.countDown();
+				if(canvas != null) {				
+					canvas.setCursor(Cursor.CROSSHAIR);
+	
+					EventHandler<MouseEvent> chooseLocation = new EventHandler<MouseEvent>() {
+						public void handle(MouseEvent e) {
+	
+							int x = (int) e.getX();
+							int y = (int) e.getY();
+							if (x > 0 && y > 0) {
+								diagram.getComm().addMetaClass(diagram.getID(), mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentNames(), mcdResult.isAbstract(), x, y);
+	
+								canvas.setCursor(Cursor.DEFAULT);
+								canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
+								diagram.updateDiagram();
+							}
 						}
-					}
-				};
-				canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
+					};
+					canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
+				} else {
+					diagram.getComm().addMetaClass(diagram.getID(), mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentNames(), mcdResult.isAbstract(), 0, 0);
+					diagram.updateDiagram();
+				}
 
 			}
 		});
@@ -109,19 +105,17 @@ public class DiagramActions {
 
 				if (x > 0 && y > 0) {
 					diagram.getComm().addMetaClass(diagram.getID(), mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentNames(), mcdResult.isAbstract(), x, y);
-					
 					diagram.updateDiagram();
 				}
 			}
 		});
 	}
 
-	public void addInstanceDialog() {
-		addInstanceDialog(null);
+	public void addInstanceDialog(Canvas canvas) {
+		addInstanceDialog(null, canvas);
 	}
 
-	public void addInstanceDialog(FmmlxObject object) {
-//		CountDownLatch l = new CountDownLatch(1);
+	public void addInstanceDialog(FmmlxObject object, Canvas canvas) {
 
 		Platform.runLater(() -> {
 			AddInstanceDialog dialog = new AddInstanceDialog(diagram, object);
@@ -131,29 +125,32 @@ public class DiagramActions {
 			if (result.isPresent()) {
 				final AddInstanceDialogResult aidResult = result.get();
 
-				Canvas canvas = diagram.getCanvas();
-				canvas.setCursor(Cursor.CROSSHAIR);
-
-				EventHandler<MouseEvent> chooseLocation = new EventHandler<MouseEvent>() {
-					public void handle(MouseEvent e) {
-
-						int x = (int) e.getX();
-						int y = (int) e.getY();
-
-						if (x > 0 && y > 0) {
-							diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), aidResult.getName(),
-                                    aidResult.getParentNames(), false, x, y);
-
-							canvas.setCursor(Cursor.DEFAULT);
-							canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
-
-							diagram.updateDiagram();
+				if(canvas == null) {
+					diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), aidResult.getName(),
+                            aidResult.getParentNames(), false, 0, 0);
+				} else {
+					canvas.setCursor(Cursor.CROSSHAIR);
+	
+					EventHandler<MouseEvent> chooseLocation = new EventHandler<MouseEvent>() {
+						public void handle(MouseEvent e) {
+	
+							int x = (int) e.getX();
+							int y = (int) e.getY();
+	
+							if (x > 0 && y > 0) {
+								diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), aidResult.getName(),
+	                                    aidResult.getParentNames(), false, x, y);
+	
+								canvas.setCursor(Cursor.DEFAULT);
+								canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
+	
+								diagram.updateDiagram();
+							}
 						}
-					}
-				};
-				canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
+					};
+					canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
+				}
 			}
-//			l.countDown();
 		});
 	}
 	
@@ -177,7 +174,6 @@ public class DiagramActions {
 				}
 			}
 		});
-		
 	}
 
 	public void addAttributeDialog() {
@@ -185,9 +181,6 @@ public class DiagramActions {
 	}
 
 	public void addAttributeDialog(FmmlxObject object) {
-
-//		CountDownLatch l = new CountDownLatch(1);
-
 		Platform.runLater(() -> {
 			AddAttributeDialog dlg;
 			if (object != null) {
@@ -204,17 +197,14 @@ public class DiagramActions {
 				diagram.getComm().addAttribute(diagram.getID(), aad.className, aad.name, aad.level, aad.type, aad.multi);
 			}
 			diagram.updateDiagram();
-//			l.countDown();
 		});
 	}
 
 	public void addEnumerationDialog() {
-//		CountDownLatch l = new CountDownLatch(1);
-
 		Platform.runLater(() -> {
 			AddEnumerationDialog dlg;
 			
-			dlg = new AddEnumerationDialog(diagram);
+			dlg = new AddEnumerationDialog();
 
 			dlg.setTitle("Create Enumeration");
 			Optional<AddEnumerationDialogResult> result = dlg.showAndWait();
@@ -224,14 +214,11 @@ public class DiagramActions {
 				diagram.getComm().addEnumeration(diagram.getID(), aed.getEnumeration().getName()); 
 			}
 			diagram.updateDiagram();
-//			l.countDown();
 		});
 		
 	}
 	
 	public void editEnumerationDialog(String string, String enumName) {
-//		CountDownLatch l = new CountDownLatch(1);
-
 		Platform.runLater(() -> {
 			EditEnumerationDialog dlg;
 			
@@ -242,13 +229,6 @@ public class DiagramActions {
 			} 
 		
 			dlg.show();
-
-//			if (result.isPresent()) {
-//				EditEnumerationDialogResult aed = result.get();
-//				diagram.getComm().editEnumeration(diagram, aed.getEnumName(), aed.getNewEditedEnum().getItems());
-//			}
-//			diagram.updateDiagram();
-//			l.countDown();
 		});
 	}
 	
@@ -268,12 +248,10 @@ public class DiagramActions {
 	}
 
 	public void removeDialog(FmmlxObject object, PropertyType type) {
-//		CountDownLatch l = new CountDownLatch(1);
-
 		FmmlxProperty selectedFmmlxProperty = diagram.getSelectedProperty();
 
 		Platform.runLater(() -> {
-			RemoveDialog dlg = new RemoveDialog(diagram, object, type);
+			RemoveDialog dlg = new RemoveDialog(object, type);
 			if (belongsPropertyToObject(object, selectedFmmlxProperty, type)) {
 				dlg.setSelected(selectedFmmlxProperty);
 			}
@@ -303,20 +281,7 @@ public class DiagramActions {
 	}
 
 
-	public void zoomIn() {
-		diagram.setZoom(Math.min(2, diagram.getZoom() * zoomLevel));
-		diagram.redraw();
-	}
 
-	public void zoomOut() {
-		diagram.setZoom(diagram.getZoom() / zoomLevel);
-		diagram.redraw();
-	}
-
-	public void zoomOne() {
-		diagram.setZoom(1.);
-		diagram.redraw();
-	}
 
 	public void changeNameDialog(FmmlxObject object, PropertyType type, FmmlxProperty selectedProperty) {
 //		CountDownLatch latch = new CountDownLatch(1);
@@ -384,7 +349,7 @@ public class DiagramActions {
 		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
 
 		Platform.runLater(() -> {
-			ChangeLevelDialog dlg = new ChangeLevelDialog(diagram, object, type);
+			ChangeLevelDialog dlg = new ChangeLevelDialog(object, type);
 			if (belongsPropertyToObject(object, selectedProperty, type)) {
 				dlg.setSelected(selectedProperty);
 			}
@@ -539,69 +504,7 @@ public class DiagramActions {
 		
 	}
 
-	public void setShowOperations(CheckBox box) {
-		boolean show = box.isSelected();
-		diagram.setShowOperations(show);
-		for (FmmlxObject o : diagram.getObjects()) {
-			o.setShowOperations(show);
-		}
-		diagram.triggerOverallReLayout();
-		diagram.redraw();
 
-	}
-	
-	public void setShowGettersAndSetters(CheckBox box) {
-		boolean show = box.isSelected();
-		diagram.setShowGettersAndSetters(show);
-		for (FmmlxObject o : diagram.getObjects()) {
-			o.setShowGettersAndSetters(show);
-		}
-		diagram.triggerOverallReLayout();
-		diagram.redraw();
-		
-	}
-
-
-	public void setShowOperationValues(CheckBox box) {
-		boolean show = box.isSelected();
-		diagram.setShowOperationValues(show);
-		for (FmmlxObject o : diagram.getObjects()) {
-			o.setShowOperationValues(show);
-		}
-		diagram.triggerOverallReLayout();
-		diagram.redraw();
-	}
-
-	public void setShowSlots(CheckBox box) {
-		boolean show = box.isSelected();
-		diagram.setShowSlots(show);
-		for (FmmlxObject o : diagram.getObjects()) {
-			o.setShowSlots(show);
-		}
-		diagram.triggerOverallReLayout();
-		diagram.redraw();
-	}
-	
-	public void setShowDerivedOperations(CheckBox box) {
-		boolean show = box.isSelected();
-		diagram.setShowDerivedOperations(show);
-		for (FmmlxObject o : diagram.getObjects()) {
-			o.setShowDerivedOperations(show);
-		}
-		diagram.triggerOverallReLayout();
-		diagram.redraw();
-		
-	}
-
-	public void setShowDerivedAttributes(CheckBox box) {
-		boolean show=box.isSelected();
-		diagram.setShowDerivedAttributes(show);
-		for (FmmlxObject o : diagram.getObjects()) {
-			o.setShowDerivedAttributes(show);
-		}
-		diagram.triggerOverallReLayout();
-		diagram.redraw();
-	}
 
 
 	public void addOperationDialog(FmmlxObject object) {
@@ -662,7 +565,7 @@ public class DiagramActions {
 //		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			ChangeTargetDialog dlg = new ChangeTargetDialog(diagram, object, type);
+			ChangeTargetDialog dlg = new ChangeTargetDialog(object, type);
 			Optional<ChangeTargetDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
@@ -696,7 +599,6 @@ public class DiagramActions {
 		Platform.runLater(() -> {
 			AssociationDialog dlg = new AssociationDialog(diagram, source, target, false);
 			Optional<AssociationDialogResult> opt = dlg.showAndWait();
-			diagram.setStandardMouseMode();
 
 			if (opt.isPresent()) {
 				final AssociationDialogResult result = opt.get();
@@ -762,13 +664,6 @@ public class DiagramActions {
 				diagram.updateDiagram();
 			}
 		});
-	}
-
-	public void setDrawEdgeMode(FmmlxObject source, PropertyType type) {
-		diagram.setSelectedObject(source);
-		diagram.setDrawEdgeMouseMode(type, source);
-		diagram.storeLastClick(source.getCenterX(), source.getCenterY());
-		diagram.deselectAll();
 	}
 	
 	public void addDelegation(FmmlxObject delegateFrom, FmmlxObject delegateTo) {
@@ -845,13 +740,9 @@ public class DiagramActions {
 	}
 
 	public void associationValueDialog(FmmlxObject object, PropertyType association) {
-//		CountDownLatch latch = new CountDownLatch(1);
-
 		Platform.runLater(() -> {
 			AssociationValueDialog dlg = new AssociationValueDialog(diagram);
 			Optional<AssociationValueDialogResult> opt = dlg.showAndWait();
-
-//			latch.countDown();
 		});
 	}
 
@@ -907,19 +798,18 @@ public class DiagramActions {
 		result.ifPresent(s -> diagram.getComm().assignToGlobal(diagram.getID(), object, s));
 	}
 
-
 	public void showBody(FmmlxObject object, FmmlxOperation operation) {
 		diagram.getComm().showBody(diagram, object, operation);
 	}
 
-	public void addMissingLink(FmmlxObject obj, FmmlxAssociation assoc) {
+	public void addMissingLink(FmmlxObject obj, FmmlxAssociation assoc, Canvas canvas) {
 		Platform.runLater(() -> {
-			AddMissingLinkDialog dlg = new AddMissingLinkDialog(diagram, obj, assoc);
+			AddMissingLinkDialog dlg = new AddMissingLinkDialog(obj, assoc);
 			Optional<AddMissingLinkDialogResult> solution = dlg.showAndWait();
 
 			if(solution.isPresent()) {
 				if(solution.get().createNew) {
-					addInstanceDialog(solution.get().selection);
+					addInstanceDialog(solution.get().selection, canvas);
 				} else {
 					diagram.getComm().addAssociationInstance(diagram.getID(), obj.getName(), solution.get().selection.getName(), assoc.getName());
 					diagram.updateDiagram();
@@ -937,6 +827,7 @@ public class DiagramActions {
 	}
 
 	public void save() {
+		if(!(diagram instanceof FmmlxDiagram)) throw new IllegalArgumentException();
 		Platform.runLater(() -> {
 			try {
 				Serializer serializer = new FmmlxSerializer(diagram.getFilePath());
@@ -951,7 +842,6 @@ public class DiagramActions {
 
 		Platform.runLater(() -> {
 			FindImplementationDialog dlg = new FindImplementationDialog(diagram, diagram.getComm());
-			//Optional<Object> opt = 
 			dlg.showAndWait();
 		});
 	}
@@ -959,7 +849,6 @@ public class DiagramActions {
 	public Object openFindClassDialog() {
 		Platform.runLater(() -> {
 			FindClassDialog dialog = new FindClassDialog();
-			//Optional<Object> optional = 
 			dialog.showAndWait();
 		});
 		return null; 
@@ -968,7 +857,6 @@ public class DiagramActions {
 	public Object openFindSendersDialog() {
 		Platform.runLater(() -> {
 			FindSendersOfMessages dialog = new FindSendersOfMessages(diagram, diagram.getComm());
-			//Optional<Object> optional = 
 			dialog.showAndWait();
 		});
 		return null;

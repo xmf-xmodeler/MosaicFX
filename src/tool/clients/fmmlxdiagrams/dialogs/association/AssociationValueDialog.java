@@ -15,9 +15,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxLink;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.AssociationValueDialogResult;
@@ -25,7 +25,7 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 public class AssociationValueDialog extends CustomDialog<AssociationValueDialogResult>{
 	
-	private FmmlxDiagram diagram;
+	private AbstractPackageViewer diagram;
 	private DialogPane dialogPane;
 	
 	private Label selectAssociation;
@@ -56,7 +56,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 	private Vector<FmmlxObject> instancesB;
 	
 	
-	public AssociationValueDialog(FmmlxDiagram diagram) {
+	public AssociationValueDialog(AbstractPackageViewer diagram) {
 		this.diagram=diagram;
 		
 		dialogPane = getDialogPane();
@@ -153,12 +153,12 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 
 	private void editAssociationInstance(FmmlxLink selectedAssociationInstance, FmmlxObject newStartObject,
 			FmmlxObject newEndObject) {
-		diagram.getComm().updateAssociationInstance(diagram.getID(), selectedAssociationInstance.path, newStartObject.getOwnPath(), newEndObject.getOwnPath());
+		diagram.getComm().updateAssociationInstance(diagram.getID(), selectedAssociationInstance.path, newStartObject.getPath(), newEndObject.getPath());
 		selectedAssociationInstance.edit(newStartObject, newEndObject);
 		updateAssociationListView(selectAssociationComboBox.getSelectionModel().getSelectedItem());
 	}
 	
-	@SuppressWarnings({ "deprecation", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	private void layoutContent() {
 		associations = diagram.getAssociations();
 		ObservableList<FmmlxAssociation> associationList;
@@ -226,8 +226,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 	}
 	
 	private void updateAssociationListView(FmmlxAssociation newValue) {
-		FmmlxAssociation association = (FmmlxAssociation) diagram.getAssociationByPath(newValue.getPath());
-		associationInstances = association.getInstance();
+		associationInstances = diagram.getAssociationInstance();
 		ObservableList<FmmlxLink> instanceOfAssociation = FXCollections.observableList(associationInstances);
 		associationListView = initializeListViewAssociation(instanceOfAssociation, SelectionMode.SINGLE);
 		updateNodeInsideGrid(associationListView, associationListView, 1, 5);

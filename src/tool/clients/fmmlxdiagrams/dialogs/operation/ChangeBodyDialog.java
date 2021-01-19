@@ -13,7 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
@@ -23,7 +23,7 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 	
 	private DialogPane dialogPane;
-	private FmmlxDiagram diagram;
+	private AbstractPackageViewer diagram;
 	private FmmlxObject object;
 	
 	private Label classLabel;
@@ -39,7 +39,7 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 	private ButtonType checkSyntaxButtonType;
 	private ButtonType defaultOperationButtonType;
 
-	public ChangeBodyDialog(FmmlxDiagram diagram, FmmlxObject object) {
+	public ChangeBodyDialog(AbstractPackageViewer diagram, FmmlxObject object) {
 		super();
 		this.diagram=diagram;
 		this.object=object;

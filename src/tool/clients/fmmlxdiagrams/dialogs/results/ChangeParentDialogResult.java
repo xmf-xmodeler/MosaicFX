@@ -28,7 +28,7 @@ public class ChangeParentDialogResult {
 
 		if (newParent.size() > 0) {
 			for (FmmlxObject object : newParent) {
-				parentPaths.add(object.getOwnPath());
+				parentPaths.add(object.getPath());
 			}
 		}
 		return parentPaths;

@@ -24,13 +24,9 @@ public class AddEnumElement extends CustomDialog<AddEnumElementDialogResult>{
 	private Label inputElementNameLabel;
 	private TextField inputElementNameTextField;
 	private ListView<String> list;
-	private FmmlxDiagram diagram;
-	private FmmlxEnum selectedEnum;
 
-	public AddEnumElement(FmmlxDiagram diagram, FmmlxEnum selectedEnum, ListView<String> list) {
+	public AddEnumElement(FmmlxEnum selectedEnum, ListView<String> list) {
 		super();
-		this.diagram=diagram;
-		this.selectedEnum=selectedEnum;
 
 		this.list= list;
 		DialogPane dialogPane = getDialogPane();

@@ -2,8 +2,8 @@ package tool.clients.fmmlxdiagrams.dialogs;
 
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 
@@ -61,7 +61,7 @@ public class InputChecker {
 		return true;
 	}
 
-	public boolean classNameIsAvailable(String name, FmmlxDiagram diagram) {
+	public boolean classNameIsAvailable(String name, AbstractPackageViewer diagram) {
 		for (FmmlxObject object : diagram.getObjects()) {
 			if (name.equals(object.getName())) return false;
 		}

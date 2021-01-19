@@ -24,7 +24,7 @@ public class ChangeLevelDialogResult {
 	}
 
 	public String getObjectPath() {
-		return object.getOwnPath();
+		return object.getPath();
 	}
 
 	public int getNewLevel() {

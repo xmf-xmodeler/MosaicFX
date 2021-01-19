@@ -1,7 +1,10 @@
 package tool.clients.fmmlxdiagrams.classbrowser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Vector;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -15,6 +18,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
@@ -37,7 +41,7 @@ public class ModellBrowserStage extends CustomStage {
 						operationOutputVBox, operationInputVBox, associationBrowserVBox, consoleContainerVBox;
 	private SplitPane outerSplitPane;
 	private GridPane mainGridPane, attributeGridpane;	
-	private FmmlxDiagram diagram;
+	private AbstractPackageViewer diagram;
 	private FmmlxObject selectedObject;
 	
 	public ModellBrowserStage() {
@@ -229,7 +233,11 @@ public class ModellBrowserStage extends CustomStage {
 		clearAll(ClearSelectionMode.OBJECT);
 		fmmlxObjectListView.getItems().clear();
 		
-		for(FmmlxObject obj : diagram.getSortedObject(SortedValue.REVERSE)) {
+		Vector<FmmlxObject> objects = new Vector<>(diagram.getObjects());
+		Collections.sort(objects);
+		Collections.reverse(objects);
+		
+		for(FmmlxObject obj : objects) {
 			if(obj.getName().toLowerCase().contains(newValue.toLowerCase())) {
 				fmmlxObjectListView.getItems().add("("+obj.getLevel()+") "+obj.getName());
 			}
@@ -279,11 +287,13 @@ public class ModellBrowserStage extends CustomStage {
 		}
 	}
 
-	public void updateDiagram(FmmlxDiagram diagram) {
+	public void initData(AbstractPackageViewer diagram) {
 		clearAll(ClearSelectionMode.MODEL);
 		this.diagram=diagram;
 		
-		List<FmmlxObject> objects = diagram.getSortedObject(SortedValue.REVERSE);
+		Vector<FmmlxObject> objects = new Vector<>(diagram.getObjects());
+		Collections.sort(objects);
+		Collections.reverse(objects);
 		
 		for(FmmlxObject obj : objects) {
 			fmmlxObjectListView.getItems().add("("+obj.getLevel()+") "+obj.getName());

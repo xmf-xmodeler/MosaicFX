@@ -5,7 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeParentDialogResult;
@@ -16,7 +16,7 @@ import java.util.Vector;
 
 public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 
-	private final FmmlxDiagram diagram;
+	private final AbstractPackageViewer diagram;
 	private FmmlxObject object;
 
 	private ObservableList<FmmlxObject> currentParentList;
@@ -31,7 +31,7 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 	private ListView<FmmlxObject> newParentListView;
 
 
-	public ChangeParentDialog(FmmlxDiagram diagram, FmmlxObject object) {
+	public ChangeParentDialog(AbstractPackageViewer diagram, FmmlxObject object) {
 		super();
 
 		this.diagram = diagram;

@@ -3,7 +3,7 @@ package tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator;
 import java.util.ArrayList;
 import java.util.List;
 
-
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.view.ValueGeneratorIncrementDialog;
@@ -39,7 +39,7 @@ public class ValueGeneratorIncrement extends ValueGenerator implements IValueGen
 	}
 
 	@Override
-	public void openDialog(FmmlxDiagram diagram) {
+	public void openDialog(AbstractPackageViewer diagram) {
 		setDiagram(diagram);
 		if (getFitsType(getAttributeType())){
 			ValueGeneratorIncrementDialog dlg = new ValueGeneratorIncrementDialog(this);

@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.classbrowser;
 
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 public class ClassBrowserClient{
@@ -22,11 +23,11 @@ public class ClassBrowserClient{
 	    return classBrowserClientInstance;
 	 }
 
-	public static void show(FmmlxDiagram diagram) {
+	public static void show(AbstractPackageViewer diagram) {
 		ClassBrowserClient.stage = new ModellBrowserStage();
 		stage.show();
 		stage.toFront();
-		stage.updateDiagram(diagram);
+		stage.initData(diagram);
 	}
 
 }

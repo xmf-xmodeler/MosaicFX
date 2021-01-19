@@ -39,7 +39,7 @@ public class AddInstanceDialogResult {
 
 		if (!parents.isEmpty()) {
 			for (FmmlxObject o : parents) {
-				parentPaths.add(o.getOwnPath());
+				parentPaths.add(o.getPath());
 			}
 		}
 		return parentPaths;

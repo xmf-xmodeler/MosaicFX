@@ -17,7 +17,6 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 	private DialogPane dialogPane;
 	private final PropertyType type;
 	private FmmlxObject object;
-	private final FmmlxDiagram diagram;
 
 	//For All
 
@@ -42,13 +41,11 @@ public class RemoveDialog extends CustomDialog<RemoveDialogResult> {
 
 	private Vector<FmmlxAttribute> attributes;
 	private Vector<FmmlxOperation> operations;
-	private Vector<FmmlxAssociation> associations;
 
 
-	public RemoveDialog(final FmmlxDiagram diagram, FmmlxObject object, PropertyType type) {
+	public RemoveDialog(FmmlxObject object, PropertyType type) {
 		super();
 		this.type = type;
-		this.diagram = diagram;
 		this.object = object;
 		dialogPane = getDialogPane();
 

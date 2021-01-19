@@ -81,7 +81,7 @@ public class FmmlxOperation implements FmmlxProperty, Comparable<FmmlxOperation>
 		}
 	}
 
-	public String getFullString(FmmlxDiagram diagram) {
+	public String getFullString(AbstractPackageViewer diagram) {
 		String params = "";
 		for(int i = 0; i < paramNames.size(); i++) {
 			if(!"".equals(params)) params = params+", ";

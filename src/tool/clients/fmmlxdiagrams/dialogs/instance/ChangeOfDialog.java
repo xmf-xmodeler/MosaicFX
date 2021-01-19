@@ -4,7 +4,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOfDialogResult;
@@ -13,7 +13,7 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult> {
 
 	private FmmlxObject object;
-	private final FmmlxDiagram diagram;
+	private final AbstractPackageViewer diagram;
 	private DialogPane dialogPane;
 
 	private Label selectedObjectLabel;
@@ -27,7 +27,7 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult> {
 	private ObservableList<FmmlxObject> allPossibleOf;
 
 
-	public ChangeOfDialog(FmmlxDiagram diagram, FmmlxObject object) {
+	public ChangeOfDialog(AbstractPackageViewer diagram, FmmlxObject object) {
 		super();
 		this.object = object;
 		this.diagram = diagram;

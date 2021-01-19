@@ -37,7 +37,7 @@ public class FmmlxSlot implements FmmlxProperty {
 		return propertyType;
 	}
 	
-	public String getType(FmmlxDiagram diagram) {
+	public String getType(AbstractPackageViewer diagram) {
 		Vector<FmmlxAttribute> allAttributes = new Vector<>();
 		FmmlxObject next = owner;
 		while (next != null) {

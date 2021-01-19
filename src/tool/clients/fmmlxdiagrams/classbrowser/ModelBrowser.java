@@ -1,15 +1,20 @@
 package tool.clients.fmmlxdiagrams.classbrowser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
@@ -18,10 +23,19 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.util.Callback;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
+import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
+import tool.clients.fmmlxdiagrams.LevelColorScheme;
+import tool.clients.fmmlxdiagrams.LevelColorScheme.RedLevelColorScheme;
+import tool.clients.fmmlxdiagrams.FmmlxSlot;
 import tool.clients.fmmlxdiagrams.SortedValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
@@ -32,8 +46,11 @@ import tool.xmodeler.XModeler;
 public class ModelBrowser extends CustomStage {
 
 	private TextArea codeArea;
-	private ListView<String> modelListView,fmmlxObjectListView, fmmlxAttributeListView, 
-						fmmlxOperationListView, fmmlxAssociationListView, slotListView;
+	private ListView<String> modelListView, fmmlxAssociationListView;
+	private ListView<FmmlxOperation> fmmlxOperationListView;
+	private ListView<FmmlxObject> fmmlxObjectListView;
+	private ListView<FmmlxAttribute> fmmlxAttributeListView;
+	private ListView<FmmlxSlot> slotListView;
 	private ComboBox<Boolean> abstractComboBox;
 	private TextField modellBrowserTextFied, classBrowserTextField, operationInputTextField, operationOutputTexField, 
 						associationBrowserTextField, attributeBrowserTextField;
@@ -41,24 +58,33 @@ public class ModelBrowser extends CustomStage {
 						operationOutputVBox, operationInputVBox, associationBrowserVBox, consoleContainerVBox;
 	private SplitPane outerSplitPane;
 	private GridPane mainGridPane, attributeGridpane;	
-	ModelBrowserCommunicator communicator;
+	FmmlxDiagramCommunicator communicator;
+	private AbstractPackageViewer activePackage;
+	
+	
+	private HashMap<String,AbstractPackageViewer> models = new HashMap<>();
+	private RedLevelColorScheme levelColorScheme;
 	
 	public ModelBrowser(String project, String selectedModel, ObservableList<String> models) {
 		super(StringValue.LabelAndHeaderTitle.modelBrowser+" " + project, XModeler.getStage(), 1100, 800);
+		communicator = FmmlxDiagramCommunicator.getCommunicator();
 		initAllElements();
 		addAllElementToPane();			
 		getContainer().getChildren().addAll(outerSplitPane);
 		setOnCloseRequest(e -> onClose());
 		modelListView.getItems().clear();
 		modelListView.getItems().addAll(models);
-		modelListView.getSelectionModel().getSelectedItems().clear();
+		modelListView.getSelectionModel().clearSelection();
 		if (selectedModel!=null) {
-		modelListView.getSelectionModel().select(selectedModel);
+			modelListView.getSelectionModel().select(selectedModel);
 		}
 	}
 
 	public void onClose() {
 		clearAll(ClearSelectionMode.MODEL);
+		for (String key:models.keySet()) {
+			communicator.closeDiagram(models.get(key).getID());
+		}
 		hide();
 	}
 
@@ -149,6 +175,137 @@ public class ModelBrowser extends CustomStage {
 				-> onOperationListViewNewValue(oldValue, newValue));
 		fmmlxAssociationListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onAssociationListViewNewValue(oldValue,newValue)); 
+		
+		fmmlxObjectListView.setCellFactory(new Callback<ListView<FmmlxObject>, ListCell<FmmlxObject>>() {
+
+		    @Override
+		    public ListCell<FmmlxObject> call(ListView<FmmlxObject> param) {
+		        ListCell<FmmlxObject> cell = new ListCell<FmmlxObject>() {
+
+		            @Override
+		            protected void updateItem(FmmlxObject o, boolean empty) {
+		                super.updateItem(o, empty);
+		                if (o != null) {
+		                    setText(o.getName());
+		                    setGraphic(getLevelGraphic(o.getLevel()));
+		                } else {
+		                	setText("");
+		                	setGraphic(null);
+		                }
+		            }
+
+					private Node getLevelGraphic(int level) {
+						double SIZE = 16;
+						Canvas canvas = new Canvas(SIZE, SIZE);
+						Text temp = new Text(level+"");
+						GraphicsContext g = canvas.getGraphicsContext2D();
+						g.setFill(levelColorScheme.getLevelBgColor(level));
+						g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/2, SIZE/2);
+						g.setFill(levelColorScheme.getLevelFgColor(level, 1.));
+						g.fillText(level+"", 
+								SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
+								SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
+						return canvas;
+					}
+		        };
+		        return cell;
+		    }
+		});
+	
+		fmmlxAttributeListView.setCellFactory(new Callback<ListView<FmmlxAttribute>, ListCell<FmmlxAttribute>>() {
+	
+		    @Override
+		    public ListCell<FmmlxAttribute> call(ListView<FmmlxAttribute> param) {
+		        ListCell<FmmlxAttribute> cell = new ListCell<FmmlxAttribute>() {
+	
+		            @Override
+		            protected void updateItem(FmmlxAttribute att, boolean empty) {
+		                super.updateItem(att, empty);
+		                FmmlxObject o = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+		                if (att != null && o != null) {
+		                    setText(att.getName() +": "+ att.getType());
+		                    setGraphic(getLevelGraphic(att.getLevel(), o.getOwnAttributes().contains(att)));
+		                } else {
+		                	setText("");
+		                	setGraphic(null);
+		                }
+		            }
+	
+					private Node getLevelGraphic(int level, boolean own) {
+						double SIZE = 16;
+						Canvas canvas = new Canvas(SIZE, SIZE);
+						Text temp = new Text(level+"");
+						GraphicsContext g = canvas.getGraphicsContext2D();
+						g.setFill(own?Color.BLACK:Color.GRAY);
+						g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/2, SIZE/2);
+						g.setFill(Color.WHITE);
+						g.fillText(level+"", 
+								SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
+								SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
+						return canvas;
+					}
+		        };
+		        return cell;
+		    }
+		});
+		
+		slotListView.setCellFactory(new Callback<ListView<FmmlxSlot>, ListCell<FmmlxSlot>>() {
+			
+		    @Override
+		    public ListCell<FmmlxSlot> call(ListView<FmmlxSlot> param) {
+		        ListCell<FmmlxSlot> cell = new ListCell<FmmlxSlot>() {
+	
+		            @Override
+		            protected void updateItem(FmmlxSlot slot, boolean empty) {
+		                super.updateItem(slot, empty);
+		                FmmlxObject o = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+		                if (slot != null && o != null) {
+		                    setText(slot.getName()+" = " + slot.getValue());
+		                } else {
+		                	setText("");
+		                }
+		            }
+		        };
+		        return cell;
+		    }
+		});
+		
+		fmmlxOperationListView.setCellFactory(new Callback<ListView<FmmlxOperation>, ListCell<FmmlxOperation>>() {
+			
+		    @Override
+		    public ListCell<FmmlxOperation> call(ListView<FmmlxOperation> param) {
+		        ListCell<FmmlxOperation> cell = new ListCell<FmmlxOperation>() {
+	
+		            @Override
+		            protected void updateItem(FmmlxOperation operation, boolean empty) {
+		                super.updateItem(operation, empty);
+		                FmmlxObject o = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+		                if (operation != null && o != null) {
+		                    setText(operation.getFullString(activePackage));
+		                    setGraphic(getLevelGraphic(operation.getLevel(), o.getOwnAttributes().contains(operation)));
+		                } else {
+		                	setText("");
+		                	setGraphic(null);
+		                }
+		            }
+	
+					private Node getLevelGraphic(int level, boolean own) {
+						double SIZE = 16;
+						Canvas canvas = new Canvas(SIZE, SIZE);
+						Text temp = new Text(level+"");
+						GraphicsContext g = canvas.getGraphicsContext2D();
+						g.setFill(own?Color.BLACK:Color.GRAY);
+						g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/2, SIZE/2);
+						g.setFill(Color.WHITE);
+						g.fillText(level+"", 
+								SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
+								SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
+						return canvas;
+					}
+		        };
+		        return cell;
+		    }
+		});
 	}
 
 	@Override
@@ -204,8 +361,12 @@ public class ModelBrowser extends CustomStage {
 		getGridControl().addNodesToGrid(mainGridPane,associationNode, 4);
 	}
 
-	private void onOperationListViewNewValue(String oldValue, String newValue) {
-
+	private void onOperationListViewNewValue(FmmlxOperation oldValue, FmmlxOperation selectedOperation) {
+		if (selectedOperation!=null) {
+		codeArea.setText(selectedOperation.getBody());	
+		} else{
+		codeArea.setText("");	
+		}
 	}
 	
 	private void modellBrowserListerner(ListView<String> modelListView2, String oldValue, String newValue) {
@@ -216,8 +377,15 @@ public class ModelBrowser extends CustomStage {
 		
 	}
 
-	private void onObjectListViewNewValue(String oldValue, String newValue) {
-		
+	private void onObjectListViewNewValue(FmmlxObject oldValue, FmmlxObject selectedObject) {
+		if (selectedObject != null ) {
+			fmmlxAttributeListView.getItems().clear();
+			fmmlxAttributeListView.getItems().addAll(selectedObject.getAllAttributes());
+			slotListView.getItems().clear();
+			slotListView.getItems().addAll(selectedObject.getAllSlots());
+			fmmlxOperationListView.getItems().clear();
+			fmmlxOperationListView.getItems().addAll(selectedObject.getAllOperations());
+		}		
 	}
 
 	private void onAssociationListViewNewValue(String oldValue, String newValue) {
@@ -236,15 +404,46 @@ public class ModelBrowser extends CustomStage {
 		
 	}
 	
-	private void onModelListViewNewValue(String oldValue, String newValue) {
-		
+	private void onModelListViewNewValue(String oldSelectedPath, String selectedPath) {
+		if(selectedPath == null || selectedPath.equals(oldSelectedPath)) return;
+		System.err.println("onModelListViewNewValue " + selectedPath);
+		if(!models.containsKey(selectedPath)) {
+			Integer newDiagramID=communicator.createDiagram(selectedPath, "Test", "");
+			ClassBrowserPackageViewer tempViewer = new ClassBrowserPackageViewer(communicator, newDiagramID, selectedPath, this);
+			models.put(selectedPath, tempViewer);
+		}
+		activePackage = models.get(selectedPath);
+		storeSelection();
+		activePackage.updateDiagram();
+		System.err.println("onModelListViewNewValue done");
 	}	
-	
-	private void onSlotListViewNewValue(ListView<String> modelListView2, String oldValue, String newValue) {
+
+	private void onSlotListViewNewValue(ListView<String> modelListView2, FmmlxSlot oldValue, FmmlxSlot newValue) {
 		
 	}
 	
-	private void onAttributeListViewNewValue(String oldValue, String newValue) {
+	private void onAttributeListViewNewValue(FmmlxAttribute oldValue, FmmlxAttribute newValue) {
+		
+	}
+
+	public void notifyModelHasLoaded() {
+		Vector<FmmlxObject> objects = activePackage.getObjects();
+		levelColorScheme = new LevelColorScheme.RedLevelColorScheme(activePackage.getObjects());
+//		Vector<String> names = new Vector<>();
+//		for (FmmlxObject o:objects) {
+//			names.add(o.getName());
+//		}
+		fmmlxObjectListView.getItems().clear();
+		fmmlxObjectListView.getItems().addAll(objects);
+		
+		restoreSelection();
+	}
+
+	private void storeSelection() {
+		
+	}
+	
+	private void restoreSelection() {
 		
 	}
 

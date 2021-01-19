@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.newpalette;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -29,7 +30,10 @@ public class PaletteGroupClass extends PaletteGroup {
 		PaletteItem metaClassPaletteItem = new PaletteItem(metaClassTool);
 		items.add(metaClassPaletteItem);
 		
-		List<FmmlxObject> objects = fmmlxDiagram.getSortedObject(SortedValue.REVERSE);
+		Vector<FmmlxObject> objects = new Vector<>(fmmlxDiagram.getObjects());
+		Collections.sort(objects);
+		Collections.reverse(objects);
+		
 		for (FmmlxObject tmp : objects) {
 			if(tmp.getLevel()>0){
 				items.add(tmp.toPaletteItem(fmmlxDiagram));

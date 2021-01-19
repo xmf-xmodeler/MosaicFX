@@ -7,7 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.util.converter.IntegerStringConverter;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.association.MultiplicityDialog;
@@ -39,11 +39,11 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 	
 	private Vector<String> types;
 
-	public AddAttributeDialog(final FmmlxDiagram diagram) {
+	public AddAttributeDialog(final AbstractPackageViewer diagram) {
 		this(diagram, null);
 	}
 
-	public AddAttributeDialog(final FmmlxDiagram diagram, FmmlxObject selectedObject) {
+	public AddAttributeDialog(final AbstractPackageViewer diagram, FmmlxObject selectedObject) {
 		super();
 
 		types = diagram.getAvailableTypes();

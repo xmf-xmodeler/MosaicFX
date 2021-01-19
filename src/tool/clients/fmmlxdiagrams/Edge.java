@@ -20,9 +20,10 @@ public abstract class Edge implements CanvasElement {
 	protected Vector<Point2D> intermediatePoints = new Vector<>();
 	protected FmmlxObject sourceNode;
 	protected FmmlxObject targetNode;
-	protected FmmlxDiagram diagram;
+	//protected FmmlxDiagram diagram;
 	protected final Double DEFAULT_TOLERANCE = 6.;
 	protected boolean layoutingFinishedSuccesfully;
+	protected AbstractPackageViewer diagram;
 	
 	public final Edge.End sourceEnd = new Edge.Source(this);
 	public final Edge.End targetEnd = new Edge.Target(this);
@@ -64,13 +65,13 @@ public abstract class Edge implements CanvasElement {
 			FmmlxObject startNode, FmmlxObject endNode, 
 			Vector<Point2D> intermediatePoints,
 			PortRegion sourcePortRegion, PortRegion targetPortRegion,
-			Vector<Object> labelPositions, FmmlxDiagram diagram) {
+			Vector<Object> labelPositions, AbstractPackageViewer diagram) {
 		layoutingFinishedSuccesfully = false;
 		initLabelPositionMap(labelPositions);
 		this.path = path;
-		this.diagram = diagram;
 		this.sourceNode = startNode;
 		this.targetNode = endNode;
+		this.diagram = diagram;
 		if (intermediatePoints == null || intermediatePoints.size() < 1) {} else {
 			this.intermediatePoints.addAll(intermediatePoints);
 		}
@@ -136,7 +137,8 @@ public abstract class Edge implements CanvasElement {
 	public final void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
 		if(!isVisible()) return;
 		if(!layoutingFinishedSuccesfully) {
-			layoutLabels(); diagram.redraw();
+			layoutLabels(fmmlxDiagram); 
+			fmmlxDiagram.redraw();
 		} else {
 			Vector<Point2D> points = getAllPoints();
 			/* SHOW ANGLE 
@@ -161,7 +163,7 @@ public abstract class Edge implements CanvasElement {
 			g.setLineDashes(getLineDashes());
 
 			for (int i = 0; i < points.size() - 1; i++) {
-				Vector<Point2D> intersections = diagram.findEdgeIntersections(points.get(i), points.get(i + 1));
+				Vector<Point2D> intersections = fmmlxDiagram.findEdgeIntersections(points.get(i), points.get(i + 1));
 
 				if (intersections.size() == 0) {
 					g.strokeLine(points.get(i).getX(), points.get(i).getY(), points.get(i + 1).getX(),
@@ -344,7 +346,7 @@ public abstract class Edge implements CanvasElement {
 		return allPoints;
 	}
 
-	protected abstract void layoutLabels();
+	protected abstract void layoutLabels(FmmlxDiagram diagram);
 
 	public void align() {
 		checkVisibilityMode();
@@ -436,8 +438,8 @@ public abstract class Edge implements CanvasElement {
 	}*/
 
 	@Override
-	public final ContextMenu getContextMenu(DiagramActions actions, Point2D absolutePoint) {
-		ContextMenu localMenu = getContextMenuLocal(actions);
+	public final ContextMenu getContextMenu(FmmlxDiagram diagram, Point2D absolutePoint) {
+		ContextMenu localMenu = getContextMenuLocal(diagram.actions);
 		if(localMenu.getItems().size()>0) localMenu.getItems().add(new SeparatorMenuItem());
 		MenuItem repairItem = new MenuItem("Repair Edge Alignment");
 		repairItem.setOnAction(e -> ensure90DegreeAngles());
@@ -533,7 +535,7 @@ public abstract class Edge implements CanvasElement {
 		}
 	}
 
-	public void dropPoint() {
+	public void dropPoint(FmmlxDiagram diagram) {
 		/*
 		 * Vector<Point2D> points = getAllPoints(); if (pointToBeMoved != -1) { // if
 		 * point very close to other point, remove it. if
@@ -721,7 +723,7 @@ public abstract class Edge implements CanvasElement {
 
 	public abstract String getName();
 	
-	protected void createLabel(String value, int localId, Anchor anchor, Runnable action, Color textColor, Color bgColor) {
+	protected void createLabel(String value, int localId, Anchor anchor, Runnable action, Color textColor, Color bgColor, FmmlxDiagram diagram) {
 		double w = FmmlxDiagram.calculateTextWidth(value);
 		double h = FmmlxDiagram.calculateTextHeight();
 		
