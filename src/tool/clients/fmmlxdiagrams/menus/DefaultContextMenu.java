@@ -80,6 +80,13 @@ public class DefaultContextMenu extends ContextMenu {
 
 			MenuItem save = new MenuItem("Save");
 			save.setOnAction(a -> actions.save());
+			getItems().addAll(save);
+			
+			MenuItem test = new MenuItem("Test");
+			test.setOnAction(a -> {
+				System.err.println("Test: " + diagram.getComm().getAllDiagramIDs("Root::BikePackage"));
+			});
+			getItems().addAll(test);
 
 			MenuItem openFindImplementationDialog = new MenuItem("Search for Implementation");
 			openFindImplementationDialog.setOnAction(e -> actions.openFindImplementationDialog());
@@ -92,7 +99,6 @@ public class DefaultContextMenu extends ContextMenu {
 			MenuItem openFindSendersOfMessages = new MenuItem("Search for Senders");
 			openFindSendersOfMessages.setOnAction(e -> actions.openFindSendersDialog());
 			getItems().addAll(openFindSendersOfMessages);
-			getItems().addAll(save);
 
 		}
 	}

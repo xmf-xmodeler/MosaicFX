@@ -1619,4 +1619,20 @@ public class FmmlxDiagramCommunicator {
 		System.out.println("FmmlxDiagramCommunicator: Diagram should be closed here!");
 		//TODO: Implementation
 	}
+	
+	public Vector<Integer> getAllDiagramIDs(String packagePath) {
+		Vector<Integer> result = new Vector<>();
+		try {
+			Vector<Object> response = xmfRequest(handler, -2, "getAllDiagrams", new Value(packagePath));
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			
+			for(Object e : responseContent) {
+				result.add((Integer) e);
+			}
+			return result;
+		} catch (TimeOutException e1) {
+			throw new RuntimeException(e1);
+		}
+
+	}
 }
