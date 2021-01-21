@@ -46,16 +46,17 @@ import tool.xmodeler.XModeler;
 public class ModelBrowser extends CustomStage {
 
 	private TextArea codeArea;
-	private ListView<String> modelListView, fmmlxAssociationListView;
+	private ListView<String> modelListView, parentsListView;
+	private ListView<FmmlxAssociation> fmmlxAssociationListView; 
 	private ListView<FmmlxOperation> fmmlxOperationListView;
 	private ListView<FmmlxObject> fmmlxObjectListView;
 	private ListView<FmmlxAttribute> fmmlxAttributeListView;
 	private ListView<FmmlxSlot> slotListView;
 	private ComboBox<Boolean> abstractComboBox;
-	private TextField modellBrowserTextFied, classBrowserTextField, operationInputTextField, operationOutputTexField, 
+	private TextField modellBrowserTextFied, metaClassTextField, abstractTextField, delegatesToTextField, operationInputTextField, operationOutputTexField, 
 						associationBrowserTextField, attributeBrowserTextField;
-	private VBox modellBrowserVBox, classBrowserVBox, attributeBrowserVBox, abstractVBox,
-						operationOutputVBox, operationInputVBox, associationBrowserVBox, consoleContainerVBox;
+	private VBox modellBrowserVBox, classBrowserVBox, attributeBrowserVBox, abstractVBox, delegatesToVBox,
+						operationOutputVBox, operationInputVBox, associationBrowserVBox, consoleContainerVBox, parentsVBox;
 	private SplitPane outerSplitPane;
 	private GridPane mainGridPane, attributeGridpane;	
 	FmmlxDiagramCommunicator communicator;
@@ -91,7 +92,7 @@ public class ModelBrowser extends CustomStage {
 	private void clearAll(ClearSelectionMode mode) {	
 		if (mode == ClearSelectionMode.MODEL) {
 			fmmlxObjectListView.getItems().clear();
-			classBrowserTextField.setText(StringValue.LabelAndHeaderTitle.empty);
+			metaClassTextField.setText(StringValue.LabelAndHeaderTitle.empty);
 		}
 		
 		if (mode == ClearSelectionMode.OBJECT || mode == ClearSelectionMode.MODEL) {
@@ -99,7 +100,7 @@ public class ModelBrowser extends CustomStage {
 			slotListView.getItems().clear();
 			fmmlxOperationListView.getItems().clear();
 			fmmlxAssociationListView.getItems().clear();
-			
+			parentsListView.getItems().clear();
 			attributeBrowserTextField.setText(StringValue.LabelAndHeaderTitle.empty);
 			operationInputTextField.setText(StringValue.LabelAndHeaderTitle.empty);
 			operationOutputTexField.setText(StringValue.LabelAndHeaderTitle.empty);
@@ -120,13 +121,19 @@ public class ModelBrowser extends CustomStage {
 
 		modelListView = new ListView<>();
 		fmmlxObjectListView = new ListView<>();
+		parentsListView = new ListView<>();
 		fmmlxAttributeListView = new ListView<>();
 		slotListView = new ListView<>();
 		fmmlxAssociationListView = new ListView<>();
 		fmmlxOperationListView = new ListView<>();
 		
 		modellBrowserTextFied = new TextField();
-		classBrowserTextField = new TextField();
+		metaClassTextField = new TextField();
+		metaClassTextField.setEditable(false);
+		abstractTextField = new TextField();
+		abstractTextField.setEditable(false);
+		delegatesToTextField = new TextField();
+		delegatesToTextField.setEditable(false);
 		attributeBrowserTextField = new TextField();
 		operationInputTextField = new TextField();
 		operationInputTextField.setEditable(false);
@@ -149,13 +156,15 @@ public class ModelBrowser extends CustomStage {
 		VBox.setVgrow(codeArea,Priority.ALWAYS);
 		
 		String doubleDots = " :";
-		abstractVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.abstractSmall+doubleDots), abstractComboBox);
+		abstractVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.abstractSmall+doubleDots), abstractTextField);
 		modellBrowserVBox= getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.project+doubleDots), modellBrowserTextFied);
+		delegatesToVBox= getVBoxControl().joinNodeInVBox(new Label (StringValue.LabelAndHeaderTitle.delegatesTo), delegatesToTextField);
 		operationOutputVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.output+doubleDots), operationOutputTexField);
 		operationInputVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.input+doubleDots), operationInputTextField);
-		classBrowserVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.aClassSmall+doubleDots), classBrowserTextField);
+		classBrowserVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.metaClass+doubleDots), metaClassTextField);
 		associationBrowserVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.withSmall+doubleDots), associationBrowserTextField);
 		attributeBrowserVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.aClassSmall+doubleDots), attributeBrowserTextField);
+		parentsVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.parent + doubleDots), parentsListView);
 		
 		modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onModelListViewNewValue(oldValue, newValue));
@@ -163,7 +172,7 @@ public class ModelBrowser extends CustomStage {
 				-> modellBrowserListerner(modelListView, oldValue, newValue));
 		fmmlxObjectListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onObjectListViewNewValue(oldValue, newValue));	
-		classBrowserTextField.textProperty().addListener((observable, oldValue, newValue) 
+		metaClassTextField.textProperty().addListener((observable, oldValue, newValue) 
 				-> classBrowserTextFieldListener(oldValue, newValue));
 		abstractComboBox.valueProperty().addListener((observable, oldValue, newValue)
 				-> onAbstractNewValue(oldValue, newValue));
@@ -306,6 +315,27 @@ public class ModelBrowser extends CustomStage {
 		        return cell;
 		    }
 		});
+		
+		fmmlxAssociationListView.setCellFactory(new Callback<ListView<FmmlxAssociation>, ListCell<FmmlxAssociation>>() {
+			
+		    @Override
+		    public ListCell<FmmlxAssociation> call(ListView<FmmlxAssociation> param) {
+		        ListCell<FmmlxAssociation> cell = new ListCell<FmmlxAssociation>() {
+	
+		            @Override
+		            protected void updateItem(FmmlxAssociation association, boolean empty) {
+		                super.updateItem(association, empty);
+		                FmmlxObject o = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+		                if (association != null && o != null) {
+		                    setText(association.getSourceNode() + " " + association.getName() + " " + association.getTargetNode());
+		                } else {
+		                	setText("");
+		                }
+		            }
+		        };
+		        return cell;
+		    }
+		});
 	}
 
 	@Override
@@ -323,15 +353,19 @@ public class ModelBrowser extends CustomStage {
 		objectNode.add(new Label(StringValue.LabelAndHeaderTitle.objects));
 		objectNode.add(fmmlxObjectListView);
 		objectNode.add(classBrowserVBox);
+		parentsVBox.setPrefHeight(300);
+		objectNode.add(parentsVBox);
 		objectNode.add(abstractVBox);
+		objectNode.add(delegatesToVBox);
+		
 		
 		List<Node> attributeNode = new ArrayList<>();
 		attributeNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		attributeNode.add(new Label(StringValue.LabelAndHeaderTitle.attributes));
 		
-		attributeGridpane.add(fmmlxAttributeListView, 0, 1);
-		attributeGridpane.add(new Label(StringValue.LabelAndHeaderTitle.slots), 0	, 2);
-		attributeGridpane.add(slotListView, 0, 3);
+		attributeGridpane.add(fmmlxAttributeListView, 0, 0);
+		attributeGridpane.add(new Label(StringValue.LabelAndHeaderTitle.slots), 0	, 1);
+		attributeGridpane.add(slotListView, 0, 2);
 		
 		ColumnConstraints col1 = new ColumnConstraints();
 	    col1.setPercentWidth(100);
@@ -379,16 +413,31 @@ public class ModelBrowser extends CustomStage {
 
 	private void onObjectListViewNewValue(FmmlxObject oldValue, FmmlxObject selectedObject) {
 		if (selectedObject != null ) {
+			metaClassTextField.clear();
+			metaClassTextField.setText(selectedObject.getMetaClassName());
+			abstractTextField.clear();
+			abstractTextField.setText(selectedObject.getIsAbstract());
+			delegatesToTextField.clear();
+			if (selectedObject.getDelegatesTo()!=null) {
+				delegatesToTextField.setText(selectedObject.getDelegatesTo().getName());
+			} else {
+				delegatesToTextField.setText("No Delegation!");
+			}
+			parentsListView.getItems().clear();
+			parentsListView.getItems().addAll(selectedObject.getParentsPaths());
 			fmmlxAttributeListView.getItems().clear();
 			fmmlxAttributeListView.getItems().addAll(selectedObject.getAllAttributes());
 			slotListView.getItems().clear();
 			slotListView.getItems().addAll(selectedObject.getAllSlots());
 			fmmlxOperationListView.getItems().clear();
 			fmmlxOperationListView.getItems().addAll(selectedObject.getAllOperations());
+			fmmlxAssociationListView.getItems().clear();
+			fmmlxAssociationListView.getItems().addAll(selectedObject.getAllRelatedAssociations());
+			
 		}		
 	}
 
-	private void onAssociationListViewNewValue(String oldValue, String newValue) {
+	private void onAssociationListViewNewValue(FmmlxAssociation oldValue, FmmlxAssociation newValue) {
 		
 	}
 

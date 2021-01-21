@@ -192,7 +192,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return delelegateToClassOperations;
 	}
 	
-	private FmmlxObject getDelegatesTo() {
+	public FmmlxObject getDelegatesTo() {
 		for(Edge e : diagram.getEdges()) {
 			if(e instanceof DelegationEdge) {
 				DelegationEdge de = (DelegationEdge) e;
@@ -939,5 +939,20 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	public String getPath() { return ownPath; }
 	@Override public String toString() { return name; }
+	
+	public String getMetaClassName() {
+		FmmlxObject of = diagram.getObjectByPath(ofPath);
+		if (of==null) {
+			if ("Root::FMML::MetaClass".equals(ofPath)) {
+			return "MetaClass";
+			} return ofPath;
+		} else {
+			return of.name;
+		}
+	}
+	
+	public String getIsAbstract() {
+		return Boolean.toString(isAbstract);
+	}
 
 }
