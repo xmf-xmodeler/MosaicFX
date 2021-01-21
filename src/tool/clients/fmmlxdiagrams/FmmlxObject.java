@@ -701,6 +701,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	}
 
 	private Vector<FmmlxObject> getAllAncestors() {
+		if("Root::XCore::Class".equals(ownPath)) return new Vector<FmmlxObject>();
 		Vector<FmmlxObject> result1 = new Vector<>();
 		if (ofPath != null) {
 			FmmlxObject of = diagram.getObjectByPath(getOfPath());
@@ -716,7 +717,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			}
 		}
 		Vector<FmmlxObject> result2 = new Vector<>(result1);
-		for (FmmlxObject o : result1) {
+		for (FmmlxObject o : result1) if (o.level != -1) {
 			result2.addAll(o.getAllAncestors());
 		}
 		return result2;

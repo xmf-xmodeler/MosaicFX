@@ -40,11 +40,6 @@ public class ClassBrowserPackageViewer extends AbstractPackageViewer{
 	}
 
 	@Override
-	public ObservableList<FmmlxObject> getAllPossibleParents(Integer newValue) {
-		throw new RuntimeException();
-	}
-
-	@Override
 	public boolean isEnum(String type) {
 		throw new RuntimeException();
 	}

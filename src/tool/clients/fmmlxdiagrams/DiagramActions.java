@@ -128,6 +128,7 @@ public class DiagramActions {
 				if(canvas == null) {
 					diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), aidResult.getName(),
                             aidResult.getParentNames(), false, 0, 0);
+					diagram.updateDiagram();
 				} else {
 					canvas.setCursor(Cursor.CROSSHAIR);
 	
@@ -248,7 +249,11 @@ public class DiagramActions {
 	}
 
 	public void removeDialog(FmmlxObject object, PropertyType type) {
-		FmmlxProperty selectedFmmlxProperty = diagram.getSelectedProperty();
+		removeDialog(object, type, diagram.getSelectedProperty());
+	}
+	
+	public void removeDialog(FmmlxObject object, PropertyType type, FmmlxProperty selectedFmmlxProperty) {
+//		FmmlxProperty selectedFmmlxProperty = diagram.getSelectedProperty();
 
 		Platform.runLater(() -> {
 			RemoveDialog dlg = new RemoveDialog(object, type);
