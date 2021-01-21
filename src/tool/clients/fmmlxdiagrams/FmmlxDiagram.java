@@ -44,7 +44,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	
 	public static final boolean SHOW_MENUITEMS_IN_DEVELOPMENT = false;
 	
-	// The elements which the diagram consists of GUI-wis
+	// The elements which the diagram consists of GUI-wise
 	private SplitPane pane;
 	private SplitPane mainView;
 	private Canvas canvas;
@@ -832,19 +832,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		return FXCollections.observableArrayList(objectList);
 	}
-
-	public ObservableList<FmmlxObject> getAllPossibleParents(Integer level) {
-		ArrayList<FmmlxObject> objectList = new ArrayList<>();
-
-		if (!objects.isEmpty()) {
-			for (FmmlxObject object : objects) {
-				if (level != 0 && object.getLevel() == level) {
-					objectList.add(object);
-				}
-			}
-		}
-		return FXCollections.observableArrayList(objectList);
-	}
 	
 	public void addLabel(DiagramEdgeLabel diagramLabel) {
 		Integer index = null;
@@ -1017,12 +1004,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
 		}
 		return result;
-	}
-
-	public DiagramActions getActions() {
-		return actions;
-	}
-	
+	}	
 
 	public Vector<Issue> getIssues(FmmlxObject fmmlxObject) {
 		Vector<Issue> result = new Vector<>();

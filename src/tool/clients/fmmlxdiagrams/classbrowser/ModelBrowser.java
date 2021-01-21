@@ -27,7 +27,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
-import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
@@ -36,10 +35,9 @@ import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.LevelColorScheme;
 import tool.clients.fmmlxdiagrams.LevelColorScheme.RedLevelColorScheme;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
-import tool.clients.fmmlxdiagrams.SortedValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
-import tool.clients.workbench.WorkbenchClient;
+import tool.clients.fmmlxdiagrams.menus.BrowserObjectsContextMenu;
 import tool.xmodeler.XModeler;
 
 
@@ -195,6 +193,7 @@ public class ModelBrowser extends CustomStage {
 		            }
 
 					private Node getLevelGraphic(int level) {
+						if(level == -1) return null;
 						double SIZE = 16;
 						Canvas canvas = new Canvas(SIZE, SIZE);
 						Text temp = new Text(level+"");
@@ -211,7 +210,7 @@ public class ModelBrowser extends CustomStage {
 		        return cell;
 		    }
 		});
-	
+		
 		fmmlxAttributeListView.setCellFactory(new Callback<ListView<FmmlxAttribute>, ListCell<FmmlxAttribute>>() {
 	
 		    @Override
@@ -224,26 +223,13 @@ public class ModelBrowser extends CustomStage {
 		                FmmlxObject o = fmmlxObjectListView.getSelectionModel().getSelectedItem();
 		                if (att != null && o != null) {
 		                    setText(att.getName() +": "+ att.getType());
-		                    setGraphic(getLevelGraphic(att.getLevel(), o.getOwnAttributes().contains(att)));
+		                    setGraphic(getLevelGraphic4Feature(att.getLevel(), o.getOwnAttributes().contains(att)));
 		                } else {
 		                	setText("");
 		                	setGraphic(null);
 		                }
 		            }
 	
-					private Node getLevelGraphic(int level, boolean own) {
-						double SIZE = 16;
-						Canvas canvas = new Canvas(SIZE, SIZE);
-						Text temp = new Text(level+"");
-						GraphicsContext g = canvas.getGraphicsContext2D();
-						g.setFill(own?Color.BLACK:Color.GRAY);
-						g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/2, SIZE/2);
-						g.setFill(Color.WHITE);
-						g.fillText(level+"", 
-								SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
-								SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
-						return canvas;
-					}
 		        };
 		        return cell;
 		    }
@@ -282,30 +268,31 @@ public class ModelBrowser extends CustomStage {
 		                FmmlxObject o = fmmlxObjectListView.getSelectionModel().getSelectedItem();
 		                if (operation != null && o != null) {
 		                    setText(operation.getFullString(activePackage));
-		                    setGraphic(getLevelGraphic(operation.getLevel(), o.getOwnAttributes().contains(operation)));
+		                    setGraphic(getLevelGraphic4Feature(operation.getLevel(), o.getOwnAttributes().contains(operation)));
 		                } else {
 		                	setText("");
 		                	setGraphic(null);
 		                }
 		            }
-	
-					private Node getLevelGraphic(int level, boolean own) {
-						double SIZE = 16;
-						Canvas canvas = new Canvas(SIZE, SIZE);
-						Text temp = new Text(level+"");
-						GraphicsContext g = canvas.getGraphicsContext2D();
-						g.setFill(own?Color.BLACK:Color.GRAY);
-						g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/2, SIZE/2);
-						g.setFill(Color.WHITE);
-						g.fillText(level+"", 
-								SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
-								SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
-						return canvas;
-					}
 		        };
 		        return cell;
 		    }
 		});
+	}
+	
+	private Node getLevelGraphic4Feature(int level, boolean own) {
+		if(level == -1) return null;
+		double SIZE = 16;
+		Canvas canvas = new Canvas(SIZE, SIZE);
+		Text temp = new Text(level+"");
+		GraphicsContext g = canvas.getGraphicsContext2D();
+		g.setFill(own?Color.BLACK:Color.GRAY);
+		g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/3, SIZE/3);
+		g.setFill(Color.WHITE);
+		g.fillText(level+"", 
+				SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
+				SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
+		return canvas;
 	}
 
 	@Override
@@ -385,7 +372,10 @@ public class ModelBrowser extends CustomStage {
 			slotListView.getItems().addAll(selectedObject.getAllSlots());
 			fmmlxOperationListView.getItems().clear();
 			fmmlxOperationListView.getItems().addAll(selectedObject.getAllOperations());
-		}		
+		}			
+		
+		fmmlxObjectListView.setContextMenu(new BrowserObjectsContextMenu(fmmlxObjectListView, activePackage));
+
 	}
 
 	private void onAssociationListViewNewValue(String oldValue, String newValue) {
@@ -427,16 +417,15 @@ public class ModelBrowser extends CustomStage {
 	}
 
 	public void notifyModelHasLoaded() {
-		Vector<FmmlxObject> objects = activePackage.getObjects();
-		levelColorScheme = new LevelColorScheme.RedLevelColorScheme(activePackage.getObjects());
-//		Vector<String> names = new Vector<>();
-//		for (FmmlxObject o:objects) {
-//			names.add(o.getName());
-//		}
-		fmmlxObjectListView.getItems().clear();
-		fmmlxObjectListView.getItems().addAll(objects);
-		
-		restoreSelection();
+		Platform.runLater(() -> {
+			Vector<FmmlxObject> objects = activePackage.getObjects();
+			levelColorScheme = new LevelColorScheme.RedLevelColorScheme(activePackage.getObjects());
+
+			fmmlxObjectListView.getItems().clear();
+			fmmlxObjectListView.getItems().addAll(objects);
+			
+			restoreSelection();
+		});
 	}
 
 	private void storeSelection() {
