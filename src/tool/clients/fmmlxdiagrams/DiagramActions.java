@@ -330,8 +330,11 @@ public class DiagramActions {
 
 
 	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type) {
-		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
+		changeMultiplicityDialog(object, type, diagram.getSelectedProperty());
+	}
 		
+	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type, FmmlxProperty selectedProperty) {
+
 		if (selectedProperty instanceof FmmlxAttribute && type == PropertyType.Attribute) {
 			FmmlxAttribute att = (FmmlxAttribute) selectedProperty;
 			Multiplicity oldMul = att.getMultiplicity();
@@ -349,9 +352,10 @@ public class DiagramActions {
 	}
 	
 	public void changeLevelDialog(FmmlxObject object, PropertyType type) {
-//		CountDownLatch latch = new CountDownLatch(1);
-
-		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
+		changeLevelDialog(object, type, diagram.getSelectedProperty());
+	}
+		
+	public void changeLevelDialog(FmmlxObject object, PropertyType type, FmmlxProperty selectedProperty) {
 
 		Platform.runLater(() -> {
 			ChangeLevelDialog dlg = new ChangeLevelDialog(object, type);
@@ -529,9 +533,10 @@ public class DiagramActions {
 	}
 
 	public void changeTypeDialog(FmmlxObject object, PropertyType type) {
-//		CountDownLatch latch = new CountDownLatch(1);
-
-		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
+		changeTypeDialog(object, type, diagram.getSelectedProperty());
+	}
+	
+    public void changeTypeDialog(FmmlxObject object, PropertyType type, FmmlxProperty selectedProperty) {
 
 		Platform.runLater(() -> {
 			ChangeTypeDialog dlg = new ChangeTypeDialog(object, type);

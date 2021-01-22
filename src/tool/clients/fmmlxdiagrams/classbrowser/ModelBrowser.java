@@ -1,6 +1,8 @@
 package tool.clients.fmmlxdiagrams.classbrowser;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
@@ -37,7 +39,8 @@ import tool.clients.fmmlxdiagrams.LevelColorScheme.RedLevelColorScheme;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
-import tool.clients.fmmlxdiagrams.menus.BrowserObjectsContextMenu;
+import tool.clients.fmmlxdiagrams.menus.BrowserAttributeContextMenu;
+import tool.clients.fmmlxdiagrams.menus.BrowserObjectContextMenu;
 import tool.xmodeler.XModeler;
 
 
@@ -278,6 +281,16 @@ public class ModelBrowser extends CustomStage {
 		        return cell;
 		    }
 		});
+		
+		slotListView.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2) {
+		        FmmlxSlot slot = slotListView.getSelectionModel().getSelectedItem();
+		        FmmlxObject object = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+		        if(slot != null && object != null) {
+		        	activePackage.getActions().changeSlotValue(object, slot);
+		        }
+			}
+		});
 	}
 	
 	private Node getLevelGraphic4Feature(int level, boolean own) {
@@ -350,9 +363,9 @@ public class ModelBrowser extends CustomStage {
 
 	private void onOperationListViewNewValue(FmmlxOperation oldValue, FmmlxOperation selectedOperation) {
 		if (selectedOperation!=null) {
-		codeArea.setText(selectedOperation.getBody());	
+			codeArea.setText(selectedOperation.getBody());	
 		} else{
-		codeArea.setText("");	
+			codeArea.setText("");	
 		}
 	}
 	
@@ -366,6 +379,7 @@ public class ModelBrowser extends CustomStage {
 
 	private void onObjectListViewNewValue(FmmlxObject oldValue, FmmlxObject selectedObject) {
 		if (selectedObject != null ) {
+			selection.put("OBJ", selectedObject.getName());
 			fmmlxAttributeListView.getItems().clear();
 			fmmlxAttributeListView.getItems().addAll(selectedObject.getAllAttributes());
 			slotListView.getItems().clear();
@@ -374,7 +388,7 @@ public class ModelBrowser extends CustomStage {
 			fmmlxOperationListView.getItems().addAll(selectedObject.getAllOperations());
 		}			
 		
-		fmmlxObjectListView.setContextMenu(new BrowserObjectsContextMenu(fmmlxObjectListView, activePackage));
+		fmmlxObjectListView.setContextMenu(new BrowserObjectContextMenu(fmmlxObjectListView, activePackage));
 
 	}
 
@@ -403,23 +417,31 @@ public class ModelBrowser extends CustomStage {
 			models.put(selectedPath, tempViewer);
 		}
 		activePackage = models.get(selectedPath);
-		storeSelection();
 		activePackage.updateDiagram();
 		System.err.println("onModelListViewNewValue done");
 	}	
 
-	private void onSlotListViewNewValue(ListView<String> modelListView2, FmmlxSlot oldValue, FmmlxSlot newValue) {
-		
-	}
+	private void onSlotListViewNewValue(ListView<String> modelListView2, FmmlxSlot oldValue, FmmlxSlot newValue) {}
 	
 	private void onAttributeListViewNewValue(FmmlxAttribute oldValue, FmmlxAttribute newValue) {
-		
+		if(newValue != null) {selection.put("ATT", newValue.getName());}
+		fmmlxAttributeListView.setContextMenu(new BrowserAttributeContextMenu(fmmlxObjectListView, fmmlxAttributeListView, activePackage));
 	}
 
 	public void notifyModelHasLoaded() {
 		Platform.runLater(() -> {
 			Vector<FmmlxObject> objects = activePackage.getObjects();
-			levelColorScheme = new LevelColorScheme.RedLevelColorScheme(activePackage.getObjects());
+			levelColorScheme = new LevelColorScheme.RedLevelColorScheme(objects);
+			
+			Collections.sort(objects, new Comparator<FmmlxObject>() {
+
+				@Override
+				public int compare(FmmlxObject o1, FmmlxObject o2) {
+					if(o1.getLevel() < o2.getLevel()) return 1;
+					if(o1.getLevel() > o2.getLevel()) return -1;
+					return o1.getName().compareTo(o2.getName());
+				}
+			});
 
 			fmmlxObjectListView.getItems().clear();
 			fmmlxObjectListView.getItems().addAll(objects);
@@ -427,13 +449,40 @@ public class ModelBrowser extends CustomStage {
 			restoreSelection();
 		});
 	}
+	
+	private transient HashMap<String, String> selection = new HashMap<>();
 
-	private void storeSelection() {
-		
-	}
+//	private void storeSelection() {
+//		System.err.println("storeSelection:" + fmmlxObjectListView.getSelectionModel().getSelectedItem());
+//		selection.clear();
+//		FmmlxObject o = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+//		if(o != null) selection.put("OBJ", o.getName());
+//		FmmlxAttribute a = fmmlxAttributeListView.getSelectionModel().getSelectedItem();
+//		if(a != null) selection.put("ATT", a.getName());
+//		FmmlxSlot s = slotListView.getSelectionModel().getSelectedItem();
+//		if(s != null) selection.put("SLO", s.getName());
+//		FmmlxOperation op = fmmlxOperationListView.getSelectionModel().getSelectedItem();
+//		if(op != null) selection.put("OPR", op.getFullString(activePackage));
+//	}
 	
 	private void restoreSelection() {
-		
+		String oS = selection.get("OBJ");
+		System.err.println("restoreSelection:" + oS);
+		for(int i = 0; i < fmmlxObjectListView.getItems().size() && oS != null; i++) {
+			if(oS.equals(fmmlxObjectListView.getItems().get(i).getName())) {
+				System.err.println("restore O: " + oS);
+				oS = null;
+				fmmlxObjectListView.getSelectionModel().select(fmmlxObjectListView.getItems().get(i));
+			}
+		}
+		String aS = selection.get("ATT");
+		for(int i = 0; i < fmmlxAttributeListView.getItems().size() && aS != null; i++) {
+			if(aS.equals(fmmlxAttributeListView.getItems().get(i).getName())) {
+				System.err.println("restore A: " + aS);
+				aS = null;
+				fmmlxAttributeListView.getSelectionModel().select(fmmlxAttributeListView.getItems().get(i));
+			}
+		}
 	}
 
 }

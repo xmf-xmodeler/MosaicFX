@@ -40,11 +40,6 @@ public class ClassBrowserPackageViewer extends AbstractPackageViewer{
 	}
 
 	@Override
-	public boolean isEnum(String type) {
-		throw new RuntimeException();
-	}
-
-	@Override
 	public Vector<String> getEnumItems(String type) {
 		throw new RuntimeException();
 	}

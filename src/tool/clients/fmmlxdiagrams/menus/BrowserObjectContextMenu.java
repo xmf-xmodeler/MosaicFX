@@ -13,15 +13,13 @@ import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
-public class BrowserObjectsContextMenu extends ContextMenu {
+public class BrowserObjectContextMenu extends ContextMenu {
 
 	private final FmmlxObject object;
 	private final DiagramActions actions;
-//	private final AbstractPackageViewer packageViewer;
 	
-	public BrowserObjectsContextMenu(ListView<FmmlxObject> listView, AbstractPackageViewer packageViewer) {
+	public BrowserObjectContextMenu(ListView<FmmlxObject> listView, AbstractPackageViewer packageViewer) {
 		
-//		this.packageViewer = packageViewer;
 		this.actions = packageViewer.getActions();
 		this.object = listView.getSelectionModel().getSelectedItem();
 		setAutoHide(true);

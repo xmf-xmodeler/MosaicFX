@@ -59,7 +59,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	// The elements representing the model which is displayed in the GUI
 	
 	private Vector<DiagramEdgeLabel> labels = new Vector<>();
-	private Vector<FmmlxEnum> enums = new Vector<>();
 	private Vector<String> auxTypes = new Vector<>();
 	private Vector<Issue> issues = new Vector<>();
 	
@@ -938,13 +937,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			types.add(e.getName());
 		}
 		return types;
-	}
-
-	public boolean isEnum(String enumName) {
-		for (FmmlxEnum e : enums) {
-			if(e.getName().equals(enumName)) return true;
-		}
-		return false;
 	}
 
 	public Vector<String> getEnumItems(String enumName) {
