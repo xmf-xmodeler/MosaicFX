@@ -11,9 +11,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
-import tool.clients.serializer.FmmlxDeserializer;
-import tool.clients.serializer.FmmlxSerializer;
-import tool.clients.serializer.XmlHandler;
+import tool.clients.serializer.*;
 import tool.clients.serializer.interfaces.Deserializer;
 import tool.clients.serializer.interfaces.Serializer;
 import tool.clients.workbench.WorkbenchClient;
@@ -270,6 +268,39 @@ public class FmmlxDiagramCommunicator {
 			result.add(object);
 
 			sendCurrentPosition(diagram.getID(), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY())); // make sure to store position if newly created
+		}
+		return result;
+	}
+
+	public Vector<FmmlxObject> getVirtualObjects(Integer id) throws TimeOutException {
+		Vector<Object> response = xmfRequest(handler, id, "getAllObjects");
+		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+		Vector<FmmlxObject> result = new Vector<>();
+		for (Object responseObject : responseContent) {
+			Vector<Object> responseObjectList = (Vector<Object>) (responseObject);
+
+			Vector<Object> parentListO2 = (Vector<Object>) responseObjectList.get(12);
+			Vector<String> parentListS = new Vector<>();
+			for (Object o : parentListO2) {
+				parentListS.add((String) o);
+			}
+			FmmlxObject object = new FmmlxObject(
+					null, // (Integer) responseObjectList.get(0), // id*
+					(String)  responseObjectList.get(1), // name
+					(Integer) responseObjectList.get(2), // level
+					null, //(Integer) responseObjectList.get(3), // of*
+					null, //parentListI,                          // parents*
+					(String)  responseObjectList.get(10), // ownPath
+					(String)  responseObjectList.get(11), // ofPath
+					parentListS,                          // parentsPath
+					(Boolean) responseObjectList.get(5),
+					(Integer) responseObjectList.get(6), // x-Position
+					(Integer) responseObjectList.get(7), // y-Position
+					(Boolean) responseObjectList.get(8),
+					AbstractPackageViewer.SIMPLE_VIEWER);
+			result.add(object);
+
+			sendCurrentPosition(id, object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY())); // make sure to store position if newly created
 		}
 		return result;
 	}
@@ -1575,7 +1606,7 @@ public class FmmlxDiagramCommunicator {
 		new Thread(task).start();
 	}
 
-	public int getDiagramIdFromName(String diagramName) {
+	public static int getDiagramIdFromName(String diagramName) {
 		String[] nameArray = diagramName.split(" ");
 		String	idDirt = nameArray[nameArray.length-1];
 		String id = idDirt.substring(0, idDirt.length()-1);
@@ -1624,5 +1655,48 @@ public class FmmlxDiagramCommunicator {
 			throw new RuntimeException(e1);
 		}
 
+	}
+
+	public Vector<Integer> getOpenedDiagrams(String packagePath) {
+		Vector<Integer> result = new Vector<>();
+		for(FmmlxDiagram diagram : diagrams){
+			if(diagram.getPackagePath().equals(packagePath)){
+				result.add(diagram.getID());
+			}
+		}
+		return result;
+	}
+
+	public VirtualDiagramHolder getVirtualDiagramHolder() {
+		return virtualDiagramHolder;
+	}
+
+	private final VirtualDiagramHolder virtualDiagramHolder= new VirtualDiagramHolder();
+
+	public void populateUnOpenedDiagram(FmmlxDiagram diagram){
+		Vector<VirtualFmmlxDiagram> virtualFmmlxDiagrams = virtualDiagramHolder.getVirtualFmmlxDiagrams();
+		Vector<Integer> ids = AbstractPackageViewer.SIMPLE_VIEWER.getComm().getAllDiagramIDs(diagram.getPackagePath());
+		Vector<Integer> openedDiagramIDs = diagram.getComm().getOpenedDiagrams(diagram.getPackagePath());
+		Vector<Integer> unOpenedDiagramIDs = new Vector<>();
+		VirtualDiagramHolder virtualDiagramHolder = this.virtualDiagramHolder;
+		for(Integer id : ids){
+			if(!openedDiagramIDs.contains(id)){
+				unOpenedDiagramIDs.add(id);
+			}
+		}
+
+		Task<Void> task = new Task<Void>() {
+			@Override
+			protected Void call() throws TimeOutException {
+				for(Integer id : unOpenedDiagramIDs){
+					Vector<FmmlxObject> objects = diagram.getComm().getVirtualObjects(id);
+					Deserializer deserializer = new FmmlxDeserializer(new XmlHandler(diagram.getFilePath()));
+					deserializer.syncObjectCoordinate(diagram, id, objects);
+					virtualFmmlxDiagrams.add(new VirtualFmmlxDiagram(id, virtualDiagramHolder, objects));
+				}
+				return null;
+			}
+		};
+		new Thread(task).start();
 	}
 }

@@ -1,7 +1,9 @@
 package tool.clients.serializer;
 
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.serializer.interfaces.Deserializer;
 
 import java.nio.file.Files;
@@ -67,5 +69,11 @@ public class FmmlxDeserializer implements Deserializer {
     public String getProjectName() {
         ProjectXmlManager projectXmlManager = new ProjectXmlManager(this.xmlHandler);
         return projectXmlManager.getProjectName();
+    }
+
+    @Override
+    public void syncObjectCoordinate(AbstractPackageViewer diagram, Integer id, Vector<FmmlxObject> objects) {
+        ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
+        objectXmlManager.alignObjects(id, objects);
     }
 }

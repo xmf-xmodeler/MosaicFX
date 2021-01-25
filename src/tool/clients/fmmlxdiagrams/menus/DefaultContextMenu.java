@@ -1,15 +1,11 @@
 package tool.clients.fmmlxdiagrams.menus;
 
-import java.util.Optional;
-import java.util.Vector;
-
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+
+import java.util.Optional;
+import java.util.Vector;
 
 public class DefaultContextMenu extends ContextMenu {
 
@@ -84,9 +80,12 @@ public class DefaultContextMenu extends ContextMenu {
 			
 			MenuItem test = new MenuItem("Test");
 			test.setOnAction(a -> {
-				System.err.println("Test: " + diagram.getComm().getAllDiagramIDs("Root::BikePackage"));
+				actions.getAllObjects();
+
+
 			});
 			getItems().addAll(test);
+
 
 			MenuItem openFindImplementationDialog = new MenuItem("Search for Implementation");
 			openFindImplementationDialog.setOnAction(e -> actions.openFindImplementationDialog());

@@ -122,7 +122,7 @@ public class ObjectXmlManager implements XmlManager {
                 double x = Double.parseDouble(tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
                 double y = Double.parseDouble(tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
                 String objectPath = tmp.getAttribute(XmlConstant.ATTRIBUTE_REFERENCE);
-                communicator.sendCurrentPosition(communicator.getDiagramIdFromName(diagramName), objectPath, (int)Math.round(x), (int)Math.round(y));
+                communicator.sendCurrentPosition(FmmlxDiagramCommunicator.getDiagramIdFromName(diagramName), objectPath, (int)Math.round(x), (int)Math.round(y));
             }
         }
         System.out.println("align objects in "+diagramName+" : finished ");
@@ -148,7 +148,7 @@ public class ObjectXmlManager implements XmlManager {
             Point2D initCoordinate = new Point2D(object.getX(), object.getY());
             Point2D coordinate = getCoordinate(diagramNode, object.getName(),initCoordinate);
             object.moveTo(coordinate.getX(), coordinate.getY(), fmmlxDiagram);
-            fmmlxDiagram.getComm().sendCurrentPosition(fmmlxDiagram.getComm().getDiagramIdFromName(fmmlxDiagram.getDiagramLabel()), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY()));
+            fmmlxDiagram.getComm().sendCurrentPosition(FmmlxDiagramCommunicator.getDiagramIdFromName(fmmlxDiagram.getDiagramLabel()), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY()));
         }
     }
 
@@ -167,5 +167,28 @@ public class ObjectXmlManager implements XmlManager {
             }
         }
         return initCoordingate;
+    }
+
+    public void alignObjects(Integer id, Vector<FmmlxObject> objects) {
+        Node diagrams = xmlHandler.getDiagramsNode();
+        NodeList diagramList = diagrams.getChildNodes();
+
+        Node diagramNode = null;
+
+        for (int i = 0 ; i< diagramList.getLength(); i++){
+            if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
+                Element tmp = (Element) diagramList.item(i);
+                int tmp_id = FmmlxDiagramCommunicator.getDiagramIdFromName(tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL));
+                if (tmp_id==id){
+                    diagramNode = tmp;
+                }
+            }
+        }
+
+        for(FmmlxObject object : objects){
+            Point2D initCoordinate = new Point2D(object.getX(), object.getY());
+            Point2D coordinate = getCoordinate(diagramNode, object.getName(),initCoordinate);
+            FmmlxDiagramCommunicator.getCommunicator().sendCurrentPosition(id, object.getPath(), (int)Math.round(coordinate.getX()), (int)Math.round(coordinate.getY()));
+        }
     }
 }

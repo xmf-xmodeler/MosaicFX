@@ -31,6 +31,7 @@ import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.XmlHandler;
+import tool.clients.serializer.interfaces.Deserializer;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -1135,11 +1136,13 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		newFmmlxPalette.update();
 		if(justLoaded){
 			if(filePath !=null && filePath.length()>0){
-				Deserializer deserializer = new Deserializer();
+				Deserializer deserializer = new FmmlxDeserializer(XmlHandler.getInstance(filePath));
 				deserializer.alignCoordinate(this);
 				triggerOverallReLayout();
 			}
 			justLoaded = false;
+			getComm().populateUnOpenedDiagram(this);
+			getComm().getVirtualDiagramHolder().remove(getID());
 		}
 		redraw();
 		if(issues.size() > 0) {

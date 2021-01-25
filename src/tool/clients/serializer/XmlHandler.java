@@ -25,7 +25,7 @@ public class XmlHandler {
         return new XmlHandler(file);
     }
 
-    private XmlHandler(String sourcePath){
+    public XmlHandler(String sourcePath){
         XmlHandler.sourcePath = sourcePath;
         this.document = buildDocument(sourcePath);
         this.xmlHelper = XmlHelper.getInstance(getDocument());
@@ -248,9 +248,7 @@ public class XmlHandler {
         }
 
         public Element createXmlElement(String tagName){
-            Element item;
-            item = document.createElement(tagName);
-            return item;
+            return document.createElement(tagName);
         }
 
         protected void addXmlElement(Node parent, Node newNode) {

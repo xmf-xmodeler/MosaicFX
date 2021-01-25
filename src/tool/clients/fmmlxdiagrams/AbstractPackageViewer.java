@@ -1,9 +1,8 @@
 package tool.clients.fmmlxdiagrams;
 
-import java.util.Vector;
-
 import javafx.collections.ObservableList;
-import tool.clients.serializer.Deserializer;
+
+import java.util.Vector;
 
 public abstract class AbstractPackageViewer {
 	
@@ -15,8 +14,64 @@ public abstract class AbstractPackageViewer {
 	protected final String packagePath;
 	protected transient boolean fetchingData;
 	protected boolean justLoaded = false;
-	
-	
+
+	public static final AbstractPackageViewer SIMPLE_VIEWER = new AbstractPackageViewer(FmmlxDiagramCommunicator.getCommunicator(),
+			-2, "simple_viewer") {
+		@Override
+		public Vector<String> getAvailableTypes() {
+			return null;
+		}
+
+		@Override
+		public Vector<FmmlxEnum> getEnums() {
+			return null;
+		}
+
+		@Override
+		public void updateEnums() {
+
+		}
+
+		@Override
+		public FmmlxProperty getSelectedProperty() {
+			return null;
+		}
+
+		@Override
+		public ObservableList<FmmlxObject> getAllPossibleParents(Integer newValue) {
+			return null;
+		}
+
+		@Override
+		public boolean isEnum(String type) {
+			return false;
+		}
+
+		@Override
+		public Vector<String> getEnumItems(String type) {
+			return null;
+		}
+
+		@Override
+		public ObservableList<FmmlxObject> getAllPossibleParentList() {
+			return null;
+		}
+
+		@Override
+		protected void fetchDiagramDataSpecific() throws TimeOutException {
+
+		}
+
+		@Override
+		protected void fetchDiagramDataSpecific2() {
+
+		}
+
+		@Override
+		protected void clearDiagram_specific() {
+
+		}
+	};
 	protected AbstractPackageViewer(FmmlxDiagramCommunicator comm, int diagramID, String packagePath) {
 		this.diagramID = diagramID;
 		this.packagePath=packagePath;
@@ -186,6 +241,7 @@ public abstract class AbstractPackageViewer {
 			}
 		return typePath;
 	}
+
 
 
 

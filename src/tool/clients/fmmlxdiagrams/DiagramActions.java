@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
@@ -28,7 +29,8 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.*;
 import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
-import tool.clients.serializer.FmmlxSerializer;
+import tool.clients.serializer.*;
+import tool.clients.serializer.interfaces.Deserializer;
 import tool.clients.serializer.interfaces.Serializer;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -830,8 +832,8 @@ public class DiagramActions {
 		if(!(diagram instanceof FmmlxDiagram)) throw new IllegalArgumentException();
 		Platform.runLater(() -> {
 			try {
-				Serializer serializer = new FmmlxSerializer(diagram.getFilePath());
-				serializer.save(diagram);
+				Serializer serializer = new FmmlxSerializer(((FmmlxDiagram) diagram).getFilePath());
+				serializer.save((FmmlxDiagram) diagram);
 			} catch (TransformerException | ParserConfigurationException e) {
 				e.printStackTrace();
 			}
@@ -865,5 +867,21 @@ public class DiagramActions {
 	public void hide(Vector<FmmlxObject> objects, boolean hide) {
 		diagram.getComm().hideElements(diagram.getID(), objects, hide);
 		diagram.updateDiagram();
+	}
+
+	public void getAllObjects() {
+		VirtualDiagramHolder virtualDiagramHolder = diagram.getComm().getVirtualDiagramHolder();
+		Vector<VirtualFmmlxDiagram> unOpenedDiagrams = virtualDiagramHolder.getVirtualFmmlxDiagrams();
+
+		for(VirtualFmmlxDiagram virtualFmmlxDiagram : unOpenedDiagrams){
+			try {
+				Vector<FmmlxObject> syncedObjects = diagram.getComm().getVirtualObjects(virtualFmmlxDiagram.getId());
+				for(FmmlxObject object : syncedObjects){
+					System.out.println("diagramID : "+virtualFmmlxDiagram.getId()+", name "+ object.getName()+", x:"+object.getX()+", y:"+object.getY());
+				}
+			} catch (TimeOutException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
