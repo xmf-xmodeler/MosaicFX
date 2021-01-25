@@ -290,6 +290,16 @@ public class ModelBrowser extends CustomStage {
 		        	activePackage.getActions().changeSlotValue(object, slot);
 		        }
 			}
+		});	
+		
+		fmmlxAttributeListView.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2) {
+		        FmmlxAttribute att = fmmlxAttributeListView.getSelectionModel().getSelectedItem();
+		        FmmlxObject object = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+		        if(att != null && object != null) {
+		        	activePackage.getActions().changeNameDialog(object, tool.clients.fmmlxdiagrams.dialogs.PropertyType.Attribute, att);
+		        }
+			}
 		});
 	}
 	
@@ -389,6 +399,7 @@ public class ModelBrowser extends CustomStage {
 		}			
 		
 		fmmlxObjectListView.setContextMenu(new BrowserObjectContextMenu(fmmlxObjectListView, activePackage));
+		onAttributeListViewNewValue(null, null);
 
 	}
 
@@ -410,7 +421,6 @@ public class ModelBrowser extends CustomStage {
 	
 	private void onModelListViewNewValue(String oldSelectedPath, String selectedPath) {
 		if(selectedPath == null || selectedPath.equals(oldSelectedPath)) return;
-		System.err.println("onModelListViewNewValue " + selectedPath);
 		if(!models.containsKey(selectedPath)) {
 			Integer newDiagramID=communicator.createDiagram(selectedPath, "Test", "");
 			ClassBrowserPackageViewer tempViewer = new ClassBrowserPackageViewer(communicator, newDiagramID, selectedPath, this);
@@ -418,7 +428,6 @@ public class ModelBrowser extends CustomStage {
 		}
 		activePackage = models.get(selectedPath);
 		activePackage.updateDiagram();
-		System.err.println("onModelListViewNewValue done");
 	}	
 
 	private void onSlotListViewNewValue(ListView<String> modelListView2, FmmlxSlot oldValue, FmmlxSlot newValue) {}
@@ -451,26 +460,11 @@ public class ModelBrowser extends CustomStage {
 	}
 	
 	private transient HashMap<String, String> selection = new HashMap<>();
-
-//	private void storeSelection() {
-//		System.err.println("storeSelection:" + fmmlxObjectListView.getSelectionModel().getSelectedItem());
-//		selection.clear();
-//		FmmlxObject o = fmmlxObjectListView.getSelectionModel().getSelectedItem();
-//		if(o != null) selection.put("OBJ", o.getName());
-//		FmmlxAttribute a = fmmlxAttributeListView.getSelectionModel().getSelectedItem();
-//		if(a != null) selection.put("ATT", a.getName());
-//		FmmlxSlot s = slotListView.getSelectionModel().getSelectedItem();
-//		if(s != null) selection.put("SLO", s.getName());
-//		FmmlxOperation op = fmmlxOperationListView.getSelectionModel().getSelectedItem();
-//		if(op != null) selection.put("OPR", op.getFullString(activePackage));
-//	}
 	
 	private void restoreSelection() {
 		String oS = selection.get("OBJ");
-		System.err.println("restoreSelection:" + oS);
 		for(int i = 0; i < fmmlxObjectListView.getItems().size() && oS != null; i++) {
 			if(oS.equals(fmmlxObjectListView.getItems().get(i).getName())) {
-				System.err.println("restore O: " + oS);
 				oS = null;
 				fmmlxObjectListView.getSelectionModel().select(fmmlxObjectListView.getItems().get(i));
 			}
@@ -478,7 +472,6 @@ public class ModelBrowser extends CustomStage {
 		String aS = selection.get("ATT");
 		for(int i = 0; i < fmmlxAttributeListView.getItems().size() && aS != null; i++) {
 			if(aS.equals(fmmlxAttributeListView.getItems().get(i).getName())) {
-				System.err.println("restore A: " + aS);
 				aS = null;
 				fmmlxAttributeListView.getSelectionModel().select(fmmlxAttributeListView.getItems().get(i));
 			}

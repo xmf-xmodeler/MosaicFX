@@ -423,8 +423,6 @@ public class FmmlxDiagramCommunicator {
 			}
 			
 			Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(13);
-			
-			System.err.println("edgeInfoAsList.get(0): " + edgeInfoAsList.get(0));
 
 			Edge object = new FmmlxAssociation(
 					(String) edgeInfoAsList.get(0), // id
@@ -606,7 +604,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxEnum> fetchAllEnums(FmmlxDiagram diagram) throws TimeOutException {
+	public Vector<FmmlxEnum> fetchAllEnums(AbstractPackageViewer diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllEnums");
 		Vector<Object> enumList = (Vector<Object>) (response.get(0));
 		Vector<FmmlxEnum> result = new Vector<>();
@@ -1295,7 +1293,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Vector<String> fetchAllAuxTypes(FmmlxDiagram fmmlxDiagram) throws TimeOutException {
+	public Vector<String> fetchAllAuxTypes(AbstractPackageViewer fmmlxDiagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, fmmlxDiagram.getID(), "getAllAuxTypes");
 		Vector<Object> auxList = (Vector<Object>) (response.get(0));
 		Vector<String> result = new Vector<>();
@@ -1633,6 +1631,31 @@ public class FmmlxDiagramCommunicator {
 		} catch (TimeOutException e1) {
 			throw new RuntimeException(e1);
 		}
-
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, HashMap<String, Object>> getAllObjectPositions(int diagramID) {
+		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
+		try {
+			Vector<Object> response = xmfRequest(handler, -2, "getAllObjectPositions", new Value(diagramID));
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			
+			for(Object o : responseContent) {
+				Vector<Object> objInfo = (Vector<Object>) o;
+				String key = (String) objInfo.get(0);
+				Integer x = (Integer) objInfo.get(1);
+				Integer y = (Integer) objInfo.get(2);
+				Boolean hidden = (Boolean) objInfo.get(3);
+				
+				HashMap<String, Object> objectMap = new HashMap<>();
+				objectMap.put("x", x);
+				objectMap.put("y", y);
+				objectMap.put("hidden", hidden);
+				result.put(key, objectMap);				
+			}
+			return result;
+		} catch (TimeOutException e1) {
+			throw new RuntimeException(e1);
+		}
 	}
 }

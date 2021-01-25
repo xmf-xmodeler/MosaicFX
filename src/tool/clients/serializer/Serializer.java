@@ -8,6 +8,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Vector;
 
 public class Serializer implements ISerializer {
@@ -35,10 +36,9 @@ public class Serializer implements ISerializer {
                 diagramXmlManager.remove(diagram);
             }
             diagramXmlManager.add(diagramElement);
-            saveObjects(diagram, file);
+            saveObjects(diagram.getPackagePath(), file);
             saveEdges(diagram, file);
             saveLabels(diagram, file);
-            saveLog(diagram, file);
         }
     }
 
@@ -80,15 +80,26 @@ public class Serializer implements ISerializer {
         }
     }
 
-    private void saveObjects(FmmlxDiagram diagram, String file) {
+    private void saveObjects(String diagramPath, String file) {
         ObjectXmlManager objectXmlManager = new ObjectXmlManager(file);
+        
+        Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(diagramPath);
+//        Vector<FmmlxObject> objects = diagram.getObjects();
 
-        Vector<FmmlxObject> objects = diagram.getObjects();
-
-        for (FmmlxObject object : objects){
-            Element objectElement = objectXmlManager.createObjectElement(diagram, object);
-            objectXmlManager.add(objectElement);
+        for(Integer id : diagramIds) {
+        	HashMap<String, HashMap<String, Object>> result = FmmlxDiagramCommunicator.getCommunicator().getAllObjectPositions(id);
+        	for(String path : result.keySet()) {
+        		Element objectElement = objectXmlManager.createObjectElement(path,
+        				(Integer) result.get(path).get("x"),
+        				(Integer) result.get(path).get("y"),
+        				(Boolean) result.get(path).get("hidden"));
+              objectXmlManager.add(objectElement);
+        	}
         }
+//        for (FmmlxObject object : objects){
+//            Element objectElement = objectXmlManager.createObjectElement(diagram, object);
+//            objectXmlManager.add(objectElement);
+//        }
     }
 
     private void saveProject(FmmlxDiagram diagram, String file) throws TransformerException {

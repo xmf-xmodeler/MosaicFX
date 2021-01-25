@@ -20,16 +20,6 @@ public class ClassBrowserPackageViewer extends AbstractPackageViewer{
 	}
 
 	@Override
-	public Vector<String> getAvailableTypes() {
-		throw new RuntimeException();
-	}
-
-	@Override
-	public Vector<FmmlxEnum> getEnums() {
-		throw new RuntimeException();
-	}
-
-	@Override
 	public void updateEnums() {
 		throw new RuntimeException();
 	}

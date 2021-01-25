@@ -59,7 +59,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	// The elements representing the model which is displayed in the GUI
 	
 	private Vector<DiagramEdgeLabel> labels = new Vector<>();
-	private Vector<String> auxTypes = new Vector<>();
 	private Vector<Issue> issues = new Vector<>();
 	
 	// Temporary variables storing the current state of user interactions
@@ -861,10 +860,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return diagramName;
 	}
 
-	public Vector<FmmlxEnum> getEnums() {
-		return enums;
-	}
-
 	public InheritanceEdge getInheritanceEdge(FmmlxObject child, FmmlxObject parent) {
 		for(Edge e : edges) {
 			if(e instanceof InheritanceEdge) {
@@ -925,19 +920,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public boolean isShowGetterAndSetter() {return this.showGetterAndSetter;}
 	public boolean isShowDerivedOperations() {return this.showDerivedOperations;}
 	public boolean isShowDerivedAttributes() {return this.showDerivedAttributes;}
-
-	public Vector<String> getAvailableTypes() {
-		Vector<String> types = new Vector<>();
-		types.add("Boolean");
-		types.add("Integer");
-		types.add("Float");
-		types.add("String");
-		types.addAll(auxTypes);
-		for(FmmlxEnum e : enums) {
-			types.add(e.getName());
-		}
-		return types;
-	}
 
 	public Vector<String> getEnumItems(String enumName) {
 		for (FmmlxEnum e : enums) {
@@ -1095,8 +1077,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		for(FmmlxObject o : objects) {
 			o.layout(this);
 		}
-		enums = comm.fetchAllEnums(this);
-		auxTypes = comm.fetchAllAuxTypes(this);
 
 		triggerOverallReLayout();
 		resizeCanvas();

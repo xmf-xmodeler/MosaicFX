@@ -26,6 +26,7 @@ public class BrowserObjectContextMenu extends ContextMenu {
 		
 		MenuItem addClassItem = new MenuItem("Add Class");
 		addClassItem.setOnAction(e -> actions.addMetaClassDialog((javafx.scene.canvas.Canvas) null));
+		getItems().add(addClassItem);
 		
 		if(object != null && object.getLevel() >= 1 && !object.isAbstract()) {
 			MenuItem addInstanceItem = new MenuItem("Add instance of " + object.getName());
@@ -48,6 +49,7 @@ public class BrowserObjectContextMenu extends ContextMenu {
 			if(object.notTraditionalDataTypeExists() || object.getLevel()<=0){
 				instanceGenerator.setDisable(true);
 			}
+			instanceGenerator.setDisable(true); // temp
 			getItems().add(instanceGenerator);
 		}
 		
@@ -58,11 +60,11 @@ public class BrowserObjectContextMenu extends ContextMenu {
 				javafx.scene.control.ButtonType.CANCEL).showAndWait();});
 		getItems().add(changeOfItem);
 		
-		MenuItem changeParentItem = new MenuItem("Change parent (Superclass)");
-		changeParentItem.setOnAction(e -> actions.changeParentsDialog(object));
-		getItems().add(changeParentItem);
-		
 		if(object != null && object.getLevel() >= 1) { 
+			MenuItem changeParentItem = new MenuItem("Change parent (Superclass)");
+			changeParentItem.setOnAction(e -> actions.changeParentsDialog(object));
+			getItems().add(changeParentItem);		
+		
 			MenuItem abstractClassItem = new MenuItem(object.isAbstract()?"Make concrete":"Make abstract");
 			abstractClassItem.setOnAction(e -> actions.toggleAbstract(object));
 			abstractClassItem.setDisable(object.getInstances().size() > 0);

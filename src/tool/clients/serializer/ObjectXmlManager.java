@@ -18,23 +18,23 @@ public class ObjectXmlManager implements IXmlManager {
         this.xmlHandler =  new XmlHandler(file);
     }
 
-    public Element createObjectElement(FmmlxDiagram diagram, FmmlxObject fmmlxObject) {
-        String name = fmmlxObject.getName();
-        int level= fmmlxObject.getLevel();
-        String ofName = fmmlxObject.getOfPath();
-        Vector<String> parents = fmmlxObject.getParentsPaths();
-        String projectPath = diagram.getPackagePath()+"::"+name;
-        String owner = diagram.getDiagramLabel();
-        double x = fmmlxObject.getX();
-        double y = fmmlxObject.getY();
+    public Element createObjectElement(String objectPath, Integer x, Integer y, Boolean hidden) {
+//        String name = fmmlxObject.getName();
+//        int level= fmmlxObject.getLevel();
+//        String ofName = fmmlxObject.getOfPath();
+//        Vector<String> parents = fmmlxObject.getParentsPaths();
+//        String projectPath = fmmlxObject.getPath();
+//        String owner = diagram.getDiagramLabel();
+//        double x = fmmlxObject.getX();
+//        double y = fmmlxObject.getY();
 
         Element object = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OBJECT);
-        object.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
-        object.setAttribute(XmlConstant.ATTRIBUTE_LEVEL, level+"");
-        object.setAttribute(XmlConstant.ATTRIBUTE_OF, ofName+"");
-        object.setAttribute(XmlConstant.ATTRIBUTE_PARENTS, parents+"");
-        object.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
-        object.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
+//        object.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
+//        object.setAttribute(XmlConstant.ATTRIBUTE_LEVEL, level+"");
+//        object.setAttribute(XmlConstant.ATTRIBUTE_OF, ofName+"");
+//        object.setAttribute(XmlConstant.ATTRIBUTE_PARENTS, parents+"");
+        object.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, objectPath);
+//        object.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
         object.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, x+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, y+"");
         return object;

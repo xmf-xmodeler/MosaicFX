@@ -10,6 +10,7 @@ public abstract class AbstractPackageViewer {
 	
 	protected Vector<FmmlxObject> objects = new Vector<>();
 	protected Vector<FmmlxEnum> enums = new Vector<>();
+	protected Vector<String> auxTypes = new Vector<>();
 	protected Vector<Edge> edges = new Vector<>();
 	protected final int diagramID;
 	protected final FmmlxDiagramCommunicator comm;
@@ -29,8 +30,6 @@ public abstract class AbstractPackageViewer {
 		return comm;
 	}
 
-	public abstract Vector<String> getAvailableTypes();
-	public abstract Vector<FmmlxEnum> getEnums();	
 	public abstract void updateEnums();
 	public abstract FmmlxProperty getSelectedProperty();
 	public abstract Vector<String> getEnumItems(String type);
@@ -80,6 +79,10 @@ public abstract class AbstractPackageViewer {
 			edges.addAll(comm.getAllInheritanceEdges(this));
 			edges.addAll(comm.getAllDelegationEdges(this));
 			edges.addAll(comm.getAllRoleFillerEdges(this));
+
+			enums = comm.fetchAllEnums(this);
+			auxTypes = comm.fetchAllAuxTypes(this);
+			
 			fetchDiagramDataSpecific();
 			
 		} catch (TimeOutException e) {
@@ -209,5 +212,21 @@ public abstract class AbstractPackageViewer {
 		}
 		return false;
 	}
+	
+	public final Vector<String> getAvailableTypes() {
+		Vector<String> types = new Vector<>();
+		types.add("Boolean");
+		types.add("Integer");
+		types.add("Float");
+		types.add("String");
+		types.addAll(auxTypes);
+		for(FmmlxEnum e : enums) {
+			types.add(e.getName());
+		}
+		return types;
+	}
 
+	public Vector<FmmlxEnum> getEnums() {
+		return enums;
+	}
 }
