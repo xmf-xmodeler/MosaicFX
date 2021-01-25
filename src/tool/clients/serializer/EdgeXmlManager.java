@@ -5,21 +5,20 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.*;
-import tool.clients.serializer.interfaces.IXmlManager;
+import tool.clients.serializer.interfaces.XmlManager;
 
-import javax.xml.transform.TransformerException;
 import java.util.List;
 import java.util.Vector;
 
-public class EdgeXmlManager implements IXmlManager {
+public class EdgeXmlManager implements XmlManager {
 
     private final XmlHandler xmlHandler;
 
-    public EdgeXmlManager(String file) {
-        this.xmlHandler = new XmlHandler(file);
+    protected EdgeXmlManager(XmlHandler xmlHandler) {
+        this.xmlHandler = xmlHandler;
     }
 
-    public Element createEdgeXmlElement(FmmlxDiagram fmmlxDiagram, Edge edge) throws TransformerException {
+    public Element createEdgeXmlElement(FmmlxDiagram fmmlxDiagram, Edge edge) {
         Vector<Point2D> intermediatePoints = edge.getIntermediatePoints();
         FmmlxObject sourceNode = edge.getSourceNode();
         FmmlxObject targetNode = edge.getTargetNode();
@@ -48,7 +47,7 @@ public class EdgeXmlManager implements IXmlManager {
         return edgeElement;
     }
 
-    public Element createAssociationXmlElement(FmmlxDiagram fmmlxDiagram, FmmlxAssociation fmmlxAssociation) throws TransformerException {
+    public Element createAssociationXmlElement(FmmlxDiagram fmmlxDiagram, FmmlxAssociation fmmlxAssociation)  {
         String name = fmmlxAssociation.getName();
         String type = XmlConstant.EdgeType.ASSOCIATION;
 //        String parentAssociationName = fmmlxAssociation.getParentAssociationName();
@@ -68,7 +67,7 @@ public class EdgeXmlManager implements IXmlManager {
         return edge;
     }
 
-    public Element createDelegationXmlElement(FmmlxDiagram fmmlxDiagram, DelegationEdge delegationEdge) throws TransformerException {
+    public Element createDelegationXmlElement(FmmlxDiagram fmmlxDiagram, DelegationEdge delegationEdge) {
         String type = XmlConstant.EdgeType.DELEGATION;
 
         Element edge = createEdgeXmlElement(fmmlxDiagram, delegationEdge);
@@ -76,7 +75,7 @@ public class EdgeXmlManager implements IXmlManager {
         return edge;
     }
 
-    public Element createRoleFillerEdgeXmlElement(FmmlxDiagram diagram, RoleFillerEdge roleFillerEdge) throws TransformerException {
+    public Element createRoleFillerEdgeXmlElement(FmmlxDiagram diagram, RoleFillerEdge roleFillerEdge) {
         String type = XmlConstant.EdgeType.ROLEFILLEREDGE;
 
         Element edge = createEdgeXmlElement(diagram, roleFillerEdge);
@@ -85,7 +84,7 @@ public class EdgeXmlManager implements IXmlManager {
     }
 
 
-    public Element createInheritanceXmlElement(FmmlxDiagram fmmlxDiagram, InheritanceEdge inheritanceEdge) throws TransformerException {
+    public Element createInheritanceXmlElement(FmmlxDiagram fmmlxDiagram, InheritanceEdge inheritanceEdge)  {
         String type = XmlConstant.EdgeType.INHERITANCE;
 
         Element edge = createEdgeXmlElement(fmmlxDiagram, inheritanceEdge);
@@ -93,7 +92,7 @@ public class EdgeXmlManager implements IXmlManager {
         return edge;
     }
 
-    public Element createLinkXmlElement(FmmlxDiagram fmmlxDiagram, FmmlxLink fmmlxLink) throws TransformerException {
+    public Element createLinkXmlElement(FmmlxDiagram fmmlxDiagram, FmmlxLink fmmlxLink)  {
 
         String type = XmlConstant.EdgeType.LINK;
         String ofName = fmmlxLink.getOfName();
@@ -118,11 +117,7 @@ public class EdgeXmlManager implements IXmlManager {
                     Element diagram = (Element) diagramNodeList.item(i);
                     if(diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(element.getAttribute(XmlConstant.ATTRIBUTE_OWNER))){
                         Element edges = (Element) getEdgesNode(diagram);
-                        try {
-                            xmlHandler.addEdgeElement(edges, element);
-                        } catch (TransformerException e) {
-                            e.printStackTrace();
-                        }
+                        xmlHandler.addEdgeElement(edges, element);
                     }
                 }
             }

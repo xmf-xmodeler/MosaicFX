@@ -20,7 +20,6 @@ public class XmlConstant {
     public static final String TAG_NAME_INTERMEDIATE_POINTS = "IntermediatePoints";
     public static final String TAG_NAME_INTERMEDIATE_POINT = "IntermediatePoint";
     public static final String TAG_NAME_OPERATION = "Operation";
-    public static final String TAG_PARAM = "Parameters";
     public static final String TAG_NAME_OPERATIONS = "Operations";
     public static final String TAG_NAME_ATTRIBUTES = "Attributes";
     public static final String TAG_PARAM_NAME = "Param";
@@ -36,7 +35,6 @@ public class XmlConstant {
     public static final String ATTRIBUTE_LABEL = "label";
     public static final String ATTRIBUTE_COORDINATE_X = "x";
     public static final String ATTRIBUTE_COORDINATE_Y = "y";
-    public static final String ATTRIBUTE_IS_MONITORED = "is_monitored";
     public static final String ATTRIBUTE_LEVEL = "level";
     public static final String ATTRIBUTE_PARENTS = "parents";
     public static final String ATTRIBUTE_TYPE = "type";
