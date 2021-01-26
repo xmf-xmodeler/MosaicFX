@@ -233,7 +233,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public void redraw() {
 		if (fetchingData) {
 			return;}
-		if (objects.size() <= 0) {return;}
+		
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
 			// we are on the right Thread already:
 			paintOn(canvas.getGraphicsContext2D(), 0, 0);
@@ -253,9 +253,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	private void paintOn(GraphicsContext g, int xOffset, int yOffset) {
 		g.setTransform(new Affine());
-//		g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 		g.setFill(Color.WHITE);
 		g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+		if (objects.size() <= 0) {return;}
 		g.setFill(Color.BLACK);
 		g.setTransform(transformFX);
 		Vector<CanvasElement> objectsToBePainted = new Vector<>();
