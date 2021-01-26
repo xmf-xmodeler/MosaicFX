@@ -37,7 +37,7 @@ public class FmmlxSerializer implements Serializer {
             saveDiagram(diagram);
             if(saveLogCount==0){
                 saveLog(diagram);
-                saveObjects(diagram.getPackagePath(), file);
+//                saveObjects(diagram.getPackagePath(), this.file);
             }
             saveLogCount++;
         }
@@ -77,6 +77,7 @@ public class FmmlxSerializer implements Serializer {
                 diagramXmlManager.remove(diagram);
             }
             diagramXmlManager.add(diagramElement);
+            saveObjects(diagram.getPackagePath());
 //            saveObjects(diagram);
             saveEdges(diagram);
             saveLabels(diagram);
@@ -84,7 +85,7 @@ public class FmmlxSerializer implements Serializer {
         }
     }
 
-    public void saveObjects(String diagramPath, String file) {
+    public void saveObjects(String diagramPath) {
         ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
         
         Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(diagramPath);
@@ -94,7 +95,8 @@ public class FmmlxSerializer implements Serializer {
         		Element objectElement = objectXmlManager.createObjectElement(path,
         				(Integer) result.get(path).get("x"),
         				(Integer) result.get(path).get("y"),
-        				(Boolean) result.get(path).get("hidden"));
+        				(Boolean) result.get(path).get("hidden"),
+                        (String) result.get(path).get("label"));
               objectXmlManager.add(objectElement);
         	}
         }    	

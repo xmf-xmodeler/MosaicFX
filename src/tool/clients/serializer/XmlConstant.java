@@ -83,6 +83,7 @@ public class XmlConstant {
     public static final String ATTRIBUTE_CLASS_TARGET = "classTarget";
 	public static final String ATTRIBUTE_TEXT = "text";
     public static final String ATTRIBUTE_ANCHORS = "anchors";
+    public static final String ATTRIBUTE_HIDDEN = "hidden";
 
 
     public static class EdgeType {

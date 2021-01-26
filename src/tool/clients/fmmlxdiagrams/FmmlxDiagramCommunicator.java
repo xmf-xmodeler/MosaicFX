@@ -1636,11 +1636,13 @@ public class FmmlxDiagramCommunicator {
 				Integer x = (Integer) objInfo.get(1);
 				Integer y = (Integer) objInfo.get(2);
 				Boolean hidden = (Boolean) objInfo.get(3);
+				String label = (String) objInfo.get(4);
 				
 				HashMap<String, Object> objectMap = new HashMap<>();
 				objectMap.put("x", x);
 				objectMap.put("y", y);
 				objectMap.put("hidden", hidden);
+				objectMap.put("label", label);
 				result.put(key, objectMap);				
 			}
 			return result;

@@ -17,7 +17,7 @@ public class ObjectXmlManager implements XmlManager {
         this.xmlHandler = xmlHandler ;
     }
 
-    public Element createObjectElement(String objectPath, Integer x, Integer y, Boolean hidden) {
+    public Element createObjectElement(String objectPath, Integer x, Integer y, Boolean hidden, String label) {
 //        String name = fmmlxObject.getName();
 //        int level= fmmlxObject.getLevel();
 //        String ofName = fmmlxObject.getOfPath();
@@ -33,9 +33,11 @@ public class ObjectXmlManager implements XmlManager {
 //        object.setAttribute(XmlConstant.ATTRIBUTE_OF, ofName+"");
 //        object.setAttribute(XmlConstant.ATTRIBUTE_PARENTS, parents+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, objectPath);
-//        object.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
+//        object.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner); TODO this is the problem
         object.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, x+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, y+"");
+        object.setAttribute(XmlConstant.ATTRIBUTE_OWNER, label);
+        object.setAttribute(XmlConstant.ATTRIBUTE_HIDDEN, hidden+"");
         return object;
     }
 
