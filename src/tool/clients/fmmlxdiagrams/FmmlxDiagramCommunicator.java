@@ -272,39 +272,6 @@ public class FmmlxDiagramCommunicator {
 		return result;
 	}
 
-	public Vector<FmmlxObject> getVirtualObjects(Integer id) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, id, "getAllObjects");
-		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-		Vector<FmmlxObject> result = new Vector<>();
-		for (Object responseObject : responseContent) {
-			Vector<Object> responseObjectList = (Vector<Object>) (responseObject);
-
-			Vector<Object> parentListO2 = (Vector<Object>) responseObjectList.get(12);
-			Vector<String> parentListS = new Vector<>();
-			for (Object o : parentListO2) {
-				parentListS.add((String) o);
-			}
-			FmmlxObject object = new FmmlxObject(
-					null, // (Integer) responseObjectList.get(0), // id*
-					(String)  responseObjectList.get(1), // name
-					(Integer) responseObjectList.get(2), // level
-					null, //(Integer) responseObjectList.get(3), // of*
-					null, //parentListI,                          // parents*
-					(String)  responseObjectList.get(10), // ownPath
-					(String)  responseObjectList.get(11), // ofPath
-					parentListS,                          // parentsPath
-					(Boolean) responseObjectList.get(5),
-					(Integer) responseObjectList.get(6), // x-Position
-					(Integer) responseObjectList.get(7), // y-Position
-					(Boolean) responseObjectList.get(8),
-					AbstractPackageViewer.SIMPLE_VIEWER);
-			result.add(object);
-
-			sendCurrentPosition(id, object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY())); // make sure to store position if newly created
-		}
-		return result;
-	}
-
 	@SuppressWarnings("unchecked")
 	public Vector<Edge> getAllInheritanceEdges(AbstractPackageViewer diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllInheritanceEdges");
@@ -1588,6 +1555,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void populateDiagram(String file, String diagramName) {
+		FmmlxDiagramCommunicator communicator = this;
 		Task<Void> task = new Task<Void>() {
 			@Override
 			protected Void call() {
@@ -1596,6 +1564,7 @@ public class FmmlxDiagramCommunicator {
 				try {
 					deserializer.getAllDiagramElement(id);
 					String projectName = deserializer.getProjectName();
+					deserializer.alignCoordinate(file, communicator);
 					System.out.println("load  "+projectName+" : finished ");
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -1615,11 +1584,10 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void saveXmlFile(String diagramPath, Integer id) {
-		String packagePath = diagramPath;
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(id),
-				new Value(packagePath),
-				new Value(packagePath.split("::")[1])
+				new Value(diagramPath),
+				new Value(diagramPath.split("::")[1])
 		};
 		sendMessage("saveAsXml", message);
 	}

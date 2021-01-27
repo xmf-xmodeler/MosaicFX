@@ -53,17 +53,7 @@ public class ProjectXmlManager implements XmlManager {
         return projects;
     }
 
-    public String getProjectName() {
-        String projectPath = "";
-        List<Node> projectList = getAll();
-        if(projectList.size()==1){
-            Element tmp = (Element) projectList.get(0);
-            projectPath = tmp.getAttribute(XmlConstant.ATTRIBUTE_NAME);
-        }
-        return getProjectName(projectPath);
-    }
-
-    private String getProjectName(String projectPath) {
+    public String getProjectName(String projectPath) {
         String[] projectPathSplit= projectPath.split("::");
         return projectPathSplit[1];
     }
@@ -96,5 +86,15 @@ public class ProjectXmlManager implements XmlManager {
         Element project = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_PROJECT);
         project.setAttribute(XmlConstant.ATTRIBUTE_NAME,packagePath);
         return project;
+    }
+
+    public String getProjectPath() {
+        String projectPath = "";
+        List<Node> projectList = getAll();
+        if(projectList.size()==1){
+            Element tmp = (Element) projectList.get(0);
+            projectPath = tmp.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+        }
+        return projectPath;
     }
 }

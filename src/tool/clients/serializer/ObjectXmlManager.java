@@ -8,6 +8,7 @@ import tool.clients.fmmlxdiagrams.*;
 import tool.clients.serializer.interfaces.XmlManager;
 
 import java.util.List;
+import java.util.Vector;
 
 public class ObjectXmlManager implements XmlManager {
     private final XmlHandler xmlHandler;
@@ -73,23 +74,8 @@ public class ObjectXmlManager implements XmlManager {
         return xmlHandler.getXmlHelper().getNodeByTag(objectNode, XmlConstant.TAG_NAME_ATTRIBUTES);
     }
 
-    @Deprecated
-    public void alignObjects(String diagramName, FmmlxDiagramCommunicator communicator) {
-        Node diagrams = xmlHandler.getDiagramsElement();
-        NodeList diagramList = diagrams.getChildNodes();
-
-        Node diagramNode = null;
-
-        for (int i = 0 ; i< diagramList.getLength(); i++){
-            if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
-                Element tmp = (Element) diagramList.item(i);
-                if (tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(diagramName)){
-                    diagramNode = tmp;
-                }
-            }
-        }
-
-        Node objectsNode = xmlHandler.getChildWithName(diagramNode, XmlConstant.TAG_NAME_OBJECTS);
+    public void alignObjects(Element diagramElement, String diagramName, FmmlxDiagramCommunicator communicator) {
+        Node objectsNode = xmlHandler.getChildWithName(diagramElement, XmlConstant.TAG_NAME_OBJECTS);
         NodeList objectList = objectsNode.getChildNodes();
         for(int i = 0 ; i < objectList.getLength(); i++){
             if(objectList.item(i).getNodeType() == Node.ELEMENT_NODE){
@@ -103,17 +89,6 @@ public class ObjectXmlManager implements XmlManager {
         System.out.println("align objects in "+diagramName+" : finished ");
     }
 
-    public void alignObjects(Node diagramNode, FmmlxDiagram fmmlxDiagram) {
-
-
-        List<FmmlxObject>allObjects = fmmlxDiagram.getObjects();
-        for(FmmlxObject object : allObjects){
-            Point2D initCoordinate = new Point2D(object.getX(), object.getY());
-            Point2D coordinate = getCoordinate(diagramNode, object.getName(),initCoordinate);
-            object.moveTo(coordinate.getX(), coordinate.getY(), fmmlxDiagram);
-            fmmlxDiagram.getComm().sendCurrentPosition(FmmlxDiagramCommunicator.getDiagramIdFromName(fmmlxDiagram.getDiagramLabel()), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY()));
-        }
-    }
 
     private Point2D getCoordinate(Node diagramNone, String name, Point2D initCoordingate) {
         Node objectsNode = xmlHandler.getChildWithName(diagramNone, XmlConstant.TAG_NAME_OBJECTS);
@@ -133,7 +108,7 @@ public class ObjectXmlManager implements XmlManager {
     }
 
     public void alignObjects(Integer id, Vector<FmmlxObject> objects) {
-        Node diagrams = xmlHandler.getDiagramsNode();
+        Element diagrams = xmlHandler.getDiagramsElement();
         NodeList diagramList = diagrams.getChildNodes();
 
         Node diagramNode = null;
@@ -152,6 +127,17 @@ public class ObjectXmlManager implements XmlManager {
             Point2D initCoordinate = new Point2D(object.getX(), object.getY());
             Point2D coordinate = getCoordinate(diagramNode, object.getName(),initCoordinate);
             FmmlxDiagramCommunicator.getCommunicator().sendCurrentPosition(id, object.getPath(), (int)Math.round(coordinate.getX()), (int)Math.round(coordinate.getY()));
+        }
+    }
+
+    @Deprecated
+    public void alignObjects2(Node diagramNode, FmmlxDiagram fmmlxDiagram) {
+        List<FmmlxObject>allObjects = fmmlxDiagram.getObjects();
+        for(FmmlxObject object : allObjects){
+            Point2D initCoordinate = new Point2D(object.getX(), object.getY());
+            Point2D coordinate = getCoordinate(diagramNode, object.getName(),initCoordinate);
+            object.moveTo(coordinate.getX(), coordinate.getY(), fmmlxDiagram);
+            fmmlxDiagram.getComm().sendCurrentPosition(FmmlxDiagramCommunicator.getDiagramIdFromName(fmmlxDiagram.getDiagramLabel()), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY()));
         }
     }
 }

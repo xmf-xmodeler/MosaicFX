@@ -250,7 +250,7 @@ public abstract class AbstractPackageViewer {
 		return actions;
 	}
 
-	public final ObservableList<FmmlxObject> getAllPossibleParents(Integer level) {
+	public ObservableList<FmmlxObject> getAllPossibleParents(Integer level) {
 		ArrayList<FmmlxObject> objectList = new ArrayList<>();
 
 		if (!objects.isEmpty()) {
@@ -263,14 +263,14 @@ public abstract class AbstractPackageViewer {
 		return FXCollections.observableArrayList(objectList);
 	}
 	
-	public final boolean isEnum(String enumName) {
+	public boolean isEnum(String enumName) {
 		for (FmmlxEnum e : enums) {
 			if(e.getName().equals(enumName)) return true;
 		}
 		return false;
 	}
 	
-	public final Vector<String> getAvailableTypes() {
+	public Vector<String> getAvailableTypes() {
 		Vector<String> types = new Vector<>();
 		types.add("Boolean");
 		types.add("Integer");

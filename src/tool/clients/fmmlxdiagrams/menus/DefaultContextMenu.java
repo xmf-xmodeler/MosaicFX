@@ -80,9 +80,7 @@ public class DefaultContextMenu extends ContextMenu {
 			
 			MenuItem test = new MenuItem("Test");
 			test.setOnAction(a -> {
-				actions.getAllObjects();
-
-
+				//actions.getAllObjects();
 			});
 			getItems().addAll(test);
 

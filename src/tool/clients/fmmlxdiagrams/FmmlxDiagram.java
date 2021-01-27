@@ -1090,13 +1090,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		newFmmlxPalette.update();
 		if(justLoaded){
 			if(filePath !=null && filePath.length()>0){
-				Deserializer deserializer = new FmmlxDeserializer(XmlHandler.getInstance(filePath));
-				deserializer.alignCoordinate(this);
+				Deserializer deserializer = new FmmlxDeserializer(new XmlHandler(filePath));
+				deserializer.alignCoordinate2(this);
 				triggerOverallReLayout();
 			}
 			justLoaded = false;
-			getComm().populateUnOpenedDiagram(this);
-			getComm().getVirtualDiagramHolder().remove(getID());
 		}
 		redraw();
 		if(issues.size() > 0) {
