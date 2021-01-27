@@ -428,15 +428,6 @@ public abstract class Edge implements CanvasElement {
 		return Math.abs(angleAB);
 	}
 
-	/*private double distance_OLD(Point2D testPoint, Point2D lineStart, Point2D lineEnd) { // some fancy math copied from
-																							// the old diagram
-		double normalLength = Math.sqrt((lineEnd.getX() - lineStart.getX()) * (lineEnd.getX() - lineStart.getX())
-				+ (lineEnd.getY() - lineStart.getY()) * (lineEnd.getY() - lineStart.getY()));
-
-		return Math.abs((testPoint.getX() - lineStart.getX()) * (lineEnd.getY() - lineStart.getY())
-				- (testPoint.getY() - lineStart.getY()) * (lineEnd.getX() - lineStart.getX())) / normalLength;
-	}*/
-
 	@Override
 	public final ContextMenu getContextMenu(FmmlxDiagram diagram, Point2D absolutePoint) {
 		ContextMenu localMenu = getContextMenuLocal(diagram.actions);
@@ -679,7 +670,7 @@ public abstract class Edge implements CanvasElement {
 		firstHoverPointIndex = null;
 		final double TOLERANCE = 3;
 
-		if (intermediatePoints.size() < 3)
+		if (intermediatePoints.size() <= 3)
 			return;
 		Integer removeIndex = null;
 		for (int i = 0; removeIndex == null && i < intermediatePoints.size() - 1; i++) {
@@ -718,7 +709,6 @@ public abstract class Edge implements CanvasElement {
 	
 	public void updatePosition(DiagramEdgeLabel del) {
 		labelPositions.put(del.localID, new Point2D(del.relativeX, del.relativeY));
-		
 	}
 
 	public abstract String getName();

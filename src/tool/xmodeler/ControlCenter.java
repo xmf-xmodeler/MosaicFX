@@ -1,5 +1,6 @@
 package tool.xmodeler;
 
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.Vector;
 
@@ -54,13 +55,16 @@ public class ControlCenter extends Stage {
 		GridPane grid = new GridPane();
 				
 		Button newCategorie = new Button("new");
+		newCategorie.setDisable(true);
 		Label categorieLabel = new Label("Categories");
 		
-		Button newProject = new Button("new");
+		Button newProject = new Button("refresh");
 		Label projectLabel = new Label("Projects");
 		CreatedModifiedGridPane projectGridPane = new CreatedModifiedGridPane();
 		
 		Button newModel = new Button("new");
+		newModel.setDisable(true);
+		
 		Label modelLabel = new Label("Models");
 		CreatedModifiedGridPane modelGridPane = new CreatedModifiedGridPane();
 		

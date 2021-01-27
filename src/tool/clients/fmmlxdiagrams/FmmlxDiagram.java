@@ -46,7 +46,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	
 	public static final boolean SHOW_MENUITEMS_IN_DEVELOPMENT = false;
 	
-	// The elements which the diagram consists of GUI-wis
+	// The elements which the diagram consists of GUI-wise
 	private SplitPane pane;
 	private SplitPane mainView;
 	private Canvas canvas;
@@ -61,8 +61,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	// The elements representing the model which is displayed in the GUI
 	
 	private Vector<DiagramEdgeLabel> labels = new Vector<>();
-	private Vector<FmmlxEnum> enums = new Vector<>();
-	private Vector<String> auxTypes = new Vector<>();
 	private Vector<Issue> issues = new Vector<>();
 	
 	// Temporary variables storing the current state of user interactions
@@ -834,19 +832,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		return FXCollections.observableArrayList(objectList);
 	}
-
-	public ObservableList<FmmlxObject> getAllPossibleParents(Integer level) {
-		ArrayList<FmmlxObject> objectList = new ArrayList<>();
-
-		if (!objects.isEmpty()) {
-			for (FmmlxObject object : objects) {
-				if (level != 0 && object.getLevel() == level) {
-					objectList.add(object);
-				}
-			}
-		}
-		return FXCollections.observableArrayList(objectList);
-	}
 	
 	public void addLabel(DiagramEdgeLabel diagramLabel) {
 		Integer index = null;
@@ -875,10 +860,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	
 	public String getDiagramLabel() {
 		return diagramName;
-	}
-
-	public Vector<FmmlxEnum> getEnums() {
-		return enums;
 	}
 
 	public InheritanceEdge getInheritanceEdge(FmmlxObject child, FmmlxObject parent) {
@@ -942,26 +923,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public boolean isShowDerivedOperations() {return this.showDerivedOperations;}
 	public boolean isShowDerivedAttributes() {return this.showDerivedAttributes;}
 
-	public Vector<String> getAvailableTypes() {
-		Vector<String> types = new Vector<>();
-		types.add("Boolean");
-		types.add("Integer");
-		types.add("Float");
-		types.add("String");
-		types.addAll(auxTypes);
-		for(FmmlxEnum e : enums) {
-			types.add(e.getName());
-		}
-		return types;
-	}
-
-	public boolean isEnum(String enumName) {
-		for (FmmlxEnum e : enums) {
-			if(e.getName().equals(enumName)) return true;
-		}
-		return false;
-	}
-
 	public Vector<String> getEnumItems(String enumName) {
 		for (FmmlxEnum e : enums) {
 			if(e.getName().equals(enumName)) return e.getItems();
@@ -1019,12 +980,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
 		}
 		return result;
-	}
-
-	public DiagramActions getActions() {
-		return actions;
-	}
-	
+	}	
 
 	public Vector<Issue> getIssues(FmmlxObject fmmlxObject) {
 		Vector<Issue> result = new Vector<>();
@@ -1123,8 +1079,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		for(FmmlxObject o : objects) {
 			o.layout(this);
 		}
-		enums = comm.fetchAllEnums(this);
-		auxTypes = comm.fetchAllAuxTypes(this);
 
 		triggerOverallReLayout();
 		resizeCanvas();

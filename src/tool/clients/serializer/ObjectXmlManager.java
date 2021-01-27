@@ -8,7 +8,6 @@ import tool.clients.fmmlxdiagrams.*;
 import tool.clients.serializer.interfaces.XmlManager;
 
 import java.util.List;
-import java.util.Vector;
 
 public class ObjectXmlManager implements XmlManager {
     private final XmlHandler xmlHandler;
@@ -17,44 +16,20 @@ public class ObjectXmlManager implements XmlManager {
         this.xmlHandler = xmlHandler ;
     }
 
-    public Element createObjectElement(FmmlxDiagram diagram, FmmlxObject fmmlxObject) {
-        String name = fmmlxObject.getName();
-        int level= fmmlxObject.getLevel();
-        String ofName = fmmlxObject.getOfPath();
-        Vector<String> parents = fmmlxObject.getParentsPaths();
-        String projectPath = diagram.getPackagePath()+"::"+name;
-        String owner = diagram.getDiagramLabel();
-        double x = fmmlxObject.getX();
-        double y = fmmlxObject.getY();
-
+    public Element createObjectElement(String objectPath, Integer x, Integer y, Boolean hidden) {
         Element object = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OBJECT);
-        object.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
-        object.setAttribute(XmlConstant.ATTRIBUTE_LEVEL, level+"");
-        object.setAttribute(XmlConstant.ATTRIBUTE_OF, ofName+"");
-        object.setAttribute(XmlConstant.ATTRIBUTE_PARENTS, parents+"");
-        object.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
-        object.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
+        object.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, objectPath);
         object.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, x+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, y+"");
+        object.setAttribute(XmlConstant.ATTRIBUTE_HIDDEN, hidden+"");
         return object;
     }
 
     @Override
-    public void add(Element element) {
+    public void add(Element diagramElement, Element element) {
+        Element objects = (Element) getObjectsNode(diagramElement);
+        xmlHandler.addObjectElement(objects, element);
 
-        Node diagrams = xmlHandler.getDiagramsNode();
-        NodeList diagramNodeList = diagrams.getChildNodes();
-
-        for(int i=0 ; i<diagramNodeList.getLength(); i++){
-            if(diagramNodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
-                Element diagram = (Element) diagramNodeList.item(i);
-                if(diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(element.getAttribute(XmlConstant.ATTRIBUTE_OWNER))){
-                    Element objects = (Element) getObjectsNode(diagram);
-                    xmlHandler.addObjectElement(objects, element);
-
-                }
-            }
-        }
     }
 
     private Node getObjectsNode(Node diagramNode){
@@ -100,7 +75,7 @@ public class ObjectXmlManager implements XmlManager {
 
     @Deprecated
     public void alignObjects(String diagramName, FmmlxDiagramCommunicator communicator) {
-        Node diagrams = xmlHandler.getDiagramsNode();
+        Node diagrams = xmlHandler.getDiagramsElement();
         NodeList diagramList = diagrams.getChildNodes();
 
         Node diagramNode = null;
@@ -128,20 +103,8 @@ public class ObjectXmlManager implements XmlManager {
         System.out.println("align objects in "+diagramName+" : finished ");
     }
 
-    public void alignObjects(FmmlxDiagram fmmlxDiagram) {
-        Node diagrams = xmlHandler.getDiagramsNode();
-        NodeList diagramList = diagrams.getChildNodes();
+    public void alignObjects(Node diagramNode, FmmlxDiagram fmmlxDiagram) {
 
-        Node diagramNode = null;
-
-        for (int i = 0 ; i< diagramList.getLength(); i++){
-            if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
-                Element tmp = (Element) diagramList.item(i);
-                if (tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(fmmlxDiagram.getDiagramLabel())){
-                    diagramNode = tmp;
-                }
-            }
-        }
 
         List<FmmlxObject>allObjects = fmmlxDiagram.getObjects();
         for(FmmlxObject object : allObjects){

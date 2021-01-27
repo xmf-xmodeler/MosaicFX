@@ -1,6 +1,8 @@
 package tool.clients.fmmlxdiagrams.classbrowser;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
@@ -27,7 +29,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
-import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
@@ -36,10 +37,10 @@ import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.LevelColorScheme;
 import tool.clients.fmmlxdiagrams.LevelColorScheme.RedLevelColorScheme;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
-import tool.clients.fmmlxdiagrams.SortedValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
-import tool.clients.workbench.WorkbenchClient;
+import tool.clients.fmmlxdiagrams.menus.BrowserAttributeContextMenu;
+import tool.clients.fmmlxdiagrams.menus.BrowserObjectContextMenu;
 import tool.xmodeler.XModeler;
 
 
@@ -195,6 +196,7 @@ public class ModelBrowser extends CustomStage {
 		            }
 
 					private Node getLevelGraphic(int level) {
+						if(level == -1) return null;
 						double SIZE = 16;
 						Canvas canvas = new Canvas(SIZE, SIZE);
 						Text temp = new Text(level+"");
@@ -211,7 +213,7 @@ public class ModelBrowser extends CustomStage {
 		        return cell;
 		    }
 		});
-	
+		
 		fmmlxAttributeListView.setCellFactory(new Callback<ListView<FmmlxAttribute>, ListCell<FmmlxAttribute>>() {
 	
 		    @Override
@@ -224,26 +226,13 @@ public class ModelBrowser extends CustomStage {
 		                FmmlxObject o = fmmlxObjectListView.getSelectionModel().getSelectedItem();
 		                if (att != null && o != null) {
 		                    setText(att.getName() +": "+ att.getType());
-		                    setGraphic(getLevelGraphic(att.getLevel(), o.getOwnAttributes().contains(att)));
+		                    setGraphic(getLevelGraphic4Feature(att.getLevel(), o.getOwnAttributes().contains(att)));
 		                } else {
 		                	setText("");
 		                	setGraphic(null);
 		                }
 		            }
 	
-					private Node getLevelGraphic(int level, boolean own) {
-						double SIZE = 16;
-						Canvas canvas = new Canvas(SIZE, SIZE);
-						Text temp = new Text(level+"");
-						GraphicsContext g = canvas.getGraphicsContext2D();
-						g.setFill(own?Color.BLACK:Color.GRAY);
-						g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/2, SIZE/2);
-						g.setFill(Color.WHITE);
-						g.fillText(level+"", 
-								SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
-								SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
-						return canvas;
-					}
 		        };
 		        return cell;
 		    }
@@ -282,30 +271,51 @@ public class ModelBrowser extends CustomStage {
 		                FmmlxObject o = fmmlxObjectListView.getSelectionModel().getSelectedItem();
 		                if (operation != null && o != null) {
 		                    setText(operation.getFullString(activePackage));
-		                    setGraphic(getLevelGraphic(operation.getLevel(), o.getOwnAttributes().contains(operation)));
+		                    setGraphic(getLevelGraphic4Feature(operation.getLevel(), o.getOwnAttributes().contains(operation)));
 		                } else {
 		                	setText("");
 		                	setGraphic(null);
 		                }
 		            }
-	
-					private Node getLevelGraphic(int level, boolean own) {
-						double SIZE = 16;
-						Canvas canvas = new Canvas(SIZE, SIZE);
-						Text temp = new Text(level+"");
-						GraphicsContext g = canvas.getGraphicsContext2D();
-						g.setFill(own?Color.BLACK:Color.GRAY);
-						g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/2, SIZE/2);
-						g.setFill(Color.WHITE);
-						g.fillText(level+"", 
-								SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
-								SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
-						return canvas;
-					}
 		        };
 		        return cell;
 		    }
 		});
+		
+		slotListView.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2) {
+		        FmmlxSlot slot = slotListView.getSelectionModel().getSelectedItem();
+		        FmmlxObject object = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+		        if(slot != null && object != null) {
+		        	activePackage.getActions().changeSlotValue(object, slot);
+		        }
+			}
+		});	
+		
+		fmmlxAttributeListView.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2) {
+		        FmmlxAttribute att = fmmlxAttributeListView.getSelectionModel().getSelectedItem();
+		        FmmlxObject object = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+		        if(att != null && object != null) {
+		        	activePackage.getActions().changeNameDialog(object, tool.clients.fmmlxdiagrams.dialogs.PropertyType.Attribute, att);
+		        }
+			}
+		});
+	}
+	
+	private Node getLevelGraphic4Feature(int level, boolean own) {
+		if(level == -1) return null;
+		double SIZE = 16;
+		Canvas canvas = new Canvas(SIZE, SIZE);
+		Text temp = new Text(level+"");
+		GraphicsContext g = canvas.getGraphicsContext2D();
+		g.setFill(own?Color.BLACK:Color.GRAY);
+		g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/3, SIZE/3);
+		g.setFill(Color.WHITE);
+		g.fillText(level+"", 
+				SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
+				SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
+		return canvas;
 	}
 
 	@Override
@@ -363,9 +373,9 @@ public class ModelBrowser extends CustomStage {
 
 	private void onOperationListViewNewValue(FmmlxOperation oldValue, FmmlxOperation selectedOperation) {
 		if (selectedOperation!=null) {
-		codeArea.setText(selectedOperation.getBody());	
+			codeArea.setText(selectedOperation.getBody());	
 		} else{
-		codeArea.setText("");	
+			codeArea.setText("");	
 		}
 	}
 	
@@ -379,13 +389,18 @@ public class ModelBrowser extends CustomStage {
 
 	private void onObjectListViewNewValue(FmmlxObject oldValue, FmmlxObject selectedObject) {
 		if (selectedObject != null ) {
+			selection.put("OBJ", selectedObject.getName());
 			fmmlxAttributeListView.getItems().clear();
 			fmmlxAttributeListView.getItems().addAll(selectedObject.getAllAttributes());
 			slotListView.getItems().clear();
 			slotListView.getItems().addAll(selectedObject.getAllSlots());
 			fmmlxOperationListView.getItems().clear();
 			fmmlxOperationListView.getItems().addAll(selectedObject.getAllOperations());
-		}		
+		}			
+		
+		fmmlxObjectListView.setContextMenu(new BrowserObjectContextMenu(fmmlxObjectListView, activePackage));
+		onAttributeListViewNewValue(null, null);
+
 	}
 
 	private void onAssociationListViewNewValue(String oldValue, String newValue) {
@@ -406,45 +421,61 @@ public class ModelBrowser extends CustomStage {
 	
 	private void onModelListViewNewValue(String oldSelectedPath, String selectedPath) {
 		if(selectedPath == null || selectedPath.equals(oldSelectedPath)) return;
-		System.err.println("onModelListViewNewValue " + selectedPath);
 		if(!models.containsKey(selectedPath)) {
 			Integer newDiagramID=communicator.createDiagram(selectedPath, "Test", "");
 			ClassBrowserPackageViewer tempViewer = new ClassBrowserPackageViewer(communicator, newDiagramID, selectedPath, this);
 			models.put(selectedPath, tempViewer);
 		}
 		activePackage = models.get(selectedPath);
-		storeSelection();
 		activePackage.updateDiagram();
-		System.err.println("onModelListViewNewValue done");
 	}	
 
-	private void onSlotListViewNewValue(ListView<String> modelListView2, FmmlxSlot oldValue, FmmlxSlot newValue) {
-		
-	}
+	private void onSlotListViewNewValue(ListView<String> modelListView2, FmmlxSlot oldValue, FmmlxSlot newValue) {}
 	
 	private void onAttributeListViewNewValue(FmmlxAttribute oldValue, FmmlxAttribute newValue) {
-		
+		if(newValue != null) {selection.put("ATT", newValue.getName());}
+		fmmlxAttributeListView.setContextMenu(new BrowserAttributeContextMenu(fmmlxObjectListView, fmmlxAttributeListView, activePackage));
 	}
 
 	public void notifyModelHasLoaded() {
-		Vector<FmmlxObject> objects = activePackage.getObjects();
-		levelColorScheme = new LevelColorScheme.RedLevelColorScheme(activePackage.getObjects());
-//		Vector<String> names = new Vector<>();
-//		for (FmmlxObject o:objects) {
-//			names.add(o.getName());
-//		}
-		fmmlxObjectListView.getItems().clear();
-		fmmlxObjectListView.getItems().addAll(objects);
-		
-		restoreSelection();
-	}
+		Platform.runLater(() -> {
+			Vector<FmmlxObject> objects = activePackage.getObjects();
+			levelColorScheme = new LevelColorScheme.RedLevelColorScheme(objects);
+			
+			Collections.sort(objects, new Comparator<FmmlxObject>() {
 
-	private void storeSelection() {
-		
+				@Override
+				public int compare(FmmlxObject o1, FmmlxObject o2) {
+					if(o1.getLevel() < o2.getLevel()) return 1;
+					if(o1.getLevel() > o2.getLevel()) return -1;
+					return o1.getName().compareTo(o2.getName());
+				}
+			});
+
+			fmmlxObjectListView.getItems().clear();
+			fmmlxObjectListView.getItems().addAll(objects);
+			
+			restoreSelection();
+		});
 	}
 	
+	private transient HashMap<String, String> selection = new HashMap<>();
+	
 	private void restoreSelection() {
-		
+		String oS = selection.get("OBJ");
+		for(int i = 0; i < fmmlxObjectListView.getItems().size() && oS != null; i++) {
+			if(oS.equals(fmmlxObjectListView.getItems().get(i).getName())) {
+				oS = null;
+				fmmlxObjectListView.getSelectionModel().select(fmmlxObjectListView.getItems().get(i));
+			}
+		}
+		String aS = selection.get("ATT");
+		for(int i = 0; i < fmmlxAttributeListView.getItems().size() && aS != null; i++) {
+			if(aS.equals(fmmlxAttributeListView.getItems().get(i).getName())) {
+				aS = null;
+				fmmlxAttributeListView.getSelectionModel().select(fmmlxAttributeListView.getItems().get(i));
+			}
+		}
 	}
 
 }

@@ -455,8 +455,6 @@ public class FmmlxDiagramCommunicator {
 			}
 			
 			Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(13);
-			
-			System.err.println("edgeInfoAsList.get(0): " + edgeInfoAsList.get(0));
 
 			Edge object = new FmmlxAssociation(
 					(String) edgeInfoAsList.get(0), // id
@@ -637,7 +635,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxEnum> fetchAllEnums(FmmlxDiagram diagram) throws TimeOutException {
+	public Vector<FmmlxEnum> fetchAllEnums(AbstractPackageViewer diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllEnums");
 		Vector<Object> enumList = (Vector<Object>) (response.get(0));
 		Vector<FmmlxEnum> result = new Vector<>();
@@ -1326,7 +1324,7 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Vector<String> fetchAllAuxTypes(FmmlxDiagram fmmlxDiagram) throws TimeOutException {
+	public Vector<String> fetchAllAuxTypes(AbstractPackageViewer fmmlxDiagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, fmmlxDiagram.getID(), "getAllAuxTypes");
 		Vector<Object> auxList = (Vector<Object>) (response.get(0));
 		Vector<String> result = new Vector<>();
@@ -1380,7 +1378,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void openXmlFile(String fileName){
-		FmmlxDeserializer fmmlxDeserializer = new FmmlxDeserializer(XmlHandler.getInstance(fileName));
+		FmmlxDeserializer fmmlxDeserializer = new FmmlxDeserializer(new XmlHandler(fileName));
 		fmmlxDeserializer.loadProject(this);
 	}
 
@@ -1402,8 +1400,8 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public FaXML getDiagramData(FmmlxDiagram diagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getDiagramData");
+	public FaXML getDiagramData(Integer diagramID) throws TimeOutException {
+		Vector<Object> response = xmfRequest(handler, diagramID, "getDiagramData");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 
 		return new FaXML(responseContent);
@@ -1560,21 +1558,24 @@ public class FmmlxDiagramCommunicator {
 
 	public void saveXmlFile(String fileName, String packageString) {
 		String packageName = packageString.substring(1,packageString.length()-1).split(" ")[1];
+		FmmlxDiagramCommunicator communicator = this;
 		Task<Void> task = new Task<Void>() {
-
 			@Override
 			protected Void call() throws TransformerException, ParserConfigurationException {
-				Vector<FmmlxDiagram> diagramsToSave = new Vector<>();
-				Serializer serializer = new FmmlxSerializer(fileName);
-				serializer.clearAllData();
-				for(FmmlxDiagram diagram : diagrams){
-					String tmp_packageName = diagram.getPackagePath().split("::")[1];
-					if(packageName.equals(tmp_packageName)){
-						diagramsToSave.add(diagram);
-					}
-				}
 				try {
-					serializer.saveAsXml(diagramsToSave);
+					String diagramPath = null;
+					String initLabel = null;
+					Serializer serializer = new FmmlxSerializer(fileName);
+					serializer.clearAllData();
+					for(FmmlxDiagram diagram : diagrams){
+						String tmp_packageName = diagram.getPackagePath().split("::")[1];
+						if(packageName.equals(tmp_packageName)){
+							diagram.setFilePath(fileName);
+							diagramPath = diagram.packagePath;
+							initLabel = diagram.getDiagramLabel();
+						}
+					}
+					serializer.saveAsXml(diagramPath, initLabel, communicator);
 				} catch (TimeOutException e) {
 					e.printStackTrace();
 				}
@@ -1590,7 +1591,7 @@ public class FmmlxDiagramCommunicator {
 		Task<Void> task = new Task<Void>() {
 			@Override
 			protected Void call() {
-				Deserializer deserializer = new FmmlxDeserializer(XmlHandler.getInstance(file));
+				Deserializer deserializer = new FmmlxDeserializer(new XmlHandler(file));
 				int id = getDiagramIdFromName(diagramName);
 				try {
 					deserializer.getAllDiagramElement(id);
@@ -1613,17 +1614,16 @@ public class FmmlxDiagramCommunicator {
 		return Integer.parseInt(id);
 	}
 
-	public void saveXmlFile(FmmlxDiagram diagram) {
-		String packagePath = diagram.getPackagePath();
+	public void saveXmlFile(String diagramPath, Integer id) {
+		String packagePath = diagramPath;
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
+				getNoReturnExpectedMessageID(id),
 				new Value(packagePath),
 				new Value(packagePath.split("::")[1])
 		};
 		sendMessage("saveAsXml", message);
 	}
 
-	
 	private String copyFilePath(String packagePath) {
 		for (FmmlxDiagram diagram: diagrams){
 			if(diagram.getPackagePath().equals(packagePath)){
@@ -1654,49 +1654,36 @@ public class FmmlxDiagramCommunicator {
 		} catch (TimeOutException e1) {
 			throw new RuntimeException(e1);
 		}
-
 	}
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, HashMap<String, Object>> getAllObjectPositions(int diagramID) {
+		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
+		try {
+			Vector<Object> response = xmfRequest(handler, -2, "getAllObjectPositions", new Value(diagramID));
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			
+			for(Object o : responseContent) {
+				Vector<Object> objInfo = (Vector<Object>) o;
+				String key = (String) objInfo.get(0);
+				Integer x = (Integer) objInfo.get(1);
+				Integer y = (Integer) objInfo.get(2);
+				Boolean hidden = (Boolean) objInfo.get(3);
 
-	public Vector<Integer> getOpenedDiagrams(String packagePath) {
-		Vector<Integer> result = new Vector<>();
-		for(FmmlxDiagram diagram : diagrams){
-			if(diagram.getPackagePath().equals(packagePath)){
-				result.add(diagram.getID());
+				HashMap<String, Object> objectMap = new HashMap<>();
+				objectMap.put("x", x);
+				objectMap.put("y", y);
+				objectMap.put("hidden", hidden);
+				result.put(key, objectMap);
 			}
+			return result;
+		} catch (TimeOutException e1) {
+			throw new RuntimeException(e1);
 		}
-		return result;
 	}
 
-	public VirtualDiagramHolder getVirtualDiagramHolder() {
-		return virtualDiagramHolder;
+	public String createLabelFromInitLabel(String initLabel, Integer id) {
+		return initLabel.substring(0, initLabel.length()-2)+id+")";
 	}
 
-	private final VirtualDiagramHolder virtualDiagramHolder= new VirtualDiagramHolder();
-
-	public void populateUnOpenedDiagram(FmmlxDiagram diagram){
-		Vector<VirtualFmmlxDiagram> virtualFmmlxDiagrams = virtualDiagramHolder.getVirtualFmmlxDiagrams();
-		Vector<Integer> ids = AbstractPackageViewer.SIMPLE_VIEWER.getComm().getAllDiagramIDs(diagram.getPackagePath());
-		Vector<Integer> openedDiagramIDs = diagram.getComm().getOpenedDiagrams(diagram.getPackagePath());
-		Vector<Integer> unOpenedDiagramIDs = new Vector<>();
-		VirtualDiagramHolder virtualDiagramHolder = this.virtualDiagramHolder;
-		for(Integer id : ids){
-			if(!openedDiagramIDs.contains(id)){
-				unOpenedDiagramIDs.add(id);
-			}
-		}
-
-		Task<Void> task = new Task<Void>() {
-			@Override
-			protected Void call() throws TimeOutException {
-				for(Integer id : unOpenedDiagramIDs){
-					Vector<FmmlxObject> objects = diagram.getComm().getVirtualObjects(id);
-					Deserializer deserializer = new FmmlxDeserializer(new XmlHandler(diagram.getFilePath()));
-					deserializer.syncObjectCoordinate(diagram, id, objects);
-					virtualFmmlxDiagrams.add(new VirtualFmmlxDiagram(id, virtualDiagramHolder, objects));
-				}
-				return null;
-			}
-		};
-		new Thread(task).start();
-	}
 }

@@ -1,5 +1,8 @@
 package tool.clients.serializer;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
@@ -44,16 +47,28 @@ public class FmmlxDeserializer implements Deserializer {
 
     @Override
     public void alignCoordinate(FmmlxDiagram diagram) {
-        if(diagramInXmlExists(diagram)){
-            ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
-            objectXmlManager.alignObjects(diagram);
-            EdgeXmlManager edgeXmlManager = new EdgeXmlManager(this.xmlHandler);
-            edgeXmlManager.alignEdges(diagram);
-            LabelXmlManager labelXmlManager = new LabelXmlManager(this.xmlHandler);
-            labelXmlManager.alignLabel(diagram);
+        Node diagrams = xmlHandler.getDiagramsElement();
+        NodeList diagramList = diagrams.getChildNodes();
+
+        Node diagramNode = null;
+        for (int i = 0 ; i< diagramList.getLength(); i++){
+            if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
+                Element tmp = (Element) diagramList.item(i);
+                if (tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(diagram.getDiagramLabel())){
+                    diagramNode = tmp;
+                }
+            }
         }
+
+        ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
+        objectXmlManager.alignObjects(diagramNode, diagram);
+        EdgeXmlManager edgeXmlManager = new EdgeXmlManager(this.xmlHandler);
+        edgeXmlManager.alignEdges(diagramNode,diagram);
+        LabelXmlManager labelXmlManager = new LabelXmlManager(this.xmlHandler);
+        labelXmlManager.alignLabel(diagramNode, diagram);
     }
 
+    @Deprecated
     private boolean diagramInXmlExists(FmmlxDiagram diagram) {
         DiagramXmlManager diagramXmlManager = new DiagramXmlManager(this.xmlHandler);
         Vector<String> diagrams = diagramXmlManager.getAllDiagrams();

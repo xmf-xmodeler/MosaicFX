@@ -1,7 +1,6 @@
 package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
@@ -29,8 +28,7 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.*;
 import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
-import tool.clients.serializer.*;
-import tool.clients.serializer.interfaces.Deserializer;
+import tool.clients.serializer.FmmlxSerializer;
 import tool.clients.serializer.interfaces.Serializer;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -130,6 +128,7 @@ public class DiagramActions {
 				if(canvas == null) {
 					diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), aidResult.getName(),
                             aidResult.getParentNames(), false, 0, 0);
+					diagram.updateDiagram();
 				} else {
 					canvas.setCursor(Cursor.CROSSHAIR);
 	
@@ -250,7 +249,11 @@ public class DiagramActions {
 	}
 
 	public void removeDialog(FmmlxObject object, PropertyType type) {
-		FmmlxProperty selectedFmmlxProperty = diagram.getSelectedProperty();
+		removeDialog(object, type, diagram.getSelectedProperty());
+	}
+	
+	public void removeDialog(FmmlxObject object, PropertyType type, FmmlxProperty selectedFmmlxProperty) {
+//		FmmlxProperty selectedFmmlxProperty = diagram.getSelectedProperty();
 
 		Platform.runLater(() -> {
 			RemoveDialog dlg = new RemoveDialog(object, type);
@@ -327,8 +330,11 @@ public class DiagramActions {
 
 
 	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type) {
-		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
+		changeMultiplicityDialog(object, type, diagram.getSelectedProperty());
+	}
 		
+	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type, FmmlxProperty selectedProperty) {
+
 		if (selectedProperty instanceof FmmlxAttribute && type == PropertyType.Attribute) {
 			FmmlxAttribute att = (FmmlxAttribute) selectedProperty;
 			Multiplicity oldMul = att.getMultiplicity();
@@ -346,9 +352,10 @@ public class DiagramActions {
 	}
 	
 	public void changeLevelDialog(FmmlxObject object, PropertyType type) {
-//		CountDownLatch latch = new CountDownLatch(1);
-
-		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
+		changeLevelDialog(object, type, diagram.getSelectedProperty());
+	}
+		
+	public void changeLevelDialog(FmmlxObject object, PropertyType type, FmmlxProperty selectedProperty) {
 
 		Platform.runLater(() -> {
 			ChangeLevelDialog dlg = new ChangeLevelDialog(object, type);
@@ -526,9 +533,10 @@ public class DiagramActions {
 	}
 
 	public void changeTypeDialog(FmmlxObject object, PropertyType type) {
-//		CountDownLatch latch = new CountDownLatch(1);
-
-		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
+		changeTypeDialog(object, type, diagram.getSelectedProperty());
+	}
+	
+    public void changeTypeDialog(FmmlxObject object, PropertyType type, FmmlxProperty selectedProperty) {
 
 		Platform.runLater(() -> {
 			ChangeTypeDialog dlg = new ChangeTypeDialog(object, type);
@@ -832,8 +840,11 @@ public class DiagramActions {
 		if(!(diagram instanceof FmmlxDiagram)) throw new IllegalArgumentException();
 		Platform.runLater(() -> {
 			try {
-				Serializer serializer = new FmmlxSerializer(((FmmlxDiagram) diagram).getFilePath());
-				serializer.save((FmmlxDiagram) diagram);
+				String path = diagram.getPackagePath();
+				FmmlxDiagramCommunicator communicator = diagram.getComm();
+				String label = ((FmmlxDiagram)diagram).getDiagramLabel();
+				FmmlxSerializer serializer = new FmmlxSerializer(((FmmlxDiagram)diagram).getFilePath());
+				serializer.save(path, label, diagram.getID(), communicator);
 			} catch (TransformerException | ParserConfigurationException e) {
 				e.printStackTrace();
 			}
@@ -867,21 +878,5 @@ public class DiagramActions {
 	public void hide(Vector<FmmlxObject> objects, boolean hide) {
 		diagram.getComm().hideElements(diagram.getID(), objects, hide);
 		diagram.updateDiagram();
-	}
-
-	public void getAllObjects() {
-		VirtualDiagramHolder virtualDiagramHolder = diagram.getComm().getVirtualDiagramHolder();
-		Vector<VirtualFmmlxDiagram> unOpenedDiagrams = virtualDiagramHolder.getVirtualFmmlxDiagrams();
-
-		for(VirtualFmmlxDiagram virtualFmmlxDiagram : unOpenedDiagrams){
-			try {
-				Vector<FmmlxObject> syncedObjects = diagram.getComm().getVirtualObjects(virtualFmmlxDiagram.getId());
-				for(FmmlxObject object : syncedObjects){
-					System.out.println("diagramID : "+virtualFmmlxDiagram.getId()+", name "+ object.getName()+", x:"+object.getX()+", y:"+object.getY());
-				}
-			} catch (TimeOutException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 }

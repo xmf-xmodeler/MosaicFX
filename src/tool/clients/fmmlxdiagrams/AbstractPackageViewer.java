@@ -1,12 +1,16 @@
 package tool.clients.fmmlxdiagrams;
 
-import javafx.collections.ObservableList;
-
+import java.util.ArrayList;
 import java.util.Vector;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public abstract class AbstractPackageViewer {
 	
 	protected Vector<FmmlxObject> objects = new Vector<>();
+	protected Vector<FmmlxEnum> enums = new Vector<>();
+	protected Vector<String> auxTypes = new Vector<>();
 	protected Vector<Edge> edges = new Vector<>();
 	protected final int diagramID;
 	protected final FmmlxDiagramCommunicator comm;
@@ -83,12 +87,8 @@ public abstract class AbstractPackageViewer {
 		return comm;
 	}
 
-	public abstract Vector<String> getAvailableTypes();
-	public abstract Vector<FmmlxEnum> getEnums();	
 	public abstract void updateEnums();
 	public abstract FmmlxProperty getSelectedProperty();
-	public abstract ObservableList<FmmlxObject> getAllPossibleParents(Integer newValue);
-	public abstract boolean isEnum(String type);
 	public abstract Vector<String> getEnumItems(String type);
 	public abstract ObservableList<FmmlxObject> getAllPossibleParentList();
 	
@@ -136,6 +136,10 @@ public abstract class AbstractPackageViewer {
 			edges.addAll(comm.getAllInheritanceEdges(this));
 			edges.addAll(comm.getAllDelegationEdges(this));
 			edges.addAll(comm.getAllRoleFillerEdges(this));
+
+			enums = comm.fetchAllEnums(this);
+			auxTypes = comm.fetchAllAuxTypes(this);
+			
 			fetchDiagramDataSpecific();
 			
 		} catch (TimeOutException e) {
@@ -159,7 +163,7 @@ public abstract class AbstractPackageViewer {
 
 	protected abstract void clearDiagram_specific();
 	
-	public Vector<FmmlxAssociation> getRelatedAssociationByObject(FmmlxObject object) {
+	public final Vector<FmmlxAssociation> getRelatedAssociationByObject(FmmlxObject object) {
 		Vector<FmmlxAssociation> result = new Vector<>();
 		for (Edge tmp : edges) {
 			if (tmp instanceof FmmlxAssociation) {
@@ -171,11 +175,11 @@ public abstract class AbstractPackageViewer {
 		return result;
 	}
 	
-	public Vector<Edge> getEdges() {
+	public final Vector<Edge> getEdges() {
 		return new Vector<>(edges); // read-only
 	}
 
-	public Vector<FmmlxAssociation> getAssociations() {
+	public final Vector<FmmlxAssociation> getAssociations() {
 		Vector<FmmlxAssociation> result = new Vector<>();
 		for (Edge tmp : edges) {
 			if (tmp instanceof FmmlxAssociation) {
@@ -185,7 +189,7 @@ public abstract class AbstractPackageViewer {
 		return result; // read-only
 	}
 
-	public Vector<FmmlxLink> getAssociationInstance(){
+	public final Vector<FmmlxLink> getAssociationInstance(){
 		Vector<FmmlxLink> result = new Vector<>();
 		for (Edge tmp : edges) {
 			if (tmp instanceof FmmlxLink) {
@@ -195,11 +199,11 @@ public abstract class AbstractPackageViewer {
 		return result; // read-only
 	}
 	
-	public String getPackagePath() {
+	public final String getPackagePath() {
 		return packagePath;
 	}
 	
-	public Vector<FmmlxAssociation> findAssociations(FmmlxObject source, FmmlxObject target) {
+	public final Vector<FmmlxAssociation> findAssociations(FmmlxObject source, FmmlxObject target) {
 		Vector<FmmlxAssociation> result = new Vector<>();
 		for (Edge e : edges)
 			if (e instanceof FmmlxAssociation) {
@@ -209,12 +213,12 @@ public abstract class AbstractPackageViewer {
 		return result;
 	}
 	
-	public boolean isNameAvailable(String t) {
+	public final boolean isNameAvailable(String t) {
 		for (FmmlxObject o : objects) if (o.getName().equals(t)) return false;
 		return true;
 	}
 	
-	public FmmlxObject getObjectByPath(String path) {
+	public final FmmlxObject getObjectByPath(String path) {
 		for(FmmlxObject obj : getObjects()) {
 			if (obj.getPath().equals(path)){
 				return obj;
@@ -223,7 +227,7 @@ public abstract class AbstractPackageViewer {
 		return null;
 	}
 	
-	public FmmlxAssociation getAssociationByPath(String path) {
+	public final FmmlxAssociation getAssociationByPath(String path) {
 		for(FmmlxAssociation as : getAssociations()) {
 			if(as.getPath().equals(path)) {
 				return as;
@@ -232,7 +236,7 @@ public abstract class AbstractPackageViewer {
 		return null;
 	}
 	
-	public String convertPath2Short(String typePath) {
+	public final String convertPath2Short(String typePath) {
 		String[] prefixes = new String[]{packagePath, "Root::XCore", "Root::Auxiliary", "Root"};
 			for(String prefix : prefixes) {
 				if(typePath.startsWith(prefix)) {
@@ -242,7 +246,45 @@ public abstract class AbstractPackageViewer {
 		return typePath;
 	}
 
+	public final DiagramActions getActions() {
+		return actions;
+	}
+
+	public final ObservableList<FmmlxObject> getAllPossibleParents(Integer level) {
+		ArrayList<FmmlxObject> objectList = new ArrayList<>();
+
+		if (!objects.isEmpty()) {
+			for (FmmlxObject object : objects) {
+				if (level != 0 && object.getLevel() == level) {
+					objectList.add(object);
+				}
+			}
+		}
+		return FXCollections.observableArrayList(objectList);
+	}
+	
+	public final boolean isEnum(String enumName) {
+		for (FmmlxEnum e : enums) {
+			if(e.getName().equals(enumName)) return true;
+		}
+		return false;
+	}
+	
+	public final Vector<String> getAvailableTypes() {
+		Vector<String> types = new Vector<>();
+		types.add("Boolean");
+		types.add("Integer");
+		types.add("Float");
+		types.add("String");
+		types.addAll(auxTypes);
+		for(FmmlxEnum e : enums) {
+			types.add(e.getName());
+		}
+		return types;
+	}
 
 
-
+	public Vector<FmmlxEnum> getEnums() {
+		return enums;
+	}
 }

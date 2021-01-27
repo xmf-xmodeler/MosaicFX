@@ -7,7 +7,7 @@ import javax.xml.transform.TransformerException;
 import java.util.List;
 
 public interface XmlManager {
-    void add(Element element) throws TransformerException;
+    void add(Element diagramElement, Element element) throws TransformerException;
     void remove(Element element);
     List<Node> getAll();
 }

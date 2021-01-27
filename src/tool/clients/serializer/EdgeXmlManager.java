@@ -106,21 +106,10 @@ public class EdgeXmlManager implements XmlManager {
 
 
     @Override
-    public void add(Element element) {
+    public void add(Element diagramElement, Element element) {
         if(element!=null){
-
-            Node diagrams = xmlHandler.getDiagramsNode();
-            NodeList diagramNodeList = diagrams.getChildNodes();
-
-            for(int i=0 ; i<diagramNodeList.getLength(); i++){
-                if(diagramNodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
-                    Element diagram = (Element) diagramNodeList.item(i);
-                    if(diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(element.getAttribute(XmlConstant.ATTRIBUTE_OWNER))){
-                        Element edges = (Element) getEdgesNode(diagram);
-                        xmlHandler.addEdgeElement(edges, element);
-                    }
-                }
-            }
+            Element edges = (Element) getEdgesNode(diagramElement);
+            xmlHandler.addEdgeElement(edges, element);
         }
     }
 
@@ -138,19 +127,17 @@ public class EdgeXmlManager implements XmlManager {
         return xmlHandler.getXmlHelper().getNodeByTag(diagramNode, XmlConstant.TAG_NAME_EDGES);
     }
 
-    public void alignEdges(FmmlxDiagram fmmlxDiagram){
-        Node diagrams = xmlHandler.getDiagramsNode();
-        NodeList diagramNodeList = diagrams.getChildNodes();
+    public void alignEdges(Node diagramNode, FmmlxDiagram fmmlxDiagram){
         Vector<Edge> edges = fmmlxDiagram.getEdges();
 
         for(Edge edge : edges){
-            handleEdge(fmmlxDiagram, diagramNodeList, edge);
+            handleEdge(fmmlxDiagram, diagramNode, edge);
         }
     }
 
-    private void handleEdge(FmmlxDiagram fmmlxDiagram, NodeList diagramNodeList, Edge edge) {
-        for(int i=0 ; i<diagramNodeList.getLength(); i++){
-            NodeList edgeList = getEdgeList(fmmlxDiagram, diagramNodeList.item(i));
+    private void handleEdge(FmmlxDiagram fmmlxDiagram, Node diagramNode, Edge edge) {
+            Node edges = xmlHandler.getChildWithName(diagramNode, XmlConstant.TAG_NAME_EDGES);
+            NodeList edgeList = edges.getChildNodes();
             if(edgeList!=null){
                 for (int j = 0 ; j< edgeList.getLength(); j++) {
                     if(edgeList.item(j).getNodeType()==Node.ELEMENT_NODE) {
@@ -198,19 +185,6 @@ public class EdgeXmlManager implements XmlManager {
                     }
                 }
             }
-        }
-    }
-
-    private NodeList getEdgeList(FmmlxDiagram fmmlxDiagram, Node diagramNode) {
-        if(diagramNode.getNodeType()==Node.ELEMENT_NODE) {
-            Element diagram = (Element) diagramNode;
-
-            if (diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(fmmlxDiagram.getDiagramLabel())) {
-                Node edgesNode = xmlHandler.getChildWithName(diagram, XmlConstant.TAG_NAME_EDGES);
-                return edgesNode.getChildNodes();
-            }
-        }
-        return null;
     }
 
     private void setDirectionsAndIntermediatePoints(FmmlxDiagram fmmlxDiagram, Edge edge, Element edgeElement) {
@@ -237,7 +211,7 @@ public class EdgeXmlManager implements XmlManager {
 
 
     public void alignEdges(String diagramName, FmmlxDiagramCommunicator communicator) {
-        Node diagrams = xmlHandler.getDiagramsNode();
+        Node diagrams = xmlHandler.getDiagramsElement();
         NodeList diagramNodeList = diagrams.getChildNodes();
         int diagramId = communicator.getDiagramIdFromName(diagramName);
         Node diagramNode = null;

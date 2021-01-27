@@ -5,6 +5,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -20,10 +21,6 @@ public class XmlHandler {
     private final Document document;
     private final XmlHelper xmlHelper;
     private static String sourcePath;
-
-    public static synchronized XmlHandler getInstance(String file) {
-        return new XmlHandler(file);
-    }
 
     public XmlHandler(String sourcePath){
         XmlHandler.sourcePath = sourcePath;
@@ -64,26 +61,26 @@ public class XmlHandler {
         return xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_CATEGORIES);
     }
 
-    public Node getProjectsNode(){
+    public Element getProjectsElement(){
         Node root = xmlHelper.getRootNode();
-        return xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_PROJECTS);
+        return (Element) xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_PROJECTS);
     }
 
-    public Node getDiagramsNode() {
+    public Element getDiagramsElement() {
         Node root = xmlHelper.getRootNode();
-        return xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_DIAGRAMS);
+        return (Element)xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_DIAGRAMS);
     }
 
-    protected Node getLogsNode() {
+    protected Element getLogsElement() {
         Node root = xmlHelper.getRootNode();
-        return xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_LOGS);
+        return (Element) xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_LOGS);
     }
 
-    protected void addLogElement(Node logs, Node log) {
+    protected void addLogElement(Element logs, Element log) {
         xmlHelper.addXmlElement(logs, log);
     }
 
-    public void addElement(Node parents, Element element) {
+    public void addElement(Element parents, Element element) {
         xmlHelper.addXmlElement(parents, element);
     }
 
@@ -91,7 +88,7 @@ public class XmlHandler {
         xmlHelper.addXmlElement(diagram, objectsElement);
     }
 
-    public void addObjectElement(Node objects, Element objectElement) {
+    public void addObjectElement(Element objects, Element objectElement) {
         xmlHelper.addXmlElement(objects, objectElement);
     }
 
@@ -99,11 +96,11 @@ public class XmlHandler {
         xmlHelper.addXmlElement(edges, newObject);
     }
     
-    public void addLabelElement(Node labels, Element labelElement) {
+    public void addLabelElement(Element labels, Element labelElement) {
         xmlHelper.addXmlElement(labels, labelElement);
     }
 
-    public void addDiagramElement(Node diagrams, Element diagramElement) {
+    public void addDiagramElement(Element diagrams, Element diagramElement) {
         xmlHelper.addXmlElement(diagrams, diagramElement);
     }
 
@@ -140,21 +137,21 @@ public class XmlHandler {
     }
 
     public void removeAllProject() {
-        xmlHelper.removeAllChildren(getProjectsNode());
-        while(getProjectsNode().hasChildNodes()){
-            getProjectsNode().removeChild(getProjectsNode().getFirstChild());
+        xmlHelper.removeAllChildren(getProjectsElement());
+        while(getProjectsElement().hasChildNodes()){
+            getProjectsElement().removeChild(getProjectsElement().getFirstChild());
         }
     }
 
-    public void removeDiagram(FmmlxDiagram diagram) {
-        Node diagrams = getDiagramsNode();
+    public void removeDiagram(String label) {
+        Node diagrams = getDiagramsElement();
         NodeList diagramsChildNodes = diagrams.getChildNodes();
 
         for(int i = 0 ; i< diagramsChildNodes.getLength(); i++){
             if(diagramsChildNodes.item(i).getNodeType() == Node.ELEMENT_NODE){
                 Element element = (Element) diagramsChildNodes.item(i);
-                if(element.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(diagram.getDiagramLabel())
-                        && element.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(diagram.getDiagramLabel())){
+                if(element.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(label)
+                        && element.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(label)){
                     xmlHelper.removeChild(diagrams, element);
                 }
             }
@@ -163,13 +160,13 @@ public class XmlHandler {
 
     public void clearAll() {
         xmlHelper.removeAllChildren(getCategoriesNode());
-        xmlHelper.removeAllChildren(getProjectsNode());
-        xmlHelper.removeAllChildren(getDiagramsNode());
-        xmlHelper.removeAllChildren(getLogsNode());
+        xmlHelper.removeAllChildren(getProjectsElement());
+        xmlHelper.removeAllChildren(getDiagramsElement());
+        xmlHelper.removeAllChildren(getLogsElement());
     }
 
     public void clearLogs() {
-        xmlHelper.removeAllChildren(getLogsNode());
+        xmlHelper.removeAllChildren(getLogsElement());
     }
 
     protected Element createXmlElement(String name){
@@ -215,7 +212,7 @@ public class XmlHandler {
     }
 
     public void clearDiagrams() {
-        xmlHelper.removeAllChildren(getDiagramsNode());
+        xmlHelper.removeAllChildren(getDiagramsElement());
     }
 
     public static class XmlHelper {
@@ -251,10 +248,9 @@ public class XmlHandler {
             return document.createElement(tagName);
         }
 
-        protected void addXmlElement(Node parent, Node newNode) {
-            Element parent1 = (Element) parent;
-            assert parent1 != null;
-            parent1.appendChild(newNode);
+        protected void addXmlElement(Element parent, Element newNode) {
+            assert parent != null;
+            parent.appendChild(newNode);
         }
 
         public void removeAllChildren(Node parentNode) {

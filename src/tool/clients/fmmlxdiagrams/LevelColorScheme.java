@@ -94,8 +94,10 @@ public abstract class LevelColorScheme {
 			int MIN = Integer.MAX_VALUE;
 			int MAX = Integer.MIN_VALUE;
 			for(FmmlxObject o : objects) {
-				if(o.level < MIN) MIN = o.level;
-				if(o.level > MAX) MAX = o.level;
+				int level = o.level;
+				if(level == -1) level = 1;
+				if(level < MIN) MIN = level;
+				if(level > MAX) MAX = level;
 			}
 			if(MAX-MIN < 0) throw new IllegalArgumentException();
 			if(MAX-MIN == 0) {MAX++; MIN--;}
@@ -105,6 +107,7 @@ public abstract class LevelColorScheme {
 
 		@Override
 		public Color getLevelFgColor(int level, double opacity) {
+			if(level == -1) level = 1;
 			if(level > max) level = max;
 			if(level < min) level = min;
 			double b = (1-(1. * (level-min)) / (max-min) > 1./2) ? 0 : 1;
@@ -113,6 +116,7 @@ public abstract class LevelColorScheme {
 
 		@Override
 		public Paint getLevelBgColor(int level) {
+			if(level == -1) level = 1;
 			if(level > max) level = max;
 			if(level < min) level = min;
 			double b = 1-(1. * (level-min)) / (max-min);
