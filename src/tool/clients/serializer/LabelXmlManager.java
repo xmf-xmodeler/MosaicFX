@@ -55,21 +55,10 @@ public class LabelXmlManager implements Log, XmlManager {
     }
 
     @Override
-	public void add(Element element) {
+	public void add(Element diagramElement, Element element) {
+        Element labels = (Element) getLabelsNode(diagramElement);
+        xmlHandler.addLabelElement(labels, element);
 
-        Node diagrams = xmlHandler.getDiagramsNode();
-        NodeList diagramNodeList = diagrams.getChildNodes();
-
-        for(int i=0 ; i<diagramNodeList.getLength(); i++){
-            if(diagramNodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
-                Element diagram = (Element) diagramNodeList.item(i);
-                if(diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(element.getAttribute(XmlConstant.ATTRIBUTE_DIAGRAM_OWNER))){
-                    Element labels = (Element) getLabelsNode(diagram);
-                    xmlHandler.addLabelElement(labels, element);
-                }
-            }
-        }
-		
 	}
 
 	private Node getLabelsNode(Element diagramNode) {
@@ -156,7 +145,7 @@ public class LabelXmlManager implements Log, XmlManager {
 
     @Deprecated
     public void alignLabel(String diagramName, FmmlxDiagramCommunicator communicator) {
-        Node diagrams = xmlHandler.getDiagramsNode();
+        Node diagrams = xmlHandler.getDiagramsElement();
         NodeList diagramList = diagrams.getChildNodes();
 
         Node diagramNode = null;
@@ -187,21 +176,7 @@ public class LabelXmlManager implements Log, XmlManager {
         System.out.println("align labels in "+diagramName+" : finished ");
     }
 
-    public void alignLabel(FmmlxDiagram fmmlxDiagram) {
-        Node diagrams = xmlHandler.getDiagramsNode();
-        NodeList diagramList = diagrams.getChildNodes();
-
-        Node diagramNode = null;
-
-        for (int i = 0 ; i< diagramList.getLength(); i++){
-            if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
-                Element tmp = (Element) diagramList.item(i);
-                if (tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(fmmlxDiagram.getDiagramLabel())){
-                    diagramNode = tmp;
-                }
-            }
-        }
-
+    public void alignLabel(Node diagramNode, FmmlxDiagram fmmlxDiagram) {
         Vector<DiagramEdgeLabel>labels = fmmlxDiagram.getLabels();
         for(DiagramEdgeLabel label : labels){
             Point2D initCoordinate = new Point2D(label.getRelativeX(), label.getRelativeY());

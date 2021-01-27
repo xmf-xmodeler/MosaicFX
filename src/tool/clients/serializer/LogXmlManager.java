@@ -23,9 +23,8 @@ public class LogXmlManager implements Log, XmlManager {
     }
 
     @Override
-    public void add(Element element) {
-        Node logs = xmlHandler.getLogsNode();
-        xmlHandler.addLogElement(logs, element);
+    public void add(Element parent, Element element) {
+        xmlHandler.addLogElement(parent, element);
     }
 
     @Override
@@ -74,7 +73,7 @@ public class LogXmlManager implements Log, XmlManager {
     }
 
     public void reproduceFromLog(Integer newDiagramID) {
-        Node logs = xmlHandler.getLogsNode();
+        Node logs = xmlHandler.getLogsElement();
         NodeList logList = logs.getChildNodes();
 
         for(int i = 0 ; i<logList.getLength(); i++){
