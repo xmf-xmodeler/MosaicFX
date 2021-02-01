@@ -23,8 +23,8 @@ public class LogXmlManager implements Log, XmlManager {
     }
 
     @Override
-    public void add(Element parent, Element element) {
-        xmlHandler.addLogElement(parent, element);
+    public void add(Element parent, Element newElement) {
+        xmlHandler.addXmlElement(parent, newElement);
     }
 
     @Override
@@ -48,6 +48,11 @@ public class LogXmlManager implements Log, XmlManager {
         //TODO
     }
 
+    public Element getLogs() {
+        Element Root = xmlHandler.getRoot();
+        return xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_LOGS);
+    }
+
     public Element createNewLogFromFaXML(FaXML faXML){
         Element element = xmlHandler.createXmlElement(faXML.getName());
         for(String attName : faXML.getAttributes()){
@@ -57,7 +62,9 @@ public class LogXmlManager implements Log, XmlManager {
     }
 
     public void clearLog() {
-        xmlHandler.clearLogs();
+        Element rootElement = xmlHandler.getRoot();
+        Element logs = xmlHandler.getChildWithTag(rootElement, XmlConstant.TAG_NAME_LOGS);
+        xmlHandler.removeAllChildren(logs);
     }
 
     @Override
@@ -73,7 +80,7 @@ public class LogXmlManager implements Log, XmlManager {
     }
 
     public void reproduceFromLog(Integer newDiagramID) {
-        Node logs = xmlHandler.getLogsElement();
+        Node logs = getLogs();
         NodeList logList = logs.getChildNodes();
 
         for(int i = 0 ; i<logList.getLength(); i++){

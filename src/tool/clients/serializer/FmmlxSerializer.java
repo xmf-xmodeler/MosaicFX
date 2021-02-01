@@ -28,7 +28,7 @@ public class FmmlxSerializer implements Serializer {
 
     @Override
     public void saveAsXml(String diagramPath, String initLabel, FmmlxDiagramCommunicator communicator) throws TimeOutException, TransformerException {
-        this.xmlHandler.clearAll();
+        this.clearAllData();
         int saveLogCount = 0;
 
         Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(diagramPath);
@@ -48,8 +48,17 @@ public class FmmlxSerializer implements Serializer {
     public void save(String diagramPath, String label, Integer id, FmmlxDiagramCommunicator communicator)  {
         if(diagramPath!=null && diagramPath.length()>0){
             try {
-                saveDiagram(label, diagramPath, id);
-                saveLog(id, communicator);
+                Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(diagramPath);
+                int saveLogCount = 0;
+                for(Integer id_tmp :diagramIds){
+                    String diagramLabel = communicator.createLabelFromInitLabel(label, id_tmp);
+                    saveProject(diagramPath);
+                    saveDiagram(diagramLabel, diagramPath, id_tmp);
+                    if(saveLogCount==0){
+                        saveLog(id_tmp, communicator);
+                    }
+                    saveLogCount++;
+                }
                 xmlHandler.flushData();
             } catch (TransformerException | TimeOutException e) {
                 e.printStackTrace();
@@ -62,22 +71,24 @@ public class FmmlxSerializer implements Serializer {
 
     public void saveProject(String projectPath)  {
         ProjectXmlManager projectXmlManager = new ProjectXmlManager(this.xmlHandler);
+        Element diagramsElement = projectXmlManager.getDiagramsElement();
         Element projectElement =  projectXmlManager.createProjectElement(projectPath);
 
         if(!projectXmlManager.projectIsExist(projectPath)) {
-            projectXmlManager.add(xmlHandler.getDiagramsElement(), projectElement);
+            projectXmlManager.add(diagramsElement, projectElement);
         }
     }
 
     public void saveDiagram(String label, String path, Integer id) throws TransformerException, TimeOutException {
         if(checkFileExist(xmlHandler.getSourcePath())) {
             DiagramXmlManager diagramXmlManager = new DiagramXmlManager(this.xmlHandler);
+            Element diagramsElement = diagramXmlManager.getDiagramsElement();
             Element diagramElement = diagramXmlManager.createDiagramElement(label, path);
             if (diagramXmlManager.isExist(label)) {
                 diagramXmlManager.remove(label);
             }
             saveComponentsIntoDiagram(diagramElement, id);
-            diagramXmlManager.add(xmlHandler.getDiagramsElement(), diagramElement);
+            diagramXmlManager.add(diagramsElement, diagramElement);
 
         }
     }
@@ -140,12 +151,13 @@ public class FmmlxSerializer implements Serializer {
     public void saveLog(Integer diagramID, FmmlxDiagramCommunicator communicator) throws TimeOutException {
         LogXmlManager logXmlManager = new LogXmlManager(this.xmlHandler);
         logXmlManager.clearLog();
+        Element logsElement = logXmlManager.getLogs();
         FaXML protocol = communicator.getDiagramData(diagramID);
 
         Vector<FaXML> logs = protocol.getChildren();
         for (FaXML log : logs){
             Element newLogElement = logXmlManager.createNewLogFromFaXML(log);
-            logXmlManager.add(xmlHandler.getLogsElement(), newLogElement);
+            logXmlManager.add(logsElement, newLogElement);
         }
     }
 
@@ -156,6 +168,14 @@ public class FmmlxSerializer implements Serializer {
 
     @Override
     public void clearAllData() {
-        xmlHandler.clearAll();
+        Element Root = xmlHandler.getRoot();
+        Element logsElement = xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_LOGS);
+        Element projectsElement = xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_PROJECTS);
+        Element categoriesElement = xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_CATEGORIES);
+        Element diagramsElement = xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_DIAGRAMS);
+        xmlHandler.removeAllChildren(logsElement);
+        xmlHandler.removeAllChildren(projectsElement);
+        xmlHandler.removeAllChildren(categoriesElement);
+        xmlHandler.removeAllChildren(diagramsElement);
     }
 }

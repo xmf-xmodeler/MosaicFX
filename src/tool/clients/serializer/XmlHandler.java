@@ -6,12 +6,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
@@ -49,148 +50,47 @@ public class XmlHandler {
     }
 
     public XmlHelper getXmlHelper() {
-        return xmlHelper;
+        return this.xmlHelper;
     }
 
     public Document getDocument() {
-        return document;
+        return this.document;
     }
 
-    public Node getCategoriesNode(){
-        Node root = xmlHelper.getRootNode();
-        return xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_CATEGORIES);
+    public void addXmlElement(Element parent, Element element){
+        getXmlHelper().addXmlNode(parent, element);
     }
 
-    public Element getProjectsElement(){
-        Node root = xmlHelper.getRootNode();
-        return (Element) xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_PROJECTS);
+    public void removeChildElement(Element parent, Element children){
+        getXmlHelper().removeChildNode(parent, children);
     }
 
-    public Element getDiagramsElement() {
-        Node root = xmlHelper.getRootNode();
-        return (Element)xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_DIAGRAMS);
-    }
-
-    protected Element getLogsElement() {
-        Node root = xmlHelper.getRootNode();
-        return (Element) xmlHelper.getNodeByTag(root, XmlConstant.TAG_NAME_LOGS);
-    }
-
-    protected void addLogElement(Element logs, Element log) {
-        xmlHelper.addXmlElement(logs, log);
-    }
-
-    public void addElement(Element parents, Element element) {
-        xmlHelper.addXmlElement(parents, element);
-    }
-
-    public void addDiagramObjectsElement(Element diagram, Element objectsElement) {
-        xmlHelper.addXmlElement(diagram, objectsElement);
-    }
-
-    public void addObjectElement(Element objects, Element objectElement) {
-        xmlHelper.addXmlElement(objects, objectElement);
-    }
-
-    public void addEdgeElement(Element edges, Element newObject) {
-        xmlHelper.addXmlElement(edges, newObject);
-    }
-    
-    public void addLabelElement(Element labels, Element labelElement) {
-        xmlHelper.addXmlElement(labels, labelElement);
-    }
-
-    public void addDiagramElement(Element diagrams, Element diagramElement) {
-        xmlHelper.addXmlElement(diagrams, diagramElement);
-    }
-
-    public void addDiagramOwnersElement(Element diagram, Element ownersElement) {
-        xmlHelper.addXmlElement(diagram, ownersElement);
-    }
-
-    public void addDiagramCategoriesElement(Element diagram, Element categoriesElement) {
-        xmlHelper.addXmlElement(diagram, categoriesElement);
-    }
-
-    public void addDiagramEdgesElement(Element diagram, Element edgesElement) {
-        xmlHelper.addXmlElement(diagram, edgesElement);
-    }
-
-	public void addDiagramLabelsElement(Element diagram, Element labelsElement) {
-		xmlHelper.addXmlElement(diagram, labelsElement);
-	}
-
-    public void addAttributesElement(Element object, Element attributesElement) {
-        xmlHelper.addXmlElement(object, attributesElement);
-    }
-
-    public void addDiagramPreferencesElement(Element diagram, Element preferencesElement) {
-        xmlHelper.addXmlElement(diagram, preferencesElement);
-    }
-
-    public void addOperationsElement(Element object, Element operationsElement) {
-        xmlHelper.addXmlElement(object, operationsElement);
-    }
-
-    public void addIntermediatePointsElement(Element edge, Element intermediatePointsElement) {
-        xmlHelper.addXmlElement(edge, intermediatePointsElement);
-    }
-
-    public void removeAllProject() {
-        xmlHelper.removeAllChildren(getProjectsElement());
-        while(getProjectsElement().hasChildNodes()){
-            getProjectsElement().removeChild(getProjectsElement().getFirstChild());
-        }
-    }
-
-    public void removeDiagram(String label) {
-        Node diagrams = getDiagramsElement();
-        NodeList diagramsChildNodes = diagrams.getChildNodes();
-
-        for(int i = 0 ; i< diagramsChildNodes.getLength(); i++){
-            if(diagramsChildNodes.item(i).getNodeType() == Node.ELEMENT_NODE){
-                Element element = (Element) diagramsChildNodes.item(i);
-                if(element.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(label)
-                        && element.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(label)){
-                    xmlHelper.removeChild(diagrams, element);
-                }
-            }
-        }
-    }
-
-    public void clearAll() {
-        xmlHelper.removeAllChildren(getCategoriesNode());
-        xmlHelper.removeAllChildren(getProjectsElement());
-        xmlHelper.removeAllChildren(getDiagramsElement());
-        xmlHelper.removeAllChildren(getLogsElement());
-    }
-
-    public void clearLogs() {
-        xmlHelper.removeAllChildren(getLogsElement());
+    public void removeAllChildren(Element element){
+        getXmlHelper().removeAllChildrenNode(element);
     }
 
     protected Element createXmlElement(String name){
-        return xmlHelper.createXmlElement(name);
+        return (Element) getXmlHelper().createXmlNode(name);
     }
 
-    public void replaceNode(Node projectsNode, String newNodeName) {
-        Node newNode = xmlHelper.createXmlElement(newNodeName);
-        xmlHelper.getRootNode().replaceChild(newNode, projectsNode);
-        xmlHelper.getRootNode().normalize();
+    public void replaceElement(Element oldElement, String newNodeName) {
+        Node newNode = getXmlHelper().createXmlNode(newNodeName);
+        getXmlHelper().getRootNode().replaceChild(newNode, oldElement);
+        getXmlHelper().getRootNode().normalize();
     }
 
-    public Node getChildWithName(Node diagramNone, String child) {
-        return xmlHelper.getNodeByTag(diagramNone, child);
+    public Element getChildWithTag(Element parent, String child) {
+        return (Element) getXmlHelper().getNodeByTag(parent, child);
     }
 
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         try{
-            document.getDocumentElement().normalize();
-            stringBuilder.append("Root element : ").append(xmlHelper.getRootNode().getNodeName());
+            this.document.getDocumentElement().normalize();
+            stringBuilder.append("Root element : ").append(getXmlHelper().getRootNode().getNodeName());
 
-            NodeList nList = xmlHelper.getRootNode().getChildNodes();
+            NodeList nList = getXmlHelper().getRootNode().getChildNodes();
 
             stringBuilder.append("\n----------------------------");
             for (int temp = 0; temp < nList.getLength(); temp++) {
@@ -208,17 +108,21 @@ public class XmlHandler {
     }
 
     public void flushData() throws TransformerException {
-        xmlHelper.flush();
+        getXmlHelper().flush();
     }
 
-    public void clearDiagrams() {
-        xmlHelper.removeAllChildren(getDiagramsElement());
+    public Element getRoot() {
+        return (Element) getXmlHelper().getRootNode();
+    }
+
+    public Node getChildrenByAttributeValue(Element element, String attributeName, String value) {
+        return getXmlHelper().getChildrenByAttributeValue(element, attributeName, value);
     }
 
     public static class XmlHelper {
         private final Document document;
 
-        public static synchronized XmlHelper getInstance(Document document) {
+        private static synchronized XmlHelper getInstance(Document document) {
             return new XmlHelper(document);
         }
 
@@ -226,40 +130,39 @@ public class XmlHandler {
             this.document = document;
         }
 
-        public Node getRootNode(){
-            return document.getDocumentElement();
+        private Node getRootNode(){
+            return this.document.getDocumentElement();
         }
 
-        public Node getChildrenByAttributeValue(Node parentNode, String attributeName, String attributeValue){
+        private Element getChildrenByAttributeValue(Node parentNode, String attributeName, String attributeValue){
             NodeList nodeList = parentNode.getChildNodes();
             for(int i = 0 ; i< nodeList.getLength(); i++){
                 if(nodeList.item(i).getNodeType() == Node.ELEMENT_NODE){
                     Element element = (Element) nodeList.item(i);
-                    if(element
-                            .getAttribute(attributeName).equals(attributeValue)){
-                        return nodeList.item(i);
+                    if(element.getAttribute(attributeName).equals(attributeValue)){
+                        return element;
                     }
                 }
             }
             return null;
         }
 
-        public Element createXmlElement(String tagName){
-            return document.createElement(tagName);
+        private Node createXmlNode(String tagName){
+            return this.document.createElement(tagName);
         }
 
-        protected void addXmlElement(Element parent, Element newNode) {
+        private void addXmlNode(Node parent, Node newNode) {
             assert parent != null;
             parent.appendChild(newNode);
         }
 
-        public void removeAllChildren(Node parentNode) {
+        private void removeAllChildrenNode(Node parentNode) {
             while(parentNode.hasChildNodes()){
                 parentNode.removeChild(parentNode.getFirstChild());
             }
         }
 
-        public Node getNodeByTag(Node parentNode, String tagName) {
+        private Node getNodeByTag(Node parentNode, String tagName) {
             NodeList nodeList = parentNode.getChildNodes();
 
             for(int i = 0 ; i < nodeList.getLength(); i++){
@@ -273,7 +176,7 @@ public class XmlHandler {
             return null;
         }
 
-        public void removeChild(Node parent, Node node) {
+        private void removeChildNode(Node parent, Node node) {
             parent.removeChild(node);
             int i = 0;
             while (parent.getChildNodes().item(i)!=null) {
@@ -284,8 +187,8 @@ public class XmlHandler {
             }
         }
 
-        public void flush() throws TransformerException {
-            DOMSource source = new DOMSource(document);
+        private void flush() throws TransformerException {
+            DOMSource source = new DOMSource(this.document);
 
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();

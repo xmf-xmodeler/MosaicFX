@@ -26,17 +26,17 @@ public class DiagramXmlManager implements XmlManager {
         Element edges = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGES);
         Element labels = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_LABELS);
         Element preferences = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_PREFERENCES);
-        xmlHandler.addDiagramCategoriesElement(diagram, categories);
-        xmlHandler.addDiagramOwnersElement(diagram, owners);
-        xmlHandler.addDiagramObjectsElement(diagram, objects);
-        xmlHandler.addDiagramEdgesElement(diagram, edges);
-        xmlHandler.addDiagramLabelsElement(diagram, labels);
-        xmlHandler.addDiagramPreferencesElement(diagram, preferences);
+        xmlHandler.addXmlElement(diagram, categories);
+        xmlHandler.addXmlElement(diagram, owners);
+        xmlHandler.addXmlElement(diagram, objects);
+        xmlHandler.addXmlElement(diagram, edges);
+        xmlHandler.addXmlElement(diagram, labels);
+        xmlHandler.addXmlElement(diagram, preferences);
         return diagram;
     }
 
     public boolean isExist(String label) {
-        Node diagrams = xmlHandler.getDiagramsElement();
+        Node diagrams = getDiagramsElement();
 
         NodeList diagramList = diagrams.getChildNodes();
 
@@ -51,9 +51,14 @@ public class DiagramXmlManager implements XmlManager {
         return false;
     }
 
+    public Element getDiagramsElement(){
+        Element Root = xmlHandler.getRoot();
+        return xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_DIAGRAMS);
+    }
+
     @Override
     public void add(Element parent, Element element) {
-        xmlHandler.addDiagramElement(parent, element);
+        xmlHandler.addXmlElement(parent, element);
     }
 
     @Override
@@ -67,12 +72,23 @@ public class DiagramXmlManager implements XmlManager {
     }
 
     public void remove(String label)  {
-        xmlHandler.removeDiagram(label);
+        Element diagrams = getDiagramsElement();
+        NodeList diagramsChildNodes = diagrams.getChildNodes();
+
+        for(int i = 0 ; i< diagramsChildNodes.getLength(); i++){
+            if(diagramsChildNodes.item(i).getNodeType() == Node.ELEMENT_NODE){
+                Element tmp_element = (Element) diagramsChildNodes.item(i);
+                if(tmp_element.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(label)
+                        && tmp_element.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(label)){
+                    xmlHandler.removeChildElement(diagrams, tmp_element);
+                }
+            }
+        }
     }
 
     public Vector<String> getAllDiagrams() {
         Vector<String> diagrams = new Vector<>();
-        Node diagramsNode = xmlHandler.getDiagramsElement();
+        Node diagramsNode = getDiagramsElement();
         NodeList diagramNodeList = diagramsNode.getChildNodes();
 
         for(int i =0; i< diagramNodeList.getLength(); i++){
@@ -86,7 +102,8 @@ public class DiagramXmlManager implements XmlManager {
     }
 
     public void removeAllDiagrams() {
-        xmlHandler.clearDiagrams();
+        Element diagramsElement = getDiagramsElement();
+        xmlHandler.removeAllChildren(diagramsElement);
     }
 
 

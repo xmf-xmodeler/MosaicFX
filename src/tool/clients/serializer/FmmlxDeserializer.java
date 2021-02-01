@@ -46,7 +46,7 @@ public class FmmlxDeserializer implements Deserializer {
     @Override
     public void alignCoordinate(String file, FmmlxDiagramCommunicator communicator) {
         if(Files.exists(Paths.get(file))) {
-            Node diagrams = xmlHandler.getDiagramsElement();
+            Node diagrams = getDiagramsElement();
             NodeList diagramList = diagrams.getChildNodes();
 
             for (int i = 0; i < diagramList.getLength(); i++) {
@@ -63,25 +63,30 @@ public class FmmlxDeserializer implements Deserializer {
     @Deprecated
     @Override
     public void alignCoordinate2(FmmlxDiagram diagram) {
-        Node diagrams = xmlHandler.getDiagramsElement();
+        Element diagrams = getDiagramsElement();
         NodeList diagramList = diagrams.getChildNodes();
 
-        Node diagramNode = null;
+        Element diagramElement = null;
         for (int i = 0 ; i< diagramList.getLength(); i++){
             if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
                 Element tmp = (Element) diagramList.item(i);
                 if (tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(diagram.getDiagramLabel())){
-                    diagramNode = tmp;
+                    diagramElement = tmp;
                 }
             }
         }
-        if(diagramNode!=null){
+        if(diagramElement!=null){
             //ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
             //objectXmlManager.alignObjects(diagramNode, diagram);
             EdgeXmlManager edgeXmlManager = new EdgeXmlManager(this.xmlHandler);
-            edgeXmlManager.alignEdges(diagramNode,diagram);
+            edgeXmlManager.alignEdges(diagramElement,diagram);
             LabelXmlManager labelXmlManager = new LabelXmlManager(this.xmlHandler);
-            labelXmlManager.alignLabel(diagramNode, diagram);
+            labelXmlManager.alignLabel(diagramElement, diagram);
         }
+    }
+
+    public Element getDiagramsElement(){
+        Element Root = xmlHandler.getRoot();
+        return xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_DIAGRAMS);
     }
 }

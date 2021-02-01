@@ -22,26 +22,26 @@ public class ProjectXmlManager implements XmlManager {
     }
     
     public Node get(String name){
-        Node projects = xmlHandler.getProjectsElement();
-        return xmlHandler.getXmlHelper().getChildrenByAttributeValue(projects, XmlConstant.ATTRIBUTE_NAME, name);
+        Element projects = getProjectsElement();
+        return xmlHandler.getChildrenByAttributeValue(projects, XmlConstant.ATTRIBUTE_NAME, name);
     }
 
     @Override
     public void add(Element parent, Element element) {
-        Element projects = xmlHandler.getProjectsElement();
-        xmlHandler.addElement(projects, element);
+        Element projects = getProjectsElement();
+        xmlHandler.addXmlElement(projects, element);
     }
 
     @Override
     public void remove(Element element){
-        Node projects = xmlHandler.getProjectsElement();
+        Node projects = getProjectsElement();
         projects.removeChild(element);
     }
 
     @Override
     public List<Node> getAll(){
         List<Node> projects = new ArrayList<>();
-        Node projectsNode = xmlHandler.getProjectsElement();
+        Node projectsNode = getProjectsElement();
         NodeList projectNodeList = projectsNode.getChildNodes();
 
         for(int i =0; i< projectNodeList.getLength(); i++){
@@ -53,17 +53,23 @@ public class ProjectXmlManager implements XmlManager {
         return projects;
     }
 
+    public Element getDiagramsElement(){
+        Element Root = xmlHandler.getRoot();
+        return xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_DIAGRAMS);
+    }
+
     public String getProjectName(String projectPath) {
         String[] projectPathSplit= projectPath.split("::");
         return projectPathSplit[1];
     }
 
-    public Node getProjectsNode() {
-        return xmlHandler.getProjectsElement();
+    public Element getProjectsElement() {
+        Element Root = xmlHandler.getRoot();
+        return xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_PROJECTS);
     }
 
     public boolean projectIsExist(String packagePath) {
-        Node projects = getProjectsNode();
+        Node projects = getProjectsElement();
         NodeList projectList = projects.getChildNodes();
 
         for(int i =0; i< projectList.getLength(); i++){
@@ -79,7 +85,8 @@ public class ProjectXmlManager implements XmlManager {
     }
 
     public void removeAll() {
-        xmlHandler.removeAllProject();
+        Element projects = getProjectsElement();
+        xmlHandler.removeAllChildren(projects);
     }
 
     public Element createProjectElement(String packagePath) {

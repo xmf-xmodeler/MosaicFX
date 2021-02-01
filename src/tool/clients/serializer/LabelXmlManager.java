@@ -55,14 +55,10 @@ public class LabelXmlManager implements Log, XmlManager {
     }
 
     @Override
-	public void add(Element diagramElement, Element element) {
-        Element labels = (Element) getLabelsNode(diagramElement);
-        xmlHandler.addLabelElement(labels, element);
+	public void add(Element diagramElement, Element newElement) {
+        Element labels = getLabelsElement(diagramElement);
+        xmlHandler.addXmlElement(labels, newElement);
 
-	}
-
-	private Node getLabelsNode(Element diagramNode) {
-		return xmlHandler.getXmlHelper().getNodeByTag(diagramNode, XmlConstant.TAG_NAME_LABELS);
 	}
 
 	@Override
@@ -94,6 +90,15 @@ public class LabelXmlManager implements Log, XmlManager {
 		// TODO Auto-generated method stub
 		
 	}
+
+    public Element getDiagramsElement(){
+        Element Root = xmlHandler.getRoot();
+        return xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_DIAGRAMS);
+    }
+
+    private Element getLabelsElement(Element diagramNode) {
+        return xmlHandler.getChildWithTag(diagramNode, XmlConstant.TAG_NAME_LABELS);
+    }
 	
 	public boolean validateName(String name) {
 		if (name.equals("")) {
@@ -109,8 +114,8 @@ public class LabelXmlManager implements Log, XmlManager {
     }
 
     @Deprecated
-	private Point2D getCoordinate(Node diagramNone, DiagramEdgeLabel label, Point2D initCoordinate) {
-        Node labelsNode = xmlHandler.getChildWithName(diagramNone, XmlConstant.TAG_NAME_LABELS);
+	private Point2D getCoordinate(Element diagramElement, DiagramEdgeLabel label, Point2D initCoordinate) {
+        Element labelsNode = getLabelsElement(diagramElement);
         String text = label.getText();
         Vector<FmmlxObject> anchors = label.getAnchors();
         NodeList labelList = labelsNode.getChildNodes();
@@ -145,21 +150,21 @@ public class LabelXmlManager implements Log, XmlManager {
 
     @Deprecated
     public void alignLabel(String diagramName, FmmlxDiagramCommunicator communicator) {
-        Node diagrams = xmlHandler.getDiagramsElement();
+        Element diagrams = getDiagramsElement();
         NodeList diagramList = diagrams.getChildNodes();
 
-        Node diagramNode = null;
+        Element diagramElement = null;
 
         for (int i = 0 ; i< diagramList.getLength(); i++){
             if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
                 Element tmp = (Element) diagramList.item(i);
                 if (tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(diagramName)){
-                    diagramNode = tmp;
+                    diagramElement = tmp;
                 }
             }
         }
 
-        Node labelsNode = xmlHandler.getChildWithName(diagramNode, XmlConstant.TAG_NAME_LABELS);
+        Node labelsNode = getLabelsElement(diagramElement);
         NodeList labelList = labelsNode.getChildNodes();
 
         for (int i = 0 ; i< labelList.getLength() ; i++){
@@ -169,18 +174,18 @@ public class LabelXmlManager implements Log, XmlManager {
                 double x = Double.parseDouble(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
                 double y = Double.parseDouble(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
 
-                communicator.storeLabelInfoFromXml(communicator.getDiagramIdFromName(diagramName),
+                communicator.storeLabelInfoFromXml(FmmlxDiagramCommunicator.getDiagramIdFromName(diagramName),
                         x, y);
             }
         }
         System.out.println("align labels in "+diagramName+" : finished ");
     }
 
-    public void alignLabel(Node diagramNode, FmmlxDiagram fmmlxDiagram) {
+    public void alignLabel(Element diagramElement, FmmlxDiagram fmmlxDiagram) {
         Vector<DiagramEdgeLabel>labels = fmmlxDiagram.getLabels();
         for(DiagramEdgeLabel label : labels){
             Point2D initCoordinate = new Point2D(label.getRelativeX(), label.getRelativeY());
-            Point2D coordinate = getCoordinate(diagramNode, label.getText(), initCoordinate);
+            Point2D coordinate = getCoordinate(diagramElement, label.getText(), initCoordinate);
             if(validateName(label.getText())){
 
                 label.setRelativeX(coordinate.getX());
@@ -195,9 +200,9 @@ public class LabelXmlManager implements Log, XmlManager {
         fmmlxDiagram.objectsMoved = true;
     }
 
-    private Point2D getCoordinate(Node diagramNone, String text, Point2D initCoordinate) {
-        Node labelsNode = xmlHandler.getChildWithName(diagramNone, XmlConstant.TAG_NAME_LABELS);
-        NodeList labelList = labelsNode.getChildNodes();
+    private Point2D getCoordinate(Element diagramElement, String text, Point2D initCoordinate) {
+        Element labelsElement = getLabelsElement(diagramElement);
+        NodeList labelList = labelsElement.getChildNodes();
 
         for (int i = 0 ; i< labelList.getLength() ; i++){
             if (labelList.item(i).getNodeType() == Node.ELEMENT_NODE){
