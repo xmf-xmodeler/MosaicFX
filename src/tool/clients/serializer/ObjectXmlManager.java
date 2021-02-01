@@ -5,36 +5,35 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.*;
-import tool.clients.serializer.interfaces.IXmlManager;
+import tool.clients.serializer.interfaces.XmlManager;
 
-import javax.xml.transform.TransformerException;
 import java.util.List;
 import java.util.Vector;
 
-public class ObjectXmlManager implements IXmlManager {
+public class ObjectXmlManager implements XmlManager {
     private final XmlHandler xmlHandler;
 
-    public ObjectXmlManager(String file) {
-        this.xmlHandler =  new XmlHandler(file);
+    public ObjectXmlManager(XmlHandler xmlHandler) {
+        this.xmlHandler = xmlHandler ;
     }
 
-    public Element createObjectElement(FmmlxDiagram diagram, FmmlxObject fmmlxObject) {
-        String name = fmmlxObject.getName();
-        int level= fmmlxObject.getLevel();
-        String ofName = fmmlxObject.getOfPath();
-        Vector<String> parents = fmmlxObject.getParentsPaths();
-        String projectPath = diagram.getPackagePath()+"::"+name;
-        String owner = diagram.getDiagramLabel();
-        double x = fmmlxObject.getX();
-        double y = fmmlxObject.getY();
+    public Element createObjectElement(String objectPath, Integer x, Integer y, Boolean hidden) {
+//        String name = fmmlxObject.getName();
+//        int level= fmmlxObject.getLevel();
+//        String ofName = fmmlxObject.getOfPath();
+//        Vector<String> parents = fmmlxObject.getParentsPaths();
+//        String projectPath = fmmlxObject.getPath();
+//        String owner = diagram.getDiagramLabel();
+//        double x = fmmlxObject.getX();
+//        double y = fmmlxObject.getY();
 
         Element object = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OBJECT);
-        object.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
-        object.setAttribute(XmlConstant.ATTRIBUTE_LEVEL, level+"");
-        object.setAttribute(XmlConstant.ATTRIBUTE_OF, ofName+"");
-        object.setAttribute(XmlConstant.ATTRIBUTE_PARENTS, parents+"");
-        object.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, projectPath);
-        object.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
+//        object.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
+//        object.setAttribute(XmlConstant.ATTRIBUTE_LEVEL, level+"");
+//        object.setAttribute(XmlConstant.ATTRIBUTE_OF, ofName+"");
+//        object.setAttribute(XmlConstant.ATTRIBUTE_PARENTS, parents+"");
+        object.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, objectPath);
+//        object.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
         object.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, x+"");
         object.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, y+"");
         return object;
@@ -51,11 +50,8 @@ public class ObjectXmlManager implements IXmlManager {
                 Element diagram = (Element) diagramNodeList.item(i);
                 if(diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(element.getAttribute(XmlConstant.ATTRIBUTE_OWNER))){
                     Element objects = (Element) getObjectsNode(diagram);
-                    try {
-                        xmlHandler.addObjectElement(objects, element);
-                    } catch (TransformerException e) {
-                        e.printStackTrace();
-                    }
+                    xmlHandler.addObjectElement(objects, element);
+
                 }
             }
         }
@@ -76,7 +72,7 @@ public class ObjectXmlManager implements IXmlManager {
         return null;
     }
 
-    public void addOperation(Node objectNode, Node newNode) throws TransformerException {
+    public void addOperation(Node objectNode, Node newNode)  {
         if(newNode!= null){
             Node operationsNode = getOperationsNode((Element) objectNode);
             Element newOperation= (Element) newNode;
@@ -89,7 +85,7 @@ public class ObjectXmlManager implements IXmlManager {
         return xmlHandler.getXmlHelper().getNodeByTag(objectNode, XmlConstant.TAG_NAME_OPERATIONS);
     }
 
-    public void addAttribute(Node objectNode, Node attributeNode) throws TransformerException {
+    public void addAttribute(Node objectNode, Node attributeNode)  {
         if(attributeNode!= null){
             Node attributesNode = getAttributesNode(objectNode);
             Element newAttribute = (Element) attributeNode;
@@ -154,7 +150,6 @@ public class ObjectXmlManager implements IXmlManager {
             object.moveTo(coordinate.getX(), coordinate.getY(), fmmlxDiagram);
             fmmlxDiagram.getComm().sendCurrentPosition(fmmlxDiagram.getComm().getDiagramIdFromName(fmmlxDiagram.getDiagramLabel()), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY()));
         }
-        System.out.println("align objects in "+fmmlxDiagram.getDiagramLabel()+" : finished ");
     }
 
     private Point2D getCoordinate(Node diagramNone, String name, Point2D initCoordingate) {

@@ -1,6 +1,8 @@
 package tool.clients.fmmlxdiagrams.classbrowser;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
@@ -38,7 +40,8 @@ import tool.clients.fmmlxdiagrams.LevelColorScheme.RedLevelColorScheme;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
-import tool.clients.fmmlxdiagrams.menus.BrowserObjectsContextMenu;
+import tool.clients.fmmlxdiagrams.menus.BrowserAttributeContextMenu;
+import tool.clients.fmmlxdiagrams.menus.BrowserObjectContextMenu;
 import tool.xmodeler.XModeler;
 
 
@@ -289,25 +292,24 @@ public class ModelBrowser extends CustomStage {
 		    }
 		});
 		
-		fmmlxAssociationListView.setCellFactory(new Callback<ListView<FmmlxAssociation>, ListCell<FmmlxAssociation>>() {
-			
-		    @Override
-		    public ListCell<FmmlxAssociation> call(ListView<FmmlxAssociation> param) {
-		        ListCell<FmmlxAssociation> cell = new ListCell<FmmlxAssociation>() {
-	
-		            @Override
-		            protected void updateItem(FmmlxAssociation association, boolean empty) {
-		                super.updateItem(association, empty);
-		                FmmlxObject o = fmmlxObjectListView.getSelectionModel().getSelectedItem();
-		                if (association != null && o != null) {
-		                    setText(association.getSourceNode() + " " + association.getName() + " " + association.getTargetNode());
-		                } else {
-		                	setText("");
-		                }
-		            }
-		        };
-		        return cell;
-		    }
+		slotListView.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2) {
+		        FmmlxSlot slot = slotListView.getSelectionModel().getSelectedItem();
+		        FmmlxObject object = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+		        if(slot != null && object != null) {
+		        	activePackage.getActions().changeSlotValue(object, slot);
+		        }
+			}
+		});	
+		
+		fmmlxAttributeListView.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2) {
+		        FmmlxAttribute att = fmmlxAttributeListView.getSelectionModel().getSelectedItem();
+		        FmmlxObject object = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+		        if(att != null && object != null) {
+		        	activePackage.getActions().changeNameDialog(object, tool.clients.fmmlxdiagrams.dialogs.PropertyType.Attribute, att);
+		        }
+			}
 		});
 	}
 	
@@ -385,9 +387,9 @@ public class ModelBrowser extends CustomStage {
 
 	private void onOperationListViewNewValue(FmmlxOperation oldValue, FmmlxOperation selectedOperation) {
 		if (selectedOperation!=null) {
-		codeArea.setText(selectedOperation.getBody());	
+			codeArea.setText(selectedOperation.getBody());	
 		} else{
-		codeArea.setText("");	
+			codeArea.setText("");	
 		}
 	}
 	
@@ -401,18 +403,7 @@ public class ModelBrowser extends CustomStage {
 
 	private void onObjectListViewNewValue(FmmlxObject oldValue, FmmlxObject selectedObject) {
 		if (selectedObject != null ) {
-			metaClassTextField.clear();
-			metaClassTextField.setText(selectedObject.getMetaClassName());
-			abstractTextField.clear();
-			abstractTextField.setText(selectedObject.getIsAbstract());
-			delegatesToTextField.clear();
-			if (selectedObject.getDelegatesTo()!=null) {
-				delegatesToTextField.setText(selectedObject.getDelegatesTo().getName());
-			} else {
-				delegatesToTextField.setText("No Delegation!");
-			}
-			parentsListView.getItems().clear();
-			parentsListView.getItems().addAll(selectedObject.getParentsPaths());
+			selection.put("OBJ", selectedObject.getName());
 			fmmlxAttributeListView.getItems().clear();
 			fmmlxAttributeListView.getItems().addAll(selectedObject.getAllAttributes());
 			slotListView.getItems().clear();
@@ -421,7 +412,6 @@ public class ModelBrowser extends CustomStage {
 			fmmlxOperationListView.getItems().addAll(selectedObject.getAllOperations());
 		}			
 		
-		fmmlxObjectListView.setContextMenu(new BrowserObjectsContextMenu(fmmlxObjectListView, activePackage));
 
 	}
 
@@ -443,30 +433,36 @@ public class ModelBrowser extends CustomStage {
 	
 	private void onModelListViewNewValue(String oldSelectedPath, String selectedPath) {
 		if(selectedPath == null || selectedPath.equals(oldSelectedPath)) return;
-		System.err.println("onModelListViewNewValue " + selectedPath);
 		if(!models.containsKey(selectedPath)) {
 			Integer newDiagramID=communicator.createDiagram(selectedPath, "Test", "");
 			ClassBrowserPackageViewer tempViewer = new ClassBrowserPackageViewer(communicator, newDiagramID, selectedPath, this);
 			models.put(selectedPath, tempViewer);
 		}
 		activePackage = models.get(selectedPath);
-		storeSelection();
 		activePackage.updateDiagram();
-		System.err.println("onModelListViewNewValue done");
 	}	
 
-	private void onSlotListViewNewValue(ListView<String> modelListView2, FmmlxSlot oldValue, FmmlxSlot newValue) {
-		
-	}
+	private void onSlotListViewNewValue(ListView<String> modelListView2, FmmlxSlot oldValue, FmmlxSlot newValue) {}
 	
 	private void onAttributeListViewNewValue(FmmlxAttribute oldValue, FmmlxAttribute newValue) {
-		
+		if(newValue != null) {selection.put("ATT", newValue.getName());}
+		fmmlxAttributeListView.setContextMenu(new BrowserAttributeContextMenu(fmmlxObjectListView, fmmlxAttributeListView, activePackage));
 	}
 
 	public void notifyModelHasLoaded() {
 		Platform.runLater(() -> {
 			Vector<FmmlxObject> objects = activePackage.getObjects();
-			levelColorScheme = new LevelColorScheme.RedLevelColorScheme(activePackage.getObjects());
+			levelColorScheme = new LevelColorScheme.RedLevelColorScheme(objects);
+			
+			Collections.sort(objects, new Comparator<FmmlxObject>() {
+
+				@Override
+				public int compare(FmmlxObject o1, FmmlxObject o2) {
+					if(o1.getLevel() < o2.getLevel()) return 1;
+					if(o1.getLevel() > o2.getLevel()) return -1;
+					return o1.getName().compareTo(o2.getName());
+				}
+			});
 
 			fmmlxObjectListView.getItems().clear();
 			fmmlxObjectListView.getItems().addAll(objects);
@@ -474,13 +470,24 @@ public class ModelBrowser extends CustomStage {
 			restoreSelection();
 		});
 	}
-
-	private void storeSelection() {
-		
-	}
+	
+	private transient HashMap<String, String> selection = new HashMap<>();
 	
 	private void restoreSelection() {
-		
+		String oS = selection.get("OBJ");
+		for(int i = 0; i < fmmlxObjectListView.getItems().size() && oS != null; i++) {
+			if(oS.equals(fmmlxObjectListView.getItems().get(i).getName())) {
+				oS = null;
+				fmmlxObjectListView.getSelectionModel().select(fmmlxObjectListView.getItems().get(i));
+			}
+		}
+		String aS = selection.get("ATT");
+		for(int i = 0; i < fmmlxAttributeListView.getItems().size() && aS != null; i++) {
+			if(aS.equals(fmmlxAttributeListView.getItems().get(i).getName())) {
+				aS = null;
+				fmmlxAttributeListView.getSelectionModel().select(fmmlxAttributeListView.getItems().get(i));
+			}
+		}
 	}
 
 }

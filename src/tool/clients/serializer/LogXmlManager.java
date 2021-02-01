@@ -8,29 +8,24 @@ import tool.clients.fmmlxdiagrams.FaXML;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.TimeOutException;
-import tool.clients.serializer.interfaces.ILog;
-import tool.clients.serializer.interfaces.IXmlManager;
+import tool.clients.serializer.interfaces.Log;
+import tool.clients.serializer.interfaces.XmlManager;
 
-import javax.xml.transform.TransformerException;
 import java.util.Base64;
 import java.util.List;
 import java.util.Vector;
 
-public class LogXmlManager implements ILog, IXmlManager {
+public class LogXmlManager implements Log, XmlManager {
     private final XmlHandler xmlHandler;
 
-    public LogXmlManager(String file) {
-        this.xmlHandler = new XmlHandler((file));
+    public LogXmlManager(XmlHandler xmlHandler) {
+        this.xmlHandler = xmlHandler;
     }
 
     @Override
     public void add(Element element) {
         Node logs = xmlHandler.getLogsNode();
-        try {
-            xmlHandler.addLogElement(logs, element);
-        } catch (TransformerException e) {
-            e.printStackTrace();
-        }
+        xmlHandler.addLogElement(logs, element);
     }
 
     @Override
@@ -62,7 +57,7 @@ public class LogXmlManager implements ILog, IXmlManager {
         return element;
     }
 
-    public void clearLog() throws TransformerException {
+    public void clearLog() {
         xmlHandler.clearLogs();
     }
 
@@ -434,7 +429,6 @@ public class LogXmlManager implements ILog, IXmlManager {
                     break;
                 }
                 case "removeLink" : {
-                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
                     //TODO still using id :: diagram.getComm().removeAssociationInstance(diagram, name);
                     break;
                 }

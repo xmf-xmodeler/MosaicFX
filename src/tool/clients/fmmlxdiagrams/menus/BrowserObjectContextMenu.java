@@ -13,21 +13,20 @@ import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
-public class BrowserObjectsContextMenu extends ContextMenu {
+public class BrowserObjectContextMenu extends ContextMenu {
 
 	private final FmmlxObject object;
 	private final DiagramActions actions;
-//	private final AbstractPackageViewer packageViewer;
 	
-	public BrowserObjectsContextMenu(ListView<FmmlxObject> listView, AbstractPackageViewer packageViewer) {
+	public BrowserObjectContextMenu(ListView<FmmlxObject> listView, AbstractPackageViewer packageViewer) {
 		
-//		this.packageViewer = packageViewer;
 		this.actions = packageViewer.getActions();
 		this.object = listView.getSelectionModel().getSelectedItem();
 		setAutoHide(true);
 		
 		MenuItem addClassItem = new MenuItem("Add Class");
 		addClassItem.setOnAction(e -> actions.addMetaClassDialog((javafx.scene.canvas.Canvas) null));
+		getItems().add(addClassItem);
 		
 		if(object != null && object.getLevel() >= 1 && !object.isAbstract()) {
 			MenuItem addInstanceItem = new MenuItem("Add instance of " + object.getName());
@@ -50,6 +49,7 @@ public class BrowserObjectsContextMenu extends ContextMenu {
 			if(object.notTraditionalDataTypeExists() || object.getLevel()<=0){
 				instanceGenerator.setDisable(true);
 			}
+			instanceGenerator.setDisable(true); // temp
 			getItems().add(instanceGenerator);
 		}
 		
@@ -60,11 +60,11 @@ public class BrowserObjectsContextMenu extends ContextMenu {
 				javafx.scene.control.ButtonType.CANCEL).showAndWait();});
 		getItems().add(changeOfItem);
 		
-		MenuItem changeParentItem = new MenuItem("Change parent (Superclass)");
-		changeParentItem.setOnAction(e -> actions.changeParentsDialog(object));
-		getItems().add(changeParentItem);
-		
 		if(object != null && object.getLevel() >= 1) { 
+			MenuItem changeParentItem = new MenuItem("Change parent (Superclass)");
+			changeParentItem.setOnAction(e -> actions.changeParentsDialog(object));
+			getItems().add(changeParentItem);		
+		
 			MenuItem abstractClassItem = new MenuItem(object.isAbstract()?"Make concrete":"Make abstract");
 			abstractClassItem.setOnAction(e -> actions.toggleAbstract(object));
 			abstractClassItem.setDisable(object.getInstances().size() > 0);

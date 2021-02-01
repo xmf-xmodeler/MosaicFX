@@ -70,7 +70,7 @@ public class XmlCreator {
         }
     }
 
-    public void create(String file) throws TransformerException, ParserConfigurationException {
+    public String create(String file) throws TransformerException, ParserConfigurationException {
         if(!checkFileExist(file)){
 
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -106,7 +106,9 @@ public class XmlCreator {
             DOMSource domSource = new DOMSource(document);
             StreamResult streamResult = new StreamResult(new File(file));
             transformer.transform(domSource, streamResult);
+            return file;
         }
+        return file;
     }
 
     private boolean checkFileExist(String file) {

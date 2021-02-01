@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
-import javax.xml.transform.TransformerException;
-
 import javafx.geometry.Point2D;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -15,18 +13,17 @@ import tool.clients.fmmlxdiagrams.DiagramEdgeLabel;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.serializer.interfaces.ILog;
-import tool.clients.serializer.interfaces.IXmlManager;
+import tool.clients.serializer.interfaces.Log;
+import tool.clients.serializer.interfaces.XmlManager;
 
-public class LabelXmlManager implements ILog, IXmlManager{
+public class LabelXmlManager implements Log, XmlManager {
 	private final XmlHandler xmlHandler;
 
-
-    public LabelXmlManager(String file) {
-        this.xmlHandler = new XmlHandler(file);
+    protected LabelXmlManager(XmlHandler xmlHandler) {
+        this.xmlHandler = xmlHandler;
     }
 
-    public Element createLabelElement(FmmlxDiagram diagram, DiagramEdgeLabel edgeLabel) {
+    protected Element createLabelElement(FmmlxDiagram diagram, DiagramEdgeLabel edgeLabel) {
         String text = edgeLabel.getText();
         String owner = edgeLabel.getOwner().getPath();
         Vector<FmmlxObject> anchors = edgeLabel.getAnchors();
@@ -45,7 +42,7 @@ public class LabelXmlManager implements ILog, IXmlManager{
         return label;
     }
 
-    private String createAnchorsString(Vector<FmmlxObject> anchors) {
+    protected String createAnchorsString(Vector<FmmlxObject> anchors) {
         StringBuilder anchorsStringBuilder = new StringBuilder();
 
         for(FmmlxObject anchor : anchors){
@@ -68,11 +65,7 @@ public class LabelXmlManager implements ILog, IXmlManager{
                 Element diagram = (Element) diagramNodeList.item(i);
                 if(diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(element.getAttribute(XmlConstant.ATTRIBUTE_DIAGRAM_OWNER))){
                     Element labels = (Element) getLabelsNode(diagram);
-                    try {
-                        xmlHandler.addLabelElement(labels, element);
-                    } catch (TransformerException e) {
-                        e.printStackTrace();
-                    }
+                    xmlHandler.addLabelElement(labels, element);
                 }
             }
         }
@@ -125,7 +118,8 @@ public class LabelXmlManager implements ILog, IXmlManager{
 		char[] c = name.toCharArray();
         return Character.isDigit(c[0]);
     }
-	
+
+    @Deprecated
 	private Point2D getCoordinate(Node diagramNone, DiagramEdgeLabel label, Point2D initCoordinate) {
         Node labelsNode = xmlHandler.getChildWithName(diagramNone, XmlConstant.TAG_NAME_LABELS);
         String text = label.getText();
@@ -160,7 +154,7 @@ public class LabelXmlManager implements ILog, IXmlManager{
         return true;
     }
 
-
+    @Deprecated
     public void alignLabel(String diagramName, FmmlxDiagramCommunicator communicator) {
         Node diagrams = xmlHandler.getDiagramsNode();
         NodeList diagramList = diagrams.getChildNodes();
@@ -182,7 +176,6 @@ public class LabelXmlManager implements ILog, IXmlManager{
         for (int i = 0 ; i< labelList.getLength() ; i++){
             if (labelList.item(i).getNodeType() == Node.ELEMENT_NODE){
                 Element label_tmp = (Element) labelList.item(i);
-                String[] anchorsString = label_tmp.getAttribute(XmlConstant.ATTRIBUTE_ANCHORS).split(",");
 
                 double x = Double.parseDouble(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
                 double y = Double.parseDouble(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));

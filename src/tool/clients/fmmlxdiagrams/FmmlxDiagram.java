@@ -29,7 +29,8 @@ import javafx.scene.transform.NonInvertibleTransformException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
-import tool.clients.serializer.Deserializer;
+import tool.clients.serializer.FmmlxDeserializer;
+import tool.clients.serializer.XmlHandler;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -59,8 +60,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	// The elements representing the model which is displayed in the GUI
 	
 	private Vector<DiagramEdgeLabel> labels = new Vector<>();
-	private Vector<FmmlxEnum> enums = new Vector<>();
-	private Vector<String> auxTypes = new Vector<>();
 	private Vector<Issue> issues = new Vector<>();
 	
 	// Temporary variables storing the current state of user interactions
@@ -234,7 +233,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public void redraw() {
 		if (fetchingData) {
 			return;}
-		if (objects.size() <= 0) {return;}
+		
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
 			// we are on the right Thread already:
 			paintOn(canvas.getGraphicsContext2D(), 0, 0);
@@ -254,9 +253,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	private void paintOn(GraphicsContext g, int xOffset, int yOffset) {
 		g.setTransform(new Affine());
-//		g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 		g.setFill(Color.WHITE);
 		g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+		if (objects.size() <= 0) {return;}
 		g.setFill(Color.BLACK);
 		g.setTransform(transformFX);
 		Vector<CanvasElement> objectsToBePainted = new Vector<>();
@@ -862,10 +861,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return diagramName;
 	}
 
-	public Vector<FmmlxEnum> getEnums() {
-		return enums;
-	}
-
 	public InheritanceEdge getInheritanceEdge(FmmlxObject child, FmmlxObject parent) {
 		for(Edge e : edges) {
 			if(e instanceof InheritanceEdge) {
@@ -926,26 +921,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public boolean isShowGetterAndSetter() {return this.showGetterAndSetter;}
 	public boolean isShowDerivedOperations() {return this.showDerivedOperations;}
 	public boolean isShowDerivedAttributes() {return this.showDerivedAttributes;}
-
-	public Vector<String> getAvailableTypes() {
-		Vector<String> types = new Vector<>();
-		types.add("Boolean");
-		types.add("Integer");
-		types.add("Float");
-		types.add("String");
-		types.addAll(auxTypes);
-		for(FmmlxEnum e : enums) {
-			types.add(e.getName());
-		}
-		return types;
-	}
-
-	public boolean isEnum(String enumName) {
-		for (FmmlxEnum e : enums) {
-			if(e.getName().equals(enumName)) return true;
-		}
-		return false;
-	}
 
 	public Vector<String> getEnumItems(String enumName) {
 		for (FmmlxEnum e : enums) {
@@ -1103,8 +1078,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		for(FmmlxObject o : objects) {
 			o.layout(this);
 		}
-		enums = comm.fetchAllEnums(this);
-		auxTypes = comm.fetchAllAuxTypes(this);
 
 		triggerOverallReLayout();
 		resizeCanvas();
@@ -1116,7 +1089,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		newFmmlxPalette.update();
 		if(justLoaded){
 			if(filePath !=null && filePath.length()>0){
-				Deserializer deserializer = new Deserializer();
+				FmmlxDeserializer deserializer = new FmmlxDeserializer(new XmlHandler(filePath));
 				deserializer.alignCoordinate(this);
 				triggerOverallReLayout();
 			}
