@@ -11,9 +11,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
-import tool.clients.serializer.FmmlxDeserializer;
-import tool.clients.serializer.FmmlxSerializer;
-import tool.clients.serializer.XmlHandler;
+import tool.clients.serializer.*;
 import tool.clients.serializer.interfaces.Deserializer;
 import tool.clients.serializer.interfaces.Serializer;
 import tool.clients.workbench.WorkbenchClient;
@@ -1369,8 +1367,8 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public FaXML getDiagramData(FmmlxDiagram diagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getDiagramData");
+	public FaXML getDiagramData(Integer diagramID) throws TimeOutException {
+		Vector<Object> response = xmfRequest(handler, diagramID, "getDiagramData");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 
 		return new FaXML(responseContent);
@@ -1527,21 +1525,24 @@ public class FmmlxDiagramCommunicator {
 
 	public void saveXmlFile(String fileName, String packageString) {
 		String packageName = packageString.substring(1,packageString.length()-1).split(" ")[1];
+		FmmlxDiagramCommunicator communicator = this;
 		Task<Void> task = new Task<Void>() {
-
 			@Override
 			protected Void call() throws TransformerException, ParserConfigurationException {
-				Vector<FmmlxDiagram> diagramsToSave = new Vector<>();
-				Serializer serializer = new FmmlxSerializer(fileName);
-				serializer.clearAllData();
-				for(FmmlxDiagram diagram : diagrams){
-					String tmp_packageName = diagram.getPackagePath().split("::")[1];
-					if(packageName.equals(tmp_packageName)){
-						diagramsToSave.add(diagram);
-					}
-				}
 				try {
-					serializer.saveAsXml(diagramsToSave);
+					String diagramPath = null;
+					String initLabel = null;
+					Serializer serializer = new FmmlxSerializer(fileName);
+					serializer.clearAllData();
+					for(FmmlxDiagram diagram : diagrams){
+						String tmp_packageName = diagram.getPackagePath().split("::")[1];
+						if(packageName.equals(tmp_packageName)){
+							diagram.setFilePath(fileName);
+							diagramPath = diagram.packagePath;
+							initLabel = diagram.getDiagramLabel();
+						}
+					}
+					serializer.saveAsXml(diagramPath, initLabel, communicator);
 				} catch (TimeOutException e) {
 					e.printStackTrace();
 				}
@@ -1554,6 +1555,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void populateDiagram(String file, String diagramName) {
+		FmmlxDiagramCommunicator communicator = this;
 		Task<Void> task = new Task<Void>() {
 			@Override
 			protected Void call() {
@@ -1562,6 +1564,7 @@ public class FmmlxDiagramCommunicator {
 				try {
 					deserializer.getAllDiagramElement(id);
 					String projectName = deserializer.getProjectName();
+					deserializer.alignCoordinate(file, communicator);
 					System.out.println("load  "+projectName+" : finished ");
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -1573,24 +1576,22 @@ public class FmmlxDiagramCommunicator {
 		new Thread(task).start();
 	}
 
-	public int getDiagramIdFromName(String diagramName) {
+	public static int getDiagramIdFromName(String diagramName) {
 		String[] nameArray = diagramName.split(" ");
 		String	idDirt = nameArray[nameArray.length-1];
 		String id = idDirt.substring(0, idDirt.length()-1);
 		return Integer.parseInt(id);
 	}
 
-	public void saveXmlFile(FmmlxDiagram diagram) {
-		String packagePath = diagram.getPackagePath();
+	public void saveXmlFile(String diagramPath, Integer id) {
 		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(packagePath),
-				new Value(packagePath.split("::")[1])
+				getNoReturnExpectedMessageID(id),
+				new Value(diagramPath),
+				new Value(diagramPath.split("::")[1])
 		};
 		sendMessage("saveAsXml", message);
 	}
 
-	
 	private String copyFilePath(String packagePath) {
 		for (FmmlxDiagram diagram: diagrams){
 			if(diagram.getPackagePath().equals(packagePath)){
@@ -1636,16 +1637,21 @@ public class FmmlxDiagramCommunicator {
 				Integer x = (Integer) objInfo.get(1);
 				Integer y = (Integer) objInfo.get(2);
 				Boolean hidden = (Boolean) objInfo.get(3);
-				
+
 				HashMap<String, Object> objectMap = new HashMap<>();
 				objectMap.put("x", x);
 				objectMap.put("y", y);
 				objectMap.put("hidden", hidden);
-				result.put(key, objectMap);				
+				result.put(key, objectMap);
 			}
 			return result;
 		} catch (TimeOutException e1) {
 			throw new RuntimeException(e1);
 		}
 	}
+
+	public String createLabelFromInitLabel(String initLabel, Integer id) {
+		return initLabel.substring(0, initLabel.length()-2)+id+")";
+	}
+
 }

@@ -3,7 +3,6 @@ package tool.clients.serializer;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.serializer.interfaces.XmlManager;
 
 import java.util.ArrayList;
@@ -23,26 +22,26 @@ public class ProjectXmlManager implements XmlManager {
     }
     
     public Node get(String name){
-        Node projects = xmlHandler.getProjectsNode();
-        return xmlHandler.getXmlHelper().getChildrenByAttributeValue(projects, XmlConstant.ATTRIBUTE_NAME, name);
+        Element projects = getProjectsElement();
+        return xmlHandler.getChildrenByAttributeValue(projects, XmlConstant.ATTRIBUTE_NAME, name);
     }
 
     @Override
-    public void add(Element element) {
-        Node projects = xmlHandler.getProjectsNode();
-        xmlHandler.addElement(projects, element);
+    public void add(Element parent, Element element) {
+        Element projects = getProjectsElement();
+        xmlHandler.addXmlElement(projects, element);
     }
 
     @Override
     public void remove(Element element){
-        Node projects = xmlHandler.getProjectsNode();
+        Node projects = getProjectsElement();
         projects.removeChild(element);
     }
 
     @Override
     public List<Node> getAll(){
         List<Node> projects = new ArrayList<>();
-        Node projectsNode = xmlHandler.getProjectsNode();
+        Node projectsNode = getProjectsElement();
         NodeList projectNodeList = projectsNode.getChildNodes();
 
         for(int i =0; i< projectNodeList.getLength(); i++){
@@ -54,27 +53,23 @@ public class ProjectXmlManager implements XmlManager {
         return projects;
     }
 
-    public String getProjectName() {
-        String projectPath = "";
-        List<Node> projectList = getAll();
-        if(projectList.size()==1){
-            Element tmp = (Element) projectList.get(0);
-            projectPath = tmp.getAttribute(XmlConstant.ATTRIBUTE_NAME);
-        }
-        return getProjectName(projectPath);
+    public Element getDiagramsElement(){
+        Element Root = xmlHandler.getRoot();
+        return xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_DIAGRAMS);
     }
 
-    private String getProjectName(String projectPath) {
+    public String getProjectName(String projectPath) {
         String[] projectPathSplit= projectPath.split("::");
         return projectPathSplit[1];
     }
 
-    public Node getProjectsNode() {
-        return xmlHandler.getProjectsNode();
+    public Element getProjectsElement() {
+        Element Root = xmlHandler.getRoot();
+        return xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_PROJECTS);
     }
 
     public boolean projectIsExist(String packagePath) {
-        Node projects = getProjectsNode();
+        Node projects = getProjectsElement();
         NodeList projectList = projects.getChildNodes();
 
         for(int i =0; i< projectList.getLength(); i++){
@@ -90,12 +85,23 @@ public class ProjectXmlManager implements XmlManager {
     }
 
     public void removeAll() {
-        xmlHandler.removeAllProject();
+        Element projects = getProjectsElement();
+        xmlHandler.removeAllChildren(projects);
     }
 
-    public Element createProjectElement(FmmlxDiagram diagram) {
+    public Element createProjectElement(String packagePath) {
         Element project = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_PROJECT);
-        project.setAttribute(XmlConstant.ATTRIBUTE_NAME, diagram.getPackagePath());
+        project.setAttribute(XmlConstant.ATTRIBUTE_NAME,packagePath);
         return project;
+    }
+
+    public String getProjectPath() {
+        String projectPath = "";
+        List<Node> projectList = getAll();
+        if(projectList.size()==1){
+            Element tmp = (Element) projectList.get(0);
+            projectPath = tmp.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+        }
+        return projectPath;
     }
 }

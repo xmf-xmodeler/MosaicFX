@@ -17,8 +17,65 @@ public abstract class AbstractPackageViewer {
 	protected DiagramActions actions;
 	protected final String packagePath;
 	protected transient boolean fetchingData;
-	protected boolean justLoaded = false;	
-	
+	protected boolean justLoaded = false;
+
+	public static final AbstractPackageViewer SIMPLE_VIEWER = new AbstractPackageViewer(FmmlxDiagramCommunicator.getCommunicator(),
+			-2, "simple_viewer") {
+		@Override
+		public Vector<String> getAvailableTypes() {
+			return null;
+		}
+
+		@Override
+		public Vector<FmmlxEnum> getEnums() {
+			return null;
+		}
+
+		@Override
+		public void updateEnums() {
+
+		}
+
+		@Override
+		public FmmlxProperty getSelectedProperty() {
+			return null;
+		}
+
+		@Override
+		public ObservableList<FmmlxObject> getAllPossibleParents(Integer newValue) {
+			return null;
+		}
+
+		@Override
+		public boolean isEnum(String type) {
+			return false;
+		}
+
+		@Override
+		public Vector<String> getEnumItems(String type) {
+			return null;
+		}
+
+		@Override
+		public ObservableList<FmmlxObject> getAllPossibleParentList() {
+			return null;
+		}
+
+		@Override
+		protected void fetchDiagramDataSpecific() throws TimeOutException {
+
+		}
+
+		@Override
+		protected void fetchDiagramDataSpecific2() {
+
+		}
+
+		@Override
+		protected void clearDiagram_specific() {
+
+		}
+	};
 	protected AbstractPackageViewer(FmmlxDiagramCommunicator comm, int diagramID, String packagePath) {
 		this.diagramID = diagramID;
 		this.packagePath=packagePath;
@@ -193,7 +250,7 @@ public abstract class AbstractPackageViewer {
 		return actions;
 	}
 
-	public final ObservableList<FmmlxObject> getAllPossibleParents(Integer level) {
+	public ObservableList<FmmlxObject> getAllPossibleParents(Integer level) {
 		ArrayList<FmmlxObject> objectList = new ArrayList<>();
 
 		if (!objects.isEmpty()) {
@@ -206,14 +263,14 @@ public abstract class AbstractPackageViewer {
 		return FXCollections.observableArrayList(objectList);
 	}
 	
-	public final boolean isEnum(String enumName) {
+	public boolean isEnum(String enumName) {
 		for (FmmlxEnum e : enums) {
 			if(e.getName().equals(enumName)) return true;
 		}
 		return false;
 	}
 	
-	public final Vector<String> getAvailableTypes() {
+	public Vector<String> getAvailableTypes() {
 		Vector<String> types = new Vector<>();
 		types.add("Boolean");
 		types.add("Integer");
@@ -225,6 +282,7 @@ public abstract class AbstractPackageViewer {
 		}
 		return types;
 	}
+
 
 	public Vector<FmmlxEnum> getEnums() {
 		return enums;

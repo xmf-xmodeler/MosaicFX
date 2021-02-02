@@ -3,7 +3,6 @@ package tool.clients.serializer;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.serializer.interfaces.XmlManager;
 
 import java.util.List;
@@ -16,9 +15,7 @@ public class DiagramXmlManager implements XmlManager {
         this.xmlHandler = xmlHandler;
     }
 
-    public Element createDiagramElement(FmmlxDiagram fmmlxDiagram) {
-        String label =fmmlxDiagram.getDiagramLabel();
-        String path = fmmlxDiagram.getPackagePath();
+    public Element createDiagramElement(String label, String path) {
 
         Element diagram = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_DIAGRAM);
         diagram.setAttribute(XmlConstant.ATTRIBUTE_LABEL, label);
@@ -29,24 +26,24 @@ public class DiagramXmlManager implements XmlManager {
         Element edges = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_EDGES);
         Element labels = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_LABELS);
         Element preferences = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_PREFERENCES);
-        xmlHandler.addDiagramCategoriesElement(diagram, categories);
-        xmlHandler.addDiagramOwnersElement(diagram, owners);
-        xmlHandler.addDiagramObjectsElement(diagram, objects);
-        xmlHandler.addDiagramEdgesElement(diagram, edges);
-        xmlHandler.addDiagramLabelsElement(diagram, labels);
-        xmlHandler.addDiagramPreferencesElement(diagram, preferences);
+        xmlHandler.addXmlElement(diagram, categories);
+        xmlHandler.addXmlElement(diagram, owners);
+        xmlHandler.addXmlElement(diagram, objects);
+        xmlHandler.addXmlElement(diagram, edges);
+        xmlHandler.addXmlElement(diagram, labels);
+        xmlHandler.addXmlElement(diagram, preferences);
         return diagram;
     }
 
-    public boolean isExist(FmmlxDiagram diagram) {
-        Node diagrams = xmlHandler.getDiagramsNode();
+    public boolean isExist(String label) {
+        Node diagrams = getDiagramsElement();
 
         NodeList diagramList = diagrams.getChildNodes();
 
         for(int i =0; i<diagramList.getLength(); i++){
             if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
                 Element element = (Element) diagramList.item(i);
-                if(element.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(diagram.getDiagramLabel())){
+                if(element.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(label)){
                     return true;
                 }
             }
@@ -54,10 +51,14 @@ public class DiagramXmlManager implements XmlManager {
         return false;
     }
 
+    public Element getDiagramsElement(){
+        Element Root = xmlHandler.getRoot();
+        return xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_DIAGRAMS);
+    }
+
     @Override
-    public void add(Element element) {
-        Node diagrams = xmlHandler.getDiagramsNode();
-        xmlHandler.addDiagramElement(diagrams, element);
+    public void add(Element parent, Element element) {
+        xmlHandler.addXmlElement(parent, element);
     }
 
     @Override
@@ -70,13 +71,24 @@ public class DiagramXmlManager implements XmlManager {
         return null;
     }
 
-    public void remove(FmmlxDiagram diagram)  {
-        xmlHandler.removeDiagram(diagram);
+    public void remove(String label)  {
+        Element diagrams = getDiagramsElement();
+        NodeList diagramsChildNodes = diagrams.getChildNodes();
+
+        for(int i = 0 ; i< diagramsChildNodes.getLength(); i++){
+            if(diagramsChildNodes.item(i).getNodeType() == Node.ELEMENT_NODE){
+                Element tmp_element = (Element) diagramsChildNodes.item(i);
+                if(tmp_element.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(label)
+                        && tmp_element.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(label)){
+                    xmlHandler.removeChildElement(diagrams, tmp_element);
+                }
+            }
+        }
     }
 
     public Vector<String> getAllDiagrams() {
         Vector<String> diagrams = new Vector<>();
-        Node diagramsNode = xmlHandler.getDiagramsNode();
+        Node diagramsNode = getDiagramsElement();
         NodeList diagramNodeList = diagramsNode.getChildNodes();
 
         for(int i =0; i< diagramNodeList.getLength(); i++){
@@ -90,6 +102,9 @@ public class DiagramXmlManager implements XmlManager {
     }
 
     public void removeAllDiagrams() {
-        xmlHandler.clearDiagrams();
+        Element diagramsElement = getDiagramsElement();
+        xmlHandler.removeAllChildren(diagramsElement);
     }
+
+
 }

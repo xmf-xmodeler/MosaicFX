@@ -840,8 +840,11 @@ public class DiagramActions {
 		if(!(diagram instanceof FmmlxDiagram)) throw new IllegalArgumentException();
 		Platform.runLater(() -> {
 			try {
+				String path = diagram.getPackagePath();
+				FmmlxDiagramCommunicator communicator = diagram.getComm();
+				String label = ((FmmlxDiagram)diagram).getDiagramLabel();
 				FmmlxSerializer serializer = new FmmlxSerializer(((FmmlxDiagram)diagram).getFilePath());
-				serializer.save((FmmlxDiagram)diagram);
+				serializer.save(path, label, diagram.getID(), communicator);
 			} catch (TransformerException | ParserConfigurationException e) {
 				e.printStackTrace();
 			}

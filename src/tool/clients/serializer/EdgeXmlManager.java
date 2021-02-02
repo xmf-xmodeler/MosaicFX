@@ -42,7 +42,7 @@ public class EdgeXmlManager implements XmlManager {
             intermediatePoint.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, point2D.getY()+"");
             intermediatePointsNode.appendChild(intermediatePoint);
         }
-        xmlHandler.addIntermediatePointsElement(edgeElement, intermediatePointsNode);
+        xmlHandler.addXmlElement(edgeElement, intermediatePointsNode);
 
         return edgeElement;
     }
@@ -106,21 +106,10 @@ public class EdgeXmlManager implements XmlManager {
 
 
     @Override
-    public void add(Element element) {
-        if(element!=null){
-
-            Node diagrams = xmlHandler.getDiagramsNode();
-            NodeList diagramNodeList = diagrams.getChildNodes();
-
-            for(int i=0 ; i<diagramNodeList.getLength(); i++){
-                if(diagramNodeList.item(i).getNodeType()==Node.ELEMENT_NODE){
-                    Element diagram = (Element) diagramNodeList.item(i);
-                    if(diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(element.getAttribute(XmlConstant.ATTRIBUTE_OWNER))){
-                        Element edges = (Element) getEdgesNode(diagram);
-                        xmlHandler.addEdgeElement(edges, element);
-                    }
-                }
-            }
+    public void add(Element diagramElement, Element newElement) {
+        if(newElement!=null){
+            Element edges = (Element) getEdgesElement(diagramElement);
+            xmlHandler.addXmlElement(edges, newElement);
         }
     }
 
@@ -134,23 +123,26 @@ public class EdgeXmlManager implements XmlManager {
         return null;
     }
 
-    private Node getEdgesNode(Node diagramNode){
-        return xmlHandler.getXmlHelper().getNodeByTag(diagramNode, XmlConstant.TAG_NAME_EDGES);
+    public Element getDiagramsElement(){
+        Element Root = xmlHandler.getRoot();
+        return xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_DIAGRAMS);
     }
 
-    public void alignEdges(FmmlxDiagram fmmlxDiagram){
-        Node diagrams = xmlHandler.getDiagramsNode();
-        NodeList diagramNodeList = diagrams.getChildNodes();
+    private Element getEdgesElement(Element diagramNode){
+        return xmlHandler.getChildWithTag(diagramNode, XmlConstant.TAG_NAME_EDGES);
+    }
+
+    public void alignEdges(Element diagramElement, FmmlxDiagram fmmlxDiagram){
         Vector<Edge> edges = fmmlxDiagram.getEdges();
 
         for(Edge edge : edges){
-            handleEdge(fmmlxDiagram, diagramNodeList, edge);
+            handleEdge(fmmlxDiagram, diagramElement, edge);
         }
     }
 
-    private void handleEdge(FmmlxDiagram fmmlxDiagram, NodeList diagramNodeList, Edge edge) {
-        for(int i=0 ; i<diagramNodeList.getLength(); i++){
-            NodeList edgeList = getEdgeList(fmmlxDiagram, diagramNodeList.item(i));
+    private void handleEdge(FmmlxDiagram fmmlxDiagram, Element diagramElement, Edge edge) {
+            Node edges = xmlHandler.getChildWithTag(diagramElement, XmlConstant.TAG_NAME_EDGES);
+            NodeList edgeList = edges.getChildNodes();
             if(edgeList!=null){
                 for (int j = 0 ; j< edgeList.getLength(); j++) {
                     if(edgeList.item(j).getNodeType()==Node.ELEMENT_NODE) {
@@ -198,19 +190,6 @@ public class EdgeXmlManager implements XmlManager {
                     }
                 }
             }
-        }
-    }
-
-    private NodeList getEdgeList(FmmlxDiagram fmmlxDiagram, Node diagramNode) {
-        if(diagramNode.getNodeType()==Node.ELEMENT_NODE) {
-            Element diagram = (Element) diagramNode;
-
-            if (diagram.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(fmmlxDiagram.getDiagramLabel())) {
-                Node edgesNode = xmlHandler.getChildWithName(diagram, XmlConstant.TAG_NAME_EDGES);
-                return edgesNode.getChildNodes();
-            }
-        }
-        return null;
     }
 
     private void setDirectionsAndIntermediatePoints(FmmlxDiagram fmmlxDiagram, Edge edge, Element edgeElement) {
@@ -218,7 +197,7 @@ public class EdgeXmlManager implements XmlManager {
                 PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT)));
         edge.getTargetNode().setDirectionForEdge(edge.targetEnd, false,
                 PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_PORT)));
-        Node intermediatePointsNode = xmlHandler.getChildWithName(edgeElement, XmlConstant.TAG_NAME_INTERMEDIATE_POINTS);
+        Node intermediatePointsNode = xmlHandler.getChildWithTag(edgeElement, XmlConstant.TAG_NAME_INTERMEDIATE_POINTS);
         NodeList intermediatePointList = intermediatePointsNode.getChildNodes();
 
         Vector<Point2D> intermediatePoints = new Vector<>();
@@ -237,21 +216,21 @@ public class EdgeXmlManager implements XmlManager {
 
 
     public void alignEdges(String diagramName, FmmlxDiagramCommunicator communicator) {
-        Node diagrams = xmlHandler.getDiagramsNode();
+        Element diagrams = getDiagramsElement();
         NodeList diagramNodeList = diagrams.getChildNodes();
-        int diagramId = communicator.getDiagramIdFromName(diagramName);
-        Node diagramNode = null;
+        int diagramId = FmmlxDiagramCommunicator.getDiagramIdFromName(diagramName);
+        Element diagramElement = null;
 
         for (int i = 0 ; i< diagramNodeList.getLength(); i++){
             if(diagramNodeList.item(i).getNodeType() == Node.ELEMENT_NODE){
                 Element tmp = (Element) diagramNodeList.item(i);
                 if (tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(diagramName)){
-                    diagramNode = tmp;
+                    diagramElement = tmp;
                 }
             }
         }
 
-        Node edgesNode = xmlHandler.getChildWithName(diagramNode, XmlConstant.TAG_NAME_EDGES);
+        Element edgesNode = xmlHandler.getChildWithTag(diagramElement, XmlConstant.TAG_NAME_EDGES);
         NodeList edgeList = edgesNode.getChildNodes();
 
         for(int i = 0 ; i < edgeList.getLength(); i++){
@@ -260,7 +239,7 @@ public class EdgeXmlManager implements XmlManager {
                 String edgePath = edgeElement.getAttribute(XmlConstant.ATTRIBUTE_REFERENCE);
                 String sourcePort = edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT);
                 String targetPort = edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_PORT);
-                Node intermediatePointsNode = xmlHandler.getChildWithName(edgeElement, XmlConstant.TAG_NAME_INTERMEDIATE_POINTS);
+                Node intermediatePointsNode = xmlHandler.getChildWithTag(edgeElement, XmlConstant.TAG_NAME_INTERMEDIATE_POINTS);
                 NodeList intermediatePointList = intermediatePointsNode.getChildNodes();
 
                 Vector<Point2D> intermediatePoints = new Vector<>();
