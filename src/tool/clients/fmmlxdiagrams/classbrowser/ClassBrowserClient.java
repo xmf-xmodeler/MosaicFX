@@ -1,7 +1,6 @@
 package tool.clients.fmmlxdiagrams.classbrowser;
 
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 public class ClassBrowserClient{
 	

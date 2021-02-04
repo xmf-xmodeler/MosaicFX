@@ -13,12 +13,12 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.Vector;
 
-public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
+public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDialog<ChangeNameDialogResult> {
 
 	private final PropertyType type;
 	private final AbstractPackageViewer diagram;
 	private FmmlxObject object;
-	private FmmlxProperty selectedProperty;
+	private Property selectedProperty;
 	private DialogPane dialog;
 
 	//For All
@@ -28,7 +28,7 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	private TextField newNameTextField = new TextField();
 
 	//ComboBox used for attribute, operation & association
-	private ComboBox<FmmlxProperty> comboBox;
+	private ComboBox<Property> comboBox;
 
 	//For Attribute
 	private Label selectAttributeLabel;
@@ -40,11 +40,11 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	private Label selectAssociationNameLabel;
 
 
-	private Vector<FmmlxAttribute> attributes;
-	private Vector<FmmlxOperation> operations;
-	private Vector<FmmlxAssociation> associations;
+//	private Vector<FmmlxAttribute> attributes;
+//	private Vector<FmmlxOperation> operations;
+//	private Vector<FmmlxAssociation> associations;
 
-	public ChangeNameDialog(final AbstractPackageViewer diagram, FmmlxObject object, PropertyType type, FmmlxProperty selectedProperty) {
+	public ChangeNameDialog(final AbstractPackageViewer diagram, FmmlxObject object, PropertyType type, Property selectedProperty) {
 		super();
 		this.diagram = diagram;
 		this.type = type;
@@ -143,14 +143,13 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	}
 
 	private void changeAttributeName() {
-		attributes = object.getOwnAttributes();
-		attributes.addAll(object.getOtherAttributes());
+		Vector<FmmlxAttribute> attributes = object.getAllAttributes();
 
-		ObservableList<FmmlxAttribute> attributeList;
-		attributeList = FXCollections.observableList(attributes);
+		ObservableList<Property> attributeList;
+		attributeList = FXCollections.observableList((Vector<Property>) attributes);
 
 		selectAttributeLabel = new Label("Select Attribute");
-		comboBox = (ComboBox<FmmlxProperty>) initializeComboBox(attributeList);
+		comboBox = initializeComboBox(attributeList);
 
 		newNameLabel = new Label("New Attribute Name");
 		newNameTextField = new TextField();
@@ -164,17 +163,16 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	
 	private void changeAssociationName() {
 		//insert Association List to Combobox;
-		associations = object.getAllRelatedAssociations();
+		Vector<FmmlxAssociation>associations = object.getAllRelatedAssociations();
 		
-		ObservableList<FmmlxAssociation> associationsList;
-		associationsList = FXCollections.observableList(associations);
+		ObservableList<Property> associationsList;
+		associationsList = FXCollections.observableList((Vector<Property>) associations);
 
 		classNameTextfield.setText(object.getName());
 		classNameTextfield.setDisable(true);
 
 		selectAssociationNameLabel = new Label("Select Association");
-		comboBox = (ComboBox<FmmlxProperty>) initializeComboBox(associationsList);
-
+		comboBox = initializeComboBox(associationsList);
 		
 		comboBox.setPrefWidth(COLUMN_WIDTH);
 		newNameLabel = new Label("New Attribute Name");
@@ -188,13 +186,12 @@ public class ChangeNameDialog extends CustomDialog<ChangeNameDialogResult> {
 	}
 
 	private void changeOperationName() {
-		operations = object.getOwnOperations();
-		operations.addAll(object.getOtherOperations());
+		Vector<FmmlxOperation> operations = object.getAllOperations();
 
-		ObservableList<FmmlxOperation> operationList;
-		operationList = FXCollections.observableList(operations);
+		ObservableList<Property> operationList;
+		operationList = FXCollections.observableList((Vector<Property>) operations);
 		selectOperationLabel = new Label("Select Operation");
-		comboBox = (ComboBox<FmmlxProperty>) initializeComboBox(operationList);
+		comboBox = initializeComboBox(operationList);
 
 		newNameLabel = new Label("New Operation Name");
 		newNameTextField = new TextField();

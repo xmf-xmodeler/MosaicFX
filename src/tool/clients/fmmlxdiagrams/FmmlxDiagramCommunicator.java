@@ -1609,6 +1609,7 @@ public class FmmlxDiagramCommunicator {
 		//TODO: Implementation
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Vector<Integer> getAllDiagramIDs(String packagePath) {
 		Vector<Integer> result = new Vector<>();
 		try {

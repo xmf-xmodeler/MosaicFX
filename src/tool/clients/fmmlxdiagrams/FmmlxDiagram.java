@@ -842,13 +842,13 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		resizeCanvas();
 	}
 
-	public Font getFont() {
-		return Font.font(FONT.getFamily(), FontPosture.REGULAR, 14);
-	}
-	
-	public Font getFontKursiv() {
-		return Font.font(FONT.getFamily(), FontPosture.ITALIC, 14);
-	}
+//	public Font getFont() {
+//		return Font.font(FONT.getFamily(), FontPosture.REGULAR, 14);
+//	}
+//	
+//	public Font getFontKursiv() {
+//		return Font.font(FONT.getFamily(), FontPosture.ITALIC, 14);
+//	}
 	
 	public Font getPaletteFont() {
 		return Font.font(FONT.getFamily(), FontPosture.REGULAR, 12);

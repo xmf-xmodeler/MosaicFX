@@ -44,7 +44,7 @@ public abstract class Node implements CanvasElement{
 
 		boolean selected = diagram.isSelected(this);
 
-		g.setFont(diagram.getFont());
+//		g.setFont(diagram.getFont());
 
 		for (NodeElement e : nodeElements) {
 			e.paintOn(g, x + xOffset, y + yOffset, diagram, selected);

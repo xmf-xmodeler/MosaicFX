@@ -40,7 +40,6 @@ import tool.clients.fmmlxdiagrams.FmmlxSlot;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
 import tool.clients.fmmlxdiagrams.menus.BrowserAttributeContextMenu;
-import tool.clients.fmmlxdiagrams.menus.BrowserObjectContextMenu;
 import tool.xmodeler.XModeler;
 
 

@@ -8,7 +8,6 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.scene.transform.Affine;
-import tool.clients.fmmlxdiagrams.Edge.Anchor;
 
 import java.util.Comparator;
 import java.util.HashMap;
