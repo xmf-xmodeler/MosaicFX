@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
@@ -16,6 +17,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -23,20 +25,26 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
+import javafx.stage.FileChooser;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.XmlHandler;
 import tool.clients.serializer.interfaces.Deserializer;
+import tool.xmodeler.PropertyManager;
+import tool.xmodeler.XModeler;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+
+import javax.imageio.ImageIO;
 
 public class FmmlxDiagram extends AbstractPackageViewer{
 
@@ -79,10 +87,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private Point2D canvasRawSize = new Point2D(1200, 800);
 	private double zoom = 1.;
 	private Affine transformFX = new Affine();
-	private static Font font;
-	private static Font fontKursiv;
-	private static Font paletteFont;
-	private static Font paletteFontKursiv;
+	public static final Font FONT;
+//	private static Font fontKursiv;
+//	private static Font paletteFont;
+//	private static Font paletteFontKursiv;
 	
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
@@ -101,9 +109,21 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	String edgeCreationType = null;
 	String nodeCreationType = null;	
 
-	public LevelColorScheme levelColorScheme = new LevelColorScheme.DefaultLevelColorScheme();
+	public LevelColorScheme levelColorScheme = new LevelColorScheme.FixedBlueLevelColorScheme();
 
 	public final static FmmlxDiagram NullDiagram = new FmmlxDiagram();
+	
+	static{		
+//		try {
+			FONT = Font.font(Font.getDefault().getFamily(), FontPosture.REGULAR, 14);
+	//		font = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono.ttf"), 14);
+	//		fontKursiv = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 14);
+	//		paletteFont = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSans.ttf"), 12);
+	//		paletteFontKursiv =Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 12);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+	}
 	
 	private FmmlxDiagram() {
 		super(null,-1,null);
@@ -146,14 +166,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 		new Thread(this::fetchDiagramData).start();
 
-		try {
-			font = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono.ttf"), 14);
-			fontKursiv = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 14);
-			paletteFont = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSans.ttf"), 12);
-			paletteFontKursiv =Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 12);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+
 		
 		java.util.Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -220,7 +233,36 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			e.printStackTrace();
 		}
 	}
-
+	
+	public void savePNG(){
+		double zoom = this.zoom;
+		setMaxZoom();
+		
+	    FileChooser fileChooser = new FileChooser();
+	    
+	    String initalDirectory = PropertyManager.getProperty("fileDialogPath", "");
+    	if (!initalDirectory.equals("")) {
+    		File dir = new File(initalDirectory);
+    		if(dir.exists()) {
+    			fileChooser.setInitialDirectory(dir);
+    		}
+    	}
+    	
+    	fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG","*.png"));
+    	fileChooser.setTitle("Save Diagram to PNG");
+	    File file = fileChooser.showSaveDialog(XModeler.getStage());
+	    
+	    if(file != null){
+	        WritableImage wi = new WritableImage((int)canvas.getWidth(),(int)canvas.getHeight());
+	        try { 
+	        	ImageIO.write(SwingFXUtils.fromFXImage(canvas.snapshot(null,wi),null),"png",file);
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    
+	    setZoom(zoom);
+	}
 	// Only used to set the diagram into the tab. Find a better solution
 	@Deprecated
 	public VBox getView() {
@@ -777,8 +819,23 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return zoom;
 	}
 
+	public void setMaxZoom(){
+		double maxRight = 1;
+		double maxBottom = 1;
+
+		for (FmmlxObject object : objects) {
+			maxRight = Math.max(maxRight, object.getRightX());
+			maxBottom = Math.max(maxBottom, object.getBottomY());
+		}
+
+		double maxXzoom = 4096. / maxRight;
+		double maxYzoom = 4096. / maxBottom;
+		
+		setZoom(Math.min(10,Math.min(maxXzoom, maxYzoom)));
+	}
+	
 	public void setZoom(double zoom) {
-		this.zoom = Math.min(4, Math.max(zoom, 1. / 8));
+		this.zoom = Math.min(10, Math.max(zoom, 1. / 8));
 
 		transformFX = new Affine();
 		transformFX.appendScale(zoom, zoom);
@@ -786,19 +843,19 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	public Font getFont() {
-		return font;
+		return Font.font(FONT.getFamily(), FontPosture.REGULAR, 14);
 	}
 	
 	public Font getFontKursiv() {
-		return fontKursiv;
+		return Font.font(FONT.getFamily(), FontPosture.ITALIC, 14);
 	}
 	
 	public Font getPaletteFont() {
-		return paletteFont;
+		return Font.font(FONT.getFamily(), FontPosture.REGULAR, 12);
 	}
 	
 	public Font getPaletteFontKursiv() {
-		return paletteFontKursiv;
+		return Font.font(FONT.getFamily(), FontPosture.ITALIC, 12);
 	}
 	
 	@Deprecated
@@ -809,13 +866,13 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	 */
 	public static double calculateTextHeight() {
 		Text t = new Text("TestText");
-		t.setFont(font);
+		t.setFont(FONT);
 		return t.getLayoutBounds().getHeight();
 	}
 
 	public static double calculateTextWidth(String text) {
 		Text t = new Text(text);
-		t.setFont(font);
+		t.setFont(FONT);
 		return t.getLayoutBounds().getWidth();
 	}
 
@@ -1074,7 +1131,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	@Override
 	protected void fetchDiagramDataSpecific() throws TimeOutException {
-		levelColorScheme = new LevelColorScheme.RedLevelColorScheme(objects);
+//		levelColorScheme = new LevelColorScheme.RedLevelColorScheme(objects);
 		issues.addAll(comm.fetchIssues(this));
 		for(FmmlxObject o : objects) {
 			o.layout(this);

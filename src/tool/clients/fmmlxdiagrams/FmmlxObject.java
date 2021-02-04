@@ -5,6 +5,8 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.paint.*;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
@@ -71,7 +73,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			x = lastKnownX;
 		} else {
 			x = testDiff;
-			testDiff += 150;
+			testDiff += 50;
 		}
 		if (lastKnownY != null && lastKnownY != 0) {
 			y = lastKnownY;
@@ -324,15 +326,15 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		}
 		String ofName = (ofObj == null) ? "MetaClass" : ofObj.name;
 		
-		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65, diagram), null, this, NO_ACTION, "^" + ofName + "^", false) ;
-		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight, getLevelFontColor(.65, diagram), null, this, NO_ACTION, "" + level, false);
-		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, getLevelFontColor(1., diagram), null, this, NO_ACTION, name, isAbstract);
+		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65, diagram), null, this, NO_ACTION, "^" + ofName + "^", FontPosture.REGULAR, FontWeight.BOLD) ;
+		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight, getLevelFontColor(.65, diagram), null, this, NO_ACTION, "" + level);
+		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, getLevelFontColor(1., diagram), null, this, NO_ACTION, name, isAbstract?FontPosture.ITALIC:FontPosture.REGULAR, FontWeight.BOLD);
 		header.nodeElements.add(metaclassLabel);
 		header.nodeElements.add(levelLabel);
 		header.nodeElements.add(nameLabel);
 
 		if ((!"".equals(parentString))) {
-			NodeLabel parentsLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 3, getLevelFontColor(1., diagram), null, this, NO_ACTION, parentString, isAbstract);
+			NodeLabel parentsLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 3, getLevelFontColor(1., diagram), null, this, NO_ACTION, parentString, isAbstract?FontPosture.ITALIC:FontPosture.REGULAR, FontWeight.NORMAL);
 			header.nodeElements.add(parentsLabel);
 		}
 
@@ -349,7 +351,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			for(Issue i : issues) {
 				issY += lineHeight;
 				
-				NodeLabel issueLabel = new NodeLabel(Pos.BASELINE_LEFT, IssueBox.BOX_SIZE * 1.5, issY, new Color(1., .8, 0., 1.), null, this, () -> i.performResolveAction(diagram), i.getText(), false);
+				NodeLabel issueLabel = new NodeLabel(Pos.BASELINE_LEFT, IssueBox.BOX_SIZE * 1.5, issY, new Color(1., .8, 0., 1.), null, this, () -> i.performResolveAction(diagram), i.getText());
 				issueBox.nodeElements.add(issueLabel);
 				issueLabel.activateSpecialMode(neededWidth - 3 * IssueBox.BOX_SIZE);
 			}
@@ -367,18 +369,18 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		for (FmmlxAttribute att : ownAttributes) {
 			attY += lineHeight;
 			NodeLabel.Action changeAttNameAction = () -> diagram.getActions().changeNameDialog(this, PropertyType.Attribute, att);
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.BLACK, null, att, changeAttNameAction, att.getName() + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]" , false);
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.BLACK, null, att, changeAttNameAction, att.getName() + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]");
 			attBox.nodeElements.add(attLabel);
 			NodeLabel.Action changeAttLevelAction = () -> diagram.getActions().changeLevelDialog(this, PropertyType.Attribute);
-			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.BLACK, att, changeAttLevelAction, att.level + "", false);
+			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.BLACK, att, changeAttLevelAction, att.level + "");
 			attBox.nodeElements.add(attLevelLabel);
 		}
 		for (FmmlxAttribute att : otherAttributes) {
 			if(showDerivedAttributes) {
 			attY += lineHeight;
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, NO_ACTION, att.getName() + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + diagram.getObjectByPath(att.owner).name + ")", false);
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, NO_ACTION, att.getName() + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + diagram.getObjectByPath(att.owner).name + ")");
 			attBox.nodeElements.add(attLabel);
-			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.GRAY, att, NO_ACTION, att.level + "", false);
+			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.GRAY, att, NO_ACTION, att.level + "");
 			attBox.nodeElements.add(attLevelLabel);
 			}
 		}
@@ -397,7 +399,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 					opsY += lineHeight;
 					NodeLabel.Action changeOpLevelAction = () -> diagram.getActions().changeLevelDialog(this, PropertyType.Operation);
-					NodeLabel opLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.BLACK, o, changeOpLevelAction, o.getLevelString() + "", false);
+					NodeLabel opLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.BLACK, o, changeOpLevelAction, o.getLevelString() + "");
 					opsBox.nodeElements.add(opLevelLabel);
 					int labelX = 14;
 					if(o.isDelegateToClassAllowed()) {
@@ -406,7 +408,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 						labelX +=16;
 					}					
 					NodeLabel.Action changeOpNameAction = () -> diagram.getActions().changeNameDialog(this, PropertyType.Operation, o);
-					NodeLabel opLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.BLACK, null, o, changeOpNameAction, o.getFullString(diagram), false);
+					NodeLabel opLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.BLACK, null, o, changeOpNameAction, o.getFullString(diagram));
 					opsBox.nodeElements.add(opLabel);
 				}
 			}
@@ -414,7 +416,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 					if(showDerivedOperations) {
 					opsY += lineHeight;
-					NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "", false);
+					NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "");
 					opsBox.nodeElements.add(oLevelLabel);
 					NodeImage inhIcon = new NodeImage(14, opsY, (diagram.getObjectByPath(o.getOwner()).getLevel() == level) ? "resources/gif/Inheritance.gif" : "resources/gif/Dependency.gif", o, NO_ACTION);
 					opsBox.nodeElements.add(inhIcon);
@@ -424,7 +426,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 						opsBox.nodeElements.add(delIcon);
 						labelX +=16;
 					}	
-					NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")", false);
+					NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")");
 					opsBox.nodeElements.add(oLabel);
 					}
 				}
@@ -433,7 +435,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 					if(showDerivedOperations) {
 					opsY += lineHeight;
-					NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "", false);
+					NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "");
 					opsBox.nodeElements.add(oLevelLabel);
 //					String iconS = 
 //							// check whether next step is delegation
@@ -453,7 +455,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 						opsBox.nodeElements.add(del2Icon);
 						labelX +=16;
 					}	
-					NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")", false);
+					NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")");
 					opsBox.nodeElements.add(oLabel);
 					}
 				}
@@ -462,9 +464,9 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 				if(showGettersAndSetters || !(o.getName().startsWith("set") || o.getName().startsWith("get"))) {
 					if(showDerivedOperations) {
 						opsY += lineHeight;
-						NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 30, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")", false);
+						NodeLabel oLabel = new NodeLabel(Pos.BASELINE_LEFT, 30, opsY, Color.GRAY, null, o, NO_ACTION, o.getFullString(diagram) + " (from " + diagram.getObjectByPath(o.getOwner()).name + ")");
 						opsBox.nodeElements.add(oLabel);
-						NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "", false);
+						NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "");
 						opsBox.nodeElements.add(oLevelLabel);
 						NodeImage delIcon = new NodeImage(14, opsY, "resources/gif/XCore/delegationUp.png", o, NO_ACTION);
 						opsBox.nodeElements.add(delIcon);
@@ -486,9 +488,9 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			for (FmmlxSlot s : slots) {
 				slotsY += lineHeight;
 				NodeLabel.Action changeSlotValueAction = () -> diagram.getActions().changeSlotValue(this, s);
-				NodeLabel slotNameLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, slotsY, Color.BLACK, null, s, changeSlotValueAction, s.getName() + " = ", false);
+				NodeLabel slotNameLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, slotsY, Color.BLACK, null, s, changeSlotValueAction, s.getName() + " = ");
 				slotsBox.nodeElements.add(slotNameLabel);
-				NodeLabel slotValueLabel = new NodeLabel(Pos.BASELINE_LEFT, 3 + slotNameLabel.getWidth(), slotsY, new Color(0.0,0.4,0.2,1.0), new Color(0.85,0.9,0.85,1.0), s, changeSlotValueAction, "" + s.getValue(), false);
+				NodeLabel slotValueLabel = new NodeLabel(Pos.BASELINE_LEFT, 3 + slotNameLabel.getWidth(), slotsY, new Color(0.0,0.4,0.2,1.0), new Color(0.85,0.9,0.85,1.0), s, changeSlotValueAction, "" + s.getValue());
 				slotsBox.nodeElements.add(slotValueLabel);
 			}
 		}
@@ -505,9 +507,9 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			nodeElements.addElement(opvBox);
 			for (FmmlxOperationValue opv : operationValues) {
 				opvY += lineHeight;
-				NodeLabel opvNameLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, opvY, Color.BLACK, null, opv, NO_ACTION, opv.getName() + "()->", false);
+				NodeLabel opvNameLabel = new NodeLabel(Pos.BASELINE_LEFT, 3, opvY, Color.BLACK, null, opv, NO_ACTION, opv.getName() + "()->");
 				opvBox.nodeElements.add(opvNameLabel);
-				NodeLabel opvValueLabel = new NodeLabel(Pos.BASELINE_LEFT, 5 + opvNameLabel.getWidth(), opvY, opv.isInRange()?Color.YELLOW:Color.RED, Color.BLACK, opv, NO_ACTION, "" + opv.getValue(), false);
+				NodeLabel opvValueLabel = new NodeLabel(Pos.BASELINE_LEFT, 5 + opvNameLabel.getWidth(), opvY, opv.isInRange()?Color.YELLOW:Color.RED, Color.BLACK, opv, NO_ACTION, "" + opv.getValue());
 				opvBox.nodeElements.add(opvValueLabel);
 			}
 		}
