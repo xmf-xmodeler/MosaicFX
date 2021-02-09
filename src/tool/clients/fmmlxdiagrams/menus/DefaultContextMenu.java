@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams.menus;
 import javafx.scene.control.*;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.TimeOutException;
 
 import java.util.Optional;
 import java.util.Vector;
@@ -78,11 +79,15 @@ public class DefaultContextMenu extends ContextMenu {
 			save.setOnAction(a -> actions.save());
 			getItems().addAll(save);
 			
-			MenuItem test = new MenuItem("Test");
+			MenuItem test = new MenuItem("Test edges");
 			test.setOnAction(a -> {
-				//actions.getAllObjects();
+				actions.testGetEdges();
 			});
-			getItems().addAll(test);
+			MenuItem testGetLabel = new MenuItem("Test label");
+			test.setOnAction(a -> {
+				actions.testGetLabel();
+			});
+			getItems().addAll(test, testGetLabel);
 
 
 			MenuItem openFindImplementationDialog = new MenuItem("Search for Implementation");

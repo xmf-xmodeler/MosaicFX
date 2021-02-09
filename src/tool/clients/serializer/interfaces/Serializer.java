@@ -14,7 +14,7 @@ public interface Serializer {
 
     void saveAsXml(String diagramPath, String initLabel, FmmlxDiagramCommunicator communicator) throws TimeOutException, TransformerException;
 
-    void save(String diagramPath, String label, Integer id, FmmlxDiagramCommunicator communicator);
+    void save(String diagramPath, String filePath, String label, Integer id, FmmlxDiagramCommunicator communicator);
 
     boolean checkFileExist(String file);
 
