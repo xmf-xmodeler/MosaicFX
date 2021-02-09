@@ -252,11 +252,8 @@ public class FmmlxDiagramCommunicator {
 				parentListS.add((String) o);
 			}
 			FmmlxObject object = new FmmlxObject(
-					null, // (Integer) responseObjectList.get(0), // id*
 					(String)  responseObjectList.get(1), // name
 					(Integer) responseObjectList.get(2), // level
-					null, //(Integer) responseObjectList.get(3), // of*
-					null, //parentListI,                          // parents*
 					(String)  responseObjectList.get(10), // ownPath
 					(String)  responseObjectList.get(11), // ofPath
 					parentListS,                          // parentsPath

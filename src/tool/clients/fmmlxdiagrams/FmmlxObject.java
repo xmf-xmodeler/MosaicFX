@@ -56,17 +56,15 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 
 	public FmmlxObject(
-			@Deprecated Integer _id, 
 			String name, 
 			int level, 
-			@Deprecated Integer _of, 
-			@Deprecated Vector<Integer> _parents, 
 			String ownPath,
 			String ofPath,
 			Vector<String> parentPaths,
 			Boolean isAbstract,
 			Integer lastKnownX, Integer lastKnownY, Boolean hidden,
 			AbstractPackageViewer diagram) {
+		super();
 		this.name = name;
 		this.diagram = diagram;
 		if (lastKnownX != null && lastKnownX != 0) {
@@ -99,7 +97,6 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		this.showDerivedAttributes = true;
 		this.showGettersAndSetters = true;
 		
-		this.ports = new FmmlxObjectPort(this);
 	}
 
 	private String getParentsList(FmmlxDiagram diagram) {
@@ -199,7 +196,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			if(e instanceof DelegationEdge) {
 				DelegationEdge de = (DelegationEdge) e;
 				if(de.sourceNode == this) {
-					return de.targetNode;
+					return (FmmlxObject) de.targetNode;
 				}
 			}
 		}
@@ -752,25 +749,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return t;
 	}
 
-	public Point2D getPointForEdge(Edge.End edge, boolean isStartNode) {
-		return ports.getPointForEdge(edge, isStartNode);
-	}
 
-	public PortRegion getDirectionForEdge(Edge.End edge, boolean isStartNode) {
-		return ports.getDirectionForEdge(edge, isStartNode);
-	}
-	
-	public void setDirectionForEdge(Edge.End edge, boolean isStartNode, PortRegion newPortRegion) {
-		ports.setDirectionForEdge(edge, isStartNode, newPortRegion);
-	}
-	
-	public void addEdgeEnd(Edge.End edge, PortRegion direction) {
-		ports.addNewEdge(edge, direction);
-	}
-
-	public void updatePortOder() {
-		ports.sortAllPorts();
-	}
 	
 	public FmmlxProperty handlePressedOnNodeElement(Point2D relativePoint, FmmlxDiagram diagram) {
 		if(relativePoint == null) return null;

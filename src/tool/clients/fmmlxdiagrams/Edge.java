@@ -16,9 +16,9 @@ import java.util.Vector;
 public abstract class Edge implements CanvasElement {
 
 	final public String path;
-	protected Vector<Point2D> intermediatePoints = new Vector<>();
-	protected FmmlxObject sourceNode;
-	protected FmmlxObject targetNode;
+	private Vector<Point2D> intermediatePoints = new Vector<>();
+	final protected Node sourceNode;
+	final protected Node targetNode;
 	//protected FmmlxDiagram diagram;
 	protected final Double DEFAULT_TOLERANCE = 6.;
 	protected boolean layoutingFinishedSuccesfully;
@@ -35,11 +35,9 @@ public abstract class Edge implements CanvasElement {
 	protected transient PortRegion targetPortRegion;
 	private transient Point2D lastMousePosition;
 
-	public abstract void setIntermediatePoints(Vector<Point2D> intermediatePoints);
-
-	public static abstract class End {public final Edge edge; private End(Edge edge) {this.edge = edge;} public abstract FmmlxObject getNode();};
-	public static class Source extends End{private Source(Edge edge) {super(edge);} public FmmlxObject getNode() {return edge.sourceNode;}};
-	public static class Target extends End{private Target(Edge edge) {super(edge);} public FmmlxObject getNode() {return edge.targetNode;}};
+	public static abstract class End {public final Edge edge; private End(Edge edge) {this.edge = edge;} public abstract Node getNode();};
+	public static class Source extends End{private Source(Edge edge) {super(edge);} public Node getNode() {return edge.sourceNode;}};
+	public static class Target extends End{private Target(Edge edge) {super(edge);} public Node getNode() {return edge.targetNode;}};
 
 	protected boolean visible;
 
@@ -100,11 +98,11 @@ public abstract class Edge implements CanvasElement {
 	}
 
 	public FmmlxObject getSourceNode() {
-		return sourceNode;
+		return (FmmlxObject) sourceNode;
 	}
 
 	public FmmlxObject getTargetNode() {
-		return targetNode;
+		return (FmmlxObject) targetNode;
 	}
 
 	public PortRegion getSourcePortRegion() {
@@ -464,7 +462,7 @@ public abstract class Edge implements CanvasElement {
 		}
 	}
 
-	private PortRegion findBestRegion(FmmlxObject node, double x, double y) {
+	private PortRegion findBestRegion(Node node, double x, double y) {
 		double angleMouse = Math.atan2(y - node.getCenterY(), x - node.getCenterX());
 		double diffAngleNW = (4 * Math.PI + angleMouse
 				- Math.atan2(node.getY() - node.getCenterY(), node.getX() - node.getCenterX())) % (2 * Math.PI);
@@ -708,6 +706,10 @@ public abstract class Edge implements CanvasElement {
 	
 	public void updatePosition(DiagramEdgeLabel del) {
 		labelPositions.put(del.localID, new Point2D(del.relativeX, del.relativeY));
+	}
+	
+	public final void setIntermediatePoints(Vector<Point2D> intermediatePoints) {
+		
 	}
 
 	public abstract String getName();

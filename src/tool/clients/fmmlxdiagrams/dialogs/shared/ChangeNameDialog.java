@@ -39,11 +39,6 @@ public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDial
 	//For Association
 	private Label selectAssociationNameLabel;
 
-
-//	private Vector<FmmlxAttribute> attributes;
-//	private Vector<FmmlxOperation> operations;
-//	private Vector<FmmlxAssociation> associations;
-
 	public ChangeNameDialog(final AbstractPackageViewer diagram, FmmlxObject object, PropertyType type, Property selectedProperty) {
 		super();
 		this.diagram = diagram;
@@ -139,7 +134,6 @@ public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDial
 
 		grid.add(newClassNameLabel, 0, 1);
 		grid.add(newNameTextField, 1, 1);
-
 	}
 
 	private void changeAttributeName() {
@@ -182,7 +176,6 @@ public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDial
 		grid.add(comboBox, 1, 1);
 		grid.add(newNameLabel, 0, 2);
 		grid.add(newNameTextField, 1, 2);
-
 	}
 
 	private void changeOperationName() {
@@ -290,9 +283,5 @@ public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDial
 			errorLabel.setText("");
 			return true;
 		}
-	}
-
-	private void showNameUsedError() {
-		errorLabel.setText("Name already used");
 	}
 }

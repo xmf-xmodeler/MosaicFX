@@ -7,10 +7,10 @@ import java.util.Vector;
 import javafx.geometry.Point2D;
 
 public class FmmlxObjectPort {
-	private final FmmlxObject owner;
+	private final Node owner;
 	private final HashMap<PortRegion, Vector<Edge.End>> edges;
 
-	public FmmlxObjectPort(FmmlxObject owner) {
+	public FmmlxObjectPort(Node owner) {
 		super();
 		this.owner = owner;
 		edges = new HashMap<>();
@@ -46,7 +46,7 @@ public class FmmlxObjectPort {
             	direction == PortRegion.EAST?-1.:
             	direction == PortRegion.SOUTH?-3./2:
             	0);
-		FmmlxObject otherEnd = edge.sourceNode==owner?edge.targetNode:edge.sourceNode;
+		Node otherEnd = edge.sourceNode==owner?edge.targetNode:edge.sourceNode;
 		double angle = Math.atan2(
 				owner.getCenterY()    - otherEnd.getCenterY(), 
 				otherEnd.getCenterX() - owner.getCenterX());

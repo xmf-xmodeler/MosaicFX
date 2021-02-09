@@ -153,12 +153,9 @@ public abstract class AbstractPackageViewer {
 	protected abstract void fetchDiagramDataSpecific2();
 
 	public void clearDiagram(){
-		
 		objects.clear();
 		edges.clear();
 		clearDiagram_specific();
-		
-		
 	}
 
 	protected abstract void clearDiagram_specific();
@@ -167,7 +164,8 @@ public abstract class AbstractPackageViewer {
 		Vector<FmmlxAssociation> result = new Vector<>();
 		for (Edge tmp : edges) {
 			if (tmp instanceof FmmlxAssociation) {
-				if (tmp.sourceNode.getName().equals(object.getName()) || tmp.targetNode.getName().equals(object.getName())) {
+				if (((FmmlxObject) (tmp.sourceNode)).getName().equals(object.getName()) 
+				  ||((FmmlxObject) (tmp.targetNode)).getName().equals(object.getName())) {
 					result.add((FmmlxAssociation) tmp);
 				}
 			}
