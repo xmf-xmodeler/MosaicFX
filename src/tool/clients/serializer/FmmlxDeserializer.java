@@ -55,6 +55,8 @@ public class FmmlxDeserializer implements Deserializer {
                     String label = diagramElement.getAttribute(XmlConstant.ATTRIBUTE_LABEL);
                     ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
                     objectXmlManager.alignObjects(diagramElement, label, communicator);
+                    EdgeXmlManager edgeXmlManager = new EdgeXmlManager(this.xmlHandler);
+                    edgeXmlManager.alignEdges(diagramElement, label, communicator);
                 }
             }
         }

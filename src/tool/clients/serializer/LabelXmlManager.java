@@ -1,6 +1,7 @@
 package tool.clients.serializer;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -23,35 +24,13 @@ public class LabelXmlManager implements Log, XmlManager {
         this.xmlHandler = xmlHandler;
     }
 
-    protected Element createLabelElement(FmmlxDiagram diagram, DiagramEdgeLabel edgeLabel) {
-        String text = edgeLabel.getText();
-        String owner = edgeLabel.getOwner().getPath();
-        Vector<FmmlxObject> anchors = edgeLabel.getAnchors();
-        String anchorsString = createAnchorsString(anchors);
-
-        double x = edgeLabel.getRelativeX();
-        double y = edgeLabel.getRelativeY();
-
+    public Element createLabelElement(String key, float x, float y) {
         Element label = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_LABEL);
-        label.setAttribute(XmlConstant.ATTRIBUTE_TEXT, text);
-        label.setAttribute(XmlConstant.ATTRIBUTE_OWNER, owner);
-        label.setAttribute(XmlConstant.ATTRIBUTE_DIAGRAM_OWNER, diagram.getDiagramLabel());
+        String[] refSplit = key.split("::");
+        label.setAttribute(XmlConstant.ATTRIBUTE_TEXT, refSplit[refSplit.length-1]);
         label.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, x+"");
         label.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, y+"");
-        label.setAttribute(XmlConstant.ATTRIBUTE_ANCHORS, anchorsString);
         return label;
-    }
-
-    protected String createAnchorsString(Vector<FmmlxObject> anchors) {
-        StringBuilder anchorsStringBuilder = new StringBuilder();
-
-        for(FmmlxObject anchor : anchors){
-                anchorsStringBuilder.append(anchor.getName());
-                anchorsStringBuilder.append(",");
-        }
-
-        String anchorsString = anchorsStringBuilder.toString();
-        return anchorsString.substring(0, anchorsString.length()-1);
     }
 
     @Override

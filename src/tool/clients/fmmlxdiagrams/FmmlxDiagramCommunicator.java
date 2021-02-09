@@ -11,7 +11,9 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
-import tool.clients.serializer.*;
+import tool.clients.serializer.FmmlxDeserializer;
+import tool.clients.serializer.FmmlxSerializer;
+import tool.clients.serializer.XmlHandler;
 import tool.clients.serializer.interfaces.Deserializer;
 import tool.clients.serializer.interfaces.Serializer;
 import tool.clients.workbench.WorkbenchClient;
@@ -20,10 +22,7 @@ import xos.Value;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Optional;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 public class FmmlxDiagramCommunicator {
@@ -304,6 +303,7 @@ public class FmmlxDiagramCommunicator {
 					listOfPoints, // points
 					startRegion, endRegion,
 					diagram);
+
 			result.add(object);
 		}
 		return result;
@@ -346,6 +346,7 @@ public class FmmlxDiagramCommunicator {
 					startRegion, endRegion,
 					diagram);
 			result.add(object);
+
 		}
 		return result;
 	}
@@ -385,16 +386,44 @@ public class FmmlxDiagramCommunicator {
 					listOfPoints, // points
 					startRegion, endRegion,
 					diagram);
+
 			result.add(object);
 		}
 		return result;
 	}
 
-    public Vector<Edge> getAllEdgePositions(Integer diagramID) throws TimeOutException {
-        Vector<Object> response = xmfRequest(handler, -2, "getAllEdgePositions", new Value(diagramID));
-        Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-        System.out.println(responseContent.toString());
-        return null;
+    public HashMap<String, HashMap<String, Object>> getAllEdgePositions(Integer diagramID) {
+		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
+
+		try {
+			Vector<Object> response = xmfRequest(handler, -2, "getAllEdgePositions", new Value(diagramID));
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+
+			for(Object contentItem : responseContent) {
+				Vector<Object> contentVector = (Vector<Object>) contentItem;
+				String key = (String) contentVector.get(0);
+				Vector<Object> edgeInfo =  (Vector<Object>) contentVector.get(1);
+
+				Vector<Object> portInfo = new Vector<>();
+				if(edgeInfo.size()>0){
+					portInfo.add(edgeInfo.get(0));
+					portInfo.add(edgeInfo.get(edgeInfo.size()-1));
+				}
+				Vector<Object> intermediatePoints = new Vector<>();
+				for(int i = 1; i< Objects.requireNonNull(edgeInfo).size()-1 ; i++){
+					intermediatePoints.add(edgeInfo.get(i));
+				}
+
+				HashMap<String, Object> edgeInfoMap = new HashMap<>();
+				edgeInfoMap.put("Ports", portInfo);
+				edgeInfoMap.put("IntermediatePoints", intermediatePoints);
+
+				result.put(key, edgeInfoMap);
+			}
+		} catch (TimeOutException e) {
+			e.printStackTrace();
+		}
+        return result;
     }
 	
 	@SuppressWarnings("unchecked")
@@ -451,6 +480,7 @@ public class FmmlxDiagramCommunicator {
 					//,(Integer) edgeInfoAsList.get(13), // sourceHead
 					//(Integer) edgeInfoAsList.get(14) // targetHead
 			);
+
 			result.add(object);
 		}
 		return result;
@@ -495,6 +525,7 @@ public class FmmlxDiagramCommunicator {
 					startRegion, endRegion,
 					labelPositions,
 					diagram);
+
 			result.add(object);
 		}
 		return result;
@@ -681,7 +712,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void sendEdgePositionsFromXml(int diagramID, String edgePath, Vector<Point2D> intermediatePoints, String sourcePort, String targetPort) {
-
+		System.out.println("align edge");
 		if(intermediatePoints.size() < 2) System.err.println("Suspicious edge alignment");
 		for(Point2D p : intermediatePoints) {
 			if(!Double.isFinite(p.getX())) {
@@ -1659,10 +1690,55 @@ public class FmmlxDiagramCommunicator {
 		return initLabel.substring(0, initLabel.length()-2)+id+")";
 	}
 
-    public Vector<DiagramEdgeLabel> getAllLabelPositions(int id) throws TimeOutException {
-        Vector<Object> response = xmfRequest(handler, -2, "getAllLabelPositions", new Value(id));
-        Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-        System.out.println(responseContent.toString());
-        return null;
+    public HashMap<String, HashMap<String, Object>> getAllLabelPositions(int id) {
+		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
+		Vector<Object> response;
+		try {
+			response = xmfRequest(handler, -2, "getAllLabelPositions", new Value(id));
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+
+			for (Object o : responseContent) {
+				Vector<Object> labelInfo = (Vector<Object>) o;
+				String key = (String) labelInfo.get(0);
+				Integer type = (Integer) labelInfo.get(1);
+				float x = (float) labelInfo.get(2);
+				float y = (float) labelInfo.get(3);
+
+				if(type == 0){
+					HashMap<String, Object> labelMap = new HashMap<>();
+					labelMap.put("x", x);
+					labelMap.put("y", y);
+					result.put(key, labelMap);
+				}
+			}
+		} catch (TimeOutException e) {
+			e.printStackTrace();
+		}
+
+        return result;
     }
+
+	public void testGetAllEdgePositions(int id) {
+		Vector<Object> response;
+		try {
+			response = xmfRequest(handler, -2, "getAllEdgePositions", new Value(id));
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			System.out.println(responseContent);
+		} catch (TimeOutException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void testGetAllLabelPositions(int id) {
+		Vector<Object> response;
+		try {
+			response = xmfRequest(handler, -2, "getAllLabelPositions", new Value(id));
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			System.out.println(responseContent);
+		} catch (TimeOutException e) {
+			e.printStackTrace();
+		}
+
+	}
 }
