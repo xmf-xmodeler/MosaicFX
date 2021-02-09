@@ -1,8 +1,6 @@
 package tool.clients.browser;
 
-
 import javafx.application.Platform;
-import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;

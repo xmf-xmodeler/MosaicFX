@@ -202,13 +202,12 @@ public class CustomDialog<R> extends Dialog<R> {
 		return listView;
 	}
 	
-
-	public ComboBox<? extends FmmlxProperty> initializeComboBox(ObservableList<? extends FmmlxProperty> list) {
+	public <Property extends FmmlxProperty> ComboBox<Property> initializeComboBox(ObservableList<Property> list) {
 		@SuppressWarnings({ "unchecked", "rawtypes" })
-		ComboBox<FmmlxProperty> comboBox = new ComboBox(list);
-		comboBox.setCellFactory(param -> new ListCell<FmmlxProperty>() {
+		ComboBox<Property> comboBox = new ComboBox(list);
+		comboBox.setCellFactory(param -> new ListCell<Property>() {
 			@Override
-			protected void updateItem(FmmlxProperty item, boolean empty) {
+			protected void updateItem(Property item, boolean empty) {
 				super.updateItem(item, empty);
 
 				if (empty || isNullOrEmpty(item.getName())) {
@@ -218,9 +217,9 @@ public class CustomDialog<R> extends Dialog<R> {
 				}
 			}
 		});
-		comboBox.setConverter(new StringConverter<FmmlxProperty>() {
+		comboBox.setConverter(new StringConverter<Property>() {
 			@Override
-			public String toString(FmmlxProperty object) {
+			public String toString(Property object) {
 				if (object == null) {
 					return null;
 				} else {
@@ -229,7 +228,7 @@ public class CustomDialog<R> extends Dialog<R> {
 			}
 
 			@Override
-			public FmmlxProperty fromString(String string) {
+			public Property fromString(String string) {
 				return null;
 			}
 		});

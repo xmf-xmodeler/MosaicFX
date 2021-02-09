@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Random;
 
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.view.ValueGeneratorNormalDistributionDialog;
 

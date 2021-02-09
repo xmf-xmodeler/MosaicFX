@@ -14,7 +14,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
-import tool.clients.fmmlxdiagrams.TimeOutException;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumElementDialogResult;
@@ -24,13 +23,12 @@ public class AddEnumItemDialog extends CustomDialog<AddEnumElementDialogResult>{
 	private Label inputElementNameLabel;
 	private TextField inputElementNameTextField;
 	private ListView<String> list;
-	private FmmlxDiagram diagram;
-	private FmmlxEnum selectedEnum;
 
+	@Deprecated
 	public AddEnumItemDialog(FmmlxDiagram diagram, FmmlxEnum selectedEnum, ListView<String> list) {
 		super();
-		this.diagram=diagram;
-		this.selectedEnum=selectedEnum;
+//		this.diagram=diagram;
+//		this.selectedEnum=selectedEnum;
 
 		this.list= list;
 		DialogPane dialogPane = getDialogPane();

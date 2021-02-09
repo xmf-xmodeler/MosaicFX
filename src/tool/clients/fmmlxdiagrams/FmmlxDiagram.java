@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
@@ -16,6 +17,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -23,20 +25,26 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
+import javafx.stage.FileChooser;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.XmlHandler;
 import tool.clients.serializer.interfaces.Deserializer;
+import tool.xmodeler.PropertyManager;
+import tool.xmodeler.XModeler;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+
+import javax.imageio.ImageIO;
 
 public class FmmlxDiagram extends AbstractPackageViewer{
 
@@ -79,10 +87,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private Point2D canvasRawSize = new Point2D(1200, 800);
 	private double zoom = 1.;
 	private Affine transformFX = new Affine();
-	private static Font font;
-	private static Font fontKursiv;
-	private static Font paletteFont;
-	private static Font paletteFontKursiv;
+	public static final Font FONT;
+//	private static Font fontKursiv;
+//	private static Font paletteFont;
+//	private static Font paletteFontKursiv;
 	
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
@@ -101,9 +109,21 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	String edgeCreationType = null;
 	String nodeCreationType = null;	
 
-	public LevelColorScheme levelColorScheme = new LevelColorScheme.DefaultLevelColorScheme();
+	public LevelColorScheme levelColorScheme = new LevelColorScheme.FixedBlueLevelColorScheme();
 
 	public final static FmmlxDiagram NullDiagram = new FmmlxDiagram();
+	
+	static{		
+//		try {
+			FONT = Font.font(Font.getDefault().getFamily(), FontPosture.REGULAR, 14);
+	//		font = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono.ttf"), 14);
+	//		fontKursiv = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 14);
+	//		paletteFont = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSans.ttf"), 12);
+	//		paletteFontKursiv =Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 12);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+	}
 	
 	private FmmlxDiagram() {
 		super(null,-1,null);
@@ -146,14 +166,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 		new Thread(this::fetchDiagramData).start();
 
-		try {
-			font = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono.ttf"), 14);
-			fontKursiv = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 14);
-			paletteFont = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSans.ttf"), 12);
-			paletteFontKursiv =Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 12);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+
 		
 		java.util.Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -220,7 +233,36 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			e.printStackTrace();
 		}
 	}
-
+	
+	public void savePNG(){
+		double zoom = this.zoom;
+		setMaxZoom();
+		
+	    FileChooser fileChooser = new FileChooser();
+	    
+	    String initalDirectory = PropertyManager.getProperty("fileDialogPath", "");
+    	if (!initalDirectory.equals("")) {
+    		File dir = new File(initalDirectory);
+    		if(dir.exists()) {
+    			fileChooser.setInitialDirectory(dir);
+    		}
+    	}
+    	
+    	fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG","*.png"));
+    	fileChooser.setTitle("Save Diagram to PNG");
+	    File file = fileChooser.showSaveDialog(XModeler.getStage());
+	    
+	    if(file != null){
+	        WritableImage wi = new WritableImage((int)canvas.getWidth(),(int)canvas.getHeight());
+	        try { 
+	        	ImageIO.write(SwingFXUtils.fromFXImage(canvas.snapshot(null,wi),null),"png",file);
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    
+	    setZoom(zoom);
+	}
 	// Only used to set the diagram into the tab. Find a better solution
 	@Deprecated
 	public VBox getView() {
@@ -234,7 +276,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public void redraw() {
 		if (fetchingData) {
 			return;}
-		if (objects.size() <= 0) {return;}
+		
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
 			// we are on the right Thread already:
 			paintOn(canvas.getGraphicsContext2D(), 0, 0);
@@ -254,9 +296,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	private void paintOn(GraphicsContext g, int xOffset, int yOffset) {
 		g.setTransform(new Affine());
-//		g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 		g.setFill(Color.WHITE);
 		g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+		if (objects.size() <= 0) {return;}
 		g.setFill(Color.BLACK);
 		g.setTransform(transformFX);
 		Vector<CanvasElement> objectsToBePainted = new Vector<>();
@@ -320,7 +362,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		if (mouseMode == MouseMode.STANDARD) {
 			if (selectedObjects.size() == 1 && selectedObjects.firstElement() instanceof Edge) {
-				((Edge) selectedObjects.firstElement()).setPointAtToBeMoved(p);
+				((Edge<?>) selectedObjects.firstElement()).setPointAtToBeMoved(p);
 
 			}
 			mouseDraggedStandard(p);
@@ -341,7 +383,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			lastElementUnderMouse = elementUnderMouse;
 			for (FmmlxObject o : objects)
 				o.unHighlight();
-			for (Edge edge : edges)
+			for (Edge<?> edge : edges)
 				edge.unHighlight();
 			for (DiagramEdgeLabel l : labels)
 				l.unHighlight();
@@ -357,7 +399,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			if (s instanceof FmmlxObject) {
 				FmmlxObject o = (FmmlxObject) s;
 				s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
-				for(Edge e : edges) {
+				for(Edge<?> e : edges) {
 					if(e.isStartNode(o) || e.isEndNode(o)) e.align();
 				}
 			} else if (s instanceof DiagramEdgeLabel) {
@@ -377,7 +419,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
 		objectsMoved = true;
         
-		for(Edge e : edges) {e.align();}
+		for(Edge<?> e : edges) {e.align();}
 
 		redraw();
 	}
@@ -393,7 +435,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			mouseMode=MouseMode.STANDARD;
 		}
 		
-		for(Edge edge : edges) {
+		for(Edge<?> edge : edges) {
 			edge.dropPoint(this);
 		}
 		
@@ -412,7 +454,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			for(FmmlxObject o : objects) {
 				o.layout(this);
 			}
-			for(Edge edge : edges) {
+			for(Edge<?> edge : edges) {
 				edge.align();
 				edge.layoutLabels(this);
 			}
@@ -420,20 +462,20 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	private void mouseReleasedStandard() {
-		for (Edge e : edges) e.removeRedundantPoints();
+		for (Edge<?> e : edges) e.removeRedundantPoints();
 		
 		if (objectsMoved) {
 			for (CanvasElement s : selectedObjects)
 				if (s instanceof FmmlxObject) {
 					FmmlxObject o = (FmmlxObject) s;
 					comm.sendCurrentPosition(this.getID(), o.getPath(), (int)Math.round(o.getX()), (int)Math.round(o.getY()));
-					for(Edge e : edges) {
+					for(Edge<?> e : edges) {
 						if(e.isStartNode(o) || e.isEndNode(o)) {
 							comm.sendCurrentPositions(this.getID(), e);
 						}
 					}
 				} else if (s instanceof Edge) {
-					comm.sendCurrentPositions(this.getID(), (Edge) s);
+					comm.sendCurrentPositions(this.getID(), (Edge<?>) s);
 				} else if (s instanceof DiagramEdgeLabel) {
 					DiagramEdgeLabel del = (DiagramEdgeLabel) s;
 					del.owner.updatePosition(del);
@@ -454,7 +496,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		for (FmmlxObject o : new Vector<>(objects))
 			if (o.isHit(x, y))
 				return o;
-		for (Edge e : new Vector<>(edges))
+		for (Edge<?> e : new Vector<>(edges))
 			if (e.isHit(x, y))
 				return e;
 		for (DiagramEdgeLabel l : new Vector<>(labels))
@@ -593,8 +635,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		for (CanvasElement object : objects) {
 			object.highlightElementAt(null);
 		}
-		for (Edge object : edges) {
-			object.highlightElementAt(null);
+		for (Edge<?> edge : edges) {
+			edge.highlightElementAt(null);
 		}
 		hitObject.highlightElementAt(p);
 	}
@@ -777,28 +819,43 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return zoom;
 	}
 
+	public void setMaxZoom(){
+		double maxRight = 1;
+		double maxBottom = 1;
+
+		for (FmmlxObject object : objects) {
+			maxRight = Math.max(maxRight, object.getRightX());
+			maxBottom = Math.max(maxBottom, object.getBottomY());
+		}
+
+		double maxXzoom = 4096. / maxRight;
+		double maxYzoom = 4096. / maxBottom;
+		
+		setZoom(Math.min(10,Math.min(maxXzoom, maxYzoom)));
+	}
+	
 	public void setZoom(double zoom) {
-		this.zoom = Math.min(4, Math.max(zoom, 1. / 8));
+		this.zoom = Math.min(10, Math.max(zoom, 1. / 8));
 
 		transformFX = new Affine();
 		transformFX.appendScale(zoom, zoom);
 		resizeCanvas();
 	}
 
-	public Font getFont() {
-		return font;
-	}
-	
-	public Font getFontKursiv() {
-		return fontKursiv;
-	}
+//	public Font getFont() {
+//		return Font.font(FONT.getFamily(), FontPosture.REGULAR, 14);
+//	}
+//	
+//	public Font getFontKursiv() {
+//		return Font.font(FONT.getFamily(), FontPosture.ITALIC, 14);
+//	}
 	
 	public Font getPaletteFont() {
-		return paletteFont;
+		return Font.font(FONT.getFamily(), FontPosture.REGULAR, 12);
 	}
 	
 	public Font getPaletteFontKursiv() {
-		return paletteFontKursiv;
+		return Font.font(FONT.getFamily(), FontPosture.ITALIC, 12);
 	}
 	
 	@Deprecated
@@ -809,13 +866,13 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	 */
 	public static double calculateTextHeight() {
 		Text t = new Text("TestText");
-		t.setFont(font);
+		t.setFont(FONT);
 		return t.getLayoutBounds().getHeight();
 	}
 
 	public static double calculateTextWidth(String text) {
 		Text t = new Text(text);
-		t.setFont(font);
+		t.setFont(FONT);
 		return t.getLayoutBounds().getWidth();
 	}
 
@@ -863,7 +920,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	public InheritanceEdge getInheritanceEdge(FmmlxObject child, FmmlxObject parent) {
-		for(Edge e : edges) {
+		for(Edge<?> e : edges) {
 			if(e instanceof InheritanceEdge) {
 				InheritanceEdge i = (InheritanceEdge) e;
 				if(i.isStartNode(child) && i.isEndNode(parent)) return i;
@@ -958,7 +1015,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	public Vector<Point2D> findEdgeIntersections(Point2D a, Point2D b) { // only interested in a-b horizontal crossing c-d vertical
 		Vector<Point2D> result = new Vector<>();
-		for(Edge e : edges) {
+		for(Edge<?> e : edges) {
 			if(e.isVisible()) {
 				Vector<Point2D> otherPoints = e.getAllPoints();
 				for(int i = 0; i < otherPoints.size()-1; i++) {
@@ -991,16 +1048,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		return result;
 	}
-	
-//	public List<FmmlxObject> getSortedObject(SortedValue sortedValue) {
-//		List<FmmlxObject> result = new ArrayList<>(getObjects());
-//		if(sortedValue == SortedValue.REVERSE) {
-//			result.sort(Collections.reverseOrder());
-//		}else {
-//			Collections.sort(result);
-//		}		
-//		return result;
-//	}
 
 	public void setShowOperations(CheckBox box) {
 		boolean show = box.isSelected();
@@ -1074,7 +1121,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	@Override
 	protected void fetchDiagramDataSpecific() throws TimeOutException {
-		levelColorScheme = new LevelColorScheme.RedLevelColorScheme(objects);
+//		levelColorScheme = new LevelColorScheme.RedLevelColorScheme(objects);
 		issues.addAll(comm.fetchIssues(this));
 		for(FmmlxObject o : objects) {
 			o.layout(this);

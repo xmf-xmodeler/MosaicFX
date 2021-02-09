@@ -5,7 +5,6 @@ import java.util.Vector;
 import javafx.collections.ObservableList;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
-import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.fmmlxdiagrams.TimeOutException;

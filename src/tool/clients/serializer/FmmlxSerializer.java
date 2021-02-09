@@ -112,11 +112,11 @@ public class FmmlxSerializer implements Serializer {
     }
 
     public void saveEdges(Element diagramElement, FmmlxDiagram diagram)  {
-        Vector<Edge> edges = diagram.getEdges();
+        Vector<Edge<?>> edges = diagram.getEdges();
         EdgeXmlManager edgeXmlManager = new EdgeXmlManager(this.xmlHandler);
         Element edgeElement;
 
-        for(Edge edge : edges){
+        for(Edge<?> edge : edges){
             if(edge instanceof FmmlxAssociation){
                 edgeElement = edgeXmlManager.createAssociationXmlElement(diagram, (FmmlxAssociation) edge);
             } else if(edge instanceof DelegationEdge){

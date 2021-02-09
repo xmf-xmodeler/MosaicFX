@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
 
-import com.sun.media.jfxmediaimpl.platform.Platform;
-
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
@@ -16,7 +14,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
-import tool.clients.fmmlxdiagrams.TimeOutException;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 
 	public class FindSendersOfMessages extends CustomDialog<Object>{

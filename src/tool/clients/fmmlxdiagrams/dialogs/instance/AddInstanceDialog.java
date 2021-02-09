@@ -7,7 +7,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
@@ -50,10 +49,9 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		setResult();
 	}
 
-	@SuppressWarnings("unchecked")
 	private void layoutContent(FmmlxObject selectedObject) {
 
-		ObservableList<FmmlxProperty> ofList = getAllOfList();
+		ObservableList<FmmlxObject> ofList = getAllOfList();
 		nameTextField = new TextField();
 		abstractCheckBox = new CheckBox();
 		parentListView = initializeListView(parentList, SelectionMode.MULTIPLE);
@@ -107,7 +105,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		});
 	}
 
-	private ObservableList<FmmlxProperty> getAllOfList() {
+	private ObservableList<FmmlxObject> getAllOfList() {
 		ArrayList<FmmlxObject> resultOf = new ArrayList<>();
 		if (!objects.isEmpty()) {
 			for (FmmlxObject object : objects) {

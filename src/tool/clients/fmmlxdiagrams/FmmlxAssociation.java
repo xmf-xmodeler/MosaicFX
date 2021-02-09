@@ -12,7 +12,7 @@ import tool.clients.fmmlxdiagrams.menus.AssociationContextMenu;
 import java.util.Optional;
 import java.util.Vector;
 
-public class FmmlxAssociation extends Edge implements FmmlxProperty {
+public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty {
 
 	private final PropertyType propertyType = PropertyType.Association;
 	private String name;
@@ -24,13 +24,13 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	private final Integer parentAssociationId;
 	private Multiplicity multiplicityStartToEnd;
 	private Multiplicity multiplicityEndToStart;
-	protected boolean sourceFromTargetVisible;
-	protected boolean targetFromSourceVisible;
-	protected boolean symmetric;
-	protected boolean transitive;
+	private boolean sourceFromTargetVisible;
+	private boolean targetFromSourceVisible;
+	private boolean symmetric;
+	private boolean transitive;
 
-	HeadStyle sourceHead; 
-	HeadStyle targetHead;
+//	HeadStyle sourceHead; 
+//	HeadStyle targetHead;
 	private final static Color TRANSPARENT = new Color(0, 0, 0, 0);
 	private final static Color BLACK = new Color(0, 0, 0, 1);
 	private final static Color WHITE = new Color(1, 1, 1, 1);
@@ -72,25 +72,11 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		this.targetFromSourceVisible = targetFromSourceVisible;
 		this.symmetric = symmetric;
 		this.transitive = transitive;
-				
-//		layout();
 	}
 
 	public Integer getParentAssociationId() {
 		return parentAssociationId;
 	}
-
-//	public String getParentAssociationName() {
-//		return getParentAssociationNameWithId();
-//	}
-
-//	private String getParentAssociationNameWithId() {
-//		FmmlxAssociation parent = diagram.getAssociationByName(parentAssociationId);
-//		if(parent==null){
-//			return "-1";
-//		}
-//		return parent.getName();
-//	}
 
 	@Override protected void layoutLabels(FmmlxDiagram diagram) {
 		if( sourceNode == targetNode) {
@@ -120,11 +106,6 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 	@Override
 	public PropertyType getPropertyType() {
 		return propertyType;
-	}
-
-	@Override
-	public void setIntermediatePoints(Vector<Point2D> intermediatePoints) {
-		super.intermediatePoints = intermediatePoints;
 	}
 
 	public Integer getLevelSource() {

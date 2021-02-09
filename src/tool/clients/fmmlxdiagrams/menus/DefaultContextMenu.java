@@ -78,16 +78,22 @@ public class DefaultContextMenu extends ContextMenu {
 			MenuItem save = new MenuItem("Save");
 			save.setOnAction(a -> actions.save());
 			getItems().addAll(save);
-			
+
+			MenuItem pngItem = new MenuItem("Export as PNG...");
+			pngItem.setOnAction(a -> {
+				diagram.savePNG();
+			});	
+
 			MenuItem test = new MenuItem("Test edges");
 			test.setOnAction(a -> {
 				actions.testGetEdges();
 			});
+
 			MenuItem testGetLabel = new MenuItem("Test label");
 			testGetLabel.setOnAction(a -> {
 				actions.testGetLabel();
 			});
-			getItems().addAll(test, testGetLabel);
+			getItems().addAll(pngItem, test, testGetLabel);
 
 
 			MenuItem openFindImplementationDialog = new MenuItem("Search for Implementation");

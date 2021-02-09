@@ -1,12 +1,10 @@
 package tool.clients.fmmlxdiagrams.newpalette;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Vector;
 
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.SortedValue;
 
 public class PaletteGroupClass extends PaletteGroup {
 	

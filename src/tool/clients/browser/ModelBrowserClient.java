@@ -29,7 +29,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import tool.clients.Client;
-import tool.clients.menus.MenuClient;
 import tool.helper.IconGenerator;
 import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
