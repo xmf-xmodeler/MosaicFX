@@ -8,7 +8,7 @@ import javafx.geometry.Point2D;
 
 public class FmmlxObjectPort {
 	private final Node owner;
-	private final HashMap<PortRegion, Vector<Edge.End>> edges;
+	private final HashMap<PortRegion, Vector<Edge<?>.End>> edges;
 
 	public FmmlxObjectPort(Node owner) {
 		super();
@@ -19,7 +19,7 @@ public class FmmlxObjectPort {
 		}
 	}
 	
-	public void removeEdge(Edge.End edge) {
+	public void removeEdge(Edge<?>.End edge) {
 		for(PortRegion direction : PortRegion.values()) {
 			if(edges.get(direction).contains(edge)) {
 				edges.get(direction).remove(edge);
@@ -28,7 +28,7 @@ public class FmmlxObjectPort {
 		}
 	}
 	
-	public void addNewEdge(Edge.End edge, PortRegion direction) {
+	public void addNewEdge(Edge<?>.End edge, PortRegion direction) {
 		edges.get(direction).add(edge);
 		sortPorts(direction);
 	}
@@ -36,11 +36,11 @@ public class FmmlxObjectPort {
 	public void sortAllPorts() { for(PortRegion direction : PortRegion.values()) sortPorts(direction); }
 	
 	private void sortPorts(final PortRegion direction) {
-		Vector<Edge.End> ports = edges.get(direction);
+		Vector<Edge<?>.End> ports = edges.get(direction);
 		ports.sort(Comparator.comparing(e -> getAngle(e.edge, direction)));
 	}
 	
-	private Double getAngle(Edge edge, PortRegion direction) {
+	private Double getAngle(Edge<?> edge, PortRegion direction) {
 		double startAngle = Math.PI*(
 				direction == PortRegion.NORTH?-1./2:
             	direction == PortRegion.EAST?-1.:
@@ -55,9 +55,9 @@ public class FmmlxObjectPort {
 		return angle;
 	}
 
-	public Point2D getPointForEdge(Edge.End edgeEnd, boolean isStartNode) {
+	public Point2D getPointForEdge(Edge<?>.End edgeEnd, boolean isStartNode) {
 		for(PortRegion direction : PortRegion.values()) {
-			Vector<Edge.End> edgesOnOneSide = edges.get(direction);
+			Vector<Edge<?>.End> edgesOnOneSide = edges.get(direction);
 			int visibleEdgeCount = 0;
 			for(int i = 0; i < edgesOnOneSide.size(); i++) {
 				if(edgesOnOneSide.get(i).edge.isVisible()) visibleEdgeCount++;
@@ -85,10 +85,10 @@ public class FmmlxObjectPort {
 		throw new RuntimeException("Point does not exist: Edge " + edgeEnd + " on Node " + owner);
 	}
 
-	public PortRegion getDirectionForEdge(Edge.End edgeEnd, boolean isStartNode) {
+	public PortRegion getDirectionForEdge(Edge<?>.End edgeEnd, boolean isStartNode) {
 		for(PortRegion direction : PortRegion.values()) {
-			Vector<Edge.End> edgesOnOneSide = edges.get(direction);
-			for (Edge.End end : edgesOnOneSide) {
+			Vector<Edge<?>.End> edgesOnOneSide = edges.get(direction);
+			for (Edge<?>.End end : edgesOnOneSide) {
 				if (end == edgeEnd && edgeEnd.getNode() == owner) {//(isStartNode?edge.sourceNode:edge.targetNode) == owner) {
 					return direction;
 				}
@@ -97,9 +97,9 @@ public class FmmlxObjectPort {
 		throw new RuntimeException("Point does not exist: Edge " + edgeEnd.edge + " on Node " + owner);
 	}
 
-	public void setDirectionForEdge(Edge.End edgeEnd, boolean isStartNode, PortRegion newPortRegion) {
+	public void setDirectionForEdge(Edge<?>.End edgeEnd, boolean isStartNode, PortRegion newPortRegion) {
 		for(PortRegion direction : PortRegion.values()) {
-			Vector<Edge.End> edgesOnOneSide = edges.get(direction);
+			Vector<Edge<?>.End> edgesOnOneSide = edges.get(direction);
 			for(int i = 0; i < edgesOnOneSide.size(); i++) {
 				if(edgesOnOneSide.get(i) == edgeEnd && edgeEnd.getNode() == owner) {//(isStartNode?edge.sourceNode:edge.targetNode) == owner) {
 					edgesOnOneSide.remove(i); i--; break;
