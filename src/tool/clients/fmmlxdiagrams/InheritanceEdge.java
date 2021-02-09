@@ -6,7 +6,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
 
-public class InheritanceEdge extends Edge {
+public class InheritanceEdge extends Edge<FmmlxObject> {
 
 	public InheritanceEdge(String path, String childPath, String parentPath, Vector<Point2D> intermediatePoints,
 			PortRegion startPortRegion, PortRegion endPortRegion,

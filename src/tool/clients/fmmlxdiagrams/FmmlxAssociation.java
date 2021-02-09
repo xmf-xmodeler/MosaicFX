@@ -12,7 +12,7 @@ import tool.clients.fmmlxdiagrams.menus.AssociationContextMenu;
 import java.util.Optional;
 import java.util.Vector;
 
-public class FmmlxAssociation extends Edge implements FmmlxProperty {
+public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty {
 
 	private final PropertyType propertyType = PropertyType.Association;
 	private String name;
@@ -72,7 +72,7 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		this.targetFromSourceVisible = targetFromSourceVisible;
 		this.symmetric = symmetric;
 		this.transitive = transitive;
-					}
+	}
 
 	public Integer getParentAssociationId() {
 		return parentAssociationId;

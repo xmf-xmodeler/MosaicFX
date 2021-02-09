@@ -7,7 +7,7 @@ import tool.clients.fmmlxdiagrams.menus.AssociationInstanceContextMenu;
 
 import java.util.Vector;
 
-public class FmmlxLink extends Edge {
+public class FmmlxLink extends Edge<FmmlxObject> {
 
 //	FmmlxAssociation ofAssociation;
 	String ofPath;

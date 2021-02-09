@@ -362,7 +362,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		if (mouseMode == MouseMode.STANDARD) {
 			if (selectedObjects.size() == 1 && selectedObjects.firstElement() instanceof Edge) {
-				((Edge) selectedObjects.firstElement()).setPointAtToBeMoved(p);
+				((Edge<?>) selectedObjects.firstElement()).setPointAtToBeMoved(p);
 
 			}
 			mouseDraggedStandard(p);
@@ -383,7 +383,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			lastElementUnderMouse = elementUnderMouse;
 			for (FmmlxObject o : objects)
 				o.unHighlight();
-			for (Edge edge : edges)
+			for (Edge<?> edge : edges)
 				edge.unHighlight();
 			for (DiagramEdgeLabel l : labels)
 				l.unHighlight();
@@ -399,7 +399,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			if (s instanceof FmmlxObject) {
 				FmmlxObject o = (FmmlxObject) s;
 				s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
-				for(Edge e : edges) {
+				for(Edge<?> e : edges) {
 					if(e.isStartNode(o) || e.isEndNode(o)) e.align();
 				}
 			} else if (s instanceof DiagramEdgeLabel) {
@@ -419,7 +419,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
 		objectsMoved = true;
         
-		for(Edge e : edges) {e.align();}
+		for(Edge<?> e : edges) {e.align();}
 
 		redraw();
 	}
@@ -435,7 +435,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			mouseMode=MouseMode.STANDARD;
 		}
 		
-		for(Edge edge : edges) {
+		for(Edge<?> edge : edges) {
 			edge.dropPoint(this);
 		}
 		
@@ -454,7 +454,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			for(FmmlxObject o : objects) {
 				o.layout(this);
 			}
-			for(Edge edge : edges) {
+			for(Edge<?> edge : edges) {
 				edge.align();
 				edge.layoutLabels(this);
 			}
@@ -462,20 +462,20 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	private void mouseReleasedStandard() {
-		for (Edge e : edges) e.removeRedundantPoints();
+		for (Edge<?> e : edges) e.removeRedundantPoints();
 		
 		if (objectsMoved) {
 			for (CanvasElement s : selectedObjects)
 				if (s instanceof FmmlxObject) {
 					FmmlxObject o = (FmmlxObject) s;
 					comm.sendCurrentPosition(this.getID(), o.getPath(), (int)Math.round(o.getX()), (int)Math.round(o.getY()));
-					for(Edge e : edges) {
+					for(Edge<?> e : edges) {
 						if(e.isStartNode(o) || e.isEndNode(o)) {
 							comm.sendCurrentPositions(this.getID(), e);
 						}
 					}
 				} else if (s instanceof Edge) {
-					comm.sendCurrentPositions(this.getID(), (Edge) s);
+					comm.sendCurrentPositions(this.getID(), (Edge<?>) s);
 				} else if (s instanceof DiagramEdgeLabel) {
 					DiagramEdgeLabel del = (DiagramEdgeLabel) s;
 					del.owner.updatePosition(del);
@@ -496,7 +496,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		for (FmmlxObject o : new Vector<>(objects))
 			if (o.isHit(x, y))
 				return o;
-		for (Edge e : new Vector<>(edges))
+		for (Edge<?> e : new Vector<>(edges))
 			if (e.isHit(x, y))
 				return e;
 		for (DiagramEdgeLabel l : new Vector<>(labels))
@@ -635,8 +635,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		for (CanvasElement object : objects) {
 			object.highlightElementAt(null);
 		}
-		for (Edge object : edges) {
-			object.highlightElementAt(null);
+		for (Edge<?> edge : edges) {
+			edge.highlightElementAt(null);
 		}
 		hitObject.highlightElementAt(p);
 	}
@@ -920,7 +920,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	public InheritanceEdge getInheritanceEdge(FmmlxObject child, FmmlxObject parent) {
-		for(Edge e : edges) {
+		for(Edge<?> e : edges) {
 			if(e instanceof InheritanceEdge) {
 				InheritanceEdge i = (InheritanceEdge) e;
 				if(i.isStartNode(child) && i.isEndNode(parent)) return i;
@@ -1015,7 +1015,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	public Vector<Point2D> findEdgeIntersections(Point2D a, Point2D b) { // only interested in a-b horizontal crossing c-d vertical
 		Vector<Point2D> result = new Vector<>();
-		for(Edge e : edges) {
+		for(Edge<?> e : edges) {
 			if(e.isVisible()) {
 				Vector<Point2D> otherPoints = e.getAllPoints();
 				for(int i = 0; i < otherPoints.size()-1; i++) {
@@ -1048,16 +1048,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		return result;
 	}
-	
-//	public List<FmmlxObject> getSortedObject(SortedValue sortedValue) {
-//		List<FmmlxObject> result = new ArrayList<>(getObjects());
-//		if(sortedValue == SortedValue.REVERSE) {
-//			result.sort(Collections.reverseOrder());
-//		}else {
-//			Collections.sort(result);
-//		}		
-//		return result;
-//	}
 
 	public void setShowOperations(CheckBox box) {
 		boolean show = box.isSelected();

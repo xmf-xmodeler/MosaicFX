@@ -11,7 +11,7 @@ public abstract class AbstractPackageViewer {
 	protected Vector<FmmlxObject> objects = new Vector<>();
 	protected Vector<FmmlxEnum> enums = new Vector<>();
 	protected Vector<String> auxTypes = new Vector<>();
-	protected Vector<Edge> edges = new Vector<>();
+	protected Vector<Edge<?>> edges = new Vector<>();
 	protected final int diagramID;
 	protected final FmmlxDiagramCommunicator comm;
 	protected DiagramActions actions;
@@ -21,61 +21,20 @@ public abstract class AbstractPackageViewer {
 
 	public static final AbstractPackageViewer SIMPLE_VIEWER = new AbstractPackageViewer(FmmlxDiagramCommunicator.getCommunicator(),
 			-2, "simple_viewer") {
-		@Override
-		public Vector<String> getAvailableTypes() {
-			return null;
-		}
 
-		@Override
-		public Vector<FmmlxEnum> getEnums() {
-			return null;
-		}
-
-		@Override
-		public void updateEnums() {
-
-		}
-
-		@Override
-		public FmmlxProperty getSelectedProperty() {
-			return null;
-		}
-
-		@Override
-		public ObservableList<FmmlxObject> getAllPossibleParents(Integer newValue) {
-			return null;
-		}
-
-		@Override
-		public boolean isEnum(String type) {
-			return false;
-		}
-
-		@Override
-		public Vector<String> getEnumItems(String type) {
-			return null;
-		}
-
-		@Override
-		public ObservableList<FmmlxObject> getAllPossibleParentList() {
-			return null;
-		}
-
-		@Override
-		protected void fetchDiagramDataSpecific() throws TimeOutException {
-
-		}
-
-		@Override
-		protected void fetchDiagramDataSpecific2() {
-
-		}
-
-		@Override
-		protected void clearDiagram_specific() {
-
-		}
+		@Override public Vector<String> getAvailableTypes() { return null;}
+		@Override public Vector<FmmlxEnum> getEnums() { return null;}
+		@Override public void updateEnums() { }
+		@Override public FmmlxProperty getSelectedProperty() { return null;}
+		@Override public ObservableList<FmmlxObject> getAllPossibleParents(Integer newValue) { return null;}
+		@Override public boolean isEnum(String type) { return false;}
+		@Override public Vector<String> getEnumItems(String type) { return null;}
+		@Override public ObservableList<FmmlxObject> getAllPossibleParentList() { return null;}
+		@Override protected void fetchDiagramDataSpecific() throws TimeOutException { }
+		@Override protected void fetchDiagramDataSpecific2() { }
+		@Override protected void clearDiagram_specific() { }
 	};
+	
 	protected AbstractPackageViewer(FmmlxDiagramCommunicator comm, int diagramID, String packagePath) {
 		this.diagramID = diagramID;
 		this.packagePath=packagePath;
@@ -129,7 +88,7 @@ public abstract class AbstractPackageViewer {
 				o.fetchDataValues(comm);
 			}
 			
-			Vector<Edge> fetchedEdges = comm.getAllAssociations(this);
+			Vector<Edge<?>> fetchedEdges = comm.getAllAssociations(this);
 			fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
 	
 			edges.addAll(fetchedEdges);
@@ -162,7 +121,7 @@ public abstract class AbstractPackageViewer {
 	
 	public final Vector<FmmlxAssociation> getRelatedAssociationByObject(FmmlxObject object) {
 		Vector<FmmlxAssociation> result = new Vector<>();
-		for (Edge tmp : edges) {
+		for (Edge<?> tmp : edges) {
 			if (tmp instanceof FmmlxAssociation) {
 				if (((FmmlxObject) (tmp.sourceNode)).getName().equals(object.getName()) 
 				  ||((FmmlxObject) (tmp.targetNode)).getName().equals(object.getName())) {
@@ -173,13 +132,13 @@ public abstract class AbstractPackageViewer {
 		return result;
 	}
 	
-	public final Vector<Edge> getEdges() {
+	public final Vector<Edge<?>> getEdges() {
 		return new Vector<>(edges); // read-only
 	}
 
 	public final Vector<FmmlxAssociation> getAssociations() {
 		Vector<FmmlxAssociation> result = new Vector<>();
-		for (Edge tmp : edges) {
+		for (Edge<?> tmp : edges) {
 			if (tmp instanceof FmmlxAssociation) {
 				result.add((FmmlxAssociation) tmp);
 			}
@@ -189,7 +148,7 @@ public abstract class AbstractPackageViewer {
 
 	public final Vector<FmmlxLink> getAssociationInstance(){
 		Vector<FmmlxLink> result = new Vector<>();
-		for (Edge tmp : edges) {
+		for (Edge<?> tmp : edges) {
 			if (tmp instanceof FmmlxLink) {
 				result.add((FmmlxLink) tmp);
 			}
@@ -203,7 +162,7 @@ public abstract class AbstractPackageViewer {
 	
 	public final Vector<FmmlxAssociation> findAssociations(FmmlxObject source, FmmlxObject target) {
 		Vector<FmmlxAssociation> result = new Vector<>();
-		for (Edge e : edges)
+		for (Edge<?> e : edges)
 			if (e instanceof FmmlxAssociation) {
 				FmmlxAssociation association = (FmmlxAssociation) e;
 				if (association.doObjectsFit(source, target)) result.add(association);

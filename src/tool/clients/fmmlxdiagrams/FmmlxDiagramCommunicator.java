@@ -270,10 +270,10 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<Edge> getAllInheritanceEdges(AbstractPackageViewer diagram) throws TimeOutException {
+	public Vector<Edge<?>> getAllInheritanceEdges(AbstractPackageViewer diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllInheritanceEdges");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-		Vector<Edge> result = new Vector<>();
+		Vector<Edge<?>> result = new Vector<>();
 
 		for (Object edgeInfo : responseContent) {
 			Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
@@ -297,7 +297,7 @@ public class FmmlxDiagramCommunicator {
 				}
 			}
 
-			Edge object = new InheritanceEdge(
+			InheritanceEdge object = new InheritanceEdge(
 					(String) edgeInfoAsList.get(0), // id
 					(String) edgeInfoAsList.get(1), //TODO startId
 					(String) edgeInfoAsList.get(2), //TODO endId
@@ -310,10 +310,10 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Vector<Edge> getAllDelegationEdges(AbstractPackageViewer diagram) throws TimeOutException {
+	public Vector<Edge<?>> getAllDelegationEdges(AbstractPackageViewer diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllDelegationEdges");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-		Vector<Edge> result = new Vector<>();
+		Vector<Edge<?>> result = new Vector<>();
 
 		for (Object edgeInfo : responseContent) {
 			Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
@@ -337,7 +337,7 @@ public class FmmlxDiagramCommunicator {
 				}
 			}
 
-			Edge object = new DelegationEdge(
+			DelegationEdge object = new DelegationEdge(
 					(String) edgeInfoAsList.get(0), // id
 					(String) edgeInfoAsList.get(1), // startId
 					(String) edgeInfoAsList.get(2), // endId
@@ -351,10 +351,10 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Vector<Edge> getAllRoleFillerEdges(AbstractPackageViewer diagram) throws TimeOutException {
+	public Vector<Edge<?>> getAllRoleFillerEdges(AbstractPackageViewer diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllRoleFillerEdges");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-		Vector<Edge> result = new Vector<>();
+		Vector<Edge<?>> result = new Vector<>();
 
 		for (Object edgeInfo : responseContent) {
 			Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
@@ -378,7 +378,7 @@ public class FmmlxDiagramCommunicator {
 				}
 			}
 
-			Edge object = new RoleFillerEdge(
+			RoleFillerEdge object = new RoleFillerEdge(
 					(String) edgeInfoAsList.get(0), // id
 					(String) edgeInfoAsList.get(1), //TODO startId
 					(String) edgeInfoAsList.get(2), //TODO endId
@@ -391,10 +391,10 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Vector<Edge> getAllAssociations(AbstractPackageViewer diagram) throws TimeOutException {
+	public Vector<Edge<?>> getAllAssociations(AbstractPackageViewer diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllAssociations");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-		Vector<Edge> result = new Vector<>();
+		Vector<Edge<?>> result = new Vector<>();
 
 		for (Object edgeInfo : responseContent) {
 			Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
@@ -420,7 +420,7 @@ public class FmmlxDiagramCommunicator {
 			
 			Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(13);
 
-			Edge object = new FmmlxAssociation(
+			FmmlxAssociation object = new FmmlxAssociation(
 					(String) edgeInfoAsList.get(0), // id
 					(String) edgeInfoAsList.get(1), // startId
 					(String) edgeInfoAsList.get(2), // endId
@@ -450,10 +450,10 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<Edge> getAllAssociationsInstances(AbstractPackageViewer diagram) throws TimeOutException {
+	public Vector<Edge<?>> getAllAssociationsInstances(AbstractPackageViewer diagram) throws TimeOutException {
 		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllAssociationInstances");
 		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-		Vector<Edge> result = new Vector<>();
+		Vector<Edge<?>> result = new Vector<>();
 
 		for (Object edgeInfo : responseContent) {
 			Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
@@ -479,7 +479,7 @@ public class FmmlxDiagramCommunicator {
 
 			Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(5);
 			
-			Edge object = new FmmlxLink(
+			FmmlxLink object = new FmmlxLink(
 					(String) edgeInfoAsList.get(0), // id
 					(String) edgeInfoAsList.get(1), // startId //TODO
 					(String) edgeInfoAsList.get(2), // endId //TODO
@@ -630,7 +630,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("sendNewPosition", message);
 	}
 
-	public void sendCurrentPositions(int diagramID, Edge edge) {
+	public void sendCurrentPositions(int diagramID, Edge<?> edge) {
 		Vector<Point2D> points = edge.getIntermediatePoints();
 		
 		if(points.size() < 2) System.err.println("Suspicious edge alignment");

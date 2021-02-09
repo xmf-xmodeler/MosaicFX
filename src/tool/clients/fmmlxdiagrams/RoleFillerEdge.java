@@ -6,7 +6,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
 
-public class RoleFillerEdge extends Edge {
+public class RoleFillerEdge extends Edge<FmmlxObject> {
 
 	public RoleFillerEdge(String path, String childPath, String parentID, Vector<Point2D> intermediatePoints,
 			PortRegion startPortRegion, PortRegion endPortRegion,

@@ -78,8 +78,8 @@ public class FmmlxDeserializer implements Deserializer {
         if(diagramElement!=null){
             //ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
             //objectXmlManager.alignObjects(diagramNode, diagram);
-            EdgeXmlManager edgeXmlManager = new EdgeXmlManager(this.xmlHandler);
-            edgeXmlManager.alignEdges(diagramElement,diagram);
+//            EdgeXmlManager edgeXmlManager = new EdgeXmlManager(this.xmlHandler);
+//            edgeXmlManager.alignEdges(diagramElement,diagram);
             LabelXmlManager labelXmlManager = new LabelXmlManager(this.xmlHandler);
             labelXmlManager.alignLabel(diagramElement, diagram);
         }
