@@ -84,7 +84,7 @@ public class DefaultContextMenu extends ContextMenu {
 				actions.testGetEdges();
 			});
 			MenuItem testGetLabel = new MenuItem("Test label");
-			test.setOnAction(a -> {
+			testGetLabel.setOnAction(a -> {
 				actions.testGetLabel();
 			});
 			getItems().addAll(test, testGetLabel);
