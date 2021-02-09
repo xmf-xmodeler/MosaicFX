@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
@@ -839,11 +840,11 @@ public class DiagramActions {
 		if(!(diagram instanceof FmmlxDiagram)) throw new IllegalArgumentException();
 		Platform.runLater(() -> {
 			try {
-				String path = diagram.getPackagePath();
+				String filePath = ((FmmlxDiagram) diagram).getFilePath();
 				FmmlxDiagramCommunicator communicator = diagram.getComm();
 				String label = ((FmmlxDiagram)diagram).getDiagramLabel();
 				FmmlxSerializer serializer = new FmmlxSerializer(((FmmlxDiagram)diagram).getFilePath());
-				serializer.save(path, label, diagram.getID(), communicator);
+				serializer.save(diagram.getPackagePath(), filePath, label, diagram.getID(), communicator);
 			} catch (TransformerException | ParserConfigurationException e) {
 				e.printStackTrace();
 			}
@@ -877,5 +878,39 @@ public class DiagramActions {
 	public void hide(Vector<FmmlxObject> objects, boolean hide) {
 		diagram.getComm().hideElements(diagram.getID(), objects, hide);
 		diagram.updateDiagram();
+	}
+
+    public void testGetEdges() {
+		Task<Void> task = new Task<Void>() {
+			@Override
+			protected Void call() {
+				Vector<Integer> ids = diagram.getComm().getAllDiagramIDs(diagram.getPackagePath());
+				for (int id : ids){
+					try {
+						System.out.println("diagram id : "+id);
+						diagram.getComm().getAllEdgePositions(id);
+					} catch (TimeOutException e) {
+						e.printStackTrace();
+					}
+				}
+				return null;
+			}
+		};
+		new Thread(task).start();
+    }
+
+	public void testGetLabel() {
+		Task<Void> task = new Task<Void>() {
+			@Override
+			protected Void call() throws TimeOutException {
+				Vector<Integer> ids = diagram.getComm().getAllDiagramIDs(diagram.getPackagePath());
+				for (int id : ids){
+					System.out.println("diagram id : "+id);
+					diagram.getComm().getAllLabelPositions(id);
+				}
+				return null;
+			}
+		};
+		new Thread(task).start();
 	}
 }

@@ -389,6 +389,13 @@ public class FmmlxDiagramCommunicator {
 		}
 		return result;
 	}
+
+    public Vector<Edge> getAllEdgePositions(Integer diagramID) throws TimeOutException {
+        Vector<Object> response = xmfRequest(handler, -2, "getAllEdgePositions", new Value(diagramID));
+        Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+        System.out.println(responseContent.toString());
+        return null;
+    }
 	
 	@SuppressWarnings("unchecked")
 	public Vector<Edge<?>> getAllAssociations(AbstractPackageViewer diagram) throws TimeOutException {
@@ -875,97 +882,97 @@ public class FmmlxDiagramCommunicator {
 //		sendMessage("addOperation", message);
 //	}
 
-	public void addOperation2(int diagramID, String objectName, int level, String body) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(objectName),
-				new Value(level),
-				new Value(body)
-		};
-		sendMessage("addOperation2", message);
-	}
+    public void addOperation2(int diagramID, String objectName, int level, String body) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(objectName),
+                new Value(level),
+                new Value(body)
+        };
+        sendMessage("addOperation2", message);
+    }
 
-	public void changeOperationName(int diagramID, String objectName, String oldName, String newName) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(objectName),
-				new Value(oldName),
-				new Value(newName)};
-		sendMessage("changeOperationName", message);
-	}
+    public void changeOperationName(int diagramID, String objectName, String oldName, String newName) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(objectName),
+                new Value(oldName),
+                new Value(newName)};
+        sendMessage("changeOperationName", message);
+    }
 
-	public void changeOperationLevel(int diagramID, String objectName, String opName, int oldLevel, int newLevel) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(objectName),
-				new Value(opName),
-				new Value(oldLevel),
-				new Value(newLevel)};
-		sendMessage("changeOperationLevel", message);
-	}
+    public void changeOperationLevel(int diagramID, String objectName, String opName, int oldLevel, int newLevel) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(objectName),
+                new Value(opName),
+                new Value(oldLevel),
+                new Value(newLevel)};
+        sendMessage("changeOperationLevel", message);
+    }
 
-	public void changeOperationOwner(int diagramID, String objectName, String name, String newOwnerName) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(objectName),
-				new Value(name),
-				new Value(newOwnerName)};
-		sendMessage("changeOperationOwner", message);
-	}
+    public void changeOperationOwner(int diagramID, String objectName, String name, String newOwnerName) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(objectName),
+                new Value(name),
+                new Value(newOwnerName)};
+        sendMessage("changeOperationOwner", message);
+    }
 
-	public void changeOperationType(int diagramID, String objectName, String operationName, String newType) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(objectName),
-				new Value(operationName),
+    public void changeOperationType(int diagramID, String objectName, String operationName, String newType) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(objectName),
+                new Value(operationName),
 //				new Value(oldType),
-				new Value(newType)};
-		sendMessage("changeOperationType", message);
+                new Value(newType)};
+        sendMessage("changeOperationType", message);
 
-	}
+    }
 
-	public void checkOperationBody(String body) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(-1),
-				new Value(body)
-		};
-		sendMessage("checkOperationBody", message);
-	}
+    public void checkOperationBody(String body) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(-1),
+                new Value(body)
+        };
+        sendMessage("checkOperationBody", message);
+    }
 
-	public void removeOperation(int diagramID, String objectName, String name, int strategy) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(objectName),
-				new Value(name)};
-		sendMessage("removeOperation", message);
-	}
+    public void removeOperation(int diagramID, String objectName, String name, int strategy) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(objectName),
+                new Value(name)};
+        sendMessage("removeOperation", message);
+    }
 
 
-	public void changeClassName(int diagramID, String className, String newName) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(className),
-				new Value(newName)};
-		sendMessage("changeClassName", message);
-	}
+    public void changeClassName(int diagramID, String className, String newName) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(className),
+                new Value(newName)};
+        sendMessage("changeClassName", message);
+    }
 
-	public void changeClassLevel(int diagramID, String objectName, int newLevel) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(objectName),
-				new Value(newLevel)};
-		sendMessage("changeClassLevel", message);
-	}
+    public void changeClassLevel(int diagramID, String objectName, int newLevel) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(objectName),
+                new Value(newLevel)};
+        sendMessage("changeClassLevel", message);
+    }
 
-	
-	public void changeSlotValue(int diagramID, String className, String slotName, String aParsableText) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(className),
-				new Value(slotName),
-				new Value(aParsableText)};
-		sendMessage("changeSlotValue", message);
-	}
+
+    public void changeSlotValue(int diagramID, String className, String slotName, String aParsableText) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(className),
+                new Value(slotName),
+                new Value(aParsableText)};
+        sendMessage("changeSlotValue", message);
+    }
 
 //	public void changeAssociationLevel(int objectId, int oldLevel, int newLevel) {
 //		Value[] message = new Value[]{
@@ -977,66 +984,66 @@ public class FmmlxDiagramCommunicator {
 //	}
 
 
-	public void changeOf(int diagramID, String objectName, String oldOfName, String newOfName) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(objectName),
-				new Value(oldOfName),
-				new Value(newOfName)};
-		sendMessage("changeOf", message);
-	}
+    public void changeOf(int diagramID, String objectName, String oldOfName, String newOfName) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(objectName),
+                new Value(oldOfName),
+                new Value(newOfName)};
+        sendMessage("changeOf", message);
+    }
 
-	public void changeParent(int diagramID, String objectName, Vector<String> currentParents, Vector<String> newParents) {
-		Value[] parentsArray = createValueArray(currentParents);
-		Value[] newParentsArray = createValueArray(newParents);
+    public void changeParent(int diagramID, String objectName, Vector<String> currentParents, Vector<String> newParents) {
+        Value[] parentsArray = createValueArray(currentParents);
+        Value[] newParentsArray = createValueArray(newParents);
 
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(objectName),
-				new Value(parentsArray),
-				new Value(newParentsArray)};
-		sendMessage("changeParent", message);
-	}
-	
-	public void addDelegation(int diagramID, String delegateFromName, String delegateToName, Integer delegateToLevel) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(delegateFromName), new Value(delegateToName), new Value(delegateToLevel)};
-		sendMessage("addDelegation", message);
-	}
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(objectName),
+                new Value(parentsArray),
+                new Value(newParentsArray)};
+        sendMessage("changeParent", message);
+    }
 
-	public void removeDelegation(int diagramID, String delegateFromName) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(delegateFromName)};
-		sendMessage("removeDelegation", message);
-	}	
-	
-	public void setRoleFiller(int diagramID, String delegateFromName, String delegateToName) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(delegateFromName), new Value(delegateToName)};
-		sendMessage("setRoleFiller", message);
-	}
+    public void addDelegation(int diagramID, String delegateFromName, String delegateToName, Integer delegateToLevel) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(delegateFromName), new Value(delegateToName), new Value(delegateToLevel)};
+        sendMessage("addDelegation", message);
+    }
 
-	public void addAssociation(int diagramID, 
-			String classSourceName, String classTargetName,
-			String accessSourceFromTargetName, String accessTargetFromSourceName,
-			String fwName, String reverseName,
-			Multiplicity multTargetToSource, Multiplicity multSourceToTarget,
-			Integer instLevelSource, Integer instLevelTarget, boolean sourceVisible, boolean targetVisible,
-			boolean isSymmetric, boolean isTransitive) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(classSourceName), new Value(classTargetName),
-				new Value(accessSourceFromTargetName), new Value(accessTargetFromSourceName),
-				new Value(fwName), reverseName == null ? new Value(-1) : new Value(reverseName),
-				new Value(multTargetToSource.toValue()),
-				new Value(multSourceToTarget.toValue()), // multiplicity,
-				new Value(instLevelSource), new Value(instLevelTarget),
-				new Value(sourceVisible), new Value(targetVisible), new Value(isSymmetric), new Value(isTransitive) };
-		sendMessage("addAssociation", message);
-	}
+    public void removeDelegation(int diagramID, String delegateFromName) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(delegateFromName)};
+        sendMessage("removeDelegation", message);
+    }
+
+    public void setRoleFiller(int diagramID, String delegateFromName, String delegateToName) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(delegateFromName), new Value(delegateToName)};
+        sendMessage("setRoleFiller", message);
+    }
+
+    public void addAssociation(int diagramID,
+                               String classSourceName, String classTargetName,
+                               String accessSourceFromTargetName, String accessTargetFromSourceName,
+                               String fwName, String reverseName,
+                               Multiplicity multTargetToSource, Multiplicity multSourceToTarget,
+                               Integer instLevelSource, Integer instLevelTarget, boolean sourceVisible, boolean targetVisible,
+                               boolean isSymmetric, boolean isTransitive) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(classSourceName), new Value(classTargetName),
+                new Value(accessSourceFromTargetName), new Value(accessTargetFromSourceName),
+                new Value(fwName), reverseName == null ? new Value(-1) : new Value(reverseName),
+                new Value(multTargetToSource.toValue()),
+                new Value(multSourceToTarget.toValue()), // multiplicity,
+                new Value(instLevelSource), new Value(instLevelTarget),
+                new Value(sourceVisible), new Value(targetVisible), new Value(isSymmetric), new Value(isTransitive)};
+        sendMessage("addAssociation", message);
+    }
 
 //	public void changeMultiplicityAttribute(int objectId, String attributeName, Multiplicity multi) {
 //		Value[] message = new Value[]{new Value(-1),
@@ -1046,344 +1053,344 @@ public class FmmlxDiagramCommunicator {
 //		sendMessage("changeMultiplicity", message);
 //	}
 
-	public void changeOperationBody(int diagramID, String objectName, String operationName, String body) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(objectName),
-				new Value(operationName),
-				new Value(body)};
-		sendMessage("changeOperationBody", message);
-	}
+    public void changeOperationBody(int diagramID, String objectName, String operationName, String body) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(objectName),
+                new Value(operationName),
+                new Value(body)};
+        sendMessage("changeOperationBody", message);
+    }
 
-	public void changeAssociationTarget(int diagramID, String associationName, String oldTargetName, String newTargetName) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
+    public void changeAssociationTarget(int diagramID, String associationName, String oldTargetName, String newTargetName) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
 //				new Value(objectName),
-				new Value(associationName),
-				new Value(oldTargetName),
-				new Value(newTargetName)};
-		sendMessage("changeAssociationTarget", message);
-	}
+                new Value(associationName),
+                new Value(oldTargetName),
+                new Value(newTargetName)};
+        sendMessage("changeAssociationTarget", message);
+    }
 
-	// to be discussed how this may work anyway
-	@Deprecated
-	public void editAssociation(int diagramID, int associationId, FmmlxObject source, FmmlxObject target, int newInstLevelSource,
-								int newInstLevelTarget, String newDisplayNameSource, String newDisplayNameTarget,
-								String newIdentifierSource, String newIdentifierTarget, Multiplicity multiSource,
-								Multiplicity multiTarget) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(associationId),
-				new Value(source.getPath()),
-				new Value(target.getPath()),
-				new Value(newInstLevelSource),
-				new Value(newInstLevelTarget),
-				new Value(newDisplayNameSource),
-				newDisplayNameTarget == null ? new Value(-1) : new Value(newDisplayNameTarget),
-				new Value(newIdentifierSource),
-				new Value(newIdentifierTarget),
-				new Value(multiSource.toValue()),
-				new Value(multiTarget.toValue())};
-		sendMessage("editAssociation", message);
-	}
+    // to be discussed how this may work anyway
+    @Deprecated
+    public void editAssociation(int diagramID, int associationId, FmmlxObject source, FmmlxObject target, int newInstLevelSource,
+                                int newInstLevelTarget, String newDisplayNameSource, String newDisplayNameTarget,
+                                String newIdentifierSource, String newIdentifierTarget, Multiplicity multiSource,
+                                Multiplicity multiTarget) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(associationId),
+                new Value(source.getPath()),
+                new Value(target.getPath()),
+                new Value(newInstLevelSource),
+                new Value(newInstLevelTarget),
+                new Value(newDisplayNameSource),
+                newDisplayNameTarget == null ? new Value(-1) : new Value(newDisplayNameTarget),
+                new Value(newIdentifierSource),
+                new Value(newIdentifierTarget),
+                new Value(multiSource.toValue()),
+                new Value(multiTarget.toValue())};
+        sendMessage("editAssociation", message);
+    }
 
-	public void addAssociationInstance(int diagramID, String object1Name, String object2Name, String associationName) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(object1Name),
-				new Value(object2Name),
-				new Value(associationName)};
-		sendMessage("addAssociationInstance", message);
-	}
+    public void addAssociationInstance(int diagramID, String object1Name, String object2Name, String associationName) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(object1Name),
+                new Value(object2Name),
+                new Value(associationName)};
+        sendMessage("addAssociationInstance", message);
+    }
 
-	public void removeAssociationInstance(int diagramID, String assocInstId) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(assocInstId)
-		};
-		sendMessage("removeAssociationInstance", message);
-	}
+    public void removeAssociationInstance(int diagramID, String assocInstId) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(assocInstId)
+        };
+        sendMessage("removeAssociationInstance", message);
+    }
 
-	public void updateAssociationInstance(int diagramID, String associationInstanceId, String startObjectPath, String endObjectPath) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(associationInstanceId),
-				//TODO new Value(startObjectId),
-				new Value(startObjectPath),
-				//new Value(endObjectId)};
-				new Value(endObjectPath)};
-		sendMessage("updateAssociationInstance", message);
-	}
+    public void updateAssociationInstance(int diagramID, String associationInstanceId, String startObjectPath, String endObjectPath) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(associationInstanceId),
+                //TODO new Value(startObjectId),
+                new Value(startObjectPath),
+                //new Value(endObjectId)};
+                new Value(endObjectPath)};
+        sendMessage("updateAssociationInstance", message);
+    }
 
-	public void storeLabelInfo(FmmlxDiagram diagram, DiagramEdgeLabel l) {		
-		sendMessage("storeLabelInfo",l.getInfo4XMF());
-		//xmfRequest(handler, "storeLabelInfo",l.getInfo4XMF());
-	}
+    public void storeLabelInfo(FmmlxDiagram diagram, DiagramEdgeLabel l) {
+        sendMessage("storeLabelInfo", l.getInfo4XMF());
+        //xmfRequest(handler, "storeLabelInfo",l.getInfo4XMF());
+    }
 
-	public void storeLabelInfoFromXml(int diagramId, double relativeX, double relativeY) {
-		Value[] message = new Value[]{
-				new Value(new Value[] {new Value(diagramId), new Value(-1)}),
-				new Value("ownerPath"),
-				new Value("localID"), //TODO ???
-				new Value((float)relativeX),
-				new Value((float)relativeY)};
-		sendMessage("storeLabelInfo",message);
-	}
+    public void storeLabelInfoFromXml(int diagramId, double relativeX, double relativeY) {
+        Value[] message = new Value[]{
+                new Value(new Value[]{new Value(diagramId), new Value(-1)}),
+                new Value("ownerPath"),
+                new Value("localID"), //TODO ???
+                new Value((float) relativeX),
+                new Value((float) relativeY)};
+        sendMessage("storeLabelInfo", message);
+    }
 
-	public void changeAssociationForwardName(int diagramID, String associationName, String newFwName) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(associationName),
-				new Value(newFwName)};
-		sendMessage("changeAssociationForwardName", message);
-	}
+    public void changeAssociationForwardName(int diagramID, String associationName, String newFwName) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(associationName),
+                new Value(newFwName)};
+        sendMessage("changeAssociationForwardName", message);
+    }
 
-	public void changeAssociationStart2EndLevel(int diagramID, String associationId, Integer newLevel) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(associationId),
-				new Value(newLevel)};
-		sendMessage("changeAssociationStart2EndLevel", message);
-	}
+    public void changeAssociationStart2EndLevel(int diagramID, String associationId, Integer newLevel) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(associationId),
+                new Value(newLevel)};
+        sendMessage("changeAssociationStart2EndLevel", message);
+    }
 
-	public void changeAssociationEnd2StartLevel(int diagramID, String associationId, Integer newLevel) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(associationId),
-				new Value(newLevel)};
-		sendMessage("changeAssociationEnd2StartLevel", message);
-	}
+    public void changeAssociationEnd2StartLevel(int diagramID, String associationId, Integer newLevel) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(associationId),
+                new Value(newLevel)};
+        sendMessage("changeAssociationEnd2StartLevel", message);
+    }
 
-	public void changeAssociationStart2EndAccessName(int diagramID, String associationId, String newName) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(associationId),
-				new Value(newName)};
-		sendMessage("changeAssociationStart2EndAccessName", message);
-	}
+    public void changeAssociationStart2EndAccessName(int diagramID, String associationId, String newName) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(associationId),
+                new Value(newName)};
+        sendMessage("changeAssociationStart2EndAccessName", message);
+    }
 
-	public void changeAssociationEnd2StartAccessName(int diagramID, String associationId, String newName) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(associationId),
-				new Value(newName)};
-		sendMessage("changeAssociationEnd2StartAccessName", message);
-	}
+    public void changeAssociationEnd2StartAccessName(int diagramID, String associationId, String newName) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(associationId),
+                new Value(newName)};
+        sendMessage("changeAssociationEnd2StartAccessName", message);
+    }
 
-	public void changeAssociationStart2EndMultiplicity(int diagramID, String associationName, Multiplicity newMultiplicity) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(associationName),
-				new Value(newMultiplicity.toValue())};
-		sendMessage("changeAssociationStart2EndMultiplicity", message);
-	}
+    public void changeAssociationStart2EndMultiplicity(int diagramID, String associationName, Multiplicity newMultiplicity) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(associationName),
+                new Value(newMultiplicity.toValue())};
+        sendMessage("changeAssociationStart2EndMultiplicity", message);
+    }
 
-	public void changeAssociationEnd2StartMultiplicity(int diagramID, String associationName, Multiplicity newMultiplicity) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(associationName),
-				new Value(newMultiplicity.toValue())};
-		sendMessage("changeAssociationEnd2StartMultiplicity", message);
-	}
+    public void changeAssociationEnd2StartMultiplicity(int diagramID, String associationName, Multiplicity newMultiplicity) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(associationName),
+                new Value(newMultiplicity.toValue())};
+        sendMessage("changeAssociationEnd2StartMultiplicity", message);
+    }
 
-	public void setClassAbstract(int diagramID, String className, boolean b) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(className),
-				new Value(b)};
-		sendMessage("setClassAbstract", message);		
-	}
+    public void setClassAbstract(int diagramID, String className, boolean b) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(className),
+                new Value(b)};
+        sendMessage("setClassAbstract", message);
+    }
 
-	public void levelRaiseAll(int diagramID) {
-		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID), new Value(1)};
-		sendMessage("levelRaiseAll", message);		
-	}
+    public void levelRaiseAll(int diagramID) {
+        Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID), new Value(1)};
+        sendMessage("levelRaiseAll", message);
+    }
 
-	public void levelLowerAll(int diagramID) {
-		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID), new Value(-1)};
-		sendMessage("levelRaiseAll", message);		
-	}
+    public void levelLowerAll(int diagramID) {
+        Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID), new Value(-1)};
+        sendMessage("levelRaiseAll", message);
+    }
 
-	public void printProtocol(int diagramID) {
-		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID)};
-		sendMessage("printProtocol", message);		
-	}
+    public void printProtocol(int diagramID) {
+        Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID)};
+        sendMessage("printProtocol", message);
+    }
 
-	public void addEnumeration(int diagramID, String newEnumName) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(newEnumName)};
-		sendMessage("addEnumeration", message);
-	}
+    public void addEnumeration(int diagramID, String newEnumName) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(newEnumName)};
+        sendMessage("addEnumeration", message);
+    }
 
-	public void changeEnumerationName(int diagramID, String oldEnumName, String newEnumName) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(oldEnumName),
-				new Value(newEnumName)};
-		sendMessage("changeEnumerationName", message);
-	}
-	
-	public void removeEnumeration(int diagramID, String enumName) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(enumName)};
-		sendMessage("removeEnumeration", message);
-	}
-	
-	public void addEnumerationItem(int diagramID, String enumName, String newEnumValueName) throws TimeOutException {
-		Vector<Object> result = xmfRequest(handler, diagramID, "addEnumerationValue", new Value(enumName),
-				new Value(newEnumValueName));
-		showErrorMessage(result);
-	}
+    public void changeEnumerationName(int diagramID, String oldEnumName, String newEnumName) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(oldEnumName),
+                new Value(newEnumName)};
+        sendMessage("changeEnumerationName", message);
+    }
 
-	@SuppressWarnings("unchecked")
-	private void showErrorMessage(Vector<Object> msgAsVec) {
-		if(msgAsVec.size() <= 0) return;
-		java.util.Vector<Object> err = (java.util.Vector<Object>) msgAsVec.get(0);
-		if (err != null && err.size() > 0 && err.get(0) != null) {
-			Platform.runLater(() -> {
-				Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
-				alert.showAndWait();
-			});
-		}
-	}
+    public void removeEnumeration(int diagramID, String enumName) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(enumName)};
+        sendMessage("removeEnumeration", message);
+    }
 
-	public void changeEnumerationItemName(int diagramID, String enumName, String oldEnumValueName, String newEnumValueName) throws TimeOutException {
-		xmfRequest(handler, diagramID, "changeEnumerationValueName", new Value(enumName),
-				new Value(oldEnumValueName),
-				new Value(newEnumValueName));
-	}
-	
-	public void removeEnumerationItem(int diagramID, String enumName, String enumValueName) throws TimeOutException {
-		xmfRequest(handler, diagramID, "removeEnumerationValue", new Value(enumName),
-				new Value(enumValueName));
-	}
+    public void addEnumerationItem(int diagramID, String enumName, String newEnumValueName) throws TimeOutException {
+        Vector<Object> result = xmfRequest(handler, diagramID, "addEnumerationValue", new Value(enumName),
+                new Value(newEnumValueName));
+        showErrorMessage(result);
+    }
 
-	public void editEnumeration(int diagramID, String enumName, Vector<String> elements) {
-		Value[] elementArray = createValueArray(elements);
-		
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(enumName),
-				new Value(elementArray)};
-		sendMessage("editEnum", message);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public Vector<Issue> fetchIssues(FmmlxDiagram fmmlxDiagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, fmmlxDiagram.getID(), "getAllIssues");
-		Vector<Object> issueList = (Vector<Object>) (response.get(0));
-		Vector<Issue> result = new Vector<>();
-		for (Object issueO : issueList) {
-			Vector<Object> issueV = (Vector<Object>) issueO;
-			try{
-				Issue issue = Issue.readIssue(issueV);
-				result.add(issue);
-			} catch (Issue.IssueNotReadableException e) {
-				e.printStackTrace();
-			}
-		}
-		return result;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public Vector<String> fetchAllAuxTypes(AbstractPackageViewer fmmlxDiagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, fmmlxDiagram.getID(), "getAllAuxTypes");
-		Vector<Object> auxList = (Vector<Object>) (response.get(0));
-		Vector<String> result = new Vector<>();
-		for (Object auxO : auxList) {
-			Vector<Object> auxV = (Vector<Object>) auxO;
-			String name = (String) (auxV.get(0));
-			result.add(name);
-		}
-		return result;
-	}
-	
-	public void hideElements(int diagramID, Vector<FmmlxObject> objects, Boolean hide) {
-		Value[] vec = new Value[objects.size()];
-		for (int i = 0; i < vec.length; i++) {
-			vec[i] = new Value(objects.get(i).getPath());
-		}
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(vec),
-				new Value(hide)};
-		sendMessage("hideElements", message);
-	}
+    @SuppressWarnings("unchecked")
+    private void showErrorMessage(Vector<Object> msgAsVec) {
+        if (msgAsVec.size() <= 0) return;
+        java.util.Vector<Object> err = (java.util.Vector<Object>) msgAsVec.get(0);
+        if (err != null && err.size() > 0 && err.get(0) != null) {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
+                alert.showAndWait();
+            });
+        }
+    }
 
-	public void assignToGlobal(int diagramID, FmmlxObject object, String varName) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-				new Value(object.getPath()),
-				new Value(varName)};
-		sendMessage("assignToGlobal", message);
-	}
+    public void changeEnumerationItemName(int diagramID, String enumName, String oldEnumValueName, String newEnumValueName) throws TimeOutException {
+        xmfRequest(handler, diagramID, "changeEnumerationValueName", new Value(enumName),
+                new Value(oldEnumValueName),
+                new Value(newEnumValueName));
+    }
 
-	public void showBody(AbstractPackageViewer fmmlxDiagram, FmmlxObject object, FmmlxOperation operation) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(fmmlxDiagram.getID()),
-				new Value(object.getPath()),
-				new Value(operation.getName()),
-				new Value(-1), // arity
-				};
-		sendMessage("showBody", message);
-	}
+    public void removeEnumerationItem(int diagramID, String enumName, String enumValueName) throws TimeOutException {
+        xmfRequest(handler, diagramID, "removeEnumerationValue", new Value(enumName),
+                new Value(enumValueName));
+    }
 
-	public void loadProjectNameFromXml(String projectName, Vector<String> diagramNames, String file){
-		Value[] diagramNamesValue = createValueArray(diagramNames);
-		Value[] message = new Value[]{
-				new Value(-1),
-				new Value(projectName),
-				new Value(diagramNamesValue),
-				new Value(file)
-		};
-		sendMessage("loadProjectFromXml", message);
-	}
+    public void editEnumeration(int diagramID, String enumName, Vector<String> elements) {
+        Value[] elementArray = createValueArray(elements);
 
-	public void openXmlFile(String fileName){
-		FmmlxDeserializer fmmlxDeserializer = new FmmlxDeserializer(new XmlHandler(fileName));
-		fmmlxDeserializer.loadProject(this);
-	}
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(enumName),
+                new Value(elementArray)};
+        sendMessage("editEnum", message);
+    }
 
-	public void openPackageBrowser() {
-		WorkbenchClient.theClient().send(handler, "openPackageBrowser()");
-	}
+    @SuppressWarnings("unchecked")
+    public Vector<Issue> fetchIssues(FmmlxDiagram fmmlxDiagram) throws TimeOutException {
+        Vector<Object> response = xmfRequest(handler, fmmlxDiagram.getID(), "getAllIssues");
+        Vector<Object> issueList = (Vector<Object>) (response.get(0));
+        Vector<Issue> result = new Vector<>();
+        for (Object issueO : issueList) {
+            Vector<Object> issueV = (Vector<Object>) issueO;
+            try {
+                Issue issue = Issue.readIssue(issueV);
+                result.add(issue);
+            } catch (Issue.IssueNotReadableException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
 
-	public Vector<String> evalList(AbstractPackageViewer diagram, String text) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram.getID(), "evalList", new Value(text));
-		@SuppressWarnings("unchecked")
-		Vector<Object> list = (Vector<Object>) (response.get(0));
-		Vector<String> result = new Vector<>();
-		for (Object o : list) {
+    @SuppressWarnings("unchecked")
+    public Vector<String> fetchAllAuxTypes(AbstractPackageViewer fmmlxDiagram) throws TimeOutException {
+        Vector<Object> response = xmfRequest(handler, fmmlxDiagram.getID(), "getAllAuxTypes");
+        Vector<Object> auxList = (Vector<Object>) (response.get(0));
+        Vector<String> result = new Vector<>();
+        for (Object auxO : auxList) {
+            Vector<Object> auxV = (Vector<Object>) auxO;
+            String name = (String) (auxV.get(0));
+            result.add(name);
+        }
+        return result;
+    }
+
+    public void hideElements(int diagramID, Vector<FmmlxObject> objects, Boolean hide) {
+        Value[] vec = new Value[objects.size()];
+        for (int i = 0; i < vec.length; i++) {
+            vec[i] = new Value(objects.get(i).getPath());
+        }
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(vec),
+                new Value(hide)};
+        sendMessage("hideElements", message);
+    }
+
+    public void assignToGlobal(int diagramID, FmmlxObject object, String varName) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(object.getPath()),
+                new Value(varName)};
+        sendMessage("assignToGlobal", message);
+    }
+
+    public void showBody(AbstractPackageViewer fmmlxDiagram, FmmlxObject object, FmmlxOperation operation) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(fmmlxDiagram.getID()),
+                new Value(object.getPath()),
+                new Value(operation.getName()),
+                new Value(-1), // arity
+        };
+        sendMessage("showBody", message);
+    }
+
+    public void loadProjectNameFromXml(String projectName, Vector<String> diagramNames, String file) {
+        Value[] diagramNamesValue = createValueArray(diagramNames);
+        Value[] message = new Value[]{
+                new Value(-1),
+                new Value(projectName),
+                new Value(diagramNamesValue),
+                new Value(file)
+        };
+        sendMessage("loadProjectFromXml", message);
+    }
+
+    public void openXmlFile(String fileName) {
+        FmmlxDeserializer fmmlxDeserializer = new FmmlxDeserializer(new XmlHandler(fileName));
+        fmmlxDeserializer.loadProject(this);
+    }
+
+    public void openPackageBrowser() {
+        WorkbenchClient.theClient().send(handler, "openPackageBrowser()");
+    }
+
+    public Vector<String> evalList(AbstractPackageViewer diagram, String text) throws TimeOutException {
+        Vector<Object> response = xmfRequest(handler, diagram.getID(), "evalList", new Value(text));
+        @SuppressWarnings("unchecked")
+        Vector<Object> list = (Vector<Object>) (response.get(0));
+        Vector<String> result = new Vector<>();
+        for (Object o : list) {
 //			Vector<Object> auxV = (Vector<Object>) auxO;
-			String listElement = (String) (o);
-			result.add(listElement);
-		}
-		return result;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public FaXML getDiagramData(Integer diagramID) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagramID, "getDiagramData");
-		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+            String listElement = (String) (o);
+            result.add(listElement);
+        }
+        return result;
+    }
 
-		return new FaXML(responseContent);
-	}
+    @SuppressWarnings("unchecked")
+    public FaXML getDiagramData(Integer diagramID) throws TimeOutException {
+        Vector<Object> response = xmfRequest(handler, diagramID, "getDiagramData");
+        Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 
-	@SuppressWarnings("unchecked")
-	public HashMap<String, String> findImplementation(AbstractPackageViewer diagram, Vector<String> names, String model, Integer arity, String returnType) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram.getID(), "findOperationImplementation", new Value(createValueArray(names)), // opNames
-				new Value(arity),// arity
-				new Value(model),// model
-				new Value(returnType)// param4
-		);
-		
-		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-		
-		HashMap<String, String> result = new HashMap<>();
-		for(Object resultItemO : responseContent) {
-			Vector<Object> resultItem = (Vector<Object>) (resultItemO);
+        return new FaXML(responseContent);
+    }
+
+    @SuppressWarnings("unchecked")
+    public HashMap<String, String> findImplementation(AbstractPackageViewer diagram, Vector<String> names, String model, Integer arity, String returnType) throws TimeOutException {
+        Vector<Object> response = xmfRequest(handler, diagram.getID(), "findOperationImplementation", new Value(createValueArray(names)), // opNames
+                new Value(arity),// arity
+                new Value(model),// model
+                new Value(returnType)// param4
+        );
+
+        Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+
+        HashMap<String, String> result = new HashMap<>();
+        for (Object resultItemO : responseContent) {
+            Vector<Object> resultItem = (Vector<Object>) (resultItemO);
 //			System.err.println(resultItem);
 			result.put((String) resultItem.get(0), (String)resultItem.get(6));
 		}
@@ -1652,4 +1659,10 @@ public class FmmlxDiagramCommunicator {
 		return initLabel.substring(0, initLabel.length()-2)+id+")";
 	}
 
+    public Vector<DiagramEdgeLabel> getAllLabelPositions(int id) throws TimeOutException {
+        Vector<Object> response = xmfRequest(handler, -2, "getAllLabelPositions", new Value(id));
+        Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+        System.out.println(responseContent.toString());
+        return null;
+    }
 }

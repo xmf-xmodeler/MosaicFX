@@ -45,15 +45,15 @@ public class FmmlxSerializer implements Serializer {
     }
 
     @Override
-    public void save(String diagramPath, String label, Integer id, FmmlxDiagramCommunicator communicator)  {
-        if(diagramPath!=null && diagramPath.length()>0){
+    public void save(String diagramPath, String filePath, String label, Integer id, FmmlxDiagramCommunicator communicator)  {
+        if(filePath!=null && filePath.length()>0){
             try {
-                Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(diagramPath);
+                Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(filePath);
                 int saveLogCount = 0;
                 for(Integer id_tmp :diagramIds){
                     String diagramLabel = communicator.createLabelFromInitLabel(label, id_tmp);
-                    saveProject(diagramPath);
-                    saveDiagram(diagramLabel, diagramPath, id_tmp);
+                    saveProject(filePath);
+                    saveDiagram(diagramLabel, filePath, id_tmp);
                     if(saveLogCount==0){
                         saveLog(id_tmp, communicator);
                     }
@@ -89,7 +89,6 @@ public class FmmlxSerializer implements Serializer {
             }
             saveComponentsIntoDiagram(diagramElement, id);
             diagramXmlManager.add(diagramsElement, diagramElement);
-
         }
     }
 
