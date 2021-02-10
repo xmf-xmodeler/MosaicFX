@@ -93,9 +93,13 @@ public class CustomDialog<R> extends Dialog<R> {
 		return string == null || string.length() == 0;
 	}
 
-	public Integer getComboBoxIntegerValue(ComboBox<Integer> box) throws NumberFormatException {
+	public Integer getComboBoxIntegerValue(ComboBox<Integer> box) {
 		int result;
-		result = Integer.parseInt(box.getEditor().getText());
+		try {
+			result = Integer.parseInt(box.getEditor().getText());
+		} catch (NumberFormatException e) {
+			return null;
+		}
 		return result;
 	}
 	
