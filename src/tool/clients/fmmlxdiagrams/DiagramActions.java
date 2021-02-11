@@ -898,7 +898,7 @@ public class DiagramActions {
 	public void testGetLabel() {
 		Task<Void> task = new Task<Void>() {
 			@Override
-			protected Void call() throws TimeOutException {
+			protected Void call() {
 				Vector<Integer> ids = diagram.getComm().getAllDiagramIDs(diagram.getPackagePath());
 				System.out.println(ids);
 				for (int id : ids){
