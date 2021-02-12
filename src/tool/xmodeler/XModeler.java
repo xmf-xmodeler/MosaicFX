@@ -81,9 +81,13 @@ public class XModeler extends Application {
   static MenuBar		 menuBar			 = null;
   static Pane			 notificationPane 	 = null;
   
-  private ControlCenter  newStage            = null;
-  
-  public static String attributeValue(Node node, String name) {
+  private static ControlCenter  newStage            = null;
+
+    public static ControlCenter getNewStage() {
+        return newStage;
+    }
+
+    public static String attributeValue(Node node, String name) {
     NamedNodeMap attrs = node.getAttributes();
     for (int i = 0; i < attrs.getLength(); i++) {
       Attr attribute = (Attr) attrs.item(i);
@@ -427,13 +431,15 @@ public class XModeler extends Application {
 	  startXOS(copyOfArgs[0]);
 	  singleton = this;
 	  stage = primaryStage;
-	  newStage = new ControlCenter();
 	  createXmodeler();
 	  initClients();
       startClients();
 	  openXModeler();
+      newStage = new ControlCenter();
 	  newStage.show();
   }
+
+
 
     public void createXmodeler() throws Exception {
 	  		outerSplitPane = new SplitPane();

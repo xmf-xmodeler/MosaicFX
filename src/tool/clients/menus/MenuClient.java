@@ -380,7 +380,8 @@ l.countDown();
             () -> {
               Menu oldMenu = getRootMenuItemNamed(name);
               if (oldMenu != null) {
-                  XModeler.getMenuBar().getMenus().remove(oldMenu);
+                  //XModeler.getMenuBar().getMenus().remove(oldMenu);
+                  XModeler.getNewStage().getMenuBar().getMenus().remove(oldMenu);
                   String oldId = getId(oldMenu);
                   menus.remove(oldId);
               }
@@ -390,7 +391,8 @@ l.countDown();
 
               //menuItem.setMenu(menu);
               //menuItem.setText(name);
-              XModeler.getMenuBar().getMenus().add(menu);
+              //XModeler.getMenuBar().getMenus().add(menu);
+              XModeler.getNewStage().getMenuBar().getMenus().add(menu);
       //        XModeler.getXModeler().setMenuBar(XModeler.getMenuBar());
               menus.put(id, menu);
               l.countDown();
