@@ -955,5 +955,6 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	public String getIsAbstract() {
 		return Boolean.toString(isAbstract);
 	}
-
+	
+	
 }
