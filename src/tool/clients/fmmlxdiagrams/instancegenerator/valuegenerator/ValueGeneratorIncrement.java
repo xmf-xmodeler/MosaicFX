@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.view.ValueGeneratorIncrementDialog;
 

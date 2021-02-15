@@ -38,12 +38,10 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.LevelColorScheme;
-import tool.clients.fmmlxdiagrams.LevelColorScheme.RedLevelColorScheme;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
 import tool.clients.fmmlxdiagrams.menus.BrowserAttributeContextMenu;
-import tool.clients.fmmlxdiagrams.menus.BrowserObjectContextMenu;
 import tool.xmodeler.XModeler;
 
 
@@ -70,7 +68,7 @@ public class ModelBrowser extends CustomStage {
 	
 	
 	private HashMap<String,AbstractPackageViewer> models = new HashMap<>();
-	private RedLevelColorScheme levelColorScheme;
+	private LevelColorScheme levelColorScheme = new LevelColorScheme.FixedBlueLevelColorScheme();
 	
 	public ModelBrowser(String project, String selectedModel, ObservableList<String> models) {
 		super(StringValue.LabelAndHeaderTitle.modelBrowser+" " + project, XModeler.getStage(), 1400, 800);
@@ -591,7 +589,7 @@ public class ModelBrowser extends CustomStage {
 	public void notifyModelHasLoaded() {
 		Platform.runLater(() -> {
 			Vector<FmmlxObject> objects = activePackage.getObjects();
-			levelColorScheme = new LevelColorScheme.RedLevelColorScheme(objects);
+//			levelColorScheme = new LevelColorScheme.RedLevelColorScheme(objects);
 			
 			Collections.sort(objects, new Comparator<FmmlxObject>() {
 

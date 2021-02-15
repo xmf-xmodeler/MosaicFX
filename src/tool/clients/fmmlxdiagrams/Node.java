@@ -17,7 +17,7 @@ public abstract class Node implements CanvasElement{
 	protected int height;
 	protected int minWidth = 100;
 	protected transient Point2D lastClick = null;
-	protected FmmlxObjectPort ports;
+	private FmmlxObjectPort port;
 	
 	protected transient boolean requiresReLayout;
 	protected Vector<NodeElement> nodeElements = new Vector<>();
@@ -35,6 +35,10 @@ public abstract class Node implements CanvasElement{
 	public double getCenterY() { return y + height / 2.; }
 	public double getRightX() { return x + width; }
 	public double getBottomY() { return y + height; }
+	
+	public Node() {
+		this.port = new FmmlxObjectPort(this);
+	}
 
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram diagram) {
 		
@@ -44,7 +48,7 @@ public abstract class Node implements CanvasElement{
 
 		boolean selected = diagram.isSelected(this);
 
-		g.setFont(diagram.getFont());
+//		g.setFont(diagram.getFont());
 
 		for (NodeElement e : nodeElements) {
 			e.paintOn(g, x + xOffset, y + yOffset, diagram, selected);
@@ -83,6 +87,26 @@ public abstract class Node implements CanvasElement{
 
 	public boolean isHidden() {
 		return hidden;
+	}
+	
+	public Point2D getPointForEdge(Edge.End edge, boolean isStartNode) {
+		return port.getPointForEdge(edge, isStartNode);
+	}
+
+	public PortRegion getDirectionForEdge(Edge.End edge, boolean isStartNode) {
+		return port.getDirectionForEdge(edge, isStartNode);
+	}
+	
+	public void setDirectionForEdge(Edge.End edge, boolean isStartNode, PortRegion newPortRegion) {
+		port.setDirectionForEdge(edge, isStartNode, newPortRegion);
+	}
+	
+	public void addEdgeEnd(Edge.End edge, PortRegion direction) {
+		port.addNewEdge(edge, direction);
+	}
+
+	public void updatePortOder() {
+		port.sortAllPorts();
 	}
 
 }

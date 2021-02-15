@@ -1,15 +1,19 @@
 package tool.clients.fmmlxdiagrams;
 
-import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 
 public class NodeLabel extends NodeBaseElement implements NodeElement {
 	
 	private Pos alignment;
-	private boolean fontItalic;
+	private final FontWeight fontWeight;
+	private final FontPosture fontPosture;
+	private final int fontSize = 14;
 	private Color fgColor = Color.BLACK;
 	private Color bgColor = null;
 	private String text;
@@ -47,12 +51,8 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 			g.fillRect(x - hAlign + xOffset - BOX_GAP, y + yOffset - BOX_GAP - textHeight, textWidth + 2 * BOX_GAP, textHeight + 2 * BOX_GAP);
 		}
 
-		// Changing font to oblique(italic)
-		if (fontItalic) {
-			g.setFont(diagram.getFontKursiv());
-		} else {
-			g.setFont(diagram.getFont());
-		}
+		g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), fontWeight, fontPosture, fontSize));
+		
 		g.setFill(fgColor);
 		g.fillText(textLocal, x - hAlign + xOffset, y + yOffset - Y_BASELINE_DIFF);
 		// Resetting font to standard in case font was changed
@@ -60,13 +60,19 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 	}
 
 	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
-					 String text, boolean fontItalic) {
+			 String text) {
+		this(alignment, x, y, fgColor, bgColor, actionObject, action, text, FontPosture.REGULAR, FontWeight.NORMAL);
+	}
+	
+	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
+				 String text, FontPosture fontPosture, FontWeight fontWeight) {
 		super(x, y, actionObject, action);
 		this.alignment = alignment;
 		this.fgColor = fgColor;
 		this.bgColor = bgColor;
 		this.text = text;
-		this.fontItalic = fontItalic;
+		this.fontWeight = fontWeight;
+		this.fontPosture = fontPosture;
 		this.selected = false;
 		
 		textWidth = FmmlxDiagram.calculateTextWidth(text);

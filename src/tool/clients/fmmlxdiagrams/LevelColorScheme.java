@@ -86,6 +86,43 @@ public abstract class LevelColorScheme {
 		}
 	}
 	
+	public static final class FixedBlueLevelColorScheme extends LevelColorScheme {
+
+		private final Color A = new Color(   .95,    .95,    .95, 1.);
+		private final Color B = new Color(10./15, 13./15,     1., 1.);
+		private final Color C = new Color( 6./15,  9./15,     1., 1.);
+		private final Color D = new Color( 4./15,  5./15, 13./15, 1.);
+		private final Color E = new Color( 5./15,  2./15, 10./15, 1.);
+		private final Color F = new Color( 4./15,     0.,  3./15, 1.);
+		private final Color G = new Color( 7./15,  7./15,  7./15, 1.);
+		
+		@Override
+		public Color getLevelFgColor(int level, double opacity) {
+			switch (level) {
+				case 0: case 1: case 2: return Color.BLACK.deriveColor(0., 1., 1., opacity);
+				case 3: case 4: case 5: case 6: return Color.WHITE.deriveColor(0., 1., 1., opacity);
+				case 7: return B.deriveColor(0., 1., 1., opacity);
+				case 8: return C.deriveColor(0., 1., 1., opacity);
+				case 9: return D.deriveColor(0., 1., 1., opacity);
+				default: return G.deriveColor(0., 1., 1., opacity);
+			}
+		}
+
+		@Override
+		public Paint getLevelBgColor(int level) {
+			switch (level) {
+				case 0: return A;
+				case 1: return B;
+				case 2: return C;
+				case 3: return D;
+				case 4: return E;
+				case 5: return F;
+				default: return Color.BLACK;
+			}
+		}
+		
+	}
+	
 	public static final class RedLevelColorScheme extends LevelColorScheme {
 		private final int min;
 		private final int max;

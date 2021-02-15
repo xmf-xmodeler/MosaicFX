@@ -1,7 +1,6 @@
 package tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator;
 
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -6,6 +6,9 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import xos.Value;
 
 public class DiagramEdgeLabel implements CanvasElement {
@@ -52,6 +55,8 @@ public class DiagramEdgeLabel implements CanvasElement {
 		g.fillRect(this.getReferenceX() + relativeX, this.getReferenceY() + relativeY, this.width, this.height);
 		
 		g.setFill(highlighted ? new Color(1.,0.,0.,1.):fontColor);
+		g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), FontWeight.NORMAL, FontPosture.REGULAR, 14));
+
 		g.fillText(this.text, this.getReferenceX() + relativeX + MARGIN, this.getReferenceY() + relativeY + height - MARGIN-2);
 		if(anchors.size()>=2) {
 			if(anchors.firstElement().getCenterX() <= anchors.elementAt(1).getCenterX()) {		

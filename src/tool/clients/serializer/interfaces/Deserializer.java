@@ -8,7 +8,9 @@ public interface Deserializer {
 
     void getAllDiagramElement(Integer newDiagramID);
 
-    void alignCoordinate(FmmlxDiagram diagram);
+    void alignCoordinate2(FmmlxDiagram diagram);
 
     String getProjectName();
+
+    void alignCoordinate(String file, FmmlxDiagramCommunicator communicator);
 }

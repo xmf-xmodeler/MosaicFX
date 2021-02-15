@@ -104,7 +104,7 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 			errorLabel.setText("Name already used");
 			return false;
 		} else if (getComboBoxIntegerValue(levelComboBox) == null) {
-			errorLabel.setText("Enter level!");
+			errorLabel.setText("Enter level as integer!");
 			return false;
 		}
 		return true;

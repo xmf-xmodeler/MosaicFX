@@ -77,7 +77,7 @@ public class XModeler extends Application {
   static SplitPane       rightSplitPane      = null;
   static TabPane 		 browserTab 		 = null;
   static TabPane 		 editorTabs 		 = null;
-  public static TabPane 		 propertyTabs 		 = null;
+  public static TabPane  propertyTabs 		 = null;
   static MenuBar		 menuBar			 = null;
   static Pane			 notificationPane 	 = null;
   

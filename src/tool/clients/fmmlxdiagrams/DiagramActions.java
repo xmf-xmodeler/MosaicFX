@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
@@ -27,9 +28,7 @@ import tool.clients.fmmlxdiagrams.dialogs.results.*;
 import tool.clients.fmmlxdiagrams.dialogs.shared.*;
 import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
-import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGenerator;
 import tool.clients.serializer.FmmlxSerializer;
-import tool.clients.serializer.interfaces.Serializer;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -242,7 +241,8 @@ public class DiagramActions {
 			dlg = new DeleteEnumerationDialog(diagram);
 
 			dlg.setTitle("Delete Enumeration");
-			Optional<DeleteEnumerationDialogResult> result = dlg.showAndWait();
+			//Optional<DeleteEnumerationDialogResult> result = 
+			dlg.showAndWait();
 			diagram.updateDiagram();
 //			l.countDown();
 		});
@@ -288,11 +288,11 @@ public class DiagramActions {
 
 
 
-	public void changeNameDialog(FmmlxObject object, PropertyType type, FmmlxProperty selectedProperty) {
+	public <Property extends FmmlxProperty> void changeNameDialog(FmmlxObject object, PropertyType type, Property selectedProperty) {
 //		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			ChangeNameDialog dlg = new ChangeNameDialog(diagram, object, type, selectedProperty);
+			ChangeNameDialog<Property> dlg = new ChangeNameDialog<Property>(diagram, object, type, selectedProperty);
 
 			Optional<ChangeNameDialogResult> opt = dlg.showAndWait();
 
@@ -398,9 +398,8 @@ public class DiagramActions {
 			for(int i =0 ; i< instanceGenerator.getNumberOfInstance(); i++){
 				System.out.println("Name : "+instanceGenerator.getGeneratedInstanceName().get(i));
 				for (Map.Entry<FmmlxAttribute, IValueGenerator> fmmlxAttributeIValueGeneratorEntry : instanceGenerator.getValue().entrySet()) {
-					Map.Entry<FmmlxAttribute, ValueGenerator> pair = (Map.Entry) fmmlxAttributeIValueGeneratorEntry;
 					System.out.println(instanceGenerator.getSelectedParent());
-					System.out.println(pair.getKey().getName() + " : " + ((IValueGenerator) pair.getValue()).getGeneratedValue().get(i));
+					System.out.println(fmmlxAttributeIValueGeneratorEntry.getKey().getName() + " : " + ((IValueGenerator) fmmlxAttributeIValueGeneratorEntry.getValue()).getGeneratedValue().get(i));
 				}
 				instanceGenerator.generateInstance(i, instanceGenerator.getGeneratedInstanceName().get(i), 15, 15);
 			}
@@ -752,7 +751,8 @@ public class DiagramActions {
 	public void associationValueDialog(FmmlxObject object, PropertyType association) {
 		Platform.runLater(() -> {
 			AssociationValueDialog dlg = new AssociationValueDialog(diagram);
-			Optional<AssociationValueDialogResult> opt = dlg.showAndWait();
+			//Optional<AssociationValueDialogResult> opt = 
+		    dlg.showAndWait();
 		});
 	}
 
@@ -840,8 +840,11 @@ public class DiagramActions {
 		if(!(diagram instanceof FmmlxDiagram)) throw new IllegalArgumentException();
 		Platform.runLater(() -> {
 			try {
+				String filePath = ((FmmlxDiagram) diagram).getFilePath();
+				FmmlxDiagramCommunicator communicator = diagram.getComm();
+				String label = ((FmmlxDiagram)diagram).getDiagramLabel();
 				FmmlxSerializer serializer = new FmmlxSerializer(((FmmlxDiagram)diagram).getFilePath());
-				serializer.save((FmmlxDiagram)diagram);
+				serializer.save(diagram.getPackagePath(), filePath, label, diagram.getID(), communicator);
 			} catch (TransformerException | ParserConfigurationException e) {
 				e.printStackTrace();
 			}
@@ -875,5 +878,39 @@ public class DiagramActions {
 	public void hide(Vector<FmmlxObject> objects, boolean hide) {
 		diagram.getComm().hideElements(diagram.getID(), objects, hide);
 		diagram.updateDiagram();
+	}
+
+    public void testGetEdges() {
+		Task<Void> task = new Task<Void>() {
+			@Override
+			protected Void call() {
+				Vector<Integer> ids = diagram.getComm().getAllDiagramIDs(diagram.getPackagePath());
+				for (int id : ids){
+					try {
+						System.out.println("diagram id : "+id);
+						diagram.getComm().getAllEdgePositions(id);
+					} catch (TimeOutException e) {
+						e.printStackTrace();
+					}
+				}
+				return null;
+			}
+		};
+		new Thread(task).start();
+    }
+
+	public void testGetLabel() {
+		Task<Void> task = new Task<Void>() {
+			@Override
+			protected Void call() throws TimeOutException {
+				Vector<Integer> ids = diagram.getComm().getAllDiagramIDs(diagram.getPackagePath());
+				for (int id : ids){
+					System.out.println("diagram id : "+id);
+					diagram.getComm().getAllLabelPositions(id);
+				}
+				return null;
+			}
+		};
+		new Thread(task).start();
 	}
 }

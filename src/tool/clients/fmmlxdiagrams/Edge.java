@@ -8,25 +8,24 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.scene.transform.Affine;
-import tool.clients.fmmlxdiagrams.Edge.Anchor;
 
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Vector;
 
-public abstract class Edge implements CanvasElement {
+public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 
 	final public String path;
-	protected Vector<Point2D> intermediatePoints = new Vector<>();
-	protected FmmlxObject sourceNode;
-	protected FmmlxObject targetNode;
+	private Vector<Point2D> intermediatePoints = new Vector<>();
+	final protected ConcreteNode sourceNode;
+	final protected ConcreteNode targetNode;
 	//protected FmmlxDiagram diagram;
 	protected final Double DEFAULT_TOLERANCE = 6.;
 	protected boolean layoutingFinishedSuccesfully;
 	protected AbstractPackageViewer diagram;
 	
-	public final Edge.End sourceEnd = new Edge.Source(this);
-	public final Edge.End targetEnd = new Edge.Target(this);
+	public final Edge<ConcreteNode>.End sourceEnd = new Source(this);
+	public final Edge<ConcreteNode>.End targetEnd = new Target(this);
 
 	private transient MoveMode moveMode;
 	private transient PortRegion newSourcePortRegion;
@@ -36,11 +35,9 @@ public abstract class Edge implements CanvasElement {
 	protected transient PortRegion targetPortRegion;
 	private transient Point2D lastMousePosition;
 
-	public abstract void setIntermediatePoints(Vector<Point2D> intermediatePoints);
-
-	public static abstract class End {public final Edge edge; private End(Edge edge) {this.edge = edge;} public abstract FmmlxObject getNode();};
-	public static class Source extends End{private Source(Edge edge) {super(edge);} public FmmlxObject getNode() {return edge.sourceNode;}};
-	public static class Target extends End{private Target(Edge edge) {super(edge);} public FmmlxObject getNode() {return edge.targetNode;}};
+	public abstract class End {public final Edge<ConcreteNode> edge; private End(Edge<ConcreteNode> edge) {this.edge = edge;} public abstract ConcreteNode getNode();};
+	public class Source extends End{private Source(Edge<ConcreteNode> edge) {super(edge);} public ConcreteNode getNode() {return edge.sourceNode;}};
+	public class Target extends End{private Target(Edge<ConcreteNode> edge) {super(edge);} public ConcreteNode getNode() {return edge.targetNode;}};
 
 	protected boolean visible;
 
@@ -62,7 +59,7 @@ public abstract class Edge implements CanvasElement {
 	public enum Anchor {CENTRE_MOVABLE, SOURCE_LEVEL, TARGET_LEVEL, SOURCE_MULTI, TARGET_MULTI,CENTRE_SELFASSOCIATION}
 
 	public Edge(String path, 
-			FmmlxObject startNode, FmmlxObject endNode, 
+			ConcreteNode startNode, ConcreteNode endNode, 
 			Vector<Point2D> intermediatePoints,
 			PortRegion sourcePortRegion, PortRegion targetPortRegion,
 			Vector<Object> labelPositions, AbstractPackageViewer diagram) {
@@ -101,11 +98,11 @@ public abstract class Edge implements CanvasElement {
 	}
 
 	public FmmlxObject getSourceNode() {
-		return sourceNode;
+		return (FmmlxObject) sourceNode;
 	}
 
 	public FmmlxObject getTargetNode() {
-		return targetNode;
+		return (FmmlxObject) targetNode;
 	}
 
 	public PortRegion getSourcePortRegion() {
@@ -116,7 +113,7 @@ public abstract class Edge implements CanvasElement {
 		return targetNode.getDirectionForEdge(this.targetEnd, false);
 	}
 
-	private PortRegion determineInitialPort(FmmlxObject node, Point2D nextPoint, PortRegion defaultRegion) {
+	private PortRegion determineInitialPort(ConcreteNode node, Point2D nextPoint, PortRegion defaultRegion) {
 		if (nextPoint == null) {
 			return defaultRegion;
 		}
@@ -465,7 +462,7 @@ public abstract class Edge implements CanvasElement {
 		}
 	}
 
-	private PortRegion findBestRegion(FmmlxObject node, double x, double y) {
+	private PortRegion findBestRegion(Node node, double x, double y) {
 		double angleMouse = Math.atan2(y - node.getCenterY(), x - node.getCenterX());
 		double diffAngleNW = (4 * Math.PI + angleMouse
 				- Math.atan2(node.getY() - node.getCenterY(), node.getX() - node.getCenterX())) % (2 * Math.PI);
