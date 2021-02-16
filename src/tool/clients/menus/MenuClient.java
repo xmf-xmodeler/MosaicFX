@@ -72,7 +72,10 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
   private void writeMenuBar(PrintStream out) {
     out.print("<MenuBar>");
     for (String id : menus.keySet()) {
-      if (isRootMenu(menus.get(id))) writeMenu(id, menus.get(id), rootMenuText(menus.get(id)), out);
+      if (isRootMenu(menus.get(id))) {
+        rootMenuText(menus.get(id));
+        writeMenu(id, menus.get(id), rootMenuText(menus.get(id)), out);
+      }
     }
     out.print("</MenuBar>");
   }
@@ -117,7 +120,7 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
   }
 
   private boolean isRootMenu(Menu menu) {
-    return XModeler.getMenuBar().getMenus().contains(menu);
+    return XModeler.getNewStage().getMenuBar().getMenus().contains(menu);
 //	for (MenuItem item : XModeler.getMenuBar().getItems())
 //      if (item.getMenu() == menu) return true;
 //    return false;
