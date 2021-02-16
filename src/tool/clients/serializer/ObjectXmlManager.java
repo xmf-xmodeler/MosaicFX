@@ -8,7 +8,6 @@ import tool.clients.fmmlxdiagrams.*;
 import tool.clients.serializer.interfaces.XmlManager;
 
 import java.util.List;
-import java.util.Vector;
 
 public class ObjectXmlManager implements XmlManager {
     private final XmlHandler xmlHandler;
@@ -86,6 +85,7 @@ public class ObjectXmlManager implements XmlManager {
                 double x = Double.parseDouble(tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
                 double y = Double.parseDouble(tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
                 String objectPath = tmp.getAttribute(XmlConstant.ATTRIBUTE_REFERENCE);
+                System.out.println("diagram id"+FmmlxDiagramCommunicator.getDiagramIdFromName(diagramName) +", " +objectPath+", x :"+ (int)Math.round(x) +", y : "+(int)Math.round(y));
                 communicator.sendCurrentPosition(FmmlxDiagramCommunicator.getDiagramIdFromName(diagramName), objectPath, (int)Math.round(x), (int)Math.round(y));
             }
         }
@@ -108,29 +108,6 @@ public class ObjectXmlManager implements XmlManager {
             }
         }
         return initCoordingate;
-    }
-
-    public void alignObjects(Integer id, Vector<FmmlxObject> objects) {
-        Element diagrams = getDiagramsElement();
-        NodeList diagramList = diagrams.getChildNodes();
-
-        Element diagramElement = null;
-
-        for (int i = 0 ; i< diagramList.getLength(); i++){
-            if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
-                Element tmp = (Element) diagramList.item(i);
-                int tmp_id = FmmlxDiagramCommunicator.getDiagramIdFromName(tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL));
-                if (tmp_id==id){
-                    diagramElement = tmp;
-                }
-            }
-        }
-
-        for(FmmlxObject object : objects){
-            Point2D initCoordinate = new Point2D(object.getX(), object.getY());
-            Point2D coordinate = getCoordinate(diagramElement, object.getName(),initCoordinate);
-            FmmlxDiagramCommunicator.getCommunicator().sendCurrentPosition(id, object.getPath(), (int)Math.round(coordinate.getX()), (int)Math.round(coordinate.getY()));
-        }
     }
 
     @Deprecated

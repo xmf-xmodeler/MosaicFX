@@ -900,12 +900,8 @@ public class DiagramActions {
 			protected Void call() {
 				Vector<Integer> ids = diagram.getComm().getAllDiagramIDs(diagram.getPackagePath());
 				for (int id : ids){
-					try {
-						System.out.println("diagram id : "+id);
-						diagram.getComm().getAllEdgePositions(id);
-					} catch (TimeOutException e) {
-						e.printStackTrace();
-					}
+					System.out.println("diagram id : "+id);
+					diagram.getComm().testGetAllEdgePositions(id);
 				}
 				return null;
 			}
@@ -916,11 +912,12 @@ public class DiagramActions {
 	public void testGetLabel() {
 		Task<Void> task = new Task<Void>() {
 			@Override
-			protected Void call() throws TimeOutException {
+			protected Void call() {
 				Vector<Integer> ids = diagram.getComm().getAllDiagramIDs(diagram.getPackagePath());
+				System.out.println(ids);
 				for (int id : ids){
 					System.out.println("diagram id : "+id);
-					diagram.getComm().getAllLabelPositions(id);
+					diagram.getComm().testGetAllLabelPositions(id);
 				}
 				return null;
 			}
