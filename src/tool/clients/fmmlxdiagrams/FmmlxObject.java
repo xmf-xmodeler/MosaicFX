@@ -43,7 +43,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	final int EXTRA_Y_PER_LINE = 3;
 
 	Vector<FmmlxSlot> slots = new Vector<>();
-	Vector<FmmlxOperationValue> operationValues = new Vector<>();
+	private Vector<FmmlxOperationValue> operationValues = new Vector<>();
 
 	private Vector<FmmlxAttribute> ownAttributes = new Vector<>();
 	private Vector<FmmlxAttribute> otherAttributes = new Vector<>();
@@ -209,6 +209,12 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		result.addAll(otherOperations);
 		result.addAll(getDelegatedOperations());
 		result.addAll(getDelegateToClassOperations());
+		return result;
+	}
+	
+	public Vector<FmmlxOperationValue> getOperationValues() {
+		Vector<FmmlxOperationValue> result = new Vector<>();
+		result.addAll(operationValues);
 		return result;
 	}
 
