@@ -73,6 +73,7 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu attributeMenu = createAttributeSubMenu();
 		Menu associationMenu = createAssociationSubMenu();
 		Menu operationMenu = createOperationSubMenu();
+		Menu constraintMenu = createConstraintSubMenu();
 		Menu slotMenu = createSlotSubMenu();
 		Menu associationInstanceMenu = createAssociationInstanceSubMenu();
 		Menu showMenu = createShowSubMenu();
@@ -100,7 +101,7 @@ public class ObjectContextMenu extends ContextMenu {
 		
 		levelMenu.getItems().addAll(levelRaiseAllItem, levelLowerAllItem, levelRaiseHereItem, levelLowerHereItem, levelSplitItem, levelMergeItem);
 
-		getItems().addAll(attributeMenu, associationMenu, operationMenu, delegationMenu, slotMenu, associationInstanceMenu, levelMenu, showMenu, assignItem);
+		getItems().addAll(attributeMenu, associationMenu, operationMenu, constraintMenu, delegationMenu, slotMenu, associationInstanceMenu, levelMenu, showMenu, assignItem);
 		
 		addNewMenuItem(this, "Hide", e -> {
 			Vector<FmmlxObject> v = new Vector<FmmlxObject>(); 
@@ -162,6 +163,16 @@ public class ObjectContextMenu extends ContextMenu {
 				changeMultiplicityItem, changeLevelItem, editAssociation, */associationValue);
 
 		return associationMenu;
+	}
+	
+	private Menu createConstraintSubMenu() {
+		Menu constraintMenu = new Menu("Constraint");
+		
+		MenuItem addItem = new MenuItem("Add");
+		addItem.setOnAction(e -> actions.addConstraintDialog(object));
+		constraintMenu.getItems().add(addItem);
+		
+		return constraintMenu;
 	}
 
 	private Menu createOperationSubMenu() {

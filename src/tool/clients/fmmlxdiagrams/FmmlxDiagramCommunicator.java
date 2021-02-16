@@ -1269,13 +1269,24 @@ public class FmmlxDiagramCommunicator {
 
     public void editEnumeration(int diagramID, String enumName, Vector<String> elements) {
         Value[] elementArray = createValueArray(elements);
-
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
                 new Value(enumName),
                 new Value(elementArray)};
         sendMessage("editEnum", message);
-    }
+    }    
+    
+	public void addConstraint(int diagramID, String path, String constName, Integer instLevel, String body, String reason) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+                new Value(path),
+                new Value(constName),
+                new Value(instLevel),
+                new Value(body),
+                new Value(reason)
+		};
+        sendMessage("addConstraint", message);
+	}
 
     @SuppressWarnings("unchecked")
     public Vector<Issue> fetchIssues(FmmlxDiagram fmmlxDiagram) throws TimeOutException {
@@ -1665,4 +1676,5 @@ public class FmmlxDiagramCommunicator {
         System.out.println(responseContent.toString());
         return null;
     }
+
 }

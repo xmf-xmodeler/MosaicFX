@@ -508,15 +508,10 @@ public class DiagramActions {
 
 	public void toggleAbstract(FmmlxObject object) {
 		diagram.getComm().setClassAbstract(diagram.getID(), object.getName(), !object.isAbstract());
-		diagram.updateDiagram();
-		
+		diagram.updateDiagram();		
 	}
-
-
-
-
+	
 	public void addOperationDialog(FmmlxObject object) {
-//		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			AddOperationDialog dlg = new AddOperationDialog(diagram, object);
@@ -527,7 +522,26 @@ public class DiagramActions {
 				diagram.getComm().addOperation2(diagram.getID(), result.getObject().getName(), result.getLevel(), result.getBody());
 				diagram.updateDiagram();
 			}
-//			latch.countDown();
+		});
+	}
+	
+	public void addConstraintDialog(FmmlxObject object) {
+
+		Platform.runLater(() -> {
+			AddConstraintDialog dlg = new AddConstraintDialog(diagram, object);
+			Optional<AddConstraintDialog.AddConstraintDialogResult> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final AddConstraintDialog.AddConstraintDialogResult result = opt.get();
+				diagram.getComm().addConstraint(
+						diagram.getID(), 
+						result.object.getPath(), 
+						result.constName, 
+						result.instLevel, 
+						result.body, 
+						result.reason);
+				diagram.updateDiagram();
+			}
 		});
 	}
 
