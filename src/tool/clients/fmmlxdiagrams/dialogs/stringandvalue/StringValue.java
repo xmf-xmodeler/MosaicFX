@@ -90,6 +90,8 @@ public class StringValue {
 		public static final String symmetric ="Symmetric";
 		public static final String transitive ="Transitive";
 		public static final String abstractBig ="Abstract";
+		public static final String source = "Source:";
+		public static final String target = "Target:";
 
 		//Current
 		public static final String currentOwner = "Current Owner";

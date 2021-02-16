@@ -11,10 +11,11 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -23,6 +24,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -46,17 +48,19 @@ import tool.xmodeler.XModeler;
 public class ModelBrowser extends CustomStage {
 
 	private TextArea codeArea;
-	private ListView<String> modelListView, parentsListView;
-	private ListView<FmmlxAssociation> fmmlxAssociationListView; 
+	private Label sourceLabel, targetLabel, visible, labelTransitive, labelSymmetric;
+	private ListView<String> modelListView, parentsListView, sourceListView2, targetListView2;
+	private ListView<FmmlxAssociation> fmmlxAssociationListView, sourceListView, targetListView; 
 	private ListView<FmmlxOperation> fmmlxOperationListView;
 	private ListView<FmmlxObject> fmmlxObjectListView;
 	private ListView<FmmlxAttribute> fmmlxAttributeListView;
 	private ListView<FmmlxSlot> slotListView;
-	private ComboBox<Boolean> abstractComboBox;
-	private TextField modellBrowserTextFied, metaClassTextField, abstractTextField, delegatesToTextField, operationInputTextField, operationOutputTexField, 
-						associationBrowserTextField, attributeBrowserTextField;
+	private CheckBox abstractCheckBox, targetVisible, sourceVisible, checkTransitive, checkSymmetric;
+	private TextField modellBrowserTextFied, metaClassTextField, delegatesToTextField, operationInputTextField, operationOutputTexField,
+						attributeBrowserTextField;
 	private VBox modellBrowserVBox, classBrowserVBox, attributeBrowserVBox, abstractVBox, delegatesToVBox,
-						operationOutputVBox, operationInputVBox, associationBrowserVBox, consoleContainerVBox, parentsVBox;
+						operationOutputVBox, operationInputVBox, associationBrowserVBox, consoleContainerVBox, parentsVBox, sourceVBox, targetVBox;
+	private HBox sourceHBox, targetHBox, associationBooleanAttributesHBox, visibleHBox;
 	private SplitPane outerSplitPane;
 	private GridPane mainGridPane, attributeGridpane;	
 	FmmlxDiagramCommunicator communicator;
@@ -67,7 +71,7 @@ public class ModelBrowser extends CustomStage {
 	private LevelColorScheme levelColorScheme = new LevelColorScheme.FixedBlueLevelColorScheme();
 	
 	public ModelBrowser(String project, String selectedModel, ObservableList<String> models) {
-		super(StringValue.LabelAndHeaderTitle.modelBrowser+" " + project, XModeler.getStage(), 1100, 800);
+		super(StringValue.LabelAndHeaderTitle.modelBrowser+" " + project, XModeler.getStage(), 1400, 800);
 		communicator = FmmlxDiagramCommunicator.getCommunicator();
 		initAllElements();
 		addAllElementToPane();			
@@ -100,12 +104,15 @@ public class ModelBrowser extends CustomStage {
 			slotListView.getItems().clear();
 			fmmlxOperationListView.getItems().clear();
 			fmmlxAssociationListView.getItems().clear();
+			sourceListView.getItems().clear();
+			targetListView.getItems().clear();
 			parentsListView.getItems().clear();
 			attributeBrowserTextField.setText(StringValue.LabelAndHeaderTitle.empty);
 			operationInputTextField.setText(StringValue.LabelAndHeaderTitle.empty);
 			operationOutputTexField.setText(StringValue.LabelAndHeaderTitle.empty);
-			associationBrowserTextField.setText(StringValue.LabelAndHeaderTitle.empty);
-			
+			//associationBrowserTextField.setText(StringValue.LabelAndHeaderTitle.empty);
+			sourceLabel.setText(StringValue.LabelAndHeaderTitle.source);
+			targetLabel.setText(StringValue.LabelAndHeaderTitle.target);
 			codeArea.clear();
 		}
 	}
@@ -117,7 +124,7 @@ public class ModelBrowser extends CustomStage {
 		mainGridPane.setHgap(10);
 		mainGridPane.setVgap(8);
 		mainGridPane.setPadding(new Insets(3, 3, 3, 3));
-		setColumnConstrain(mainGridPane);
+		//setColumnConstrain(mainGridPane);
 
 		modelListView = new ListView<>();
 		fmmlxObjectListView = new ListView<>();
@@ -126,12 +133,18 @@ public class ModelBrowser extends CustomStage {
 		slotListView = new ListView<>();
 		fmmlxAssociationListView = new ListView<>();
 		fmmlxOperationListView = new ListView<>();
-		
+		sourceListView = new ListView<>();
+		targetListView = new ListView<>();
+		sourceListView.setEditable(false);
+		targetListView.setEditable(false);
 		modellBrowserTextFied = new TextField();
 		metaClassTextField = new TextField();
 		metaClassTextField.setEditable(false);
-		abstractTextField = new TextField();
-		abstractTextField.setEditable(false);
+		abstractCheckBox = new CheckBox();
+		sourceVisible = new CheckBox();
+		targetVisible = new CheckBox();
+		checkTransitive = new CheckBox();
+		checkSymmetric= new CheckBox();
 		delegatesToTextField = new TextField();
 		delegatesToTextField.setEditable(false);
 		attributeBrowserTextField = new TextField();
@@ -139,10 +152,20 @@ public class ModelBrowser extends CustomStage {
 		operationInputTextField.setEditable(false);
 		operationOutputTexField = new TextField();
 		operationOutputTexField.setEditable(false);
-		associationBrowserTextField = new TextField();
-		associationBrowserTextField.setEditable(false);
-		
-		abstractComboBox = new ComboBox<>(ValueList.booleanList);
+		//associationBrowserTextField = new TextField();
+		//associationBrowserTextField.setEditable(false);
+		sourceLabel = new Label();
+		targetLabel = new Label();
+		visible = new Label(StringValue.LabelAndHeaderTitle.visible);
+		labelTransitive = new Label (StringValue.LabelAndHeaderTitle.transitive);
+		labelSymmetric = new Label (StringValue.LabelAndHeaderTitle.symmetric);
+		sourceHBox = new HBox();
+		targetHBox = new HBox();
+		associationBooleanAttributesHBox = new HBox();
+		associationBooleanAttributesHBox.setPadding(new Insets(3,3,3,3));
+		visibleHBox = new HBox();
+		visibleHBox.setPadding(new Insets(3,3,3,3));
+		visibleHBox.setSpacing(10);
 		
 		codeArea = new TextArea();
 		consoleContainerVBox= new VBox();
@@ -156,15 +179,18 @@ public class ModelBrowser extends CustomStage {
 		VBox.setVgrow(codeArea,Priority.ALWAYS);
 		
 		String doubleDots = " :";
-		abstractVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.abstractSmall+doubleDots), abstractTextField);
+		abstractVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.abstractSmall+doubleDots), abstractCheckBox);
 		modellBrowserVBox= getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.project+doubleDots), modellBrowserTextFied);
 		delegatesToVBox= getVBoxControl().joinNodeInVBox(new Label (StringValue.LabelAndHeaderTitle.delegatesTo), delegatesToTextField);
 		operationOutputVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.output+doubleDots), operationOutputTexField);
 		operationInputVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.input+doubleDots), operationInputTextField);
 		classBrowserVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.metaClass+doubleDots), metaClassTextField);
-		associationBrowserVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.withSmall+doubleDots), associationBrowserTextField);
+		//associationBrowserVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.withSmall+doubleDots), associationBrowserTextField);
+		sourceVBox = getVBoxControl().joinNodeInVBox(new Label (StringValue.LabelAndHeaderTitle.source), sourceListView);
+		targetVBox = getVBoxControl().joinNodeInVBox(new Label (StringValue.LabelAndHeaderTitle.target), targetListView);
 		attributeBrowserVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.aClassSmall+doubleDots), attributeBrowserTextField);
 		parentsVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.parent + doubleDots), parentsListView);
+		
 		
 		modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onModelListViewNewValue(oldValue, newValue));
@@ -174,8 +200,8 @@ public class ModelBrowser extends CustomStage {
 				-> onObjectListViewNewValue(oldValue, newValue));	
 		metaClassTextField.textProperty().addListener((observable, oldValue, newValue) 
 				-> classBrowserTextFieldListener(oldValue, newValue));
-		abstractComboBox.valueProperty().addListener((observable, oldValue, newValue)
-				-> onAbstractNewValue(oldValue, newValue));
+		abstractCheckBox.selectedProperty().addListener((ov,oldValue,newValue) 
+			      ->onAbstractNewValue(oldValue, newValue));		
 		fmmlxAttributeListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onAttributeListViewNewValue(oldValue, newValue));
 		slotListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
@@ -309,6 +335,79 @@ public class ModelBrowser extends CustomStage {
 		        }
 			}
 		});
+		
+		sourceListView.setCellFactory(new Callback<ListView<FmmlxAssociation>, ListCell<FmmlxAssociation>>() {
+
+		    @Override
+		    public ListCell<FmmlxAssociation> call(ListView<FmmlxAssociation> param) {
+		        ListCell<FmmlxAssociation> cell = new ListCell<FmmlxAssociation>() {
+
+		            protected void updateItem(FmmlxAssociation association, boolean empty) {
+		                super.updateItem(association, empty);
+		                if (association != null) {
+		                    setText(association.getSourceNode().getName()+ " Multiplicity: " + association.getMultiplicityStartToEnd().toString());
+		                    setGraphic(getLevelGraphic(association.getLevelSource()));
+		                } else {
+		                	setText("");
+		                	setGraphic(null);
+		                }
+		            }
+
+					private Node getLevelGraphic(int level) {
+						if(level == -1) return null;
+						double SIZE = 16;
+						Canvas canvas = new Canvas(SIZE, SIZE);
+						Text temp = new Text(level+"");
+						GraphicsContext g = canvas.getGraphicsContext2D();
+						g.setFill(levelColorScheme.getLevelBgColor(level));
+						g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/2, SIZE/2);
+						g.setFill(levelColorScheme.getLevelFgColor(level, 1.));
+						g.fillText(level+"", 
+								SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
+								SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
+						return canvas;
+					}
+		        };
+		        return cell;
+		    }
+		});
+		
+		targetListView.setCellFactory(new Callback<ListView<FmmlxAssociation>, ListCell<FmmlxAssociation>>() {
+
+		    @Override
+		    public ListCell<FmmlxAssociation> call(ListView<FmmlxAssociation> param) {
+		        ListCell<FmmlxAssociation> cell = new ListCell<FmmlxAssociation>() {
+
+		            protected void updateItem(FmmlxAssociation association, boolean empty) {
+		                super.updateItem(association, empty);
+		                if (association != null) {
+		                    setText(association.getTargetNode().getName()+ " Mulitplicity: " + association.getMultiplicityEndToStart().toString());
+		                    setGraphic(getLevelGraphic(association.getLevelTarget()));
+		                } else {
+		                	setText("");
+		                	setGraphic(null);
+		                }
+		            }
+
+					private Node getLevelGraphic(int level) {
+						if(level == -1) return null;
+						double SIZE = 16;
+						Canvas canvas = new Canvas(SIZE, SIZE);
+						Text temp = new Text(level+"");
+						GraphicsContext g = canvas.getGraphicsContext2D();
+						g.setFill(levelColorScheme.getLevelBgColor(level));
+						g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/2, SIZE/2);
+						g.setFill(levelColorScheme.getLevelFgColor(level, 1.));
+						g.fillText(level+"", 
+								SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
+								SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
+						return canvas;
+					}
+		        };
+		        return cell;
+		    }
+		});
+		
 	}
 	
 	private Node getLevelGraphic4Feature(int level, boolean own) {
@@ -344,8 +443,7 @@ public class ModelBrowser extends CustomStage {
 		parentsVBox.setPrefHeight(300);
 		objectNode.add(parentsVBox);
 		objectNode.add(abstractVBox);
-		objectNode.add(delegatesToVBox);
-		
+		objectNode.add(delegatesToVBox);	
 		
 		List<Node> attributeNode = new ArrayList<>();
 		attributeNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
@@ -374,7 +472,27 @@ public class ModelBrowser extends CustomStage {
 		associationNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 		associationNode.add(new Label(StringValue.LabelAndHeaderTitle.associations));
 		associationNode.add(fmmlxAssociationListView);
-		associationNode.add(associationBrowserVBox);
+		//visible.setText(StringValue.LabelAndHeaderTitle.visible);
+		sourceVisible.setPadding(new Insets(3, 3, 3, 3));
+		targetVisible.setPadding(new Insets(3, 3, 3, 3));
+		sourceHBox.getChildren().addAll(sourceLabel, sourceListView);
+		targetHBox.getChildren().addAll(targetLabel, targetListView);
+		associationBooleanAttributesHBox.setPadding(new Insets(3,3,3,3));
+		associationBooleanAttributesHBox.setSpacing(10);
+		associationBooleanAttributesHBox.getChildren().addAll(labelSymmetric, checkSymmetric, labelTransitive, checkTransitive);
+		sourceLabel.setText("Source: ");
+		sourceLabel.setPadding(new Insets(3, 3, 3, 3));		
+		targetLabel.setText("Target:  ");
+		targetLabel.setPadding(new Insets(3, 3, 3, 3));
+		visibleHBox.getChildren().addAll(new Label("Visibility - Source: "), sourceVisible, new Label("Target :"), targetVisible);
+		associationNode.add(sourceHBox);
+		associationNode.add(targetHBox);
+		associationNode.add(visibleHBox);
+		associationNode.add(associationBooleanAttributesHBox);
+		
+		//associationNode.add(associationBrowserVBox);
+		//associationNode.add(sourceVBox);
+		//associationNode.add(targetVBox);
 		
 		getGridControl().addNodesToGrid(mainGridPane,modelNode, 0);
 		getGridControl().addNodesToGrid(mainGridPane,objectNode, 1);
@@ -408,17 +526,38 @@ public class ModelBrowser extends CustomStage {
 			slotListView.getItems().addAll(selectedObject.getAllSlots());
 			fmmlxOperationListView.getItems().clear();
 			fmmlxOperationListView.getItems().addAll(selectedObject.getAllOperations());
+			fmmlxAssociationListView.getItems().clear();
+			fmmlxAssociationListView.getItems().addAll(selectedObject.getAllRelatedAssociations());
+			metaClassTextField.clear();
+			metaClassTextField.setText(selectedObject.getMetaClassName());
+			delegatesToTextField.clear();
+			if (selectedObject.getDelegatesTo()==null) {
+				delegatesToTextField.setText("No delegation");
+			} else {
+				delegatesToTextField.setText(selectedObject.getDelegatesTo().toString());	
+			}
+			abstractCheckBox.setSelected(selectedObject.isAbstract());
+			parentsListView.getItems().clear();
+			parentsListView.getItems().addAll(selectedObject.getParentsPaths());
 		}			
 		
 
 	}
 
-	private void onAssociationListViewNewValue(FmmlxAssociation oldValue, FmmlxAssociation newValue) {
-		
+	private void onAssociationListViewNewValue(FmmlxAssociation oldValue, FmmlxAssociation association) {
+		sourceListView.getItems().clear();
+		sourceListView.getItems().add(association);
+		targetListView.getItems().clear();
+		targetListView.getItems().add(association);
+		checkSymmetric.setSelected(association.isSymmetric());
+		checkTransitive.setSelected(association.isTransitive());
+		sourceVisible.setSelected(association.isSourceVisible());
+		targetVisible.setSelected(association.isTargetVisible());
 	}
 
 	private void onAbstractNewValue(Boolean oldValue, Boolean newValue) {
-		
+		communicator.setClassAbstract(activePackage.getID(), fmmlxObjectListView.getSelectionModel().getSelectedItem().getName(), abstractCheckBox.isSelected());
+		activePackage.updateDiagram();
 	}
 
 	private void setColumnConstrain(GridPane gridPane) {
@@ -464,7 +603,7 @@ public class ModelBrowser extends CustomStage {
 
 			fmmlxObjectListView.getItems().clear();
 			fmmlxObjectListView.getItems().addAll(objects);
-			
+			//set Flag for loaded okay...
 			restoreSelection();
 		});
 	}
