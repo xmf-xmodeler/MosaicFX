@@ -78,7 +78,7 @@ public class ModellBrowserStage extends CustomStage {
 		}
 	}
 	
-	@Override
+	
 	protected void initAllElements() {
 		mainGridPane = new GridPane();
 		attributeGridpane = new GridPane();
@@ -146,7 +146,7 @@ public class ModellBrowserStage extends CustomStage {
 				-> onAssociationListViewNewValue(oldValue,newValue)); 
 	}
 
-	@Override
+	
 	protected void addAllElementToPane() {
 		List<Node> modelNode = new ArrayList<>();
 		modelNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));

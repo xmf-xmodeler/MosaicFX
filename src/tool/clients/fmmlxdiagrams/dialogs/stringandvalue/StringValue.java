@@ -162,6 +162,7 @@ public class StringValue {
 		public static final String slots = "Slots";
 		public static final String protocols = "Protocols";
 		public static final String operations = "Operations";
+		public static final String operationValues = "Operation Values";
 		public static final String empty = "";
 		public static final String modelBrowser = "Model Browser";
 		public static final String aClassSmall = "class";
@@ -179,6 +180,10 @@ public class StringValue {
 		public static final String randomValue = "Random Value";
 		public static final String metaClass = "MetaClass";
 		public static final String delegatesTo ="Delegate:";
+		public static final String constraint ="Constraints";
+		public static final String constraintValues ="Constraint Report / Issues";
+		public static final String links = "Links";
+		public static final String linkedObjects = "Linked Objects";
 
         public static final String Mean = "Mean";
 		public static final String stdDeviation= "Standard Deviation";
