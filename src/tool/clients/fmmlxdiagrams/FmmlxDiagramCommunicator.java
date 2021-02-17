@@ -607,6 +607,28 @@ public class FmmlxDiagramCommunicator {
 		}
 		return result;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public Vector<Constraint> fetchConstraints(AbstractPackageViewer diagram, String className) throws TimeOutException {
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getConstraints", new Value(className));
+		Vector<Object> response0 = (Vector<Object>) (response.get(0));
+		Vector<Constraint> result = new Vector<>();
+		for (Object o : response0) {
+			Vector<Object> conInfo = (Vector<Object>) o;
+		
+			Constraint con =
+				new Constraint(
+					(String)  conInfo.get(0), // name
+					(Integer) conInfo.get(1), // level
+					(String)  conInfo.get(2), // body-raw
+					(String)  conInfo.get(3), // body-full
+					(String)  conInfo.get(4), // reason-raw
+					(String)  conInfo.get(5) // reason-full
+				);
+			result.add(con);
+		}
+		return result;
+	}
 
 	@SuppressWarnings("unchecked")
 	public Vector<FmmlxSlot> fetchSlots(AbstractPackageViewer diagram, FmmlxObject owner, Vector<String> slotNames) throws TimeOutException {
@@ -1321,6 +1343,67 @@ public class FmmlxDiagramCommunicator {
 		};
         sendMessage("addConstraint", message);
 	}
+	
+	public void changeConstraintName(int diagramID, String path, String oldName, String newName) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+                new Value(path),
+                new Value(oldName),
+                new Value(newName)
+		};
+        sendMessage("changeConstraintName", message);
+	}
+	
+	public void changeConstraintLevel(int diagramID, String path, String name, String level) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+                new Value(path),
+                new Value(name),
+                new Value(level)
+		};
+        sendMessage("changeConstraintLevel", message);
+	}
+	
+	public void changeConstraintBody(int diagramID, String path, String name, String body) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+                new Value(path),
+                new Value(name),
+                new Value(body)
+		};
+        sendMessage("changeConstraintBody", message);
+	}
+	
+	public void changeConstraintReason(int diagramID, String path, String name, String reason) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+                new Value(path),
+                new Value(name),
+                new Value(reason)
+		};
+        sendMessage("changeConstraintReason", message);
+	}
+	
+	public void changeConstraintOwner(int diagramID, String oldOwner, String newOwner, String name) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+                new Value(oldOwner),
+                new Value(newOwner),
+                new Value(name)
+		};
+        sendMessage("changeConstraintOwner", message);
+	}
+	
+	public void removeConstraint(int diagramID, String path, String name) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+                new Value(path),
+                new Value(name)
+		};
+        sendMessage("removeConstraint", message);
+	}
+	
+	
 
     @SuppressWarnings("unchecked")
     public Vector<Issue> fetchIssues(FmmlxDiagram fmmlxDiagram) throws TimeOutException {
@@ -1755,4 +1838,5 @@ public class FmmlxDiagramCommunicator {
 		}
 
 	}
+
 }
