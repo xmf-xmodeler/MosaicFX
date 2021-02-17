@@ -1,7 +1,5 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
-import java.util.Optional;
-
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -23,14 +21,15 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.AddConstrain
 	private Label label2 = new Label("@");
 	private TextField levelField = new TextField("level");
 	private TextArea bodyBox = new TextArea("false");
-	private Label label3 = new Label("reason");
+	private Label label3 = new Label("fail");
 	private TextArea reasonBox = new TextArea("\"This constraint always fails.\"");
 	private Label label4 = new Label("end");
 	private Label statusLabel = new Label("");
 	
 	
 	public AddConstraintDialog(AbstractPackageViewer diagram, FmmlxObject object) {
-
+		
+		setTitle("Add constraint to " + object.getName());
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		GridPane grid = new GridPane();

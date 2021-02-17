@@ -8,6 +8,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
@@ -171,6 +172,36 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem addItem = new MenuItem("Add");
 		addItem.setOnAction(e -> actions.addConstraintDialog(object));
 		constraintMenu.getItems().add(addItem);
+		
+		constraintMenu.getItems().add(new SeparatorMenuItem());
+
+		MenuItem changeNameItem = new MenuItem("Change name");
+		changeNameItem.setDisable(true);
+		constraintMenu.getItems().add(changeNameItem);
+		
+		MenuItem changeLevelItem = new MenuItem("Change level");
+		changeLevelItem.setDisable(true);
+		constraintMenu.getItems().add(changeLevelItem);
+		
+		MenuItem changeBodyItem = new MenuItem("Change body");
+		changeBodyItem.setDisable(true);
+		constraintMenu.getItems().add(changeBodyItem);
+		
+		MenuItem changeReasonItem = new MenuItem("Change reason");
+		changeReasonItem.setDisable(true);
+		constraintMenu.getItems().add(changeReasonItem);
+		
+		MenuItem changeOwnerItem = new MenuItem("Change owner");
+		changeOwnerItem.setDisable(true);
+		constraintMenu.getItems().add(changeOwnerItem);
+		
+		constraintMenu.getItems().add(new SeparatorMenuItem());
+		
+		MenuItem removeItem = new MenuItem("Remove");
+		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Constraint));
+		constraintMenu.getItems().add(removeItem);
+		
+		
 		
 		return constraintMenu;
 	}
