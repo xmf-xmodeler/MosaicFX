@@ -1406,8 +1406,8 @@ public class FmmlxDiagramCommunicator {
 	
 
     @SuppressWarnings("unchecked")
-    public Vector<Issue> fetchIssues(FmmlxDiagram fmmlxDiagram) throws TimeOutException {
-        Vector<Object> response = xmfRequest(handler, fmmlxDiagram.getID(), "getAllIssues");
+    public Vector<Issue> fetchIssues(AbstractPackageViewer abstractPackageViewer) throws TimeOutException {
+        Vector<Object> response = xmfRequest(handler, abstractPackageViewer.getID(), "getAllIssues");
         Vector<Object> issueList = (Vector<Object>) (response.get(0));
         Vector<Issue> result = new Vector<>();
         for (Object issueO : issueList) {

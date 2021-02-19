@@ -110,6 +110,23 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 		setResultConverter();
 	}
 	
+	public AssociationDialog(AbstractPackageViewer diagram, FmmlxObject source, boolean editMode) {
+		
+		this.editMode=editMode;
+		this.diagram = diagram;
+		this.source = source;
+
+		dialogPane = getDialogPane();
+		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+		dialogPane.setHeaderText("Add Association");
+
+		layoutContent();
+		presetClassesInCombobox();
+		dialogPane.setContent(flow);
+		addValidationListener();
+		setResultConverter();
+	}
+	
 	private void addValidationListener() {
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
@@ -138,8 +155,8 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 			selectedObject.setDisable(true);	
 		}
 		
-		newTypeSource = (ComboBox<FmmlxObject>) initializeComboBox(diagram.getAllPossibleParentList());
-		newTypeTarget = (ComboBox<FmmlxObject>) initializeComboBox(diagram.getAllPossibleParentList());
+		newTypeSource =  initializeComboBox(diagram.getPossibleAssociationEnds());
+		newTypeTarget =  initializeComboBox(diagram.getPossibleAssociationEnds());
 		/*newTypeSource.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue != null) {
 				this.source = newValue;
@@ -288,6 +305,10 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 		
 	}
 	
+	
+
+	
+
 	private boolean validateUserInput() {
 		 if (newTypeSource.getSelectionModel().getSelectedItem()==null) {
 				errorLabel.setText(StringValue.ErrorMessage.selectNewTypeSource);

@@ -132,5 +132,10 @@ public class Issue {
 //	        alert.showAndWait();
 		}
 	}
+	
+	@Override
+	public String toString() { 
+		return text;
+		}
 
 }

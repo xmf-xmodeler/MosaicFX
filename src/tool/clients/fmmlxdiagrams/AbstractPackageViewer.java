@@ -18,6 +18,7 @@ public abstract class AbstractPackageViewer {
 	protected final String packagePath;
 	protected transient boolean fetchingData;
 	protected boolean justLoaded = false;
+	protected Vector<Issue> issues = new Vector<>();
 
 	public static final AbstractPackageViewer SIMPLE_VIEWER = new AbstractPackageViewer(FmmlxDiagramCommunicator.getCommunicator(),
 			-2, "simple_viewer") {
@@ -29,7 +30,7 @@ public abstract class AbstractPackageViewer {
 		@Override public ObservableList<FmmlxObject> getAllPossibleParents(Integer newValue) { return null;}
 		@Override public boolean isEnum(String type) { return false;}
 		@Override public Vector<String> getEnumItems(String type) { return null;}
-		@Override public ObservableList<FmmlxObject> getAllPossibleParentList() { return null;}
+		@Override public ObservableList<FmmlxObject> getPossibleAssociationEnds() { return null;}
 		@Override protected void fetchDiagramDataSpecific() throws TimeOutException { }
 		@Override protected void fetchDiagramDataSpecific2() { }
 		@Override protected void clearDiagram_specific() { }
@@ -49,7 +50,7 @@ public abstract class AbstractPackageViewer {
 	public abstract void updateEnums();
 	public abstract FmmlxProperty getSelectedProperty();
 	public abstract Vector<String> getEnumItems(String type);
-	public abstract ObservableList<FmmlxObject> getAllPossibleParentList();
+	public abstract ObservableList<FmmlxObject> getPossibleAssociationEnds();
 	
 	public int getID() {
 		return diagramID;
@@ -87,7 +88,7 @@ public abstract class AbstractPackageViewer {
 			for(FmmlxObject o : objects) {
 				o.fetchDataValues(comm);
 			}
-			
+			issues.addAll(comm.fetchIssues(this));
 			Vector<Edge<?>> fetchedEdges = comm.getAllAssociations(this);
 			fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
 	
@@ -114,6 +115,7 @@ public abstract class AbstractPackageViewer {
 	public void clearDiagram(){
 		objects.clear();
 		edges.clear();
+		issues.clear();	
 		clearDiagram_specific();
 	}
 
@@ -243,5 +245,15 @@ public abstract class AbstractPackageViewer {
 
 	public Vector<FmmlxEnum> getEnums() {
 		return enums;
+	}
+	
+	public Vector<Issue> getIssues(FmmlxObject fmmlxObject) {
+		Vector<Issue> result = new Vector<>();
+		if(issues != null) for(Issue issue : issues) { 
+			if(issue.isAffected(fmmlxObject)) {
+				result.add(issue);
+			}
+		}
+		return result;
 	}
 }
