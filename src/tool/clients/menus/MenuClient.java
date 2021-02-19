@@ -1,7 +1,9 @@
 package tool.clients.menus;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
@@ -71,8 +73,12 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
 
   private void writeMenuBar(PrintStream out) {
     out.print("<MenuBar>");
-    for (String id : menus.keySet()) {
-      if (isRootMenu(menus.get(id))) writeMenu(id, menus.get(id), rootMenuText(menus.get(id)), out);
+    List<String> sortedID = new ArrayList<>(menus.keySet());
+    for (String id : sortedID) {
+      if (isRootMenu(menus.get(id))) {
+        rootMenuText(menus.get(id));
+        writeMenu(id, menus.get(id), rootMenuText(menus.get(id)), out);
+      }
     }
     out.print("</MenuBar>");
   }
@@ -117,7 +123,7 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
   }
 
   private boolean isRootMenu(Menu menu) {
-    return XModeler.getMenuBar().getMenus().contains(menu);
+    return XModeler.getNewStage().getMenuBar().getMenus().contains(menu);
 //	for (MenuItem item : XModeler.getMenuBar().getItems())
 //      if (item.getMenu() == menu) return true;
 //    return false;

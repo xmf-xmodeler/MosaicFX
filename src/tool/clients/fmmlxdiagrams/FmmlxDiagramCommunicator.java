@@ -1715,7 +1715,7 @@ public class FmmlxDiagramCommunicator {
 		return Integer.parseInt(id);
 	}
 
-	public void saveXmlFile(String diagramPath, Integer id) {
+	public void saveXmlFile2(String diagramPath, Integer id) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(id),
 				new Value(diagramPath),
