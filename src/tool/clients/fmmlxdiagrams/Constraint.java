@@ -25,5 +25,10 @@ public class Constraint implements FmmlxProperty, Comparable<Constraint>{
 	@Override public int compareTo(Constraint that) { return this.name.compareTo(that.name); }
 	@Override public PropertyType getPropertyType() { return PropertyType.Constraint; }
 	@Override public String getName() { return name;}
+	public int getLevel() { return level;}
+	public String getBodyRaw() { return bodyRaw;}
+	public String getBodyFull() { return bodyFull;}
+	public String getReasonRaw() { return reasonRaw;}
+	public String getReasonFull() { return reasonFull;}
 
 }

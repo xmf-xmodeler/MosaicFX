@@ -69,7 +69,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	// The elements representing the model which is displayed in the GUI
 	
 	private Vector<DiagramEdgeLabel> labels = new Vector<>();
-	private Vector<Issue> issues = new Vector<>();
+	
 	
 	// Temporary variables storing the current state of user interactions
 	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
@@ -878,7 +878,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	// TODO: delete and use method with level
-	public ObservableList<FmmlxObject> getAllPossibleParentList() {
+	public ObservableList<FmmlxObject> getPossibleAssociationEnds() {
 		ArrayList<FmmlxObject> objectList = new ArrayList<>();
 
 		if (!objects.isEmpty()) {
@@ -1040,15 +1040,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return result;
 	}	
 
-	public Vector<Issue> getIssues(FmmlxObject fmmlxObject) {
-		Vector<Issue> result = new Vector<>();
-		if(issues != null) for(Issue issue : issues) { 
-			if(issue.isAffected(fmmlxObject)) {
-				result.add(issue);
-			}
-		}
-		return result;
-	}
+	
 
 	public void setShowOperations(CheckBox box) {
 		boolean show = box.isSelected();
@@ -1116,14 +1108,12 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	@Override
 	protected void clearDiagram_specific() {
-		labels.clear();
-		issues.clear();		
+		labels.clear();	
 	}
 
 	@Override
 	protected void fetchDiagramDataSpecific() throws TimeOutException {
 //		levelColorScheme = new LevelColorScheme.RedLevelColorScheme(objects);
-		issues.addAll(comm.fetchIssues(this));
 		for(FmmlxObject o : objects) {
 			o.layout(this);
 		}

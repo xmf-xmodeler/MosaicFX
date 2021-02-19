@@ -20,6 +20,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
@@ -47,14 +49,15 @@ import tool.clients.fmmlxdiagrams.FmmlxSlot;
 import tool.clients.fmmlxdiagrams.Issue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
+import tool.clients.fmmlxdiagrams.menus.BrowserAssociationContextMenu;
 import tool.clients.fmmlxdiagrams.menus.BrowserAttributeContextMenu;
 import tool.clients.fmmlxdiagrams.menus.BrowserObjectContextMenu;
 import tool.xmodeler.XModeler;
 
 
 public class ModelBrowser extends CustomStage {
-
-	private TextArea codeArea;
+	
+	private TextArea codeArea, constraintTextArea;
 	private Label sourceLabel, targetLabel, visible, labelTransitive, labelSymmetric;
 	private ListView<String> modelListView, parentsListView;
 	private ListView<Issue> issueListView;
@@ -73,11 +76,14 @@ public class ModelBrowser extends CustomStage {
 						operationOutputVBox, operationInputVBox, associationBrowserVBox, consoleContainerVBox, parentsVBox, sourceVBox, targetVBox;
 	private HBox sourceHBox, targetHBox, associationBooleanAttributesHBox, visibleHBox;
 	private SplitPane outerSplitPane;
+	private TabPane codeAndConstraintTabPane;
+	private Tab codeTab = new Tab("Code");
+	private Tab constraintTab = new Tab("Constraint");
 	private GridPane mainGridPane, attributeGridpane;	
 	FmmlxDiagramCommunicator communicator;
 	private AbstractPackageViewer activePackage;
 	
-	
+	private static final String HIGHLIGHTED_ISSUE = "derive(orangered, 80%)";
 	private HashMap<String,AbstractPackageViewer> models = new HashMap<>();
 	private FixedBlueLevelColorScheme levelColorScheme;
 	
@@ -186,16 +192,11 @@ public class ModelBrowser extends CustomStage {
 		visibleHBox.setPadding(new Insets(3,3,3,3));
 		visibleHBox.setSpacing(10);
 		
-		codeArea = new TextArea();
-		consoleContainerVBox= new VBox();
-		consoleContainerVBox.getChildren().add(codeArea);
 		
-		outerSplitPane = new SplitPane();
-		outerSplitPane.setOrientation(Orientation.VERTICAL);
-		outerSplitPane.getItems().addAll(mainGridPane, consoleContainerVBox);
+//		consoleContainerVBox= new VBox();
+//		consoleContainerVBox.getChildren().add(codeArea);
+		//outerSplitPane.getItems().addAll(mainGridPane, consoleContainerVBox);		
 		
-		VBox.setVgrow(outerSplitPane,Priority.ALWAYS);
-		VBox.setVgrow(codeArea,Priority.ALWAYS);
 		
 		String doubleDots = " :";
 		abstractVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.abstractSmall+doubleDots), abstractCheckBox);
@@ -228,7 +229,9 @@ public class ModelBrowser extends CustomStage {
 		fmmlxOperationListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onOperationListViewNewValue(oldValue, newValue));
 		fmmlxAssociationListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
-				-> onAssociationListViewNewValue(oldValue,newValue)); 
+				-> onAssociationListViewNewValue(oldValue,newValue));
+		constraintListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
+				-> onConstraintListViewNewValue(oldValue,newValue));
 		
 		fmmlxObjectListView.setCellFactory(new Callback<ListView<FmmlxObject>, ListCell<FmmlxObject>>() {
 
@@ -240,7 +243,13 @@ public class ModelBrowser extends CustomStage {
 		            protected void updateItem(FmmlxObject o, boolean empty) {
 		                super.updateItem(o, empty);
 		                if (o != null) {
-		                    setText(o.getName());
+		                    if (activePackage.getIssues(o).size()>0) {
+		                    	setTextFill(Color.INDIANRED);
+		                    } else {
+		                    	setTextFill(Color.BLACK);
+		                    }
+		                    
+		                	setText(o.getName());
 		                    setGraphic(getLevelGraphic(o.getLevel()));
 		                } else {
 		                	setText("");
@@ -449,8 +458,67 @@ public class ModelBrowser extends CustomStage {
 		    }
 		});
 		
+		constraintListView.setCellFactory(new Callback<ListView<Constraint>, ListCell<Constraint>>() {
+
+		    @Override
+		    public ListCell<Constraint> call(ListView<Constraint> param) {
+		        ListCell<Constraint> cell = new ListCell<Constraint>() {
+
+		            protected void updateItem(Constraint constraint, boolean empty) {
+		                super.updateItem(constraint, empty);
+		                if (constraint != null) {
+		                    setText(constraint.getName());
+		                    setGraphic(getLevelGraphic(constraint.getLevel()));
+		                } else {
+		                	setText("");
+		                	setGraphic(null);
+		                }
+		            }
+
+					private Node getLevelGraphic(int level) {
+						if(level == -1) return null;
+						double SIZE = 16;
+						Canvas canvas = new Canvas(SIZE, SIZE);
+						Text temp = new Text(level+"");
+						GraphicsContext g = canvas.getGraphicsContext2D();
+						g.setFill(levelColorScheme.getLevelBgColor(level));
+						g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/2, SIZE/2);
+						g.setFill(levelColorScheme.getLevelFgColor(level, 1.));
+						g.fillText(level+"", 
+								SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
+								SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
+						return canvas;
+					}
+		        };
+		        return cell;
+		    }
+		});
+		
+		issueListView.setCellFactory(new Callback<ListView<Issue>, ListCell<Issue>>() {
+
+		    @Override
+		    public ListCell<Issue> call(ListView<Issue> param) {
+		        ListCell<Issue> cell = new ListCell<Issue>() {
+
+		            protected void updateItem(Issue issue, boolean empty) {
+		                super.updateItem(issue, empty);
+		                if (issue != null) {
+		                	setTextFill(Color.INDIANRED);
+		                	setText(issue.toString());  
+		                } else {
+		                	setText("");
+		                	
+		                }
+		            }
+		        };
+		        return cell;
+		    }
+		});
+		
 	}
 	
+	
+
 	private Node getLevelGraphic4Feature(int level, boolean own) {
 		if(level == -1) return null;
 		double SIZE = 16;
@@ -473,6 +541,22 @@ public class ModelBrowser extends CustomStage {
 		modelColumnVBox.getChildren().add(new Label(StringValue.LabelAndHeaderTitle.model));
 		modelColumnVBox.getChildren().add(modelListView);
 		modelColumnVBox.getChildren().add(new Label(StringValue.LabelAndHeaderTitle.project + ": [TODO]"));
+		modelListView.setPrefWidth(200);
+		fmmlxObjectListView.setPrefWidth(200);
+		fmmlxOperationListView.setPrefWidth(200);
+		parentsListView.setPrefWidth(200);
+		fmmlxAttributeListView.setPrefWidth(200);
+		slotListView.setPrefWidth(200);
+		operationValueListView.setPrefWidth(200);
+		constraintListView.setPrefWidth(200);
+		issueListView.setPrefWidth(200);
+		fmmlxAssociationListView.setPrefWidth(200);
+		linksListView.setPrefWidth(200);
+		linkedObjectsListView.setPrefWidth(200);
+		sourceListView.setPrefWidth(200);
+		targetListView.setPrefWidth(200);
+		metaClassTextField.setPrefWidth(200);
+		delegatesToTextField.setPrefWidth(200);
 		
 		VBox objectColumnVBox = new VBox();
 		objectColumnVBox.setSpacing(3);
@@ -536,6 +620,20 @@ public class ModelBrowser extends CustomStage {
 		mainGridPane.add(objectColumnVBox, 1,0);
 		mainGridPane.add(propertyGrid,2,0);
 		mainGridPane.add(associationsGrid, 3, 0);
+		
+		codeArea = new TextArea();
+		constraintTextArea = new TextArea();
+		outerSplitPane = new SplitPane();
+		outerSplitPane.setOrientation(Orientation.VERTICAL);
+		codeAndConstraintTabPane = new TabPane();
+		codeAndConstraintTabPane.getTabs().addAll(codeTab, constraintTab);
+		outerSplitPane.getItems().addAll(mainGridPane, codeAndConstraintTabPane);
+		codeTab.setContent(codeArea);
+		constraintTab.setContent(constraintTextArea);
+		VBox.setVgrow(outerSplitPane,Priority.ALWAYS);
+		VBox.setVgrow(codeArea,Priority.ALWAYS);
+		
+		
 //		List<Node> modelNode = new ArrayList<>();
 //		modelNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
 //		modelNode.add(new Label(StringValue.LabelAndHeaderTitle.model));
@@ -611,6 +709,7 @@ public class ModelBrowser extends CustomStage {
 	}
 
 	private void onOperationListViewNewValue(FmmlxOperation oldValue, FmmlxOperation selectedOperation) {
+		codeAndConstraintTabPane.getSelectionModel().select(codeTab);
 		if (selectedOperation!=null) {
 			codeArea.setText(selectedOperation.getBody());	
 		} else{
@@ -642,6 +741,11 @@ public class ModelBrowser extends CustomStage {
 			delegatesToTextField.clear();
 			operationValueListView.getItems().clear();
 			operationValueListView.getItems().addAll(selectedObject.getOperationValues());
+			constraintListView.getItems().clear();
+			constraintListView.getItems().addAll(selectedObject.getConstraints());
+			issueListView.getItems().clear();
+			issueListView.getItems().addAll(activePackage.getIssues(selectedObject));	
+			
 			if (selectedObject.getDelegatesTo()==null) {
 				delegatesToTextField.setText("No delegation");
 			} else {
@@ -677,7 +781,7 @@ public class ModelBrowser extends CustomStage {
 			sourceVisible.setDisable(true);
 			targetVisible.setDisable(true);
 		}
-
+		fmmlxAssociationListView.setContextMenu(new BrowserAssociationContextMenu(fmmlxObjectListView, fmmlxAssociationListView, activePackage));
 	}
 
 	private void onAbstractNewValue(Boolean oldValue, Boolean newValue) {
@@ -709,6 +813,15 @@ public class ModelBrowser extends CustomStage {
 	private void onAttributeListViewNewValue(FmmlxAttribute oldValue, FmmlxAttribute newValue) {
 		if(newValue != null) {selection.put("ATT", newValue.getName());}
 		fmmlxAttributeListView.setContextMenu(new BrowserAttributeContextMenu(fmmlxObjectListView, fmmlxAttributeListView, activePackage));
+	}
+	
+	private void onConstraintListViewNewValue(Constraint oldValue, Constraint constraint) {
+		
+		if (constraint!=null) {
+			codeAndConstraintTabPane.getSelectionModel().select(constraintTab);
+			constraintTextArea.setText(constraint.getBodyRaw() + constraint.getBodyFull() + constraint.getReasonRaw() + constraint.getReasonFull());
+		}
+		
 	}
 
 	public void notifyModelHasLoaded() {

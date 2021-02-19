@@ -13,6 +13,7 @@ import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerat
 import tool.clients.fmmlxdiagrams.instancegenerator.view.InstanceGeneratorGenerateTypeComboBox;
 
 import java.util.List;
+import java.util.Vector;
 
 
 public class CustomDialog<R> extends Dialog<R> {
@@ -207,8 +208,7 @@ public class CustomDialog<R> extends Dialog<R> {
 	}
 	
 	public <Property extends FmmlxProperty> ComboBox<Property> initializeComboBox(ObservableList<Property> list) {
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		ComboBox<Property> comboBox = new ComboBox(list);
+		ComboBox<Property> comboBox = new ComboBox<>(list);
 		comboBox.setCellFactory(param -> new ListCell<Property>() {
 			@Override
 			protected void updateItem(Property item, boolean empty) {
@@ -239,7 +239,7 @@ public class CustomDialog<R> extends Dialog<R> {
 		comboBox.setPrefWidth(COLUMN_WIDTH);
 		return comboBox;
 	}
-	
+		
 	protected InstanceGeneratorGenerateTypeComboBox initializeComboBoxGeneratorList(AbstractPackageViewer diagram, FmmlxAttribute attribute) {
 		InstanceGeneratorGenerateTypeComboBox comboBox = new InstanceGeneratorGenerateTypeComboBox(attribute);
 		comboBox.setCellFactory(param -> new ListCell<IValueGenerator>() {
