@@ -333,7 +333,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		String ofName = (ofObj == null) ? "MetaClass" : ofObj.name;
 		
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65, diagram), null, this, NO_ACTION, "^" + ofName + "^", FontPosture.REGULAR, FontWeight.BOLD) ;
-		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight, getLevelFontColor(.65, diagram), null, this, NO_ACTION, "" + level);
+		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight * 2, getLevelFontColor(.4, diagram), null, this, NO_ACTION, "" + level, FontPosture.REGULAR, FontWeight.BOLD, 3.);
 		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, getLevelFontColor(1., diagram), null, this, NO_ACTION, name, isAbstract?FontPosture.ITALIC:FontPosture.REGULAR, FontWeight.BOLD);
 		header.nodeElements.add(metaclassLabel);
 		header.nodeElements.add(levelLabel);

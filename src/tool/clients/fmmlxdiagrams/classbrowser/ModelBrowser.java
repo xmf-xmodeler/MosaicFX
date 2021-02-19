@@ -1,20 +1,18 @@
 package tool.clients.fmmlxdiagrams.classbrowser;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Vector;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -22,7 +20,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -30,23 +28,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
-import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
-import tool.clients.fmmlxdiagrams.Constraint;
-import tool.clients.fmmlxdiagrams.FmmlxAssociation;
-import tool.clients.fmmlxdiagrams.FmmlxAttribute;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
-import tool.clients.fmmlxdiagrams.FmmlxLink;
-import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.FmmlxOperation;
-import tool.clients.fmmlxdiagrams.FmmlxOperationValue;
-import tool.clients.fmmlxdiagrams.LevelColorScheme;
+import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.LevelColorScheme.FixedBlueLevelColorScheme;
-import tool.clients.fmmlxdiagrams.LevelColorScheme.RedLevelColorScheme;
-import tool.clients.fmmlxdiagrams.FmmlxSlot;
-import tool.clients.fmmlxdiagrams.Issue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
-import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
 import tool.clients.fmmlxdiagrams.menus.BrowserAttributeContextMenu;
 import tool.clients.fmmlxdiagrams.menus.BrowserObjectContextMenu;
 import tool.xmodeler.XModeler;
@@ -69,11 +53,10 @@ public class ModelBrowser extends CustomStage {
 	private CheckBox abstractCheckBox, targetVisible, sourceVisible, checkTransitive, checkSymmetric;
 	private TextField modellBrowserTextFied, metaClassTextField, delegatesToTextField, operationInputTextField, operationOutputTexField,
 						attributeBrowserTextField;
-	private VBox modelBrowserVBox, classBrowserVBox, attributeBrowserVBox, abstractVBox, delegatesToVBox,
-						operationOutputVBox, operationInputVBox, associationBrowserVBox, consoleContainerVBox, parentsVBox, sourceVBox, targetVBox;
-	private HBox sourceHBox, targetHBox, associationBooleanAttributesHBox, visibleHBox;
+	private VBox consoleContainerVBox;
+	private HBox associationBooleanAttributesHBox, visibleHBox;
 	private SplitPane outerSplitPane;
-	private GridPane mainGridPane, attributeGridpane;	
+	private GridPane mainGridPane;	
 	FmmlxDiagramCommunicator communicator;
 	private AbstractPackageViewer activePackage;
 	
@@ -134,11 +117,9 @@ public class ModelBrowser extends CustomStage {
 	
 	protected void initAllElements() {
 		mainGridPane = new GridPane();
-		attributeGridpane = new GridPane();
 		mainGridPane.setHgap(10);
 		mainGridPane.setVgap(8);
-		mainGridPane.setPadding(new Insets(3, 3, 3, 3));
-		//setColumnConstrain(mainGridPane);
+		mainGridPane.setPadding(new Insets(5,5,5,5));
 
 		modelListView = new ListView<>();
 		fmmlxObjectListView = new ListView<>();
@@ -178,12 +159,10 @@ public class ModelBrowser extends CustomStage {
 		visible = new Label(StringValue.LabelAndHeaderTitle.visible);
 		labelTransitive = new Label (StringValue.LabelAndHeaderTitle.transitive);
 		labelSymmetric = new Label (StringValue.LabelAndHeaderTitle.symmetric);
-		sourceHBox = new HBox();
-		targetHBox = new HBox();
 		associationBooleanAttributesHBox = new HBox();
-		associationBooleanAttributesHBox.setPadding(new Insets(3,3,3,3));
+		associationBooleanAttributesHBox.setPadding(new Insets(5,5,5,5));
 		visibleHBox = new HBox();
-		visibleHBox.setPadding(new Insets(3,3,3,3));
+		visibleHBox.setPadding(new Insets(5,5,5,5));
 		visibleHBox.setSpacing(10);
 		
 		codeArea = new TextArea();
@@ -196,20 +175,6 @@ public class ModelBrowser extends CustomStage {
 		
 		VBox.setVgrow(outerSplitPane,Priority.ALWAYS);
 		VBox.setVgrow(codeArea,Priority.ALWAYS);
-		
-		String doubleDots = " :";
-		abstractVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.abstractSmall+doubleDots), abstractCheckBox);
-		modelBrowserVBox= getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.project+doubleDots), modellBrowserTextFied);
-		delegatesToVBox= getVBoxControl().joinNodeInVBox(new Label (StringValue.LabelAndHeaderTitle.delegatesTo), delegatesToTextField);
-		operationOutputVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.output+doubleDots), operationOutputTexField);
-		operationInputVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.input+doubleDots), operationInputTextField);
-		classBrowserVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.metaClass+doubleDots), metaClassTextField);
-		//associationBrowserVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.withSmall+doubleDots), associationBrowserTextField);
-		sourceVBox = getVBoxControl().joinNodeInVBox(new Label (StringValue.LabelAndHeaderTitle.source), sourceListView);
-		targetVBox = getVBoxControl().joinNodeInVBox(new Label (StringValue.LabelAndHeaderTitle.target), targetListView);
-		attributeBrowserVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.aClassSmall+doubleDots), attributeBrowserTextField);
-		parentsVBox = getVBoxControl().joinNodeInVBox(new Label(StringValue.LabelAndHeaderTitle.parent + doubleDots), parentsListView);
-		
 		
 		modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onModelListViewNewValue(oldValue, newValue));
@@ -468,11 +433,19 @@ public class ModelBrowser extends CustomStage {
 
 	protected void addAllElementsToPane() {
 		VBox modelColumnVBox = new VBox();
-		modelColumnVBox.setSpacing(3);
-		modelColumnVBox.setPadding(new Insets(3,3,3,3));
+		modelColumnVBox.setSpacing(5);
+		modelColumnVBox.setPadding(new Insets(5,5,5,5));
 		modelColumnVBox.getChildren().add(new Label(StringValue.LabelAndHeaderTitle.model));
-		modelColumnVBox.getChildren().add(modelListView);
+		modelColumnVBox.getChildren().add(modelListView);		
 		modelColumnVBox.getChildren().add(new Label(StringValue.LabelAndHeaderTitle.project + ": [TODO]"));
+		Button button1 = new Button("Update...");
+		modelColumnVBox.getChildren().add(button1);
+		button1.setOnAction(e -> activePackage.updateDiagram());
+		button1.setMaxWidth(300);
+		Button button2 = new Button("Do not push!");
+		button2.setMaxWidth(300);
+		modelColumnVBox.getChildren().add(button2);
+		button2.setOnAction(e -> System.exit(0));
 		
 		VBox objectColumnVBox = new VBox();
 		objectColumnVBox.setSpacing(3);

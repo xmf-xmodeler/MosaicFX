@@ -1130,7 +1130,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 		triggerOverallReLayout();
 		resizeCanvas();
-
 	}
 
 	@Override
@@ -1145,8 +1144,13 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			justLoaded = false;
 		}
 		redraw();
-		if(issues.size() > 0) {
-			issues.firstElement().performResolveAction(this);
+		Issue nextIssue = null;
+		for(int i = 0; i < issues.size() && nextIssue == null; i++) {
+			if(issues.get(i).isSoluble()) nextIssue = issues.get(i);
+		} 
+		
+		if(nextIssue != null) {
+			nextIssue.performResolveAction(this);
 		}
 	}
 	
