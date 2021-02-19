@@ -65,7 +65,7 @@ public class FmmlxSerializer implements Serializer {
             }
             System.out.println(label + " saved");
         } else {
-            communicator.saveXmlFile(diagramPath, id);
+            communicator.saveXmlFile2(diagramPath, id);
         }
     }
 
