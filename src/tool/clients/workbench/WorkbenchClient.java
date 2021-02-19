@@ -29,14 +29,13 @@ public class WorkbenchClient extends Client {
     else if (message.hasName("namespace"))
       consoleNamespace(message);
     else if (message.hasName("loadImage"))
-    	loadImage(message);
+      loadImage(message);
     else if (message.hasName("setAllProjects"))
-    	setAllProjects(message);
+      setAllProjects(message);
     else if (message.hasName("setProjectModels"))
-    	setProjectModels(message);
+      setProjectModels(message);
     else super.sendMessage(message);
   }
-
 
   private void setAllProjects(Message message) {
 	ControlCenterClient.getClient().setAllProjects(message);
