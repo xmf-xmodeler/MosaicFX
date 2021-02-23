@@ -33,6 +33,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	private boolean showGettersAndSetters = true;
 	private boolean showDerivedOperations = true;
 	private boolean showDerivedAttributes = true;
+	private boolean showConstraints = true;
 
 	static int testDiff = 10;
 
@@ -43,13 +44,15 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	final int EXTRA_Y_PER_LINE = 3;
 
 	Vector<FmmlxSlot> slots = new Vector<>();
-	Vector<FmmlxOperationValue> operationValues = new Vector<>();
+	private Vector<FmmlxOperationValue> operationValues = new Vector<>();
 
 	private Vector<FmmlxAttribute> ownAttributes = new Vector<>();
 	private Vector<FmmlxAttribute> otherAttributes = new Vector<>();
 
 	private Vector<FmmlxOperation> ownOperations = new Vector<>();
 	private Vector<FmmlxOperation> otherOperations = new Vector<>();
+	
+	private Vector<Constraint> constraints = new Vector<>();
 
 	private AbstractPackageViewer diagram;
 	private PropertyType propertyType = PropertyType.Class;
@@ -211,6 +214,12 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		result.addAll(getDelegateToClassOperations());
 		return result;
 	}
+	
+	public Vector<FmmlxOperationValue> getOperationValues() {
+		Vector<FmmlxOperationValue> result = new Vector<>();
+		result.addAll(operationValues);
+		return result;
+	}
 
 	public Vector<String> getParentsPaths() {
 		return parentsPaths;
@@ -324,7 +333,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		String ofName = (ofObj == null) ? "MetaClass" : ofObj.name;
 		
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65, diagram), null, this, NO_ACTION, "^" + ofName + "^", FontPosture.REGULAR, FontWeight.BOLD) ;
-		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight, getLevelFontColor(.65, diagram), null, this, NO_ACTION, "" + level);
+		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight * 2, getLevelFontColor(.4, diagram), null, this, NO_ACTION, "" + level, FontPosture.REGULAR, FontWeight.BOLD, 3.);
 		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, getLevelFontColor(1., diagram), null, this, NO_ACTION, name, isAbstract?FontPosture.ITALIC:FontPosture.REGULAR, FontWeight.BOLD);
 		header.nodeElements.add(metaclassLabel);
 		header.nodeElements.add(levelLabel);
@@ -434,12 +443,6 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 					opsY += lineHeight;
 					NodeLabel oLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, opsY, Color.WHITE, Color.GRAY, o, NO_ACTION, o.getLevelString() + "");
 					opsBox.nodeElements.add(oLevelLabel);
-//					String iconS = 
-//							// check whether next step is delegation
-//							diagram.getObjectByPath(o.getOwner()) == getDelegatesTo() ? "resources/gif/XCore/delegation.png" :
-//							// otherwise delegation has been somewhere before
-//							// if level of owner is the same then inheritance otherwise metaclass
-//							diagram.getObjectByPath(o.getOwner()).getLevel() == level ? "resources/gif/Inheritance.gif" : "resources/gif/Dependency.gif";
 					String iconS = "resources/gif/Inheritance.gif";
 					if(diagram.getObjectByPath(ofPath) != null && diagram.getObjectByPath(ofPath).getAllOperations().contains(o)) iconS = "resources/gif/Dependency.gif";
 					if(getDelegatesTo() != null && getDelegatesTo().getAllOperations().contains(o)) iconS = "resources/gif/XCore/delegation.png";
@@ -472,10 +475,27 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			}
 		}
 		currentY = yAfterOpsBox;
+		
+		double yAfterConstraintBox = currentY;
+		int constraintSize = constraints.size();
+		double constraintBoxHeight = Math.max(lineHeight * constraintSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
+		double constraintY = 0;
+		NodeBox coinstraintsBox = new NodeBox(0, currentY, neededWidth, constraintBoxHeight, Color.WHITE, Color.BLACK, (x) -> 1., PropertyType.Constraint);
+		if (showConstraints && constraintSize > 0) {
+			yAfterConstraintBox = currentY + constraintBoxHeight;
+			nodeElements.addElement(coinstraintsBox);
+			for (Constraint con : constraints) {
+				constraintY += lineHeight;
+				NodeLabel constraintLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, constraintY, new Color(.8,0,0,1), null, con, NO_ACTION, con.getName());
+				coinstraintsBox.nodeElements.add(constraintLabel);
+				NodeLabel constraintLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, constraintY, Color.WHITE, new Color(.8,0,0,1), con, NO_ACTION, con.level + "");
+				coinstraintsBox.nodeElements.add(constraintLevelLabel);
+			}
+		}
+		currentY = yAfterConstraintBox;
 
 		double yAfterSlotBox = currentY;
 		int slotSize = slots.size();
-//		double lineHeight = textHeight + EXTRA_Y_PER_LINE;
 		double slotBoxHeight = Math.max(lineHeight * slotSize + EXTRA_Y_PER_LINE, MIN_BOX_HEIGHT);
 		double slotsY = 0;
 		NodeBox slotsBox = new NodeBox(0, currentY, neededWidth, slotBoxHeight, Color.WHITE, Color.BLACK, (x) -> 1., PropertyType.Slot);
@@ -623,19 +643,16 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 				neededWidth = Math.max(2+FmmlxDiagram.calculateTextWidth(opValue.getName() + " -> " + opValue.getValue()), neededWidth);
 			}
 		}
+		
+		if (showConstraints) {
+			for (Constraint con : constraints) {
+				neededWidth = Math.max(2+FmmlxDiagram.calculateTextWidth(con.getName()) + INST_LEVEL_WIDTH, neededWidth);
+			}
+		}
 
 		if (hasParents()) {
 			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(getParentsList(diagram)), neededWidth);
 		}
-//
-//		//determine maximal width of operation values
-//		if (showOperationValues) {
-//			for (FmmlxOperationValue operationValue : operationValues) {
-//				Text text = new Text(operationValue.name + " = " + operationValue.value);
-//				neededWidth = Math.max(text.getLayoutBounds().getWidth(), neededWidth);
-//			}
-//		}
-
 
 		//if minimum width is not reached just paint minimum
 		return Math.max(neededWidth + 2 * GAP, minWidth);
@@ -659,6 +676,9 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 				otherOperations.sort(Collections.reverseOrder());
 			}
 		}
+		constraints = comm.fetchConstraints(diagram, this.name);
+		Collections.sort(constraints);
+		
 	}
 
 	public void fetchDataValues(FmmlxDiagramCommunicator comm) throws TimeOutException {
@@ -937,4 +957,9 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return Boolean.toString(isAbstract);
 	}
 
+	public Vector<Constraint> getConstraints() {
+		return new Vector<Constraint>(constraints);
+	}
+	
+	
 }

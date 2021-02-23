@@ -42,7 +42,7 @@ public class Issue {
 				i.affectedObjects.add((String) o);
 			}
 			i.solution = (Vector<Object>) message.get(3);
-			
+						
 			return i;
 //		} catch (IssueNotReadableException e) {
 //			throw e;
@@ -66,6 +66,10 @@ public class Issue {
 
 	public String getText() {
 		return text;
+	}
+	
+	public boolean isSoluble() {
+		return !"no solution available".equals(solution.get(0));
 	}
 	
 	public void performResolveAction(FmmlxDiagram diagram) {
@@ -128,5 +132,10 @@ public class Issue {
 //	        alert.showAndWait();
 		}
 	}
+	
+	@Override
+	public String toString() { 
+		return text;
+		}
 
 }

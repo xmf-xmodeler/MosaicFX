@@ -1,7 +1,9 @@
 package tool.clients.fmmlxdiagrams.classbrowser;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
@@ -34,8 +36,17 @@ public class ClassBrowserPackageViewer extends AbstractPackageViewer{
 	}
 
 	@Override
-	public ObservableList<FmmlxObject> getAllPossibleParentList() {
-		throw new RuntimeException();
+	public ObservableList<FmmlxObject> getPossibleAssociationEnds() {
+		ArrayList<FmmlxObject> objectList = new ArrayList<>();
+
+		if (!objects.isEmpty()) {
+			for (FmmlxObject object : objects) {
+				if (object.getLevel() != 0) {
+					objectList.add(object);
+				}
+			}
+		}
+		return FXCollections.observableArrayList(objectList);
 	}
 
 	@Override

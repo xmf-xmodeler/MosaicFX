@@ -1,56 +1,24 @@
 package tool.clients.fmmlxdiagrams.dialogs.results;
 
-import tool.clients.fmmlxdiagrams.FmmlxAssociation;
-import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.FmmlxOperation;
-import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.FmmlxProperty;
 
-public class RemoveDialogResult {
+public class RemoveDialogResult<Property extends FmmlxProperty> {
 	
-	private final PropertyType type;
-	private FmmlxObject object;
-	private FmmlxAttribute attribute;
-	private FmmlxOperation operation;
-	private FmmlxAssociation association;
+	private final FmmlxObject object;
+	private final Property property;
 	
-	public RemoveDialogResult(PropertyType type, FmmlxObject object) {
-		
-		this.type=type;
+	public RemoveDialogResult(FmmlxObject object, Property property) {
 		this.object=object;
-	}
-
-	public RemoveDialogResult(PropertyType type, FmmlxObject object, FmmlxAttribute selectedItem) {
-		this.type=type;
-		this.object=object;
-		this.attribute=selectedItem;
-		
-	}
-
-	public RemoveDialogResult(PropertyType type, FmmlxObject object, FmmlxOperation selectedItem) {
-		this.type=type;
-		this.object=object;
-		this.operation=selectedItem;
-	}
-
-	public PropertyType getType() {
-		return type;
+		this.property=property;
 	}
 
 	public FmmlxObject getObject() {
 		return object;
 	}
 
-	public FmmlxAttribute getAttribute() {
-		return attribute;
-	}
-
-	public FmmlxOperation getOperation() {
-		return operation;
-	}
-
-	public FmmlxAssociation getAssociation() {
-		return association;
+	public Property getProperty() {
+		return property;
 	}
 	
 	

@@ -37,11 +37,11 @@ public abstract class CustomStage extends Stage{
 		this.setOnShowing(e-> onShow());	
 	}
 	
-	protected abstract void initAllElements();
+	//protected abstract void initAllElements();
 	
-	protected abstract void addAllElementToPane();
+	//protected abstract void addAllElementToPane();
 	
-	public abstract void onClose();
+	//public abstract void onClose();
 	
 	protected VBox getContainer() {
 		return container;

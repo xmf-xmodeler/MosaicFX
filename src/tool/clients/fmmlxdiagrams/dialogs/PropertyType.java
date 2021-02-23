@@ -11,7 +11,7 @@ public enum PropertyType {
 	Selection("Selection"),
 	Delegation("Delegation"),
 	RoleFiller("RoleFiller"),
-	Issue("Issue");
+	Issue("Issue"), Constraint("Constraint");
 
 	private String name;
 

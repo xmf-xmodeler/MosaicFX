@@ -8,6 +8,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
@@ -73,6 +74,7 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu attributeMenu = createAttributeSubMenu();
 		Menu associationMenu = createAssociationSubMenu();
 		Menu operationMenu = createOperationSubMenu();
+		Menu constraintMenu = createConstraintSubMenu();
 		Menu slotMenu = createSlotSubMenu();
 		Menu associationInstanceMenu = createAssociationInstanceSubMenu();
 		Menu showMenu = createShowSubMenu();
@@ -100,7 +102,7 @@ public class ObjectContextMenu extends ContextMenu {
 		
 		levelMenu.getItems().addAll(levelRaiseAllItem, levelLowerAllItem, levelRaiseHereItem, levelLowerHereItem, levelSplitItem, levelMergeItem);
 
-		getItems().addAll(attributeMenu, associationMenu, operationMenu, delegationMenu, slotMenu, associationInstanceMenu, levelMenu, showMenu, assignItem);
+		getItems().addAll(attributeMenu, associationMenu, operationMenu, constraintMenu, delegationMenu, slotMenu, associationInstanceMenu, levelMenu, showMenu, assignItem);
 		
 		addNewMenuItem(this, "Hide", e -> {
 			Vector<FmmlxObject> v = new Vector<FmmlxObject>(); 
@@ -162,6 +164,46 @@ public class ObjectContextMenu extends ContextMenu {
 				changeMultiplicityItem, changeLevelItem, editAssociation, */associationValue);
 
 		return associationMenu;
+	}
+	
+	private Menu createConstraintSubMenu() {
+		Menu constraintMenu = new Menu("Constraint");
+		
+		MenuItem addItem = new MenuItem("Add");
+		addItem.setOnAction(e -> actions.addConstraintDialog(object));
+		constraintMenu.getItems().add(addItem);
+		
+		constraintMenu.getItems().add(new SeparatorMenuItem());
+
+		MenuItem changeNameItem = new MenuItem("Change name");
+		changeNameItem.setDisable(true);
+		constraintMenu.getItems().add(changeNameItem);
+		
+		MenuItem changeLevelItem = new MenuItem("Change level");
+		changeLevelItem.setDisable(true);
+		constraintMenu.getItems().add(changeLevelItem);
+		
+		MenuItem changeBodyItem = new MenuItem("Change body");
+		changeBodyItem.setDisable(true);
+		constraintMenu.getItems().add(changeBodyItem);
+		
+		MenuItem changeReasonItem = new MenuItem("Change reason");
+		changeReasonItem.setDisable(true);
+		constraintMenu.getItems().add(changeReasonItem);
+		
+		MenuItem changeOwnerItem = new MenuItem("Change owner");
+		changeOwnerItem.setDisable(true);
+		constraintMenu.getItems().add(changeOwnerItem);
+		
+		constraintMenu.getItems().add(new SeparatorMenuItem());
+		
+		MenuItem removeItem = new MenuItem("Remove");
+		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Constraint));
+		constraintMenu.getItems().add(removeItem);
+		
+		
+		
+		return constraintMenu;
 	}
 
 	private Menu createOperationSubMenu() {
