@@ -309,12 +309,11 @@ public class TextEditor implements ITextEditor{
   public void addLineHighlight(int line) {
 //    highlights.add(text.getOffsetAtLine(line - 1));
 //    text.redraw();
-	  
   	  String s = textArea.getText();
   	  int index = -1;
   	  
   	  for(int i=1; i< line;i++){
-  		  index = s.indexOf("\n",index+1);  
+  		  index = s.indexOf("\n",index+1);
   	  }
   	  index += 1;
   	  int lineEnd = s.indexOf("\n",index+1);
@@ -342,10 +341,20 @@ public class TextEditor implements ITextEditor{
 //    }
   }
 
-  public void addMultilineRule(String id, String start, String end, int red, int green, int blue) {
+  public void addMultilineRule(String id, String start, String end, double red, double green, double blue) {
     if (getId().equals(id)) {
-      wordRules.add(new MultiLineRule(start, end, Color.rgb(red, green, blue)));
+      wordRules.add(new MultiLineRule(start, end, Color.color(red, green, blue)));
     }
+  }
+
+  @Override
+  public void addMultilineRule(String id, String start, String end, int red, int green, int blue) {
+
+  }
+
+  @Override
+  public void addWordRule(String id, String text, int red, int green, int blue) {
+
   }
 
   private void addStyles() {
@@ -456,8 +465,8 @@ public class TextEditor implements ITextEditor{
     }
   }
 
-  public void addWordRule(String id, String text, int red, int green, int blue) {
-    if (getId().equals(id)) wordRules.add(new WordRule(text, Color.rgb(red, green, blue)));
+  public void addWordRule(String id, String text, double red, double green, double blue) {
+    if (getId().equals(id)) wordRules.add(new WordRule(text, Color.color(red, green, blue)));
   }
 
   private boolean at() {
@@ -707,17 +716,17 @@ public class TextEditor implements ITextEditor{
   private void inflateMultiLineRule(Node item) {
     String word = XModeler.attributeValue(item, "word");
     String end = XModeler.attributeValue(item, "end");
-    int red = Integer.parseInt(XModeler.attributeValue(item, "red"));
-    int green = Integer.parseInt(XModeler.attributeValue(item, "green"));
-    int blue = Integer.parseInt(XModeler.attributeValue(item, "blue"));
+    double red = Double.parseDouble(XModeler.attributeValue(item, "red"));
+    double green = Double.parseDouble(XModeler.attributeValue(item, "green"));
+    double blue = Double.parseDouble(XModeler.attributeValue(item, "blue"));
     addMultilineRule(getId(), word, end, red, green, blue);
   }
 
   private void inflateWordRule(Node item) {
     String word = XModeler.attributeValue(item, "word");
-    int red = Integer.parseInt(XModeler.attributeValue(item, "red"));
-    int green = Integer.parseInt(XModeler.attributeValue(item, "green"));
-    int blue = Integer.parseInt(XModeler.attributeValue(item, "blue"));
+    double red = Double.parseDouble(XModeler.attributeValue(item, "red"));
+    double green = Double.parseDouble(XModeler.attributeValue(item, "green"));
+    double blue = Double.parseDouble(XModeler.attributeValue(item, "blue"));
     addWordRule(getId(), word, red, green, blue);
   }
 

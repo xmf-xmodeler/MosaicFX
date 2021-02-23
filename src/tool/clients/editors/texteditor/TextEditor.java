@@ -120,6 +120,11 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
 //    redraw();
   }
 
+  @Override
+  public void addMultilineRule(String id, String start, String end, double red, double green, double blue) {
+
+  }
+
   public void addMultilineRule(String id, String start, String end, int red, int green, int blue) {
     if (getId().equals(id)) {
       lineStyler.addMultilineRule(id, start, end, red, green, blue);

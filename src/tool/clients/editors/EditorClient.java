@@ -106,22 +106,28 @@ public class EditorClient extends Client {
     String start = message.args[1].strValue();
     String end = message.args[2].strValue();
     String color = message.args[3].strValue();
-    if (color.equals("red"))
-      addMultilineRule(id, start, end, 255, 0, 0);
-    else if (color.equals("green"))
-      addMultilineRule(id, start, end, 0, 153, 0);
-    else if (color.equals("blue"))
-      addMultilineRule(id, start, end, 50, 50, 255);
-    else if (color.equals("gray"))
-      addMultilineRule(id, start, end, 120, 120, 120);
-    else {
-      String[] colours = color.split(",");
-      if (colours.length == 3) {
-        int red = Integer.parseInt(colours[0]);
-        int blue = Integer.parseInt(colours[1]);
-        int green = Integer.parseInt(colours[2]);
-        addMultilineRule(id, start, end, red, blue, green);
-      } else System.err.println("unknown color: " + Arrays.toString(colours));
+    switch (color) {
+      case "red":
+        addMultilineRule(id, start, end, 255, 0, 0);
+        break;
+      case "green":
+        addMultilineRule(id, start, end, 0, 153, 0);
+        break;
+      case "blue":
+        addMultilineRule(id, start, end, 50, 50, 255);
+        break;
+      case "gray":
+        addMultilineRule(id, start, end, 120, 120, 120);
+        break;
+      default:
+        String[] colours = color.split(",");
+        if (colours.length == 3) {
+          int red = Integer.parseInt(colours[0]);
+          int blue = Integer.parseInt(colours[1]);
+          int green = Integer.parseInt(colours[2]);
+          addMultilineRule(id, start, end, red, blue, green);
+        } else System.err.println("unknown color: " + Arrays.toString(colours));
+        break;
     }
   }
 
@@ -232,7 +238,6 @@ public class EditorClient extends Client {
 		alert.setTitle("Open Tab in seperate window instead?");
 		alert.setHeaderText(null);
 		
-
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == ButtonType.YES) {
 			System.err.println("TEST new Tab Window");
@@ -285,11 +290,38 @@ public class EditorClient extends Client {
     else return result[0];
   }
 
-
-
   private void inflateEditorElement(Node editor) {
+    if (editor.getNodeName().equals("TextEditor")) inflateTextEditor(editor);
     if (editor.getNodeName().equals("NewTextEditor")) inflateNewTextEditor(editor);
     if (editor.getNodeName().equals("Browser")) inflateBrowser(editor);
+  }
+
+  private void inflateTextEditor(Node TextEditor) {
+    final String id = XModeler.attributeValue(TextEditor, "id");
+    String text = XModeler.attributeValue(TextEditor, "text");
+    String label = XModeler.attributeValue(TextEditor, "label");
+    String toolTip = XModeler.attributeValue(TextEditor, "toolTip");
+    final boolean selected = XModeler.attributeValue(TextEditor, "selected").equals("true");
+    boolean editable = XModeler.attributeValue(TextEditor, "editable").equals("true");
+    boolean lineNumbers = XModeler.attributeValue(TextEditor, "lineNumbers").equals("true");
+//    int fontHeight = Integer.parseInt(XModeler.attributeValue(NewTextEditor, "fontHeight"));
+    newNewTextEditor(id, label, toolTip, editable, lineNumbers, text);
+    final ITextEditor editor = editors.get(id);
+    editor.inflate(TextEditor);
+    CountDownLatch l = new CountDownLatch(1);
+    Platform.runLater(()->{
+//    runOnDisplay(new Runnable() {
+//      public void run() {
+//        editor.getText().redraw();
+      if (selected) tabPane.getSelectionModel().select(tabs.get(id));
+//      }
+      l.countDown();
+    });
+    try {
+      l.await();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 
   private void inflateNewTextEditor(Node NewTextEditor) {
@@ -783,16 +815,15 @@ public void sendMessage(final Message message) {
   public void writeXML(PrintStream out) {
     out.print("<Editors>");
     for (String id : editors.keySet()) {
-      
-    	Tab item = tabs.get(id);
-    	ITextEditor editor = editors.get(id);
-    	if(item!=null) {
-    	    editor.writeXML(out, item.isSelected(), item.getText(), item.getTooltip().getText());
-    	}else {
-    		editor.writeXML(out, false, editor.getLabel(), editor.getLabel());
-    	}
+      Tab item = tabs.get(id);
+      ITextEditor editor = editors.get(id);
+      if(item!=null) {
+        editor.writeXML(out, item.isSelected(), item.getText(), item.getTooltip().getText());
+      }else {
+        editor.writeXML(out, false, editor.getLabel(), editor.getLabel());
+      }
     }
-    /*for (String id : browsers.keySet()) {
+    for (String id : browsers.keySet()) {
       Tab tab = tabs.get(id);
       if (tab != null) {
         WebBrowser browser = browsers.get(id);
@@ -810,7 +841,7 @@ public void sendMessage(final Message message) {
           out.print("<Browser id='" + id + "' label='" + label + "' tooltip='" + tooltip + "' url='" + url + "' text='" + XModeler.encodeXmlAttribute(text) + "'/>");
         }
       }
-    }*/
+    }
     out.print("</Editors>");
   }
 
