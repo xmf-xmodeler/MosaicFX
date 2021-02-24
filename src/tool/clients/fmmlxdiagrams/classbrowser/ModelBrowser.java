@@ -244,9 +244,10 @@ public class ModelBrowser extends CustomStage {
 		                super.updateItem(o, empty);
 		                if (o != null) {
 		                    if (activePackage.getIssues(o).size()>0) {
-		                    	setTextFill(Color.INDIANRED);
-		                    } else {
-		                    	setTextFill(Color.BLACK);
+		                    	setStyle("-fx-control-inner-background: tomato;");
+		                    } 
+		                    else {
+		                    	setStyle("-fx-control-inner-background: white;");
 		                    }
 		                    
 		                	setText(o.getName());
