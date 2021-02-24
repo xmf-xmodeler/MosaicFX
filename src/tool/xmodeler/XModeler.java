@@ -429,9 +429,9 @@ public class XModeler extends Application {
   @Override
   public void start(Stage primaryStage) throws Exception {
       stage = primaryStage;
+      createXmodeler();
 	  startXOS(copyOfArgs[0]);
 	  singleton = this;
-	  createXmodeler();
 	  initClients();
       startClients();
 	  openXModeler();

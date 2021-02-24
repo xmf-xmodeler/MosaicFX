@@ -1,10 +1,7 @@
 package tool.clients.menus;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 //import org.eclipse.swt.SWT;
@@ -74,6 +71,7 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
   private void writeMenuBar(PrintStream out) {
     out.print("<MenuBar>");
     List<String> sortedID = new ArrayList<>(menus.keySet());
+    Collections.sort(sortedID);
     for (String id : sortedID) {
       if (isRootMenu(menus.get(id))) {
         rootMenuText(menus.get(id));
