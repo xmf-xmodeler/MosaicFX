@@ -5,6 +5,7 @@ import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
@@ -40,7 +41,7 @@ public class EditorClient extends Client {
 
   public static final Color             LINE_HIGHLIGHT = Color.rgb(192, 192, 192);
   public static final Color             RED            = Color.rgb(255, 0, 0);
-  public static final Color             GREY           = Color.rgb(192, 192, 192);
+  //public static final Color             GREY           = Color.rgb(192, 192, 192);
   public static final Color             WHITE          = Color.rgb(255, 255, 255);
   public static final Color             GREEN          = Color.rgb(0, 170, 0);
   public static final Color             BLACK          = Color.rgb(0, 0, 0);
@@ -51,9 +52,9 @@ public class EditorClient extends Client {
   
   
 
-  public static Hashtable<String, Tab>    tabs           = new Hashtable<String, Tab>(); //TODO: rewrite completely and introduce Browser object
-  public static Hashtable<String, ITextEditor> editors        = new Hashtable<String, ITextEditor>(); //unorthodox TODO:
-  public static Hashtable<String, WebBrowser> browsers        = new Hashtable<String, WebBrowser>(); // unorthodox TODO:
+  public static Hashtable<String, Tab>    tabs           = new Hashtable<>(); //TODO: rewrite completely and introduce Browser object
+  public static Hashtable<String, ITextEditor> editors        = new Hashtable<>(); //unorthodox TODO:
+  public static Hashtable<String, WebBrowser> browsers        = new Hashtable<>(); // unorthodox TODO:
   
   public static void start(TabPane tabPane) {
     EditorClient.tabPane = tabPane;
@@ -160,22 +161,28 @@ public class EditorClient extends Client {
     String id = message.args[0].strValue();
     String text = message.args[1].strValue();
     String color = message.args[2].strValue();
-    if (color.equals("red"))
-      addWordRuleColor(id, text, 255, 0, 0);
-    else if (color.equals("green"))
-      addWordRuleColor(id, text, 0, 153, 0);
-    else if (color.equals("blue"))
-      addWordRuleColor(id, text, 50, 50, 255);
-    else if (color.equals("torquoise"))
-      addWordRuleColor(id, text, 0, 120, 120);
-    else {
-      String[] colours = color.split(",");
-      if (colours.length == 3) {
-        int red = Integer.parseInt(colours[0]);
-        int blue = Integer.parseInt(colours[1]);
-        int green = Integer.parseInt(colours[2]);
-        addWordRuleColor(id, text, red, blue, green);
-      } else System.err.println("unknown color: " + Arrays.toString(colours));
+    switch (color) {
+      case "red":
+        addWordRuleColor(id, text, 255, 0, 0);
+        break;
+      case "green":
+        addWordRuleColor(id, text, 0, 153, 0);
+        break;
+      case "blue":
+        addWordRuleColor(id, text, 50, 50, 255);
+        break;
+      case "torquoise":
+        addWordRuleColor(id, text, 0, 120, 120);
+        break;
+      default:
+        String[] colours = color.split(",");
+        if (colours.length == 3) {
+          int red = Integer.parseInt(colours[0]);
+          int blue = Integer.parseInt(colours[1]);
+          int green = Integer.parseInt(colours[2]);
+          addWordRuleColor(id, text, red, blue, green);
+        } else System.err.println("unknown color: " + Arrays.toString(colours));
+        break;
     }
   }
 
@@ -301,9 +308,9 @@ public class EditorClient extends Client {
     String text = XModeler.attributeValue(TextEditor, "text");
     String label = XModeler.attributeValue(TextEditor, "label");
     String toolTip = XModeler.attributeValue(TextEditor, "toolTip");
-    final boolean selected = XModeler.attributeValue(TextEditor, "selected").equals("true");
-    boolean editable = XModeler.attributeValue(TextEditor, "editable").equals("true");
-    boolean lineNumbers = XModeler.attributeValue(TextEditor, "lineNumbers").equals("true");
+    final boolean selected = Objects.equals(XModeler.attributeValue(TextEditor, "selected"), "true");
+    boolean editable = Objects.equals(XModeler.attributeValue(TextEditor, "editable"), "true");
+    boolean lineNumbers = Objects.equals(XModeler.attributeValue(TextEditor, "lineNumbers"), "true");
 //    int fontHeight = Integer.parseInt(XModeler.attributeValue(NewTextEditor, "fontHeight"));
     newNewTextEditor(id, label, toolTip, editable, lineNumbers, text);
     final ITextEditor editor = editors.get(id);
@@ -329,9 +336,9 @@ public class EditorClient extends Client {
     String text = XModeler.attributeValue(NewTextEditor, "text");
     String label = XModeler.attributeValue(NewTextEditor, "label");
     String toolTip = XModeler.attributeValue(NewTextEditor, "toolTip");
-    final boolean selected = XModeler.attributeValue(NewTextEditor, "selected").equals("true");
-    boolean editable = XModeler.attributeValue(NewTextEditor, "editable").equals("true");
-    boolean lineNumbers = XModeler.attributeValue(NewTextEditor, "lineNumbers").equals("true");
+    final boolean selected = Objects.equals(XModeler.attributeValue(NewTextEditor, "selected"), "true");
+    boolean editable = Objects.equals(XModeler.attributeValue(NewTextEditor, "editable"), "true");
+    boolean lineNumbers = Objects.equals(XModeler.attributeValue(NewTextEditor, "lineNumbers"), "true");
 //    int fontHeight = Integer.parseInt(XModeler.attributeValue(NewTextEditor, "fontHeight"));
     newNewTextEditor(id, label, toolTip, editable, lineNumbers, text);
     final ITextEditor editor = editors.get(id);
@@ -869,20 +876,18 @@ public void sendMessage(final Message message) {
     browsers.put(id, browser);
 
     browser.getBrowserVBox(url, text)
-            .thenAccept(browserVbox -> {
-              Platform.runLater(() -> {
-                HBox hbox = new HBox();
-                VBox vbox = new VBox();
-                Tab tab = createBrowserTab(id, label, tooltip);
+            .thenAccept(browserVbox -> Platform.runLater(() -> {
+              HBox hbox = new HBox();
+              VBox vbox = new VBox();
+              Tab tab = createBrowserTab(id, label, tooltip);
 
-                vbox.getChildren().addAll(hbox, browserVbox);
-                tab.setContent(vbox);
-                tabs.put(id, tab);
+              vbox.getChildren().addAll(hbox, browserVbox);
+              tab.setContent(vbox);
+              tabs.put(id, tab);
 
-                tabPane.getTabs().add(tab);
-                tabPane.getSelectionModel().select(tab);
-              });
-            })
+              tabPane.getTabs().add(tab);
+              tabPane.getSelectionModel().select(tab);
+            }))
             .exceptionally(throwable -> {
               System.err.println("Error creating new Browser: "+throwable);
               return null;
@@ -912,9 +917,7 @@ public void sendMessage(final Message message) {
 
   private void setUrl(final String id, final String url, final boolean addToHistory) {
     if (browsers.containsKey(id)) {
-      Platform.runLater(()->{
-        tabPane.getSelectionModel().select(tabs.get(id));
-      });
+      Platform.runLater(()-> tabPane.getSelectionModel().select(tabs.get(id)));
       browsers.get(id).setUrl(url);
     } else {
       System.err.println("cannot find browser " + id);
@@ -953,6 +956,7 @@ public void sendMessage(final Message message) {
     String tooltip = XModeler.attributeValue(browser, "toolTip");
     String url = XModeler.attributeValue(browser, "url");
 
+    assert url != null;
     if (url.equals("welcome")) { //TODO: move into dedicated protocol
       URL location = EditorClient.class.getProtectionDomain().getCodeSource().getLocation();
       url = location.toString();

@@ -9,6 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -32,6 +33,7 @@ public class FmmlxSerializer implements Serializer {
         this.clearAllData();
         int saveLogCount = 0;
         Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(diagramPath);
+        Collections.sort(diagramIds);
         for(Integer id :diagramIds){
             String diagramLabel = communicator.createLabelFromInitLabel(initLabel, id);
             saveProject(diagramPath);
@@ -49,6 +51,7 @@ public class FmmlxSerializer implements Serializer {
         if(filePath!=null && filePath.length()>0 && checkFileExist(xmlHandler.getSourcePath())){
             try {
                 Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(diagramPath);
+                Collections.sort(diagramIds);
                 int saveLogCount = 0;
                 for(Integer id_tmp :diagramIds){
                     String diagramLabel = communicator.createLabelFromInitLabel(label, id_tmp);

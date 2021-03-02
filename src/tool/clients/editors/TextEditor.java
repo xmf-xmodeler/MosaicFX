@@ -2,43 +2,9 @@ package tool.clients.editors;
 
 import java.io.PrintStream;
 import java.util.Hashtable;
+import java.util.Objects;
 import java.util.Vector;
 
-//import org.eclipse.swt.SWT;
-//import org.eclipse.swt.custom.Bullet;
-//import org.eclipse.swt.custom.CTabFolder;
-//import org.eclipse.swt.custom.ExtendedModifyEvent;
-//import org.eclipse.swt.custom.ExtendedModifyListener;
-//import org.eclipse.swt.custom.LineBackgroundEvent;
-//import org.eclipse.swt.custom.LineBackgroundListener;
-//import org.eclipse.swt.custom.PaintObjectEvent;
-//import org.eclipse.swt.custom.PaintObjectListener;
-//import org.eclipse.swt.custom.ST;
-//import org.eclipse.swt.custom.StyleRange;
-//import org.eclipse.swt.custom.StyledText;
-//import org.eclipse.swt.custom.VerifyKeyListener;
-//import org.eclipse.swt.dnd.Clipboard;
-//import org.eclipse.swt.dnd.ImageTransfer;
-//import org.eclipse.swt.events.MouseEvent;
-//import org.eclipse.swt.events.MouseListener;
-//import org.eclipse.swt.events.MouseWheelListener;
-//import org.eclipse.swt.events.SelectionEvent;
-//import org.eclipse.swt.events.SelectionListener;
-//import org.eclipse.swt.events.VerifyEvent;
-//import org.eclipse.swt.events.VerifyListener;
-//import org.eclipse.swt.graphics.Color;
-//import org.eclipse.swt.graphics.Font;
-//import org.eclipse.swt.graphics.FontData;
-//import org.eclipse.swt.graphics.GC;
-//import org.eclipse.swt.graphics.GlyphMetrics;
-//import org.eclipse.swt.graphics.Image;
-//import org.eclipse.swt.graphics.ImageData;
-//import org.eclipse.swt.graphics.ImageLoader;
-//import org.eclipse.swt.graphics.Point;
-//import org.eclipse.swt.graphics.Rectangle;
-//import org.eclipse.swt.widgets.Display;
-//import org.eclipse.swt.widgets.Menu;
-//import org.eclipse.swt.widgets.MenuItem;
 import javafx.scene.input.MouseButton;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.InlineCssTextArea;
@@ -77,10 +43,10 @@ public class TextEditor implements ITextEditor{
   int 								 fontsize = 10;
 //  StyledText                         text;
 //  FontData                           fontData;                                                // = new FontData("Courier", 12, SWT.NO);
-  Hashtable<String, PPrint>          atTable       = new Hashtable<String, PPrint>();
-  Hashtable<String, Vector<Keyword>> keyTable      = new Hashtable<String, Vector<Keyword>>();
-  Vector<WordRule>                   wordRules     = new Vector<WordRule>();
-  Vector<Integer>                    highlights    = new Vector<Integer>();
+  Hashtable<String, PPrint>          atTable       = new Hashtable<>();
+  Hashtable<String, Vector<Keyword>> keyTable      = new Hashtable<>();
+  Vector<WordRule>                   wordRules     = new Vector<>();
+  Vector<Integer>                    highlights    = new Vector<>();
 //  Image[]                            images        = new Image[] {};
 //  Image                              selectedImage = null;
   int[]                              offsets       = new int[] {};
@@ -99,7 +65,7 @@ public class TextEditor implements ITextEditor{
     this.label = label;
     
     textArea = new InlineCssTextArea(s);
-    virtualizedScrollPane = new VirtualizedScrollPane<InlineCssTextArea>(textArea);
+    virtualizedScrollPane = new VirtualizedScrollPane<>(textArea);
     textArea.setEditable(editable);    
     //textArea.setFont is not supported, font-family css works, but font needs to be imported first. In our case the ConsoleView tries importing it
     textArea.setStyle("-fx-font-size:"+fontsize+"pt;");
@@ -301,7 +267,7 @@ public class TextEditor implements ITextEditor{
 //  }
 
   private void addKeyword(String keyword, String description, PPrint pprint) {
-    if (!keyTable.containsKey(keyword)) keyTable.put(keyword, new Vector<Keyword>());
+    if (!keyTable.containsKey(keyword)) keyTable.put(keyword, new Vector<>());
     Vector<Keyword> keys = keyTable.get(keyword);
     keys.add(new Keyword(description, pprint));
   }
@@ -347,14 +313,20 @@ public class TextEditor implements ITextEditor{
     }
   }
 
+  public void addWordRule(String id, String text, double red, double green, double blue) {
+    if (getId().equals(id)) wordRules.add(new WordRule(text, Color.color(red, green, blue)));
+  }
+
   @Override
   public void addMultilineRule(String id, String start, String end, int red, int green, int blue) {
-
+    if (getId().equals(id)) {
+      wordRules.add(new MultiLineRule(start, end, Color.rgb(red, green, blue)));
+    }
   }
 
   @Override
   public void addWordRule(String id, String text, int red, int green, int blue) {
-
+    if (getId().equals(id)) wordRules.add(new WordRule(text, Color.rgb(red, green, blue)));
   }
 
   private void addStyles() {
@@ -413,7 +385,7 @@ public class TextEditor implements ITextEditor{
     }
   }
 
-  private Vector<StyleQueueItem> styleQueue = new Vector<StyleQueueItem>();
+  private Vector<StyleQueueItem> styleQueue = new Vector<>();
 
   private void addStylesNew(final int start, final int length, final String s) {
     // System.err.println("\n");
@@ -422,15 +394,11 @@ public class TextEditor implements ITextEditor{
 
 //    final Display display = Display.getCurrent();
     if (textArea.getText().length() > 0) {
-      Thread thread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-          final StyleSpans<String> styleSpans = styleRange(start, start + length, s);	
+      Thread thread = new Thread(() -> {
+        final StyleSpans<String> styleSpans = styleRange(start, start + length, s);
 //          final StyleRange[] styleRanges = styleRange(start, start + length, s);
-          if (styleSpans != null && styleSpans.length() > 0) {
-        	Platform.runLater(()->{
-        		textArea.setStyleSpans(0, styleSpans);
-        	});  
+        if (styleSpans != null && styleSpans.length() > 0) {
+          Platform.runLater(()-> textArea.setStyleSpans(0, styleSpans));
 //            display.asyncExec(new Runnable() {
 //              @Override
 //              public void run() {
@@ -440,22 +408,19 @@ public class TextEditor implements ITextEditor{
 //                }
 //              }
 //            });
-          }
-          if (styleQueue.size() != 0) {
-            final StyleQueueItem next = styleQueue.remove(0);
-            // System.err.println("request unqueued");
-            Platform.runLater(()->{
-            	addStylesNew(next.start, next.length, next.s);
-        	});
+        }
+        if (styleQueue.size() != 0) {
+          final StyleQueueItem next = styleQueue.remove(0);
+          // System.err.println("request unqueued");
+          Platform.runLater(()-> addStylesNew(next.start, next.length, next.s));
 //            display.asyncExec(new Runnable() {
 //              @Override
 //              public void run() {
 //                addStylesNew(next.start, next.length, next.s);
 //              }
 //            });
-          } else {
-            syntaxBusy = false;
-          }
+        } else {
+          syntaxBusy = false;
         }
       });
 
@@ -463,10 +428,6 @@ public class TextEditor implements ITextEditor{
     } else {
       syntaxBusy = false;
     }
-  }
-
-  public void addWordRule(String id, String text, double red, double green, double blue) {
-    if (getId().equals(id)) wordRules.add(new WordRule(text, Color.color(red, green, blue)));
   }
 
   private boolean at() {
@@ -699,11 +660,9 @@ public class TextEditor implements ITextEditor{
     NodeList children = textEditor.getChildNodes();
     for (int i = 0; i < children.getLength(); i++)
       inflateElement(children.item(i));
-    EditorClient.theClient().runOnDisplay(new Runnable() {
-      public void run() {
-        addLines();
-        addStyles();
-      }
+    EditorClient.theClient().runOnDisplay(() -> {
+      addLines();
+      addStyles();
     });
   }
 
@@ -714,19 +673,21 @@ public class TextEditor implements ITextEditor{
   }
 
   private void inflateMultiLineRule(Node item) {
+    System.err.println("tanpa image dipanggil inflateMultilineRule");
     String word = XModeler.attributeValue(item, "word");
     String end = XModeler.attributeValue(item, "end");
-    double red = Double.parseDouble(XModeler.attributeValue(item, "red"));
-    double green = Double.parseDouble(XModeler.attributeValue(item, "green"));
-    double blue = Double.parseDouble(XModeler.attributeValue(item, "blue"));
+    double red = Double.parseDouble(Objects.requireNonNull(XModeler.attributeValue(item, "red")));
+    double green = Double.parseDouble(Objects.requireNonNull(XModeler.attributeValue(item, "green")));
+    double blue= Double.parseDouble(Objects.requireNonNull(XModeler.attributeValue(item, "blue")));
     addMultilineRule(getId(), word, end, red, green, blue);
   }
 
   private void inflateWordRule(Node item) {
+    System.err.println("tanpa image dipanggil inflateWordRule");
     String word = XModeler.attributeValue(item, "word");
-    double red = Double.parseDouble(XModeler.attributeValue(item, "red"));
-    double green = Double.parseDouble(XModeler.attributeValue(item, "green"));
-    double blue = Double.parseDouble(XModeler.attributeValue(item, "blue"));
+    double red = Double.parseDouble(Objects.requireNonNull(XModeler.attributeValue(item, "red")));
+    double green = Double.parseDouble(Objects.requireNonNull(XModeler.attributeValue(item, "green")));
+    double blue = Double.parseDouble(Objects.requireNonNull(XModeler.attributeValue(item, "blue")));
     addWordRule(getId(), word, red, green, blue);
   }
 
@@ -1023,10 +984,10 @@ public class TextEditor implements ITextEditor{
 
   private StyleSpans<String> styleRange(int start, int end, String s) {
 //  private StyleRange[] styleRange(int start, int end, String s) {
-	  StyleSpansBuilder<String> sb = new StyleSpansBuilder<String>();  
+	  StyleSpansBuilder<String> sb = new StyleSpansBuilder<>();
 //	java.util.List<StyleRange> ranges = new java.util.ArrayList<StyleRange>();
     // String s = text.getText();
-	StyleSpan<String> defaultStyle = new StyleSpan<String>("", 1);
+	StyleSpan<String> defaultStyle = new StyleSpan<>("", 1);
 	  
     int prevChar = -1;
     for (int i = start; i < end; i++) {

@@ -23,6 +23,10 @@ public class LineStyler {
     multiLineRules.add(new MultiLineRule(start, end, Color.rgb(red, green, blue)));
   }
 
+  public void addMultilineRule(String id, String start, String end, double red, double green, double blue) {
+    multiLineRules.add(new MultiLineRule(start, end, Color.color(red, green, blue)));
+  }
+
   public void addWordRule(String id, String text, int red, int green, int blue) {
     wordRules.add(new WordRule(text, Color.rgb(red, green, blue)));
   }
