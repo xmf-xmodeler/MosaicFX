@@ -9,16 +9,19 @@ import javafx.collections.ObservableList;
 public abstract class AbstractPackageViewer {
 	
 	protected Vector<FmmlxObject> objects = new Vector<>();
-	protected Vector<FmmlxEnum> enums = new Vector<>();
-	protected Vector<String> auxTypes = new Vector<>();
-	protected Vector<Edge<?>> edges = new Vector<>();
+	protected Vector<FmmlxEnum>   enums = new Vector<>();
+	protected Vector<String>      auxTypes = new Vector<>();
+	protected Vector<Edge<?>>     edges = new Vector<>();
+	protected Vector<Issue>       issues = new Vector<>();
 	protected final int diagramID;
 	protected final FmmlxDiagramCommunicator comm;
 	protected DiagramActions actions;
 	protected final String packagePath;
 	protected transient boolean fetchingData;
 	protected boolean justLoaded = false;
-	protected Vector<Issue> issues = new Vector<>();
+	private ViewerStatus viewerStatus = ViewerStatus.CLEAN;
+	
+	public static enum ViewerStatus { CLEAN, DIRTY, LOADING }
 
 	public static final AbstractPackageViewer SIMPLE_VIEWER = new AbstractPackageViewer(FmmlxDiagramCommunicator.getCommunicator(),
 			-2, "simple_viewer") {
@@ -34,6 +37,8 @@ public abstract class AbstractPackageViewer {
 		@Override protected void fetchDiagramDataSpecific() throws TimeOutException { }
 		@Override protected void fetchDiagramDataSpecific2() { }
 		@Override protected void clearDiagram_specific() { }
+		@Override public void setSelectedObjectAndProperty(FmmlxObject objectByPath, FmmlxProperty property) {}
+		@Override protected void updateViewerStatusInGUI(ViewerStatus newStatus) {}	
 	};
 	
 	protected AbstractPackageViewer(FmmlxDiagramCommunicator comm, int diagramID, String packagePath) {
@@ -61,6 +66,7 @@ public abstract class AbstractPackageViewer {
 	}
 	
 	public void updateDiagram() {
+		setViewerStatus(ViewerStatus.DIRTY);
 		new Thread(this::fetchDiagramData).start();
 	}
 	
@@ -70,6 +76,7 @@ public abstract class AbstractPackageViewer {
 			return;
 		}
 		fetchingData = true;
+		setViewerStatus(ViewerStatus.LOADING);
 		try {
 
 			if(objects.size()==0){
@@ -106,9 +113,17 @@ public abstract class AbstractPackageViewer {
 			e.printStackTrace();
 		}
 		fetchingData = false;
+		setViewerStatus(ViewerStatus.CLEAN);
 		fetchDiagramDataSpecific2();
 	}
 	
+	private void setViewerStatus(ViewerStatus newStatus) {
+		viewerStatus = newStatus;
+		updateViewerStatusInGUI(newStatus);
+	}
+
+	protected abstract void updateViewerStatusInGUI(ViewerStatus newStatus);
+
 	protected abstract void fetchDiagramDataSpecific() throws TimeOutException;
 	protected abstract void fetchDiagramDataSpecific2();
 
@@ -255,5 +270,25 @@ public abstract class AbstractPackageViewer {
 			}
 		}
 		return result;
+	}
+
+	public abstract void setSelectedObjectAndProperty(FmmlxObject objectByPath, FmmlxProperty property);
+
+	public FmmlxOperation getOperation(FmmlxOperationValue newOpV) {
+		for(FmmlxObject o : getObjects()) {
+			if(o.getOperationValues().contains(newOpV)) {
+				FmmlxObject oOf = getObjectByPath(o.getOfPath());
+				for(FmmlxOperation op : oOf.getAllOperations()) {
+					if(op.getName().equals(newOpV.name)) {
+						FmmlxObject opOwner = getObjectByPath(op.getOwner());
+						for(FmmlxOperation op2 : opOwner.getOwnOperations()) {
+							if(op2.getName().equals(newOpV.name)) {
+								return op2;
+							}
+						}; throw new RuntimeException("Operation not found in owner");
+					}
+				}; throw new RuntimeException("Operation not found in class");
+			}
+		}; throw new RuntimeException("Object not found for OperationValue");
 	}
 }

@@ -770,6 +770,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		deselectAll();
 		selectedObjects.add(source);
 	}
+	
+	@Override public void setSelectedObjectAndProperty(FmmlxObject o, FmmlxProperty p) { setSelectedObject(o); }
 
 	private void select(FmmlxObject o) {
 		if (!selectedObjects.contains(o)) {
@@ -1142,6 +1144,12 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		if(nextIssue != null) {
 			nextIssue.performResolveAction(this);
 		}
+	}
+
+	@Override
+	protected void updateViewerStatusInGUI(ViewerStatus newStatus) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

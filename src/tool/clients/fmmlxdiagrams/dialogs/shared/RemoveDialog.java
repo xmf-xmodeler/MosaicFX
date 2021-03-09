@@ -47,7 +47,9 @@ public class RemoveDialog<Property extends FmmlxProperty> extends CustomDialog<R
 
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				return new RemoveDialogResult<>(object, propertyBox.getSelectionModel().getSelectedItem());
+				if(propertyType == PropertyType.Class)
+					return new RemoveDialogResult<>(object, null);
+				else return new RemoveDialogResult<>(object, propertyBox.getSelectionModel().getSelectedItem());
 			}
 			return null;
 		});

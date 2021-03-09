@@ -58,6 +58,11 @@ public class ClassBrowserPackageViewer extends AbstractPackageViewer{
 	@Override
 	protected void clearDiagram_specific() {}
 
+	@Override
+	public void setSelectedObjectAndProperty(FmmlxObject object, FmmlxProperty property) {view.setSelectedObjectAndProperty(object, property);}
 
-	
+	@Override
+	protected void updateViewerStatusInGUI(ViewerStatus newStatus) {
+		view.setStatusButton(newStatus);		
+	}	
 }

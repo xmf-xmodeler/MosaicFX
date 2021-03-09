@@ -6,7 +6,7 @@ public class FmmlxAttribute implements FmmlxProperty, Comparable<FmmlxAttribute>
 
 	String name;
 	private Multiplicity multiplicity;
-	String owner;
+	String ownerPath;
 	int level;
 	String type;
 	private PropertyType propertyType = PropertyType.Attribute;
@@ -24,7 +24,7 @@ public class FmmlxAttribute implements FmmlxProperty, Comparable<FmmlxAttribute>
 		this.level = level;
 		this.type = type;
 		this.multiplicity = multiplicity;
-		this.owner = owner;
+		this.ownerPath = owner;
 	}
 
 	@Override
@@ -36,8 +36,8 @@ public class FmmlxAttribute implements FmmlxProperty, Comparable<FmmlxAttribute>
 		return level;
 	}
 
-	public String getOwnerId() {
-		return owner;
+	public String getOwnerPath() {
+		return ownerPath;
 	}
 
 	public String getType() {

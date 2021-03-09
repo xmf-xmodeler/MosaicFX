@@ -7,82 +7,85 @@ import java.util.Vector;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.*;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer.ViewerStatus;
 import tool.clients.fmmlxdiagrams.LevelColorScheme.FixedBlueLevelColorScheme;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
-import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
-import tool.clients.fmmlxdiagrams.menus.BrowserAssociationContextMenu;
-import tool.clients.fmmlxdiagrams.menus.BrowserAttributeContextMenu;
-import tool.clients.fmmlxdiagrams.menus.BrowserObjectContextMenu;
+import tool.clients.fmmlxdiagrams.menus.*;
 import tool.xmodeler.XModeler;
 
 
-public class ModelBrowser extends CustomStage {
+public final class ModelBrowser extends CustomStage {
 	
-	private TextArea codeArea, constraintTextArea;
-	private Label sourceLabel, targetLabel, visible, labelTransitive, labelSymmetric;
-	private ListView<String> modelListView, parentsListView;
-	private ListView<Issue> issueListView;
-	private ListView<Constraint> constraintListView;
-	private ListView<FmmlxLink> linkedObjectsListView;
-	private ListView<FmmlxOperationValue> operationValueListView;
-	private ListView<FmmlxAssociation> fmmlxAssociationListView, sourceListView, targetListView, linksListView; 
-	private ListView<FmmlxOperation> fmmlxOperationListView;
-	private ListView<FmmlxObject> fmmlxObjectListView;
-	private ListView<FmmlxAttribute> fmmlxAttributeListView;
-	private ListView<FmmlxSlot> slotListView;
-	private CheckBox abstractCheckBox, targetVisible, sourceVisible, checkTransitive, checkSymmetric;
-	private TextField modellBrowserTextFied, metaClassTextField, delegatesToTextField, operationInputTextField, operationOutputTexField,
+	private final TextArea operationCodeArea = new TextArea();
+	private final TextArea constraintBodyArea = new TextArea();
+	private final TextArea constraintReasonArea = new TextArea();
+	private final ListView<String> modelListView   = new ListView<>();
+	private final ListView<String> parentsListView = new ListView<>();
+	private final ListView<Issue>  issueListView   = new ListView<>();
+	private final ListView<Constraint> constraintListView = new ListView<>();
+	private final ListView<FmmlxLink> linkedObjectsListView = new ListView<>();
+	private final ListView<FmmlxOperationValue> operationValueListView = new ListView<>();
+	private final ListView<FmmlxAssociation> fmmlxAssociationListView = new ListView<>();
+	private final ListView<FmmlxAssociation> sourceListView = new ListView<>();
+	private final ListView<FmmlxAssociation> targetListView = new ListView<>();
+	private final ListView<FmmlxAssociation> linksListView = new ListView<>(); 
+	private final ListView<FmmlxOperation> fmmlxOperationListView = new ListView<>();
+	private final ListView<FmmlxObject> fmmlxObjectListView = new ListView<>();
+	private final ListView<FmmlxAttribute> fmmlxAttributeListView = new ListView<>();
+	private final ListView<FmmlxSlot> slotListView = new ListView<>();
+
+	private final Button opCodeButton = new Button("Commit");
+	private final Button conCodeButton = new Button("Commit");
+	
+	private CheckBox abstractCheckBox = new CheckBox(); 
+	private CheckBox targetVisible    = new CheckBox(); 
+	private CheckBox sourceVisible    = new CheckBox(); 
+	private CheckBox checkTransitive  = new CheckBox(); 
+	private CheckBox checkSymmetric   = new CheckBox(); 
+	
+	private TextField metaClassTextField, delegatesToTextField, operationInputTextField, operationOutputTexField,
 						attributeBrowserTextField;
-	private VBox consoleContainerVBox;
 	private HBox associationBooleanAttributesHBox, visibleHBox;
-	private SplitPane outerSplitPane;
 	private TabPane codeAndConstraintTabPane;
-	private Tab codeTab = new Tab("Code");
+	private Tab operationTab = new Tab("Operation");
 	private Tab constraintTab = new Tab("Constraint");
-	private GridPane mainGridPane;
 	FmmlxDiagramCommunicator communicator;
 	private AbstractPackageViewer activePackage;
+	Label statusLabel = new Label("Status: not initialized");
 	
-	private static final String HIGHLIGHTED_ISSUE = "derive(orangered, 80%)";
 	private HashMap<String,AbstractPackageViewer> models = new HashMap<>();
 	private FixedBlueLevelColorScheme levelColorScheme;
 	
-	public ModelBrowser(String project, String selectedModel, ObservableList<String> models) {
+	public ModelBrowser(String project, String initialModel, ObservableList<String> models) {
 		super(StringValue.LabelAndHeaderTitle.modelBrowser+" " + project, XModeler.getStage(), 1500, 800);
 		communicator = FmmlxDiagramCommunicator.getCommunicator();
-		initAllElements();
-		addAllElementsToPane();			
+		
+		initElements();
+		addSelectionListeners();
+		addCellFactories();
+		addDoubleClickListeners();
+		SplitPane outerSplitPane = layoutElements();		
+		
 		getContainer().getChildren().addAll(outerSplitPane);
+
 		setOnCloseRequest(e -> onClose());
+		
 		modelListView.getItems().clear();
 		modelListView.getItems().addAll(models);
 		modelListView.getSelectionModel().clearSelection();
-		if (selectedModel!=null) {
-			modelListView.getSelectionModel().select(selectedModel);
+		if (initialModel!=null) {
+			modelListView.getSelectionModel().select(initialModel);
 		}
 	}
 
@@ -116,42 +119,18 @@ public class ModelBrowser extends CustomStage {
 			operationInputTextField.setText(StringValue.LabelAndHeaderTitle.empty);
 			operationOutputTexField.setText(StringValue.LabelAndHeaderTitle.empty);
 			//associationBrowserTextField.setText(StringValue.LabelAndHeaderTitle.empty);
-			sourceLabel.setText(StringValue.LabelAndHeaderTitle.source);
-			targetLabel.setText(StringValue.LabelAndHeaderTitle.target);
-			codeArea.clear();
+			updateOperationTab(null, false, false);
+			updateConstraintTab(null, false, false);
 		}
 	}
 	
-	protected void initAllElements() {
-		mainGridPane = new GridPane();
-		mainGridPane.setHgap(10);
-		mainGridPane.setVgap(8);
-		mainGridPane.setPadding(new Insets(5,5,5,5));
+	protected void initElements() {
 
-		modelListView = new ListView<>();
-		fmmlxObjectListView = new ListView<>();
-		parentsListView = new ListView<>();
-		fmmlxAttributeListView = new ListView<>();
-		slotListView = new ListView<>();
-		fmmlxAssociationListView = new ListView<>();
-		fmmlxOperationListView = new ListView<>();
-		operationValueListView = new ListView<>();
-		issueListView  = new ListView<>();
-		linkedObjectsListView  = new ListView<>();
-		linksListView = new ListView<>();
-		constraintListView  = new ListView<>();
-		sourceListView = new ListView<>();
-		targetListView = new ListView<>();
 		sourceListView.setEditable(false);
 		targetListView.setEditable(false);
-		modellBrowserTextFied = new TextField();
 		metaClassTextField = new TextField();
 		metaClassTextField.setEditable(false);
-		abstractCheckBox = new CheckBox();
-		sourceVisible = new CheckBox();
-		targetVisible = new CheckBox();
-		checkTransitive = new CheckBox();
-		checkSymmetric= new CheckBox();
+
 		delegatesToTextField = new TextField();
 		delegatesToTextField.setEditable(false);
 		attributeBrowserTextField = new TextField();
@@ -159,177 +138,31 @@ public class ModelBrowser extends CustomStage {
 		operationInputTextField.setEditable(false);
 		operationOutputTexField = new TextField();
 		operationOutputTexField.setEditable(false);
-		//associationBrowserTextField = new TextField();
-		//associationBrowserTextField.setEditable(false);
-		sourceLabel = new Label();
-		targetLabel = new Label();
-		visible = new Label(StringValue.LabelAndHeaderTitle.visible);
-		labelTransitive = new Label (StringValue.LabelAndHeaderTitle.transitive);
-		labelSymmetric = new Label (StringValue.LabelAndHeaderTitle.symmetric);
+//		sourceLabel = new Label();
+//		targetLabel = new Label();
+//		visible = new Label(StringValue.LabelAndHeaderTitle.visible);
+//		labelTransitive = new Label (StringValue.LabelAndHeaderTitle.transitive);
+//		labelSymmetric = new Label (StringValue.LabelAndHeaderTitle.symmetric);
 		associationBooleanAttributesHBox = new HBox();
 		associationBooleanAttributesHBox.setPadding(new Insets(5,5,5,5));
 		visibleHBox = new HBox();
 		visibleHBox.setPadding(new Insets(5,5,5,5));
-		visibleHBox.setSpacing(10);
+		visibleHBox.setSpacing(10);		
 		
-		
-//		consoleContainerVBox= new VBox();
-//		consoleContainerVBox.getChildren().add(codeArea);
-		//outerSplitPane.getItems().addAll(mainGridPane, consoleContainerVBox);		
-		
-		
-		modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
-				-> onModelListViewNewValue(oldValue, newValue));
-		modellBrowserTextFied.textProperty().addListener((observable, oldValue, newValue) 
-				-> modellBrowserListerner(modelListView, oldValue, newValue));
-		fmmlxObjectListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
-				-> onObjectListViewNewValue(oldValue, newValue));	
-		metaClassTextField.textProperty().addListener((observable, oldValue, newValue) 
-				-> classBrowserTextFieldListener(oldValue, newValue));
-		abstractCheckBox.selectedProperty().addListener((ov,oldValue,newValue) 
-			      ->onAbstractNewValue(oldValue, newValue));		
-		fmmlxAttributeListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
-				-> onAttributeListViewNewValue(oldValue, newValue));
-		slotListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
-				-> onSlotListViewNewValue(modelListView, oldValue, newValue));
-		fmmlxOperationListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
-				-> onOperationListViewNewValue(oldValue, newValue));
-		fmmlxAssociationListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
-				-> onAssociationListViewNewValue(oldValue,newValue));
-		constraintListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
-				-> onConstraintListViewNewValue(oldValue,newValue));
-		
-		fmmlxObjectListView.setCellFactory(new Callback<ListView<FmmlxObject>, ListCell<FmmlxObject>>() {
+		opCodeButton.setDisable(true);
+		conCodeButton.setDisable(true);
+	}
+	
+	private void addDoubleClickListeners() {
 
-		    @Override
-		    public ListCell<FmmlxObject> call(ListView<FmmlxObject> param) {
-		        ListCell<FmmlxObject> cell = new ListCell<FmmlxObject>() {
-
-		            @Override
-		            protected void updateItem(FmmlxObject o, boolean empty) {
-		                super.updateItem(o, empty);
-		                if (o != null) {
-		                    if (activePackage.getIssues(o).size()>0) {
-		                    	setStyle("-fx-control-inner-background: tomato;");
-		                    } 
-		                    else {
-		                    	setStyle("-fx-control-inner-background: white;");
-		                    }
-		                    
-		                	setText(o.getName());
-		                    setGraphic(getLevelGraphic(o.getLevel()));
-		                } else {
-		                	setText("");
-		                	setGraphic(null);
-		                }
-		            }
-
-					private Node getLevelGraphic(int level) {
-						if(level == -1) return null;
-						double SIZE = 16;
-						Canvas canvas = new Canvas(SIZE, SIZE);
-						Text temp = new Text(level+"");
-						GraphicsContext g = canvas.getGraphicsContext2D();
-						g.setFill(levelColorScheme.getLevelBgColor(level));
-						g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/2, SIZE/2);
-						g.setFill(levelColorScheme.getLevelFgColor(level, 1.));
-						g.fillText(level+"", 
-								SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
-								SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
-						return canvas;
-					}
-		        };
-		        return cell;
-		    }
-		});
-		
-		fmmlxAttributeListView.setCellFactory(new Callback<ListView<FmmlxAttribute>, ListCell<FmmlxAttribute>>() {
-	
-		    @Override
-		    public ListCell<FmmlxAttribute> call(ListView<FmmlxAttribute> param) {
-		        ListCell<FmmlxAttribute> cell = new ListCell<FmmlxAttribute>() {
-	
-		            @Override
-		            protected void updateItem(FmmlxAttribute att, boolean empty) {
-		                super.updateItem(att, empty);
-		                FmmlxObject o = fmmlxObjectListView.getSelectionModel().getSelectedItem();
-		                if (att != null && o != null) {
-		                    setText(att.getName() +": "+ att.getType());
-		                    setGraphic(getLevelGraphic4Feature(att.getLevel(), o.getOwnAttributes().contains(att)));
-		                } else {
-		                	setText("");
-		                	setGraphic(null);
-		                }
-		            }
-	
-		        };
-		        return cell;
-		    }
-		});
-		
-		slotListView.setCellFactory(new Callback<ListView<FmmlxSlot>, ListCell<FmmlxSlot>>() {
-			
-		    @Override
-		    public ListCell<FmmlxSlot> call(ListView<FmmlxSlot> param) {
-		        ListCell<FmmlxSlot> cell = new ListCell<FmmlxSlot>() {
-	
-		            @Override
-		            protected void updateItem(FmmlxSlot slot, boolean empty) {
-		                super.updateItem(slot, empty);
-		                FmmlxObject o = fmmlxObjectListView.getSelectionModel().getSelectedItem();
-		                if (slot != null && o != null) {
-		                    setText(slot.getName()+" = " + slot.getValue());
-		                } else {
-		                	setText("");
-		                }
-		            }
-		        };
-		        return cell;
-		    }
-		});
-		
-		operationValueListView.setCellFactory(new Callback<ListView<FmmlxOperationValue>, ListCell<FmmlxOperationValue>>() {
-			
-		    @Override
-		    public ListCell<FmmlxOperationValue> call(ListView<FmmlxOperationValue> param) {
-		        ListCell<FmmlxOperationValue> cell = new ListCell<FmmlxOperationValue>() {
-	
-		            @Override
-		            protected void updateItem(FmmlxOperationValue opValue, boolean empty) {
-		                super.updateItem(opValue,empty);
-		                FmmlxObject o = fmmlxObjectListView.getSelectionModel().getSelectedItem();
-		                if (opValue != null && o != null) {
-		                    setText(opValue.getName()  + "() = " + opValue.getValue());
-		                } else {
-		                	setText("");
-		                }
-		            }
-		        };
-		        return cell;
-		    }
-		});
-		
-		fmmlxOperationListView.setCellFactory(new Callback<ListView<FmmlxOperation>, ListCell<FmmlxOperation>>() {
-			
-		    @Override
-		    public ListCell<FmmlxOperation> call(ListView<FmmlxOperation> param) {
-		        ListCell<FmmlxOperation> cell = new ListCell<FmmlxOperation>() {
-	
-		            @Override
-		            protected void updateItem(FmmlxOperation operation, boolean empty) {
-		                super.updateItem(operation, empty);
-		                FmmlxObject o = fmmlxObjectListView.getSelectionModel().getSelectedItem();
-		                if (operation != null && o != null) {
-		                    setText(operation.getFullString(activePackage));
-		                    setGraphic(getLevelGraphic4Feature(operation.getLevel(), o.getOwnAttributes().contains(operation)));
-		                } else {
-		                	setText("");
-		                	setGraphic(null);
-		                }
-		            }
-		        };
-		        return cell;
-		    }
+		fmmlxAttributeListView.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2) {
+		        FmmlxAttribute att = fmmlxAttributeListView.getSelectionModel().getSelectedItem();
+		        FmmlxObject object = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+		        if(att != null && object != null) {
+		        	activePackage.getActions().changeNameDialog(object, tool.clients.fmmlxdiagrams.dialogs.PropertyType.Attribute, att);
+		        }
+			}
 		});
 		
 		slotListView.setOnMouseClicked(e -> {
@@ -341,219 +174,224 @@ public class ModelBrowser extends CustomStage {
 		        }
 			}
 		});	
-		
-		fmmlxAttributeListView.setOnMouseClicked(e -> {
-			if (e.getClickCount() == 2) {
-		        FmmlxAttribute att = fmmlxAttributeListView.getSelectionModel().getSelectedItem();
-		        FmmlxObject object = fmmlxObjectListView.getSelectionModel().getSelectedItem();
-		        if(att != null && object != null) {
-		        	activePackage.getActions().changeNameDialog(object, tool.clients.fmmlxdiagrams.dialogs.PropertyType.Attribute, att);
-		        }
-			}
-		});
-		
-		
-		sourceListView.setCellFactory(new Callback<ListView<FmmlxAssociation>, ListCell<FmmlxAssociation>>() {
-
-		    @Override
-		    public ListCell<FmmlxAssociation> call(ListView<FmmlxAssociation> param) {
-		        ListCell<FmmlxAssociation> cell = new ListCell<FmmlxAssociation>() {
-
-		            protected void updateItem(FmmlxAssociation association, boolean empty) {
-		                super.updateItem(association, empty);
-		                if (association != null) {
-		                    setText(association.getSourceNode().getName()+ " [" + association.getMultiplicityStartToEnd().toString()+"]");
-		                    setGraphic(getLevelGraphic(association.getLevelSource()));
-		                } else {
-		                	setText("");
-		                	setGraphic(null);
-		                }
-		            }
-
-					private Node getLevelGraphic(int level) {
-						if(level == -1) return null;
-						double SIZE = 16;
-						Canvas canvas = new Canvas(SIZE, SIZE);
-						Text temp = new Text(level+"");
-						GraphicsContext g = canvas.getGraphicsContext2D();
-						g.setFill(levelColorScheme.getLevelBgColor(level));
-						g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/2, SIZE/2);
-						g.setFill(levelColorScheme.getLevelFgColor(level, 1.));
-						g.fillText(level+"", 
-								SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
-								SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
-						return canvas;
-					}
-		        };
-		        return cell;
-		    }
-		});
-		
-		targetListView.setCellFactory(new Callback<ListView<FmmlxAssociation>, ListCell<FmmlxAssociation>>() {
-
-		    @Override
-		    public ListCell<FmmlxAssociation> call(ListView<FmmlxAssociation> param) {
-		        ListCell<FmmlxAssociation> cell = new ListCell<FmmlxAssociation>() {
-
-		            protected void updateItem(FmmlxAssociation association, boolean empty) {
-		                super.updateItem(association, empty);
-		                if (association != null) {
-		                    setText(association.getTargetNode().getName()+ " [" + association.getMultiplicityEndToStart().toString()+"]");
-		                    setGraphic(getLevelGraphic(association.getLevelTarget()));
-		                } else {
-		                	setText("");
-		                	setGraphic(null);
-		                }
-		            }
-
-					private Node getLevelGraphic(int level) {
-						if(level == -1) return null;
-						double SIZE = 16;
-						Canvas canvas = new Canvas(SIZE, SIZE);
-						Text temp = new Text(level+"");
-						GraphicsContext g = canvas.getGraphicsContext2D();
-						g.setFill(levelColorScheme.getLevelBgColor(level));
-						g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/2, SIZE/2);
-						g.setFill(levelColorScheme.getLevelFgColor(level, 1.));
-						g.fillText(level+"", 
-								SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
-								SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
-						return canvas;
-					}
-		        };
-		        return cell;
-		    }
-		});
-		
-		constraintListView.setCellFactory(new Callback<ListView<Constraint>, ListCell<Constraint>>() {
-
-		    @Override
-		    public ListCell<Constraint> call(ListView<Constraint> param) {
-		        ListCell<Constraint> cell = new ListCell<Constraint>() {
-
-		            protected void updateItem(Constraint constraint, boolean empty) {
-		                super.updateItem(constraint, empty);
-		                if (constraint != null) {
-		                    setText(constraint.getName());
-		                    setGraphic(getLevelGraphic(constraint.getLevel()));
-		                } else {
-		                	setText("");
-		                	setGraphic(null);
-		                }
-		            }
-
-					private Node getLevelGraphic(int level) {
-						if(level == -1) return null;
-						double SIZE = 16;
-						Canvas canvas = new Canvas(SIZE, SIZE);
-						Text temp = new Text(level+"");
-						GraphicsContext g = canvas.getGraphicsContext2D();
-						g.setFill(levelColorScheme.getLevelBgColor(level));
-						g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/2, SIZE/2);
-						g.setFill(levelColorScheme.getLevelFgColor(level, 1.));
-						g.fillText(level+"", 
-								SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
-								SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
-						return canvas;
-					}
-		        };
-		        return cell;
-		    }
-		});
-		
-		issueListView.setCellFactory(new Callback<ListView<Issue>, ListCell<Issue>>() {
-
-		    @Override
-		    public ListCell<Issue> call(ListView<Issue> param) {
-		        ListCell<Issue> cell = new ListCell<Issue>() {
-
-		            protected void updateItem(Issue issue, boolean empty) {
-		                super.updateItem(issue, empty);
-		                if (issue != null) {
-		                	setTextFill(Color.INDIANRED);
-		                	setText(issue.toString());  
-		                } else {
-		                	setText("");
-		                	
-		                }
-		            }
-		        };
-		        return cell;
-		    }
-		});
-		
-	}
-	
-	
-
-	private Node getLevelGraphic4Feature(int level, boolean own) {
-		if(level == -1) return null;
-		double SIZE = 16;
-		Canvas canvas = new Canvas(SIZE, SIZE);
-		Text temp = new Text(level+"");
-		GraphicsContext g = canvas.getGraphicsContext2D();
-		g.setFill(own?Color.BLACK:Color.GRAY);
-		g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/3, SIZE/3);
-		g.setFill(Color.WHITE);
-		g.fillText(level+"", 
-				SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
-				SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
-		return canvas;
 	}
 
-	protected void addAllElementsToPane() {
-		VBox modelColumnVBox = new VBox();
-		modelColumnVBox.setSpacing(3);
-		modelColumnVBox.setPadding(new Insets(3,3,3,3));
-		modelColumnVBox.getChildren().add(new Label(StringValue.LabelAndHeaderTitle.model));
-		modelColumnVBox.getChildren().add(modelListView);		
-		modelColumnVBox.getChildren().add(new Label(StringValue.LabelAndHeaderTitle.project + ": [TODO]"));
-		modelListView.setPrefWidth(200);
-		fmmlxObjectListView.setPrefWidth(200);
-		fmmlxOperationListView.setPrefWidth(200);
-		parentsListView.setPrefWidth(200);
-		fmmlxAttributeListView.setPrefWidth(200);
-		slotListView.setPrefWidth(200);
-		operationValueListView.setPrefWidth(200);
-		constraintListView.setPrefWidth(200);
-		issueListView.setPrefWidth(200);
-		fmmlxAssociationListView.setPrefWidth(200);
-		linksListView.setPrefWidth(200);
-		linkedObjectsListView.setPrefWidth(200);
-		sourceListView.setPrefWidth(200);
-		targetListView.setPrefWidth(200);
-		metaClassTextField.setPrefWidth(200);
-		delegatesToTextField.setPrefWidth(200);
+	private void addCellFactories() {
+		
+		fmmlxObjectListView.setCellFactory((listView) -> {
+			return new ListCell<FmmlxObject>() {
+
+	            @Override
+	            protected void updateItem(FmmlxObject o, boolean empty) {
+	                super.updateItem(o, empty);
+	                if (o != null) {
+	                    if (activePackage.getIssues(o).size()>0) {
+	                    	setStyle("-fx-control-inner-background: tomato;");
+	                    } 
+	                    else {
+	                    	setStyle("-fx-control-inner-background: white;");
+	                    }
+	                    
+	                	if(o.isAbstract()) setText("(" + o.getName() + ")"); else setText(o.getName());
+	                	
+	                    setGraphic(getClassLevelGraphic(o.getLevel()));
+	                } else { setText(""); setGraphic(null); }
+	            }
+	        };
+	    });
+		
+		fmmlxAttributeListView.setCellFactory((listView) -> {
+			return new ListCell<FmmlxAttribute>() {
+
+	            @Override
+	            protected void updateItem(FmmlxAttribute att, boolean empty) {
+	                super.updateItem(att, empty);
+	                FmmlxObject o = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+	                if (att != null && o != null) {
+	                    setText(att.getName() +": "+ att.getType());
+	                    setGraphic(getFeatureLevelGraphic(att.getLevel(), o.getOwnAttributes().contains(att)));
+	                } else { setText(""); setGraphic(null); }	            }
+	        };
+		});
+		
+		slotListView.setCellFactory((listView) -> {
+			return new ListCell<FmmlxSlot>() {
+	
+	            @Override
+	            protected void updateItem(FmmlxSlot slot, boolean empty) {
+	                super.updateItem(slot, empty);
+	                FmmlxObject o = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+	                if (slot != null && o != null) {
+	                    setText(slot.getName()+" = " + slot.getValue());
+	                } else {
+	                	setText("");
+	                }
+	            }
+	        };
+		});
+		
+		operationValueListView.setCellFactory((listView) -> {
+			return new ListCell<FmmlxOperationValue>() {
+	
+	            @Override protected void updateItem(FmmlxOperationValue opValue, boolean empty) {
+	                super.updateItem(opValue,empty);
+	                FmmlxObject o = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+	                if (opValue != null && o != null) {
+	                    setText(opValue.getName()  + "() = " + opValue.getValue());
+	                } else {
+	                	setText("");
+	                }
+	            }
+	        };
+		});
+		
+		fmmlxOperationListView.setCellFactory((listView) -> {
+			return new ListCell<FmmlxOperation>() {
+	
+				@Override protected void updateItem(FmmlxOperation operation, boolean empty) {
+	                super.updateItem(operation, empty);
+	                FmmlxObject o = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+	                if (operation != null && o != null) {
+	                    setText(operation.getFullString(activePackage));
+	                    setGraphic(getFeatureLevelGraphic(operation.getLevel(), o.getOwnOperations().contains(operation)));
+	                } else { setText(""); setGraphic(null); }
+	            }
+	        };
+		});
+		
+		sourceListView.setCellFactory((listView) -> {
+			return new ListCell<FmmlxAssociation>() {
+
+				@Override protected void updateItem(FmmlxAssociation association, boolean empty) {
+	                super.updateItem(association, empty);
+	                if (association != null) {
+	                    setText(association.getSourceNode().getName()+ " [" + association.getMultiplicityStartToEnd().toString()+"]");
+	                    setGraphic(getFeatureLevelGraphic(association.getLevelSource(), true));
+	                } else { setText(""); setGraphic(null); }
+	            }
+	        };
+		});
+		
+		targetListView.setCellFactory((listView) -> {
+			return new ListCell<FmmlxAssociation>() {
+
+				@Override protected void updateItem(FmmlxAssociation association, boolean empty) {
+	                super.updateItem(association, empty);
+	                if (association != null) {
+	                    setText(association.getTargetNode().getName()+ " [" + association.getMultiplicityEndToStart().toString()+"]");
+	                    setGraphic(getFeatureLevelGraphic(association.getLevelTarget(), true));
+	                } else { setText(""); setGraphic(null); }
+	            }
+	        };
+		});
+		
+		constraintListView.setCellFactory((listView) -> {
+			return new ListCell<Constraint>() {
+
+				@Override protected void updateItem(Constraint constraint, boolean empty) {
+	                super.updateItem(constraint, empty);
+	                if (constraint != null) {
+	                    setText(constraint.getName());
+	                    setGraphic(getFeatureLevelGraphic(constraint.getLevel(), true));
+	                } else { setText(""); setGraphic(null); }
+	            }
+	        };
+		});
+		
+		issueListView.setCellFactory((listView) -> {
+			return new ListCell<Issue>() {
+
+	        	@Override protected void updateItem(Issue issue, boolean empty) {
+	                super.updateItem(issue, empty);
+	                if (issue != null) {
+	                	setTextFill(Color.INDIANRED);
+	                	setText(issue.toString());  
+	                } else {
+	                	setText("");
+	                	
+	                }
+	            }
+	        };
+		});
+	}
+
+	private void addSelectionListeners() {
+		modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
+				-> onModelListViewNewValue(oldValue, newValue));
+
+		fmmlxObjectListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
+				-> onObjectListViewNewValue(oldValue, newValue));	
+		abstractCheckBox.selectedProperty().addListener((ov,oldValue,newValue) 
+			      ->onAbstractNewValue(oldValue, newValue));		
+
+		fmmlxAttributeListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
+				-> onAttributeListViewNewValue(oldValue, newValue));
+		fmmlxOperationListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
+				-> onOperationListViewNewValue(oldValue, newValue));
+		constraintListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
+				-> onConstraintListViewNewValue(oldValue,newValue));	
+
+		slotListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
+				-> onSlotListViewNewValue(oldValue,newValue));	
+		operationValueListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
+				-> onOperationValueListViewNewValue(oldValue,newValue));	
+//		issueListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
+//				-> onIssueListViewNewValue(oldValue,newValue));	
+
+		fmmlxAssociationListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
+				-> onAssociationListViewNewValue(oldValue,newValue));
+	}
+
+	protected SplitPane layoutElements() {
+		final ColumnConstraints FILL = new ColumnConstraints(); FILL.setFillWidth(true); FILL.setHgrow(Priority.ALWAYS);
+
+		GridPane mainGridPane = new GridPane();
+		mainGridPane.setHgap(10);
+		mainGridPane.setVgap(8);
+		mainGridPane.setPadding(new Insets(5,5,5,5));		
+		
+		GridPane modelColumnGrid = new GridPane();
+		modelColumnGrid.setBackground(new Background(new BackgroundFill(Color.ALICEBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+		modelColumnGrid.setVgap(3);
+		modelColumnGrid.setPadding(new Insets(3,3,3,3));
+		modelColumnGrid.add(new Label(StringValue.LabelAndHeaderTitle.model), 0,0);
+		modelColumnGrid.add(modelListView, 0,1);		
+		modelColumnGrid.add(new Label(StringValue.LabelAndHeaderTitle.project + ": [TODO]"), 0,2);
 		
 		Button button1 = new Button("Update...");
-		modelColumnVBox.getChildren().add(button1);
+		modelColumnGrid.add(button1, 0,3);
 		button1.setOnAction(e -> activePackage.updateDiagram());
-		button1.setMaxWidth(300);
-		Button button2 = new Button("Do not push!");
-		button2.setMaxWidth(300);
-		modelColumnVBox.getChildren().add(button2);
-		button2.setOnAction(e -> System.exit(0));
+		modelColumnGrid.add(statusLabel, 0,4);
+		GridPane.setHalignment(statusLabel, javafx.geometry.HPos.CENTER);
+		Button button3 = new Button("Do not push!");
+		modelColumnGrid.add(button3, 0,5);
+		button3.setOnAction(e -> System.exit(0));
 		
-		VBox objectColumnVBox = new VBox();
-		objectColumnVBox.setSpacing(3);
-		objectColumnVBox.setPadding(new Insets(3,3,3,3));
-		objectColumnVBox.getChildren().add(new Label(StringValue.LabelAndHeaderTitle.objects));
-		objectColumnVBox.getChildren().add(fmmlxObjectListView);
+		button1.setMaxWidth(300);
+		statusLabel.setMaxWidth(300);
+		button3.setMaxWidth(300);
+		modelColumnGrid.getColumnConstraints().add(FILL);
+		
 		GridPane objectPropertyPane = new GridPane();
 		objectPropertyPane.setPadding(new Insets(3,3,3,3));
 		objectPropertyPane.setVgap(3);
 		objectPropertyPane.setHgap(3);
-		objectPropertyPane.add(new Label(StringValue.LabelAndHeaderTitle.metaClass + ": "), 0,0);
-		objectPropertyPane.add(metaClassTextField, 1,0);
-		objectPropertyPane.add(new Label(StringValue.LabelAndHeaderTitle.parent + ": "), 0,1);
-		objectPropertyPane.add(parentsListView, 1,1);
-		parentsListView.setMaxHeight(30);
-		parentsListView.setMinHeight(30);
-		objectPropertyPane.add(new Label(StringValue.LabelAndHeaderTitle.abstractBig + ": "), 0,2);
-		objectPropertyPane.add(abstractCheckBox, 1,2);
-		objectPropertyPane.add(new Label(StringValue.LabelAndHeaderTitle.delegatesTo), 0,3);
-		objectPropertyPane.add(delegatesToTextField, 1,3);
-		objectColumnVBox.getChildren().add(objectPropertyPane);
+		
+		objectPropertyPane.add(new Label(StringValue.LabelAndHeaderTitle.objects), 0,0, 2,1);
+		objectPropertyPane.add(fmmlxObjectListView, 0,1, 2,1);		
+		objectPropertyPane.add(new Label(StringValue.LabelAndHeaderTitle.metaClass + ": "), 0,2);
+		objectPropertyPane.add(metaClassTextField, 1,2);
+		objectPropertyPane.add(new Label(StringValue.LabelAndHeaderTitle.parent + ": "), 0,3);
+		objectPropertyPane.add(parentsListView, 1,3);
+		parentsListView.setMaxHeight(70);
+		parentsListView.setMinHeight(70);
+		objectPropertyPane.add(new Label(StringValue.LabelAndHeaderTitle.abstractBig + ": "), 0,4);
+		objectPropertyPane.add(abstractCheckBox, 1,4);
+		objectPropertyPane.add(new Label(StringValue.LabelAndHeaderTitle.delegatesTo), 0,5);
+		objectPropertyPane.add(delegatesToTextField, 1,5);
+
+		objectPropertyPane.getColumnConstraints().add(new ColumnConstraints(100, 125, 150));
+		objectPropertyPane.getColumnConstraints().add(FILL);
 		
 		GridPane propertyGrid = new GridPane();
 		propertyGrid.setVgap(3);
@@ -577,6 +415,8 @@ public class ModelBrowser extends CustomStage {
 		propertyGrid.add(new Label(StringValue.LabelAndHeaderTitle.linkedObjects), 2,4);
 		propertyGrid.add(linkedObjectsListView, 2, 5);
 		
+		for(int i=0;i<3;i++) propertyGrid.getColumnConstraints().add(new ColumnConstraints(150, 150, Integer.MAX_VALUE, Priority.SOMETIMES, HPos.LEFT, true));
+		
 		GridPane associationsGrid = new GridPane();
 		associationsGrid.setHgap(3);
 		associationsGrid.setVgap(3);
@@ -592,149 +432,85 @@ public class ModelBrowser extends CustomStage {
 		associationsGrid.add(new Label (StringValue.LabelAndHeaderTitle.visible), 2, 2);
 		associationsGrid.add(targetVisible, 3, 2);
 		
-		mainGridPane.add(modelColumnVBox, 0, 0);
-		mainGridPane.add(objectColumnVBox, 1,0);
+		mainGridPane.add(modelColumnGrid, 0, 0);
+		mainGridPane.add(objectPropertyPane, 1,0);
 		mainGridPane.add(propertyGrid,2,0);
-		mainGridPane.add(associationsGrid, 3, 0);
+		//mainGridPane.add(associationsGrid, 3, 0);
 		
-		codeArea = new TextArea();
-		constraintTextArea = new TextArea();
-		outerSplitPane = new SplitPane();
+		mainGridPane.getColumnConstraints().add(new ColumnConstraints(150, 180, 250, Priority.SOMETIMES, HPos.LEFT, true));
+		mainGridPane.getColumnConstraints().add(new ColumnConstraints(150, 200, 300, Priority.SOMETIMES, HPos.LEFT, true));
+		mainGridPane.getColumnConstraints().add(new ColumnConstraints(450, 600, Integer.MAX_VALUE, Priority.SOMETIMES, HPos.LEFT, true));
+				
+		SplitPane outerSplitPane = new SplitPane();
 		outerSplitPane.setOrientation(Orientation.VERTICAL);
 		codeAndConstraintTabPane = new TabPane();
-		codeAndConstraintTabPane.getTabs().addAll(codeTab, constraintTab);
+		codeAndConstraintTabPane.getTabs().addAll(operationTab, constraintTab);
 		outerSplitPane.getItems().addAll(mainGridPane, codeAndConstraintTabPane);
-		codeTab.setContent(codeArea);
-		constraintTab.setContent(constraintTextArea);
-		VBox.setVgrow(outerSplitPane,Priority.ALWAYS);
-		VBox.setVgrow(codeArea,Priority.ALWAYS);
 		
+		GridPane operationPane = new GridPane();
+		operationPane.setVgap(3);
+		operationPane.add(operationCodeArea, 0, 0);
+		operationPane.add(opCodeButton, 0, 1);
+		operationPane.getColumnConstraints().add(FILL);
+		operationPane.getRowConstraints().add(new RowConstraints(1, Integer.MAX_VALUE, Integer.MAX_VALUE));
+		operationTab.setContent(operationPane);
 		
-//		List<Node> modelNode = new ArrayList<>();
-//		modelNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
-//		modelNode.add(new Label(StringValue.LabelAndHeaderTitle.model));
-//		modelNode.add(modelListView);
-//		modelNode.add(modelBrowserVBox);
-//		modelNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
-//		modelNode.add(new Label(StringValue.LabelAndHeaderTitle.code));
-//		
-//		List<Node> objectNode = new ArrayList<>();
-//		objectNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
-//		objectNode.add(new Label(StringValue.LabelAndHeaderTitle.objects));
-//		objectNode.add(fmmlxObjectListView);
-//		objectNode.add(classBrowserVBox);
-//		parentsVBox.setPrefHeight(300);
-//		objectNode.add(parentsVBox);
-//		objectNode.add(abstractVBox);
-//		objectNode.add(delegatesToVBox);	
-//		
-//		List<Node> attributeNode = new ArrayList<>();
-//		attributeNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
-//		attributeNode.add(new Label(StringValue.LabelAndHeaderTitle.attributes));
-//		
-//		attributeGridpane.add(fmmlxAttributeListView, 0, 0);
-//		attributeGridpane.add(new Label(StringValue.LabelAndHeaderTitle.slots), 0	, 1);
-//		attributeGridpane.add(slotListView, 0, 2);
-//		
-//		ColumnConstraints col1 = new ColumnConstraints();
-//	    col1.setPercentWidth(100);
-//	    attributeGridpane.getColumnConstraints().add(col1);
-//	    attributeGridpane.setVgap(8);
-//		
-//		attributeNode.add(attributeGridpane);
-//		attributeNode.add(attributeBrowserVBox);	
-//
-//		List<Node> operationNode = new ArrayList<>();
-//		operationNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
-//		operationNode.add(new Label(StringValue.LabelAndHeaderTitle.operations));
-//		operationNode.add(fmmlxOperationListView);
-//		operationNode.add(operationOutputVBox);
-//		operationNode.add(operationInputVBox);
-//		
-//		List<Node> associationNode = new ArrayList<>();
-//		associationNode.add(new Label(StringValue.LabelAndHeaderTitle.empty));
-//		associationNode.add(new Label(StringValue.LabelAndHeaderTitle.associations));
-//		associationNode.add(fmmlxAssociationListView);
-//		//visible.setText(StringValue.LabelAndHeaderTitle.visible);
-//		sourceVisible.setPadding(new Insets(3, 3, 3, 3));
-//		targetVisible.setPadding(new Insets(3, 3, 3, 3));
-//		sourceHBox.getChildren().addAll(sourceLabel, sourceListView);
-//		targetHBox.getChildren().addAll(targetLabel, targetListView);
-//		associationBooleanAttributesHBox.setPadding(new Insets(3,3,3,3));
-//		associationBooleanAttributesHBox.setSpacing(10);
-//		associationBooleanAttributesHBox.getChildren().addAll(labelSymmetric, checkSymmetric, labelTransitive, checkTransitive);
-//		sourceLabel.setText("Source: ");
-//		sourceLabel.setPadding(new Insets(3, 3, 3, 3));		
-//		targetLabel.setText("Target:  ");
-//		targetLabel.setPadding(new Insets(3, 3, 3, 3));
-//		visibleHBox.getChildren().addAll(new Label("Visibility - Source: "), sourceVisible, new Label("Target :"), targetVisible);
-//		associationNode.add(sourceHBox);
-//		associationNode.add(targetHBox);
-//		associationNode.add(visibleHBox);
-//		associationNode.add(associationBooleanAttributesHBox);
-//		
-//		//associationNode.add(associationBrowserVBox);
-//		//associationNode.add(sourceVBox);
-//		//associationNode.add(targetVBox);
-//		
-//		getGridControl().addNodesToGrid(mainGridPane,modelNode, 0);
-//		getGridControl().addNodesToGrid(mainGridPane,objectNode, 1);
-//		getGridControl().addNodesToGrid(mainGridPane,attributeNode, 2);
-//		getGridControl().addNodesToGrid(mainGridPane,operationNode, 3);
-//		getGridControl().addNodesToGrid(mainGridPane,associationNode, 4);
-	}
-
-	private void onOperationListViewNewValue(FmmlxOperation oldValue, FmmlxOperation selectedOperation) {
-		codeAndConstraintTabPane.getSelectionModel().select(codeTab);
-		if (selectedOperation!=null) {
-			codeArea.setText(selectedOperation.getBody());	
-		} else{
-			codeArea.setText("");	
-		}
-	}
-	
-	private void modellBrowserListerner(ListView<String> modelListView2, String oldValue, String newValue) {
+		GridPane constraintPane = new GridPane();
+		constraintPane.setVgap(3);
+		constraintPane.add(constraintBodyArea, 0, 0);
+		constraintPane.add(constraintReasonArea, 0, 1);
+		constraintPane.add(conCodeButton, 0, 2);
+		constraintPane.getRowConstraints().add(new RowConstraints(1, Integer.MAX_VALUE, Integer.MAX_VALUE));
+		constraintPane.getRowConstraints().add(new RowConstraints(1, Integer.MAX_VALUE, Integer.MAX_VALUE));
+		constraintPane.getColumnConstraints().add(FILL);
+		constraintTab.setContent(constraintPane);
 		
-	}
-
-	private void classBrowserTextFieldListener(String oldValue, String newValue) {
-		
+		VBox.setVgrow(outerSplitPane,Priority.ALWAYS);		
+		return outerSplitPane;
 	}
 
 	private void onObjectListViewNewValue(FmmlxObject oldValue, FmmlxObject selectedObject) {
-		if (selectedObject != null ) {
+		
+		boolean noObject = selectedObject == null;
+		
+		fmmlxAttributeListView.getItems().clear();
+		onAttributeListViewNewValue(null, null);
+		slotListView.getItems().clear();
+		fmmlxOperationListView.getItems().clear();
+		onOperationListViewNewValue(null, null);
+		operationValueListView.getItems().clear();
+		fmmlxAssociationListView.getItems().clear();
+		onAssociationListViewNewValue(null, null);
+		metaClassTextField.clear();
+		delegatesToTextField.clear();
+		constraintListView.getItems().clear();
+		issueListView.getItems().clear();
+		parentsListView.getItems().clear();		
+
+		delegatesToTextField.setDisable(noObject);
+		abstractCheckBox.setDisable(    noObject);
+		parentsListView.setDisable(     noObject);
+		
+		if (!noObject) {
 			selection.put("OBJ", selectedObject.getName());
-			fmmlxAttributeListView.getItems().clear();
 			fmmlxAttributeListView.getItems().addAll(selectedObject.getAllAttributes());
-			slotListView.getItems().clear();
 			slotListView.getItems().addAll(selectedObject.getAllSlots());
-			fmmlxOperationListView.getItems().clear();
 			fmmlxOperationListView.getItems().addAll(selectedObject.getAllOperations());
-			fmmlxAssociationListView.getItems().clear();
 			fmmlxAssociationListView.getItems().addAll(selectedObject.getAllRelatedAssociations());
-			metaClassTextField.clear();
 			metaClassTextField.setText(selectedObject.getMetaClassName());
-			delegatesToTextField.clear();
-			operationValueListView.getItems().clear();
 			operationValueListView.getItems().addAll(selectedObject.getOperationValues());
-			constraintListView.getItems().clear();
 			constraintListView.getItems().addAll(selectedObject.getConstraints());
-			issueListView.getItems().clear();
 			issueListView.getItems().addAll(activePackage.getIssues(selectedObject));	
 			
-			if (selectedObject.getDelegatesTo()==null) {
+			if (selectedObject.getDelegatesTo() == null) {
 				delegatesToTextField.setText("No delegation");
 			} else {
 				delegatesToTextField.setText(selectedObject.getDelegatesTo().toString());	
 			}
 			abstractCheckBox.setSelected(selectedObject.isAbstract());
-			parentsListView.getItems().clear();
 			parentsListView.getItems().addAll(selectedObject.getParentsPaths());
-		}	
-			fmmlxObjectListView.setContextMenu(new BrowserObjectContextMenu(fmmlxObjectListView, activePackage));
-			onAttributeListViewNewValue(null, null);
-		
-
+		}
+		fmmlxObjectListView.setContextMenu(new BrowserObjectContextMenu(fmmlxObjectListView, activePackage));
 	}
 
 	private void onAssociationListViewNewValue(FmmlxAssociation oldValue, FmmlxAssociation association) {
@@ -764,14 +540,6 @@ public class ModelBrowser extends CustomStage {
 		communicator.setClassAbstract(activePackage.getID(), fmmlxObjectListView.getSelectionModel().getSelectedItem().getName(), abstractCheckBox.isSelected());
 		activePackage.updateDiagram();
 	}
-
-	private void setColumnConstrain(GridPane gridPane) {
-		
-	}
-
-	public void updateDiagram(FmmlxDiagram diagram) {
-		
-	}
 	
 	private void onModelListViewNewValue(String oldSelectedPath, String selectedPath) {
 		if(selectedPath == null || selectedPath.equals(oldSelectedPath)) return;
@@ -784,20 +552,89 @@ public class ModelBrowser extends CustomStage {
 		activePackage.updateDiagram();
 	}	
 
-	private void onSlotListViewNewValue(ListView<String> modelListView2, FmmlxSlot oldValue, FmmlxSlot newValue) {}
+	private void onAttributeListViewNewValue(FmmlxAttribute oldAtt, FmmlxAttribute newAtt) {
+		if(newAtt != null) {selection.put("ATT", newAtt.getName());}
+		fmmlxAttributeListView.setContextMenu(new BrowserAttributeContextMenu(fmmlxObjectListView.getSelectionModel().getSelectedItem(), newAtt, activePackage));
+	}
+
+	private void onOperationListViewNewValue(FmmlxOperation oldValue, FmmlxOperation newOp) {
+		if (newOp!=null) {
+			selection.put("OPE", newOp.getName());
+			updateOperationTab(newOp, activePackage.getObjectByPath(newOp.getOwner()) == fmmlxObjectListView.getSelectionModel().getSelectedItem(), true);
+			fmmlxOperationListView.setContextMenu(new BrowserOperationContextMenu(fmmlxObjectListView.getSelectionModel().getSelectedItem(), newOp, activePackage));
+			opCodeButton.setDisable(false);
+		} else{
+			selection.put("OPE", null);
+			updateOperationTab(null, false, false);
+		}
+	}
+
+	private void onOperationValueListViewNewValue(FmmlxOperationValue oldValue, FmmlxOperationValue newOpV) {
+		if (newOpV!=null) {
+			selection.put("OPV", newOpV.getName());
+			opCodeButton.setDisable(true);
+			
+			MenuItem selectDefValueItem = new MenuItem("Select Definition");
+			final FmmlxOperation op = activePackage.getOperation(newOpV);
+			final FmmlxObject obj = activePackage.getObjectByPath(op.getOwner());
+
+			updateOperationTab(op, false, true);
+			selectDefValueItem.setOnAction(e -> setSelectedObjectAndProperty(obj, op)); 
+			operationValueListView.setContextMenu(new ContextMenu(selectDefValueItem));			
+		} else{
+			selection.put("OPV", null);
+			updateOperationTab(null, false, false);
+			operationValueListView.setContextMenu(null);
+		}
+	}
 	
-	private void onAttributeListViewNewValue(FmmlxAttribute oldValue, FmmlxAttribute newValue) {
-		if(newValue != null) {selection.put("ATT", newValue.getName());}
-		fmmlxAttributeListView.setContextMenu(new BrowserAttributeContextMenu(fmmlxObjectListView, fmmlxAttributeListView, activePackage));
+	private void onSlotListViewNewValue(FmmlxSlot oldValue, final FmmlxSlot newSlot) {
+		if (newSlot!=null) {
+			selection.put("SLO", newSlot.getName());
+			final FmmlxObject object = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+			MenuItem changeSlotValueItem = new MenuItem("Change Value");
+			changeSlotValueItem.setOnAction(e -> activePackage.getActions().changeSlotValue(object, newSlot)); 
+			slotListView.setContextMenu(new ContextMenu(changeSlotValueItem));
+		} else{
+			selection.put("SLO", null);
+			slotListView.setContextMenu(null);
+		}
 	}
 	
 	private void onConstraintListViewNewValue(Constraint oldValue, Constraint constraint) {
-		
-		if (constraint!=null) {
-			codeAndConstraintTabPane.getSelectionModel().select(constraintTab);
-			constraintTextArea.setText(constraint.getBodyRaw() + constraint.getBodyFull() + constraint.getReasonRaw() + constraint.getReasonFull());
+		if (constraint != null) {
+			selection.put("CON", constraint.getName());
+			updateConstraintTab(constraint, true, true);
+		} else {
+			selection.put("CON", null);
+			updateConstraintTab(null, false, false);
 		}
-		
+	}
+	
+	private void updateOperationTab(FmmlxOperation operation, boolean editable, boolean select) {
+		if(select) codeAndConstraintTabPane.getSelectionModel().select(operationTab);
+		opCodeButton.setDisable(!editable);
+		if(operation != null) {
+			operationCodeArea.setText(operation.getBody());
+			operationTab.setText("Operation" + " (" + operation.getName() + ")");
+		} else {
+			operationCodeArea.setText("");
+			operationTab.setText("Operation");
+		}
+	}	
+	
+	private void updateConstraintTab(Constraint constraint, boolean editable, boolean select) {
+		if(select) codeAndConstraintTabPane.getSelectionModel().select(constraintTab);
+		conCodeButton.setDisable(!editable);
+		if(constraint != null) {
+			constraintBodyArea.setText(constraint.getBodyFull());
+			constraintReasonArea.setText(constraint.getReasonFull());
+			constraintTab.setText("Constraint" + " (" + constraint.getName()+ ")");
+		} else {
+			constraintBodyArea.setText(null);
+			constraintReasonArea.setText(null);
+			constraintTab.setText("Constraint");			
+		}
 	}
 
 	public void notifyModelHasLoaded() {
@@ -825,20 +662,86 @@ public class ModelBrowser extends CustomStage {
 	private transient HashMap<String, String> selection = new HashMap<>();
 	
 	private void restoreSelection() {
-		String oS = selection.get("OBJ");
-		for(int i = 0; i < fmmlxObjectListView.getItems().size() && oS != null; i++) {
-			if(oS.equals(fmmlxObjectListView.getItems().get(i).getName())) {
-				oS = null;
-				fmmlxObjectListView.getSelectionModel().select(fmmlxObjectListView.getItems().get(i));
-			}
-		}
-		String aS = selection.get("ATT");
-		for(int i = 0; i < fmmlxAttributeListView.getItems().size() && aS != null; i++) {
-			if(aS.equals(fmmlxAttributeListView.getItems().get(i).getName())) {
-				aS = null;
-				fmmlxAttributeListView.getSelectionModel().select(fmmlxAttributeListView.getItems().get(i));
+		selectItemByString(fmmlxObjectListView, selection.get("OBJ"));
+
+		selectItemByString(fmmlxAttributeListView, selection.get("ATT"));
+		selectItemByString(fmmlxOperationListView, selection.get("OPE"));
+		selectItemByString(constraintListView, selection.get("CON"));
+
+		selectItemByString(slotListView, selection.get("SLO"));
+		selectItemByString(operationValueListView, selection.get("OPV"));
+		selectItemByString(issueListView, selection.get("ISS"));
+		
+		selectItemByString(fmmlxAssociationListView, selection.get("SLO"));
+		selectItemByString(linksListView, selection.get("LI1"));
+		selectItemByString(linkedObjectsListView, selection.get("LI2"));		
+	}
+	
+	private <E extends FmmlxProperty> void selectItemByString(ListView<E> list, String key) {
+		for(int i = 0; i < list.getItems().size() && key != null; i++) {
+			if(key.equals(list.getItems().get(i).getName())) {
+				key = null;
+				list.getSelectionModel().select(list.getItems().get(i));
 			}
 		}
 	}
+	
+	private Node getClassLevelGraphic(int level) {
+		if(level == -1) return null;
+		double SIZE = 16;
+		Canvas canvas = new Canvas(SIZE, SIZE);
+		Text temp = new Text(level+"");
+		GraphicsContext g = canvas.getGraphicsContext2D();
+		g.setFill(levelColorScheme.getLevelBgColor(level));
+		g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/2, SIZE/2);
+		g.setFill(levelColorScheme.getLevelFgColor(level, 1.));
+		g.fillText(level+"", 
+				SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
+				SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
+		return canvas;
+	}
+	
+	private Node getFeatureLevelGraphic(int level, boolean own) {
+		if(level == -1) return null;
+		double SIZE = 16;
+		Canvas canvas = new Canvas(SIZE, SIZE);
+		Text temp = new Text(level+"");
+		GraphicsContext g = canvas.getGraphicsContext2D();
+		g.setFill(own?Color.BLACK:Color.GRAY);
+		g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/3, SIZE/3);
+		g.setFill(Color.WHITE);
+		g.fillText(level+"", 
+				SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
+				SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
+		return canvas;
+	}
 
+	public void setSelectedObjectAndProperty(FmmlxObject object, FmmlxProperty property) {
+		fmmlxObjectListView.scrollTo(object);
+		fmmlxObjectListView.getSelectionModel().select(object);
+		
+		if(property == null) return;
+		
+		if(property instanceof FmmlxAttribute) {
+			FmmlxAttribute att = (FmmlxAttribute) property;
+			fmmlxAttributeListView.scrollTo(att);
+			fmmlxAttributeListView.getSelectionModel().select(att);
+		} else if(property instanceof FmmlxOperation) {
+			FmmlxOperation att = (FmmlxOperation) property;
+			fmmlxOperationListView.scrollTo(att);
+			fmmlxOperationListView.getSelectionModel().select(att);
+		} else{
+			throw new RuntimeException("not yet implemented for " + property.getClass().getName());
+		}		
+	}
+
+	public void setStatusButton(ViewerStatus newStatus) {
+		Platform.runLater(() -> {
+			switch(newStatus) {
+			case DIRTY : statusLabel.setText("Status: Prepare Loading"); break;
+			case LOADING : statusLabel.setText("Status: Loading Model"); break;
+			case CLEAN : statusLabel.setText("Status: View Updated"); break;
+			}
+		});
+	}
 }

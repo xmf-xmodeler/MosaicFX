@@ -5,8 +5,9 @@ import java.util.Vector;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
-public class Issue {
+public class Issue implements FmmlxProperty{
 	
 	public static final Issue NOT_YET_IMPLEMENTED = new Issue("This feature has not been implemented yet.");
 
@@ -137,5 +138,15 @@ public class Issue {
 	public String toString() { 
 		return text;
 		}
+
+	@Override
+	public PropertyType getPropertyType() {
+		return PropertyType.Issue;
+	}
+
+	@Override
+	public String getName() {
+		return text;
+	}
 
 }
