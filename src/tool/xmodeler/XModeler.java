@@ -282,6 +282,7 @@ public class XModeler extends Application {
 					PrintStream out = new PrintStream(file, "UTF-8");
 					out.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?><XModeler x='" + x + "' y='" + y + "' width='"
 							+ width + "' height = '" + height + "'>");
+                    System.err.println("start write xml");
 					ModelBrowserClient.theClient().writeXML(out);
 					DiagramClient.theClient().writeXML(out);
 					MenuClient.theClient().writeXML(out);

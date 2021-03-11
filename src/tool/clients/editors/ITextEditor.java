@@ -10,6 +10,8 @@ public interface ITextEditor {
 
   void addLineHighlight(int line);
 
+  void addMultilineRule(String id, String start, String end, double red, double green, double blue);
+
   void addMultilineRule(String id, String start, String end, int red, int green, int blue);
 
   void addWordRule(String id, String text, int red, int green, int blue);
