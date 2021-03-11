@@ -7,6 +7,8 @@ import java.util.Vector;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -14,22 +16,27 @@ import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.ViewerStatus;
 import tool.clients.fmmlxdiagrams.LevelColorScheme.FixedBlueLevelColorScheme;
+import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
-import tool.clients.fmmlxdiagrams.menus.*;
+import tool.clients.fmmlxdiagrams.menus.BrowserAssociationContextMenu;
+import tool.clients.fmmlxdiagrams.menus.BrowserAttributeContextMenu;
+import tool.clients.fmmlxdiagrams.menus.BrowserOperationContextMenu;
 import tool.xmodeler.XModeler;
-
 
 public final class ModelBrowser extends CustomStage {
 	
-	private final TextArea operationCodeArea = new TextArea();
-	private final TextArea constraintBodyArea = new TextArea();
-	private final TextArea constraintReasonArea = new TextArea();
+	private final CodeBox operationCodeArea = new CodeBox(10,true,"");
+	private final CodeBox constraintBodyArea = new CodeBox(10,false,"");
+	private final CodeBox constraintReasonArea = new CodeBox(10,false,"");
 	private final ListView<String> modelListView   = new ListView<>();
 	private final ListView<String> parentsListView = new ListView<>();
 	private final ListView<Issue>  issueListView   = new ListView<>();
@@ -87,6 +94,8 @@ public final class ModelBrowser extends CustomStage {
 		if (initialModel!=null) {
 			modelListView.getSelectionModel().select(initialModel);
 		}
+
+		fmmlxObjectListView.setContextMenu(new BrowserObjectContextMenu());
 	}
 
 	public void onClose() {
@@ -151,6 +160,8 @@ public final class ModelBrowser extends CustomStage {
 		
 		opCodeButton.setDisable(true);
 		conCodeButton.setDisable(true);
+		
+		statusLabel.setFont(Font.font(statusLabel.getFont().getFamily(), FontWeight.BOLD, statusLabel.getFont().getSize()));
 	}
 	
 	private void addDoubleClickListeners() {
@@ -171,6 +182,17 @@ public final class ModelBrowser extends CustomStage {
 		        FmmlxObject object = fmmlxObjectListView.getSelectionModel().getSelectedItem();
 		        if(slot != null && object != null) {
 		        	activePackage.getActions().changeSlotValue(object, slot);
+		        }
+			}
+		});	
+		
+
+		issueListView.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2) {
+		        Issue issue = issueListView.getSelectionModel().getSelectedItem();
+		        FmmlxObject object = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+		        if(issue != null && object != null) {
+		        	issue.performResolveAction(activePackage);
 		        }
 			}
 		});	
@@ -449,7 +471,7 @@ public final class ModelBrowser extends CustomStage {
 		
 		GridPane operationPane = new GridPane();
 		operationPane.setVgap(3);
-		operationPane.add(operationCodeArea, 0, 0);
+		operationPane.add(operationCodeArea.virtualizedScrollPane, 0, 0);
 		operationPane.add(opCodeButton, 0, 1);
 		operationPane.getColumnConstraints().add(FILL);
 		operationPane.getRowConstraints().add(new RowConstraints(1, Integer.MAX_VALUE, Integer.MAX_VALUE));
@@ -457,8 +479,8 @@ public final class ModelBrowser extends CustomStage {
 		
 		GridPane constraintPane = new GridPane();
 		constraintPane.setVgap(3);
-		constraintPane.add(constraintBodyArea, 0, 0);
-		constraintPane.add(constraintReasonArea, 0, 1);
+		constraintPane.add(constraintBodyArea.virtualizedScrollPane, 0, 0);
+		constraintPane.add(constraintReasonArea.virtualizedScrollPane, 0, 1);
 		constraintPane.add(conCodeButton, 0, 2);
 		constraintPane.getRowConstraints().add(new RowConstraints(1, Integer.MAX_VALUE, Integer.MAX_VALUE));
 		constraintPane.getRowConstraints().add(new RowConstraints(1, Integer.MAX_VALUE, Integer.MAX_VALUE));
@@ -502,15 +524,19 @@ public final class ModelBrowser extends CustomStage {
 			constraintListView.getItems().addAll(selectedObject.getConstraints());
 			issueListView.getItems().addAll(activePackage.getIssues(selectedObject));	
 			
-			if (selectedObject.getDelegatesTo() == null) {
-				delegatesToTextField.setText("No delegation");
+			if (selectedObject.getDelegatesTo(false) == null) {
+				if (selectedObject.getDelegatesTo(true) == null) {
+					delegatesToTextField.setText("No delegation");
+				} else {
+					delegatesToTextField.setText("(" + selectedObject.getDelegatesTo(true).toString() + ")");	
+				}
 			} else {
-				delegatesToTextField.setText(selectedObject.getDelegatesTo().toString());	
+				delegatesToTextField.setText(selectedObject.getDelegatesTo(false).toString());	
 			}
 			abstractCheckBox.setSelected(selectedObject.isAbstract());
 			parentsListView.getItems().addAll(selectedObject.getParentsPaths());
 		}
-		fmmlxObjectListView.setContextMenu(new BrowserObjectContextMenu(fmmlxObjectListView, activePackage));
+		fmmlxObjectListView.setContextMenu(new BrowserObjectContextMenu());
 	}
 
 	private void onAssociationListViewNewValue(FmmlxAssociation oldValue, FmmlxAssociation association) {
@@ -563,8 +589,15 @@ public final class ModelBrowser extends CustomStage {
 			updateOperationTab(newOp, activePackage.getObjectByPath(newOp.getOwner()) == fmmlxObjectListView.getSelectionModel().getSelectedItem(), true);
 			fmmlxOperationListView.setContextMenu(new BrowserOperationContextMenu(fmmlxObjectListView.getSelectionModel().getSelectedItem(), newOp, activePackage));
 			opCodeButton.setDisable(false);
+			opCodeButton.setOnAction(e -> {
+				activePackage.getComm().changeOperationBody(
+						activePackage.getID(), 
+						activePackage.getObjectByPath(newOp.getOwner()).getName(), 
+						newOp.getName(), 
+						operationCodeArea.getText());
+				activePackage.updateDiagram();
+			});
 		} else{
-			selection.put("OPE", null);
 			updateOperationTab(null, false, false);
 		}
 	}
@@ -582,7 +615,6 @@ public final class ModelBrowser extends CustomStage {
 			selectDefValueItem.setOnAction(e -> setSelectedObjectAndProperty(obj, op)); 
 			operationValueListView.setContextMenu(new ContextMenu(selectDefValueItem));			
 		} else{
-			selection.put("OPV", null);
 			updateOperationTab(null, false, false);
 			operationValueListView.setContextMenu(null);
 		}
@@ -596,7 +628,6 @@ public final class ModelBrowser extends CustomStage {
 			changeSlotValueItem.setOnAction(e -> activePackage.getActions().changeSlotValue(object, newSlot)); 
 			slotListView.setContextMenu(new ContextMenu(changeSlotValueItem));
 		} else{
-			selection.put("SLO", null);
 			slotListView.setContextMenu(null);
 		}
 	}
@@ -606,7 +637,6 @@ public final class ModelBrowser extends CustomStage {
 			selection.put("CON", constraint.getName());
 			updateConstraintTab(constraint, true, true);
 		} else {
-			selection.put("CON", null);
 			updateConstraintTab(null, false, false);
 		}
 	}
@@ -738,10 +768,70 @@ public final class ModelBrowser extends CustomStage {
 	public void setStatusButton(ViewerStatus newStatus) {
 		Platform.runLater(() -> {
 			switch(newStatus) {
-			case DIRTY : statusLabel.setText("Status: Prepare Loading"); break;
-			case LOADING : statusLabel.setText("Status: Loading Model"); break;
-			case CLEAN : statusLabel.setText("Status: View Updated"); break;
+			case DIRTY : 
+				if(!statusLabel.getText().startsWith("Status: Already Loading"))
+					statusLabel.setText("Status: Already Loading");
+				else
+					statusLabel.setText(statusLabel.getText() + "!");
+				statusLabel.setTextFill(new Color(.8, .2, .5, 1.)); break;
+			case LOADING : 
+				statusLabel.setText("Status: Loading Model"); 
+				statusLabel.setTextFill(new Color(.8, .5, .2, 1.)); break;
+			case CLEAN : 
+				statusLabel.setText("Status: View Updated");
+				statusLabel.setTextFill(new Color(.2, .5, .8, 1.)); break;
 			}
 		});
 	}
+	
+	private class BrowserObjectContextMenu extends ContextMenu {
+
+		private final FmmlxObject object;
+		private final DiagramActions actions;
+		
+		public BrowserObjectContextMenu() {
+			
+			this.actions = activePackage.getActions();
+			this.object = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+			setAutoHide(true);
+			
+			addNewMenuItem(this, "Add Class", e -> actions.addMetaClassDialog((javafx.scene.canvas.Canvas) null), ALWAYS);
+			if(object!=null) {
+				addNewMenuItem(this, "Add Instance of " + object.getName(), e -> actions.addInstanceDialog(object, (javafx.scene.canvas.Canvas) null), () -> {return object.getLevel() >= 1 && !object.isAbstract();});
+				addNewMenuItem(this, "Instance Generator", e -> actions.runInstanceGenerator(object), NEVER);
+	
+				getItems().add(new SeparatorMenuItem());
+	
+				addNewMenuItem(this, "Change Name", e -> actions.changeNameDialog(object, PropertyType.Class, object), ALWAYS);
+				addNewMenuItem(this, "Remove Object", e -> actions.removeDialog(object, PropertyType.Class, object), ALWAYS);
+				addNewMenuItem(this, "Change Metaclass",e -> {new javafx.scene.control.Alert(
+						AlertType.INFORMATION, "Really ?", 
+						javafx.scene.control.ButtonType.NO, 
+						javafx.scene.control.ButtonType.CANCEL).showAndWait();}, ALWAYS);
+				addNewMenuItem(this, "Change Superclasses", e -> actions.changeParentsDialog(object), () -> {return object.getLevel() >= 1;});
+				addNewMenuItem(this, "Set Delegation", e -> actions.setDelegation(object, null), () -> {return object.getLevel() >= 1;});
+				addNewMenuItem(this, "Remove Delegation", e -> actions.removeDelegation(object), () -> {return object.getDelegatesTo(false) != null;});
+				addNewMenuItem(this, "Set RoleFiller", e -> actions.setRoleFiller(object, null), () -> {return object.getDelegatesTo(true)!= null;});
+				addNewMenuItem(this, "Remove RoleFiller", e -> actions.removeRoleFiller(object), () -> {return object.getRoleFiller() != null;});
+				addNewMenuItem(this, object.isAbstract()?"Make Concrete":"Make Abstract", e -> actions.toggleAbstract(object), () -> {return object.getLevel() >= 1 && object.getInstances().size() > 0;});
+			}
+		}
+	}
+	
+	private void addNewMenuItem(ContextMenu parentMenu, String text, EventHandler<ActionEvent> action, Enabler enabler) {
+		MenuItem item = new MenuItem(text);
+		item.setOnAction(action);
+		item.setDisable(!enabler.isEnabled());
+		parentMenu.getItems().add(item);
+	}
+	
+	private void notYetImplemented() {
+		new javafx.scene.control.Alert(AlertType.ERROR, "Not yet implemented", ButtonType.CANCEL).showAndWait(); return;
+	}
+	
+	private interface Enabler {
+		boolean isEnabled();
+	}
+	private static final Enabler ALWAYS = () -> true; 
+	private static final Enabler NEVER = () -> false; 
 }

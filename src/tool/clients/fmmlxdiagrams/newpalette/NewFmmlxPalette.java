@@ -123,11 +123,11 @@ public class NewFmmlxPalette {
 //						}
 					}
 
-					if(item.isAbstract()) {
-						setFont(fmmlxDiagram.getPaletteFontKursiv());
-					} else {
-						setFont(fmmlxDiagram.getPaletteFont());
-					}
+//					if(item.isAbstract()) {
+//						setFont(get);
+//					} else {
+//						setFont(fmmlxDiagram.getPaletteFont());
+//					}
 
 				}
 			}

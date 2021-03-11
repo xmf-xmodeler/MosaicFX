@@ -1082,6 +1082,13 @@ public class FmmlxDiagramCommunicator {
         sendMessage("setRoleFiller", message);
     }
 
+    public void removeRoleFiller(int diagramID, String roleName) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(roleName)};
+        sendMessage("removeRoleFiller", message);
+    }
+
     public void addAssociation(int diagramID,
                                String classSourceName, String classTargetName,
                                String accessSourceFromTargetName, String accessTargetFromSourceName,

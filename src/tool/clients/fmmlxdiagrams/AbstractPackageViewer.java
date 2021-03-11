@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.canvas.Canvas;
 
 public abstract class AbstractPackageViewer {
 	
@@ -19,7 +20,6 @@ public abstract class AbstractPackageViewer {
 	protected final String packagePath;
 	protected transient boolean fetchingData;
 	protected boolean justLoaded = false;
-	private ViewerStatus viewerStatus = ViewerStatus.CLEAN;
 	
 	public static enum ViewerStatus { CLEAN, DIRTY, LOADING }
 
@@ -118,7 +118,6 @@ public abstract class AbstractPackageViewer {
 	}
 	
 	private void setViewerStatus(ViewerStatus newStatus) {
-		viewerStatus = newStatus;
 		updateViewerStatusInGUI(newStatus);
 	}
 
@@ -291,4 +290,6 @@ public abstract class AbstractPackageViewer {
 			}
 		}; throw new RuntimeException("Object not found for OperationValue");
 	}
+
+	public Canvas getCanvas() {return null;}
 }

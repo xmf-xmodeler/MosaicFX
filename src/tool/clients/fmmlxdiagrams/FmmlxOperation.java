@@ -85,9 +85,9 @@ public class FmmlxOperation implements FmmlxProperty, Comparable<FmmlxOperation>
 		String params = "";
 		for(int i = 0; i < paramNames.size(); i++) {
 			if(!"".equals(params)) params = params+", ";
-			params = params + paramNames.get(i)+ ":" + diagram.convertPath2Short(paramTypes.get(i));
+			params = params + paramNames.get(i)+ " : " + diagram.convertPath2Short(paramTypes.get(i));
 		}
-		return name + "("+params+"):" + diagram.convertPath2Short(type);
+		return name + "("+params+") : " + diagram.convertPath2Short(type);
 	}
 
 	@Override

@@ -534,8 +534,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 						final FmmlxObject delegateFrom = newEdgeSource;
 						final FmmlxObject delegateTo = newEdgeTarget;
 						Platform.runLater(() -> {
-							actions.addDelegation(delegateFrom, delegateTo);
-							updateDiagramLater();
+							actions.setDelegation(delegateFrom, delegateTo);
+//							updateDiagramLater();
 						});						
 						break;
 					}
@@ -545,7 +545,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 						final FmmlxObject delegateTo = newEdgeTarget;
 						Platform.runLater(() -> {
 							actions.setRoleFiller(delegateFrom, delegateTo);
-							updateDiagramLater();
+//							updateDiagramLater();
 						});						
 						break;
 					}
@@ -843,22 +843,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		transformFX = new Affine();
 		transformFX.appendScale(zoom, zoom);
 		resizeCanvas();
-	}
-
-//	public Font getFont() {
-//		return Font.font(FONT.getFamily(), FontPosture.REGULAR, 14);
-//	}
-//	
-//	public Font getFontKursiv() {
-//		return Font.font(FONT.getFamily(), FontPosture.ITALIC, 14);
-//	}
-	
-	public Font getPaletteFont() {
-		return Font.font(FONT.getFamily(), FontPosture.REGULAR, 12);
-	}
-	
-	public Font getPaletteFontKursiv() {
-		return Font.font(FONT.getFamily(), FontPosture.ITALIC, 12);
 	}
 	
 	@Deprecated

@@ -162,7 +162,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	
 	public Vector<FmmlxOperation> getDelegatedOperations() {
 		Vector<FmmlxOperation> delegatedOperations = new Vector<>();
-		FmmlxObject delegatesTo = getDelegatesTo();
+		FmmlxObject delegatesTo = getDelegatesTo(false);
 		if(delegatesTo != null) {
 			delegatedOperations.addAll(delegatesTo.getAllOperations());
 		}
@@ -194,18 +194,36 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return delelegateToClassOperations;
 	}
 	
-	public FmmlxObject getDelegatesTo() {
-		for(Edge e : diagram.getEdges()) {
+	public FmmlxObject getDelegatesTo(boolean includeAncestors) {
+		DelegationEdge de = getDelegatesToEdge(includeAncestors);
+		if(de != null) return de.targetNode;
+		return null;
+	}	
+	
+	public DelegationEdge getDelegatesToEdge(boolean includeAncestors) {
+		for(Edge<?> e : diagram.getEdges()) {
 			if(e instanceof DelegationEdge) {
 				DelegationEdge de = (DelegationEdge) e;
-				if(de.sourceNode == this) {
-					return (FmmlxObject) de.targetNode;
+				if(de.sourceNode == this || (includeAncestors && this.getAllAncestors().contains(de.sourceNode))) {
+					return de;
 				}
 			}
 		}
 		return null;
 	}
-
+	
+	public FmmlxObject getRoleFiller() {
+		for(Edge<?> e : diagram.getEdges()) {
+			if(e instanceof RoleFillerEdge) {
+				RoleFillerEdge rfe = (RoleFillerEdge) e;
+				if(rfe.sourceNode == this || this.getAllAncestors().contains(rfe.sourceNode)) {
+					return rfe.targetNode;
+				}
+			}
+		}
+		return null;
+	}
+	
 	public Vector<FmmlxOperation> getAllOperations() {
 		Vector<FmmlxOperation> result = new Vector<>();
 		result.addAll(ownOperations);
@@ -445,7 +463,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 					opsBox.nodeElements.add(oLevelLabel);
 					String iconS = "resources/gif/Inheritance.gif";
 					if(diagram.getObjectByPath(ofPath) != null && diagram.getObjectByPath(ofPath).getAllOperations().contains(o)) iconS = "resources/gif/Dependency.gif";
-					if(getDelegatesTo() != null && getDelegatesTo().getAllOperations().contains(o)) iconS = "resources/gif/XCore/delegation.png";
+					if(getDelegatesTo(false) != null && getDelegatesTo(false).getAllOperations().contains(o)) iconS = "resources/gif/XCore/delegation.png";
 						
 					NodeImage delIcon = new NodeImage(14, opsY, iconS, o, NO_ACTION);
 					opsBox.nodeElements.add(delIcon);
@@ -721,7 +739,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return monitorNames;
 	}
 
-	private Vector<FmmlxObject> getAllAncestors() {
+	public Vector<FmmlxObject> getAllAncestors() {
 		if("Root::XCore::Class".equals(ownPath)) return new Vector<FmmlxObject>();
 		Vector<FmmlxObject> result1 = new Vector<>();
 		if (ofPath != null) {
@@ -962,6 +980,4 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	public Vector<Constraint> getConstraints() {
 		return new Vector<Constraint>(constraints);
 	}
-	
-	
 }

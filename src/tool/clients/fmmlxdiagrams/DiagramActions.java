@@ -701,16 +701,74 @@ public class DiagramActions {
 		});
 	}
 	
-	public void addDelegation(FmmlxObject delegateFrom, FmmlxObject delegateTo) {
-		if (delegateFrom != null && delegateTo != null) { // just for safety
-			diagram.getComm().addDelegation(diagram.getID(), delegateFrom.getName(), delegateTo.getName(), delegateFrom.level-1);
-		}		
+	public void setDelegation(FmmlxObject delegateFrom, FmmlxObject delegateTo) {
+		if(delegateFrom == null) {
+			new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Source Missing", ButtonType.CANCEL).showAndWait(); return;
+		}
+		if(delegateTo == null) {
+			Vector<FmmlxObject> delegationCandidates = new Vector<>();
+			for(FmmlxObject o : diagram.getObjects()) {
+				if(o != delegateFrom && o.level == delegateFrom.level) delegationCandidates.add(o);
+			}
+			ChoiceDialog<FmmlxObject> delegationChooseDialog = new ChoiceDialog<FmmlxObject>(delegateFrom.getDelegatesTo(false), delegationCandidates);
+			delegationChooseDialog.setTitle("Set Delegation");
+			delegationChooseDialog.setHeaderText("Select delegation target for " + delegateFrom.getName());
+			Optional<FmmlxObject> chosenTarget = delegationChooseDialog.showAndWait();
+			if(chosenTarget.isPresent()) {
+				delegateTo = chosenTarget.get();
+			} else {
+				new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Target Missing", ButtonType.CANCEL).showAndWait(); return;
+			}
+		}
+		diagram.getComm().addDelegation(diagram.getID(), delegateFrom.getName(), delegateTo.getName(), delegateFrom.level-1);
+		diagram.updateDiagram();
 	}
 	
-	public void setRoleFiller(FmmlxObject delegateFrom, FmmlxObject delegateTo) {
-		if (delegateFrom != null && delegateTo != null) { // just for safety
-			diagram.getComm().setRoleFiller(diagram.getID(), delegateFrom.getName(), delegateTo.getName());
-		}		
+	public void removeDelegation(FmmlxObject delegateFrom) {
+		if(delegateFrom == null) {
+			new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Source Missing", ButtonType.CANCEL).showAndWait(); return;
+		}
+		diagram.getComm().removeDelegation(diagram.getID(), delegateFrom.getName());
+		diagram.updateDiagram();
+	}
+	
+	public void removeRoleFiller(FmmlxObject role) {
+		if(role == null) {
+			new javafx.scene.control.Alert(AlertType.ERROR, "Role Missing", ButtonType.CANCEL).showAndWait(); return;
+		}
+		diagram.getComm().removeRoleFiller(diagram.getID(), role.getName());
+		diagram.updateDiagram();
+
+	}
+	
+	public void setRoleFiller(FmmlxObject role, FmmlxObject roleFiller) {
+		if(role == null) {
+			new javafx.scene.control.Alert(AlertType.ERROR, "Role Missing", ButtonType.CANCEL).showAndWait(); return;
+		}
+		if(roleFiller == null) {
+			Vector<FmmlxObject> roleFillerCandidates = new Vector<>();
+			FmmlxObject delegateFrom = diagram.getObjectByPath(role.getOfPath());
+			
+			DelegationEdge de = delegateFrom.getDelegatesToEdge(true);
+			if(de == null) {
+				new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Missing", ButtonType.CANCEL).showAndWait(); return;
+			}
+			FmmlxObject delegateTo = de.targetNode;
+			for(FmmlxObject o : diagram.getObjects()) {
+				if(o.getAllAncestors().contains(delegateTo)) roleFillerCandidates.add(o);
+			}
+			ChoiceDialog<FmmlxObject> delegationChooseDialog = new ChoiceDialog<FmmlxObject>(null, roleFillerCandidates);
+			delegationChooseDialog.setTitle("Set RoleFiller");
+			delegationChooseDialog.setHeaderText("Select roleFiller for " + role.getName());
+			Optional<FmmlxObject> chosenTarget = delegationChooseDialog.showAndWait();
+			if(chosenTarget.isPresent()) {
+				roleFiller = chosenTarget.get();
+			} else {
+				new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Target Missing", ButtonType.CANCEL).showAndWait(); return;
+			}
+		}
+		diagram.getComm().setRoleFiller(diagram.getID(), role.getName(), roleFiller.getName());
+		diagram.updateDiagram();
 	}
 
 	public void addAssociationInstance(FmmlxObject source, FmmlxObject target) {
