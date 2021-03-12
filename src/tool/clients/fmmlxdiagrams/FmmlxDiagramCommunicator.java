@@ -114,6 +114,7 @@ public class FmmlxDiagramCommunicator {
 			try { Thread.sleep(200); } catch (InterruptedException e) { e.printStackTrace(); }
 			
 		}
+		if (_newDiagramID == null) throw new RuntimeException();
 		return _newDiagramID;
 	}
 	
@@ -1472,7 +1473,7 @@ public class FmmlxDiagramCommunicator {
         sendMessage("showBody", message);
     }
 
-    public void loadProjectNameFromXml(String projectName, Vector<String> diagramNames, String file) {
+    public void createProject(String projectName, Vector<String> diagramNames, String file) {
         Value[] diagramNamesValue = createValueArray(diagramNames);
         Value[] message = new Value[]{
                 new Value(-1),
@@ -1485,7 +1486,7 @@ public class FmmlxDiagramCommunicator {
 
     public void openXmlFile(String fileName) {
         FmmlxDeserializer fmmlxDeserializer = new FmmlxDeserializer(new XmlHandler(fileName));
-        fmmlxDeserializer.loadProject(this);
+        new Thread(() -> fmmlxDeserializer.loadProject(this)).start(); // Very important. Otherwise assigning diagramID will get stuck
     }
 
     public void openPackageBrowser() {
@@ -1693,18 +1694,13 @@ public class FmmlxDiagramCommunicator {
 		new Thread(task).start();
 	}
 
-	public void populateDiagram(String file, String diagramName) {
-		FmmlxDiagramCommunicator communicator = this;
+	public void populateDiagram(String file, String diagramName, Integer diagramID) {
 		Task<Void> task = new Task<Void>() {
 			@Override
 			protected Void call() {
-				Deserializer deserializer = new FmmlxDeserializer(new XmlHandler(file));
-				int id = getDiagramIdFromName(diagramName);
+				FmmlxDeserializer deserializer = new FmmlxDeserializer(new XmlHandler(file));
 				try {
-					deserializer.getAllDiagramElement(id);
-					String projectName = deserializer.getProjectName();
-					deserializer.alignCoordinate(file, communicator);
-					System.out.println("load  "+projectName+" : finished ");
+					deserializer.createModelElementsFromLogfile(diagramID);
 				} catch (Exception e) {
 					e.printStackTrace();
 					System.err.println("load xml file failed");
@@ -1715,12 +1711,12 @@ public class FmmlxDiagramCommunicator {
 		new Thread(task).start();
 	}
 
-	public static int getDiagramIdFromName(String diagramName) {
-		String[] nameArray = diagramName.split(" ");
-		String	idDirt = nameArray[nameArray.length-1];
-		String id = idDirt.substring(0, idDirt.length()-1);
-		return Integer.parseInt(id);
-	}
+//	public static int getDiagramIdFromName(String diagramName) {
+//		String[] nameArray = diagramName.split(" ");
+//		String	idDirt = nameArray[nameArray.length-1];
+//		String id = idDirt.substring(0, idDirt.length()-1);
+//		return Integer.parseInt(id);
+//	}
 
 	public void saveXmlFile2(String diagramPath, Integer id) {
 		Value[] message = new Value[]{
@@ -1843,7 +1839,21 @@ public class FmmlxDiagramCommunicator {
 		} catch (TimeOutException e) {
 			e.printStackTrace();
 		}
+	}
 
+	private HashMap<Integer, org.w3c.dom.Node> positionInfos = new HashMap<>();
+	
+	public void preparePositionInfo(Integer diagramId, org.w3c.dom.Node diagramNode) {
+		positionInfos.put(diagramId, diagramNode);	
+	}
+
+	public org.w3c.dom.Node getPositionInfo(Integer id) {
+		System.err.println("getPositionInfo " + id + "/" + this.positionInfos.keySet().contains(id));
+		org.w3c.dom.Node positionInfos = this.positionInfos.get(id);
+		if(positionInfos != null) {
+			this.positionInfos.remove(id);
+		}
+		return positionInfos;
 	}
 
 }

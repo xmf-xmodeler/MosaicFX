@@ -1111,14 +1111,17 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	@Override
 	protected void fetchDiagramDataSpecific2() {
 		newFmmlxPalette.update();
-		if(justLoaded){
-			if(filePath !=null && filePath.length()>0){
-				Deserializer deserializer = new FmmlxDeserializer(new XmlHandler(filePath));
-				deserializer.alignCoordinate2(this);
+
+		if(filePath !=null && filePath.length()>0)
+		{   // only used once when loaded from xml
+			org.w3c.dom.Node positionInfo = getComm().getPositionInfo(getID()); 
+			if(positionInfo != null) {
+				FmmlxDeserializer deserializer = new FmmlxDeserializer(new XmlHandler(filePath));
+				deserializer.alignElements(this, (org.w3c.dom.Element) positionInfo);
 				triggerOverallReLayout();
 			}
-			justLoaded = false;
 		}
+		
 		redraw();
 		Issue nextIssue = null;
 		for(int i = 0; i < issues.size() && nextIssue == null; i++) {

@@ -193,7 +193,7 @@ public class EdgeXmlManager implements XmlManager {
 //    }
 
 
-    public void alignEdges(Element diagramElement, String diagramName, FmmlxDiagramCommunicator communicator) {
+    public void alignEdges(Element diagramElement, int diagramID, FmmlxDiagramCommunicator communicator) {
 
         Element edgesNode = getEdgesElement(diagramElement);
         NodeList edgeList = edgesNode.getChildNodes();
@@ -217,14 +217,13 @@ public class EdgeXmlManager implements XmlManager {
                         intermediatePoints.add(point2D);
                     }
                 }
-                communicator.sendEdgePositionsFromXml(FmmlxDiagramCommunicator.getDiagramIdFromName(diagramName),
+                communicator.sendEdgePositionsFromXml(diagramID,
                         edgePath,
                         intermediatePoints,
                         sourcePort,
                         targetPort);
             }
         }
-        System.out.println("align edges in "+diagramName+" : finished ");
     }
 
 

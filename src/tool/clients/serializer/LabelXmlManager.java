@@ -1,7 +1,6 @@
 package tool.clients.serializer;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -127,8 +126,8 @@ public class LabelXmlManager implements Log, XmlManager {
         return true;
     }
 
-    @Deprecated
-    public void alignLabel(String diagramName, FmmlxDiagramCommunicator communicator) {
+    /*@Deprecated
+    public void alignLabel(String diagramName, FmmlxDiagramCommunicator communicator, int diagramID) {
         Element diagrams = getDiagramsElement();
         NodeList diagramList = diagrams.getChildNodes();
 
@@ -153,12 +152,10 @@ public class LabelXmlManager implements Log, XmlManager {
                 double x = Double.parseDouble(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
                 double y = Double.parseDouble(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
 
-                communicator.storeLabelInfoFromXml(FmmlxDiagramCommunicator.getDiagramIdFromName(diagramName),
-                        x, y);
+                communicator.storeLabelInfoFromXml(diagramID, x, y);
             }
         }
-        System.out.println("align labels in "+diagramName+" : finished ");
-    }
+    }*/
 
     public void alignLabel(Element diagramElement, FmmlxDiagram fmmlxDiagram) {
         Vector<DiagramEdgeLabel>labels = fmmlxDiagram.getLabels();

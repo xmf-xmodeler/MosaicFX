@@ -5,46 +5,54 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
-import tool.clients.serializer.interfaces.Deserializer;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Vector;
 
-public class FmmlxDeserializer implements Deserializer {
+public class FmmlxDeserializer {
     private final XmlHandler xmlHandler;
 
     public FmmlxDeserializer(XmlHandler xmlHandler) {
         this.xmlHandler = xmlHandler;
     }
 
-    @Override
     public void loadProject(FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
         ProjectXmlManager projectXmlManager = new ProjectXmlManager(this.xmlHandler);
         String projectPath = projectXmlManager.getProjectPath();
         String projectName = projectXmlManager.getProjectName(projectPath);
         DiagramXmlManager diagramXmlManager = new DiagramXmlManager(this.xmlHandler);
-        Vector<String> diagramNames = diagramXmlManager.getAllDiagrams();
-        fmmlxDiagramCommunicator.loadProjectNameFromXml(projectName, diagramNames, this.xmlHandler.getSourcePath());
+        NodeList diagramNodes = getDiagramsElement().getChildNodes();
+        fmmlxDiagramCommunicator.createProject(projectName, diagramXmlManager.getAllDiagramNames(), this.xmlHandler.getSourcePath());
+        
+        boolean populated = false;
+        for(int i =0; i< diagramNodes.getLength(); i++){
+            Node diagramNode = diagramNodes.item(i);
+            if(diagramNode.getNodeType()==Node.ELEMENT_NODE){
+            	String diagramName = ((Element) diagramNode).getAttribute(XmlConstant.ATTRIBUTE_LABEL);
+            	Integer diagramId = fmmlxDiagramCommunicator.createDiagram(projectName, diagramName, this.xmlHandler.getSourcePath());
+            	fmmlxDiagramCommunicator.preparePositionInfo(diagramId, diagramNode);
+            	if(!populated) {
+            		fmmlxDiagramCommunicator.populateDiagram(this.xmlHandler.getSourcePath(), diagramName, diagramId);
+            		populated = true;
+            	}
+            }    
+        }
     }
-    @Override
-    public void getAllDiagramElement(Integer newDiagramID) {
+    
+    public void createModelElementsFromLogfile(Integer newDiagramID) {
         if(Files.exists(Paths.get(xmlHandler.getSourcePath()))){
             LogXmlManager logXmlManager = new LogXmlManager(this.xmlHandler);
             logXmlManager.reproduceFromLog(newDiagramID);
-            System.out.println("re-create all objects : finished ");
         }
     }
 
-    @Override
     public String getProjectName() {
         ProjectXmlManager projectXmlManager = new ProjectXmlManager(this.xmlHandler);
         String projectPath = projectXmlManager.getProjectPath();
         return projectXmlManager.getProjectName(projectPath);
     }
 
-    @Override
-    public void alignCoordinate(String file, FmmlxDiagramCommunicator communicator) {
+    /*public void alignCoordinate(String file, FmmlxDiagramCommunicator communicator) {
         if(Files.exists(Paths.get(file))) {
             Node diagrams = getDiagramsElement();
             NodeList diagramList = diagrams.getChildNodes();
@@ -60,11 +68,18 @@ public class FmmlxDeserializer implements Deserializer {
                 }
             }
         }
-    }
+    }*/
+    
+	public void alignElements(FmmlxDiagram diagram, Element diagramElement) {
+        ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
+        objectXmlManager.alignObjects(diagramElement, diagram.getID(), diagram.getComm());
+        EdgeXmlManager edgeXmlManager = new EdgeXmlManager(this.xmlHandler);
+        edgeXmlManager.alignEdges(diagramElement, diagram.getID(), diagram.getComm());
+        LabelXmlManager labelXmlManager = new LabelXmlManager(this.xmlHandler);
+        labelXmlManager.alignLabel(diagramElement, diagram);	
+	}
 
-    @Deprecated
-    @Override
-    public void alignCoordinate2(FmmlxDiagram diagram) {
+    public void alignElements(FmmlxDiagram diagram) {
         Element diagrams = getDiagramsElement();
         NodeList diagramList = diagrams.getChildNodes();
 
@@ -78,10 +93,10 @@ public class FmmlxDeserializer implements Deserializer {
             }
         }
         if(diagramElement!=null){
-            //ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
-            //objectXmlManager.alignObjects(diagramNode, diagram);
-//            EdgeXmlManager edgeXmlManager = new EdgeXmlManager(this.xmlHandler);
-//            edgeXmlManager.alignEdges(diagramElement,diagram);
+            ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
+            objectXmlManager.alignObjects(diagramElement, diagram.getID(), diagram.getComm());
+            EdgeXmlManager edgeXmlManager = new EdgeXmlManager(this.xmlHandler);
+            edgeXmlManager.alignEdges(diagramElement, diagram.getID(), diagram.getComm());
             LabelXmlManager labelXmlManager = new LabelXmlManager(this.xmlHandler);
             labelXmlManager.alignLabel(diagramElement, diagram);
         }
