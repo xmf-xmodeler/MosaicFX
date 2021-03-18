@@ -865,6 +865,10 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return new Vector<FmmlxSlot> (slots);
 	}
 
+	public Vector<FmmlxOperationValue> getAllOperationValues(){
+		return new Vector<FmmlxOperationValue> (operationValues);
+	}
+
 	@Override
 	public int compareTo(FmmlxObject anotherObject) {
 		if(this.getLevel()>anotherObject.getLevel()) {

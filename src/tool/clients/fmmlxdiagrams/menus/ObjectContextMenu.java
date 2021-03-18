@@ -61,6 +61,10 @@ public class ObjectContextMenu extends ContextMenu {
 		changeParentItem.setOnAction(e -> actions.changeParentsDialog(object));
 		getItems().add(changeParentItem);
 		
+		MenuItem browseInstanceItem = new MenuItem("Browse Instances");
+		browseInstanceItem.setOnAction(e -> actions.showObjectBrowser(object));
+		getItems().add(browseInstanceItem);
+		
 //		MenuItem changeLevelItem = new MenuItem("Change level");
 //		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Class));
 //		changeLevelItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);

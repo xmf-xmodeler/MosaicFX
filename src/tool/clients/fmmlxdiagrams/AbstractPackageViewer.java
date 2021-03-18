@@ -132,6 +132,19 @@ public abstract class AbstractPackageViewer {
 		return result;
 	}
 	
+	public final Vector<FmmlxLink> getRelatedLinksByObject(FmmlxObject object) {
+		Vector<FmmlxLink> result = new Vector<>();
+		for (Edge<?> tmp : edges) {
+			if (tmp instanceof FmmlxLink) {
+				if (((FmmlxObject) (tmp.sourceNode)).getName().equals(object.getName()) 
+				  ||((FmmlxObject) (tmp.targetNode)).getName().equals(object.getName())) {
+					result.add((FmmlxLink) tmp);
+				}
+			}
+		}
+		return result;
+	}
+	
 	public final Vector<Edge<?>> getEdges() {
 		return new Vector<>(edges); // read-only
 	}
