@@ -14,6 +14,7 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 	private final FontWeight fontWeight;
 	private final FontPosture fontPosture;
 	private final int fontSize = 14;
+	private final double fontScale;
 	private Color fgColor = Color.BLACK;
 	private Color bgColor = null;
 	private String text;
@@ -51,7 +52,7 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 			g.fillRect(x - hAlign + xOffset - BOX_GAP, y + yOffset - BOX_GAP - textHeight, textWidth + 2 * BOX_GAP, textHeight + 2 * BOX_GAP);
 		}
 
-		g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), fontWeight, fontPosture, fontSize));
+		g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), fontWeight, fontPosture, fontSize * fontScale));
 		
 		g.setFill(fgColor);
 		g.fillText(textLocal, x - hAlign + xOffset, y + yOffset - Y_BASELINE_DIFF);
@@ -61,11 +62,16 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 
 	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
 			 String text) {
-		this(alignment, x, y, fgColor, bgColor, actionObject, action, text, FontPosture.REGULAR, FontWeight.NORMAL);
+		this(alignment, x, y, fgColor, bgColor, actionObject, action, text, FontPosture.REGULAR, FontWeight.NORMAL, 1.);
 	}
 	
 	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
-				 String text, FontPosture fontPosture, FontWeight fontWeight) {
+			 String text, FontPosture fontPosture, FontWeight fontWeight) {
+		this(alignment, x, y, fgColor, bgColor, actionObject, action, text, fontPosture, fontWeight, 1.);
+	}
+	
+	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
+				 String text, FontPosture fontPosture, FontWeight fontWeight, double fontScale) {
 		super(x, y, actionObject, action);
 		this.alignment = alignment;
 		this.fgColor = fgColor;
@@ -74,9 +80,10 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 		this.fontWeight = fontWeight;
 		this.fontPosture = fontPosture;
 		this.selected = false;
+		this.fontScale = fontScale;
 		
 		textWidth = FmmlxDiagram.calculateTextWidth(text);
-		textHeight = FmmlxDiagram.calculateTextHeight();
+		textHeight = FmmlxDiagram.calculateTextHeight()*fontScale;
 	}
 
 	@Override

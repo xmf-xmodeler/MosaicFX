@@ -6,7 +6,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
 
-public class DelegationEdge extends Edge {
+public class DelegationEdge extends Edge<FmmlxObject> {
 
 	public DelegationEdge(String path, String childPath, String parentPath, Integer level, Vector<Point2D> intermediatePoints,
 			PortRegion startPortRegion, PortRegion endPortRegion,

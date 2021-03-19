@@ -11,7 +11,9 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
-import tool.clients.serializer.*;
+import tool.clients.serializer.FmmlxDeserializer;
+import tool.clients.serializer.FmmlxSerializer;
+import tool.clients.serializer.XmlHandler;
 import tool.clients.serializer.interfaces.Deserializer;
 import tool.clients.serializer.interfaces.Serializer;
 import tool.clients.workbench.WorkbenchClient;
@@ -22,6 +24,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
@@ -111,6 +114,7 @@ public class FmmlxDiagramCommunicator {
 			try { Thread.sleep(200); } catch (InterruptedException e) { e.printStackTrace(); }
 			
 		}
+		if (_newDiagramID == null) throw new RuntimeException();
 		return _newDiagramID;
 	}
 	
@@ -304,6 +308,7 @@ public class FmmlxDiagramCommunicator {
 					listOfPoints, // points
 					startRegion, endRegion,
 					diagram);
+
 			result.add(object);
 		}
 		return result;
@@ -346,6 +351,7 @@ public class FmmlxDiagramCommunicator {
 					startRegion, endRegion,
 					diagram);
 			result.add(object);
+
 		}
 		return result;
 	}
@@ -385,16 +391,44 @@ public class FmmlxDiagramCommunicator {
 					listOfPoints, // points
 					startRegion, endRegion,
 					diagram);
+
 			result.add(object);
 		}
 		return result;
 	}
 
-    public Vector<Edge> getAllEdgePositions(Integer diagramID) throws TimeOutException {
-        Vector<Object> response = xmfRequest(handler, -2, "getAllEdgePositions", new Value(diagramID));
-        Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-        System.out.println(responseContent.toString());
-        return null;
+    public HashMap<String, HashMap<String, Object>> getAllEdgePositions(Integer diagramID) {
+		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
+
+		try {
+			Vector<Object> response = xmfRequest(handler, -2, "getAllEdgePositions", new Value(diagramID));
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+
+			for(Object contentItem : responseContent) {
+				Vector<Object> contentVector = (Vector<Object>) contentItem;
+				String key = (String) contentVector.get(0);
+				Vector<Object> edgeInfo =  (Vector<Object>) contentVector.get(1);
+
+				Vector<Object> portInfo = new Vector<>();
+				if(edgeInfo.size()>0){
+					portInfo.add(edgeInfo.get(0));
+					portInfo.add(edgeInfo.get(edgeInfo.size()-1));
+				}
+				Vector<Object> intermediatePoints = new Vector<>();
+				for(int i = 1; i< Objects.requireNonNull(edgeInfo).size()-1 ; i++){
+					intermediatePoints.add(edgeInfo.get(i));
+				}
+
+				HashMap<String, Object> edgeInfoMap = new HashMap<>();
+				edgeInfoMap.put("Ports", portInfo);
+				edgeInfoMap.put("IntermediatePoints", intermediatePoints);
+
+				result.put(key, edgeInfoMap);
+			}
+		} catch (TimeOutException e) {
+			e.printStackTrace();
+		}
+        return result;
     }
 	
 	@SuppressWarnings("unchecked")
@@ -451,6 +485,7 @@ public class FmmlxDiagramCommunicator {
 					//,(Integer) edgeInfoAsList.get(13), // sourceHead
 					//(Integer) edgeInfoAsList.get(14) // targetHead
 			);
+
 			result.add(object);
 		}
 		return result;
@@ -495,6 +530,7 @@ public class FmmlxDiagramCommunicator {
 					startRegion, endRegion,
 					labelPositions,
 					diagram);
+
 			result.add(object);
 		}
 		return result;
@@ -569,6 +605,28 @@ public class FmmlxDiagramCommunicator {
 					(Boolean) opInfo.get(9) // delToClass
 				);
 			result.add(op);
+		}
+		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Vector<Constraint> fetchConstraints(AbstractPackageViewer diagram, String className) throws TimeOutException {
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getConstraints", new Value(className));
+		Vector<Object> response0 = (Vector<Object>) (response.get(0));
+		Vector<Constraint> result = new Vector<>();
+		for (Object o : response0) {
+			Vector<Object> conInfo = (Vector<Object>) o;
+		
+			Constraint con =
+				new Constraint(
+					(String)  conInfo.get(0), // name
+					(Integer) conInfo.get(1), // level
+					(String)  conInfo.get(2), // body-raw
+					(String)  conInfo.get(3), // body-full
+					(String)  conInfo.get(4), // reason-raw
+					(String)  conInfo.get(5) // reason-full
+				);
+			result.add(con);
 		}
 		return result;
 	}
@@ -681,7 +739,6 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void sendEdgePositionsFromXml(int diagramID, String edgePath, Vector<Point2D> intermediatePoints, String sourcePort, String targetPort) {
-
 		if(intermediatePoints.size() < 2) System.err.println("Suspicious edge alignment");
 		for(Point2D p : intermediatePoints) {
 			if(!Double.isFinite(p.getX())) {
@@ -1026,6 +1083,13 @@ public class FmmlxDiagramCommunicator {
         sendMessage("setRoleFiller", message);
     }
 
+    public void removeRoleFiller(int diagramID, String roleName) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(roleName)};
+        sendMessage("removeRoleFiller", message);
+    }
+
     public void addAssociation(int diagramID,
                                String classSourceName, String classTargetName,
                                String accessSourceFromTargetName, String accessTargetFromSourceName,
@@ -1269,17 +1333,89 @@ public class FmmlxDiagramCommunicator {
 
     public void editEnumeration(int diagramID, String enumName, Vector<String> elements) {
         Value[] elementArray = createValueArray(elements);
-
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
                 new Value(enumName),
                 new Value(elementArray)};
         sendMessage("editEnum", message);
-    }
+    }    
+    
+	public void addConstraint(int diagramID, String path, String constName, Integer instLevel, String body, String reason) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+                new Value(path),
+                new Value(constName),
+                new Value(instLevel),
+                new Value(body),
+                new Value(reason)
+		};
+        sendMessage("addConstraint", message);
+	}
+	
+	public void changeConstraintName(int diagramID, String path, String oldName, String newName) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+                new Value(path),
+                new Value(oldName),
+                new Value(newName)
+		};
+        sendMessage("changeConstraintName", message);
+	}
+	
+	public void changeConstraintLevel(int diagramID, String path, String name, String level) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+                new Value(path),
+                new Value(name),
+                new Value(level)
+		};
+        sendMessage("changeConstraintLevel", message);
+	}
+	
+	public void changeConstraintBody(int diagramID, String path, String name, String body) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+                new Value(path),
+                new Value(name),
+                new Value(body)
+		};
+        sendMessage("changeConstraintBody", message);
+	}
+	
+	public void changeConstraintReason(int diagramID, String path, String name, String reason) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+                new Value(path),
+                new Value(name),
+                new Value(reason)
+		};
+        sendMessage("changeConstraintReason", message);
+	}
+	
+	public void changeConstraintOwner(int diagramID, String oldOwner, String newOwner, String name) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+                new Value(oldOwner),
+                new Value(newOwner),
+                new Value(name)
+		};
+        sendMessage("changeConstraintOwner", message);
+	}
+	
+	public void removeConstraint(int diagramID, String path, String name) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+                new Value(path),
+                new Value(name)
+		};
+        sendMessage("removeConstraint", message);
+	}
+	
+	
 
     @SuppressWarnings("unchecked")
-    public Vector<Issue> fetchIssues(FmmlxDiagram fmmlxDiagram) throws TimeOutException {
-        Vector<Object> response = xmfRequest(handler, fmmlxDiagram.getID(), "getAllIssues");
+    public Vector<Issue> fetchIssues(AbstractPackageViewer abstractPackageViewer) throws TimeOutException {
+        Vector<Object> response = xmfRequest(handler, abstractPackageViewer.getID(), "getAllIssues");
         Vector<Object> issueList = (Vector<Object>) (response.get(0));
         Vector<Issue> result = new Vector<>();
         for (Object issueO : issueList) {
@@ -1337,7 +1473,7 @@ public class FmmlxDiagramCommunicator {
         sendMessage("showBody", message);
     }
 
-    public void loadProjectNameFromXml(String projectName, Vector<String> diagramNames, String file) {
+    public void createProject(String projectName, Vector<String> diagramNames, String file) {
         Value[] diagramNamesValue = createValueArray(diagramNames);
         Value[] message = new Value[]{
                 new Value(-1),
@@ -1350,7 +1486,7 @@ public class FmmlxDiagramCommunicator {
 
     public void openXmlFile(String fileName) {
         FmmlxDeserializer fmmlxDeserializer = new FmmlxDeserializer(new XmlHandler(fileName));
-        fmmlxDeserializer.loadProject(this);
+        new Thread(() -> fmmlxDeserializer.loadProject(this)).start(); // Very important. Otherwise assigning diagramID will get stuck
     }
 
     public void openPackageBrowser() {
@@ -1558,18 +1694,13 @@ public class FmmlxDiagramCommunicator {
 		new Thread(task).start();
 	}
 
-	public void populateDiagram(String file, String diagramName) {
-		FmmlxDiagramCommunicator communicator = this;
+	public void populateDiagram(String file, String diagramName, Integer diagramID) {
 		Task<Void> task = new Task<Void>() {
 			@Override
 			protected Void call() {
-				Deserializer deserializer = new FmmlxDeserializer(new XmlHandler(file));
-				int id = getDiagramIdFromName(diagramName);
+				FmmlxDeserializer deserializer = new FmmlxDeserializer(new XmlHandler(file));
 				try {
-					deserializer.getAllDiagramElement(id);
-					String projectName = deserializer.getProjectName();
-					deserializer.alignCoordinate(file, communicator);
-					System.out.println("load  "+projectName+" : finished ");
+					deserializer.createModelElementsFromLogfile(diagramID);
 				} catch (Exception e) {
 					e.printStackTrace();
 					System.err.println("load xml file failed");
@@ -1580,14 +1711,14 @@ public class FmmlxDiagramCommunicator {
 		new Thread(task).start();
 	}
 
-	public static int getDiagramIdFromName(String diagramName) {
-		String[] nameArray = diagramName.split(" ");
-		String	idDirt = nameArray[nameArray.length-1];
-		String id = idDirt.substring(0, idDirt.length()-1);
-		return Integer.parseInt(id);
-	}
+//	public static int getDiagramIdFromName(String diagramName) {
+//		String[] nameArray = diagramName.split(" ");
+//		String	idDirt = nameArray[nameArray.length-1];
+//		String id = idDirt.substring(0, idDirt.length()-1);
+//		return Integer.parseInt(id);
+//	}
 
-	public void saveXmlFile(String diagramPath, Integer id) {
+	public void saveXmlFile2(String diagramPath, Integer id) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(id),
 				new Value(diagramPath),
@@ -1659,10 +1790,70 @@ public class FmmlxDiagramCommunicator {
 		return initLabel.substring(0, initLabel.length()-2)+id+")";
 	}
 
-    public Vector<DiagramEdgeLabel> getAllLabelPositions(int id) throws TimeOutException {
-        Vector<Object> response = xmfRequest(handler, -2, "getAllLabelPositions", new Value(id));
-        Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-        System.out.println(responseContent.toString());
-        return null;
+    public HashMap<String, HashMap<String, Object>> getAllLabelPositions(int id) {
+		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
+		Vector<Object> response;
+		try {
+			response = xmfRequest(handler, -2, "getAllLabelPositions", new Value(id));
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+
+			for (Object o : responseContent) {
+				Vector<Object> labelInfo = (Vector<Object>) o;
+				String key = (String) labelInfo.get(0);
+				Integer type = (Integer) labelInfo.get(1);
+				float x = (float) labelInfo.get(2);
+				float y = (float) labelInfo.get(3);
+
+				if(type == 0){
+					HashMap<String, Object> labelMap = new HashMap<>();
+					labelMap.put("x", x);
+					labelMap.put("y", y);
+					result.put(key, labelMap);
+				}
+			}
+		} catch (TimeOutException e) {
+			e.printStackTrace();
+		}
+
+        return result;
     }
+
+	public void testGetAllEdgePositions(int id) {
+		Vector<Object> response;
+		try {
+			response = xmfRequest(handler, -2, "getAllEdgePositions", new Value(id));
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			System.out.println(responseContent);
+		} catch (TimeOutException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void testGetAllLabelPositions(int id) {
+		Vector<Object> response;
+		try {
+			response = xmfRequest(handler, -2, "getAllLabelPositions", new Value(id));
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			System.out.println(responseContent);
+		} catch (TimeOutException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private HashMap<Integer, org.w3c.dom.Node> positionInfos = new HashMap<>();
+	
+	public void preparePositionInfo(Integer diagramId, org.w3c.dom.Node diagramNode) {
+		positionInfos.put(diagramId, diagramNode);	
+	}
+
+	public org.w3c.dom.Node getPositionInfo(Integer id) {
+		System.err.println("getPositionInfo " + id + "/" + this.positionInfos.keySet().contains(id));
+		org.w3c.dom.Node positionInfos = this.positionInfos.get(id);
+		if(positionInfos != null) {
+			this.positionInfos.remove(id);
+		}
+		return positionInfos;
+	}
+
 }

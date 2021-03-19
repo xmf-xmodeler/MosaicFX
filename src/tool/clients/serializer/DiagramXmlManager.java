@@ -86,7 +86,7 @@ public class DiagramXmlManager implements XmlManager {
         }
     }
 
-    public Vector<String> getAllDiagrams() {
+    public Vector<String> getAllDiagramNames() {
         Vector<String> diagrams = new Vector<>();
         Node diagramsNode = getDiagramsElement();
         NodeList diagramNodeList = diagramsNode.getChildNodes();

@@ -1,5 +1,6 @@
 package tool.clients.serializer;
 
+import javafx.util.Pair;
 import org.w3c.dom.Element;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.serializer.interfaces.Serializer;
@@ -8,6 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -30,8 +32,8 @@ public class FmmlxSerializer implements Serializer {
     public void saveAsXml(String diagramPath, String initLabel, FmmlxDiagramCommunicator communicator) throws TimeOutException, TransformerException {
         this.clearAllData();
         int saveLogCount = 0;
-
         Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(diagramPath);
+        Collections.sort(diagramIds);
         for(Integer id :diagramIds){
             String diagramLabel = communicator.createLabelFromInitLabel(initLabel, id);
             saveProject(diagramPath);
@@ -46,14 +48,15 @@ public class FmmlxSerializer implements Serializer {
 
     @Override
     public void save(String diagramPath, String filePath, String label, Integer id, FmmlxDiagramCommunicator communicator)  {
-        if(filePath!=null && filePath.length()>0){
+        if(filePath!=null && filePath.length()>0 && checkFileExist(xmlHandler.getSourcePath())){
             try {
-                Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(filePath);
+                Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(diagramPath);
+                Collections.sort(diagramIds);
                 int saveLogCount = 0;
                 for(Integer id_tmp :diagramIds){
                     String diagramLabel = communicator.createLabelFromInitLabel(label, id_tmp);
-                    saveProject(filePath);
-                    saveDiagram(diagramLabel, filePath, id_tmp);
+                    saveProject(diagramPath);
+                    saveDiagram(diagramLabel, diagramPath, id_tmp);
                     if(saveLogCount==0){
                         saveLog(id_tmp, communicator);
                     }
@@ -65,7 +68,7 @@ public class FmmlxSerializer implements Serializer {
             }
             System.out.println(label + " saved");
         } else {
-            communicator.saveXmlFile(diagramPath, id);
+            communicator.saveXmlFile2(diagramPath, id);
         }
     }
 
@@ -79,23 +82,36 @@ public class FmmlxSerializer implements Serializer {
         }
     }
 
-    public void saveDiagram(String label, String path, Integer id) throws TransformerException, TimeOutException {
+    public void saveDiagram(String label, String diagramPath, Integer id) throws TransformerException, TimeOutException {
         if(checkFileExist(xmlHandler.getSourcePath())) {
             DiagramXmlManager diagramXmlManager = new DiagramXmlManager(this.xmlHandler);
             Element diagramsElement = diagramXmlManager.getDiagramsElement();
-            Element diagramElement = diagramXmlManager.createDiagramElement(label, path);
+            Element diagramElement = diagramXmlManager.createDiagramElement(label, diagramPath);
             if (diagramXmlManager.isExist(label)) {
                 diagramXmlManager.remove(label);
             }
-            saveComponentsIntoDiagram(diagramElement, id);
+            saveComponentsIntoDiagram(diagramElement, diagramPath, id);
             diagramXmlManager.add(diagramsElement, diagramElement);
         }
     }
 
-    private void saveComponentsIntoDiagram(Element diagramElement, Integer id) {
+    private void saveComponentsIntoDiagram(Element diagramElement, String diagramPath, Integer id) {
         saveObjectsIntoDiagram(id, diagramElement);
-        //saveEdges(diagramElement, diagram);
-        //saveLabels(diagramElement, diagram);
+        saveEdgesIntoDiagram(id, diagramPath, diagramElement);
+        saveLabels(id, diagramElement);
+    }
+
+    private void saveLabels(Integer id, Element diagramElement) {
+        LabelXmlManager labelXmlManager = new LabelXmlManager(this.xmlHandler);
+
+        HashMap<String, HashMap<String, Object>> result = FmmlxDiagramCommunicator.getCommunicator().getAllLabelPositions(id);
+
+        for (String key : result.keySet()){
+            Element labelElement = labelXmlManager.createLabelElement(key,
+                    (float) result.get(key).get("x"),
+                    (float) result.get(key).get("y"));
+            labelXmlManager.add(diagramElement, labelElement);
+        }
     }
 
     public void saveObjectsIntoDiagram(int id, Element diagramElement) {
@@ -111,39 +127,36 @@ public class FmmlxSerializer implements Serializer {
         }
     }
 
-    public void saveEdges(Element diagramElement, FmmlxDiagram diagram)  {
-        Vector<Edge<?>> edges = diagram.getEdges();
+    public void saveEdgesIntoDiagram(int id, String diagramPath, Element diagramElement)  {
         EdgeXmlManager edgeXmlManager = new EdgeXmlManager(this.xmlHandler);
-        Element edgeElement;
+        HashMap<String, HashMap<String, Object>> edgesInfo = FmmlxDiagramCommunicator.getCommunicator().getAllEdgePositions(id);
 
-        for(Edge<?> edge : edges){
-            if(edge instanceof FmmlxAssociation){
-                edgeElement = edgeXmlManager.createAssociationXmlElement(diagram, (FmmlxAssociation) edge);
-            } else if(edge instanceof DelegationEdge){
-                edgeElement = edgeXmlManager.createDelegationXmlElement(diagram, (DelegationEdge) edge);
-            } else if(edge instanceof FmmlxLink){
-                edgeElement = edgeXmlManager.createLinkXmlElement(diagram, (FmmlxLink) edge);
-            } else if(edge instanceof InheritanceEdge){
-                edgeElement = edgeXmlManager.createInheritanceXmlElement(diagram, (InheritanceEdge) edge);
-            } else if(edge instanceof RoleFillerEdge){
-                edgeElement = edgeXmlManager.createRoleFillerEdgeXmlElement(diagram, (RoleFillerEdge) edge);
+        for (String key : edgesInfo.keySet()) {
+            Element edgeElement;
+            Pair<String, String> typeAndRef = getTypeAndRefFromKey(key);
+            switch (typeAndRef.getKey()) {
+                case XmlConstant.EdgeType.ASSOCIATION:
+                    edgeElement = edgeXmlManager.createAssociationXmlElement(typeAndRef.getValue(), diagramPath, edgesInfo.get(key));
+                    break;
+                case XmlConstant.EdgeType.LINK:
+                    edgeElement = edgeXmlManager.createLinkXmlElement(typeAndRef.getValue(), edgesInfo.get(key));
+                    break;
+                case XmlConstant.EdgeType.INHERITANCE:
+                    edgeElement = edgeXmlManager.createInheritanceXmlElement(typeAndRef.getValue(), edgesInfo.get(key));
+                    break;
+                case XmlConstant.EdgeType.ROLEFILLEREDGE:
+                    edgeElement = edgeXmlManager.createRoleFillerEdgeXmlElement(typeAndRef.getValue(), edgesInfo.get(key));
+                    break;
+                case XmlConstant.EdgeType.DELEGATION:
+                    edgeElement = edgeXmlManager.createDelegationXmlElement(typeAndRef.getValue(), edgesInfo.get(key));
+                    break;
+                default:
+                    edgeElement = null;
+                    break;
             }
-            else {
-                edgeElement = null;
-            }
-            if(edgeElement!= null){
+            if(edgeElement != null) {
                 edgeXmlManager.add(diagramElement, edgeElement);
             }
-        }
-    }
-
-    public void saveLabels(Element diagramElement, FmmlxDiagram diagram) {
-        LabelXmlManager labelXmlManager = new LabelXmlManager(this.xmlHandler);
-        Vector<DiagramEdgeLabel> labels = diagram.getLabels();
-
-        for (DiagramEdgeLabel label : labels){
-            Element labelElement = labelXmlManager.createLabelElement(diagram, label);
-            labelXmlManager.add(diagramElement, labelElement);
         }
     }
 
@@ -158,6 +171,22 @@ public class FmmlxSerializer implements Serializer {
             Element newLogElement = logXmlManager.createNewLogFromFaXML(log);
             logXmlManager.add(logsElement, newLogElement);
         }
+    }
+
+    private Pair<String, String> getTypeAndRefFromKey(String key) {
+        String[] keyPair = key.split(" ");
+        String type = keyPair[0];
+        switch (type) {
+            case "DelegationMapping:":
+                return new Pair<>(XmlConstant.EdgeType.DELEGATION, keyPair[1]);
+            case "InheritanceMapping:":
+                return new Pair<>(XmlConstant.EdgeType.INHERITANCE, keyPair[1]);
+            case "AssociationLinkMapping:":
+                return new Pair<>(XmlConstant.EdgeType.LINK, keyPair[1]);
+            case "RoleFillerMapping:":
+                return new Pair<>(XmlConstant.EdgeType.ROLEFILLEREDGE, keyPair[1]);
+        }
+        return new Pair<>(XmlConstant.EdgeType.ASSOCIATION, key);
     }
 
     @Override

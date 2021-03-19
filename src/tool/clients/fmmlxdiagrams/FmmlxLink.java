@@ -3,11 +3,12 @@ package tool.clients.fmmlxdiagrams;
 import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
+import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.AssociationInstanceContextMenu;
 
 import java.util.Vector;
 
-public class FmmlxLink extends Edge<FmmlxObject> {
+public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 
 //	FmmlxAssociation ofAssociation;
 	String ofPath;
@@ -90,5 +91,10 @@ public class FmmlxLink extends Edge<FmmlxObject> {
 	@Override
 	public String getName() {
 		return getOfName()+"#"+((FmmlxObject) (this.sourceNode)).getName()+"#"+((FmmlxObject) (this.targetNode)).getName();
+	}
+
+	@Override
+	public PropertyType getPropertyType() {
+		return PropertyType.AssociationInstance;
 	}
 }

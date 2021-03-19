@@ -1,23 +1,18 @@
 package tool.clients.editors.texteditor;
 
-import java.io.PrintStream;
-import java.util.Stack;
-import java.util.Vector;
-
-import org.eclipse.jface.text.JFaceTextUtil;
 import org.eclipse.jface.window.DefaultToolTip;
-import org.eclipse.jface.window.ToolTip;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import tool.clients.editors.EditorClient;
-import tool.clients.editors.FindUtil;
 import tool.clients.editors.ITextEditor;
-import tool.clients.editors.UndoRedoImpl;
-import tool.clients.menus.MenuClient;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
+
+import java.io.PrintStream;
+import java.util.Objects;
+import java.util.Stack;
+import java.util.Vector;
 
 public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyListener, MouseMoveListener, MouseListener, MouseWheelListener, LineBackgroundListener, ExtendedModifyListener, PaintObjectListener, SelectionListener, LineStyleListener, PaintListener, MouseTrackListener, */ITextEditor {
 
@@ -77,14 +72,14 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
   DefaultToolTip          toolTip;
   Signature               signature      = new Signature();
   LineStyler              lineStyler     = new LineStyler(this);
-  Vector<Integer>         highlights     = new Vector<Integer>();
-  Vector<ErrorListener>   errorListeners = new Vector<ErrorListener>();
-  Vector<FileError>       errors         = new Vector<FileError>();
-  Vector<VarInfo>         varInfo        = new Vector<VarInfo>();
-  Vector<Tooltip>         tooltips       = new Vector<Tooltip>();
-  Vector<Terminal>        terminals      = new Vector<Terminal>();
-  Vector<Action>          actions        = new Vector<Action>();
-  Stack<Vector<Terminal>> tStack         = new Stack<Vector<Terminal>>();
+  Vector<Integer>         highlights     = new Vector<>();
+  Vector<ErrorListener>   errorListeners = new Vector<>();
+  Vector<FileError>       errors         = new Vector<>();
+  Vector<VarInfo>         varInfo        = new Vector<>();
+  Vector<Tooltip>         tooltips       = new Vector<>();
+  Vector<Terminal>        terminals      = new Vector<>();
+  Vector<Action>          actions        = new Vector<>();
+  Stack<Vector<Terminal>> tStack         = new Stack<>();
   int[]                   terminal       = new int[] { -1, -1, -1, -1 };
   AST                     ast            = null;
   AST                     hover          = null;
@@ -118,6 +113,13 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
   public void addLineHighlight(int line) {
 //    highlights.add(text.getOffsetAtLine(line - 1));
 //    redraw();
+  }
+
+  @Override
+  public void addMultilineRule(String id, String start, String end, double red, double green, double blue) {
+    if (getId().equals(id)) {
+      lineStyler.addMultilineRule(id, start, end, red, green, blue);
+    }
   }
 
   public void addMultilineRule(String id, String start, String end, int red, int green, int blue) {
@@ -378,17 +380,17 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
   private void inflateMultiLineRule(Node item) {
     String word = XModeler.attributeValue(item, "word");
     String end = XModeler.attributeValue(item, "end");
-    int red = Integer.parseInt(XModeler.attributeValue(item, "red"));
-    int green = Integer.parseInt(XModeler.attributeValue(item, "green"));
-    int blue = Integer.parseInt(XModeler.attributeValue(item, "blue"));
+    int red = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(item, "red")));
+    int green = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(item, "green")));
+    int blue = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(item, "blue")));
     addMultilineRule(getId(), word, end, red, green, blue);
   }
 
   private void inflateWordRule(Node item) {
     String word = XModeler.attributeValue(item, "word");
-    int red = Integer.parseInt(XModeler.attributeValue(item, "red"));
-    int green = Integer.parseInt(XModeler.attributeValue(item, "green"));
-    int blue = Integer.parseInt(XModeler.attributeValue(item, "blue"));
+    int red = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(item, "red")));
+    int green = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(item, "green")));
+    int blue = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(item, "blue")));
     addWordRule(getId(), word, red, green, blue);
   }
 
@@ -420,7 +422,7 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
     Vector<Terminal> terminates = null;
     for (Terminal t : terminals) {
       if (t.terminates(s, index)) {
-        if (terminates == null) terminates = new Stack<Terminal>();
+        if (terminates == null) terminates = new Stack<>();
         terminates.add(t);
       }
     }

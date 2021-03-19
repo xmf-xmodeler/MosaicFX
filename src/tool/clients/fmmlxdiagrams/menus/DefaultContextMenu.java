@@ -3,7 +3,6 @@ package tool.clients.fmmlxdiagrams.menus;
 import javafx.scene.control.*;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.TimeOutException;
 
 import java.util.Optional;
 import java.util.Vector;

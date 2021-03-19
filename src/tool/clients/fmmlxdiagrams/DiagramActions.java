@@ -253,32 +253,36 @@ public class DiagramActions {
 		removeDialog(object, type, diagram.getSelectedProperty());
 	}
 	
-	public void removeDialog(FmmlxObject object, PropertyType type, FmmlxProperty selectedFmmlxProperty) {
+	public <Property extends FmmlxProperty> void removeDialog(FmmlxObject object, PropertyType type, Property selectedFmmlxProperty) {
 //		FmmlxProperty selectedFmmlxProperty = diagram.getSelectedProperty();
 
 		Platform.runLater(() -> {
-			RemoveDialog dlg = new RemoveDialog(object, type);
+			RemoveDialog<Property> dlg = new RemoveDialog<Property>(object, type);
 			if (belongsPropertyToObject(object, selectedFmmlxProperty, type)) {
 				dlg.setSelected(selectedFmmlxProperty);
 			}
-			Optional<RemoveDialogResult> opt = dlg.showAndWait();
+			Optional<RemoveDialogResult<Property>> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
-				final RemoveDialogResult result = opt.get();
-				switch (result.getType()) {
+				final RemoveDialogResult<Property> result = opt.get();
+				switch (type) {
 					case Class:
 						diagram.getComm().removeClass(diagram.getID(), result.getObject().getName(), 0);
 						break;
 					case Operation:
-						diagram.getComm().removeOperation(diagram.getID(), result.getObject().getName(), result.getOperation().getName(), 0);
+						diagram.getComm().removeOperation(diagram.getID(), result.getObject().getName(), result.getProperty().getName(), 0);
 						break;
 					case Attribute:
-						diagram.getComm().removeAttribute(diagram.getID(), result.getObject().getName(), result.getAttribute().getName(), 0);
+						diagram.getComm().removeAttribute(diagram.getID(), result.getObject().getName(), result.getProperty().getName(), 0);
 						break;
 					case Association:
-						diagram.getComm().removeAssociation(diagram.getID(), result.getAssociation().getName(), 0);
+						diagram.getComm().removeAssociation(diagram.getID(), result.getProperty().getName(), 0);
+						break;
+					case Constraint:
+						diagram.getComm().removeConstraint(diagram.getID(), result.getObject().getPath(), result.getProperty().getName());
+						break;
 					default:
-						System.err.println("ChangeNameDialogResult: No matching content type!");
+						System.err.println("RemoveDialogResult: No matching content type!");
 				}
 			}
 			diagram.updateDiagram();
@@ -509,15 +513,10 @@ public class DiagramActions {
 
 	public void toggleAbstract(FmmlxObject object) {
 		diagram.getComm().setClassAbstract(diagram.getID(), object.getName(), !object.isAbstract());
-		diagram.updateDiagram();
-		
+		diagram.updateDiagram();		
 	}
-
-
-
-
+	
 	public void addOperationDialog(FmmlxObject object) {
-//		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
 			AddOperationDialog dlg = new AddOperationDialog(diagram, object);
@@ -528,8 +527,35 @@ public class DiagramActions {
 				diagram.getComm().addOperation2(diagram.getID(), result.getObject().getName(), result.getLevel(), result.getBody());
 				diagram.updateDiagram();
 			}
-//			latch.countDown();
 		});
+	}
+	
+	public void addConstraintDialog(FmmlxObject object) {
+
+		Platform.runLater(() -> {
+			AddConstraintDialog dlg = new AddConstraintDialog(diagram, object);
+			Optional<AddConstraintDialog.AddConstraintDialogResult> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final AddConstraintDialog.AddConstraintDialogResult result = opt.get();
+				diagram.getComm().addConstraint(
+						diagram.getID(), 
+						result.object.getPath(), 
+						result.constName, 
+						result.instLevel, 
+						result.body, 
+						result.reason);
+				diagram.updateDiagram();
+			}
+		});
+	}
+	
+	public Object removeConstraintDialog(FmmlxObject object) {
+		FmmlxProperty property = diagram.getSelectedProperty();
+		
+		
+				
+		return null;
 	}
 
 	public void changeTypeDialog(FmmlxObject object, PropertyType type) {
@@ -676,16 +702,74 @@ public class DiagramActions {
 		});
 	}
 	
-	public void addDelegation(FmmlxObject delegateFrom, FmmlxObject delegateTo) {
-		if (delegateFrom != null && delegateTo != null) { // just for safety
-			diagram.getComm().addDelegation(diagram.getID(), delegateFrom.getName(), delegateTo.getName(), delegateFrom.level-1);
-		}		
+	public void setDelegation(FmmlxObject delegateFrom, FmmlxObject delegateTo) {
+		if(delegateFrom == null) {
+			new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Source Missing", ButtonType.CANCEL).showAndWait(); return;
+		}
+		if(delegateTo == null) {
+			Vector<FmmlxObject> delegationCandidates = new Vector<>();
+			for(FmmlxObject o : diagram.getObjects()) {
+				if(o != delegateFrom && o.level == delegateFrom.level) delegationCandidates.add(o);
+			}
+			ChoiceDialog<FmmlxObject> delegationChooseDialog = new ChoiceDialog<FmmlxObject>(delegateFrom.getDelegatesTo(false), delegationCandidates);
+			delegationChooseDialog.setTitle("Set Delegation");
+			delegationChooseDialog.setHeaderText("Select delegation target for " + delegateFrom.getName());
+			Optional<FmmlxObject> chosenTarget = delegationChooseDialog.showAndWait();
+			if(chosenTarget.isPresent()) {
+				delegateTo = chosenTarget.get();
+			} else {
+				new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Target Missing", ButtonType.CANCEL).showAndWait(); return;
+			}
+		}
+		diagram.getComm().addDelegation(diagram.getID(), delegateFrom.getName(), delegateTo.getName(), delegateFrom.level-1);
+		diagram.updateDiagram();
 	}
 	
-	public void setRoleFiller(FmmlxObject delegateFrom, FmmlxObject delegateTo) {
-		if (delegateFrom != null && delegateTo != null) { // just for safety
-			diagram.getComm().setRoleFiller(diagram.getID(), delegateFrom.getName(), delegateTo.getName());
-		}		
+	public void removeDelegation(FmmlxObject delegateFrom) {
+		if(delegateFrom == null) {
+			new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Source Missing", ButtonType.CANCEL).showAndWait(); return;
+		}
+		diagram.getComm().removeDelegation(diagram.getID(), delegateFrom.getName());
+		diagram.updateDiagram();
+	}
+	
+	public void removeRoleFiller(FmmlxObject role) {
+		if(role == null) {
+			new javafx.scene.control.Alert(AlertType.ERROR, "Role Missing", ButtonType.CANCEL).showAndWait(); return;
+		}
+		diagram.getComm().removeRoleFiller(diagram.getID(), role.getName());
+		diagram.updateDiagram();
+
+	}
+	
+	public void setRoleFiller(FmmlxObject role, FmmlxObject roleFiller) {
+		if(role == null) {
+			new javafx.scene.control.Alert(AlertType.ERROR, "Role Missing", ButtonType.CANCEL).showAndWait(); return;
+		}
+		if(roleFiller == null) {
+			Vector<FmmlxObject> roleFillerCandidates = new Vector<>();
+			FmmlxObject delegateFrom = diagram.getObjectByPath(role.getOfPath());
+			
+			DelegationEdge de = delegateFrom.getDelegatesToEdge(true);
+			if(de == null) {
+				new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Missing", ButtonType.CANCEL).showAndWait(); return;
+			}
+			FmmlxObject delegateTo = de.targetNode;
+			for(FmmlxObject o : diagram.getObjects()) {
+				if(o.getAllAncestors().contains(delegateTo)) roleFillerCandidates.add(o);
+			}
+			ChoiceDialog<FmmlxObject> delegationChooseDialog = new ChoiceDialog<FmmlxObject>(null, roleFillerCandidates);
+			delegationChooseDialog.setTitle("Set RoleFiller");
+			delegationChooseDialog.setHeaderText("Select roleFiller for " + role.getName());
+			Optional<FmmlxObject> chosenTarget = delegationChooseDialog.showAndWait();
+			if(chosenTarget.isPresent()) {
+				roleFiller = chosenTarget.get();
+			} else {
+				new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Target Missing", ButtonType.CANCEL).showAndWait(); return;
+			}
+		}
+		diagram.getComm().setRoleFiller(diagram.getID(), role.getName(), roleFiller.getName());
+		diagram.updateDiagram();
 	}
 
 	public void addAssociationInstance(FmmlxObject source, FmmlxObject target) {
@@ -758,36 +842,9 @@ public class DiagramActions {
 	}
 
 	public boolean belongsPropertyToObject(FmmlxObject object, FmmlxProperty property, PropertyType dialogType) {
-		if (property != null && property.getPropertyType() == dialogType) {
-			switch (dialogType) {
-				case Attribute:
-					return belongsAttributeToObject(object, (FmmlxAttribute) property);
-				case Operation:
-					return belongsOperationToObject(object, (FmmlxOperation) property);
-				default:
-					return false;
-			}
-		}
-		return false;
-	}
-
-	private boolean belongsAttributeToObject(FmmlxObject object, FmmlxAttribute selectedAttribute) {
-		Vector<FmmlxAttribute> objectAttributes = object.getAllAttributes();
-		for (FmmlxAttribute attribute : objectAttributes) {
-			if (attribute == selectedAttribute) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean belongsOperationToObject(FmmlxObject object, FmmlxOperation selectedOperation) {
-		Vector<FmmlxOperation> objectOperations = object.getOwnOperations();
-		for (FmmlxOperation operation : objectOperations) {
-			if (operation == selectedOperation) {
-				return true;
-			}
-		}
+		if(object.getOwnAttributes().contains(property)) return true;
+		if(object.getOwnOperations().contains(property)) return true;
+		if(object.getConstraints().contains(property)) return true;
 		return false;
 	}
 
@@ -887,12 +944,8 @@ public class DiagramActions {
 			protected Void call() {
 				Vector<Integer> ids = diagram.getComm().getAllDiagramIDs(diagram.getPackagePath());
 				for (int id : ids){
-					try {
-						System.out.println("diagram id : "+id);
-						diagram.getComm().getAllEdgePositions(id);
-					} catch (TimeOutException e) {
-						e.printStackTrace();
-					}
+					System.out.println("diagram id : "+id);
+					diagram.getComm().testGetAllEdgePositions(id);
 				}
 				return null;
 			}
@@ -903,11 +956,12 @@ public class DiagramActions {
 	public void testGetLabel() {
 		Task<Void> task = new Task<Void>() {
 			@Override
-			protected Void call() throws TimeOutException {
+			protected Void call() {
 				Vector<Integer> ids = diagram.getComm().getAllDiagramIDs(diagram.getPackagePath());
+				System.out.println(ids);
 				for (int id : ids){
 					System.out.println("diagram id : "+id);
-					diagram.getComm().getAllLabelPositions(id);
+					diagram.getComm().testGetAllLabelPositions(id);
 				}
 				return null;
 			}

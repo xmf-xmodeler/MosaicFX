@@ -25,7 +25,6 @@ public class FmmlxOperationValue implements FmmlxProperty {
 		return value;
 	}
 
-
 	@Override
 	public PropertyType getPropertyType() {
 		return propertyType;

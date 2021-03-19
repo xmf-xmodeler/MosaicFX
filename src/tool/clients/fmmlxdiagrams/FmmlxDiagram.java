@@ -69,7 +69,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	// The elements representing the model which is displayed in the GUI
 	
 	private Vector<DiagramEdgeLabel> labels = new Vector<>();
-	private Vector<Issue> issues = new Vector<>();
+	
 	
 	// Temporary variables storing the current state of user interactions
 	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
@@ -413,6 +413,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 //				} else {
 //					s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
 //				}
+
 				s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
 			} else { // must be edge
 				s.moveTo(p.getX(), p.getY(), this);
@@ -533,8 +534,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 						final FmmlxObject delegateFrom = newEdgeSource;
 						final FmmlxObject delegateTo = newEdgeTarget;
 						Platform.runLater(() -> {
-							actions.addDelegation(delegateFrom, delegateTo);
-							updateDiagramLater();
+							actions.setDelegation(delegateFrom, delegateTo);
+//							updateDiagramLater();
 						});						
 						break;
 					}
@@ -544,7 +545,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 						final FmmlxObject delegateTo = newEdgeTarget;
 						Platform.runLater(() -> {
 							actions.setRoleFiller(delegateFrom, delegateTo);
-							updateDiagramLater();
+//							updateDiagramLater();
 						});						
 						break;
 					}
@@ -769,6 +770,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		deselectAll();
 		selectedObjects.add(source);
 	}
+	
+	@Override public void setSelectedObjectAndProperty(FmmlxObject o, FmmlxProperty p) { setSelectedObject(o); }
 
 	private void select(FmmlxObject o) {
 		if (!selectedObjects.contains(o)) {
@@ -841,22 +844,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		transformFX.appendScale(zoom, zoom);
 		resizeCanvas();
 	}
-
-//	public Font getFont() {
-//		return Font.font(FONT.getFamily(), FontPosture.REGULAR, 14);
-//	}
-//	
-//	public Font getFontKursiv() {
-//		return Font.font(FONT.getFamily(), FontPosture.ITALIC, 14);
-//	}
-	
-	public Font getPaletteFont() {
-		return Font.font(FONT.getFamily(), FontPosture.REGULAR, 12);
-	}
-	
-	public Font getPaletteFontKursiv() {
-		return Font.font(FONT.getFamily(), FontPosture.ITALIC, 12);
-	}
 	
 	@Deprecated
 	//needs filter
@@ -877,7 +864,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	// TODO: delete and use method with level
-	public ObservableList<FmmlxObject> getAllPossibleParentList() {
+	public ObservableList<FmmlxObject> getPossibleAssociationEnds() {
 		ArrayList<FmmlxObject> objectList = new ArrayList<>();
 
 		if (!objects.isEmpty()) {
@@ -1039,15 +1026,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return result;
 	}	
 
-	public Vector<Issue> getIssues(FmmlxObject fmmlxObject) {
-		Vector<Issue> result = new Vector<>();
-		if(issues != null) for(Issue issue : issues) { 
-			if(issue.isAffected(fmmlxObject)) {
-				result.add(issue);
-			}
-		}
-		return result;
-	}
+	
 
 	public void setShowOperations(CheckBox box) {
 		boolean show = box.isSelected();
@@ -1115,38 +1094,49 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	@Override
 	protected void clearDiagram_specific() {
-		labels.clear();
-		issues.clear();		
+		labels.clear();	
 	}
 
 	@Override
 	protected void fetchDiagramDataSpecific() throws TimeOutException {
 //		levelColorScheme = new LevelColorScheme.RedLevelColorScheme(objects);
-		issues.addAll(comm.fetchIssues(this));
 		for(FmmlxObject o : objects) {
 			o.layout(this);
 		}
 
 		triggerOverallReLayout();
 		resizeCanvas();
-
 	}
 
 	@Override
 	protected void fetchDiagramDataSpecific2() {
 		newFmmlxPalette.update();
-		if(justLoaded){
-			if(filePath !=null && filePath.length()>0){
-				Deserializer deserializer = new FmmlxDeserializer(new XmlHandler(filePath));
-				deserializer.alignCoordinate2(this);
+
+		if(filePath !=null && filePath.length()>0)
+		{   // only used once when loaded from xml
+			org.w3c.dom.Node positionInfo = getComm().getPositionInfo(getID()); 
+			if(positionInfo != null) {
+				FmmlxDeserializer deserializer = new FmmlxDeserializer(new XmlHandler(filePath));
+				deserializer.alignElements(this, (org.w3c.dom.Element) positionInfo);
 				triggerOverallReLayout();
 			}
-			justLoaded = false;
 		}
+		
 		redraw();
-		if(issues.size() > 0) {
-			issues.firstElement().performResolveAction(this);
+		Issue nextIssue = null;
+		for(int i = 0; i < issues.size() && nextIssue == null; i++) {
+			if(issues.get(i).isSoluble()) nextIssue = issues.get(i);
+		} 
+		
+		if(nextIssue != null) {
+			nextIssue.performResolveAction(this);
 		}
+	}
+
+	@Override
+	protected void updateViewerStatusInGUI(ViewerStatus newStatus) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

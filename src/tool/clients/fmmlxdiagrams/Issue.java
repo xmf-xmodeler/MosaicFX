@@ -5,8 +5,9 @@ import java.util.Vector;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
-public class Issue {
+public class Issue implements FmmlxProperty{
 	
 	public static final Issue NOT_YET_IMPLEMENTED = new Issue("This feature has not been implemented yet.");
 
@@ -42,7 +43,7 @@ public class Issue {
 				i.affectedObjects.add((String) o);
 			}
 			i.solution = (Vector<Object>) message.get(3);
-			
+						
 			return i;
 //		} catch (IssueNotReadableException e) {
 //			throw e;
@@ -68,7 +69,11 @@ public class Issue {
 		return text;
 	}
 	
-	public void performResolveAction(FmmlxDiagram diagram) {
+	public boolean isSoluble() {
+		return !"no solution available".equals(solution.get(0));
+	}
+	
+	public void performResolveAction(AbstractPackageViewer diagram) {
 		String actionName = (String) solution.get(0);
 		if("setSlotValue".equals(actionName)) {
 			FmmlxObject obj = diagram.getObjectByPath((String) solution.get(1));
@@ -102,19 +107,9 @@ public class Issue {
 		 
 		        alert.showAndWait();
 			});	        
-		} else if("addRoleFiller".equals(actionName)) { 
+		} else if("addRoleFiller".equals(actionName)) {
 			FmmlxObject obj = diagram.getObjectByPath((String) solution.get(1));
-			FmmlxObject roleFillerOf = diagram.getObjectByPath((String) solution.get(2));
-			Platform.runLater(()->{
-		        Alert alert = new Alert(AlertType.ERROR);
-		        alert.setTitle("Role filler required");
-		 
-		        // Header Text: null
-		        alert.setHeaderText(null);
-		        alert.setContentText("The object "+obj.getName()+" requires a role filler of type "+ roleFillerOf.getName()+". Use Delegation -> Set Rolefiller.");
-		 
-		        alert.showAndWait();
-			});	
+			diagram.getActions().setRoleFiller(obj, null);
 	    } else { System.err.println("Solution not recognized: " + solution.get(0));
 			
 //		} else { // NOT IN AUTO-MODE
@@ -127,6 +122,21 @@ public class Issue {
 //	 
 //	        alert.showAndWait();
 		}
+	}
+	
+	@Override
+	public String toString() { 
+		return text;
+		}
+
+	@Override
+	public PropertyType getPropertyType() {
+		return PropertyType.Issue;
+	}
+
+	@Override
+	public String getName() {
+		return text;
 	}
 
 }

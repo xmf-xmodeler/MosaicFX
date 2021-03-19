@@ -5,19 +5,23 @@ import java.util.Vector;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.canvas.Canvas;
 
 public abstract class AbstractPackageViewer {
 	
 	protected Vector<FmmlxObject> objects = new Vector<>();
-	protected Vector<FmmlxEnum> enums = new Vector<>();
-	protected Vector<String> auxTypes = new Vector<>();
-	protected Vector<Edge<?>> edges = new Vector<>();
+	protected Vector<FmmlxEnum>   enums = new Vector<>();
+	protected Vector<String>      auxTypes = new Vector<>();
+	protected Vector<Edge<?>>     edges = new Vector<>();
+	protected Vector<Issue>       issues = new Vector<>();
 	protected final int diagramID;
 	protected final FmmlxDiagramCommunicator comm;
 	protected DiagramActions actions;
 	protected final String packagePath;
 	protected transient boolean fetchingData;
 	protected boolean justLoaded = false;
+	
+	public static enum ViewerStatus { CLEAN, DIRTY, LOADING }
 
 	public static final AbstractPackageViewer SIMPLE_VIEWER = new AbstractPackageViewer(FmmlxDiagramCommunicator.getCommunicator(),
 			-2, "simple_viewer") {
@@ -29,10 +33,12 @@ public abstract class AbstractPackageViewer {
 		@Override public ObservableList<FmmlxObject> getAllPossibleParents(Integer newValue) { return null;}
 		@Override public boolean isEnum(String type) { return false;}
 		@Override public Vector<String> getEnumItems(String type) { return null;}
-		@Override public ObservableList<FmmlxObject> getAllPossibleParentList() { return null;}
+		@Override public ObservableList<FmmlxObject> getPossibleAssociationEnds() { return null;}
 		@Override protected void fetchDiagramDataSpecific() throws TimeOutException { }
 		@Override protected void fetchDiagramDataSpecific2() { }
 		@Override protected void clearDiagram_specific() { }
+		@Override public void setSelectedObjectAndProperty(FmmlxObject objectByPath, FmmlxProperty property) {}
+		@Override protected void updateViewerStatusInGUI(ViewerStatus newStatus) {}	
 	};
 	
 	protected AbstractPackageViewer(FmmlxDiagramCommunicator comm, int diagramID, String packagePath) {
@@ -49,7 +55,7 @@ public abstract class AbstractPackageViewer {
 	public abstract void updateEnums();
 	public abstract FmmlxProperty getSelectedProperty();
 	public abstract Vector<String> getEnumItems(String type);
-	public abstract ObservableList<FmmlxObject> getAllPossibleParentList();
+	public abstract ObservableList<FmmlxObject> getPossibleAssociationEnds();
 	
 	public int getID() {
 		return diagramID;
@@ -60,6 +66,7 @@ public abstract class AbstractPackageViewer {
 	}
 	
 	public void updateDiagram() {
+		setViewerStatus(ViewerStatus.DIRTY);
 		new Thread(this::fetchDiagramData).start();
 	}
 	
@@ -69,6 +76,7 @@ public abstract class AbstractPackageViewer {
 			return;
 		}
 		fetchingData = true;
+		setViewerStatus(ViewerStatus.LOADING);
 		try {
 
 			if(objects.size()==0){
@@ -87,7 +95,7 @@ public abstract class AbstractPackageViewer {
 			for(FmmlxObject o : objects) {
 				o.fetchDataValues(comm);
 			}
-			
+			issues.addAll(comm.fetchIssues(this));
 			Vector<Edge<?>> fetchedEdges = comm.getAllAssociations(this);
 			fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
 	
@@ -105,15 +113,23 @@ public abstract class AbstractPackageViewer {
 			e.printStackTrace();
 		}
 		fetchingData = false;
+		setViewerStatus(ViewerStatus.CLEAN);
 		fetchDiagramDataSpecific2();
 	}
 	
+	private void setViewerStatus(ViewerStatus newStatus) {
+		updateViewerStatusInGUI(newStatus);
+	}
+
+	protected abstract void updateViewerStatusInGUI(ViewerStatus newStatus);
+
 	protected abstract void fetchDiagramDataSpecific() throws TimeOutException;
 	protected abstract void fetchDiagramDataSpecific2();
 
 	public void clearDiagram(){
 		objects.clear();
 		edges.clear();
+		issues.clear();	
 		clearDiagram_specific();
 	}
 
@@ -257,4 +273,36 @@ public abstract class AbstractPackageViewer {
 	public Vector<FmmlxEnum> getEnums() {
 		return enums;
 	}
+	
+	public Vector<Issue> getIssues(FmmlxObject fmmlxObject) {
+		Vector<Issue> result = new Vector<>();
+		if(issues != null) for(Issue issue : issues) { 
+			if(issue.isAffected(fmmlxObject)) {
+				result.add(issue);
+			}
+		}
+		return result;
+	}
+
+	public abstract void setSelectedObjectAndProperty(FmmlxObject objectByPath, FmmlxProperty property);
+
+	public FmmlxOperation getOperation(FmmlxOperationValue newOpV) {
+		for(FmmlxObject o : getObjects()) {
+			if(o.getOperationValues().contains(newOpV)) {
+				FmmlxObject oOf = getObjectByPath(o.getOfPath());
+				for(FmmlxOperation op : oOf.getAllOperations()) {
+					if(op.getName().equals(newOpV.name)) {
+						FmmlxObject opOwner = getObjectByPath(op.getOwner());
+						for(FmmlxOperation op2 : opOwner.getOwnOperations()) {
+							if(op2.getName().equals(newOpV.name)) {
+								return op2;
+							}
+						}; throw new RuntimeException("Operation not found in owner");
+					}
+				}; throw new RuntimeException("Operation not found in class");
+			}
+		}; throw new RuntimeException("Object not found for OperationValue");
+	}
+
+	public Canvas getCanvas() {return null;}
 }

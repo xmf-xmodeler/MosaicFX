@@ -8,7 +8,6 @@ import tool.clients.fmmlxdiagrams.*;
 import tool.clients.serializer.interfaces.XmlManager;
 
 import java.util.List;
-import java.util.Vector;
 
 public class ObjectXmlManager implements XmlManager {
     private final XmlHandler xmlHandler;
@@ -77,7 +76,7 @@ public class ObjectXmlManager implements XmlManager {
         return xmlHandler.getChildWithTag(objectNode, XmlConstant.TAG_NAME_ATTRIBUTES);
     }
 
-    public void alignObjects(Element diagramElement, String diagramName, FmmlxDiagramCommunicator communicator) {
+    public void alignObjects(Element diagramElement, int diagramID, FmmlxDiagramCommunicator communicator) {
         Node objectsNode = xmlHandler.getChildWithTag(diagramElement, XmlConstant.TAG_NAME_OBJECTS);
         NodeList objectList = objectsNode.getChildNodes();
         for(int i = 0 ; i < objectList.getLength(); i++){
@@ -86,10 +85,9 @@ public class ObjectXmlManager implements XmlManager {
                 double x = Double.parseDouble(tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
                 double y = Double.parseDouble(tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
                 String objectPath = tmp.getAttribute(XmlConstant.ATTRIBUTE_REFERENCE);
-                communicator.sendCurrentPosition(FmmlxDiagramCommunicator.getDiagramIdFromName(diagramName), objectPath, (int)Math.round(x), (int)Math.round(y));
+                communicator.sendCurrentPosition(diagramID, objectPath, (int)Math.round(x), (int)Math.round(y));
             }
         }
-        System.out.println("align objects in "+diagramName+" : finished ");
     }
 
 
@@ -110,29 +108,6 @@ public class ObjectXmlManager implements XmlManager {
         return initCoordingate;
     }
 
-    public void alignObjects(Integer id, Vector<FmmlxObject> objects) {
-        Element diagrams = getDiagramsElement();
-        NodeList diagramList = diagrams.getChildNodes();
-
-        Element diagramElement = null;
-
-        for (int i = 0 ; i< diagramList.getLength(); i++){
-            if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
-                Element tmp = (Element) diagramList.item(i);
-                int tmp_id = FmmlxDiagramCommunicator.getDiagramIdFromName(tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL));
-                if (tmp_id==id){
-                    diagramElement = tmp;
-                }
-            }
-        }
-
-        for(FmmlxObject object : objects){
-            Point2D initCoordinate = new Point2D(object.getX(), object.getY());
-            Point2D coordinate = getCoordinate(diagramElement, object.getName(),initCoordinate);
-            FmmlxDiagramCommunicator.getCommunicator().sendCurrentPosition(id, object.getPath(), (int)Math.round(coordinate.getX()), (int)Math.round(coordinate.getY()));
-        }
-    }
-
     @Deprecated
     public void alignObjects2(Element diagramElement, FmmlxDiagram fmmlxDiagram) {
         List<FmmlxObject>allObjects = fmmlxDiagram.getObjects();
@@ -140,7 +115,7 @@ public class ObjectXmlManager implements XmlManager {
             Point2D initCoordinate = new Point2D(object.getX(), object.getY());
             Point2D coordinate = getCoordinate(diagramElement, object.getName(),initCoordinate);
             object.moveTo(coordinate.getX(), coordinate.getY(), fmmlxDiagram);
-            fmmlxDiagram.getComm().sendCurrentPosition(FmmlxDiagramCommunicator.getDiagramIdFromName(fmmlxDiagram.getDiagramLabel()), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY()));
+            fmmlxDiagram.getComm().sendCurrentPosition(fmmlxDiagram.getID(), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY()));
         }
     }
 }

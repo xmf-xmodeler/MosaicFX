@@ -43,6 +43,7 @@ public class ControlCenter extends Stage {
 	private final ObservableList<String> diagramList = FXCollections.observableArrayList();
 	private final ListView<String> diagramLV = new ListView<String>();
 	private ModelBrowser stage;
+	private MenuBar menuBar;
 			
 	public ControlCenter() {
 		setTitle("XModeler ML Control Center");
@@ -104,8 +105,8 @@ public class ControlCenter extends Stage {
 		Menu windows = new Menu("Windows");
 		Menu settings = new Menu("Settings");
 		Menu help = new Menu ("Help");
-		MenuBar menuBar = new MenuBar();
-		menuBar.getMenus().addAll(file, browsers, tools, windows, settings, help);
+		menuBar = new MenuBar();
+		//menuBar.getMenus().addAll(file, browsers, tools, windows, settings, help);
 		HBox.setHgrow(menuBar, Priority.ALWAYS);
 		hBox.getChildren().add(menuBar);
 		grid.setHgap(10);
@@ -152,8 +153,12 @@ public class ControlCenter extends Stage {
 		this.setOnShown((event) -> {controlCenterClient.getAllProjects();});
 		newProject.setOnAction((event) -> {controlCenterClient.getAllProjects();});
 			
-	}	
-	
+	}
+
+	public MenuBar getMenuBar() {
+		return menuBar;
+	}
+
 	private void modelDoubleClick(MouseEvent e) {
 		ModelBrowser stage = new ModelBrowser(projectLV.getSelectionModel().getSelectedItem(), modelLV.getSelectionModel().getSelectedItem(), modelLV.getItems() );
 		stage.show();

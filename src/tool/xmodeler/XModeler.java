@@ -77,13 +77,17 @@ public class XModeler extends Application {
   static SplitPane       rightSplitPane      = null;
   static TabPane 		 browserTab 		 = null;
   static TabPane 		 editorTabs 		 = null;
-  public static TabPane 		 propertyTabs 		 = null;
+  public static TabPane  propertyTabs 		 = null;
   static MenuBar		 menuBar			 = null;
   static Pane			 notificationPane 	 = null;
   
-  private ControlCenter  newStage            = null;
-  
-  public static String attributeValue(Node node, String name) {
+  private static ControlCenter  newStage            = null;
+
+    public static ControlCenter getNewStage() {
+        return newStage;
+    }
+
+    public static String attributeValue(Node node, String name) {
     NamedNodeMap attrs = node.getAttributes();
     for (int i = 0; i < attrs.getLength(); i++) {
       Attr attribute = (Attr) attrs.item(i);
@@ -278,6 +282,7 @@ public class XModeler extends Application {
 					PrintStream out = new PrintStream(file, "UTF-8");
 					out.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?><XModeler x='" + x + "' y='" + y + "' width='"
 							+ width + "' height = '" + height + "'>");
+                    System.err.println("start write xml");
 					ModelBrowserClient.theClient().writeXML(out);
 					DiagramClient.theClient().writeXML(out);
 					MenuClient.theClient().writeXML(out);
@@ -424,16 +429,18 @@ public class XModeler extends Application {
   
   @Override
   public void start(Stage primaryStage) throws Exception {
+      stage = primaryStage;
+      createXmodeler();
 	  startXOS(copyOfArgs[0]);
 	  singleton = this;
-	  stage = primaryStage;
-	  newStage = new ControlCenter();
-	  createXmodeler();
 	  initClients();
       startClients();
 	  openXModeler();
+      newStage = new ControlCenter();
 	  newStage.show();
   }
+
+
 
     public void createXmodeler() throws Exception {
 	  		outerSplitPane = new SplitPane();
