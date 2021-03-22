@@ -8,42 +8,35 @@ import tool.clients.fmmlxdiagrams.FaXML;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.TimeOutException;
-import tool.clients.serializer.interfaces.Log;
-import tool.clients.serializer.interfaces.XmlManager;
 
 import java.util.Base64;
 import java.util.List;
 import java.util.Vector;
 
-public class LogXmlManager implements Log, XmlManager {
+public class LogXmlManager {
     private final XmlHandler xmlHandler;
 
     public LogXmlManager(XmlHandler xmlHandler) {
         this.xmlHandler = xmlHandler;
     }
 
-    @Override
     public void add(Element parent, Element newElement) {
         xmlHandler.addXmlElement(parent, newElement);
     }
 
-    @Override
     public void remove(Element element) {
         //TODO
     }
 
-    @Override
     public List<Node> getAll() {
         //TODO
         return null;
     }
 
-    @Override
     public void back(int diagramId) {
         //TODO
     }
 
-    @Override
     public void forward(int diagramId) {
         //TODO
     }
@@ -67,7 +60,6 @@ public class LogXmlManager implements Log, XmlManager {
         xmlHandler.removeAllChildren(logs);
     }
 
-    @Override
     public void backToLatestSave(int diagramId, String diagramLabel) {
         //TODO
     }

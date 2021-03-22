@@ -14,8 +14,6 @@ import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.FmmlxSerializer;
 import tool.clients.serializer.XmlHandler;
-import tool.clients.serializer.interfaces.Deserializer;
-import tool.clients.serializer.interfaces.Serializer;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.PropertyManager;
 import xos.Value;
@@ -1663,6 +1661,26 @@ public class FmmlxDiagramCommunicator {
 		}
 	}
 
+	public void saveFile(String packageString) {
+		Platform.runLater(() -> {
+			try {
+				for(FmmlxDiagram diagram : diagrams){
+					String tmp_packageName = diagram.getPackagePath().split("::")[1];
+					if(packageString.equals(tmp_packageName)){
+						String filePath = diagram.getFilePath();
+						FmmlxDiagramCommunicator communicator = diagram.getComm();
+						String label = diagram.getDiagramLabel();
+						FmmlxSerializer serializer = new FmmlxSerializer(diagram.getFilePath());
+						serializer.save(diagram.getPackagePath(), filePath, label, diagram.getID(), communicator);
+						return;
+					}
+				}
+			} catch (TransformerException | ParserConfigurationException e) {
+				e.printStackTrace();
+			}
+		});
+	}
+
 	public void saveXmlFile(String fileName, String packageString) {
 		String packageName = packageString.substring(1,packageString.length()-1).split(" ")[1];
 		FmmlxDiagramCommunicator communicator = this;
@@ -1672,7 +1690,7 @@ public class FmmlxDiagramCommunicator {
 				try {
 					String diagramPath = null;
 					String initLabel = null;
-					Serializer serializer = new FmmlxSerializer(fileName);
+					FmmlxSerializer serializer = new FmmlxSerializer(fileName);
 					serializer.clearAllData();
 					for(FmmlxDiagram diagram : diagrams){
 						String tmp_packageName = diagram.getPackagePath().split("::")[1];

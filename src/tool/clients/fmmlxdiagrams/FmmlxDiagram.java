@@ -35,7 +35,6 @@ import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.XmlHandler;
-import tool.clients.serializer.interfaces.Deserializer;
 import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
 

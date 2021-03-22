@@ -11,12 +11,9 @@ import org.w3c.dom.NodeList;
 
 import tool.clients.fmmlxdiagrams.DiagramEdgeLabel;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.serializer.interfaces.Log;
-import tool.clients.serializer.interfaces.XmlManager;
 
-public class LabelXmlManager implements Log, XmlManager {
+public class LabelXmlManager {
 	private final XmlHandler xmlHandler;
 
     protected LabelXmlManager(XmlHandler xmlHandler) {
@@ -32,38 +29,32 @@ public class LabelXmlManager implements Log, XmlManager {
         return label;
     }
 
-    @Override
 	public void add(Element diagramElement, Element newElement) {
         Element labels = getLabelsElement(diagramElement);
         xmlHandler.addXmlElement(labels, newElement);
 
 	}
 
-	@Override
 	public void remove(Element element) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public List<Node> getAll() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public void back(int diagramId) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void forward(int diagramId) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void backToLatestSave(int diagramId, String diagramLabel) {
 		// TODO Auto-generated method stub
 		

@@ -5,13 +5,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.*;
-import tool.clients.serializer.interfaces.XmlManager;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
-public class EdgeXmlManager implements XmlManager {
+public class EdgeXmlManager {
 
     private final XmlHandler xmlHandler;
 
@@ -83,7 +82,6 @@ public class EdgeXmlManager implements XmlManager {
         return edge;
     }
 
-    @Override
     public void add(Element diagramElement, Element newElement) {
         if(newElement!=null){
             Element edges = getEdgesElement(diagramElement);
@@ -91,12 +89,10 @@ public class EdgeXmlManager implements XmlManager {
         }
     }
 
-    @Override
     public void remove(Element element) {
         //TODO
     }
 
-    @Override
     public List<Node> getAll() {
         return null;
     }

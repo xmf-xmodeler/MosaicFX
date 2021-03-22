@@ -3,12 +3,11 @@ package tool.clients.serializer;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import tool.clients.serializer.interfaces.XmlManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProjectXmlManager implements XmlManager {
+public class ProjectXmlManager  {
     private final XmlHandler xmlHandler;
 
     public ProjectXmlManager(XmlHandler xmlHandler) {
@@ -26,19 +25,16 @@ public class ProjectXmlManager implements XmlManager {
         return xmlHandler.getChildrenByAttributeValue(projects, XmlConstant.ATTRIBUTE_NAME, name);
     }
 
-    @Override
     public void add(Element parent, Element element) {
         Element projects = getProjectsElement();
         xmlHandler.addXmlElement(projects, element);
     }
 
-    @Override
     public void remove(Element element){
         Node projects = getProjectsElement();
         projects.removeChild(element);
     }
 
-    @Override
     public List<Node> getAll(){
         List<Node> projects = new ArrayList<>();
         Node projectsNode = getProjectsElement();
