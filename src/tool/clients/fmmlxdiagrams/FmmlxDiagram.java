@@ -30,6 +30,7 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.stage.FileChooser;
+import org.w3c.dom.Element;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
@@ -165,8 +166,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 		new Thread(this::fetchDiagramData).start();
 
-
-		
 		java.util.Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
 			
@@ -1111,15 +1110,21 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	protected void fetchDiagramDataSpecific2() {
 		newFmmlxPalette.update();
 
-		if(filePath !=null && filePath.length()>0)
-		{   // only used once when loaded from xml
-			org.w3c.dom.Node positionInfo = getComm().getPositionInfo(getID()); 
-			if(positionInfo != null) {
+		if(filePath !=null && filePath.length()>0){
+			if(justLoaded){
 				FmmlxDeserializer deserializer = new FmmlxDeserializer(new XmlHandler(filePath));
-				deserializer.alignElements(this, (org.w3c.dom.Element) positionInfo);
+				deserializer.alignElements(this, getComm());
 				triggerOverallReLayout();
 			}
 		}
+//		{   // only used once when loaded from xml
+//			org.w3c.dom.Node positionInfo = getComm().getPositionInfo(getID());
+//			if(positionInfo != null) {
+//				FmmlxDeserializer deserializer = new FmmlxDeserializer(new XmlHandler(filePath));
+//				deserializer.alignElements(this, (org.w3c.dom.Element) positionInfo);
+//				triggerOverallReLayout();
+//			}
+//		}
 		
 		redraw();
 		Issue nextIssue = null;

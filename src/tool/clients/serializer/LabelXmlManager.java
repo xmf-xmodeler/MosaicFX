@@ -11,6 +11,7 @@ import org.w3c.dom.NodeList;
 
 import tool.clients.fmmlxdiagrams.DiagramEdgeLabel;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 public class LabelXmlManager {
@@ -117,22 +118,8 @@ public class LabelXmlManager {
         return true;
     }
 
-    /*@Deprecated
-    public void alignLabel(String diagramName, FmmlxDiagramCommunicator communicator, int diagramID) {
-        Element diagrams = getDiagramsElement();
-        NodeList diagramList = diagrams.getChildNodes();
-
-        Element diagramElement = null;
-
-        for (int i = 0 ; i< diagramList.getLength(); i++){
-            if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
-                Element tmp = (Element) diagramList.item(i);
-                if (tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(diagramName)){
-                    diagramElement = tmp;
-                }
-            }
-        }
-
+    @Deprecated
+    public void alignLabel2(Element diagramElement, FmmlxDiagramCommunicator communicator, int diagramID) {
         Node labelsNode = getLabelsElement(diagramElement);
         NodeList labelList = labelsNode.getChildNodes();
 
@@ -146,7 +133,7 @@ public class LabelXmlManager {
                 communicator.storeLabelInfoFromXml(diagramID, x, y);
             }
         }
-    }*/
+    }
 
     public void alignLabel(Element diagramElement, FmmlxDiagram fmmlxDiagram) {
         Vector<DiagramEdgeLabel>labels = fmmlxDiagram.getLabels();

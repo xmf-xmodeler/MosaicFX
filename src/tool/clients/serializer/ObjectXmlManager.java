@@ -87,21 +87,21 @@ public class ObjectXmlManager {
     }
 
 
-    private Point2D getCoordinate(Element diagramElement, String name, Point2D initCoordingate) {
+    private Point2D getCoordinate(Element diagramElement, String path, Point2D initCoordinate, String packagePath) {
         Node objectsNode = getObjectsElement(diagramElement);
         NodeList objectList = objectsNode.getChildNodes();
 
         for (int i = 0 ; i< objectList.getLength() ; i++){
             if (objectList.item(i).getNodeType() == Node.ELEMENT_NODE){
                 Element object_tmp = (Element) objectList.item(i);
-                if(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_NAME).equals(name)){
+                if(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_REFERENCE).equals(path)){
                     double x = Double.parseDouble(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
                     double y = Double.parseDouble(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
                     return new Point2D(x, y);
                 }
             }
         }
-        return initCoordingate;
+        return initCoordinate;
     }
 
     @Deprecated
@@ -109,7 +109,7 @@ public class ObjectXmlManager {
         List<FmmlxObject>allObjects = fmmlxDiagram.getObjects();
         for(FmmlxObject object : allObjects){
             Point2D initCoordinate = new Point2D(object.getX(), object.getY());
-            Point2D coordinate = getCoordinate(diagramElement, object.getName(),initCoordinate);
+            Point2D coordinate = getCoordinate(diagramElement, object.getPath(),initCoordinate, fmmlxDiagram.getPackagePath());
             object.moveTo(coordinate.getX(), coordinate.getY(), fmmlxDiagram);
             fmmlxDiagram.getComm().sendCurrentPosition(fmmlxDiagram.getID(), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY()));
         }

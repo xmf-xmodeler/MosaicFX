@@ -105,6 +105,10 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		return (FmmlxObject) targetNode;
 	}
 
+	public void setIntermediatePoints(Vector<Point2D> intermediatePoints) {
+		this.intermediatePoints = intermediatePoints;
+	}
+
 	public PortRegion getSourcePortRegion() {
 		return sourceNode.getDirectionForEdge(this.sourceEnd, true);
 	}
