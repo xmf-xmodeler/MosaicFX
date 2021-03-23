@@ -1868,9 +1868,9 @@ public class FmmlxDiagramCommunicator {
 	public org.w3c.dom.Node getPositionInfo(Integer id) {
 		System.err.println("getPositionInfo " + id + "/" + this.positionInfos.keySet().contains(id));
 		org.w3c.dom.Node positionInfos = this.positionInfos.get(id);
-		if(positionInfos != null) {
-			this.positionInfos.remove(id);
-		}
+//		if(positionInfos != null) {
+//			this.positionInfos.remove(id);
+//		}
 		return positionInfos;
 	}
 
