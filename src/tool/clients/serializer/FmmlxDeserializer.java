@@ -30,8 +30,8 @@ public class FmmlxDeserializer {
             if(diagramNode.getNodeType()==Node.ELEMENT_NODE){
             	String diagramName = ((Element) diagramNode).getAttribute(XmlConstant.ATTRIBUTE_LABEL);
             	Integer diagramId = fmmlxDiagramCommunicator.createDiagram(projectName, diagramName, this.xmlHandler.getSourcePath());
-            	fmmlxDiagramCommunicator.preparePositionInfo(diagramId, diagramNode);
             	if(!populated) {
+                    fmmlxDiagramCommunicator.preparePositionInfo(diagramId, diagramNode);
             		fmmlxDiagramCommunicator.populateDiagram(this.xmlHandler.getSourcePath(), diagramName, diagramId);
             		populated = true;
             	}

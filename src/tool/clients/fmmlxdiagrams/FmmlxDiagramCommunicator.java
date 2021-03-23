@@ -10,6 +10,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.w3c.dom.Node;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.FmmlxSerializer;
@@ -1662,23 +1663,29 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void saveFile(String packageString) {
-		Platform.runLater(() -> {
-			try {
-				for(FmmlxDiagram diagram : diagrams){
-					String tmp_packageName = diagram.getPackagePath().split("::")[1];
-					if(packageString.equals(tmp_packageName)){
-						String filePath = diagram.getFilePath();
-						FmmlxDiagramCommunicator communicator = diagram.getComm();
-						String label = diagram.getDiagramLabel();
-						FmmlxSerializer serializer = new FmmlxSerializer(diagram.getFilePath());
-						serializer.save(diagram.getPackagePath(), filePath, label, diagram.getID(), communicator);
-						return;
+		String packageName = packageString.substring(1,packageString.length()-1).split(" ")[1];
+		Task<Void> task = new Task<Void>() {
+			@Override
+			protected Void call() {
+				try {
+					for(FmmlxDiagram diagram : diagrams){
+						String tmp_packageName = diagram.getPackagePath().split("::")[1];
+						if(packageName.equals(tmp_packageName)){
+							String filePath = diagram.getFilePath();
+							FmmlxDiagramCommunicator communicator = diagram.getComm();
+							String label = diagram.getDiagramLabel();
+							FmmlxSerializer serializer = new FmmlxSerializer(diagram.getFilePath());
+							serializer.save(diagram.getPackagePath(), filePath, label, diagram.getID(), communicator);
+						}
 					}
+				} catch (TransformerException | ParserConfigurationException e) {
+					e.printStackTrace();
 				}
-			} catch (TransformerException | ParserConfigurationException e) {
-				e.printStackTrace();
+				return null;
 			}
-		});
+		};
+		new Thread(task).start();
+
 	}
 
 	public void saveXmlFile(String fileName, String packageString) {
