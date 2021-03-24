@@ -10,12 +10,11 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.w3c.dom.Node;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.FmmlxSerializer;
 import tool.clients.serializer.XmlHandler;
-import tool.clients.serializer.interfaces.Deserializer;
-import tool.clients.serializer.interfaces.Serializer;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.PropertyManager;
 import xos.Value;
@@ -1663,6 +1662,32 @@ public class FmmlxDiagramCommunicator {
 		}
 	}
 
+	public void saveFile(String packageString) {
+		String packageName = packageString.substring(1,packageString.length()-1).split(" ")[1];
+		Task<Void> task = new Task<Void>() {
+			@Override
+			protected Void call() {
+				try {
+					for(FmmlxDiagram diagram : diagrams){
+						String tmp_packageName = diagram.getPackagePath().split("::")[1];
+						if(packageName.equals(tmp_packageName)){
+							String filePath = diagram.getFilePath();
+							FmmlxDiagramCommunicator communicator = diagram.getComm();
+							String label = diagram.getDiagramLabel();
+							FmmlxSerializer serializer = new FmmlxSerializer(diagram.getFilePath());
+							serializer.save(diagram.getPackagePath(), filePath, label, diagram.getID(), communicator);
+						}
+					}
+				} catch (TransformerException | ParserConfigurationException e) {
+					e.printStackTrace();
+				}
+				return null;
+			}
+		};
+		new Thread(task).start();
+
+	}
+
 	public void saveXmlFile(String fileName, String packageString) {
 		String packageName = packageString.substring(1,packageString.length()-1).split(" ")[1];
 		FmmlxDiagramCommunicator communicator = this;
@@ -1672,7 +1697,7 @@ public class FmmlxDiagramCommunicator {
 				try {
 					String diagramPath = null;
 					String initLabel = null;
-					Serializer serializer = new FmmlxSerializer(fileName);
+					FmmlxSerializer serializer = new FmmlxSerializer(fileName);
 					serializer.clearAllData();
 					for(FmmlxDiagram diagram : diagrams){
 						String tmp_packageName = diagram.getPackagePath().split("::")[1];
@@ -1851,9 +1876,9 @@ public class FmmlxDiagramCommunicator {
 	public org.w3c.dom.Node getPositionInfo(Integer id) {
 		System.err.println("getPositionInfo " + id + "/" + this.positionInfos.keySet().contains(id));
 		org.w3c.dom.Node positionInfos = this.positionInfos.get(id);
-		if(positionInfos != null) {
-			this.positionInfos.remove(id);
-		}
+//		if(positionInfos != null) {
+//			this.positionInfos.remove(id);
+//		}
 		return positionInfos;
 	}
 

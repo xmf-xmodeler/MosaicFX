@@ -3,7 +3,6 @@ package tool.clients.serializer;
 import javafx.util.Pair;
 import org.w3c.dom.Element;
 import tool.clients.fmmlxdiagrams.*;
-import tool.clients.serializer.interfaces.Serializer;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -13,7 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
 
-public class FmmlxSerializer implements Serializer {
+public class FmmlxSerializer  {
     private final XmlHandler xmlHandler;
     private final String file;
 
@@ -22,13 +21,11 @@ public class FmmlxSerializer implements Serializer {
         this.xmlHandler = new XmlHandler(this.file);
     }
 
-    @Override
     public String initUserXMLFile(String file) throws TransformerException, ParserConfigurationException {
         XmlCreator xmlCreator = new XmlCreator();
         return xmlCreator.create(file);
     }
 
-    @Override
     public void saveAsXml(String diagramPath, String initLabel, FmmlxDiagramCommunicator communicator) throws TimeOutException, TransformerException {
         this.clearAllData();
         int saveLogCount = 0;
@@ -46,7 +43,6 @@ public class FmmlxSerializer implements Serializer {
         this.xmlHandler.flushData();
     }
 
-    @Override
     public void save(String diagramPath, String filePath, String label, Integer id, FmmlxDiagramCommunicator communicator)  {
         if(filePath!=null && filePath.length()>0 && checkFileExist(xmlHandler.getSourcePath())){
             try {
@@ -189,12 +185,10 @@ public class FmmlxSerializer implements Serializer {
         return new Pair<>(XmlConstant.EdgeType.ASSOCIATION, key);
     }
 
-    @Override
     public boolean checkFileExist(String file) {
         return Files.exists(Paths.get(file));
     }
 
-    @Override
     public void clearAllData() {
         Element Root = xmlHandler.getRoot();
         Element logsElement = xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_LOGS);

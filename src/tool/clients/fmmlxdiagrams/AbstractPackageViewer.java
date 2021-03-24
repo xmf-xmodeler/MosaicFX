@@ -78,7 +78,6 @@ public abstract class AbstractPackageViewer {
 		fetchingData = true;
 		setViewerStatus(ViewerStatus.LOADING);
 		try {
-
 			if(objects.size()==0){
 				justLoaded = true;
 			}

@@ -30,12 +30,12 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.stage.FileChooser;
+import org.w3c.dom.Element;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.XmlHandler;
-import tool.clients.serializer.interfaces.Deserializer;
 import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
 
@@ -166,8 +166,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 		new Thread(this::fetchDiagramData).start();
 
-
-		
 		java.util.Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
 			
@@ -1112,24 +1110,28 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	protected void fetchDiagramDataSpecific2() {
 		newFmmlxPalette.update();
 
-		if(filePath !=null && filePath.length()>0)
-		{   // only used once when loaded from xml
-			org.w3c.dom.Node positionInfo = getComm().getPositionInfo(getID()); 
-			if(positionInfo != null) {
+		if(filePath !=null && filePath.length()>0){
+			if(justLoaded){
 				FmmlxDeserializer deserializer = new FmmlxDeserializer(new XmlHandler(filePath));
-				deserializer.alignElements(this, (org.w3c.dom.Element) positionInfo);
-				triggerOverallReLayout();
+//				deserializer.alignElements(this, getComm());
+//		   		only used once when loaded from xml TODO
+				org.w3c.dom.Node positionInfo = getComm().getPositionInfo(getID());
+				if(positionInfo != null) {
+					deserializer.alignElements(this, (org.w3c.dom.Element) positionInfo);
+					triggerOverallReLayout();
+				}
+				redraw();
+				Issue nextIssue = null;
+				for(int i = 0; i < issues.size() && nextIssue == null; i++) {
+					if(issues.get(i).isSoluble()) nextIssue = issues.get(i);
+				}
+
+				if(nextIssue != null) {
+					nextIssue.performResolveAction(this);
+				}
+				updateDiagram();
+				justLoaded = false;
 			}
-		}
-		
-		redraw();
-		Issue nextIssue = null;
-		for(int i = 0; i < issues.size() && nextIssue == null; i++) {
-			if(issues.get(i).isSoluble()) nextIssue = issues.get(i);
-		} 
-		
-		if(nextIssue != null) {
-			nextIssue.performResolveAction(this);
 		}
 	}
 

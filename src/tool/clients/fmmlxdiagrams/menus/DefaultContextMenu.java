@@ -76,7 +76,7 @@ public class DefaultContextMenu extends ContextMenu {
 
 			MenuItem save = new MenuItem("Save");
 			save.setOnAction(a -> actions.save());
-			getItems().addAll(save);
+			//getItems().addAll(save);
 
 			MenuItem pngItem = new MenuItem("Export as PNG...");
 			pngItem.setOnAction(a -> {
