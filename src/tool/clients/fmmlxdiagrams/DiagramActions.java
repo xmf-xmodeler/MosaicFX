@@ -660,28 +660,28 @@ public class DiagramActions {
 				final AssociationDialogResult result = opt.get();
 				
 				if(result.selectedAssociation.isSourceVisible() != result.sourceVisibleFromTarget) {
-					diagram.getComm().setAssociationEndVisibility(diagram.getID(), result.selectedAssociation.path, false, result.sourceVisibleFromTarget);				
+					diagram.getComm().setAssociationEndVisibility(diagram.getID(), result.selectedAssociation.getName(), false, result.sourceVisibleFromTarget);				
 				}
 				if(result.selectedAssociation.isTargetVisible() != result.targetVisibleFromSource) {
-					diagram.getComm().setAssociationEndVisibility(diagram.getID(), result.selectedAssociation.path, true, result.targetVisibleFromSource);				
+					diagram.getComm().setAssociationEndVisibility(diagram.getID(), result.selectedAssociation.getName(), true, result.targetVisibleFromSource);				
 				}
 				
 				if(!result.selectedAssociation.getAccessNameEndToStart().equals(result.newIdentifierSource)) {
 					System.err.println("getAccessNameEndToStart:" + result.selectedAssociation.getAccessNameEndToStart() + "--> " + result.newIdentifierSource);
-					diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), result.selectedAssociation.path, result.newIdentifierSource);
+					diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), result.selectedAssociation.getName(), result.newIdentifierSource);
 				}
 				if(!result.selectedAssociation.getAccessNameStartToEnd().equals(result.newIdentifierTarget)) {
 					System.err.println("getAccessNameStartToEnd:" + result.selectedAssociation.getAccessNameStartToEnd() + "--> " + result.newIdentifierTarget);
-					diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), result.selectedAssociation.path, result.newIdentifierTarget);
+					diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), result.selectedAssociation.getName(), result.newIdentifierTarget);
 				}
 				
 				if(!result.selectedAssociation.getLevelSource().equals(result.newInstLevelSource)) {
 					System.err.println("getLevelEndToStart:" + result.selectedAssociation.getLevelSource() + "--> " + result.newInstLevelSource);
-					diagram.getComm().changeAssociationEnd2StartLevel(diagram.getID(), result.selectedAssociation.path, result.newInstLevelSource);
+					diagram.getComm().changeAssociationEnd2StartLevel(diagram.getID(), result.selectedAssociation.getName(), result.newInstLevelSource);
 				}
 				if(!result.selectedAssociation.getLevelTarget().equals(result.newInstLevelTarget)) {
 					System.err.println("getLevelStartToEnd:" + result.selectedAssociation.getLevelTarget() + "--> " + result.newInstLevelTarget);
-					diagram.getComm().changeAssociationStart2EndLevel(diagram.getID(), result.selectedAssociation.path, result.newInstLevelTarget);
+					diagram.getComm().changeAssociationStart2EndLevel(diagram.getID(), result.selectedAssociation.getName(), result.newInstLevelTarget);
 				}
 				
 				if(!result.selectedAssociation.getMultiplicityEndToStart().equals(result.multTargetToSource)) {

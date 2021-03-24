@@ -76,6 +76,7 @@ public final class ModelBrowser extends CustomStage {
 	
 	public ModelBrowser(String project, String initialModel, ObservableList<String> models) {
 		super(StringValue.LabelAndHeaderTitle.modelBrowser+" " + project, XModeler.getStage(), 1500, 800);
+		System.err.println("ModelBrowser ("+initialModel+") start");
 		communicator = FmmlxDiagramCommunicator.getCommunicator();
 		
 		initElements();
@@ -83,6 +84,8 @@ public final class ModelBrowser extends CustomStage {
 		addCellFactories();
 		addDoubleClickListeners();
 		SplitPane outerSplitPane = layoutElements();		
+		
+		System.err.println("ModelBrowser ("+initialModel+") I");
 		
 		getContainer().getChildren().addAll(outerSplitPane);
 
@@ -92,16 +95,19 @@ public final class ModelBrowser extends CustomStage {
 		modelListView.getItems().addAll(models);
 		modelListView.getSelectionModel().clearSelection();
 		if (initialModel!=null) {
+			System.err.println("ModelBrowser ("+initialModel+") IIa");
 			modelListView.getSelectionModel().select(initialModel);
+			System.err.println("ModelBrowser ("+initialModel+") IIb");
 		}
 
 		fmmlxObjectListView.setContextMenu(new BrowserObjectContextMenu());
+		System.err.println("ModelBrowser ("+initialModel+") IIc");
 	}
 
 	public void onClose() {
 		clearAll(ClearSelectionMode.MODEL);
 		for (String key:models.keySet()) {
-			communicator.closeDiagram(models.get(key).getID());
+			communicator.close(models.get(key), false);
 		}
 		hide();
 	}
