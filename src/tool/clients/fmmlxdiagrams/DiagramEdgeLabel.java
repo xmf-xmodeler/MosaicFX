@@ -11,9 +11,9 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import xos.Value;
 
-public class DiagramEdgeLabel implements CanvasElement {
+public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElement {
 	
-	final Edge owner;
+	final Edge<ConcreteNode> owner;
 	final int localID;
 	private final Runnable action;
 	private final String text;
@@ -22,7 +22,7 @@ public class DiagramEdgeLabel implements CanvasElement {
 	public double relativeY;
 	private double width;
 	private double height;
-	private Vector<FmmlxObject> anchors;
+	private Vector<ConcreteNode> anchors;
 	private transient double mouseMoveOffsetX;
 	private transient double mouseMoveOffsetY;
 	private transient boolean highlighted = false;
@@ -30,7 +30,7 @@ public class DiagramEdgeLabel implements CanvasElement {
 	private Color fontColor;
 	private final static int MARGIN = 1;
 
-	public DiagramEdgeLabel(Edge owner, int localID, Runnable action, ContextMenu menu, Vector<FmmlxObject> anchors, String value, 
+	public DiagramEdgeLabel(Edge<ConcreteNode> owner, int localID, Runnable action, ContextMenu menu, Vector<ConcreteNode> anchors, String value, 
 			double relativeX, double relativeY, double w, double h,
 			Color fontColor, Color bgColor) {
 		this.owner = owner;
@@ -68,6 +68,7 @@ public class DiagramEdgeLabel implements CanvasElement {
 			}
 		if (highlighted) { 
 			//This will highlight the edge label when you hover over it and lines from the label to the ports from the associations are drawn. 
+			//TODO: Make thoughts about more efficient way
 			g.setStroke(Color.TOMATO);
 			if(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX()< anchors.get(1).getPointForEdge(owner.targetEnd,true).getX()) {
 				if(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX() < relativeX+this.getReferenceX() ) {
@@ -82,7 +83,7 @@ public class DiagramEdgeLabel implements CanvasElement {
 				if(anchors.get(1).getPointForEdge(owner.targetEnd, true).getX() > relativeX+this.getReferenceX()) {
 					g.strokeLine(anchors.get(1).getPointForEdge(owner.targetEnd, true).getX(), anchors.get(1).getPointForEdge(owner.targetEnd, true).getY(), this.getReferenceX()+relativeX+18*MARGIN+width, this.getReferenceY()+relativeY+0.5*height);
 				}
-			}else if(anchors.get(0).getPath().equals(anchors.get(1).getPath())) {
+			}else if(anchors.get(0) == anchors.get(1)) {
 				if(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX() < relativeX+this.getReferenceX() ) {
 					g.strokeLine(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX(), anchors.get(0).getPointForEdge(owner.sourceEnd, true).getY(), this.getReferenceX()+relativeX-2*MARGIN, this.getReferenceY()+relativeY+0.5*height);
 				}
@@ -115,7 +116,7 @@ public class DiagramEdgeLabel implements CanvasElement {
 		
 	
 
-	public Edge getOwner() {
+	public Edge<ConcreteNode> getOwner() {
 		return owner;
 	}
 
@@ -125,7 +126,7 @@ public class DiagramEdgeLabel implements CanvasElement {
 
 	private double getReferenceX() {
 		double x = 0;
-		for(FmmlxObject o : anchors) {
+		for(ConcreteNode o : anchors) {
 			x += o.getCenterX();
 		}
 		x /= anchors.size();
@@ -134,7 +135,7 @@ public class DiagramEdgeLabel implements CanvasElement {
 
 	private double getReferenceY() {
 		double y = 0;
-		for(FmmlxObject o : anchors) {
+		for(ConcreteNode o : anchors) {
 			y += o.getCenterY();
 		}
 		y /= anchors.size();
@@ -208,7 +209,7 @@ public class DiagramEdgeLabel implements CanvasElement {
 			new Value((float)relativeY)};
 	}
 
-	public Vector<FmmlxObject> getAnchors() {
+	public Vector<ConcreteNode> getAnchors() {
 		return anchors;
 	}
 

@@ -147,6 +147,17 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	public Vector<FmmlxAssociation> getAllRelatedAssociations() {
 		return diagram.getRelatedAssociationByObject(this);
 	}
+	
+	public Vector<FmmlxAssociation> findAssociationsForLinks(){
+		Vector<FmmlxAssociation> associationForLinks = new Vector<>();
+		for (FmmlxAssociation asso : diagram.getAssociations()) {
+			if (this.level == asso.getLevelSource() && this.isInstanceOf(asso.sourceNode, this.level) || 
+				this.level == asso.getLevelTarget() && this.isInstanceOf(asso.targetNode, this.level)) {
+				associationForLinks.add(asso);
+			}
+		}
+			return  associationForLinks;
+	}
 
 	public ObservableList<FmmlxAttribute> getAllAttributesAsList() {
 		return FXCollections.observableArrayList(getAllAttributes());

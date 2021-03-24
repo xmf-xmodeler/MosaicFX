@@ -97,12 +97,12 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 
 	}
 
-	public FmmlxObject getSourceNode() {
-		return (FmmlxObject) sourceNode;
+	public ConcreteNode getSourceNode() {
+		return sourceNode;
 	}
 
-	public FmmlxObject getTargetNode() {
-		return (FmmlxObject) targetNode;
+	public ConcreteNode getTargetNode() {
+		return targetNode;
 	}
 
 	public void setIntermediatePoints(Vector<Point2D> intermediatePoints) {
@@ -488,11 +488,11 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		return PortRegion.WEST;
 	}
 
-	public boolean isStartNode(FmmlxObject fmmlxObject) {
+	public boolean isSourceNode(FmmlxObject fmmlxObject) {
 		return sourceNode == fmmlxObject;
 	}
 
-	public boolean isEndNode(FmmlxObject fmmlxObject) {
+	public boolean isTargetNode(FmmlxObject fmmlxObject) {
 		return targetNode == fmmlxObject;
 	}
 
@@ -708,7 +708,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		return visible && !sourceNode.isHidden() && !targetNode.isHidden();
 	}
 	
-	public void updatePosition(DiagramEdgeLabel del) {
+	public void updatePosition(DiagramEdgeLabel<?> del) {
 		labelPositions.put(del.localID, new Point2D(del.relativeX, del.relativeY));
 	}
 
@@ -720,26 +720,26 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		
 		if(Anchor.CENTRE_MOVABLE == anchor) {
 			Point2D storedPostion = getLabelPosition(localId);
-			Vector<FmmlxObject> anchors = new Vector<>();
+			Vector<ConcreteNode> anchors = new Vector<>();
 			anchors.add(getSourceNode());
 			anchors.add(getTargetNode());
 			if(storedPostion != null) {
-				diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, storedPostion.getX(), storedPostion.getY(), w, h, textColor, bgColor));
+				diagram.addLabel(new DiagramEdgeLabel<>(this, localId, action, null, anchors, value, storedPostion.getX(), storedPostion.getY(), w, h, textColor, bgColor));
 			} else {
-				diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, 0, -h*1.5, w, h, textColor, bgColor));
+				diagram.addLabel(new DiagramEdgeLabel<>(this, localId, action, null, anchors, value, 0, -h*1.5, w, h, textColor, bgColor));
 			}
 		} else if (Anchor.CENTRE_SELFASSOCIATION==anchor) {
 			Point2D storedPostion = getLabelPosition(localId);
-			Vector<FmmlxObject> anchors = new Vector<>();
+			Vector<ConcreteNode> anchors = new Vector<>();
 			anchors.add(getSourceNode());
 			anchors.add(getTargetNode());
 			if(storedPostion != null) {
-				diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, storedPostion.getX(), storedPostion.getY(), w, h, textColor, bgColor));
+				diagram.addLabel(new DiagramEdgeLabel<>(this, localId, action, null, anchors, value, storedPostion.getX(), storedPostion.getY(), w, h, textColor, bgColor));
 			} else {
-				diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, sourceNode.getWidth()/2, -4*h-0.5*sourceNode.getHeight(), w, h, textColor, bgColor));
+				diagram.addLabel(new DiagramEdgeLabel<>(this, localId, action, null, anchors, value, sourceNode.getWidth()/2, -4*h-0.5*sourceNode.getHeight(), w, h, textColor, bgColor));
 			}
 		} else {
-			Vector<FmmlxObject> anchors = new Vector<>();
+			Vector<ConcreteNode> anchors = new Vector<>();
 			double x,y;
 			Point2D p;
 			PortRegion dir;
@@ -752,7 +752,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 				dir = getTargetNode().getDirectionForEdge(targetEnd, false); 
 				anchors.add(getTargetNode());
 			}
-			FmmlxObject node = anchors.firstElement();
+			ConcreteNode node = anchors.firstElement();
 
 			final double TEXT_X_DIFF = 10;
 			final double TEXT_Y_DIFF = 10;
@@ -785,7 +785,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 				break;}
 			default: {x=0;y=0;break;}
 			}
-			diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, 
+			diagram.addLabel(new DiagramEdgeLabel<>(this, localId, action, null, anchors, value, 
 					p.getX() - node.getCenterX() + x, 
 					p.getY() - node.getCenterY() + y, 
 					w, h, textColor, bgColor));

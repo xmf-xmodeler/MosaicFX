@@ -109,4 +109,6 @@ public abstract class Node implements CanvasElement{
 		port.sortAllPorts();
 	}
 
+	public abstract String getName();
+
 }
