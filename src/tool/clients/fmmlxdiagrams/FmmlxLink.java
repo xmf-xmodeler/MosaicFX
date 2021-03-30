@@ -41,7 +41,7 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 		} catch(Exception e) {}
 	}
 
-	private FmmlxAssociation getOfAssociation() {
+	public FmmlxAssociation getOfAssociation() {
 		return (FmmlxAssociation) diagram.getAssociationByPath(ofPath);
 	}
 
