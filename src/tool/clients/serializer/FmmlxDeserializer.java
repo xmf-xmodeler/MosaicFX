@@ -79,6 +79,9 @@ public class FmmlxDeserializer {
         labelXmlManager.alignLabel(diagramElement, diagram);
 	}
 
+    /**
+     * @deprecated replaced by {@link #alignElements(FmmlxDiagram, Element)}
+     */
     public void alignElements(FmmlxDiagram diagram, FmmlxDiagramCommunicator comm) {
         Element diagrams = getDiagramsElement();
         NodeList diagramList = diagrams.getChildNodes();

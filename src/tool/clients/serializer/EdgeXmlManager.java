@@ -107,7 +107,7 @@ public class EdgeXmlManager {
     }
 
     /**
-     * @deprecated  As of release 1.3, replaced by {@link #alignEdges(Element, int, FmmlxDiagramCommunicator)} ()}
+     * @deprecated replaced by {@link #alignEdges(Element, int, FmmlxDiagramCommunicator)}
      */
     public void alignEdges2(Element diagramElement, FmmlxDiagram fmmlxDiagram){
         Vector<Edge<?>> edges = fmmlxDiagram.getEdges();
@@ -125,44 +125,34 @@ public class EdgeXmlManager {
                 for (int j = 0 ; j< edgeList.getLength(); j++) {
                     if(edgeList.item(j).getNodeType()==Node.ELEMENT_NODE) {
                         Element edgeElement = (Element) edgeList.item(j);
-                        String name_parent = edge.getTargetNode().getName();
-                        String name_child = edge.getSourceNode().getName();
 
                         if (edge instanceof FmmlxAssociation) {
                             String name = edge.getName();
-                            String ref = edge.getPath();
-                            System.out.println(ref);
                             if(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_NAME).equals(name) &&
                                     edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE).equals(XmlConstant.EdgeType.ASSOCIATION)){
                                 setDirectionsAndIntermediatePoints(fmmlxDiagram, edge, edgeElement);
                                 break;
                             }
                         } else if (edge instanceof DelegationEdge){
-                            if(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE).equals(name_child) &&
-                                    edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE).equals(name_parent) &&
+                            if(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_REFERENCE).equals(edge.getPath()) &&
                                     edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE).equals(XmlConstant.EdgeType.DELEGATION)){
                                 setDirectionsAndIntermediatePoints(fmmlxDiagram, edge, edgeElement);
                                 break;
                             }
                         } else if (edge instanceof FmmlxLink) {
-                            String ofName = ((FmmlxLink) edge).getOfName();
-                            if(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE).equals(name_child) &&
-                                    edgeElement.getAttribute(XmlConstant.ATTRIBUTE_OF).equals(ofName) &&
-                                    edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE).equals(name_parent) &&
+                            if(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_REFERENCE).equals(edge.getPath()) &&
                                     edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE).equals(XmlConstant.EdgeType.LINK)){
                                 setDirectionsAndIntermediatePoints(fmmlxDiagram, edge, edgeElement);
                                 break;
                             }
                         } else if (edge instanceof InheritanceEdge) {
-                            if(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE).equals(name_child) &&
-                                    edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE).equals(name_parent) &&
+                            if(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_REFERENCE).equals(edge.getPath()) &&
                                     edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE).equals(XmlConstant.EdgeType.INHERITANCE)){
                                 setDirectionsAndIntermediatePoints(fmmlxDiagram, edge, edgeElement);
                                 break;
                             }
                         } else if (edge instanceof RoleFillerEdge) {
-                            if(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_NODE).equals(name_child) &&
-                                    edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_NODE).equals(name_parent) &&
+                            if(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_REFERENCE).equals(edge.getPath()) &&
                                     edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE).equals(XmlConstant.EdgeType.ROLEFILLEREDGE)){
                                 setDirectionsAndIntermediatePoints(fmmlxDiagram, edge, edgeElement);
                             }
@@ -220,7 +210,9 @@ public class EdgeXmlManager {
                         intermediatePoints.add(point2D);
                     }
                 }
-                communicator.sendEdgePositionsFromXml(diagramID, edgePath, intermediatePoints, sourcePort, targetPort);
+                if(intermediatePointList.getLength()>0 || !sourcePort.equals("null") || !targetPort.equals("null")) {
+                    communicator.sendEdgePositionsFromXml(diagramID, edgePath, intermediatePoints, sourcePort, targetPort);
+                }
             }
         }
     }
