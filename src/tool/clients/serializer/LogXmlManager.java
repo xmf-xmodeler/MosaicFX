@@ -1,6 +1,5 @@
 package tool.clients.serializer;
 
-import com.oracle.tools.packager.Log;
 import javafx.geometry.Point2D;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
