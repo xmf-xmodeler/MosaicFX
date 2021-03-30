@@ -75,7 +75,7 @@ public class EdgeXmlManager {
     }
 
     public Element createDelegationXmlElement(String ref, HashMap<String, Object> edgeInfo) {
-        String type = XmlConstant.EdgeType.ROLEFILLEREDGE;
+        String type = XmlConstant.EdgeType.DELEGATION;
 
         Element edge = createEdgeXmlElement((Vector<Object>) edgeInfo.get("IntermediatePoints"), ref, (Vector<Object>) edgeInfo.get("Ports"));
         edge.setAttribute(XmlConstant.ATTRIBUTE_TYPE, type);
