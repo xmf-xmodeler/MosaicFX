@@ -87,7 +87,7 @@ public class ObjectXmlManager {
     }
 
 
-    private Point2D getCoordinate(Element diagramElement, String path, Point2D initCoordinate, String packagePath) {
+    private Point2D getCoordinate(Element diagramElement, String path, Point2D initCoordinate) {
         Node objectsNode = getObjectsElement(diagramElement);
         NodeList objectList = objectsNode.getChildNodes();
 
@@ -109,7 +109,7 @@ public class ObjectXmlManager {
         List<FmmlxObject>allObjects = fmmlxDiagram.getObjects();
         for(FmmlxObject object : allObjects){
             Point2D initCoordinate = new Point2D(object.getX(), object.getY());
-            Point2D coordinate = getCoordinate(diagramElement, object.getPath(),initCoordinate, fmmlxDiagram.getPackagePath());
+            Point2D coordinate = getCoordinate(diagramElement, object.getPath(),initCoordinate);
             object.moveTo(coordinate.getX(), coordinate.getY(), fmmlxDiagram);
             fmmlxDiagram.getComm().sendCurrentPosition(fmmlxDiagram.getID(), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY()));
         }

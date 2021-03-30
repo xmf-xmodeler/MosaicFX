@@ -1,7 +1,5 @@
 package tool.clients.fmmlxdiagrams.menus;
 
-import java.util.Vector;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -9,14 +7,10 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import tool.clients.fmmlxdiagrams.DiagramActions;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.FmmlxOperation;
-import tool.clients.fmmlxdiagrams.FmmlxProperty;
-import tool.clients.fmmlxdiagrams.NodeBaseElement;
-import tool.clients.fmmlxdiagrams.NodeLabel;
+import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+
+import java.util.Vector;
 
 public class ObjectContextMenu extends ContextMenu {
 
@@ -105,7 +99,7 @@ public class ObjectContextMenu extends ContextMenu {
 		getItems().addAll(attributeMenu, associationMenu, operationMenu, constraintMenu, delegationMenu, slotMenu, associationInstanceMenu, levelMenu, showMenu, assignItem);
 		
 		addNewMenuItem(this, "Hide", e -> {
-			Vector<FmmlxObject> v = new Vector<FmmlxObject>(); 
+			Vector<FmmlxObject> v = new Vector<>();
 			v.add(object); 
 			actions.hide(v, true);
 		}, ALWAYS);
