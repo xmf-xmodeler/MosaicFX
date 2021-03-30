@@ -106,7 +106,9 @@ public class EdgeXmlManager {
         return xmlHandler.getChildWithTag(diagramNode, XmlConstant.TAG_NAME_EDGES);
     }
 
-    @Deprecated
+    /**
+     * @deprecated  As of release 1.3, replaced by {@link #alignEdges(Element, int, FmmlxDiagramCommunicator)} ()}
+     */
     public void alignEdges2(Element diagramElement, FmmlxDiagram fmmlxDiagram){
         Vector<Edge<?>> edges = fmmlxDiagram.getEdges();
 
@@ -115,6 +117,7 @@ public class EdgeXmlManager {
         }
     }
 
+    @Deprecated
     private void handleEdge(FmmlxDiagram fmmlxDiagram, Element diagramElement, Edge<?> edge) {
             Node edges = xmlHandler.getChildWithTag(diagramElement, XmlConstant.TAG_NAME_EDGES);
             NodeList edgeList = edges.getChildNodes();
@@ -127,6 +130,8 @@ public class EdgeXmlManager {
 
                         if (edge instanceof FmmlxAssociation) {
                             String name = edge.getName();
+                            String ref = edge.getPath();
+                            System.out.println(ref);
                             if(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_NAME).equals(name) &&
                                     edgeElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE).equals(XmlConstant.EdgeType.ASSOCIATION)){
                                 setDirectionsAndIntermediatePoints(fmmlxDiagram, edge, edgeElement);
@@ -167,6 +172,7 @@ public class EdgeXmlManager {
             }
     }
 
+    @Deprecated
     private void setDirectionsAndIntermediatePoints(FmmlxDiagram fmmlxDiagram, Edge edge, Element edgeElement) {
         edge.getSourceNode().setDirectionForEdge(edge.sourceEnd, true,
                 PortRegion.valueOf(edgeElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_PORT)));
@@ -214,11 +220,7 @@ public class EdgeXmlManager {
                         intermediatePoints.add(point2D);
                     }
                 }
-                communicator.sendEdgePositionsFromXml(diagramID,
-                        edgePath,
-                        intermediatePoints,
-                        sourcePort,
-                        targetPort);
+                communicator.sendEdgePositionsFromXml(diagramID, edgePath, intermediatePoints, sourcePort, targetPort);
             }
         }
     }

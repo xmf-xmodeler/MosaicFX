@@ -1,5 +1,6 @@
 package tool.clients.serializer;
 
+import com.oracle.tools.packager.Log;
 import javafx.geometry.Point2D;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Vector;
 
 public class LogXmlManager {
+    private static final String TAG = LogXmlManager.class.getSimpleName();
     private final XmlHandler xmlHandler;
 
     public LogXmlManager(XmlHandler xmlHandler) {
@@ -454,7 +456,6 @@ public class LogXmlManager {
 
                     comm.setRoleFiller(diagramID, role, roleFiller);
                     break;
-
                 }
                 case "addEnumeration" : {
                     String enumName = logElement.getAttribute("name");
@@ -471,13 +472,22 @@ public class LogXmlManager {
                         e.printStackTrace();
                     }
                     break;
+                }
+                case "levelRaiseAll" : {
+                    String amountStr = logElement.getAttribute("amount");
+                    int raiseValue = Integer.parseInt(amountStr);
 
+                    if(raiseValue>0){
+                        comm.levelRaiseAll(diagramID);
+                    } else {
+                        comm.levelLowerAll(diagramID);
+                    }
+                    break;
                 }
                 default:
-                    System.out.println(tagName + " not implemented yet");
+                    System.out.println(tagName + " not implemented yet. Check "+TAG);
                     break;
             }
-
     }
 
     private String parseOf(String ofString) {
