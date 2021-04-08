@@ -130,11 +130,11 @@ public class FmmlxDiagramCommunicator {
 		_newDiagramID = i;
 	}
 
-	private void close(FmmlxDiagram diagram) {
+	public void close(AbstractPackageViewer diagram, boolean keepDiagram) {
 		diagrams.remove(diagram);
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagram.getID()),
-				new Value(handler)};
+				new Value(keepDiagram)};
 			sendMessage("closeDiagram", message);
 	}
 
@@ -845,10 +845,10 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("removeAssociation", message);
 	}
 
-	public void setAssociationEndVisibility(int diagramID, String assocId, boolean targetEnd, boolean newVisbility) {
+	public void setAssociationEndVisibility(int diagramID, String assocName, boolean targetEnd, boolean newVisbility) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(assocId),
+				new Value(assocName),
 				new Value(targetEnd),
 				new Value(newVisbility)};
 		sendMessage("setAssociationEndVisibility", message);
@@ -1633,7 +1633,7 @@ public class FmmlxDiagramCommunicator {
 			} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
 				wevent.consume();
 			} else {
-				close(diagram);
+				close(diagram, true);
 				tabs.remove(id);
 			}
 		}
@@ -1657,7 +1657,7 @@ public class FmmlxDiagramCommunicator {
 			} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
 				wevent.consume();
 			} else {
-				close(diagram);
+				close(diagram, true);
 			}
 		}
 	}
@@ -1764,9 +1764,10 @@ public class FmmlxDiagramCommunicator {
 		return "";
 	}
 
-	public void closeDiagram(int id) {
-		System.out.println("FmmlxDiagramCommunicator: Diagram should be closed here!");
-		//TODO: Implementation
+	public void closeDiagram(int diagramID) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID)};
+		sendMessage("closeDiagram", message);
 	}
 	
 	@SuppressWarnings("unchecked")

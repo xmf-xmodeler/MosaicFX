@@ -161,8 +161,9 @@ public class ControlCenter extends Stage {
 
 	private void modelDoubleClick(MouseEvent e) {
 		ModelBrowser stage = new ModelBrowser(projectLV.getSelectionModel().getSelectedItem(), modelLV.getSelectionModel().getSelectedItem(), modelLV.getItems() );
+		System.err.println("ModelBrowser ("+modelLV.getSelectionModel().getSelectedItem()+") IIIa");
 		stage.show();
-		
+		System.err.println("ModelBrowser ("+modelLV.getSelectionModel().getSelectedItem()+") IIIb");
 	}
 
 	private void categorySelected(String nEWW) {

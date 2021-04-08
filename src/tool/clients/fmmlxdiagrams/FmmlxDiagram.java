@@ -397,7 +397,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				FmmlxObject o = (FmmlxObject) s;
 				s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
 				for(Edge<?> e : edges) {
-					if(e.isStartNode(o) || e.isEndNode(o)) e.align();
+					if(e.isSourceNode(o) || e.isTargetNode(o)) e.align();
 				}
 			} else if (s instanceof DiagramEdgeLabel) {
 				DiagramEdgeLabel o = (DiagramEdgeLabel) s;
@@ -468,7 +468,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					FmmlxObject o = (FmmlxObject) s;
 					comm.sendCurrentPosition(this.getID(), o.getPath(), (int)Math.round(o.getX()), (int)Math.round(o.getY()));
 					for(Edge<?> e : edges) {
-						if(e.isStartNode(o) || e.isEndNode(o)) {
+						if(e.isSourceNode(o) || e.isTargetNode(o)) {
 							comm.sendCurrentPositions(this.getID(), e);
 						}
 					}
@@ -907,7 +907,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		for(Edge<?> e : edges) {
 			if(e instanceof InheritanceEdge) {
 				InheritanceEdge i = (InheritanceEdge) e;
-				if(i.isStartNode(child) && i.isEndNode(parent)) return i;
+				if(i.isSourceNode(child) && i.isTargetNode(parent)) return i;
 			}
 		}
 		return null;
