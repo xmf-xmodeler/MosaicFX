@@ -69,7 +69,18 @@ public abstract class AbstractPackageViewer {
 		setViewerStatus(ViewerStatus.DIRTY);
 		new Thread(this::fetchDiagramData).start();
 	}
-	
+
+	//for test
+	public void updateEdges() {
+		new Thread(this::sendInitialEdgesPosition).start();
+	}
+
+	private void sendInitialEdgesPosition() {
+		for(Edge edge : edges){
+			getComm().sendCurrentPositions(getID(), edge);
+		}
+	}
+
 	protected void fetchDiagramData() {
 		if(fetchingData) {
 			System.err.println("\talready fetching diagram data");

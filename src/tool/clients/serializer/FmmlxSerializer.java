@@ -44,6 +44,7 @@ public class FmmlxSerializer  {
     }
 
     public void save(String diagramPath, String filePath, String label, Integer id, FmmlxDiagramCommunicator communicator)  {
+        System.out.println(label);
         if(filePath!=null && filePath.length()>0 && checkFileExist(xmlHandler.getSourcePath())){
             try {
                 Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(diagramPath);
@@ -174,13 +175,13 @@ public class FmmlxSerializer  {
         String type = keyPair[0];
         switch (type) {
             case "DelegationMapping:":
-                return new Pair<>(XmlConstant.EdgeType.DELEGATION, keyPair[1]);
+                return new Pair<>(XmlConstant.EdgeType.DELEGATION, key);
             case "InheritanceMapping:":
-                return new Pair<>(XmlConstant.EdgeType.INHERITANCE, keyPair[1]);
+                return new Pair<>(XmlConstant.EdgeType.INHERITANCE, key);
             case "AssociationLinkMapping:":
-                return new Pair<>(XmlConstant.EdgeType.LINK, keyPair[1]);
+                return new Pair<>(XmlConstant.EdgeType.LINK, key);
             case "RoleFillerMapping:":
-                return new Pair<>(XmlConstant.EdgeType.ROLEFILLEREDGE, keyPair[1]);
+                return new Pair<>(XmlConstant.EdgeType.ROLEFILLEREDGE, key);
         }
         return new Pair<>(XmlConstant.EdgeType.ASSOCIATION, key);
     }
