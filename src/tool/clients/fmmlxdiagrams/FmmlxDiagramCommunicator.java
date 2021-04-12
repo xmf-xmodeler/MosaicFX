@@ -94,12 +94,16 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	private transient Integer _newDiagramID = null;
-	public Integer createDiagram(String packagePath, String diagramName, String file) {
+	
+	public static enum DiagramType {ClassDiagram, ModelBrowser};
+	
+	public Integer createDiagram(String packagePath, String diagramName, String file, DiagramType type) {
 		//Creates a diagram which is not displayed yet.
 		Value[] message = new Value[]{
 				new Value(packagePath),
 				new Value(diagramName),
-				new Value(file)
+				new Value(file),
+				new Value(type.toString())
 		};
 		_newDiagramID = null;
 		int timeout = 0;
@@ -1506,8 +1510,8 @@ public class FmmlxDiagramCommunicator {
     }
 
     @SuppressWarnings("unchecked")
-    public FaXML getDiagramData(Integer diagramID) throws TimeOutException {
-        Vector<Object> response = xmfRequest(handler, diagramID, "getDiagramData");
+    public FaXML getDiagramData(String path) throws TimeOutException {
+        Vector<Object> response = xmfRequest(handler, -2, "getDiagramData", new Value(path));
         Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 
         return new FaXML(responseContent);

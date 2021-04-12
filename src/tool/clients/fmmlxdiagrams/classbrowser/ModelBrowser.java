@@ -565,7 +565,7 @@ public final class ModelBrowser extends CustomStage {
 	private void onModelListViewNewValue(String oldSelectedPath, String selectedPath) {
 		if(selectedPath == null || selectedPath.equals(oldSelectedPath)) return;
 		if(!models.containsKey(selectedPath)) {
-			Integer newDiagramID = communicator.createDiagram(selectedPath, "Test", "");
+			Integer newDiagramID = communicator.createDiagram(selectedPath, "Test", "", FmmlxDiagramCommunicator.DiagramType.ModelBrowser);
 			ClassBrowserPackageViewer tempViewer = new ClassBrowserPackageViewer(communicator, newDiagramID, selectedPath, this);
 			models.put(selectedPath, tempViewer);
 		}

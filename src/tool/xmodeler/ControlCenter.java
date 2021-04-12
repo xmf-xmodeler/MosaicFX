@@ -81,7 +81,7 @@ public class ControlCenter extends Stage {
 			result.ifPresent(name -> 
 			    {Integer diagramID = FmmlxDiagramCommunicator.getCommunicator().createDiagram(
 			        modelLV.getSelectionModel().getSelectedItem(), 
-			        name, ""); System.err.println("diagramID "  +diagramID);});});
+			        name, "", FmmlxDiagramCommunicator.DiagramType.ClassDiagram); System.err.println("diagramID "  +diagramID);});});
 		
 		diagramLV.setOnMouseClicked(me -> {
 
