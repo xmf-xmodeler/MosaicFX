@@ -521,7 +521,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 						final FmmlxObject obj1 = newEdgeSource;
 						final FmmlxObject obj2 = newEdgeTarget;
 						Platform.runLater(() -> {
-							actions.addAssociationInstance(obj1, obj2);
+							actions.addAssociationInstance(obj1, obj2,null);
 							updateDiagramLater();
 						});						
 						break;
@@ -579,7 +579,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 						break;
 					case AssociationInstance:
 						mouseMode = MouseMode.STANDARD;
-						actions.addAssociationInstance(newEdgeSource, null);
+						actions.addAssociationInstance(newEdgeSource, null,null);
 						break;
 					case Delegation:
 					case RoleFiller:

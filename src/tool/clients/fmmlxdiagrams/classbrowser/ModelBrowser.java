@@ -215,7 +215,7 @@ public final class ModelBrowser extends CustomStage {
 	                    	setStyle("-fx-control-inner-background: white;");
 	                    }
 	                    
-	                	if(o.isAbstract()) setText("(" + o.getName() + ")"); else setText(o.getName());
+	                	if(o.isAbstract()) setText("(" + o.getName() + " ^"+ o.getMetaClassName() + "^ " + ")"); else setText(o.getName()+ " ^"+ o.getMetaClassName() + "^");
 	                	
 	                    setGraphic(getClassLevelGraphic(o.getLevel()));
 	                } else { setText(""); setGraphic(null); }
@@ -289,8 +289,7 @@ public final class ModelBrowser extends CustomStage {
 				@Override protected void updateItem(FmmlxAssociation association, boolean empty) {
 					super.updateItem(association, empty);
 					if (association!=null) {
-						setStyle("-fx-font-weight: bold");
-						setText("{"+ association.getLevelSource() +"} " + association.getTargetNode().getName() + " [" + association.getMultiplicityEndToStart().toString()+"]" +" " + association.getName() +" {"+ association.getLevelTarget() + "} " + association.getSourceNode().getName()+ " [" + association.getMultiplicityStartToEnd().toString()+"]");
+						setText("{"+ association.getLevelSource() +"} " + association.getSourceNode().getName() + " [" + association.getMultiplicityStartToEnd().toString()+"]" +" " + association.getName() +" {"+ association.getLevelTarget() + "} " + association.getTargetNode().getName()+ " [" + association.getMultiplicityEndToStart().toString()+"]");
 					} else { setText(""); setGraphic(null);  }
 				}
 			};
@@ -658,6 +657,7 @@ public final class ModelBrowser extends CustomStage {
 		} else {
 			
 		}
+		linksListView.setContextMenu(new BrowserLinkedObjectContextMenu());
 	}
 
 	
@@ -836,6 +836,23 @@ public final class ModelBrowser extends CustomStage {
 				addNewMenuItem(this, object.isAbstract()?"Make Concrete":"Make Abstract", e -> actions.toggleAbstract(object), () -> {return object.getLevel() >= 1 && object.getInstances().size() > 0;});
 			}
 		}
+	}
+	
+	private class BrowserLinkedObjectContextMenu extends ContextMenu {
+		
+		private final FmmlxObject object;
+		//private final FmmxObject target;
+		private final DiagramActions actions;
+		private final FmmlxAssociation association;
+		
+		public BrowserLinkedObjectContextMenu() {
+			this.object = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+			this.actions = activePackage.getActions();
+			this.association = linksListView.getSelectionModel().getSelectedItem();
+			setAutoHide(true);
+			addNewMenuItem(this, "Generate instance for Link", e -> actions.addAssociationInstanceDialog(null,null,association),ALWAYS);
+		}
+		
 	}
 	
 	private void addNewMenuItem(ContextMenu parentMenu, String text, EventHandler<ActionEvent> action, Enabler enabler) {

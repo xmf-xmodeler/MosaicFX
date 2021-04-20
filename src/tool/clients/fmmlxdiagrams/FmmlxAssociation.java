@@ -147,10 +147,9 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	}	
 	
 	public boolean doObjectsFit(FmmlxObject source, FmmlxObject target) {
-		if(source==null || target == null) return false;
-		if (source.isInstanceOf(getSourceNode(), levelStart) && target.isInstanceOf(getTargetNode(), levelEnd))
+		if ((source==null || source.isInstanceOf(getSourceNode(), levelStart)) && (target==null || target.isInstanceOf(getTargetNode(), levelEnd)))
 			return true;
-		return target.isInstanceOf(getSourceNode(), levelStart) && source.isInstanceOf(getTargetNode(), levelEnd);
+		return (target==null || target.isInstanceOf(getSourceNode(), levelStart)) && (source==null || source.isInstanceOf(getTargetNode(), levelEnd));
 	}
 
 	@Override

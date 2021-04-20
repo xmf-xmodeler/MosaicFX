@@ -34,11 +34,17 @@ public class WorkbenchClient extends Client {
       setAllProjects(message);
     else if (message.hasName("setProjectModels"))
       setProjectModels(message);
+    else if (message.hasName("setAllCategories"))
+        setAllCategories(message);
     else super.sendMessage(message);
   }
 
   private void setAllProjects(Message message) {
 	ControlCenterClient.getClient().setAllProjects(message);
+  }
+  
+  private void setAllCategories(Message message) {
+	ControlCenterClient.getClient().setAllCategories(message);  
   }
 
   private void setProjectModels(Message message) {
