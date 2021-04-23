@@ -606,7 +606,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	}
 	
 	private int countAttributesToBeShown() {
-		return otherAttributes.size() + ownAttributes.size();
+		return (showDerivedAttributes?1:0)*otherAttributes.size() + ownAttributes.size();
 	}
 
 	private boolean hasParents() {

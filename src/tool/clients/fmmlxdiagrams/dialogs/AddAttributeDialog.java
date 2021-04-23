@@ -122,12 +122,12 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		Label errorLabel = getErrorLabel();
 		String name = nameTextField.getText();
 
-		if (!InputChecker.getInstance().validateName(name)) {
+		if (!InputChecker.validateName(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
-		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, selectedObject)) {
-			errorLabel.setText(StringValue.ErrorMessage.nameAlreadyUsed);
-			return false;
+//		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, selectedObject)) {
+//			errorLabel.setText(StringValue.ErrorMessage.nameAlreadyUsed);
+//			return false;
 		} else {
 			errorLabel.setText("");
 			return true;

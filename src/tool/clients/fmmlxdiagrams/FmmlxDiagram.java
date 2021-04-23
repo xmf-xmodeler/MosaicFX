@@ -999,7 +999,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	public Vector<Point2D> findEdgeIntersections(Point2D a, Point2D b) { // only interested in a-b horizontal crossing c-d vertical
 		Vector<Point2D> result = new Vector<>();
-		for(Edge<?> e : edges) {
+		for(Edge<?> e : new Vector<>(edges)) {
 			if(e.isVisible()) {
 				Vector<Point2D> otherPoints = e.getAllPoints();
 				for(int i = 0; i < otherPoints.size()-1; i++) {

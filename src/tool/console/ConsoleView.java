@@ -352,16 +352,13 @@ public Node getView() {
           insert("\"\"");
           backup(1);
           revertInput();
-        } else if (keyEvent.getCode() == KeyCode.DIGIT0 && keyEvent.isControlDown()) { textArea.setStyle("-fx-text-fill: #000000;"); 
-        } else if (keyEvent.getCode() == KeyCode.DIGIT1 && keyEvent.isControlDown()) { textArea.setStyle("-fx-text-fill: #ff0000;"); 
-        } else if (keyEvent.getCode() == KeyCode.DIGIT2 && keyEvent.isControlDown()) { textArea.setStyle("-fx-text-fill: #ffff00;"); 
-        } else if (keyEvent.getCode() == KeyCode.DIGIT3 && keyEvent.isControlDown()) { textArea.setStyle("-fx-text-fill: #00ff00;"); 
-        } else if (keyEvent.getCode() == KeyCode.DIGIT4 && keyEvent.isControlDown()) { textArea.setStyle("-fx-text-fill: #00ffff;"); 
-        } else if (keyEvent.getCode() == KeyCode.DIGIT5 && keyEvent.isControlDown()) { textArea.setStyle("-fx-text-fill: #0000ff;"); 
-        } else if (keyEvent.getCode() == KeyCode.DIGIT6 && keyEvent.isControlDown()) { textArea.setStyle("-fx-text-fill: #ff00ff;"); 
-        } else if (keyEvent.getCode() == KeyCode.DIGIT7 && keyEvent.isControlDown()) { textArea.setStyle("-fx-text-fill: #cccccc;"); 
-        } else if (keyEvent.getCode() == KeyCode.DIGIT8 && keyEvent.isControlDown()) { textArea.setStyle("-fx-text-fill: #88ff00;"); 
-        } else if (keyEvent.getCode() == KeyCode.DIGIT9 && keyEvent.isControlDown()) { textArea.setStyle("-fx-text-fill: #cccccc;"); 
+        } else if (keyEvent.getCode() == KeyCode.DIGIT1 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #ff0000;"); 
+        } else if (keyEvent.getCode() == KeyCode.DIGIT2 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #ffff00;"); 
+        } else if (keyEvent.getCode() == KeyCode.DIGIT3 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #00ff00;"); 
+        } else if (keyEvent.getCode() == KeyCode.DIGIT4 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #00ffff;"); 
+        } else if (keyEvent.getCode() == KeyCode.DIGIT5 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #0000ff;"); 
+        } else if (keyEvent.getCode() == KeyCode.DIGIT6 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #ff00ff;"); 
+        } else if (keyEvent.getCode() == KeyCode.DIGIT7 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #cccccc;"); 
         } else prepareTopLevelCommand();
       }
     });

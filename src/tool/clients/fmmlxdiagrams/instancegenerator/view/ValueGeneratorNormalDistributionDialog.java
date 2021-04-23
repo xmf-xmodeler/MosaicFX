@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.VBox;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
+import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorNormalDistribution;
 
@@ -85,16 +86,16 @@ public class ValueGeneratorNormalDistributionDialog extends CustomDialog<List<St
 	}
 
 	private boolean validateInteger(TextField meanTextField, TextField stdTextField, TextField rangeMinTextField, TextField rangeMaxTextField) {
-		if(!inputChecker.validateInteger(meanTextField.getText())){
+		if(!InputChecker.validateInteger(meanTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidIntegerValue +" : Mean");
 			return false;
-		} else if(!inputChecker.validateInteger(stdTextField.getText())){
+		} else if(!InputChecker.validateInteger(stdTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidIntegerValue +" : Standard Deviation");
 			return false;
-		} else if(!inputChecker.validateInteger(rangeMinTextField.getText())){
+		} else if(!InputChecker.validateInteger(rangeMinTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidIntegerValue +" : Range (Min)");
 			return false;
-		} else if(!inputChecker.validateInteger(rangeMaxTextField.getText())){
+		} else if(!InputChecker.validateInteger(rangeMaxTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidIntegerValue +" : Range (Max)");
 			return false;
 		} else if(!validateLogic()){
@@ -125,16 +126,16 @@ public class ValueGeneratorNormalDistributionDialog extends CustomDialog<List<St
 	}
 
 	private boolean validateFloat(TextField meanTextField, TextField stdTextField, TextField rangeMinTextField, TextField rangeMaxTextField) {
-		if(!inputChecker.validateFloat(meanTextField.getText())){
+		if(!InputChecker.validateFloat(meanTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidFloatValue +" : Mean");
 			return false;
-		} else if(!inputChecker.validateFloat(stdTextField.getText())){
+		} else if(!InputChecker.validateFloat(stdTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidFloatValue +" : Standard Deviation");
 			return false;
-		} else if(!inputChecker.validateFloat(rangeMinTextField.getText())){
+		} else if(!InputChecker.validateFloat(rangeMinTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidFloatValue +" : Range (Min)");
 			return false;
-		} else if(!inputChecker.validateFloat(rangeMaxTextField.getText())){
+		} else if(!InputChecker.validateFloat(rangeMaxTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidFloatValue +" : Range (Max)");
 			return false;
 		} else if(!validateLogic()){
