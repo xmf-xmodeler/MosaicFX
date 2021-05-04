@@ -209,7 +209,6 @@ public class LogXmlManager {
                     String className = classPathArray[classPathArray.length-1];
                     int oldLevel = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_OLD_LEVEL));
                     int newLevel = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_NEW_LEVEL));
-                    System.err.println("changeAttributeLevel:" + className + " " +name + " " + oldLevel + "->" + newLevel);
                     comm.changeAttributeLevel(diagramID, className, name, oldLevel, newLevel);
                     break;
 
