@@ -850,7 +850,8 @@ public final class ModelBrowser extends CustomStage {
 			this.actions = activePackage.getActions();
 			this.association = linksListView.getSelectionModel().getSelectedItem();
 			setAutoHide(true);
-			addNewMenuItem(this, "Generate instance for Link", e -> actions.addAssociationInstanceDialog(null,null,association),ALWAYS);
+			addNewMenuItem(this, "Add instance for Link", e -> actions.addAssociationInstanceDialog(null,null,association),ALWAYS);
+			
 		}
 		
 	}

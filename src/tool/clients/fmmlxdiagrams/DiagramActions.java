@@ -898,12 +898,6 @@ public class DiagramActions {
 			    sourceCB.valueProperty(),
 			    targetCB.valueProperty()
 			));
-		//ButtonType buttonTypeOk = new ButtonType("Ok", ButtonData.OK_DONE);
-		//dialog.getDialogPane().lookupButton(buttonTypeOk).disableProperty().bind(Bindings.createBooleanBinding( () -> sourceCB.getValue()==null || targetCB.getValue()==null));
-		//dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
-		//ButtonType cancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
-		//dialog.getDialogPane().getButtonTypes().add(cancel);
-		
 		Optional result= dialog.showAndWait();
 		if (result.isPresent()) {
 			diagram.getComm().addAssociationInstance(diagram.getID(), sourceCB.getSelectionModel().getSelectedItem().getName(), targetCB.getSelectionModel().getSelectedItem().getName(), association.getName());
