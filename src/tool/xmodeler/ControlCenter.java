@@ -155,7 +155,7 @@ public class ControlCenter extends Stage {
 		setScene(scene);
 		this.setOnShown((event) -> {controlCenterClient.getAllCategories();});
 		refreshAll.setOnAction((event) -> {controlCenterClient.getAllProjects();});
-		newProject.setOnAction((event) -> {controlCenterClient.createNewProject();});	
+		newProject.setOnAction((event) -> {controlCenterClient.createNewProject();controlCenterClient.getAllProjects();});	
 	}
 
 	public MenuBar getMenuBar() {
