@@ -500,6 +500,8 @@ public final class ModelBrowser extends CustomStage {
 		operationValueListView.getItems().clear();
 		fmmlxAssociationListView.getItems().clear();
 		onAssociationListViewNewValue(null, null);
+		onConstraintListViewNewValue(null, null);
+		constraintListView.getItems().clear();
 		metaClassTextField.clear();
 		delegatesToTextField.clear();
 		constraintListView.getItems().clear();
@@ -633,6 +635,7 @@ public final class ModelBrowser extends CustomStage {
 		} else {
 			updateConstraintTab(null, false, false);
 		}
+		constraintListView.setContextMenu(new BrowserConstraintContextMenu());
 	}
 
 	private void onLinksListViewNewValue(FmmlxAssociation oldValue, FmmlxAssociation association) {
@@ -854,6 +857,22 @@ public final class ModelBrowser extends CustomStage {
 			
 		}
 		
+	}
+	
+	private class BrowserConstraintContextMenu extends ContextMenu {
+		
+		private final FmmlxObject object;
+		private final DiagramActions actions;
+		private final Constraint constraint;
+		
+		public BrowserConstraintContextMenu() {
+			this.object = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+			this.actions = activePackage.getActions();
+			this.constraint = constraintListView.getSelectionModel().getSelectedItem();
+			setAutoHide(true);
+			addNewMenuItem(this,"Add Constraint", e -> actions.addConstraintDialog(object), ALWAYS);
+			addNewMenuItem(this,"Remove Constraint", e -> actions.removeDialog(object,PropertyType.Constraint, constraint),() -> {return constraint != null;});
+		}
 	}
 	
 	private void addNewMenuItem(ContextMenu parentMenu, String text, EventHandler<ActionEvent> action, Enabler enabler) {
