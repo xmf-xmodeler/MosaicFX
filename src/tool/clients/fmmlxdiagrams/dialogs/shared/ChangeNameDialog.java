@@ -256,12 +256,12 @@ public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDial
 			return false;
 		}
 
-		if (!InputChecker.getInstance().validateName(name)) {
+		if (!InputChecker.validateName(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
-		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, object)) {
-			errorLabel.setText(StringValue.ErrorMessage.nameAlreadyUsed);
-			return false;
+//		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, object)) {
+//			errorLabel.setText(StringValue.ErrorMessage.nameAlreadyUsed);
+//			return false;
 		}
 		return true;
 	}
@@ -273,12 +273,12 @@ public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDial
 			errorLabel.setText(StringValue.ErrorMessage.selectAttribute);
 			return false;
 		}
-		if (!InputChecker.getInstance().validateName(name)) {
+		if (!InputChecker.validateName(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
-		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, object)) {
-			errorLabel.setText(StringValue.ErrorMessage.nameAlreadyUsed);
-			return false;
+//		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, object)) {
+//			errorLabel.setText(StringValue.ErrorMessage.nameAlreadyUsed);
+//			return false;
 		} else {
 			errorLabel.setText("");
 			return true;

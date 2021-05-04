@@ -23,7 +23,6 @@ public class CustomDialog<R> extends Dialog<R> {
 	protected FlowPane flow;
 	protected GridPane grid;
 	protected Label errorLabel;
-	protected InputChecker inputChecker;
 	protected VBoxControl vBoxControl;
 
 	public CustomDialog() {
@@ -36,7 +35,6 @@ public class CustomDialog<R> extends Dialog<R> {
 		flow.setVgap(3);
 		flow.setPrefWrapLength(250);
 		vBoxControl = new VBoxControl();
-		inputChecker = new InputChecker();
 		
 		flow.getChildren().add(grid);
 
@@ -351,13 +349,13 @@ public class CustomDialog<R> extends Dialog<R> {
 		boolean valid;
 		switch(attributeType){
         case "Integer":   	
-        	valid = inputChecker.validateInteger(startValue) && inputChecker.validateInteger(endValue) && inputChecker.validateInteger(increment);
+        	valid = InputChecker.validateInteger(startValue) && InputChecker.validateInteger(endValue) && InputChecker.validateInteger(increment);
         	if(!valid) {
         		errorLabel.setText("Please input valid Integer-Value");
         	}
         	return valid;
         case "Float":
-        	valid =  inputChecker.validateFloat(startValue) && inputChecker.validateFloat(endValue) && inputChecker.validateFloat(increment);
+        	valid =  InputChecker.validateFloat(startValue) && InputChecker.validateFloat(endValue) && InputChecker.validateFloat(increment);
         	if(!valid) {
         		errorLabel.setText("Please input valid Float-Value");
         	}

@@ -92,14 +92,16 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		this.ownPath = ownPath;
 		this.ofPath = ofPath;
 		this.parentsPaths = parentPaths;
-
-		this.showOperations = true;
-		this.showOperationValues = true;
-		this.showSlots = true;
-		this.showDerivedOperations = true;
-		this.showDerivedAttributes = true;
-		this.showGettersAndSetters = true;
 		
+		if(diagram instanceof FmmlxDiagram) {
+			FmmlxDiagram D = (FmmlxDiagram) diagram;
+			this.showOperations = D.isShowOperations();
+			this.showOperationValues = D.isShowOperationValues();
+			this.showSlots = D.isShowSlots();
+			this.showDerivedOperations = D.isShowDerivedOperations();
+			this.showDerivedAttributes = D.isShowDerivedAttributes();
+			this.showGettersAndSetters = D.isShowGetterAndSetter();
+		}
 	}
 
 	private String getParentsList(FmmlxDiagram diagram) {
@@ -171,7 +173,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return otherOperations;
 	}
 	
-	public Vector<FmmlxOperation> getDelegatedOperations() {
+	public Vector<FmmlxOperation> getDelegatedOperations() {		
 		Vector<FmmlxOperation> delegatedOperations = new Vector<>();
 		FmmlxObject delegatesTo = getDelegatesTo(false);
 		if(delegatesTo != null) {
@@ -604,7 +606,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	}
 	
 	private int countAttributesToBeShown() {
-		return otherAttributes.size() + ownAttributes.size();
+		return (showDerivedAttributes?1:0)*otherAttributes.size() + ownAttributes.size();
 	}
 
 	private boolean hasParents() {
@@ -741,7 +743,10 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	private Vector<String> getMonitoredOperationsNames() {
 		Vector<String> monitorNames = new Vector<>();
 		for (FmmlxObject ancestor : getAllAncestors()) {
-			for (FmmlxOperation operation : ancestor.getAllOperations()) {
+			Vector<FmmlxOperation> ops = new Vector<>();
+			ops.addAll(ancestor.getAllOperations());
+			ops.addAll(ancestor.getDelegatedOperations());
+			for (FmmlxOperation operation : ops) {
 				if (operation.getLevel() == this.level && operation.isMonitored() && !monitorNames.contains(operation.getName())) {
 					monitorNames.add(operation.getName());
 				}

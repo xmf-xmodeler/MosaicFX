@@ -102,9 +102,6 @@ public abstract class AbstractPackageViewer {
 				o.fetchDataDefinitions(comm);
 			}
 			
-			for(FmmlxObject o : objects) {
-				o.fetchDataValues(comm);
-			}
 			issues.addAll(comm.fetchIssues(this));
 			Vector<Edge<?>> fetchedEdges = comm.getAllAssociations(this);
 			fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
@@ -116,6 +113,10 @@ public abstract class AbstractPackageViewer {
 
 			enums = comm.fetchAllEnums(this);
 			auxTypes = comm.fetchAllAuxTypes(this);
+						
+			for(FmmlxObject o : objects) {
+				o.fetchDataValues(comm);
+			}
 			
 			fetchDiagramDataSpecific();
 			
