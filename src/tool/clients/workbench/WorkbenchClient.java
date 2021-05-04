@@ -115,4 +115,13 @@ public class WorkbenchClient extends Client {
     Message message = getHandler().newMessage("startFmmlxClient", 0);
     getHandler().raiseEvent(message);
   }
+  
+  /*public Integer getRandomNumber(int min, int max) {
+	Message message = getHandler().newMessage("getRandomNumber", 2);
+	message.args[0] = new Value(min);
+	message.args[1] = new Value(max);
+	
+	Value value = getHandler().call(message);
+	return value.intValue;
+  }*/
 }

@@ -41,6 +41,7 @@ public class FmmlxDiagramCommunicator {
 	private static final boolean DEBUG = false;
 	static TabPane tabPane;
 	private Value getNoReturnExpectedMessageID(int diagramID) {return new Value(new Value[] {new Value(diagramID), new Value(-1)});}
+	private boolean silent;
 	
 	/* Operations for setting up the Communicator */
 	
@@ -177,7 +178,7 @@ public class FmmlxDiagramCommunicator {
 			if (requestID == -1) {
 				if (DEBUG) System.err.println("v.get(0)= " + msgAsVec.get(0));
 				java.util.Vector<Object> err = (java.util.Vector<Object>) msgAsVec.get(0);
-				if (err != null && err.size() > 0 && err.get(0) != null ) {
+				if ((!silent) && err != null && err.size() > 0 && err.get(0) != null ) {
 					CountDownLatch l = new CountDownLatch(1);
 					Platform.runLater(() -> {
 						Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
@@ -1170,10 +1171,12 @@ public class FmmlxDiagramCommunicator {
         sendMessage("addAssociationInstance", message);
     }
 
-    public void removeAssociationInstance(int diagramID, String assocInstId) {
+    public void removeAssociationInstance(int diagramID, String assocName, String sourceName, String targetName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(assocInstId)
+                new Value(assocName),
+                new Value(sourceName),
+                new Value(targetName)
         };
         sendMessage("removeAssociationInstance", message);
     }
@@ -1885,5 +1888,10 @@ public class FmmlxDiagramCommunicator {
 //		}
 		return positionInfos;
 	}
+
+	public void setSilent(boolean silent) {
+		this.silent = silent;
+	}
+
 
 }

@@ -75,17 +75,21 @@ public class LogXmlManager {
     public void reproduceFromLog(Integer newDiagramID) {
         Node logs = getLogs();
         NodeList logList = logs.getChildNodes();
-
-        for(int i = 0 ; i<logList.getLength(); i++){
-            if(logList.item(i).getNodeType()==Node.ELEMENT_NODE){
-                Element logElement = (Element) logList.item(i);
-                reproduceDiagramElement(newDiagramID, logElement);
-            }
+        FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator();
+         try {
+        	comm.setSilent(true);
+	        for(int i = 0 ; i<logList.getLength(); i++){
+	            if(logList.item(i).getNodeType()==Node.ELEMENT_NODE){
+	                Element logElement = (Element) logList.item(i);
+	                reproduceDiagramElement(comm, newDiagramID, logElement);
+	            }
+	        }
+        } finally {
+        	comm.setSilent(false);
         }
     }
 
-    private void reproduceDiagramElement(Integer diagramID, Element logElement) {
-    	FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator();
+    private void reproduceDiagramElement(FmmlxDiagramCommunicator comm, Integer diagramID, Element logElement) {
             String tagName = logElement.getTagName();
             switch (tagName) {
                 case "addMetaClass": {
@@ -205,6 +209,7 @@ public class LogXmlManager {
                     String className = classPathArray[classPathArray.length-1];
                     int oldLevel = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_OLD_LEVEL));
                     int newLevel = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_NEW_LEVEL));
+                    System.err.println("changeAttributeLevel:" + className + " " +name + " " + oldLevel + "->" + newLevel);
                     comm.changeAttributeLevel(diagramID, className, name, oldLevel, newLevel);
                     break;
 
@@ -428,7 +433,17 @@ public class LogXmlManager {
                     break;
                 }
                 case "removeLink" : {
-                    //TODO still using id :: diagram.getComm().removeAssociationInstance(diagram, name);
+                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+
+                    String classpath1 = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS_SOURCE);
+                    String[] classPathArray1 = classpath1.split("::");
+                    String className1 = classPathArray1[classPathArray1.length-1];
+
+                    String classpath2 = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS_TARGET);
+                    String[] classPathArray2 = classpath2.split("::");
+                    String className2 = classPathArray2[classPathArray2.length-1];
+
+                    comm.removeAssociationInstance(diagramID, name, className1, className2);
                     break;
                 }
                 case "addDelegation" : {
@@ -460,7 +475,6 @@ public class LogXmlManager {
                     String enumName = logElement.getAttribute("name");
                     comm.addEnumeration(diagramID, enumName);
                     break;
-
                 }
                 case "addEnumerationValue" : {
                     String enumName = logElement.getAttribute("enum_name");

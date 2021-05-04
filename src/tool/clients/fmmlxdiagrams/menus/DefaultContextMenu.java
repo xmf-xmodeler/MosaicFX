@@ -1,9 +1,15 @@
 package tool.clients.fmmlxdiagrams.menus;
 
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.workbench.WorkbenchClient;
 
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Optional;
 import java.util.Vector;
 
@@ -83,16 +89,36 @@ public class DefaultContextMenu extends ContextMenu {
 				diagram.savePNG();
 			});	
 
-			MenuItem test = new MenuItem("Test edges");
+			/*MenuItem test = new MenuItem("Lottoziehung");
 			test.setOnAction(a -> {
-				actions.testGetEdges();
+				Vector<Integer> result = new Vector<>();
+				while(result.size() < 6) {
+					Integer next = WorkbenchClient.theClient().getRandomNumber(1, 50);
+					if(!result.contains(next)) result.add(next);
+				}
+				Collections.sort(result);
+				Integer zusatzzahl = null;
+				while(zusatzzahl == null) {
+					Integer next = WorkbenchClient.theClient().getRandomNumber(1, 50);
+					if(!result.contains(next)) zusatzzahl = next;
+				}
+				
+				Alert alert = new Alert(AlertType.INFORMATION);
+				alert.setTitle("Lottoziehung");
+				Calendar greg = GregorianCalendar.getInstance();
+				greg.setTime(new Date());
+				alert.setHeaderText("Die Lottozahlen vom " + greg.get(GregorianCalendar.DAY_OF_MONTH) + "."+ greg.get(GregorianCalendar.MONTH) + "." + greg.get(GregorianCalendar.YEAR) + ":");
+				alert.setContentText(result.get(0) + ", "+ result.get(1) + ", "+ result.get(2) + ", "
+						            +result.get(4) + ", "+ result.get(5) + ", "+ result.get(6) + " Z: " + zusatzzahl);
+
+				alert.showAndWait();
 			});
 
 			MenuItem testGetLabel = new MenuItem("Test label");
 			testGetLabel.setOnAction(a -> {
 				actions.testGetLabel();
 			});
-			getItems().addAll(pngItem, test, testGetLabel);
+			getItems().addAll(pngItem, test, testGetLabel);*/
 
 
 			MenuItem openFindImplementationDialog = new MenuItem("Search for Implementation");

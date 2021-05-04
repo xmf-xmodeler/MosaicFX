@@ -415,9 +415,11 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		for (FmmlxAttribute att : otherAttributes) {
 			if(showDerivedAttributes) {
 			attY += lineHeight;
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, NO_ACTION, att.getName() + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + diagram.getObjectByPath(att.ownerPath).name + ")");
+			String ownerName = att.ownerPath;
+			try{ownerName = diagram.getObjectByPath(att.ownerPath).name;} catch (Exception e) {}
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, NO_ACTION, att.getName() + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + ownerName + ")");
 			attBox.nodeElements.add(attLabel);
-			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.GRAY, att, NO_ACTION, att.level + "");
+			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.GRAY, att, NO_ACTION, att.level == -1 ? " " : att.level + "");
 			attBox.nodeElements.add(attLevelLabel);
 			}
 		}
@@ -631,7 +633,9 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		}
 		for (FmmlxAttribute att : otherAttributes) {
 			if(showDerivedAttributes) {
-			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + diagram.getObjectByPath(att.ownerPath).name + ")") + INST_LEVEL_WIDTH, neededWidth);
+				String ownerName = att.ownerPath;
+				try{ownerName = diagram.getObjectByPath(att.ownerPath).name;} catch (Exception e) {}
+				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + ownerName + ")") + INST_LEVEL_WIDTH, neededWidth);
 			}
 		}
 //		//determine maximal width of operations

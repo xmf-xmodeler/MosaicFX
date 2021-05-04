@@ -825,8 +825,11 @@ public class DiagramActions {
 		}
 	}
 
-	public void removeAssociationInstance(FmmlxLink instance) {
-		diagram.getComm().removeAssociationInstance(diagram.getID(), instance.path);
+	public void removeAssociationInstance(FmmlxLink link) {
+		diagram.getComm().removeAssociationInstance(diagram.getID(), 
+				link.getOfName(), 
+				link.getSourceNode().getName(), 
+				link.getTargetNode().getName());
 		diagram.updateDiagram();
 	}
 
