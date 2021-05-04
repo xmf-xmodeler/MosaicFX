@@ -684,10 +684,11 @@ public final class ModelBrowser extends CustomStage {
 			constraintReasonArea.setText(constraint.getReasonFull());
 			constraintTab.setText("Constraint" + " (" + constraint.getName()+ ")");
 		} else {
-			constraintBodyArea.setText(null);
-			constraintReasonArea.setText(null);
+			constraintBodyArea.setText("");
+			constraintReasonArea.setText("");
 			constraintTab.setText("Constraint");			
 		}
+		conCodeButton.setOnAction(e->{activePackage.getComm().changeConstraintBody(activePackage.getID(), fmmlxObjectListView.getSelectionModel().getSelectedItem().getPath(), constraint.getName(), constraintBodyArea.getText());});
 	}
 
 	public void notifyModelHasLoaded() {
