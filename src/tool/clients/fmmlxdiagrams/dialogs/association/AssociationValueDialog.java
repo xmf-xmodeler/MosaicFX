@@ -145,9 +145,12 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 		updateAssociationListView(selectAssociationComboBox.getSelectionModel().getSelectedItem());
 	}
 	
-	private void removeAssociationInstance(FmmlxLink selectedItem) {
-		diagram.getComm().removeAssociationInstance(diagram.getID(), selectedItem.path);
-		associationListView.getItems().remove(selectedItem);
+	private void removeAssociationInstance(FmmlxLink link) {
+		diagram.getComm().removeAssociationInstance(diagram.getID(), 
+				link.getOfName(), 
+				link.getSourceNode().getName(), 
+				link.getTargetNode().getName());
+		associationListView.getItems().remove(link);
 		diagram.updateDiagram();
 	}
 

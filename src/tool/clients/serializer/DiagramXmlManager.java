@@ -3,12 +3,11 @@ package tool.clients.serializer;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import tool.clients.serializer.interfaces.XmlManager;
 
 import java.util.List;
 import java.util.Vector;
 
-public class DiagramXmlManager implements XmlManager {
+public class DiagramXmlManager  {
     private final XmlHandler xmlHandler;
 
     protected DiagramXmlManager(XmlHandler xmlHandler){
@@ -56,17 +55,14 @@ public class DiagramXmlManager implements XmlManager {
         return xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_DIAGRAMS);
     }
 
-    @Override
     public void add(Element parent, Element element) {
         xmlHandler.addXmlElement(parent, element);
     }
 
-    @Override
     public void remove(Element element) {
 
     }
 
-    @Override
     public List<Node> getAll() {
         return null;
     }

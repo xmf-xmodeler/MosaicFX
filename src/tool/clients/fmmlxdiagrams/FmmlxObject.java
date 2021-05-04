@@ -92,14 +92,16 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		this.ownPath = ownPath;
 		this.ofPath = ofPath;
 		this.parentsPaths = parentPaths;
-
-		this.showOperations = true;
-		this.showOperationValues = true;
-		this.showSlots = true;
-		this.showDerivedOperations = true;
-		this.showDerivedAttributes = true;
-		this.showGettersAndSetters = true;
 		
+		if(diagram instanceof FmmlxDiagram) {
+			FmmlxDiagram D = (FmmlxDiagram) diagram;
+			this.showOperations = D.isShowOperations();
+			this.showOperationValues = D.isShowOperationValues();
+			this.showSlots = D.isShowSlots();
+			this.showDerivedOperations = D.isShowDerivedOperations();
+			this.showDerivedAttributes = D.isShowDerivedAttributes();
+			this.showGettersAndSetters = D.isShowGetterAndSetter();
+		}
 	}
 
 	private String getParentsList(FmmlxDiagram diagram) {
@@ -147,6 +149,17 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	public Vector<FmmlxAssociation> getAllRelatedAssociations() {
 		return diagram.getRelatedAssociationByObject(this);
 	}
+	
+	public Vector<FmmlxAssociation> findAssociationsForLinks(){
+		Vector<FmmlxAssociation> associationForLinks = new Vector<>();
+		for (FmmlxAssociation asso : diagram.getAssociations()) {
+			if (this.level == asso.getLevelSource() && this.isInstanceOf(asso.sourceNode, this.level) || 
+				this.level == asso.getLevelTarget() && this.isInstanceOf(asso.targetNode, this.level)) {
+				associationForLinks.add(asso);
+			}
+		}
+			return  associationForLinks;
+	}
 
 	public ObservableList<FmmlxAttribute> getAllAttributesAsList() {
 		return FXCollections.observableArrayList(getAllAttributes());
@@ -160,7 +173,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return otherOperations;
 	}
 	
-	public Vector<FmmlxOperation> getDelegatedOperations() {
+	public Vector<FmmlxOperation> getDelegatedOperations() {		
 		Vector<FmmlxOperation> delegatedOperations = new Vector<>();
 		FmmlxObject delegatesTo = getDelegatesTo(false);
 		if(delegatesTo != null) {
@@ -402,9 +415,11 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		for (FmmlxAttribute att : otherAttributes) {
 			if(showDerivedAttributes) {
 			attY += lineHeight;
-			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, NO_ACTION, att.getName() + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + diagram.getObjectByPath(att.ownerPath).name + ")");
+			String ownerName = att.ownerPath;
+			try{ownerName = diagram.getObjectByPath(att.ownerPath).name;} catch (Exception e) {}
+			NodeLabel attLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, attY, Color.GRAY, null, att, NO_ACTION, att.getName() + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + ownerName + ")");
 			attBox.nodeElements.add(attLabel);
-			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.GRAY, att, NO_ACTION, att.level + "");
+			NodeLabel attLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, attY, Color.WHITE, Color.GRAY, att, NO_ACTION, att.level == -1 ? " " : att.level + "");
 			attBox.nodeElements.add(attLevelLabel);
 			}
 		}
@@ -593,7 +608,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	}
 	
 	private int countAttributesToBeShown() {
-		return otherAttributes.size() + ownAttributes.size();
+		return (showDerivedAttributes?1:0)*otherAttributes.size() + ownAttributes.size();
 	}
 
 	private boolean hasParents() {
@@ -618,7 +633,9 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		}
 		for (FmmlxAttribute att : otherAttributes) {
 			if(showDerivedAttributes) {
-			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + diagram.getObjectByPath(att.ownerPath).name + ")") + INST_LEVEL_WIDTH, neededWidth);
+				String ownerName = att.ownerPath;
+				try{ownerName = diagram.getObjectByPath(att.ownerPath).name;} catch (Exception e) {}
+				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + ownerName + ")") + INST_LEVEL_WIDTH, neededWidth);
 			}
 		}
 //		//determine maximal width of operations
@@ -730,7 +747,10 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	private Vector<String> getMonitoredOperationsNames() {
 		Vector<String> monitorNames = new Vector<>();
 		for (FmmlxObject ancestor : getAllAncestors()) {
-			for (FmmlxOperation operation : ancestor.getAllOperations()) {
+			Vector<FmmlxOperation> ops = new Vector<>();
+			ops.addAll(ancestor.getAllOperations());
+			ops.addAll(ancestor.getDelegatedOperations());
+			for (FmmlxOperation operation : ops) {
 				if (operation.getLevel() == this.level && operation.isMonitored() && !monitorNames.contains(operation.getName())) {
 					monitorNames.add(operation.getName());
 				}

@@ -8,42 +8,36 @@ import tool.clients.fmmlxdiagrams.FaXML;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.TimeOutException;
-import tool.clients.serializer.interfaces.Log;
-import tool.clients.serializer.interfaces.XmlManager;
 
 import java.util.Base64;
 import java.util.List;
 import java.util.Vector;
 
-public class LogXmlManager implements Log, XmlManager {
+public class LogXmlManager {
+    private static final String TAG = LogXmlManager.class.getSimpleName();
     private final XmlHandler xmlHandler;
 
     public LogXmlManager(XmlHandler xmlHandler) {
         this.xmlHandler = xmlHandler;
     }
 
-    @Override
     public void add(Element parent, Element newElement) {
         xmlHandler.addXmlElement(parent, newElement);
     }
 
-    @Override
     public void remove(Element element) {
         //TODO
     }
 
-    @Override
     public List<Node> getAll() {
         //TODO
         return null;
     }
 
-    @Override
     public void back(int diagramId) {
         //TODO
     }
 
-    @Override
     public void forward(int diagramId) {
         //TODO
     }
@@ -67,7 +61,6 @@ public class LogXmlManager implements Log, XmlManager {
         xmlHandler.removeAllChildren(logs);
     }
 
-    @Override
     public void backToLatestSave(int diagramId, String diagramLabel) {
         //TODO
     }
@@ -82,17 +75,21 @@ public class LogXmlManager implements Log, XmlManager {
     public void reproduceFromLog(Integer newDiagramID) {
         Node logs = getLogs();
         NodeList logList = logs.getChildNodes();
-
-        for(int i = 0 ; i<logList.getLength(); i++){
-            if(logList.item(i).getNodeType()==Node.ELEMENT_NODE){
-                Element logElement = (Element) logList.item(i);
-                reproduceDiagramElement(newDiagramID, logElement);
-            }
+        FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator();
+         try {
+        	comm.setSilent(true);
+	        for(int i = 0 ; i<logList.getLength(); i++){
+	            if(logList.item(i).getNodeType()==Node.ELEMENT_NODE){
+	                Element logElement = (Element) logList.item(i);
+	                reproduceDiagramElement(comm, newDiagramID, logElement);
+	            }
+	        }
+        } finally {
+        	comm.setSilent(false);
         }
     }
 
-    private void reproduceDiagramElement(Integer diagramID, Element logElement) {
-    	FmmlxDiagramCommunicator comm = FmmlxDiagramCommunicator.getCommunicator();
+    private void reproduceDiagramElement(FmmlxDiagramCommunicator comm, Integer diagramID, Element logElement) {
             String tagName = logElement.getTagName();
             switch (tagName) {
                 case "addMetaClass": {
@@ -435,7 +432,17 @@ public class LogXmlManager implements Log, XmlManager {
                     break;
                 }
                 case "removeLink" : {
-                    //TODO still using id :: diagram.getComm().removeAssociationInstance(diagram, name);
+                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+
+                    String classpath1 = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS_SOURCE);
+                    String[] classPathArray1 = classpath1.split("::");
+                    String className1 = classPathArray1[classPathArray1.length-1];
+
+                    String classpath2 = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS_TARGET);
+                    String[] classPathArray2 = classpath2.split("::");
+                    String className2 = classPathArray2[classPathArray2.length-1];
+
+                    comm.removeAssociationInstance(diagramID, name, className1, className2);
                     break;
                 }
                 case "addDelegation" : {
@@ -462,13 +469,11 @@ public class LogXmlManager implements Log, XmlManager {
 
                     comm.setRoleFiller(diagramID, role, roleFiller);
                     break;
-
                 }
                 case "addEnumeration" : {
                     String enumName = logElement.getAttribute("name");
                     comm.addEnumeration(diagramID, enumName);
                     break;
-
                 }
                 case "addEnumerationValue" : {
                     String enumName = logElement.getAttribute("enum_name");
@@ -479,13 +484,22 @@ public class LogXmlManager implements Log, XmlManager {
                         e.printStackTrace();
                     }
                     break;
+                }
+                case "levelRaiseAll" : {
+                    String amountStr = logElement.getAttribute("amount");
+                    int raiseValue = Integer.parseInt(amountStr);
 
+                    if(raiseValue>0){
+                        comm.levelRaiseAll(diagramID);
+                    } else {
+                        comm.levelLowerAll(diagramID);
+                    }
+                    break;
                 }
                 default:
-                    System.out.println(tagName + " not implemented yet");
+                    System.out.println(tagName + " not implemented yet. Check "+TAG);
                     break;
             }
-
     }
 
     private String parseOf(String ofString) {

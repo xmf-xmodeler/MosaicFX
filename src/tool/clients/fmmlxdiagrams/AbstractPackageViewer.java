@@ -69,7 +69,18 @@ public abstract class AbstractPackageViewer {
 		setViewerStatus(ViewerStatus.DIRTY);
 		new Thread(this::fetchDiagramData).start();
 	}
-	
+
+	//for test
+	public void updateEdges() {
+		new Thread(this::sendInitialEdgesPosition).start();
+	}
+
+	private void sendInitialEdgesPosition() {
+		for(Edge edge : edges){
+			getComm().sendCurrentPositions(getID(), edge);
+		}
+	}
+
 	protected void fetchDiagramData() {
 		if(fetchingData) {
 			System.err.println("\talready fetching diagram data");
@@ -78,7 +89,6 @@ public abstract class AbstractPackageViewer {
 		fetchingData = true;
 		setViewerStatus(ViewerStatus.LOADING);
 		try {
-
 			if(objects.size()==0){
 				justLoaded = true;
 			}
@@ -92,9 +102,6 @@ public abstract class AbstractPackageViewer {
 				o.fetchDataDefinitions(comm);
 			}
 			
-			for(FmmlxObject o : objects) {
-				o.fetchDataValues(comm);
-			}
 			issues.addAll(comm.fetchIssues(this));
 			Vector<Edge<?>> fetchedEdges = comm.getAllAssociations(this);
 			fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
@@ -106,6 +113,10 @@ public abstract class AbstractPackageViewer {
 
 			enums = comm.fetchAllEnums(this);
 			auxTypes = comm.fetchAllAuxTypes(this);
+						
+			for(FmmlxObject o : objects) {
+				o.fetchDataValues(comm);
+			}
 			
 			fetchDiagramDataSpecific();
 			

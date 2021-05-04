@@ -11,6 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
+import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorRandom;
 
@@ -86,10 +87,10 @@ public class ValueGeneratorRandomDialog extends CustomDialog<String> implements 
 	}
 
 	private boolean validateFloat(TextField rangeMinTextField, TextField rangeMaxTextField) {
-		if(!inputChecker.validateFloat(rangeMinTextField.getText())){
+		if(!InputChecker.validateFloat(rangeMinTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidFloatValue +" : Range (Min)");
 			return false;
-		} else if(!inputChecker.validateFloat(rangeMaxTextField.getText())){
+		} else if(!InputChecker.validateFloat(rangeMaxTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidFloatValue +" : Range (Max)");
 			return false;
 		} else if(!validateLogic()){
@@ -100,10 +101,10 @@ public class ValueGeneratorRandomDialog extends CustomDialog<String> implements 
 	}
 
 	private boolean validateInteger(TextField rangeMinTextField, TextField rangeMaxTextField) {
-		if(!inputChecker.validateInteger(rangeMinTextField.getText())){
+		if(!InputChecker.validateInteger(rangeMinTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidIntegerValue +" : Range (Min)");
 			return false;
-		} else if(!inputChecker.validateInteger(rangeMaxTextField.getText())){
+		} else if(!InputChecker.validateInteger(rangeMaxTextField.getText())){
 			errorLabel.setText(StringValue.ErrorMessage.pleaseInputValidIntegerValue +" : Range (Max)");
 			return false;
 		} else if(!validateLogic()){

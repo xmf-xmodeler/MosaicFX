@@ -1,13 +1,18 @@
 package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import tool.clients.dialogs.enquiries.FindClassDialog;
 import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
@@ -661,28 +666,28 @@ public class DiagramActions {
 				final AssociationDialogResult result = opt.get();
 				
 				if(result.selectedAssociation.isSourceVisible() != result.sourceVisibleFromTarget) {
-					diagram.getComm().setAssociationEndVisibility(diagram.getID(), result.selectedAssociation.path, false, result.sourceVisibleFromTarget);				
+					diagram.getComm().setAssociationEndVisibility(diagram.getID(), result.selectedAssociation.getName(), false, result.sourceVisibleFromTarget);				
 				}
 				if(result.selectedAssociation.isTargetVisible() != result.targetVisibleFromSource) {
-					diagram.getComm().setAssociationEndVisibility(diagram.getID(), result.selectedAssociation.path, true, result.targetVisibleFromSource);				
+					diagram.getComm().setAssociationEndVisibility(diagram.getID(), result.selectedAssociation.getName(), true, result.targetVisibleFromSource);				
 				}
 				
 				if(!result.selectedAssociation.getAccessNameEndToStart().equals(result.newIdentifierSource)) {
 					System.err.println("getAccessNameEndToStart:" + result.selectedAssociation.getAccessNameEndToStart() + "--> " + result.newIdentifierSource);
-					diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), result.selectedAssociation.path, result.newIdentifierSource);
+					diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), result.selectedAssociation.getName(), result.newIdentifierSource);
 				}
 				if(!result.selectedAssociation.getAccessNameStartToEnd().equals(result.newIdentifierTarget)) {
 					System.err.println("getAccessNameStartToEnd:" + result.selectedAssociation.getAccessNameStartToEnd() + "--> " + result.newIdentifierTarget);
-					diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), result.selectedAssociation.path, result.newIdentifierTarget);
+					diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), result.selectedAssociation.getName(), result.newIdentifierTarget);
 				}
 				
 				if(!result.selectedAssociation.getLevelSource().equals(result.newInstLevelSource)) {
 					System.err.println("getLevelEndToStart:" + result.selectedAssociation.getLevelSource() + "--> " + result.newInstLevelSource);
-					diagram.getComm().changeAssociationEnd2StartLevel(diagram.getID(), result.selectedAssociation.path, result.newInstLevelSource);
+					diagram.getComm().changeAssociationEnd2StartLevel(diagram.getID(), result.selectedAssociation.getName(), result.newInstLevelSource);
 				}
 				if(!result.selectedAssociation.getLevelTarget().equals(result.newInstLevelTarget)) {
 					System.err.println("getLevelStartToEnd:" + result.selectedAssociation.getLevelTarget() + "--> " + result.newInstLevelTarget);
-					diagram.getComm().changeAssociationStart2EndLevel(diagram.getID(), result.selectedAssociation.path, result.newInstLevelTarget);
+					diagram.getComm().changeAssociationStart2EndLevel(diagram.getID(), result.selectedAssociation.getName(), result.newInstLevelTarget);
 				}
 				
 				if(!result.selectedAssociation.getMultiplicityEndToStart().equals(result.multTargetToSource)) {
@@ -742,61 +747,48 @@ public class DiagramActions {
 
 	}
 	
-	public void setRoleFiller(FmmlxObject role, FmmlxObject roleFiller) {
-		if(role == null) {
-			new javafx.scene.control.Alert(AlertType.ERROR, "Role Missing", ButtonType.CANCEL).showAndWait(); return;
-		}
-		if(roleFiller == null) {
-			Vector<FmmlxObject> roleFillerCandidates = new Vector<>();
-			FmmlxObject delegateFrom = diagram.getObjectByPath(role.getOfPath());
-			
-			DelegationEdge de = delegateFrom.getDelegatesToEdge(true);
-			if(de == null) {
-				new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Missing", ButtonType.CANCEL).showAndWait(); return;
+	public void setRoleFiller(final FmmlxObject role, final FmmlxObject roleFiller) {
+		Platform.runLater(() -> {
+			FmmlxObject roleFiller_Local = roleFiller;
+			if(role == null) {
+				new javafx.scene.control.Alert(AlertType.ERROR, "Role Missing", ButtonType.CANCEL).showAndWait(); return;
 			}
-			FmmlxObject delegateTo = de.targetNode;
-			for(FmmlxObject o : diagram.getObjects()) {
-				if(o.getAllAncestors().contains(delegateTo)) roleFillerCandidates.add(o);
+			if(roleFiller_Local == null) {
+				Vector<FmmlxObject> roleFillerCandidates = new Vector<>();
+				FmmlxObject delegateFrom = diagram.getObjectByPath(role.getOfPath());
+				
+				DelegationEdge de = delegateFrom.getDelegatesToEdge(true);
+				if(de == null) {
+					new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Missing", ButtonType.CANCEL).showAndWait(); return;
+				}
+				FmmlxObject delegateTo = de.targetNode;
+				for(FmmlxObject o : diagram.getObjects()) {
+					if(o.getAllAncestors().contains(delegateTo)) roleFillerCandidates.add(o);
+				}
+				ChoiceDialog<FmmlxObject> delegationChooseDialog = new ChoiceDialog<FmmlxObject>(null, roleFillerCandidates);
+				delegationChooseDialog.setTitle("Set RoleFiller");
+				delegationChooseDialog.setHeaderText("Select roleFiller for " + role.getName());
+				Optional<FmmlxObject> chosenTarget = delegationChooseDialog.showAndWait();
+				if(chosenTarget.isPresent()) {
+					roleFiller_Local = chosenTarget.get();
+				} else {
+					new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Target Missing", ButtonType.CANCEL).showAndWait(); return;
+				}
 			}
-			ChoiceDialog<FmmlxObject> delegationChooseDialog = new ChoiceDialog<FmmlxObject>(null, roleFillerCandidates);
-			delegationChooseDialog.setTitle("Set RoleFiller");
-			delegationChooseDialog.setHeaderText("Select roleFiller for " + role.getName());
-			Optional<FmmlxObject> chosenTarget = delegationChooseDialog.showAndWait();
-			if(chosenTarget.isPresent()) {
-				roleFiller = chosenTarget.get();
-			} else {
-				new javafx.scene.control.Alert(AlertType.ERROR, "Delegation Target Missing", ButtonType.CANCEL).showAndWait(); return;
-			}
-		}
-		diagram.getComm().setRoleFiller(diagram.getID(), role.getName(), roleFiller.getName());
-		diagram.updateDiagram();
+			diagram.getComm().setRoleFiller(diagram.getID(), role.getName(), roleFiller_Local.getName());
+			diagram.updateDiagram();
+		});
 	}
 
-	public void addAssociationInstance(FmmlxObject source, FmmlxObject target) {
+	public void addAssociationInstance(FmmlxObject source, FmmlxObject target, FmmlxAssociation association) {
 		if (source != null && target != null) {
 			// this case is relatively easy. We have two objects. Now we try to find the 
 			// association they belong to. If there are more than one, show a dialog to pick one.
 			// if there is only one, or one has been picked: proceed to xmf, otherwise nothing
-			FmmlxAssociation association = null;
-			Vector<FmmlxAssociation> associations = diagram.findAssociations(source, target);
-			if (associations.size() > 1) {
-				ChoiceDialog<FmmlxAssociation> dialog = new ChoiceDialog<>(associations.firstElement(), associations);
-				dialog.setTitle("Choose Association Dialog");
-				dialog.setHeaderText("More than one matching association found");
-				dialog.setContentText("Choose an association:");
-
-				// Traditional way to get the response value.
-				Optional<FmmlxAssociation> result = dialog.showAndWait();
-				if (result.isPresent()){
-				    association = result.get();
-				} else {
-					// do nothing
-				}
-			} else if (associations.size() == 1) {
-				association = associations.firstElement();
-			} else {
-				// if associations.size() == 0 then association remains null
-				new Alert(AlertType.ERROR, "The selected objects don't fit any Association definition.", ButtonType.OK).showAndWait();
+			//FmmlxAssociation association = null;
+			if(association==null) {
+				association=chooseAssociation(source, target);
+				
 			}
 			if (association != null) {
 				//				CountDownLatch l = new CountDownLatch(1);
@@ -809,22 +801,117 @@ public class DiagramActions {
 			}
 		} else if (source != null ^ target != null) { // XOR
 			// In this case only one object is set. If only second is set: swap them
-			if (target != null) {
-				source = target;
-				target = null;
-			} // swap
+//			if (target != null) {
+//				source = target;
+//				target = null;
+//			} // swap
 			// now: source != null and target == null
 			// We don't know the association, so we try to figure it out:
-			Vector<FmmlxAssociation> associations = diagram.findAssociations(source, target);
-			new Alert(AlertType.ERROR, "No strategy for this situation yet. Choose two objects to create an Association Instance instead.", ButtonType.OK).showAndWait();
+			if (association==null) {
+				association=chooseAssociation(source, target);
+			}
+			
+			if(association!=null) {
+				
+				if((source==null || association.sourceNode.getInstancesByLevel(association.getLevelSource()).contains(source)) && (target==null ||association.targetNode.getInstancesByLevel(association.getLevelTarget()).contains(target))) {
+					addAssociationInstanceDialog(source, target, association);		
+				} else if((target==null || association.sourceNode.getInstancesByLevel(association.getLevelSource()).contains(target)) && (source==null ||association.targetNode.getInstancesByLevel(association.getLevelTarget()).contains(source))){
+					addAssociationInstanceDialog(target, source, association);	
+				} else {
+					new Alert(AlertType.ERROR, "Selected elements don't fit association definition.", ButtonType.OK).showAndWait();
+				}
+				
+			} else {
+				new Alert(AlertType.ERROR, "No strategy for this situation yet. Choose two objects to create an Association Instance instead.", ButtonType.OK).showAndWait();	
+			}
 		} else {
 			// nothing supplied
-			new Alert(AlertType.ERROR, "No strategy for this situation yet. Choose two objects to create an Association Instance instead.", ButtonType.OK).showAndWait();
+			if(association==null) {
+				addAssociationInstanceDialog(source, target, association);	
+			} else {
+				new Alert(AlertType.ERROR, "No strategy for this situation yet. Choose two objects to create an Association Instance instead.", ButtonType.OK).showAndWait();	
+			}	
 		}
 	}
 
-	public void removeAssociationInstance(FmmlxLink instance) {
-		diagram.getComm().removeAssociationInstance(diagram.getID(), instance.path);
+	private FmmlxAssociation chooseAssociation(FmmlxObject source, FmmlxObject target) {
+		FmmlxAssociation association=null;
+		Vector<FmmlxAssociation> associations = diagram.findAssociations(source, target);
+		if (associations.size() > 1) {
+			ChoiceDialog<FmmlxAssociation> dialog = new ChoiceDialog<>(associations.firstElement(), associations);
+			dialog.setTitle("Choose Association Dialog");
+			dialog.setHeaderText("More than one matching association found");
+			dialog.setContentText("Choose an association:");
+
+			// Traditional way to get the response value.
+			Optional<FmmlxAssociation> result = dialog.showAndWait();
+			if (result.isPresent()){
+			    association = result.get();
+			} else {
+				// do nothing
+			}
+		} else if (associations.size() == 1) {
+			association = associations.firstElement();
+		} else {
+			// if associations.size() == 0 then association remains null		
+			new Alert(AlertType.ERROR, "The selected objects don't fit any Association definition.", ButtonType.OK).showAndWait();
+		}
+		return association;
+	}
+
+	public void addAssociationInstanceDialog(FmmlxObject source, FmmlxObject target, FmmlxAssociation association) {
+		Dialog dialog = new Dialog();
+		dialog.setTitle("Generate Instance for Link");
+		dialog.setHeaderText("Choose Source & Target for the Link via Dropdown Menu");
+		Label sourceLabel = new Label("Source: ");
+		Label targetLabel = new Label("Target: ");
+		ComboBox<FmmlxObject> sourceCB = new ComboBox<FmmlxObject>();
+		ComboBox<FmmlxObject> targetCB = new ComboBox<FmmlxObject>();
+		Vector<FmmlxObject> sourceList = new Vector<FmmlxObject>();
+		Vector<FmmlxObject> targetList = new Vector<FmmlxObject>();
+		if(source!=null) {
+			sourceList.add(source);
+			sourceCB.getItems().addAll(sourceList);
+			sourceCB.setValue(source);
+		} else {
+			sourceList.addAll(association.sourceNode.getInstancesByLevel(association.getLevelSource()));
+			sourceCB.getItems().addAll(sourceList);
+		}
+		if(target!=null) {
+			targetList.add(target);
+			targetCB.getItems().addAll(targetList);
+			targetCB.setValue(target);
+		} else {
+			targetList.addAll(association.targetNode.getInstancesByLevel(association.getLevelTarget()));
+			targetCB.getItems().addAll(targetList);
+		}
+		Label space=new Label("        ");
+		GridPane grid = new GridPane();
+		grid.add(sourceLabel, 1, 1);
+		grid.add(sourceCB, 1, 2);
+		grid.add(space,2,1);
+		grid.add(targetLabel, 3, 1);
+		grid.add(targetCB, 3, 2);
+		dialog.getDialogPane().setContent(grid);
+		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+		dialog.getDialogPane().lookupButton(ButtonType.OK).disableProperty().bind(Bindings.createBooleanBinding(
+			    () -> (sourceCB.getValue() == null) || targetCB.getValue()==null,
+			    sourceCB.valueProperty(),
+			    targetCB.valueProperty()
+			));
+		Optional result= dialog.showAndWait();
+		if (result.isPresent()) {
+			diagram.getComm().addAssociationInstance(diagram.getID(), sourceCB.getSelectionModel().getSelectedItem().getName(), targetCB.getSelectionModel().getSelectedItem().getName(), association.getName());
+		} else {
+			dialog.close();
+		}
+	}
+	
+	public void removeAssociationInstance(FmmlxLink link) {
+		diagram.getComm().removeAssociationInstance(diagram.getID(), 
+				link.getOfName(), 
+				link.getSourceNode().getName(), 
+				link.getTargetNode().getName());
 		diagram.updateDiagram();
 	}
 

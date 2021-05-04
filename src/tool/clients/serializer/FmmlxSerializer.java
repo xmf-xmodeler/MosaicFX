@@ -3,7 +3,6 @@ package tool.clients.serializer;
 import javafx.util.Pair;
 import org.w3c.dom.Element;
 import tool.clients.fmmlxdiagrams.*;
-import tool.clients.serializer.interfaces.Serializer;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -13,7 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Vector;
 
-public class FmmlxSerializer implements Serializer {
+public class FmmlxSerializer  {
     private final XmlHandler xmlHandler;
     private final String file;
 
@@ -22,53 +21,53 @@ public class FmmlxSerializer implements Serializer {
         this.xmlHandler = new XmlHandler(this.file);
     }
 
-    @Override
     public String initUserXMLFile(String file) throws TransformerException, ParserConfigurationException {
         XmlCreator xmlCreator = new XmlCreator();
         return xmlCreator.create(file);
     }
 
-    @Override
-    public void saveAsXml(String diagramPath, String initLabel, FmmlxDiagramCommunicator communicator) throws TimeOutException, TransformerException {
+    public void saveAsXml(String packagePath, String initLabel, FmmlxDiagramCommunicator communicator) throws TimeOutException, TransformerException {
         this.clearAllData();
-        int saveLogCount = 0;
-        Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(diagramPath);
+//        int saveLogCount = 0;
+        Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(packagePath);
         Collections.sort(diagramIds);
         for(Integer id :diagramIds){
             String diagramLabel = communicator.createLabelFromInitLabel(initLabel, id);
-            saveProject(diagramPath);
-            saveDiagram(diagramLabel, diagramPath, id);
-            if(saveLogCount==0){
-                saveLog(id, communicator);
-            }
-            saveLogCount++;
+            saveProject(packagePath);
+            saveDiagram(diagramLabel, packagePath, id);
+//            if(saveLogCount==0){
+//                saveLog(packagePath, communicator);
+//            }
+//            saveLogCount++;
         }
+        saveLog(packagePath, communicator);
         this.xmlHandler.flushData();
     }
 
-    @Override
-    public void save(String diagramPath, String filePath, String label, Integer id, FmmlxDiagramCommunicator communicator)  {
+    public void save(String packagePath, String filePath, String label, Integer id, FmmlxDiagramCommunicator communicator)  {
+        System.out.println(label);
         if(filePath!=null && filePath.length()>0 && checkFileExist(xmlHandler.getSourcePath())){
             try {
-                Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(diagramPath);
+                Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(packagePath);
                 Collections.sort(diagramIds);
-                int saveLogCount = 0;
+//                int saveLogCount = 0;
                 for(Integer id_tmp :diagramIds){
                     String diagramLabel = communicator.createLabelFromInitLabel(label, id_tmp);
-                    saveProject(diagramPath);
-                    saveDiagram(diagramLabel, diagramPath, id_tmp);
-                    if(saveLogCount==0){
-                        saveLog(id_tmp, communicator);
-                    }
-                    saveLogCount++;
+                    saveProject(packagePath);
+                    saveDiagram(diagramLabel, packagePath, id_tmp);
+//                    if(saveLogCount==0){
+//                        saveLog(packagePath, communicator);
+//                    }
+//                    saveLogCount++;
                 }
+                saveLog(packagePath, communicator);
                 xmlHandler.flushData();
             } catch (TransformerException | TimeOutException e) {
                 e.printStackTrace();
             }
             System.out.println(label + " saved");
         } else {
-            communicator.saveXmlFile2(diagramPath, id);
+            communicator.saveXmlFile2(packagePath, id);
         }
     }
 
@@ -160,11 +159,11 @@ public class FmmlxSerializer implements Serializer {
         }
     }
 
-    public void saveLog(Integer diagramID, FmmlxDiagramCommunicator communicator) throws TimeOutException {
+    public void saveLog(String path, FmmlxDiagramCommunicator communicator) throws TimeOutException {
         LogXmlManager logXmlManager = new LogXmlManager(this.xmlHandler);
         logXmlManager.clearLog();
         Element logsElement = logXmlManager.getLogs();
-        FaXML protocol = communicator.getDiagramData(diagramID);
+        FaXML protocol = communicator.getDiagramData(path);
 
         Vector<FaXML> logs = protocol.getChildren();
         for (FaXML log : logs){
@@ -178,23 +177,21 @@ public class FmmlxSerializer implements Serializer {
         String type = keyPair[0];
         switch (type) {
             case "DelegationMapping:":
-                return new Pair<>(XmlConstant.EdgeType.DELEGATION, keyPair[1]);
+                return new Pair<>(XmlConstant.EdgeType.DELEGATION, key);
             case "InheritanceMapping:":
-                return new Pair<>(XmlConstant.EdgeType.INHERITANCE, keyPair[1]);
+                return new Pair<>(XmlConstant.EdgeType.INHERITANCE, key);
             case "AssociationLinkMapping:":
-                return new Pair<>(XmlConstant.EdgeType.LINK, keyPair[1]);
+                return new Pair<>(XmlConstant.EdgeType.LINK, key);
             case "RoleFillerMapping:":
-                return new Pair<>(XmlConstant.EdgeType.ROLEFILLEREDGE, keyPair[1]);
+                return new Pair<>(XmlConstant.EdgeType.ROLEFILLEREDGE, key);
         }
         return new Pair<>(XmlConstant.EdgeType.ASSOCIATION, key);
     }
 
-    @Override
     public boolean checkFileExist(String file) {
         return Files.exists(Paths.get(file));
     }
 
-    @Override
     public void clearAllData() {
         Element Root = xmlHandler.getRoot();
         Element logsElement = xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_LOGS);

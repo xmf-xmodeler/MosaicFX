@@ -35,7 +35,6 @@ import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.XmlHandler;
-import tool.clients.serializer.interfaces.Deserializer;
 import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
 
@@ -166,8 +165,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 		new Thread(this::fetchDiagramData).start();
 
-
-		
 		java.util.Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
 			
@@ -400,7 +397,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				FmmlxObject o = (FmmlxObject) s;
 				s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
 				for(Edge<?> e : edges) {
-					if(e.isStartNode(o) || e.isEndNode(o)) e.align();
+					if(e.isSourceNode(o) || e.isTargetNode(o)) e.align();
 				}
 			} else if (s instanceof DiagramEdgeLabel) {
 				DiagramEdgeLabel o = (DiagramEdgeLabel) s;
@@ -471,7 +468,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					FmmlxObject o = (FmmlxObject) s;
 					comm.sendCurrentPosition(this.getID(), o.getPath(), (int)Math.round(o.getX()), (int)Math.round(o.getY()));
 					for(Edge<?> e : edges) {
-						if(e.isStartNode(o) || e.isEndNode(o)) {
+						if(e.isSourceNode(o) || e.isTargetNode(o)) {
 							comm.sendCurrentPositions(this.getID(), e);
 						}
 					}
@@ -524,7 +521,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 						final FmmlxObject obj1 = newEdgeSource;
 						final FmmlxObject obj2 = newEdgeTarget;
 						Platform.runLater(() -> {
-							actions.addAssociationInstance(obj1, obj2);
+							actions.addAssociationInstance(obj1, obj2,null);
 							updateDiagramLater();
 						});						
 						break;
@@ -582,7 +579,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 						break;
 					case AssociationInstance:
 						mouseMode = MouseMode.STANDARD;
-						actions.addAssociationInstance(newEdgeSource, null);
+						actions.addAssociationInstance(newEdgeSource, null,null);
 						break;
 					case Delegation:
 					case RoleFiller:
@@ -910,7 +907,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		for(Edge<?> e : edges) {
 			if(e instanceof InheritanceEdge) {
 				InheritanceEdge i = (InheritanceEdge) e;
-				if(i.isStartNode(child) && i.isEndNode(parent)) return i;
+				if(i.isSourceNode(child) && i.isTargetNode(parent)) return i;
 			}
 		}
 		return null;
@@ -1002,7 +999,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	public Vector<Point2D> findEdgeIntersections(Point2D a, Point2D b) { // only interested in a-b horizontal crossing c-d vertical
 		Vector<Point2D> result = new Vector<>();
-		for(Edge<?> e : edges) {
+		for(Edge<?> e : new Vector<>(edges)) {
 			if(e.isVisible()) {
 				Vector<Point2D> otherPoints = e.getAllPoints();
 				for(int i = 0; i < otherPoints.size()-1; i++) {
@@ -1112,24 +1109,28 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	protected void fetchDiagramDataSpecific2() {
 		newFmmlxPalette.update();
 
-		if(filePath !=null && filePath.length()>0)
-		{   // only used once when loaded from xml
-			org.w3c.dom.Node positionInfo = getComm().getPositionInfo(getID()); 
-			if(positionInfo != null) {
+		if(filePath !=null && filePath.length()>0){
+			if(justLoaded){
 				FmmlxDeserializer deserializer = new FmmlxDeserializer(new XmlHandler(filePath));
-				deserializer.alignElements(this, (org.w3c.dom.Element) positionInfo);
-				triggerOverallReLayout();
+//				deserializer.alignElements(this, getComm());
+//		   		only used once when loaded from xml TODO
+				org.w3c.dom.Node positionInfo = getComm().getPositionInfo(getID());
+				if(positionInfo != null) {
+					deserializer.alignElements(this, (org.w3c.dom.Element) positionInfo);
+					triggerOverallReLayout();
+				}
+				redraw();
+				Issue nextIssue = null;
+				for(int i = 0; i < issues.size() && nextIssue == null; i++) {
+					if(issues.get(i).isSoluble()) nextIssue = issues.get(i);
+				}
+
+				if(nextIssue != null) {
+					nextIssue.performResolveAction(this);
+				}
+				updateDiagram();
+				justLoaded = false;
 			}
-		}
-		
-		redraw();
-		Issue nextIssue = null;
-		for(int i = 0; i < issues.size() && nextIssue == null; i++) {
-			if(issues.get(i).isSoluble()) nextIssue = issues.get(i);
-		} 
-		
-		if(nextIssue != null) {
-			nextIssue.performResolveAction(this);
 		}
 	}
 
