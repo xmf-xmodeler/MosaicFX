@@ -62,11 +62,12 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.AddConstrain
 						object, 
 						nameField.getText(), 
 						Integer.parseInt(levelField.getText()), 
-						bodyBox.getText(), reasonBox.getText());
+						"@Operation body(classifier : Class, level : Integer) : Boolean " + bodyBox.getText() + " end", 
+						"@Operation reason(classifier : Class, level : Integer) : String " + reasonBox.getText() + " end");
 			} else return null;
 		});
 	}
-
+	
 	private boolean validateUserInput() {
 		statusLabel.setText("");
 		try{

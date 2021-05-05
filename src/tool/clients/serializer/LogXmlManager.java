@@ -90,7 +90,7 @@ public class LogXmlManager {
     }
 
     private void reproduceDiagramElement(FmmlxDiagramCommunicator comm, Integer diagramID, Element logElement) {
-            String tagName = logElement.getTagName();
+    	String tagName = logElement.getTagName();
             switch (tagName) {
                 case "addMetaClass": {
                     String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
@@ -495,6 +495,21 @@ public class LogXmlManager {
                         comm.levelLowerAll(diagramID);
                     }
                     break;
+                }
+                case "addConstraint" : {
+                	String path = logElement.getAttribute("class");
+                	String constName = logElement.getAttribute("constName");
+                	Integer instLevel = Integer.parseInt(logElement.getAttribute("instLevel"));
+                	String body = logElement.getAttribute("body");
+                	String reason = logElement.getAttribute("reason");
+                	comm.addConstraint(diagramID, path, constName, instLevel, body, reason);
+                	break;
+                }
+                case "removeConstraint" : {
+                	String path = logElement.getAttribute("class");
+                	String name = logElement.getAttribute("name");
+                	comm.removeConstraint(diagramID, path, name);
+                	break;
                 }
                 default:
                     System.out.println(tagName + " not implemented yet. Check "+TAG);

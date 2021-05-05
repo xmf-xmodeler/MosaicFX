@@ -1378,25 +1378,36 @@ public class FmmlxDiagramCommunicator {
         sendMessage("changeConstraintLevel", message);
 	}
 	
-	public void changeConstraintBody(int diagramID, String path, String name, String body) {
+	public void changeConstraintBodyAndReason(int diagramID, String path, String name, String body, String reason) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
                 new Value(path),
                 new Value(name),
-                new Value(body)
-		};
-        sendMessage("changeConstraintBody", message);
-	}
-	
-	public void changeConstraintReason(int diagramID, String path, String name, String reason) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-                new Value(path),
-                new Value(name),
+                new Value(body),
                 new Value(reason)
 		};
-        sendMessage("changeConstraintReason", message);
-	}
+        sendMessage("changeConstraintBodyAndReason", message);
+	}	
+//	
+//	public void changeConstraintBody(int diagramID, String path, String name, String body) {
+//		Value[] message = new Value[]{
+//				getNoReturnExpectedMessageID(diagramID),
+//                new Value(path),
+//                new Value(name),
+//                new Value(body)
+//		};
+//        sendMessage("changeConstraintBody", message);
+//	}
+//	
+//	public void changeConstraintReason(int diagramID, String path, String name, String reason) {
+//		Value[] message = new Value[]{
+//				getNoReturnExpectedMessageID(diagramID),
+//                new Value(path),
+//                new Value(name),
+//                new Value(reason)
+//		};
+//        sendMessage("changeConstraintReason", message);
+//	}
 	
 	public void changeConstraintOwner(int diagramID, String oldOwner, String newOwner, String name) {
 		Value[] message = new Value[]{
