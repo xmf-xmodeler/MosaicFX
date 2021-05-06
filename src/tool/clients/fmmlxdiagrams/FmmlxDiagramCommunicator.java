@@ -10,7 +10,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import org.w3c.dom.Node;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.FmmlxSerializer;

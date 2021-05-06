@@ -78,7 +78,7 @@ public class DefaultContextMenu extends ContextMenu {
 
 			});
 			
-			getItems().addAll(testEvalList);
+//			getItems().addAll(testEvalList);
 
 			MenuItem save = new MenuItem("Save");
 			save.setOnAction(a -> actions.save());
@@ -119,7 +119,7 @@ public class DefaultContextMenu extends ContextMenu {
 				actions.testGetLabel();
 			});
 			getItems().addAll(pngItem, test, testGetLabel);*/
-
+			getItems().add(pngItem);
 
 			MenuItem openFindImplementationDialog = new MenuItem("Search for Implementation");
 			openFindImplementationDialog.setOnAction(e -> actions.openFindImplementationDialog());

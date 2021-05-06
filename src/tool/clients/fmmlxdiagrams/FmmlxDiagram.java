@@ -233,7 +233,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	
 	public void savePNG(){
 		double zoom = this.zoom;
+		System.err.println("current zoom: " + zoom);
 		setMaxZoom();
+		System.err.println("max zoom: " + getZoom());
 		
 	    FileChooser fileChooser = new FileChooser();
 	    
