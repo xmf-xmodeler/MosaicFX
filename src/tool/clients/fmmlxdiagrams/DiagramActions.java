@@ -480,7 +480,7 @@ public class DiagramActions {
 
 			if (cpd.isPresent()) {
 				ChangeParentDialogResult result = cpd.get();
-				diagram.getComm().changeParent(diagram.getID(), result.getObject().getName(), result.getCurrentParentNames(), result.getNewParentNames());
+				diagram.getComm().changeParent(diagram.getID(), result.object.getName(), result.getCurrentParentNames(), result.getNewParentNames());
 				diagram.updateDiagram();
 			}
 
@@ -906,8 +906,11 @@ public class DiagramActions {
 		}
 	}
 	
-	public void removeAssociationInstance(FmmlxLink instance) {
-		diagram.getComm().removeAssociationInstance(diagram.getID(), instance.path);
+	public void removeAssociationInstance(FmmlxLink link) {
+		diagram.getComm().removeAssociationInstance(diagram.getID(), 
+				link.getOfName(), 
+				link.getSourceNode().getName(), 
+				link.getTargetNode().getName());
 		diagram.updateDiagram();
 	}
 

@@ -39,6 +39,9 @@ public class FaXML {
 				if(child.size() == 2 && child.get(0) instanceof String && child.get(1) instanceof String) {
 					attributes.put((String)child.get(0),(String)child.get(1));
 				} else {
+					if(child.size() == 2) {
+						System.err.println("wrong type: " + child.get(0) + "/" +child.get(1).getClass().getCanonicalName());
+					}
 					children.add(new FaXML(child));
 				}
 			}

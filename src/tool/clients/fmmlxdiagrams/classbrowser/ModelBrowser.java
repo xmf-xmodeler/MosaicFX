@@ -384,7 +384,7 @@ public final class ModelBrowser extends CustomStage {
 		GridPane.setHalignment(statusLabel, javafx.geometry.HPos.CENTER);
 		Button button3 = new Button("Do not push!");
 		modelColumnGrid.add(button3, 0,5);
-		button3.setOnAction(e -> System.exit(0));
+//		button3.setOnAction(e -> System.exit(0));
 		
 		button1.setMaxWidth(300);
 		statusLabel.setMaxWidth(300);
@@ -688,7 +688,12 @@ public final class ModelBrowser extends CustomStage {
 			constraintReasonArea.setText("");
 			constraintTab.setText("Constraint");			
 		}
-		conCodeButton.setOnAction(e->{activePackage.getComm().changeConstraintBody(activePackage.getID(), fmmlxObjectListView.getSelectionModel().getSelectedItem().getPath(), constraint.getName(), constraintBodyArea.getText());});
+		conCodeButton.setOnAction(e->{activePackage.getComm().changeConstraintBodyAndReason(
+				activePackage.getID(), 
+				fmmlxObjectListView.getSelectionModel().getSelectedItem().getPath(), 
+				constraint.getName(), 
+				constraintBodyArea.getText(), 
+				constraintReasonArea.getText());});
 	}
 
 	public void notifyModelHasLoaded() {
