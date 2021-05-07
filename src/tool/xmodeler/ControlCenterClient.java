@@ -81,9 +81,9 @@ public class ControlCenterClient {
 		String projectName = "";
 		if (result.isPresent()) {
 		    projectName = result.get();
-		}		
-		Message message = WorkbenchClient.theClient().getHandler().newMessage("addProject",1);
-		message.args[0] = new Value(projectName);
-		WorkbenchClient.theClient().getHandler().raiseEvent(message);
+			Message message = WorkbenchClient.theClient().getHandler().newMessage("addProject",1);
+			message.args[0] = new Value(projectName);
+			WorkbenchClient.theClient().getHandler().raiseEvent(message);
+		}
 	}
 }
