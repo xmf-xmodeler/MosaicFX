@@ -89,19 +89,19 @@ public abstract class Node implements CanvasElement{
 		return hidden;
 	}
 	
-	public Point2D getPointForEdge(Edge.End edge, boolean isStartNode) {
+	public Point2D getPointForEdge(Edge<?>.End edge, boolean isStartNode) {
 		return port.getPointForEdge(edge, isStartNode);
 	}
 
-	public PortRegion getDirectionForEdge(Edge.End edge, boolean isStartNode) {
+	public PortRegion getDirectionForEdge(Edge<?>.End edge, boolean isStartNode) {
 		return port.getDirectionForEdge(edge, isStartNode);
 	}
 	
-	public void setDirectionForEdge(Edge.End edge, boolean isStartNode, PortRegion newPortRegion) {
+	public void setDirectionForEdge(Edge<?>.End edge, boolean isStartNode, PortRegion newPortRegion) {
 		port.setDirectionForEdge(edge, isStartNode, newPortRegion);
 	}
 	
-	public void addEdgeEnd(Edge.End edge, PortRegion direction) {
+	public void addEdgeEnd(Edge<?>.End edge, PortRegion direction) {
 		port.addNewEdge(edge, direction);
 	}
 

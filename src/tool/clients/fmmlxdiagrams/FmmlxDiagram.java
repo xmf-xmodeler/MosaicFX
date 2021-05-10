@@ -67,7 +67,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	
 	// The elements representing the model which is displayed in the GUI
 	
-	private Vector<DiagramEdgeLabel> labels = new Vector<>();
+	private Vector<DiagramEdgeLabel<?>> labels = new Vector<>();
 	
 	
 	// Temporary variables storing the current state of user interactions
@@ -222,6 +222,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				maxRight = Math.max(maxRight, object.getRightX());
 				maxBottom = Math.max(maxBottom, object.getBottomY());
 			}
+			for (Edge<?> edge : edges) {
+				maxRight = Math.max(maxRight, edge.getMaxX());
+				maxBottom = Math.max(maxBottom, edge.getMaxY());
+			}
 			canvasRawSize = new Point2D(maxRight, maxBottom);
 			Point2D canvasScreenSize = transformFX.transform(canvasRawSize);
 			canvas.setWidth(Math.min(4096, canvasScreenSize.getX() + 5));
@@ -233,9 +237,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	
 	public void savePNG(){
 		double zoom = this.zoom;
-		System.err.println("current zoom: " + zoom);
+//		System.err.println("current zoom: " + zoom);
 		setMaxZoom();
-		System.err.println("max zoom: " + getZoom());
+//		System.err.println("max zoom: " + getZoom());
 		
 	    FileChooser fileChooser = new FileChooser();
 	    
@@ -384,7 +388,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				o.unHighlight();
 			for (Edge<?> edge : edges)
 				edge.unHighlight();
-			for (DiagramEdgeLabel l : labels)
+			for (DiagramEdgeLabel<?> l : labels)
 				l.unHighlight();
 		}
 		
@@ -402,7 +406,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					if(e.isSourceNode(o) || e.isTargetNode(o)) e.align();
 				}
 			} else if (s instanceof DiagramEdgeLabel) {
-				DiagramEdgeLabel o = (DiagramEdgeLabel) s;
+				DiagramEdgeLabel<?> o = (DiagramEdgeLabel<?>) s;
 //				if(o.getReferenceX()+o.getRelativeX()<0.0 && o.getReferenceY()+o.getRelativeY()<0.0){
 //					s.moveTo(0.5, 0.5, this);
 //				} else if (o.getReferenceX()+o.getRelativeX()<0.0){
@@ -477,7 +481,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				} else if (s instanceof Edge) {
 					comm.sendCurrentPositions(this.getID(), (Edge<?>) s);
 				} else if (s instanceof DiagramEdgeLabel) {
-					DiagramEdgeLabel del = (DiagramEdgeLabel) s;
+					DiagramEdgeLabel<?> del = (DiagramEdgeLabel<?>) s;
 					del.owner.updatePosition(del);
 					comm.storeLabelInfo(this, del);
 				}
@@ -499,7 +503,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		for (Edge<?> e : new Vector<>(edges))
 			if (e.isHit(x, y))
 				return e;
-		for (DiagramEdgeLabel l : new Vector<>(labels))
+		for (DiagramEdgeLabel<?> l : new Vector<>(labels))
 			if (l.isHit(x, y))
 				return l;
 		
@@ -655,7 +659,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			Point2D relativePoint = new Point2D(p.getX() - obj.getX(), p.getY() - obj.getY());
 			obj.performDoubleClickAction(relativePoint);
 		} else if (hitObject instanceof DiagramEdgeLabel) {
-			DiagramEdgeLabel l = (DiagramEdgeLabel) hitObject;
+			DiagramEdgeLabel<?> l = (DiagramEdgeLabel<?>) hitObject;
 			l.performAction();
 		}
 	}
@@ -829,6 +833,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			maxRight = Math.max(maxRight, object.getRightX());
 			maxBottom = Math.max(maxBottom, object.getBottomY());
 		}
+		for (Edge<?> edge : edges) {
+			maxRight = Math.max(maxRight, edge.getMaxX());
+			maxBottom = Math.max(maxBottom, edge.getMaxY());
+		}
 
 		double maxXzoom = 4096. / maxRight;
 		double maxYzoom = 4096. / maxBottom;
@@ -876,10 +884,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return FXCollections.observableArrayList(objectList);
 	}
 	
-	public void addLabel(DiagramEdgeLabel diagramLabel) {
+	public void addLabel(DiagramEdgeLabel<?> diagramLabel) {
 		Integer index = null;
 		for(int i = 0; i < labels.size(); i++) {
-			DiagramEdgeLabel label = labels.get(i);
+			DiagramEdgeLabel<?> label = labels.get(i);
 			if(label.owner == diagramLabel.owner && label.localID == diagramLabel.localID) {
 				index = i;
 			}
@@ -915,7 +923,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return null;
 	}
 
-	public Vector<DiagramEdgeLabel> getLabels() {
+	public Vector<DiagramEdgeLabel<?>> getLabels() {
 		return new Vector<>(labels); // read-only
 	}
 	

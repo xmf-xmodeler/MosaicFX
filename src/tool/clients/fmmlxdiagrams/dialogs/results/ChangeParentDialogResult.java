@@ -2,7 +2,6 @@ package tool.clients.fmmlxdiagrams.dialogs.results;
 
 import java.util.Vector;
 
-import javafx.collections.ObservableList;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 public class ChangeParentDialogResult {

@@ -16,13 +16,13 @@ import java.util.Vector;
 
 public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyListener, MouseMoveListener, MouseListener, MouseWheelListener, LineBackgroundListener, ExtendedModifyListener, PaintObjectListener, SelectionListener, LineStyleListener, PaintListener, MouseTrackListener, */ITextEditor {
 
-  private static final int   ZOOM              = 2;
-  private static final int   MAX_FONT_SIZE     = 40;
-  private static final int   MIN_FONT_SIZE     = 2;
-  private static final int   LEFT_BUTTON       = 1;
-  private static final int   MIDDLE_BUTTON     = 2;
-  private static final int   RIGHT_BUTTON      = 3;
-  private static final int   TRAY_PAD          = 5;
+//  private static final int   ZOOM              = 2;
+//  private static final int   MAX_FONT_SIZE     = 40;
+//  private static final int   MIN_FONT_SIZE     = 2;
+//  private static final int   LEFT_BUTTON       = 1;
+//  private static final int   MIDDLE_BUTTON     = 2;
+//  private static final int   RIGHT_BUTTON      = 3;
+//  private static final int   TRAY_PAD          = 5;
   private static final int   SYNTAX_DELAY      = 2000;
   private static final int   SYNTAX_INC        = 200;
 //  private static final Color RED               = Display.getDefault().getSystemColor(SWT.COLOR_RED);
@@ -136,10 +136,10 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
 //    ast.add(new AST(text, tooltip, charStart, charEnd));
   }
 
-  private void cancelToolTip() {
-    if (toolTip != null) toolTip.deactivate();
-    toolTip = null;
-  }
+//  private void cancelToolTip() {
+//    if (toolTip != null) toolTip.deactivate();
+//    toolTip = null;
+//  }
 
 //  private void checkBracket(ExtendedModifyEvent event) {
 //
@@ -338,15 +338,15 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
 //    return text.getLineCount();
 //  }
 
-  private char getOpening(char closing) {
-    if (closing == ')')
-      return '(';
-    else if (closing == '}')
-      return '{';
-    else if (closing == ']')
-      return '[';
-    else throw new Error("unknown closing bracket " + closing);
-  }
+//  private char getOpening(char closing) {
+//    if (closing == ')')
+//      return '(';
+//    else if (closing == '}')
+//      return '{';
+//    else if (closing == ']')
+//      return '[';
+//    else throw new Error("unknown closing bracket " + closing);
+//  }
 
 //  public String getString() {
 //    return text.getText();
@@ -394,9 +394,9 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
     addWordRule(getId(), word, red, green, blue);
   }
 
-  private boolean isAlpha(char c) {
-    return 'a' <= c && c <= 'z';
-  }
+//  private boolean isAlpha(char c) {
+//    return 'a' <= c && c <= 'z';
+//  }
 
   public boolean isCheckingSyntax() {
     return checkingSyntax;
@@ -418,16 +418,16 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
 //    return event.button == RIGHT_BUTTON || isCntrl(event);
 //  }
 
-  private Vector<Terminal> isTerminator(String s, int index) {
-    Vector<Terminal> terminates = null;
-    for (Terminal t : terminals) {
-      if (t.terminates(s, index)) {
-        if (terminates == null) terminates = new Stack<>();
-        terminates.add(t);
-      }
-    }
-    return terminates;
-  }
+//  private Vector<Terminal> isTerminator(String s, int index) {
+//    Vector<Terminal> terminates = null;
+//    for (Terminal t : terminals) {
+//      if (t.terminates(s, index)) {
+//        if (terminates == null) terminates = new Stack<>();
+//        terminates.add(t);
+//      }
+//    }
+//    return terminates;
+//  }
 
 //  public void keyPressed(KeyEvent arg0) {
 //    ast = new AST(text, "", 0, text.getText().length());
@@ -754,11 +754,11 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
     this.dirty = dirty;
   }
 
-  private void setMouseOverVar(int x, int y) {
-//    boolean isOverVar = mouseOverVar != null;
-//    mouseOverVar = selectVarInfo(x, y);
-//    if (mouseOverVar != null || isOverVar) redraw();
-  }
+//  private void setMouseOverVar(int x, int y) {
+////    boolean isOverVar = mouseOverVar != null;
+////    mouseOverVar = selectVarInfo(x, y);
+////    if (mouseOverVar != null || isOverVar) redraw();
+//  }
 
   public void setRendering(boolean rendering) {
 //    this.rendering = rendering;
@@ -795,38 +795,38 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
     tooltips.add(new Tooltip(tooltip, charStart, charEnd));
   }
 
-  private void setToolTip(int x, int y, String message) {
-//    if (toolTip == null) {
-//      toolTip = new DefaultToolTip(text, ToolTip.NO_RECREATE, false);
-//    }
-//    if (toolTip != null) {
-//      toolTip.setHideDelay(2000);
-//      toolTip.setText(message);
-//    }
-  }
+//  private void setToolTip(int x, int y, String message) {
+////    if (toolTip == null) {
+////      toolTip = new DefaultToolTip(text, ToolTip.NO_RECREATE, false);
+////    }
+////    if (toolTip != null) {
+////      toolTip.setHideDelay(2000);
+////      toolTip.setText(message);
+////    }
+//  }
 
   public void showLine(int line) {
 //    text.setCaretOffset(text.getOffsetAtLine(line));
 //    redraw();
   }
 
-  private int starts(String s, int index) {
-    if (tStack.isEmpty())
-      return -1;
-    else {
-      for (Terminal t : tStack.peek()) {
-        if (t.starts(s, index)) return t.getStart().length();
-      }
-      Vector<Terminal> ts = tStack.pop();
-      int starts = starts(s, index);
-      if (starts >= 0)
-        return starts;
-      else {
-        tStack.push(ts);
-        return starts;
-      }
-    }
-  }
+//  private int starts(String s, int index) {
+//    if (tStack.isEmpty())
+//      return -1;
+//    else {
+//      for (Terminal t : tStack.peek()) {
+//        if (t.starts(s, index)) return t.getStart().length();
+//      }
+//      Vector<Terminal> ts = tStack.pop();
+//      int starts = starts(s, index);
+//      if (starts >= 0)
+//        return starts;
+//      else {
+//        tStack.push(ts);
+//        return starts;
+//      }
+//    }
+//  }
 
   public void syntaxError(int pos, String error) {
 //    this.errorPosition = Math.min(pos - 10, text.getText().length() - 1);

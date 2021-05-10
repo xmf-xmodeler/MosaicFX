@@ -791,4 +791,20 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 					w, h, textColor, bgColor));
 		}
 	}
+
+	public double getMaxX() {
+		Double i = Double.NEGATIVE_INFINITY;
+		for(Point2D p : intermediatePoints) {
+			i = Math.max(i, p.getX());
+		}
+		return i;
+	}
+
+	public double getMaxY() {
+		Double i = Double.NEGATIVE_INFINITY;
+		for(Point2D p : intermediatePoints) {
+			i = Math.max(i, p.getY());
+		}
+		return i;
+	}
 }

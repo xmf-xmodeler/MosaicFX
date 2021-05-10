@@ -400,7 +400,8 @@ public class FmmlxDiagramCommunicator {
 		return result;
 	}
 
-    public HashMap<String, HashMap<String, Object>> getAllEdgePositions(Integer diagramID) {
+    @SuppressWarnings("unchecked")
+	public HashMap<String, HashMap<String, Object>> getAllEdgePositions(Integer diagramID) {
 		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
 
 		try {
@@ -1191,7 +1192,7 @@ public class FmmlxDiagramCommunicator {
         sendMessage("updateAssociationInstance", message);
     }
 
-    public void storeLabelInfo(FmmlxDiagram diagram, DiagramEdgeLabel l) {
+    public void storeLabelInfo(FmmlxDiagram diagram, DiagramEdgeLabel<?> l) {
         sendMessage("storeLabelInfo", l.getInfo4XMF());
         //xmfRequest(handler, "storeLabelInfo",l.getInfo4XMF());
     }

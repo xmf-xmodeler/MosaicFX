@@ -100,7 +100,7 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 		}
 		
 		for (String tmp : inputElementListview.getItems()) {
-			if (!InputChecker.getInstance().validateName(tmp)) {
+			if (!InputChecker.validateName(tmp)) {
 				errorLabel.setText("\""+tmp+"\""+ " is not valid name for enumeration's element");
 				return false;
 			} 
