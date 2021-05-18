@@ -15,6 +15,7 @@ import tool.clients.dialogs.enquiries.FindClassDialog;
 import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
+import tool.clients.fmmlxdiagrams.classbrowser.ObjectBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.*;
 import tool.clients.fmmlxdiagrams.dialogs.association.AssociationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.association.AssociationValueDialog;
@@ -1080,6 +1081,12 @@ public class DiagramActions {
 		Optional<Vector<FmmlxObject>> result = unhideElementsDialog.showAndWait();
 		
 		result.ifPresent(vec -> {hide(vec, false);});
-				
+			
+	}
+		
+	public void showObjectBrowser(FmmlxObject object) {
+			
+		Platform.runLater(() -> new ObjectBrowser(diagram, object, null).show());
+			
 	}
 }

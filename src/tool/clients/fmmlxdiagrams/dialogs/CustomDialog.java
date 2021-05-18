@@ -13,7 +13,6 @@ import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerat
 import tool.clients.fmmlxdiagrams.instancegenerator.view.InstanceGeneratorGenerateTypeComboBox;
 
 import java.util.List;
-import java.util.Vector;
 
 
 public class CustomDialog<R> extends Dialog<R> {
