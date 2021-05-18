@@ -472,7 +472,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			for (CanvasElement s : selectedObjects)
 				if (s instanceof FmmlxObject) {
 					FmmlxObject o = (FmmlxObject) s;
-					comm.sendCurrentPosition(this.getID(), o.getPath(), (int)Math.round(o.getX()), (int)Math.round(o.getY()));
+					comm.sendCurrentPosition(this.getID(), o.getPath(), (int)Math.round(o.getX()), (int)Math.round(o.getY()), o.hidden);
 					for(Edge<?> e : edges) {
 						if(e.isSourceNode(o) || e.isTargetNode(o)) {
 							comm.sendCurrentPositions(this.getID(), e);

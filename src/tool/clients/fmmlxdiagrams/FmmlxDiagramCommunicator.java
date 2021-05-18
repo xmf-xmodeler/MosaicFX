@@ -177,18 +177,22 @@ public class FmmlxDiagramCommunicator {
 			if (requestID == -1) {
 				if (DEBUG) System.err.println("v.get(0)= " + msgAsVec.get(0));
 				java.util.Vector<Object> err = (java.util.Vector<Object>) msgAsVec.get(0);
-				if ((!silent) && err != null && err.size() > 0 && err.get(0) != null ) {
-					CountDownLatch l = new CountDownLatch(1);
-					Platform.runLater(() -> {
-						Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
-						//alert.showAndWait(); NOPE
-						alert.show();
-						l.countDown();
-					});
-					try {
-						l.await();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+				if (err != null && err.size() > 0 && err.get(0) != null ) {
+			        if(silent) {
+			        	System.err.println(err.get(0));
+			        } else {
+						CountDownLatch l = new CountDownLatch(1);
+						Platform.runLater(() -> {
+							Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
+							//alert.showAndWait(); NOPE
+							alert.show();
+							l.countDown();
+						});
+						try {
+							l.await();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			} else {
@@ -232,7 +236,7 @@ public class FmmlxDiagramCommunicator {
 		}
 
 		if (waiting)
-			throw new TimeOutException();
+			throw new TimeOutException(message + args);
 		return results.remove(requestID);
 	}
 
@@ -271,7 +275,7 @@ public class FmmlxDiagramCommunicator {
 					diagram);
 			result.add(object);
 
-			sendCurrentPosition(diagram.getID(), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY())); // make sure to store position if newly created
+			sendCurrentPosition(diagram.getID(), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY()), object.hidden); // make sure to store position if newly created
 		}
 		return result;
 	}
@@ -690,12 +694,13 @@ public class FmmlxDiagramCommunicator {
 	/// Operations storing graphical info to xmf ///
 	////////////////////////////////////////////////
 
-	public void sendCurrentPosition(int diagramID, String objectPath, int x, int y) {
+	public void sendCurrentPosition(int diagramID, String objectPath, int x, int y, boolean hidden) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectPath),
 				new Value(x),
-				new Value(y)};
+				new Value(y),
+				new Value(hidden)};
 		sendMessage("sendNewPosition", message);
 	}
 

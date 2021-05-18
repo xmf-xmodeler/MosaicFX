@@ -80,8 +80,9 @@ public class ObjectXmlManager {
                 Element tmp = (Element) objectList.item(i);
                 double x = Double.parseDouble(tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
                 double y = Double.parseDouble(tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
+                Boolean hidden = "true".equals(tmp.getAttribute(XmlConstant.ATTRIBUTE_HIDDEN));
                 String objectPath = tmp.getAttribute(XmlConstant.ATTRIBUTE_REFERENCE);
-                communicator.sendCurrentPosition(diagramID, objectPath, (int)Math.round(x), (int)Math.round(y));
+                communicator.sendCurrentPosition(diagramID, objectPath, (int)Math.round(x), (int)Math.round(y), hidden);
             }
         }
     }
@@ -104,14 +105,14 @@ public class ObjectXmlManager {
         return initCoordinate;
     }
 
-    @Deprecated
-    public void alignObjects2(Element diagramElement, FmmlxDiagram fmmlxDiagram) {
-        List<FmmlxObject>allObjects = fmmlxDiagram.getObjects();
-        for(FmmlxObject object : allObjects){
-            Point2D initCoordinate = new Point2D(object.getX(), object.getY());
-            Point2D coordinate = getCoordinate(diagramElement, object.getPath(),initCoordinate);
-            object.moveTo(coordinate.getX(), coordinate.getY(), fmmlxDiagram);
-            fmmlxDiagram.getComm().sendCurrentPosition(fmmlxDiagram.getID(), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY()));
-        }
-    }
+//    @Deprecated
+//    public void alignObjects2(Element diagramElement, FmmlxDiagram fmmlxDiagram) {
+//        List<FmmlxObject>allObjects = fmmlxDiagram.getObjects();
+//        for(FmmlxObject object : allObjects){
+//            Point2D initCoordinate = new Point2D(object.getX(), object.getY());
+//            Point2D coordinate = getCoordinate(diagramElement, object.getPath(),initCoordinate);
+//            object.moveTo(coordinate.getX(), coordinate.getY(), fmmlxDiagram);
+//            fmmlxDiagram.getComm().sendCurrentPosition(fmmlxDiagram.getID(), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY()), false);
+//        }
+//    }
 }
