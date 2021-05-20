@@ -222,7 +222,7 @@ public class XModeler extends Application {
           EditorClient.theClient().inflateXML(doc);
           ConsoleClient.theConsole().inflateXML(doc);
           FormsClient.theClient().inflateXML(doc);
-        }
+          FmmlxDiagramCommunicator.initCommunicator();        }
       }
     } catch (Throwable e) {
       e.printStackTrace(System.err);
@@ -411,6 +411,7 @@ public class XModeler extends Application {
     xos.newMessageClient("com.ceteva.oleBridge", new OleBridgeClient());
     
     WorkbenchClient.theClient().startFmmlxClient();
+    System.err.println("Wurde aufgerufen!");
 //    xos.newMessageClient("screenGeneration", new ScreenGenerationClient()); // BB
   }
   
