@@ -2,8 +2,6 @@ package tool.clients.fmmlxdiagrams.classbrowser;
 
 import java.util.Vector;
 
-import org.eclipse.swt.widgets.Link;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -164,11 +162,11 @@ public class ObjectBrowser {
 		}
 
 		
-		/*für alle Links im Diagram, wenn der Source = object ist, dann mach irgendwas mit target;
+		/*fï¿½r alle Links im Diagram, wenn der Source = object ist, dann mach irgendwas mit target;
 		 *  wenn der target=newValue ist, mach etwas mit source
 		stopf alle in einen Vektor rein=irgendwas;
 		dann die gefundenden(im Vektor gespeicheren) Namen anzeigen
-		später für alle gefundenen die Eigenschaften anzeigen
+		spï¿½ter fï¿½r alle gefundenen die Eigenschaften anzeigen
 			 */	
 	}
 

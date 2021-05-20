@@ -11,6 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
@@ -129,9 +130,9 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 		removeItemButton = new Button("Remove Element");
 		changeNameButton = new Button("Change Name");
 		changeItemNameButton = new Button ("Change ItemName");
-		
 
-		
+		List<Node> labelNodes = new ArrayList<>();
+		List<Node> editorNodes = new ArrayList<>();
 
 		labelNodes.add(chooseEnumLabel);
 		labelNodes.add(new Label(" "));

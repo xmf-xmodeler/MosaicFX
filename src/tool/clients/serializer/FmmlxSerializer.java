@@ -40,7 +40,7 @@ public class FmmlxSerializer  {
 //            }
 //            saveLogCount++;
         }
-        saveLog(packagePath, communicator);
+        saveLog(diagramIds.get(0), communicator);
         this.xmlHandler.flushData();
     }
 
@@ -60,7 +60,7 @@ public class FmmlxSerializer  {
 //                    }
 //                    saveLogCount++;
                 }
-                saveLog(packagePath, communicator);
+                saveLog(diagramIds.get(0), communicator);
                 xmlHandler.flushData();
             } catch (TransformerException | TimeOutException e) {
                 e.printStackTrace();
@@ -159,7 +159,7 @@ public class FmmlxSerializer  {
         }
     }
 
-    public void saveLog(String path, FmmlxDiagramCommunicator communicator) throws TimeOutException {
+    public void saveLog(Integer diagramID, FmmlxDiagramCommunicator communicator) throws TimeOutException {
         LogXmlManager logXmlManager = new LogXmlManager(this.xmlHandler);
         logXmlManager.clearLog();
         Element logsElement = logXmlManager.getLogs();
