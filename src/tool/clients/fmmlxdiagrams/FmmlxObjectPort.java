@@ -71,7 +71,7 @@ public class FmmlxObjectPort {
 					double diffY = maxY - minY;
 					
 					int visibleEdges = 0;
-					for(Edge.End E : edgesOnOneSide) if(E.edge.isVisible()) visibleEdges++;
+					for(Edge<?>.End E : edgesOnOneSide) if(E.edge.isVisible()) visibleEdges++;
 					
 					if(edgeEnd.edge.isVisible()) {
 						double share = 1. / (visibleEdges + 1);

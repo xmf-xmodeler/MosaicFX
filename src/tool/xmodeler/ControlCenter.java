@@ -59,7 +59,8 @@ public class ControlCenter extends Stage {
 		newCategorie.setDisable(true);
 		Label categorieLabel = new Label("Categories");
 		
-		Button newProject = new Button("refresh");
+		Button refreshAll = new Button("refresh");
+		Button newProject = new Button("new");
 		Label projectLabel = new Label("Projects");
 		CreatedModifiedGridPane projectGridPane = new CreatedModifiedGridPane();
 		
@@ -81,7 +82,7 @@ public class ControlCenter extends Stage {
 			result.ifPresent(name -> 
 			    {Integer diagramID = FmmlxDiagramCommunicator.getCommunicator().createDiagram(
 			        modelLV.getSelectionModel().getSelectedItem(), 
-			        name, ""); System.err.println("diagramID "  +diagramID);});});
+			        name, "", FmmlxDiagramCommunicator.DiagramType.ClassDiagram); System.err.println("diagramID "  +diagramID);});});
 		
 		diagramLV.setOnMouseClicked(me -> {
 
@@ -118,8 +119,10 @@ public class ControlCenter extends Stage {
 		grid.add(categoryLV, 1, 2);
 	
 		grid.add(projectLabel, 2, 1);
+		grid.add(refreshAll, 2, 1);
+		GridPane.setHalignment(refreshAll, HPos.RIGHT);
 		grid.add(newProject, 2, 1);
-		GridPane.setHalignment(newProject, HPos.RIGHT);
+		GridPane.setHalignment(newProject, HPos.CENTER);
 		projectLV.setPrefSize(200, 150);
 		grid.add(projectLV, 2, 2);
 		grid.add(projectGridPane, 2, 3);
@@ -150,9 +153,9 @@ public class ControlCenter extends Stage {
 		vBox.getChildren().addAll(hBox, grid);
 		Scene scene = new Scene(vBox, 900, 300);
 		setScene(scene);
-		this.setOnShown((event) -> {controlCenterClient.getAllProjects();});
-		newProject.setOnAction((event) -> {controlCenterClient.getAllProjects();});
-			
+		this.setOnShown((event) -> {controlCenterClient.getAllCategories();});
+		refreshAll.setOnAction((event) -> {controlCenterClient.getAllProjects();});
+		newProject.setOnAction((event) -> {controlCenterClient.createNewProject();controlCenterClient.getAllProjects();});	
 	}
 
 	public MenuBar getMenuBar() {
@@ -180,7 +183,7 @@ public class ControlCenter extends Stage {
 	
 	private void init() {
 		categoryLV.getItems().clear();
-		categoryLV.getItems().addAll(controlCenterClient.getAllCategories());
+		//categoryLV.getItems().addAll(controlCenterClient.getAllCategories());
 		}
 
 	public Stage getStageForConsole() {
@@ -219,6 +222,14 @@ public class ControlCenter extends Stage {
 		projectLV.getItems().addAll(vec);
 		});
 	}
+	
+	public void setAllCategories(Vector<String> vec) {
+		Platform.runLater(()->{
+		categoryLV.getItems().clear();
+		categoryLV.getItems().addAll(vec);
+		});
+	}
+
 
 	public void setProjectModels(Vector<String> vec) {
 		Platform.runLater(()->{

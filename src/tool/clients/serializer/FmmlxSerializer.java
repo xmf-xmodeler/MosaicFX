@@ -26,46 +26,48 @@ public class FmmlxSerializer  {
         return xmlCreator.create(file);
     }
 
-    public void saveAsXml(String diagramPath, String initLabel, FmmlxDiagramCommunicator communicator) throws TimeOutException, TransformerException {
+    public void saveAsXml(String packagePath, String initLabel, FmmlxDiagramCommunicator communicator) throws TimeOutException, TransformerException {
         this.clearAllData();
-        int saveLogCount = 0;
-        Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(diagramPath);
+//        int saveLogCount = 0;
+        Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(packagePath);
         Collections.sort(diagramIds);
         for(Integer id :diagramIds){
             String diagramLabel = communicator.createLabelFromInitLabel(initLabel, id);
-            saveProject(diagramPath);
-            saveDiagram(diagramLabel, diagramPath, id);
-            if(saveLogCount==0){
-                saveLog(id, communicator);
-            }
-            saveLogCount++;
+            saveProject(packagePath);
+            saveDiagram(diagramLabel, packagePath, id);
+//            if(saveLogCount==0){
+//                saveLog(packagePath, communicator);
+//            }
+//            saveLogCount++;
         }
+        saveLog(packagePath, communicator);
         this.xmlHandler.flushData();
     }
 
-    public void save(String diagramPath, String filePath, String label, Integer id, FmmlxDiagramCommunicator communicator)  {
+    public void save(String packagePath, String filePath, String label, Integer id, FmmlxDiagramCommunicator communicator)  {
         System.out.println(label);
         if(filePath!=null && filePath.length()>0 && checkFileExist(xmlHandler.getSourcePath())){
             try {
-                Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(diagramPath);
+                Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(packagePath);
                 Collections.sort(diagramIds);
-                int saveLogCount = 0;
+//                int saveLogCount = 0;
                 for(Integer id_tmp :diagramIds){
                     String diagramLabel = communicator.createLabelFromInitLabel(label, id_tmp);
-                    saveProject(diagramPath);
-                    saveDiagram(diagramLabel, diagramPath, id_tmp);
-                    if(saveLogCount==0){
-                        saveLog(id_tmp, communicator);
-                    }
-                    saveLogCount++;
+                    saveProject(packagePath);
+                    saveDiagram(diagramLabel, packagePath, id_tmp);
+//                    if(saveLogCount==0){
+//                        saveLog(packagePath, communicator);
+//                    }
+//                    saveLogCount++;
                 }
+                saveLog(packagePath, communicator);
                 xmlHandler.flushData();
             } catch (TransformerException | TimeOutException e) {
                 e.printStackTrace();
             }
             System.out.println(label + " saved");
         } else {
-            communicator.saveXmlFile2(diagramPath, id);
+            communicator.saveXmlFile2(packagePath, id);
         }
     }
 
@@ -157,7 +159,7 @@ public class FmmlxSerializer  {
         }
     }
 
-    public void saveLog(Integer diagramID, FmmlxDiagramCommunicator communicator) throws TimeOutException {
+    public void saveLog(String path, FmmlxDiagramCommunicator communicator) throws TimeOutException {
         LogXmlManager logXmlManager = new LogXmlManager(this.xmlHandler);
         logXmlManager.clearLog();
         Element logsElement = logXmlManager.getLogs();

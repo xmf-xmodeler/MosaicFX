@@ -10,7 +10,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import org.w3c.dom.Node;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.FmmlxSerializer;
@@ -41,6 +40,7 @@ public class FmmlxDiagramCommunicator {
 	private static final boolean DEBUG = true;
 	static TabPane tabPane;
 	private Value getNoReturnExpectedMessageID(int diagramID) {return new Value(new Value[] {new Value(diagramID), new Value(-1)});}
+	private boolean silent;
 	
 	/* Operations for setting up the Communicator */
 	
@@ -94,12 +94,16 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	private transient Integer _newDiagramID = null;
-	public Integer createDiagram(String packagePath, String diagramName, String file) {
+	
+	public static enum DiagramType {ClassDiagram, ModelBrowser};
+	
+	public Integer createDiagram(String packagePath, String diagramName, String file, DiagramType type) {
 		//Creates a diagram which is not displayed yet.
 		Value[] message = new Value[]{
 				new Value(packagePath),
 				new Value(diagramName),
-				new Value(file)
+				new Value(file),
+				new Value(type.toString())
 		};
 		_newDiagramID = null;
 		int timeout = 0;
@@ -174,17 +178,21 @@ public class FmmlxDiagramCommunicator {
 				if (DEBUG) System.err.println("v.get(0)= " + msgAsVec.get(0));
 				java.util.Vector<Object> err = (java.util.Vector<Object>) msgAsVec.get(0);
 				if (err != null && err.size() > 0 && err.get(0) != null ) {
-					CountDownLatch l = new CountDownLatch(1);
-					Platform.runLater(() -> {
-						Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
-						//alert.showAndWait(); NOPE
-						alert.show();
-						l.countDown();
-					});
-					try {
-						l.await();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+			        if(silent) {
+			        	System.err.println(err.get(0));
+			        } else {
+						CountDownLatch l = new CountDownLatch(1);
+						Platform.runLater(() -> {
+							Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
+							//alert.showAndWait(); NOPE
+							alert.show();
+							l.countDown();
+						});
+						try {
+							l.await();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			} else {
@@ -228,7 +236,7 @@ public class FmmlxDiagramCommunicator {
 		}
 
 		if (waiting)
-			throw new TimeOutException();
+			throw new TimeOutException(message + args);
 		return results.remove(requestID);
 	}
 
@@ -267,7 +275,7 @@ public class FmmlxDiagramCommunicator {
 					diagram);
 			result.add(object);
 
-			sendCurrentPosition(diagram.getID(), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY())); // make sure to store position if newly created
+			sendCurrentPosition(diagram.getID(), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY()), object.hidden); // make sure to store position if newly created
 		}
 		return result;
 	}
@@ -396,7 +404,8 @@ public class FmmlxDiagramCommunicator {
 		return result;
 	}
 
-    public HashMap<String, HashMap<String, Object>> getAllEdgePositions(Integer diagramID) {
+    @SuppressWarnings("unchecked")
+	public HashMap<String, HashMap<String, Object>> getAllEdgePositions(Integer diagramID) {
 		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
 
 		try {
@@ -685,12 +694,13 @@ public class FmmlxDiagramCommunicator {
 	/// Operations storing graphical info to xmf ///
 	////////////////////////////////////////////////
 
-	public void sendCurrentPosition(int diagramID, String objectPath, int x, int y) {
+	public void sendCurrentPosition(int diagramID, String objectPath, int x, int y, boolean hidden) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(objectPath),
 				new Value(x),
-				new Value(y)};
+				new Value(y),
+				new Value(hidden)};
 		sendMessage("sendNewPosition", message);
 	}
 
@@ -1164,10 +1174,12 @@ public class FmmlxDiagramCommunicator {
         sendMessage("addAssociationInstance", message);
     }
 
-    public void removeAssociationInstance(int diagramID, String assocInstId) {
+    public void removeAssociationInstance(int diagramID, String assocName, String sourceName, String targetName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(assocInstId)
+                new Value(assocName),
+                new Value(sourceName),
+                new Value(targetName)
         };
         sendMessage("removeAssociationInstance", message);
     }
@@ -1183,7 +1195,7 @@ public class FmmlxDiagramCommunicator {
         sendMessage("updateAssociationInstance", message);
     }
 
-    public void storeLabelInfo(FmmlxDiagram diagram, DiagramEdgeLabel l) {
+    public void storeLabelInfo(FmmlxDiagram diagram, DiagramEdgeLabel<?> l) {
         sendMessage("storeLabelInfo", l.getInfo4XMF());
         //xmfRequest(handler, "storeLabelInfo",l.getInfo4XMF());
     }
@@ -1369,25 +1381,36 @@ public class FmmlxDiagramCommunicator {
         sendMessage("changeConstraintLevel", message);
 	}
 	
-	public void changeConstraintBody(int diagramID, String path, String name, String body) {
+	public void changeConstraintBodyAndReason(int diagramID, String path, String name, String body, String reason) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
                 new Value(path),
                 new Value(name),
-                new Value(body)
-		};
-        sendMessage("changeConstraintBody", message);
-	}
-	
-	public void changeConstraintReason(int diagramID, String path, String name, String reason) {
-		Value[] message = new Value[]{
-				getNoReturnExpectedMessageID(diagramID),
-                new Value(path),
-                new Value(name),
+                new Value(body),
                 new Value(reason)
 		};
-        sendMessage("changeConstraintReason", message);
-	}
+        sendMessage("changeConstraintBodyAndReason", message);
+	}	
+//	
+//	public void changeConstraintBody(int diagramID, String path, String name, String body) {
+//		Value[] message = new Value[]{
+//				getNoReturnExpectedMessageID(diagramID),
+//                new Value(path),
+//                new Value(name),
+//                new Value(body)
+//		};
+//        sendMessage("changeConstraintBody", message);
+//	}
+//	
+//	public void changeConstraintReason(int diagramID, String path, String name, String reason) {
+//		Value[] message = new Value[]{
+//				getNoReturnExpectedMessageID(diagramID),
+//                new Value(path),
+//                new Value(name),
+//                new Value(reason)
+//		};
+//        sendMessage("changeConstraintReason", message);
+//	}
 	
 	public void changeConstraintOwner(int diagramID, String oldOwner, String newOwner, String name) {
 		Value[] message = new Value[]{
@@ -1879,5 +1902,10 @@ public class FmmlxDiagramCommunicator {
 //		}
 		return positionInfos;
 	}
+
+	public void setSilent(boolean silent) {
+		this.silent = silent;
+	}
+
 
 }

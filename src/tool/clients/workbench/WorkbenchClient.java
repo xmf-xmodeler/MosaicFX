@@ -34,11 +34,17 @@ public class WorkbenchClient extends Client {
       setAllProjects(message);
     else if (message.hasName("setProjectModels"))
       setProjectModels(message);
+    else if (message.hasName("setAllCategories"))
+        setAllCategories(message);
     else super.sendMessage(message);
   }
 
   private void setAllProjects(Message message) {
 	ControlCenterClient.getClient().setAllProjects(message);
+  }
+  
+  private void setAllCategories(Message message) {
+	ControlCenterClient.getClient().setAllCategories(message);  
   }
 
   private void setProjectModels(Message message) {
@@ -115,4 +121,13 @@ public class WorkbenchClient extends Client {
     Message message = getHandler().newMessage("startFmmlxClient", 0);
     getHandler().raiseEvent(message);
   }
+  
+  /*public Integer getRandomNumber(int min, int max) {
+	Message message = getHandler().newMessage("getRandomNumber", 2);
+	message.args[0] = new Value(min);
+	message.args[1] = new Value(max);
+	
+	Value value = getHandler().call(message);
+	return value.intValue;
+  }*/
 }

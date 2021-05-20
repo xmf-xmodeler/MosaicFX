@@ -110,17 +110,17 @@ public class Issue implements FmmlxProperty{
 		} else if("addRoleFiller".equals(actionName)) {
 			FmmlxObject obj = diagram.getObjectByPath((String) solution.get(1));
 			diagram.getActions().setRoleFiller(obj, null);
-	    } else { System.err.println("Solution not recognized: " + solution.get(0));
+//	    } else { System.err.println("Solution not recognized: " + solution.get(0));
 			
-//		} else { // NOT IN AUTO-MODE
-//	        Alert alert = new Alert(AlertType.INFORMATION);
-//	        alert.setTitle("Resolving Issue");
-//	 
-//	        // Header Text: null
-//	        alert.setHeaderText(null);
-//	        alert.setContentText("This issue cannot be resolved!");
-//	 
-//	        alert.showAndWait();
+		} else { // NOT IN AUTO-MODE
+	        Alert alert = new Alert(AlertType.INFORMATION);
+	        alert.setTitle("Resolving Issue");
+	 
+	        // Header Text: null
+	        alert.setHeaderText("This issue cannot be resolved!");
+	        alert.setContentText(text);
+	 
+	        alert.showAndWait();
 		}
 	}
 	

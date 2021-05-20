@@ -38,6 +38,7 @@ public final class ModelBrowser extends CustomStage {
 	private final CodeBox operationCodeArea = new CodeBox(10,true,"");
 	private final CodeBox constraintBodyArea = new CodeBox(10,false,"");
 	private final CodeBox constraintReasonArea = new CodeBox(10,false,"");
+	private final CodeBox issueArea = new CodeBox(10,false,"");
 	private final ListView<String> modelListView   = new ListView<>();
 	private final ListView<String> parentsListView = new ListView<>();
 	private final ListView<Issue>  issueListView   = new ListView<>();
@@ -66,6 +67,7 @@ public final class ModelBrowser extends CustomStage {
 	private TabPane codeAndConstraintTabPane;
 	private Tab operationTab = new Tab("Operation");
 	private Tab constraintTab = new Tab("Constraint");
+	private Tab issueTab = new Tab("Issue");
 	FmmlxDiagramCommunicator communicator;
 	private AbstractPackageViewer activePackage;
 	Label statusLabel = new Label("Status: not initialized");
@@ -190,9 +192,15 @@ public final class ModelBrowser extends CustomStage {
 
 		issueListView.setOnMouseClicked(e -> {
 			if (e.getClickCount() == 2) {
-		        Issue issue = issueListView.getSelectionModel().getSelectedItem();
+				
+				Issue issue = issueListView.getSelectionModel().getSelectedItem();
 		        FmmlxObject object = fmmlxObjectListView.getSelectionModel().getSelectedItem();
 		        if(issue != null && object != null) {
+		        	Alert alert = new Alert(AlertType.INFORMATION);
+					alert.setTitle("Constraint report / Issue");
+					alert.setHeaderText(null);
+					alert.setContentText(issue.toString());
+					alert.showAndWait();
 		        	issue.performResolveAction(activePackage);
 		        }
 			}
@@ -215,7 +223,7 @@ public final class ModelBrowser extends CustomStage {
 	                    	setStyle("-fx-control-inner-background: white;");
 	                    }
 	                    
-	                	if(o.isAbstract()) setText("(" + o.getName() + ")"); else setText(o.getName());
+	                	if(o.isAbstract()) setText("(" + o.getName() + " ^"+ o.getMetaClassName() + "^ " + ")"); else setText(o.getName()+ " ^"+ o.getMetaClassName() + "^");
 	                	
 	                    setGraphic(getClassLevelGraphic(o.getLevel()));
 	                } else { setText(""); setGraphic(null); }
@@ -289,8 +297,7 @@ public final class ModelBrowser extends CustomStage {
 				@Override protected void updateItem(FmmlxAssociation association, boolean empty) {
 					super.updateItem(association, empty);
 					if (association!=null) {
-						setStyle("-fx-font-weight: bold");
-						setText("{"+ association.getLevelSource() +"} " + association.getTargetNode().getName() + " [" + association.getMultiplicityEndToStart().toString()+"]" +" " + association.getName() +" {"+ association.getLevelTarget() + "} " + association.getSourceNode().getName()+ " [" + association.getMultiplicityStartToEnd().toString()+"]");
+						setText("{"+ association.getLevelSource() +"} " + association.getSourceNode().getName() + " [" + association.getMultiplicityStartToEnd().toString()+"]" +" " + association.getName() +" {"+ association.getLevelTarget() + "} " + association.getTargetNode().getName()+ " [" + association.getMultiplicityEndToStart().toString()+"]");
 					} else { setText(""); setGraphic(null);  }
 				}
 			};
@@ -314,13 +321,16 @@ public final class ModelBrowser extends CustomStage {
 			return new ListCell<Issue>() {
 
 	        	@Override protected void updateItem(Issue issue, boolean empty) {
-	                super.updateItem(issue, empty);
+	        		final Tooltip tooltip = new Tooltip();
+	        		super.updateItem(issue, empty);
 	                if (issue != null) {
 	                	setTextFill(Color.INDIANRED);
-	                	setText(issue.toString());  
+	                	setText(issue.toString());
+	                	tooltip.setText(issue.toString());
+	                	setTooltip(tooltip);
 	                } else {
 	                	setText("");
-	                	
+	                	setTooltip(null);
 	                }
 	            }
 	        };
@@ -352,8 +362,8 @@ public final class ModelBrowser extends CustomStage {
 				-> onSlotListViewNewValue(oldValue,newValue));	
 		operationValueListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onOperationValueListViewNewValue(oldValue,newValue));	
-//		issueListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
-//				-> onIssueListViewNewValue(oldValue,newValue));	
+		issueListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
+				-> onIssueListViewNewValue(oldValue,newValue));	
 
 		fmmlxAssociationListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) 
 				-> onAssociationListViewNewValue(oldValue,newValue));
@@ -385,7 +395,7 @@ public final class ModelBrowser extends CustomStage {
 		GridPane.setHalignment(statusLabel, javafx.geometry.HPos.CENTER);
 		Button button3 = new Button("Do not push!");
 		modelColumnGrid.add(button3, 0,5);
-		button3.setOnAction(e -> System.exit(0));
+//		button3.setOnAction(e -> System.exit(0));
 		
 		button1.setMaxWidth(300);
 		statusLabel.setMaxWidth(300);
@@ -464,7 +474,7 @@ public final class ModelBrowser extends CustomStage {
 		SplitPane outerSplitPane = new SplitPane();
 		outerSplitPane.setOrientation(Orientation.VERTICAL);
 		codeAndConstraintTabPane = new TabPane();
-		codeAndConstraintTabPane.getTabs().addAll(operationTab, constraintTab);
+		codeAndConstraintTabPane.getTabs().addAll(operationTab, constraintTab, issueTab);
 		outerSplitPane.getItems().addAll(mainGridPane, codeAndConstraintTabPane);
 		
 		GridPane operationPane = new GridPane();
@@ -485,6 +495,13 @@ public final class ModelBrowser extends CustomStage {
 		constraintPane.getColumnConstraints().add(FILL);
 		constraintTab.setContent(constraintPane);
 		
+		GridPane issuePane = new GridPane();
+		issuePane.setVgap(3);
+		issuePane.add(issueArea.virtualizedScrollPane, 0, 0);
+		issuePane.getColumnConstraints().add(FILL);
+		issuePane.getRowConstraints().add(new RowConstraints(1, Integer.MAX_VALUE, Integer.MAX_VALUE));
+		issueTab.setContent(issuePane);
+		
 		VBox.setVgrow(outerSplitPane,Priority.ALWAYS);		
 		return outerSplitPane;
 	}
@@ -501,6 +518,8 @@ public final class ModelBrowser extends CustomStage {
 		operationValueListView.getItems().clear();
 		fmmlxAssociationListView.getItems().clear();
 		onAssociationListViewNewValue(null, null);
+		onConstraintListViewNewValue(null, null);
+		constraintListView.getItems().clear();
 		metaClassTextField.clear();
 		delegatesToTextField.clear();
 		constraintListView.getItems().clear();
@@ -565,7 +584,7 @@ public final class ModelBrowser extends CustomStage {
 	private void onModelListViewNewValue(String oldSelectedPath, String selectedPath) {
 		if(selectedPath == null || selectedPath.equals(oldSelectedPath)) return;
 		if(!models.containsKey(selectedPath)) {
-			Integer newDiagramID = communicator.createDiagram(selectedPath, "Test", "");
+			Integer newDiagramID = communicator.createDiagram(selectedPath, "Test", "", FmmlxDiagramCommunicator.DiagramType.ModelBrowser);
 			ClassBrowserPackageViewer tempViewer = new ClassBrowserPackageViewer(communicator, newDiagramID, selectedPath, this);
 			models.put(selectedPath, tempViewer);
 		}
@@ -634,7 +653,17 @@ public final class ModelBrowser extends CustomStage {
 		} else {
 			updateConstraintTab(null, false, false);
 		}
+		constraintListView.setContextMenu(new BrowserConstraintContextMenu());
 	}
+	
+	private void onIssueListViewNewValue(Issue oldValue, Issue issue) {
+		if (issue!=null) {
+			selection.put("ISS", issue.getText());
+			updateIssueTab(issue, false, true);
+		} else {
+			updateIssueTab(null, false, false);
+		}
+	}	
 
 	private void onLinksListViewNewValue(FmmlxAssociation oldValue, FmmlxAssociation association) {
 		linkedObjectsListView.getItems().clear();
@@ -658,6 +687,7 @@ public final class ModelBrowser extends CustomStage {
 		} else {
 			
 		}
+		linksListView.setContextMenu(new BrowserLinkedObjectContextMenu());
 	}
 
 	
@@ -681,9 +711,28 @@ public final class ModelBrowser extends CustomStage {
 			constraintReasonArea.setText(constraint.getReasonFull());
 			constraintTab.setText("Constraint" + " (" + constraint.getName()+ ")");
 		} else {
-			constraintBodyArea.setText(null);
-			constraintReasonArea.setText(null);
+			constraintBodyArea.setText("");
+			constraintReasonArea.setText("");
 			constraintTab.setText("Constraint");			
+		}
+		conCodeButton.setOnAction(e->{activePackage.getComm().changeConstraintBodyAndReason(
+				activePackage.getID(), 
+				fmmlxObjectListView.getSelectionModel().getSelectedItem().getPath(), 
+				constraint.getName(), 
+				constraintBodyArea.getText(), 
+				constraintReasonArea.getText());});
+	}
+	
+	private void updateIssueTab(Issue issue, boolean editable, boolean select) {
+		if(select) {
+			codeAndConstraintTabPane.getSelectionModel().select(issueTab);
+			if (issue!=null) {
+				issueArea.setText(issue.getText());
+				issueTab.setText("Issue");
+			} else {
+				issueArea.setText("");
+				issueTab.setText("Issue");
+			}
 		}
 	}
 
@@ -724,7 +773,8 @@ public final class ModelBrowser extends CustomStage {
 		
 		selectItemByString(fmmlxAssociationListView, selection.get("SLO"));
 		selectItemByString(linksListView, selection.get("LI1"));
-		selectItemByString(linkedObjectsListView, selection.get("LI2"));		
+		selectItemByString(linkedObjectsListView, selection.get("LI2"));
+		selectItemByString(issueListView, selection.get("ISS"));
 	}
 	
 	private <E extends FmmlxProperty> void selectItemByString(ListView<E> list, String key) {
@@ -835,6 +885,40 @@ public final class ModelBrowser extends CustomStage {
 				addNewMenuItem(this, "Remove RoleFiller", e -> actions.removeRoleFiller(object), () -> {return object.getRoleFiller() != null;});
 				addNewMenuItem(this, object.isAbstract()?"Make Concrete":"Make Abstract", e -> actions.toggleAbstract(object), () -> {return object.getLevel() >= 1 && object.getInstances().size() > 0;});
 			}
+		}
+	}
+	
+	private class BrowserLinkedObjectContextMenu extends ContextMenu {
+		
+		private final FmmlxObject object;
+		//private final FmmxObject target;
+		private final DiagramActions actions;
+		private final FmmlxAssociation association;
+		
+		public BrowserLinkedObjectContextMenu() {
+			this.object = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+			this.actions = activePackage.getActions();
+			this.association = linksListView.getSelectionModel().getSelectedItem();
+			setAutoHide(true);
+			addNewMenuItem(this, "Add instance for Link", e -> actions.addAssociationInstanceDialog(null,null,association),ALWAYS);
+			
+		}
+		
+	}
+	
+	private class BrowserConstraintContextMenu extends ContextMenu {
+		
+		private final FmmlxObject object;
+		private final DiagramActions actions;
+		private final Constraint constraint;
+		
+		public BrowserConstraintContextMenu() {
+			this.object = fmmlxObjectListView.getSelectionModel().getSelectedItem();
+			this.actions = activePackage.getActions();
+			this.constraint = constraintListView.getSelectionModel().getSelectedItem();
+			setAutoHide(true);
+			addNewMenuItem(this,"Add Constraint", e -> actions.addConstraintDialog(object), ALWAYS);
+			addNewMenuItem(this,"Remove Constraint", e -> actions.removeDialog(object,PropertyType.Constraint, constraint),() -> {return constraint != null;});
 		}
 	}
 	

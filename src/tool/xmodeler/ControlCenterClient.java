@@ -1,8 +1,12 @@
 package tool.xmodeler;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Vector;
 
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.TextInputDialog;
 import tool.clients.workbench.WorkbenchClient;
 import xos.Message;
 import xos.Value;
@@ -25,11 +29,18 @@ public class ControlCenterClient {
 		return self;
 	}
 
-	public Vector<String> getAllCategories() {
-		Vector<String> v = new Vector<>();
-		v.add("Sales");
-		v.add("Buying");
-		return v;
+	public void getAllCategories() {
+		Message message = WorkbenchClient.theClient().getHandler().newMessage("getAllCategories", 0);
+	    WorkbenchClient.theClient().getHandler().raiseEvent(message);
+	}
+	
+	public void setAllCategories(Message message) {
+		Vector<String> vec = new Vector<String>();
+		for(int i = 0; i < message.args[0].values.length; i++) {
+			vec.add(message.args[0].values[i].strValue());
+		}
+		Collections.sort(vec);
+		controlCenter.setAllCategories(vec);
 	}
 	
 	public void getAllProjects() {
@@ -61,5 +72,18 @@ public class ControlCenterClient {
 //		Collections.sort(vec);
 		controlCenter.setProjectModels(vec);		
 	}
- 
+	
+	public void createNewProject() {
+		TextInputDialog dialog = new TextInputDialog();
+		dialog.setTitle("Name for new Project");
+		dialog.setHeaderText("Enter a name for the new Project");
+		Optional<String> result = dialog.showAndWait();
+		String projectName = "";
+		if (result.isPresent()) {
+		    projectName = result.get();
+			Message message = WorkbenchClient.theClient().getHandler().newMessage("addProject",1);
+			message.args[0] = new Value(projectName);
+			WorkbenchClient.theClient().getHandler().raiseEvent(message);
+		}
+	}
 }

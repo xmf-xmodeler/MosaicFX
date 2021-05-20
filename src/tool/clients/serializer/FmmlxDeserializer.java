@@ -29,7 +29,7 @@ public class FmmlxDeserializer {
             Node diagramNode = diagramNodes.item(i);
             if(diagramNode.getNodeType()==Node.ELEMENT_NODE){
             	String diagramName = ((Element) diagramNode).getAttribute(XmlConstant.ATTRIBUTE_LABEL);
-            	Integer diagramId = fmmlxDiagramCommunicator.createDiagram(projectName, diagramName, this.xmlHandler.getSourcePath());
+            	Integer diagramId = fmmlxDiagramCommunicator.createDiagram(projectName, diagramName, this.xmlHandler.getSourcePath(), FmmlxDiagramCommunicator.DiagramType.ClassDiagram);
             	if(!populated) {
                     fmmlxDiagramCommunicator.preparePositionInfo(diagramId, diagramNode);
             		fmmlxDiagramCommunicator.populateDiagram(this.xmlHandler.getSourcePath(), diagramName, diagramId);
@@ -79,32 +79,32 @@ public class FmmlxDeserializer {
         labelXmlManager.alignLabel(diagramElement, diagram);
 	}
 
-    /**
-     * @deprecated replaced by {@link #alignElements(FmmlxDiagram, Element)}
-     */
-    public void alignElements(FmmlxDiagram diagram, FmmlxDiagramCommunicator comm) {
-        Element diagrams = getDiagramsElement();
-        NodeList diagramList = diagrams.getChildNodes();
-
-        Element diagramElement = null;
-        for (int i = 0 ; i< diagramList.getLength(); i++){
-            if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
-                Element tmp = (Element) diagramList.item(i);
-                if (tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(diagram.getDiagramLabel())){
-                    diagramElement = tmp;
-                }
-            }
-        }
-        if(diagramElement!=null){
-            ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
-            objectXmlManager.alignObjects2(diagramElement, diagram);
-            EdgeXmlManager edgeXmlManager = new EdgeXmlManager(this.xmlHandler);
-            edgeXmlManager.alignEdges2(diagramElement, diagram);
-            LabelXmlManager labelXmlManager = new LabelXmlManager(this.xmlHandler);
-            labelXmlManager.alignLabel2(diagramElement, comm, diagram.getID());
-        }
-        diagram.objectsMoved = true;
-    }
+//    /**
+//     * @deprecated replaced by {@link #alignElements(FmmlxDiagram, Element)}
+//     */
+//    public void alignElements(FmmlxDiagram diagram, FmmlxDiagramCommunicator comm) {
+//        Element diagrams = getDiagramsElement();
+//        NodeList diagramList = diagrams.getChildNodes();
+//
+//        Element diagramElement = null;
+//        for (int i = 0 ; i< diagramList.getLength(); i++){
+//            if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
+//                Element tmp = (Element) diagramList.item(i);
+//                if (tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(diagram.getDiagramLabel())){
+//                    diagramElement = tmp;
+//                }
+//            }
+//        }
+//        if(diagramElement!=null){
+//            ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
+//            objectXmlManager.alignObjects2(diagramElement, diagram);
+//            EdgeXmlManager edgeXmlManager = new EdgeXmlManager(this.xmlHandler);
+//            edgeXmlManager.alignEdges2(diagramElement, diagram);
+//            LabelXmlManager labelXmlManager = new LabelXmlManager(this.xmlHandler);
+//            labelXmlManager.alignLabel2(diagramElement, comm, diagram.getID());
+//        }
+//        diagram.objectsMoved = true;
+//    }
 
     public Element getDiagramsElement(){
         Element Root = xmlHandler.getRoot();

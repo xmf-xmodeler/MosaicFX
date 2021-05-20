@@ -79,7 +79,7 @@ public abstract class AbstractPackageViewer {
 	}
 
 	private void sendInitialEdgesPosition() {
-		for(Edge edge : edges){
+		for(Edge<?> edge : edges){
 			getComm().sendCurrentPositions(getID(), edge);
 		}
 	}
@@ -105,9 +105,6 @@ public abstract class AbstractPackageViewer {
 				o.fetchDataDefinitions(comm);
 			}
 			
-			for(FmmlxObject o : objects) {
-				o.fetchDataValues(comm);
-			}
 			issues.addAll(comm.fetchIssues(this));
 			Vector<Edge<?>> fetchedEdges = comm.getAllAssociations(this);
 			fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
@@ -119,6 +116,10 @@ public abstract class AbstractPackageViewer {
 
 			enums = comm.fetchAllEnums(this);
 			auxTypes = comm.fetchAllAuxTypes(this);
+						
+			for(FmmlxObject o : objects) {
+				o.fetchDataValues(comm);
+			}
 			
 			fetchDiagramDataSpecific();
 			
@@ -155,6 +156,19 @@ public abstract class AbstractPackageViewer {
 				if (((FmmlxObject) (tmp.sourceNode)).getName().equals(object.getName()) 
 				  ||((FmmlxObject) (tmp.targetNode)).getName().equals(object.getName())) {
 					result.add((FmmlxAssociation) tmp);
+				}
+			}
+		}
+		return result;
+	}
+	
+	public final Vector<FmmlxLink> getRelatedLinksByObject(FmmlxObject object) {
+		Vector<FmmlxLink> result = new Vector<>();
+		for (Edge<?> tmp : edges) {
+			if (tmp instanceof FmmlxLink) {
+				if (((FmmlxObject) (tmp.sourceNode)).getName().equals(object.getName()) 
+				  ||((FmmlxObject) (tmp.targetNode)).getName().equals(object.getName())) {
+					result.add((FmmlxLink) tmp);
 				}
 			}
 		}

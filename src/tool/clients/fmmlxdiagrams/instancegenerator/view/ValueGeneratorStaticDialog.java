@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
+import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.ValueGeneratorStatic;
@@ -86,22 +87,22 @@ public class ValueGeneratorStaticDialog extends CustomDialog<String> implements 
 	protected boolean validateStatic(String string) {
 		switch(valueGeneratorStatic.getAttributeType()){
         case StringValue.TraditionalDataType.INTEGER:
-        	if(!inputChecker.validateInteger(string)) {
+        	if(!InputChecker.validateInteger(string)) {
         		errorLabel.setText("Please input valid Integer");
         	}
-            return inputChecker.validateInteger(string);
+            return InputChecker.validateInteger(string);
         case StringValue.TraditionalDataType.FLOAT:
-        	if(!inputChecker.validateFloat(string)) {
+        	if(!InputChecker.validateFloat(string)) {
         		errorLabel.setText("Please input valid float value");
         	}
-        	return inputChecker.validateFloat(string);
+        	return InputChecker.validateFloat(string);
         case StringValue.TraditionalDataType.STRING:
         	return validateString(string);
         case StringValue.TraditionalDataType.BOOLEAN:
-        	if(!inputChecker.validateBoolean(string)) {
+        	if(!InputChecker.validateBoolean(string)) {
         		errorLabel.setText("Please select boolean value");
         	}
-        	return inputChecker.validateBoolean(string);
+        	return InputChecker.validateBoolean(string);
         default:
             return false;
         }		

@@ -54,7 +54,9 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				return new ChangeParentDialogResult(object, newParentListView.getSelectionModel().getSelectedItems());
+				return new ChangeParentDialogResult(object, 
+						new Vector<>(newParentListView.getSelectionModel().getSelectedItems()), 
+						new Vector<>(currentParentList));
 			}
 			return null;
 		});
@@ -108,7 +110,7 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 
 		for (String name : parentNames) {
 			FmmlxObject o = diagram.getObjectByPath(name);
-			resultList.add(o);
+			if(o != null) resultList.add(o);
 		}
 		
 		ObservableList<FmmlxObject> result = FXCollections.observableArrayList(resultList);

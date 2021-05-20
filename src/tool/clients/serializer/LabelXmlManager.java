@@ -136,8 +136,8 @@ public class LabelXmlManager {
     }
 
     public void alignLabel(Element diagramElement, FmmlxDiagram fmmlxDiagram) {
-        Vector<DiagramEdgeLabel>labels = fmmlxDiagram.getLabels();
-        for(DiagramEdgeLabel label : labels){
+        Vector<DiagramEdgeLabel<?>>labels = fmmlxDiagram.getLabels();
+        for(DiagramEdgeLabel<?> label : labels){
             Point2D initCoordinate = new Point2D(label.getRelativeX(), label.getRelativeY());
             Point2D coordinate = getCoordinate(diagramElement, label.getText(), initCoordinate);
             if(validateName(label.getText())){

@@ -13,9 +13,7 @@ public class InputChecker {
 
 	private static InputChecker instance;
 
-	public InputChecker() {
-		// Blank Constructor needed
-	}
+	private InputChecker() { }
 
 	public static InputChecker getInstance() {
 		if (instance == null) {
@@ -24,7 +22,7 @@ public class InputChecker {
 		return instance;
 	}
 
-	public boolean validateName(String name) {
+	public static boolean validateName(String name) {
 		if (name.equals("")) {
 			return false;
 		} else if (checkFirstStringIsDigit(name)) {
@@ -35,7 +33,7 @@ public class InputChecker {
 		return true;
 	}
 
-	private boolean checkFirstStringIsDigit(String name) {
+	private static boolean checkFirstStringIsDigit(String name) {
 		char[] c = name.toCharArray();
 
 		if (Character.isDigit(c[0])) {
@@ -51,15 +49,15 @@ public class InputChecker {
 		return false;
 	}
 
-	public boolean attributeNameIsAvailable(String name, FmmlxObject object) {
-		for (FmmlxAttribute attribute : object.getOwnAttributes()) {
-			if (name.equals(attribute.getName())) return false;
-		}
-		for (FmmlxAttribute attribute : object.getOtherAttributes()) {
-			if (name.equals(attribute.getName())) return false;
-		}
-		return true;
-	}
+//	public static boolean attributeNameIsAvailable(String name, FmmlxObject object) {
+//		for (FmmlxAttribute attribute : object.getOwnAttributes()) {
+//			if (name.equals(attribute.getName())) return false;
+//		}
+//		for (FmmlxAttribute attribute : object.getOtherAttributes()) {
+//			if (name.equals(attribute.getName())) return false;
+//		}
+//		return true;
+//	}
 
 	public boolean classNameIsAvailable(String name, AbstractPackageViewer diagram) {
 		for (FmmlxObject object : diagram.getObjects()) {
@@ -93,7 +91,7 @@ public class InputChecker {
 				|| textField.getText().length() == 0;
 	}
 	
-	public boolean validateInteger(String string) {
+	public static boolean validateInteger(String string) {
 		boolean isValidInteger = false;
 	      try
 	      {
@@ -108,7 +106,7 @@ public class InputChecker {
 		
 	}
 	
-	public boolean validateFloat(String string) {
+	public static boolean validateFloat(String string) {
 		boolean isValidFloat = false;
 	      try
 	      {
@@ -124,7 +122,7 @@ public class InputChecker {
 	      return isValidFloat;
 	}
 	
-	public boolean validateBoolean(String string) {
+	public static boolean validateBoolean(String string) {
 		boolean isValidBoolean = false;
 	      try
 	      {

@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
@@ -245,7 +246,7 @@ public class XModeler extends Application {
 
   public static void main(String[] args) {
 	  System.setProperty("prism.order", "sw");
-	  
+	  Locale.setDefault(Locale.ENGLISH);
 //	try {
 //		PrintStream R = new PrintStream(new File("err.txt"));
 //		System.setErr(R);
