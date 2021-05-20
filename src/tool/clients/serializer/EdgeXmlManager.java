@@ -97,11 +97,6 @@ public class EdgeXmlManager {
         return null;
     }
 
-    public Element getDiagramsElement(){
-        Element Root = xmlHandler.getRoot();
-        return xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_DIAGRAMS);
-    }
-
     private Element getEdgesElement(Element diagramNode){
         return xmlHandler.getChildWithTag(diagramNode, XmlConstant.TAG_NAME_EDGES);
     }

@@ -54,6 +54,7 @@ public class AddEnumElement extends CustomDialog<AddEnumElementDialogResult>{
 	}
 
 	private boolean validateUserInput() {
+
 		String name = inputElementNameTextField.getText();
 
 		if (!InputChecker.getInstance().validateName(name)) {

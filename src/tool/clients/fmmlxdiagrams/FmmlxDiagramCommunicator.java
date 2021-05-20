@@ -38,7 +38,7 @@ public class FmmlxDiagramCommunicator {
 	private final HashMap<Integer, Vector<Object>> results = new HashMap<>();
 	private static final Hashtable<Integer, Tab> tabs = new Hashtable<>();
 	private static final Vector<FmmlxDiagram> diagrams = new Vector<>();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	static TabPane tabPane;
 	private Value getNoReturnExpectedMessageID(int diagramID) {return new Value(new Value[] {new Value(diagramID), new Value(-1)});}
 	
@@ -729,7 +729,6 @@ public class FmmlxDiagramCommunicator {
 			pointE[2] = new Value(0);
 			listOfPoints[listOfPoints.length-1] = new Value(pointE);
 		}
-
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(edge.path),
@@ -770,7 +769,6 @@ public class FmmlxDiagramCommunicator {
 			pointE[2] = new Value(0);
 			listOfPoints[listOfPoints.length-1] = new Value(pointE);
 		}
-
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(edgePath),
@@ -1507,10 +1505,10 @@ public class FmmlxDiagramCommunicator {
 
     @SuppressWarnings("unchecked")
     public FaXML getDiagramData(Integer diagramID) throws TimeOutException {
-        Vector<Object> response = xmfRequest(handler, diagramID, "getDiagramData");
+        //Vector<Object> response = xmfRequest(handler, diagramID, "getDiagramData2");
+		Vector<Object> response = xmfRequest(handler, diagramID, "getDiagramData");
         Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-
-        return new FaXML(responseContent);
+		return new FaXML(responseContent);
     }
 
     @SuppressWarnings("unchecked")
