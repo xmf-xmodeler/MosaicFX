@@ -22,6 +22,7 @@ import javafx.scene.control.cell.TextFieldListCell;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumElementDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeEnumItemNameDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeEnumNameDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.EditEnumerationDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
@@ -40,6 +41,7 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 	private Button addItemButton;
 	private Button removeItemButton;
 	private Button changeNameButton;
+	private Button changeItemNameButton;
 	
 	private AbstractPackageViewer diagram;
 	
@@ -130,32 +132,43 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 		addItemButton = new Button("Add Element");
 		removeItemButton = new Button("Remove Element");
 		changeNameButton = new Button("Change Name");
+		changeItemNameButton = new Button ("Change ItemName");
 		
-		List<Node> labelNode = new ArrayList<Node>(); 
-		List<Node> editorNode = new ArrayList<Node>();
+		List<Node> labelNodes = new ArrayList<Node>(); 
+		List<Node> editorNodes = new ArrayList<Node>();
 		
 
-		labelNode.add(chooseEnumLabel);
-		labelNode.add(new Label(" "));
-		labelNode.add(new Label(" "));
-		labelNode.add(inputElementLabel);
+		labelNodes.add(chooseEnumLabel);
+		labelNodes.add(new Label(" "));
+		labelNodes.add(new Label(" "));
+		labelNodes.add(inputElementLabel);
 			
-		editorNode.add(joinNodeElementInHBox(chooseEnumComboBox, changeNameButton));
-		editorNode.add(new Label(" "));
-		editorNode.add(new Label(" "));
-		editorNode.add(inputElementListview);
-		editorNode.add(joinNodeElementInHBox(addItemButton, removeItemButton));
-		  
+		editorNodes.add(joinNodeElementInHBox(chooseEnumComboBox, changeNameButton));
+		editorNodes.add(new Label(" "));
+		editorNodes.add(new Label(" "));
+		editorNodes.add(inputElementListview);
+		editorNodes.add(joinNodeElementInHBox(addItemButton, removeItemButton));
+		editorNodes.add(changeItemNameButton);
+		
 		addItemButton.setOnAction(e -> addElement(chooseEnumComboBox.getSelectionModel().getSelectedItem(),inputElementListview));
 		removeItemButton.setOnAction(e ->removeElement(inputElementListview.getSelectionModel().getSelectedItem(),inputElementListview));
-		changeNameButton.setOnAction(e -> chageEnumNameDialog(chooseEnumComboBox.getSelectionModel().getSelectedItem()));  
-		  
-		addNodesToGrid(labelNode,0); addNodesToGrid(editorNode, 1);
+		changeNameButton.setOnAction(e -> changeEnumNameDialog(chooseEnumComboBox.getSelectionModel().getSelectedItem()));  
+		changeItemNameButton.setOnAction(e-> {
+			try {
+				changeItemNameDialog(chooseEnumComboBox.getSelectionModel().getSelectedItem(), inputElementListview.getSelectionModel().getSelectedItem());
+			} catch (TimeOutException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
+		
+		addNodesToGrid(labelNodes,0); 
+		addNodesToGrid(editorNodes, 1);
 		 
 		
 	} 
 
-	private void chageEnumNameDialog(FmmlxEnum selectedItem) {
+	private void changeEnumNameDialog(FmmlxEnum selectedItem) {
 		ChangeEnumName dlg = new ChangeEnumName(diagram, selectedItem);
 		Optional<ChangeEnumNameDialogResult> opt = dlg.showAndWait();
 
@@ -164,6 +177,16 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 			diagram.getComm().changeEnumerationName(diagram.getID(), result.getOldName(), result.getNewName());
 		}
 		
+	}
+	
+	private void changeItemNameDialog(FmmlxEnum selectedEnum, String selectedItem) throws TimeOutException {
+		ChangeEnumItemName dlg = new ChangeEnumItemName(diagram, selectedEnum, selectedItem);
+		Optional<ChangeEnumItemNameDialogResult> opt = dlg.showAndWait();
+		
+		if(opt.isPresent()) {
+			ChangeEnumItemNameDialogResult result = opt.get();
+				diagram.getComm().changeEnumerationItemName(diagram.getID(), result.getEnumName(), result.getOldName(), result.getNewName());
+		}
 	}
 
 	private ObservableList<FmmlxEnum> getEnumList() {	
