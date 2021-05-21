@@ -254,7 +254,6 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 					}
 				};
 
-				
 				new Thread(task).start();
 
 				boolean waiting = true;
