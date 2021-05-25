@@ -23,6 +23,10 @@ public class FmmlxDeserializer {
         DiagramXmlManager diagramXmlManager = new DiagramXmlManager(this.xmlHandler);
         NodeList diagramNodes = getDiagramsElement().getChildNodes();
         fmmlxDiagramCommunicator.createProject(projectName, diagramXmlManager.getAllDiagramNames(), this.xmlHandler.getSourcePath());
+
+//        if(!fmmlxDiagramCommunicator.projectExist(projectPath,projectName)){
+//
+//        }
         
         boolean populated = false;
         for(int i =0; i< diagramNodes.getLength(); i++){
@@ -44,12 +48,6 @@ public class FmmlxDeserializer {
             LogXmlManager logXmlManager = new LogXmlManager(this.xmlHandler);
             logXmlManager.reproduceFromLog(newDiagramID);
         }
-    }
-
-    public String getProjectName() {
-        ProjectXmlManager projectXmlManager = new ProjectXmlManager(this.xmlHandler);
-        String projectPath = projectXmlManager.getProjectPath();
-        return projectXmlManager.getProjectName(projectPath);
     }
 
     /*public void alignCoordinate(String file, FmmlxDiagramCommunicator communicator) {

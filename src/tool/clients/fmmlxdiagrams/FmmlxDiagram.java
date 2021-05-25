@@ -99,7 +99,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private boolean showDerivedOperations=true;
 	private boolean showDerivedAttributes=true;
 	
-	private final String diagramName;
+	public final String diagramName;
 	private final NewFmmlxPalette newFmmlxPalette;
 	private String filePath;
 	
