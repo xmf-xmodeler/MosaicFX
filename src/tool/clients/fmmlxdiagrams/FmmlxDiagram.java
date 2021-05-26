@@ -531,6 +531,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 						Platform.runLater(() -> {
 							actions.addAssociationInstance(obj1, obj2,null);
 							updateDiagramLater();
+							setStandardMouseMode();
 						});						
 						break;
 					}
@@ -614,13 +615,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			
 		} else if (edgeCreationType != null) {			
 			if (edgeCreationType.equals("association")) {
-				hitObject = getElementAt(p.getX(), p.getY());
+				//hitObject = getElementAt(p.getX(), p.getY());
+				System.out.println("asso");
 				if(hitObject instanceof FmmlxObject) {		
 					setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Association);
 					canvas.setCursor(Cursor.DEFAULT);
 					
 				}
 			} else if (edgeCreationType.equals("associationInstance")) {
+				System.out.println("instance");
 				if(hitObject instanceof FmmlxObject) {
 					setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.AssociationInstance);
 					canvas.setCursor(Cursor.DEFAULT);
