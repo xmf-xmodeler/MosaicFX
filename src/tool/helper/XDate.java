@@ -55,4 +55,17 @@ public class XDate {
 			return null;
 		}
 	}
+	
+	private Integer get(String timeString, int FIELD) {
+		GregorianCalendar gc = new GregorianCalendar();
+		gc.setTime(new Date(Long.parseLong(timeString)));
+		return gc.get(FIELD);
+	}
+	
+	public Integer getYear(String timeString) { return get(timeString, GregorianCalendar.YEAR); }
+	public Integer getMonth(String timeString) { return get(timeString, GregorianCalendar.MONTH); }
+	public Integer getDay(String timeString) { return get(timeString, GregorianCalendar.DAY_OF_MONTH); }
+	public Integer getHour(String timeString) { return get(timeString, GregorianCalendar.HOUR_OF_DAY); }
+	public Integer getMinute(String timeString) { return get(timeString, GregorianCalendar.MINUTE); }
+	public Integer getSecond(String timeString) { return get(timeString, GregorianCalendar.SECOND); }
 }
