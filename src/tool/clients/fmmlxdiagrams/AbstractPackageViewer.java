@@ -20,7 +20,9 @@ public abstract class AbstractPackageViewer {
 	protected final String packagePath;
 	protected transient boolean fetchingData;
 	protected boolean justLoaded = false;
-	
+
+
+
 	public static enum ViewerStatus { CLEAN, DIRTY, LOADING }
 
 	public static final AbstractPackageViewer SIMPLE_VIEWER = new AbstractPackageViewer(FmmlxDiagramCommunicator.getCommunicator(),
@@ -33,6 +35,7 @@ public abstract class AbstractPackageViewer {
 		@Override public ObservableList<FmmlxObject> getAllPossibleParents(Integer newValue) { return null;}
 		@Override public boolean isEnum(String type) { return false;}
 		@Override public Vector<String> getEnumItems(String type) { return null;}
+
 		@Override public ObservableList<FmmlxObject> getPossibleAssociationEnds() { return null;}
 		@Override protected void fetchDiagramDataSpecific() throws TimeOutException { }
 		@Override protected void fetchDiagramDataSpecific2() { }

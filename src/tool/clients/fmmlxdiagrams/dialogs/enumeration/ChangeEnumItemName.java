@@ -15,11 +15,12 @@ import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
+import tool.clients.fmmlxdiagrams.dialogs.results.ChangeEnumItemNameDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeEnumNameDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
-public class ChangeEnumName extends CustomDialog<ChangeEnumNameDialogResult>{
-	
+public class ChangeEnumItemName  extends CustomDialog<ChangeEnumItemNameDialogResult> {
+
 	private AbstractPackageViewer diagram;
 	private FmmlxEnum selectedEnum;
 	private String selectedItem;
@@ -29,17 +30,15 @@ public class ChangeEnumName extends CustomDialog<ChangeEnumNameDialogResult>{
 	private TextField currentNameTextField;
 	private TextField newNameTextField;
 	
-
-	public ChangeEnumName(AbstractPackageViewer diagram, FmmlxEnum selectedItem) {
+	public ChangeEnumItemName(AbstractPackageViewer diagram, FmmlxEnum selectedEnum, String selectedItem) {
 		super();
-		this.selectedEnum=selectedItem;
-		this.diagram=diagram;
+		this.selectedEnum=selectedEnum;
+		this.diagram = diagram;
+		this.selectedItem=selectedItem;
 		
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		
-
-		dialogPane.setHeaderText("Change Enum Name");
+		dialogPane.setHeaderText("Change Name of EnumItem");
 
 		addElementToGrid();
 
@@ -54,36 +53,34 @@ public class ChangeEnumName extends CustomDialog<ChangeEnumNameDialogResult>{
 
 		setResult();
 	}
-	
+
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {				
-				return new ChangeEnumNameDialogResult(selectedEnum.getName(),newNameTextField.getText());
+				return new ChangeEnumItemNameDialogResult(selectedEnum.getName(), currentNameTextField.getText(), newNameTextField.getText());
 			}
 			return null;
-		});
-		
+		});		
 	}
 
 	private boolean validateUserInput() {
-		if (!validateName()) {	
+		if (!validateName()) {
 			return false;
 		} 
-		
-		for (FmmlxEnum tmp : diagram.getEnums()) {
-			if (tmp.getName().equals(newNameTextField.getText())) {
-				errorLabel.setText(StringValue.ErrorMessage.enumAlreadyExist);
-				return false;
+			for (String tmp : selectedEnum.getItems()) {
+				if(tmp.equals(newNameTextField.getText())) {
+					errorLabel.setText(StringValue.ErrorMessage.enumItemNameAlreadyExist);
+					return false;
+				}
 			}
-		}
 		errorLabel.setText("");
 		return true;
 	}
-	
+
 	private boolean validateName() {
 		String name = newNameTextField.getText();
 
-		if (!InputChecker.getInstance().validateName(name)) {
+		if (!InputChecker.validateName(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else {
@@ -97,7 +94,7 @@ public class ChangeEnumName extends CustomDialog<ChangeEnumNameDialogResult>{
 		newNameLabel = new Label ("New Name");
 		
 		currentNameTextField = new TextField();
-		currentNameTextField.setText(selectedEnum.getName());
+		currentNameTextField.setText(selectedItem);
 		currentNameTextField.setDisable(true);
 		currentNameTextField.setEditable(false);
 		
@@ -113,7 +110,8 @@ public class ChangeEnumName extends CustomDialog<ChangeEnumNameDialogResult>{
 		editorNode.add(newNameTextField);
 		
 		addNodesToGrid(labelNode, 0);
-		addNodesToGrid(editorNode, 1);
+		addNodesToGrid(editorNode, 1);		
 	}
-
+	
+	
 }

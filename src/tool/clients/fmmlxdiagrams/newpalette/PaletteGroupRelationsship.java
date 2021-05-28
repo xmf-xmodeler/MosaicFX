@@ -22,7 +22,7 @@ public class PaletteGroupRelationsship extends PaletteGroup {
 
 	private void initTools(FmmlxDiagram fmmlxDiagram) {
 		PaletteTool associationTool = new ToolRelationsship(fmmlxDiagram, "Association", "association", "resources/gif/Association.gif");
-		PaletteTool associationInstanceTool = new ToolRelationsship(fmmlxDiagram, "Link", "assoziationInstance","resources/gif/Association.gif");
+		PaletteTool associationInstanceTool = new ToolRelationsship(fmmlxDiagram, "Link", "associationInstance","resources/gif/Association.gif");
 //		PaletteTool spezializationTool = new ToolRelationsship(fmmlxDiagram, "Spezialization", "spezialization", "resources/gif/Inheritance.gif");
 //		PaletteTool delegationTool = new ToolRelationsship(fmmlxDiagram, "Delegation", "delegation", "resources/gif/XCore/Delegation.png");
 		

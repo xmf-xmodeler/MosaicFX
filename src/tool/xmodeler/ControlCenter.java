@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -27,9 +28,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
+import tool.clients.workbench.WorkbenchClient;
 
 public class ControlCenter extends Stage {
 	
@@ -156,6 +159,22 @@ public class ControlCenter extends Stage {
 		this.setOnShown((event) -> {controlCenterClient.getAllCategories();});
 		refreshAll.setOnAction((event) -> {controlCenterClient.getAllProjects();});
 		newProject.setOnAction((event) -> {controlCenterClient.createNewProject();controlCenterClient.getAllProjects();});	
+		
+		this.setOnCloseRequest(  new EventHandler<WindowEvent>() {
+			  public void handle(WindowEvent event) {
+				  //propertyManager.writeXMLFile();
+                if (PropertyManager.getProperty("IGNORE_SAVE_IMAGE", false)) {
+                    System.exit(0);
+                } else {
+                	String loadedImagePath = null;
+                	if (loadedImagePath == null) WorkbenchClient.theClient().shutdownEvent();
+                    else WorkbenchClient.theClient().shutdownAndSaveEvent(loadedImagePath, loadedImagePath);
+                }
+				  event.consume();
+//				  event.doit = false;
+			  }
+	  });	
+	
 	}
 
 	public MenuBar getMenuBar() {

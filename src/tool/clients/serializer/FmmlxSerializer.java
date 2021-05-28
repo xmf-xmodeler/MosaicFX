@@ -40,7 +40,7 @@ public class FmmlxSerializer  {
 //            }
 //            saveLogCount++;
         }
-        saveLog(packagePath, communicator);
+        saveLog(diagramIds.get(0), communicator);
         this.xmlHandler.flushData();
     }
 
@@ -60,7 +60,7 @@ public class FmmlxSerializer  {
 //                    }
 //                    saveLogCount++;
                 }
-                saveLog(packagePath, communicator);
+                saveLog(diagramIds.get(0), communicator);
                 xmlHandler.flushData();
             } catch (TransformerException | TimeOutException e) {
                 e.printStackTrace();
@@ -159,12 +159,28 @@ public class FmmlxSerializer  {
         }
     }
 
-    public void saveLog(String path, FmmlxDiagramCommunicator communicator) throws TimeOutException {
+    public void saveLog(Integer diagramID, FmmlxDiagramCommunicator communicator) throws TimeOutException {
         LogXmlManager logXmlManager = new LogXmlManager(this.xmlHandler);
         logXmlManager.clearLog();
         Element logsElement = logXmlManager.getLogs();
-        FaXML protocol = communicator.getDiagramData(path);
-
+        boolean waiting = true;
+        int sleep = 5;
+        int attempts = 0;
+        FaXML protocol = null;
+        while (waiting && sleep < 200 * 100) {
+            System.err.println(attempts + ". attempt");
+            attempts++;
+            try {
+                Thread.sleep(sleep);
+                sleep *= 2;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            protocol = communicator.getDiagramData(diagramID);
+            if (protocol!=null) {
+                waiting = false;
+            }
+        }
         Vector<FaXML> logs = protocol.getChildren();
         for (FaXML log : logs){
             Element newLogElement = logXmlManager.createNewLogFromFaXML(log);

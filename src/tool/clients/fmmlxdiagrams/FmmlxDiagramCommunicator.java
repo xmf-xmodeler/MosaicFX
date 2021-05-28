@@ -37,7 +37,7 @@ public class FmmlxDiagramCommunicator {
 	private final HashMap<Integer, Vector<Object>> results = new HashMap<>();
 	private static final Hashtable<Integer, Tab> tabs = new Hashtable<>();
 	private static final Vector<FmmlxDiagram> diagrams = new Vector<>();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	static TabPane tabPane;
 	private Value getNoReturnExpectedMessageID(int diagramID) {return new Value(new Value[] {new Value(diagramID), new Value(-1)});}
 	private boolean silent;
@@ -45,16 +45,19 @@ public class FmmlxDiagramCommunicator {
 	/* Operations for setting up the Communicator */
 	
 	public FmmlxDiagramCommunicator() {
+		//System.err.println("DiagramCom aufgerufen?!?FmmlxDiagramCommunicator?!?11111111");
 		if(self != null) throw new IllegalStateException("FmmlxDiagramCommunicator must not be instantiated more than once.");
 		self = this;
 	}
 	
 	public static FmmlxDiagramCommunicator getCommunicator() {
 		if(self != null) return self;
+		//System.err.println("DiagramCom aufgerufen?getCommunicator");
 		throw new IllegalStateException("FmmlxDiagramCommunicator should have been instantiated. Run initCommunicator() first");		
 	}
 	
 	public static void initCommunicator() {
+		//System.err.println("initCommunicator!?!?!?!?!?!?!?!?!");
 		WorkbenchClient.theClient().startFmmlxClient();
 	}
 
@@ -766,7 +769,6 @@ public class FmmlxDiagramCommunicator {
 			pointE[2] = new Value(0);
 			listOfPoints[listOfPoints.length-1] = new Value(pointE);
 		}
-
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(edge.path),
@@ -807,7 +809,6 @@ public class FmmlxDiagramCommunicator {
 			pointE[2] = new Value(0);
 			listOfPoints[listOfPoints.length-1] = new Value(pointE);
 		}
-
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(edgePath),
@@ -1345,7 +1346,7 @@ public class FmmlxDiagramCommunicator {
                 new Value(newEnumValueName));
         showErrorMessage(result);
     }
-
+    
     @SuppressWarnings("unchecked")
     private void showErrorMessage(Vector<Object> msgAsVec) {
         if (msgAsVec.size() <= 0) return;
@@ -1363,7 +1364,7 @@ public class FmmlxDiagramCommunicator {
                 new Value(oldEnumValueName),
                 new Value(newEnumValueName));
     }
-
+    
     public void removeEnumerationItem(int diagramID, String enumName, String enumValueName) throws TimeOutException {
         xmfRequest(handler, diagramID, "removeEnumerationValue", new Value(enumName),
                 new Value(enumValueName));
@@ -1556,11 +1557,11 @@ public class FmmlxDiagramCommunicator {
     }
 
     @SuppressWarnings("unchecked")
-    public FaXML getDiagramData(String path) throws TimeOutException {
-        Vector<Object> response = xmfRequest(handler, -2, "getDiagramData", new Value(path));
+    public FaXML getDiagramData(Integer diagramID) throws TimeOutException {
+        //Vector<Object> response = xmfRequest(handler, diagramID, "getDiagramData2");
+		Vector<Object> response = xmfRequest(handler, diagramID, "getDiagramData");
         Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-
-        return new FaXML(responseContent);
+		return new FaXML(responseContent);
     }
 
     @SuppressWarnings("unchecked")
