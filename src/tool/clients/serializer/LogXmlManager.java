@@ -250,6 +250,15 @@ public class LogXmlManager {
                     comm.changeAttributeMultiplicity(diagramID, className, name, multiplicity, multiplicity1);
                     break;
                 }
+                case "addOperation": {
+                    String classPath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String[] classPathArray = classPath.split("::");
+                    String className = classPathArray[classPathArray.length-1];
+                    String body = logElement.getAttribute(XmlConstant.ATTRIBUTE_BODY);
+                    int level = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_LEVEL));
+                    comm.addOperation2(diagramID, className, level, body);
+                    break;
+                }
                 case "addOperation2": {
                     String classPath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
                     String[] classPathArray = classPath.split("::");

@@ -37,7 +37,7 @@ public class FmmlxDiagramCommunicator {
 	private final HashMap<Integer, Vector<Object>> results = new HashMap<>();
 	private static final Hashtable<Integer, Tab> tabs = new Hashtable<>();
 	private static final Vector<FmmlxDiagram> diagrams = new Vector<>();
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	static TabPane tabPane;
 	private Value getNoReturnExpectedMessageID(int diagramID) {return new Value(new Value[] {new Value(diagramID), new Value(-1)});}
 	private boolean silent;
@@ -1558,7 +1558,6 @@ public class FmmlxDiagramCommunicator {
 
     @SuppressWarnings("unchecked")
     public FaXML getDiagramData(Integer diagramID) throws TimeOutException {
-        //Vector<Object> response = xmfRequest(handler, diagramID, "getDiagramData2");
 		Vector<Object> response = xmfRequest(handler, diagramID, "getDiagramData");
         Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		return new FaXML(responseContent);

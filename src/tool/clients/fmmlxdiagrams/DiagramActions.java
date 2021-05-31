@@ -613,11 +613,11 @@ public class DiagramActions {
 		});
 	}
 
-	public void changeBodyDialog(FmmlxObject object) {
+	public void changeBodyDialog(FmmlxObject object, FmmlxOperation initiallySelectedOperation) {
 //		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			ChangeBodyDialog dlg = new ChangeBodyDialog(diagram, object);
+			ChangeBodyDialog dlg = new ChangeBodyDialog(diagram, object, initiallySelectedOperation);
 			Optional<ChangeBodyDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
