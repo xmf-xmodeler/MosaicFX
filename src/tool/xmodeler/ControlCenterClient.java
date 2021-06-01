@@ -7,6 +7,7 @@ import java.util.Vector;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.TreeItem;
 import tool.clients.workbench.WorkbenchClient;
 import xos.Message;
 import xos.Value;
@@ -56,6 +57,7 @@ public class ControlCenterClient {
 		Collections.sort(vec);
 		controlCenter.setAllProjects(vec);		
 	}
+	
 	
 	public void getProjectModels(String projectPath) {
 		if(projectPath == null) return;
