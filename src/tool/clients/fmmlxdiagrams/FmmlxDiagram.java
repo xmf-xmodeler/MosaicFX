@@ -39,6 +39,7 @@ import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -87,9 +88,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private double zoom = 1.;
 	private Affine transformFX = new Affine();
 	public static final Font FONT;
-//	private static Font fontKursiv;
+	private static Font fontKursiv;
 //	private static Font paletteFont;
-//	private static Font paletteFontKursiv;
+	private static Font paletteFontKursiv;
 	
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
@@ -98,7 +99,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private boolean showDerivedOperations=true;
 	private boolean showDerivedAttributes=true;
 	
-	private final String diagramName;
+	public final String diagramName;
 	private final NewFmmlxPalette newFmmlxPalette;
 	private String filePath;
 	
@@ -112,16 +113,17 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	public final static FmmlxDiagram NullDiagram = new FmmlxDiagram();
 	
-	static{		
-//		try {
-			FONT = Font.font(Font.getDefault().getFamily(), FontPosture.REGULAR, 14);
+	static{
+		FONT = Font.font(Font.getDefault().getFamily(), FontPosture.REGULAR, 14);
+		try {
+
 	//		font = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono.ttf"), 14);
-	//		fontKursiv = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 14);
+			fontKursiv = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 14);
 	//		paletteFont = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSans.ttf"), 12);
-	//		paletteFontKursiv =Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 12);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
+			paletteFontKursiv =Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 12);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private FmmlxDiagram() {
@@ -529,6 +531,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 						Platform.runLater(() -> {
 							actions.addAssociationInstance(obj1, obj2,null);
 							updateDiagramLater();
+							setStandardMouseMode();
 						});						
 						break;
 					}
@@ -612,13 +615,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			
 		} else if (edgeCreationType != null) {			
 			if (edgeCreationType.equals("association")) {
-				hitObject = getElementAt(p.getX(), p.getY());
+				//hitObject = getElementAt(p.getX(), p.getY());
+				System.out.println("asso");
 				if(hitObject instanceof FmmlxObject) {		
 					setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Association);
 					canvas.setCursor(Cursor.DEFAULT);
 					
 				}
 			} else if (edgeCreationType.equals("associationInstance")) {
+				System.out.println("instance");
 				if(hitObject instanceof FmmlxObject) {
 					setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.AssociationInstance);
 					canvas.setCursor(Cursor.DEFAULT);
@@ -981,6 +986,17 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return null;
 	}
 
+	public ObservableList<FmmlxEnum> getEnumsObservableList() {
+		ArrayList<FmmlxEnum> objectList = new ArrayList<>();
+
+		if (!enums.isEmpty()) {
+			for (FmmlxEnum fmmlxEnum : enums) {
+				objectList.add(fmmlxEnum);
+			}
+		}
+		return FXCollections.observableArrayList(objectList);
+	}
+
 	public synchronized void updateEnums() {
 		try {
 			enums.clear();
@@ -1043,7 +1059,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		triggerOverallReLayout();
 		redraw();
-
 	}
 	
 	public void setShowGettersAndSetters(CheckBox box) {
@@ -1053,8 +1068,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			o.setShowGettersAndSetters(show);
 		}
 		triggerOverallReLayout();
-		redraw();
-		
+		redraw();		
 	}
 
 
@@ -1121,25 +1135,24 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 		if(filePath !=null && filePath.length()>0){
 			if(justLoaded){
+				justLoaded = false;
 				FmmlxDeserializer deserializer = new FmmlxDeserializer(new XmlHandler(filePath));
-//				deserializer.alignElements(this, getComm());
-//		   		only used once when loaded from xml TODO
 				org.w3c.dom.Node positionInfo = getComm().getPositionInfo(getID());
 				if(positionInfo != null) {
 					deserializer.alignElements(this, (org.w3c.dom.Element) positionInfo);
 					triggerOverallReLayout();
 				}
 				redraw();
-				Issue nextIssue = null;
-				for(int i = 0; i < issues.size() && nextIssue == null; i++) {
-					if(issues.get(i).isSoluble()) nextIssue = issues.get(i);
-				}
-
-				if(nextIssue != null) {
-					nextIssue.performResolveAction(this);
-				}
 				updateDiagram();
-				justLoaded = false;
+			}
+		} else {		
+			Issue nextIssue = null;
+			for(int i = 0; i < issues.size() && nextIssue == null; i++) {
+				if(issues.get(i).isSoluble()) nextIssue = issues.get(i);
+			}
+	
+			if(nextIssue != null) {
+				nextIssue.performResolveAction(this);
 			}
 		}
 	}

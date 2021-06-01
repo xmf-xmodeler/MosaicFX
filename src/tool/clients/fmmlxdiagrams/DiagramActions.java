@@ -490,8 +490,6 @@ public class DiagramActions {
 
 	public void changeSlotValue(FmmlxObject hitObject, FmmlxSlot hitProperty) {
 
-//		CountDownLatch l = new CountDownLatch(1);
-
 		Platform.runLater(() -> {
 			ChangeSlotValueDialog dlg = new ChangeSlotValueDialog(diagram, hitObject, hitProperty);
 			Optional<ChangeSlotValueDialogResult> result = dlg.showAndWait();
@@ -501,8 +499,6 @@ public class DiagramActions {
 				diagram.getComm().changeSlotValue(diagram.getID(), slotValueDialogResult.getObject().getName(), slotValueDialogResult.getSlot().getName(), slotValueDialogResult.getNewValue());
 				diagram.updateDiagram();
 			}
-
-//			l.countDown();
 		});
 	}
 
@@ -617,11 +613,11 @@ public class DiagramActions {
 		});
 	}
 
-	public void changeBodyDialog(FmmlxObject object) {
+	public void changeBodyDialog(FmmlxObject object, FmmlxOperation initiallySelectedOperation) {
 //		CountDownLatch latch = new CountDownLatch(1);
 
 		Platform.runLater(() -> {
-			ChangeBodyDialog dlg = new ChangeBodyDialog(diagram, object);
+			ChangeBodyDialog dlg = new ChangeBodyDialog(diagram, object, initiallySelectedOperation);
 			Optional<ChangeBodyDialogResult> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {

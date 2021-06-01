@@ -39,7 +39,7 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 	private ButtonType checkSyntaxButtonType;
 	private ButtonType defaultOperationButtonType;
 
-	public ChangeBodyDialog(AbstractPackageViewer diagram, FmmlxObject object) {
+	public ChangeBodyDialog(AbstractPackageViewer diagram, FmmlxObject object, final FmmlxOperation initiallySelectedOperation) {
 		super();
 		this.diagram=diagram;
 		this.object=object;
@@ -78,6 +78,7 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 		setResizable(true);
 		dialogPane.setMinSize(800, 500);
 
+		if(initiallySelectedOperation != null) selectOperationComboBox.getSelectionModel().select(initiallySelectedOperation);
 	}
 	
 	private void setResultConverter() {

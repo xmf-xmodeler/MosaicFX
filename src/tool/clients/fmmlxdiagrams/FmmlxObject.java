@@ -695,13 +695,14 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return Math.max(neededWidth + 2 * GAP, minWidth);
 	}
 
-	public void fetchDataDefinitions(FmmlxDiagramCommunicator comm) throws TimeOutException {
-		Vector<Vector<FmmlxAttribute>> attributeList = comm.fetchAttributes(diagram, this.name);
-		ownAttributes = attributeList.get(0);
+	public void setAttributes(Vector<FmmlxAttribute> ownAttributes, Vector<FmmlxAttribute> otherAttributes) {
+		this.ownAttributes = ownAttributes;
 		ownAttributes.sort(Collections.reverseOrder());
-		otherAttributes = attributeList.get(1);
+		this.otherAttributes = otherAttributes;
 		otherAttributes.sort(Collections.reverseOrder());
-		Vector<FmmlxOperation> operations = comm.fetchOperations(diagram, this.name);
+	}
+	
+	public void setOperations(Vector<FmmlxOperation> operations) {
 		ownOperations = new Vector<>();
 		otherOperations = new Vector<>();
 		for (FmmlxOperation o : operations) {
@@ -713,9 +714,11 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 				otherOperations.sort(Collections.reverseOrder());
 			}
 		}
-		constraints = comm.fetchConstraints(diagram, this.name);
+	}
+
+	public void setConstraints(Vector<Constraint> constraints) {
 		Collections.sort(constraints);
-		
+		this.constraints = constraints;
 	}
 
 	public void fetchDataValues(FmmlxDiagramCommunicator comm) throws TimeOutException {

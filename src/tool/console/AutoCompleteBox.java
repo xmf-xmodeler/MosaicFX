@@ -89,8 +89,10 @@ public class AutoCompleteBox extends Dialog<String> {
 		addAllToListSortedBy("");
         
 		getDialogPane().setContent(grid);
+		getDialogPane().toFront();
 		
 		searchField.requestFocus();
+
 
 		showAndWait();
 

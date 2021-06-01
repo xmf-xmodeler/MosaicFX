@@ -5,11 +5,7 @@ import java.util.Vector;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
-import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
-import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.FmmlxProperty;
-import tool.clients.fmmlxdiagrams.TimeOutException;
+import tool.clients.fmmlxdiagrams.*;
 
 public class ClassBrowserPackageViewer extends AbstractPackageViewer{
 
