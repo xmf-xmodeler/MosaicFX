@@ -13,6 +13,7 @@ import tool.clients.fmmlxdiagrams.DiagramEdgeLabel;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.xmlManipulator.XmlHandler;
 
 public class LabelXmlManager {
 	private final XmlHandler xmlHandler;
@@ -22,11 +23,11 @@ public class LabelXmlManager {
     }
 
     public Element createLabelElement(String key, float x, float y) {
-        Element label = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_LABEL);
+        Element label = xmlHandler.createXmlElement(SerializerConstant.TAG_NAME_LABEL);
         String[] refSplit = key.split("::");
-        label.setAttribute(XmlConstant.ATTRIBUTE_TEXT, refSplit[refSplit.length-1]);
-        label.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, x+"");
-        label.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, y+"");
+        label.setAttribute(SerializerConstant.ATTRIBUTE_TEXT, refSplit[refSplit.length-1]);
+        label.setAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_X, x+"");
+        label.setAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_Y, y+"");
         return label;
     }
 
@@ -63,11 +64,11 @@ public class LabelXmlManager {
 
     public Element getDiagramsElement(){
         Element Root = xmlHandler.getRoot();
-        return xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_DIAGRAMS);
+        return xmlHandler.getChildWithTag(Root, SerializerConstant.TAG_NAME_DIAGRAMS);
     }
 
     private Element getLabelsElement(Element diagramNode) {
-        return xmlHandler.getChildWithTag(diagramNode, XmlConstant.TAG_NAME_LABELS);
+        return xmlHandler.getChildWithTag(diagramNode, SerializerConstant.TAG_NAME_LABELS);
     }
 	
 	public boolean validateName(String name) {
@@ -93,11 +94,11 @@ public class LabelXmlManager {
         for (int i = 0 ; i< labelList.getLength() ; i++){
             if (labelList.item(i).getNodeType() == Node.ELEMENT_NODE){
                 Element label_tmp = (Element) labelList.item(i);
-                String[] anchorsString = label_tmp.getAttribute(XmlConstant.ATTRIBUTE_ANCHORS).split(",");
+                String[] anchorsString = label_tmp.getAttribute(SerializerConstant.ATTRIBUTE_ANCHORS).split(",");
                 if(validateName(text) && validateEdgeLabel(anchorsString, anchors)) {
-                	if(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_TEXT).equals(text)){
-                        double x = Double.parseDouble(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
-                        double y = Double.parseDouble(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
+                	if(label_tmp.getAttribute(SerializerConstant.ATTRIBUTE_TEXT).equals(text)){
+                        double x = Double.parseDouble(label_tmp.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_X));
+                        double y = Double.parseDouble(label_tmp.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_Y));
                         return new Point2D(x, y);
                     }
                 }
@@ -127,8 +128,8 @@ public class LabelXmlManager {
             if (labelList.item(i).getNodeType() == Node.ELEMENT_NODE){
                 Element label_tmp = (Element) labelList.item(i);
 
-                double x = Double.parseDouble(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
-                double y = Double.parseDouble(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
+                double x = Double.parseDouble(label_tmp.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_X));
+                double y = Double.parseDouble(label_tmp.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_Y));
 
                 communicator.storeLabelInfoFromXml(diagramID, x, y);
             }
@@ -162,9 +163,9 @@ public class LabelXmlManager {
             if (labelList.item(i).getNodeType() == Node.ELEMENT_NODE){
                 Element label_tmp = (Element) labelList.item(i);
                 if(validateName(text)) {
-                    if(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_TEXT).equals(text)){
-                        double x = Double.parseDouble(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
-                        double y = Double.parseDouble(label_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
+                    if(label_tmp.getAttribute(SerializerConstant.ATTRIBUTE_TEXT).equals(text)){
+                        double x = Double.parseDouble(label_tmp.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_X));
+                        double y = Double.parseDouble(label_tmp.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_Y));
                         return new Point2D(x, y);
                     }
                 }

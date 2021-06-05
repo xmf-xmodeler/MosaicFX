@@ -729,7 +729,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		Point2D relativePoint = new Point2D(absolutePoint.getX() - getX(), absolutePoint.getY() - getY());
 		return new ObjectContextMenu(this, fmmlxDiagram, relativePoint);
 	}
-	
+
 	public boolean isAbstract() {return isAbstract;}
 
 	private Vector<String> getSlotNames() {
@@ -1002,6 +1002,6 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	}
 
 	public Vector<Constraint> getConstraints() {
-		return new Vector<Constraint>(constraints);
+		return new Vector<>(constraints);
 	}
 }

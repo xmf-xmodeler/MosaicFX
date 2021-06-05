@@ -1,9 +1,11 @@
 package tool.clients.fmmlxdiagrams;
 
+import java.util.Collections;
 import java.util.Vector;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import tool.clients.xmlManipulator.XmlHandler;
 
 public abstract class Node implements CanvasElement{
 
@@ -52,6 +54,18 @@ public abstract class Node implements CanvasElement{
 
 		for (NodeElement e : nodeElements) {
 			e.paintOn(g, x + xOffset, y + yOffset, diagram, selected);
+		}
+	}
+
+	@Override
+	public void paintToSvg(XmlHandler xmlHandler, int xOffset, int yOffset, FmmlxDiagram diagram) {
+
+		if(requiresReLayout) layout(diagram);
+
+		Vector<NodeElement> nodesTobePainted = nodeElements;
+		Collections.reverse(nodesTobePainted);
+		for(NodeElement nodeElement : nodesTobePainted){
+			nodeElement.paintToSvg(diagram, xmlHandler, x+xOffset, y+yOffset);
 		}
 	}
 	

@@ -2,6 +2,8 @@ package tool.clients.fmmlxdiagrams;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import org.w3c.dom.Element;
+import tool.clients.xmlManipulator.XmlHandler;
 
 public interface NodeElement {
 
@@ -15,4 +17,5 @@ public interface NodeElement {
 
 	NodeBaseElement getHitLabel(Point2D pointRelativeToParent);
 
+    void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, double xOffset, double yOffset);
 }

@@ -3,6 +3,8 @@ package tool.clients.serializer;
 import javafx.util.Pair;
 import org.w3c.dom.Element;
 import tool.clients.fmmlxdiagrams.*;
+import tool.clients.xmlManipulator.XmlCreator;
+import tool.clients.xmlManipulator.XmlHandler;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -23,22 +25,17 @@ public class FmmlxSerializer  {
 
     public String initUserXMLFile(String file) throws TransformerException, ParserConfigurationException {
         XmlCreator xmlCreator = new XmlCreator();
-        return xmlCreator.create(file);
+        return xmlCreator.createXml(file);
     }
 
     public void saveAsXml(String packagePath, String initLabel, FmmlxDiagramCommunicator communicator) throws TimeOutException, TransformerException {
         this.clearAllData();
-//        int saveLogCount = 0;
         Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(packagePath);
         Collections.sort(diagramIds);
         for(Integer id :diagramIds){
             String diagramLabel = communicator.createLabelFromInitLabel(initLabel, id);
             saveProject(packagePath);
             saveDiagram(diagramLabel, packagePath, id);
-//            if(saveLogCount==0){
-//                saveLog(packagePath, communicator);
-//            }
-//            saveLogCount++;
         }
         saveLog(diagramIds.get(0), communicator);
         this.xmlHandler.flushData();
@@ -50,15 +47,10 @@ public class FmmlxSerializer  {
             try {
                 Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(packagePath);
                 Collections.sort(diagramIds);
-//                int saveLogCount = 0;
                 for(Integer id_tmp :diagramIds){
                     String diagramLabel = communicator.createLabelFromInitLabel(label, id_tmp);
                     saveProject(packagePath);
                     saveDiagram(diagramLabel, packagePath, id_tmp);
-//                    if(saveLogCount==0){
-//                        saveLog(packagePath, communicator);
-//                    }
-//                    saveLogCount++;
                 }
                 saveLog(diagramIds.get(0), communicator);
                 xmlHandler.flushData();
@@ -134,19 +126,19 @@ public class FmmlxSerializer  {
             Element edgeElement;
             Pair<String, String> typeAndRef = getTypeAndRefFromKey(key);
             switch (typeAndRef.getKey()) {
-                case XmlConstant.EdgeType.ASSOCIATION:
+                case SerializerConstant.EdgeType.ASSOCIATION:
                     edgeElement = edgeXmlManager.createAssociationXmlElement(typeAndRef.getValue(), diagramPath, edgesInfo.get(key));
                     break;
-                case XmlConstant.EdgeType.LINK:
+                case SerializerConstant.EdgeType.LINK:
                     edgeElement = edgeXmlManager.createLinkXmlElement(typeAndRef.getValue(), edgesInfo.get(key));
                     break;
-                case XmlConstant.EdgeType.INHERITANCE:
+                case SerializerConstant.EdgeType.INHERITANCE:
                     edgeElement = edgeXmlManager.createInheritanceXmlElement(typeAndRef.getValue(), edgesInfo.get(key));
                     break;
-                case XmlConstant.EdgeType.ROLEFILLEREDGE:
+                case SerializerConstant.EdgeType.ROLEFILLEREDGE:
                     edgeElement = edgeXmlManager.createRoleFillerEdgeXmlElement(typeAndRef.getValue(), edgesInfo.get(key));
                     break;
-                case XmlConstant.EdgeType.DELEGATION:
+                case SerializerConstant.EdgeType.DELEGATION:
                     edgeElement = edgeXmlManager.createDelegationXmlElement(typeAndRef.getValue(), edgesInfo.get(key));
                     break;
                 default:
@@ -181,6 +173,7 @@ public class FmmlxSerializer  {
                 waiting = false;
             }
         }
+        assert protocol != null;
         Vector<FaXML> logs = protocol.getChildren();
         for (FaXML log : logs){
             Element newLogElement = logXmlManager.createNewLogFromFaXML(log);
@@ -193,15 +186,15 @@ public class FmmlxSerializer  {
         String type = keyPair[0];
         switch (type) {
             case "DelegationMapping:":
-                return new Pair<>(XmlConstant.EdgeType.DELEGATION, key);
+                return new Pair<>(SerializerConstant.EdgeType.DELEGATION, key);
             case "InheritanceMapping:":
-                return new Pair<>(XmlConstant.EdgeType.INHERITANCE, key);
+                return new Pair<>(SerializerConstant.EdgeType.INHERITANCE, key);
             case "AssociationLinkMapping:":
-                return new Pair<>(XmlConstant.EdgeType.LINK, key);
+                return new Pair<>(SerializerConstant.EdgeType.LINK, key);
             case "RoleFillerMapping:":
-                return new Pair<>(XmlConstant.EdgeType.ROLEFILLEREDGE, key);
+                return new Pair<>(SerializerConstant.EdgeType.ROLEFILLEREDGE, key);
         }
-        return new Pair<>(XmlConstant.EdgeType.ASSOCIATION, key);
+        return new Pair<>(SerializerConstant.EdgeType.ASSOCIATION, key);
     }
 
     public boolean checkFileExist(String file) {
@@ -210,10 +203,10 @@ public class FmmlxSerializer  {
 
     public void clearAllData() {
         Element Root = xmlHandler.getRoot();
-        Element logsElement = xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_LOGS);
-        Element projectsElement = xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_PROJECTS);
-        Element categoriesElement = xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_CATEGORIES);
-        Element diagramsElement = xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_DIAGRAMS);
+        Element logsElement = xmlHandler.getChildWithTag(Root, SerializerConstant.TAG_NAME_LOGS);
+        Element projectsElement = xmlHandler.getChildWithTag(Root, SerializerConstant.TAG_NAME_PROJECTS);
+        Element categoriesElement = xmlHandler.getChildWithTag(Root, SerializerConstant.TAG_NAME_CATEGORIES);
+        Element diagramsElement = xmlHandler.getChildWithTag(Root, SerializerConstant.TAG_NAME_DIAGRAMS);
         xmlHandler.removeAllChildren(logsElement);
         xmlHandler.removeAllChildren(projectsElement);
         xmlHandler.removeAllChildren(categoriesElement);

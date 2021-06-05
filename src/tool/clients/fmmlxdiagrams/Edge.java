@@ -8,6 +8,9 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.scene.transform.Affine;
+import org.w3c.dom.Element;
+import tool.clients.exporter.svg.SvgConstant;
+import tool.clients.xmlManipulator.XmlHandler;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -397,6 +400,14 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 
 	protected Double getLineDashes() {
 		return (double) 0;
+	}
+
+	protected String getSvgDashes() {
+		return "0";
+	}
+
+	protected String getSvgStrokeWidth() {
+		return "1";
 	}
 
 	private boolean isSelected() {
@@ -806,5 +817,28 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 			i = Math.max(i, p.getY());
 		}
 		return i;
+	}
+
+	@Override
+	public void paintToSvg(XmlHandler xmlHandler, int xOffset, int yOffset, FmmlxDiagram diagram) {
+		Element path = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
+		StringBuilder pathString = new StringBuilder("M");
+		int begin = 0;
+
+		for (Point2D point : getAllPoints()){
+			if(begin==0){
+				pathString.append(point.getX()).append(" ").append(point.getY());
+			} else {
+				pathString.append(" L").append(point.getX()).append(" ").append(point.getY());
+			}
+			begin++;
+		}
+		path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString.toString());
+		path.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "black");
+		path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
+		path.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
+		path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
+
+		xmlHandler.addXmlElement(xmlHandler.getRoot(), path);
 	}
 }

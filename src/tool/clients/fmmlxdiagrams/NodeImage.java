@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams;
 import java.io.File;
 
 import javafx.scene.canvas.GraphicsContext;
+import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeImage extends NodeBaseElement implements NodeElement {
 	
@@ -19,10 +20,16 @@ public class NodeImage extends NodeBaseElement implements NodeElement {
 		g.drawImage(image, xOffset + x, yOffset + y - image.getHeight());
 		
 	}
+
 	@Override
 	public boolean isHit(double mouseX, double mouseY) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, double x, double y) {
+
 	}
 
 }

@@ -34,7 +34,7 @@ import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
 import tool.clients.serializer.FmmlxDeserializer;
-import tool.clients.serializer.XmlHandler;
+import tool.clients.xmlManipulator.XmlHandler;
 import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
 
@@ -51,9 +51,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	enum MouseMode {
 		MULTISELECT, STANDARD, DRAW_EDGE
 	}
-	
+
 	public static final boolean SHOW_MENUITEMS_IN_DEVELOPMENT = false;
-	
+
 	// The elements which the diagram consists of GUI-wise
 	private SplitPane pane;
 	private SplitPane mainView;
@@ -65,12 +65,12 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private MenuItem loadXML;
 	private MenuItem saveXML;
 	// The communication to the xmf and other actions
-	
+
 	// The elements representing the model which is displayed in the GUI
-	
+
 	private Vector<DiagramEdgeLabel<?>> labels = new Vector<>();
-	
-	
+
+
 	// Temporary variables storing the current state of user interactions
 	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
 	private ContextMenu activeContextMenu;
@@ -82,7 +82,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private transient FmmlxObject newEdgeSource;
 	private transient FmmlxProperty lastHitProperty = null;
 	private boolean diagramRequiresUpdate = false;
-	
+
 	// The state of the canvas is stored here:
 	private Point2D canvasRawSize = new Point2D(1200, 800);
 	private double zoom = 1.;
@@ -91,28 +91,28 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private static Font fontKursiv;
 //	private static Font paletteFont;
 	private static Font paletteFontKursiv;
-	
+
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
 	private boolean showSlots = true;
 	private boolean showGetterAndSetter = true;
 	private boolean showDerivedOperations=true;
 	private boolean showDerivedAttributes=true;
-	
+
 	public final String diagramName;
 	private final NewFmmlxPalette newFmmlxPalette;
 	private String filePath;
-	
-	
+
+
 	public String updateID = null;
-	
+
 	String edgeCreationType = null;
-	String nodeCreationType = null;	
+	String nodeCreationType = null;
 
 	public LevelColorScheme levelColorScheme = new LevelColorScheme.FixedBlueLevelColorScheme();
 
 	public final static FmmlxDiagram NullDiagram = new FmmlxDiagram();
-	
+
 	static{
 		FONT = Font.font(Font.getDefault().getFamily(), FontPosture.REGULAR, 14);
 		try {
@@ -125,14 +125,14 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			e.printStackTrace();
 		}
 	}
-	
+
 	private FmmlxDiagram() {
 		super(null,-1,null);
 //		this.comm = null;
 		this.newFmmlxPalette = null;
 		this.diagramName = null;
 	}
-	
+
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String name, String packagePath) {
 //		this.comm = comm;
 		super(comm,diagramID,packagePath);
@@ -156,7 +156,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		mainView.setOrientation(Orientation.VERTICAL);
 		mainView.getItems().addAll(palette, scrollerCanvas);
 		mainView.setDividerPosition(0, 0.2);
-		
+
 		pane.getItems().addAll(newFmmlxPalette.getToolBar(), mainView);
 
 		canvas.setOnMousePressed(this::mousePressed);
@@ -169,7 +169,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 		java.util.Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
-			
+
 			@Override
 			public void run() {
 				redraw();
@@ -182,24 +182,24 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public Canvas getCanvas() {
 		return canvas;
 	}
-	
+
 	public void deselectPalette() {
 		edgeCreationType = null;
 		nodeCreationType = null;
 		newFmmlxPalette.clearSelection();
 	}
-	
+
 	public NewFmmlxPalette getPalette() {
 		return newFmmlxPalette;
 	}
-	
-	
+
+
 	public void setEdgeCreationType(String edgeCreationType) {
 		this.edgeCreationType = edgeCreationType;
 		this.nodeCreationType= null;
 		getCanvas().setCursor(Cursor.CROSSHAIR);
 	}
-	
+
 	public void setNodeCreationType(String nodeCreationType) {
 		this.nodeCreationType = nodeCreationType;
 		this.edgeCreationType = null;
@@ -236,15 +236,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void savePNG(){
 		double zoom = this.zoom;
 //		System.err.println("current zoom: " + zoom);
 		setMaxZoom();
 //		System.err.println("max zoom: " + getZoom());
-		
+
 	    FileChooser fileChooser = new FileChooser();
-	    
+
 	    String initalDirectory = PropertyManager.getProperty("fileDialogPath", "");
     	if (!initalDirectory.equals("")) {
     		File dir = new File(initalDirectory);
@@ -252,20 +252,20 @@ public class FmmlxDiagram extends AbstractPackageViewer{
     			fileChooser.setInitialDirectory(dir);
     		}
     	}
-    	
+
     	fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG","*.png"));
     	fileChooser.setTitle("Save Diagram to PNG");
 	    File file = fileChooser.showSaveDialog(XModeler.getStage());
-	    
+
 	    if(file != null){
 	        WritableImage wi = new WritableImage((int)canvas.getWidth(),(int)canvas.getHeight());
-	        try { 
+	        try {
 	        	ImageIO.write(SwingFXUtils.fromFXImage(canvas.snapshot(null,wi),null),"png",file);
 	        } catch (IOException e) {
 	            e.printStackTrace();
 	        }
 	    }
-	    
+
 	    setZoom(zoom);
 	}
 	// Only used to set the diagram into the tab. Find a better solution
@@ -277,11 +277,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private void updateDiagramLater() {
 		diagramRequiresUpdate = true;
 	}
-	
+
 	public void redraw() {
 		if (fetchingData) {
 			return;}
-		
+
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
 			// we are on the right Thread already:
 			paintOn(canvas.getGraphicsContext2D(), 0, 0);
@@ -297,7 +297,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				e.printStackTrace();
 			}
 		}
-	}	
+	}
 
 	private void paintOn(GraphicsContext g, int xOffset, int yOffset) {
 		g.setTransform(new Affine());
@@ -375,14 +375,14 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	private transient CanvasElement lastElementUnderMouse = null;
-	
+
 	private void mouseMoved(MouseEvent e) {
 		Point2D p = scale(e);
 		if (mouseMode == MouseMode.DRAW_EDGE) {
 			storeCurrentPoint(p.getX(), p.getY());
 			redraw();
 		}
-		
+
 		CanvasElement elementUnderMouse = getElementAt(p.getX(), p.getY());
 		if(elementUnderMouse != lastElementUnderMouse) {
 			lastElementUnderMouse = elementUnderMouse;
@@ -393,9 +393,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			for (DiagramEdgeLabel<?> l : labels)
 				l.unHighlight();
 		}
-		
+
 		if(elementUnderMouse != null) elementUnderMouse.highlightElementAt(p);
-		
+
 	}
 
 	private void mouseDraggedStandard(Point2D p) {
@@ -424,7 +424,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				s.moveTo(p.getX(), p.getY(), this);
 			}
 		objectsMoved = true;
-        
+
 		for(Edge<?> e : edges) {e.align();}
 
 		redraw();
@@ -436,15 +436,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		if(mouseMode == MouseMode.STANDARD) {
 			mouseReleasedStandard();
-		} 
+		}
 		if(mouseMode!=MouseMode.DRAW_EDGE) {
 			mouseMode=MouseMode.STANDARD;
 		}
-		
+
 		for(Edge<?> edge : edges) {
 			edge.dropPoint(this);
 		}
-		
+
 		triggerOverallReLayout();
 
 		resizeCanvas();
@@ -469,7 +469,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	private void mouseReleasedStandard() {
 		for (Edge<?> e : edges) e.removeRedundantPoints();
-		
+
 		if (objectsMoved) {
 			for (CanvasElement s : selectedObjects)
 				if (s instanceof FmmlxObject) {
@@ -508,10 +508,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		for (DiagramEdgeLabel<?> l : new Vector<>(labels))
 			if (l.isHit(x, y))
 				return l;
-		
+
 		return null;
 	}
-	
+
 	private void handleLeftPressedDefault(MouseEvent e, CanvasElement hitObject) {
 		Point2D p = scale(e);
 
@@ -532,7 +532,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 							actions.addAssociationInstance(obj1, obj2,null);
 							updateDiagramLater();
 							setStandardMouseMode();
-						});						
+						});
 						break;
 					}
 					case Delegation:
@@ -542,7 +542,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 						Platform.runLater(() -> {
 							actions.setDelegation(delegateFrom, delegateTo);
 //							updateDiagramLater();
-						});						
+						});
 						break;
 					}
 					case RoleFiller:
@@ -552,7 +552,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 						Platform.runLater(() -> {
 							actions.setRoleFiller(delegateFrom, delegateTo);
 //							updateDiagramLater();
-						});						
+						});
 						break;
 					}
 					default:
@@ -598,29 +598,29 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					default:
 						break;
 				}
-			} else {	
+			} else {
 				mouseMode = MouseMode.MULTISELECT;
 				storeLastClick(p.getX(), p.getY());
 				storeCurrentPoint(p.getX(), p.getY());
 			}
-		}		
+		}
 	}
 
 	private void handleLeftPressed(MouseEvent e) {
 		Point2D p = scale(e);
 		CanvasElement hitObject = getElementAt(p.getX(), p.getY());
-		
+
 		if (nodeCreationType == null && edgeCreationType == null) {
-			handleLeftPressedDefault(e, hitObject);		
-			
-		} else if (edgeCreationType != null) {			
+			handleLeftPressedDefault(e, hitObject);
+
+		} else if (edgeCreationType != null) {
 			if (edgeCreationType.equals("association")) {
 				//hitObject = getElementAt(p.getX(), p.getY());
 				System.out.println("asso");
-				if(hitObject instanceof FmmlxObject) {		
+				if(hitObject instanceof FmmlxObject) {
 					setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Association);
 					canvas.setCursor(Cursor.DEFAULT);
-					
+
 				}
 			} else if (edgeCreationType.equals("associationInstance")) {
 				System.out.println("instance");
@@ -698,9 +698,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
 		}
 	}
-	
+
 	private final double ZOOM_STEP = Math.sqrt(2);
-	
+
 	public void zoomIn() {
 		setZoom(Math.min(2, getZoom() * ZOOM_STEP));
 		redraw();
@@ -727,7 +727,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public void setStandardMouseMode() {
 		mouseMode = MouseMode.STANDARD;
 	}
-	
+
 	public void setDrawEdgeMode(FmmlxObject source, PropertyType type) {
 		setSelectedObject(source);
 		setDrawEdgeMouseMode(type, source);
@@ -778,7 +778,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		deselectAll();
 		selectedObjects.add(source);
 	}
-	
+
 	@Override public void setSelectedObjectAndProperty(FmmlxObject o, FmmlxProperty p) { setSelectedObject(o); }
 
 	private void select(FmmlxObject o) {
@@ -845,10 +845,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 		double maxXzoom = 4096. / maxRight;
 		double maxYzoom = 4096. / maxBottom;
-		
+
 		setZoom(Math.min(10,Math.min(maxXzoom, maxYzoom)));
 	}
-	
+
 	public void setZoom(double zoom) {
 		this.zoom = Math.min(10, Math.max(zoom, 1. / 8));
 
@@ -856,7 +856,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		transformFX.appendScale(zoom, zoom);
 		resizeCanvas();
 	}
-	
+
 	@Deprecated
 	//needs filter
 	/**
@@ -888,7 +888,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		return FXCollections.observableArrayList(objectList);
 	}
-	
+
 	public void addLabel(DiagramEdgeLabel<?> diagramLabel) {
 		Integer index = null;
 		for(int i = 0; i < labels.size(); i++) {
@@ -902,18 +902,18 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		} else {
 			labels.set(index, diagramLabel);
 		}
-		
-		
+
+
 	}
-	
-	
+
+
 	////////////////////////////////////////////////////////////////////
 	////					Messages to XMF							////
 	////////////////////////////////////////////////////////////////////
 
 
 	// Some useful methods for queries:
-	
+
 	public String getDiagramLabel() {
 		return diagramName;
 	}
@@ -931,10 +931,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public Vector<DiagramEdgeLabel<?>> getLabels() {
 		return new Vector<>(labels); // read-only
 	}
-	
+
 	public Vector<FmmlxObject> getObjectsByLevel(int level){
 		Vector<FmmlxObject> result = new Vector<>();
-		
+
 		for (FmmlxObject object : objects) {
 			if (object.getLevel()==level) {
 				result.add(object);
@@ -942,7 +942,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		return result;
 	}
-	
+
 //	public FmmlxAssociation getAssociationById(int id) {
 //		for (Edge tmp : edges) {
 //			if (tmp.getId() == id)
@@ -950,7 +950,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 //		}
 //		return null;
 //	}
-	
+
 	public Object getAllMetaClass() {
 		Vector<FmmlxObject> result = new Vector<>();
 		for (FmmlxObject object : getObjects()) {
@@ -960,20 +960,20 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		return result;
 	}
-	
+
 	public void setCursor(Cursor c) {
 		canvas.setCursor(c);
 	}
-	
-	public void setShowOperations(boolean show) {this.showOperations = show;}	
-	public void setShowOperationValues(boolean show) {this.showOperationValues = show;}	
+
+	public void setShowOperations(boolean show) {this.showOperations = show;}
+	public void setShowOperationValues(boolean show) {this.showOperationValues = show;}
 	public void setShowSlots(boolean show) {this.showSlots = show;}
 	public void setShowGettersAndSetters(boolean show) {this.showGetterAndSetter = show;}
 	public void setShowDerivedOperations(boolean show) {this.showDerivedOperations = show;}
 	public void setShowDerivedAttributes(boolean show) {this.showDerivedAttributes = show;}
-	
-	public boolean isShowOperations() {return this.showOperations;}	
-	public boolean isShowOperationValues() {return this.showOperationValues;}	
+
+	public boolean isShowOperations() {return this.showOperations;}
+	public boolean isShowOperationValues() {return this.showOperationValues;}
 	public boolean isShowSlots() {return this.showSlots;}
 	public boolean isShowGetterAndSetter() {return this.showGetterAndSetter;}
 	public boolean isShowDerivedOperations() {return this.showDerivedOperations;}
@@ -1012,7 +1012,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		return null;
 	}
-	
+
 	public int getMaxLevel() {
 		int level = 0;
 		for (FmmlxObject tmp : objects) {
@@ -1047,9 +1047,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
 		}
 		return result;
-	}	
+	}
 
-	
+
 
 	public void setShowOperations(CheckBox box) {
 		boolean show = box.isSelected();
@@ -1061,7 +1061,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		redraw();
 
 	}
-	
+
 	public void setShowGettersAndSetters(CheckBox box) {
 		boolean show = box.isSelected();
 		setShowGettersAndSetters(show);
@@ -1070,7 +1070,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		triggerOverallReLayout();
 		redraw();
-		
+
 	}
 
 
@@ -1093,7 +1093,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		triggerOverallReLayout();
 		redraw();
 	}
-	
+
 	public void setShowDerivedOperations(CheckBox box) {
 		boolean show = box.isSelected();
 		setShowDerivedOperations(show);
@@ -1102,7 +1102,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		triggerOverallReLayout();
 		redraw();
-		
+
 	}
 
 	public void setShowDerivedAttributes(CheckBox box) {
@@ -1117,7 +1117,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	@Override
 	protected void clearDiagram_specific() {
-		labels.clear();	
+		labels.clear();
 	}
 
 	@Override
@@ -1161,7 +1161,21 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	@Override
 	protected void updateViewerStatusInGUI(ViewerStatus newStatus) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
+	public void paintToSvg(XmlHandler xmlHandler){
+		Vector<CanvasElement> objectsToBePainted = new Vector<>();
+		objectsToBePainted.addAll(objects);
+		objectsToBePainted.addAll(labels);
+		Collections.reverse(objectsToBePainted);
+		for (FmmlxObject o : objects) {
+			o.updatePortOder();
+		}
+		for(CanvasElement c : objectsToBePainted){
+			c.paintToSvg(xmlHandler, 0, 0, this);
+		}
+
+	}
+
 }

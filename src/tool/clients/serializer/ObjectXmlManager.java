@@ -5,6 +5,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.*;
+import tool.clients.xmlManipulator.XmlHandler;
 
 import java.util.List;
 
@@ -16,11 +17,11 @@ public class ObjectXmlManager {
     }
 
     public Element createObjectElement(String objectPath, Integer x, Integer y, Boolean hidden) {
-        Element object = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_OBJECT);
-        object.setAttribute(XmlConstant.ATTRIBUTE_REFERENCE, objectPath);
-        object.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X, x+"");
-        object.setAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y, y+"");
-        object.setAttribute(XmlConstant.ATTRIBUTE_HIDDEN, hidden+"");
+        Element object = xmlHandler.createXmlElement(SerializerConstant.TAG_NAME_OBJECT);
+        object.setAttribute(SerializerConstant.ATTRIBUTE_REFERENCE, objectPath);
+        object.setAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_X, x+"");
+        object.setAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_Y, y+"");
+        object.setAttribute(SerializerConstant.ATTRIBUTE_HIDDEN, hidden+"");
         return object;
     }
 
@@ -40,11 +41,11 @@ public class ObjectXmlManager {
 
     public Element getDiagramsElement(){
         Element Root = xmlHandler.getRoot();
-        return xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_DIAGRAMS);
+        return xmlHandler.getChildWithTag(Root, SerializerConstant.TAG_NAME_DIAGRAMS);
     }
 
     public Element getObjectsElement(Element diagramsElement){
-        return xmlHandler.getChildWithTag(diagramsElement, XmlConstant.TAG_NAME_OBJECTS);
+        return xmlHandler.getChildWithTag(diagramsElement, SerializerConstant.TAG_NAME_OBJECTS);
     }
 
     public void addOperation(Node objectNode, Node newNode)  {
@@ -57,7 +58,7 @@ public class ObjectXmlManager {
     }
 
     private Element getOperationsNode(Element objectNode) {
-        return xmlHandler.getChildWithTag(objectNode, XmlConstant.TAG_NAME_OPERATIONS);
+        return xmlHandler.getChildWithTag(objectNode, SerializerConstant.TAG_NAME_OPERATIONS);
     }
 
     public void addAttribute(Element objectElement, Element attributeElement)  {
@@ -69,19 +70,19 @@ public class ObjectXmlManager {
     }
 
     private Element getAttributesNode(Element objectNode) {
-        return xmlHandler.getChildWithTag(objectNode, XmlConstant.TAG_NAME_ATTRIBUTES);
+        return xmlHandler.getChildWithTag(objectNode, SerializerConstant.TAG_NAME_ATTRIBUTES);
     }
 
     public void alignObjects(Element diagramElement, int diagramID, FmmlxDiagramCommunicator communicator) {
-        Node objectsNode = xmlHandler.getChildWithTag(diagramElement, XmlConstant.TAG_NAME_OBJECTS);
+        Node objectsNode = xmlHandler.getChildWithTag(diagramElement, SerializerConstant.TAG_NAME_OBJECTS);
         NodeList objectList = objectsNode.getChildNodes();
         for(int i = 0 ; i < objectList.getLength(); i++){
             if(objectList.item(i).getNodeType() == Node.ELEMENT_NODE){
                 Element tmp = (Element) objectList.item(i);
-                double x = Double.parseDouble(tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
-                double y = Double.parseDouble(tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
-                Boolean hidden = "true".equals(tmp.getAttribute(XmlConstant.ATTRIBUTE_HIDDEN));
-                String objectPath = tmp.getAttribute(XmlConstant.ATTRIBUTE_REFERENCE);
+                double x = Double.parseDouble(tmp.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_X));
+                double y = Double.parseDouble(tmp.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_Y));
+                Boolean hidden = "true".equals(tmp.getAttribute(SerializerConstant.ATTRIBUTE_HIDDEN));
+                String objectPath = tmp.getAttribute(SerializerConstant.ATTRIBUTE_REFERENCE);
                 communicator.sendCurrentPosition(diagramID, objectPath, (int)Math.round(x), (int)Math.round(y), hidden);
             }
         }
@@ -95,9 +96,9 @@ public class ObjectXmlManager {
         for (int i = 0 ; i< objectList.getLength() ; i++){
             if (objectList.item(i).getNodeType() == Node.ELEMENT_NODE){
                 Element object_tmp = (Element) objectList.item(i);
-                if(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_REFERENCE).equals(path)){
-                    double x = Double.parseDouble(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_X));
-                    double y = Double.parseDouble(object_tmp.getAttribute(XmlConstant.ATTRIBUTE_COORDINATE_Y));
+                if(object_tmp.getAttribute(SerializerConstant.ATTRIBUTE_REFERENCE).equals(path)){
+                    double x = Double.parseDouble(object_tmp.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_X));
+                    double y = Double.parseDouble(object_tmp.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_Y));
                     return new Point2D(x, y);
                 }
             }

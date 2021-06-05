@@ -8,6 +8,7 @@ import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.association.MultiplicityDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
 import tool.clients.fmmlxdiagrams.menus.AssociationContextMenu;
+import tool.clients.xmlManipulator.XmlHandler;
 
 import java.util.Optional;
 import java.util.Vector;
@@ -256,5 +257,10 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	@Override
 	public String toString() {
 		return "FmmlxAssociation [name=" + name + "]";
+	}
+
+	@Override
+	public void paintToSvg(XmlHandler xmlHandler, int xOffset, int yOffset, FmmlxDiagram diagram) {
+
 	}
 }
