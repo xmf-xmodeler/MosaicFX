@@ -32,20 +32,7 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 	@Override
 	public void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram, boolean objectIsSelected) {
 		double hAlign = 0;
-		String textLocal = text;
-		
-		if(special) {
-			int length = text.length();
-			double neededWidth = FmmlxDiagram.calculateTextWidth(text);
-			if(neededWidth > availableWidth) {
-				textLocal = text + "     " + text;
-				int cycle = length + 5;
-				final int SPEED = 400;
-				int step = (int)((System.currentTimeMillis() % (cycle * SPEED)) / SPEED);
-				textLocal = textLocal.substring(step);
-				textLocal = textLocal.substring(0,(int)(length * availableWidth / neededWidth + .5));
-			}
-		}
+		String textLocal = setTextLocal(text);
 
 		if (alignment != Pos.BASELINE_LEFT) {
 			hAlign = (alignment == Pos.BASELINE_CENTER ? 0.5 : 1) * textWidth;
@@ -123,14 +110,16 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 	}
 
 	@Override
-	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, double xOffset, double yOffset) {
+	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, double xOffset, double yOffset, boolean objectIsSelected) {
 		double hAlign = 0;
+		String textLocal = setTextLocal(text);
 		if (alignment != Pos.BASELINE_LEFT) {
 			hAlign = (alignment == Pos.BASELINE_CENTER ? 0.5 : 1) * textWidth;
 		}
-		if(bgColor!=null){
-			String backgroundColor = bgColor.toString().split("x")[1].substring(0,6);
-			String styleString = "fill: "+backgroundColor+";";
+		if(selected || bgColor!=null){
+			Color color = selected ? Color.DARKGREY : bgColor;
+			String backgroundColor = color.toString().split("x")[1].substring(0,6);
+			String styleString = "fill: #"+backgroundColor+";";
 			Element rect = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_RECT);
 			rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (x - hAlign + xOffset - BOX_GAP)+"");
 			rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (y + yOffset - BOX_GAP - textHeight)+"");
@@ -143,13 +132,32 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 		String color = fgColor.toString().split("x")[1].substring(0,6);
 
 		Element text = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_TEXT);
+		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_FAMILY, "Arial");
 		text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (x - hAlign + xOffset)+"");
 		text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (y + yOffset - Y_BASELINE_DIFF)+"");
-		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, ((fontSize-3)*fontScale)+"");
+		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, ((fontSize-1)*fontScale)+"");
 		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_OPACITY, fgColor.getOpacity()+"");
 		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_STYLE, fgColor.getOpacity()+"");
 		text.setAttribute(SvgConstant.ATTRIBUTE_FILL, "#"+color);
-		text.setTextContent(this.text);
+		text.setTextContent(textLocal);
 		xmlHandler.addXmlElement(xmlHandler.getRoot(), text);
+	}
+
+	private String setTextLocal(String text) {
+		String textLocal = text;
+
+		if(special) {
+			int length = text.length();
+			double neededWidth = FmmlxDiagram.calculateTextWidth(text);
+			if(neededWidth > availableWidth) {
+				textLocal = text + "     " + text;
+				int cycle = length + 5;
+				final int SPEED = 400;
+				int step = (int)((System.currentTimeMillis() % (cycle * SPEED)) / SPEED);
+				textLocal = textLocal.substring(step);
+				textLocal = textLocal.substring(0,(int)(length * availableWidth / neededWidth + .5));
+			}
+		}
+		return textLocal;
 	}
 }

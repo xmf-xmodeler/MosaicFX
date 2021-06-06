@@ -74,6 +74,7 @@ public class XmlCreator {
     private void initSvg(Document document, double width, double height){
         Element root = document.createElement(SvgConstant.TAG_NAME_ROOT);
         root.setAttribute(SvgConstant.ATTRIBUTE_XMLNS, SvgConstant.XMLNS_VALUE);
+        root.setAttribute(SvgConstant.ATTRIBUTE_XMLNS_XLINK, SvgConstant.XMLNS_XLINK_VALUE);
         root.setAttribute(SvgConstant.ATTRIBUTE_WIDTH, width+"");
         root.setAttribute(SvgConstant.ATTRIBUTE_HEIGHT, height+"");
         document.appendChild(root);

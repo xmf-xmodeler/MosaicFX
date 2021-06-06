@@ -23,5 +23,16 @@ public class SvgConstant {
     public static final String ATTRIBUTE_FONT_OPACITY = "opacity";
     public static final String ATTRIBUTE_FONT_STYLE = "font-style";
     public static final String ATTRIBUTE_FILL_OPACITY = "fill-opacity";
+    public static final String TAG_NAME_IMAGE = "image";
+    public static final String ATTRIBUTE_XMLNS_XLINK = "xmlns:xlink";
+    public static final String XMLNS_XLINK_VALUE = "http://www.w3.org/1999/xlink";
+    public static final String ATTRIBUTE_XLINK_HREF = "xlink:href";
+    public static final String TAG_NAME_CIRCLE = "circle";
+    public static final String ATTRIBUTE_CX = "cx";
+    public static final String ATTRIBUTE_CY = "cy";
+    public static final String ATTRIBUTE_R = "r";
+    public static final String ATTRIBUTE_TRANSFORM = "transform";
+    public static final String TAG_NAME_POLYGON = "polygon";
+    public static final String ATTRIBUTE_POINTS = "points";
 }
 

@@ -258,9 +258,4 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	public String toString() {
 		return "FmmlxAssociation [name=" + name + "]";
 	}
-
-	@Override
-	public void paintToSvg(XmlHandler xmlHandler, int xOffset, int yOffset, FmmlxDiagram diagram) {
-
-	}
 }

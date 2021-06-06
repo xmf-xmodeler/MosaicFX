@@ -77,20 +77,22 @@ public class NodeBox implements NodeElement {
 	}
 
 	@Override
-	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, double xOffset, double yOffset) {
+	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, double xOffset, double yOffset, boolean objectIsSelected) {
 		String backgroundColor = bgColor.toString().split("x")[1].substring(0,6);
 		String foregroundColor = fgColor.toString().split("x")[1].substring(0,6);
-		String styleString = "fill: #"+backgroundColor+"; stroke: #"+foregroundColor+";";
+
 		Element rect = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_RECT);
 		rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (x + xOffset)+"");
 		rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (y + yOffset)+"");
 		rect.setAttribute(SvgConstant.ATTRIBUTE_HEIGHT, height+"");
 		rect.setAttribute(SvgConstant.ATTRIBUTE_WIDTH, width+"");
-		rect.setAttribute(SvgConstant.ATTRIBUTE_STYLE, styleString);
+		rect.setAttribute(SvgConstant.ATTRIBUTE_FILL, "#"+backgroundColor);
+		rect.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+foregroundColor);
+		rect.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, lineWidth.getWidth(objectIsSelected)+"");
 		rect.setAttribute(SvgConstant.ATTRIBUTE_FILL_OPACITY, 1 +"");
 		xmlHandler.addXmlElement(xmlHandler.getRoot(), rect);
 		for(NodeElement e : nodeElements){
-			e.paintToSvg(diagram, xmlHandler, x+xOffset, y+yOffset);
+			e.paintToSvg(diagram, xmlHandler, x+xOffset, y+yOffset, objectIsSelected);
 		}
 	}
 }

@@ -62,10 +62,12 @@ public abstract class Node implements CanvasElement{
 
 		if(requiresReLayout) layout(diagram);
 
+		boolean selected = diagram.isSelected(this);
+
 		Vector<NodeElement> nodesTobePainted = nodeElements;
 		Collections.reverse(nodesTobePainted);
 		for(NodeElement nodeElement : nodesTobePainted){
-			nodeElement.paintToSvg(diagram, xmlHandler, x+xOffset, y+yOffset);
+			nodeElement.paintToSvg(diagram, xmlHandler, x+xOffset, y+yOffset, selected);
 		}
 	}
 	

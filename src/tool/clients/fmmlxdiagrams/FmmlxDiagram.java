@@ -1168,6 +1168,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		Vector<CanvasElement> objectsToBePainted = new Vector<>();
 		objectsToBePainted.addAll(objects);
 		objectsToBePainted.addAll(labels);
+		objectsToBePainted.addAll(edges);
 		Collections.reverse(objectsToBePainted);
 		for (FmmlxObject o : objects) {
 			o.updatePortOder();

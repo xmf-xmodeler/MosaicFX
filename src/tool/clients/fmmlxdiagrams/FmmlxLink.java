@@ -80,10 +80,6 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 		return "10";
 	}
 
-	protected String getSvgStrokeWidth() {
-		return "0.5";
-	}
-
 	@Override
 	public ContextMenu getContextMenuLocal(DiagramActions actions) {
 		return new AssociationInstanceContextMenu(this, actions);

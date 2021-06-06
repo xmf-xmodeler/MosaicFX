@@ -50,6 +50,9 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		NO_ARROW, ARROW, FULL_TRIANGLE, CIRCLE;
 	}
 
+	Affine old;
+	Affine local;
+
 	private transient Vector<Point2D> latestValidPointConfiguration = new Vector<>();
 	private transient int pointToBeMoved = -1;
 	private transient boolean movementDirectionHorizontal;
@@ -278,8 +281,8 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	private void drawDecoration(GraphicsContext g, HeadStyle decoration, PortRegion directionForEdge,
 			Point2D pointForEdge) {
 
-		Affine old = g.getTransform();
-		Affine local = new Affine(old);
+		old = g.getTransform();
+		local = new Affine(old);
 		double angle = (directionForEdge == PortRegion.EAST ? -0.5
 				: directionForEdge == PortRegion.WEST ? 0.5 : directionForEdge == PortRegion.NORTH ? 1 : 0) * 180;
 		local.appendRotation(angle, pointForEdge.getX(), pointForEdge.getY());
@@ -662,7 +665,6 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	private void initLabelPositionMap(Vector<Object> labelPositions2) {
 		labelPositions = new HashMap<>();
 		for (Object labelPositionO : labelPositions2) {
-			@SuppressWarnings("unchecked")
 			Vector<Object> labelPosition = (Vector<Object>) labelPositionO;
 			int theirLocalId = (Integer) labelPosition.get(1);
 			float x = (Float) labelPosition.get(2);
@@ -804,7 +806,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	}
 
 	public double getMaxX() {
-		Double i = Double.NEGATIVE_INFINITY;
+		double i = Double.NEGATIVE_INFINITY;
 		for(Point2D p : intermediatePoints) {
 			i = Math.max(i, p.getX());
 		}
@@ -812,7 +814,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	}
 
 	public double getMaxY() {
-		Double i = Double.NEGATIVE_INFINITY;
+		double i = Double.NEGATIVE_INFINITY;
 		for(Point2D p : intermediatePoints) {
 			i = Math.max(i, p.getY());
 		}
@@ -824,7 +826,8 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		Element path = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
 		StringBuilder pathString = new StringBuilder("M");
 		int begin = 0;
-
+		Color color = diagram.isSelected(this) ? Color.RED : getPrimaryColor();
+		String strokeColor = color.toString().split("x")[1].substring(0,6);
 		for (Point2D point : getAllPoints()){
 			if(begin==0){
 				pathString.append(point.getX()).append(" ").append(point.getY());
@@ -834,11 +837,130 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 			begin++;
 		}
 		path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString.toString());
-		path.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "black");
+		path.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
 		path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
 		path.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
 		path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
-
 		xmlHandler.addXmlElement(xmlHandler.getRoot(), path);
+
+		drawEdgeSvgDecoration(xmlHandler, getTargetDecoration(), targetNode.getDirectionForEdge(targetEnd, false),
+				targetNode.getPointForEdge(targetEnd, false), strokeColor);
+		drawEdgeSvgDecoration(xmlHandler, getSourceDecoration(), sourceNode.getDirectionForEdge(sourceEnd, true),
+				sourceNode.getPointForEdge(sourceEnd, true), strokeColor);
+	}
+
+	protected void drawEdgeSvgDecoration(XmlHandler xmlHandler, HeadStyle decoration, PortRegion directionForEdge,
+										 Point2D pointForEdge, String strokeColor){
+		Element decor;
+
+		switch (decoration) {
+			case NO_ARROW: {
+				final double size = 3;
+				decor =  xmlHandler.createXmlElement(SvgConstant.TAG_NAME_CIRCLE);
+				decor.setAttribute(SvgConstant.ATTRIBUTE_CX, (pointForEdge.getX())+"");
+				decor.setAttribute(SvgConstant.ATTRIBUTE_CY, (pointForEdge.getY())+"");
+				decor.setAttribute(SvgConstant.ATTRIBUTE_R, size+"");
+				xmlHandler.addXmlElement(xmlHandler.getRoot(), decor);
+			}
+			break;
+
+			case ARROW: {
+				final double size = 16;
+				decor = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
+				StringBuilder pathString = new StringBuilder("M");
+				StringBuilder transform = new StringBuilder("rotate");
+				if(PortRegion.WEST.equals(directionForEdge)){
+					transform.append("(90,").append(pointForEdge.getX() - size / 2).append(", ").append(pointForEdge.getY()).append(")");
+					pathString.append(pointForEdge.getX() - size).append(" ").append(pointForEdge.getY() + size/2);
+					pathString.append(" L").append(pointForEdge.getX()- size/2).append(" ").append(pointForEdge.getY()-size/2);
+					pathString.append(" L").append(pointForEdge.getX()).append(" ").append(pointForEdge.getY() + size/2);
+				} else if (PortRegion.EAST.equals(directionForEdge)){
+					transform.append("(270,").append(pointForEdge.getX() + size / 2).append(", ").append(pointForEdge.getY()).append(")");
+					pathString.append(pointForEdge.getX()).append(" ").append(pointForEdge.getY() + size/2);
+					pathString.append(" L").append(pointForEdge.getX()+ size/2).append(" ").append(pointForEdge.getY()-size/2);
+					pathString.append(" L").append(pointForEdge.getX() +size).append(" ").append(pointForEdge.getY() + size/2);
+				} else if (PortRegion.SOUTH.equals(directionForEdge)){
+					transform.append("(0,").append(pointForEdge.getX()).append(", ").append(pointForEdge.getY()).append(")");
+					pathString.append(pointForEdge.getX() - size/2).append(" ").append(pointForEdge.getY() + size);
+					pathString.append(" L").append(pointForEdge.getX()).append(" ").append(pointForEdge.getY());
+					pathString.append(" L").append(pointForEdge.getX() + size/2).append(" ").append(pointForEdge.getY() + size);
+				} else {
+					transform.append("(180,").append(pointForEdge.getX()).append(", ").append(pointForEdge.getY() - size / 2).append(")");
+					pathString.append(pointForEdge.getX() - size/2).append(" ").append(pointForEdge.getY());
+					pathString.append(" L").append(pointForEdge.getX()).append(" ").append(pointForEdge.getY()-size);
+					pathString.append(" L").append(pointForEdge.getX() + size/2).append(" ").append(pointForEdge.getY());
+				}
+				decor.setAttribute(SvgConstant.ATTRIBUTE_D, pathString.toString());
+				decor.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
+				decor.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
+				decor.setAttribute(SvgConstant.ATTRIBUTE_TRANSFORM, transform.toString());
+				decor.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
+				xmlHandler.addXmlElement(xmlHandler.getRoot(), decor);
+			}
+			break;
+
+			case FULL_TRIANGLE: {
+				final double size = 16;
+				decor = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
+				StringBuilder pathString = new StringBuilder("M");
+				StringBuilder transform = new StringBuilder("rotate");
+				if(PortRegion.WEST.equals(directionForEdge)){
+					transform.append("(90,").append(pointForEdge.getX() - size / 2).append(", ").append(pointForEdge.getY()).append(")");
+					pathString.append(pointForEdge.getX() - size).append(" ").append(pointForEdge.getY() + size/2);
+					pathString.append(" L").append(pointForEdge.getX()- size/2).append(" ").append(pointForEdge.getY()-size/2);
+					pathString.append(" L").append(pointForEdge.getX()).append(" ").append(pointForEdge.getY() + size/2).append(" z");
+				} else if (PortRegion.EAST.equals(directionForEdge)){
+					transform.append("(270,").append(pointForEdge.getX() + size / 2).append(", ").append(pointForEdge.getY()).append(")");
+					pathString.append(pointForEdge.getX()).append(" ").append(pointForEdge.getY() + size/2);
+					pathString.append(" L").append(pointForEdge.getX()+ size/2).append(" ").append(pointForEdge.getY()-size/2);
+					pathString.append(" L").append(pointForEdge.getX() +size).append(" ").append(pointForEdge.getY() + size/2).append(" z");
+				} else if (PortRegion.SOUTH.equals(directionForEdge)){
+					transform.append("(0,").append(pointForEdge.getX()).append(", ").append(pointForEdge.getY()).append(")");
+					pathString.append(pointForEdge.getX() - size/2).append(" ").append(pointForEdge.getY() + size);
+					pathString.append(" L").append(pointForEdge.getX()).append(" ").append(pointForEdge.getY());
+					pathString.append(" L").append(pointForEdge.getX() + size/2).append(" ").append(pointForEdge.getY() + size).append(" z");
+				} else {
+					transform.append("(180,").append(pointForEdge.getX()).append(", ").append(pointForEdge.getY() - size / 2).append(")");
+					pathString.append(pointForEdge.getX() - size/2).append(" ").append(pointForEdge.getY());
+					pathString.append(" L").append(pointForEdge.getX()).append(" ").append(pointForEdge.getY()-size);
+					pathString.append(" L").append(pointForEdge.getX() + size/2).append(" ").append(pointForEdge.getY()).append(" z");
+				}
+				decor.setAttribute(SvgConstant.ATTRIBUTE_D, pathString.toString());
+				decor.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
+				decor.setAttribute(SvgConstant.ATTRIBUTE_FILL, "white");
+				decor.setAttribute(SvgConstant.ATTRIBUTE_TRANSFORM, transform.toString());
+				decor.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
+				xmlHandler.addXmlElement(xmlHandler.getRoot(), decor);
+			}break;
+
+			case CIRCLE: {
+				double size = 7;
+				String color = Color.WHITE.toString().split("x")[1].substring(0,6);
+				decor =  xmlHandler.createXmlElement(SvgConstant.TAG_NAME_CIRCLE);
+				if(PortRegion.EAST.equals(directionForEdge)){
+					decor.setAttribute(SvgConstant.ATTRIBUTE_CX, (pointForEdge.getX()+size)+"");
+					decor.setAttribute(SvgConstant.ATTRIBUTE_CY, (pointForEdge.getY())+"");
+				} else if (PortRegion.WEST.equals(directionForEdge)){
+					decor.setAttribute(SvgConstant.ATTRIBUTE_CX, (pointForEdge.getX()-size)+"");
+					decor.setAttribute(SvgConstant.ATTRIBUTE_CY, (pointForEdge.getY())+"");
+				} else if (PortRegion.NORTH.equals(directionForEdge)){
+					decor.setAttribute(SvgConstant.ATTRIBUTE_CX, (pointForEdge.getX())+"");
+					decor.setAttribute(SvgConstant.ATTRIBUTE_CY, (pointForEdge.getY()-size)+"");
+				} else {
+					decor.setAttribute(SvgConstant.ATTRIBUTE_CX, (pointForEdge.getX())+"");
+					decor.setAttribute(SvgConstant.ATTRIBUTE_CY, (pointForEdge.getY()+size)+"");
+				}
+				decor.setAttribute(SvgConstant.ATTRIBUTE_R, size+"");
+				decor.setAttribute(SvgConstant.ATTRIBUTE_FILL, "#"+color);
+				decor.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
+				decor.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, "1");
+				xmlHandler.addXmlElement(xmlHandler.getRoot(), decor);
+			}
+			break;
+			default:
+				break;
+
+		}
+
 	}
 }
