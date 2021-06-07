@@ -832,16 +832,14 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 			Vector<Point2D> intersections = diagram.findEdgeIntersections(points.get(i), points.get(i + 1));
 
 			if (intersections.size() == 0) {
-				StringBuilder pathString = new StringBuilder("M");
-
-				pathString.append(points.get(i).getX()).append(" ").append(points.get(i).getY());
-				pathString.append(" L").append(points.get(i+1).getX()).append(" ").append(points.get(i+1).getY());
 
 				Element path = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
 				path.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
 				path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
 				path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
-				path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString.toString());
+				String pathString = "M" + points.get(i).getX() + " " + points.get(i).getY() +
+						" L" + points.get(i + 1).getX() + " " + points.get(i + 1).getY();
+				path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString);
 				path.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
 				xmlHandler.addXmlElement(xmlHandler.getRoot(), path);
 
@@ -857,121 +855,111 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 
 				boolean tunnelMode = false;
 				final int R = 5;
-				int begin = 0;
 
 				while (intersections.size() > 0) {
 					Point2D next = intersections.remove(0);
 					if (tunnelMode) {
 						if (next.getX() - 2 * R > now.getX()) { // enough space to next
-							StringBuilder pathString = new StringBuilder("M");
-							pathString.append(now.getX()).append(" ").append(now.getY() - R);
-							pathString.append("A");
-							pathString.append(" 5 5"); // radiusX radiusY
-							pathString.append(" 0"); // rotation
-							pathString.append(" 0");
-							pathString.append(" 1"); // Clockwise
-							pathString.append(" ").append(now.getX() + R);// X-Endpoint
-							pathString.append(" ").append(now.getY());// Y-Endpoint
 							Element path = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
 							path.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
 							path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
 							path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
-							path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString.toString());
+							String pathString = "M" + now.getX() + " " + (now.getY() - R) +
+									"A" +
+									" 5 5" + // radiusX radiusY
+									" 0" + // rotation
+									" 0" +
+									" 1" + // Clockwise
+									" " + (now.getX() + R) +// X-Endpoint
+									" " + now.getY();// Y-Endpoint
+							path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString);
 							path.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
 							xmlHandler.addXmlElement(xmlHandler.getRoot(), path);
 
-							StringBuilder pathString1 = new StringBuilder("M");
-							pathString1.append(now.getX() + R).append(" ").append(now.getY());
-							pathString1.append(" L").append(next.getX()- R).append(" ").append(next.getY());
 							Element path1 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
 							path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
 							path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
 							path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
-							path1.setAttribute(SvgConstant.ATTRIBUTE_D, pathString1.toString());
+							String pathString1 = "M" + (now.getX() + R) + " " + now.getY() +
+									" L" + (next.getX() - R) + " " + next.getY();
+							path1.setAttribute(SvgConstant.ATTRIBUTE_D, pathString1);
 							path1.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
 							xmlHandler.addXmlElement(xmlHandler.getRoot(), path1);
 
-							StringBuilder pathString2 = new StringBuilder("M");
-							pathString2.append(next.getX() -R).append(" ").append(next.getY());
-							pathString2.append("A");
-							pathString2.append(" 5 5"); // radiusX radiusY
-							pathString2.append(" 0"); // rotation
-							pathString2.append(" 0");
-							pathString2.append(" 1"); // Clockwise
-							pathString2.append(" ").append(next.getX());// X-Endpoint
-							pathString2.append(" ").append(next.getY() - R);// Y-Endpoint
 							Element path2 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
 							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
 							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
 							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
-							path2.setAttribute(SvgConstant.ATTRIBUTE_D, pathString2.toString());
+							String pathString2 = "M" + (next.getX() - R) + " " + next.getY() +
+									"A" +
+									" 5 5" + // radiusX radiusY
+									" 0" + // rotation
+									" 0" +
+									" 1" + // Clockwise
+									" " + next.getX() +// X-Endpoint
+									" " + (next.getY() - R);// Y-Endpoint
+							path2.setAttribute(SvgConstant.ATTRIBUTE_D, pathString2);
 							path2.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
 							xmlHandler.addXmlElement(xmlHandler.getRoot(), path2);
 
 
 						} else { // not enough space -> just line to next
-							StringBuilder pathString = new StringBuilder("M");
-							pathString.append(now.getX()).append(" ").append(now.getY()-R);
-							pathString.append(" L").append(next.getX()).append(" ").append(next.getY()- R);
-
 							Element path = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
 							path.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
 							path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
 							path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
-							path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString.toString());
+							String pathString = "M" + now.getX() + " " + (now.getY() - R) +
+									" L" + next.getX() + " " + (next.getY() - R);
+							path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString);
 							path.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
 							xmlHandler.addXmlElement(xmlHandler.getRoot(), path);
 						}
 					} else {
 						if (next.getX() - R > now.getX()) {
-							StringBuilder pathString1 = new StringBuilder("M");
-							pathString1.append(now.getX()).append(" ").append(now.getY());
-							pathString1.append(" L").append(next.getX()- R).append(" ").append(next.getY());
 							Element path1 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
 							path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
 							path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
 							path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
-							path1.setAttribute(SvgConstant.ATTRIBUTE_D, pathString1.toString());
+							String pathString1 = "M" + now.getX() + " " + now.getY() +
+									" L" + (next.getX() - R) + " " + next.getY();
+							path1.setAttribute(SvgConstant.ATTRIBUTE_D, pathString1);
 							path1.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
 							xmlHandler.addXmlElement(xmlHandler.getRoot(), path1);
 
-							StringBuilder pathString2 = new StringBuilder("M");
-							pathString2.append(next.getX() -R).append(" ").append(next.getY());
-							pathString2.append("A");
-							pathString2.append(" 5 5"); // radiusX radiusY
-							pathString2.append(" 0"); // rotation
-							pathString2.append(" 0"); //
-							pathString2.append(" 1"); // Clockwise
-							pathString2.append(" ").append(next.getX());// X-Endpoint
-							pathString2.append(" ").append(next.getY() - R);// Y-Endpoint
 							Element path2 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
 							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
 							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
 							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
-							path2.setAttribute(SvgConstant.ATTRIBUTE_D, pathString2.toString());
+							String pathString2 = "M" + (next.getX() - R) + " " + next.getY() +
+									"A" +
+									" 5 5" + // radiusX radiusY
+									" 0" + // rotation
+									" 0" + //
+									" 1" + // Clockwise
+									" " + next.getX() +// X-Endpoint
+									" " + (next.getY() - R);// Y-Endpoint
+							path2.setAttribute(SvgConstant.ATTRIBUTE_D, pathString2);
 							path2.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
 							xmlHandler.addXmlElement(xmlHandler.getRoot(), path2);
 
 						} else {
-							StringBuilder pathString1 = new StringBuilder("M");
-							pathString1.append(now.getX()).append(" ").append(now.getY());
-							pathString1.append(" L").append(now.getX()).append(" ").append(next.getY()- R);
 							Element path1 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
 							path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
 							path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
 							path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
-							path1.setAttribute(SvgConstant.ATTRIBUTE_D, pathString1.toString());
+							String pathString1 = "M" + now.getX() + " " + now.getY() +
+									" L" + now.getX() + " " + (next.getY() - R);
+							path1.setAttribute(SvgConstant.ATTRIBUTE_D, pathString1);
 							path1.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
 							xmlHandler.addXmlElement(xmlHandler.getRoot(), path1);
 
-							StringBuilder pathString2 = new StringBuilder("M");
-							pathString2.append(now.getX()).append(" ").append(now.getY() - R);
-							pathString2.append(" L").append(next.getX()).append(" ").append(next.getY()- R);
 							Element path2 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
 							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
 							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
 							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
-							path2.setAttribute(SvgConstant.ATTRIBUTE_D, pathString2.toString());
+							String pathString2 = "M" + now.getX() + " " + (now.getY() - R) +
+									" L" + next.getX() + " " + (next.getY() - R);
+							path2.setAttribute(SvgConstant.ATTRIBUTE_D, pathString2);
 							path2.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
 							xmlHandler.addXmlElement(xmlHandler.getRoot(), path2);
 						}
@@ -982,57 +970,53 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 				// last intersection to end of line
 
 				if (endOfLine.getX() - R > now.getX()) {
-					StringBuilder pathString = new StringBuilder("M");
-					pathString.append(now.getX()).append(" ").append(now.getY()-R);
-					pathString.append("A");
-					pathString.append(" 5 5"); // radiusX radiusY
-					pathString.append(" 0"); // rotation
-					pathString.append(" 0");
-					pathString.append(" 1"); // Clockwise
-					pathString.append(" ").append(now.getX() + R);// X-Endpoint
-					pathString.append(" ").append(now.getY());// Y-Endpoint
 
 					Element path = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
 					path.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
 					path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
 					path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
-					path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString.toString());
+					String pathString = "M" + now.getX() + " " + (now.getY() - R) +
+							"A" +
+							" 5 5" + // radiusX radiusY
+							" 0" + // rotation
+							" 0" +
+							" 1" + // Clockwise
+							" " + (now.getX() + R) +// X-Endpoint
+							" " + now.getY();// Y-Endpoint
+					path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString);
 					path.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
 					xmlHandler.addXmlElement(xmlHandler.getRoot(), path);
 
 
-					StringBuilder pathString1 = new StringBuilder("M");
-					pathString1.append(now.getX() + R).append(" ").append(now.getY());
-					pathString1.append(" L").append(endOfLine.getX()).append(" ").append(endOfLine.getY());
 					Element path1 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
 					path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
 					path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
 					path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
-					path1.setAttribute(SvgConstant.ATTRIBUTE_D, pathString1.toString());
+					String pathString1 = "M" + (now.getX() + R) + " " + now.getY() +
+							" L" + endOfLine.getX() + " " + endOfLine.getY();
+					path1.setAttribute(SvgConstant.ATTRIBUTE_D, pathString1);
 					path1.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
 					xmlHandler.addXmlElement(xmlHandler.getRoot(), path1);
 
 				} else {
-					StringBuilder pathString = new StringBuilder("M");
-					pathString.append(now.getX()).append(" ").append(now.getY()-R);
-					pathString.append(" L").append(endOfLine.getX()).append(" ").append(endOfLine.getY()- R);
 
 					Element path = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
 					path.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
 					path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
 					path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
-					path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString.toString());
+					String pathString = "M" + now.getX() + " " + (now.getY() - R) +
+							" L" + endOfLine.getX() + " " + (endOfLine.getY() - R);
+					path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString);
 					path.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
 					xmlHandler.addXmlElement(xmlHandler.getRoot(), path);
 
-					StringBuilder pathString1 = new StringBuilder("M");
-					pathString1.append(endOfLine.getX()).append(" ").append(now.getY()-R);
-					pathString1.append(" L").append(endOfLine.getX()).append(" ").append(endOfLine.getY());
 					Element path1 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
 					path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
 					path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
 					path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
-					path1.setAttribute(SvgConstant.ATTRIBUTE_D, pathString1.toString());
+					String pathString1 = "M" + endOfLine.getX() + " " + (now.getY() - R) +
+							" L" + endOfLine.getX() + " " + endOfLine.getY();
+					path1.setAttribute(SvgConstant.ATTRIBUTE_D, pathString1);
 					path1.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
 					xmlHandler.addXmlElement(xmlHandler.getRoot(), path1);
 				}
