@@ -247,7 +247,6 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 			Element text = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_TEXT);
 			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (this.getReferenceX() + relativeX + MARGIN)+"");
 			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (this.getReferenceY() + relativeY + height - MARGIN-2)+"");
-			//TODO text.setAttribute(SvgConstant.ATTRIBUTE_FONT_FAMILY, "Regular");
 			text.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, "11");
 			text.setAttribute(SvgConstant.ATTRIBUTE_FILL, "white");
 			text.setTextContent(this.text);
@@ -256,7 +255,6 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 			Element text = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_TEXT);
 			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (this.getReferenceX() + relativeX + MARGIN)+"");
 			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (this.getReferenceY() + relativeY + height - MARGIN-2)+"");
-			//TODO text.setAttribute(SvgConstant.ATTRIBUTE_FONT_FAMILY, "Regular");
 			text.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, "14");
 			text.setAttribute(SvgConstant.ATTRIBUTE_FILL, "black");
 			text.setTextContent(this.text);

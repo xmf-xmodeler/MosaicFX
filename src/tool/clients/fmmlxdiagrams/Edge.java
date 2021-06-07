@@ -38,16 +38,16 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	protected transient PortRegion targetPortRegion;
 	private transient Point2D lastMousePosition;
 
-	public abstract class End {public final Edge<ConcreteNode> edge; private End(Edge<ConcreteNode> edge) {this.edge = edge;} public abstract ConcreteNode getNode();};
-	public class Source extends End{private Source(Edge<ConcreteNode> edge) {super(edge);} public ConcreteNode getNode() {return edge.sourceNode;}};
-	public class Target extends End{private Target(Edge<ConcreteNode> edge) {super(edge);} public ConcreteNode getNode() {return edge.targetNode;}};
+	public abstract class End {public final Edge<ConcreteNode> edge; private End(Edge<ConcreteNode> edge) {this.edge = edge;} public abstract ConcreteNode getNode();}
+	public class Source extends End{private Source(Edge<ConcreteNode> edge) {super(edge);} public ConcreteNode getNode() {return edge.sourceNode;}}
+	public class Target extends End{private Target(Edge<ConcreteNode> edge) {super(edge);} public ConcreteNode getNode() {return edge.targetNode;}}
 
 	protected boolean visible;
 
 	private HashMap<Integer, Point2D> labelPositions;
 
 	protected enum HeadStyle {
-		NO_ARROW, ARROW, FULL_TRIANGLE, CIRCLE;
+		NO_ARROW, ARROW, FULL_TRIANGLE, CIRCLE
 	}
 
 	Affine old;
@@ -742,12 +742,12 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 				diagram.addLabel(new DiagramEdgeLabel<>(this, localId, action, null, anchors, value, 0, -h*1.5, w, h, textColor, bgColor));
 			}
 		} else if (Anchor.CENTRE_SELFASSOCIATION==anchor) {
-			Point2D storedPostion = getLabelPosition(localId);
+			Point2D storedPosition = getLabelPosition(localId);
 			Vector<ConcreteNode> anchors = new Vector<>();
 			anchors.add(getSourceNode());
 			anchors.add(getTargetNode());
-			if(storedPostion != null) {
-				diagram.addLabel(new DiagramEdgeLabel<>(this, localId, action, null, anchors, value, storedPostion.getX(), storedPostion.getY(), w, h, textColor, bgColor));
+			if(storedPosition != null) {
+				diagram.addLabel(new DiagramEdgeLabel<>(this, localId, action, null, anchors, value, storedPosition.getX(), storedPosition.getY(), w, h, textColor, bgColor));
 			} else {
 				diagram.addLabel(new DiagramEdgeLabel<>(this, localId, action, null, anchors, value, sourceNode.getWidth()/2, -4*h-0.5*sourceNode.getHeight(), w, h, textColor, bgColor));
 			}
