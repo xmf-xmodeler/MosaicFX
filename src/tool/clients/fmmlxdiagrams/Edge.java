@@ -1039,7 +1039,6 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 			}
 		}
 
-		//-------------
 		drawEdgeSvgDecoration(xmlHandler, getTargetDecoration(), targetNode.getDirectionForEdge(targetEnd, false),
 				targetNode.getPointForEdge(targetEnd, false), strokeColor);
 		drawEdgeSvgDecoration(xmlHandler, getSourceDecoration(), sourceNode.getDirectionForEdge(sourceEnd, true),
