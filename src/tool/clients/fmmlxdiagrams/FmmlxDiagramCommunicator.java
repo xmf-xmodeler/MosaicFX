@@ -37,7 +37,7 @@ public class FmmlxDiagramCommunicator {
 	private final HashMap<Integer, Vector<Object>> results = new HashMap<>();
 	private static final Hashtable<Integer, Tab> tabs = new Hashtable<>();
 	private static final Vector<FmmlxDiagram> diagrams = new Vector<>();
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	static TabPane tabPane;
 	private Value getNoReturnExpectedMessageID(int diagramID) {return new Value(new Value[] {new Value(diagramID), new Value(-1)});}
 	private boolean silent;
@@ -223,18 +223,20 @@ public class FmmlxDiagramCommunicator {
 		boolean waiting = true;
 		WorkbenchClient.theClient().send(targetHandle, message, args2);
 		int attempts = 0;
-		int sleep = 5;
+		int sleep = 2;
+		long START = System.currentTimeMillis();
 		while (waiting && sleep < 200 * 100) {
 			if (DEBUG) System.err.println(attempts + ". attempt");
 			attempts++;
 			try {
 				Thread.sleep(sleep);
-				sleep *= 2;
+				sleep = (int) (sleep * 1.5);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 			if (results.containsKey(requestID)) {
 				waiting = false;
+				if (DEBUG) System.err.println("  received after " + (System.currentTimeMillis() - START) + "ms.");
 			}
 		}
 
@@ -278,7 +280,7 @@ public class FmmlxDiagramCommunicator {
 					diagram);
 			result.add(object);
 
-			sendCurrentPosition(diagram.getID(), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY()), object.hidden); // make sure to store position if newly created
+			//sendCurrentPosition(diagram.getID(), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY()), object.hidden); // make sure to store position if newly created
 		}
 		return result;
 	}
@@ -546,100 +548,125 @@ public class FmmlxDiagramCommunicator {
 		}
 		return result;
 	}
-
-	@SuppressWarnings("unchecked")
-	public Vector<Vector<FmmlxAttribute>> fetchAttributes(AbstractPackageViewer diagram, String className) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllAttributes", new Value(className));
-		Vector<Object> twoLists = (Vector<Object>) (response.get(0));
-		Vector<FmmlxAttribute> resultOwn = new Vector<>();
-		Vector<FmmlxAttribute> resultOther = new Vector<>();
-
-		Vector<Object> ownAttList = (Vector<Object>) twoLists.get(0);
-		Vector<Object> otherAttList = (Vector<Object>) twoLists.get(1);
-		for (Object o : ownAttList) {
-			Vector<Object> attInfo = (Vector<Object>) o;
-			FmmlxAttribute object = new FmmlxAttribute(
-					(String) attInfo.get(0),
-					(Integer) attInfo.get(2),
-					(String) attInfo.get(1),
-					(String) attInfo.get(4),
-					Multiplicity.parseMultiplicity((Vector<Object>) attInfo.get(3)));
-			resultOwn.add(object);
-		}
-		for (Object o : otherAttList) {
-			Vector<Object> attInfo = (Vector<Object>) o;
-			FmmlxAttribute object = new FmmlxAttribute(
-					(String) attInfo.get(0),
-					(Integer) attInfo.get(2),
-					(String) attInfo.get(1),
-					(String) attInfo.get(4),
-					Multiplicity.parseMultiplicity((Vector<Object>) attInfo.get(3)));
-			resultOther.add(object);
-		}
-		Vector<Vector<FmmlxAttribute>> result = new Vector<>();
-		result.addElement(resultOwn);
-		result.addElement(resultOther);
-		return result;
-	}
-
-	@SuppressWarnings("unchecked")
-	public Vector<FmmlxOperation> fetchOperations(AbstractPackageViewer diagram, String className) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getOwnOperations", new Value(className));
-		Vector<Object> response0 = (Vector<Object>) (response.get(0));
-		Vector<FmmlxOperation> result = new Vector<>();
-		for (Object o : response0) {
-			Vector<Object> opInfo = (Vector<Object>) o;
-
-			Vector<Object> paramNamesO = (Vector<Object>) opInfo.get(1);
-			Vector<String> paramNamesS = new Vector<>();
-			for (Object O : paramNamesO) {
-				paramNamesS.add((String) O);
-			}
-			
-			Vector<Object> paramTypesO = (Vector<Object>) opInfo.get(2);
-			Vector<String> paramTypesS = new Vector<>();
-			for (Object O : paramTypesO) {
-				paramTypesS.add((String) O);
-			}
-		
-			FmmlxOperation op =
-				new FmmlxOperation(
-					(String) opInfo.get(0), // name
-					paramNamesS, // paramNames
-					paramTypesS, // paramTypes
-					(Integer) opInfo.get(3), // level
-					(String) opInfo.get(4), // type
-					(String) opInfo.get(5), // body
-					(String) opInfo.get(6), // owner
-					null, // multiplicity
-					(Boolean) opInfo.get(8), // isMonitored
-					(Boolean) opInfo.get(9) // delToClass
-				);
-			result.add(op);
-		}
-		return result;
-	}
 	
 	@SuppressWarnings("unchecked")
-	public Vector<Constraint> fetchConstraints(AbstractPackageViewer diagram, String className) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getConstraints", new Value(className));
-		Vector<Object> response0 = (Vector<Object>) (response.get(0));
-		Vector<Constraint> result = new Vector<>();
-		for (Object o : response0) {
-			Vector<Object> conInfo = (Vector<Object>) o;
+	public void fetchAllAttributes(AbstractPackageViewer diagram, Vector<FmmlxObject> objects) throws TimeOutException {
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllAttributes");
+		Vector<Object> listOfAllAttributes = (Vector<Object>) (response.get(0));
 		
-			Constraint con =
-				new Constraint(
-					(String)  conInfo.get(0), // name
-					(Integer) conInfo.get(1), // level
-					(String)  conInfo.get(2), // body-raw
-					(String)  conInfo.get(3), // body-full
-					(String)  conInfo.get(4), // reason-raw
-					(String)  conInfo.get(5) // reason-full
-				);
-			result.add(con);
+		for(Object attributeListforOneObject : listOfAllAttributes) {
+			String objPath = (String) (((Vector<Object>) attributeListforOneObject).get(0));
+			for(FmmlxObject o : objects) if (o.getPath().equals(objPath)) {
+				Vector<Object> ownAttList = (Vector<Object>) (((Vector<Object>) attributeListforOneObject).get(1));
+				Vector<Object> otherAttList = (Vector<Object>) (((Vector<Object>) attributeListforOneObject).get(2));
+				Vector<FmmlxAttribute> resultOwn = new Vector<>();
+				Vector<FmmlxAttribute> resultOther = new Vector<>();
+				
+				for (Object a : ownAttList) {
+					Vector<Object> attInfo = (Vector<Object>) a;
+					FmmlxAttribute object = new FmmlxAttribute(
+							(String) attInfo.get(0),
+							(Integer) attInfo.get(2),
+							(String) attInfo.get(1),
+							(String) attInfo.get(4),
+							Multiplicity.parseMultiplicity((Vector<Object>) attInfo.get(3)));
+					resultOwn.add(object);
+				}
+				for (Object a : otherAttList) {
+					Vector<Object> attInfo = (Vector<Object>) a;
+					FmmlxAttribute object = new FmmlxAttribute(
+							(String) attInfo.get(0),
+							(Integer) attInfo.get(2),
+							(String) attInfo.get(1),
+							(String) attInfo.get(4),
+							Multiplicity.parseMultiplicity((Vector<Object>) attInfo.get(3)));
+					resultOther.add(object);
+				}
+				
+				o.setAttributes(resultOwn, resultOther);
+			}
 		}
-		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	public void fetchAllOperations(AbstractPackageViewer diagram, Vector<FmmlxObject> objects) throws TimeOutException {
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllOperations");
+		Vector<Object> listOfAllOperations = (Vector<Object>) (response.get(0));
+//		System.err.println("listOfAllOperations: " +listOfAllOperations);
+		
+		for(Object operationListforOneObject : listOfAllOperations) {
+			String objPath = (String) (((Vector<Object>) operationListforOneObject).get(0));
+//			System.err.println("objPath: " +objPath + " " + ((Vector<Object>) (((Vector<Object>) operationListforOneObject).get(1))).size());
+			for(FmmlxObject obj : objects) if (obj.getPath().equals(objPath)) {
+				Vector<Object> ownOpList = (Vector<Object>) (((Vector<Object>) operationListforOneObject).get(1));
+				Vector<FmmlxOperation> result = new Vector<>();
+				
+				for (Object o : ownOpList) {
+					Vector<Object> opInfo = (Vector<Object>) o;
+
+					Vector<Object> paramNamesO = (Vector<Object>) opInfo.get(1);
+					Vector<String> paramNamesS = new Vector<>();
+					for (Object O : paramNamesO) {
+						paramNamesS.add((String) O);
+					}
+					
+					Vector<Object> paramTypesO = (Vector<Object>) opInfo.get(2);
+					Vector<String> paramTypesS = new Vector<>();
+					for (Object O : paramTypesO) {
+						paramTypesS.add((String) O);
+					}
+				
+					FmmlxOperation op =
+						new FmmlxOperation(
+							(String) opInfo.get(0), // name
+							paramNamesS, // paramNames
+							paramTypesS, // paramTypes
+							(Integer) opInfo.get(3), // level
+							(String) opInfo.get(4), // type
+							(String) opInfo.get(5), // body
+							(String) opInfo.get(6), // owner
+							null, // multiplicity
+							(Boolean) opInfo.get(8), // isMonitored
+							(Boolean) opInfo.get(9) // delToClass
+						);
+					result.add(op);
+				}
+				
+				obj.setOperations(result);
+			}
+		}
+	}
+	
+
+	
+	@SuppressWarnings("unchecked")
+	public void fetchAllConstraints(AbstractPackageViewer diagram, Vector<FmmlxObject> objects) throws TimeOutException {
+		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllConstraints");
+		Vector<Object> listOfAllConstraints = (Vector<Object>) (response.get(0));
+		
+		for(Object constraintListForOneObject : listOfAllConstraints) {
+			String objPath = (String) (((Vector<Object>) constraintListForOneObject).get(0));
+			for(FmmlxObject obj : objects) if (obj.getPath().equals(objPath)) {
+				Vector<Object> constraintList = (Vector<Object>) (((Vector<Object>) constraintListForOneObject).get(1));
+				Vector<Constraint> result = new Vector<>();
+	
+				for (Object o : constraintList) {
+					Vector<Object> conInfo = (Vector<Object>) o;
+				
+					Constraint con =
+						new Constraint(
+							(String)  conInfo.get(0), // name
+							(Integer) conInfo.get(1), // level
+							(String)  conInfo.get(2), // body-raw
+							(String)  conInfo.get(3), // body-full
+							(String)  conInfo.get(4), // reason-raw
+							(String)  conInfo.get(5) // reason-full
+						);
+					result.add(con);
+				}
+				obj.setConstraints(result);
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1531,7 +1558,6 @@ public class FmmlxDiagramCommunicator {
 
     @SuppressWarnings("unchecked")
     public FaXML getDiagramData(Integer diagramID) throws TimeOutException {
-        //Vector<Object> response = xmfRequest(handler, diagramID, "getDiagramData2");
 		Vector<Object> response = xmfRequest(handler, diagramID, "getDiagramData");
         Vector<Object> responseContent = (Vector<Object>) (response.get(0));
 		return new FaXML(responseContent);

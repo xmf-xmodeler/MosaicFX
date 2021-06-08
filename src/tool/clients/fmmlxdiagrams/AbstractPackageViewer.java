@@ -85,6 +85,10 @@ public abstract class AbstractPackageViewer {
 	}
 
 	protected void fetchDiagramData() {
+		
+		final boolean TIMER = false;
+		final long START = System.currentTimeMillis();
+		
 		if(fetchingData) {
 			System.err.println("\talready fetching diagram data");
 			return;
@@ -100,15 +104,28 @@ public abstract class AbstractPackageViewer {
 			Vector<FmmlxObject> fetchedObjects = comm.getAllObjects(this);
 			objects.addAll(fetchedObjects);
 
+			if(TIMER) System.err.println("\nObjects loaded after            " + (System.currentTimeMillis() - START) + " ms.");
 			
-			for(FmmlxObject o : objects) {
-				o.fetchDataDefinitions(comm);
-			}
+//			for(FmmlxObject o : objects) {
+//				o.fetchDataDefinitions(comm);
+//			}
+
+			comm.fetchAllAttributes(this, objects);	
+			comm.fetchAllOperations(this, objects);	
+			comm.fetchAllConstraints(this, objects);			
+			
+			
+			if(TIMER) System.err.println("Object definitions loaded after " + (System.currentTimeMillis() - START) + " ms.");
 			
 			issues.addAll(comm.fetchIssues(this));
+
+			if(TIMER) System.err.println("Issues loaded after             " + (System.currentTimeMillis() - START) + " ms.");
+			
 			Vector<Edge<?>> fetchedEdges = comm.getAllAssociations(this);
 			fetchedEdges.addAll(comm.getAllAssociationsInstances(this));
 	
+			if(TIMER) System.err.println("Edges loaded after              " + (System.currentTimeMillis() - START) + " ms.");
+
 			edges.addAll(fetchedEdges);
 			edges.addAll(comm.getAllInheritanceEdges(this));
 			edges.addAll(comm.getAllDelegationEdges(this));
@@ -120,9 +137,13 @@ public abstract class AbstractPackageViewer {
 			for(FmmlxObject o : objects) {
 				o.fetchDataValues(comm);
 			}
+
+			if(TIMER) System.err.println("Object values loaded after      " + (System.currentTimeMillis() - START) + " ms.");
 			
 			fetchDiagramDataSpecific();
 			
+			if(TIMER) System.err.println("Other stuff loaded after        " + (System.currentTimeMillis() - START) + " ms.");
+
 		} catch (TimeOutException e) {
 			e.printStackTrace();
 		}

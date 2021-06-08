@@ -1059,7 +1059,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		triggerOverallReLayout();
 		redraw();
-
 	}
 
 	public void setShowGettersAndSetters(CheckBox box) {
@@ -1069,8 +1068,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			o.setShowGettersAndSetters(show);
 		}
 		triggerOverallReLayout();
-		redraw();
-
+		redraw();		
 	}
 
 
@@ -1137,6 +1135,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 		if(filePath !=null && filePath.length()>0){
 			if(justLoaded){
+				justLoaded = false;
 				FmmlxDeserializer deserializer = new FmmlxDeserializer(new XmlHandler(filePath));
 				org.w3c.dom.Node positionInfo = getComm().getPositionInfo(getID());
 				if(positionInfo != null) {
@@ -1144,16 +1143,16 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					triggerOverallReLayout();
 				}
 				redraw();
-				Issue nextIssue = null;
-				for(int i = 0; i < issues.size() && nextIssue == null; i++) {
-					if(issues.get(i).isSoluble()) nextIssue = issues.get(i);
-				}
-
-				if(nextIssue != null) {
-					nextIssue.performResolveAction(this);
-				}
 				updateDiagram();
-				justLoaded = false;
+			}
+		} else {		
+			Issue nextIssue = null;
+			for(int i = 0; i < issues.size() && nextIssue == null; i++) {
+				if(issues.get(i).isSoluble()) nextIssue = issues.get(i);
+			}
+	
+			if(nextIssue != null) {
+				nextIssue.performResolveAction(this);
 			}
 		}
 	}

@@ -12,7 +12,7 @@ public class FaXML {
 	private final HashMap<String, String> attributes = new HashMap<>();
 	
 	public FaXML(Vector<Object> content) {
-		System.err.println("reading " + content);
+//		System.err.println("reading " + content);
 		name = content.get(0).toString();
 		if (name.contains("addOperation2") || name.contains("changeOperationBody")){
 			for(int i = 1; i < content.size(); i++) {

@@ -17,7 +17,7 @@ public class ObjectContextMenu extends ContextMenu {
 	private final FmmlxObject object;
 	private final FmmlxDiagram diagram;
 	private final DiagramActions actions;
-	FmmlxProperty activeProperty;
+	private final FmmlxProperty activeProperty;
 
 	public ObjectContextMenu(FmmlxObject object, FmmlxDiagram diagram, Point2D relativePoint) {
 		this.diagram = diagram;
@@ -205,6 +205,11 @@ public class ObjectContextMenu extends ContextMenu {
 	}
 
 	private Menu createOperationSubMenu() {
+		FmmlxOperation activeOperation = 
+				(activeProperty != null && activeProperty instanceof FmmlxOperation)
+					?(FmmlxOperation) activeProperty
+					:null;
+				
 		Menu operationMenu = new Menu("Operation");
 		MenuItem addItem = new MenuItem("Add");
 		addItem.setOnAction(e -> actions.addOperationDialog(object));
@@ -219,20 +224,20 @@ public class ObjectContextMenu extends ContextMenu {
 		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Operation));
 		changeTypeItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		
-		MenuItem showBodyItem = new MenuItem("Show body in editor");
+		/*MenuItem showBodyItem = new MenuItem("Show body in editor");
 		if(activeProperty != null && activeProperty instanceof FmmlxOperation) {
 			showBodyItem.setOnAction(e -> actions.showBody(object, (FmmlxOperation) activeProperty));
 		} else {
 			showBodyItem.setDisable(true);
-		}
+		}*/
 		
 		MenuItem changeBodyItem = new MenuItem("Change body");
-		changeBodyItem.setOnAction(e -> actions.changeBodyDialog(object));
+		changeBodyItem.setOnAction(e -> actions.changeBodyDialog(object, activeOperation));
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Operation));
 
 		operationMenu.getItems().addAll(addItem, removeItem, changeNameItem, changeOwnerItem, changeTypeItem,
-				showBodyItem, changeBodyItem, changeLevelItem);
+				changeBodyItem, changeLevelItem);
 
 		return operationMenu;
 	}

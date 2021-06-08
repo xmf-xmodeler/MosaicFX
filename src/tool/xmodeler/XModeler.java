@@ -411,7 +411,6 @@ public class XModeler extends Application {
     xos.newMessageClient("com.ceteva.oleBridge", new OleBridgeClient());
     
     WorkbenchClient.theClient().startFmmlxClient();
-    System.err.println("Wurde aufgerufen!");
 //    xos.newMessageClient("screenGeneration", new ScreenGenerationClient()); // BB
   }
   
