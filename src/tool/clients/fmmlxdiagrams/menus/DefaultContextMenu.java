@@ -44,13 +44,15 @@ public class DefaultContextMenu extends ContextMenu {
 		packageListView_LOCAL.setOnAction(e -> actions.openClassBrowserStage(false));
 		MenuItem packageListView = new MenuItem("Package ListView");
 		packageListView.setOnAction(e -> actions.openClassBrowserStage(false));
+		MenuItem exportSvg = new MenuItem("export svg (BETA)");
+		exportSvg.setOnAction(e -> actions.exportSvg());
 		
 		enumeration.getItems().addAll(createEnumeration, editEnumeration, deleteEnumeration);
 		
 		MenuItem unhideItem = new MenuItem("Unhide Elements");
 		unhideItem.setOnAction(e -> actions.unhideElementsDialog());
 		
-		getItems().addAll(addClassItem, addInstanceItem, addAssociationItem, levelMenu, enumeration, unhideItem, packageListView, packageListView_LOCAL);
+		getItems().addAll(addClassItem, addInstanceItem, addAssociationItem, levelMenu, enumeration, unhideItem, packageListView, packageListView_LOCAL, exportSvg);
 
 		{ // test
 			MenuItem testEvalList = new MenuItem("TEST EVAL LIST");

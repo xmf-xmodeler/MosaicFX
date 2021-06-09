@@ -1,6 +1,6 @@
 package tool.clients.serializer;
 
-public class XmlConstant {
+public class SerializerConstant {
     public static final int SERIALIZER_VERSION = 2;
 
     public static final String TAG_NAME_ROOT = "XModeler";
@@ -29,7 +29,6 @@ public class XmlConstant {
 	public static final String TAG_NAME_LABEL = "Label";
 
     public static final String ATTRIBUTE_NAME = "name";
-    public static final String ATTRIBUTE_OWNER = "owner";
     public static final String ATTRIBUTE_PACKAGE_PATH = "package_path";
     public static final String ATTRIBUTE_REFERENCE = "ref";
     public static final String ATTRIBUTE_LABEL = "label";
@@ -46,9 +45,6 @@ public class XmlConstant {
     public static final String ATTRIBUTE_SOURCE_PORT = "source_port";
     public static final String ATTRIBUTE_TARGET_PORT = "target_port";
     public static final String ATTRIBUTE_PARENT_ASSOCIATION = "parent_association";
-    public static final String ATTRIBUTE_MULTIPLICITY_START_TO_END = "multiplicity_start_to_end";
-    public static final String ATTRIBUTE_MULTIPLICITY_END_TO_START = "multiplicity_end_to_start";
-    public static final String ATTRIBUTE_DIAGRAM_OWNER = "diagram_owner";
     public static final String ATTRIBUTE_MULTIPLICITY = "multiplicity";
     public static final String ATTRIBUTE_IS_ABSTRACT = "abstract";
     public static final String ATTRIBUTE_BODY = "body";
@@ -84,6 +80,7 @@ public class XmlConstant {
 	public static final String ATTRIBUTE_TEXT = "text";
     public static final String ATTRIBUTE_ANCHORS = "anchors";
     public static final String ATTRIBUTE_HIDDEN = "hidden";
+    public static final String FILE_XML = "xml";
 
 
     public static class EdgeType {

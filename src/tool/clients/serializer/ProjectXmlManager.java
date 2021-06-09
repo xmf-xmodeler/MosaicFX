@@ -3,6 +3,7 @@ package tool.clients.serializer;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import tool.clients.xmlManipulator.XmlHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,14 +16,14 @@ public class ProjectXmlManager  {
     }
 
     public Node createProject(String name){
-        Element project = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_PROJECT);
-        project.setAttribute(XmlConstant.ATTRIBUTE_NAME, name);
+        Element project = xmlHandler.createXmlElement(SerializerConstant.TAG_NAME_PROJECT);
+        project.setAttribute(SerializerConstant.ATTRIBUTE_NAME, name);
         return project;
     }
     
     public Node get(String name){
         Element projects = getProjectsElement();
-        return xmlHandler.getChildrenByAttributeValue(projects, XmlConstant.ATTRIBUTE_NAME, name);
+        return xmlHandler.getChildrenByAttributeValue(projects, SerializerConstant.ATTRIBUTE_NAME, name);
     }
 
     public void add(Element parent, Element element) {
@@ -51,7 +52,7 @@ public class ProjectXmlManager  {
 
     public Element getDiagramsElement(){
         Element Root = xmlHandler.getRoot();
-        return xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_DIAGRAMS);
+        return xmlHandler.getChildWithTag(Root, SerializerConstant.TAG_NAME_DIAGRAMS);
     }
 
     public String getProjectName(String projectPath) {
@@ -61,7 +62,7 @@ public class ProjectXmlManager  {
 
     public Element getProjectsElement() {
         Element Root = xmlHandler.getRoot();
-        return xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_PROJECTS);
+        return xmlHandler.getChildWithTag(Root, SerializerConstant.TAG_NAME_PROJECTS);
     }
 
     public boolean projectIsExist(String packagePath) {
@@ -72,7 +73,7 @@ public class ProjectXmlManager  {
             Node tmp = projectList.item(i);
             if(tmp.getNodeType()==Node.ELEMENT_NODE){
                 Element projectElement = (Element) tmp;
-                if(projectElement.getAttribute(XmlConstant.ATTRIBUTE_NAME).equals(packagePath)){
+                if(projectElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME).equals(packagePath)){
                     return true;
                 }
             }
@@ -86,8 +87,8 @@ public class ProjectXmlManager  {
     }
 
     public Element createProjectElement(String packagePath) {
-        Element project = xmlHandler.createXmlElement(XmlConstant.TAG_NAME_PROJECT);
-        project.setAttribute(XmlConstant.ATTRIBUTE_NAME,packagePath);
+        Element project = xmlHandler.createXmlElement(SerializerConstant.TAG_NAME_PROJECT);
+        project.setAttribute(SerializerConstant.ATTRIBUTE_NAME,packagePath);
         return project;
     }
 
@@ -96,7 +97,7 @@ public class ProjectXmlManager  {
         List<Node> projectList = getAll();
         if(projectList.size()==1){
             Element tmp = (Element) projectList.get(0);
-            projectPath = tmp.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+            projectPath = tmp.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
         }
         return projectPath;
     }

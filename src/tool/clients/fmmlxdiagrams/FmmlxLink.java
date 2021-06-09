@@ -5,6 +5,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.AssociationInstanceContextMenu;
+import tool.clients.xmlManipulator.XmlHandler;
 
 import java.util.Vector;
 
@@ -72,6 +73,11 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 	@Override
 	protected Double getLineDashes() {
 		return 10d;
+	}
+
+	@Override
+	protected String getSvgDashes() {
+		return "10";
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
+import tool.clients.xmlManipulator.XmlHandler;
 
 public interface CanvasElement {
 
@@ -22,5 +23,5 @@ public interface CanvasElement {
 	double getMouseMoveOffsetX();
 	double getMouseMoveOffsetY();
 
-
+    void paintToSvg(XmlHandler xmlHandler, int xOffset, int yOffset, FmmlxDiagram diagram);
 }

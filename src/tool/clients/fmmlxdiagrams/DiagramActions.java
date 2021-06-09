@@ -11,9 +11,11 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 import tool.clients.dialogs.enquiries.FindClassDialog;
 import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
+import tool.clients.exporter.svg.SvgExporter;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ObjectBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.*;
@@ -36,6 +38,7 @@ import tool.clients.serializer.FmmlxSerializer;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import java.io.File;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
@@ -1084,5 +1087,30 @@ public class DiagramActions {
 			
 		Platform.runLater(() -> new ObjectBrowser(diagram, object, null).show());
 			
+	}
+
+	public void exportSvg() {
+		FileChooser fc = new FileChooser();
+		fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("svg", "*.svg"));
+		fc.setTitle("Export File");
+		File file = fc.showSaveDialog(null);
+
+		if(file!= null){
+			if(!(diagram instanceof FmmlxDiagram)) throw new IllegalArgumentException();
+			Platform.runLater(() -> {
+				//String filePath = "testSvg.svg";
+				String filePath = file.getPath();
+				double width = diagram.getCanvas().getWidth();
+				double height = diagram.getCanvas().getHeight();
+				SvgExporter svgExporter;
+				try {
+					svgExporter = new SvgExporter(filePath, width, height);
+					svgExporter.clearAllData();
+					svgExporter.export(diagram);
+				} catch (TransformerException | ParserConfigurationException e) {
+					e.printStackTrace();
+				}
+			});
+		}
 	}
 }

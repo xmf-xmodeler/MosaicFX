@@ -1,12 +1,3 @@
-import org.junit.jupiter.api.Test;
-import tool.clients.serializer.XmlCreator;
-import tool.clients.serializer.XmlHandler;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 class XmlHandlerTest {
 
 //    @Test

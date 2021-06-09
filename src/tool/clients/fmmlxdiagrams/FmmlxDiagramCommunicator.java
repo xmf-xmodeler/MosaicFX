@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.FmmlxSerializer;
-import tool.clients.serializer.XmlHandler;
+import tool.clients.xmlManipulator.XmlHandler;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.PropertyManager;
 import xos.Value;
@@ -1939,5 +1939,7 @@ public class FmmlxDiagramCommunicator {
 		this.silent = silent;
 	}
 
-
+	public void saveSvgFile(String fileName, String packageString) {
+		System.out.println("test svg export");
+	}
 }

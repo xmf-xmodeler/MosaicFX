@@ -9,6 +9,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
+import org.w3c.dom.Element;
+import tool.clients.exporter.svg.SvgConstant;
+import tool.clients.xmlManipulator.XmlHandler;
 import xos.Value;
 
 public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElement {
@@ -196,6 +199,15 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 	@Override public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
 	@Override public double getMouseMoveOffsetY() {return mouseMoveOffsetY;}
 
+	public static boolean isInteger(String s) {
+		try {
+			Integer.parseInt(s);
+		} catch(NumberFormatException | NullPointerException e) {
+			return false;
+		}
+		return true;
+	}
+
 	public void performAction() {
 		action.run();
 	}
@@ -216,6 +228,55 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 	@Override
 	public void unHighlight() {
 	this.highlighted=false;	
+	}
+
+	@Override
+	public void paintToSvg(XmlHandler xmlHandler, int xOffset, int yOffset, FmmlxDiagram diagram) {
+		int size=16;
+		if (isInteger(text)){
+			String color = bgColor.toString().split("x")[1].substring(0,6);
+			String styleString = "fill: #"+color+";";
+			Element rect = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_RECT);
+			rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (this.getReferenceX() + relativeX)+"");
+			rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (this.getReferenceY() + relativeY)+"");
+			rect.setAttribute(SvgConstant.ATTRIBUTE_HEIGHT, height+"");
+			rect.setAttribute(SvgConstant.ATTRIBUTE_WIDTH, width+"");
+			rect.setAttribute(SvgConstant.ATTRIBUTE_STYLE, styleString);
+			xmlHandler.addXmlElement(xmlHandler.getRoot(), rect);
+
+			Element text = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_TEXT);
+			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (this.getReferenceX() + relativeX + MARGIN)+"");
+			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (this.getReferenceY() + relativeY + height - MARGIN-2)+"");
+			text.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, "11");
+			text.setAttribute(SvgConstant.ATTRIBUTE_FILL, "white");
+			text.setTextContent(this.text);
+			xmlHandler.addXmlElement(xmlHandler.getRoot(), text);
+		} else {
+			Element text = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_TEXT);
+			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (this.getReferenceX() + relativeX + MARGIN)+"");
+			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (this.getReferenceY() + relativeY + height - MARGIN-2)+"");
+			text.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, "14");
+			text.setAttribute(SvgConstant.ATTRIBUTE_FILL, "black");
+			text.setTextContent(this.text);
+			xmlHandler.addXmlElement(xmlHandler.getRoot(), text);
+		}
+		Element polygon = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_POLYGON);
+		StringBuilder points = new StringBuilder();
+		if(anchors.size()>=2) {
+			if (anchors.firstElement().getCenterX() <= anchors.elementAt(1).getCenterX()) {
+				points.append(this.getReferenceX()+relativeX+width).append(",").append(this.getReferenceY()+relativeY).append(" ");
+				points.append(this.getReferenceX()+relativeX+width + size-5).append(",").append(this.getReferenceY()+relativeY + size /2).append(" ");
+				points.append(this.getReferenceX()+relativeX+width).append(",").append(this.getReferenceY()+relativeY+ size);
+
+			} else {
+				points.append(this.getReferenceX()+relativeX).append(",").append(this.getReferenceY()+relativeY).append(" ");
+				points.append(this.getReferenceX()+relativeX - size+5).append(",").append(this.getReferenceY()+relativeY + size /2).append(" ");
+				points.append(this.getReferenceX()+relativeX).append(",").append(this.getReferenceY()+relativeY+ size);
+
+			}
+			polygon.setAttribute(SvgConstant.ATTRIBUTE_POINTS, points.toString());
+			xmlHandler.addXmlElement(xmlHandler.getRoot(), polygon);
+		}
 	}
 
 }
