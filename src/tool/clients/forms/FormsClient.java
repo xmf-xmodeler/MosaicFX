@@ -706,8 +706,8 @@ public class FormsClient extends Client {
 			}
 		} else if (message.hasName("setText"))
 			setText(message);
-		else if (message.hasName("newXYLayout"))
-			newXYLayout(message);
+//		else if (message.hasName("newXYLayout"))
+//			newXYLayout(message);
 		else if (message.hasName("newTextField"))
 			newTextField(message);
 		else if (message.hasName("clearForm"))
@@ -755,13 +755,13 @@ public class FormsClient extends Client {
 		}
 	}
 
-	private void newXYLayout(Message message) {
-		Value parentId = message.args[0];
-		Value id = message.args[1];
-		Value rows = message.args[2];
-		Value columns = message.args[3];
-
-	}
+//	private void newXYLayout(Message message) {
+//		Value parentId = message.args[0];
+//		Value id = message.args[1];
+//		Value rows = message.args[2];
+//		Value columns = message.args[3];
+//
+//	}
 
 	private void move(Message message) {
 		Value id = message.args[0];

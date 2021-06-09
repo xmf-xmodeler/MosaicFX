@@ -1866,7 +1866,8 @@ public class FmmlxDiagramCommunicator {
 		return initLabel.substring(0, initLabel.length()-2)+id+")";
 	}
 
-    public HashMap<String, HashMap<String, Object>> getAllLabelPositions(int id) {
+    @SuppressWarnings("unchecked")
+	public HashMap<String, HashMap<String, Object>> getAllLabelPositions(int id) {
 		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
 		Vector<Object> response;
 		try {
@@ -1894,6 +1895,7 @@ public class FmmlxDiagramCommunicator {
         return result;
     }
 
+	@SuppressWarnings("unchecked")
 	public void testGetAllEdgePositions(int id) {
 		Vector<Object> response;
 		try {
@@ -1906,6 +1908,7 @@ public class FmmlxDiagramCommunicator {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public void testGetAllLabelPositions(int id) {
 		Vector<Object> response;
 		try {

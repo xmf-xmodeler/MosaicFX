@@ -16,12 +16,10 @@ import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeEnumItemNameDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeEnumNameDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 public class ChangeEnumItemName  extends CustomDialog<ChangeEnumItemNameDialogResult> {
 
-	private AbstractPackageViewer diagram;
 	private FmmlxEnum selectedEnum;
 	private String selectedItem;
 	private Label currentNameLabel;
@@ -33,7 +31,7 @@ public class ChangeEnumItemName  extends CustomDialog<ChangeEnumItemNameDialogRe
 	public ChangeEnumItemName(AbstractPackageViewer diagram, FmmlxEnum selectedEnum, String selectedItem) {
 		super();
 		this.selectedEnum=selectedEnum;
-		this.diagram = diagram;
+//		this.diagram = diagram;
 		this.selectedItem=selectedItem;
 		
 		DialogPane dialogPane = getDialogPane();

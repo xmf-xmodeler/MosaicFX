@@ -88,9 +88,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private double zoom = 1.;
 	private Affine transformFX = new Affine();
 	public static final Font FONT;
-	private static Font fontKursiv;
+//	private static Font fontKursiv;
 //	private static Font paletteFont;
-	private static Font paletteFontKursiv;
+//	private static Font paletteFontKursiv;
 	
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
@@ -115,15 +115,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	
 	static{
 		FONT = Font.font(Font.getDefault().getFamily(), FontPosture.REGULAR, 14);
-		try {
-
-	//		font = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono.ttf"), 14);
-			fontKursiv = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 14);
-	//		paletteFont = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSans.ttf"), 12);
-			paletteFontKursiv =Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 12);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		try {
+//
+//	//		font = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono.ttf"), 14);
+////			fontKursiv = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 14);
+//	//		paletteFont = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSans.ttf"), 12);
+////			paletteFontKursiv =Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 12);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 	}
 	
 	private FmmlxDiagram() {
