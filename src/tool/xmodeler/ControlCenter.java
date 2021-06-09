@@ -1,5 +1,6 @@
 package tool.xmodeler;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Vector;
@@ -19,6 +20,11 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -29,6 +35,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
@@ -40,6 +47,7 @@ public class ControlCenter extends Stage {
 	private final ObservableList<String> categoryList = FXCollections.observableArrayList();
 	private final ListView<String> categoryLV = new ListView<String>();
 	private final ObservableList<String> projectList = FXCollections.observableArrayList();
+	private final TreeView<String> projectTree = new TreeView<String>();
 	private final ListView<String> projectLV = new ListView<String>();
 	private final ObservableList<String> modelList = FXCollections.observableArrayList();
 	private final ListView<String> modelLV = new ListView<String>();
@@ -53,6 +61,8 @@ public class ControlCenter extends Stage {
 		
 		ControlCenterClient.init(this);
 		controlCenterClient = ControlCenterClient.getClient();
+		
+		final Image image = new Image(new File("resources/gif/Projects/Project.gif").toURI().toString());
 		
 		VBox vBox = new VBox();
 		HBox hBox = new HBox();
@@ -115,25 +125,27 @@ public class ControlCenter extends Stage {
 		hBox.getChildren().add(menuBar);
 		grid.setHgap(10);
 		grid.setVgap(10);
-		grid.add(categorieLabel, 1, 1);
-		grid.add(newCategorie, 1, 1);
+		//grid.add(categorieLabel, 1, 1);
+		//grid.add(newCategorie, 1, 1);
 		GridPane.setHalignment(newCategorie, HPos.RIGHT);
-		categoryLV.setPrefSize(200, 150);
-		grid.add(categoryLV, 1, 2);
+		//categoryLV.setPrefSize(200, 150);
+		//grid.add(categoryLV, 1, 2);
 	
 		grid.add(projectLabel, 2, 1);
 		grid.add(refreshAll, 2, 1);
 		GridPane.setHalignment(refreshAll, HPos.RIGHT);
 		grid.add(newProject, 2, 1);
 		GridPane.setHalignment(newProject, HPos.CENTER);
-		projectLV.setPrefSize(200, 150);
-		grid.add(projectLV, 2, 2);
+		//projectLV.setPrefSize(250, 150);
+		//grid.add(projectLV, 2, 2);
+		projectTree.setPrefSize(250, 150);
+		grid.add(projectTree, 2, 2);
 		grid.add(projectGridPane, 2, 3);
 	
 		grid.add(modelLabel, 3, 1);
 		grid.add(newModel, 3, 1);
 		GridPane.setHalignment(newModel, HPos.RIGHT);
-		modelLV.setPrefSize(200, 150);
+		modelLV.setPrefSize(250, 150);
 		grid.add(modelLV, 3, 2);
 		grid.add(modelGridPane, 3, 3);
 		modelLV.setOnMouseClicked(e->{if (e.getClickCount()==2 && e.getButton()==MouseButton.PRIMARY) modelDoubleClick(e);});
@@ -142,19 +154,47 @@ public class ControlCenter extends Stage {
 		grid.add(diagramLabel, 4, 1);
 		grid.add(newDiagram, 4, 1);
 		GridPane.setHalignment(newDiagram, HPos.RIGHT);
-		diagramLV.setPrefSize(200, 150);
+		diagramLV.setPrefSize(250, 150);
 		grid.add(diagramLV, 4, 2);
 		grid.add(diagramsGridPane, 4, 3);
 		
 		
 
 		init();
-		categoryLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->categorySelected(NEWW));
+		//categoryLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->categorySelected(NEWW));
 		projectLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->controlCenterClient.getProjectModels(NEWW));
+		projectTree.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->controlCenterClient.getProjectModels(getProjectPath(projectTree.getSelectionModel().getSelectedItem())));
 		
-				
+		projectTree.setCellFactory(new Callback<TreeView<String>,TreeCell<String>>(){
+            @Override
+            public TreeCell<String> call(TreeView<String> p) {
+                return new TreeCell<String>() {
+                	@Override
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+             
+                        if (empty) {
+                            setText(null);
+                            setGraphic(null);
+                        } else {
+                        	setText(getTreeItem().getValue());
+                            if (getTreeItem().isLeaf()) {
+                            	setGraphic(new ImageView(image));
+                            } else {
+                            	setGraphic(null);
+                            }
+                        }
+                    }
+                };
+            }
+        });
+		
+        
+		
+		
+		
 		vBox.getChildren().addAll(hBox, grid);
-		Scene scene = new Scene(vBox, 900, 300);
+		Scene scene = new Scene(vBox, 800, 300);
 		setScene(scene);
 		this.setOnShown((event) -> {controlCenterClient.getAllCategories();});
 		refreshAll.setOnAction((event) -> {controlCenterClient.getAllProjects();});
@@ -237,8 +277,45 @@ public class ControlCenter extends Stage {
 
 	public void setAllProjects(Vector<String> vec) {
 		Platform.runLater(()->{
-		projectLV.getItems().clear();
-		projectLV.getItems().addAll(vec);
+		TreeItem<String> root = new TreeItem<>("root");
+		
+		
+		for (String projectString : vec) {
+			String[] projectPath = projectString.split("::");
+			TreeItem<String> currentTreeItemPosition = root;
+			for (int i=0; i<projectPath.length; i++) {
+				TreeItem<String> newTreeItem = null;
+				for (TreeItem<String> tempItem : currentTreeItemPosition.getChildren()) {
+					if (tempItem.getValue().equals(projectPath[i])) {
+						newTreeItem = tempItem;
+					}
+				}
+				if (newTreeItem==null) {
+					newTreeItem = new TreeItem<>(projectPath[i]);
+					currentTreeItemPosition.getChildren().add(newTreeItem);
+					
+				}
+				currentTreeItemPosition = newTreeItem;
+				
+				
+				
+//				if(currentTreeItemPosition.getChildren().contains(newTreeItem)){
+//					
+//				}
+			}
+			projectTree.setRoot(root);
+			projectTree.setShowRoot(false);
+			
+			for (TreeItem<String> temp : root.getChildren()) {
+				temp.setExpanded(true);
+				for (TreeItem<String> tempLvl2 : temp.getChildren()) {
+					tempLvl2.setExpanded(true);
+				}
+			}
+		}
+		
+		//projectLV.getItems().clear();
+		//projectLV.getItems().addAll(vec);
 		});
 	}
 	
@@ -256,6 +333,16 @@ public class ControlCenter extends Stage {
 			modelLV.getItems().addAll(vec);
 		});
 		
+	}
+	
+	public String getProjectPath(TreeItem<String> item) {
+		if(item==null) return null;
+		String projectPath=item.getValue();
+		while (item.getParent()!=projectTree.getRoot()) {
+			item=item.getParent();
+			projectPath=item.getValue()+"::"+projectPath;
+		}
+		return projectPath;
 	}
 	
 	
