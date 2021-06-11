@@ -1248,34 +1248,34 @@ public class FmmlxDiagramCommunicator {
         sendMessage("changeAssociationForwardName", message);
     }
 
-    public void changeAssociationStart2EndLevel(int diagramID, String associationId, Integer newLevel) {
+    public void changeAssociationStart2EndLevel(int diagramID, String associationName, Integer newLevel) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationId),
+                new Value(associationName),
                 new Value(newLevel)};
         sendMessage("changeAssociationStart2EndLevel", message);
     }
 
-    public void changeAssociationEnd2StartLevel(int diagramID, String associationId, Integer newLevel) {
+    public void changeAssociationEnd2StartLevel(int diagramID, String associationName, Integer newLevel) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationId),
+                new Value(associationName),
                 new Value(newLevel)};
         sendMessage("changeAssociationEnd2StartLevel", message);
     }
 
-    public void changeAssociationStart2EndAccessName(int diagramID, String associationId, String newName) {
+    public void changeAssociationStart2EndAccessName(int diagramID, String associationName, String newName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationId),
+                new Value(associationName),
                 new Value(newName)};
         sendMessage("changeAssociationStart2EndAccessName", message);
     }
 
-    public void changeAssociationEnd2StartAccessName(int diagramID, String associationId, String newName) {
+    public void changeAssociationEnd2StartAccessName(int diagramID, String associationName, String newName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationId),
+                new Value(associationName),
                 new Value(newName)};
         sendMessage("changeAssociationEnd2StartAccessName", message);
     }
