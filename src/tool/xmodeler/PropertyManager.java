@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import tool.clients.menus.MenuClient;
 import tool.helper.IconGenerator;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,6 +32,7 @@ public class PropertyManager {
 	Stage stage;
 	GridPane generalGrid;
 	GridPane debugGrid;
+	GridPane pathGrid;
 
 	public PropertyManager(String filePath) {
 		PropertyManager.filePath = filePath;
@@ -82,20 +84,23 @@ public class PropertyManager {
 			//init gridpanes
 			generalGrid = getGridpane();
 			debugGrid = getGridpane();
+			pathGrid = getGridpane();
 
 			//fill gridpanes
 			fillPropGrid();
 			fillDebugGrid();
+			fillPathGrid();
 
 			//labels
 			Label generalLabel = new Label("General:");
 			Label debugLabel = new Label("Debug:");
+			Label pathLabel = new Label("Modelpaths:");
 
 			//control buttons
 			HBox buttons = getControlButtons();
 
 			//merge into mainVbox
-			VBox gridPanes = new VBox(generalLabel, generalGrid, debugLabel, debugGrid);
+			VBox gridPanes = new VBox(generalLabel, generalGrid, debugLabel, debugGrid, pathLabel, pathGrid);
 			gridPanes.setPadding(new Insets(10));
 			VBox mainVbox = new VBox(new ScrollPane(gridPanes), buttons);
 			mainVbox.setPadding(new Insets(10));
@@ -131,6 +136,7 @@ public class PropertyManager {
 	private void onSaveButtonClicked(ActionEvent actionEvent) {
 		parseGridPane(generalGrid);
 		parseGridPane(debugGrid);
+		parseGridPane(pathGrid);
 		stage.close();
 	}
 
@@ -216,6 +222,15 @@ public class PropertyManager {
 		});
 	}
 
+	private void fillPathGrid() {
+		//It looks doubled, but its necessary to get to the current folder.
+		File folder = new File("");
+		folder=new File(folder.toURI()).getParentFile();
+		addRow(pathGrid, "Save", getProperty("backUpPath",new File(folder, "Saves").toString()));
+		addRow(pathGrid, "BackUp", getProperty("backUpPath",new File(folder, "BackUps").toString()));
+		addRow(pathGrid, "Graphics", getProperty("backUpPath",new File(folder, "Graphics").toString()));
+	}
+	
 	private GridPane addRow(GridPane pane, String key, String value) {
 		pane.addRow(getGridLength(pane), getKeyLabel(key), getValueTextField(value));
 		return pane;
@@ -276,7 +291,8 @@ public class PropertyManager {
 			method.setAccessible(true);
 			rows = (Integer) method.invoke(gridPane);
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.err.println("Error @getGridLength @PropertyManager");
+			//e.printStackTrace();
 		}
 		return rows;
 	}
