@@ -32,6 +32,7 @@ import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.stage.FileChooser;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
+import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.XmlHandler;
@@ -100,7 +101,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private boolean showDerivedAttributes=true;
 	
 	public final String diagramName;
-	private final NewFmmlxPalette newFmmlxPalette;
+	private final FmmlxPalette newFmmlxPalette;
 	private String filePath;
 	
 	
@@ -149,7 +150,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		mainView = new SplitPane();
 		canvas = new Canvas(canvasRawSize.getX(), canvasRawSize.getY());
 		Palette palette = new Palette(this);
-		newFmmlxPalette = new NewFmmlxPalette(this);
+		newFmmlxPalette = new FmmlxPalette(this);
 		scrollerCanvas = new ScrollPane(canvas);
 		pane.setOrientation(Orientation.HORIZONTAL);
 		pane.setDividerPosition(0, 0.25);
@@ -186,10 +187,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public void deselectPalette() {
 		edgeCreationType = null;
 		nodeCreationType = null;
-		newFmmlxPalette.clearSelection();
+		//newFmmlxPalette.clearSelection();
 	}
 	
-	public NewFmmlxPalette getPalette() {
+	public FmmlxPalette getPalette() {
 		return newFmmlxPalette;
 	}
 	
@@ -203,7 +204,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public void setNodeCreationType(String nodeCreationType) {
 		this.nodeCreationType = nodeCreationType;
 		this.edgeCreationType = null;
-		getCanvas().setCursor(Cursor.CROSSHAIR);
+		getCanvas().setCursor(Cursor.HAND);
 	}
 
 	public String getFilePath() {
@@ -616,16 +617,21 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		} else if (edgeCreationType != null) {			
 			if (edgeCreationType.equals("association")) {
 				//hitObject = getElementAt(p.getX(), p.getY());
-				System.out.println("asso");
+				//System.out.println("asso");
 				if(hitObject instanceof FmmlxObject) {		
 					setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Association);
 					canvas.setCursor(Cursor.DEFAULT);
 					
 				}
 			} else if (edgeCreationType.equals("associationInstance")) {
-				System.out.println("instance");
+				//System.out.println("instance");
 				if(hitObject instanceof FmmlxObject) {
 					setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.AssociationInstance);
+					canvas.setCursor(Cursor.DEFAULT);
+				}
+			} else if (edgeCreationType.equals("delegation")) {
+				if(hitObject instanceof FmmlxObject) {
+					setDrawEdgeMode((FmmlxObject)hitObject, PropertyType.Delegation);
 					canvas.setCursor(Cursor.DEFAULT);
 				}
 			}
