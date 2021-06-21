@@ -34,5 +34,7 @@ public class SvgConstant {
     public static final String ATTRIBUTE_TRANSFORM = "transform";
     public static final String TAG_NAME_POLYGON = "polygon";
     public static final String ATTRIBUTE_POINTS = "points";
+    public static final String ATTRIBUTE_TEXT_ANCHOR = "text-anchor";
+    public static final String ATTRIBUTE_TEXT_ALIGN = "text-align";
 }
 

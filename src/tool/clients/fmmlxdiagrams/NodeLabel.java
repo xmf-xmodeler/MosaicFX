@@ -133,8 +133,16 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 
 		Element text = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_TEXT);
 		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_FAMILY, "Arial");
-		text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (x - hAlign + xOffset)+"");
-		text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (y + yOffset - Y_BASELINE_DIFF)+"");
+
+		if(alignment == Pos.BASELINE_CENTER){
+			text.setAttribute(SvgConstant.ATTRIBUTE_TEXT_ANCHOR, "middle");
+			text.setAttribute(SvgConstant.ATTRIBUTE_TEXT_ALIGN, "center");
+			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (x + xOffset)+"");
+			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (y + yOffset - Y_BASELINE_DIFF)+"");
+		} else {
+			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (x - hAlign + xOffset)+"");
+			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (y + yOffset - Y_BASELINE_DIFF)+"");
+		}
 		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, ((fontSize-1)*fontScale)+"");
 		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_OPACITY, fgColor.getOpacity()+"");
 		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_STYLE, fgColor.getOpacity()+"");
