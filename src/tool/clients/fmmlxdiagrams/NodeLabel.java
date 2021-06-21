@@ -110,7 +110,7 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 	}
 
 	@Override
-	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, double xOffset, double yOffset, boolean objectIsSelected) {
+	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element group, double xOffset, double yOffset, boolean objectIsSelected) {
 		double hAlign = 0;
 		String textLocal = setTextLocal(text);
 		if (alignment != Pos.BASELINE_LEFT) {
@@ -148,7 +148,7 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_STYLE, fgColor.getOpacity()+"");
 		text.setAttribute(SvgConstant.ATTRIBUTE_FILL, "#"+color);
 		text.setTextContent(textLocal);
-		xmlHandler.addXmlElement(xmlHandler.getRoot(), text);
+		xmlHandler.addXmlElement(group, text);
 	}
 
 	private String setTextLocal(String text) {
