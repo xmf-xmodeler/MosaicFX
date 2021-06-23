@@ -34,17 +34,8 @@ public class XmlCreator {
         return file;
     }
 
-    public void createSvg(int width, int height) throws ParserConfigurationException,
-            TransformerException {
-        if(!checkFileExist()){
-            Document document = createDocument();
-            initSvg(document, width, height);
-            transformDocument(document, new File(svgPath));
-        }
-    }
-
     public String createSvg(String file, double width, double height) throws TransformerException, ParserConfigurationException {
-        if(checkFileExist(file)){
+        if(!checkFileExist(file)){
             Document document = createDocument();
             initSvg(document, width, height);
             transformDocument(document, new File(file));
@@ -73,10 +64,6 @@ public class XmlCreator {
 
     private void initSvg(Document document, double width, double height){
         Element root = document.createElement(SvgConstant.TAG_NAME_ROOT);
-        root.setAttribute(SvgConstant.ATTRIBUTE_XMLNS, SvgConstant.XMLNS_VALUE);
-        root.setAttribute(SvgConstant.ATTRIBUTE_XMLNS_XLINK, SvgConstant.XMLNS_XLINK_VALUE);
-        root.setAttribute(SvgConstant.ATTRIBUTE_WIDTH, width+"");
-        root.setAttribute(SvgConstant.ATTRIBUTE_HEIGHT, height+"");
         document.appendChild(root);
     }
 
@@ -100,9 +87,6 @@ public class XmlCreator {
     }
 
     private boolean checkFileExist(String file) {
-        return !Files.exists(Paths.get(file));
-    }
-    public boolean checkFileExist(){
-        return Files.exists(Paths.get(svgPath));
+        return Files.exists(Paths.get(file));
     }
 }

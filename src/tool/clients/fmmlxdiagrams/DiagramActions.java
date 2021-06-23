@@ -1098,7 +1098,6 @@ public class DiagramActions {
 		if(file!= null){
 			if(!(diagram instanceof FmmlxDiagram)) throw new IllegalArgumentException();
 			Platform.runLater(() -> {
-				//String filePath = "testSvg.svg";
 				String filePath = file.getPath();
 				double width = diagram.getCanvas().getWidth();
 				double height = diagram.getCanvas().getHeight();

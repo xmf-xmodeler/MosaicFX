@@ -127,7 +127,7 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 			rect.setAttribute(SvgConstant.ATTRIBUTE_WIDTH, (textWidth + 2 * BOX_GAP)+"");
 			rect.setAttribute(SvgConstant.ATTRIBUTE_FILL_OPACITY, bgColor.getOpacity()+"");
 			rect.setAttribute(SvgConstant.ATTRIBUTE_STYLE, styleString);
-			xmlHandler.addXmlElement(xmlHandler.getRoot(), rect);
+			xmlHandler.addXmlElement(group, rect);
 		}
 		String color = fgColor.toString().split("x")[1].substring(0,6);
 

@@ -64,6 +64,7 @@ public abstract class Node implements CanvasElement{
 
 		boolean selected = diagram.isSelected(this);
 		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
+		group.setAttribute(SvgConstant.ATTRIBUTE_GROUP_TYPE, "object");
 
 		Vector<NodeElement> nodesTobePainted = nodeElements;
 		Collections.reverse(nodesTobePainted);

@@ -827,7 +827,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		String strokeColor = color.toString().split("x")[1].substring(0,6);
 
 		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
-
+		group.setAttribute(SvgConstant.ATTRIBUTE_GROUP_TYPE, "edge");
 
 		Vector<Point2D> points = getAllPoints();
 		for (int i = 0; i < points.size() - 1; i++) {
