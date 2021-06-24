@@ -826,6 +826,8 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		Color color = diagram.isSelected(this) ? Color.RED : getPrimaryColor();
 		String strokeColor = color.toString().split("x")[1].substring(0,6);
 
+		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
+		group.setAttribute(SvgConstant.ATTRIBUTE_GROUP_TYPE, "edge");
 
 		Vector<Point2D> points = getAllPoints();
 		for (int i = 0; i < points.size() - 1; i++) {
@@ -841,7 +843,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 						" L" + points.get(i + 1).getX() + " " + points.get(i + 1).getY();
 				path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString);
 				path.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
-				xmlHandler.addXmlElement(xmlHandler.getRoot(), path);
+				xmlHandler.addXmlElement(group, path);
 
 			} else {
 
@@ -874,7 +876,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 									" " + now.getY();// Y-Endpoint
 							path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString);
 							path.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
-							xmlHandler.addXmlElement(xmlHandler.getRoot(), path);
+							xmlHandler.addXmlElement(group, path);
 
 							Element path1 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
 							path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
@@ -884,7 +886,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 									" L" + (next.getX() - R) + " " + next.getY();
 							path1.setAttribute(SvgConstant.ATTRIBUTE_D, pathString1);
 							path1.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
-							xmlHandler.addXmlElement(xmlHandler.getRoot(), path1);
+							xmlHandler.addXmlElement(group, path1);
 
 							Element path2 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
 							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
@@ -900,7 +902,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 									" " + (next.getY() - R);// Y-Endpoint
 							path2.setAttribute(SvgConstant.ATTRIBUTE_D, pathString2);
 							path2.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
-							xmlHandler.addXmlElement(xmlHandler.getRoot(), path2);
+							xmlHandler.addXmlElement(group, path2);
 
 
 						} else { // not enough space -> just line to next
@@ -912,7 +914,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 									" L" + next.getX() + " " + (next.getY() - R);
 							path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString);
 							path.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
-							xmlHandler.addXmlElement(xmlHandler.getRoot(), path);
+							xmlHandler.addXmlElement(group, path);
 						}
 					} else {
 						if (next.getX() - R > now.getX()) {
@@ -924,7 +926,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 									" L" + (next.getX() - R) + " " + next.getY();
 							path1.setAttribute(SvgConstant.ATTRIBUTE_D, pathString1);
 							path1.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
-							xmlHandler.addXmlElement(xmlHandler.getRoot(), path1);
+							xmlHandler.addXmlElement(group, path1);
 
 							Element path2 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
 							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
@@ -940,7 +942,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 									" " + (next.getY() - R);// Y-Endpoint
 							path2.setAttribute(SvgConstant.ATTRIBUTE_D, pathString2);
 							path2.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
-							xmlHandler.addXmlElement(xmlHandler.getRoot(), path2);
+							xmlHandler.addXmlElement(group, path2);
 
 						} else {
 							Element path1 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
@@ -951,7 +953,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 									" L" + now.getX() + " " + (next.getY() - R);
 							path1.setAttribute(SvgConstant.ATTRIBUTE_D, pathString1);
 							path1.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
-							xmlHandler.addXmlElement(xmlHandler.getRoot(), path1);
+							xmlHandler.addXmlElement(group, path1);
 
 							Element path2 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
 							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
@@ -961,7 +963,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 									" L" + next.getX() + " " + (next.getY() - R);
 							path2.setAttribute(SvgConstant.ATTRIBUTE_D, pathString2);
 							path2.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
-							xmlHandler.addXmlElement(xmlHandler.getRoot(), path2);
+							xmlHandler.addXmlElement(group, path2);
 						}
 						tunnelMode = true;
 					}
@@ -985,7 +987,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 							" " + now.getY();// Y-Endpoint
 					path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString);
 					path.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
-					xmlHandler.addXmlElement(xmlHandler.getRoot(), path);
+					xmlHandler.addXmlElement(group, path);
 
 
 					Element path1 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
@@ -996,7 +998,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 							" L" + endOfLine.getX() + " " + endOfLine.getY();
 					path1.setAttribute(SvgConstant.ATTRIBUTE_D, pathString1);
 					path1.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
-					xmlHandler.addXmlElement(xmlHandler.getRoot(), path1);
+					xmlHandler.addXmlElement(group, path1);
 
 				} else {
 
@@ -1008,7 +1010,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 							" L" + endOfLine.getX() + " " + (endOfLine.getY() - R);
 					path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString);
 					path.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
-					xmlHandler.addXmlElement(xmlHandler.getRoot(), path);
+					xmlHandler.addXmlElement(group, path);
 
 					Element path1 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
 					path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
@@ -1018,18 +1020,20 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 							" L" + endOfLine.getX() + " " + endOfLine.getY();
 					path1.setAttribute(SvgConstant.ATTRIBUTE_D, pathString1);
 					path1.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
-					xmlHandler.addXmlElement(xmlHandler.getRoot(), path1);
+					xmlHandler.addXmlElement(group, path1);
 				}
 			}
 		}
 
-		drawEdgeSvgDecoration(xmlHandler, getTargetDecoration(), targetNode.getDirectionForEdge(targetEnd, false),
+		drawEdgeSvgDecoration(xmlHandler, group, getTargetDecoration(), targetNode.getDirectionForEdge(targetEnd, false),
 				targetNode.getPointForEdge(targetEnd, false), strokeColor);
-		drawEdgeSvgDecoration(xmlHandler, getSourceDecoration(), sourceNode.getDirectionForEdge(sourceEnd, true),
+		drawEdgeSvgDecoration(xmlHandler, group, getSourceDecoration(), sourceNode.getDirectionForEdge(sourceEnd, true),
 				sourceNode.getPointForEdge(sourceEnd, true), strokeColor);
+
+		xmlHandler.addXmlElement(xmlHandler.getRoot(), group);
 	}
 
-	protected void drawEdgeSvgDecoration(XmlHandler xmlHandler, HeadStyle decoration, PortRegion directionForEdge,
+	protected void drawEdgeSvgDecoration(XmlHandler xmlHandler, Element group, HeadStyle decoration, PortRegion directionForEdge,
 										 Point2D pointForEdge, String strokeColor){
 		Element decor;
 
@@ -1040,7 +1044,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 				decor.setAttribute(SvgConstant.ATTRIBUTE_CX, (pointForEdge.getX())+"");
 				decor.setAttribute(SvgConstant.ATTRIBUTE_CY, (pointForEdge.getY())+"");
 				decor.setAttribute(SvgConstant.ATTRIBUTE_R, size+"");
-				xmlHandler.addXmlElement(xmlHandler.getRoot(), decor);
+				xmlHandler.addXmlElement(group, decor);
 			}
 			break;
 
@@ -1075,7 +1079,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 				decor.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
 				decor.setAttribute(SvgConstant.ATTRIBUTE_TRANSFORM, transform.toString());
 				decor.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
-				xmlHandler.addXmlElement(xmlHandler.getRoot(), decor);
+				xmlHandler.addXmlElement(group, decor);
 			}
 			break;
 
@@ -1110,7 +1114,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 				decor.setAttribute(SvgConstant.ATTRIBUTE_FILL, "white");
 				decor.setAttribute(SvgConstant.ATTRIBUTE_TRANSFORM, transform.toString());
 				decor.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
-				xmlHandler.addXmlElement(xmlHandler.getRoot(), decor);
+				xmlHandler.addXmlElement(group, decor);
 			}break;
 
 			case CIRCLE: {
@@ -1134,7 +1138,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 				decor.setAttribute(SvgConstant.ATTRIBUTE_FILL, "#"+color);
 				decor.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
 				decor.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, "1");
-				xmlHandler.addXmlElement(xmlHandler.getRoot(), decor);
+				xmlHandler.addXmlElement(group, decor);
 			}
 			break;
 			default:

@@ -34,12 +34,12 @@ public class NodeImage extends NodeBaseElement implements NodeElement {
 	}
 
 	@Override
-	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, double xOffset, double yOffset, boolean selected) {
+	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element group, double xOffset, double yOffset, boolean selected) {
 		Element imageElement = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_IMAGE);
 		imageElement.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X,(xOffset + x)+"");
 		imageElement.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y,(yOffset + y- image.getHeight())+"");
 		imageElement.setAttribute(SvgConstant.ATTRIBUTE_XLINK_HREF, "data:image/png;base64,"+encodeFileToBase64Binary(new File(iconSource)));
-		xmlHandler.addXmlElement(xmlHandler.getRoot(),imageElement);
+		xmlHandler.addXmlElement(group,imageElement);
 	}
 
 	private static String encodeFileToBase64Binary(File file){

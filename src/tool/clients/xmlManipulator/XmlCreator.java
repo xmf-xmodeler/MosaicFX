@@ -18,7 +18,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class XmlCreator {
-    public static String svgPath = "testSVG.svg";
     private static final int version = SerializerConstant.SERIALIZER_VERSION;
 
     public XmlCreator() {
@@ -34,22 +33,10 @@ public class XmlCreator {
         return file;
     }
 
-    public void createSvg(int width, int height) throws ParserConfigurationException,
-            TransformerException {
-        if(!checkFileExist()){
-            Document document = createDocument();
-            initSvg(document, width, height);
-            transformDocument(document, new File(svgPath));
-        }
-    }
-
     public String createSvg(String file, double width, double height) throws TransformerException, ParserConfigurationException {
-        if(checkFileExist(file)){
-            Document document = createDocument();
-            initSvg(document, width, height);
-            transformDocument(document, new File(file));
-            return file;
-        }
+        Document document = createDocument();
+        initSvg(document, width, height);
+        transformDocument(document, new File(file));
         return file;
     }
 
@@ -100,9 +87,6 @@ public class XmlCreator {
     }
 
     private boolean checkFileExist(String file) {
-        return !Files.exists(Paths.get(file));
-    }
-    public boolean checkFileExist(){
-        return Files.exists(Paths.get(svgPath));
+        return Files.exists(Paths.get(file));
     }
 }

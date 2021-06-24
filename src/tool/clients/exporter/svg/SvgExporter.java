@@ -1,6 +1,5 @@
 package tool.clients.exporter.svg;
 
-import org.w3c.dom.Element;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.xmlManipulator.XmlCreator;
 import tool.clients.xmlManipulator.XmlHandler;

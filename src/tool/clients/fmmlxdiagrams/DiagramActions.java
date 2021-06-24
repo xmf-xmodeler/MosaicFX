@@ -1098,14 +1098,12 @@ public class DiagramActions {
 		if(file!= null){
 			if(!(diagram instanceof FmmlxDiagram)) throw new IllegalArgumentException();
 			Platform.runLater(() -> {
-				//String filePath = "testSvg.svg";
 				String filePath = file.getPath();
 				double width = diagram.getCanvas().getWidth();
 				double height = diagram.getCanvas().getHeight();
 				SvgExporter svgExporter;
 				try {
 					svgExporter = new SvgExporter(filePath, width, height);
-					svgExporter.clearAllData();
 					svgExporter.export(diagram);
 				} catch (TransformerException | ParserConfigurationException e) {
 					e.printStackTrace();

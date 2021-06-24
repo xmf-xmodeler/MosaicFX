@@ -77,7 +77,7 @@ public class NodeBox implements NodeElement {
 	}
 
 	@Override
-	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, double xOffset, double yOffset, boolean objectIsSelected) {
+	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element group, double xOffset, double yOffset, boolean objectIsSelected) {
 		String backgroundColor = bgColor.toString().split("x")[1].substring(0,6);
 		String foregroundColor = fgColor.toString().split("x")[1].substring(0,6);
 
@@ -90,9 +90,10 @@ public class NodeBox implements NodeElement {
 		rect.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+foregroundColor);
 		rect.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, lineWidth.getWidth(objectIsSelected)+"");
 		rect.setAttribute(SvgConstant.ATTRIBUTE_FILL_OPACITY, 1 +"");
-		xmlHandler.addXmlElement(xmlHandler.getRoot(), rect);
+		xmlHandler.addXmlElement(group, rect);
 		for(NodeElement e : nodeElements){
-			e.paintToSvg(diagram, xmlHandler, x+xOffset, y+yOffset, objectIsSelected);
+			e.paintToSvg(diagram, xmlHandler, group, x+xOffset, y+yOffset, objectIsSelected);
 		}
+
 	}
 }
