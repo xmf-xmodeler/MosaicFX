@@ -1104,7 +1104,6 @@ public class DiagramActions {
 				SvgExporter svgExporter;
 				try {
 					svgExporter = new SvgExporter(filePath, width, height);
-					svgExporter.clearAllData();
 					svgExporter.export(diagram);
 				} catch (TransformerException | ParserConfigurationException e) {
 					e.printStackTrace();
