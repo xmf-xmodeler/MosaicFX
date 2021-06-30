@@ -24,12 +24,9 @@ public class XmlCreator {
     }
 
     public String createXml(String file) throws TransformerException, ParserConfigurationException {
-        if(!checkFileExist(file)){
-            Document document = createDocument();
-            initXML(document);
-            transformDocument(document, new File(file));
-            return file;
-        }
+        Document document = createDocument();
+        initXML(document);
+        transformDocument(document, new File(file));
         return file;
     }
 
