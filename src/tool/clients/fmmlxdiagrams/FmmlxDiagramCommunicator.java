@@ -97,7 +97,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	private transient Integer _newDiagramID = null;
-	
+
 	public static enum DiagramType {ClassDiagram, ModelBrowser};
 	
 	public Integer createDiagram(String packagePath, String diagramName, String file, DiagramType type) {
@@ -1936,7 +1936,12 @@ public class FmmlxDiagramCommunicator {
 		this.silent = silent;
 	}
 
-	public void saveSvgFile(String fileName, String packageString) {
-		System.out.println("test svg export");
+	public void fileSaved(String filePath, Integer id) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(id),
+				new Value(filePath),
+		};
+		sendMessage("isSaved", message);
 	}
+
 }

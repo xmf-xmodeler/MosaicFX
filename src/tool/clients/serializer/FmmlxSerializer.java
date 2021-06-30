@@ -29,16 +29,22 @@ public class FmmlxSerializer  {
     }
 
     public void saveAsXml(String packagePath, String initLabel, FmmlxDiagramCommunicator communicator) throws TimeOutException, TransformerException {
-        this.clearAllData();
-        Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(packagePath);
-        Collections.sort(diagramIds);
-        for(Integer id :diagramIds){
-            String diagramLabel = communicator.createLabelFromInitLabel(initLabel, id);
-            saveProject(packagePath);
-            saveDiagram(diagramLabel, packagePath, id);
+        try{
+            this.clearAllData();
+            Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(packagePath);
+            Collections.sort(diagramIds);
+            for(Integer id :diagramIds){
+                String diagramLabel = communicator.createLabelFromInitLabel(initLabel, id);
+                saveProject(packagePath);
+                saveDiagram(diagramLabel, packagePath, id);
+            }
+            saveLog(diagramIds.get(0), communicator);
+            this.xmlHandler.flushData();
+            communicator.fileSaved(file, diagramIds.get(0));
+        } catch (Exception e){
+            e.printStackTrace();
         }
-        saveLog(diagramIds.get(0), communicator);
-        this.xmlHandler.flushData();
+
     }
 
     public void save(String packagePath, String filePath, String label, Integer id, FmmlxDiagramCommunicator communicator)  {
@@ -54,6 +60,7 @@ public class FmmlxSerializer  {
                 }
                 saveLog(diagramIds.get(0), communicator);
                 xmlHandler.flushData();
+                communicator.fileSaved(file, diagramIds.get(0));
             } catch (TransformerException | TimeOutException e) {
                 e.printStackTrace();
             }

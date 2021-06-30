@@ -1111,4 +1111,36 @@ public class DiagramActions {
 			});
 		}
 	}
+
+	public void showCertainLevel() {
+
+
+//		Dialog<Vector<FmmlxObject>> unhideElementsDialog = new Dialog<>();
+//		unhideElementsDialog.setTitle("Export SVG");
+//
+//		ButtonType okButtonType = new ButtonType("Export", ButtonData.OK_DONE);
+//		unhideElementsDialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
+//
+//
+//		Vector<FmmlxObject> hiddenElements = new Vector<>();
+//		for(FmmlxObject o : diagram.getObjects()) if(o.hidden) hiddenElements.add(o);
+//		ListView<FmmlxObject> listView = new ListView<>();
+//		listView.getItems().addAll(hiddenElements);
+//
+//		unhideElementsDialog.getDialogPane().setContent(listView);
+//
+//		unhideElementsDialog.setResultConverter(dialogButton -> {
+//			if (dialogButton == okButtonType) {
+//				Vector<FmmlxObject> result = new Vector<>();
+//				result.addAll(listView.getSelectionModel().getSelectedItems());
+//				return result;
+//			}
+//			return null;
+//		});
+//
+//		Optional<Vector<FmmlxObject>> result = unhideElementsDialog.showAndWait();
+//
+//		result.ifPresent(vec -> {hide(vec, false);});
+
+	}
 }
