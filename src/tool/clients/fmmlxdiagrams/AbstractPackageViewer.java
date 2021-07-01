@@ -352,6 +352,7 @@ public abstract class AbstractPackageViewer {
 			}
 		}
 		Collections.sort(result);
+		Collections.reverse(result);
 		return result;
 	}
 }

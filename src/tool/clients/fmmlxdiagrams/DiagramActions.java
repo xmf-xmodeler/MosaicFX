@@ -1123,11 +1123,15 @@ public class DiagramActions {
 
 				Vector<FmmlxObject> objects = diagram.getObjects();
 				Vector<FmmlxObject> hiddenObjects = new Vector<>();
+				Vector<FmmlxObject> unHiddenObjects = new Vector<>();
 				for(FmmlxObject obj : objects){
 					if(!chosenLevel.contains(obj.getLevel())){
 						hiddenObjects.add(obj);
+					} else {
+						unHiddenObjects.add(obj);
 					}
 				}
+				hide(unHiddenObjects, false);
 				hide(hiddenObjects, true);
 				updateDiagram();
 			}
