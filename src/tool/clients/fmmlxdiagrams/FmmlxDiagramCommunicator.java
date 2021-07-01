@@ -20,6 +20,9 @@ import xos.Value;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import java.io.FileNotFoundException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Objects;
@@ -1730,6 +1733,8 @@ public class FmmlxDiagramCommunicator {
 					}
 				} catch (TransformerException | ParserConfigurationException e) {
 					e.printStackTrace();
+					saveXmlFile2(diagrams.get(0).getPackagePath(), diagrams.get(0).getID());
+					return null;
 				}
 				return null;
 			}
@@ -1785,13 +1790,6 @@ public class FmmlxDiagramCommunicator {
 		};
 		new Thread(task).start();
 	}
-
-//	public static int getDiagramIdFromName(String diagramName) {
-//		String[] nameArray = diagramName.split(" ");
-//		String	idDirt = nameArray[nameArray.length-1];
-//		String id = idDirt.substring(0, idDirt.length()-1);
-//		return Integer.parseInt(id);
-//	}
 
 	public void saveXmlFile2(String diagramPath, Integer id) {
 		Value[] message = new Value[]{

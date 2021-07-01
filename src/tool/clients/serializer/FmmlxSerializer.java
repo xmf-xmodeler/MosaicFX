@@ -28,7 +28,7 @@ public class FmmlxSerializer  {
         return xmlCreator.createXml(file);
     }
 
-    public void saveAsXml(String packagePath, String initLabel, FmmlxDiagramCommunicator communicator) throws TimeOutException, TransformerException {
+    public void saveAsXml(String packagePath, String initLabel, FmmlxDiagramCommunicator communicator) throws TimeOutException {
         try{
             this.clearAllData();
             Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(packagePath);
@@ -162,25 +162,6 @@ public class FmmlxSerializer  {
         LogXmlManager logXmlManager = new LogXmlManager(this.xmlHandler);
         logXmlManager.clearLog();
         Element logsElement = logXmlManager.getLogs();
-//       boolean waiting = true;
-//        int sleep = 5;
-//        int attempts = 0;
-//        FaXML protocol = null;
-//        while (waiting && sleep < 200 * 100) {
-//            System.err.println(attempts + ". attempt");
-//            attempts++;
-//            try {
-//                Thread.sleep(sleep);
-//                sleep *= 2;
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            protocol = communicator.getDiagramData(diagramID);
-//            if (protocol!=null) {
-//                waiting = false;
-//            }
-//        }
-//        assert protocol != null;
         FaXML protocol = communicator.getDiagramData(diagramID);
         
         System.err.println("protocol:" + protocol.getChildren().size() + " :protocol");
