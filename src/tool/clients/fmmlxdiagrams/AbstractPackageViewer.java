@@ -1,6 +1,8 @@
 package tool.clients.fmmlxdiagrams;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Vector;
 
 import javafx.collections.FXCollections;
@@ -21,6 +23,7 @@ public abstract class AbstractPackageViewer {
 	protected final String packagePath;
 	protected transient boolean fetchingData;
 	protected boolean justLoaded = false;
+
 
 	public static enum ViewerStatus { CLEAN, DIRTY, LOADING }
 
@@ -340,4 +343,15 @@ public abstract class AbstractPackageViewer {
 	}
 
 	public Canvas getCanvas() {return null;}
+
+	public Vector<Integer> getAllObjectLevel() {
+		Vector<Integer> result = new Vector<>();
+		for(FmmlxObject obj : objects){
+			if(!result.contains(obj.getLevel())){
+				result.add(obj.getLevel());
+			}
+		}
+		Collections.sort(result);
+		return result;
+	}
 }

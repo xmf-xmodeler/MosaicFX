@@ -1113,34 +1113,31 @@ public class DiagramActions {
 	}
 
 	public void showCertainLevel() {
+		Platform.runLater(() ->{
+			ShowCertainLevelDialog dlg = new ShowCertainLevelDialog(diagram);
+			Optional<ShowCertainLevelDialogResult> result = dlg.showAndWait();
 
+			if(result.isPresent()){
+				final ShowCertainLevelDialogResult sclResult = result.get();
+				Vector<Integer> chosenLevel = sclResult.getChosenLevels();
 
-//		Dialog<Vector<FmmlxObject>> unhideElementsDialog = new Dialog<>();
-//		unhideElementsDialog.setTitle("Export SVG");
-//
-//		ButtonType okButtonType = new ButtonType("Export", ButtonData.OK_DONE);
-//		unhideElementsDialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
-//
-//
-//		Vector<FmmlxObject> hiddenElements = new Vector<>();
-//		for(FmmlxObject o : diagram.getObjects()) if(o.hidden) hiddenElements.add(o);
-//		ListView<FmmlxObject> listView = new ListView<>();
-//		listView.getItems().addAll(hiddenElements);
-//
-//		unhideElementsDialog.getDialogPane().setContent(listView);
-//
-//		unhideElementsDialog.setResultConverter(dialogButton -> {
-//			if (dialogButton == okButtonType) {
-//				Vector<FmmlxObject> result = new Vector<>();
-//				result.addAll(listView.getSelectionModel().getSelectedItems());
-//				return result;
-//			}
-//			return null;
-//		});
-//
-//		Optional<Vector<FmmlxObject>> result = unhideElementsDialog.showAndWait();
-//
-//		result.ifPresent(vec -> {hide(vec, false);});
+				Vector<FmmlxObject> objects = diagram.getObjects();
+				Vector<FmmlxObject> hiddenObjects = new Vector<>();
+				for(FmmlxObject obj : objects){
+					if(!chosenLevel.contains(obj.getLevel())){
+						hiddenObjects.add(obj);
+					}
+				}
+				hide(hiddenObjects, true);
+				updateDiagram();
+			}
+		});
+	}
 
+	public void showAll() {
+		Platform.runLater(() ->{
+			hide(diagram.getObjects(), false);
+			updateDiagram();
+		});
 	}
 }
