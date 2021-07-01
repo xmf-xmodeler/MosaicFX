@@ -1732,9 +1732,11 @@ public class FmmlxDiagramCommunicator {
 						}
 					}
 				} catch (TransformerException | ParserConfigurationException e) {
-					e.printStackTrace();
-					saveXmlFile2(diagrams.get(0).getPackagePath(), diagrams.get(0).getID());
-					return null;
+					if(e instanceof TransformerException){
+						saveXmlFile2(diagrams.get(0).getPackagePath(), diagrams.get(0).getID());
+					} else {
+						e.printStackTrace();
+					}
 				}
 				return null;
 			}
