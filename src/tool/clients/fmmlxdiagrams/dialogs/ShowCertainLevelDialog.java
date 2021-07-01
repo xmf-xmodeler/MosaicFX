@@ -42,7 +42,6 @@ public class ShowCertainLevelDialog extends CustomDialog<ShowCertainLevelDialogR
     }
 
     private boolean validateUserInput() {
-        System.out.println(levelListView.getSelectionModel().getSelectedItems().size());
         if(levelListView.getSelectionModel().getSelectedItems().size()==0){
             errorLabel.setText("Please select at least one");
             return false;
