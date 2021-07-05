@@ -2,6 +2,7 @@ package tool.clients.fmmlxdiagrams;
 
 import java.util.Vector;
 
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
 public class FmmlxSlot implements FmmlxProperty {
@@ -43,7 +44,11 @@ public class FmmlxSlot implements FmmlxProperty {
 		while (next != null) {
 			allAttributes.addAll(next.getOwnAttributes());
 			allAttributes.addAll(next.getOtherAttributes());
-			next = diagram.getObjectByPath(next.getOfPath());
+			try{ 
+				next = diagram.getObjectByPath(next.getOfPath());
+			} catch (PathNotFoundException pe) {
+				next = null;
+			}
 		}
 
 		for (FmmlxAttribute attribute : allAttributes) {
