@@ -476,7 +476,7 @@ public class XModeler extends Application {
 			VBox.setVgrow(outerSplitPane,Priority.ALWAYS);
 			scene = new Scene(stackPane, TOOL_WIDTH, TOOL_HEIGHT);
 			//scene = new Scene(containingBox,TOOL_WIDTH,TOOL_HEIGHT);
-			
+			scene.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
 			// Set up Stage
 			stage.getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 			setToolTitle();

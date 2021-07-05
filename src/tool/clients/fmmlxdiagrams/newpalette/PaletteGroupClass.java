@@ -20,6 +20,7 @@ public class PaletteGroupClass extends PaletteGroup {
 		initTools(fmmlxDiagram);
 		inflateInGroup();
 		
+		
 	}
 
 	private void initTools(FmmlxDiagram fmmlxDiagram) {

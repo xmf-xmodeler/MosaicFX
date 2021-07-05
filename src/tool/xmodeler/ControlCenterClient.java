@@ -58,7 +58,6 @@ public class ControlCenterClient {
 		controlCenter.setAllProjects(vec);		
 	}
 	
-	
 	public void getProjectModels(String projectPath) {
 		if(projectPath == null) return;
 	    Message message = WorkbenchClient.theClient().getHandler().newMessage("getProjectModels", 1);
@@ -73,6 +72,21 @@ public class ControlCenterClient {
 		}
 //		Collections.sort(vec);
 		controlCenter.setProjectModels(vec);		
+	}
+	
+	public void getDiagrams(String modelPath) {
+		if(modelPath == null) return;
+		Message message = WorkbenchClient.theClient().getHandler().newMessage("getDiagrams", 1);
+		message.args[0] = new Value(modelPath);
+		WorkbenchClient.theClient().getHandler().raiseEvent(message);
+	}
+	
+	public void setDiagrams(Message message) {
+		Vector<String> vec = new Vector<>();
+		for (int i = 0; i<message.args[0].values.length;i++) {
+			vec.add(message.args[0].values[i].strValue());
+		}
+		controlCenter.setDiagrams(vec);
 	}
 	
 	public void createNewProject() {

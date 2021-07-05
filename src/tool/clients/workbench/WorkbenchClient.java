@@ -50,7 +50,12 @@ public class WorkbenchClient extends Client {
   private void setProjectModels(Message message) {
 	ControlCenterClient.getClient().setProjectModels(message);
   }
-
+  
+  private void setDiagrams(Message message) {
+	  ControlCenterClient.getClient().setDiagrams(message);
+  }
+  
+  
   private void consoleDot(Message message) {
     ConsoleClient.theConsole().dot(message);
   }
