@@ -823,6 +823,8 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 
 	@Override
 	public void paintToSvg(XmlHandler xmlHandler, int xOffset, int yOffset, FmmlxDiagram diagram) {
+		if(!isVisible()) return;
+
 		Color color = diagram.isSelected(this) ? Color.RED : getPrimaryColor();
 		String strokeColor = color.toString().split("x")[1].substring(0,6);
 

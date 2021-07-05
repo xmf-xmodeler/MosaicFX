@@ -41,13 +41,17 @@ public class NodeBox implements NodeElement {
 
 	@Override
 	public void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram, boolean objectIsSelected) {
-		g.setFill(bgColor);
-		g.fillRect(x + xOffset, y + yOffset, width, height);
-		g.setStroke(/*objectIsSelected&&System.currentTimeMillis()%2400<500?new Color(1.,.8,0.,1.):*/fgColor);
-		g.setLineWidth(lineWidth.getWidth(objectIsSelected));
-		g.strokeRect(x + xOffset, y + yOffset, width, height);
-		for (NodeElement e : nodeElements) {
-			e.paintOn(g, x + xOffset, y + yOffset, diagram, objectIsSelected);
+		try {
+			g.setFill(bgColor);
+			g.fillRect(x + xOffset, y + yOffset, width, height);
+			g.setStroke(/*objectIsSelected&&System.currentTimeMillis()%2400<500?new Color(1.,.8,0.,1.):*/fgColor);
+			g.setLineWidth(lineWidth.getWidth(objectIsSelected));
+			g.strokeRect(x + xOffset, y + yOffset, width, height);
+			for (NodeElement e : nodeElements) {
+				e.paintOn(g, x + xOffset, y + yOffset, diagram, objectIsSelected);
+			}
+		} catch (Exception e){
+			e.printStackTrace();
 		}
 	}
 

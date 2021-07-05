@@ -28,17 +28,23 @@ public class FmmlxSerializer  {
         return xmlCreator.createXml(file);
     }
 
-    public void saveAsXml(String packagePath, String initLabel, FmmlxDiagramCommunicator communicator) throws TimeOutException, TransformerException {
-        this.clearAllData();
-        Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(packagePath);
-        Collections.sort(diagramIds);
-        for(Integer id :diagramIds){
-            String diagramLabel = communicator.createLabelFromInitLabel(initLabel, id);
-            saveProject(packagePath);
-            saveDiagram(diagramLabel, packagePath, id);
+    public void saveAsXml(String packagePath, String initLabel, FmmlxDiagramCommunicator communicator) throws TimeOutException {
+        try{
+            this.clearAllData();
+            Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(packagePath);
+            Collections.sort(diagramIds);
+            for(Integer id :diagramIds){
+                String diagramLabel = communicator.createLabelFromInitLabel(initLabel, id);
+                saveProject(packagePath);
+                saveDiagram(diagramLabel, packagePath, id);
+            }
+            saveLog(diagramIds.get(0), communicator);
+            this.xmlHandler.flushData();
+            communicator.fileSaved(file, diagramIds.get(0));
+        } catch (Exception e){
+            e.printStackTrace();
         }
-        saveLog(diagramIds.get(0), communicator);
-        this.xmlHandler.flushData();
+
     }
 
     public void save(String packagePath, String filePath, String label, Integer id, FmmlxDiagramCommunicator communicator)  {
@@ -54,6 +60,7 @@ public class FmmlxSerializer  {
                 }
                 saveLog(diagramIds.get(0), communicator);
                 xmlHandler.flushData();
+                communicator.fileSaved(file, diagramIds.get(0));
             } catch (TransformerException | TimeOutException e) {
                 e.printStackTrace();
             }
@@ -155,25 +162,6 @@ public class FmmlxSerializer  {
         LogXmlManager logXmlManager = new LogXmlManager(this.xmlHandler);
         logXmlManager.clearLog();
         Element logsElement = logXmlManager.getLogs();
-//       boolean waiting = true;
-//        int sleep = 5;
-//        int attempts = 0;
-//        FaXML protocol = null;
-//        while (waiting && sleep < 200 * 100) {
-//            System.err.println(attempts + ". attempt");
-//            attempts++;
-//            try {
-//                Thread.sleep(sleep);
-//                sleep *= 2;
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            protocol = communicator.getDiagramData(diagramID);
-//            if (protocol!=null) {
-//                waiting = false;
-//            }
-//        }
-//        assert protocol != null;
         FaXML protocol = communicator.getDiagramData(diagramID);
         
         System.err.println("protocol:" + protocol.getChildren().size() + " :protocol");

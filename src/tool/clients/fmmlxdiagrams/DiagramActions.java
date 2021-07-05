@@ -1111,4 +1111,37 @@ public class DiagramActions {
 			});
 		}
 	}
+
+	public void showCertainLevel() {
+		Platform.runLater(() ->{
+			ShowCertainLevelDialog dlg = new ShowCertainLevelDialog(diagram);
+			Optional<ShowCertainLevelDialogResult> result = dlg.showAndWait();
+
+			if(result.isPresent()){
+				final ShowCertainLevelDialogResult sclResult = result.get();
+				Vector<Integer> chosenLevel = sclResult.getChosenLevels();
+
+				Vector<FmmlxObject> objects = diagram.getObjects();
+				Vector<FmmlxObject> hiddenObjects = new Vector<>();
+				Vector<FmmlxObject> unHiddenObjects = new Vector<>();
+				for(FmmlxObject obj : objects){
+					if(!chosenLevel.contains(obj.getLevel())){
+						hiddenObjects.add(obj);
+					} else {
+						unHiddenObjects.add(obj);
+					}
+				}
+				hide(unHiddenObjects, false);
+				hide(hiddenObjects, true);
+				updateDiagram();
+			}
+		});
+	}
+
+	public void showAll() {
+		Platform.runLater(() ->{
+			hide(diagram.getObjects(), false);
+			updateDiagram();
+		});
+	}
 }

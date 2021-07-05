@@ -60,6 +60,8 @@ public abstract class Node implements CanvasElement{
 	@Override
 	public void paintToSvg(XmlHandler xmlHandler, int xOffset, int yOffset, FmmlxDiagram diagram) {
 
+		if(hidden) return;
+
 		if(requiresReLayout) layout(diagram);
 
 		boolean selected = diagram.isSelected(this);

@@ -234,6 +234,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 
 	@Override
 	public void paintToSvg(XmlHandler xmlHandler, int xOffset, int yOffset, FmmlxDiagram diagram) {
+		if(!owner.isVisible()) return;
 		int size=16;
 		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
 		group.setAttribute(SvgConstant.ATTRIBUTE_GROUP_TYPE, "edge_label");
