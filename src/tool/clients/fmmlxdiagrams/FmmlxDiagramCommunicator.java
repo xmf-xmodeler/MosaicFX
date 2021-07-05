@@ -226,7 +226,7 @@ public class FmmlxDiagramCommunicator {
 		int sleep = 2;
 		long START = System.currentTimeMillis();
 		while (waiting && sleep < 200 * 100) {
-			if (DEBUG) System.err.println(attempts + ". attempt");
+//			if (DEBUG) System.err.println(attempts + ". attempt");
 			attempts++;
 			try {
 				Thread.sleep(sleep);

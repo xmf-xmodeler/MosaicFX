@@ -239,13 +239,27 @@ public abstract class AbstractPackageViewer {
 		return true;
 	}
 	
-	public final FmmlxObject getObjectByPath(String path) {
+	@SuppressWarnings("serial")
+	public static class PathNotFoundException extends RuntimeException {
+
+		public PathNotFoundException(String message) {
+			super(message);
+		}
+		
+	}
+	
+	public final FmmlxObject getObjectByPath(String path) throws PathNotFoundException{
 		for(FmmlxObject obj : getObjects()) {
 			if (obj.getPath().equals(path)){
 				return obj;
 			}
 		}
-		return null;
+		for(FmmlxObject obj : getObjects()) {
+			if (obj.getName().equals(path)){
+				return obj;
+			}
+		}
+		throw new PathNotFoundException("path " + path + " not found");
 	}
 	
 	public final FmmlxAssociation getAssociationByPath(String path) {
