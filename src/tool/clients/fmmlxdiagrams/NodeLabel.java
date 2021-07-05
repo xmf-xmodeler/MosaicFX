@@ -7,6 +7,9 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
+import org.w3c.dom.Element;
+import tool.clients.exporter.svg.SvgConstant;
+import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeLabel extends NodeBaseElement implements NodeElement {
 	
@@ -15,8 +18,8 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 	private final FontPosture fontPosture;
 	private final int fontSize = 14;
 	private final double fontScale;
-	private Color fgColor = Color.BLACK;
-	private Color bgColor = null;
+	private Color fgColor;
+	private Color bgColor;
 	private String text;
 	private double textWidth;
 	private double textHeight;
@@ -29,20 +32,7 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 	@Override
 	public void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram, boolean objectIsSelected) {
 		double hAlign = 0;
-		String textLocal = text;
-		
-		if(special) {
-			int length = text.length();
-			double neededWidth = FmmlxDiagram.calculateTextWidth(text);
-			if(neededWidth > availableWidth) {
-				textLocal = text + "     " + text;
-				int cycle = length + 5;
-				final int SPEED = 400;
-				int step = (int)((System.currentTimeMillis() % (cycle * SPEED)) / SPEED);
-				textLocal = textLocal.substring(step);
-				textLocal = textLocal.substring(0,(int)(length * availableWidth / neededWidth + .5));
-			}
-		}
+		String textLocal = setTextLocal(text);
 
 		if (alignment != Pos.BASELINE_LEFT) {
 			hAlign = (alignment == Pos.BASELINE_CENTER ? 0.5 : 1) * textWidth;
@@ -117,5 +107,57 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 
 	public double getWidth() {
 		return FmmlxDiagram.calculateTextWidth(text);
+	}
+
+	@Override
+	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, double xOffset, double yOffset, boolean objectIsSelected) {
+		double hAlign = 0;
+		String textLocal = setTextLocal(text);
+		if (alignment != Pos.BASELINE_LEFT) {
+			hAlign = (alignment == Pos.BASELINE_CENTER ? 0.5 : 1) * textWidth;
+		}
+		if(selected || bgColor!=null){
+			Color color = selected ? Color.DARKGREY : bgColor;
+			String backgroundColor = color.toString().split("x")[1].substring(0,6);
+			String styleString = "fill: #"+backgroundColor+";";
+			Element rect = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_RECT);
+			rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (x - hAlign + xOffset - BOX_GAP)+"");
+			rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (y + yOffset - BOX_GAP - textHeight)+"");
+			rect.setAttribute(SvgConstant.ATTRIBUTE_HEIGHT, ( textHeight + 2 * BOX_GAP)+"");
+			rect.setAttribute(SvgConstant.ATTRIBUTE_WIDTH, (textWidth + 2 * BOX_GAP)+"");
+			rect.setAttribute(SvgConstant.ATTRIBUTE_FILL_OPACITY, bgColor.getOpacity()+"");
+			rect.setAttribute(SvgConstant.ATTRIBUTE_STYLE, styleString);
+			xmlHandler.addXmlElement(xmlHandler.getRoot(), rect);
+		}
+		String color = fgColor.toString().split("x")[1].substring(0,6);
+
+		Element text = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_TEXT);
+		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_FAMILY, "Arial");
+		text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (x - hAlign + xOffset)+"");
+		text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (y + yOffset - Y_BASELINE_DIFF)+"");
+		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, ((fontSize-1)*fontScale)+"");
+		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_OPACITY, fgColor.getOpacity()+"");
+		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_STYLE, fgColor.getOpacity()+"");
+		text.setAttribute(SvgConstant.ATTRIBUTE_FILL, "#"+color);
+		text.setTextContent(textLocal);
+		xmlHandler.addXmlElement(xmlHandler.getRoot(), text);
+	}
+
+	private String setTextLocal(String text) {
+		String textLocal = text;
+
+		if(special) {
+			int length = text.length();
+			double neededWidth = FmmlxDiagram.calculateTextWidth(text);
+			if(neededWidth > availableWidth) {
+				textLocal = text + "     " + text;
+				int cycle = length + 5;
+				final int SPEED = 400;
+				int step = (int)((System.currentTimeMillis() % (cycle * SPEED)) / SPEED);
+				textLocal = textLocal.substring(step);
+				textLocal = textLocal.substring(0,(int)(length * availableWidth / neededWidth + .5));
+			}
+		}
+		return textLocal;
 	}
 }

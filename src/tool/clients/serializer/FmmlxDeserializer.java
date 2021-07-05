@@ -5,6 +5,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
+import tool.clients.xmlManipulator.XmlHandler;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -32,7 +33,7 @@ public class FmmlxDeserializer {
         for(int i =0; i< diagramNodes.getLength(); i++){
             Node diagramNode = diagramNodes.item(i);
             if(diagramNode.getNodeType()==Node.ELEMENT_NODE){
-            	String diagramName = ((Element) diagramNode).getAttribute(XmlConstant.ATTRIBUTE_LABEL);
+            	String diagramName = ((Element) diagramNode).getAttribute(SerializerConstant.ATTRIBUTE_LABEL);
             	Integer diagramId = fmmlxDiagramCommunicator.createDiagram(projectName, diagramName, this.xmlHandler.getSourcePath(), FmmlxDiagramCommunicator.DiagramType.ClassDiagram);
             	if(!populated) {
                     fmmlxDiagramCommunicator.preparePositionInfo(diagramId, diagramNode);
@@ -106,6 +107,6 @@ public class FmmlxDeserializer {
 
     public Element getDiagramsElement(){
         Element Root = xmlHandler.getRoot();
-        return xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_DIAGRAMS);
+        return xmlHandler.getChildWithTag(Root, SerializerConstant.TAG_NAME_DIAGRAMS);
     }
 }

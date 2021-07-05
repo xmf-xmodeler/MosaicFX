@@ -85,6 +85,19 @@ public class FmmlxPalette {
 			}
 		});
 
+		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue.getValue().toString().equals("MetaClass")) {
+				fmmlxDiagram.setNodeCreationType("MetaClass");
+			} else if (newValue.getValue().toString().equals("Association")) {
+				fmmlxDiagram.setEdgeCreationType("association");
+			} else if (newValue.getValue().toString().equals("Link")) {
+				fmmlxDiagram.setEdgeCreationType("associationInstance");
+			} else if (newValue.getValue().toString().equals("Delegation")) {
+				fmmlxDiagram.setEdgeCreationType("delegation");
+			} else {
+				fmmlxDiagram.setNodeCreationType(newValue.getValue().toString());
+			}
+		});
 	}
 
 	public synchronized void update() {
@@ -100,14 +113,19 @@ public class FmmlxPalette {
 			root.getChildren().add(relationships);
 			root.getChildren().add(elements);
 
-			DefaultTool associationTool = new DefaultTool("Association", "resources/gif/Association.gif",
-					p -> fmmlxDiagram.setEdgeCreationType("association"));
-			DefaultTool linkTool = new DefaultTool("Link", "resources/gif/Association.gif",
-					p -> fmmlxDiagram.setEdgeCreationType("associationInstance"));
-			DefaultTool delegationTool = new DefaultTool("Delegation", "resources/gif/XCore/Delegation.png",
-					p -> fmmlxDiagram.setEdgeCreationType("delegation"));
-			DefaultTool metaClassTool = new DefaultTool("MetaClass", "resources/gif/class.gif",
-					p -> fmmlxDiagram.setNodeCreationType("MetaClass"));
+//			DefaultTool associationTool = new DefaultTool("Association", "resources/gif/Association.gif",
+//					point -> fmmlxDiagram.setEdgeCreationType("association"));
+//			DefaultTool linkTool = new DefaultTool("Link", "resources/gif/Association.gif",
+//					point -> fmmlxDiagram.setEdgeCreationType("associationInstance"));
+//			DefaultTool delegationTool = new DefaultTool("Delegation", "resources/gif/XCore/Delegation.png",
+//					point -> fmmlxDiagram.setEdgeCreationType("delegation"));
+//			DefaultTool metaClassTool = new DefaultTool("MetaClass", "resources/gif/class.gif",
+//					point -> fmmlxDiagram.setNodeCreationType("MetaClass"));
+//			
+			DefaultTool associationTool = new DefaultTool("Association", "resources/gif/Association.gif");
+			DefaultTool linkTool = new DefaultTool("Link", "resources/gif/Association.gif");
+			DefaultTool delegationTool = new DefaultTool("Delegation", "resources/gif/XCore/Delegation.png");
+			DefaultTool metaClassTool = new DefaultTool("MetaClass", "resources/gif/class.gif");
 
 			TreeItem<AbstractTreeType> association = new TreeItem<AbstractTreeType>(associationTool);
 			TreeItem<AbstractTreeType> link = new TreeItem<AbstractTreeType>(linkTool);
@@ -145,6 +163,10 @@ public class FmmlxPalette {
 			relationships.setExpanded(true);
 			elements.setExpanded(true);
 		});
+
+		System.err.println("NodeCreationType: " + fmmlxDiagram.getNodeCreationType());
+		System.err.println("EdgeCreationType: " + fmmlxDiagram.getEdgeCreationType());
+
 	}
 
 	public TreeView getToolBar() {
@@ -191,6 +213,8 @@ public class FmmlxPalette {
 
 		public String toString() {
 			return object.getName() + " ^" + object.getMetaClassName() + "^";
+			// return object.getName();
+
 		}
 
 		@Override
@@ -208,6 +232,11 @@ public class FmmlxPalette {
 
 		String name;
 		ImageView icon;
+
+		public DefaultTool(String name, String pathToIcon) {
+			this.name = name;
+			this.icon = new ImageView(new javafx.scene.image.Image(new File(pathToIcon).toURI().toString()));
+		}
 
 		public DefaultTool(String name, String pathToIcon, Action action) {
 			this.name = name;
@@ -229,6 +258,7 @@ public class FmmlxPalette {
 				return 1000;
 			return 0;
 		}
+
 	}
 
 	private interface Action {

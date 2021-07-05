@@ -157,7 +157,7 @@ public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDial
 	
 	private void changeAssociationName() {
 		//insert Association List to Combobox;
-		Vector<FmmlxAssociation>associations = object.getAllRelatedAssociations();
+		Vector<FmmlxAssociation> associations = object.getAllRelatedAssociations();
 		
 		ObservableList<Property> associationsList;
 		associationsList = FXCollections.observableList((Vector<Property>) associations);

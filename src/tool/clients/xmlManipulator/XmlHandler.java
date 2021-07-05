@@ -1,4 +1,4 @@
-package tool.clients.serializer;
+package tool.clients.xmlManipulator;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -69,7 +69,7 @@ public class XmlHandler {
         getXmlHelper().removeAllChildrenNode(element);
     }
 
-    protected Element createXmlElement(String name){
+    public Element createXmlElement(String name){
         return (Element) getXmlHelper().createXmlNode(name);
     }
 

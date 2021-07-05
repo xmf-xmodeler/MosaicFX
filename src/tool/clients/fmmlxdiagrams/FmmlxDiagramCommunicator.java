@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.FmmlxSerializer;
-import tool.clients.serializer.XmlHandler;
+import tool.clients.xmlManipulator.XmlHandler;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.PropertyManager;
 import xos.Value;
@@ -1248,34 +1248,34 @@ public class FmmlxDiagramCommunicator {
         sendMessage("changeAssociationForwardName", message);
     }
 
-    public void changeAssociationStart2EndLevel(int diagramID, String associationId, Integer newLevel) {
+    public void changeAssociationStart2EndLevel(int diagramID, String associationName, Integer newLevel) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationId),
+                new Value(associationName),
                 new Value(newLevel)};
         sendMessage("changeAssociationStart2EndLevel", message);
     }
 
-    public void changeAssociationEnd2StartLevel(int diagramID, String associationId, Integer newLevel) {
+    public void changeAssociationEnd2StartLevel(int diagramID, String associationName, Integer newLevel) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationId),
+                new Value(associationName),
                 new Value(newLevel)};
         sendMessage("changeAssociationEnd2StartLevel", message);
     }
 
-    public void changeAssociationStart2EndAccessName(int diagramID, String associationId, String newName) {
+    public void changeAssociationStart2EndAccessName(int diagramID, String associationName, String newName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationId),
+                new Value(associationName),
                 new Value(newName)};
         sendMessage("changeAssociationStart2EndAccessName", message);
     }
 
-    public void changeAssociationEnd2StartAccessName(int diagramID, String associationId, String newName) {
+    public void changeAssociationEnd2StartAccessName(int diagramID, String associationName, String newName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationId),
+                new Value(associationName),
                 new Value(newName)};
         sendMessage("changeAssociationEnd2StartAccessName", message);
     }
@@ -1866,7 +1866,8 @@ public class FmmlxDiagramCommunicator {
 		return initLabel.substring(0, initLabel.length()-2)+id+")";
 	}
 
-    public HashMap<String, HashMap<String, Object>> getAllLabelPositions(int id) {
+    @SuppressWarnings("unchecked")
+	public HashMap<String, HashMap<String, Object>> getAllLabelPositions(int id) {
 		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
 		Vector<Object> response;
 		try {
@@ -1894,6 +1895,7 @@ public class FmmlxDiagramCommunicator {
         return result;
     }
 
+	@SuppressWarnings("unchecked")
 	public void testGetAllEdgePositions(int id) {
 		Vector<Object> response;
 		try {
@@ -1906,6 +1908,7 @@ public class FmmlxDiagramCommunicator {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public void testGetAllLabelPositions(int id) {
 		Vector<Object> response;
 		try {
@@ -1936,5 +1939,7 @@ public class FmmlxDiagramCommunicator {
 		this.silent = silent;
 	}
 
-
+	public void saveSvgFile(String fileName, String packageString) {
+		System.out.println("test svg export");
+	}
 }

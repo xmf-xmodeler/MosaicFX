@@ -8,6 +8,7 @@ import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.association.MultiplicityDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
 import tool.clients.fmmlxdiagrams.menus.AssociationContextMenu;
+import tool.clients.xmlManipulator.XmlHandler;
 
 import java.util.Optional;
 import java.util.Vector;
@@ -179,7 +180,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 		if(result.isPresent()) {
 			try {
 				Integer level = Integer.parseInt(result.get());
-				diagram.getComm().changeAssociationStart2EndLevel(diagram.getID(), this.path, level);
+				diagram.getComm().changeAssociationStart2EndLevel(diagram.getID(), this.getName(), level);
 				diagram.updateDiagram();
 			} catch (Exception e) {
 				System.err.println("Number not readable. Change Nothing.");
@@ -192,7 +193,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 		td.setHeaderText("Change Start to End Access Name");
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
-			diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), this.path, result.get());
+			diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), this.getName(), result.get());
 			diagram.updateDiagram();
 		}
 	};
@@ -213,7 +214,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 		if(result.isPresent()) {
 			try {
 				Integer level = Integer.parseInt(result.get());
-				diagram.getComm().changeAssociationEnd2StartLevel(diagram.getID(), this.path, level);
+				diagram.getComm().changeAssociationEnd2StartLevel(diagram.getID(), this.getName(), level);
 				diagram.updateDiagram();
 			} catch (Exception e) {
 				System.err.println("Number not readable. Change Nothing.");
@@ -226,7 +227,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 		td.setHeaderText("Change End to Start Access Name");
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
-			diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), this.path, result.get());
+			diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), this.getName(), result.get());
 			diagram.updateDiagram();
 		}
 	};

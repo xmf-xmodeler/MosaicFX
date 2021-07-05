@@ -95,7 +95,9 @@ public class ControlCenter extends Stage {
 			result.ifPresent(name -> 
 			    {Integer diagramID = FmmlxDiagramCommunicator.getCommunicator().createDiagram(
 			        modelLV.getSelectionModel().getSelectedItem(), 
-			        name, "", FmmlxDiagramCommunicator.DiagramType.ClassDiagram); System.err.println("diagramID "  +diagramID);});});
+			        name, "", FmmlxDiagramCommunicator.DiagramType.ClassDiagram); System.err.println("diagramID "  +diagramID);});
+			controlCenterClient.getDiagrams(modelLV.getSelectionModel().getSelectedItem());
+		});
 		
 		diagramLV.setOnMouseClicked(me -> {
 
@@ -150,6 +152,8 @@ public class ControlCenter extends Stage {
 		grid.add(modelGridPane, 3, 3);
 		modelLV.setOnMouseClicked(e->{if (e.getClickCount()==2 && e.getButton()==MouseButton.PRIMARY) modelDoubleClick(e);});
 		
+		TreeItem loading = new TreeItem("Loading");
+		projectTree.setRoot(loading);
 		
 		grid.add(diagramLabel, 4, 1);
 		grid.add(newDiagram, 4, 1);
@@ -214,7 +218,14 @@ public class ControlCenter extends Stage {
 //				  event.doit = false;
 			  }
 	  });	
-	
+		new java.util.Timer().schedule( 
+		        new java.util.TimerTask() {
+		            @Override
+		            public void run() {
+		            	controlCenterClient.getAllProjects();
+		            } 
+		        }, 1500 
+		);
 	}
 
 	public MenuBar getMenuBar() {
@@ -259,11 +270,11 @@ public class ControlCenter extends Stage {
 		Label created = new Label("31-03-2000");
 				
 		private CreatedModifiedGridPane() {
-			
-			this.add(new Label("created: "), 1, 1);
-			this.add(created, 2, 1);
-			this.add(new Label("modified: "), 1, 2);
-			this.add(modified, 2, 2);
+			//Labels for creation & last modification of projects, models & diagrams! ToDo!
+			///this.add(new Label("created: "), 1, 1);
+			//this.add(created, 2, 1);
+			//this.add(new Label("modified: "), 1, 2);
+			//this.add(modified, 2, 2);
 			
 		}
 		
@@ -343,6 +354,14 @@ public class ControlCenter extends Stage {
 			projectPath=item.getValue()+"::"+projectPath;
 		}
 		return projectPath;
+	}
+
+	public void setDiagrams(Vector<String> vec) {
+		Platform.runLater(()->{
+			diagramLV.getItems().clear();
+			diagramLV.getItems().addAll(vec);
+		});
+		
 	}
 	
 	

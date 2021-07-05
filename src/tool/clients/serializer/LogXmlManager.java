@@ -8,7 +8,9 @@ import tool.clients.fmmlxdiagrams.FaXML;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.TimeOutException;
+import tool.clients.xmlManipulator.XmlHandler;
 
+import javax.xml.XMLConstants;
 import java.util.Base64;
 import java.util.List;
 import java.util.Vector;
@@ -44,7 +46,7 @@ public class LogXmlManager {
 
     public Element getLogs() {
         Element Root = xmlHandler.getRoot();
-        return xmlHandler.getChildWithTag(Root, XmlConstant.TAG_NAME_LOGS);
+        return xmlHandler.getChildWithTag(Root, SerializerConstant.TAG_NAME_LOGS);
     }
 
     public Element createNewLogFromFaXML(FaXML faXML){
@@ -57,7 +59,7 @@ public class LogXmlManager {
 
     public void clearLog() {
         Element rootElement = xmlHandler.getRoot();
-        Element logs = xmlHandler.getChildWithTag(rootElement, XmlConstant.TAG_NAME_LOGS);
+        Element logs = xmlHandler.getChildWithTag(rootElement, SerializerConstant.TAG_NAME_LOGS);
         xmlHandler.removeAllChildren(logs);
     }
 
@@ -93,9 +95,9 @@ public class LogXmlManager {
     	String tagName = logElement.getTagName();
             switch (tagName) {
                 case "addMetaClass": {
-                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
-                    int level = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_LEVEL));
-                    String parentPathsString = logElement.getAttribute(XmlConstant.ATTRIBUTE_PARENTS);
+                    String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
+                    int level = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));
+                    String parentPathsString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_PARENTS);
                     Vector<String> parents = new Vector<>();
                     if(!parentPathsString.equals("")){
                         String[] parentPathsArray = parentPathsString.split(",");
@@ -105,7 +107,7 @@ public class LogXmlManager {
                             parents.add(parentPathArray[parentPathArray.length - 1]);
                         }
                     }
-                    boolean isAbstract = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_ABSTRACT));
+                    boolean isAbstract = Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_ABSTRACT));
                     Point2D coordinate = new Point2D(0.0,0.0);
                     int x = (int) Math.round(coordinate.getX());
                     int y = (int) Math.round(coordinate.getY());
@@ -113,29 +115,29 @@ public class LogXmlManager {
                     break;
                 }
                 case "removeClass" : {
-                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String classpath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
                     String[] classPathArray = classpath.split("::");
                     String className = classPathArray[classPathArray.length-1];
                     comm.removeClass(diagramID, className, 0);
                     break;
                 }
                 case "changeClassName" : {
-                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
-                    String newName = logElement.getAttribute(XmlConstant.ATTRIBUTE_NEW_NAME);
+                    String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
+                    String newName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NEW_NAME);
                     comm.changeClassName(diagramID, name, newName);
                     break;
                 }
                 case "setClassAbstract" : {
-                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String classpath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
                     String[] classPathArray = classpath.split("::");
                     String className = classPathArray[classPathArray.length-1];
-                    boolean abstractValue = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_ABSTRACT));
+                    boolean abstractValue = Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_ABSTRACT));
                     comm.setClassAbstract(diagramID, className, abstractValue);
                     break;
 
                 }
                 case "changeParent" : {
-                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String classpath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
                     String[] classPathArray = classpath.split("::");
                     String className = classPathArray[classPathArray.length-1];
 
@@ -165,13 +167,13 @@ public class LogXmlManager {
                     break;
                 }
                 case "addAttribute" : {
-                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
-                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
+                    String classpath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
                     String[] classPathArray = classpath.split("::");
                     String className = classPathArray[classPathArray.length-1];
-                    int level = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_LEVEL));
-                    String typePath = logElement.getAttribute(XmlConstant.ATTRIBUTE_TYPE);
-                    String multiplicityString = logElement.getAttribute(XmlConstant.ATTRIBUTE_MULTIPLICITY);
+                    int level = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));
+                    String typePath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_TYPE);
+                    String multiplicityString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_MULTIPLICITY);
                     String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
                     String[] multiplicityArray =  multiplicitySubString.split(",");
                     int upper = Integer.parseInt(multiplicityArray[0]);
@@ -186,50 +188,50 @@ public class LogXmlManager {
                     break;
                 }
                 case "removeAttribute" : {
-                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String classpath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
                     String[] classPathArray = classpath.split("::");
                     String className = classPathArray[classPathArray.length-1];
-                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+                    String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
                     comm.removeAttribute(diagramID, className, name, 0);
                     break;
                 }
                 case "changeAttributeName" : {
-                    String oldName = logElement.getAttribute(XmlConstant.ATTRIBUTE_OLD_NAME);
-                    String newName = logElement.getAttribute(XmlConstant.ATTRIBUTE_NEW_NAME);
-                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String oldName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_OLD_NAME);
+                    String newName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NEW_NAME);
+                    String classpath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
                     String[] classPathArray = classpath.split("::");
                     String className = classPathArray[classPathArray.length-1];
                     comm.changeAttributeName(diagramID, className, oldName, newName);
                     break;
                 }
                 case "changeAttributeLevel" : {
-                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
-                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
+                    String classpath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
                     String[] classPathArray = classpath.split("::");
                     String className = classPathArray[classPathArray.length-1];
-                    int oldLevel = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_OLD_LEVEL));
-                    int newLevel = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_NEW_LEVEL));
+                    int oldLevel = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_OLD_LEVEL));
+                    int newLevel = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_NEW_LEVEL));
                     comm.changeAttributeLevel(diagramID, className, name, oldLevel, newLevel);
                     break;
 
                 }
                 case "changeAttributeType" : {
-                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
-                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
+                    String classpath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
                     String[] classPathArray = classpath.split("::");
                     String className = classPathArray[classPathArray.length-1];
-                    String oldType = logElement.getAttribute(XmlConstant.ATTRIBUTE_OLD_TYPE);
-                    String newType = logElement.getAttribute(XmlConstant.ATTRIBUTE_NEW_TYPE);
+                    String oldType = logElement.getAttribute(SerializerConstant.ATTRIBUTE_OLD_TYPE);
+                    String newType = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NEW_TYPE);
                     comm.changeAttributeType(diagramID, className, name, oldType, newType);
                     break;
                 }
                 case "changeAttributeMultiplicity" : {
-                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
-                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
+                    String classpath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
                     String[] classPathArray = classpath.split("::");
                     String className = classPathArray[classPathArray.length-1];
 
-                    String multiplicityString = logElement.getAttribute(XmlConstant.ATTRIBUTE_OLD_MULTIPLICITY);
+                    String multiplicityString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_OLD_MULTIPLICITY);
                     String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
                     String[] multiplicityArray =  multiplicitySubString.split(",");
                     int upper = Integer.parseInt(multiplicityArray[0]);
@@ -238,7 +240,7 @@ public class LogXmlManager {
                     boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
                     Multiplicity multiplicity = new Multiplicity(upper, under, upperLimit, ordered, false);
 
-                    String multiplicityString1 = logElement.getAttribute(XmlConstant.ATTRIBUTE_NEW_MULTIPLICITY);
+                    String multiplicityString1 = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NEW_MULTIPLICITY);
                     String multiplicitySubString1 = multiplicityString1.substring(4, multiplicityString1.length()-1);
                     String[] multiplicityArray1 =  multiplicitySubString1.split(",");
                     int upper1 = Integer.parseInt(multiplicityArray1[0]);
@@ -251,27 +253,27 @@ public class LogXmlManager {
                     break;
                 }
                 case "addOperation": {
-                    String classPath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String classPath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
                     String[] classPathArray = classPath.split("::");
                     String className = classPathArray[classPathArray.length-1];
-                    String body = logElement.getAttribute(XmlConstant.ATTRIBUTE_BODY);
-                    int level = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_LEVEL));
+                    String body = logElement.getAttribute(SerializerConstant.ATTRIBUTE_BODY);
+                    int level = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));
                     comm.addOperation2(diagramID, className, level, body);
                     break;
                 }
                 case "addOperation2": {
-                    String classPath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String classPath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
                     String[] classPathArray = classPath.split("::");
                     String className = classPathArray[classPathArray.length-1];
-                    String body = parseBase64(logElement.getAttribute(XmlConstant.ATTRIBUTE_BODY));
-                    int level = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_LEVEL));
+                    String body = parseBase64(logElement.getAttribute(SerializerConstant.ATTRIBUTE_BODY));
+                    int level = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));
                     comm.addOperation2(diagramID, className, level, body);
                     break;
                 }
                 case "addInstance": {
-                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
-                    String ofName = parseOf(logElement.getAttribute(XmlConstant.ATTRIBUTE_OF));
-                    String parentPathsString = logElement.getAttribute(XmlConstant.ATTRIBUTE_PARENTS);
+                    String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
+                    String ofName = parseOf(logElement.getAttribute(SerializerConstant.ATTRIBUTE_OF));
+                    String parentPathsString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_PARENTS);
                     Vector<String> parents = new Vector<>();
 
                     if(!parentPathsString.equals("")){
@@ -282,7 +284,7 @@ public class LogXmlManager {
                             parents.add(parentPathArray[parentPathArray.length - 1]);
                         }
                     }
-                    boolean isAbstract = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_ABSTRACT));
+                    boolean isAbstract = Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_ABSTRACT));
                     Point2D coordinate = new Point2D(0.0,0.0);
                     int x = (int) Math.round(coordinate.getX());
                     int y = (int) Math.round(coordinate.getY());
@@ -290,30 +292,30 @@ public class LogXmlManager {
                     break;
                 }
                 case "changeOperationBody" : {
-                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
-                    String className = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
-                    String body = parseBase64(logElement.getAttribute(XmlConstant.ATTRIBUTE_BODY));
+                    String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
+                    String className = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
+                    String body = parseBase64(logElement.getAttribute(SerializerConstant.ATTRIBUTE_BODY));
                     comm.changeOperationBody(diagramID, className, name, body);
                     break;
                 }
                 case "changeOperationLevel" : {
-                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
-                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
+                    String classpath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
                     String[] classPathArray = classpath.split("::");
                     String className = classPathArray[classPathArray.length-1];
-                    int oldLevel = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_OLD_LEVEL));
-                    int newLevel = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_NEW_LEVEL));
+                    int oldLevel = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_OLD_LEVEL));
+                    int newLevel = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_NEW_LEVEL));
                     comm.changeOperationLevel(diagramID, className, name, oldLevel, newLevel);
                     break;
                 }
                 case "changeOperationOwner" : {
-                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+                    String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
 
-                    String oldClasspath = logElement.getAttribute(XmlConstant.ATTRIBUTE_OLD_CLASS);
+                    String oldClasspath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_OLD_CLASS);
                     String[] oldClassPathArray = oldClasspath.split("::");
                     String oldClassName = oldClassPathArray[oldClassPathArray.length-1];
 
-                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_NEW_CLASS);
+                    String classpath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NEW_CLASS);
                     String[] classPathArray = classpath.split("::");
                     String className = classPathArray[classPathArray.length-1];
 
@@ -321,34 +323,34 @@ public class LogXmlManager {
                     break;
                 }
                 case "removeOperation" : {
-                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
-                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
+                    String classpath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
                     String[] classPathArray = classpath.split("::");
                     String className = classPathArray[classPathArray.length-1];
                     comm.removeOperation(diagramID, className, name, 0);
                     break;
                 }
                 case "changeSlotValue" : {
-                    String classpath = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS);
+                    String classpath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
                     String[] classPathArray = classpath.split("::");
                     String className = classPathArray[classPathArray.length-1];
-                    String slotName = logElement.getAttribute(XmlConstant.ATTRIBUTE_SLOT_NAME);
-                    String valueToBeParsed = logElement.getAttribute(XmlConstant.ATTRIBUTE_VALUE_TOBE_PARSED);
+                    String slotName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_SLOT_NAME);
+                    String valueToBeParsed = logElement.getAttribute(SerializerConstant.ATTRIBUTE_VALUE_TOBE_PARSED);
                     comm.changeSlotValue(diagramID, className, slotName, valueToBeParsed);
                     break;
                 }
                 case "addAssociation" : {
-                    String classSourceName = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS_SOURCE);//classPathArray1[classPathArray1.length-1];
-                    String classpath2 = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS_TARGET);
-                    String accessSourceFromTargetName = logElement.getAttribute(XmlConstant.ATTRIBUTE_ACCESS_SOURCE_FROM_TARGET);
-                    String accessTargetFromSourceName = logElement.getAttribute(XmlConstant.ATTRIBUTE_ACCESS_TARGET_FROM_SOURCE);
+                    String classSourceName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE);//classPathArray1[classPathArray1.length-1];
+                    String classpath2 = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET);
+                    String accessSourceFromTargetName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_ACCESS_SOURCE_FROM_TARGET);
+                    String accessTargetFromSourceName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_ACCESS_TARGET_FROM_SOURCE);
 
-                    String fwName = logElement.getAttribute(XmlConstant.ATTRIBUTE_FW_NAME);
-                    String reverseName = logElement.getAttribute(XmlConstant.ATTRIBUTE_REVERSE_NAME);
+                    String fwName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_FW_NAME);
+                    String reverseName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_REVERSE_NAME);
 
                     
                     Multiplicity multiplicityT2S; {
-	                    String multiplicityString = logElement.getAttribute(XmlConstant.ATTRIBUTE_T2S_MULTIPLICITY);
+	                    String multiplicityString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_T2S_MULTIPLICITY);
 	                    String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
 	                    String[] multiplicityArray =  multiplicitySubString.split(",");
 	                    int min = Integer.parseInt(multiplicityArray[0]);
@@ -359,7 +361,7 @@ public class LogXmlManager {
                     }
 
                     Multiplicity multiplicityS2T; {
-	                    String multiplicityString = logElement.getAttribute(XmlConstant.ATTRIBUTE_S2T_MULTIPLICITY);
+	                    String multiplicityString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_S2T_MULTIPLICITY);
 	                    String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
 	                    String[] multiplicityArray =  multiplicitySubString.split(",");
 	                    int min = Integer.parseInt(multiplicityArray[0]);
@@ -369,14 +371,14 @@ public class LogXmlManager {
 	                    multiplicityS2T = new Multiplicity(min, max, upperLimit, ordered, false);
                     }
 
-                    int instLevelSource = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_INST_LEVEL_SOURCE));
-                    int instLevelTarget = Integer.parseInt(logElement.getAttribute(XmlConstant.ATTRIBUTE_INST_LEVEL_TARGET));
+                    int instLevelSource = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_INST_LEVEL_SOURCE));
+                    int instLevelTarget = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_INST_LEVEL_TARGET));
 
-                    boolean sourceVisibleFromTarget= Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_SOURCE_VISIBLE));
-                    boolean targetVisibleFromSource = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_TARGET_VISIBLE));
+                    boolean sourceVisibleFromTarget= Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_SOURCE_VISIBLE));
+                    boolean targetVisibleFromSource = Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_TARGET_VISIBLE));
 
-                    boolean isSymmetric = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_SYMMETRIC));
-                    boolean isTransitive = Boolean.parseBoolean(logElement.getAttribute(XmlConstant.ATTRIBUTE_IS_TRANSITIVE));
+                    boolean isSymmetric = Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_SYMMETRIC));
+                    boolean isTransitive = Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_TRANSITIVE));
 
                     comm.addAssociation(diagramID, classSourceName, classpath2,
                             accessSourceFromTargetName, accessTargetFromSourceName,
@@ -386,20 +388,20 @@ public class LogXmlManager {
                     break;
                 }
                 case "removeAssociation" : {
-                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+                    String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
                     comm.removeAssociation(diagramID, name, 0);
                     break;
                 }
                 case "changeAssociationForwardName" : {
-                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+                    String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
                     String newFwName = logElement.getAttribute("newFwName");
                     comm.changeAssociationForwardName(diagramID, name, newFwName);
                     break;
                 }
                 case "changeAssociationEnd2StartMultiplicity" : {
-                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+                    String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
 
-                    String multiplicityString = logElement.getAttribute(XmlConstant.ATTRIBUTE_MULTIPLICITY);
+                    String multiplicityString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_MULTIPLICITY);
                     String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
                     String[] multiplicityArray =  multiplicitySubString.split(",");
                     int upper = Integer.parseInt(multiplicityArray[0]);
@@ -412,9 +414,9 @@ public class LogXmlManager {
                     break;
                 }
                 case "changeAssociationStart2EndMultiplicity" : {
-                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+                    String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
 
-                    String multiplicityString = logElement.getAttribute(XmlConstant.ATTRIBUTE_MULTIPLICITY);
+                    String multiplicityString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_MULTIPLICITY);
                     String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
                     String[] multiplicityArray =  multiplicitySubString.split(",");
                     int upper = Integer.parseInt(multiplicityArray[0]);
@@ -427,13 +429,13 @@ public class LogXmlManager {
                     break;
                 }
                 case "addLink" : {
-                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+                    String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
 
-                    String classpath1 = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS_SOURCE);
+                    String classpath1 = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE);
                     String[] classPathArray1 = classpath1.split("::");
                     String className1 = classPathArray1[classPathArray1.length-1];
 
-                    String classpath2 = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS_TARGET);
+                    String classpath2 = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET);
                     String[] classPathArray2 = classpath2.split("::");
                     String className2 = classPathArray2[classPathArray2.length-1];
 
@@ -441,13 +443,13 @@ public class LogXmlManager {
                     break;
                 }
                 case "removeLink" : {
-                    String name = logElement.getAttribute(XmlConstant.ATTRIBUTE_NAME);
+                    String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
 
-                    String classpath1 = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS_SOURCE);
+                    String classpath1 = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE);
                     String[] classPathArray1 = classpath1.split("::");
                     String className1 = classPathArray1[classPathArray1.length-1];
 
-                    String classpath2 = logElement.getAttribute(XmlConstant.ATTRIBUTE_CLASS_TARGET);
+                    String classpath2 = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET);
                     String[] classPathArray2 = classpath2.split("::");
                     String className2 = classPathArray2[classPathArray2.length-1];
 
@@ -455,11 +457,11 @@ public class LogXmlManager {
                     break;
                 }
                 case "addDelegation" : {
-                    String delegationFromPath = logElement.getAttribute(XmlConstant.ATTRIBUTE_DELEGATE_FROM);
+                    String delegationFromPath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_DELEGATE_FROM);
                     String[] delegationFromPathArray = delegationFromPath.split("::");
                     String delegationFromName = delegationFromPathArray[delegationFromPathArray.length-1];
 
-                    String delegationToPath = logElement.getAttribute(XmlConstant.ATTRIBUTE_DELEGATE_TO);
+                    String delegationToPath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_DELEGATE_TO);
                     String[] delegationToPathArray = delegationToPath.split("::");
                     String delegationToName = delegationToPathArray[delegationToPathArray.length-1];
                     int delegateToLevel = Integer.parseInt(logElement.getAttribute("delegateToLevel"));
