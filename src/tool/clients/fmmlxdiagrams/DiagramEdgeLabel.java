@@ -50,6 +50,8 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 		this.bgColor = bgColor;
 	}
 
+
+
 	@Override
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
 		if(!owner.isVisible()) return;		
@@ -232,8 +234,12 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 
 	@Override
 	public void paintToSvg(XmlHandler xmlHandler, int xOffset, int yOffset, FmmlxDiagram diagram) {
+		if(!owner.isVisible()) return;
 		int size=16;
+		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
+		group.setAttribute(SvgConstant.ATTRIBUTE_GROUP_TYPE, "edge_label");
 		if (isInteger(text)){
+
 			String color = bgColor.toString().split("x")[1].substring(0,6);
 			String styleString = "fill: #"+color+";";
 			Element rect = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_RECT);
@@ -242,23 +248,26 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 			rect.setAttribute(SvgConstant.ATTRIBUTE_HEIGHT, height+"");
 			rect.setAttribute(SvgConstant.ATTRIBUTE_WIDTH, width+"");
 			rect.setAttribute(SvgConstant.ATTRIBUTE_STYLE, styleString);
-			xmlHandler.addXmlElement(xmlHandler.getRoot(), rect);
+			xmlHandler.addXmlElement(group, rect);
 
 			Element text = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_TEXT);
 			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (this.getReferenceX() + relativeX + MARGIN)+"");
 			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (this.getReferenceY() + relativeY + height - MARGIN-2)+"");
-			text.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, "11");
+			text.setAttribute(SvgConstant.ATTRIBUTE_FONT_FAMILY, "Arial");
+			text.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, "13");
 			text.setAttribute(SvgConstant.ATTRIBUTE_FILL, "white");
 			text.setTextContent(this.text);
-			xmlHandler.addXmlElement(xmlHandler.getRoot(), text);
+			xmlHandler.addXmlElement(group, text);
+
 		} else {
 			Element text = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_TEXT);
 			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (this.getReferenceX() + relativeX + MARGIN)+"");
 			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (this.getReferenceY() + relativeY + height - MARGIN-2)+"");
-			text.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, "14");
+			text.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, "13");
+			text.setAttribute(SvgConstant.ATTRIBUTE_FONT_FAMILY, "Arial");
 			text.setAttribute(SvgConstant.ATTRIBUTE_FILL, "black");
 			text.setTextContent(this.text);
-			xmlHandler.addXmlElement(xmlHandler.getRoot(), text);
+			xmlHandler.addXmlElement(group, text);
 		}
 		Element polygon = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_POLYGON);
 		StringBuilder points = new StringBuilder();
@@ -275,8 +284,9 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 
 			}
 			polygon.setAttribute(SvgConstant.ATTRIBUTE_POINTS, points.toString());
-			xmlHandler.addXmlElement(xmlHandler.getRoot(), polygon);
+			xmlHandler.addXmlElement(group, polygon);
 		}
+		xmlHandler.addXmlElement(xmlHandler.getRoot(), group);
 	}
 
 }

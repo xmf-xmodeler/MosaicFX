@@ -5,6 +5,8 @@ import java.util.Vector;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import org.w3c.dom.Element;
+import tool.clients.exporter.svg.SvgConstant;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public abstract class Node implements CanvasElement{
@@ -50,8 +52,6 @@ public abstract class Node implements CanvasElement{
 
 		boolean selected = diagram.isSelected(this);
 
-//		g.setFont(diagram.getFont());
-
 		for (NodeElement e : nodeElements) {
 			e.paintOn(g, x + xOffset, y + yOffset, diagram, selected);
 		}
@@ -60,15 +60,20 @@ public abstract class Node implements CanvasElement{
 	@Override
 	public void paintToSvg(XmlHandler xmlHandler, int xOffset, int yOffset, FmmlxDiagram diagram) {
 
+		if(hidden) return;
+
 		if(requiresReLayout) layout(diagram);
 
 		boolean selected = diagram.isSelected(this);
+		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
+		group.setAttribute(SvgConstant.ATTRIBUTE_GROUP_TYPE, "object");
 
 		Vector<NodeElement> nodesTobePainted = nodeElements;
 		Collections.reverse(nodesTobePainted);
 		for(NodeElement nodeElement : nodesTobePainted){
-			nodeElement.paintToSvg(diagram, xmlHandler, x+xOffset, y+yOffset, selected);
+			nodeElement.paintToSvg(diagram, xmlHandler, group, x+xOffset, y+yOffset, selected);
 		}
+		xmlHandler.addXmlElement(xmlHandler.getRoot(), group);
 	}
 	
 	@Override

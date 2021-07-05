@@ -25,6 +25,5 @@ public class ChangeOfDialogResult {
 	public String getOldOfName() {
 		return oldOfName;
 	}
-	
 
 }

@@ -1,6 +1,8 @@
 package tool.clients.fmmlxdiagrams;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Vector;
 
 import javafx.collections.FXCollections;
@@ -21,6 +23,7 @@ public abstract class AbstractPackageViewer {
 	protected final String packagePath;
 	protected transient boolean fetchingData;
 	protected boolean justLoaded = false;
+
 
 	public static enum ViewerStatus { CLEAN, DIRTY, LOADING }
 
@@ -239,13 +242,27 @@ public abstract class AbstractPackageViewer {
 		return true;
 	}
 	
-	public final FmmlxObject getObjectByPath(String path) {
+	@SuppressWarnings("serial")
+	public static class PathNotFoundException extends RuntimeException {
+
+		public PathNotFoundException(String message) {
+			super(message);
+		}
+		
+	}
+	
+	public final FmmlxObject getObjectByPath(String path) throws PathNotFoundException{
 		for(FmmlxObject obj : getObjects()) {
 			if (obj.getPath().equals(path)){
 				return obj;
 			}
 		}
-		return null;
+		for(FmmlxObject obj : getObjects()) {
+			if (obj.getName().equals(path)){
+				return obj;
+			}
+		}
+		throw new PathNotFoundException("path " + path + " not found");
 	}
 	
 	public final FmmlxAssociation getAssociationByPath(String path) {
@@ -340,4 +357,16 @@ public abstract class AbstractPackageViewer {
 	}
 
 	public Canvas getCanvas() {return null;}
+
+	public Vector<Integer> getAllObjectLevel() {
+		Vector<Integer> result = new Vector<>();
+		for(FmmlxObject obj : objects){
+			if(!result.contains(obj.getLevel())){
+				result.add(obj.getLevel());
+			}
+		}
+		Collections.sort(result);
+		Collections.reverse(result);
+		return result;
+	}
 }

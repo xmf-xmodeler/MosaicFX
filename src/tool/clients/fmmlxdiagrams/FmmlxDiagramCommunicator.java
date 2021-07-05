@@ -20,6 +20,9 @@ import xos.Value;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import java.io.FileNotFoundException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Objects;
@@ -97,7 +100,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	private transient Integer _newDiagramID = null;
-	
+
 	public static enum DiagramType {ClassDiagram, ModelBrowser};
 	
 	public Integer createDiagram(String packagePath, String diagramName, String file, DiagramType type) {
@@ -226,7 +229,7 @@ public class FmmlxDiagramCommunicator {
 		int sleep = 2;
 		long START = System.currentTimeMillis();
 		while (waiting && sleep < 200 * 100) {
-			if (DEBUG) System.err.println(attempts + ". attempt");
+//			if (DEBUG) System.err.println(attempts + ". attempt");
 			attempts++;
 			try {
 				Thread.sleep(sleep);
@@ -1729,7 +1732,11 @@ public class FmmlxDiagramCommunicator {
 						}
 					}
 				} catch (TransformerException | ParserConfigurationException e) {
-					e.printStackTrace();
+					if(e instanceof TransformerException){
+						saveXmlFile2(diagrams.get(0).getPackagePath(), diagrams.get(0).getID());
+					} else {
+						e.printStackTrace();
+					}
 				}
 				return null;
 			}
@@ -1785,13 +1792,6 @@ public class FmmlxDiagramCommunicator {
 		};
 		new Thread(task).start();
 	}
-
-//	public static int getDiagramIdFromName(String diagramName) {
-//		String[] nameArray = diagramName.split(" ");
-//		String	idDirt = nameArray[nameArray.length-1];
-//		String id = idDirt.substring(0, idDirt.length()-1);
-//		return Integer.parseInt(id);
-//	}
 
 	public void saveXmlFile2(String diagramPath, Integer id) {
 		Value[] message = new Value[]{
@@ -1939,7 +1939,12 @@ public class FmmlxDiagramCommunicator {
 		this.silent = silent;
 	}
 
-	public void saveSvgFile(String fileName, String packageString) {
-		System.out.println("test svg export");
+	public void fileSaved(String filePath, Integer id) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(id),
+				new Value(filePath),
+		};
+		sendMessage("isSaved", message);
 	}
+
 }
