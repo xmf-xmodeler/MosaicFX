@@ -86,17 +86,22 @@ public class FmmlxPalette {
 		});
 
 		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue.getValue().toString().equals("MetaClass")) {
-				fmmlxDiagram.setNodeCreationType("MetaClass");
-			} else if (newValue.getValue().toString().equals("Association")) {
-				fmmlxDiagram.setEdgeCreationType("association");
-			} else if (newValue.getValue().toString().equals("Link")) {
-				fmmlxDiagram.setEdgeCreationType("associationInstance");
-			} else if (newValue.getValue().toString().equals("Delegation")) {
-				fmmlxDiagram.setEdgeCreationType("delegation");
-			} else {
-				fmmlxDiagram.setNodeCreationType(newValue.getValue().toString());
+			if(newValue != null) {
+				newValue.getValue().action.perform(null);
 			}
+//			if (newValue.getValue().toString().equals("MetaClass")) {
+//				fmmlxDiagram.setNodeCreationType("MetaClass");
+//			} else if (newValue.getValue().toString().equals("Association")) {
+//				fmmlxDiagram.setEdgeCreationType("association");
+//			} else if (newValue.getValue().toString().equals("Link")) {
+//				fmmlxDiagram.setEdgeCreationType("associationInstance");
+//			} else if (newValue.getValue().toString().equals("Delegation")) {
+//				fmmlxDiagram.setEdgeCreationType("delegation");
+//			} else {
+//				newValue.getValue().action.perform(null);
+////				
+////				fmmlxDiagram.setNodeCreationType(newValue.getValue().toString());
+//			}
 		});
 	}
 
@@ -122,10 +127,14 @@ public class FmmlxPalette {
 //			DefaultTool metaClassTool = new DefaultTool("MetaClass", "resources/gif/class.gif",
 //					point -> fmmlxDiagram.setNodeCreationType("MetaClass"));
 //			
-			DefaultTool associationTool = new DefaultTool("Association", "resources/gif/Association.gif");
-			DefaultTool linkTool = new DefaultTool("Link", "resources/gif/Association.gif");
-			DefaultTool delegationTool = new DefaultTool("Delegation", "resources/gif/XCore/Delegation.png");
-			DefaultTool metaClassTool = new DefaultTool("MetaClass", "resources/gif/class.gif");
+			DefaultTool associationTool = 
+					new DefaultTool("Association", "resources/gif/Association.gif", point -> fmmlxDiagram.setEdgeCreationType("association"));
+			DefaultTool linkTool = 
+					new DefaultTool("Link", "resources/gif/Association.gif", point -> fmmlxDiagram.setEdgeCreationType("associationInstance"));
+			DefaultTool delegationTool = 
+					new DefaultTool("Delegation", "resources/gif/XCore/Delegation.png", point -> fmmlxDiagram.setEdgeCreationType("delegation"));
+			DefaultTool metaClassTool = 
+					new DefaultTool("MetaClass", "resources/gif/class.gif", point -> fmmlxDiagram.setNodeCreationType("MetaClass"));
 
 			TreeItem<AbstractTreeType> association = new TreeItem<AbstractTreeType>(associationTool);
 			TreeItem<AbstractTreeType> link = new TreeItem<AbstractTreeType>(linkTool);
@@ -152,10 +161,10 @@ public class FmmlxPalette {
 				levelGroup.setExpanded(true);
 				elements.getChildren().add(levelGroup);
 			}
-			for (FmmlxObject o : objects) {
+			for(final FmmlxObject o : objects) {
 				if (o.getLevel() > 0 && !o.isAbstract()) {
 					TreeItem<AbstractTreeType> levelGroup = levels.get(o.getLevel());
-					TreeItem<AbstractTreeType> classItem = new TreeItem<AbstractTreeType>(new InstanceTool(o));
+					TreeItem<AbstractTreeType> classItem = new TreeItem<AbstractTreeType>(new InstanceTool(o, p -> fmmlxDiagram.setNodeCreationType(o.getPath())));
 					levelGroup.getChildren().add(classItem);
 				}
 			}
@@ -163,10 +172,6 @@ public class FmmlxPalette {
 			relationships.setExpanded(true);
 			elements.setExpanded(true);
 		});
-
-		System.err.println("NodeCreationType: " + fmmlxDiagram.getNodeCreationType());
-		System.err.println("EdgeCreationType: " + fmmlxDiagram.getEdgeCreationType());
-
 	}
 
 	public TreeView getToolBar() {
@@ -174,17 +179,20 @@ public class FmmlxPalette {
 	}
 
 	private abstract class AbstractTreeType {
-		Action action;
+		final Action action;
 
 		protected abstract Node getIcon();
 
 		protected abstract int getLevel();
+		
+		protected AbstractTreeType(Action action) {this.action = action;}
 	}
 
 	private class TreeGroup extends AbstractTreeType {
 		final String name;
 
 		private TreeGroup(String name) {
+			super(point -> {});
 			this.name = name;
 		}
 
@@ -206,9 +214,10 @@ public class FmmlxPalette {
 	private class InstanceTool extends AbstractTreeType {
 		final FmmlxObject object;
 
-		public InstanceTool(FmmlxObject object) {
+		public InstanceTool(FmmlxObject object, Action action) {
+			super(action);
 			this.object = object;
-			this.action = p -> fmmlxDiagram.setNodeCreationType(object.getPath());
+//			this.action = p -> fmmlxDiagram.setNodeCreationType(object.getPath());
 		}
 
 		public String toString() {
@@ -233,14 +242,9 @@ public class FmmlxPalette {
 		String name;
 		ImageView icon;
 
-		public DefaultTool(String name, String pathToIcon) {
-			this.name = name;
-			this.icon = new ImageView(new javafx.scene.image.Image(new File(pathToIcon).toURI().toString()));
-		}
-
 		public DefaultTool(String name, String pathToIcon, Action action) {
+			super(action);
 			this.name = name;
-			this.action = action;
 			this.icon = new ImageView(new javafx.scene.image.Image(new File(pathToIcon).toURI().toString()));
 		}
 
