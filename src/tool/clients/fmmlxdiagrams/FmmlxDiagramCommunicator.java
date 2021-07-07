@@ -20,9 +20,6 @@ import xos.Value;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import java.io.FileNotFoundException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Objects;
@@ -229,7 +226,7 @@ public class FmmlxDiagramCommunicator {
 		int sleep = 2;
 		long START = System.currentTimeMillis();
 		while (waiting && sleep < 200 * 100) {
-//			if (DEBUG) System.err.println(attempts + ". attempt");
+			if (DEBUG) System.err.println(attempts + ". attempt");
 			attempts++;
 			try {
 				Thread.sleep(sleep);
@@ -279,7 +276,7 @@ public class FmmlxDiagramCommunicator {
 					(Boolean) responseObjectList.get(5),
 					(Integer) responseObjectList.get(6), // x-Position
 					(Integer) responseObjectList.get(7), // y-Position 
-					(Boolean) responseObjectList.get(8),
+					(Boolean) responseObjectList.get(8), // hidden
 					diagram);
 			result.add(object);
 
@@ -598,6 +595,7 @@ public class FmmlxDiagramCommunicator {
 //		System.err.println("listOfAllOperations: " +listOfAllOperations);
 		
 		for(Object operationListforOneObject : listOfAllOperations) {
+		  if(operationListforOneObject != null) {
 			String objPath = (String) (((Vector<Object>) operationListforOneObject).get(0));
 //			System.err.println("objPath: " +objPath + " " + ((Vector<Object>) (((Vector<Object>) operationListforOneObject).get(1))).size());
 			for(FmmlxObject obj : objects) if (obj.getPath().equals(objPath)) {
@@ -637,6 +635,7 @@ public class FmmlxDiagramCommunicator {
 				
 				obj.setOperations(result);
 			}
+		  }
 		}
 	}
 	
@@ -823,7 +822,7 @@ public class FmmlxDiagramCommunicator {
 	/// Operations requesting data to be manipulated ///
 	////////////////////////////////////////////////////
 
-	public void addMetaClass(int diagramID, String name, int level, Vector<String> parents, boolean isAbstract, int x, int y) {
+	public void addMetaClass(int diagramID, String name, int level, Vector<String> parents, boolean isAbstract, int x, int y, boolean hidden) {
 		Value[] parentsArray = createValueArray(parents);
 
 		Value[] message = new Value[]{
@@ -832,16 +831,16 @@ public class FmmlxDiagramCommunicator {
 				new Value(level),
 				new Value(parentsArray),
 				new Value(isAbstract),
-				new Value(x), new Value(y)};
+				new Value(x), new Value(y), new Value(hidden)};
 		sendMessage("addMetaClass", message);
 	}
 	
 	public void addNewInstance(int diagramID, String className, String name, Vector<String> parents, boolean isAbstract, int x,
-							   int y) {
+							   int y, boolean hidden) {
 		Value[] parentsArray = createValueArray(parents);
 
 		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID), new Value(className), new Value(name),
-				new Value(parentsArray), new Value(isAbstract), new Value(x), new Value(y), new Value(new Value[] {})};
+				new Value(parentsArray), new Value(isAbstract), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
 		sendMessage("addInstance", message);
 	}
 	

@@ -71,18 +71,8 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		super();
 		this.name = name;
 		this.diagram = diagram;
-		if (lastKnownX != null && lastKnownX != 0) {
-			x = lastKnownX;
-		} else {
-			x = testDiff;
-			testDiff += 50;
-		}
-		if (lastKnownY != null && lastKnownY != 0) {
-			y = lastKnownY;
-		} else {
-			y = 10;
-		}
-		
+		this.x = lastKnownX;
+		this.y = lastKnownY;
 		this.hidden = hidden;
 
 		width = 150;

@@ -10,6 +10,7 @@ import tool.clients.fmmlxdiagrams.*;
 public class ClassBrowserPackageViewer extends AbstractPackageViewer{
 
 	private final ModelBrowser view;
+	@Override protected boolean loadOnlyVisibleObjects() { return false; }	
 	
 	protected ClassBrowserPackageViewer(FmmlxDiagramCommunicator comm, int diagramID, String packagePath, ModelBrowser view) {
 		super(comm, diagramID, packagePath);

@@ -103,6 +103,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private boolean showGetterAndSetter = true;
 	private boolean showDerivedOperations=true;
 	private boolean showDerivedAttributes=true;
+	@Override protected boolean loadOnlyVisibleObjects() { return true; }	
 
 	public final String diagramName;
 	private final FmmlxPalette newFmmlxPalette;
