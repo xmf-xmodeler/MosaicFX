@@ -822,7 +822,7 @@ public class FmmlxDiagramCommunicator {
 	/// Operations requesting data to be manipulated ///
 	////////////////////////////////////////////////////
 
-	public void addMetaClass(int diagramID, String name, int level, Vector<String> parents, boolean isAbstract, int x, int y) {
+	public void addMetaClass(int diagramID, String name, int level, Vector<String> parents, boolean isAbstract, int x, int y, boolean hidden) {
 		Value[] parentsArray = createValueArray(parents);
 
 		Value[] message = new Value[]{
@@ -831,16 +831,16 @@ public class FmmlxDiagramCommunicator {
 				new Value(level),
 				new Value(parentsArray),
 				new Value(isAbstract),
-				new Value(x), new Value(y)};
+				new Value(x), new Value(y), new Value(hidden)};
 		sendMessage("addMetaClass", message);
 	}
 	
 	public void addNewInstance(int diagramID, String className, String name, Vector<String> parents, boolean isAbstract, int x,
-							   int y) {
+							   int y, boolean hidden) {
 		Value[] parentsArray = createValueArray(parents);
 
 		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID), new Value(className), new Value(name),
-				new Value(parentsArray), new Value(isAbstract), new Value(x), new Value(y), new Value(new Value[] {})};
+				new Value(parentsArray), new Value(isAbstract), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
 		sendMessage("addInstance", message);
 	}
 	
