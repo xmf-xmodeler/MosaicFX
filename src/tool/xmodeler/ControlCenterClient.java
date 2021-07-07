@@ -84,8 +84,13 @@ public class ControlCenterClient {
 	public void setDiagrams(Message message) {
 		Vector<String> vec = new Vector<>();
 		for (int i = 0; i<message.args[0].values.length;i++) {
-			vec.add(message.args[0].values[i].strValue());
+			Value value = message.args[0].values[i];
+			int id = value.values[0].intValue;
+			String name = value.values[1].strValue();
+			vec.add(name);
+			System.err.println("Message: "+ value);
 		}
+		System.err.println("Message: "+ message);
 		controlCenter.setDiagrams(vec);
 	}
 	

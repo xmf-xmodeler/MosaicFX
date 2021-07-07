@@ -1,24 +1,19 @@
 package tool.xmodeler;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.Vector;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -27,7 +22,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 //import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -37,23 +31,22 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
-import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.workbench.WorkbenchClient;
 
 public class ControlCenter extends Stage {
 	
 	private final ControlCenterClient controlCenterClient;
-	private final ObservableList<String> categoryList = FXCollections.observableArrayList();
-	private final ListView<String> categoryLV = new ListView<String>();
-	private final ObservableList<String> projectList = FXCollections.observableArrayList();
+	//private final ObservableList<String> categoryList = FXCollections.observableArrayList();
+	//private final ListView<String> categoryLV = new ListView<String>();
+	//private final ObservableList<String> projectList = FXCollections.observableArrayList();
 	private final TreeView<String> projectTree = new TreeView<String>();
 	private final ListView<String> projectLV = new ListView<String>();
-	private final ObservableList<String> modelList = FXCollections.observableArrayList();
+	//private final ObservableList<String> modelList = FXCollections.observableArrayList();
 	private final ListView<String> modelLV = new ListView<String>();
-	private final ObservableList<String> diagramList = FXCollections.observableArrayList();
+	//private final ObservableList<String> diagramList = FXCollections.observableArrayList();
 	private final ListView<String> diagramLV = new ListView<String>();
-	private ModelBrowser stage;
+	//private ModelBrowser stage;
 	private MenuBar menuBar;
 			
 	public ControlCenter() {
@@ -84,6 +77,10 @@ public class ControlCenter extends Stage {
 		CreatedModifiedGridPane modelGridPane = new CreatedModifiedGridPane();
 		
 		Button newDiagram = new Button("new");
+		newDiagram.setDisable(true);
+		newDiagram.disableProperty().bind(
+			    Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
+			);
 		Label diagramLabel = new Label("Diagrams");
 		CreatedModifiedGridPane diagramsGridPane = new CreatedModifiedGridPane();
 		newDiagram.setOnAction(e -> {
@@ -98,7 +95,6 @@ public class ControlCenter extends Stage {
 			        name, "", FmmlxDiagramCommunicator.DiagramType.ClassDiagram); System.err.println("diagramID "  +diagramID);});
 			controlCenterClient.getDiagrams(modelLV.getSelectionModel().getSelectedItem());
 		});
-		
 		diagramLV.setOnMouseClicked(me -> {
 
 		        if (me.getClickCount() == 2 && me.getButton() == MouseButton.PRIMARY) {
@@ -113,14 +109,15 @@ public class ControlCenter extends Stage {
 			           }
 		           }
 		        }
+	
 		    });
 		
-		Menu file = new Menu("File");
-		Menu browsers = new Menu("Browser");
-		Menu tools = new Menu("Tools");
-		Menu windows = new Menu("Windows");
-		Menu settings = new Menu("Settings");
-		Menu help = new Menu ("Help");
+//		Menu file = new Menu("File");
+//		Menu browsers = new Menu("Browser");
+//		Menu tools = new Menu("Tools");
+//		Menu windows = new Menu("Windows");
+//		Menu settings = new Menu("Settings");
+//		Menu help = new Menu ("Help");
 		menuBar = new MenuBar();
 		//menuBar.getMenus().addAll(file, browsers, tools, windows, settings, help);
 		HBox.setHgrow(menuBar, Priority.ALWAYS);
@@ -150,8 +147,9 @@ public class ControlCenter extends Stage {
 		modelLV.setPrefSize(250, 150);
 		grid.add(modelLV, 3, 2);
 		grid.add(modelGridPane, 3, 3);
-		modelLV.setOnMouseClicked(e->{if (e.getClickCount()==2 && e.getButton()==MouseButton.PRIMARY) modelDoubleClick(e);});
 		
+		modelLV.setOnMouseClicked(e->{if (e.getClickCount()==2 && e.getButton()==MouseButton.PRIMARY) modelDoubleClick(e);});
+		modelLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->newModelSelected(NEWW));
 		TreeItem loading = new TreeItem("Loading");
 		projectTree.setRoot(loading);
 		
@@ -161,12 +159,10 @@ public class ControlCenter extends Stage {
 		diagramLV.setPrefSize(250, 150);
 		grid.add(diagramLV, 4, 2);
 		grid.add(diagramsGridPane, 4, 3);
-		
-		
 
 		init();
 		//categoryLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->categorySelected(NEWW));
-		projectLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->controlCenterClient.getProjectModels(NEWW));
+		//projectLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->controlCenterClient.getProjectModels(NEWW));
 		projectTree.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->controlCenterClient.getProjectModels(getProjectPath(projectTree.getSelectionModel().getSelectedItem())));
 		
 		projectTree.setCellFactory(new Callback<TreeView<String>,TreeCell<String>>(){
@@ -192,11 +188,7 @@ public class ControlCenter extends Stage {
                 };
             }
         });
-		
-        
-		
-		
-		
+
 		vBox.getChildren().addAll(hBox, grid);
 		Scene scene = new Scene(vBox, 800, 300);
 		setScene(scene);
@@ -224,9 +216,17 @@ public class ControlCenter extends Stage {
 		            public void run() {
 		            	controlCenterClient.getAllProjects();
 		            } 
-		        }, 1500 
+		        }, 2000
 		);
 	}
+
+
+
+	private void newModelSelected(String modelName) {
+		controlCenterClient.getDiagrams(modelName);
+	}
+
+
 
 	public MenuBar getMenuBar() {
 		return menuBar;
@@ -234,9 +234,7 @@ public class ControlCenter extends Stage {
 
 	private void modelDoubleClick(MouseEvent e) {
 		ModelBrowser stage = new ModelBrowser(projectLV.getSelectionModel().getSelectedItem(), modelLV.getSelectionModel().getSelectedItem(), modelLV.getItems() );
-		System.err.println("ModelBrowser ("+modelLV.getSelectionModel().getSelectedItem()+") IIIa");
 		stage.show();
-		System.err.println("ModelBrowser ("+modelLV.getSelectionModel().getSelectedItem()+") IIIb");
 	}
 
 	private void categorySelected(String nEWW) {
@@ -252,7 +250,7 @@ public class ControlCenter extends Stage {
 	}
 	
 	private void init() {
-		categoryLV.getItems().clear();
+		//categoryLV.getItems().clear();
 		//categoryLV.getItems().addAll(controlCenterClient.getAllCategories());
 		}
 
@@ -332,8 +330,8 @@ public class ControlCenter extends Stage {
 	
 	public void setAllCategories(Vector<String> vec) {
 		Platform.runLater(()->{
-		categoryLV.getItems().clear();
-		categoryLV.getItems().addAll(vec);
+//		categoryLV.getItems().clear();
+//		categoryLV.getItems().addAll(vec);
 		});
 	}
 
@@ -342,6 +340,10 @@ public class ControlCenter extends Stage {
 		Platform.runLater(()->{
 			modelLV.getItems().clear();
 			modelLV.getItems().addAll(vec);
+			if(vec.size()>=1) {
+				modelLV.getSelectionModel().selectFirst();
+			}
+			
 		});
 		
 	}

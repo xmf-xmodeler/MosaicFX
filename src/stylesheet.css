@@ -1,8 +1,3 @@
-.tree-cell:selected {
-    -fx-font-weight: bold;
-    -fx-font-size: 13;
-}
-
 .tree-cell .tree-disclosure-node .arrow {
     -fx-background-color: -fx-mark-color;
     -fx-padding: 0.333333em; /* 4 */

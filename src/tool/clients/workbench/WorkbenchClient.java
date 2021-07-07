@@ -36,6 +36,8 @@ public class WorkbenchClient extends Client {
       setProjectModels(message);
     else if (message.hasName("setAllCategories"))
         setAllCategories(message);
+    else if (message.hasName("setDiagrams"))
+    	setDiagrams(message);
     else super.sendMessage(message);
   }
 
