@@ -52,8 +52,13 @@ public class ControlCenterClient {
 	public void setAllProjects(Message message) {
 		Vector<String> vec = new Vector<String>();
 		for(int i = 0; i < message.args[0].values.length; i++) {
-			vec.add(message.args[0].values[i].strValue());
+			String s = message.args[0].values[i].strValue();
+			if(s.startsWith("Root::")) {
+				s = s.substring(6);
+			}
+			vec.add(s);
 		}
+		
 		Collections.sort(vec);
 		controlCenter.setAllProjects(vec);		
 	}
@@ -68,14 +73,20 @@ public class ControlCenterClient {
 	public void setProjectModels(Message message) {
 		Vector<String> vec = new Vector<>();
 		for(int i = 0; i < message.args[0].values.length; i++) {
-			vec.add(message.args[0].values[i].strValue());
+			String s = message.args[0].values[i].strValue();
+			if(s.startsWith("Root::")) {
+				s = s.substring(6);
+			}
+			vec.add(s);
 		}
 //		Collections.sort(vec);
 		controlCenter.setProjectModels(vec);		
 	}
 	
 	public void getDiagrams(String modelPath) {
+		System.err.println("Modelpath: "+ modelPath);
 		if(modelPath == null) return;
+		if(!modelPath.startsWith("Root::")) modelPath = "Root::" + modelPath;
 		Message message = WorkbenchClient.theClient().getHandler().newMessage("getDiagrams", 1);
 		message.args[0] = new Value(modelPath);
 		WorkbenchClient.theClient().getHandler().raiseEvent(message);

@@ -130,7 +130,7 @@ public class FmmlxDiagramCommunicator {
 				new Value(packagePath),
 				new Value(diagramName)
 		};
-		sendMessage("openDiagramFromJava", message);
+		sendMessage("showDiagram", message);
 	}
 	
 	public void setNewDiagramId(int i) {
