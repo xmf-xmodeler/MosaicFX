@@ -10,7 +10,6 @@ import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.TimeOutException;
 import tool.clients.xmlManipulator.XmlHandler;
 
-import javax.xml.XMLConstants;
 import java.util.Base64;
 import java.util.List;
 import java.util.Vector;

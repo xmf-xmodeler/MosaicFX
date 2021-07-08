@@ -1,10 +1,9 @@
 package tool.clients.serializer;
 
-import javafx.geometry.Point2D;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import tool.clients.fmmlxdiagrams.*;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.xmlManipulator.XmlHandler;
 
 import java.util.List;
@@ -48,30 +47,6 @@ public class ObjectXmlManager {
         return xmlHandler.getChildWithTag(diagramsElement, SerializerConstant.TAG_NAME_OBJECTS);
     }
 
-    public void addOperation(Node objectNode, Node newNode)  {
-        if(newNode!= null){
-            Element operationsNode = getOperationsNode((Element) objectNode);
-            Element newOperation= (Element) newNode;
-
-            xmlHandler.addXmlElement(operationsNode, newOperation);
-        }
-    }
-
-    private Element getOperationsNode(Element objectNode) {
-        return xmlHandler.getChildWithTag(objectNode, SerializerConstant.TAG_NAME_OPERATIONS);
-    }
-
-    public void addAttribute(Element objectElement, Element attributeElement)  {
-        if(attributeElement!= null){
-            Element attributesNode = getAttributesNode(objectElement);
-
-            xmlHandler.addXmlElement(attributesNode, attributeElement);
-        }
-    }
-
-    private Element getAttributesNode(Element objectNode) {
-        return xmlHandler.getChildWithTag(objectNode, SerializerConstant.TAG_NAME_ATTRIBUTES);
-    }
 
     public void alignObjects(Element diagramElement, int diagramID, FmmlxDiagramCommunicator communicator) {
         Node objectsNode = xmlHandler.getChildWithTag(diagramElement, SerializerConstant.TAG_NAME_OBJECTS);
@@ -81,39 +56,10 @@ public class ObjectXmlManager {
                 Element tmp = (Element) objectList.item(i);
                 double x = Double.parseDouble(tmp.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_X));
                 double y = Double.parseDouble(tmp.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_Y));
-                Boolean hidden = "true".equals(tmp.getAttribute(SerializerConstant.ATTRIBUTE_HIDDEN));
+                boolean hidden = "true".equals(tmp.getAttribute(SerializerConstant.ATTRIBUTE_HIDDEN));
                 String objectPath = tmp.getAttribute(SerializerConstant.ATTRIBUTE_REFERENCE);
                 communicator.sendCurrentPosition(diagramID, objectPath, (int)Math.round(x), (int)Math.round(y), hidden);
             }
         }
     }
-
-
-    private Point2D getCoordinate(Element diagramElement, String path, Point2D initCoordinate) {
-        Node objectsNode = getObjectsElement(diagramElement);
-        NodeList objectList = objectsNode.getChildNodes();
-
-        for (int i = 0 ; i< objectList.getLength() ; i++){
-            if (objectList.item(i).getNodeType() == Node.ELEMENT_NODE){
-                Element object_tmp = (Element) objectList.item(i);
-                if(object_tmp.getAttribute(SerializerConstant.ATTRIBUTE_REFERENCE).equals(path)){
-                    double x = Double.parseDouble(object_tmp.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_X));
-                    double y = Double.parseDouble(object_tmp.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_Y));
-                    return new Point2D(x, y);
-                }
-            }
-        }
-        return initCoordinate;
-    }
-
-//    @Deprecated
-//    public void alignObjects2(Element diagramElement, FmmlxDiagram fmmlxDiagram) {
-//        List<FmmlxObject>allObjects = fmmlxDiagram.getObjects();
-//        for(FmmlxObject object : allObjects){
-//            Point2D initCoordinate = new Point2D(object.getX(), object.getY());
-//            Point2D coordinate = getCoordinate(diagramElement, object.getPath(),initCoordinate);
-//            object.moveTo(coordinate.getX(), coordinate.getY(), fmmlxDiagram);
-//            fmmlxDiagram.getComm().sendCurrentPosition(fmmlxDiagram.getID(), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY()), false);
-//        }
-//    }
 }
