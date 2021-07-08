@@ -22,7 +22,6 @@ public class ChangeEnumName extends CustomDialog<ChangeEnumNameDialogResult>{
 	
 	private AbstractPackageViewer diagram;
 	private FmmlxEnum selectedEnum;
-	private String selectedItem;
 	private Label currentNameLabel;
 	private Label newNameLabel;
 	
@@ -83,7 +82,7 @@ public class ChangeEnumName extends CustomDialog<ChangeEnumNameDialogResult>{
 	private boolean validateName() {
 		String name = newNameTextField.getText();
 
-		if (!InputChecker.getInstance().validateName(name)) {
+		if (!InputChecker.validateName(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else {

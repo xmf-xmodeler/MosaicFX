@@ -1,7 +1,5 @@
 package tool.clients.fmmlxdiagrams.dialogs.results;
 
-import tool.clients.fmmlxdiagrams.FmmlxEnum;
-
 public class ChangeEnumItemNameDialogResult {
 	
 	String oldName;

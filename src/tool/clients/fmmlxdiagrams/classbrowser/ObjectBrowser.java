@@ -7,7 +7,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -16,26 +15,17 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
-import tool.clients.fmmlxdiagrams.Edge;
-import tool.clients.fmmlxdiagrams.Edge.Anchor;
-import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperationValue;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
-import tool.clients.fmmlxdiagrams.classbrowser.CustomStage.GridControl;
-import tool.clients.fmmlxdiagrams.classbrowser.CustomStage.VBoxControl;
-import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue.OperationStringValues;
 
 
 
@@ -57,9 +47,7 @@ public class ObjectBrowser {
 	private Label minLevelLabel;
 	private Label maxLevelLabel;
 	private ScrollPane rechteSeite;
-	private Button submitButton;
 
-	private FmmlxLink link;
 	AbstractPackageViewer diagram;
 	Object object2;
 	

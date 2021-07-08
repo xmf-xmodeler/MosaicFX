@@ -35,6 +35,7 @@ import tool.clients.fmmlxdiagrams.dialogs.shared.*;
 import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
 import tool.clients.serializer.FmmlxSerializer;
+import xos.Value;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -79,7 +80,7 @@ public class DiagramActions {
 							int x = (int) e.getX();
 							int y = (int) e.getY();
 							if (x > 0 && y > 0) {
-								diagram.getComm().addMetaClass(diagram.getID(), mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentNames(), mcdResult.isAbstract(), x, y);
+								diagram.getComm().addMetaClass(diagram.getID(), mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentNames(), mcdResult.isAbstract(), x, y, false);
 	
 								canvas.setCursor(Cursor.DEFAULT);
 								canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
@@ -89,7 +90,7 @@ public class DiagramActions {
 					};
 					canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
 				} else {
-					diagram.getComm().addMetaClass(diagram.getID(), mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentNames(), mcdResult.isAbstract(), 0, 0);
+					diagram.getComm().addMetaClass(diagram.getID(), mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentNames(), mcdResult.isAbstract(), 0, 0, true);
 					diagram.updateDiagram();
 				}
 
@@ -110,7 +111,7 @@ public class DiagramActions {
 				int y = (int) e.getY();
 
 				if (x > 0 && y > 0) {
-					diagram.getComm().addMetaClass(diagram.getID(), mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentNames(), mcdResult.isAbstract(), x, y);
+					diagram.getComm().addMetaClass(diagram.getID(), mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentNames(), mcdResult.isAbstract(), x, y, false);
 					diagram.updateDiagram();
 				}
 			}
@@ -133,7 +134,7 @@ public class DiagramActions {
 
 				if(canvas == null) {
 					diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), aidResult.getName(),
-                            aidResult.getParentNames(), false, 0, 0);
+                            aidResult.getParentNames(), aidResult.isAbstract(), 0, 0, true);
 					diagram.updateDiagram();
 				} else {
 					canvas.setCursor(Cursor.CROSSHAIR);
@@ -146,7 +147,7 @@ public class DiagramActions {
 	
 							if (x > 0 && y > 0) {
 								diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), aidResult.getName(),
-	                                    aidResult.getParentNames(), false, x, y);
+	                                    aidResult.getParentNames(), aidResult.isAbstract(), x, y, false);
 	
 								canvas.setCursor(Cursor.DEFAULT);
 								canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
@@ -175,7 +176,7 @@ public class DiagramActions {
 				
 				if (x > 0 && y > 0) {
 					diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), aidResult.getName(),
-                            aidResult.getParentNames(), false, x, y);
+                            aidResult.getParentNames(), aidResult.isAbstract(), x, y, false);
 
 					diagram.updateDiagram();
 				}

@@ -1,0 +1,9 @@
+.tree-cell .tree-disclosure-node .arrow {
+    -fx-background-color: -fx-mark-color;
+    -fx-padding: 0.333333em; /* 4 */
+    -fx-shape: "M 0 -4 L 8 0 L 0 4 z";    // <-- change this default triangle shape
+}
+
+.tree-cell:expanded .tree-disclosure-node .arrow {
+    -fx-rotate: 90;                      // maybe another svg shape instead
+}

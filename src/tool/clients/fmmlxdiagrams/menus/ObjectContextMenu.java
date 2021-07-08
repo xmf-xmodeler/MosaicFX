@@ -205,7 +205,7 @@ public class ObjectContextMenu extends ContextMenu {
 	}
 
 	private Menu createOperationSubMenu() {
-		FmmlxOperation activeOperation = 
+		final FmmlxOperation activeOperation = 
 				(activeProperty != null && activeProperty instanceof FmmlxOperation)
 					?(FmmlxOperation) activeProperty
 					:null;

@@ -440,7 +440,7 @@ public class XmlManager extends XmlHandler {
                     }
                 }
                 boolean isAbstract = Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_ABSTRACT));
-                comm.addMetaClass(diagramID, name, level, parents, isAbstract, 0, 0);
+                comm.addMetaClass(diagramID, name, level, parents, isAbstract, 0, 0, false);
                 break;
             }
             case "removeClass" : {
@@ -617,7 +617,7 @@ public class XmlManager extends XmlHandler {
                 Point2D coordinate = new Point2D(0.0,0.0);
                 int x = (int) Math.round(coordinate.getX());
                 int y = (int) Math.round(coordinate.getY());
-                comm.addNewInstance(diagramID, ofName, name, parents, isAbstract, x, y);
+                comm.addNewInstance(diagramID, ofName, name, parents, isAbstract, x, y, false);
                 break;
             }
             case "changeOperationBody" : {

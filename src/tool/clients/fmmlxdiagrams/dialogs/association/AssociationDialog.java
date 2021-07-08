@@ -38,9 +38,6 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 		
 	private ComboBox<FmmlxAssociation> selectAssociationComboBox;
 	
-	private Label typeSource;
-	private Label typeTarget;
-	
 	private TextField selectedObject;
 	private ComboBox<FmmlxObject> newTypeSource;
 	private ComboBox<FmmlxObject> newTypeTarget;
@@ -350,7 +347,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 	private boolean validateNewIdentifierTarget() {
 		String name = newIdentifierTarget.getText();
 		
-		if (!InputChecker.getInstance().validateName(name)) {
+		if (!InputChecker.validateName(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidNameIdentifierTarget);
 			return false;
 		} else {
@@ -362,7 +359,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 	private boolean validateNewIdentifierSource() {
 		String name = newIdentifierSource.getText();
 		
-		if (!InputChecker.getInstance().validateName(name)) {
+		if (!InputChecker.validateName(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidNameIdentifierSource);
 			return false;
 		} else {
@@ -374,7 +371,7 @@ public class AssociationDialog extends CustomDialog<AssociationDialogResult> {
 	private boolean validateNewDisplayName() {
 		String name = newDisplayName.getText();
 
-		if (!InputChecker.getInstance().validateName(name)) {
+		if (!InputChecker.validateName(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidNameDisplaySource);
 			return false;
 		} else {

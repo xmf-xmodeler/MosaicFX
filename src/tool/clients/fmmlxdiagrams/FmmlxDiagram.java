@@ -11,6 +11,7 @@ import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -33,6 +34,7 @@ import javafx.stage.FileChooser;
 import org.w3c.dom.Element;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
+import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.XmlManager;
@@ -43,10 +45,15 @@ import tool.xmodeler.XModeler;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
+
 
 public class FmmlxDiagram extends AbstractPackageViewer{
 
@@ -90,9 +97,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private double zoom = 1.;
 	private Affine transformFX = new Affine();
 	public static final Font FONT;
-	private static Font fontKursiv;
-//	private static Font paletteFont;
-	private static Font paletteFontKursiv;
 
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
@@ -100,9 +104,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private boolean showGetterAndSetter = true;
 	private boolean showDerivedOperations=true;
 	private boolean showDerivedAttributes=true;
+	@Override protected boolean loadOnlyVisibleObjects() { return true; }	
 
 	public final String diagramName;
-	private final NewFmmlxPalette newFmmlxPalette;
+	private final FmmlxPalette newFmmlxPalette;
 	private String filePath;
 
 
@@ -117,15 +122,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	static{
 		FONT = Font.font(Font.getDefault().getFamily(), FontPosture.REGULAR, 14);
-		try {
-
-	//		font = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono.ttf"), 14);
-			fontKursiv = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 14);
-	//		paletteFont = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSans.ttf"), 12);
-			paletteFontKursiv =Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 12);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		try {
+//
+//	//		font = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono.ttf"), 14);
+////			fontKursiv = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 14);
+//	//		paletteFont = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSans.ttf"), 12);
+////			paletteFontKursiv =Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 12);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	private FmmlxDiagram() {
@@ -140,10 +145,12 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		super(comm,diagramID,packagePath);
 		this.diagramName = name;
 		vBox = new VBox();
-		menu = new Menu("Test");
+		menu = new Menu("Save & Load");
 		menuBar = new MenuBar();
 		loadXML = new MenuItem("Load Diagram via XML");
 		saveXML = new MenuItem("Save Diagram as XML");
+		saveXML.setOnAction(e->saveXMLAction());
+		loadXML.setOnAction(e->loadXMLAction());
 		menu.getItems().addAll(loadXML, saveXML);
 		menuBar.getMenus().add(menu);
 		pane = new SplitPane();
@@ -151,7 +158,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		mainView = new SplitPane();
 		canvas = new Canvas(canvasRawSize.getX(), canvasRawSize.getY());
 		Palette palette = new Palette(this);
-		newFmmlxPalette = new NewFmmlxPalette(this);
+		newFmmlxPalette = new FmmlxPalette(this);
 		scrollerCanvas = new ScrollPane(canvas);
 		pane.setOrientation(Orientation.HORIZONTAL);
 		pane.setDividerPosition(0, 0.25);
@@ -179,6 +186,43 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}, 25, 25);
 	}
 
+	private void loadXMLAction() {
+		ChoiceDialog<String> dialog = new ChoiceDialog<>();
+		dialog.setTitle("Load XML File");
+		dialog.setHeaderText(null);
+		dialog.setContentText("Choose one of your saved XML files:");
+
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()){
+		    
+		}
+		
+		File tempDirectory = new File("");
+		tempDirectory=new File(tempDirectory.toURI()).getParentFile();
+		//boolean exists = tempDirectory.exists();
+		
+		String dirLocation = tempDirectory.toString();
+		System.err.println("Directory: " + tempDirectory.toString());
+        try {
+            List<File> files = Files.list(Paths.get(dirLocation))
+                                    .filter(Files::isRegularFile)
+                                    .filter(path -> path.toString().endsWith(".xml"))
+                                    .map(Path::toFile)
+                                    .collect(Collectors.toList());
+           
+            files.forEach(System.err::println);
+            
+        } catch (IOException e) {
+            // Error while reading the directory
+        }
+
+	}
+
+	private Object saveXMLAction() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	// Only used to set the mouse pointer. Find a better solution
 	@Deprecated
 	public Canvas getCanvas() {
@@ -188,10 +232,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public void deselectPalette() {
 		edgeCreationType = null;
 		nodeCreationType = null;
-		newFmmlxPalette.clearSelection();
+		//newFmmlxPalette.clearSelection();
 	}
-
-	public NewFmmlxPalette getPalette() {
+	
+	public FmmlxPalette getPalette() {
 		return newFmmlxPalette;
 	}
 
@@ -206,6 +250,14 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		this.nodeCreationType = nodeCreationType;
 		this.edgeCreationType = null;
 		getCanvas().setCursor(Cursor.CROSSHAIR);
+	}
+	
+	public String getEdgeCreationType() {
+		return edgeCreationType;
+	}
+	
+	public String getNodeCreationType() {
+		return nodeCreationType;
 	}
 
 	public String getFilePath() {
@@ -618,16 +670,21 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		} else if (edgeCreationType != null) {
 			if (edgeCreationType.equals("association")) {
 				//hitObject = getElementAt(p.getX(), p.getY());
-				System.out.println("asso");
-				if(hitObject instanceof FmmlxObject) {
+				//System.out.println("asso");
+				if(hitObject instanceof FmmlxObject) {		
 					setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Association);
 					canvas.setCursor(Cursor.DEFAULT);
 
 				}
 			} else if (edgeCreationType.equals("associationInstance")) {
-				System.out.println("instance");
+				//System.out.println("instance");
 				if(hitObject instanceof FmmlxObject) {
 					setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.AssociationInstance);
+					canvas.setCursor(Cursor.DEFAULT);
+				}
+			} else if (edgeCreationType.equals("delegation")) {
+				if(hitObject instanceof FmmlxObject) {
+					setDrawEdgeMode((FmmlxObject)hitObject, PropertyType.Delegation);
 					canvas.setCursor(Cursor.DEFAULT);
 				}
 			}

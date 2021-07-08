@@ -18,7 +18,7 @@ import java.util.concurrent.CountDownLatch;
 
 public class NewFmmlxPalette {
 	
-	public static HashMap<Integer, Paint> colors = null;
+	//public static HashMap<Integer, Paint> colors = null;
 	private final TreeView<PaletteTool> tree;
 	private final HashMap<String, PaletteGroup> paletteGroups = new HashMap<>();
 	private final FmmlxDiagram fmmlxDiagram;
@@ -74,7 +74,7 @@ public class NewFmmlxPalette {
 		return tree;
 	}
 	
-	public TreeView<PaletteTool> initCustomTreeView() {
+	private TreeView<PaletteTool> initCustomTreeView() {
 
 		TreeView<PaletteTool> treeView = new TreeView<>();
 		
@@ -157,9 +157,9 @@ public class NewFmmlxPalette {
 		}
 	}
 
-	public HashMap<String, PaletteGroup> getFmmlxGroups() {
-		return paletteGroups;
-	}
+//	public HashMap<String, PaletteGroup> getFmmlxGroups() {
+//		return paletteGroups;
+//	}
 
 	public void clearSelection() {
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {

@@ -44,7 +44,8 @@ public abstract class AbstractPackageViewer {
 		@Override protected void fetchDiagramDataSpecific2() { }
 		@Override protected void clearDiagram_specific() { }
 		@Override public void setSelectedObjectAndProperty(FmmlxObject objectByPath, FmmlxProperty property) {}
-		@Override protected void updateViewerStatusInGUI(ViewerStatus newStatus) {}	
+		@Override protected void updateViewerStatusInGUI(ViewerStatus newStatus) {}
+		@Override protected boolean loadOnlyVisibleObjects() { return false; }	
 	};
 	
 	protected AbstractPackageViewer(FmmlxDiagramCommunicator comm, int diagramID, String packagePath) {
@@ -112,10 +113,16 @@ public abstract class AbstractPackageViewer {
 //			for(FmmlxObject o : objects) {
 //				o.fetchDataDefinitions(comm);
 //			}
+			
+			Vector<FmmlxObject> visibleObjects = new Vector<>();
+			if (loadOnlyVisibleObjects()) {
+				for(FmmlxObject o : objects)
+					if(!o.hidden) visibleObjects.add(o); }
+				else visibleObjects = objects;
 
-			comm.fetchAllAttributes(this, objects);	
-			comm.fetchAllOperations(this, objects);	
-			comm.fetchAllConstraints(this, objects);			
+			comm.fetchAllAttributes(this, visibleObjects);	
+			comm.fetchAllOperations(this, visibleObjects);	
+			comm.fetchAllConstraints(this, visibleObjects);			
 			
 			
 			if(TIMER) System.err.println("Object definitions loaded after " + (System.currentTimeMillis() - START) + " ms.");
@@ -155,6 +162,8 @@ public abstract class AbstractPackageViewer {
 		fetchDiagramDataSpecific2();
 	}
 	
+	protected abstract boolean loadOnlyVisibleObjects();
+
 	private void setViewerStatus(ViewerStatus newStatus) {
 		updateViewerStatusInGUI(newStatus);
 	}
@@ -242,13 +251,27 @@ public abstract class AbstractPackageViewer {
 		return true;
 	}
 	
-	public final FmmlxObject getObjectByPath(String path) {
+	@SuppressWarnings("serial")
+	public static class PathNotFoundException extends RuntimeException {
+
+		public PathNotFoundException(String message) {
+			super(message);
+		}
+		
+	}
+	
+	public final FmmlxObject getObjectByPath(String path) throws PathNotFoundException{
 		for(FmmlxObject obj : getObjects()) {
 			if (obj.getPath().equals(path)){
 				return obj;
 			}
 		}
-		return null;
+		for(FmmlxObject obj : getObjects()) {
+			if (obj.getName().equals(path)){
+				return obj;
+			}
+		}
+		throw new PathNotFoundException("path " + path + " not found");
 	}
 	
 	public final FmmlxAssociation getAssociationByPath(String path) {

@@ -60,7 +60,7 @@ public class AddEnumItemDialog extends CustomDialog<AddEnumElementDialogResult>{
 	private boolean validateUserInput() {
 		String name = inputElementNameTextField.getText();
 
-		if (!InputChecker.getInstance().validateName(name)) {
+		if (!InputChecker.validateName(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else if(list.getItems().contains(name)){

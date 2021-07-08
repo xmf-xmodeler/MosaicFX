@@ -7,6 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.paint.*;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
@@ -70,18 +71,8 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		super();
 		this.name = name;
 		this.diagram = diagram;
-		if (lastKnownX != null && lastKnownX != 0) {
-			x = lastKnownX;
-		} else {
-			x = testDiff;
-			testDiff += 50;
-		}
-		if (lastKnownY != null && lastKnownY != 0) {
-			y = lastKnownY;
-		} else {
-			y = 10;
-		}
-		
+		this.x = lastKnownX;
+		this.y = lastKnownY;
 		this.hidden = hidden;
 
 		width = 150;
@@ -108,7 +99,8 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		StringBuilder parentsList = new StringBuilder("extends ");
 		for (String parentName : getParentsPaths()) {
 			try {
-				FmmlxObject parent = diagram.getObjectByPath(parentName);
+				FmmlxObject parent = null;
+				try {parent = diagram.getObjectByPath(parentName);} catch (PathNotFoundException e) {}
 				InheritanceEdge edge = diagram.getInheritanceEdge(this, parent);
 				if(edge != null && !edge.isVisible()) {
 					parentName = parent.name;
@@ -192,8 +184,8 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	
 	public Vector<FmmlxOperation> getDelegateToClassOperations() {
 		Vector<FmmlxOperation> delelegateToClassOperations = new Vector<>();
-		FmmlxObject of = diagram.getObjectByPath(ofPath);
-		if(of != null) {
+		try {
+			FmmlxObject of = diagram.getObjectByPath(ofPath);
 			Vector<FmmlxOperation> ofOps = new Vector<>(of.ownOperations);
 			ofOps.addAll(of.otherOperations);
 			ofOps.addAll(of.getDelegatedOperations());
@@ -203,7 +195,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 					delelegateToClassOperations.add(o);
 				}
 			}
-		}
+		} catch (PathNotFoundException e) {} // of not found
 		return delelegateToClassOperations;
 	}
 	
@@ -358,6 +350,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		FmmlxObject ofObj = null;
 		try {
 			ofObj = diagram.getObjectByPath(getOfPath());
+		} catch (PathNotFoundException e) {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -618,10 +611,10 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	private double calculateNeededWidth(FmmlxDiagram diagram) {
 		double neededWidth = FmmlxDiagram.calculateTextWidth(name); 
 
-		FmmlxObject of = diagram.getObjectByPath(ofPath);
-		if (of!=null) {
+		try {
+			FmmlxObject of = diagram.getObjectByPath(ofPath);
 			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(getLevel() + "^" + of.name + "^"));
-		} else {
+		} catch (PathNotFoundException e) {
 			neededWidth = Math.max(neededWidth, FmmlxDiagram.calculateTextWidth(getLevel() + "^MetaClass^"));
 		}
 		
@@ -766,17 +759,13 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		if("Root::XCore::Class".equals(ownPath)) return new Vector<FmmlxObject>();
 		Vector<FmmlxObject> result1 = new Vector<>();
 		if (ofPath != null) {
-			FmmlxObject of = diagram.getObjectByPath(getOfPath());
-			if(of!=null){
-				result1.add(of);
-			}
+			try{FmmlxObject of = diagram.getObjectByPath(getOfPath());result1.add(of);}
+			catch (PathNotFoundException e) {} // if(of==null){}
 		}
 		for (String p : getParentsPaths()) {
-			FmmlxObject parent = diagram.getObjectByPath(p);
-
-			if(parent!=null){
-				result1.add(parent);
-			}
+			try
+			  {FmmlxObject parent = diagram.getObjectByPath(p); result1.add(parent); }
+			catch(PathNotFoundException e) {} // if(parent==null){}
 		}
 		Vector<FmmlxObject> result2 = new Vector<>(result1);
 		for (FmmlxObject o : result1) if (o.level != -1) {
@@ -990,13 +979,11 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	@Override public String toString() { return name; }
 	
 	public String getMetaClassName() {
-		FmmlxObject of = diagram.getObjectByPath(ofPath);
-		if (of==null) {
-			if ("Root::FMML::MetaClass".equals(ofPath)) {
-			return "MetaClass";
-			} return ofPath;
-		} else {
-			return of.name;
+		try {
+			FmmlxObject of = diagram.getObjectByPath(ofPath); return of.name;
+		} catch (PathNotFoundException e) {
+			if ("Root::FMML::MetaClass".equals(ofPath)) return "MetaClass";
+			return ofPath;
 		}
 	}
 	

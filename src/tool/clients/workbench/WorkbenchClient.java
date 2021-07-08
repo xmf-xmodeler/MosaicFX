@@ -36,6 +36,8 @@ public class WorkbenchClient extends Client {
       setProjectModels(message);
     else if (message.hasName("setAllCategories"))
         setAllCategories(message);
+    else if (message.hasName("setDiagrams"))
+    	setDiagrams(message);
     else super.sendMessage(message);
   }
 
@@ -50,7 +52,12 @@ public class WorkbenchClient extends Client {
   private void setProjectModels(Message message) {
 	ControlCenterClient.getClient().setProjectModels(message);
   }
-
+  
+  private void setDiagrams(Message message) {
+	  ControlCenterClient.getClient().setDiagrams(message);
+  }
+  
+  
   private void consoleDot(Message message) {
     ConsoleClient.theConsole().dot(message);
   }

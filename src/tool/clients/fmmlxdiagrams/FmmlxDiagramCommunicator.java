@@ -21,9 +21,6 @@ import xos.Value;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import java.io.FileNotFoundException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Objects;
@@ -280,7 +277,7 @@ public class FmmlxDiagramCommunicator {
 					(Boolean) responseObjectList.get(5),
 					(Integer) responseObjectList.get(6), // x-Position
 					(Integer) responseObjectList.get(7), // y-Position 
-					(Boolean) responseObjectList.get(8),
+					(Boolean) responseObjectList.get(8), // hidden
 					diagram);
 			result.add(object);
 
@@ -599,6 +596,7 @@ public class FmmlxDiagramCommunicator {
 //		System.err.println("listOfAllOperations: " +listOfAllOperations);
 		
 		for(Object operationListforOneObject : listOfAllOperations) {
+		  if(operationListforOneObject != null) {
 			String objPath = (String) (((Vector<Object>) operationListforOneObject).get(0));
 //			System.err.println("objPath: " +objPath + " " + ((Vector<Object>) (((Vector<Object>) operationListforOneObject).get(1))).size());
 			for(FmmlxObject obj : objects) if (obj.getPath().equals(objPath)) {
@@ -638,6 +636,7 @@ public class FmmlxDiagramCommunicator {
 				
 				obj.setOperations(result);
 			}
+		  }
 		}
 	}
 	
@@ -824,7 +823,7 @@ public class FmmlxDiagramCommunicator {
 	/// Operations requesting data to be manipulated ///
 	////////////////////////////////////////////////////
 
-	public void addMetaClass(int diagramID, String name, int level, Vector<String> parents, boolean isAbstract, int x, int y) {
+	public void addMetaClass(int diagramID, String name, int level, Vector<String> parents, boolean isAbstract, int x, int y, boolean hidden) {
 		Value[] parentsArray = createValueArray(parents);
 
 		Value[] message = new Value[]{
@@ -833,16 +832,16 @@ public class FmmlxDiagramCommunicator {
 				new Value(level),
 				new Value(parentsArray),
 				new Value(isAbstract),
-				new Value(x), new Value(y)};
+				new Value(x), new Value(y), new Value(hidden)};
 		sendMessage("addMetaClass", message);
 	}
 	
 	public void addNewInstance(int diagramID, String className, String name, Vector<String> parents, boolean isAbstract, int x,
-							   int y) {
+							   int y, boolean hidden) {
 		Value[] parentsArray = createValueArray(parents);
 
 		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID), new Value(className), new Value(name),
-				new Value(parentsArray), new Value(isAbstract), new Value(x), new Value(y), new Value(new Value[] {})};
+				new Value(parentsArray), new Value(isAbstract), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
 		sendMessage("addInstance", message);
 	}
 	
@@ -1252,34 +1251,34 @@ public class FmmlxDiagramCommunicator {
         sendMessage("changeAssociationForwardName", message);
     }
 
-    public void changeAssociationStart2EndLevel(int diagramID, String associationId, Integer newLevel) {
+    public void changeAssociationStart2EndLevel(int diagramID, String associationName, Integer newLevel) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationId),
+                new Value(associationName),
                 new Value(newLevel)};
         sendMessage("changeAssociationStart2EndLevel", message);
     }
 
-    public void changeAssociationEnd2StartLevel(int diagramID, String associationId, Integer newLevel) {
+    public void changeAssociationEnd2StartLevel(int diagramID, String associationName, Integer newLevel) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationId),
+                new Value(associationName),
                 new Value(newLevel)};
         sendMessage("changeAssociationEnd2StartLevel", message);
     }
 
-    public void changeAssociationStart2EndAccessName(int diagramID, String associationId, String newName) {
+    public void changeAssociationStart2EndAccessName(int diagramID, String associationName, String newName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationId),
+                new Value(associationName),
                 new Value(newName)};
         sendMessage("changeAssociationStart2EndAccessName", message);
     }
 
-    public void changeAssociationEnd2StartAccessName(int diagramID, String associationId, String newName) {
+    public void changeAssociationEnd2StartAccessName(int diagramID, String associationName, String newName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
-                new Value(associationId),
+                new Value(associationName),
                 new Value(newName)};
         sendMessage("changeAssociationEnd2StartAccessName", message);
     }
@@ -1867,7 +1866,8 @@ public class FmmlxDiagramCommunicator {
 		return initLabel.substring(0, initLabel.length()-2)+id+")";
 	}
 
-    public HashMap<String, HashMap<String, Object>> getAllLabelPositions(int id) {
+    @SuppressWarnings("unchecked")
+	public HashMap<String, HashMap<String, Object>> getAllLabelPositions(int id) {
 		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
 		Vector<Object> response;
 		try {
@@ -1895,6 +1895,7 @@ public class FmmlxDiagramCommunicator {
         return result;
     }
 
+	@SuppressWarnings("unchecked")
 	public void testGetAllEdgePositions(int id) {
 		Vector<Object> response;
 		try {
@@ -1907,6 +1908,7 @@ public class FmmlxDiagramCommunicator {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public void testGetAllLabelPositions(int id) {
 		Vector<Object> response;
 		try {

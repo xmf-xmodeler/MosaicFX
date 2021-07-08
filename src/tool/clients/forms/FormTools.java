@@ -2,7 +2,6 @@ package tool.clients.forms;
 
 import java.io.PrintStream;
 import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javafx.application.Platform;
 

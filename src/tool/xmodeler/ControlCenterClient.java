@@ -7,6 +7,7 @@ import java.util.Vector;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.TreeItem;
 import tool.clients.workbench.WorkbenchClient;
 import xos.Message;
 import xos.Value;
@@ -71,6 +72,26 @@ public class ControlCenterClient {
 		}
 //		Collections.sort(vec);
 		controlCenter.setProjectModels(vec);		
+	}
+	
+	public void getDiagrams(String modelPath) {
+		if(modelPath == null) return;
+		Message message = WorkbenchClient.theClient().getHandler().newMessage("getDiagrams", 1);
+		message.args[0] = new Value(modelPath);
+		WorkbenchClient.theClient().getHandler().raiseEvent(message);
+	}
+	
+	public void setDiagrams(Message message) {
+		Vector<String> vec = new Vector<>();
+		for (int i = 0; i<message.args[0].values.length;i++) {
+			Value value = message.args[0].values[i];
+			int id = value.values[0].intValue;
+			String name = value.values[1].strValue();
+			vec.add(name);
+			System.err.println("Message: "+ value);
+		}
+		System.err.println("Message: "+ message);
+		controlCenter.setDiagrams(vec);
 	}
 	
 	public void createNewProject() {
