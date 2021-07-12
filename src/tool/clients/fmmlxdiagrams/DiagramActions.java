@@ -1066,6 +1066,7 @@ public class DiagramActions {
 		for(FmmlxObject o : diagram.getObjects()) if(o.hidden) hiddenElements.add(o); 
 		ListView<FmmlxObject> listView = new ListView<>();
 		listView.getItems().addAll(hiddenElements);
+		listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		unhideElementsDialog.getDialogPane().setContent(listView);
 

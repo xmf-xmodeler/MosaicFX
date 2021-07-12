@@ -447,7 +447,7 @@ public class XModeler extends Application {
 	  		outerSplitPane = new SplitPane();
 			
 			// Tabs for projects
-			browserTab = new TabPane();//new Tab("MyProjects",projectTree),new Tab("Project0",new TreeView<String>()));
+//			browserTab = new TabPane();
 			
 			rightSplitPane = new SplitPane();
 			rightSplitPane.setOrientation(Orientation.VERTICAL);
@@ -459,8 +459,9 @@ public class XModeler extends Application {
 			
 			rightSplitPane.getItems().addAll(editorTabs, propertyTabs);
 			
-			outerSplitPane.getItems().addAll(browserTab, rightSplitPane);
-			outerSplitPane.setDividerPosition(0, 0.01 );
+			outerSplitPane = rightSplitPane;
+//			outerSplitPane.getItems().addAll(browserTab, rightSplitPane);
+//			outerSplitPane.setDividerPosition(0, 0.01 );
 			
 			menuBar = new MenuBar(); //MyMenuBar();
 			
