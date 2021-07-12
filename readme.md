@@ -40,8 +40,8 @@ Please make sure to update tests as appropriate.
 **XModeler - Language Engineering for Multilevel Modelling**  
 [Wiki][wiki] | [LE4MM Website][web] | [Kanban Board][kanban] | [Markdown Cheatsheet][markdown]  
 
-## License
-[MIT](https://choosealicense.com/licenses/mit/)
+<!--## License
+[MIT](https://choosealicense.com/licenses/mit/)-->
 
 ***
 
