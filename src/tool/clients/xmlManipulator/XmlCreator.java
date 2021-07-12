@@ -1,4 +1,5 @@
 package tool.clients.xmlManipulator;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import tool.clients.exporter.svg.SvgConstant;
@@ -14,8 +15,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 /*As the name suggests, the XML Creator is a class that is tasked with making XML files needed later to save XML-Document.
 *This class has two creators.
@@ -24,21 +23,16 @@ import java.nio.file.Paths;
 public class XmlCreator {
     private static final int version = SerializerConstant.SERIALIZER_VERSION;
 
-    public XmlCreator() {
-    }
-
-    public String createXml(String file) throws TransformerException, ParserConfigurationException {
+    public void createXml(String file) throws TransformerException, ParserConfigurationException {
         Document document = createDocument();
         initXML(document);
         transformDocument(document, new File(file));
-        return file;
     }
 
-    public String createSvg(String file, double width, double height) throws TransformerException, ParserConfigurationException {
+    public void createSvg(String file, double width, double height) throws TransformerException, ParserConfigurationException {
         Document document = createDocument();
         initSvg(document, width, height);
         transformDocument(document, new File(file));
-        return file;
     }
 
     /*This function initializes the basic structure of the XML file that later will be able to be manipulated which aims to store FMMLXDiagram data.*/

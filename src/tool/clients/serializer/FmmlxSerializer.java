@@ -27,15 +27,16 @@ public class FmmlxSerializer  {
 
 
     public FmmlxSerializer(String filePath) throws TransformerException, ParserConfigurationException {
-        this.filePath = initUserXMLFile(filePath);
+        this.filePath = filePath;
+        initUserXMLFile(filePath);
         this.xmlManager = new XmlManager(this.filePath);
     }
 
     //This methode is used to make xml files according to the address in parameters
     //and it will be automatically called when FmmlxSerializer-Class created
-    public String initUserXMLFile(String file) throws TransformerException, ParserConfigurationException {
+    public void initUserXMLFile(String file) throws TransformerException, ParserConfigurationException {
         XmlCreator xmlCreator = new XmlCreator();
-        return xmlCreator.createXml(file);
+        xmlCreator.createXml(file);
     }
 
     //This Method is the main "save as" method
