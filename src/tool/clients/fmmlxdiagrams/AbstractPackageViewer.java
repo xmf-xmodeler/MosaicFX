@@ -348,21 +348,23 @@ public abstract class AbstractPackageViewer {
 	public abstract void setSelectedObjectAndProperty(FmmlxObject objectByPath, FmmlxProperty property);
 
 	public FmmlxOperation getOperation(FmmlxOperationValue newOpV) {
-		for(FmmlxObject o : getObjects()) {
-			if(o.getOperationValues().contains(newOpV)) {
-				FmmlxObject oOf = getObjectByPath(o.getOfPath());
-				for(FmmlxOperation op : oOf.getAllOperations()) {
-					if(op.getName().equals(newOpV.name)) {
-						FmmlxObject opOwner = getObjectByPath(op.getOwner());
-						for(FmmlxOperation op2 : opOwner.getOwnOperations()) {
-							if(op2.getName().equals(newOpV.name)) {
-								return op2;
-							}
-						}; throw new RuntimeException("Operation not found in owner");
-					}
-				}; throw new RuntimeException("Operation not found in class");
-			}
-		}; throw new RuntimeException("Object not found for OperationValue");
+		try{
+			for(FmmlxObject o : getObjects()) {
+				if(o.getOperationValues().contains(newOpV)) {
+					FmmlxObject oOf = getObjectByPath(o.getOfPath());
+					for(FmmlxOperation op : oOf.getAllOperations()) {
+						if(op.getName().equals(newOpV.name)) {
+							FmmlxObject opOwner = getObjectByPath(op.getOwner());
+							for(FmmlxOperation op2 : opOwner.getOwnOperations()) {
+								if(op2.getName().equals(newOpV.name)) {
+									return op2;
+								}
+							}; throw new RuntimeException("Operation not found in owner");
+						}
+					}; throw new RuntimeException("Operation not found in class");
+				}
+			}; throw new RuntimeException("Object not found for OperationValue");
+		} catch (PathNotFoundException pnfe) {throw new RuntimeException("Something went wrong",pnfe);}
 	}
 
 	public Canvas getCanvas() {return null;}
