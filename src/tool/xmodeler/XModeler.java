@@ -460,7 +460,7 @@ public class XModeler extends Application {
 			rightSplitPane.getItems().addAll(editorTabs, propertyTabs);
 			
 			outerSplitPane.getItems().addAll(browserTab, rightSplitPane);
-			outerSplitPane.setDividerPosition(0, 0.2 );
+			outerSplitPane.setDividerPosition(0, 0.01 );
 			
 			menuBar = new MenuBar(); //MyMenuBar();
 			

@@ -160,11 +160,11 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
 				return new TreeItemInteractionHandler();
 			});
 
-			if (PropertyManager.getProperty("treeBrowsersSeparately", true)) {
+//			if (PropertyManager.getProperty("treeBrowsersSeparately", true)) {
 				createStage(tv, name, id);
-			} else {
-				createTab(tv, name, id);
-			}
+//			} else {
+//				createTab(tv, name, id);
+//			}
 
 			l.countDown();
 		});
@@ -175,47 +175,46 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
 		}
 	}
 
-	private void createTab(TreeView<String> tv, String name, String id) {
-		Tab tab = new Tab(name);
-		tab.setTooltip(new Tooltip(name));
-		tab.setContent(tv);
-		tab.setClosable(true);
-		tabs.put(id, tab);
-		tab.setOnCloseRequest((e) -> closeTab(tab, e, id, name, tv));
-		tabPane.getTabs().add(tab);
-		tabPane.getSelectionModel().select(tab);
-	}
+//	private void createTab(TreeView<String> tv, String name, String id) {
+//		Tab tab = new Tab(name);
+//		tab.setTooltip(new Tooltip(name));
+//		tab.setContent(tv);
+//		tab.setClosable(true);
+//		tabs.put(id, tab);
+//		tab.setOnCloseRequest((e) -> closeTab(tab, e, id, name, tv));
+//		tabPane.getTabs().add(tab);
+//		tabPane.getSelectionModel().select(tab);
+//	}
 
-	private void closeTab(Tab item, Event wevent, String id, String name, TreeView<String> tv) {
-
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-
-		ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
-		ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
-		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-		alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
-		alert.setTitle("Open tab in separate window instead?");
-		alert.setHeaderText(null);
-
-		Optional<ButtonType> result = alert.showAndWait();
-		if (result.get().getButtonData() == ButtonData.YES) {
-			tabs.remove(id);
-			PropertyManager.setProperty("treeBrowsersSeparately", "true");
-			createStage(tv, name, id);
-		} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
-			wevent.consume();
-		} else {
-			Message message = getHandler().newMessage("modelBrowserClosed", 1);
-			message.args[0] = new Value(id);
-			getHandler().raiseEvent(message);
-			trees.remove(id);
-			tabs.remove(id);
-		}
-
-	}
+//	private void closeTab(Tab item, Event wevent, String id, String name, TreeView<String> tv) {
+//
+//		Alert alert = new Alert(AlertType.CONFIRMATION);
+//
+//		ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+//		ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
+//		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+//		alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
+//		alert.setTitle("Open tab in separate window instead?");
+//		alert.setHeaderText(null);
+//
+//		Optional<ButtonType> result = alert.showAndWait();
+//		if (result.get().getButtonData() == ButtonData.YES) {
+//			tabs.remove(id);
+//			PropertyManager.setProperty("treeBrowsersSeparately", "true");
+//			createStage(tv, name, id);
+//		} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
+//			wevent.consume();
+//		} else {
+//			Message message = getHandler().newMessage("modelBrowserClosed", 1);
+//			message.args[0] = new Value(id);
+//			getHandler().raiseEvent(message);
+//			trees.remove(id);
+//			tabs.remove(id);
+//		}
+//
+//	}
 
 	private void createStage(TreeView<String> tv, String name, String id) {
-
 		Stage stage = new Stage();
 		BorderPane border = new BorderPane();
 		border.setCenter(tv);
@@ -228,28 +227,28 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
 
 	private void closeScene(Stage stage, Event wevent, String id, String name, TreeView<String> tv) {
 
-		Alert alert = new Alert(AlertType.CONFIRMATION);
+//		Alert alert = new Alert(AlertType.CONFIRMATION);
+//
+//		ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+//		ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
+//		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+//		alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
+//		alert.setTitle("Open stage as tab in tree pane instead?");
+//		alert.setHeaderText(null);
 
-		ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
-		ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
-		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-		alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
-		alert.setTitle("Open stage as tab in tree pane instead?");
-		alert.setHeaderText(null);
-
-		Optional<ButtonType> result = alert.showAndWait();
-		if (result.get().getButtonData() == ButtonData.YES) {
-			PropertyManager.setProperty("treeBrowsersSeparately", "false");
-			createTab(tv, name, id);
-		} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
-			wevent.consume();
-		} else {
+//		Optional<ButtonType> result = alert.showAndWait();
+//		if (result.get().getButtonData() == ButtonData.YES) {
+//			PropertyManager.setProperty("treeBrowsersSeparately", "false");
+//			createTab(tv, name, id);
+//		} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
+//			wevent.consume();
+//		} else {
 			Message message = getHandler().newMessage("modelBrowserClosed", 1);
 			message.args[0] = new Value(id);
 			getHandler().raiseEvent(message);
 			trees.remove(id);
 		}
-	}
+//	}
 
 	private void expand(final String id) {
 		CountDownLatch l = new CountDownLatch(1);
