@@ -70,13 +70,13 @@ public class ControlCenter extends Stage {
 		Label projectLabel = new Label("Projects");
 		CreatedModifiedGridPane projectGridPane = new CreatedModifiedGridPane();
 		
-		Button newModel = new Button("new");
+		Button newModel = new Button("Create new Model");
 		newModel.setDisable(true);
 		
 		Label modelLabel = new Label("Models");
 		CreatedModifiedGridPane modelGridPane = new CreatedModifiedGridPane();
 		
-		Button newDiagram = new Button("new");
+		Button newDiagram = new Button("create new Diagram");
 		newDiagram.setDisable(true);
 		newDiagram.disableProperty().bind(
 			    Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
