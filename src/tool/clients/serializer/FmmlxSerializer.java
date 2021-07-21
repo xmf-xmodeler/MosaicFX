@@ -19,7 +19,7 @@ import java.util.Vector;
 *This Class associated with another two classes, which is XmlHandler and the xml-filePath
 *   XMLHandler is can be considered an interface to manipulate XML-document (document-communicator).
 *   while filepath is an address where the XML file will be saved
-*And this Class contains the main method to save FmmlxDiagram data into xml-File
+*   And this Class contains the main method to save FmmlxDiagram data into xml-File
 */
 public class FmmlxSerializer  {
     private final XmlManager xmlManager;
@@ -55,7 +55,7 @@ public class FmmlxSerializer  {
                 saveProject(packagePath);
                 saveDiagram(diagramLabel, packagePath, id);
             }
-            saveLog(diagramIds.get(0), communicator);
+            saveProjectLog(diagramIds.get(0), communicator);
             this.xmlManager.flushData();
             communicator.fileSaved(filePath, diagramIds.get(0));
         } catch (Exception e){
@@ -76,7 +76,7 @@ public class FmmlxSerializer  {
                     saveProject(packagePath);
                     saveDiagram(diagramLabel, packagePath, id_tmp);
                 }
-                saveLog(diagramIds.get(0), communicator);
+                saveProjectLog(diagramIds.get(0), communicator);
                 xmlManager.flushData();
                 communicator.fileSaved(this.filePath, diagramIds.get(0));
             } catch (TransformerException | TimeOutException e) {
@@ -106,24 +106,24 @@ public class FmmlxSerializer  {
         if(checkFileExist(xmlManager.getSourcePath())) {
             Element diagramsElement = xmlManager.getDiagramsElement();
             Element diagramElement = xmlManager.createDiagramElement(label, diagramPath);
-            if (xmlManager.isDiagramExist(label)) {
+            if (xmlManager.diagramIsExist(label)) {
                 xmlManager.removeDiagram(label);
             }
-            saveComponentsIntoDiagram(diagramElement, diagramPath, id);
-            xmlManager.addDiagram(diagramsElement, diagramElement);
+            saveComponentsIntoDiagramElement(diagramElement, diagramPath, id);
+            xmlManager.addDiagramIntoDiagramsElement(diagramsElement, diagramElement);
         }
     }
 
     //Part of saveDiagram-process
     //this method contains the steps of saving process in more detail
     //All steps create the XML-Element and add this element as a child into its parent (Diagram Node)
-    private void saveComponentsIntoDiagram(Element ParentElement, String diagramPath, Integer id) {
-        saveObjectsIntoDiagram(id, ParentElement);
-        saveEdgesIntoDiagram(id, diagramPath, ParentElement);
-        saveLabels(id, ParentElement);
+    private void saveComponentsIntoDiagramElement(Element ParentElement, String diagramPath, Integer id) {
+        saveObjectsIntoDiagramElement(id, ParentElement);
+        saveEdgesIntoDiagramElement(id, diagramPath, ParentElement);
+        saveLabelsIntoDiagramElement(id, ParentElement);
     }
 
-    private void saveLabels(Integer id, Element diagramElement) {
+    private void saveLabelsIntoDiagramElement(Integer id, Element diagramElement) {
         HashMap<String, HashMap<String, Object>> result = FmmlxDiagramCommunicator.getCommunicator().getAllLabelPositions(id);
 
         for (String key : result.keySet()){
@@ -134,7 +134,7 @@ public class FmmlxSerializer  {
         }
     }
 
-    public void saveObjectsIntoDiagram(int id, Element diagramElement) {
+    public void saveObjectsIntoDiagramElement(int id, Element diagramElement) {
         HashMap<String, HashMap<String, Object>> result = FmmlxDiagramCommunicator.getCommunicator().getAllObjectPositions(id);
         for(String path : result.keySet()) {
             Element objectElement = xmlManager.createObjectElement(path,
@@ -145,7 +145,7 @@ public class FmmlxSerializer  {
         }
     }
 
-    public void saveEdgesIntoDiagram(int id, String diagramPath, Element parentElement)  {
+    public void saveEdgesIntoDiagramElement(int id, String diagramPath, Element parentElement)  {
         HashMap<String, HashMap<String, Object>> edgesInfo = FmmlxDiagramCommunicator.getCommunicator().getAllEdgePositions(id);
 
         for (String key : edgesInfo.keySet()) {
@@ -177,7 +177,7 @@ public class FmmlxSerializer  {
         }
     }
 
-    public void saveLog(Integer diagramID, FmmlxDiagramCommunicator communicator) throws TimeOutException {
+    public void saveProjectLog(Integer diagramID, FmmlxDiagramCommunicator communicator) throws TimeOutException {
         xmlManager.clearLog();
         Element logsElement = xmlManager.getLogs();
         FaXML protocol = communicator.getDiagramData(diagramID);

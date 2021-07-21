@@ -18,7 +18,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
 
-/*XMLHandler is a major class for the XML-Document Manipulation process.
+/*XMLHandler is a major class for the XML/SVG Manipulation process.
 XMLHandler can also be considered as an interface that makes it easy for us to manipulate XML-Document.
 This class manage two important components, namely XMLHelper and DOCUMENT.
 In addition, this class also has functions that are not found in basic functions on DOM-Library*/
@@ -37,7 +37,8 @@ public class XmlHandler {
         return sourcePath;
     }
 
-    /*This method serves to create a dom-document instance, then copy the existing data on the XML-file then transformed into a dom-document that can be manipulated.*/
+    /*This method serves to create a dom-document instance,
+    then copy the existing data on the XML/SVG-file then transformed into a dom-document that can be manipulated.*/
     private Document buildDocument(String sourcePath) {
         Document doc = null;
         try {
@@ -66,6 +67,7 @@ public class XmlHandler {
         getXmlHelper().addXmlNode(parent, element);
     }
 
+    //This method remove an element from parent-element if parent-element has child-element with certain TAG
     public void removeChildElement(Element parent, Element children){
         getXmlHelper().removeChildNode(parent, children);
     }
@@ -84,6 +86,7 @@ public class XmlHandler {
         getXmlHelper().getRootNode().normalize();
     }
 
+    //This method return an element if parent-element has child-element with certain TAG
     public Element getChildWithTag(Element parent, String child) {
         return (Element) getXmlHelper().getNodeByTag(parent, child);
     }
@@ -112,16 +115,13 @@ public class XmlHandler {
         return stringBuilder.toString();
     }
 
+    //This methode store manipulated dom-document to the existing xml-file
     public void flushData() throws TransformerException {
         getXmlHelper().flush();
     }
 
     public Element getRoot() {
         return (Element) getXmlHelper().getRootNode();
-    }
-
-    public Node getChildrenByAttributeValue(Element element, String attributeName, String value) {
-        return getXmlHelper().getChildrenByAttributeValue(element, attributeName, value);
     }
 
     /*

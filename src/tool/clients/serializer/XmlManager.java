@@ -6,9 +6,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.xmlManipulator.XmlHandler;
-
 import java.util.*;
 
+/*XMLManager extends XMLHandler which is an interface that makes it easy for us to manipulate XML-Document.
+* this class has some specifics functions for saving and loading FMMLxDiagram into or from XML file (Serializer / Deserializer).
+*/
 public class XmlManager extends XmlHandler {
     private static final String TAG = XmlManager.class.getSimpleName();
     public XmlManager(String sourcePath) {
@@ -34,7 +36,8 @@ public class XmlManager extends XmlHandler {
         return diagram;
     }
 
-    public boolean isDiagramExist(String label) {
+    // Check whether Diagram with certain label already exists
+    public boolean diagramIsExist(String label) {
         Node diagrams = getDiagramsElement();
 
         NodeList diagramList = diagrams.getChildNodes();
@@ -65,8 +68,8 @@ public class XmlManager extends XmlHandler {
         return diagrams;
     }
 
-    public void addDiagram(Element parent, Element element) {
-        addXmlElement(parent, element);
+    public void addDiagramIntoDiagramsElement(Element diagramsElement, Element newDiagramElement) {
+        addXmlElement(diagramsElement, newDiagramElement);
     }
 
     public void removeDiagram(String label)  {
@@ -85,11 +88,12 @@ public class XmlManager extends XmlHandler {
     }
 
     public Element createProjectElement(String packagePath) {
-        Element project = createXmlElement(SerializerConstant.TAG_NAME_PROJECT);
-        project.setAttribute(SerializerConstant.ATTRIBUTE_NAME,packagePath);
-        return project;
+        Element projectElement = createXmlElement(SerializerConstant.TAG_NAME_PROJECT);
+        projectElement.setAttribute(SerializerConstant.ATTRIBUTE_NAME,packagePath);
+        return projectElement;
     }
 
+    //Check whether project already exists
     public boolean projectIsExist(String packagePath) {
         Node projects = getProjectsElement();
         NodeList projectList = projects.getChildNodes();
@@ -126,6 +130,7 @@ public class XmlManager extends XmlHandler {
         return projectPath;
     }
 
+    //Return list of all projects form documents
     public List<Node> getAllProjects(){
         List<Node> projects = new ArrayList<>();
         Node projectsNode = getProjectsElement();
@@ -406,6 +411,7 @@ public class XmlManager extends XmlHandler {
         return getChildWithTag(Root, SerializerConstant.TAG_NAME_LOGS);
     }
 
+    //this recreate all diagram-components based on the order in the diagram's log
     public void reproduceFromLog(Integer newDiagramID) {
         Node logs = getLogs();
         NodeList logList = logs.getChildNodes();
@@ -423,6 +429,7 @@ public class XmlManager extends XmlHandler {
         }
     }
 
+    //recreate diagram component based on the tag of the xml-element that stored in diagram's log
     private void reproduceDiagramElement(FmmlxDiagramCommunicator comm, Integer diagramID, Element logElement) {
         String tagName = logElement.getTagName();
         switch (tagName) {
@@ -614,10 +621,7 @@ public class XmlManager extends XmlHandler {
                     }
                 }
                 boolean isAbstract = Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_ABSTRACT));
-                Point2D coordinate = new Point2D(0.0,0.0);
-                int x = (int) Math.round(coordinate.getX());
-                int y = (int) Math.round(coordinate.getY());
-                comm.addNewInstance(diagramID, ofName, name, parents, isAbstract, x, y, false);
+                comm.addNewInstance(diagramID, ofName, name, parents, isAbstract, 0, 0, false);
                 break;
             }
             case "changeOperationBody" : {
