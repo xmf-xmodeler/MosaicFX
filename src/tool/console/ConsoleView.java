@@ -163,7 +163,7 @@ private void separateConsole(boolean docking) {
 
 private void setFont(double size) {
 	    try {
-	        Font f = Font.loadFont(new FileInputStream(new File("resources/fonts/DejaVuSansMono.ttf")), size);
+	        Font f = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono.ttf"), size);
 	        textArea.setFont(f);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -241,79 +241,71 @@ public Node getView() {
   
   public void addVerifyListener(final TextArea textArea) {
 
-	textArea.textProperty().addListener(new ChangeListener<String>() {
-		public void changed(
-				final ObservableValue<? extends String> observable, 
-				final String oldValue, final String newValue) {
-		  if(!listenerActive) {
-			listenerActive = true; return;
-		  }	 
-		  Diff diff = compare(oldValue, newValue);
-	      int start 		= diff.left;
-	      int end   		= oldValue.length()-diff.right;
-	      String diffText   = diff.textPlus;
+	textArea.textProperty().addListener((observable, oldValue, newValue) -> {
+      if(!listenerActive) {
+        listenerActive = true; return;
+      }
+      Diff diff = compare(oldValue, newValue);
+      int start 		= diff.left;
+      int end   		= oldValue.length()-diff.right;
+      String diffText   = diff.textPlus;
 //	      System.err.println(diff);
-        if (start < inputStart || end < inputStart) {
-        	/* if cursor not at end, 
-        	 *   then revert change, 
-        	 *        move cursor to end, 
-        	 *        append diff there
-        	 */
-        	listenerActive = false;
-        	textArea.setText(oldValue);
-        	textArea.appendText(diffText);
-        	
-        	positionCaret(textArea.getText().length());
-        	
-        } else {
-        	/* Do nothing */
-		}
-        
-        if(newValue.startsWith(oldValue)) {
-        	if(".".equals(diff.textPlus)) {
-	            // Display options based on the type of the input.
-	            String content = textArea.getText();
-	            if (textArea.getCaretPosition() >= inputStart) {
-	                String command = content.substring(inputStart);
-	                WorkbenchClient.theClient().dotConsole(command.substring(0, command.length()-1));
-	            }
-        	}
+if (start < inputStart || end < inputStart) {
+        /* if cursor not at end,
+         *   then revert change,
+         *        move cursor to end,
+         *        append diff there
+         */
+        listenerActive = false;
+        textArea.setText(oldValue);
+        textArea.appendText(diffText);
+
+        positionCaret(textArea.getText().length());
+
+}
+
+if(newValue.startsWith(oldValue)) {
+        if(".".equals(diff.textPlus)) {
+            // Display options based on the type of the input.
+            String content = textArea.getText();
+            if (textArea.getCaretPosition() >= inputStart) {
+                String command = content.substring(inputStart);
+                WorkbenchClient.theClient().dotConsole(command.substring(0, command.length()-1));
+            }
         }
-     }
-    });
+}
+});
 	
 	
 	
-	textArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
-	    @Override
-	    public void handle(KeyEvent keyEvent) {
-	    	
-        if (overwriting(keyEvent.getCharacter())) {
-          try {
-        	positionCaret(textArea.getCaretPosition() + 1);
-          } catch (Exception err) {
-            System.err.println("something's wrong with a caret");
-            err.printStackTrace();
-          }
-          revertInput();
-        } else if (keyEvent.getCode() == KeyCode.ESCAPE) {
-          if (escape != null) escape.interrupt();
-          revertInput();
-        } else if (keyEvent.getCode() == KeyCode.UP) {
-          String command = recallFromHistoryForward();
-          if (command != "") addCommand(textArea, command);
-          revertInput();
-        } else if (keyEvent.getCode() == KeyCode.DOWN) {
-          String command = recallFromHistoryBackward();
-          if (command != "") addCommand(textArea, command);
-          revertInput();
-        } else if (keyEvent.getCode() == KeyCode.PLUS && keyEvent.isControlDown()) {
-        	setFont(textArea.getFont().getSize() + FONT_INC);
+	textArea.setOnKeyPressed(keyEvent -> {
+
+    if (overwriting(keyEvent.getCharacter())) {
+      try {
+        positionCaret(textArea.getCaretPosition() + 1);
+      } catch (Exception err) {
+        System.err.println("something's wrong with a caret");
+        err.printStackTrace();
+      }
+      revertInput();
+    } else if (keyEvent.getCode() == KeyCode.ESCAPE) {
+      if (escape != null) escape.interrupt();
+      revertInput();
+    } else if (keyEvent.getCode() == KeyCode.UP) {
+      String command = recallFromHistoryForward();
+      if (!command.equals("")) addCommand(textArea, command);
+      revertInput();
+    } else if (keyEvent.getCode() == KeyCode.DOWN) {
+      String command = recallFromHistoryBackward();
+      if (!command.equals("")) addCommand(textArea, command);
+      revertInput();
+    } else if (keyEvent.getCode() == KeyCode.PLUS && keyEvent.isControlDown()) {
+        setFont(textArea.getFont().getSize() + FONT_INC);
 //          fontData.setHeight(Math.min(fontData.getHeight() + FONT_INC, MAX_FONT_HEIGHT));
 //          text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
 //          revertInput();
-        } else if (keyEvent.getCode() == KeyCode.MINUS && keyEvent.isControlDown()) {
-        	setFont(textArea.getFont().getSize() - FONT_INC);
+    } else if (keyEvent.getCode() == KeyCode.MINUS && keyEvent.isControlDown()) {
+        setFont(textArea.getFont().getSize() - FONT_INC);
 //          fontData.setHeight(Math.max(MIN_FONT_HEIGHT, fontData.getHeight() - FONT_INC));
 //          text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
 //          revertInput();
@@ -329,65 +321,64 @@ public Node getView() {
 //          revertInput();
 //        } else if (e.keyCode == '/' && ((e.stateMask & SWT.CTRL) == SWT.CTRL) && ((e.stateMask & SWT.SHIFT) == SWT.SHIFT)) {
 //          help();
-        } else if (keyEvent.getCode() == KeyCode.ENTER)  {
-          String output = pushToHistory(textArea);
-          if (out != null) {
-            out.print(output + "\r");
-            out.flush();
-          }
-          revertInput();
-          goToEnd();
-          inputStart = textArea.getText().length();
-        } else if (keyEvent.getCharacter().charAt(0) == '.' /*|| e.keyCode == ' ' && ((e.stateMask & SWT.CTRL) == SWT.CTRL)*/ && autoComplete.isDisplayOptions()) {
-          // Display options based on the type of the input.
-          String content = textArea.getText();
-          if (textArea.getCaretPosition() >= inputStart) {
-          String command = content.substring(inputStart);
-            WorkbenchClient.theClient().dotConsole(command);
-          }
-        } else if (keyEvent.getCharacter().charAt(0) == ':' && autoComplete.isColonAddPath()) {
-          // We might have a :: where there is a path to the left ...
-          String content = textArea.getText();
-          String command = content.substring(inputStart);
-          if (command.endsWith(":")) {
-            WorkbenchClient.theClient().nameLookup(command.substring(0, command.length() - 1));
-          }
-        } else if (keyEvent.getCharacter().charAt(0) == '>' && autoComplete.isRightArrowFillPatterns()) {
-          // We might have a -> and can fill in the standard patterns ...
-          String content = textArea.getText();
-          String command = content.substring(inputStart);
-          if (command.endsWith("-")) {
-            completeArrow();
-          }
-        } else if (keyEvent.getCharacter().charAt(0) == '{' && autoComplete.isSquareStartCollection()) {
-          // Are we starting a collection?
-          String content = textArea.getText();
-          String command = content.substring(inputStart);
-          if (command.endsWith("Set") || command.endsWith("Seq")) {
-            insert("{}");
-            backup(1);
-            revertInput();
-          }
-        } else if (keyEvent.getCharacter().charAt(0) == '(' && autoComplete.isNineAddParenthesis()) {
-          // Insert the corresponding parenthesis...
-          insert("()");
-          backup(1);
-          revertInput();
-        } else if (keyEvent.getCharacter().charAt(0) == '\"' && autoComplete.isApostropheAddQuotes()) {
-            // Insert the corresponding close string...
-          insert("\"\"");
-          backup(1);
-          revertInput();
-        } else if (keyEvent.getCode() == KeyCode.DIGIT1 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #ff0000;"); 
-        } else if (keyEvent.getCode() == KeyCode.DIGIT2 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #ffff00;"); 
-        } else if (keyEvent.getCode() == KeyCode.DIGIT3 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #00ff00;"); 
-        } else if (keyEvent.getCode() == KeyCode.DIGIT4 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #00ffff;"); 
-        } else if (keyEvent.getCode() == KeyCode.DIGIT5 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #0000ff;"); 
-        } else if (keyEvent.getCode() == KeyCode.DIGIT6 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #ff00ff;"); 
-        } else if (keyEvent.getCode() == KeyCode.DIGIT7 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #cccccc;"); 
-        } else prepareTopLevelCommand();
+    } else if (keyEvent.getCode() == KeyCode.ENTER)  {
+      String output = pushToHistory(textArea);
+      if (out != null) {
+        out.print(output + "\r");
+        out.flush();
       }
-    });
+      revertInput();
+      goToEnd();
+      inputStart = textArea.getText().length();
+    } else if (keyEvent.getCharacter().charAt(0) == '.' /*|| e.keyCode == ' ' && ((e.stateMask & SWT.CTRL) == SWT.CTRL)*/ && autoComplete.isDisplayOptions()) {
+      // Display options based on the type of the input.
+      String content = textArea.getText();
+      if (textArea.getCaretPosition() >= inputStart) {
+      String command = content.substring(inputStart);
+        WorkbenchClient.theClient().dotConsole(command);
+      }
+    } else if (keyEvent.getCharacter().charAt(0) == ':' && autoComplete.isColonAddPath()) {
+      // We might have a :: where there is a path to the left ...
+      String content = textArea.getText();
+      String command = content.substring(inputStart);
+      if (command.endsWith(":")) {
+        WorkbenchClient.theClient().nameLookup(command.substring(0, command.length() - 1));
+      }
+    } else if (keyEvent.getCharacter().charAt(0) == '>' && autoComplete.isRightArrowFillPatterns()) {
+      // We might have a -> and can fill in the standard patterns ...
+      String content = textArea.getText();
+      String command = content.substring(inputStart);
+      if (command.endsWith("-")) {
+        completeArrow();
+      }
+    } else if (keyEvent.getCharacter().charAt(0) == '{' && autoComplete.isSquareStartCollection()) {
+      // Are we starting a collection?
+      String content = textArea.getText();
+      String command = content.substring(inputStart);
+      if (command.endsWith("Set") || command.endsWith("Seq")) {
+        insert("{}");
+        backup(1);
+        revertInput();
+      }
+    } else if (keyEvent.getCharacter().charAt(0) == '(' && autoComplete.isNineAddParenthesis()) {
+      // Insert the corresponding parenthesis...
+      insert("()");
+      backup(1);
+      revertInput();
+    } else if (keyEvent.getCharacter().charAt(0) == '\"' && autoComplete.isApostropheAddQuotes()) {
+        // Insert the corresponding close string...
+      insert("\"\"");
+      backup(1);
+      revertInput();
+    } else if (keyEvent.getCode() == KeyCode.DIGIT1 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #ff0000;");
+    } else if (keyEvent.getCode() == KeyCode.DIGIT2 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #ffff00;");
+    } else if (keyEvent.getCode() == KeyCode.DIGIT3 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #00ff00;");
+    } else if (keyEvent.getCode() == KeyCode.DIGIT4 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #00ffff;");
+    } else if (keyEvent.getCode() == KeyCode.DIGIT5 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #0000ff;");
+    } else if (keyEvent.getCode() == KeyCode.DIGIT6 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #ff00ff;");
+    } else if (keyEvent.getCode() == KeyCode.DIGIT7 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #cccccc;");
+    } else prepareTopLevelCommand();
+  });
 	        	
 //
 //    ConsoleLineStyler consoleLineStyper = new ConsoleLineStyler();
@@ -399,12 +390,7 @@ public Node getView() {
 		}
 		
 		private void positionCaret(int pos) {
-    	Platform.runLater( new Runnable() {
-    	    @Override
-    	    public void run() {
-    	        textArea.positionCaret(pos);
-    	    }
-    	});
+    	Platform.runLater(() -> textArea.positionCaret(pos));
 	}
 
   private void help() {
@@ -483,16 +469,14 @@ public Node getView() {
   }
 
 	public void processInput(String input) {
-        if(region==null){
-            try {
-                if(Console.colorReverted){
-                    region=(Region)textArea.lookup(".content");
-                    region.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
-                    textArea.setStyle("-fx-text-fill: #cccccc;");
-                }
-            } catch(Exception e) {
-                e.printStackTrace();
+        try {
+            if(Console.colorReverted){
+                region=(Region)textArea.lookup(".content");
+                region.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
+                textArea.setStyle("-fx-text-fill: #cccccc;");
             }
+        } catch(Exception e) {
+            e.printStackTrace();
         }
 
 		CountDownLatch l = new CountDownLatch(1);
@@ -551,11 +535,7 @@ public Node getView() {
   
     private void addQuickCompleteItem(ContextMenu menu, String text) {
     	MenuItem item = new MenuItem("->" + text);
-    	item.setOnAction(new EventHandler<ActionEvent>() {
-    	    public void handle(ActionEvent e) {
-    	    	insert(text);
-    	    }
-    	});
+    	item.setOnAction(e -> insert(text));
     }
 
   	private void completeArrow() {

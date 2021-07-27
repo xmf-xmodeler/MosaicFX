@@ -24,10 +24,10 @@ public class Console {
   
   
   public static void start(TabPane tabPane, boolean separate, boolean visible, boolean colorReverted) {
+	  Console.colorReverted=colorReverted;
 	  Console.separate=separate;
 	  Console.visible=visible;
 	  Console.stage=null;
-	  Console.colorReverted=colorReverted;
 	  Console.consoleView = new ConsoleView(colorReverted);
 	  if(visible)if(separate) {
 		showInStage();
