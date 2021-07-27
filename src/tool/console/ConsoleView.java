@@ -15,25 +15,16 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -70,42 +61,46 @@ public class ConsoleView {
   private final TextArea textArea;
   private final VBox vBox;
 
-  
   Stage owner;
   
   
-  public ConsoleView() {
+  public ConsoleView(boolean colorReverted) {
 	
 	vBox = new VBox();
 	Menu menu = new Menu("View");
 	CheckMenuItem consoleSeparateItem = new CheckMenuItem("Docked");
+	CheckMenuItem changeColor = new CheckMenuItem("Change Color");
 	consoleSeparateItem.setSelected(true);
-	
+	changeColor.setSelected(colorReverted);
 	MenuItem hideItem = new MenuItem("Hide!");
 	MenuBar menuBar = new MenuBar();
+
 	//ColorPicker colorPicker = new ColorPicker();
 	//colorPicker.setValue(Color.RED);
 	//colorPicker.setStyle("-fx-background-color: white;");
 	//MenuItem fgColorItem = new MenuItem(null,colorPicker);
-	menu.getItems().addAll(consoleSeparateItem,hideItem);
+	menu.getItems().addAll(consoleSeparateItem,hideItem, changeColor);
 	menuBar.getMenus().add(menu);
 	
 	consoleSeparateItem.setOnAction(e->separateConsole(((CheckMenuItem)e.getSource()).isSelected()));
+	changeColor.setOnAction(e-> revertBackgroundColor(((CheckMenuItem)e.getSource()).isSelected()));
 	hideItem.setOnAction(e->hideConsole());
 	vBox.getChildren().add(menuBar);
-	  
 	scrollpane = new ScrollPane();
 	textArea = new TextArea();
 	textArea.setPrefHeight(600);
 	scrollpane.setContent(textArea);
 	scrollpane.setFitToWidth(true);
 	scrollpane.setFitToHeight(true);
+	VBox.setVgrow(scrollpane, Priority.ALWAYS);
 	textArea.setWrapText(true);
 	addVerifyListener(textArea);
     setFont(textArea.getFont().getSize());
     vBox.getChildren().add(scrollpane);
   }
-  
+
+
+
   private void hideConsole() {
 	  if(!Console.separate) {
 		  XModeler.propertyTabs.getTabs().remove(Console.tab);  
@@ -114,6 +109,38 @@ public class ConsoleView {
 	  }
 	  PropertyManager.setProperty("consoleVisible", "false");
   }
+
+    public void revertBackgroundColor(boolean reverted) {
+        if(reverted){
+            if(!Console.colorReverted){
+                  //Set backgroundColor and fontColor of the console
+                    try {
+                        region=(Region)textArea.lookup(".content");
+                        region.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
+                        textArea.setStyle("-fx-text-fill: #cccccc;");
+                        PropertyManager.setProperty("consoleColorReverted", "true");
+                        Console.colorReverted =true;
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+            }
+        } else {
+            if(Console.colorReverted){
+                  //Set backgroundColor and fontColor of the console
+                    try {
+                        region=(Region)textArea.lookup(".content");
+                        region.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+                        textArea.setStyle("-fx-text-fill: #000000;");
+                        PropertyManager.setProperty("consoleColorReverted", "false");
+                        Console.colorReverted =false;
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+
+            }
+        }
+
+    }
   
 private void separateConsole(boolean docking) {
 	System.out.println(docking);
@@ -123,7 +150,6 @@ private void separateConsole(boolean docking) {
 			PropertyManager.setProperty("showConsoleSeparately", "false");
 			Console.showInTab(XModeler.propertyTabs);
 			Console.stage.close();
-			
 		}
 	}else {
 		if(!Console.separate) {
@@ -457,16 +483,18 @@ public Node getView() {
   }
 
 	public void processInput(String input) {
-		
-		if (region==null) {  //Set backgroundColor and fontColor of the console
-			try {
-				region=(Region)textArea.lookup(".content");
-				region.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
-				textArea.setStyle("-fx-text-fill: #cccccc;");
-			} catch(Exception e) {}
-		}
-		
-		
+        if(region==null){
+            try {
+                if(Console.colorReverted){
+                    region=(Region)textArea.lookup(".content");
+                    region.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
+                    textArea.setStyle("-fx-text-fill: #cccccc;");
+                }
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			appendText(input);

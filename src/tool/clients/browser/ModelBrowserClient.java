@@ -152,6 +152,7 @@ public class ModelBrowserClient extends Client {//implements MouseListener, List
   }
 
 	private void addTree(final String id, final String name) {
+//		throw new IllegalArgumentException();
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			TreeView<String> tv = new TreeView<String>();
