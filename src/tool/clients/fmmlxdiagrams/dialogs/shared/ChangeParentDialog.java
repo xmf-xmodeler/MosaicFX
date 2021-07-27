@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.ChangeParentDialogResult;
@@ -109,8 +110,10 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 		Vector<String> parentNames = object.getParentsPaths();
 
 		for (String name : parentNames) {
-			FmmlxObject o = diagram.getObjectByPath(name);
-			if(o != null) resultList.add(o);
+			try{
+				FmmlxObject o = diagram.getObjectByPath(name);
+				if(o != null) resultList.add(o);
+			} catch (PathNotFoundException pnfe) {}
 		}
 		
 		ObservableList<FmmlxObject> result = FXCollections.observableArrayList(resultList);

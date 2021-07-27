@@ -625,13 +625,13 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 		//determine maximal width of attributes
 		for (FmmlxAttribute att : ownAttributes) {
-			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]") + INST_LEVEL_WIDTH, neededWidth);
+			neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ": " + att.getTypeShort() +"["+ att.getMultiplicity() + "]") + INST_LEVEL_WIDTH, neededWidth);
 		}
 		for (FmmlxAttribute att : otherAttributes) {
 			if(showDerivedAttributes) {
 				String ownerName = att.ownerPath;
 				try{ownerName = diagram.getObjectByPath(att.ownerPath).name;} catch (Exception e) {}
-				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ":" + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + ownerName + ")") + INST_LEVEL_WIDTH, neededWidth);
+				neededWidth = Math.max(FmmlxDiagram.calculateTextWidth(att.name + ": " + att.getTypeShort() +"["+ att.getMultiplicity() + "]" + " (from " + ownerName + ")") + INST_LEVEL_WIDTH, neededWidth);
 			}
 		}
 //		//determine maximal width of operations
