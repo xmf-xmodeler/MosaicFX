@@ -5,108 +5,64 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
-import tool.clients.xmlManipulator.XmlHandler;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+/*This Class is an abstract layer over XML to allow loading FmmlxDiagram-data from Xml file
+ *And this Class contains the main method to load FmmlxDiagram data
+ */
 public class FmmlxDeserializer {
-    private final XmlHandler xmlHandler;
+    private final XmlManager xmlManager;
 
-    public FmmlxDeserializer(XmlHandler xmlHandler) {
-        this.xmlHandler = xmlHandler;
+    public FmmlxDeserializer(XmlManager xmlManager) {
+        this.xmlManager = xmlManager;
     }
-
+    /*
+    * This is the main method for the load process.
+    * This process is divided into several parts.
+    *   First, the Project data will be read then the Project data will be sent to the XMF to create.
+    *   After the project is made, each diagram-data is children from a project will be sent to XMF and recreated.
+    *   After the diagram is made, all components in the XML diagrams will also be created and the position of each component is set according to the data stored in XML.*/
     public void loadProject(FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
-        ProjectXmlManager projectXmlManager = new ProjectXmlManager(this.xmlHandler);
-        String projectPath = projectXmlManager.getProjectPath();
-        String projectName = projectXmlManager.getProjectName(projectPath);
-        DiagramXmlManager diagramXmlManager = new DiagramXmlManager(this.xmlHandler);
-        NodeList diagramNodes = getDiagramsElement().getChildNodes();
-        fmmlxDiagramCommunicator.createProject(projectName, diagramXmlManager.getAllDiagramNames(), this.xmlHandler.getSourcePath());
 
-//        if(!fmmlxDiagramCommunicator.projectExist(projectPath,projectName)){
-//
-//        }
+        String projectPath = xmlManager.getProjectPath();
+        String projectName = xmlManager.getProjectName(projectPath);
+        NodeList diagramNodes = getDiagramsElement().getChildNodes();
+        fmmlxDiagramCommunicator.createProject(projectName, xmlManager.getAllDiagramNames(), this.xmlManager.getSourcePath());
         
         boolean populated = false;
         for(int i =0; i< diagramNodes.getLength(); i++){
             Node diagramNode = diagramNodes.item(i);
             if(diagramNode.getNodeType()==Node.ELEMENT_NODE){
             	String diagramName = ((Element) diagramNode).getAttribute(SerializerConstant.ATTRIBUTE_LABEL);
-            	Integer diagramId = fmmlxDiagramCommunicator.createDiagram(projectName, diagramName, this.xmlHandler.getSourcePath(), FmmlxDiagramCommunicator.DiagramType.ClassDiagram);
+            	Integer diagramId = fmmlxDiagramCommunicator.createDiagram(projectName, diagramName, this.xmlManager.getSourcePath(), FmmlxDiagramCommunicator.DiagramType.ClassDiagram);
             	if(!populated) {
                     fmmlxDiagramCommunicator.preparePositionInfo(diagramId, diagramNode);
-            		fmmlxDiagramCommunicator.populateDiagram(this.xmlHandler.getSourcePath(), diagramName, diagramId);
+            		fmmlxDiagramCommunicator.populateDiagram(this.xmlManager.getSourcePath(), diagramName, diagramId);
             		populated = true;
             	}
             }    
         }
     }
-    
+
+    //This methode works to recreate all the existing components on a diagram-data in the xml file.
+    //The sequence of its reproduction corresponds to the log order stored in XML.
     public void createModelElementsFromLogfile(Integer newDiagramID) {
-        if(Files.exists(Paths.get(xmlHandler.getSourcePath()))){
-            LogXmlManager logXmlManager = new LogXmlManager(this.xmlHandler);
-            logXmlManager.reproduceFromLog(newDiagramID);
+        if(Files.exists(Paths.get(xmlManager.getSourcePath()))){
+            xmlManager.reproduceFromLog(newDiagramID);
         }
     }
 
-    /*public void alignCoordinate(String file, FmmlxDiagramCommunicator communicator) {
-        if(Files.exists(Paths.get(file))) {
-            Node diagrams = getDiagramsElement();
-            NodeList diagramList = diagrams.getChildNodes();
-
-            for (int i = 0; i < diagramList.getLength(); i++) {
-                if (diagramList.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                    Element diagramElement = (Element) diagramList.item(i);
-                    String label = diagramElement.getAttribute(XmlConstant.ATTRIBUTE_LABEL);
-                    ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
-                    objectXmlManager.alignObjects(diagramElement, label, communicator);
-                    EdgeXmlManager edgeXmlManager = new EdgeXmlManager(this.xmlHandler);
-                    edgeXmlManager.alignEdges(diagramElement, label, communicator);
-                }
-            }
-        }
-    }*/
-    
+    //This method is tasked with regulating the adjusting position of each component according to the data that stored in XML.
 	public void alignElements(FmmlxDiagram diagram, Element diagramElement) {
-        ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
-        objectXmlManager.alignObjects(diagramElement, diagram.getID(), diagram.getComm());
-        EdgeXmlManager edgeXmlManager = new EdgeXmlManager(this.xmlHandler);
-        edgeXmlManager.alignEdges(diagramElement, diagram.getID(), diagram.getComm());
-        LabelXmlManager labelXmlManager = new LabelXmlManager(this.xmlHandler);
-        labelXmlManager.alignLabel(diagramElement, diagram);
+        xmlManager.alignObjects(diagramElement, diagram.getID(), diagram.getComm());
+        xmlManager.alignEdges(diagramElement, diagram.getID(), diagram.getComm());
+        xmlManager.alignLabel(diagramElement, diagram);
 	}
 
-//    /**
-//     * @deprecated replaced by {@link #alignElements(FmmlxDiagram, Element)}
-//     */
-//    public void alignElements(FmmlxDiagram diagram, FmmlxDiagramCommunicator comm) {
-//        Element diagrams = getDiagramsElement();
-//        NodeList diagramList = diagrams.getChildNodes();
-//
-//        Element diagramElement = null;
-//        for (int i = 0 ; i< diagramList.getLength(); i++){
-//            if(diagramList.item(i).getNodeType() == Node.ELEMENT_NODE){
-//                Element tmp = (Element) diagramList.item(i);
-//                if (tmp.getAttribute(XmlConstant.ATTRIBUTE_LABEL).equals(diagram.getDiagramLabel())){
-//                    diagramElement = tmp;
-//                }
-//            }
-//        }
-//        if(diagramElement!=null){
-//            ObjectXmlManager objectXmlManager = new ObjectXmlManager(this.xmlHandler);
-//            objectXmlManager.alignObjects2(diagramElement, diagram);
-//            EdgeXmlManager edgeXmlManager = new EdgeXmlManager(this.xmlHandler);
-//            edgeXmlManager.alignEdges2(diagramElement, diagram);
-//            LabelXmlManager labelXmlManager = new LabelXmlManager(this.xmlHandler);
-//            labelXmlManager.alignLabel2(diagramElement, comm, diagram.getID());
-//        }
-//        diagram.objectsMoved = true;
-//    }
-
     public Element getDiagramsElement(){
-        Element Root = xmlHandler.getRoot();
-        return xmlHandler.getChildWithTag(Root, SerializerConstant.TAG_NAME_DIAGRAMS);
+        Element Root = xmlManager.getRoot();
+        return xmlManager.getChildWithTag(Root, SerializerConstant.TAG_NAME_DIAGRAMS);
     }
 }

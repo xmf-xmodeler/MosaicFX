@@ -1,4 +1,5 @@
 package tool.clients.xmlManipulator;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import tool.clients.exporter.svg.SvgConstant;
@@ -14,29 +15,27 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
+/*As the name suggests, the XML Creator is a class that is tasked with making XML files needed later to save XML-Document.
+*This class has two creators.
+*   First, Creator to create XML files used to keep FMMlx Data Data.
+*   Second, creator to make the SVG file used to export the FmmlxDiagram into a graphic asset*/
 public class XmlCreator {
     private static final int version = SerializerConstant.SERIALIZER_VERSION;
 
-    public XmlCreator() {
-    }
-
-    public String createXml(String file) throws TransformerException, ParserConfigurationException {
+    public void createXml(String file) throws TransformerException, ParserConfigurationException {
         Document document = createDocument();
         initXML(document);
         transformDocument(document, new File(file));
-        return file;
     }
 
-    public String createSvg(String file, double width, double height) throws TransformerException, ParserConfigurationException {
+    public void createSvg(String file, double width, double height) throws TransformerException, ParserConfigurationException {
         Document document = createDocument();
         initSvg(document, width, height);
         transformDocument(document, new File(file));
-        return file;
     }
 
+    /*This function initializes the basic structure of the XML file that later will be able to be manipulated which aims to store FMMLXDiagram data.*/
     private void initXML(Document document) {
         Element root = document.createElement(SerializerConstant.TAG_NAME_ROOT);
         document.appendChild(root);
@@ -55,6 +54,7 @@ public class XmlCreator {
         root.appendChild(logs);
     }
 
+    /*This function initializes the basic structure of the XML file that later will be able to be manipulated which aims to store svg data.*/
     private void initSvg(Document document, double width, double height){
         Element root = document.createElement(SvgConstant.TAG_NAME_ROOT);
         root.setAttribute(SvgConstant.ATTRIBUTE_XMLNS, SvgConstant.XMLNS_VALUE);
@@ -72,6 +72,9 @@ public class XmlCreator {
         return documentBuilder.newDocument();
     }
 
+    /* this method transform a source tree into a result tree.
+    * The method will also change the XML-node structure on the document to be easier to read (Beautify)
+    * */
     private void transformDocument(Document document, File file) throws TransformerException {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
@@ -83,7 +86,4 @@ public class XmlCreator {
         transformer.transform(domSource, streamResult);
     }
 
-    private boolean checkFileExist(String file) {
-        return Files.exists(Paths.get(file));
-    }
 }

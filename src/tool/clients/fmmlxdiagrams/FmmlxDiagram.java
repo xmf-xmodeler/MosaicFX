@@ -37,6 +37,7 @@ import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
 import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
 import tool.clients.serializer.FmmlxDeserializer;
+import tool.clients.serializer.XmlManager;
 import tool.clients.xmlManipulator.XmlHandler;
 import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
@@ -1194,7 +1195,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		if(filePath !=null && filePath.length()>0){
 			if(justLoaded){
 				justLoaded = false;
-				FmmlxDeserializer deserializer = new FmmlxDeserializer(new XmlHandler(filePath));
+				FmmlxDeserializer deserializer = new FmmlxDeserializer(new XmlManager(filePath));
 				org.w3c.dom.Node positionInfo = getComm().getPositionInfo(getID());
 				if(positionInfo != null) {
 					deserializer.alignElements(this, (org.w3c.dom.Element) positionInfo);

@@ -18,6 +18,10 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
 
+/*XMLHandler is a major class for the XML/SVG Manipulation process.
+XMLHandler can also be considered as an interface that makes it easy for us to manipulate XML-Document.
+This class manage two important components, namely XMLHelper and DOCUMENT.
+In addition, this class also has functions that are not found in basic functions on DOM-Library*/
 public class XmlHandler {
     private final Document document;
     private final XmlHelper xmlHelper;
@@ -33,6 +37,8 @@ public class XmlHandler {
         return sourcePath;
     }
 
+    /*This method serves to create a dom-document instance,
+    then copy the existing data on the XML/SVG-file then transformed into a dom-document that can be manipulated.*/
     private Document buildDocument(String sourcePath) {
         Document doc = null;
         try {
@@ -61,6 +67,7 @@ public class XmlHandler {
         getXmlHelper().addXmlNode(parent, element);
     }
 
+    //This method remove an element from parent-element if parent-element has child-element with certain TAG
     public void removeChildElement(Element parent, Element children){
         getXmlHelper().removeChildNode(parent, children);
     }
@@ -79,6 +86,7 @@ public class XmlHandler {
         getXmlHelper().getRootNode().normalize();
     }
 
+    //This method return an element if parent-element has child-element with certain TAG
     public Element getChildWithTag(Element parent, String child) {
         return (Element) getXmlHelper().getNodeByTag(parent, child);
     }
@@ -107,6 +115,7 @@ public class XmlHandler {
         return stringBuilder.toString();
     }
 
+    //This methode store manipulated dom-document to the existing xml-file
     public void flushData() throws TransformerException {
         getXmlHelper().flush();
     }
@@ -115,10 +124,10 @@ public class XmlHandler {
         return (Element) getXmlHelper().getRootNode();
     }
 
-    public Node getChildrenByAttributeValue(Element element, String attributeName, String value) {
-        return getXmlHelper().getChildrenByAttributeValue(element, attributeName, value);
-    }
-
+    /*
+    *XMLHelper is a class that functions to be the main communicator between the XML-File and Dom-Document.
+    *Before being manipulated, the data from the XML-file loaded into Dom-Document and the Instance of this DOM-Document will be manipulated which can later be saved back to the real XML-file.
+    *Besides, XMLHelper has basic functions to manipulate XML-Document.*/
     public static class XmlHelper {
         private final Document document;
 
@@ -147,6 +156,7 @@ public class XmlHandler {
             return null;
         }
 
+        //This function makes one XML-node with the name of the tag according to the parameters
         private Node createXmlNode(String tagName){
             return this.document.createElement(tagName);
         }
@@ -162,6 +172,7 @@ public class XmlHandler {
             }
         }
 
+        //This method returns a node according to its name from a certain parent node
         private Node getNodeByTag(Node parentNode, String tagName) {
             NodeList nodeList = parentNode.getChildNodes();
 
@@ -176,6 +187,7 @@ public class XmlHandler {
             return null;
         }
 
+        //This removes a certain childNode from from its parent
         private void removeChildNode(Node parent, Node node) {
             parent.removeChild(node);
             int i = 0;
@@ -187,6 +199,7 @@ public class XmlHandler {
             }
         }
 
+        //This methode store manipulated dom-document to the existing xml-file
         private void flush() throws TransformerException {
             DOMSource source = new DOMSource(this.document);
 

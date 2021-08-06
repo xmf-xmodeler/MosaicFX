@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.FmmlxSerializer;
+import tool.clients.serializer.XmlManager;
 import tool.clients.xmlManipulator.XmlHandler;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.PropertyManager;
@@ -1537,7 +1538,7 @@ public class FmmlxDiagramCommunicator {
     }
 
     public void openXmlFile(String fileName) {
-        FmmlxDeserializer fmmlxDeserializer = new FmmlxDeserializer(new XmlHandler(fileName));
+        FmmlxDeserializer fmmlxDeserializer = new FmmlxDeserializer(new XmlManager(fileName));
         new Thread(() -> fmmlxDeserializer.loadProject(this)).start(); // Very important. Otherwise assigning diagramID will get stuck
     }
 
@@ -1779,7 +1780,7 @@ public class FmmlxDiagramCommunicator {
 		Task<Void> task = new Task<Void>() {
 			@Override
 			protected Void call() {
-				FmmlxDeserializer deserializer = new FmmlxDeserializer(new XmlHandler(file));
+				FmmlxDeserializer deserializer = new FmmlxDeserializer(new XmlManager(file));
 				try {
 					deserializer.createModelElementsFromLogfile(diagramID);
 				} catch (Exception e) {
