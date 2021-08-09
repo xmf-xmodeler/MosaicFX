@@ -10,6 +10,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import tool.helper.IconGenerator;
+import tool.xmodeler.XModeler;
 
 public abstract class CustomStage extends Stage{
 
@@ -25,7 +27,7 @@ public abstract class CustomStage extends Stage{
 		super();
 		this.setWidth(width);
 		this.setHeight(height);
-		this.setTitle(title);
+		this.setTitle("Model Browser");
 		this.relativeStage=relativeStage;
 		this.container = new VBox();
 		this.root =  new StackPane(container);
@@ -34,7 +36,8 @@ public abstract class CustomStage extends Stage{
 		this.gridControl = new GridControl();
 		this.vBoxControl = new VBoxControl();
 		this.setScene(scene);
-		this.setOnShowing(e-> onShow());	
+		this.setOnShowing(e-> onShow());
+		this.getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 	}
 	
 	//protected abstract void initAllElements();

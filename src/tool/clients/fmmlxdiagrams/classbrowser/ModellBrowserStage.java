@@ -50,6 +50,7 @@ public class ModellBrowserStage extends CustomStage {
 		getContainer().getChildren().addAll(outerSplitPane);
 		
 		setOnCloseRequest(e -> onClose());
+		XModeler.getStage().setTitle("Model Browser");
 	}
 
 	public void onClose() {

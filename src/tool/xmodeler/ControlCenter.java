@@ -11,6 +11,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
@@ -33,6 +34,7 @@ import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.workbench.WorkbenchClient;
+import tool.helper.IconGenerator;
 
 public class ControlCenter extends Stage {
 	
@@ -51,7 +53,7 @@ public class ControlCenter extends Stage {
 			
 	public ControlCenter() {
 		setTitle("XModeler ML Control Center");
-		
+		getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		ControlCenterClient.init(this);
 		controlCenterClient = ControlCenterClient.getClient();
 		
@@ -66,17 +68,17 @@ public class ControlCenter extends Stage {
 		Label categorieLabel = new Label("Categories");
 		
 		Button refreshAll = new Button("refresh");
-		Button newProject = new Button("new");
+		Button newProject = new Button("Create Project");
 		Label projectLabel = new Label("Projects");
 		CreatedModifiedGridPane projectGridPane = new CreatedModifiedGridPane();
 		
-		Button newModel = new Button("new");
+		Button newModel = new Button("Create Model");
 		newModel.setDisable(true);
 		
 		Label modelLabel = new Label("Models");
 		CreatedModifiedGridPane modelGridPane = new CreatedModifiedGridPane();
 		
-		Button newDiagram = new Button("new");
+		Button newDiagram = new Button("Create Diagram");
 		newDiagram.setDisable(true);
 		newDiagram.disableProperty().bind(
 			    Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
@@ -216,7 +218,7 @@ public class ControlCenter extends Stage {
 		            public void run() {
 		            	controlCenterClient.getAllProjects();
 		            } 
-		        }, 2000
+		        }, 2500
 		);
 	}
 
@@ -363,6 +365,12 @@ public class ControlCenter extends Stage {
 			diagramLV.getItems().clear();
 			diagramLV.getItems().addAll(vec);
 		});
+		
+	}
+	
+	private class ControlCenterContextMenu extends ContextMenu {
+		
+		
 		
 	}
 	

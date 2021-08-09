@@ -64,7 +64,7 @@ public class XModeler extends Application {
   static OperatingSystem xos                 = new OperatingSystem();
   static String          projDir             = null;
   static String          loadedImagePath     = null;
-  static String          version             = null;
+  static String          version             = "";
   static String[]        copyOfArgs          = null;
   static boolean         showLoad            = false;
   public static String   textEditorClass     = "tool.clients.editors.TextEditor";
@@ -172,7 +172,7 @@ public class XModeler extends Application {
   }
   
   public static Stage getStage() {
-	    return stage;
+	  return stage;
 	  }
   
   public static PropertyManager getPropertyManager() {
