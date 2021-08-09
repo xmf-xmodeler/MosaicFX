@@ -98,18 +98,26 @@ public abstract class LevelColorScheme {
 		
 		@Override
 		public Color getLevelFgColor(int level, double opacity) {
+			Color BG = getLevelBgColor(level);
 			switch (level) {
-				case 0: case 1: case 2: return Color.BLACK.deriveColor(0., 1., 1., opacity);
-				case 3: case 4: case 5: case 6: return Color.WHITE.deriveColor(0., 1., 1., opacity);
-				case 7: return B.deriveColor(0., 1., 1., opacity);
-				case 8: return C.deriveColor(0., 1., 1., opacity);
-				case 9: return D.deriveColor(0., 1., 1., opacity);
-				default: return G.deriveColor(0., 1., 1., opacity);
+				case 0: case 1: case 2: return mix(Color.BLACK, BG, opacity);
+				case 3: case 4: case 5: case 6: return mix(Color.WHITE, BG, opacity);
+				case 7: return mix(B, BG, opacity);
+				case 8: return mix(C, BG, opacity);
+				case 9: return mix(D, BG, opacity);
+				default: return mix(G, BG, opacity);
 			}
+		}
+		
+		private Color mix(Color FG, Color BG, double opacity) {
+			double r = FG.getRed()*opacity + BG.getRed()*(1-opacity);
+			double g = FG.getGreen()*opacity + BG.getGreen()*(1-opacity);
+			double b = FG.getBlue()*opacity + BG.getBlue()*(1-opacity);
+			return  Color.color(r, g, b);
 		}
 
 		@Override
-		public Paint getLevelBgColor(int level) {
+		public Color getLevelBgColor(int level) {
 			switch (level) {
 				case 0: return A;
 				case 1: return B;
