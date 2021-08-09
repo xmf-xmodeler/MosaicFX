@@ -28,7 +28,7 @@ public class Console {
 	  Console.separate=separate;
 	  Console.visible=visible;
 	  Console.stage=null;
-	  Console.consoleView = new ConsoleView(colorReverted);
+	  Console.consoleView = new ConsoleView(colorReverted, !separate);
 	  if(visible)if(separate) {
 		showInStage();
 	  } else {
@@ -63,7 +63,7 @@ public class Console {
 
 
 private static void start() {
-	  Console.consoleView = new ConsoleView(colorReverted);
+	  Console.consoleView = new ConsoleView(colorReverted, !separate);
   }
   
   

@@ -1,11 +1,15 @@
 package tool.clients.fmmlxdiagrams;
 
-import java.util.Vector;
-
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.paint.Color;
+import org.w3c.dom.Element;
+import tool.clients.exporter.svg.SvgConstant;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.xmlManipulator.XmlHandler;
+
+import java.util.Vector;
 
 public class Issue implements FmmlxProperty{
 	
@@ -16,9 +20,24 @@ public class Issue implements FmmlxProperty{
 	private Issue(String text) {this.text = text;}
 	
 	private String type;
+	private Color color = new Color(1., .8, 0., 1.);
 	private String text;
 	private Vector<Object> solution;
 	private Vector<String> affectedObjects = new Vector<>();
+
+	public void paintToSvg(XmlHandler xmlHandler, Element group, int xOffset, int yOffset, int x, double y, int issueNumber) {
+		String textColor = this.color.toString().split("x")[1].substring(0,6);
+		Element textElement = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_TEXT);
+		textElement.setAttribute(SvgConstant.ATTRIBUTE_FONT_FAMILY, "Arial");
+
+		textElement.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, 13+"");
+		textElement.setAttribute(SvgConstant.ATTRIBUTE_FONT_OPACITY, 1+"");
+		textElement.setAttribute(SvgConstant.ATTRIBUTE_FILL, "#"+textColor);
+		textElement.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (x  + xOffset)+"");
+		textElement.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (y + yOffset)+"");
+		textElement.setTextContent("issue ["+issueNumber+"] : "+this.text);
+		xmlHandler.addXmlElement(group, textElement);
+	}
 
 	public static class IssueNotReadableException extends Exception {
 		private static final long serialVersionUID = 1L;

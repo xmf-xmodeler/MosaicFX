@@ -21,8 +21,8 @@ public class SvgExporter {
         XmlCreator xmlCreator = new XmlCreator();
         xmlCreator.createSvg(file, width, height);
     }
-    public void export(AbstractPackageViewer diagram) throws TransformerException {
-        ((FmmlxDiagram)diagram).paintToSvg(xmlHandler);
+    public void export(AbstractPackageViewer diagram, double extraHeight) throws TransformerException {
+        ((FmmlxDiagram)diagram).paintToSvg(xmlHandler, extraHeight);
         this.xmlHandler.flushData();
     }
 

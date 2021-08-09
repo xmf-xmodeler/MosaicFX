@@ -1092,6 +1092,7 @@ public class DiagramActions {
 	}
 
 	public void exportSvg() {
+		Platform.runLater(() ->{
 		FileChooser fc = new FileChooser();
 		fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("svg", "*.svg"));
 		fc.setTitle("Export File");
@@ -1102,16 +1103,22 @@ public class DiagramActions {
 			Platform.runLater(() -> {
 				String filePath = file.getPath();
 				double width = diagram.getCanvas().getWidth();
-				double height = diagram.getCanvas().getHeight();
+				double height = diagram.getCanvas().getHeight() ;
+				double extraHeight = getExtraHeight();
 				SvgExporter svgExporter;
 				try {
-					svgExporter = new SvgExporter(filePath, width, height);
-					svgExporter.export(diagram);
+					svgExporter = new SvgExporter(filePath, width, height+extraHeight);
+					svgExporter.export(diagram, extraHeight);
 				} catch (TransformerException | ParserConfigurationException e) {
 					e.printStackTrace();
 				}
 			});
 		}
+		});
+	}
+
+	private double getExtraHeight() {
+		return (diagram.issues.size()+1) * 14;
 	}
 
 	public void showCertainLevel() {

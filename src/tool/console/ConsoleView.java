@@ -1,29 +1,10 @@
 package tool.console;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
-import java.util.concurrent.CountDownLatch;
-
-//import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
-
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -36,6 +17,13 @@ import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
+import java.util.concurrent.CountDownLatch;
+
+//import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
 
 
 public class ConsoleView {
@@ -64,13 +52,13 @@ public class ConsoleView {
   Stage owner;
   
   
-  public ConsoleView(boolean colorReverted) {
+  public ConsoleView(boolean colorReverted, boolean docked) {
 	
 	vBox = new VBox();
 	Menu menu = new Menu("View");
 	CheckMenuItem consoleSeparateItem = new CheckMenuItem("Docked");
 	CheckMenuItem changeColor = new CheckMenuItem("Change Color");
-	consoleSeparateItem.setSelected(true);
+	consoleSeparateItem.setSelected(docked);
 	changeColor.setSelected(colorReverted);
 	MenuItem hideItem = new MenuItem("Hide!");
 	MenuBar menuBar = new MenuBar();
@@ -143,17 +131,14 @@ public class ConsoleView {
     }
   
 private void separateConsole(boolean docking) {
-	System.out.println(docking);
 	if(docking) {
 		if(Console.separate) {
-			System.out.println("Docking!");
 			PropertyManager.setProperty("showConsoleSeparately", "false");
 			Console.showInTab(XModeler.propertyTabs);
 			Console.stage.close();
 		}
 	}else {
 		if(!Console.separate) {
-		System.out.println("Undocking!");
 		PropertyManager.setProperty("showConsoleSeparately", "true");
 		Console.showInStage();
 		XModeler.propertyTabs.getTabs().remove(Console.tab);

@@ -32,10 +32,10 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.stage.FileChooser;
 import org.w3c.dom.Element;
+import tool.clients.exporter.svg.SvgConstant;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
-import tool.clients.fmmlxdiagrams.newpalette.NewFmmlxPalette;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.XmlManager;
 import tool.clients.xmlManipulator.XmlHandler;
@@ -43,7 +43,6 @@ import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -1222,7 +1221,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	}
 
-	public void paintToSvg(XmlHandler xmlHandler){
+	public void paintToSvg(XmlHandler xmlHandler, double extraHeight){
 		Vector<CanvasElement> objectsToBePainted = new Vector<>();
 		objectsToBePainted.addAll(objects);
 		objectsToBePainted.addAll(labels);
@@ -1234,6 +1233,23 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		for(CanvasElement c : objectsToBePainted){
 			c.paintToSvg(xmlHandler, 0, 0, this);
 		}
+		Element issueGroup = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
+		issueGroup.setAttribute(SvgConstant.ATTRIBUTE_GROUP_TYPE, "issues");
+
+		Element rect = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_RECT);
+		rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, 0+"");
+		rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, canvas.getHeight()+"");
+		rect.setAttribute(SvgConstant.ATTRIBUTE_HEIGHT, extraHeight+7+"");
+		rect.setAttribute(SvgConstant.ATTRIBUTE_WIDTH, canvas.getWidth()+"");
+		rect.setAttribute(SvgConstant.ATTRIBUTE_FILL, "black");
+		rect.setAttribute(SvgConstant.ATTRIBUTE_FILL_OPACITY, 1 +"");
+		xmlHandler.addXmlElement(issueGroup, rect);
+		int issueNumber = 0;
+		for(Issue issue : issues){
+			issue.paintToSvg(xmlHandler, issueGroup, 7, 14, 0, canvas.getHeight()+issueNumber*14, issueNumber);
+			issueNumber++;
+		}
+		xmlHandler.addXmlElement(xmlHandler.getRoot(), issueGroup);
 
 	}
 
