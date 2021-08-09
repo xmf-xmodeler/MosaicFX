@@ -7,8 +7,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
@@ -19,22 +17,23 @@ public class Console {
   static String      CONSOLE_LABEL = "XMF Console";
   static boolean separate;
   static boolean visible;
+  static boolean colorReverted;
   static Stage stage;
   static Tab tab;
   
   
   
-  public static void start(TabPane tabPane, boolean separate, boolean visible) {
+  public static void start(TabPane tabPane, boolean separate, boolean visible, boolean colorReverted) {
+	  Console.colorReverted=colorReverted;
 	  Console.separate=separate;
 	  Console.visible=visible;
 	  Console.stage=null;
-	  Console.consoleView = new ConsoleView();
+	  Console.consoleView = new ConsoleView(colorReverted, !separate);
 	  if(visible)if(separate) {
 		showInStage();
 	  } else {
 		showInTab(tabPane);
 	  }
-		  
   }
   
   
@@ -45,7 +44,7 @@ public class Console {
 	tabPane.getTabs().add(tab);
 	tabPane.toFront();
 	separate = false;
-	tab.setOnClosed((e)->{PropertyManager.setProperty("consoleVisible", "false");});
+	tab.setOnClosed((e)-> PropertyManager.setProperty("consoleVisible", "false"));
   }
 
 
@@ -58,14 +57,13 @@ public class Console {
 	  Console.stage=stage;
 	  stage.setScene(scene);
 	  stage.setTitle("Console");
-	  stage.setOnCloseRequest((e)->{PropertyManager.setProperty("consoleVisible", "false");});
+	  stage.setOnCloseRequest((e)-> PropertyManager.setProperty("consoleVisible", "false"));
 	  stage.show();
   }
 
 
 private static void start() {
-	  Console.consoleView = new ConsoleView();
-	  
+	  Console.consoleView = new ConsoleView(colorReverted, !separate);
   }
   
   

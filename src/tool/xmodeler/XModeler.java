@@ -418,7 +418,7 @@ public class XModeler extends Application {
 	  ModelBrowserClient.start(browserTab);
 	  EditorClient.start(editorTabs);
 	  FormsClient.start(propertyTabs);
-	  Console.start(propertyTabs,PropertyManager.getProperty("showConsoleSeparately", false), PropertyManager.getProperty("consoleVisible", false));
+	  Console.start(propertyTabs,PropertyManager.getProperty("showConsoleSeparately", false), PropertyManager.getProperty("consoleVisible", false), PropertyManager.getProperty("consoleColorReverted", false));
 	  DiagramClient.start(editorTabs);
 	  FmmlxDiagramCommunicator.start(editorTabs);
 	  //ClassBrowserClient.start();
@@ -458,7 +458,6 @@ public class XModeler extends Application {
 			propertyTabs = new TabPane();
 			
 			rightSplitPane.getItems().addAll(editorTabs, propertyTabs);
-			
 			outerSplitPane = rightSplitPane;
 //			outerSplitPane.getItems().addAll(browserTab, rightSplitPane);
 //			outerSplitPane.setDividerPosition(0, 0.01 );

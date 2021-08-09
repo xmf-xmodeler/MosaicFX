@@ -377,11 +377,10 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 				Color.BLACK, Color.BLACK, (x) -> 1., PropertyType.Issue);
 			nodeElements.addElement(issueBox);
 			double issY = 0;
-			
 			for(Issue i : issues) {
 				issY += lineHeight;
 				
-				NodeLabel issueLabel = new NodeLabel(Pos.BASELINE_LEFT, IssueBox.BOX_SIZE * 1.5, issY, new Color(1., .8, 0., 1.), null, this, () -> i.performResolveAction(diagram), i.getText());
+				NodeLabel issueLabel = new NodeLabel(Pos.BASELINE_LEFT, IssueBox.BOX_SIZE * 1.5, issY, new Color(1., .8, 0., 1.), null, this, () -> i.performResolveAction(diagram), i.getText(), true, i.issueNumber);
 				issueBox.nodeElements.add(issueLabel);
 				issueLabel.activateSpecialMode(neededWidth - 3 * IssueBox.BOX_SIZE);
 			}

@@ -171,7 +171,6 @@ public class WebBrowser {
         HBox rightControls = new HBox();
         HBox urlBar = new HBox();
         StackPane urlFieldStack = new StackPane();
-
         urlFieldStack.getChildren().addAll(urlField, loadingSpinner);
         StackPane.setAlignment(loadingSpinner, Pos.CENTER_RIGHT);
 

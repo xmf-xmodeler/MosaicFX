@@ -25,9 +25,17 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 	private double textHeight;
 	private final static int Y_BASELINE_DIFF = 3;
 	private final static int BOX_GAP = 1;
+	boolean isIssue;
+	int issueNumber;
 	
 	private boolean special = false;
 	private double availableWidth;
+
+	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxObject actionObject, Action action, String text, boolean b, int issueNumber) {
+		this(alignment, x, y, fgColor, bgColor, actionObject, action, text, FontPosture.REGULAR, FontWeight.NORMAL, 1.);
+		this.isIssue = b;
+		this.issueNumber = issueNumber;
+	}
 
 	@Override
 	public void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram, boolean objectIsSelected) {
@@ -147,7 +155,11 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_OPACITY, fgColor.getOpacity()+"");
 		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_STYLE, fgColor.getOpacity()+"");
 		text.setAttribute(SvgConstant.ATTRIBUTE_FILL, "#"+color);
-		text.setTextContent(textLocal);
+		if(isIssue){
+			text.setTextContent(" issue ["+issueNumber+"]");
+		} else {
+			text.setTextContent(textLocal);
+		}
 		xmlHandler.addXmlElement(group, text);
 	}
 

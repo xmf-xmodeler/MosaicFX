@@ -1471,10 +1471,13 @@ public class FmmlxDiagramCommunicator {
         Vector<Object> response = xmfRequest(handler, abstractPackageViewer.getID(), "getAllIssues");
         Vector<Object> issueList = (Vector<Object>) (response.get(0));
         Vector<Issue> result = new Vector<>();
+        int issueNumber = 0;
         for (Object issueO : issueList) {
             Vector<Object> issueV = (Vector<Object>) issueO;
             try {
                 Issue issue = Issue.readIssue(issueV);
+                issue.setIssueNumber(issueNumber);
+				issueNumber++;
                 result.add(issue);
             } catch (Issue.IssueNotReadableException e) {
                 e.printStackTrace();
