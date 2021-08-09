@@ -1,0 +1,289 @@
+    <project>
+      <modelVersion>4.0.0</modelVersion>
+      <artifactId>my-test-app</artifactId>
+      <groupId>my-test-group</groupId>
+      <version>1.0-SNAPSHOT</version>
+    <dependencies>
+		<dependency>
+		<groupId>org.openjfx</groupId>
+		<artifactId>javafx-controls</artifactId>
+		<version>15.0.1</version>
+		</dependency>
+		<dependency>
+            <groupId>ant-contrib</groupId>
+            <artifactId>ant-contrib</artifactId>
+            <version>1.0b3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant-jsch</artifactId>
+            <version>1.7.1</version>
+        </dependency>
+
+  </dependencies>
+	  <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.7</version>
+            <executions>
+              <execution>
+                <phase>generate-sources</phase>
+                <configuration>
+                  <tasks>
+     
+         <target  name="init">
+		<property name="output" location="output/" />
+		<property name="archiveDir" location="${output}/archiv/" />
+		<loadfile property="loadedVersion" srcFile="version.txt" />
+		<condition property="version" value="${loadedVersion}-SNAPSHOT" else="${loadedVersion}">
+			<or>
+				<resourceexists>
+					<file file="${output}/XModeler-${loadedVersion}.zip" />
+				</resourceexists>
+				<resourceexists>
+					<file file="${archiveDir}/XModeler-${loadedVersion}.zip" />
+				</resourceexists>
+			</or>
+		</condition>
+		<property name="outputArchive" location="${output}/XModeler-${version}.zip" />
+		<property name="prefix" value="XModeler/" />
+
+		<echo message="Building XModeler ${version}."/>
+
+		<property name="homeDir" location="../../XMF/com.ceteva.xmf.system/xmf-src" />
+		<property name="imageDir" location="${homeDir}/../xmf-img/" />
+		<property name="machineDir" location="${homeDir}/../../com.ceteva.xmf.machine/" />
+		<property name="compileAll" location="${homeDir}/bin/compileAll.bat" />
+		<property name="makexmf" location="${homeDir}/bin/makexmf.bat" />
+		<property name="makemosaic" location="${homeDir}/bin/makemosaic.bat" />
+		<move todir="${archiveDir}" overwrite="true">
+		    <fileset dir="${output}">
+		      <include name="*.zip"/>
+			</fileset>
+		</move>
+	</target>
+
+	<!-- Compile everything -->
+	<target name="compile" depends="compileMachine,compileXMF,makexmf,makemosaic">
+	</target>
+
+	<!-- Compile Java code for machine -->
+	<target name="compileMachine" depends="init">
+		<mkdir dir="${machineDir}/bin"/>
+		<javac srcdir="${machineDir}/src" destdir="${machineDir}/bin" fork="true">
+			<classpath>
+				<path>
+					<fileset dir="${machineDir}">
+						<include name = "*.jar"/>
+					</fileset>
+				</path>
+			</classpath>
+		</javac>
+		<mkdir dir="../bin"/>
+		<javac srcdir="../src" destdir="../bin">
+			<classpath>
+				<path>
+					<fileset dir="../lib/">
+						<include name = "**/*.jar"/>
+					</fileset>
+					<pathelement location="${machineDir}/bin/"/>
+				</path>
+			</classpath>
+		</javac>
+	</target>
+
+	<!-- Run compileAll for XMF code -->
+	<target name="compileXMF" depends="init">
+		<java classname="xos.OperatingSystem" fork="true">
+			<jvmarg value="-Duser.country=UK"/>
+			<arg value="-image"/> <arg value="${imageDir}/compiler.img"/>
+			<arg value="-heapSize"/> <arg value="5000"/>
+			<arg value="-stackSize"/> <arg value="50"/>
+			<arg value="-arg"/> <arg value="filename:${homeDir}/Boot/CompileAll.o"/>
+			<arg value="-arg"/> <arg value="version:${version}"/>
+			<arg value="-arg"/> <arg value="user:${user.name}"/>
+			<arg value="-arg"/> <arg value="home:${homeDir}"/>
+			<arg value="-arg"/> <arg value="license:license.lic"/>
+			<classpath>
+	           <pathelement path="../../XMF/com.ceteva.xmf.machine/bin"/>
+			</classpath>
+		</java>
+	</target>
+
+	<!-- Run makexmf to build xmf.img -->
+	<target name="makexmf" depends="init">
+		<java classname="xos.OperatingSystem" fork="true" dir="${homeDir}">
+			<jvmarg value="-Duser.country=UK"/>
+			<arg value="-port"/> <arg value="10101"/>
+			<arg value="-initFile"/> <arg value="${homeDir}/Boot/Boot.o"/>
+			<arg value="-heapSize"/> <arg value="5000"/>
+			<arg value="-arg"/> <arg value="version:${version}"/>
+			<arg value="-arg"/> <arg value="user:${user.name}"/>
+			<arg value="-arg"/> <arg value="home:${homeDir}"/>
+			<arg value="-arg"/> <arg value="license:license.lic"/>
+			<classpath>
+	           <pathelement path="../../XMF/com.ceteva.xmf.machine/bin"/>
+			</classpath>
+		</java>
+	</target>
+
+	<!-- Run makemosaic to build mosaic.img -->
+	<target name="makemosaic" depends="init">
+		<java classname="xos.OperatingSystem" fork="true" dir="${homeDir}">
+			<jvmarg value="-Duser.country=UK"/>
+			<arg value="-port"/> <arg value="10101"/>
+			<arg value="-image"/> <arg value="${imageDir}/xmf.img"/>
+			<arg value="-heapSize"/> <arg value="10000"/>
+			<arg value="-arg"/> <arg value="image:${imageDir}/compiler.img"/>
+			<arg value="-arg"/> <arg value="filename:${homeDir}/Boot/BootMosaic.o"/>
+			<arg value="-arg"/> <arg value="version:${version}"/>
+			<arg value="-arg"/> <arg value="user:${user.name}"/>
+			<arg value="-arg"/> <arg value="home:${homeDir}"/>
+			<arg value="-arg"/> <arg value="saveSource:true"/>
+			<arg value="-arg"/> <arg value="Comms:true"/>
+			<arg value="-arg"/> <arg value="Constraints:true"/>
+			<arg value="-arg"/> <arg value="Java:true"/>
+			<arg value="-arg"/> <arg value="Format:true"/>
+			<arg value="-arg"/> <arg value="Env:true"/>
+			<arg value="-arg"/> <arg value="Arrays:true"/>
+			<arg value="-arg"/> <arg value="Graphs:true"/>
+			<arg value="-arg"/> <arg value="Stacks:true"/>
+			<arg value="-arg"/> <arg value="OCL:true"/>
+			<arg value="-arg"/> <arg value="Parser:true"/>
+			<arg value="-arg"/> <arg value="Instrs:true"/>
+			<arg value="-arg"/> <arg value="Assembler:true"/>
+			<arg value="-arg"/> <arg value="Signatures:true"/>
+			<arg value="-arg"/> <arg value="Compiler:true"/>
+			<arg value="-arg"/> <arg value="Grammar:true"/>
+			<arg value="-arg"/> <arg value="Extensions:true"/>
+			<arg value="-arg"/> <arg value="Extensions/Compiler:true"/>
+			<arg value="-arg"/> <arg value="Undo:true"/>
+			<arg value="-arg"/> <arg value="Aspects:true"/>
+			<arg value="-arg"/> <arg value="DocTables:true"/>
+			<arg value="-arg"/> <arg value="Doc:true"/>
+			<arg value="-arg"/> <arg value="Eval:true"/>
+			<arg value="-arg"/> <arg value="XMatch:true"/>
+			<arg value="-arg"/> <arg value="TopLevel:true"/>
+			<arg value="-arg"/> <arg value="Walkers:true"/>
+			<arg value="-arg"/> <arg value="XML:true"/>
+			<arg value="-arg"/> <arg value="XMap:true"/>
+			<arg value="-arg"/> <arg value="Manifests:true"/>
+			<arg value="-arg"/> <arg value="Languages:true"/>
+			<arg value="-arg"/> <arg value="Associations:true"/>
+			<arg value="-arg"/> <arg value="Deploy:true"/>
+			<arg value="-arg"/> <arg value="Debug:true"/>
+			<arg value="-arg"/> <arg value="XRules:true"/>
+			<arg value="-arg"/> <arg value="CodeGen:true"/>
+			<arg value="-arg"/> <arg value="PPrint:true"/>
+			<arg value="-arg"/> <arg value="Comprehensions:true"/>
+			<arg value="-arg"/> <arg value="Import:true"/>
+			<classpath>
+	           <pathelement path="../../XMF/com.ceteva.xmf.machine/bin"/>
+			</classpath>
+		</java>
+	</target>	
+
+	
+	<!-- 
+		Main build 
+	-->
+	<target name="build" depends="compile">
+		<!-- If there is a SNAPSHOT, it should be deleted -->
+		<delete file="${outputArchive}" failonerror="no"/> 
+		<copy file="./resources/ini-linux.txt" tofile="./output/ini-linux.txt" />
+		<copy file="./resources/ini-win.txt" tofile="./output/ini-win.txt" />
+		<!-- set version -->
+		<replace file="./output/ini-linux.txt" token="@@VERSION@@" value="${version}" />
+		<replace file="./output/ini-win.txt" token="@@VERSION@@" value="${version}" />
+
+		<zip destfile="${outputArchive}" compress="yes" duplicate="fail">
+			<zipfileset dir=".." prefix="${prefix}">
+				<include name="bin/**" />
+				<!--include name="doc/**" /-->
+				<include name="lib/*.jar" />
+				<include name="lib/poi-3.10.1/*.jar" />
+				<include name="lib/poi-3.10.1/LICENSE" />
+				<include name="lib/poi-3.10.1/NOTICE" />
+				<!--include name="Exceptions/**" />
+				<include name="file/**" />
+				<include name="icons/**" />
+				<include name="images/**" />
+				<include name="dejavu/**" />
+				<include name="User/**" />
+				<include name="web/**" />
+				<include name="MDC/**" /-->
+				<include name="setting/**" />
+				<exclude name="**/.DS_Store" />
+				<include name="resources/**" />
+			</zipfileset>
+			<zipfileset dir="./output/" prefix="${prefix}">
+				<!-- ini files -->
+				<include name="ini-win.txt" />
+				<include name="ini-linux.txt" />
+			</zipfileset>
+			<zipfileset dir="./resources/" prefix="${prefix}" filemode="755">
+				<include name="*.sh" />
+				<!-- start scripts -->
+				<include name="*.bat" />
+			</zipfileset>
+			<zipfileset dir="./resources/" prefix="${prefix}">
+				<include name="changelog.txt" />
+			</zipfileset>
+			<zipfileset dir="./resources/" prefix="${prefix}" filemode="755">
+				<include name="XModeler.app/**"/>
+			</zipfileset>
+			<zipfileset dir="../../XMF/com.ceteva.xmf.machine" prefix="${prefix}">
+				<include name="bin/**" />
+				<exclude name="**/.DS_Store" />
+			</zipfileset>
+			<zipfileset dir="../../XMF/com.ceteva.xmf.system" prefix="${prefix}">
+				<include name="xmf-addons/**" />
+				<include name="xmf-src/**" />
+				<include name="xmf-img/compiler.img" />
+				<include name="xmf-img/xmf.img" />
+				<include name="xmf-img/mosaic.img" />
+				<exclude name="**/.DS_Store" />
+			</zipfileset>
+			<!-- doc/ -->
+			<zipfileset dir="../../XMF/com.ceteva.xmf.system/xmf-doc/xmf-books" prefix="${prefix}doc/">
+				<include name="Bluebook.pdf" />
+			</zipfileset>
+			<mappedresources>
+				<zipfileset dir="../../XMF/com.ceteva.xmf.system/xmf-doc/xmf-books/SuperLanguages" prefix="${prefix}doc/">
+					<include name="book.pdf" />
+				</zipfileset>
+				<globmapper from="book.pdf" to="${prefix}doc/Super Languages.pdf" />
+			</mappedresources>
+			<zipfileset dir="../../XMF/com.ceteva.xmf.system/xmf-doc/xmf-books/AppliedMetamodelling" prefix="${prefix}doc/">
+				<include name="Applied Metamodelling (Second Edition).pdf" />
+			</zipfileset>
+		</zip>
+		<delete file="./output/ini-win.txt" />
+		<delete file="./output/ini-linux.txt" />
+	</target>
+	
+	<!-- 
+		Main build with subsequent refresh of the projetc's build/output directory 
+	-->
+	<target name="buildAndRefresh" depends="build">
+		<!-- ANT must be run with "Run in the same JRE as the workbench" -->
+		<eclipse.refreshLocal resource="MosaicFX/build/output" depth="2" />
+	</target>
+     
+                  </tasks>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </project>
