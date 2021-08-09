@@ -221,8 +221,13 @@ public class FmmlxPalette {
 		}
 
 		public String toString() {
-			return object.getName() + " ^" + object.getMetaClassName() + "^";
-			// return object.getName();
+			
+			//if (showMetaClassNameInPalette==true){
+			//return object.getName() + " ^" + object.getMetaClassName() + "^";
+		    //} else {
+			return object.getName();
+			//}
+			//TODO Implement checkBox/Property for enable/disable MetaClassName in palette!
 
 		}
 
