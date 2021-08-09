@@ -34,6 +34,7 @@ import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.workbench.WorkbenchClient;
+import tool.helper.IconGenerator;
 
 public class ControlCenter extends Stage {
 	
@@ -52,7 +53,7 @@ public class ControlCenter extends Stage {
 			
 	public ControlCenter() {
 		setTitle("XModeler ML Control Center");
-		
+		getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		ControlCenterClient.init(this);
 		controlCenterClient = ControlCenterClient.getClient();
 		
@@ -217,7 +218,7 @@ public class ControlCenter extends Stage {
 		            public void run() {
 		            	controlCenterClient.getAllProjects();
 		            } 
-		        }, 2000
+		        }, 2500
 		);
 	}
 

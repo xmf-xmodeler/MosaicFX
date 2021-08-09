@@ -172,7 +172,7 @@ public class XModeler extends Application {
   }
   
   public static Stage getStage() {
-	    return stage;
+	  return stage;
 	  }
   
   public static PropertyManager getPropertyManager() {

@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams.classbrowser;
 
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
+import tool.helper.IconGenerator;
 
 public class ClassBrowserClient{
 	
@@ -27,6 +28,7 @@ public class ClassBrowserClient{
 		stage.show();
 		stage.toFront();
 		stage.initData(diagram);
+		stage.getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 	}
 
 }
