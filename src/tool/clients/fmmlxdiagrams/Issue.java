@@ -14,6 +14,7 @@ import java.util.Vector;
 public class Issue implements FmmlxProperty{
 	
 	public static final Issue NOT_YET_IMPLEMENTED = new Issue("This feature has not been implemented yet.");
+	public int issueNumber;
 
 	private Issue() {}
 	
@@ -25,7 +26,7 @@ public class Issue implements FmmlxProperty{
 	private Vector<Object> solution;
 	private Vector<String> affectedObjects = new Vector<>();
 
-	public void paintToSvg(XmlHandler xmlHandler, Element group, int xOffset, int yOffset, int x, double y, int issueNumber) {
+	public void paintToSvg(XmlHandler xmlHandler, Element group, int xOffset, int yOffset, int x, double y) {
 		String textColor = this.color.toString().split("x")[1].substring(0,6);
 		Element textElement = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_TEXT);
 		textElement.setAttribute(SvgConstant.ATTRIBUTE_FONT_FAMILY, "Arial");
@@ -37,6 +38,10 @@ public class Issue implements FmmlxProperty{
 		textElement.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (y + yOffset)+"");
 		textElement.setTextContent("issue ["+issueNumber+"] : "+this.text);
 		xmlHandler.addXmlElement(group, textElement);
+	}
+
+	public void setIssueNumber(int issueNumber) {
+		this.issueNumber=issueNumber;
 	}
 
 	public static class IssueNotReadableException extends Exception {

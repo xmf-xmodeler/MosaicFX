@@ -1244,10 +1244,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		rect.setAttribute(SvgConstant.ATTRIBUTE_FILL, "black");
 		rect.setAttribute(SvgConstant.ATTRIBUTE_FILL_OPACITY, 1 +"");
 		xmlHandler.addXmlElement(issueGroup, rect);
-		int issueNumber = 0;
 		for(Issue issue : issues){
-			issue.paintToSvg(xmlHandler, issueGroup, 7, 14, 0, canvas.getHeight()+issueNumber*14, issueNumber);
-			issueNumber++;
+			issue.paintToSvg(xmlHandler, issueGroup, 7, 14, 0, canvas.getHeight()+issue.issueNumber*14);
 		}
 		xmlHandler.addXmlElement(xmlHandler.getRoot(), issueGroup);
 
