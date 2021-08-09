@@ -725,6 +725,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		} else if (hitObject instanceof DiagramEdgeLabel) {
 			DiagramEdgeLabel<?> l = (DiagramEdgeLabel<?>) hitObject;
 			l.performAction();
+		} else if (hitObject instanceof FmmlxAssociation) {
+			actions.editAssociationDialog((FmmlxAssociation)hitObject);
 		}
 	}
 
