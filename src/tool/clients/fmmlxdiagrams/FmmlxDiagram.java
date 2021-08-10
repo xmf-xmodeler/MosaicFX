@@ -64,7 +64,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	// The elements which the diagram consists of GUI-wise
 	private SplitPane pane;
-	private SplitPane mainView;
+	private VBox mainView;
 	private Canvas canvas;
 	private ScrollPane scrollerCanvas;
 	private VBox vBox;
@@ -155,20 +155,18 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		menuBar.getMenus().add(menu);
 		pane = new SplitPane();
 		vBox.getChildren().addAll(menuBar, pane);
-		mainView = new SplitPane();
+		mainView = new VBox();
 		canvas = new Canvas(canvasRawSize.getX(), canvasRawSize.getY());
+		
 		Palette palette = new Palette(this);
 		Palette palette2 = new Palette(this,2);
 		newFmmlxPalette = new FmmlxPalette(this);
 		scrollerCanvas = new ScrollPane(canvas);
 		pane.setOrientation(Orientation.HORIZONTAL);
 		pane.setDividerPosition(0, 0.25);
-		mainView.setOrientation(Orientation.VERTICAL);
-		mainView.getItems().addAll(palette,palette2, scrollerCanvas);
-		mainView.setDividerPosition(0, 0.2);
+		mainView.getChildren().addAll(palette,palette2, scrollerCanvas);
 
 		pane.getItems().addAll(newFmmlxPalette.getToolBar(), mainView);
-
 		canvas.setOnMousePressed(this::mousePressed);
 		canvas.setOnMouseDragged(this::mouseDragged);
 		canvas.setOnMouseReleased(this::mouseReleased);

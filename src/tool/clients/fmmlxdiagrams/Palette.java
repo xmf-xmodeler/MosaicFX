@@ -11,7 +11,7 @@ public class Palette extends ToolBar {
 	public Palette(FmmlxDiagram diagram) {
 		setPadding(new Insets(5, 5, 5, 5));
 		setOrientation(Orientation.HORIZONTAL);
-
+		isResizable();
 		
 		getItems().add(new Label("Show: "));
 		CheckBox boxO = addCheckBox("Operations");
@@ -36,6 +36,7 @@ public class Palette extends ToolBar {
 		}
 	
 	public Palette(FmmlxDiagram diagram, int secondRow) {
+		autosize();
 		setPadding(new Insets(5,5,5,5));
 		getItems().add(new Label("Zoom"));
 		addButton("+", e -> diagram.zoomIn());
