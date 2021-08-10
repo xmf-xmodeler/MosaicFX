@@ -103,6 +103,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private boolean showGetterAndSetter = true;
 	private boolean showDerivedOperations=true;
 	private boolean showDerivedAttributes=true;
+	private boolean showMetaClassName = false;
 	@Override protected boolean loadOnlyVisibleObjects() { return true; }	
 
 	public final String diagramName;
@@ -157,12 +158,13 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		mainView = new SplitPane();
 		canvas = new Canvas(canvasRawSize.getX(), canvasRawSize.getY());
 		Palette palette = new Palette(this);
+		Palette palette2 = new Palette(this,2);
 		newFmmlxPalette = new FmmlxPalette(this);
 		scrollerCanvas = new ScrollPane(canvas);
 		pane.setOrientation(Orientation.HORIZONTAL);
 		pane.setDividerPosition(0, 0.25);
 		mainView.setOrientation(Orientation.VERTICAL);
-		mainView.getItems().addAll(palette, scrollerCanvas);
+		mainView.getItems().addAll(palette,palette2, scrollerCanvas);
 		mainView.setDividerPosition(0, 0.2);
 
 		pane.getItems().addAll(newFmmlxPalette.getToolBar(), mainView);
@@ -1031,6 +1033,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public void setShowGettersAndSetters(boolean show) {this.showGetterAndSetter = show;}
 	public void setShowDerivedOperations(boolean show) {this.showDerivedOperations = show;}
 	public void setShowDerivedAttributes(boolean show) {this.showDerivedAttributes = show;}
+	public void setMetaClassNanmeInPalette(boolean show) {this.showMetaClassName = show;} 
 
 	public boolean isShowOperations() {return this.showOperations;}
 	public boolean isShowOperationValues() {return this.showOperationValues;}
@@ -1038,6 +1041,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public boolean isShowGetterAndSetter() {return this.showGetterAndSetter;}
 	public boolean isShowDerivedOperations() {return this.showDerivedOperations;}
 	public boolean isShowDerivedAttributes() {return this.showDerivedAttributes;}
+	public boolean isMetaClassNameInPalette() {return this.showMetaClassName;}
 
 	public Vector<String> getEnumItems(String enumName) {
 		for (FmmlxEnum e : enums) {
@@ -1172,6 +1176,19 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		triggerOverallReLayout();
 		redraw();
 	}
+	
+	public void setMetaClassNameInPalette(CheckBox metaClassName) {
+		boolean show=metaClassName.isSelected();
+		setMetaClassNanmeInPalette(show);
+		if(show==true) {
+			newFmmlxPalette.showMetaClassName = true;
+			newFmmlxPalette.update();
+		} else if (show==false) {
+			newFmmlxPalette.showMetaClassName = false;
+			newFmmlxPalette.update();
+		}
+		
+	}
 
 	@Override
 	protected void clearDiagram_specific() {
@@ -1237,5 +1254,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 
 	}
+
+	
 
 }
