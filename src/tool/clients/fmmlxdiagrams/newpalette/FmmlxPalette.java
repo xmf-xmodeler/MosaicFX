@@ -36,7 +36,7 @@ public class FmmlxPalette {
 	private TreeItem<AbstractTreeType> root;
 	private TreeItem<AbstractTreeType> relationships = new TreeItem<AbstractTreeType>(new TreeGroup("Relationships"));
 	private TreeItem<AbstractTreeType> elements = new TreeItem<AbstractTreeType>(new TreeGroup("Elements"));
-	public boolean showMetaClassName = false;
+	private boolean showMetaClassName = false;
 
 	// Vector<FmmlxObject> objects = diagram.getObjects();
 
@@ -271,6 +271,14 @@ public class FmmlxPalette {
 
 	private interface Action {
 		void perform(Point2D point);
+	}
+	
+	public boolean isShowMetaClassName() {
+		return showMetaClassName;
+	}
+
+	public void setShowMetaClassName(boolean showMetaClassName) {
+		this.showMetaClassName = showMetaClassName;
 	}
 
 }

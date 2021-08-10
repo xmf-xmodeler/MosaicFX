@@ -1181,10 +1181,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		boolean show=metaClassName.isSelected();
 		setMetaClassNanmeInPalette(show);
 		if(show==true) {
-			newFmmlxPalette.showMetaClassName = true;
+			newFmmlxPalette.setShowMetaClassName(true);
 			newFmmlxPalette.update();
 		} else if (show==false) {
-			newFmmlxPalette.showMetaClassName = false;
+			newFmmlxPalette.setShowMetaClassName(false);
 			newFmmlxPalette.update();
 		}
 		
