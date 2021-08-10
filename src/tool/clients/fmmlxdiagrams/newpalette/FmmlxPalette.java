@@ -36,6 +36,7 @@ public class FmmlxPalette {
 	private TreeItem<AbstractTreeType> root;
 	private TreeItem<AbstractTreeType> relationships = new TreeItem<AbstractTreeType>(new TreeGroup("Relationships"));
 	private TreeItem<AbstractTreeType> elements = new TreeItem<AbstractTreeType>(new TreeGroup("Elements"));
+	public boolean showMetaClassName = false;
 
 	// Vector<FmmlxObject> objects = diagram.getObjects();
 
@@ -222,13 +223,11 @@ public class FmmlxPalette {
 
 		public String toString() {
 			
-			//if (showMetaClassNameInPalette==true){
-			//return object.getName() + " ^" + object.getMetaClassName() + "^";
-		    //} else {
+			if (showMetaClassName==true){
+			return object.getName() + " ^" + object.getMetaClassName() + "^";
+		    } else {
 			return object.getName();
-			//}
-			//TODO Implement checkBox/Property for enable/disable MetaClassName in palette!
-
+			}
 		}
 
 		@Override

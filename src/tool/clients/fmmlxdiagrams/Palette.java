@@ -12,11 +12,7 @@ public class Palette extends ToolBar {
 		setPadding(new Insets(10, 10, 10, 10));
 		setOrientation(Orientation.HORIZONTAL);
 
-		getItems().add(new Label("Zoom"));
-		addButton("+", e -> diagram.zoomIn());
-		addButton("100%", e -> diagram.zoomOne());
-		addButton("-", e -> diagram.zoomOut());
-		getItems().add(new Separator());
+		
 		getItems().add(new Label("Show: "));
 		CheckBox boxO = addCheckBox("Operations");
 		CheckBox boxOV = addCheckBox("Operation Values");
@@ -24,20 +20,31 @@ public class Palette extends ToolBar {
 		CheckBox boxGettersAndSetters = addCheckBox("Getters & Setters");
 		CheckBox boxDerivedOperations = addCheckBox("Derived Operations");
 		CheckBox boxDerivedAttributes = addCheckBox("Derived Attributes");
- 		
+		CheckBox metaClassName = addCheckBox("Name of Metaclass in Palette");
+		metaClassName.setSelected(false);
+		getItems().add(new Separator());
 		boxO.setOnAction(e -> diagram.setShowOperations(boxO));
 		boxOV.setOnAction(e -> diagram.setShowOperationValues(boxOV));
 		boxS.setOnAction(e -> diagram.setShowSlots(boxS));
 		boxGettersAndSetters.setOnAction(e-> diagram.setShowGettersAndSetters(boxGettersAndSetters));
 		boxDerivedOperations.setOnAction(e-> diagram.setShowDerivedOperations(boxDerivedOperations));
 		boxDerivedAttributes.setOnAction(e-> diagram.setShowDerivedAttributes(boxDerivedAttributes));
+		metaClassName.setOnAction(e-> diagram.setMetaClassNameInPalette(metaClassName));
 		
+		
+		
+		}
+	
+	public Palette(FmmlxDiagram diagram, int secondRow) {
+		setPadding(new Insets(10, 10, 10, 10));
+		getItems().add(new Label("Zoom"));
+		addButton("+", e -> diagram.zoomIn());
+		addButton("100%", e -> diagram.zoomOne());
+		addButton("-", e -> diagram.zoomOut());
 		getItems().add(new Separator());
 		addButton("Update Diagram", e -> diagram.updateDiagram());
 		addButton("Print Protocol", e -> diagram.actions.printProtocol());
-		
-		}
-
+	}
 	private void addButton(String string, EventHandler<ActionEvent> eventHandler) {
 		Button button = new Button(string);
 		button.setOnAction(eventHandler);
