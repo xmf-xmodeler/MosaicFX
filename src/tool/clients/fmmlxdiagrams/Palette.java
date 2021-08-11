@@ -9,9 +9,9 @@ import javafx.scene.control.*;
 public class Palette extends ToolBar {
 
 	public Palette(FmmlxDiagram diagram) {
-		setPadding(new Insets(10, 10, 10, 10));
+		setPadding(new Insets(5, 5, 5, 5));
 		setOrientation(Orientation.HORIZONTAL);
-
+		isResizable();
 		
 		getItems().add(new Label("Show: "));
 		CheckBox boxO = addCheckBox("Operations");
@@ -36,7 +36,8 @@ public class Palette extends ToolBar {
 		}
 	
 	public Palette(FmmlxDiagram diagram, int secondRow) {
-		setPadding(new Insets(10, 10, 10, 10));
+		autosize();
+		setPadding(new Insets(5,5,5,5));
 		getItems().add(new Label("Zoom"));
 		addButton("+", e -> diagram.zoomIn());
 		addButton("100%", e -> diagram.zoomOne());
