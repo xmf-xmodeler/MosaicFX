@@ -436,9 +436,11 @@ public class XModeler extends Application {
 	  singleton = this;
 	  initClients();
       startClients();
-	  openXModeler();
+	  //openXModeler();
       newStage = new ControlCenter();
-	  newStage.show();
+      stage= newStage;
+      newStage.show();
+      
   }
 
 

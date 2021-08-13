@@ -1727,27 +1727,29 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	private void closeScene(Stage stage, Event wevent, int id, String name, javafx.scene.Node node, FmmlxDiagram diagram) {
-		Alert alert = new Alert(AlertType.CONFIRMATION);
 
-		ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
-		ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
-		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-		alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
-		alert.setTitle("Open stage as tab in editor instead?");
-		alert.setHeaderText(null);
-
-		Optional<ButtonType> result = alert.showAndWait();
-		if (result.isPresent()){
-			if (result.get().getButtonData() == ButtonData.YES) {
-				PropertyManager.setProperty("diagramsInSeparateTab", "false");
-				createTab(node, name, id, diagram);
-			} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
-				wevent.consume();
-			} else {
+//TODO : Implement Dialog!		
+//		Alert alert = new Alert(AlertType.CONFIRMATION);
+//
+//		ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+//		ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
+//		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+//		alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
+//		alert.setTitle("Open stage as tab in editor instead?");
+//		alert.setHeaderText(null);
+//
+//		Optional<ButtonType> result = alert.showAndWait();
+//		if (result.isPresent()){
+//			if (result.get().getButtonData() == ButtonData.YES) {
+//				PropertyManager.setProperty("diagramsInSeparateTab", "false");
+//				createTab(node, name, id, diagram);
+//			} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
+//				wevent.consume();
+//			} else {
 				close(diagram, true);
 			}
-		}
-	}
+//		}
+//	}
 
 	public void saveFile(String packageString) {
 		String packageName = packageString.substring(1,packageString.length()-1).split(" ")[1];
