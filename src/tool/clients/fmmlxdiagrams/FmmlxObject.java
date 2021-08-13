@@ -515,9 +515,10 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			nodeElements.addElement(coinstraintsBox);
 			for (Constraint con : constraints) {
 				constraintY += lineHeight;
-				NodeLabel constraintLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, constraintY, new Color(.8,0,0,1), null, con, NO_ACTION, con.getName());
+				NodeLabel.Action editConstraintAction = () -> diagram.getActions().editConstraint(this,con);
+				NodeLabel constraintLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, constraintY, new Color(.8,0,0,1), null, con, editConstraintAction, con.getName());
 				coinstraintsBox.nodeElements.add(constraintLabel);
-				NodeLabel constraintLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, constraintY, Color.WHITE, new Color(.8,0,0,1), con, NO_ACTION, con.level + "");
+				NodeLabel constraintLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, constraintY, Color.WHITE, new Color(.8,0,0,1), con, editConstraintAction, con.level + "");
 				coinstraintsBox.nodeElements.add(constraintLevelLabel);
 			}
 		}

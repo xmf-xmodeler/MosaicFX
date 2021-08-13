@@ -165,6 +165,11 @@ public class ObjectContextMenu extends ContextMenu {
 	}
 	
 	private Menu createConstraintSubMenu() {
+		final Constraint activeConstraint = 
+				(activeProperty != null && activeProperty instanceof Constraint)
+					?(Constraint) activeProperty
+					:null;
+		
 		Menu constraintMenu = new Menu("Constraint");
 		
 		MenuItem addItem = new MenuItem("Add");
@@ -172,9 +177,14 @@ public class ObjectContextMenu extends ContextMenu {
 		constraintMenu.getItems().add(addItem);
 		
 		constraintMenu.getItems().add(new SeparatorMenuItem());
-
+		
+		MenuItem editConstraint = new MenuItem("Edit Constraint");
+		editConstraint.setOnAction(e -> actions.editConstraint(object,activeConstraint));
+		constraintMenu.getItems().add(editConstraint);
+		
 		MenuItem changeNameItem = new MenuItem("Change name");
 		changeNameItem.setDisable(true);
+		//changeNameItem.setOnAction();
 		constraintMenu.getItems().add(changeNameItem);
 		
 		MenuItem changeLevelItem = new MenuItem("Change level");
