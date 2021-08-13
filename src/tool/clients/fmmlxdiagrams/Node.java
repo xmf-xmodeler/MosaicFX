@@ -19,11 +19,10 @@ public abstract class Node implements CanvasElement{
 	protected double y;
 	protected int width;
 	protected int height;
-	protected int minWidth = 100;
 	protected transient Point2D lastClick = null;
 	private FmmlxObjectPort port;
 	
-	protected transient boolean requiresReLayout;
+	transient boolean requiresReLayout;
 	protected Vector<NodeElement> nodeElements = new Vector<>();
 	
 	
@@ -78,12 +77,11 @@ public abstract class Node implements CanvasElement{
 	
 	@Override
 	public boolean isHit(double mouseX, double mouseY) {
-		return
-	        !hidden && 
-			mouseX > x &&
-			mouseY > y &&
-			mouseX < x + width &&
-			mouseY < y + height;
+		if(hidden) return false;
+		for(NodeElement n : nodeElements) {
+			if(n.isHit(mouseX-x, mouseY-y)) return true;
+		}
+		return false;
 	}
 
 	protected abstract void layout(FmmlxDiagram diagram) ;

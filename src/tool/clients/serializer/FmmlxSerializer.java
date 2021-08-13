@@ -66,7 +66,6 @@ public class FmmlxSerializer  {
 
     //Analog to "save as" methode without created file-path using file chooser because the file-path is already exists
     public void save(String packagePath, String filePath, String label, Integer id, FmmlxDiagramCommunicator communicator)  {
-        System.out.println(label);
         if(filePath!=null && filePath.length()>0 && checkFileExist(xmlManager.getSourcePath())){
             try {
                 Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(packagePath);

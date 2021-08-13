@@ -2,6 +2,7 @@ package tool.clients.fmmlxdiagrams.classbrowser;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
@@ -20,8 +21,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
+import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
+import tool.clients.fmmlxdiagrams.FmmlxSlot;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
 import tool.xmodeler.XModeler;
@@ -249,14 +252,50 @@ public class ModellBrowserStage extends CustomStage {
 			selectedObject=diagram.getObjectByPath(newValue.split(" ")[1]);		
 			clearAll(ClearSelectionMode.OBJECT);
 			
-			fmmlxAttributeListView.getItems().addAll(selectedObject.getAllAttributesString());
-			slotListView.getItems().addAll(selectedObject.getAllSlotString());
-			fmmlxOperationListView.getItems().addAll(selectedObject.getAllOperationsString());
-			fmmlxAssociationListView.getItems().addAll(selectedObject.getAllRelatedAssociationsString());
+			fmmlxAttributeListView.getItems().addAll(getAllAttributesString());
+			slotListView.getItems().addAll(getAllSlotString());
+			fmmlxOperationListView.getItems().addAll(getAllOperationsString());
+			fmmlxAssociationListView.getItems().addAll(getAllRelatedAssociationsString());
 			abstractComboBox.setValue(selectedObject.isAbstract());
 		}
 	}
+	
+	private List<String> getAllSlotString() {
+		List<String> result = new LinkedList<>();
+		
+		for(FmmlxSlot slot : selectedObject.getAllSlots()) {
+			result.add(slot.getName()+" = "+slot.getValue());
+		}
+		return result;
+	}
 
+	private List<String> getAllAttributesString() {
+		List<String> result = new LinkedList<>();
+		
+		for(FmmlxAttribute att : selectedObject.getAllAttributes()) {
+			result.add("("+att.getLevel()+") "+att.getName());
+		}
+		return result;
+	}
+	
+	private List<String> getAllOperationsString() {
+		List<String> result = new LinkedList<>();
+		
+		for(FmmlxOperation op : selectedObject.getAllOperations()) {
+			StringBuilder stringBuilderType = new StringBuilder();
+			int paramLength= op.getParamTypes().size();		
+			for(int i =0 ; i<paramLength;i++) {			
+				stringBuilderType.append(op.getParamTypes().get(i).split("::")[2]);
+				if(i!=paramLength-1) {
+					stringBuilderType.append(", ");
+				}
+			}
+			
+			result.add(op.getName()+" ("+stringBuilderType.toString()+")");
+		}
+		return result;
+	}
+	
 	private void onAssociationListViewNewValue(String oldValue, String newValue) {
 		FmmlxAssociation association = diagram.getAssociationByPath(newValue);	
 		if (association!=null) {
@@ -266,6 +305,15 @@ public class ModellBrowserStage extends CustomStage {
 				associationBrowserTextField.setText("("+association.getSourceNode().getLevel()+")"+" "+association.getSourceNode().getName());
 			}
 		}
+	}	
+
+	private List<String> getAllRelatedAssociationsString() {
+		List<String> result = new LinkedList<>();
+		
+		for(FmmlxAssociation as : selectedObject.getAllRelatedAssociations()) {
+			result.add(as.getName());
+		}
+		return result;
 	}
 
 	private void onAbstractNewValue(Boolean oldValue, Boolean newValue) {

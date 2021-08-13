@@ -88,43 +88,18 @@ public class DefaultContextMenu extends ContextMenu {
 
 			MenuItem save = new MenuItem("Save");
 			save.setOnAction(a -> actions.save());
-			//getItems().addAll(save);
+			getItems().addAll(save);
+			save.setDisable(true);
+
+			MenuItem saveAs = new MenuItem("Save As...");
+			saveAs.setOnAction(a -> diagram.getComm().saveXmlFile2(diagram.getPackagePath(), diagram.getID()));
+			getItems().addAll(saveAs);
 
 			MenuItem pngItem = new MenuItem("Export as PNG...");
 			pngItem.setOnAction(a -> {
 				diagram.savePNG();
 			});	
 
-			/*MenuItem test = new MenuItem("Lottoziehung");
-			test.setOnAction(a -> {
-				Vector<Integer> result = new Vector<>();
-				while(result.size() < 6) {
-					Integer next = WorkbenchClient.theClient().getRandomNumber(1, 50);
-					if(!result.contains(next)) result.add(next);
-				}
-				Collections.sort(result);
-				Integer zusatzzahl = null;
-				while(zusatzzahl == null) {
-					Integer next = WorkbenchClient.theClient().getRandomNumber(1, 50);
-					if(!result.contains(next)) zusatzzahl = next;
-				}
-				
-				Alert alert = new Alert(AlertType.INFORMATION);
-				alert.setTitle("Lottoziehung");
-				Calendar greg = GregorianCalendar.getInstance();
-				greg.setTime(new Date());
-				alert.setHeaderText("Die Lottozahlen vom " + greg.get(GregorianCalendar.DAY_OF_MONTH) + "."+ greg.get(GregorianCalendar.MONTH) + "." + greg.get(GregorianCalendar.YEAR) + ":");
-				alert.setContentText(result.get(0) + ", "+ result.get(1) + ", "+ result.get(2) + ", "
-						            +result.get(4) + ", "+ result.get(5) + ", "+ result.get(6) + " Z: " + zusatzzahl);
-
-				alert.showAndWait();
-			});
-
-			MenuItem testGetLabel = new MenuItem("Test label");
-			testGetLabel.setOnAction(a -> {
-				actions.testGetLabel();
-			});
-			getItems().addAll(pngItem, test, testGetLabel);*/
 			getItems().add(pngItem);
 
 			MenuItem openFindImplementationDialog = new MenuItem("Search for Implementation");
