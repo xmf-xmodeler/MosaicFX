@@ -218,7 +218,8 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 			object.nodeElements.addElement(coinstraintsBox);
 			for (Constraint con : object.getConstraints()) {
 				constraintY += lineHeight;
-				NodeLabel constraintLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, constraintY, new Color(.8,0,0,1), null, con, NO_ACTION, con.getName());
+				NodeLabel.Action editConstraintAction = () -> diagram.getActions().editConstraint(object,con);
+				NodeLabel constraintLabel = new NodeLabel(Pos.BASELINE_LEFT, 14, constraintY, new Color(.8,0,0,1), null, con, editConstraintAction, con.getName());
 				coinstraintsBox.nodeElements.add(constraintLabel);
 				NodeLabel constraintLevelLabel = new NodeLabel(Pos.BASELINE_CENTER, 7, constraintY, Color.WHITE, new Color(.8,0,0,1), con, NO_ACTION, con.level + "");
 				coinstraintsBox.nodeElements.add(constraintLevelLabel);

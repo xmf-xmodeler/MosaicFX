@@ -1197,7 +1197,7 @@ public class FmmlxDiagramCommunicator {
                 new Value(multiTarget.toValue())};
         sendMessage("editAssociation", message);
     }
-
+    
     public void addAssociationInstance(int diagramID, String object1Name, String object2Name, String associationName) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),
@@ -1392,6 +1392,41 @@ public class FmmlxDiagramCommunicator {
                 new Value(reason)
 		};
         sendMessage("addConstraint", message);
+	}
+	
+	public void editConstraint(int diagramID, String oldPath, String path,String oldConstName, String constName,Integer oldInstLevel, Integer instLevel,String oldBody, String body,String oldReason, String reason) {
+		if (!constName.equals(oldConstName)) {
+			Value [] message = new Value[] {
+					getNoReturnExpectedMessageID(diagramID),
+					new Value(path),
+					new Value(oldConstName),
+					new Value(constName)
+			};
+			sendMessage("changeConstraintName", message);	
+		}
+		System.err.println(instLevel + " : new!");
+		System.err.println(oldInstLevel + " : old!");
+		if (!instLevel.equals(oldInstLevel)) {
+			Value[] message = new Value[]{
+					getNoReturnExpectedMessageID(diagramID),
+	                new Value(path),
+	                new Value(constName),
+	                new Value(instLevel)
+			};
+	        sendMessage("changeConstraintLevel", message);
+		}
+		
+		if((!body.equals(oldBody)) || (!reason.equals(oldReason))) {
+			Value[] message = new Value[]{
+					getNoReturnExpectedMessageID(diagramID),
+	                new Value(path),
+	                new Value(constName),
+	                new Value(body),
+	                new Value(reason)
+			};
+	        sendMessage("changeConstraintBodyAndReason", message);
+		}
+		
 	}
 	
 	public void changeConstraintName(int diagramID, String path, String oldName, String newName) {
@@ -1696,27 +1731,29 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	private void closeScene(Stage stage, Event wevent, int id, String name, javafx.scene.Node node, FmmlxDiagram diagram) {
-		Alert alert = new Alert(AlertType.CONFIRMATION);
 
-		ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
-		ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
-		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-		alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
-		alert.setTitle("Open stage as tab in editor instead?");
-		alert.setHeaderText(null);
-
-		Optional<ButtonType> result = alert.showAndWait();
-		if (result.isPresent()){
-			if (result.get().getButtonData() == ButtonData.YES) {
-				PropertyManager.setProperty("diagramsInSeparateTab", "false");
-				createTab(node, name, id, diagram);
-			} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
-				wevent.consume();
-			} else {
+//TODO : Implement Dialog!		
+//		Alert alert = new Alert(AlertType.CONFIRMATION);
+//
+//		ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+//		ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
+//		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+//		alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
+//		alert.setTitle("Open stage as tab in editor instead?");
+//		alert.setHeaderText(null);
+//
+//		Optional<ButtonType> result = alert.showAndWait();
+//		if (result.isPresent()){
+//			if (result.get().getButtonData() == ButtonData.YES) {
+//				PropertyManager.setProperty("diagramsInSeparateTab", "false");
+//				createTab(node, name, id, diagram);
+//			} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
+//				wevent.consume();
+//			} else {
 				close(diagram, true);
 			}
-		}
-	}
+//		}
+//	}
 
 	public void saveFile(String packageString) {
 		String packageName = packageString.substring(1,packageString.length()-1).split(" ")[1];

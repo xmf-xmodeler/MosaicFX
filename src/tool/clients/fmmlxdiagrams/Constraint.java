@@ -4,13 +4,13 @@ import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
 public class Constraint implements FmmlxProperty, Comparable<Constraint>{
 	
-	final String  name;
-	final Integer level;
-	final String  bodyRaw;
-	final String  bodyFull;
-	final String  reasonRaw;
-	final String  reasonFull;
-
+	String  name;
+	Integer level;
+	String  bodyRaw;
+	String  bodyFull;
+	String  reasonRaw;
+	String  reasonFull;
+	
 	public Constraint(String name, Integer level, 
 			String bodyRaw,   String bodyFull, 
 			String reasonRaw, String reasonFull) {
@@ -30,5 +30,12 @@ public class Constraint implements FmmlxProperty, Comparable<Constraint>{
 	public String getBodyFull() { return bodyFull;}
 	public String getReasonRaw() { return reasonRaw;}
 	public String getReasonFull() { return reasonFull;}
+	public void setName(String name) { this.name=name;}
+	public void setBodyRaw(String bodyRaw) { this.bodyRaw=bodyRaw;}
+	public void setBodyFull(String bodyFull) { this.bodyFull=bodyFull;}
+	public void setReasonRaw(String reasonRaw) { this.bodyRaw=reasonRaw;}
+	public void setReasonFull(String reasonFull) { this.bodyRaw=reasonFull;}
+	public void setBodyRaw(Integer level) { this.level=level;}
+	
 
 }

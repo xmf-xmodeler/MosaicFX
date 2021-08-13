@@ -553,6 +553,29 @@ public class DiagramActions {
 		});
 	}
 	
+	public void editConstraint(FmmlxObject object, Constraint constraint) {
+		Platform.runLater(() -> {
+		AddConstraintDialog dlg = new AddConstraintDialog(diagram,object,constraint);
+		Optional<AddConstraintDialog.AddConstraintDialogResult> opt = dlg.showAndWait();
+		if(opt.isPresent()) {
+			final AddConstraintDialog.AddConstraintDialogResult result = opt.get();
+					diagram.getComm().editConstraint(
+							diagram.getID(), 
+							object.getPath(),
+							result.object.getPath(),
+							constraint.name,
+							result.constName,
+							constraint.level,
+							result.instLevel, 
+							constraint.bodyFull,
+							result.body,
+							constraint.reasonFull,
+							result.reason);
+			diagram.updateDiagram();
+		}
+		});
+	}
+	
 	public Object removeConstraintDialog(FmmlxObject object) {
 		FmmlxProperty property = diagram.getSelectedProperty();
 		
