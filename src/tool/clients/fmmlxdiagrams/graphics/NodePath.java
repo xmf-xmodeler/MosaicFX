@@ -16,9 +16,11 @@ public class NodePath extends NodeBaseElement{
 	Paint fgColor;
 	private transient GraphicsContext g; // evil hack
 	private transient Affine lastTransform;
+	private Affine selfTransform;
 	
-	public NodePath(double x, double y, String textPath, Paint bgColor, Paint fgColor, FmmlxProperty actionObject, Action action) {
-		super(x, y, actionObject, action);
+	public NodePath(Affine selfTransform, String textPath, Paint bgColor, Paint fgColor, FmmlxProperty actionObject, Action action) {
+		super(selfTransform.getTx(), selfTransform.getTy(), actionObject, action);
+		this.selfTransform = selfTransform;
 		this.bgColor = bgColor;
 		this.fgColor = fgColor;
 		this.textPath = textPath;
@@ -29,7 +31,9 @@ public class NodePath extends NodeBaseElement{
 			boolean objectIsSelected) {this.g = g;
 		Affine oldTransform = g.getTransform();
 		Affine newtransform = oldTransform.clone();
-		newtransform.appendTranslation(transform.getTx() + x, transform.getTy() + y);
+//		newtransform.appendTranslation(transform.getTx(), transform.getTy());
+		newtransform.append(transform);
+		newtransform.append(selfTransform);
 		lastTransform = newtransform;
 		g.setTransform(newtransform);
 		g.beginPath();
@@ -47,7 +51,7 @@ public class NodePath extends NodeBaseElement{
 		if (g == null || lastTransform == null) return false;
 		Affine transform = g.getTransform();
 		Affine newtransform = transform.clone();
-		newtransform.appendTranslation(x, y);
+		newtransform.append(selfTransform);
 		g.setTransform(newtransform);
 		g.beginPath();
 		g.appendSVGPath(textPath);

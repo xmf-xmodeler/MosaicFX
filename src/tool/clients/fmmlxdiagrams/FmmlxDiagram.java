@@ -370,6 +370,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		for (CanvasElement o : objectsToBePainted) {
 			o.paintOn(g, xOffset, yOffset, this);
 		}
+		g.setStroke(Color.BLACK);
+		g.setLineWidth(1);
+		g.setLineDashes(null);
 		drawMultiSelectRect(g);
 		drawNewEdgeLine(g);
 	}
