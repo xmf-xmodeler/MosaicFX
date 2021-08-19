@@ -1,11 +1,14 @@
-package tool.clients.fmmlxdiagrams;
+package tool.clients.fmmlxdiagrams.graphics;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Affine;
+
 import org.w3c.dom.Element;
 import tool.clients.exporter.svg.SvgConstant;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.xmlManipulator.XmlHandler;
 
@@ -24,7 +27,7 @@ public class NodeBox implements NodeElement {
 	Paint bgColor;
 	Paint fgColor;
 	LineWidthGetter lineWidth;
-	Vector<NodeElement> nodeElements = new Vector<>();
+	public Vector<NodeElement> nodeElements = new Vector<>();
 	private PropertyType propertyType;
 
 	public NodeBox(double x, double y, double width, double height, Paint bgColor, Paint fgColor, LineWidthGetter lineWidth, PropertyType propertyType) {
@@ -40,15 +43,16 @@ public class NodeBox implements NodeElement {
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram, boolean objectIsSelected) {
+	public void paintOn(GraphicsContext g, Affine transform, FmmlxDiagram diagram, boolean objectIsSelected) {
 		try {
 			g.setFill(bgColor);
-			g.fillRect(x + xOffset, y + yOffset, width, height);
+			g.fillRect(x + transform.getTx(), y + transform.getTy(), width, height);
 			g.setStroke(/*objectIsSelected&&System.currentTimeMillis()%2400<500?new Color(1.,.8,0.,1.):*/fgColor);
 			g.setLineWidth(lineWidth.getWidth(objectIsSelected));
-			g.strokeRect(x + xOffset, y + yOffset, width, height);
+			g.strokeRect(x + transform.getTx(), y + transform.getTy(), width, height);
+			Affine newTransform = transform.clone(); newTransform.appendTranslation(x, y);
 			for (NodeElement e : nodeElements) {
-				e.paintOn(g, x + xOffset, y + yOffset, diagram, objectIsSelected);
+				e.paintOn(g, newTransform, diagram, objectIsSelected);
 			}
 		} catch (Exception e){
 			e.printStackTrace();

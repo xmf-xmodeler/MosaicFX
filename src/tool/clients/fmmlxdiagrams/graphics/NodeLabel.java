@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams;
+package tool.clients.fmmlxdiagrams.graphics;
 
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
@@ -7,8 +7,13 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
+import javafx.scene.transform.Affine;
+
 import org.w3c.dom.Element;
 import tool.clients.exporter.svg.SvgConstant;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeLabel extends NodeBaseElement implements NodeElement {
@@ -38,7 +43,7 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram, boolean objectIsSelected) {
+	public void paintOn(GraphicsContext g, Affine transform, FmmlxDiagram diagram, boolean objectIsSelected) {
 		double hAlign = 0;
 		String textLocal = setTextLocal(text);
 
@@ -47,13 +52,13 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 		}
 		if (selected || bgColor != null) {
 			g.setFill(selected ? Color.DARKGREY : bgColor);
-			g.fillRect(x - hAlign + xOffset - BOX_GAP, y + yOffset - BOX_GAP - textHeight, textWidth + 2 * BOX_GAP, textHeight + 2 * BOX_GAP);
+			g.fillRect(x - hAlign + transform.getTx() - BOX_GAP, y + transform.getTy() - BOX_GAP - textHeight, textWidth + 2 * BOX_GAP, textHeight + 2 * BOX_GAP);
 		}
 
 		g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), fontWeight, fontPosture, fontSize * fontScale));
 		
 		g.setFill(fgColor);
-		g.fillText(textLocal, x - hAlign + xOffset, y + yOffset - Y_BASELINE_DIFF);
+		g.fillText(textLocal, x - hAlign + transform.getTx(), y + transform.getTy() - Y_BASELINE_DIFF);
 		// Resetting font to standard in case font was changed
 		
 	}

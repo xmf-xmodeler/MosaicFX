@@ -5,8 +5,11 @@ import java.util.Vector;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.transform.Affine;
+
 import org.w3c.dom.Element;
 import tool.clients.exporter.svg.SvgConstant;
+import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public abstract class Node implements CanvasElement{
@@ -51,8 +54,11 @@ public abstract class Node implements CanvasElement{
 
 		boolean selected = diagram.isSelected(this);
 
+		Affine transform = new Affine();
+		transform.appendTranslation(x + xOffset, y + yOffset);
+		
 		for (NodeElement e : nodeElements) {
-			e.paintOn(g, x + xOffset, y + yOffset, diagram, selected);
+			e.paintOn(g, transform, diagram, selected);
 		}
 	}
 

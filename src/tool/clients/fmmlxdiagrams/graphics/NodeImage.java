@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams;
+package tool.clients.fmmlxdiagrams.graphics;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -6,8 +6,12 @@ import java.io.IOException;
 import java.util.Base64;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.transform.Affine;
+
 import org.w3c.dom.Element;
 import tool.clients.exporter.svg.SvgConstant;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeImage extends NodeBaseElement implements NodeElement {
@@ -21,9 +25,9 @@ public class NodeImage extends NodeBaseElement implements NodeElement {
 	private javafx.scene.image.Image image;	
 
 	@Override
-	public void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram,
+	public void paintOn(GraphicsContext g, Affine transform, FmmlxDiagram diagram,
 			boolean objectIsSelected) {
-		g.drawImage(image, xOffset + x, yOffset + y - image.getHeight());
+		g.drawImage(image, transform.getTx() + x, transform.getTy() + y - image.getHeight());
 		
 	}
 

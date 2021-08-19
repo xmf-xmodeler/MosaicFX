@@ -1,15 +1,18 @@
-package tool.clients.fmmlxdiagrams;
+package tool.clients.fmmlxdiagrams.graphics;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import org.w3c.dom.Element;
+import javafx.scene.transform.Affine;
+
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public interface NodeElement {
 
-	void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram, boolean objectIsSelected);
+	public void paintOn(GraphicsContext g, Affine transform, FmmlxDiagram diagram, boolean objectIsSelected);
 
-	boolean isHit(double mouseX, double mouseY);
+	public boolean isHit(double mouseX, double mouseY);
 
 	double getX();
 

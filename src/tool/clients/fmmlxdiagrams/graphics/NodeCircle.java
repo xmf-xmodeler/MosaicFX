@@ -1,10 +1,13 @@
-package tool.clients.fmmlxdiagrams;
+package tool.clients.fmmlxdiagrams.graphics;
 
 import org.w3c.dom.Element;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.transform.Affine;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeCircle extends NodeBaseElement{
@@ -20,14 +23,14 @@ public class NodeCircle extends NodeBaseElement{
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram,
+	public void paintOn(GraphicsContext g, Affine transform, FmmlxDiagram diagram,
 			boolean objectIsSelected) {
 		try {
 			g.setFill(bgColor);
-			g.fillOval(x + xOffset, y + yOffset, diameter, diameter);
+			g.fillOval(x + transform.getTx(), y + transform.getTy(), diameter, diameter);
 			g.setStroke(/*objectIsSelected&&System.currentTimeMillis()%2400<500?new Color(1.,.8,0.,1.):*/fgColor);
 			g.setLineWidth(1);
-			g.strokeOval(x + xOffset, y + yOffset, diameter, diameter);
+			g.strokeOval(x + transform.getTx(), y + transform.getTy(), diameter, diameter);
 		} catch (Exception e){
 			e.printStackTrace();
 		}		

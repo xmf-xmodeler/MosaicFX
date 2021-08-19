@@ -1,6 +1,7 @@
-package tool.clients.fmmlxdiagrams;
+package tool.clients.fmmlxdiagrams.graphics;
 
 import javafx.geometry.Point2D;
+import tool.clients.fmmlxdiagrams.FmmlxProperty;
 
 public abstract class NodeBaseElement implements NodeElement {
 	

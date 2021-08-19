@@ -1404,8 +1404,7 @@ public class FmmlxDiagramCommunicator {
 			};
 			sendMessage("changeConstraintName", message);	
 		}
-		System.err.println(instLevel + " : new!");
-		System.err.println(oldInstLevel + " : old!");
+
 		if (!instLevel.equals(oldInstLevel)) {
 			Value[] message = new Value[]{
 					getNoReturnExpectedMessageID(diagramID),

@@ -1,8 +1,10 @@
-package tool.clients.fmmlxdiagrams;
+package tool.clients.fmmlxdiagrams.graphics;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.transform.Affine;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
 public class IssueBox extends NodeBox{
@@ -15,14 +17,14 @@ public class IssueBox extends NodeBox{
 	}
 	
 	@Override
-	public void paintOn(GraphicsContext g, double xOffset, double yOffset, FmmlxDiagram diagram, boolean objectIsSelected) {
-		super.paintOn(g, xOffset, yOffset, diagram, objectIsSelected);
+	public void paintOn(GraphicsContext g, Affine transform, FmmlxDiagram diagram, boolean objectIsSelected) {
+		super.paintOn(g, transform, diagram, objectIsSelected);
 		
 			final double LAMP_SIZE = 2 * BOX_SIZE / (1 + Math.sqrt(5));
 			
-			double X1 = x + xOffset;
-			double X2 = x + xOffset + width - BOX_SIZE;
-			double Y = y + yOffset + 3;
+			double X1 = x + transform.getTx();
+			double X2 = x + transform.getTx() + width - BOX_SIZE;
+			double Y = y + transform.getTy() + 3;
 			
 //			g.setFill(Color.BLACK);
 //			g.fillRect(X1, Y, BOX_SIZE, BOX_SIZE);

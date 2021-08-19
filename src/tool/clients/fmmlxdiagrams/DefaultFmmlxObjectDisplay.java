@@ -9,6 +9,11 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.graphics.IssueBox;
+import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement;
+import tool.clients.fmmlxdiagrams.graphics.NodeBox;
+import tool.clients.fmmlxdiagrams.graphics.NodeImage;
+import tool.clients.fmmlxdiagrams.graphics.NodeLabel;
 
 public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	
