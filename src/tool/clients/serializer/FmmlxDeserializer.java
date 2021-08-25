@@ -32,7 +32,7 @@ public class FmmlxDeserializer {
         fmmlxDiagramCommunicator.createProject(projectName, xmlManager.getAllDiagramNames(), this.xmlManager.getSourcePath());
         
         boolean populated = false;
-        for(int i =0; i< diagramNodes.getLength(); i++){
+        for(int i = 0; i< diagramNodes.getLength(); i++){
             Node diagramNode = diagramNodes.item(i);
             if(diagramNode.getNodeType()==Node.ELEMENT_NODE){
             	String diagramName = ((Element) diagramNode).getAttribute(SerializerConstant.ATTRIBUTE_LABEL);
@@ -58,7 +58,7 @@ public class FmmlxDeserializer {
 	public void alignElements(FmmlxDiagram diagram, Element diagramElement) {
         xmlManager.alignObjects(diagramElement, diagram.getID(), diagram.getComm());
         xmlManager.alignEdges(diagramElement, diagram.getID(), diagram.getComm());
-        xmlManager.alignLabel(diagramElement, diagram);
+        xmlManager.alignLabels(diagramElement, diagram);
 	}
 
     public Element getDiagramsElement(){

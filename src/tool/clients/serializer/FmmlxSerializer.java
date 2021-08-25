@@ -32,7 +32,7 @@ public class FmmlxSerializer  {
         this.xmlManager = new XmlManager(this.filePath);
     }
 
-    //This methode is used to make xml files according to the address in parameters
+    //This method is used to make xml files according to the address in parameters
     //and it will be automatically called when FmmlxSerializer-Class created
     public void initUserXMLFile(String file) throws TransformerException, ParserConfigurationException {
         XmlCreator xmlCreator = new XmlCreator();
@@ -51,9 +51,9 @@ public class FmmlxSerializer  {
             Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(packagePath);
             Collections.sort(diagramIds);
             for(Integer id :diagramIds){
-                String diagramLabel = communicator.createLabelFromInitLabel(initLabel, id);
-                saveProject(packagePath);
-                saveDiagram(diagramLabel, packagePath, id);
+//                String diagramLabel = communicator.createLabelFromInitLabel(initLabel, id);
+                saveProject(packagePath);                
+                saveDiagram(FmmlxDiagramCommunicator.getDiagram(id).getDiagramLabel(), packagePath, id);
             }
             saveProjectLog(diagramIds.get(0), communicator);
             this.xmlManager.flushData();
@@ -71,9 +71,9 @@ public class FmmlxSerializer  {
                 Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(packagePath);
                 Collections.sort(diagramIds);
                 for(Integer id_tmp :diagramIds){
-                    String diagramLabel = communicator.createLabelFromInitLabel(label, id_tmp);
+//                    String diagramLabel = communicator.createLabelFromInitLabel(label, id_tmp);
                     saveProject(packagePath);
-                    saveDiagram(diagramLabel, packagePath, id_tmp);
+                    saveDiagram(FmmlxDiagramCommunicator.getDiagram(id_tmp).getDiagramLabel(), packagePath, id_tmp);
                 }
                 saveProjectLog(diagramIds.get(0), communicator);
                 xmlManager.flushData();
@@ -127,8 +127,10 @@ public class FmmlxSerializer  {
 
         for (String key : result.keySet()){
             Element labelElement = xmlManager.createLabelElement(key,
-                    (float) result.get(key).get("x"),
-                    (float) result.get(key).get("y"));
+                (String) result.get(key).get("ownerID"),
+                (int) result.get(key).get("localID"),
+	            (float) result.get(key).get("x"),
+	            (float) result.get(key).get("y"));
             xmlManager.addLabel(diagramElement, labelElement);
         }
     }

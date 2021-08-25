@@ -17,7 +17,7 @@ import xos.Value;
 public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElement {
 	
 	final Edge<ConcreteNode> owner;
-	final int localID;
+	public final int localID;
 	private final Runnable action;
 	private final String text;
 	private final ContextMenu menu;

@@ -1901,10 +1901,6 @@ public class FmmlxDiagramCommunicator {
 		}
 	}
 
-	public String createLabelFromInitLabel(String initLabel, Integer id) {
-		return initLabel.substring(0, initLabel.length()-2)+id+")";
-	}
-
     @SuppressWarnings("unchecked")
 	public HashMap<String, HashMap<String, Object>> getAllLabelPositions(int id) {
 		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
@@ -1915,17 +1911,19 @@ public class FmmlxDiagramCommunicator {
 
 			for (Object o : responseContent) {
 				Vector<Object> labelInfo = (Vector<Object>) o;
-				String key = (String) labelInfo.get(0);
-				Integer type = (Integer) labelInfo.get(1);
+				String ownerID = (String) labelInfo.get(0);
+				Integer localID = (Integer) labelInfo.get(1);
 				float x = (float) labelInfo.get(2);
 				float y = (float) labelInfo.get(3);
 
-				if(type == 0){
+//				if(type == 0){
 					HashMap<String, Object> labelMap = new HashMap<>();
+					labelMap.put("ownerID", ownerID);
+					labelMap.put("localID", localID);
 					labelMap.put("x", x);
 					labelMap.put("y", y);
-					result.put(key, labelMap);
-				}
+					result.put(ownerID + "::" + localID, labelMap); // just some arbitrary stuff for the hashMap
+//				}
 			}
 		} catch (TimeOutException e) {
 			e.printStackTrace();
@@ -1966,11 +1964,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public org.w3c.dom.Node getPositionInfo(Integer id) {
-		System.err.println("getPositionInfo " + id + "/" + this.positionInfos.keySet().contains(id));
 		org.w3c.dom.Node positionInfos = this.positionInfos.get(id);
-//		if(positionInfos != null) {
-//			this.positionInfos.remove(id);
-//		}
 		return positionInfos;
 	}
 
@@ -1984,6 +1978,15 @@ public class FmmlxDiagramCommunicator {
 				new Value(filePath),
 		};
 		sendMessage("isSaved", message);
+	}
+
+	public static FmmlxDiagram getDiagram(Integer id) {
+		for(FmmlxDiagram diagram : diagrams) {
+			if(id == diagram.diagramID) {
+				return diagram;
+			}
+		}
+		return null;
 	}
 
 }

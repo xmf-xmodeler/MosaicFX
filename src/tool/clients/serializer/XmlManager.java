@@ -188,10 +188,10 @@ public class XmlManager extends XmlHandler {
         }
     }
 
-    public Element createLabelElement(String key, float x, float y) {
+    public Element createLabelElement(String key, String ownerID, int localID, float x, float y) {
         Element label = createXmlElement(SerializerConstant.TAG_NAME_LABEL);
-        String[] refSplit = key.split("::");
-        label.setAttribute(SerializerConstant.ATTRIBUTE_TEXT, refSplit[refSplit.length-1]);
+        label.setAttribute("ownerID", ownerID);
+        label.setAttribute("localID", localID+"");
         label.setAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_X, x+"");
         label.setAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_Y, y+"");
         return label;
@@ -206,11 +206,11 @@ public class XmlManager extends XmlHandler {
         return getChildWithTag(diagramNode, SerializerConstant.TAG_NAME_LABELS);
     }
 
-    public void alignLabel(Element diagramElement, FmmlxDiagram fmmlxDiagram) {
+    public void alignLabels(Element diagramElement_XML, FmmlxDiagram fmmlxDiagram) {
         Vector<DiagramEdgeLabel<?>>labels = fmmlxDiagram.getLabels();
         for(DiagramEdgeLabel<?> label : labels){
             Point2D initCoordinate = new Point2D(label.getRelativeX(), label.getRelativeY());
-            Point2D coordinate = getLabelCoordinate(diagramElement, label.getText(), initCoordinate);
+            Point2D coordinate = getLabelCoordinate(diagramElement_XML, label, initCoordinate);
             if(validateLabelName(label.getText())){
 
                 label.setRelativeX(coordinate.getX());
@@ -238,21 +238,19 @@ public class XmlManager extends XmlHandler {
         return Character.isDigit(c[0]);
     }
 
-    private Point2D getLabelCoordinate(Element diagramElement, String text, Point2D initCoordinate) {
+    private Point2D getLabelCoordinate(Element diagramElement, DiagramEdgeLabel<?> label, Point2D initCoordinate) {
         Element labelsElement = getLabelsElement(diagramElement);
-        NodeList labelList = labelsElement.getChildNodes();
+        NodeList labelList_XML = labelsElement.getChildNodes();
 
-        for (int i = 0 ; i< labelList.getLength() ; i++){
-            if (labelList.item(i).getNodeType() == Node.ELEMENT_NODE){
-                Element label_tmp = (Element) labelList.item(i);
-                if(validateLabelName(text)) {
-                    if(label_tmp.getAttribute(SerializerConstant.ATTRIBUTE_TEXT).equals(text)){
-                        double x = Double.parseDouble(label_tmp.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_X));
-                        double y = Double.parseDouble(label_tmp.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_Y));
-                        return new Point2D(x, y);
-                    }
+        for (int i = 0 ; i < labelList_XML.getLength() ; i++){
+            if (labelList_XML.item(i).getNodeType() == Node.ELEMENT_NODE){
+                Element label_xml_element = (Element) labelList_XML.item(i);
+                if(label_xml_element.getAttribute("ownerID").equals(label.getOwner().path) &&
+                   label_xml_element.getAttribute("localID").equals(label.localID+"")) {
+                    double x = Double.parseDouble(label_xml_element.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_X));
+                    double y = Double.parseDouble(label_xml_element.getAttribute(SerializerConstant.ATTRIBUTE_COORDINATE_Y));
+                    return new Point2D(x, y);
                 }
-
             }
         }
         return initCoordinate;
