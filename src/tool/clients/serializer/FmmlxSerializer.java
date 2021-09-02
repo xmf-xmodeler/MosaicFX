@@ -183,15 +183,16 @@ public class FmmlxSerializer  {
         Element logsElement = xmlManager.getLogs();
         FaXML protocol = communicator.getDiagramData(diagramID);
         
-        System.err.println("protocol:" + protocol.getChildren().size() + " :protocol");
+//        System.err.println("protocol:" + protocol.getChildren().size() + " :protocol");
 
         Vector<FaXML> logs = protocol.getChildren();
+        Collections.sort(logs);
         for (FaXML log : logs){
             Element newLogElement = xmlManager.createNewLogFromFaXML(log);
             xmlManager.addLog(logsElement, newLogElement);
         }
     }
-
+    
     private Pair<String, String> getTypeAndRefFromKey(String key) {
         String[] keyPair = key.split(" ");
         String type = keyPair[0];

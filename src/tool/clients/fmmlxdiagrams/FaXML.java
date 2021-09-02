@@ -1,11 +1,12 @@
 package tool.clients.fmmlxdiagrams;
 
 import java.util.Base64;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Vector;
 
-public class FaXML {
+public class FaXML implements Comparable<FaXML>{
 	
 	private final String name;	
 	private final Vector<FaXML> children = new Vector<>();
@@ -45,7 +46,6 @@ public class FaXML {
 				}
 			}
 		}
-
 	}
 
 	private String transformBase64(String s) {
@@ -66,5 +66,41 @@ public class FaXML {
 		StringBuilder childrenString = new StringBuilder();
 		for(FaXML child : children) childrenString.append(child.toString(prefix + "  "));
 		return prefix + "<" + name + attString + (children.size()>0?(">\n"+childrenString+"</" + name):"/")  + ">\n";
+	}
+	
+	@Override
+	public int compareTo(FaXML that) {
+		Integer prio = this.priority().compareTo(that.priority());
+		if(prio != 0) return prio;
+		
+		if("addMetaClass".equals(name) || "addInstance".equals(name)) {
+			return 0; // Don't mess up with the original order !!!
+		}
+		
+		Vector<String> keys = new Vector<>(attributes.keySet());
+		Collections.sort(keys);
+		for(String key : keys) {
+			if(that.attributes.get(key) == null) return -1;
+			Integer c = this.attributes.get(key).compareTo(that.attributes.get(key));
+			if(c != 0) return c;
+		}
+		return 0;
+	}
+	
+	private Integer priority() {
+		if("addMetaClass".equals(name))         return 0000;
+		if("addInstance".equals(name))          return 0010;
+		if("changeParent".equals(name))         return 0020;
+		if("addEnumeration".equals(name))       return 0030;
+		if("addEnumerationValue".equals(name))  return 0040;
+		if("addAttribute".equals(name))         return 0050;
+		if("addOperation".equals(name))         return 0060;
+		if("addConstraint".equals(name))        return 0070;
+		if("changeSlotValue".equals(name))      return 0100;
+		if("addAssociation".equals(name))       return 0110;
+		if("addLink".equals(name))              return 0120;
+		if("addDelegation".equals(name))        return 0130;
+		if("setRoleFiller".equals(name))        return 0140;
+		return Integer.MAX_VALUE;
 	}
 }
