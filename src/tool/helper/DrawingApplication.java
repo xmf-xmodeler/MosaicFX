@@ -2,6 +2,9 @@ package tool.helper;
 
 import java.util.Vector;
 
+import com.sun.javafx.geom.transform.Affine3D;
+import com.sun.javafx.geom.transform.BaseTransform;
+
 import javafx.application.Application;
 import javafx.event.Event;
 import javafx.geometry.Point2D;
@@ -18,7 +21,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
+import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
+import tool.clients.fmmlxdiagrams.CanvasElement;
 import tool.xmodeler.XModeler;
 
 public class DrawingApplication extends Application {
@@ -34,6 +39,7 @@ public class DrawingApplication extends Application {
 	private Button button6;
 	private Separator separator;
 	private Point2D lastClicked = new Point2D(0, 0);
+	private Point2D currentPoint = new Point2D(0,0);
 	private Point2D lastMoved = new Point2D(0, 0);
 	private final String PATH = "m 6.769531,0 c -2.318,0 -4.203125,1.886125 -4.203125,4.203125 0,2.318 1.885125,4.203125 4.203125,4.203125 2.318,0 4.204125,"
 			+ "-1.884125 4.203125,-4.203125 C 10.972656,1.886125 9.086531,0 6.769531,0 Z m 0,0.875 c 1.835,0 3.329125,1.493125 3.328125,3.328125 0,1.836 -1.493125,3.330078"
@@ -54,6 +60,8 @@ public class DrawingApplication extends Application {
 	private double zoom=1.0;
 	private double rotate=0;
 	private Vector<MyPath> paths = new Vector<MyPath>();
+	private Affine currentAffine = new Affine();
+	Affine aCanvas = new Affine();
 	
 	public DrawingApplication() {
 
@@ -68,16 +76,22 @@ public class DrawingApplication extends Application {
 		button1 = new Button("+");
 		button1.setOnAction(e -> {
 			zoom *= 1.33;
+			aCanvas = new Affine();
+			aCanvas.appendScale(zoom, zoom);
 			repaint();
 		});
 		button2 = new Button("100%");
 		button2.setOnAction(e -> {
 			zoom = 1.0;
+			aCanvas = new Affine();
+			aCanvas.appendScale(zoom, zoom);
 			repaint();
 		});
 		button3 = new Button("-");
 		button3.setOnAction(e -> {
 			zoom /= 1.33;
+			aCanvas = new Affine();
+			aCanvas.appendScale(zoom, zoom);
 			repaint();
 		});
 		button4 = new Button("Rotate");
@@ -114,11 +128,13 @@ public class DrawingApplication extends Application {
 		repaint();
 		canvas.setOnMouseClicked(e -> mouseClicked(new Point2D(e.getX(), e.getY())));
 		canvas.setOnMouseMoved(e -> mouseMoved(new Point2D(e.getX(), e.getY())));
-		
+		canvas.setOnMouseDragged(e-> mouseDragged(new Point2D(e.getX(),e.getY())));
+		canvas.setOnMouseReleased(e->handleMouseRelease(e));
+		canvas.setOnMousePressed(e -> handlePressedLeftMouse(e));
 	}
 
 	private void mouseClicked(Point2D p) {
-		lastClicked = p;
+		
 		Affine aCanvas = new Affine();
 		aCanvas.appendScale(zoom, zoom);
 		for(MyPath myPath:paths) {
@@ -131,9 +147,45 @@ public class DrawingApplication extends Application {
 	private void mouseMoved(Point2D p) {
 		lastMoved = p;
 		count++;
+		repaint();	
+	}
+	
+	private void handlePressedLeftMouse(MouseEvent e) {
+		lastClicked = new Point2D(e.getX(),e.getY());
+	}
+	
+	private void handlePressedLeftMouseObject(MouseEvent e, CanvasElement hitObject) {
+		
+	}
+	
+	private void handleMouseRelease(MouseEvent e) {
+		lastClicked = new Point2D(0,0);
+		currentPoint = new Point2D(0,0);
+		Affine aObject = new Affine(aCanvas);
+		try {
+			aObject=aObject.createInverse();
+			aObject.prepend(currentAffine);
+			aObject.prepend(new Affine(aCanvas));
+			paths.firstElement().moveTransform(aObject);
+		} catch (NonInvertibleTransformException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		currentAffine = new Affine();
+		repaint();
+	}
+		
+	private void mouseDragged(Point2D p) {
+		currentPoint = p;
+		currentAffine = new Affine(Transform.translate(p.getX() - lastClicked.getX(), p.getY() - lastClicked.getY()));
+		//currentAffine.
 		repaint();
 	}
 	
+	private void storeCurrentAffine(Affine affine) {
+		currentAffine = affine;
+	}
 	
 
 	private void repaint() {
@@ -142,12 +194,12 @@ public class DrawingApplication extends Application {
 		gc.setTransform(new Affine());
 		gc.clearRect(0, 0, 1500, 1000);
 		
-		Affine aCanvas = new Affine();
-		aCanvas.appendScale(zoom, zoom);
 		gc.setTransform(aCanvas);
 		
 		for(MyPath myPath:paths) {
-			myPath.draw(gc, aCanvas, lastMoved);
+			Affine aObject = new Affine(aCanvas);
+			aObject.prepend(currentAffine);
+			myPath.draw(gc, aObject, lastMoved);
 		}
 //		for(int i=0; i<=11; i++) {
 //			Affine aObject = new Affine(aCanvas);
@@ -172,6 +224,7 @@ public class DrawingApplication extends Application {
 		} catch (NonInvertibleTransformException e) {
 			e.printStackTrace();
 		}
+		gc.strokeLine(currentPoint.getX(), currentPoint.getY(), lastClicked.getX(), lastClicked.getY());
 		
 	}
 }

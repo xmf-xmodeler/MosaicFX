@@ -6,6 +6,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
+import javafx.scene.transform.NonInvertibleTransformException;
 
 public class MyPath {
 	private final String PATH = "m 6.769531,0 c -2.318,0 -4.203125,1.886125 -4.203125,4.203125 0,2.318 1.885125,4.203125 4.203125,4.203125 2.318,0 4.204125,"
@@ -36,6 +37,10 @@ public class MyPath {
 		gc.setFill(gc.isPointInPath(lastMoved.getX(), lastMoved.getY())?Color.DARKGREEN:Color.DARKRED);
 		gc.fill();
 		gc.closePath();
+		
+		
+		gc.fillText(myTransform.transform(new Point2D(0,0))+" ", 0, 0);
+					
 		for(MyPath myPath:paths) {
 			myPath.draw(gc, aObject, lastMoved);
 		}
@@ -58,6 +63,10 @@ public class MyPath {
 			}
 		}
 		
+	}
+	
+	void moveTransform(Affine affine) {
+		myTransform.prepend(affine);
 	}
 	
 }

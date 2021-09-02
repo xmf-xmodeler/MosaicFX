@@ -373,17 +373,16 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		g.setStroke(Color.BLACK);
 		g.setLineWidth(1);
 		g.setLineDashes(null);
+		if (mouseMode == MouseMode.MULTISELECT) {
 		drawMultiSelectRect(g);
+		}
 		drawNewEdgeLine(g);
 	}
 
 	private void drawMultiSelectRect(GraphicsContext g) {
-		if (mouseMode == MouseMode.MULTISELECT) {
 			double x = Math.min(lastPoint.getX(), currentPoint.getX());
 			double y = Math.min(lastPoint.getY(), currentPoint.getY());
-
 			g.strokeRect(x, y, Math.abs(currentPoint.getX() - lastPoint.getX()), Math.abs(currentPoint.getY() - lastPoint.getY()));
-		}
 	}
 
 	private void drawNewEdgeLine(GraphicsContext g) {
