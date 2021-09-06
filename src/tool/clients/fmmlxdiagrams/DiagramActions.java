@@ -34,6 +34,7 @@ import tool.clients.fmmlxdiagrams.dialogs.results.*;
 import tool.clients.fmmlxdiagrams.dialogs.shared.*;
 import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
+import tool.clients.importer.FMMLxImporter;
 import tool.clients.serializer.FmmlxSerializer;
 import xos.Value;
 
@@ -1151,6 +1152,21 @@ public class DiagramActions {
 		Platform.runLater(() ->{
 			hide(diagram.getObjects(), false);
 			updateDiagram();
+		});
+	}
+
+	public void importDiagram() {
+		Platform.runLater(() ->{
+			FileChooser fc = new FileChooser();
+			fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("xml", "*.xml"));
+			fc.setTitle("choose File");
+			File file = fc.showOpenDialog(null);
+
+			if(file!= null){
+				System.out.println("file not null");
+				FMMLxImporter importer = new FMMLxImporter(file.getPath(), diagram);
+				importer.handleLogs();
+			}
 		});
 	}
 }

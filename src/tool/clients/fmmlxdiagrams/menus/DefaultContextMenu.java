@@ -49,6 +49,9 @@ public class DefaultContextMenu extends ContextMenu {
 		MenuItem exportSvgDefault = new MenuItem("Export SVG");
 		exportSvgDefault.setOnAction(e -> actions.exportSvg());
 
+		MenuItem importDiagram = new MenuItem("Import Package (BETA)");
+		importDiagram.setOnAction(e -> actions.importDiagram());
+
 		Menu filterObjects = new Menu("Filter Objects");
 		MenuItem showAll = new MenuItem("Show All");
 		showAll.setOnAction(e -> actions.showAll());
@@ -59,7 +62,7 @@ public class DefaultContextMenu extends ContextMenu {
 		MenuItem unhideItem = new MenuItem("Unhide Elements");
 		unhideItem.setOnAction(e -> actions.unhideElementsDialog());
 		
-		getItems().addAll(addClassItem, addInstanceItem, addAssociationItem, levelMenu, enumeration, unhideItem, packageListView, packageListView_LOCAL, exportSvgDefault, filterObjects);
+		getItems().addAll(addClassItem, addInstanceItem, addAssociationItem, levelMenu, enumeration, unhideItem, packageListView, packageListView_LOCAL, exportSvgDefault, importDiagram, filterObjects);
 
 		{ // test
 			MenuItem testEvalList = new MenuItem("TEST EVAL LIST");
