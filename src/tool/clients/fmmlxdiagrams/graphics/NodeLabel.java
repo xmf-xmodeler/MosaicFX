@@ -43,24 +43,34 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, Affine transform, FmmlxDiagram diagram, boolean objectIsSelected) {
+	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram diagram, boolean objectIsSelected) {
 		double hAlign = 0;
 		String textLocal = setTextLocal(text);
+		g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), fontWeight, fontPosture, fontSize * fontScale));
 
 		if (alignment != Pos.BASELINE_LEFT) {
 			hAlign = (alignment == Pos.BASELINE_CENTER ? 0.5 : 1) * textWidth;
 		}
+
+		Affine boxTransform = new Affine(currentTransform); // copy
+		boxTransform.append(new Affine(1, 0, getX() - hAlign - BOX_GAP, 0, 1,  getY() - BOX_GAP - textHeight));
+		g.setTransform(boxTransform);
+		
+//		if("getStudent(): Student".equals(getText())) {
+//			g.setFill(Color.web("#ff8800"));g.fillText(boxTransform+"",300, 0);
+//		}
+		
 		if (selected || bgColor != null) {
 			g.setFill(selected ? Color.DARKGREY : bgColor);
-			g.fillRect(x - hAlign + transform.getTx() - BOX_GAP, y + transform.getTy() - BOX_GAP - textHeight, textWidth + 2 * BOX_GAP, textHeight + 2 * BOX_GAP);
+			g.fillRect(0, 0, textWidth + 2 * BOX_GAP, textHeight + 2 * BOX_GAP);
 		}
-
-		g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), fontWeight, fontPosture, fontSize * fontScale));
+		
+		Affine textTransform = new Affine(currentTransform); // copy
+		textTransform.append(new Affine(1, 0, getX() - hAlign, 0, 1, getY() - Y_BASELINE_DIFF));
+		g.setTransform(textTransform);		
 		
 		g.setFill(fgColor);
-		g.fillText(textLocal, x - hAlign + transform.getTx(), y + transform.getTy() - Y_BASELINE_DIFF);
-		// Resetting font to standard in case font was changed
-		
+		g.fillText(textLocal, 0, 0);
 	}
 
 	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
@@ -90,23 +100,53 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, Affine currentTransform) {
+		currentTransform = new Affine(currentTransform); // copy
+		currentTransform.append(myTransform);
 		if (alignment == Pos.BASELINE_LEFT) {
-			return isHitBaseLineLeft(mouseX, mouseY);
+			return isHitBaseLineLeft(mouseX, mouseY, g, currentTransform);
 		} else if (alignment == Pos.BASELINE_CENTER) {
-			return isHitBaseLineCenter(mouseX, mouseY);
+			return isHitBaseLineCenter(mouseX, mouseY, g, currentTransform);
 		}
 		return false;
 	}
 
-	private boolean isHitBaseLineCenter(double mouseX, double mouseY) {
-		Rectangle rec = new Rectangle(x - 0.5 * textWidth, y - textHeight, textWidth, textHeight);
-		return rec.contains(mouseX, mouseY);
+	private boolean isHitBaseLineCenter(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform) {
+		boolean hit = false; 
+		g.setTransform(currentTransform);
+		g.beginPath();
+		g.moveTo(- 0.5 * textWidth, 0); 
+		g.lineTo(- 0.5 * textWidth, - textHeight); 
+		g.lineTo(  0.5 * textWidth, - textHeight); 
+		g.lineTo(  0.5 * textWidth, 0); 
+		g.lineTo(- 0.5 * textWidth, 0);
+		hit = g.isPointInPath(mouseX, mouseY);
+		g.closePath();
+		return hit;
+//
+//		Rectangle rec = new Rectangle(getX() - 0.5 * textWidth, getY() - textHeight, textWidth, textHeight);
+//		return rec.contains(mouseX, mouseY);
 	}
 
-	private boolean isHitBaseLineLeft(double mouseX, double mouseY) {
-		Rectangle rec = new Rectangle(x, y - textHeight, textWidth, textHeight);
-		return rec.contains(mouseX, mouseY);
+	private boolean isHitBaseLineLeft(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform) {
+		boolean hit = false; 
+		g.setTransform(currentTransform);
+		g.beginPath();
+		g.moveTo(0, 0); 
+		g.lineTo(0, - textHeight); 
+		g.lineTo(textWidth, - textHeight); 
+		g.lineTo(textWidth, 0); 
+		g.lineTo(0, 0);
+//		if("getStudent(): Student".equals(getText())) {
+//			System.err.println(currentTransform+"");
+//			System.err.println(mouseX+"/"+mouseY);
+//		}
+		hit = g.isPointInPath(mouseX, mouseY);
+		g.closePath();
+		return hit;
+//
+//		Rectangle rec = new Rectangle(getX(), getY() - textHeight, textWidth, textHeight);
+//		return rec.contains(mouseX, mouseY);
 	}
 
 	public String getText() {
@@ -134,8 +174,8 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 			String backgroundColor = color.toString().split("x")[1].substring(0,6);
 			String styleString = "fill: #"+backgroundColor+";";
 			Element rect = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_RECT);
-			rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (x - hAlign + xOffset - BOX_GAP)+"");
-			rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (y + yOffset - BOX_GAP - textHeight)+"");
+			rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (getX() - hAlign + xOffset - BOX_GAP)+"");
+			rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (getY() + yOffset - BOX_GAP - textHeight)+"");
 			rect.setAttribute(SvgConstant.ATTRIBUTE_HEIGHT, ( textHeight + 2 * BOX_GAP)+"");
 			rect.setAttribute(SvgConstant.ATTRIBUTE_WIDTH, (textWidth + 2 * BOX_GAP)+"");
 			rect.setAttribute(SvgConstant.ATTRIBUTE_FILL_OPACITY, bgColor.getOpacity()+"");
@@ -150,11 +190,11 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 		if(alignment == Pos.BASELINE_CENTER){
 			text.setAttribute(SvgConstant.ATTRIBUTE_TEXT_ANCHOR, "middle");
 			text.setAttribute(SvgConstant.ATTRIBUTE_TEXT_ALIGN, "center");
-			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (x + xOffset)+"");
-			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (y + yOffset - Y_BASELINE_DIFF)+"");
+			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (getX() + xOffset)+"");
+			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (getY() + yOffset - Y_BASELINE_DIFF)+"");
 		} else {
-			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (x - hAlign + xOffset)+"");
-			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (y + yOffset - Y_BASELINE_DIFF)+"");
+			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (getX() - hAlign + xOffset)+"");
+			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (getY() + yOffset - Y_BASELINE_DIFF)+"");
 		}
 		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, ((fontSize-1)*fontScale)+"");
 		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_OPACITY, fgColor.getOpacity()+"");

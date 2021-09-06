@@ -27,13 +27,13 @@ public class NodePath extends NodeBaseElement{
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, Affine transform, FmmlxDiagram diagram,
+	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram diagram,
 			boolean objectIsSelected) {this.g = g;
-		Affine oldTransform = g.getTransform();
-		Affine newtransform = oldTransform.clone();
+//		Affine oldTransform = g.getTransform();
+		Affine newtransform = currentTransform.clone();
 //		newtransform.appendTranslation(transform.getTx(), transform.getTy());
-		newtransform.append(transform);
-		newtransform.append(selfTransform);
+//		newtransform.prepend(transform);
+		newtransform.prepend(selfTransform);
 		lastTransform = newtransform;
 		g.setTransform(newtransform);
 		g.beginPath();
@@ -43,11 +43,11 @@ public class NodePath extends NodeBaseElement{
 		g.setStroke(fgColor);
 		g.stroke();
 		g.closePath();
-		g.setTransform(oldTransform);
+//		g.setTransform(oldTransform);
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform) {
 		if (g == null || lastTransform == null) return false;
 		Affine transform = g.getTransform();
 		Affine newtransform = transform.clone();

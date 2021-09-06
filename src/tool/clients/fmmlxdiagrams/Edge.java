@@ -22,7 +22,6 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	private Vector<Point2D> intermediatePoints = new Vector<>();
 	final protected ConcreteNode sourceNode;
 	final protected ConcreteNode targetNode;
-	//protected FmmlxDiagram diagram;
 	protected final Double DEFAULT_TOLERANCE = 6.;
 	protected boolean layoutingFinishedSuccesfully;
 	protected AbstractPackageViewer diagram;
@@ -140,8 +139,13 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		}
 	}
 
-	@Override
+	@Override @Deprecated
 	public final void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
+		this.paintOn(g, new Affine(1, 0, xOffset, 0, 1, yOffset), fmmlxDiagram);
+	}
+	
+	@Override
+	public final void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram fmmlxDiagram) {
 		if(!isVisible()) return;
 		if(!layoutingFinishedSuccesfully) {
 			layoutLabels(fmmlxDiagram); 
@@ -417,7 +421,8 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		return false;
 	}
 
-	public boolean isHit(double x, double y) {
+	@Override
+	public boolean isHit(double x, double y, GraphicsContext g,  Affine currentTransform) {
 		if(!isVisible()) return false;
 		return null != isHit(new Point2D(x, y), 2.5);
 	}

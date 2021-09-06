@@ -4,9 +4,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.*;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
+import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement;
@@ -454,13 +456,15 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return new ObjectContextMenu(this, fmmlxDiagram, relativePoint);
 	}
 	
-	public FmmlxProperty handlePressedOnNodeElement(Point2D relativePoint, FmmlxDiagram diagram) {
+	public FmmlxProperty handlePressedOnNodeElement(Point2D relativePoint, FmmlxDiagram diagram, GraphicsContext g, Affine currentTransform) {
 		if(relativePoint == null) return null;
 		if(!diagram.isSelected(this)) {
 			lastClick = null; return null;
  		}
 		lastClick = relativePoint;
-		NodeBaseElement hitLabel = getHitLabel(relativePoint);
+		currentTransform = new Affine(currentTransform); // copy
+		currentTransform.append(new Affine(1, 0, x, 0, 1, y));
+		NodeBaseElement hitLabel = getHitLabel(relativePoint, g, currentTransform);
 		if (hitLabel != null && hitLabel.getActionObject() != null) {
 			if (hitLabel.getActionObject().getPropertyType() != PropertyType.Class) {
 				hitLabel.setSelected();
@@ -470,17 +474,17 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return null;
 	}
 
-	public NodeBaseElement getHitLabel(Point2D relativePoint) {
+	public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform) {
 		NodeBaseElement hitLabel = null;
 		for(NodeElement e : nodeElements) if(hitLabel == null) {
-			 hitLabel =  e.getHitLabel(relativePoint);//new Point2D(relativePoint.getX() - e.getX(), relativePoint.getY() - e.getY()));
+			 hitLabel =  e.getHitLabel(mouse, g, currentTransform);//new Point2D(relativePoint.getX() - e.getX(), relativePoint.getY() - e.getY()));
 		}
 		return hitLabel;
 	}
 
-	public void performDoubleClickAction(Point2D p) {
+	public void performDoubleClickAction(Point2D p, GraphicsContext g, Affine currentTransform) {
 		if(p == null) return;
-		NodeBaseElement hitLabel = getHitLabel(p);
+		NodeBaseElement hitLabel = getHitLabel(p, g, currentTransform);
 		if(hitLabel != null) hitLabel.performDoubleClickAction();
 	}
 

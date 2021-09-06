@@ -24,7 +24,7 @@ public class ObjectContextMenu extends ContextMenu {
 		this.diagram = diagram;
 		this.actions = diagram.getActions();
 		this.object = object;
-		NodeBaseElement nl = this.object.getHitLabel(relativePoint);
+		NodeBaseElement nl = this.object.getHitLabel(relativePoint, diagram.getCanvas().getGraphicsContext2D(), diagram.getCanvasTransform());
 		activeProperty = nl==null?null:nl.getActionObject();
 		setAutoHide(true);
 

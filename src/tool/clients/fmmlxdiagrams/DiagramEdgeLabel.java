@@ -9,6 +9,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
+import javafx.scene.transform.Affine;
+
 import org.w3c.dom.Element;
 import tool.clients.exporter.svg.SvgConstant;
 import tool.clients.xmlManipulator.XmlHandler;
@@ -51,9 +53,12 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 	}
 
 
-
-	@Override
+	@Override @Deprecated
 	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
+		this.paintOn(g, new Affine(1, 0, xOffset, 0, 1, yOffset), fmmlxDiagram);
+	}
+	@Override
+	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram fmmlxDiagram) {
 		if(!owner.isVisible()) return;		
 		int size=16;
 		g.setFill(bgColor);
@@ -181,7 +186,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform) {
 		return
 			owner.isVisible() &&
 			mouseX > getReferenceX() + relativeX &&

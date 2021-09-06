@@ -28,7 +28,6 @@ import tool.xmodeler.XModeler;
 
 public class DrawingApplication extends Application {
 
-	private Stage stage;
 	private SplitPane splitPane;
 	private Canvas canvas;
 	private Button button1;
@@ -56,7 +55,6 @@ public class DrawingApplication extends Application {
 			+ " H 18.144531 13.839844 V 30.564453 H 5.294922 c -2.409,-0.033 -4.302735,-1.947735 -4.302735,-4.302735 L 0.994141,26.099609 V 14.146484 c 0,-2.377 1.923781,"
 			+ "-4.304689 4.300781,-4.304687 z m 28.039062,0.425781 c 0.247415,0.174087 0.419922,0.447454 0.419922,0.773437 v 6.580078 h -1.894531 z m -10.884765,8.103515 h "
 			+ "12.941406 v 3.585938 H 22.449219 Z m 1.160156,1.292969 v 0.5 0.5 h 4.220703 v -0.5 -0.5 z";
-	private int count=0;
 	private double zoom=1.0;
 	private double rotate=0;
 	private Vector<MyPath> paths = new Vector<MyPath>();
@@ -134,41 +132,35 @@ public class DrawingApplication extends Application {
 	}
 
 	private void mouseClicked(Point2D p) {
-		
-		Affine aCanvas = new Affine();
-		aCanvas.appendScale(zoom, zoom);
-		for(MyPath myPath:paths) {
-			myPath.action(p,canvas.getGraphicsContext2D(),aCanvas);
-		}
-		
-		repaint();
+//		
+//		Affine aCanvas = new Affine();
+//		aCanvas.appendScale(zoom, zoom);
+//		for(MyPath myPath:paths) {
+//			myPath.action(p,canvas.getGraphicsContext2D(),aCanvas);
+//		}
+//		
+//		repaint();
 	}
 	
 	private void mouseMoved(Point2D p) {
 		lastMoved = p;
-		count++;
 		repaint();	
 	}
 	
 	private void handlePressedLeftMouse(MouseEvent e) {
 		lastClicked = new Point2D(e.getX(),e.getY());
+		repaint();	
 	}
-	
-	private void handlePressedLeftMouseObject(MouseEvent e, CanvasElement hitObject) {
 		
-	}
-	
 	private void handleMouseRelease(MouseEvent e) {
 		lastClicked = new Point2D(0,0);
 		currentPoint = new Point2D(0,0);
-		Affine aObject = new Affine(aCanvas);
 		try {
-			aObject=aObject.createInverse();
-			aObject.prepend(currentAffine);
-			aObject.prepend(new Affine(aCanvas));
-			paths.firstElement().moveTransform(aObject);
+			Affine a = new Affine(aCanvas);
+			a.prepend(currentAffine);
+			a.prepend(aCanvas.createInverse());
+			paths.firstElement().moveTransform(a);
 		} catch (NonInvertibleTransformException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
@@ -179,14 +171,8 @@ public class DrawingApplication extends Application {
 	private void mouseDragged(Point2D p) {
 		currentPoint = p;
 		currentAffine = new Affine(Transform.translate(p.getX() - lastClicked.getX(), p.getY() - lastClicked.getY()));
-		//currentAffine.
 		repaint();
 	}
-	
-	private void storeCurrentAffine(Affine affine) {
-		currentAffine = affine;
-	}
-	
 
 	private void repaint() {
 		
@@ -194,27 +180,14 @@ public class DrawingApplication extends Application {
 		gc.setTransform(new Affine());
 		gc.clearRect(0, 0, 1500, 1000);
 		
-		gc.setTransform(aCanvas);
+//		gc.setTransform(aCanvas);
 		
 		for(MyPath myPath:paths) {
 			Affine aObject = new Affine(aCanvas);
 			aObject.prepend(currentAffine);
 			myPath.draw(gc, aObject, lastMoved);
 		}
-//		for(int i=0; i<=11; i++) {
-//			Affine aObject = new Affine(aCanvas);
-//			aObject.appendTranslation(60*i, 0);
-//			aObject.appendRotation(rotate,50,50);
-//			gc.setTransform(aObject);
-//			gc.beginPath();
-//			gc.appendSVGPath(PATH);
-//			Point2D q=lastMoved;
-//			
-//			gc.setFill(gc.isPointInPath(q.getX(), q.getY())?Color.DARKGREEN:Color.DARKRED);
-//			
-//			gc.fill();
-//			gc.closePath();
-//		}
+		
 		gc.setTransform(new Affine());
 		gc.setFill(Color.BLACK);
 		gc.fillText("p="+lastMoved, lastMoved.getX(), lastMoved.getY());

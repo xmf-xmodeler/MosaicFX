@@ -12,13 +12,13 @@ public interface NodeElement {
 
 	public void paintOn(GraphicsContext g, Affine transform, FmmlxDiagram diagram, boolean objectIsSelected);
 
-	public boolean isHit(double mouseX, double mouseY);
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform);
 
 	double getX();
 
 	double getY();
 
-	NodeBaseElement getHitLabel(Point2D pointRelativeToParent);
+	NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g,  Affine currentTransform);
 
     void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element group, double xOffset, double yOffset, boolean objectIsSelected);
 }

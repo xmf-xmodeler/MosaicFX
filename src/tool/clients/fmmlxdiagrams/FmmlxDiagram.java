@@ -84,8 +84,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private ContextMenu activeContextMenu;
 	public transient boolean objectsMoved = false;
 	private transient PropertyType drawEdgeType = null;
-	private transient Point2D lastPoint;
-	private transient Point2D currentPoint;
+	private transient Point2D lastPointPressed;
+	private transient Point2D currentPointMoving;
 	private transient MouseMode mouseMode = MouseMode.STANDARD;
 	private transient FmmlxObject newEdgeSource;
 	private transient FmmlxProperty lastHitProperty = null;
@@ -94,7 +94,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	// The state of the canvas is stored here:
 	private Point2D canvasRawSize = new Point2D(1200, 800);
 	private double zoom = 1.;
-	private Affine transformFX = new Affine();
+	private Affine canvasTransform = new Affine();
 	public static final Font FONT;
 
 	private boolean showOperations = true;
@@ -122,26 +122,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	static{
 		FONT = Font.font(Font.getDefault().getFamily(), FontPosture.REGULAR, 14);
-//		try {
-//
-//	//		font = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono.ttf"), 14);
-////			fontKursiv = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 14);
-//	//		paletteFont = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSans.ttf"), 12);
-////			paletteFontKursiv =Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono-Oblique.ttf"), 12);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
 	}
 
 	private FmmlxDiagram() {
 		super(null,-1,null);
-//		this.comm = null;
 		this.newFmmlxPalette = null;
 		this.diagramName = null;
 	}
 
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String name, String packagePath) {
-//		this.comm = comm;
 		super(comm,diagramID,packagePath);
 		this.diagramName = name;
 		vBox = new VBox();
@@ -282,7 +271,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				maxBottom = Math.max(maxBottom, edge.getMaxY());
 			}
 			canvasRawSize = new Point2D(maxRight, maxBottom);
-			Point2D canvasScreenSize = transformFX.transform(canvasRawSize);
+			Point2D canvasScreenSize = canvasTransform.transform(canvasRawSize);
 			canvas.setWidth(Math.min(4096, canvasScreenSize.getX() + 5));
 			canvas.setHeight(Math.min(4096, canvasScreenSize.getY() + 5));
 		} catch (Exception e) {
@@ -292,9 +281,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	public void savePNG(){
 		double zoom = this.zoom;
-//		System.err.println("current zoom: " + zoom);
 		setMaxZoom();
-//		System.err.println("max zoom: " + getZoom());
 
 	    FileChooser fileChooser = new FileChooser();
 
@@ -337,11 +324,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
 			// we are on the right Thread already:
-			paintOn(canvas.getGraphicsContext2D(), 0, 0);
+			paintOn(canvas.getGraphicsContext2D());
 		} else { // create a new Thread
 			CountDownLatch l = new CountDownLatch(1);
 			Platform.runLater(() -> {
-				paintOn(canvas.getGraphicsContext2D(), 0, 0);
+				paintOn(canvas.getGraphicsContext2D());
 				l.countDown();
 			});
 			try {
@@ -352,24 +339,34 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 	}
 
-	private void paintOn(GraphicsContext g, int xOffset, int yOffset) {
+	private void paintOn(GraphicsContext g) {
+		// blank bg first:
 		g.setTransform(new Affine());
 		g.setFill(Color.WHITE);
 		g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-		if (objects.size() <= 0) {return;}
-		g.setFill(Color.BLACK);
-		g.setTransform(transformFX);
+				
+		if (objects.size() <= 0) {return;} // if no objects yet: out, avoid div/0 or similar
+		
+		// otherwise gather (first-level) objects to be painted
 		Vector<CanvasElement> objectsToBePainted = new Vector<>();
 		objectsToBePainted.addAll(objects);
 		objectsToBePainted.addAll(labels);
 		objectsToBePainted.addAll(edges);
+		//reverse so that those first in the list are painted last
 		Collections.reverse(objectsToBePainted);
+		
+		// Cleanup ports (to be moved somewhere else)
 		for (FmmlxObject o : objects) {
 			o.updatePortOder();
-		}
+		}	
+		
+		g.setFill(Color.BLACK);
+		g.setTransform(canvasTransform);
+
 		for (CanvasElement o : objectsToBePainted) {
-			o.paintOn(g, xOffset, yOffset, this);
+			o.paintOn(g, canvasTransform, this);
 		}
+		
 		g.setStroke(Color.BLACK);
 		g.setLineWidth(1);
 		g.setLineDashes(null);
@@ -380,14 +377,14 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	private void drawMultiSelectRect(GraphicsContext g) {
-			double x = Math.min(lastPoint.getX(), currentPoint.getX());
-			double y = Math.min(lastPoint.getY(), currentPoint.getY());
-			g.strokeRect(x, y, Math.abs(currentPoint.getX() - lastPoint.getX()), Math.abs(currentPoint.getY() - lastPoint.getY()));
+			double x = Math.min(lastPointPressed.getX(), currentPointMoving.getX());
+			double y = Math.min(lastPointPressed.getY(), currentPointMoving.getY());
+			g.strokeRect(x, y, Math.abs(currentPointMoving.getX() - lastPointPressed.getX()), Math.abs(currentPointMoving.getY() - lastPointPressed.getY()));
 	}
 
 	private void drawNewEdgeLine(GraphicsContext g) {
-		if (mouseMode == MouseMode.DRAW_EDGE && lastPoint != null && currentPoint != null) {
-			g.strokeLine(lastPoint.getX(), lastPoint.getY(), currentPoint.getX(), currentPoint.getY());
+		if (mouseMode == MouseMode.DRAW_EDGE && lastPointPressed != null && currentPointMoving != null) {
+			g.strokeLine(lastPointPressed.getX(), lastPointPressed.getY(), currentPointMoving.getX(), currentPointMoving.getY());
 		}
 	}
 
@@ -397,7 +394,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	private void mousePressed(MouseEvent e) {
 		if(fetchingData) return;
-		Point2D p = scale(e);
+//		Point2D p = scale(e);
 		clearContextMenus();
 
 //		if (isMiddleClick(e)) {
@@ -409,36 +406,36 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		if (isRightButton(e)) {
 			handleRightClick(e);
 		}
-		setMouseOffset(p);
+		setMouseOffset(new Point2D(e.getX(), e.getY()));
 		//redraw();
 	}
 
 	private void mouseDragged(MouseEvent e) {
-		Point2D p = scale(e);
+//		Point2D p = scale(e);
 
 		if (mouseMode == MouseMode.MULTISELECT) {
-			storeCurrentPoint(p.getX(), p.getY());
+			storeCurrentPoint(e.getX(), e.getY());
 			redraw();
 		}
 		if (mouseMode == MouseMode.STANDARD) {
 			if (selectedObjects.size() == 1 && selectedObjects.firstElement() instanceof Edge) {
-				((Edge<?>) selectedObjects.firstElement()).setPointAtToBeMoved(p);
+				((Edge<?>) selectedObjects.firstElement()).setPointAtToBeMoved(new Point2D(e.getX(), e.getY()));
 
 			}
-			mouseDraggedStandard(p);
+			mouseDraggedStandard(new Point2D(e.getX(), e.getY()));
 		}
 	}
 
 	private transient CanvasElement lastElementUnderMouse = null;
 
 	private void mouseMoved(MouseEvent e) {
-		Point2D p = scale(e);
+//		Point2D p = scale(e);
 		if (mouseMode == MouseMode.DRAW_EDGE) {
-			storeCurrentPoint(p.getX(), p.getY());
+			storeCurrentPoint(e.getX(), e.getY());
 			redraw();
 		}
 
-		CanvasElement elementUnderMouse = getElementAt(p.getX(), p.getY());
+		CanvasElement elementUnderMouse = getElementAt(e.getX(), e.getY());
 		if(elementUnderMouse != lastElementUnderMouse) {
 			lastElementUnderMouse = elementUnderMouse;
 			for (FmmlxObject o : objects)
@@ -449,7 +446,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				l.unHighlight();
 		}
 
-		if(elementUnderMouse != null) elementUnderMouse.highlightElementAt(p);
+		if(elementUnderMouse != null) elementUnderMouse.highlightElementAt(new Point2D(e.getX(), e.getY()));
 
 	}
 
@@ -555,20 +552,21 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	private CanvasElement getElementAt(double x, double y) {
 		for (FmmlxObject o : new Vector<>(objects))
-			if (o.isHit(x, y))
+			if (o.isHit(x, y, canvas.getGraphicsContext2D(), canvasTransform))
 				return o;
 		for (Edge<?> e : new Vector<>(edges))
-			if (e.isHit(x, y))
+			if (e.isHit(x, y, canvas.getGraphicsContext2D(), canvasTransform))
 				return e;
 		for (DiagramEdgeLabel<?> l : new Vector<>(labels))
-			if (l.isHit(x, y))
+			if (l.isHit(x, y, canvas.getGraphicsContext2D(), canvasTransform))
 				return l;
 
 		return null;
 	}
 
 	private void handleLeftPressedDefault(MouseEvent e, CanvasElement hitObject) {
-		Point2D p = scale(e);
+//		Point2D p = scale(e);
+		Point2D p = new Point2D(e.getX(), e.getY());
 
 		if (hitObject != null) {
 			if (mouseMode == MouseMode.DRAW_EDGE) {
@@ -655,15 +653,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				}
 			} else {
 				mouseMode = MouseMode.MULTISELECT;
-				storeLastClick(p.getX(), p.getY());
-				storeCurrentPoint(p.getX(), p.getY());
+				storeLastClick(e.getX(), e.getY());
+				storeCurrentPoint(e.getX(), e.getY());
 			}
 		}
 	}
 
 	private void handleLeftPressed(MouseEvent e) {
-		Point2D p = scale(e);
-		CanvasElement hitObject = getElementAt(p.getX(), p.getY());
+//		Point2D p = scale(e);
+		CanvasElement hitObject = getElementAt(e.getX(), e.getY());
 
 		if (nodeCreationType == null && edgeCreationType == null) {
 			handleLeftPressedDefault(e, hitObject);
@@ -713,16 +711,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private void handlePressedOnNodeElement(Point2D p, CanvasElement hitObject) {
 		if (hitObject instanceof FmmlxObject) {
 			FmmlxObject obj = (FmmlxObject) hitObject;
-			Point2D relativePoint = new Point2D(p.getX() - obj.getX(), p.getY() - obj.getY());
-			lastHitProperty = obj.handlePressedOnNodeElement(relativePoint, this);
+			lastHitProperty = obj.handlePressedOnNodeElement(p, this, canvas.getGraphicsContext2D(), canvasTransform);
 		}
 	}
 
 	private void handleDoubleClickOnNodeElement(Point2D p, CanvasElement hitObject) {
 		if (hitObject instanceof FmmlxObject) {
 			FmmlxObject obj = (FmmlxObject) hitObject;
-			Point2D relativePoint = new Point2D(p.getX() - obj.getX(), p.getY() - obj.getY());
-			obj.performDoubleClickAction(relativePoint);
+//			Point2D relativePoint = new Point2D(p.getX() - obj.getX(), p.getY() - obj.getY());
+			obj.performDoubleClickAction(p, canvas.getGraphicsContext2D(), canvasTransform);
 		} else if (hitObject instanceof DiagramEdgeLabel) {
 			DiagramEdgeLabel<?> l = (DiagramEdgeLabel<?>) hitObject;
 			l.performAction();
@@ -732,13 +729,13 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	private void handleRightClick(MouseEvent e) {
-		Point2D p = scale(e);
-		CanvasElement hitObject = getElementAt(p.getX(), p.getY());
+//		Point2D p = scale(e);
+		CanvasElement hitObject = getElementAt(e.getX(), e.getY());
 		if (hitObject != null) {
 			if (hitObject instanceof FmmlxObject) {
-				activeContextMenu = hitObject.getContextMenu(this, p);
+				activeContextMenu = hitObject.getContextMenu(this, new Point2D(e.getX(), e.getY()));
 			} else if (hitObject instanceof Edge) {
-				activeContextMenu = hitObject.getContextMenu(this, p);
+				activeContextMenu = hitObject.getContextMenu(this, new Point2D(e.getX(), e.getY()));
 			}
 			if (!selectedObjects.contains(hitObject)) {
 				deselectAll();
@@ -761,7 +758,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 	}
 
-	private final double ZOOM_STEP = Math.sqrt(2);
+	private final double ZOOM_STEP = Math.sqrt(Math.sqrt(Math.sqrt(2)));
 
 	public void zoomIn() {
 		setZoom(Math.min(2, getZoom() * ZOOM_STEP));
@@ -811,11 +808,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	public void storeLastClick(double x, double y) {
-		lastPoint = new Point2D(x, y);
+		lastPointPressed = new Point2D(x, y);
 	}
 
 	private void storeCurrentPoint(double x, double y) {
-		currentPoint = new Point2D(x, y);
+		currentPointMoving = new Point2D(x, y);
 	}
 
 	private void setMouseOffset(Point2D p) {
@@ -850,10 +847,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	private void handleMultiSelect() {
-		double x = Math.min(lastPoint.getX(), currentPoint.getX());
-		double y = Math.min(lastPoint.getY(), currentPoint.getY());
-		double w = Math.abs(currentPoint.getX() - lastPoint.getX());
-		double h = Math.abs(currentPoint.getY() - lastPoint.getY());
+		double x = Math.min(lastPointPressed.getX(), currentPointMoving.getX());
+		double y = Math.min(lastPointPressed.getY(), currentPointMoving.getY());
+		double w = Math.abs(currentPointMoving.getX() - lastPointPressed.getX());
+		double h = Math.abs(currentPointMoving.getY() - lastPointPressed.getY());
 
 		Rectangle rec = new Rectangle(x, y, w, h);
 		deselectAll();
@@ -873,16 +870,16 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				object.getY() + object.getHeight());
 	}
 
-	public Point2D scale(MouseEvent event) {
-		Affine i;
-		try {
-			i = transformFX.createInverse();
-			return i.transform(event.getX(), event.getY());
-		} catch (NonInvertibleTransformException e) {
-			e.printStackTrace();
-			return new javafx.geometry.Point2D(event.getX(), event.getY());
-		}
-	}
+//	public Point2D scale(MouseEvent event) {
+//		Affine i;
+//		try {
+//			i = canvasTransform.createInverse();
+//			return i.transform(event.getX(), event.getY());
+//		} catch (NonInvertibleTransformException e) {
+//			e.printStackTrace();
+//			return new javafx.geometry.Point2D(event.getX(), event.getY());
+//		}
+//	}
 
 	public FmmlxProperty getSelectedProperty() {
 		return lastHitProperty;
@@ -914,8 +911,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public void setZoom(double zoom) {
 		this.zoom = Math.min(10, Math.max(zoom, 1. / 8));
 
-		transformFX = new Affine();
-		transformFX.appendScale(zoom, zoom);
+		canvasTransform = new Affine();
+		canvasTransform.appendScale(zoom, zoom);
 		resizeCanvas();
 	}
 
@@ -1267,7 +1264,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			issue.paintToSvg(xmlHandler, issueGroup, 14, 16, 0, canvas.getHeight()+issue.issueNumber*14);
 		}
 		xmlHandler.addXmlElement(xmlHandler.getRoot(), issueGroup);
+	}
 
+	public Affine getCanvasTransform() {
+		return canvasTransform;
 	}
 
 	

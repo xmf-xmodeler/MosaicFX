@@ -48,24 +48,26 @@ public class NodeGroup implements NodeElement {
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform) {
 		Point2D p = new Point2D(mouseX, mouseY);
-		try {
-			p = selfTransform.createInverse().transform(p);
+		currentTransform = new Affine(currentTransform); // copy
+		currentTransform.append(selfTransform);
+//		try {
+//			p = selfTransform.createInverse().transform(p);
 			for (NodeElementData ned : elements) {
-				if (ned.element.isHit(p.getX(), p.getY()))
+				if (ned.element.isHit(mouseX, mouseY, g, currentTransform))
 					return true;
 			}
-		} catch (NonInvertibleTransformException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		} catch (NonInvertibleTransformException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 		return false;
 	}
 
 	@Override
-	public NodeBaseElement getHitLabel(Point2D pointRelativeToParent) {
+	public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -27,21 +27,21 @@ public class NodeCircle extends NodeBaseElement{
 			boolean objectIsSelected) {
 		try {
 			g.setFill(bgColor);
-			g.fillOval(x + transform.getTx(), y + transform.getTy(), diameter, diameter);
+			g.fillOval(getX() + transform.getTx(), getY() + transform.getTy(), diameter, diameter);
 			g.setStroke(/*objectIsSelected&&System.currentTimeMillis()%2400<500?new Color(1.,.8,0.,1.):*/fgColor);
 			g.setLineWidth(1);
-			g.strokeOval(x + transform.getTx(), y + transform.getTy(), diameter, diameter);
+			g.strokeOval(getX() + transform.getTx(), getY() + transform.getTy(), diameter, diameter);
 		} catch (Exception e){
 			e.printStackTrace();
 		}		
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY) {
-		return  (x - mouseX + diameter/2) * 
-				(x - mouseX + diameter/2) + 
-				(y - mouseY + diameter/2) * 
-				(y - mouseY + diameter/2) < diameter * diameter / 4;
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform) {
+		return  (getX() - mouseX + diameter/2) * 
+				(getX() - mouseX + diameter/2) + 
+				(getY() - mouseY + diameter/2) * 
+				(getY() - mouseY + diameter/2) < diameter * diameter / 4;
 	}
 
 	@Override

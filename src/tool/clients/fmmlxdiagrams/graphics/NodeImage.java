@@ -27,12 +27,13 @@ public class NodeImage extends NodeBaseElement implements NodeElement {
 	@Override
 	public void paintOn(GraphicsContext g, Affine transform, FmmlxDiagram diagram,
 			boolean objectIsSelected) {
-		g.drawImage(image, transform.getTx() + x, transform.getTy() + y - image.getHeight());
+		g.setTransform(transform);
+		g.drawImage(image, getX(), getY() - image.getHeight());
 		
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -40,8 +41,8 @@ public class NodeImage extends NodeBaseElement implements NodeElement {
 	@Override
 	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element group, double xOffset, double yOffset, boolean selected) {
 		Element imageElement = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_IMAGE);
-		imageElement.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X,(xOffset + x)+"");
-		imageElement.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y,(yOffset + y- image.getHeight())+"");
+		imageElement.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X,(xOffset + getX())+"");
+		imageElement.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y,(yOffset + getY()- image.getHeight())+"");
 		imageElement.setAttribute(SvgConstant.ATTRIBUTE_XLINK_HREF, "data:image/png;base64,"+encodeFileToBase64Binary(new File(iconSource)));
 		xmlHandler.addXmlElement(group,imageElement);
 	}
