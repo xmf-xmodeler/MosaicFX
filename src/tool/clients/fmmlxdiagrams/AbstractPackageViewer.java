@@ -231,6 +231,26 @@ public abstract class AbstractPackageViewer {
 		}
 		return result; // read-only
 	}
+
+	public final Vector<DelegationEdge> getDelegations() {
+		Vector<DelegationEdge> result = new Vector<>();
+		for (Edge<?> tmp : edges) {
+			if (tmp instanceof DelegationEdge) {
+				result.add((DelegationEdge) tmp);
+			}
+		}
+		return result; // read-only
+	}
+
+	public final Vector<RoleFillerEdge> getRoleFillerEdges() {
+		Vector<RoleFillerEdge> result = new Vector<>();
+		for (Edge<?> tmp : edges) {
+			if (tmp instanceof RoleFillerEdge) {
+				result.add((RoleFillerEdge) tmp);
+			}
+		}
+		return result; // read-only
+	}
 	
 	public final String getPackagePath() {
 		return packagePath;

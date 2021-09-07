@@ -1163,10 +1163,10 @@ public class DiagramActions {
 			File file = fc.showOpenDialog(null);
 
 			if(file!= null){
-				System.out.println("file not null");
 				FMMLxImporter importer = new FMMLxImporter(file.getPath(), diagram);
 				importer.handleLogs();
 			}
+			updateDiagram();
 		});
 	}
 }

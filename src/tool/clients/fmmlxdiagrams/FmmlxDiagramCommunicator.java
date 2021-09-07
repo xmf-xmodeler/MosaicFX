@@ -1933,6 +1933,8 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("isSaved", message);
 	}
 
+	// -------------------- merge package ---------------------------- //
+
 	public void mergeMetaClass(int diagramID, String name, int level, Vector<String> parents, boolean isAbstract, int x, int y, boolean hidden) {
 		Value[] parentsArray = createValueArray(parents);
 
@@ -1988,6 +1990,23 @@ public class FmmlxDiagramCommunicator {
 		Vector<Object> result = xmfRequest(handler, diagramID, "mergeEnumerationValue", new Value(enumName),
 				new Value(itemName));
 		showErrorMessage(result);
+	}
+
+	public void mergeAssociation(int diagramID, String classSourceName, String classTargetName,
+								 String accessSourceFromTargetName, String accessTargetFromSourceName,
+								 String fwName, String reverseName, Multiplicity multiplicityT2S, Multiplicity multiplicityS2T,
+								 int instLevelSource, int instLevelTarget, boolean sourceVisibleFromTarget,
+								 boolean targetVisibleFromSource, boolean isSymmetric, boolean isTransitive) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(classSourceName), new Value(classTargetName),
+				new Value(accessSourceFromTargetName), new Value(accessTargetFromSourceName),
+				new Value(fwName), reverseName == null ? new Value(-1) : new Value(reverseName),
+				new Value(multiplicityT2S.toValue()),
+				new Value(multiplicityS2T.toValue()),
+				new Value(instLevelSource), new Value(instLevelTarget),
+				new Value(sourceVisibleFromTarget), new Value(targetVisibleFromSource), new Value(isSymmetric), new Value(isTransitive)};
+		sendMessage("mergeAssociation", message);
 	}
 
 

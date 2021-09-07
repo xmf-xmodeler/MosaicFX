@@ -16,12 +16,18 @@ public class ProtocolHandler {
     public List<String> problems;
     private final Vector<FmmlxObject> objects;
     private final Vector<FmmlxAssociation> associations;
+    private final Vector<FmmlxLink> links;
+    private final Vector<DelegationEdge> delegationEdges;
+    private final Vector<RoleFillerEdge> roleFillerEdges;
 
     public ProtocolHandler(AbstractPackageViewer diagram) {
         this.diagram = diagram;
         this.problems = new ArrayList<>();
         this.objects = diagram.getObjects();
         this.associations = diagram.getAssociations();
+        this.links = diagram.getAssociationInstance();
+        this.delegationEdges = diagram.getDelegations();
+        this.roleFillerEdges = diagram.getRoleFillerEdges();
     }
 
     public void readLogs(Node logsNode) {
@@ -131,88 +137,167 @@ public class ProtocolHandler {
                     }
                     break;
                 }
-            }
                 break;
-//            }
-//            case "addAssociation" : {
-//                String classSourceName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE);//classPathArray1[classPathArray1.length-1];
-//                String classpath2 = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET);
-//                String accessSourceFromTargetName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_ACCESS_SOURCE_FROM_TARGET);
-//                String accessTargetFromSourceName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_ACCESS_TARGET_FROM_SOURCE);
-//
-//                String fwName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_FW_NAME);
-//                String reverseName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_REVERSE_NAME);
-//
-//
-//                Multiplicity multiplicityT2S; {
-//                    String multiplicityString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_T2S_MULTIPLICITY);
-//                    String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
-//                    String[] multiplicityArray =  multiplicitySubString.split(",");
-//                    int min = Integer.parseInt(multiplicityArray[0]);
-//                    int max = Integer.parseInt(multiplicityArray[1]);
-//                    boolean upperLimit = Boolean.parseBoolean(multiplicityArray[2]);
-//                    boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
-//                    multiplicityT2S = new Multiplicity(min, max, upperLimit, ordered, false);
-//                }
-//
-//                Multiplicity multiplicityS2T; {
-//                    String multiplicityString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_S2T_MULTIPLICITY);
-//                    String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
-//                    String[] multiplicityArray =  multiplicitySubString.split(",");
-//                    int min = Integer.parseInt(multiplicityArray[0]);
-//                    int max = Integer.parseInt(multiplicityArray[1]);
-//                    boolean upperLimit = Boolean.parseBoolean(multiplicityArray[2]);
-//                    boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
-//                    multiplicityS2T = new Multiplicity(min, max, upperLimit, ordered, false);
-//                }
-//
-//                int instLevelSource = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_INST_LEVEL_SOURCE));
-//                int instLevelTarget = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_INST_LEVEL_TARGET));
-//
-//                boolean sourceVisibleFromTarget= Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_SOURCE_VISIBLE));
-//                boolean targetVisibleFromSource = Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_TARGET_VISIBLE));
-//
-//                boolean isSymmetric = Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_SYMMETRIC));
-//                boolean isTransitive = Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_TRANSITIVE));
-//
-//                break;
-//            }
-//            case "addLink" : {
-//                String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
-//
-//                String classpath1 = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE);
-//                String[] classPathArray1 = classpath1.split("::");
-//                String className1 = classPathArray1[classPathArray1.length-1];
-//
-//                String classpath2 = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET);
-//                String[] classPathArray2 = classpath2.split("::");
-//                String className2 = classPathArray2[classPathArray2.length-1];
-//
-//                break;
-//            }
-//            case "addDelegation" : {
-//                String delegationFromPath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_DELEGATE_FROM);
-//                String[] delegationFromPathArray = delegationFromPath.split("::");
-//                String delegationFromName = delegationFromPathArray[delegationFromPathArray.length-1];
-//
-//                String delegationToPath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_DELEGATE_TO);
-//                String[] delegationToPathArray = delegationToPath.split("::");
-//                String delegationToName = delegationToPathArray[delegationToPathArray.length-1];
-//                int delegateToLevel = Integer.parseInt(logElement.getAttribute("delegateToLevel"));
-//
-//                break;
-//            }
-//            case "setRoleFiller" : {
-//                String rolePath = logElement.getAttribute("role");
-//                String[] rolePathArray1 = rolePath.split("::");
-//                String role = rolePathArray1[rolePathArray1.length-1];
-//
-//                String roleFillerPath = logElement.getAttribute("roleFiller");
-//                String[] roleFillerPathArray = roleFillerPath.split("::");
-//                String roleFiller = roleFillerPathArray[roleFillerPathArray.length-1];
-//
-//                break;
-//            }
+            }
+            case "addAssociation" : {
+                String classSourcePath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE);
+                String[] classSourcePathArray = classSourcePath.split("::");
+                String sourceName = classSourcePathArray[classSourcePathArray.length-1];
+
+                String classTargetPath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET);
+                String[] classTargetPathArray = classTargetPath.split("::");
+                String targetName = classTargetPathArray[classTargetPathArray.length-1];
+
+                String accessSourceFromTargetName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_ACCESS_SOURCE_FROM_TARGET);
+                String accessTargetFromSourceName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_ACCESS_TARGET_FROM_SOURCE);
+
+                String fwName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_FW_NAME);
+                String reverseName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_REVERSE_NAME);
+
+
+                Multiplicity multiplicityT2S; {
+                    String multiplicityString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_T2S_MULTIPLICITY);
+                    String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
+                    String[] multiplicityArray =  multiplicitySubString.split(",");
+                    int min = Integer.parseInt(multiplicityArray[0]);
+                    int max = Integer.parseInt(multiplicityArray[1]);
+                    boolean upperLimit = Boolean.parseBoolean(multiplicityArray[2]);
+                    boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
+                    multiplicityT2S = new Multiplicity(min, max, upperLimit, ordered, false);
+                }
+
+                Multiplicity multiplicityS2T; {
+                    String multiplicityString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_S2T_MULTIPLICITY);
+                    String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
+                    String[] multiplicityArray =  multiplicitySubString.split(",");
+                    int min = Integer.parseInt(multiplicityArray[0]);
+                    int max = Integer.parseInt(multiplicityArray[1]);
+                    boolean upperLimit = Boolean.parseBoolean(multiplicityArray[2]);
+                    boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
+                    multiplicityS2T = new Multiplicity(min, max, upperLimit, ordered, false);
+                }
+
+                int instLevelSource = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_INST_LEVEL_SOURCE));
+                int instLevelTarget = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_INST_LEVEL_TARGET));
+
+                boolean sourceVisibleFromTarget= Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_SOURCE_VISIBLE));
+                boolean targetVisibleFromSource = Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_TARGET_VISIBLE));
+
+                boolean isSymmetric = Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_SYMMETRIC));
+                boolean isTransitive = Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_TRANSITIVE));
+
+                for(FmmlxAssociation ass : associations){
+                    if(ass.targetEnd.getNode().getName().equals(targetName) && ass.sourceEnd.getNode().getName().equals(sourceName)) {
+                        if (ass.getName().equals(fwName)) {
+                            if (!ass.getReverseName().equals(reverseName)) {
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_REVERSE_NAME + "ass_name " + fwName + ", "
+                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                            } else if (!ass.getAccessNameStartToEnd().equals(accessSourceFromTargetName)) {
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_ACCESS_SOURCE_FROM_TARGET + "ass_name " + fwName + ", "
+                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                            } else if (!ass.getAccessNameEndToStart().equals(accessTargetFromSourceName)) {
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_ACCESS_TARGET_FROM_SOURCE + "ass_name " + fwName + ", "
+                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                            } else if (ass.getLevelSource()!=(instLevelSource)) {
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_INST_LEVEL_SOURCE + "ass_name " + fwName + ", "
+                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                            } else if (ass.getLevelTarget()!=(instLevelTarget)) {
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_INST_LEVEL_TARGET + "ass_name " + fwName + ", "
+                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                            } else if (!ass.getMultiplicityStartToEnd().toString().equals(multiplicityS2T.toString())){
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_MULTIPLICITY_S2E + "ass_name " + fwName + ", "
+                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                            } else if (!ass.getMultiplicityEndToStart().toString().equals(multiplicityT2S.toString())){
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_MULTIPLICITY_E2S + "ass_name " + fwName + ", "
+                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                            } else if (ass.isSourceVisible()!=sourceVisibleFromTarget) {
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_SOURCE_VISIBLE_FROM_TARGET + "ass_name " + fwName + ", "
+                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                            } else if (ass.isTargetVisible()!=targetVisibleFromSource) {
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_TARGET_VISIBLE_FROM_SOURCE + "ass_name " + fwName + ", "
+                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                            } else if (ass.isSymmetric()!=isSymmetric) {
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_SYMMETRIC + "ass_name " + fwName + ", "
+                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                            } else if (ass.isTransitive()!=isTransitive) {
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_TRANSITIVE + "ass_name " + fwName + ", "
+                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                            }
+                        }
+                    } else if (ass.targetEnd.getNode().getName().equals(sourceName) && ass.sourceEnd.getNode().getName().equals(targetName)){
+                        if(ass.getName().equals(fwName)){
+                            problems.add(ImporterStrings.PROBLEM_ASSOCIATION_REVERSE_SOURCE_AND_TARGET +"ass_name "+fwName+", "
+                                    +"source_class "+ sourceName+", "+"target_class "+targetName);
+                        }
+                    }
+                }
+
+                break;
+            }
+            case "addLink" : {
+                String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
+
+                String classpath1 = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE);
+                String[] classPathArray1 = classpath1.split("::");
+                String className1 = classPathArray1[classPathArray1.length-1];
+
+                String classpath2 = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET);
+                String[] classPathArray2 = classpath2.split("::");
+                String className2 = classPathArray2[classPathArray2.length-1];
+
+                for(FmmlxLink link:links){
+                    if(link.sourceEnd.getNode().getName().equals(className2) && (link.targetEnd.getNode().getName().equals(className1))){
+                        if(link.getName().equals(name)){
+                            problems.add(ImporterStrings.PROBLEM_LINK_REVERSE_SOURCE_AND_TARGET +"ass_name "+name+", "
+                                    +"source_class "+ className1+", "+"target_class "+className2);
+                        }
+                    }
+                }
+
+                break;
+            }
+            case "addDelegation" : {
+                String delegationFromPath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_DELEGATE_FROM);
+                String[] delegationFromPathArray = delegationFromPath.split("::");
+                String delegationFromName = delegationFromPathArray[delegationFromPathArray.length-1];
+
+                String delegationToPath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_DELEGATE_TO);
+                String[] delegationToPathArray = delegationToPath.split("::");
+                String delegationToName = delegationToPathArray[delegationToPathArray.length-1];
+                int delegateToLevel = Integer.parseInt(logElement.getAttribute("delegateToLevel"));
+
+                for(DelegationEdge delegationEdge:delegationEdges){
+                    if(delegationEdge.sourceEnd.getNode().getName().equals(delegationFromName) && (delegationEdge.targetEnd.getNode().getName().equals(delegationToName))){
+                        if(delegationEdge.level!=delegateToLevel){
+                            problems.add(ImporterStrings.PROBLEM_DELEGATION_DIFFERENT_DELEGATION_LEVEL +
+                                    "source_class " + delegationFromName + ", " + "target_class " + delegateToLevel);
+                        }
+                    }
+                    if(delegationEdge.sourceEnd.getNode().getName().equals(delegationToName) && (delegationEdge.targetEnd.getNode().getName().equals(delegationFromName))){
+                        problems.add(ImporterStrings.PROBLEM_DELEGATION_REVERSE_SOURCE_AND_TARGET
+                                +"source_class "+ delegationFromName+", "+"target_class "+delegationToName);
+                    }
+                }
+                break;
+            }
+            case "setRoleFiller" : {
+                String rolePath = logElement.getAttribute("role");
+                String[] rolePathArray1 = rolePath.split("::");
+                String role = rolePathArray1[rolePathArray1.length-1];
+
+                String roleFillerPath = logElement.getAttribute("roleFiller");
+                String[] roleFillerPathArray = roleFillerPath.split("::");
+                String roleFiller = roleFillerPathArray[roleFillerPathArray.length-1];
+
+                for(RoleFillerEdge roleFillerEdge:roleFillerEdges){
+                    if(roleFillerEdge.sourceEnd.getNode().getName().equals(roleFiller) && (roleFillerEdge.targetEnd.getNode().getName().equals(role))){
+                        problems.add(ImporterStrings.PROBLEM_ROLE_FILLER_REVERSE_SOURCE_AND_TARGET
+                                +"source_class "+ role+", "+"target_class "+roleFiller);
+                    }
+                }
+
+                break;
+            }
 //            case "addConstraint" : {
 //                String path = logElement.getAttribute("class");
 //                String constName = logElement.getAttribute("constName");
@@ -246,7 +331,6 @@ public class ProtocolHandler {
     }
 
     public void executeMerge(Node logsNode, FmmlxDiagramCommunicator comm) {
-        System.out.println("execute merge");
         NodeList logList = logsNode.getChildNodes();
         for(int i = 0; i< logList.getLength(); i++){
             if(logList.item(i).getNodeType()== Node.ELEMENT_NODE){
@@ -361,6 +445,61 @@ public class ProtocolHandler {
 //                }
 //                break;
 //            }
+            case "addAssociation" : {
+                String projectPath = diagram.getPackagePath();
+                String classSourcePath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE);//classPathArray1[classPathArray1.length-1];
+                String[] classSourcePathArray = classSourcePath.split("::");
+                String classSourceName = projectPath+"::"+classSourcePathArray[classSourcePathArray.length-1];
+
+                String classTargetPath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET);
+                String[] classTargetPathArray = classTargetPath.split("::");
+                String classTargetName = projectPath+"::"+classTargetPathArray[classTargetPathArray.length-1];
+
+                String accessSourceFromTargetName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_ACCESS_SOURCE_FROM_TARGET);
+                String accessTargetFromSourceName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_ACCESS_TARGET_FROM_SOURCE);
+
+                String fwName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_FW_NAME);
+                String reverseName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_REVERSE_NAME);
+
+
+                Multiplicity multiplicityT2S; {
+                    String multiplicityString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_T2S_MULTIPLICITY);
+                    String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
+                    String[] multiplicityArray =  multiplicitySubString.split(",");
+                    int min = Integer.parseInt(multiplicityArray[0]);
+                    int max = Integer.parseInt(multiplicityArray[1]);
+                    boolean upperLimit = Boolean.parseBoolean(multiplicityArray[2]);
+                    boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
+                    multiplicityT2S = new Multiplicity(min, max, upperLimit, ordered, false);
+                }
+
+                Multiplicity multiplicityS2T; {
+                    String multiplicityString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_S2T_MULTIPLICITY);
+                    String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
+                    String[] multiplicityArray =  multiplicitySubString.split(",");
+                    int min = Integer.parseInt(multiplicityArray[0]);
+                    int max = Integer.parseInt(multiplicityArray[1]);
+                    boolean upperLimit = Boolean.parseBoolean(multiplicityArray[2]);
+                    boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
+                    multiplicityS2T = new Multiplicity(min, max, upperLimit, ordered, false);
+                }
+
+                int instLevelSource = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_INST_LEVEL_SOURCE));
+                int instLevelTarget = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_INST_LEVEL_TARGET));
+
+                boolean sourceVisibleFromTarget= Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_SOURCE_VISIBLE));
+                boolean targetVisibleFromSource = Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_TARGET_VISIBLE));
+
+                boolean isSymmetric = Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_SYMMETRIC));
+                boolean isTransitive = Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_TRANSITIVE));
+
+                comm.mergeAssociation(diagramID, classSourceName, classTargetName,
+                        accessSourceFromTargetName, accessTargetFromSourceName,
+                        fwName, reverseName, multiplicityT2S, multiplicityS2T,
+                        instLevelSource, instLevelTarget, sourceVisibleFromTarget,
+                        targetVisibleFromSource, isSymmetric, isTransitive);
+                break;
+            }
             default:
                 break;
         }
