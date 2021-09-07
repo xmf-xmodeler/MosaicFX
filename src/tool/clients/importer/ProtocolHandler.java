@@ -6,14 +6,11 @@ import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.serializer.SerializerConstant;
 
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 public class ProtocolHandler {
     private final AbstractPackageViewer diagram;
-    public List<String> problems;
+    public List<Conflict> problems;
     private final Vector<FmmlxObject> objects;
     private final Vector<FmmlxAssociation> associations;
     private final Vector<FmmlxLink> links;
@@ -51,7 +48,9 @@ public class ProtocolHandler {
                     if(object.getName().equals(name)){
                         //Check level
                         if(object.getLevel() != level){
-                            problems.add(ImporterStrings.PROBLEM_CLASS_DIFFERENT_LEVEL +"[class_name :"+object.getName()+"]");
+                            Conflict conflict = new Conflict(ImporterStrings.PROBLEM_CLASS_DIFFERENT_LEVEL);
+                            conflict.putIn(ImporterStrings.CLASS_NAME, object.getName());
+                            problems.add(conflict);
                         }
                     }
                 }
@@ -68,14 +67,7 @@ public class ProtocolHandler {
                 String className = classPathArray[classPathArray.length-1];
                 int level = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));
                 String typePath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_TYPE);
-                String multiplicityString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_MULTIPLICITY);
-                String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
-                String[] multiplicityArray =  multiplicitySubString.split(",");
-                int upper = Integer.parseInt(multiplicityArray[0]);
-                int under = Integer.parseInt(multiplicityArray[1]);
-                boolean upperLimit = Boolean.parseBoolean(multiplicityArray[2]);
-                boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
-                Multiplicity multiplicity = new Multiplicity(upper, under, upperLimit, ordered, false);
+                Multiplicity multiplicity = getMultiplicityFromXml(logElement.getAttribute(SerializerConstant.ATTRIBUTE_MULTIPLICITY));
 
                 String[] typePathArray = typePath.split("::");
                 String typeName = typePathArray[typePathArray.length-1];
@@ -89,15 +81,24 @@ public class ProtocolHandler {
                             if(attribute.getName().equals(name)){
                                 //check level
                                 if(attribute.getLevel()!=level){
-                                    problems.add(ImporterStrings.PROBLEM_ATTRIBUTE_DIFFERENT_LEVEL +"[class_name :"+className+", "+"attribute :"+ name+"]");
+                                    Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ATTRIBUTE_DIFFERENT_LEVEL);
+                                    conflict.putIn(ImporterStrings.CLASS_NAME, className);
+                                    conflict.putIn(ImporterStrings.ATTRIBUTE_NAME, name);
+                                    problems.add(conflict);
                                 }
                                 //check type
                                 if(!attribute.getType().equals(typeName)){
-                                    problems.add(ImporterStrings.PROBLEM_ATTRIBUTE_DIFFERENT_TYPE +"[class_name :"+className+", "+"attribute :"+ name+"]");
+                                    Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ATTRIBUTE_DIFFERENT_TYPE);
+                                    conflict.putIn(ImporterStrings.CLASS_NAME, className);
+                                    conflict.putIn(ImporterStrings.ATTRIBUTE_NAME, name);
+                                    problems.add(conflict);
                                 }
                                 //check multiplicity
                                 if(!attribute.getMultiplicity().toString().equals(multiplicity.toString())){
-                                    problems.add(ImporterStrings.PROBLEM_ATTRIBUTE_DIFFERENT_MULTIPLICITY +"[class_name :"+className+", "+"attribute :"+ name+"]");
+                                    Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ATTRIBUTE_DIFFERENT_MULTIPLICITY);
+                                    conflict.putIn(ImporterStrings.CLASS_NAME, className);
+                                    conflict.putIn(ImporterStrings.ATTRIBUTE_NAME, name);
+                                    problems.add(conflict);
                                 }
                                 break;
                             }
@@ -129,7 +130,10 @@ public class ProtocolHandler {
                         for(FmmlxSlot slot : slots){
                             if(slot.getName().equals(slotName)){
                                 if(!slot.getValue().equals(valueToBeParsed)){
-                                    problems.add(ImporterStrings.PROBLEM_SLOT_DIFFERENT_VALUE +"[class_name :"+className+", "+"slot :"+ slotName+"]");
+                                    Conflict conflict = new Conflict(ImporterStrings.PROBLEM_SLOT_DIFFERENT_VALUE);
+                                    conflict.putIn(ImporterStrings.CLASS_NAME, className);
+                                    conflict.putIn(ImporterStrings.SLOT_NAME, slotName);
+                                    problems.add(conflict);
                                 }
                             }
                             break;
@@ -140,13 +144,8 @@ public class ProtocolHandler {
                 break;
             }
             case "addAssociation" : {
-                String classSourcePath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE);
-                String[] classSourcePathArray = classSourcePath.split("::");
-                String sourceName = classSourcePathArray[classSourcePathArray.length-1];
-
-                String classTargetPath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET);
-                String[] classTargetPathArray = classTargetPath.split("::");
-                String targetName = classTargetPathArray[classTargetPathArray.length-1];
+                String sourceName = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE));
+                String targetName = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET));
 
                 String accessSourceFromTargetName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_ACCESS_SOURCE_FROM_TARGET);
                 String accessTargetFromSourceName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_ACCESS_TARGET_FROM_SOURCE);
@@ -154,28 +153,8 @@ public class ProtocolHandler {
                 String fwName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_FW_NAME);
                 String reverseName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_REVERSE_NAME);
 
-
-                Multiplicity multiplicityT2S; {
-                    String multiplicityString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_T2S_MULTIPLICITY);
-                    String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
-                    String[] multiplicityArray =  multiplicitySubString.split(",");
-                    int min = Integer.parseInt(multiplicityArray[0]);
-                    int max = Integer.parseInt(multiplicityArray[1]);
-                    boolean upperLimit = Boolean.parseBoolean(multiplicityArray[2]);
-                    boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
-                    multiplicityT2S = new Multiplicity(min, max, upperLimit, ordered, false);
-                }
-
-                Multiplicity multiplicityS2T; {
-                    String multiplicityString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_S2T_MULTIPLICITY);
-                    String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
-                    String[] multiplicityArray =  multiplicitySubString.split(",");
-                    int min = Integer.parseInt(multiplicityArray[0]);
-                    int max = Integer.parseInt(multiplicityArray[1]);
-                    boolean upperLimit = Boolean.parseBoolean(multiplicityArray[2]);
-                    boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
-                    multiplicityS2T = new Multiplicity(min, max, upperLimit, ordered, false);
-                }
+                Multiplicity multiplicityT2S = getMultiplicityFromXml(logElement.getAttribute(SerializerConstant.ATTRIBUTE_T2S_MULTIPLICITY));
+                Multiplicity multiplicityS2T = getMultiplicityFromXml(logElement.getAttribute(SerializerConstant.ATTRIBUTE_S2T_MULTIPLICITY));
 
                 int instLevelSource = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_INST_LEVEL_SOURCE));
                 int instLevelTarget = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_INST_LEVEL_TARGET));
@@ -191,59 +170,82 @@ public class ProtocolHandler {
                         if (ass.getName().equals(fwName)) {
                             if(ass.getReverseName()!=null && reverseName!=null){
                                 if (!ass.getReverseName().equals(reverseName)) {
-                                    problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_REVERSE_NAME + "[association_name :" + fwName + ", "
-                                            + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
+                                    Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_REVERSE_NAME);
+                                    conflictAssocIn(conflict, fwName, sourceName, targetName);
+                                    problems.add(conflict);
                                 }
                             } else if(ass.getReverseName() != null || ass.getReverseName() == null && reverseName != null){
                                 if(ass.getReverseName() != null){
                                     if(!ass.getReverseName().equals("-1")){
-                                        problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_REVERSE_NAME + "[association_name :" + fwName + ", "
-                                                + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
+                                        Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_REVERSE_NAME);
+                                        conflictAssocIn(conflict, fwName, sourceName, targetName);
+                                        problems.add(conflict);
                                     }
                                 } else {
                                     assert reverseName != null;
                                     if(!reverseName.equals("-1")){
-                                        problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_REVERSE_NAME + "[association_name :" + fwName + ", "
-                                                + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
+                                        Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_REVERSE_NAME);
+                                        conflictAssocIn(conflict, fwName, sourceName, targetName);
+                                        problems.add(conflict);
                                     }
                                 }
                             }
-                            if (!ass.getAccessNameStartToEnd().equals(accessSourceFromTargetName)) {
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_ACCESS_SOURCE_FROM_TARGET + "[association_name :" + fwName + ", "
-                                        + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
-                            } else if (!ass.getAccessNameEndToStart().equals(accessTargetFromSourceName)) {
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_ACCESS_TARGET_FROM_SOURCE + "[association_name :" + fwName + ", "
-                                        + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
-                            } else if (ass.getLevelSource()!=(instLevelSource)) {
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_INST_LEVEL_SOURCE + "[association_name :" + fwName + ", "
-                                        + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
-                            } else if (ass.getLevelTarget()!=(instLevelTarget)) {
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_INST_LEVEL_TARGET + "[association_name :" + fwName + ", "
-                                        + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
-                            } else if (!ass.getMultiplicityStartToEnd().toString().equals(multiplicityS2T.toString())){
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_MULTIPLICITY_S2E + "[association_name :" + fwName + ", "
-                                        + "source_class :" + sourceName + ", " + "target_class " + targetName+"]");
-                            } else if (!ass.getMultiplicityEndToStart().toString().equals(multiplicityT2S.toString())){
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_MULTIPLICITY_E2S + "[association_name :" + fwName + ", "
-                                        + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
-                            } else if (ass.isSourceVisible()!=sourceVisibleFromTarget) {
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_SOURCE_VISIBLE_FROM_TARGET + "[asso_name :" + fwName + ", "
-                                        + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
-                            } else if (ass.isTargetVisible()!=targetVisibleFromSource) {
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_TARGET_VISIBLE_FROM_SOURCE + "[association_name " + fwName + ", "
-                                        + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
-                            } else if (ass.isSymmetric()!=isSymmetric) {
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_SYMMETRIC + "[association_name :" + fwName + ", "
-                                        + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
-                            } else if (ass.isTransitive()!=isTransitive) {
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_TRANSITIVE + "[association_name :" + fwName + ", "
-                                        + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
+                            if (!ass.getAccessNameStartToEnd().equals(accessTargetFromSourceName)) {
+                                Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_ACCESS_SOURCE_FROM_TARGET);
+                                conflictAssocIn(conflict, fwName, sourceName, targetName);
+                                problems.add(conflict);
+                            }
+                            if (!ass.getAccessNameEndToStart().equals(accessSourceFromTargetName)) {
+                                Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_ACCESS_TARGET_FROM_SOURCE);
+                                conflictAssocIn(conflict, fwName, sourceName, targetName);
+                                problems.add(conflict);
+                            }
+                            if (ass.getLevelSource()!=(instLevelSource)) {
+                                Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_INST_LEVEL_SOURCE);
+                                conflictAssocIn(conflict, fwName, sourceName, targetName);
+                                problems.add(conflict);
+                            }
+                            if (ass.getLevelTarget()!=(instLevelTarget)) {
+                                Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_INST_LEVEL_TARGET);
+                                conflictAssocIn(conflict, fwName, sourceName, targetName);
+                                problems.add(conflict);
+                            }
+                            if (!ass.getMultiplicityStartToEnd().toString().equals(multiplicityS2T.toString())){
+                                Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_MULTIPLICITY_S2E);
+                                conflictAssocIn(conflict, fwName, sourceName, targetName);
+                                problems.add(conflict);
+                            }
+                            if (!ass.getMultiplicityEndToStart().toString().equals(multiplicityT2S.toString())){
+                                Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_MULTIPLICITY_E2S);
+                                conflictAssocIn(conflict, fwName, sourceName, targetName);
+                                problems.add(conflict);
+                            }
+                            if (ass.isSourceVisible()!=sourceVisibleFromTarget) {
+                                Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_SOURCE_VISIBLE_FROM_TARGET);
+                                conflictAssocIn(conflict, fwName, sourceName, targetName);
+                                problems.add(conflict);
+                            }
+                            if (ass.isTargetVisible()!=targetVisibleFromSource) {
+                                Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_TARGET_VISIBLE_FROM_SOURCE);
+                                conflictAssocIn(conflict, fwName, sourceName, targetName);
+                                problems.add(conflict);
+                            }
+                            if (ass.isSymmetric()!=isSymmetric) {
+                                Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_SYMMETRIC);
+                                conflictAssocIn(conflict, fwName, sourceName, targetName);
+                                problems.add(conflict);
+                            }
+                            if (ass.isTransitive()!=isTransitive) {
+                                Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_TRANSITIVE);
+                                conflictAssocIn(conflict, fwName, sourceName, targetName);
+                                problems.add(conflict);
                             }
                         }
                     } else if (ass.targetEnd.getNode().getName().equals(sourceName) && ass.sourceEnd.getNode().getName().equals(targetName)){
                         if(ass.getName().equals(fwName)){
-                            problems.add(ImporterStrings.PROBLEM_ASSOCIATION_REVERSE_SOURCE_AND_TARGET +"[association_name :"+fwName+", "
-                                    +"source_class :"+ sourceName+", "+"target_class :"+targetName+"]");
+                            Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_REVERSE_SOURCE_AND_TARGET);
+                            conflictAssocIn(conflict, fwName, sourceName, targetName);
+                            problems.add(conflict);
                         }
                     }
                 }
@@ -252,45 +254,39 @@ public class ProtocolHandler {
             }
             case "addLink" : {
                 String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
-
-                String classpath1 = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE);
-                String[] classPathArray1 = classpath1.split("::");
-                String className1 = classPathArray1[classPathArray1.length-1];
-
-                String classpath2 = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET);
-                String[] classPathArray2 = classpath2.split("::");
-                String className2 = classPathArray2[classPathArray2.length-1];
+                String className1 = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE));
+                String className2 = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET));
 
                 for(FmmlxLink link:links){
                     if(link.sourceEnd.getNode().getName().equals(className2) && (link.targetEnd.getNode().getName().equals(className1))){
                         if(link.getName().equals(name)){
-                            problems.add(ImporterStrings.PROBLEM_LINK_REVERSE_SOURCE_AND_TARGET +"[association_name :"+name+", "
-                                    +"source_class :"+ className1+", "+"target_class :"+className2+"]");
+                            Conflict conflict = new Conflict(ImporterStrings.PROBLEM_LINK_REVERSE_SOURCE_AND_TARGET);
+                            conflictAssocIn(conflict, name, className1, className2);
+                            problems.add(conflict);
                         }
                     }
                 }
                 break;
             }
             case "addDelegation" : {
-                String delegationFromPath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_DELEGATE_FROM);
-                String[] delegationFromPathArray = delegationFromPath.split("::");
-                String delegationFromName = delegationFromPathArray[delegationFromPathArray.length-1];
-
-                String delegationToPath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_DELEGATE_TO);
-                String[] delegationToPathArray = delegationToPath.split("::");
-                String delegationToName = delegationToPathArray[delegationToPathArray.length-1];
+                String delegationFromName = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_DELEGATE_FROM));
+                String delegationToName = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_DELEGATE_TO));
                 int delegateToLevel = Integer.parseInt(logElement.getAttribute("delegateToLevel"));
 
                 for(DelegationEdge delegationEdge:delegationEdges){
                     if(delegationEdge.sourceEnd.getNode().getName().equals(delegationFromName) && (delegationEdge.targetEnd.getNode().getName().equals(delegationToName))){
                         if(delegationEdge.level!=delegateToLevel){
-                            problems.add(ImporterStrings.PROBLEM_DELEGATION_DIFFERENT_DELEGATION_LEVEL +
-                                    "[source_class :" + delegationFromName + ", " + "target_class :" + delegateToLevel+"]");
+                            Conflict conflict = new Conflict(ImporterStrings.PROBLEM_LINK_REVERSE_SOURCE_AND_TARGET);
+                            conflict.putIn(ImporterStrings.SOURCE_CLASS, delegationFromName);
+                            conflict.putIn(ImporterStrings.TARGET_CLASS, delegationToName);
+                            problems.add(conflict);
                         }
                     }
                     if(delegationEdge.sourceEnd.getNode().getName().equals(delegationToName) && (delegationEdge.targetEnd.getNode().getName().equals(delegationFromName))){
-                        problems.add(ImporterStrings.PROBLEM_DELEGATION_REVERSE_SOURCE_AND_TARGET
-                                +"[source_class :"+ delegationFromName+", "+"target_class :"+delegationToName+"]");
+                        Conflict conflict = new Conflict(ImporterStrings.PROBLEM_LINK_REVERSE_SOURCE_AND_TARGET);
+                        conflict.putIn(ImporterStrings.SOURCE_CLASS, delegationFromName);
+                        conflict.putIn(ImporterStrings.TARGET_CLASS, delegationToName);
+                        problems.add(conflict);
                     }
                 }
                 break;
@@ -306,8 +302,10 @@ public class ProtocolHandler {
 
                 for(RoleFillerEdge roleFillerEdge:roleFillerEdges){
                     if(roleFillerEdge.sourceEnd.getNode().getName().equals(roleFiller) && (roleFillerEdge.targetEnd.getNode().getName().equals(role))){
-                        problems.add(ImporterStrings.PROBLEM_ROLE_FILLER_REVERSE_SOURCE_AND_TARGET
-                                +"[source_class :"+ role+", "+"target_class :"+roleFiller+"]");
+                        Conflict conflict = new Conflict(ImporterStrings.PROBLEM_LINK_REVERSE_SOURCE_AND_TARGET);
+                        conflict.putIn(ImporterStrings.SOURCE_CLASS, role);
+                        conflict.putIn(ImporterStrings.TARGET_CLASS, roleFiller);
+                        problems.add(conflict);
                     }
                 }
 
@@ -326,6 +324,27 @@ public class ProtocolHandler {
         }
     }
 
+    private Multiplicity getMultiplicityFromXml(String attribute) {
+        String multiplicitySubString = attribute.substring(4, attribute.length()-1);
+        String[] multiplicityArray =  multiplicitySubString.split(",");
+        int min = Integer.parseInt(multiplicityArray[0]);
+        int max = Integer.parseInt(multiplicityArray[1]);
+        boolean upperLimit = Boolean.parseBoolean(multiplicityArray[2]);
+        boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
+        return new Multiplicity(min, max, upperLimit, ordered, false);
+    }
+
+    private String getNameFromPath(String path) {
+        String[] classSourcePathArray = path.split("::");
+        return classSourcePathArray[classSourcePathArray.length-1];
+    }
+
+    private void conflictAssocIn(Conflict conflict, String fwName, String sourceName, String targetName) {
+        conflict.putIn(ImporterStrings.ASSOCIATION_NAME, fwName);
+        conflict.putIn(ImporterStrings.SOURCE_CLASS, sourceName);
+        conflict.putIn(ImporterStrings.TARGET_CLASS, targetName);
+    }
+
     private String parseBase64(String body) {
         byte[] decodedBytes = Base64.getDecoder().decode(body);
         return new String(decodedBytes);
@@ -341,7 +360,7 @@ public class ProtocolHandler {
     }
 
 
-    public List<String> getProblems() {
+    public List<Conflict> getProblems() {
         return problems;
     }
 
@@ -408,22 +427,11 @@ public class ProtocolHandler {
             }
             case "addAttribute" : {
                 String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
-                String classpath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
-                String[] classPathArray = classpath.split("::");
-                String className = classPathArray[classPathArray.length-1];
+                String className = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS));
                 int level = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));
-                String typePath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_TYPE);
-                String multiplicityString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_MULTIPLICITY);
-                String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
-                String[] multiplicityArray =  multiplicitySubString.split(",");
-                int upper = Integer.parseInt(multiplicityArray[0]);
-                int under = Integer.parseInt(multiplicityArray[1]);
-                boolean upperLimit = Boolean.parseBoolean(multiplicityArray[2]);
-                boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
-                Multiplicity multiplicity = new Multiplicity(upper, under, upperLimit, ordered, false);
+                Multiplicity multiplicity = getMultiplicityFromXml(logElement.getAttribute(SerializerConstant.ATTRIBUTE_MULTIPLICITY));
 
-                String[] typePathArray = typePath.split("::");
-                String typeName = typePathArray[typePathArray.length-1];
+                String typeName = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_TYPE));
                 comm.mergeAttribute(diagramID, className, name, level, typeName, multiplicity);
                 break;
             }
@@ -462,13 +470,8 @@ public class ProtocolHandler {
 //            }
             case "addAssociation" : {
                 String projectPath = diagram.getPackagePath();
-                String classSourcePath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE);
-                String[] classSourcePathArray = classSourcePath.split("::");
-                String classSourceName = projectPath+"::"+classSourcePathArray[classSourcePathArray.length-1];
-
-                String classTargetPath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET);
-                String[] classTargetPathArray = classTargetPath.split("::");
-                String classTargetName = projectPath+"::"+classTargetPathArray[classTargetPathArray.length-1];
+                String classSourceName = projectPath+"::"+getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE));
+                String classTargetName = projectPath+"::"+getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET));
 
                 String accessSourceFromTargetName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_ACCESS_SOURCE_FROM_TARGET);
                 String accessTargetFromSourceName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_ACCESS_TARGET_FROM_SOURCE);
@@ -477,28 +480,8 @@ public class ProtocolHandler {
                 String reverseName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_REVERSE_NAME);
 
 
-                Multiplicity multiplicityT2S; {
-                    String multiplicityString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_T2S_MULTIPLICITY);
-                    String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
-                    String[] multiplicityArray =  multiplicitySubString.split(",");
-                    int min = Integer.parseInt(multiplicityArray[0]);
-                    int max = Integer.parseInt(multiplicityArray[1]);
-                    boolean upperLimit = Boolean.parseBoolean(multiplicityArray[2]);
-                    boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
-                    multiplicityT2S = new Multiplicity(min, max, upperLimit, ordered, false);
-                }
-
-                Multiplicity multiplicityS2T; {
-                    String multiplicityString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_S2T_MULTIPLICITY);
-                    String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);
-                    String[] multiplicityArray =  multiplicitySubString.split(",");
-                    int min = Integer.parseInt(multiplicityArray[0]);
-                    int max = Integer.parseInt(multiplicityArray[1]);
-                    boolean upperLimit = Boolean.parseBoolean(multiplicityArray[2]);
-                    boolean ordered = Boolean.parseBoolean(multiplicityArray[3]);
-                    multiplicityS2T = new Multiplicity(min, max, upperLimit, ordered, false);
-                }
-
+                Multiplicity multiplicityT2S = getMultiplicityFromXml(logElement.getAttribute(SerializerConstant.ATTRIBUTE_T2S_MULTIPLICITY));
+                Multiplicity multiplicityS2T = getMultiplicityFromXml(logElement.getAttribute(SerializerConstant.ATTRIBUTE_S2T_MULTIPLICITY));
                 int instLevelSource = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_INST_LEVEL_SOURCE));
                 int instLevelTarget = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_INST_LEVEL_TARGET));
 
@@ -517,14 +500,8 @@ public class ProtocolHandler {
             }
             case "addLink" : {
                 String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
-
-                String classpath1 = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE);
-                String[] classPathArray1 = classpath1.split("::");
-                String className1 = classPathArray1[classPathArray1.length-1];
-
-                String classpath2 = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET);
-                String[] classPathArray2 = classpath2.split("::");
-                String className2 = classPathArray2[classPathArray2.length-1];
+                String className1 = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE));
+                String className2 = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET));
 
                 comm.mergeAssociationInstance(diagramID, className1, className2, name);
                 break;

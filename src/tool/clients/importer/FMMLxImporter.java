@@ -10,7 +10,7 @@ public class FMMLxImporter {
     private final XmlManager xmlManager;
     private final AbstractPackageViewer diagram;
     ProtocolHandler protocolHandler;
-    List<String> problems;
+    List<Conflict> problems;
 
     public FMMLxImporter(String sourcePath, AbstractPackageViewer diagram) {
         this.xmlManager = new XmlManager(sourcePath);
