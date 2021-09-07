@@ -51,7 +51,7 @@ public class ProtocolHandler {
                     if(object.getName().equals(name)){
                         //Check level
                         if(object.getLevel() != level){
-                            problems.add(ImporterStrings.PROBLEM_CLASS_DIFFERENT_LEVEL +object.getName());
+                            problems.add(ImporterStrings.PROBLEM_CLASS_DIFFERENT_LEVEL +"[class_name :"+object.getName()+"]");
                         }
                     }
                 }
@@ -89,15 +89,15 @@ public class ProtocolHandler {
                             if(attribute.getName().equals(name)){
                                 //check level
                                 if(attribute.getLevel()!=level){
-                                    problems.add(ImporterStrings.PROBLEM_ATTRIBUTE_DIFFERENT_LEVEL +"class "+className+", "+"attribute "+ name);
+                                    problems.add(ImporterStrings.PROBLEM_ATTRIBUTE_DIFFERENT_LEVEL +"[class_name :"+className+", "+"attribute :"+ name+"]");
                                 }
                                 //check type
                                 if(!attribute.getType().equals(typeName)){
-                                    problems.add(ImporterStrings.PROBLEM_ATTRIBUTE_DIFFERENT_TYPE +"class "+className+", "+"attribute "+ name);
+                                    problems.add(ImporterStrings.PROBLEM_ATTRIBUTE_DIFFERENT_TYPE +"[class_name :"+className+", "+"attribute :"+ name+"]");
                                 }
                                 //check multiplicity
                                 if(!attribute.getMultiplicity().toString().equals(multiplicity.toString())){
-                                    problems.add(ImporterStrings.PROBLEM_ATTRIBUTE_DIFFERENT_MULTIPLICITY +"class "+className+", "+"attribute "+ name);
+                                    problems.add(ImporterStrings.PROBLEM_ATTRIBUTE_DIFFERENT_MULTIPLICITY +"[class_name :"+className+", "+"attribute :"+ name+"]");
                                 }
                                 break;
                             }
@@ -129,7 +129,7 @@ public class ProtocolHandler {
                         for(FmmlxSlot slot : slots){
                             if(slot.getName().equals(slotName)){
                                 if(!slot.getValue().equals(valueToBeParsed)){
-                                    problems.add(ImporterStrings.PROBLEM_SLOT_DIFFERENT_VALUE +"class "+className+", "+"slot "+ slotName);
+                                    problems.add(ImporterStrings.PROBLEM_SLOT_DIFFERENT_VALUE +"[class_name :"+className+", "+"slot :"+ slotName+"]");
                                 }
                             }
                             break;
@@ -189,45 +189,61 @@ public class ProtocolHandler {
                 for(FmmlxAssociation ass : associations){
                     if(ass.targetEnd.getNode().getName().equals(targetName) && ass.sourceEnd.getNode().getName().equals(sourceName)) {
                         if (ass.getName().equals(fwName)) {
-                            if (!ass.getReverseName().equals(reverseName)) {
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_REVERSE_NAME + "ass_name " + fwName + ", "
-                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
-                            } else if (!ass.getAccessNameStartToEnd().equals(accessSourceFromTargetName)) {
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_ACCESS_SOURCE_FROM_TARGET + "ass_name " + fwName + ", "
-                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                            if(ass.getReverseName()!=null && reverseName!=null){
+                                if (!ass.getReverseName().equals(reverseName)) {
+                                    problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_REVERSE_NAME + "[association_name :" + fwName + ", "
+                                            + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
+                                }
+                            } else if(ass.getReverseName() != null || ass.getReverseName() == null && reverseName != null){
+                                if(ass.getReverseName() != null){
+                                    if(!ass.getReverseName().equals("-1")){
+                                        problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_REVERSE_NAME + "[association_name :" + fwName + ", "
+                                                + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
+                                    }
+                                } else {
+                                    assert reverseName != null;
+                                    if(!reverseName.equals("-1")){
+                                        problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_REVERSE_NAME + "[association_name :" + fwName + ", "
+                                                + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
+                                    }
+                                }
+                            }
+                            if (!ass.getAccessNameStartToEnd().equals(accessSourceFromTargetName)) {
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_ACCESS_SOURCE_FROM_TARGET + "[association_name :" + fwName + ", "
+                                        + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
                             } else if (!ass.getAccessNameEndToStart().equals(accessTargetFromSourceName)) {
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_ACCESS_TARGET_FROM_SOURCE + "ass_name " + fwName + ", "
-                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_ACCESS_TARGET_FROM_SOURCE + "[association_name :" + fwName + ", "
+                                        + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
                             } else if (ass.getLevelSource()!=(instLevelSource)) {
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_INST_LEVEL_SOURCE + "ass_name " + fwName + ", "
-                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_INST_LEVEL_SOURCE + "[association_name :" + fwName + ", "
+                                        + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
                             } else if (ass.getLevelTarget()!=(instLevelTarget)) {
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_INST_LEVEL_TARGET + "ass_name " + fwName + ", "
-                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_INST_LEVEL_TARGET + "[association_name :" + fwName + ", "
+                                        + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
                             } else if (!ass.getMultiplicityStartToEnd().toString().equals(multiplicityS2T.toString())){
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_MULTIPLICITY_S2E + "ass_name " + fwName + ", "
-                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_MULTIPLICITY_S2E + "[association_name :" + fwName + ", "
+                                        + "source_class :" + sourceName + ", " + "target_class " + targetName+"]");
                             } else if (!ass.getMultiplicityEndToStart().toString().equals(multiplicityT2S.toString())){
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_MULTIPLICITY_E2S + "ass_name " + fwName + ", "
-                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_MULTIPLICITY_E2S + "[association_name :" + fwName + ", "
+                                        + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
                             } else if (ass.isSourceVisible()!=sourceVisibleFromTarget) {
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_SOURCE_VISIBLE_FROM_TARGET + "ass_name " + fwName + ", "
-                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_SOURCE_VISIBLE_FROM_TARGET + "[asso_name :" + fwName + ", "
+                                        + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
                             } else if (ass.isTargetVisible()!=targetVisibleFromSource) {
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_TARGET_VISIBLE_FROM_SOURCE + "ass_name " + fwName + ", "
-                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_TARGET_VISIBLE_FROM_SOURCE + "[association_name " + fwName + ", "
+                                        + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
                             } else if (ass.isSymmetric()!=isSymmetric) {
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_SYMMETRIC + "ass_name " + fwName + ", "
-                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_SYMMETRIC + "[association_name :" + fwName + ", "
+                                        + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
                             } else if (ass.isTransitive()!=isTransitive) {
-                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_TRANSITIVE + "ass_name " + fwName + ", "
-                                        + "source_class " + sourceName + ", " + "target_class " + targetName);
+                                problems.add(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_TRANSITIVE + "[association_name :" + fwName + ", "
+                                        + "source_class :" + sourceName + ", " + "target_class :" + targetName+"]");
                             }
                         }
                     } else if (ass.targetEnd.getNode().getName().equals(sourceName) && ass.sourceEnd.getNode().getName().equals(targetName)){
                         if(ass.getName().equals(fwName)){
-                            problems.add(ImporterStrings.PROBLEM_ASSOCIATION_REVERSE_SOURCE_AND_TARGET +"ass_name "+fwName+", "
-                                    +"source_class "+ sourceName+", "+"target_class "+targetName);
+                            problems.add(ImporterStrings.PROBLEM_ASSOCIATION_REVERSE_SOURCE_AND_TARGET +"[association_name :"+fwName+", "
+                                    +"source_class :"+ sourceName+", "+"target_class :"+targetName+"]");
                         }
                     }
                 }
@@ -248,12 +264,11 @@ public class ProtocolHandler {
                 for(FmmlxLink link:links){
                     if(link.sourceEnd.getNode().getName().equals(className2) && (link.targetEnd.getNode().getName().equals(className1))){
                         if(link.getName().equals(name)){
-                            problems.add(ImporterStrings.PROBLEM_LINK_REVERSE_SOURCE_AND_TARGET +"ass_name "+name+", "
-                                    +"source_class "+ className1+", "+"target_class "+className2);
+                            problems.add(ImporterStrings.PROBLEM_LINK_REVERSE_SOURCE_AND_TARGET +"[association_name :"+name+", "
+                                    +"source_class :"+ className1+", "+"target_class :"+className2+"]");
                         }
                     }
                 }
-
                 break;
             }
             case "addDelegation" : {
@@ -270,12 +285,12 @@ public class ProtocolHandler {
                     if(delegationEdge.sourceEnd.getNode().getName().equals(delegationFromName) && (delegationEdge.targetEnd.getNode().getName().equals(delegationToName))){
                         if(delegationEdge.level!=delegateToLevel){
                             problems.add(ImporterStrings.PROBLEM_DELEGATION_DIFFERENT_DELEGATION_LEVEL +
-                                    "source_class " + delegationFromName + ", " + "target_class " + delegateToLevel);
+                                    "[source_class :" + delegationFromName + ", " + "target_class :" + delegateToLevel+"]");
                         }
                     }
                     if(delegationEdge.sourceEnd.getNode().getName().equals(delegationToName) && (delegationEdge.targetEnd.getNode().getName().equals(delegationFromName))){
                         problems.add(ImporterStrings.PROBLEM_DELEGATION_REVERSE_SOURCE_AND_TARGET
-                                +"source_class "+ delegationFromName+", "+"target_class "+delegationToName);
+                                +"[source_class :"+ delegationFromName+", "+"target_class :"+delegationToName+"]");
                     }
                 }
                 break;
@@ -292,7 +307,7 @@ public class ProtocolHandler {
                 for(RoleFillerEdge roleFillerEdge:roleFillerEdges){
                     if(roleFillerEdge.sourceEnd.getNode().getName().equals(roleFiller) && (roleFillerEdge.targetEnd.getNode().getName().equals(role))){
                         problems.add(ImporterStrings.PROBLEM_ROLE_FILLER_REVERSE_SOURCE_AND_TARGET
-                                +"source_class "+ role+", "+"target_class "+roleFiller);
+                                +"[source_class :"+ role+", "+"target_class :"+roleFiller+"]");
                     }
                 }
 
@@ -447,7 +462,7 @@ public class ProtocolHandler {
 //            }
             case "addAssociation" : {
                 String projectPath = diagram.getPackagePath();
-                String classSourcePath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE);//classPathArray1[classPathArray1.length-1];
+                String classSourcePath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE);
                 String[] classSourcePathArray = classSourcePath.split("::");
                 String classSourceName = projectPath+"::"+classSourcePathArray[classSourcePathArray.length-1];
 
@@ -498,6 +513,20 @@ public class ProtocolHandler {
                         fwName, reverseName, multiplicityT2S, multiplicityS2T,
                         instLevelSource, instLevelTarget, sourceVisibleFromTarget,
                         targetVisibleFromSource, isSymmetric, isTransitive);
+                break;
+            }
+            case "addLink" : {
+                String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
+
+                String classpath1 = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE);
+                String[] classPathArray1 = classpath1.split("::");
+                String className1 = classPathArray1[classPathArray1.length-1];
+
+                String classpath2 = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET);
+                String[] classPathArray2 = classpath2.split("::");
+                String className2 = classPathArray2[classPathArray2.length-1];
+
+                comm.mergeAssociationInstance(diagramID, className1, className2, name);
                 break;
             }
             default:

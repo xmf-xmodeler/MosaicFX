@@ -2009,5 +2009,14 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("mergeAssociation", message);
 	}
 
+	public void mergeAssociationInstance(int diagramID, String className1, String className2, String name) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(className1),
+				new Value(className2),
+				new Value(name)};
+		sendMessage("mergeAssociationInstance", message);
+	}
+
 
 }

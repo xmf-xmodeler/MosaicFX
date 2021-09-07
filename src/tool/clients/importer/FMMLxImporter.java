@@ -10,6 +10,7 @@ public class FMMLxImporter {
     private final XmlManager xmlManager;
     private final AbstractPackageViewer diagram;
     ProtocolHandler protocolHandler;
+    List<String> problems;
 
     public FMMLxImporter(String sourcePath, AbstractPackageViewer diagram) {
         this.xmlManager = new XmlManager(sourcePath);
@@ -20,7 +21,6 @@ public class FMMLxImporter {
     public void handleLogs() {
         Node logsNode = xmlManager.getLogs();
 
-        List<String> problems;
         protocolHandler.readLogs(logsNode);
         problems = protocolHandler.getProblems();
         if(problems.size()==0){
