@@ -8,6 +8,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Affine;
+import javafx.scene.transform.Translate;
 
 import org.w3c.dom.Element;
 import tool.clients.exporter.svg.SvgConstant;
@@ -41,6 +42,16 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 		this.isIssue = b;
 		this.issueNumber = issueNumber;
 	}
+	
+	private Affine getBoxTransform(Affine canvasTransform) {
+		double hAlign = 0;
+		if (alignment != Pos.BASELINE_LEFT) {
+			hAlign = (alignment == Pos.BASELINE_CENTER ? 0.5 : 1) * textWidth;
+		}
+		Affine total = getTotalTransform(canvasTransform);
+		total.append(new Translate( - hAlign - BOX_GAP,  - BOX_GAP - textHeight));
+		return total;
+	}
 
 	@Override
 	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram diagram, boolean objectIsSelected) {
@@ -64,6 +75,12 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 			g.setFill(selected ? Color.DARKGREY : bgColor);
 			g.fillRect(0, 0, textWidth + 2 * BOX_GAP, textHeight + 2 * BOX_GAP);
 		}
+		
+			String color = "00000" +Integer.toHexString(getText().hashCode());
+			color = color.substring(color.length()-6);
+			g.setFill(Color.web("#"+color));
+			g.setTransform(getBoxTransform(diagram.getCanvasTransform()));
+			g.fillRect(0, 0, textWidth + 2 * BOX_GAP, textHeight + 2 * BOX_GAP);
 		
 		Affine textTransform = new Affine(currentTransform); // copy
 		textTransform.append(new Affine(1, 0, getX() - hAlign, 0, 1, getY() - Y_BASELINE_DIFF));
@@ -100,15 +117,26 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, Affine currentTransform) {
-		currentTransform = new Affine(currentTransform); // copy
-		currentTransform.append(myTransform);
-		if (alignment == Pos.BASELINE_LEFT) {
-			return isHitBaseLineLeft(mouseX, mouseY, g, currentTransform);
-		} else if (alignment == Pos.BASELINE_CENTER) {
-			return isHitBaseLineCenter(mouseX, mouseY, g, currentTransform);
-		}
-		return false;
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram diagram) {
+//		currentTransform = new Affine(currentTransform); // copy
+//		currentTransform.append(myTransform);
+//		if (alignment == Pos.BASELINE_LEFT) {
+//			return isHitBaseLineLeft(mouseX, mouseY, g, currentTransform);
+//		} else if (alignment == Pos.BASELINE_CENTER) {
+//			return isHitBaseLineCenter(mouseX, mouseY, g, currentTransform);
+//		}
+//		return false;
+		boolean hit = false;
+		g.setTransform(getBoxTransform(diagram.getCanvasTransform()));
+		g.beginPath();
+		g.moveTo(0, 0); 
+		g.lineTo(0, textHeight + 2 * BOX_GAP); 
+		g.lineTo(textWidth + 2 * BOX_GAP, textHeight + 2 * BOX_GAP); 
+		g.lineTo(textWidth + 2 * BOX_GAP, 0); 
+		g.lineTo(0, 0);
+		hit = g.isPointInPath(mouseX, mouseY);
+		g.closePath();
+		return hit;
 	}
 
 	private boolean isHitBaseLineCenter(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform) {

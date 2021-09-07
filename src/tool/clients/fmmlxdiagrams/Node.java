@@ -26,7 +26,7 @@ public abstract class Node implements CanvasElement{
 	private FmmlxObjectPort port;
 	
 	transient boolean requiresReLayout;
-	protected Vector<NodeElement> nodeElements = new Vector<>();
+	Vector<NodeElement> nodeElements = new Vector<>();
 	
 	
 	public void triggerLayout() {
@@ -69,9 +69,9 @@ public abstract class Node implements CanvasElement{
 		if(requiresReLayout) layout(diagram);
 		boolean selected = diagram.isSelected(this);
 		
-		Affine myTransform = new Affine(1, 0, x, 0, 1, y);
-		currentTransform = new Affine(currentTransform); // copy
-		currentTransform.append(myTransform);
+//		Affine myTransform = new Affine(1, 0, x, 0, 1, y);
+//		currentTransform = new Affine(currentTransform); // copy
+//		currentTransform.append(myTransform);
 
 //		Affine newTransform = new Affine();
 //		transform.appendTranslation(x + xOffset, y + yOffset);
@@ -101,13 +101,13 @@ public abstract class Node implements CanvasElement{
 	}
 	
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram diagram) {
 		if(hidden) return false;
-		Affine myTransform = new Affine(1, 0, x, 0, 1, y);
-		currentTransform = new Affine(currentTransform); // copy
-		currentTransform.append(myTransform);
+//		Affine myTransform = new Affine(1, 0, x, 0, 1, y);
+//		currentTransform = new Affine(currentTransform); // copy
+//		currentTransform.append(myTransform);
 		for(NodeElement n : nodeElements) {
-			if(n.isHit(mouseX, mouseY, g, currentTransform)) return true;
+			if(n.isHit(mouseX, mouseY, g, diagram)) return true;
 		}
 		return false;
 	}

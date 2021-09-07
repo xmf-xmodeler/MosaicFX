@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams.graphics;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.transform.Affine;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 
 public abstract class NodeBaseElement implements NodeElement {
@@ -21,6 +22,7 @@ public abstract class NodeBaseElement implements NodeElement {
 	protected FmmlxProperty actionObject;
 	protected Action action;
 	protected boolean selected = false;
+	private NodeElement owner;
 	
 	@Override public double getX() {return myTransform.getTx();}
 	@Override public double getY() {return myTransform.getTy();}	
@@ -28,14 +30,25 @@ public abstract class NodeBaseElement implements NodeElement {
 	public void setDeselected() { selected = false;}
 	public FmmlxProperty getActionObject() { return actionObject;}
 	
-	@Override public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform) {
+	@Override public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram diagram) {
 //		currentTransform = new Affine(currentTransform); // copy
 //		currentTransform.append(myTransform);
-		if(isHit(mouse.getX(), mouse.getY(), g, currentTransform))
+		if(isHit(mouse.getX(), mouse.getY(), g, diagram))
 			return this; return null;
 	}
 	
 	public void performDoubleClickAction() { action.perform();}
 	
+	public final Affine getMyTransform() {	return myTransform; }
+	
+	public Affine getTotalTransform(Affine canvasTransform) {
+		Affine a = new Affine(owner == null?canvasTransform:owner.getTotalTransform(canvasTransform));
+		a.append(myTransform);
+		return a;
+	}
+
+	public void setOwner(NodeElement owner) {
+		this.owner = owner;
+	}
 
 }

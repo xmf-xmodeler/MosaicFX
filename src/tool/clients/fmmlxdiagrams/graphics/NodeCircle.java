@@ -10,6 +10,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.xmlManipulator.XmlHandler;
 
+@Deprecated
 public class NodeCircle extends NodeBaseElement{
 	final double diameter;
 	final Paint bgColor;
@@ -37,7 +38,7 @@ public class NodeCircle extends NodeBaseElement{
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram diagram) {
 		return  (getX() - mouseX + diameter/2) * 
 				(getX() - mouseX + diameter/2) + 
 				(getY() - mouseY + diameter/2) * 

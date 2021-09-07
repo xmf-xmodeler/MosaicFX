@@ -27,8 +27,9 @@ public class NodeBox implements NodeElement {
 	Paint bgColor;
 	Paint fgColor;
 	LineWidthGetter lineWidth;
-	public Vector<NodeElement> nodeElements = new Vector<>();
+	private Vector<NodeElement> nodeElements = new Vector<>();
 	private PropertyType propertyType;
+	private NodeElement owner;
 
 	public NodeBox(double x, double y, double width, double height, Paint bgColor, Paint fgColor, LineWidthGetter lineWidth, PropertyType propertyType) {
 		super();
@@ -67,12 +68,13 @@ public class NodeBox implements NodeElement {
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, Affine currentTransform) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram diagram) {
 		boolean hit = false;
-		Affine myTransform = new Affine(1, 0, x, 0, 1, y);
-		currentTransform = new Affine(currentTransform); // copy
-		currentTransform.append(myTransform);
-		g.setTransform(currentTransform);
+//		Affine myTransform = new Affine(1, 0, x, 0, 1, y);
+//		currentTransform = new Affine(currentTransform); // copy
+//		currentTransform.append(myTransform);
+//		g.setTransform(currentTransform);
+		g.setTransform(getTotalTransform(diagram.getCanvasTransform()));
 		g.beginPath();
 		g.moveTo(0, 0); g.lineTo(0, height); g.lineTo(width, height); g.lineTo(width, 0); g.lineTo(0, 0);
 		hit = g.isPointInPath(mouseX, mouseY);
@@ -89,19 +91,19 @@ public class NodeBox implements NodeElement {
 	@Override public double getX() {return x;}
 	@Override public double getY() {return y;}
 	
-	@Override public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform) {
-		if(isHit(mouse.getX(), mouse.getY(), g, currentTransform)) {
+	@Override public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram diagram) {
+//		if(isHit(mouse.getX(), mouse.getY(), g, currentTransform, diagram)) {
 			Affine myTransform = new Affine(1, 0, x, 0, 1, y);
 			currentTransform = new Affine(currentTransform); // copy
 			currentTransform.append(myTransform);
 			NodeBaseElement hitLabel = null;
 			for(NodeElement e : nodeElements) if(hitLabel == null) {
-				 hitLabel = e.getHitLabel(mouse, g, currentTransform);
+				 hitLabel = e.getHitLabel(mouse, g, currentTransform, diagram);
 			}
 			return hitLabel;
-		} else {
-			return null;
-		} 
+//		} else {
+//			return null;
+//		} 
 	}
 
 	@Override
@@ -123,5 +125,22 @@ public class NodeBox implements NodeElement {
 			e.paintToSvg(diagram, xmlHandler, group, x+xOffset, y+yOffset, objectIsSelected);
 		}
 
+	}
+
+	public void addNodeElement(NodeElement nodeElement) {
+		nodeElements.add(nodeElement);
+		nodeElement.setOwner(this);		
+	}
+	
+	public final Affine getMyTransform() {	return new Affine(1, 0, x, 0, 1, y); }
+	
+	public Affine getTotalTransform(Affine canvasTransform) {
+		Affine a = new Affine(owner == null?canvasTransform:owner.getTotalTransform(canvasTransform));
+		a.append(new Affine(1, 0, x, 0, 1, y));
+		return a;
+	}
+
+	public void setOwner(NodeElement owner) {
+		this.owner = owner;
 	}
 }

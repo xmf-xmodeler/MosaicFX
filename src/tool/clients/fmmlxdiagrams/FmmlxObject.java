@@ -13,6 +13,7 @@ import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
+import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteTool;
@@ -477,7 +478,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform) {
 		NodeBaseElement hitLabel = null;
 		for(NodeElement e : nodeElements) if(hitLabel == null) {
-			 hitLabel =  e.getHitLabel(mouse, g, currentTransform);//new Point2D(relativePoint.getX() - e.getX(), relativePoint.getY() - e.getY()));
+			 hitLabel =  e.getHitLabel(mouse, g, currentTransform, (FmmlxDiagram) diagram);//new Point2D(relativePoint.getX() - e.getX(), relativePoint.getY() - e.getY()));
 		}
 		return hitLabel;
 	}
@@ -526,5 +527,17 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		} else {
 			new DefaultFmmlxObjectDisplay(diagram, this).layout();
 		}
+	}
+
+	public void dragTo(Affine dragAffine) {
+		NodeGroup ng = (NodeGroup) nodeElements.firstElement(); // HACK
+		ng.dragTo(dragAffine);
+	}
+
+	public void drop() {
+		NodeGroup ng = (NodeGroup) nodeElements.firstElement(); // HACK
+		ng.drop();
+		this.x = ng.getMyTransform().getTx();
+		this.y = ng.getMyTransform().getTy();
 	}
 }

@@ -422,7 +422,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	}
 
 	@Override
-	public boolean isHit(double x, double y, GraphicsContext g,  Affine currentTransform) {
+	public boolean isHit(double x, double y, GraphicsContext g,  Affine currentTransform, FmmlxDiagram diagram) {
 		if(!isVisible()) return false;
 		return null != isHit(new Point2D(x, y), 2.5);
 	}

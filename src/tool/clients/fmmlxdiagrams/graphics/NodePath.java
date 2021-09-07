@@ -47,7 +47,7 @@ public class NodePath extends NodeBaseElement{
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram diagram) {
 		if (g == null || lastTransform == null) return false;
 		Affine transform = g.getTransform();
 		Affine newtransform = transform.clone();

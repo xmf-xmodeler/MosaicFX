@@ -15,7 +15,7 @@ public interface CanvasElement {
 
 	void moveTo(double d, double e, FmmlxDiagram diagram);
 	
-	boolean isHit(double x, double y, GraphicsContext g,  Affine currentTransform);
+	boolean isHit(double x, double y, GraphicsContext g,  Affine currentTransform, FmmlxDiagram diagram);
 
 	void highlightElementAt(Point2D p);
 	void unHighlight();

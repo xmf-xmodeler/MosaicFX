@@ -91,14 +91,14 @@ public class ExperimentalFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		a.prependScale(size, size);
 
 		NodeGroup g = new NodeGroup(a);
-		g.addElement(p1, false, false);
-		g.addElement(p2, false, false);
-		g.addElement(p3, false, false);
-		g.addElement(p4a, false, true);
-		g.addElement(p4b, true, false);
-		g.addElement(p5, false, false);
-		
-		object.nodeElements.addElement(g);
+//		g.addElement(p1, false, false);
+//		g.addElement(p2, false, false);
+//		g.addElement(p3, false, false);
+//		g.addElement(p4a, false, true);
+//		g.addElement(p4b, true, false);
+//		g.addElement(p5, false, false);
+//		
+//		object.nodeElements.addElement(g);
 		
 		
 		

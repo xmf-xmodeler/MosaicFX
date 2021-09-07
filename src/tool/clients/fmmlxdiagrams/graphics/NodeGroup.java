@@ -13,16 +13,25 @@ import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeGroup implements NodeElement {
 	
-	private Vector<NodeElementData> elements = new Vector<>();
-	private Affine selfTransform;
+	private Vector<NodeElement> nodeElements = new Vector<>();
+	private Affine myTransform;
+	private NodeElement owner;
+	private transient Affine dragAffine;
 	
-	public NodeGroup(Affine selfTransform) {
-		this.selfTransform = selfTransform;
+	public void addNodeElement(NodeElement nodeElement) {
+		nodeElements.add(nodeElement);
+		nodeElement.setOwner(this);
+		dragAffine = new Affine();
 	}
 	
-	public void addElement(NodeElement element, boolean showSelectedOnly, boolean showUnselectedOnly) {
-		elements.add(new NodeElementData(element, showSelectedOnly, showUnselectedOnly));
+	public NodeGroup(Affine myTransform) {
+		this.myTransform = myTransform;
 	}
+	
+//	public void addElement(NodeElement element, boolean showSelectedOnly, boolean showUnselectedOnly) {
+//		elements.add(new NodeElementData(element, showSelectedOnly, showUnselectedOnly));
+//		element.setOwner(this);
+//	}
 	
 	private class NodeElementData  {
 		NodeElement element;
@@ -38,38 +47,55 @@ public class NodeGroup implements NodeElement {
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, Affine transform, FmmlxDiagram diagram, boolean objectIsSelected) {
-		Affine newTransform = transform.clone(); newTransform.append(selfTransform);
-		for(NodeElementData ned : elements)  {
-			if(!((ned.showUnselectedOnly && objectIsSelected) || (ned.showSelectedOnly && !objectIsSelected)))
-			ned.element.paintOn(g, newTransform, diagram, objectIsSelected);
+	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram diagram, boolean objectIsSelected) {
+//		Affine newTransform = transform.clone(); newTransform.append(myTransform);
+//		for(NodeElementData ned : elements)  {
+//			if(!((ned.showUnselectedOnly && objectIsSelected) || (ned.showSelectedOnly && !objectIsSelected)))
+//			ned.element.paintOn(g, newTransform, diagram, objectIsSelected);
+//		}
+		
+//		Affine myTransform = new Affine(1, 0, x, 0, 1, y);
+		currentTransform = new Affine(currentTransform); // copy
+		currentTransform.append(myTransform);
+		currentTransform.append(dragAffine);
+		g.setTransform(currentTransform);
+		for (NodeElement e : nodeElements) {
+			e.paintOn(g, currentTransform, diagram, objectIsSelected);
 		}
-
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform) {
-		Point2D p = new Point2D(mouseX, mouseY);
-		currentTransform = new Affine(currentTransform); // copy
-		currentTransform.append(selfTransform);
-//		try {
-//			p = selfTransform.createInverse().transform(p);
-			for (NodeElementData ned : elements) {
-				if (ned.element.isHit(mouseX, mouseY, g, currentTransform))
-					return true;
-			}
-//		} catch (NonInvertibleTransformException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram diagram) {
+//		Point2D p = new Point2D(mouseX, mouseY);
+//		currentTransform = new Affine(currentTransform); // copy
+//		currentTransform.append(myTransform);
+////		try {
+////			p = selfTransform.createInverse().transform(p);
+//			for (NodeElementData ned : elements) {
+//				if (ned.element.isHit(mouseX, mouseY, g, currentTransform))
+//					return true;
+//			}
+////		} catch (NonInvertibleTransformException e) {
+////			// TODO Auto-generated catch block
+////			e.printStackTrace();
+////		}
+
+//		currentTransform = new Affine(currentTransform); // copy
+//		currentTransform.append(myTransform);
+		for(NodeElement n : nodeElements) {
+			if(n.isHit(mouseX, mouseY, g, diagram)) return true;
+		}
 
 		return false;
 	}
 
 	@Override
-	public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform) {
-		// TODO Auto-generated method stub
-		return null;
+	public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram diagram) {
+		NodeBaseElement hitLabel = null;
+		for(NodeElement e : nodeElements) if(hitLabel == null) {
+			 hitLabel =  e.getHitLabel(mouse, g, currentTransform, diagram);//new Point2D(relativePoint.getX() - e.getX(), relativePoint.getY() - e.getY()));
+		}
+		return hitLabel;
 	}
 
 	@Override
@@ -78,9 +104,30 @@ public class NodeGroup implements NodeElement {
 		// TODO Auto-generated method stub
 	}
 	
-	@Override public double getX() {return selfTransform.getTx();}
-	@Override public double getY() {return selfTransform.getTy();}
+	@Override public double getX() {return myTransform.getTx();}
+	@Override public double getY() {return myTransform.getTy();}
 
+	public final Affine getMyTransform() {	return myTransform; }
+	
+	public Affine getTotalTransform(Affine canvasTransform) {
+		Affine a = new Affine(owner == null?canvasTransform:owner.getTotalTransform(canvasTransform));
+		a.append(myTransform);
+		a.append(dragAffine);
+		return a;
+	}
 
+	public void setOwner(NodeElement owner) {
+		this.owner = owner;
+	}
+
+	public void dragTo(Affine dragAffine) {
+		this.dragAffine = dragAffine;		
+	}
+
+	public void drop() {
+		myTransform.append(dragAffine);
+		dragAffine = new Affine();
+		
+	}
 
 }

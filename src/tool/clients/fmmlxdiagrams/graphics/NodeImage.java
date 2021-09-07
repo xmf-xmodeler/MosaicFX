@@ -33,7 +33,7 @@ public class NodeImage extends NodeBaseElement implements NodeElement {
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram diagram) {
 		// TODO Auto-generated method stub
 		return false;
 	}

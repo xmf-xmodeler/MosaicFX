@@ -186,7 +186,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram diagram) {
 		return
 			owner.isVisible() &&
 			mouseX > getReferenceX() + relativeX &&
