@@ -44,44 +44,27 @@ public class NodeBox implements NodeElement {
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram diagram, boolean objectIsSelected) {
-		Affine myTransform = new Affine(1, 0, x, 0, 1, y);
-		currentTransform = new Affine(currentTransform); // copy
-		currentTransform.append(myTransform);
-		g.setTransform(currentTransform);
-		
-		try {
-			g.setFill(bgColor);
-			g.fillRect(0,0, width, height);
-//			g.fillRect(x + transform.getTx(), y + transform.getTy(), width, height);
-			g.setStroke(/*objectIsSelected&&System.currentTimeMillis()%2400<500?new Color(1.,.8,0.,1.):*/fgColor);
-			g.setLineWidth(lineWidth.getWidth(objectIsSelected));
-			g.strokeRect(0,0, width, height);
-//			g.strokeRect(x + transform.getTx(), y + transform.getTy(), width, height);
-//			Affine newTransform = transform.clone(); newTransform.appendTranslation(x, y);
-			for (NodeElement e : nodeElements) {
-				e.paintOn(g, currentTransform, diagram, objectIsSelected);
-			}
-		} catch (Exception e){
-			e.printStackTrace();
+	public void paintOn(GraphicsContext g, FmmlxDiagram diagram, boolean objectIsSelected) {
+		g.setTransform(getTotalTransform(diagram.getCanvasTransform()));
+		g.setFill(bgColor);
+		g.fillRect(0,0, width, height);
+		g.setStroke(fgColor);
+		g.setLineWidth(lineWidth.getWidth(objectIsSelected));
+		g.strokeRect(0,0, width, height);
+		for (NodeElement e : new Vector<>(nodeElements)) {
+			e.paintOn(g, diagram, objectIsSelected);
 		}
 	}
 
 	@Override
 	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram diagram) {
 		boolean hit = false;
-//		Affine myTransform = new Affine(1, 0, x, 0, 1, y);
-//		currentTransform = new Affine(currentTransform); // copy
-//		currentTransform.append(myTransform);
-//		g.setTransform(currentTransform);
 		g.setTransform(getTotalTransform(diagram.getCanvasTransform()));
 		g.beginPath();
 		g.moveTo(0, 0); g.lineTo(0, height); g.lineTo(width, height); g.lineTo(width, 0); g.lineTo(0, 0);
 		hit = g.isPointInPath(mouseX, mouseY);
 		g.closePath();
 		return hit;
-//		Rectangle rec = new Rectangle(x, y, width, height);
-//		return rec.contains(mouseX, mouseY);
 	}
 
 	public PropertyType getElementType() {

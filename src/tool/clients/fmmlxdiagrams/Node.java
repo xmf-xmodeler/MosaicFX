@@ -10,6 +10,7 @@ import javafx.scene.transform.Affine;
 import org.w3c.dom.Element;
 import tool.clients.exporter.svg.SvgConstant;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
+import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public abstract class Node implements CanvasElement{
@@ -46,38 +47,15 @@ public abstract class Node implements CanvasElement{
 		this.port = new FmmlxObjectPort(this);
 	}
 
-	@Override @Deprecated public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram diagram) {
-		
-		if(hidden) return;
-		
-		if(requiresReLayout) layout(diagram);
-
-		boolean selected = diagram.isSelected(this);
-
-		Affine transform = new Affine();
-		transform.appendTranslation(x + xOffset, y + yOffset);
-		
-		for (NodeElement e : nodeElements) {
-			e.paintOn(g, transform, diagram, selected);
-		}
-	}
-	
 	@Override
 	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram diagram) {
 		
 		if(hidden) return;		
 		if(requiresReLayout) layout(diagram);
 		boolean selected = diagram.isSelected(this);
-		
-//		Affine myTransform = new Affine(1, 0, x, 0, 1, y);
-//		currentTransform = new Affine(currentTransform); // copy
-//		currentTransform.append(myTransform);
-
-//		Affine newTransform = new Affine();
-//		transform.appendTranslation(x + xOffset, y + yOffset);
-		
+	
 		for (NodeElement e : nodeElements) {
-			e.paintOn(g, currentTransform, diagram, selected);
+			e.paintOn(g, diagram, selected);
 		}
 	}
 
@@ -103,9 +81,6 @@ public abstract class Node implements CanvasElement{
 	@Override
 	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram diagram) {
 		if(hidden) return false;
-//		Affine myTransform = new Affine(1, 0, x, 0, 1, y);
-//		currentTransform = new Affine(currentTransform); // copy
-//		currentTransform.append(myTransform);
 		for(NodeElement n : nodeElements) {
 			if(n.isHit(mouseX, mouseY, g, diagram)) return true;
 		}
@@ -128,7 +103,7 @@ public abstract class Node implements CanvasElement{
 	
 	@Override public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
 	@Override public double getMouseMoveOffsetY() {return mouseMoveOffsetY;}
-	@Override public void highlightElementAt(Point2D p) {}
+	@Override public void highlightElementAt(Point2D p, Affine a) {}
 	@Override public void unHighlight() {}
 
 
@@ -152,10 +127,16 @@ public abstract class Node implements CanvasElement{
 		port.addNewEdge(edge, direction);
 	}
 
-	public void updatePortOder() {
+	public void updatePortOrder() {
 		port.sortAllPorts();
 	}
 
 	public abstract String getName();
 
+	public Affine getOwnAndDragTransform() {
+		NodeGroup group = (NodeGroup) nodeElements.firstElement();
+		Affine a = new Affine(group.getMyTransform());
+		a.append(group.getDragAffine());		
+		return a;
+	}
 }

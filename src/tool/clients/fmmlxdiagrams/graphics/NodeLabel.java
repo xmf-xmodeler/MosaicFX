@@ -52,39 +52,36 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 		total.append(new Translate( - hAlign - BOX_GAP,  - BOX_GAP - textHeight));
 		return total;
 	}
-
-	@Override
-	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram diagram, boolean objectIsSelected) {
+	
+	private Affine getTextTransform(Affine canvasTransform) {
 		double hAlign = 0;
-		String textLocal = setTextLocal(text);
-		g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), fontWeight, fontPosture, fontSize * fontScale));
-
 		if (alignment != Pos.BASELINE_LEFT) {
 			hAlign = (alignment == Pos.BASELINE_CENTER ? 0.5 : 1) * textWidth;
 		}
+		Affine total = getTotalTransform(canvasTransform);
+		total.append(new Translate( - hAlign, - Y_BASELINE_DIFF));
+		return total;
+	}
 
-		Affine boxTransform = new Affine(currentTransform); // copy
-		boxTransform.append(new Affine(1, 0, getX() - hAlign - BOX_GAP, 0, 1,  getY() - BOX_GAP - textHeight));
-		g.setTransform(boxTransform);
-		
-//		if("getStudent(): Student".equals(getText())) {
-//			g.setFill(Color.web("#ff8800"));g.fillText(boxTransform+"",300, 0);
-//		}
+	@Override
+	public void paintOn(GraphicsContext g, FmmlxDiagram diagram, boolean objectIsSelected) {
+		String textLocal = setTextLocal(text);
+		g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), fontWeight, fontPosture, fontSize * fontScale));
+
+		g.setTransform(getBoxTransform(diagram.getCanvasTransform()));
 		
 		if (selected || bgColor != null) {
 			g.setFill(selected ? Color.DARKGREY : bgColor);
 			g.fillRect(0, 0, textWidth + 2 * BOX_GAP, textHeight + 2 * BOX_GAP);
 		}
 		
-			String color = "00000" +Integer.toHexString(getText().hashCode());
-			color = color.substring(color.length()-6);
-			g.setFill(Color.web("#"+color));
-			g.setTransform(getBoxTransform(diagram.getCanvasTransform()));
-			g.fillRect(0, 0, textWidth + 2 * BOX_GAP, textHeight + 2 * BOX_GAP);
+//			String color = "00000" +Integer.toHexString(getText().hashCode());
+//			color = color.substring(color.length()-6);
+//			g.setFill(Color.web("#"+color));
+//			g.setTransform(getBoxTransform(diagram.getCanvasTransform()));
+//			g.fillRect(0, 0, textWidth + 2 * BOX_GAP, textHeight + 2 * BOX_GAP);
 		
-		Affine textTransform = new Affine(currentTransform); // copy
-		textTransform.append(new Affine(1, 0, getX() - hAlign, 0, 1, getY() - Y_BASELINE_DIFF));
-		g.setTransform(textTransform);		
+		g.setTransform(getTextTransform(diagram.getCanvasTransform()));		
 		
 		g.setFill(fgColor);
 		g.fillText(textLocal, 0, 0);
@@ -118,14 +115,6 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 
 	@Override
 	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram diagram) {
-//		currentTransform = new Affine(currentTransform); // copy
-//		currentTransform.append(myTransform);
-//		if (alignment == Pos.BASELINE_LEFT) {
-//			return isHitBaseLineLeft(mouseX, mouseY, g, currentTransform);
-//		} else if (alignment == Pos.BASELINE_CENTER) {
-//			return isHitBaseLineCenter(mouseX, mouseY, g, currentTransform);
-//		}
-//		return false;
 		boolean hit = false;
 		g.setTransform(getBoxTransform(diagram.getCanvasTransform()));
 		g.beginPath();
@@ -137,44 +126,6 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 		hit = g.isPointInPath(mouseX, mouseY);
 		g.closePath();
 		return hit;
-	}
-
-	private boolean isHitBaseLineCenter(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform) {
-		boolean hit = false; 
-		g.setTransform(currentTransform);
-		g.beginPath();
-		g.moveTo(- 0.5 * textWidth, 0); 
-		g.lineTo(- 0.5 * textWidth, - textHeight); 
-		g.lineTo(  0.5 * textWidth, - textHeight); 
-		g.lineTo(  0.5 * textWidth, 0); 
-		g.lineTo(- 0.5 * textWidth, 0);
-		hit = g.isPointInPath(mouseX, mouseY);
-		g.closePath();
-		return hit;
-//
-//		Rectangle rec = new Rectangle(getX() - 0.5 * textWidth, getY() - textHeight, textWidth, textHeight);
-//		return rec.contains(mouseX, mouseY);
-	}
-
-	private boolean isHitBaseLineLeft(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform) {
-		boolean hit = false; 
-		g.setTransform(currentTransform);
-		g.beginPath();
-		g.moveTo(0, 0); 
-		g.lineTo(0, - textHeight); 
-		g.lineTo(textWidth, - textHeight); 
-		g.lineTo(textWidth, 0); 
-		g.lineTo(0, 0);
-//		if("getStudent(): Student".equals(getText())) {
-//			System.err.println(currentTransform+"");
-//			System.err.println(mouseX+"/"+mouseY);
-//		}
-		hit = g.isPointInPath(mouseX, mouseY);
-		g.closePath();
-		return hit;
-//
-//		Rectangle rec = new Rectangle(getX(), getY() - textHeight, textWidth, textHeight);
-//		return rec.contains(mouseX, mouseY);
 	}
 
 	public String getText() {

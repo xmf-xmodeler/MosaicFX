@@ -24,17 +24,17 @@ public class NodeCircle extends NodeBaseElement{
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, Affine transform, FmmlxDiagram diagram,
+	public void paintOn(GraphicsContext g, FmmlxDiagram diagram,
 			boolean objectIsSelected) {
-		try {
-			g.setFill(bgColor);
-			g.fillOval(getX() + transform.getTx(), getY() + transform.getTy(), diameter, diameter);
-			g.setStroke(/*objectIsSelected&&System.currentTimeMillis()%2400<500?new Color(1.,.8,0.,1.):*/fgColor);
-			g.setLineWidth(1);
-			g.strokeOval(getX() + transform.getTx(), getY() + transform.getTy(), diameter, diameter);
-		} catch (Exception e){
-			e.printStackTrace();
-		}		
+//		try {
+//			g.setFill(bgColor);
+//			g.fillOval(getX() + transform.getTx(), getY() + transform.getTy(), diameter, diameter);
+//			g.setStroke(/*objectIsSelected&&System.currentTimeMillis()%2400<500?new Color(1.,.8,0.,1.):*/fgColor);
+//			g.setLineWidth(1);
+//			g.strokeOval(getX() + transform.getTx(), getY() + transform.getTy(), diameter, diameter);
+//		} catch (Exception e){
+//			e.printStackTrace();
+//		}		
 	}
 
 	@Override

@@ -27,15 +27,15 @@ public class NodePath extends NodeBaseElement{
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram diagram,
+	public void paintOn(GraphicsContext g, FmmlxDiagram diagram,
 			boolean objectIsSelected) {this.g = g;
 //		Affine oldTransform = g.getTransform();
-		Affine newtransform = currentTransform.clone();
+//		Affine newtransform = currentTransform.clone();
 //		newtransform.appendTranslation(transform.getTx(), transform.getTy());
 //		newtransform.prepend(transform);
-		newtransform.prepend(selfTransform);
-		lastTransform = newtransform;
-		g.setTransform(newtransform);
+//		newtransform.prepend(selfTransform);
+//		lastTransform = newtransform;
+		g.setTransform(getTotalTransform(diagram.getCanvasTransform()));
 		g.beginPath();
 		g.appendSVGPath(textPath);
 		g.setFill(bgColor);

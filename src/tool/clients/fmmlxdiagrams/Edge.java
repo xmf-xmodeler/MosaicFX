@@ -8,6 +8,8 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.scene.transform.Affine;
+import javafx.scene.transform.NonInvertibleTransformException;
+
 import org.w3c.dom.Element;
 import tool.clients.exporter.svg.SvgConstant;
 import tool.clients.xmlManipulator.XmlHandler;
@@ -35,7 +37,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 
 	protected transient PortRegion sourcePortRegion;
 	protected transient PortRegion targetPortRegion;
-	private transient Point2D lastMousePosition;
+	private transient Point2D lastMousePositionRaw;
 
 	public abstract class End {public final Edge<ConcreteNode> edge; private End(Edge<ConcreteNode> edge) {this.edge = edge;} public abstract ConcreteNode getNode();}
 	public class Source extends End{private Source(Edge<ConcreteNode> edge) {super(edge);} public ConcreteNode getNode() {return edge.sourceNode;}}
@@ -48,9 +50,6 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	protected enum HeadStyle {
 		NO_ARROW, ARROW, FULL_TRIANGLE, CIRCLE
 	}
-
-	Affine old;
-	Affine local;
 
 	private transient Vector<Point2D> latestValidPointConfiguration = new Vector<>();
 	private transient int pointToBeMoved = -1;
@@ -138,11 +137,6 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 			return PortRegion.EAST;
 		}
 	}
-
-	@Override @Deprecated
-	public final void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
-		this.paintOn(g, new Affine(1, 0, xOffset, 0, 1, yOffset), fmmlxDiagram);
-	}
 	
 	@Override
 	public final void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram fmmlxDiagram) {
@@ -174,6 +168,12 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 			g.setLineDashes(getLineDashes());
 
 			for (int i = 0; i < points.size() - 1; i++) {
+				if(i!=0) try {
+					g.setFill(Color.PURPLE);
+					Point2D hoverRaw = g.getTransform().inverseTransform(points.get(i));
+					g.fillText(""+hoverRaw, points.get(i).getX(), points.get(i).getY()+15);
+				} catch (NonInvertibleTransformException e) {}
+				
 				Vector<Point2D> intersections = fmmlxDiagram.findEdgeIntersections(points.get(i), points.get(i + 1));
 
 				if (intersections.size() == 0) {
@@ -228,12 +228,12 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 
 			if (newSourcePortRegion != null) {
 				double[] xPoints2 = new double[] { (points.get(0).getX() + points.get(1).getX()) / 2,
-						lastMousePosition.getX(),
+						lastMousePositionRaw.getX(),
 						newSourcePortRegion == PortRegion.WEST ? sourceNode.getX()
 								: newSourcePortRegion == PortRegion.EAST ? sourceNode.getRightX()
 										: sourceNode.getCenterX() };
 				double[] yPoints2 = new double[] { (points.get(0).getY() + points.get(1).getY()) / 2,
-						lastMousePosition.getY(),
+						lastMousePositionRaw.getY(),
 						newSourcePortRegion == PortRegion.NORTH ? sourceNode.getY()
 								: newSourcePortRegion == PortRegion.SOUTH ? sourceNode.getBottomY()
 										: sourceNode.getCenterY() };
@@ -248,13 +248,13 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 			if (newTargetPortRegion != null) {
 				double[] xPoints2 = new double[] {
 						(points.get(points.size() - 1).getX() + points.get(points.size() - 2).getX()) / 2,
-						lastMousePosition.getX(),
+						lastMousePositionRaw.getX(),
 						newSourcePortRegion == PortRegion.WEST ? targetNode.getX()
 								: newTargetPortRegion == PortRegion.EAST ? targetNode.getRightX()
 										: targetNode.getCenterX() };
 				double[] yPoints2 = new double[] {
 						(points.get(points.size() - 1).getY() + points.get(points.size() - 2).getY()) / 2,
-						lastMousePosition.getY(),
+						lastMousePositionRaw.getY(),
 						newSourcePortRegion == PortRegion.NORTH ? targetNode.getY()
 								: newTargetPortRegion == PortRegion.SOUTH ? targetNode.getBottomY()
 										: targetNode.getCenterY() };
@@ -285,6 +285,9 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	private void drawDecoration(GraphicsContext g, HeadStyle decoration, PortRegion directionForEdge,
 			Point2D pointForEdge) {
 
+		Affine old;
+		Affine local;
+		
 		old = g.getTransform();
 		local = new Affine(old);
 		double angle = (directionForEdge == PortRegion.EAST ? -0.5
@@ -422,22 +425,29 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	}
 
 	@Override
-	public boolean isHit(double x, double y, GraphicsContext g,  Affine currentTransform, FmmlxDiagram diagram) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram diagram) {
 		if(!isVisible()) return false;
-		return null != isHit(new Point2D(x, y), 2.5);
+		return null != isHit(new Point2D(mouseX, mouseY), 2.5, diagram.getCanvasTransform());
 	}
 
-	public Integer isHit(Point2D p, Double tolerance) {
-		if (p == null)
+	public Integer isHit(Point2D mouse, Double tolerance, Affine canvasTransform) {
+		if (mouse == null)
 			return null;
-		Vector<Point2D> points = getAllPoints();
-		for (int i = 0; i < points.size() - 1; i++) {
-			if (distance(p, points.get(i),
-					points.get(i + 1)) < 0.2/* (tolerance == null ? DEFAULT_TOLERANCE : tolerance) */) {
-				return i;
+		Point2D p;
+		try {
+			p = canvasTransform.inverseTransform(mouse);
+//			System.err.println(getName() + ": " + p);
+			Vector<Point2D> points = getAllPoints();
+			for (int i = 0; i < points.size() - 1; i++) {
+				if (distance(p, points.get(i),
+						points.get(i + 1)) < 0.2/* (tolerance == null ? DEFAULT_TOLERANCE : tolerance) */) {
+					return i;
+				}
 			}
+			return null;
+		} catch (NonInvertibleTransformException e) {
+			return null;
 		}
-		return null;
 	}
 
 	private double distance(Point2D p, Point2D a, Point2D b) { // assume lines to be aligned
@@ -461,8 +471,13 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	public abstract ContextMenu getContextMenuLocal(DiagramActions actions);
 	
 	@Override
-	public void moveTo(double x, double y, FmmlxDiagram diagram) {
-		lastMousePosition = new Point2D(x, y);
+	public void moveTo(double mouseX, double mouseY, FmmlxDiagram diagram) {
+	  try {
+		Point2D mouse = new Point2D(mouseX, mouseY);
+		Point2D raw = diagram.getCanvasTransform().inverseTransform(mouse);
+        lastMousePositionRaw = raw;
+		double x = raw.getX();
+		double y = raw.getY();
 		//System.err.println("move point " + pointToBeMoved + " to " + x + "," + y + (movementDirectionHorizontal?"H":"V"));
 		if (pointToBeMoved != -1 && moveMode == MoveMode.normal) {
 			if (movementDirectionHorizontal) {
@@ -483,6 +498,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 			newTargetPortRegion = findBestRegion(targetNode, x, y);
 			this.targetPortRegion = newTargetPortRegion;
 		}
+      } catch (NonInvertibleTransformException e) {}
 	}
 
 	private PortRegion findBestRegion(Node node, double x, double y) {
@@ -522,14 +538,14 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 
 
 
-	public void setPointAtToBeMoved(Point2D mousePoint) {
+	public void setPointAtToBeMoved(Point2D mousePoint, Affine canvasTransform) {
 		Vector<Point2D> points = getAllPoints();
 		// An edge has been dragged on at Point p.
 		// if a point is already found
 		if (pointToBeMoved != -1)
 			return;
 
-		Integer hitLine = isHit(mousePoint, 0.2);
+		Integer hitLine = isHit(mousePoint, 0.2, canvasTransform);
 		if(hitLine != null) { 
 			if(hitLine > 0 && hitLine < points.size() - 2) {
 			pointToBeMoved = hitLine;
@@ -644,8 +660,8 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	}
 
 	@Override
-	public void highlightElementAt(Point2D p) {
-		firstHoverPointIndex = isHit(p, .2);
+	public void highlightElementAt(Point2D mouse, Affine canvasTransform) {
+		firstHoverPointIndex = isHit(mouse, .2, canvasTransform);
 	}
 
 	@Override
@@ -727,7 +743,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	}
 	
 	public void updatePosition(DiagramEdgeLabel<?> del) {
-		labelPositions.put(del.localID, new Point2D(del.relativeX, del.relativeY));
+		labelPositions.put(del.localID, new Point2D(del.getRelativeX(), del.getRelativeY()));
 	}
 
 	public abstract String getName();

@@ -213,8 +213,7 @@ public class XmlManager extends XmlHandler {
             Point2D coordinate = getLabelCoordinate(diagramElement_XML, label, initCoordinate);
             if(validateLabelName(label.getText())){
 
-                label.setRelativeX(coordinate.getX());
-                label.setRelativeY(coordinate.getY());
+                label.setRelativePosition(coordinate.getX(), coordinate.getY());
                 label.getOwner().updatePosition(label);
                 fmmlxDiagram.getComm().storeLabelInfo(fmmlxDiagram, label);
             }

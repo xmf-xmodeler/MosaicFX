@@ -8,6 +8,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
+import javafx.scene.transform.Transform;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.xmlManipulator.XmlHandler;
 
@@ -47,45 +48,17 @@ public class NodeGroup implements NodeElement {
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram diagram, boolean objectIsSelected) {
-//		Affine newTransform = transform.clone(); newTransform.append(myTransform);
-//		for(NodeElementData ned : elements)  {
-//			if(!((ned.showUnselectedOnly && objectIsSelected) || (ned.showSelectedOnly && !objectIsSelected)))
-//			ned.element.paintOn(g, newTransform, diagram, objectIsSelected);
-//		}
-		
-//		Affine myTransform = new Affine(1, 0, x, 0, 1, y);
-		currentTransform = new Affine(currentTransform); // copy
-		currentTransform.append(myTransform);
-		currentTransform.append(dragAffine);
-		g.setTransform(currentTransform);
-		for (NodeElement e : nodeElements) {
-			e.paintOn(g, currentTransform, diagram, objectIsSelected);
+	public void paintOn(GraphicsContext g, FmmlxDiagram diagram, boolean objectIsSelected) {
+		for (NodeElement e : new Vector<>(nodeElements)) {
+			e.paintOn(g, diagram, objectIsSelected);
 		}
 	}
 
 	@Override
 	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram diagram) {
-//		Point2D p = new Point2D(mouseX, mouseY);
-//		currentTransform = new Affine(currentTransform); // copy
-//		currentTransform.append(myTransform);
-////		try {
-////			p = selfTransform.createInverse().transform(p);
-//			for (NodeElementData ned : elements) {
-//				if (ned.element.isHit(mouseX, mouseY, g, currentTransform))
-//					return true;
-//			}
-////		} catch (NonInvertibleTransformException e) {
-////			// TODO Auto-generated catch block
-////			e.printStackTrace();
-////		}
-
-//		currentTransform = new Affine(currentTransform); // copy
-//		currentTransform.append(myTransform);
-		for(NodeElement n : nodeElements) {
+		for(NodeElement n : new Vector<>(nodeElements)) {
 			if(n.isHit(mouseX, mouseY, g, diagram)) return true;
 		}
-
 		return false;
 	}
 
@@ -126,8 +99,12 @@ public class NodeGroup implements NodeElement {
 
 	public void drop() {
 		myTransform.append(dragAffine);
-		dragAffine = new Affine();
-		
+		dragAffine = new Affine();		
+	}
+
+	public Transform getDragAffine() {
+		if(dragAffine == null) return new Affine(); // HACK
+		return dragAffine;
 	}
 
 }

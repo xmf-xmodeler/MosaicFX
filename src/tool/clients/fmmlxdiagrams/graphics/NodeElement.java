@@ -10,7 +10,7 @@ import tool.clients.xmlManipulator.XmlHandler;
 
 public interface NodeElement {
 
-	public void paintOn(GraphicsContext g, Affine transform, FmmlxDiagram diagram, boolean objectIsSelected);
+	public void paintOn(GraphicsContext g, FmmlxDiagram diagram, boolean objectIsSelected);
 
 	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram diagram);
 

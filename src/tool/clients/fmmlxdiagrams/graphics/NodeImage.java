@@ -25,16 +25,14 @@ public class NodeImage extends NodeBaseElement implements NodeElement {
 	private javafx.scene.image.Image image;	
 
 	@Override
-	public void paintOn(GraphicsContext g, Affine transform, FmmlxDiagram diagram,
+	public void paintOn(GraphicsContext g, FmmlxDiagram diagram,
 			boolean objectIsSelected) {
-		g.setTransform(transform);
-		g.drawImage(image, getX(), getY() - image.getHeight());
-		
+		g.setTransform(getTotalTransform(diagram.getCanvasTransform()));
+		g.drawImage(image, 0, 0 - image.getHeight());		
 	}
 
 	@Override
 	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram diagram) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

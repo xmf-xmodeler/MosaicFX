@@ -17,14 +17,16 @@ public class IssueBox extends NodeBox{
 	}
 	
 	@Override
-	public void paintOn(GraphicsContext g, Affine transform, FmmlxDiagram diagram, boolean objectIsSelected) {
-		super.paintOn(g, transform, diagram, objectIsSelected);
+	public void paintOn(GraphicsContext g, FmmlxDiagram diagram, boolean objectIsSelected) {
+		super.paintOn(g, diagram, objectIsSelected);
 		
 			final double LAMP_SIZE = 2 * BOX_SIZE / (1 + Math.sqrt(5));
 			
-			double X1 = x + transform.getTx();
-			double X2 = x + transform.getTx() + width - BOX_SIZE;
-			double Y = y + transform.getTy() + 3;
+			double X1 = x;// + transform.getTx();
+			double X2 = x + width - BOX_SIZE;//+ transform.getTx()
+			double Y = y + 3;//+ transform.getTy()
+			
+			g.setTransform(getTotalTransform(diagram.getCanvasTransform()));
 			
 //			g.setFill(Color.BLACK);
 //			g.fillRect(X1, Y, BOX_SIZE, BOX_SIZE);
