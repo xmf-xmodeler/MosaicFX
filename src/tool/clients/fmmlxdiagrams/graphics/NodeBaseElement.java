@@ -30,7 +30,7 @@ public abstract class NodeBaseElement implements NodeElement {
 	public void setDeselected() { selected = false;}
 	public FmmlxProperty getActionObject() { return actionObject;}
 	
-	@Override public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram diagram) {
+	@Override public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
 //		currentTransform = new Affine(currentTransform); // copy
 //		currentTransform.append(myTransform);
 		if(isHit(mouse.getX(), mouse.getY(), g, diagram))

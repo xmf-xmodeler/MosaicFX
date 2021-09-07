@@ -139,11 +139,11 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	}
 	
 	@Override
-	public final void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram fmmlxDiagram) {
+	public final void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
 		if(!isVisible()) return;
 		if(!layoutingFinishedSuccesfully) {
-			layoutLabels(fmmlxDiagram); 
-			fmmlxDiagram.redraw();
+			layoutLabels(view.getDiagram()); 
+			view.getDiagram().redraw();
 		} else {
 			Vector<Point2D> points = getAllPoints();
 			/* SHOW ANGLE 
@@ -163,18 +163,18 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 			}
 
 			// normal
-			g.setStroke(fmmlxDiagram.isSelected(this) ? Color.RED : getPrimaryColor());
+			g.setStroke(view.getDiagram().isSelected(this) ? Color.RED : getPrimaryColor());
 			g.setLineWidth(isSelected() ? 3 : 1);
 			g.setLineDashes(getLineDashes());
 
 			for (int i = 0; i < points.size() - 1; i++) {
-				if(i!=0) try {
-					g.setFill(Color.PURPLE);
-					Point2D hoverRaw = g.getTransform().inverseTransform(points.get(i));
-					g.fillText(""+hoverRaw, points.get(i).getX(), points.get(i).getY()+15);
-				} catch (NonInvertibleTransformException e) {}
+//				if(i!=0) try {
+//					g.setFill(Color.PURPLE);
+//					Point2D hoverRaw = g.getTransform().inverseTransform(points.get(i));
+//					g.fillText(""+hoverRaw, points.get(i).getX(), points.get(i).getY()+15);
+//				} catch (NonInvertibleTransformException e) {}
 				
-				Vector<Point2D> intersections = fmmlxDiagram.findEdgeIntersections(points.get(i), points.get(i + 1));
+				Vector<Point2D> intersections = view.getDiagram().findEdgeIntersections(points.get(i), points.get(i + 1));
 
 				if (intersections.size() == 0) {
 					g.strokeLine(points.get(i).getX(), points.get(i).getY(), points.get(i + 1).getX(),
@@ -425,9 +425,9 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram diagram) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
 		if(!isVisible()) return false;
-		return null != isHit(new Point2D(mouseX, mouseY), 2.5, diagram.getCanvasTransform());
+		return null != isHit(new Point2D(mouseX, mouseY), 2.5, view.getCanvasTransform());
 	}
 
 	public Integer isHit(Point2D mouse, Double tolerance, Affine canvasTransform) {
@@ -459,8 +459,8 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	}
 
 	@Override
-	public final ContextMenu getContextMenu(FmmlxDiagram diagram, Point2D absolutePoint) {
-		ContextMenu localMenu = getContextMenuLocal(diagram.actions);
+	public final ContextMenu getContextMenu(FmmlxDiagram.DiagramViewPane diagram, Point2D absolutePoint) {
+		ContextMenu localMenu = getContextMenuLocal(diagram.getDiagram().actions);
 		if(localMenu.getItems().size()>0) localMenu.getItems().add(new SeparatorMenuItem());
 		MenuItem repairItem = new MenuItem("Repair Edge Alignment");
 		repairItem.setOnAction(e -> ensure90DegreeAngles());
@@ -471,10 +471,10 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	public abstract ContextMenu getContextMenuLocal(DiagramActions actions);
 	
 	@Override
-	public void moveTo(double mouseX, double mouseY, FmmlxDiagram diagram) {
+	public void moveTo(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane view) {
 	  try {
 		Point2D mouse = new Point2D(mouseX, mouseY);
-		Point2D raw = diagram.getCanvasTransform().inverseTransform(mouse);
+		Point2D raw = view.getCanvasTransform().inverseTransform(mouse);
         lastMousePositionRaw = raw;
 		double x = raw.getX();
 		double y = raw.getY();

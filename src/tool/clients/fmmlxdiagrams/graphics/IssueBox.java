@@ -17,7 +17,7 @@ public class IssueBox extends NodeBox{
 	}
 	
 	@Override
-	public void paintOn(GraphicsContext g, FmmlxDiagram diagram, boolean objectIsSelected) {
+	public void paintOn(GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram, boolean objectIsSelected) {
 		super.paintOn(g, diagram, objectIsSelected);
 		
 			final double LAMP_SIZE = 2 * BOX_SIZE / (1 + Math.sqrt(5));

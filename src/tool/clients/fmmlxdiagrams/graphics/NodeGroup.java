@@ -48,14 +48,14 @@ public class NodeGroup implements NodeElement {
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, FmmlxDiagram diagram, boolean objectIsSelected) {
+	public void paintOn(GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram, boolean objectIsSelected) {
 		for (NodeElement e : new Vector<>(nodeElements)) {
 			e.paintOn(g, diagram, objectIsSelected);
 		}
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram diagram) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram) {
 		for(NodeElement n : new Vector<>(nodeElements)) {
 			if(n.isHit(mouseX, mouseY, g, diagram)) return true;
 		}
@@ -63,7 +63,7 @@ public class NodeGroup implements NodeElement {
 	}
 
 	@Override
-	public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram diagram) {
+	public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
 		NodeBaseElement hitLabel = null;
 		for(NodeElement e : nodeElements) if(hitLabel == null) {
 			 hitLabel =  e.getHitLabel(mouse, g, currentTransform, diagram);//new Point2D(relativePoint.getX() - e.getX(), relativePoint.getY() - e.getY()));

@@ -20,11 +20,11 @@ public class ObjectContextMenu extends ContextMenu {
 	private final DiagramActions actions;
 	private final FmmlxProperty activeProperty;
 
-	public ObjectContextMenu(FmmlxObject object, FmmlxDiagram diagram, Point2D relativePoint) {
-		this.diagram = diagram;
+	public ObjectContextMenu(FmmlxObject object, FmmlxDiagram.DiagramViewPane view, Point2D relativePoint) {
+		this.diagram = view.getDiagram();
 		this.actions = diagram.getActions();
 		this.object = object;
-		NodeBaseElement nl = this.object.getHitLabel(relativePoint, diagram.getCanvas().getGraphicsContext2D(), diagram.getCanvasTransform());
+		NodeBaseElement nl = this.object.getHitLabel(relativePoint, view.getCanvas().getGraphicsContext2D(), diagram.getCanvasTransform(), view);
 		activeProperty = nl==null?null:nl.getActionObject();
 		setAutoHide(true);
 

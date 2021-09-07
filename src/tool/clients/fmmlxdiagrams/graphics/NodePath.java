@@ -27,7 +27,7 @@ public class NodePath extends NodeBaseElement{
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, FmmlxDiagram diagram,
+	public void paintOn(GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram,
 			boolean objectIsSelected) {this.g = g;
 //		Affine oldTransform = g.getTransform();
 //		Affine newtransform = currentTransform.clone();
@@ -47,7 +47,7 @@ public class NodePath extends NodeBaseElement{
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram diagram) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram) {
 		if (g == null || lastTransform == null) return false;
 		Affine transform = g.getTransform();
 		Affine newtransform = transform.clone();

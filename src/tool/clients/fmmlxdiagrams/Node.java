@@ -48,14 +48,14 @@ public abstract class Node implements CanvasElement{
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram diagram) {
+	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
 		
 		if(hidden) return;		
-		if(requiresReLayout) layout(diagram);
-		boolean selected = diagram.isSelected(this);
+		if(requiresReLayout) layout(view.getDiagram());
+		boolean selected = view.getDiagram().isSelected(this);
 	
 		for (NodeElement e : nodeElements) {
-			e.paintOn(g, diagram, selected);
+			e.paintOn(g, view, selected);
 		}
 	}
 
@@ -79,7 +79,7 @@ public abstract class Node implements CanvasElement{
 	}
 	
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram diagram) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
 		if(hidden) return false;
 		for(NodeElement n : nodeElements) {
 			if(n.isHit(mouseX, mouseY, g, diagram)) return true;
@@ -90,7 +90,7 @@ public abstract class Node implements CanvasElement{
 	protected abstract void layout(FmmlxDiagram diagram) ;
 	
 	@Override
-	public void moveTo(double x, double y, FmmlxDiagram diagram) {
+	public void moveTo(double x, double y, FmmlxDiagram.DiagramViewPane diagram) {
 		this.x = Math.max(x, 0.0);
 		this.y = Math.max(y, 0.0);
 	}

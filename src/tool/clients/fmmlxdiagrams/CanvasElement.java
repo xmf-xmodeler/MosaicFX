@@ -9,13 +9,13 @@ import tool.clients.xmlManipulator.XmlHandler;
 public interface CanvasElement {
 
 //	@Deprecated void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram);
-	void paintOn(GraphicsContext g, Affine currentAffine, FmmlxDiagram fmmlxDiagram);
+	void paintOn(GraphicsContext g, Affine currentAffine, FmmlxDiagram.DiagramViewPane fmmlxDiagram);
 
-	ContextMenu getContextMenu(FmmlxDiagram fmmlxDiagram, Point2D absolutePoint);
+	ContextMenu getContextMenu(FmmlxDiagram.DiagramViewPane fmmlxDiagram, Point2D absolutePoint);
 
-	void moveTo(double d, double e, FmmlxDiagram diagram);
+	void moveTo(double d, double e, FmmlxDiagram.DiagramViewPane diagram);
 	
-	boolean isHit(double x, double y, GraphicsContext g,  Affine currentTransform, FmmlxDiagram diagram);
+	boolean isHit(double x, double y, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram);
 
 	void highlightElementAt(Point2D mouse, Affine canvasTransform);
 	void unHighlight();

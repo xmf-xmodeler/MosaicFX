@@ -44,7 +44,7 @@ public class NodeBox implements NodeElement {
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, FmmlxDiagram diagram, boolean objectIsSelected) {
+	public void paintOn(GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram, boolean objectIsSelected) {
 		g.setTransform(getTotalTransform(diagram.getCanvasTransform()));
 		g.setFill(bgColor);
 		g.fillRect(0,0, width, height);
@@ -57,7 +57,7 @@ public class NodeBox implements NodeElement {
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram diagram) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram) {
 		boolean hit = false;
 		g.setTransform(getTotalTransform(diagram.getCanvasTransform()));
 		g.beginPath();
@@ -74,7 +74,7 @@ public class NodeBox implements NodeElement {
 	@Override public double getX() {return x;}
 	@Override public double getY() {return y;}
 	
-	@Override public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram diagram) {
+	@Override public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
 //		if(isHit(mouse.getX(), mouse.getY(), g, currentTransform, diagram)) {
 			Affine myTransform = new Affine(1, 0, x, 0, 1, y);
 			currentTransform = new Affine(currentTransform); // copy

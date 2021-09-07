@@ -10,15 +10,15 @@ import tool.clients.xmlManipulator.XmlHandler;
 
 public interface NodeElement {
 
-	public void paintOn(GraphicsContext g, FmmlxDiagram diagram, boolean objectIsSelected);
+	public void paintOn(GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram, boolean objectIsSelected);
 
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram diagram);
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram);
 
 	double getX();
 
 	double getY();
 
-	NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagram diagram);
+	NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram);
 
     void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element group, double xOffset, double yOffset, boolean objectIsSelected);
 

@@ -24,8 +24,6 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 	private final Runnable action;
 	private final String text;
 	private final ContextMenu menu;
-//	public double relativeX;
-//	public double relativeY;
 	private double width;
 	private double height;
 	private Vector<ConcreteNode> anchors;
@@ -56,18 +54,12 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 	@Deprecated private double getX() {return this.myTransform.getTx();}
 	@Deprecated private double getY() {return this.myTransform.getTy();}
 
-
-//	@Override @Deprecated
-//	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
-//		this.paintOn(g, new Affine(1, 0, xOffset, 0, 1, yOffset), fmmlxDiagram);
-//	}
 	@Override
-	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram fmmlxDiagram) {
+	public void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
 		if(!owner.isVisible()) return;		
 		int size=16;
-		g.setTransform(getTotalTransform(fmmlxDiagram.getCanvasTransform()));
-		g.setFill(Color.YELLOW);//bgColor);
-//		g.fillRect(this.getReferenceX() + relativeX, this.getReferenceY() + relativeY, this.width, this.height);
+		g.setTransform(getTotalTransform(view.getCanvasTransform()));
+		g.setFill(bgColor);
 		g.fillRect(0, 0, this.width, this.height);
 		
 		g.setFill(highlighted ? new Color(1.,0.,0.,1.):fontColor);
@@ -88,7 +80,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 			double relativeX = getX();
 			double relativeY = getY();
 			g.setStroke(Color.TOMATO);
-			g.setTransform(fmmlxDiagram.getCanvasTransform());
+			g.setTransform(view.getCanvasTransform());
 			if(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX()< anchors.get(1).getPointForEdge(owner.targetEnd,true).getX()) {
 				if(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX() < relativeX+this.getReferenceX() ) {
 					g.strokeLine(anchors.get(0).getPointForEdge(owner.sourceEnd, true).getX(), anchors.get(0).getPointForEdge(owner.sourceEnd, true).getY(), this.getReferenceX()+relativeX-2*MARGIN, this.getReferenceY()+relativeY+0.5*height);
@@ -176,14 +168,12 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 //	}
 
 	@Override
-	public ContextMenu getContextMenu(FmmlxDiagram diagram, Point2D absolutePoint) {
+	public ContextMenu getContextMenu(FmmlxDiagram.DiagramViewPane diagram, Point2D absolutePoint) {
 		return menu;
 	}
 
 	@Override
-	public void moveTo(double x, double y, FmmlxDiagram diagram) {
-//		this.relativeX = x;// - getReferenceX();
-//		this.relativeY = y;// - getReferenceY();
+	public void moveTo(double x, double y, FmmlxDiagram.DiagramViewPane diagram) {
 		this.myTransform = new Affine(1,0,x,0,1,y);
 	}
 	
@@ -194,7 +184,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram diagram) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
 		if(!owner.isVisible()) return false;
 		boolean hit = false;
 		g.setTransform(getTotalTransform(diagram.getCanvasTransform()));

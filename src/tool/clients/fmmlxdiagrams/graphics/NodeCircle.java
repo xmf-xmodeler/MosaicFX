@@ -24,7 +24,7 @@ public class NodeCircle extends NodeBaseElement{
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, FmmlxDiagram diagram,
+	public void paintOn(GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram,
 			boolean objectIsSelected) {
 //		try {
 //			g.setFill(bgColor);
@@ -38,7 +38,7 @@ public class NodeCircle extends NodeBaseElement{
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram diagram) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram) {
 		return  (getX() - mouseX + diameter/2) * 
 				(getX() - mouseX + diameter/2) + 
 				(getY() - mouseY + diameter/2) * 

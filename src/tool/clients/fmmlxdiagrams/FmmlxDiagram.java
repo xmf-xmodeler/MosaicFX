@@ -17,6 +17,8 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -67,7 +69,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	// The elements which the diagram consists of GUI-wise
 	private SplitPane splitPane;
 	private VBox mainView;
-	private Canvas canvas;
 	private VBox vBox;
 	private Menu menu;
 	private MenuBar menuBar;
@@ -78,6 +79,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	// The elements representing the model which is displayed in the GUI
 
 	private Vector<DiagramEdgeLabel<?>> labels = new Vector<>();
+	private TabPane tabPane;
 
 
 	// Temporary variables storing the current state of user interactions
@@ -95,10 +97,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private transient FmmlxProperty lastHitProperty = null;
 	private boolean diagramRequiresUpdate = false;
 
-	// The state of the canvas is stored here:
-	private Point2D canvasRawSize = new Point2D(1400, 1000);
-	private double zoom = 1.;
-	private Affine canvasTransform = new Affine();
+	private static final Point2D CANVAS_RAW_SIZE = new Point2D(1400, 1000);
 	public static final Font FONT;
 
 	private boolean showOperations = true;
@@ -126,6 +125,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	static{
 		FONT = Font.font(Font.getDefault().getFamily(), FontPosture.REGULAR, 14);
 	}
+	
+
+	@Deprecated private DiagramViewPane mainViewPane; 
+	private Vector<DiagramViewPane> views = new Vector<>(); 
 
 	private FmmlxDiagram() {
 		super(null,-1,null);
@@ -148,31 +151,30 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		splitPane = new SplitPane();
 		vBox.getChildren().addAll(menuBar, splitPane);
 		mainView = new VBox();
-		canvas = new Canvas(canvasRawSize.getX(), canvasRawSize.getY());
+//		canvas = new Canvas(CANVAS_RAW_SIZE.getX(), CANVAS_RAW_SIZE.getY());
 		
 		Palette palette = new Palette(this);
 		Palette palette2 = new Palette(this,2);
 		newFmmlxPalette = new FmmlxPalette(this);
-//		scrollerCanvas = new ScrollPane(canvas);
 		
-		Pane canvasPane = new Pane();
-		canvasPane.getChildren().add(canvas);
-        canvas.widthProperty().bind(canvasPane.widthProperty());
-        canvas.heightProperty().bind(canvasPane.heightProperty());
-        canvasPane.setPrefSize(1400, 1000);
+//		Pane canvasPane = new Pane();
+//		canvasPane.getChildren().add(canvas);
+//        canvas.widthProperty().bind(canvasPane.widthProperty());
+//        canvas.heightProperty().bind(canvasPane.heightProperty());
+////        canvasPane.setPrefSize(1400, 1000);
+		mainViewPane = new DiagramViewPane();
+				
+        tabPane = new TabPane();
+        tabPane.getTabs().add(new Tab("Main Tab", mainViewPane));
+        tabPane.getTabs().add(new Tab("Tab 1", new DiagramViewPane()));
+        tabPane.getTabs().add(new Tab("Tab 2", new DiagramViewPane()));
 		
-		mainView.getChildren().addAll(palette,palette2, canvasPane);//scrollerCanvas);
+		mainView.getChildren().addAll(palette,palette2, tabPane);//scrollerCanvas);
 
 		splitPane.setOrientation(Orientation.HORIZONTAL);
 		splitPane.setDividerPosition(0, 0.2);
 		splitPane.getItems().addAll(newFmmlxPalette.getToolBar(), mainView);
 		SplitPane.setResizableWithParent(newFmmlxPalette.getToolBar(), false);
-		
-		canvas.setOnMousePressed(this::mousePressed);
-		canvas.setOnMouseDragged(this::mouseDragged);
-		canvas.setOnMouseReleased(this::mouseReleased);
-		canvas.setOnMouseMoved(this::mouseMoved);
-		canvas.addEventFilter(ScrollEvent.ANY, this::handleScroll);
 		
 		new Thread(this::fetchDiagramData).start();
 
@@ -226,7 +228,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	// Only used to set the mouse pointer. Find a better solution
 	@Deprecated
 	public Canvas getCanvas() {
-		return canvas;
+		return mainViewPane.canvas;
 	}
 
 	public void deselectPalette() {
@@ -292,8 +294,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	public void savePNG(){
-		double zoom = this.zoom;
-		setMaxZoom();
+//		double zoom = this.zoom;
+		mainViewPane.setMaxZoom();
 
 	    FileChooser fileChooser = new FileChooser();
 
@@ -310,15 +312,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	    File file = fileChooser.showSaveDialog(XModeler.getStage());
 
 	    if(file != null){
-	        WritableImage wi = new WritableImage((int)canvas.getWidth(),(int)canvas.getHeight());
+	        WritableImage wi = new WritableImage((int)mainViewPane.canvas.getWidth(),(int)mainViewPane.canvas.getHeight());
 	        try {
-	        	ImageIO.write(SwingFXUtils.fromFXImage(canvas.snapshot(null,wi),null),"png",file);
+	        	ImageIO.write(SwingFXUtils.fromFXImage(mainViewPane.canvas.snapshot(null,wi),null),"png",file);
 	        } catch (IOException e) {
 	            e.printStackTrace();
 	        }
 	    }
 
-	    setZoom(zoom);
+//	    setZoom(zoom);
 	}
 	// Only used to set the diagram into the tab. Find a better solution
 	@Deprecated
@@ -336,11 +338,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
 			// we are on the right Thread already:
-			paintOn(canvas.getGraphicsContext2D());
+			for(DiagramViewPane view : views) {
+				view.paintOn();
+			}			
 		} else { // create a new Thread
 			CountDownLatch l = new CountDownLatch(1);
 			Platform.runLater(() -> {
-				paintOn(canvas.getGraphicsContext2D());
+				for(DiagramViewPane view : views) {
+					view.paintOn();
+				}	
 				l.countDown();
 			});
 			try {
@@ -351,65 +357,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 	}
 
-	private void paintOn(GraphicsContext g) {
-		// blank bg first:
-		g.setTransform(new Affine());
-		g.setFill(Color.WHITE);
-		g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-				
-		if (objects.size() <= 0) {return;} // if no objects yet: out, avoid div/0 or similar
-		
-		// otherwise gather (first-level) objects to be painted
-		Vector<CanvasElement> objectsToBePainted = new Vector<>();
-		objectsToBePainted.addAll(objects);
-		objectsToBePainted.addAll(labels);
-		objectsToBePainted.addAll(edges);
-		//reverse so that those first in the list are painted last
-		Collections.reverse(objectsToBePainted);
-		
-		// Cleanup ports (to be moved somewhere else)
-		for (FmmlxObject o : objects) {
-			o.updatePortOrder();
-		}	
-		
-		g.setFill(Color.BLACK);
-		g.setTransform(canvasTransform);
 
-		for (CanvasElement o : objectsToBePainted) {
-			o.paintOn(g, canvasTransform, this);
-		}
-		
-		g.setStroke(Color.BLACK);
-		g.setLineWidth(1);
-		g.setLineDashes(null);
-		
-		g.setTransform(new Affine());		
-		if (mouseMode == MouseMode.MULTISELECT) {drawMultiSelectRect(g);}
-		drawNewEdgeLine(g);
-		
-		g.setFill(Color.RED);
-//
-//		g.fillText(""+currentPointHover, currentPointHover.getX(), currentPointHover.getY());
-//				
-		try {
-			Point2D hoverRaw = canvasTransform.inverseTransform(currentPointHover);
-			g.fillText(""+hoverRaw, currentPointHover.getX(), currentPointHover.getY()+15);
-		} catch (NonInvertibleTransformException e) {}
-//		
-//		g.setFill(Color.PURPLE);
-//		g.fillText(canvas.getWidth() + ":"  +canvas.getHeight(), 0, 20);
-//		
-//		g.setStroke(Color.PURPLE);
-//		g.strokeLine(0, 0, canvas.getWidth(), canvas.getHeight());
-//		g.strokeLine(canvas.getWidth(), 0, 0, canvas.getHeight());
-//		
-//		g.setStroke(Color.RED);
-//		g.setTransform(canvasTransform);
-//		for(int x = 0; x <= 10; x++) {
-//			g.strokeLine(x*100, 0, x*100, 1000);
-//			g.strokeLine(0, x*100, 1000, x*100);
-//		}
-	}
 
 	private void drawMultiSelectRect(GraphicsContext g) {
 			double x = Math.min(lastPointPressed.getX(), currentPointMoving.getX());
@@ -423,139 +371,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 	}
 
-	////////////////////////////////////////////////////////////////////
-	////						MouseListener						////
-	////////////////////////////////////////////////////////////////////
 
-	private void mousePressed(MouseEvent e) {
-		if(fetchingData) return;
-//		Point2D p = scale(e);
-		clearContextMenus();
-
-//		if (isMiddleClick(e)) {
-//			selectedObjects.addAll(objects);
-//		}
-		if (isLeftButton(e)) {
-			handleLeftPressed(e);
-		}
-		if (isRightButton(e)) {
-			handleRightClick(e);
-		}
-		setMouseOffset(new Point2D(e.getX(), e.getY()));
-		dragStart = new Point2D(e.getX(), e.getY());
-		//redraw();
-	}
-
-	private void mouseDragged(MouseEvent e) {
-//		Point2D p = scale(e);
-
-		if (mouseMode == MouseMode.MULTISELECT) {
-			storeCurrentPoint(e.getX(), e.getY());
-			redraw();
-		}
-		if (mouseMode == MouseMode.STANDARD) {
-			if (selectedObjects.size() == 1 && selectedObjects.firstElement() instanceof Edge) {
-				((Edge<?>) selectedObjects.firstElement()).setPointAtToBeMoved(new Point2D(e.getX(), e.getY()), canvasTransform);
-
-			}
-			mouseDraggedStandard(new Point2D(e.getX(), e.getY()));
-		}
-	}
-
-	private transient CanvasElement lastElementUnderMouse = null;
-
-	private void mouseMoved(MouseEvent e) {
-		currentPointHover = new Point2D(e.getX(), e.getY());
-		
-//		Point2D p = scale(e);
-		if (mouseMode == MouseMode.DRAW_EDGE) {
-			storeCurrentPoint(e.getX(), e.getY());
-			redraw();
-		}
-
-		CanvasElement elementUnderMouse = getElementAt(e.getX(), e.getY());
-		if(elementUnderMouse != lastElementUnderMouse) {
-			lastElementUnderMouse = elementUnderMouse;
-			for (FmmlxObject o : objects)
-				o.unHighlight();
-			for (Edge<?> edge : edges)
-				edge.unHighlight();
-			for (DiagramEdgeLabel<?> l : labels)
-				l.unHighlight();
-		}
-
-		if(elementUnderMouse != null) elementUnderMouse.highlightElementAt(new Point2D(e.getX(), e.getY()), canvasTransform);
-
-	}
-
-	private void mouseDraggedStandard(Point2D p) {
-//		if (hitObject != null) {
-		
-		try {
-			Affine b = new Affine(Transform.translate(p.getX() - dragStart.getX(), p.getY() - dragStart.getY()));
-			Affine a = new Affine(canvasTransform);
-			a.prepend(b);
-			a.prepend(canvasTransform.createInverse());
-			dragAffine = a;
-		} catch (NonInvertibleTransformException e1) {
-			e1.printStackTrace();
-		}
-		
-		for (CanvasElement s : selectedObjects)
-			if (s instanceof FmmlxObject) {
-				FmmlxObject o = (FmmlxObject) s;
-//				s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
-				o.dragTo(dragAffine);
-				for(Edge<?> e : edges) {
-					if(e.isSourceNode(o) || e.isTargetNode(o)) e.align();
-				}
-			} else if (s instanceof DiagramEdgeLabel) {
-				DiagramEdgeLabel<?> o = (DiagramEdgeLabel<?>) s;
-//				if(o.getReferenceX()+o.getRelativeX()<0.0 && o.getReferenceY()+o.getRelativeY()<0.0){
-//					s.moveTo(0.5, 0.5, this);
-//				} else if (o.getReferenceX()+o.getRelativeX()<0.0){
-//					s.moveTo(0.5, p.getY() - o.getMouseMoveOffsetY(), this);
-//				} else if (o.getReferenceY()+o.getRelativeY()<0.0){
-//					s.moveTo(p.getX() - o.getMouseMoveOffsetX(), 0.5, this);
-//				} else {
-//					s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
-//				}
-
-				s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
-			} else { // must be edge
-				s.moveTo(p.getX(), p.getY(), this);
-			}
-		objectsMoved = true;
-
-		for(Edge<?> e : edges) {e.align();}
-
-		redraw();
-	}
-
-	private void mouseReleased(MouseEvent e) {
-		if(mouseMode == MouseMode.MULTISELECT) {
-			handleMultiSelect();
-		}
-		if(mouseMode == MouseMode.STANDARD) {
-			mouseReleasedStandard();
-		}
-		if(mouseMode!=MouseMode.DRAW_EDGE) {
-			mouseMode=MouseMode.STANDARD;
-		}
-
-		for(Edge<?> edge : edges) {
-			edge.dropPoint(this);
-		}
-
-		triggerOverallReLayout();
-
-		resizeCanvas();
-		if(diagramRequiresUpdate) {
-			diagramRequiresUpdate = false;
-			updateDiagram();
-		}
-		redraw();
-	}
 
 	public void triggerOverallReLayout() {
 		for(int i = 0; i < 3; i++) {
@@ -599,253 +415,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	private boolean isRightButton(MouseEvent e) {return e.getButton() == MouseButton.SECONDARY;}
 
-//	private boolean isMiddleClick(MouseEvent e) {return e.getButton() == MouseButton.MIDDLE;}
+	private boolean isCenterButton(MouseEvent e) {return e.getButton() == MouseButton.MIDDLE;}
 
-	private CanvasElement getElementAt(double x, double y) {
-		for (FmmlxObject o : new Vector<>(objects))
-			if (o.isHit(x, y, canvas.getGraphicsContext2D(), canvasTransform, this))
-				return o;
-		for (Edge<?> e : new Vector<>(edges))
-			if (e.isHit(x, y, canvas.getGraphicsContext2D(), canvasTransform, this))
-				return e;
-		for (DiagramEdgeLabel<?> l : new Vector<>(labels))
-			if (l.isHit(x, y, canvas.getGraphicsContext2D(), canvasTransform, this))
-				return l;
 
-		return null;
-	}
 
-	private void handleLeftPressedDefault(MouseEvent e, CanvasElement hitObject) {
-//		Point2D p = scale(e);
-		Point2D p = new Point2D(e.getX(), e.getY());
 
-		if (hitObject != null) {
-			if (mouseMode == MouseMode.DRAW_EDGE) {
-				mouseMode = MouseMode.STANDARD;
-				FmmlxObject newEdgeTarget = hitObject instanceof FmmlxObject ? (FmmlxObject) hitObject : null;
-				switch (drawEdgeType) {
-					case Association:
-						actions.addAssociationDialog(newEdgeSource, newEdgeTarget);
-                        setStandardMouseMode();
-						break;
-					case AssociationInstance:
-					{
-						final FmmlxObject obj1 = newEdgeSource;
-						final FmmlxObject obj2 = newEdgeTarget;
-						Platform.runLater(() -> {
-							actions.addAssociationInstance(obj1, obj2,null);
-							updateDiagramLater();
-							setStandardMouseMode();
-						});
-						break;
-					}
-					case Delegation:
-					{
-						final FmmlxObject delegateFrom = newEdgeSource;
-						final FmmlxObject delegateTo = newEdgeTarget;
-						Platform.runLater(() -> {
-							actions.setDelegation(delegateFrom, delegateTo);
-//							updateDiagramLater();
-						});
-						break;
-					}
-					case RoleFiller:
-					{
-						final FmmlxObject delegateFrom = newEdgeSource;
-						final FmmlxObject delegateTo = newEdgeTarget;
-						Platform.runLater(() -> {
-							actions.setRoleFiller(delegateFrom, delegateTo);
-//							updateDiagramLater();
-						});
-						break;
-					}
-					default:
-						break;
-				}
-				deselectAll();
-			}
+	
 
-			if (e.isControlDown()) {
-				if (selectedObjects.contains(hitObject)) {
-					selectedObjects.remove(hitObject);
-				} else {
-					selectedObjects.add(hitObject);
-				}
-			} else {
-				if (!selectedObjects.contains(hitObject)) {
-					selectedObjects.clear();
-					selectedObjects.add(hitObject);
-					highlightElementAt(hitObject, p);
-				}
-			}
-			handlePressedOnNodeElement(p, hitObject);
-
-			if (e.getClickCount() == 2) {
-				handleDoubleClickOnNodeElement(p, hitObject);
-			}
-		} else {
-			if (mouseMode == MouseMode.DRAW_EDGE) {
-				switch (drawEdgeType) {
-					case Association:
-						mouseMode = MouseMode.STANDARD;
-						actions.addAssociationDialog(newEdgeSource, null);
-						break;
-					case AssociationInstance:
-						mouseMode = MouseMode.STANDARD;
-						actions.addAssociationInstance(newEdgeSource, null,null);
-						break;
-					case Delegation:
-					case RoleFiller:
-						mouseMode = MouseMode.STANDARD;
-						// no dialog if clicked into the void: actions.addDelegation(newEdgeSource, null);
-						break;
-					default:
-						break;
-				}
-			} else {
-				mouseMode = MouseMode.MULTISELECT;
-				storeLastClick(e.getX(), e.getY());
-				storeCurrentPoint(e.getX(), e.getY());
-			}
-		}
-	}
-
-	private void handleLeftPressed(MouseEvent e) {
-//		Point2D p = scale(e);
-		CanvasElement hitObject = getElementAt(e.getX(), e.getY());
-
-		if (nodeCreationType == null && edgeCreationType == null) {
-			handleLeftPressedDefault(e, hitObject);
-
-		} else if (edgeCreationType != null) {
-			if (edgeCreationType.equals("association")) {
-				//hitObject = getElementAt(p.getX(), p.getY());
-				//System.out.println("asso");
-				if(hitObject instanceof FmmlxObject) {		
-					setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Association);
-					canvas.setCursor(Cursor.DEFAULT);
-
-				}
-			} else if (edgeCreationType.equals("associationInstance")) {
-				//System.out.println("instance");
-				if(hitObject instanceof FmmlxObject) {
-					setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.AssociationInstance);
-					canvas.setCursor(Cursor.DEFAULT);
-				}
-			} else if (edgeCreationType.equals("delegation")) {
-				if(hitObject instanceof FmmlxObject) {
-					setDrawEdgeMode((FmmlxObject)hitObject, PropertyType.Delegation);
-					canvas.setCursor(Cursor.DEFAULT);
-				}
-			}
-		} else {
-			if (nodeCreationType.equals("MetaClass")) {
-				actions.addMetaClassDialog(e);
-			} else {
-				actions.addInstanceDialog(getObjectByPath((nodeCreationType)),e);
-			}
-			canvas.setCursor(Cursor.DEFAULT);
-			deselectAll();
-		}
-	}
-
-	private void highlightElementAt(CanvasElement hitObject, Point2D mouse) {
-		for (CanvasElement object : objects) {
-			object.highlightElementAt(null, canvasTransform);
-		}
-		for (Edge<?> edge : edges) {
-			edge.highlightElementAt(null, canvasTransform);
-		}
-		hitObject.highlightElementAt(mouse, canvasTransform);
-	}
-
-	private void handlePressedOnNodeElement(Point2D p, CanvasElement hitObject) {
-		if (hitObject instanceof FmmlxObject) {
-			FmmlxObject obj = (FmmlxObject) hitObject;
-			lastHitProperty = obj.handlePressedOnNodeElement(p, this, canvas.getGraphicsContext2D(), canvasTransform);
-		}
-	}
-
-	private void handleDoubleClickOnNodeElement(Point2D p, CanvasElement hitObject) {
-		if (hitObject instanceof FmmlxObject) {
-			FmmlxObject obj = (FmmlxObject) hitObject;
-//			Point2D relativePoint = new Point2D(p.getX() - obj.getX(), p.getY() - obj.getY());
-			obj.performDoubleClickAction(p, canvas.getGraphicsContext2D(), canvasTransform);
-		} else if (hitObject instanceof DiagramEdgeLabel) {
-			DiagramEdgeLabel<?> l = (DiagramEdgeLabel<?>) hitObject;
-			l.performAction();
-		} else if (hitObject instanceof FmmlxAssociation) {
-			actions.editAssociationDialog((FmmlxAssociation)hitObject);
-		}
-	}
-
-	private void handleRightClick(MouseEvent e) {
-//		Point2D p = scale(e);
-		CanvasElement hitObject = getElementAt(e.getX(), e.getY());
-		if (hitObject != null) {
-			if (hitObject instanceof FmmlxObject) {
-				activeContextMenu = hitObject.getContextMenu(this, new Point2D(e.getX(), e.getY()));
-			} else if (hitObject instanceof Edge) {
-				activeContextMenu = hitObject.getContextMenu(this, new Point2D(e.getX(), e.getY()));
-			}
-			if (!selectedObjects.contains(hitObject)) {
-				deselectAll();
-				selectedObjects.add(hitObject);
-			}
-		} else {
-			activeContextMenu = new DefaultContextMenu(this);
-		}
-		showContextMenu(e);
-	}
-
-	private void handleScroll(ScrollEvent e) {
-		if (e.isControlDown()) {
-			double delta = e.getDeltaY();
-			
-			double zoom = Math.pow(ZOOM_STEP, delta > 0 ? 1 : -1);
-			
-			Point2D p = new Point2D(e.getX(), e.getY());
-
-			System.err.println(p);
-			
-			
-			try {
-				Point2D p_ = canvasTransform.inverseTransform(p);
-				System.err.println(p_);
-				canvasTransform.append(new Scale(zoom, zoom, p_.getX(), p_.getY()));	
-			} catch (NonInvertibleTransformException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			
-			
-			System.err.println(canvasTransform);
-//			setZoom(newZoom);
-			redraw();
-//			if (delta > 0) {
-//				zoomIn();
-//			} else {
-//				zoomOut();
-//			}
-		}
-	}
 
 	private final double ZOOM_STEP = Math.sqrt(Math.sqrt(Math.sqrt(2)));
-
-	public void zoomIn() {
-		setZoom(Math.min(2, getZoom() * ZOOM_STEP));
-		redraw();
-	}
-
-	public void zoomOut() {
-		setZoom(getZoom() / ZOOM_STEP);
-		redraw();
-	}
-
-	public void zoomOne() {
-		setZoom(1.);
-		redraw();
-	}
 
 	/* Setters for MouseMode */
 
@@ -867,17 +445,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	////////////////////////////////////////////////////////////////////
-	private void clearContextMenus() {
-		if (activeContextMenu != null && activeContextMenu.isShowing()) {
-			activeContextMenu.hide();
-		}
-	}
-
-	private void showContextMenu(MouseEvent p) {
-		if (activeContextMenu != null) {
-			activeContextMenu.show(canvas, Side.LEFT, p.getX(), p.getY());
-		}
-	}
 
 	public void storeLastClick(double x, double y) {
 		lastPointPressed = new Point2D(x, y);
@@ -957,36 +524,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return lastHitProperty;
 	}
 
-	public double getZoom() {
-		return zoom;
-	}
 
-	public void setMaxZoom(){
-		double maxRight = 1;
-		double maxBottom = 1;
-
-		for (FmmlxObject object : objects) {
-			maxRight = Math.max(maxRight, object.getRightX());
-			maxBottom = Math.max(maxBottom, object.getBottomY());
-		}
-		for (Edge<?> edge : edges) {
-			maxRight = Math.max(maxRight, edge.getMaxX());
-			maxBottom = Math.max(maxBottom, edge.getMaxY());
-		}
-
-		double maxXzoom = 4096. / maxRight;
-		double maxYzoom = 4096. / maxBottom;
-
-		setZoom(Math.min(10,Math.min(maxXzoom, maxYzoom)));
-	}
-
-	public void setZoom(double zoom) {
-		this.zoom = Math.min(10, Math.max(zoom, 1. / 8));
-
-		canvasTransform = new Affine();
-		canvasTransform.appendScale(zoom, zoom);
-		resizeCanvas();
-	}
 
 	@Deprecated
 	//needs filter
@@ -1082,7 +620,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	public void setCursor(Cursor c) {
-		canvas.setCursor(c);
+		mainViewPane.canvas.setCursor(c);
 	}
 
 	public void setShowOperations(boolean show) {this.showOperations = show;}
@@ -1313,25 +851,550 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 		Element rect = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_RECT);
 		rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, 0+"");
-		rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, canvas.getHeight()+"");
+		rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, mainViewPane.canvas.getHeight()+"");
 		rect.setAttribute(SvgConstant.ATTRIBUTE_HEIGHT, extraHeight+7+"");
-		rect.setAttribute(SvgConstant.ATTRIBUTE_WIDTH, canvas.getWidth()+"");
+		rect.setAttribute(SvgConstant.ATTRIBUTE_WIDTH, mainViewPane.canvas.getWidth()+"");
 		rect.setAttribute(SvgConstant.ATTRIBUTE_FILL, "black");
 		rect.setAttribute(SvgConstant.ATTRIBUTE_FILL_OPACITY, 1 +"");
 		xmlHandler.addXmlElement(issueGroup, rect);
 		for(Issue issue : issues){
-			issue.paintToSvg(xmlHandler, issueGroup, 14, 16, 0, canvas.getHeight()+issue.issueNumber*14);
+			issue.paintToSvg(xmlHandler, issueGroup, 14, 16, 0, mainViewPane.canvas.getHeight()+issue.issueNumber*14);
 		}
 		xmlHandler.addXmlElement(xmlHandler.getRoot(), issueGroup);
 	}
 
 	public Affine getCanvasTransform() {
-		return canvasTransform;
+		return mainViewPane.canvasTransform;
 	}
 
-	private class DiagramView {
+	public class DiagramViewPane extends Pane {
 		
+		private Canvas canvas;
+		private double zoom = 1.;
+		private Affine canvasTransform = new Affine();
+
+		
+		private DiagramViewPane() {
+			super();
+
+			canvas = new Canvas(CANVAS_RAW_SIZE.getX(), CANVAS_RAW_SIZE.getY());
+			getChildren().add(canvas);
+			canvas.widthProperty().bind(this.widthProperty());
+			canvas.heightProperty().bind(this.heightProperty());
+			setPrefSize(1400, 1000);
+			
+			canvas.setOnMousePressed(this::mousePressed);
+			canvas.setOnMouseDragged(this::mouseDragged);
+			canvas.setOnMouseReleased(this::mouseReleased);
+			canvas.setOnMouseMoved(this::mouseMoved);
+			canvas.addEventFilter(ScrollEvent.ANY, this::handleScroll);
+			
+			views.add(this);
+			
+		}
+		
+		////////////////////////////////////////////////////////////////////
+		////						MouseListener						////
+		////////////////////////////////////////////////////////////////////
+
+		private void mousePressed(MouseEvent e) {
+			if(fetchingData) return;
+			clearContextMenus();
+
+			if (isLeftButton(e)) {
+				handleLeftPressed(e);
+				setMouseOffset(new Point2D(e.getX(), e.getY()));
+				dragStart = new Point2D(e.getX(), e.getY());
+			}
+			if (isRightButton(e)) {
+				handleRightPressed(e);
+			}
+			if (isCenterButton(e)) {
+				handleCenterPressed(e);
+			}
+		}
+
+		private void mouseDragged(MouseEvent e) {
+			if(isLeftButton(e)) {	
+				if (mouseMode == MouseMode.MULTISELECT) {
+					storeCurrentPoint(e.getX(), e.getY());
+					redraw();
+				}
+				if (mouseMode == MouseMode.STANDARD) {
+					if (selectedObjects.size() == 1 && selectedObjects.firstElement() instanceof Edge) {
+						((Edge<?>) selectedObjects.firstElement()).setPointAtToBeMoved(new Point2D(e.getX(), e.getY()), canvasTransform);
+	
+					}
+					mouseDraggedStandard(new Point2D(e.getX(), e.getY()));
+				}
+			}
+			if (isCenterButton(e)) {
+				handleCenterDragged(e);
+			}
+		}
+
+		private transient CanvasElement lastElementUnderMouse = null;
+
+		private void mouseMoved(MouseEvent e) {
+			currentPointHover = new Point2D(e.getX(), e.getY());
+			
+//			Point2D p = scale(e);
+			if (mouseMode == MouseMode.DRAW_EDGE) {
+				storeCurrentPoint(e.getX(), e.getY());
+				redraw();
+			}
+
+			CanvasElement elementUnderMouse = getElementAt(e.getX(), e.getY());
+			if(elementUnderMouse != lastElementUnderMouse) {
+				lastElementUnderMouse = elementUnderMouse;
+				for (FmmlxObject o : objects)
+					o.unHighlight();
+				for (Edge<?> edge : edges)
+					edge.unHighlight();
+				for (DiagramEdgeLabel<?> l : labels)
+					l.unHighlight();
+			}
+
+			if(elementUnderMouse != null) elementUnderMouse.highlightElementAt(new Point2D(e.getX(), e.getY()), canvasTransform);
+
+		}
+
+		private void mouseDraggedStandard(Point2D p) {
+			
+			try {
+				Affine b = new Affine(Transform.translate(p.getX() - dragStart.getX(), p.getY() - dragStart.getY()));
+				Affine a = new Affine(canvasTransform);
+				a.prepend(b);
+				a.prepend(canvasTransform.createInverse());
+				dragAffine = a;
+			} catch (NonInvertibleTransformException e1) {
+				e1.printStackTrace();
+			}
+			
+			for (CanvasElement s : selectedObjects)
+				if (s instanceof FmmlxObject) {
+					FmmlxObject o = (FmmlxObject) s;
+//					s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
+					o.dragTo(dragAffine);
+					for(Edge<?> e : edges) {
+						if(e.isSourceNode(o) || e.isTargetNode(o)) e.align();
+					}
+				} else if (s instanceof DiagramEdgeLabel) {
+					DiagramEdgeLabel<?> o = (DiagramEdgeLabel<?>) s;
+
+					s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
+				} else { // must be edge
+					s.moveTo(p.getX(), p.getY(), this);
+				}
+			objectsMoved = true;
+
+			for(Edge<?> e : edges) {e.align();}
+
+			redraw();
+		}
+
+		private void mouseReleased(MouseEvent e) {
+			if(isLeftButton(e)){
+				if(mouseMode == MouseMode.MULTISELECT) {
+					handleMultiSelect();
+				}
+				if(mouseMode == MouseMode.STANDARD) {
+					mouseReleasedStandard();
+				}
+				if(mouseMode!=MouseMode.DRAW_EDGE) {
+					mouseMode=MouseMode.STANDARD;
+				}
+	
+				for(Edge<?> edge : edges) {
+					edge.dropPoint(FmmlxDiagram.this);
+				}
+
+				triggerOverallReLayout();
+
+				if(diagramRequiresUpdate) {
+					diagramRequiresUpdate = false;
+					updateDiagram();
+				}
+			} else if(isCenterButton(e)) {
+				handleCenterReleased(e);
+			}
+			redraw();
+		}
+		
+		private void handleScroll(ScrollEvent e) {
+			if (e.isControlDown()) {
+				double delta = e.getDeltaY();
+				
+				double zoom = Math.pow(ZOOM_STEP, delta > 0 ? 1 : -1);
+				
+				Point2D p = new Point2D(e.getX(), e.getY());				
+				
+				try {
+					Point2D p_ = canvasTransform.inverseTransform(p);
+					canvasTransform.append(new Scale(zoom, zoom, p_.getX(), p_.getY()));	
+				} catch (NonInvertibleTransformException e1) {
+					e1.printStackTrace();
+				}
+				
+				redraw();
+			}
+		}
+		
+		private void handleLeftPressed(MouseEvent e) {
+			CanvasElement hitObject = getElementAt(e.getX(), e.getY());
+
+			if (nodeCreationType == null && edgeCreationType == null) {
+				handleLeftPressedDefault(e, hitObject);
+
+			} else if (edgeCreationType != null) {
+				if (edgeCreationType.equals("association")) {
+					//hitObject = getElementAt(p.getX(), p.getY());
+					//System.out.println("asso");
+					if(hitObject instanceof FmmlxObject) {		
+						setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Association);
+						canvas.setCursor(Cursor.DEFAULT);
+
+					}
+				} else if (edgeCreationType.equals("associationInstance")) {
+					//System.out.println("instance");
+					if(hitObject instanceof FmmlxObject) {
+						setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.AssociationInstance);
+						canvas.setCursor(Cursor.DEFAULT);
+					}
+				} else if (edgeCreationType.equals("delegation")) {
+					if(hitObject instanceof FmmlxObject) {
+						setDrawEdgeMode((FmmlxObject)hitObject, PropertyType.Delegation);
+						canvas.setCursor(Cursor.DEFAULT);
+					}
+				}
+			} else {
+				if (nodeCreationType.equals("MetaClass")) {
+					actions.addMetaClassDialog(e);
+				} else {
+					actions.addInstanceDialog(getObjectByPath((nodeCreationType)),e);
+				}
+				canvas.setCursor(Cursor.DEFAULT);
+				deselectAll();
+			}
+		}
+		
+		private void handlePressedOnNodeElement(Point2D p, CanvasElement hitObject) {
+			if (hitObject instanceof FmmlxObject) {
+				FmmlxObject obj = (FmmlxObject) hitObject;
+				lastHitProperty = obj.handlePressedOnNodeElement(p, this, canvas.getGraphicsContext2D(), canvasTransform);
+			}
+		}
+
+		private void handleDoubleClickOnNodeElement(Point2D p, CanvasElement hitObject) {
+			if (hitObject instanceof FmmlxObject) {
+				FmmlxObject obj = (FmmlxObject) hitObject;
+//				Point2D relativePoint = new Point2D(p.getX() - obj.getX(), p.getY() - obj.getY());
+				obj.performDoubleClickAction(p, canvas.getGraphicsContext2D(), canvasTransform, this);
+			} else if (hitObject instanceof DiagramEdgeLabel) {
+				DiagramEdgeLabel<?> l = (DiagramEdgeLabel<?>) hitObject;
+				l.performAction();
+			} else if (hitObject instanceof FmmlxAssociation) {
+				actions.editAssociationDialog((FmmlxAssociation)hitObject);
+			}
+		}
+
+		private void handleRightPressed(MouseEvent e) {
+//			Point2D p = scale(e);
+			CanvasElement hitObject = getElementAt(e.getX(), e.getY());
+			if (hitObject != null) {
+				if (hitObject instanceof FmmlxObject) {
+					activeContextMenu = hitObject.getContextMenu(this, new Point2D(e.getX(), e.getY()));
+				} else if (hitObject instanceof Edge) {
+					activeContextMenu = hitObject.getContextMenu(this, new Point2D(e.getX(), e.getY()));
+				}
+				if (!selectedObjects.contains(hitObject)) {
+					deselectAll();
+					selectedObjects.add(hitObject);
+				}
+			} else {
+				activeContextMenu = new DefaultContextMenu(FmmlxDiagram.this);
+			}
+			showContextMenu(e);
+		}
+		
+		private void handleLeftPressedDefault(MouseEvent e, CanvasElement hitObject) {
+//			Point2D p = scale(e);
+			Point2D p = new Point2D(e.getX(), e.getY());
+
+			if (hitObject != null) {
+				if (mouseMode == MouseMode.DRAW_EDGE) {
+					mouseMode = MouseMode.STANDARD;
+					FmmlxObject newEdgeTarget = hitObject instanceof FmmlxObject ? (FmmlxObject) hitObject : null;
+					switch (drawEdgeType) {
+						case Association:
+							actions.addAssociationDialog(newEdgeSource, newEdgeTarget);
+	                        setStandardMouseMode();
+							break;
+						case AssociationInstance:
+						{
+							final FmmlxObject obj1 = newEdgeSource;
+							final FmmlxObject obj2 = newEdgeTarget;
+							Platform.runLater(() -> {
+								actions.addAssociationInstance(obj1, obj2,null);
+								updateDiagramLater();
+								setStandardMouseMode();
+							});
+							break;
+						}
+						case Delegation:
+						{
+							final FmmlxObject delegateFrom = newEdgeSource;
+							final FmmlxObject delegateTo = newEdgeTarget;
+							Platform.runLater(() -> {
+								actions.setDelegation(delegateFrom, delegateTo);
+//								updateDiagramLater();
+							});
+							break;
+						}
+						case RoleFiller:
+						{
+							final FmmlxObject delegateFrom = newEdgeSource;
+							final FmmlxObject delegateTo = newEdgeTarget;
+							Platform.runLater(() -> {
+								actions.setRoleFiller(delegateFrom, delegateTo);
+//								updateDiagramLater();
+							});
+							break;
+						}
+						default:
+							break;
+					}
+					deselectAll();
+				}
+
+				if (e.isControlDown()) {
+					if (selectedObjects.contains(hitObject)) {
+						selectedObjects.remove(hitObject);
+					} else {
+						selectedObjects.add(hitObject);
+					}
+				} else {
+					if (!selectedObjects.contains(hitObject)) {
+						selectedObjects.clear();
+						selectedObjects.add(hitObject);
+						highlightElementAt(hitObject, p);
+					}
+				}
+				handlePressedOnNodeElement(p, hitObject);
+
+				if (e.getClickCount() == 2) {
+					handleDoubleClickOnNodeElement(p, hitObject);
+				}
+			} else {
+				if (mouseMode == MouseMode.DRAW_EDGE) {
+					switch (drawEdgeType) {
+						case Association:
+							mouseMode = MouseMode.STANDARD;
+							actions.addAssociationDialog(newEdgeSource, null);
+							break;
+						case AssociationInstance:
+							mouseMode = MouseMode.STANDARD;
+							actions.addAssociationInstance(newEdgeSource, null,null);
+							break;
+						case Delegation:
+						case RoleFiller:
+							mouseMode = MouseMode.STANDARD;
+							// no dialog if clicked into the void: actions.addDelegation(newEdgeSource, null);
+							break;
+						default:
+							break;
+					}
+				} else {
+					mouseMode = MouseMode.MULTISELECT;
+					storeLastClick(e.getX(), e.getY());
+					storeCurrentPoint(e.getX(), e.getY());
+				}
+			}
+		}
+		
+	    private void highlightElementAt(CanvasElement hitObject, Point2D mouse) {
+			for (CanvasElement object : objects) {
+				object.highlightElementAt(null, canvasTransform);
+			}
+			for (Edge<?> edge : edges) {
+				edge.highlightElementAt(null, canvasTransform);
+			}
+			hitObject.highlightElementAt(mouse, canvasTransform);
+		}
+		
+		private void paintOn() {
+			final GraphicsContext g = canvas.getGraphicsContext2D();
+			// blank bg first:
+			g.setTransform(new Affine());
+			g.setFill(Color.WHITE);
+			g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+					
+			if (objects.size() <= 0) {return;} // if no objects yet: out, avoid div/0 or similar
+			
+			// otherwise gather (first-level) objects to be painted
+			Vector<CanvasElement> objectsToBePainted = new Vector<>();
+			objectsToBePainted.addAll(objects);
+			objectsToBePainted.addAll(labels);
+			objectsToBePainted.addAll(edges);
+			//reverse so that those first in the list are painted last
+			Collections.reverse(objectsToBePainted);
+			
+			// Cleanup ports (to be moved somewhere else)
+			for (FmmlxObject o : objects) {
+				o.updatePortOrder();
+			}	
+			
+			g.setFill(Color.BLACK);
+			g.setTransform(canvasTransform);
+
+			for (CanvasElement o : objectsToBePainted) {
+				o.paintOn(g, canvasTransform, this);
+			}
+			
+			g.setStroke(Color.BLACK);
+			g.setLineWidth(1);
+			g.setLineDashes(null);
+			
+			g.setTransform(new Affine());		
+			if (mouseMode == MouseMode.MULTISELECT) {drawMultiSelectRect(g);}
+			drawNewEdgeLine(g);
+			
+			g.setFill(Color.RED);
+	//
+//			g.fillText(""+currentPointHover, currentPointHover.getX(), currentPointHover.getY());
+//					
+//			try {
+//				Point2D hoverRaw = canvasTransform.inverseTransform(currentPointHover);
+//				g.fillText(""+hoverRaw, currentPointHover.getX(), currentPointHover.getY()+15);
+//			} catch (NonInvertibleTransformException e) {}
+//			
+//			g.setFill(Color.PURPLE);
+//			g.fillText(canvas.getWidth() + ":"  +canvas.getHeight(), 0, 20);
+//			
+//			g.setStroke(Color.PURPLE);
+//			g.strokeLine(0, 0, canvas.getWidth(), canvas.getHeight());
+//			g.strokeLine(canvas.getWidth(), 0, 0, canvas.getHeight());
+//			
+//			g.setStroke(Color.RED);
+//			g.setTransform(canvasTransform);
+//			for(int x = 0; x <= 10; x++) {
+//				g.strokeLine(x*100, 0, x*100, 1000);
+//				g.strokeLine(0, x*100, 1000, x*100);
+//			}
+		}
+		
+		public double getZoom() {
+			return zoom;
+		}
+
+		public void setMaxZoom(){
+			double maxRight = 1;
+			double maxBottom = 1;
+
+			for (FmmlxObject object : objects) {
+				maxRight = Math.max(maxRight, object.getRightX());
+				maxBottom = Math.max(maxBottom, object.getBottomY());
+			}
+			for (Edge<?> edge : edges) {
+				maxRight = Math.max(maxRight, edge.getMaxX());
+				maxBottom = Math.max(maxBottom, edge.getMaxY());
+			}
+
+			double maxXzoom = 4096. / maxRight;
+			double maxYzoom = 4096. / maxBottom;
+
+			setZoom(Math.min(10,Math.min(maxXzoom, maxYzoom)));
+		}
+
+		public void setZoom(double zoom) {
+			this.zoom = Math.min(10, Math.max(zoom, 1. / 8));
+
+			canvasTransform = new Affine();
+			canvasTransform.appendScale(zoom, zoom);
+			resizeCanvas();
+		}
+		
+		private CanvasElement getElementAt(double x, double y) {
+			for (FmmlxObject o : new Vector<>(objects))
+				if (o.isHit(x, y, canvas.getGraphicsContext2D(), canvasTransform, this))
+					return o;
+			for (Edge<?> e : new Vector<>(edges))
+				if (e.isHit(x, y, canvas.getGraphicsContext2D(), canvasTransform, this))
+					return e;
+			for (DiagramEdgeLabel<?> l : new Vector<>(labels))
+				if (l.isHit(x, y, canvas.getGraphicsContext2D(), canvasTransform, this))
+					return l;
+
+			return null;
+		}
+		
+		public void zoomIn() {
+			setZoom(Math.min(2, getZoom() * ZOOM_STEP));
+			redraw();
+		}
+
+		public void zoomOut() {
+			setZoom(getZoom() / ZOOM_STEP);
+			redraw();
+		}
+
+		public void zoomOne() {
+			setZoom(1.);
+			redraw();
+		}
+		
+		private void clearContextMenus() {
+			if (activeContextMenu != null && activeContextMenu.isShowing()) {
+				activeContextMenu.hide();
+			}
+		}
+
+		private void showContextMenu(MouseEvent p) {
+			if (activeContextMenu != null) {
+				activeContextMenu.show(canvas, Side.LEFT, p.getX(), p.getY());
+			}
+		}
+
+		public FmmlxDiagram getDiagram() { return FmmlxDiagram.this; }
+
+		public Affine getCanvasTransform() {
+			return canvasTransform;
+		}
+
+		public Canvas getCanvas() {
+			return canvas;
+		}
+		
+		private transient Affine wheelDragStartAffine;
+		private transient Point2D wheelDragStartPoint;
+		
+		private void handleCenterPressed(MouseEvent e) {
+			wheelDragStartAffine = new Affine(canvasTransform);
+			wheelDragStartPoint = new Point2D(e.getX(), e.getY());
+		}
+		
+		private void handleCenterReleased(MouseEvent e) {
+			// ???
+		}
+
+		private void handleCenterDragged(MouseEvent e) {
+			canvasTransform = new Affine(wheelDragStartAffine);
+			canvasTransform.prependTranslation(e.getX() - wheelDragStartPoint.getX(), e.getY() - wheelDragStartPoint.getY());
+			redraw();
+		}		
+	}
+
+	public DiagramViewPane getActiveTab() {
+		Tab activeTab = tabPane.getSelectionModel().getSelectedItem();
+		javafx.scene.Node activeNode = activeTab.getContent();
+		DiagramViewPane activeView = (DiagramViewPane) activeNode;
+		return activeView;
 	}
 	
 
+	
+
+	
+	
+	
 }

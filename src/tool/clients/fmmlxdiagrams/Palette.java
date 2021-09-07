@@ -39,9 +39,9 @@ public class Palette extends ToolBar {
 		autosize();
 		setPadding(new Insets(5,5,5,5));
 		getItems().add(new Label("Zoom"));
-		addButton("+", e -> diagram.zoomIn());
-		addButton("100%", e -> diagram.zoomOne());
-		addButton("-", e -> diagram.zoomOut());
+		addButton("+", e -> diagram.getActiveTab().zoomIn());
+		addButton("100%", e -> diagram.getActiveTab().zoomOne());
+		addButton("-", e -> diagram.getActiveTab().zoomOut());
 		getItems().add(new Separator());
 		addButton("Update Diagram", e -> diagram.updateDiagram());
 		addButton("Print Protocol", e -> diagram.actions.printProtocol());

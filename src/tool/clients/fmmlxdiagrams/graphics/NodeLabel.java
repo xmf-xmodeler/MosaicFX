@@ -64,7 +64,7 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, FmmlxDiagram diagram, boolean objectIsSelected) {
+	public void paintOn(GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram, boolean objectIsSelected) {
 		String textLocal = setTextLocal(text);
 		g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), fontWeight, fontPosture, fontSize * fontScale));
 
@@ -114,7 +114,7 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram diagram) {
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram) {
 		boolean hit = false;
 		g.setTransform(getBoxTransform(diagram.getCanvasTransform()));
 		g.beginPath();
