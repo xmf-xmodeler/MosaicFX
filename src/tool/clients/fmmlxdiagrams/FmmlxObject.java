@@ -516,8 +516,16 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	@Override
 	protected void layout(FmmlxDiagram diagram) {
-		if(ofPath.endsWith("Planet")) {
-			new ExperimentalFmmlxObjectDisplay(diagram, this).layout();
+		if(ofPath.endsWith("StartEvent")) {
+			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutStartEvent();
+		} else if(ofPath.endsWith("StopEvent")) {
+			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutStopEvent();
+		} else if(ofPath.endsWith("Event")) {
+			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutEvent();
+		} else if(ofPath.endsWith("ComputerSupportedProcess")) {
+			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutComputerSupportedProcess();
+		} else if(ofPath.endsWith("AutomatedProcess")) {
+			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutAutomatedProcess();
 		} else {
 			new DefaultFmmlxObjectDisplay(diagram, this).layout();
 		}

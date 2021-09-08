@@ -3,8 +3,10 @@ package tool.clients.fmmlxdiagrams.graphics;
 import org.w3c.dom.Element;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.transform.Affine;
+import tool.clients.exporter.svg.SvgConstant;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.xmlManipulator.XmlHandler;
@@ -12,12 +14,12 @@ import tool.clients.xmlManipulator.XmlHandler;
 public class NodePath extends NodeBaseElement{
 	
 	String textPath;
-	Paint bgColor;
-	Paint fgColor;
+	Color bgColor;
+	Color fgColor;
 	private transient Affine lastTransform;
 	private Affine selfTransform;
 	
-	public NodePath(Affine selfTransform, String textPath, Paint bgColor, Paint fgColor, FmmlxProperty actionObject, Action action) {
+	public NodePath(Affine selfTransform, String textPath, Color bgColor, Color fgColor, FmmlxProperty actionObject, Action action) {
 		super(selfTransform.getTx(), selfTransform.getTy(), actionObject, action);
 		this.selfTransform = selfTransform;
 		this.bgColor = bgColor;
@@ -47,7 +49,13 @@ public class NodePath extends NodeBaseElement{
 
 	@Override
 	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram) {
-		if (g == null || lastTransform == null) return false;
+		g.setTransform(getTotalTransform(diagram.getCanvasTransform()));
+		g.beginPath();
+		g.appendSVGPath(textPath);
+		boolean result = g.isPointInPath(mouseX, mouseY);
+		g.closePath();
+		return result;
+		/*if (g == null || lastTransform == null) return false;
 		Affine transform = g.getTransform();
 		Affine newtransform = transform.clone();
 		newtransform.append(selfTransform);
@@ -57,13 +65,23 @@ public class NodePath extends NodeBaseElement{
 		boolean result = g.isPointInPath(mouseX, mouseY);
 		g.closePath();
 		g.setTransform(transform);
-		return result;
+		return result;*/
 	}
 
 	@Override
 	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup) {
-		// TODO Auto-generated method stub
-		
+		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
+		group.setAttribute(SvgConstant.ATTRIBUTE_TRANSFORM, getMatrix4svg());
+		group.setAttribute("XModeler", "NodePath");
+		Element path = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
+		path.setAttribute(SvgConstant.ATTRIBUTE_D, textPath);
+		path.setAttribute(SvgConstant.ATTRIBUTE_FILL, NodeBaseElement.toRGBHexString(bgColor));
+//		path.setAttribute(SvgConstant.ATTRIBUTE_STROKE, NodeBaseElement.toRGBHexString(fgColor));
+//		path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, lineWidth.getWidth(false)+"");
+//		path.setAttribute(SvgConstant.ATTRIBUTE_FILL_OPACITY, bgColor.getOpacity()<.5?"0":"1");
+		xmlHandler.addXmlElement(group, path);
+		xmlHandler.addXmlElement(parentGroup, group);
+
 	}
 
 }

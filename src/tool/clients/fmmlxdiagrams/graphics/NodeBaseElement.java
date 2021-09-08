@@ -60,4 +60,9 @@ public abstract class NodeBaseElement implements NodeElement {
 	            .toUpperCase();
 	}
 
+	protected String getMatrix4svg() {
+		return "matrix(" + getMyTransform().getMxx() + "," + getMyTransform().getMyx() + "," 
+	                     + getMyTransform().getMxy() + "," + getMyTransform().getMyy() + ","
+	                     + getMyTransform().getTx() + "," + getMyTransform().getTy() + ")";
+	}
 }
