@@ -2020,5 +2020,31 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("mergeAssociationInstance", message);
 	}
 
+	public void mergeConstraint(int diagramID, String classPath, String constName, Integer instLevel, String body, String reason) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(classPath),
+				new Value(constName),
+				new Value(instLevel),
+				new Value(body),
+				new Value(reason)
+		};
+		sendMessage("mergeConstraint", message);
+	}
+
+	public void mergeRoleFiller(int diagramID, String role, String roleFiller) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(role), new Value(roleFiller)};
+		sendMessage("mergeRoleFiller", message);
+	}
+
+	public void mergeDelegation(int diagramID, String delegationFromName, String delegationToName, int delegateToLevel) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(delegationFromName), new Value(delegationToName), new Value(delegateToLevel)};
+		sendMessage("mergeDelegation", message);
+	}
+
 
 }

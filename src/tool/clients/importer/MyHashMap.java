@@ -10,7 +10,7 @@ public class MyHashMap extends HashMap<String, String> {
         for(int i = 0; i< this.size();i++ ){
             Object myKey = keySet().toArray()[i];
             stringBuilder.append(myKey.toString()).append(" : ").append(get(myKey));
-            stringBuilder.append(", ");
+            stringBuilder.append(" , ");
         }
 
         return stringBuilder.substring(0, stringBuilder.toString().length() - 2);

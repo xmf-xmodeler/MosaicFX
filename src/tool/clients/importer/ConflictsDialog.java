@@ -23,8 +23,8 @@ public class ConflictsDialog extends CustomDialog {
         this.conflicts = conflicts;
 
         DialogPane dialogPane = getDialogPane();
-        dialogPane.setHeaderText(ImporterStrings.DIALOG_TITLE);
-        dialogPane.getButtonTypes().addAll(ButtonType.CANCEL);
+        dialogPane.setHeaderText(ImporterStrings.ConflictDialogString.DIALOG_TITLE);
+        dialogPane.getButtonTypes().addAll(ButtonType.CLOSE);
 
         setLayoutContent();
         dialogPane.setContent(flow);
@@ -44,6 +44,8 @@ public class ConflictsDialog extends CustomDialog {
         whereListView = initializeConflictListView(getConflictTypeList(new ArrayList<>()), SelectionMode.SINGLE, "w");
         whereListView.getItems().clear();
         whereListView.setEditable(false);
+
+        conflictTypeList.setPrefHeight(listView_ROW_HEIGHT * 7);
 
         conflictTypeList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             descriptionsListView.getItems().clear();

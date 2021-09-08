@@ -16,6 +16,7 @@ public class ProtocolHandler {
     private final Vector<FmmlxLink> links;
     private final Vector<DelegationEdge> delegationEdges;
     private final Vector<RoleFillerEdge> roleFillerEdges;
+    private final String projectPath;
 
     public ProtocolHandler(AbstractPackageViewer diagram) {
         this.diagram = diagram;
@@ -25,6 +26,7 @@ public class ProtocolHandler {
         this.links = diagram.getAssociationInstance();
         this.delegationEdges = diagram.getDelegations();
         this.roleFillerEdges = diagram.getRoleFillerEdges();
+        this.projectPath = diagram.getPackagePath();
     }
 
     public void readLogs(Node logsNode) {
@@ -108,16 +110,6 @@ public class ProtocolHandler {
                         break;
                     }
                 }
-                break;
-            }
-            case "addOperation": {
-                String conflictType = ImporterStrings.ConflictType.OPERATION;
-                String classPath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
-                String[] classPathArray = classPath.split("::");
-                String className = classPathArray[classPathArray.length-1];
-                String body = parseBase64(logElement.getAttribute(SerializerConstant.ATTRIBUTE_BODY));
-                int level = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));
-
                 break;
             }
             case "changeSlotValue" : {
@@ -319,14 +311,42 @@ public class ProtocolHandler {
 
                 break;
             }
-//            case "addConstraint" : {
-//                String path = logElement.getAttribute("class");
-//                String constName = logElement.getAttribute("constName");
-//                Integer instLevel = Integer.parseInt(logElement.getAttribute("instLevel"));
-//                String body = logElement.getAttribute("body");
-//                String reason = logElement.getAttribute("reason");
-//                break;
-//            }
+            case "addConstraint" : {
+                String conflictType = ImporterStrings.ConflictType.CONSTRAINT;
+                String path = logElement.getAttribute("class");
+                String className = getNameFromPath(path);
+                String constName = logElement.getAttribute("constName");
+                int instLevel = Integer.parseInt(logElement.getAttribute("instLevel"));
+                String body = logElement.getAttribute("body");
+                String reason = logElement.getAttribute("reason");
+
+                for(FmmlxObject object:objects){
+                    if(object.getName().equals(className)){
+                        Vector<Constraint> constraints = object.getConstraints();
+                        for(Constraint constraint: constraints){
+                            if(constraint.getName().equals(constName)){
+                                if(constraint.getLevel()!=instLevel){
+                                    Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_INST_LEVEL);
+                                    conflict.putIn(ImporterStrings.CLASS_NAME, className);
+                                    conflicts.add(conflict);
+                                }
+                                if(!constraint.getBodyFull().equals(body)){
+                                    Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_BODY);
+                                    conflict.putIn(ImporterStrings.CLASS_NAME, className);
+                                    conflicts.add(conflict);
+                                }
+                                if(!constraint.getReasonFull().equals(reason)){
+                                    Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_REASON);
+                                    conflict.putIn(ImporterStrings.CLASS_NAME, className);
+                                    conflicts.add(conflict);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+            }
             default:
                 break;
         }
@@ -477,7 +497,7 @@ public class ProtocolHandler {
 //                break;
 //            }
             case "addAssociation" : {
-                String projectPath = diagram.getPackagePath();
+
                 String classSourceName = projectPath+"::"+getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE));
                 String classTargetName = projectPath+"::"+getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET));
 
@@ -512,6 +532,34 @@ public class ProtocolHandler {
                 String className2 = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET));
 
                 comm.mergeAssociationInstance(diagramID, className1, className2, name);
+                break;
+            }
+            case "addConstraint" : {
+                String classPath = projectPath+"::"+getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS));
+                String constName = logElement.getAttribute("constName");
+                Integer instLevel = Integer.parseInt(logElement.getAttribute("instLevel"));
+                String body = logElement.getAttribute("body");
+                String reason = logElement.getAttribute("reason");
+                comm.mergeConstraint(diagramID, classPath, constName, instLevel, body, reason);
+                break;
+            }
+            case "addDelegation" : {
+                String delegationFromName = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_DELEGATE_FROM));
+                String delegationToName = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_DELEGATE_TO));
+                int delegateToLevel = Integer.parseInt(logElement.getAttribute("delegateToLevel"));
+
+                comm.mergeDelegation(diagramID, delegationFromName, delegationToName, delegateToLevel);
+                break;
+            }
+            case "setRoleFiller" : {
+                String role = getNameFromPath(logElement.getAttribute("role"));
+                String roleFiller = getNameFromPath(logElement.getAttribute("roleFiller"));
+
+                comm.mergeRoleFiller(diagramID, role, roleFiller);
+                break;
+            }
+            case "changeSlotValue" : {
+                //no need to merge
                 break;
             }
             default:
