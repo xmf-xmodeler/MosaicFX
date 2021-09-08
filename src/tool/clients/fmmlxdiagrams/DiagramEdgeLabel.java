@@ -242,7 +242,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 	}
 
 	@Override
-	public void paintToSvg(XmlHandler xmlHandler, int xOffset, int yOffset, FmmlxDiagram diagram) {
+	public void paintToSvg(XmlHandler xmlHandler, FmmlxDiagram diagram) {
 		if(!owner.isVisible()) return;
 		double relativeX = getX();
 		double relativeY = getY();

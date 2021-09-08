@@ -3,7 +3,6 @@ package tool.clients.fmmlxdiagrams.graphics;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -142,7 +141,14 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 	}
 
 	@Override
-	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element group, double xOffset, double yOffset, boolean objectIsSelected) {
+	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup) {
+		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
+		double x = myTransform.getTx() - BOX_GAP;// + (alignment == Pos.BASELINE_CENTER ? 0.5 : 1) * textWidth;
+		double y = myTransform.getTy() - BOX_GAP;//- Y_BASELINE_DIFF + BOX_GAP;
+		group.setAttribute(SvgConstant.ATTRIBUTE_TRANSFORM, "matrix(1,0,0,1,"+x+","+y+")");
+		group.setAttribute("XModeler", "NodeLabel");
+		xmlHandler.addXmlElement(parentGroup, group);
+		
 		double hAlign = 0;
 		String textLocal = setTextLocal(text);
 		if (alignment != Pos.BASELINE_LEFT) {
@@ -150,14 +156,13 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 		}
 		if(selected || bgColor!=null){
 			Color color = selected ? Color.DARKGREY : bgColor;
-			String backgroundColor = color.toString().split("x")[1].substring(0,6);
-			String styleString = "fill: #"+backgroundColor+";";
+			String styleString = "fill: "+NodeBaseElement.toRGBHexString(color)+";";
 			Element rect = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_RECT);
-			rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (getX() - hAlign + xOffset - BOX_GAP)+"");
-			rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (getY() + yOffset - BOX_GAP - textHeight)+"");
+			rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, ( - hAlign - BOX_GAP)+"");
+			rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, ( - BOX_GAP - textHeight)+"");
 			rect.setAttribute(SvgConstant.ATTRIBUTE_HEIGHT, ( textHeight + 2 * BOX_GAP)+"");
 			rect.setAttribute(SvgConstant.ATTRIBUTE_WIDTH, (textWidth + 2 * BOX_GAP)+"");
-			rect.setAttribute(SvgConstant.ATTRIBUTE_FILL_OPACITY, bgColor.getOpacity()+"");
+			rect.setAttribute(SvgConstant.ATTRIBUTE_FILL_OPACITY, bgColor.getOpacity()<.5?"0":"1");
 			rect.setAttribute(SvgConstant.ATTRIBUTE_STYLE, styleString);
 			xmlHandler.addXmlElement(group, rect);
 		}
@@ -169,11 +174,11 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 		if(alignment == Pos.BASELINE_CENTER){
 			text.setAttribute(SvgConstant.ATTRIBUTE_TEXT_ANCHOR, "middle");
 			text.setAttribute(SvgConstant.ATTRIBUTE_TEXT_ALIGN, "center");
-			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (getX() + xOffset)+"");
-			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (getY() + yOffset - Y_BASELINE_DIFF)+"");
+			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, "0");
+			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (- Y_BASELINE_DIFF)+"");
 		} else {
-			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (getX() - hAlign + xOffset)+"");
-			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (getY() + yOffset - Y_BASELINE_DIFF)+"");
+			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (- hAlign)+"");
+			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (- Y_BASELINE_DIFF)+"");
 		}
 		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, ((fontSize-1)*fontScale)+"");
 		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_OPACITY, fgColor.getOpacity()+"");

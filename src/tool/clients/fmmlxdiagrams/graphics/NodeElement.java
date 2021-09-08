@@ -20,7 +20,7 @@ public interface NodeElement {
 
 	NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram);
 
-    void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element group, double xOffset, double yOffset, boolean objectIsSelected);
+    void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup);
 
     Affine getMyTransform();
     Affine getTotalTransform(Affine canvasTransform);

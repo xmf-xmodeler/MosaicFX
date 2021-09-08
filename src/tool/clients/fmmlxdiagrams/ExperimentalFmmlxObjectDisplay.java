@@ -1,15 +1,9 @@
 package tool.clients.fmmlxdiagrams;
 
-import java.util.Vector;
-
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
-import tool.clients.fmmlxdiagrams.graphics.NodeCircle;
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.fmmlxdiagrams.graphics.NodePath;
-import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement.Action;
 
 public class ExperimentalFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 
@@ -18,7 +12,7 @@ public class ExperimentalFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	}
 
 	public void layout() {
-		object.nodeElements = new Vector<>();
+		object.rootNodeElement = new NodeGroup(new Affine(1, 0, object.x, 0, 1, object.y));
 		FmmlxSlot sizeSlot = object.getSlot("size");
 		double size = 1. + (sizeSlot==null?0:Double.parseDouble(sizeSlot.getValue()));
 		FmmlxSlot angleSlot = object.getSlot("angle");

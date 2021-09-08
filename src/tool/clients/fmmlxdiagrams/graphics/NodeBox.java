@@ -2,8 +2,8 @@ package tool.clients.fmmlxdiagrams.graphics;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Affine;
 
 import org.w3c.dom.Element;
@@ -24,14 +24,14 @@ public class NodeBox implements NodeElement {
 	double y;
 	double width;
 	double height;
-	Paint bgColor;
-	Paint fgColor;
+	Color bgColor;
+	Color fgColor;
 	LineWidthGetter lineWidth;
 	private Vector<NodeElement> nodeElements = new Vector<>();
 	private PropertyType propertyType;
 	private NodeElement owner;
 
-	public NodeBox(double x, double y, double width, double height, Paint bgColor, Paint fgColor, LineWidthGetter lineWidth, PropertyType propertyType) {
+	public NodeBox(double x, double y, double width, double height, Color bgColor, Color fgColor, LineWidthGetter lineWidth, PropertyType propertyType) {
 		super();
 		this.x = x;
 		this.y = y;
@@ -90,24 +90,29 @@ public class NodeBox implements NodeElement {
 	}
 
 	@Override
-	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element group, double xOffset, double yOffset, boolean objectIsSelected) {
-		String backgroundColor = bgColor.toString().split("x")[1].substring(0,6);
-		String foregroundColor = fgColor.toString().split("x")[1].substring(0,6);
+	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup) {
+		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
+		group.setAttribute(SvgConstant.ATTRIBUTE_TRANSFORM, "matrix(1,0,0,1,"+getMyTransform().getTx()+","+getMyTransform().getTy()+")");
+		group.setAttribute("XModeler", "NodeBox");
+		xmlHandler.addXmlElement(parentGroup, group);
+
+//		String backgroundColor = bgColor.toString().split("x")[1].substring(0,6);
+//		String foregroundColor = fgColor.toString().split("x")[1].substring(0,6);
 
 		Element rect = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_RECT);
-		rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (x + xOffset)+"");
-		rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (y + yOffset)+"");
+		rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, "0");//(x + xOffset)+"");
+		rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, "0");// (y + yOffset)+"");
 		rect.setAttribute(SvgConstant.ATTRIBUTE_HEIGHT, height+"");
 		rect.setAttribute(SvgConstant.ATTRIBUTE_WIDTH, width+"");
-		rect.setAttribute(SvgConstant.ATTRIBUTE_FILL, "#"+backgroundColor);
-		rect.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+foregroundColor);
-		rect.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, lineWidth.getWidth(objectIsSelected)+"");
-		rect.setAttribute(SvgConstant.ATTRIBUTE_FILL_OPACITY, 1 +"");
+		rect.setAttribute(SvgConstant.ATTRIBUTE_FILL, NodeBaseElement.toRGBHexString(bgColor));
+		rect.setAttribute(SvgConstant.ATTRIBUTE_STROKE, NodeBaseElement.toRGBHexString(fgColor));
+		rect.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, lineWidth.getWidth(false)+"");
+		rect.setAttribute(SvgConstant.ATTRIBUTE_FILL_OPACITY, bgColor.getOpacity()<.5?"0":"1");
 		xmlHandler.addXmlElement(group, rect);
-		for(NodeElement e : nodeElements){
-			e.paintToSvg(diagram, xmlHandler, group, x+xOffset, y+yOffset, objectIsSelected);
+		
+		for(NodeElement nodeElement : nodeElements){
+			nodeElement.paintToSvg(diagram, xmlHandler, group);
 		}
-
 	}
 
 	public void addNodeElement(NodeElement nodeElement) {

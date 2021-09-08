@@ -4,7 +4,6 @@ import java.util.Vector;
 
 import javafx.geometry.Pos;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Affine;
@@ -33,7 +32,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		super(diagram, object);
 	}
 
-	public Paint getLevelBackgroundColor(FmmlxDiagram diagram) {
+	public Color getLevelBackgroundColor(FmmlxDiagram diagram) {
 		return diagram.levelColorScheme.getLevelBgColor(this.object.level);
 	}
 
@@ -41,16 +40,12 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		return diagram.levelColorScheme.getLevelFgColor(this.object.level, opacity);
 	}
 
-//	public Vector<NodeElement> getNodes() {
-//		return nodeElements;
-//	}
-
 	public void layout() {
 		object.requiresReLayout = false;
 		NodeGroup group = new NodeGroup(new Affine(1, 0, object.x, 0, 1, object.y));
-		object.nodeElements = new Vector<>();
-		object.nodeElements.add(group);
+		object.rootNodeElement = group;
 		double neededWidth = calculateNeededWidth(diagram);
+		
 		//determine text height
 		double textHeight = FmmlxDiagram.calculateTextHeight();
 		double lineHeight = textHeight + EXTRA_Y_PER_LINE;

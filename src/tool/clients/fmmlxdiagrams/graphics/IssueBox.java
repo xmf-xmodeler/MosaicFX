@@ -11,7 +11,7 @@ public class IssueBox extends NodeBox{
 	
 	public final static double BOX_SIZE = 16;
 
-	public IssueBox(double x, double y, double width, double height, Paint bgColor, Paint fgColor,
+	public IssueBox(double x, double y, double width, double height, Color bgColor, Color fgColor,
 			LineWidthGetter lineWidth, PropertyType propertyType) {
 		super(x, y, width, height, bgColor, fgColor, lineWidth, propertyType);
 	}

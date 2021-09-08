@@ -843,7 +843,7 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	}
 
 	@Override
-	public void paintToSvg(XmlHandler xmlHandler, int xOffset, int yOffset, FmmlxDiagram diagram) {
+	public void paintToSvg(XmlHandler xmlHandler, FmmlxDiagram diagram) {
 		if(!isVisible()) return;
 
 		Color color = diagram.isSelected(this) ? Color.RED : getPrimaryColor();

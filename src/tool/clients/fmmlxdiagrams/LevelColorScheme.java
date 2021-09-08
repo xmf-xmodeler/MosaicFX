@@ -12,7 +12,7 @@ import javafx.scene.paint.Stop;
 public abstract class LevelColorScheme {
 	
 	public abstract Color getLevelFgColor(int level, double opacity);
-	public abstract Paint getLevelBgColor(int level); 
+	public abstract Color getLevelBgColor(int level); 
 	
 	public static final class DefaultLevelColorScheme extends LevelColorScheme {
 		
@@ -25,29 +25,29 @@ public abstract class LevelColorScheme {
 		}
 
 		@Override
-		public Paint getLevelBgColor(int level) {
+		public Color getLevelBgColor(int level) {
 			if(level == 0) return Color.valueOf("#8C8C8C");
 			if(level == 1) return Color.valueOf("#eeeeee");
 			if(level == 2) return Color.valueOf("#000000");
 			if(level == 3) return Color.valueOf("#3111DB");
 			if(level == 4) return Color.valueOf("#BB1133");
 			if(level == 5) return Color.valueOf("#119955");
-			if(level == 6) return new LinearGradient(0, 0, 20, 10, false, CycleMethod.REPEAT,
-					new Stop(.24, Color.valueOf("#22cc55")),
-					new Stop(.26, Color.valueOf("#ffdd00")),
-					new Stop(.74, Color.valueOf("#ffdd00")),
-					new Stop(.76, Color.valueOf("#22cc55")));
-			if(level == 7) return new LinearGradient(0, 0, 60, 25, false, CycleMethod.REPEAT,
-					new Stop(0. / 6, Color.valueOf("#ff4444")),
-					new Stop(0.8 / 6, Color.valueOf("#ffff00")),
-					new Stop(1.2 / 6, Color.valueOf("#ffff00")),
-					new Stop(2. / 6, Color.valueOf("#44ff44")),
-					new Stop(2.8 / 6, Color.valueOf("#00ffff")),
-					new Stop(3.2 / 6, Color.valueOf("#00ffff")),
-					new Stop(4. / 6, Color.valueOf("#6666ff")),
-					new Stop(4.8 / 6, Color.valueOf("#ff22ff")),
-					new Stop(5.2 / 6, Color.valueOf("#ff22ff")),
-					new Stop(6. / 6, Color.valueOf("#ff4444")));
+//			if(level == 6) return new LinearGradient(0, 0, 20, 10, false, CycleMethod.REPEAT,
+//					new Stop(.24, Color.valueOf("#22cc55")),
+//					new Stop(.26, Color.valueOf("#ffdd00")),
+//					new Stop(.74, Color.valueOf("#ffdd00")),
+//					new Stop(.76, Color.valueOf("#22cc55")));
+//			if(level == 7) return new LinearGradient(0, 0, 60, 25, false, CycleMethod.REPEAT,
+//					new Stop(0. / 6, Color.valueOf("#ff4444")),
+//					new Stop(0.8 / 6, Color.valueOf("#ffff00")),
+//					new Stop(1.2 / 6, Color.valueOf("#ffff00")),
+//					new Stop(2. / 6, Color.valueOf("#44ff44")),
+//					new Stop(2.8 / 6, Color.valueOf("#00ffff")),
+//					new Stop(3.2 / 6, Color.valueOf("#00ffff")),
+//					new Stop(4. / 6, Color.valueOf("#6666ff")),
+//					new Stop(4.8 / 6, Color.valueOf("#ff22ff")),
+//					new Stop(5.2 / 6, Color.valueOf("#ff22ff")),
+//					new Stop(6. / 6, Color.valueOf("#ff4444")));
 			return Color.valueOf("#ffaa00");
 		}
 	}
@@ -78,7 +78,7 @@ public abstract class LevelColorScheme {
 		}
 
 		@Override
-		public Paint getLevelBgColor(int level) {
+		public Color getLevelBgColor(int level) {
 			if(level > max) level = max;
 			if(level < min) level = min;
 			double b = 1-(1. * (level-min)) / (max-min);
@@ -160,7 +160,7 @@ public abstract class LevelColorScheme {
 		}
 
 		@Override
-		public Paint getLevelBgColor(int level) {
+		public Color getLevelBgColor(int level) {
 			if(level == -1) level = 1;
 			if(level > max) level = max;
 			if(level < min) level = min;

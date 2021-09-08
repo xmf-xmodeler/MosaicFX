@@ -7,8 +7,8 @@ import org.w3c.dom.Element;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.transform.Affine;
-import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
+import tool.clients.exporter.svg.SvgConstant;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.xmlManipulator.XmlHandler;
 
@@ -34,18 +34,18 @@ public class NodeGroup implements NodeElement {
 //		element.setOwner(this);
 //	}
 	
-	private class NodeElementData  {
-		NodeElement element;
-		boolean showSelectedOnly;
-		boolean showUnselectedOnly;
-		
-		private NodeElementData(NodeElement element, boolean showSelectedOnly, boolean showUnselectedOnly) {
-			super();
-			this.element = element;
-			this.showSelectedOnly = showSelectedOnly;
-			this.showUnselectedOnly = showUnselectedOnly;
-		}
-	}
+//	private class NodeElementData  {
+//		NodeElement element;
+//		boolean showSelectedOnly;
+//		boolean showUnselectedOnly;
+//		
+//		private NodeElementData(NodeElement element, boolean showSelectedOnly, boolean showUnselectedOnly) {
+//			super();
+//			this.element = element;
+//			this.showSelectedOnly = showSelectedOnly;
+//			this.showUnselectedOnly = showUnselectedOnly;
+//		}
+//	}
 
 	@Override
 	public void paintOn(GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram, boolean objectIsSelected) {
@@ -72,9 +72,17 @@ public class NodeGroup implements NodeElement {
 	}
 
 	@Override
-	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element group, double xOffset, double yOffset,
-			boolean objectIsSelected) {
-		// TODO Auto-generated method stub
+	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup) {
+		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
+
+		group.setAttribute(SvgConstant.ATTRIBUTE_TRANSFORM, "matrix(1,0,0,1,"+getMyTransform().getTx()+","+getMyTransform().getTy()+")");
+
+		for(NodeElement nodeElement : nodeElements){
+			nodeElement.paintToSvg(diagram, xmlHandler, group);
+		}
+		
+		xmlHandler.addXmlElement(parentGroup, group);
+		
 	}
 	
 	@Override public double getX() {return myTransform.getTx();}

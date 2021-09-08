@@ -1,15 +1,11 @@
 package tool.clients.fmmlxdiagrams;
 
-import java.util.Collections;
-import java.util.Vector;
-
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.transform.Affine;
 
 import org.w3c.dom.Element;
 import tool.clients.exporter.svg.SvgConstant;
-import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.xmlManipulator.XmlHandler;
 
@@ -27,7 +23,7 @@ public abstract class Node implements CanvasElement{
 	private FmmlxObjectPort port;
 	
 	transient boolean requiresReLayout;
-	Vector<NodeElement> nodeElements = new Vector<>();
+	NodeGroup rootNodeElement = null;
 	
 	
 	public void triggerLayout() {
@@ -54,26 +50,23 @@ public abstract class Node implements CanvasElement{
 		if(requiresReLayout) layout(view.getDiagram());
 		boolean selected = view.getDiagram().isSelected(this);
 	
-		for (NodeElement e : nodeElements) {
-			e.paintOn(g, view, selected);
+		if (rootNodeElement != null) {
+			rootNodeElement.paintOn(g, view, selected);
 		}
 	}
 
 	@Override
-	public void paintToSvg(XmlHandler xmlHandler, int xOffset, int yOffset, FmmlxDiagram diagram) {
+	public void paintToSvg(XmlHandler xmlHandler, FmmlxDiagram diagram) {
 
 		if(hidden) return;
 
 		if(requiresReLayout) layout(diagram);
 
-		boolean selected = diagram.isSelected(this);
 		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
 		group.setAttribute(SvgConstant.ATTRIBUTE_GROUP_TYPE, "object");
-
-		Vector<NodeElement> nodesTobePainted = nodeElements;
-		Collections.reverse(nodesTobePainted);
-		for(NodeElement nodeElement : nodesTobePainted){
-			nodeElement.paintToSvg(diagram, xmlHandler, group, x+xOffset, y+yOffset, selected);
+		group.setAttribute("XModeler", "Node");
+		if(rootNodeElement != null){
+			rootNodeElement.paintToSvg(diagram, xmlHandler, group);
 		}
 		xmlHandler.addXmlElement(xmlHandler.getRoot(), group);
 	}
@@ -81,8 +74,8 @@ public abstract class Node implements CanvasElement{
 	@Override
 	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
 		if(hidden) return false;
-		for(NodeElement n : nodeElements) {
-			if(n.isHit(mouseX, mouseY, g, diagram)) return true;
+		if(rootNodeElement != null){
+			if(rootNodeElement.isHit(mouseX, mouseY, g, diagram)) return true;
 		}
 		return false;
 	}
@@ -134,9 +127,9 @@ public abstract class Node implements CanvasElement{
 	public abstract String getName();
 
 	public Affine getOwnAndDragTransform() {
-		NodeGroup group = (NodeGroup) nodeElements.firstElement();
-		Affine a = new Affine(group.getMyTransform());
-		a.append(group.getDragAffine());		
+//		NodeGroup group = (NodeGroup) rootNodeElement;
+		Affine a = new Affine(rootNodeElement.getMyTransform());
+		a.append(rootNodeElement.getDragAffine());		
 		return a;
 	}
 }

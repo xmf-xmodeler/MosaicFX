@@ -3,18 +3,11 @@ package tool.clients.fmmlxdiagrams;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.*;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement;
-import tool.clients.fmmlxdiagrams.graphics.NodeElement;
-import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteTool;
@@ -478,8 +471,8 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
 		NodeBaseElement hitLabel = null;
-		for(NodeElement e : nodeElements) if(hitLabel == null) {
-			 hitLabel =  e.getHitLabel(mouse, g, currentTransform, view);//new Point2D(relativePoint.getX() - e.getX(), relativePoint.getY() - e.getY()));
+		if(rootNodeElement != null) if(hitLabel == null) {
+			 hitLabel = rootNodeElement.getHitLabel(mouse, g, currentTransform, view);//new Point2D(relativePoint.getX() - e.getX(), relativePoint.getY() - e.getY()));
 		}
 		return hitLabel;
 	}
@@ -531,14 +524,12 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	}
 
 	public void dragTo(Affine dragAffine) {
-		NodeGroup ng = (NodeGroup) nodeElements.firstElement(); // HACK
-		ng.dragTo(dragAffine);
+		rootNodeElement.dragTo(dragAffine);
 	}
 
 	public void drop() {
-		NodeGroup ng = (NodeGroup) nodeElements.firstElement(); // HACK
-		ng.drop();
-		this.x = ng.getMyTransform().getTx();
-		this.y = ng.getMyTransform().getTy();
+		rootNodeElement.drop();
+		this.x = rootNodeElement.getMyTransform().getTx();
+		this.y = rootNodeElement.getMyTransform().getTy();
 	}
 }

@@ -25,5 +25,5 @@ public interface CanvasElement {
 	double getMouseMoveOffsetX();
 	double getMouseMoveOffsetY();
 
-    void paintToSvg(XmlHandler xmlHandler, int xOffset, int yOffset, FmmlxDiagram diagram);
+    void paintToSvg(XmlHandler xmlHandler, FmmlxDiagram diagram);
 }

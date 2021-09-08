@@ -2,6 +2,7 @@ package tool.clients.fmmlxdiagrams.graphics;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
@@ -31,8 +32,6 @@ public abstract class NodeBaseElement implements NodeElement {
 	public FmmlxProperty getActionObject() { return actionObject;}
 	
 	@Override public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
-//		currentTransform = new Affine(currentTransform); // copy
-//		currentTransform.append(myTransform);
 		if(isHit(mouse.getX(), mouse.getY(), g, diagram))
 			return this; return null;
 	}
@@ -49,6 +48,16 @@ public abstract class NodeBaseElement implements NodeElement {
 
 	public void setOwner(NodeElement owner) {
 		this.owner = owner;
+	}
+	
+	private static String format(double val) {
+	    String in = Integer.toHexString((int) Math.round(val * 255));
+	    return in.length() == 1 ? "0" + in : in;
+	}
+
+	public static String toRGBHexString(Color value) {
+	    return "#" + (format(value.getRed()) + format(value.getGreen()) + format(value.getBlue()))
+	            .toUpperCase();
 	}
 
 }

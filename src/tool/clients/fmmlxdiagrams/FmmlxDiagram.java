@@ -844,7 +844,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			o.updatePortOrder();
 		}
 		for(CanvasElement c : objectsToBePainted){
-			c.paintToSvg(xmlHandler, 0, 0, this);
+			c.paintToSvg(xmlHandler, this);
 		}
 		Element issueGroup = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
 		issueGroup.setAttribute(SvgConstant.ATTRIBUTE_GROUP_TYPE, "issues");
@@ -860,7 +860,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		for(Issue issue : issues){
 			issue.paintToSvg(xmlHandler, issueGroup, 14, 16, 0, mainViewPane.canvas.getHeight()+issue.issueNumber*14);
 		}
-		xmlHandler.addXmlElement(xmlHandler.getRoot(), issueGroup);
+		xmlHandler.addXmlElement(xmlHandler.getRoot(), issueGroup); 
 	}
 
 	public Affine getCanvasTransform() {

@@ -14,7 +14,6 @@ public class NodePath extends NodeBaseElement{
 	String textPath;
 	Paint bgColor;
 	Paint fgColor;
-	private transient GraphicsContext g; // evil hack
 	private transient Affine lastTransform;
 	private Affine selfTransform;
 	
@@ -28,7 +27,7 @@ public class NodePath extends NodeBaseElement{
 
 	@Override
 	public void paintOn(GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram,
-			boolean objectIsSelected) {this.g = g;
+			boolean objectIsSelected) {//this.g = g;
 //		Affine oldTransform = g.getTransform();
 //		Affine newtransform = currentTransform.clone();
 //		newtransform.appendTranslation(transform.getTx(), transform.getTy());
@@ -62,8 +61,7 @@ public class NodePath extends NodeBaseElement{
 	}
 
 	@Override
-	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element group, double xOffset, double yOffset,
-			boolean objectIsSelected) {
+	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup) {
 		// TODO Auto-generated method stub
 		
 	}
