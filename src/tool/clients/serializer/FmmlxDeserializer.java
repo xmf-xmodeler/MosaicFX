@@ -6,6 +6,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
+import tool.xmodeler.XModeler;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -61,6 +62,7 @@ public class FmmlxDeserializer {
                     e.printStackTrace();
                     System.err.println("load xml file failed");
                 }
+                XModeler.finishOpenDiagramFromXml();
                 return null;
             }
         };

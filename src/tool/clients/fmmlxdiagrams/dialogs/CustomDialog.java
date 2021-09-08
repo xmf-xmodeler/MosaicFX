@@ -11,6 +11,8 @@ import javafx.util.StringConverter;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.view.InstanceGeneratorGenerateTypeComboBox;
+import tool.clients.importer.Conflict;
+import tool.xmodeler.XModeler;
 
 import java.util.List;
 
@@ -34,6 +36,8 @@ public class CustomDialog<R> extends Dialog<R> {
 		flow.setVgap(3);
 		flow.setPrefWrapLength(250);
 		vBoxControl = new VBoxControl();
+
+		initOwner(XModeler.getStage());
 		
 		flow.getChildren().add(grid);
 
@@ -181,6 +185,78 @@ public class CustomDialog<R> extends Dialog<R> {
 		listView.getSelectionModel().setSelectionMode(selectionMode);
 		return listView;
 	}
+
+	public ListView<Conflict> initializeConflictListView(ObservableList<Conflict> list, SelectionMode selectionMode, String mode) {
+
+		ListView<Conflict> listView = new ListView<>(list);
+		listView.setPrefHeight(75);
+		listView.setPrefWidth(COLUMN_WIDTH);
+
+		switch (mode) {
+			case "t":
+				listView.setCellFactory(param -> new ListCell<Conflict>() {
+					@Override
+					protected void updateItem(Conflict object, boolean empty) {
+						super.updateItem(object, empty);
+
+						if (empty || object == null || object.getType() == null) {
+							setText(null);
+						} else {
+							setText(object.getType());
+						}
+					}
+				});
+				break;
+			case "d":
+				listView.setCellFactory(param -> new ListCell<Conflict>() {
+					@Override
+					protected void updateItem(Conflict object, boolean empty) {
+						super.updateItem(object, empty);
+
+						if (empty || object == null || object.getDescription() == null) {
+							setText(null);
+						} else {
+							setText(object.getDescription());
+						}
+					}
+				});
+				break;
+			case "w":
+				listView.setCellFactory(param -> new ListCell<Conflict>() {
+					@Override
+					protected void updateItem(Conflict object, boolean empty) {
+						super.updateItem(object, empty);
+
+						if (empty || object == null || object.getIn() == null) {
+							setText(null);
+						} else {
+							setText(object.getIn().toString());
+						}
+					}
+				});
+				break;
+			default:
+				listView.setCellFactory(param -> new ListCell<Conflict>() {
+					@Override
+					protected void updateItem(Conflict object, boolean empty) {
+						super.updateItem(object, empty);
+
+						if (empty || object == null) {
+							setText(null);
+						} else {
+							setText(object.toString());
+						}
+					}
+				});
+				break;
+		}
+
+
+		listView.getSelectionModel().setSelectionMode(selectionMode);
+		return listView;
+	}
+
+
 	
 	public ListView<FmmlxLink> initializeListViewAssociation(ObservableList<FmmlxLink> instanceOfAssociation, SelectionMode selectionMode){
 		ListView<FmmlxLink> listView = new ListView<>(instanceOfAssociation);
@@ -334,7 +410,8 @@ public class CustomDialog<R> extends Dialog<R> {
 	
 	public boolean validateString(String string) {
 
-		if (!InputChecker.getInstance().validateName(string)) {
+		InputChecker.getInstance();
+		if (!InputChecker.validateName(string)) {
 			errorLabel.setText("Enter valid String!");
 			return false;
 		} else {

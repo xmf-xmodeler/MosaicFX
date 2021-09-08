@@ -10,7 +10,7 @@ import java.util.*;
 
 public class ProtocolHandler {
     private final AbstractPackageViewer diagram;
-    public List<Conflict> problems;
+    public List<Conflict> conflicts;
     private final Vector<FmmlxObject> objects;
     private final Vector<FmmlxAssociation> associations;
     private final Vector<FmmlxLink> links;
@@ -19,7 +19,7 @@ public class ProtocolHandler {
 
     public ProtocolHandler(AbstractPackageViewer diagram) {
         this.diagram = diagram;
-        this.problems = new ArrayList<>();
+        this.conflicts = new ArrayList<>();
         this.objects = diagram.getObjects();
         this.associations = diagram.getAssociations();
         this.links = diagram.getAssociationInstance();
@@ -41,6 +41,7 @@ public class ProtocolHandler {
         String tagName = logElement.getTagName();
         switch (tagName) {
             case "addMetaClass": {
+                String conflictType = ImporterStrings.ConflictType.CLASS;
                 String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
                 int level = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));
                 // check name
@@ -48,9 +49,9 @@ public class ProtocolHandler {
                     if(object.getName().equals(name)){
                         //Check level
                         if(object.getLevel() != level){
-                            Conflict conflict = new Conflict(ImporterStrings.PROBLEM_CLASS_DIFFERENT_LEVEL);
+                            Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_LEVEL);
                             conflict.putIn(ImporterStrings.CLASS_NAME, object.getName());
-                            problems.add(conflict);
+                            conflicts.add(conflict);
                         }
                     }
                 }
@@ -61,6 +62,7 @@ public class ProtocolHandler {
                 break;
             }
             case "addAttribute" : {
+                String conflictType = ImporterStrings.ConflictType.ATTRIBUTE;
                 String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
                 String classpath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
                 String[] classPathArray = classpath.split("::");
@@ -81,24 +83,24 @@ public class ProtocolHandler {
                             if(attribute.getName().equals(name)){
                                 //check level
                                 if(attribute.getLevel()!=level){
-                                    Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ATTRIBUTE_DIFFERENT_LEVEL);
+                                    Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_LEVEL);
                                     conflict.putIn(ImporterStrings.CLASS_NAME, className);
                                     conflict.putIn(ImporterStrings.ATTRIBUTE_NAME, name);
-                                    problems.add(conflict);
+                                    conflicts.add(conflict);
                                 }
                                 //check type
                                 if(!attribute.getType().equals(typeName)){
-                                    Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ATTRIBUTE_DIFFERENT_TYPE);
+                                    Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_TYPE);
                                     conflict.putIn(ImporterStrings.CLASS_NAME, className);
                                     conflict.putIn(ImporterStrings.ATTRIBUTE_NAME, name);
-                                    problems.add(conflict);
+                                    conflicts.add(conflict);
                                 }
                                 //check multiplicity
                                 if(!attribute.getMultiplicity().toString().equals(multiplicity.toString())){
-                                    Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ATTRIBUTE_DIFFERENT_MULTIPLICITY);
+                                    Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_MULTIPLICITY);
                                     conflict.putIn(ImporterStrings.CLASS_NAME, className);
                                     conflict.putIn(ImporterStrings.ATTRIBUTE_NAME, name);
-                                    problems.add(conflict);
+                                    conflicts.add(conflict);
                                 }
                                 break;
                             }
@@ -109,6 +111,7 @@ public class ProtocolHandler {
                 break;
             }
             case "addOperation": {
+                String conflictType = ImporterStrings.ConflictType.OPERATION;
                 String classPath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
                 String[] classPathArray = classPath.split("::");
                 String className = classPathArray[classPathArray.length-1];
@@ -118,6 +121,7 @@ public class ProtocolHandler {
                 break;
             }
             case "changeSlotValue" : {
+                String conflictType = ImporterStrings.ConflictType.SLOT;
                 String classpath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
                 String[] classPathArray = classpath.split("::");
                 String className = classPathArray[classPathArray.length-1];
@@ -130,10 +134,10 @@ public class ProtocolHandler {
                         for(FmmlxSlot slot : slots){
                             if(slot.getName().equals(slotName)){
                                 if(!slot.getValue().equals(valueToBeParsed)){
-                                    Conflict conflict = new Conflict(ImporterStrings.PROBLEM_SLOT_DIFFERENT_VALUE);
+                                    Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_VALUE);
                                     conflict.putIn(ImporterStrings.CLASS_NAME, className);
                                     conflict.putIn(ImporterStrings.SLOT_NAME, slotName);
-                                    problems.add(conflict);
+                                    conflicts.add(conflict);
                                 }
                             }
                             break;
@@ -144,6 +148,7 @@ public class ProtocolHandler {
                 break;
             }
             case "addAssociation" : {
+                String conflictType = ImporterStrings.ConflictType.ASSOCIATION;
                 String sourceName = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE));
                 String targetName = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET));
 
@@ -170,82 +175,82 @@ public class ProtocolHandler {
                         if (ass.getName().equals(fwName)) {
                             if(ass.getReverseName()!=null && reverseName!=null){
                                 if (!ass.getReverseName().equals(reverseName)) {
-                                    Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_REVERSE_NAME);
+                                    Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_REVERSE_NAME);
                                     conflictAssocIn(conflict, fwName, sourceName, targetName);
-                                    problems.add(conflict);
+                                    conflicts.add(conflict);
                                 }
                             } else if(ass.getReverseName() != null || ass.getReverseName() == null && reverseName != null){
                                 if(ass.getReverseName() != null){
                                     if(!ass.getReverseName().equals("-1")){
-                                        Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_REVERSE_NAME);
+                                        Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_REVERSE_NAME);
                                         conflictAssocIn(conflict, fwName, sourceName, targetName);
-                                        problems.add(conflict);
+                                        conflicts.add(conflict);
                                     }
                                 } else {
                                     assert reverseName != null;
                                     if(!reverseName.equals("-1")){
-                                        Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_REVERSE_NAME);
+                                        Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_REVERSE_NAME);
                                         conflictAssocIn(conflict, fwName, sourceName, targetName);
-                                        problems.add(conflict);
+                                        conflicts.add(conflict);
                                     }
                                 }
                             }
                             if (!ass.getAccessNameStartToEnd().equals(accessTargetFromSourceName)) {
-                                Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_ACCESS_SOURCE_FROM_TARGET);
+                                Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_ACCESS_SOURCE_FROM_TARGET);
                                 conflictAssocIn(conflict, fwName, sourceName, targetName);
-                                problems.add(conflict);
+                                conflicts.add(conflict);
                             }
                             if (!ass.getAccessNameEndToStart().equals(accessSourceFromTargetName)) {
-                                Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_ACCESS_TARGET_FROM_SOURCE);
+                                Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_ACCESS_TARGET_FROM_SOURCE);
                                 conflictAssocIn(conflict, fwName, sourceName, targetName);
-                                problems.add(conflict);
+                                conflicts.add(conflict);
                             }
                             if (ass.getLevelSource()!=(instLevelSource)) {
-                                Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_INST_LEVEL_SOURCE);
+                                Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_INST_LEVEL_SOURCE);
                                 conflictAssocIn(conflict, fwName, sourceName, targetName);
-                                problems.add(conflict);
+                                conflicts.add(conflict);
                             }
                             if (ass.getLevelTarget()!=(instLevelTarget)) {
-                                Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_INST_LEVEL_TARGET);
+                                Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_INST_LEVEL_TARGET);
                                 conflictAssocIn(conflict, fwName, sourceName, targetName);
-                                problems.add(conflict);
+                                conflicts.add(conflict);
                             }
                             if (!ass.getMultiplicityStartToEnd().toString().equals(multiplicityS2T.toString())){
-                                Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_MULTIPLICITY_S2E);
+                                Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_MULTIPLICITY_S2E);
                                 conflictAssocIn(conflict, fwName, sourceName, targetName);
-                                problems.add(conflict);
+                                conflicts.add(conflict);
                             }
                             if (!ass.getMultiplicityEndToStart().toString().equals(multiplicityT2S.toString())){
-                                Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_MULTIPLICITY_E2S);
+                                Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_MULTIPLICITY_E2S);
                                 conflictAssocIn(conflict, fwName, sourceName, targetName);
-                                problems.add(conflict);
+                                conflicts.add(conflict);
                             }
                             if (ass.isSourceVisible()!=sourceVisibleFromTarget) {
-                                Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_SOURCE_VISIBLE_FROM_TARGET);
+                                Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_SOURCE_VISIBLE_FROM_TARGET);
                                 conflictAssocIn(conflict, fwName, sourceName, targetName);
-                                problems.add(conflict);
+                                conflicts.add(conflict);
                             }
                             if (ass.isTargetVisible()!=targetVisibleFromSource) {
-                                Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_TARGET_VISIBLE_FROM_SOURCE);
+                                Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_TARGET_VISIBLE_FROM_SOURCE);
                                 conflictAssocIn(conflict, fwName, sourceName, targetName);
-                                problems.add(conflict);
+                                conflicts.add(conflict);
                             }
                             if (ass.isSymmetric()!=isSymmetric) {
-                                Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_SYMMETRIC);
+                                Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_SYMMETRIC);
                                 conflictAssocIn(conflict, fwName, sourceName, targetName);
-                                problems.add(conflict);
+                                conflicts.add(conflict);
                             }
                             if (ass.isTransitive()!=isTransitive) {
-                                Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_DIFFERENT_TRANSITIVE);
+                                Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_TRANSITIVE);
                                 conflictAssocIn(conflict, fwName, sourceName, targetName);
-                                problems.add(conflict);
+                                conflicts.add(conflict);
                             }
                         }
                     } else if (ass.targetEnd.getNode().getName().equals(sourceName) && ass.sourceEnd.getNode().getName().equals(targetName)){
                         if(ass.getName().equals(fwName)){
-                            Conflict conflict = new Conflict(ImporterStrings.PROBLEM_ASSOCIATION_REVERSE_SOURCE_AND_TARGET);
+                            Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_REVERSE_SOURCE_AND_TARGET);
                             conflictAssocIn(conflict, fwName, sourceName, targetName);
-                            problems.add(conflict);
+                            conflicts.add(conflict);
                         }
                     }
                 }
@@ -253,6 +258,7 @@ public class ProtocolHandler {
                 break;
             }
             case "addLink" : {
+                String conflictType = ImporterStrings.ConflictType.LINK;
                 String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
                 String className1 = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE));
                 String className2 = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET));
@@ -260,15 +266,16 @@ public class ProtocolHandler {
                 for(FmmlxLink link:links){
                     if(link.sourceEnd.getNode().getName().equals(className2) && (link.targetEnd.getNode().getName().equals(className1))){
                         if(link.getName().equals(name)){
-                            Conflict conflict = new Conflict(ImporterStrings.PROBLEM_LINK_REVERSE_SOURCE_AND_TARGET);
+                            Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_REVERSE_SOURCE_AND_TARGET);
                             conflictAssocIn(conflict, name, className1, className2);
-                            problems.add(conflict);
+                            conflicts.add(conflict);
                         }
                     }
                 }
                 break;
             }
             case "addDelegation" : {
+                String conflictType = ImporterStrings.ConflictType.DELEGATION;
                 String delegationFromName = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_DELEGATE_FROM));
                 String delegationToName = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_DELEGATE_TO));
                 int delegateToLevel = Integer.parseInt(logElement.getAttribute("delegateToLevel"));
@@ -276,22 +283,23 @@ public class ProtocolHandler {
                 for(DelegationEdge delegationEdge:delegationEdges){
                     if(delegationEdge.sourceEnd.getNode().getName().equals(delegationFromName) && (delegationEdge.targetEnd.getNode().getName().equals(delegationToName))){
                         if(delegationEdge.level!=delegateToLevel){
-                            Conflict conflict = new Conflict(ImporterStrings.PROBLEM_LINK_REVERSE_SOURCE_AND_TARGET);
+                            Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_DELEGATION_LEVEL);
                             conflict.putIn(ImporterStrings.SOURCE_CLASS, delegationFromName);
                             conflict.putIn(ImporterStrings.TARGET_CLASS, delegationToName);
-                            problems.add(conflict);
+                            conflicts.add(conflict);
                         }
                     }
                     if(delegationEdge.sourceEnd.getNode().getName().equals(delegationToName) && (delegationEdge.targetEnd.getNode().getName().equals(delegationFromName))){
-                        Conflict conflict = new Conflict(ImporterStrings.PROBLEM_LINK_REVERSE_SOURCE_AND_TARGET);
+                        Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_REVERSE_SOURCE_AND_TARGET);
                         conflict.putIn(ImporterStrings.SOURCE_CLASS, delegationFromName);
                         conflict.putIn(ImporterStrings.TARGET_CLASS, delegationToName);
-                        problems.add(conflict);
+                        conflicts.add(conflict);
                     }
                 }
                 break;
             }
             case "setRoleFiller" : {
+                String conflictType = ImporterStrings.ConflictType.ROLE_FILLER;
                 String rolePath = logElement.getAttribute("role");
                 String[] rolePathArray1 = rolePath.split("::");
                 String role = rolePathArray1[rolePathArray1.length-1];
@@ -302,10 +310,10 @@ public class ProtocolHandler {
 
                 for(RoleFillerEdge roleFillerEdge:roleFillerEdges){
                     if(roleFillerEdge.sourceEnd.getNode().getName().equals(roleFiller) && (roleFillerEdge.targetEnd.getNode().getName().equals(role))){
-                        Conflict conflict = new Conflict(ImporterStrings.PROBLEM_LINK_REVERSE_SOURCE_AND_TARGET);
+                        Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_REVERSE_SOURCE_AND_TARGET);
                         conflict.putIn(ImporterStrings.SOURCE_CLASS, role);
                         conflict.putIn(ImporterStrings.TARGET_CLASS, roleFiller);
-                        problems.add(conflict);
+                        conflicts.add(conflict);
                     }
                 }
 
@@ -356,12 +364,12 @@ public class ProtocolHandler {
     }
 
     public void clearProblems(){
-        problems.clear();
+        conflicts.clear();
     }
 
 
-    public List<Conflict> getProblems() {
-        return problems;
+    public List<Conflict> getConflicts() {
+        return conflicts;
     }
 
     public void executeMerge(Node logsNode, FmmlxDiagramCommunicator comm) {

@@ -3,11 +3,18 @@ package tool.clients.importer;
 import java.util.Map;
 
 public class Conflict {
-    private String description;
-    private Map<String, String> in;
+    private final String type;
+    private final String description;
+    private MyHashMap in;
 
-    public Conflict(String description){
+    public Conflict(String type, String description){
+        this.type = type;
+        this.in = new MyHashMap();
         this.description = description;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public String getDescription() {
@@ -25,12 +32,13 @@ public class Conflict {
     @Override
     public String toString() {
         return "Conflict{" +
-                "description='" + description + '\'' +
-                ", in = " + in +
+                "type='" + type + '\'' +
+                ", description='" + description + '\'' +
+                ", in=" + in +
                 '}';
     }
 
-    public void setIn(Map<String, String> in) {
+    public void setIn(MyHashMap in) {
         this.in = in;
     }
 }

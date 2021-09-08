@@ -36,6 +36,7 @@ import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
 import tool.clients.importer.FMMLxImporter;
 import tool.clients.serializer.FmmlxSerializer;
+import tool.xmodeler.XModeler;
 import xos.Value;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -1097,7 +1098,7 @@ public class DiagramActions {
 		FileChooser fc = new FileChooser();
 		fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("svg", "*.svg"));
 		fc.setTitle("Export File");
-		File file = fc.showSaveDialog(null);
+		File file = fc.showSaveDialog(XModeler.getStage());
 
 		if(file!= null){
 			if(!(diagram instanceof FmmlxDiagram)) throw new IllegalArgumentException();
@@ -1160,7 +1161,7 @@ public class DiagramActions {
 			FileChooser fc = new FileChooser();
 			fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("xml", "*.xml"));
 			fc.setTitle("choose File");
-			File file = fc.showOpenDialog(null);
+			File file = fc.showOpenDialog(XModeler.getStage());
 
 			if(file!= null){
 				FMMLxImporter importer = new FMMLxImporter(file.getPath(), diagram);

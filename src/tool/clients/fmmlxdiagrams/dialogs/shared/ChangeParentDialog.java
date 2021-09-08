@@ -83,17 +83,15 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 		newParentListView = initializeListView(possibleParents, SelectionMode.MULTIPLE);
 		
 		possibleParents = diagram.getAllPossibleParents(object.getLevel());
-		if(possibleParents.contains(object)) {
-			possibleParents.remove(object);
-		}
+		possibleParents.remove(object);
 		newParentListView.setItems(possibleParents);
 		newParentListView.setDisable(false);
 		if (possibleParents.size() == 0) {
 			newParentListView.setDisable(true);
 		}
-		 
-		for(int i = 0; i < currentParentList.size(); i++) {
-			newParentListView.getSelectionModel().select(currentParentList.get(i));
+
+		for (FmmlxObject fmmlxObject : currentParentList) {
+			newParentListView.getSelectionModel().select(fmmlxObject);
 		}
 		
 		grid.add(selectedObjectLabel, 0, 0);
@@ -110,10 +108,9 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 
 		for (String name : parentNames) {
 			FmmlxObject o = diagram.getObjectByPath(name);
-			if(o != null) resultList.add(o);
+			resultList.add(o);
 		}
-		
-		ObservableList<FmmlxObject> result = FXCollections.observableArrayList(resultList);
-		return result;
+
+		return FXCollections.observableArrayList(resultList);
 	}
 }
