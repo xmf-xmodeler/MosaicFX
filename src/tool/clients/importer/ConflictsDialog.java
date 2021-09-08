@@ -16,7 +16,7 @@ public class ConflictsDialog extends CustomDialog {
     private ListView<Conflict> conflictTypeList;
     private ListView<Conflict> descriptionsListView;
     private ListView<Conflict> whereListView;
-    private List<Conflict> conflicts;
+    private final List<Conflict> conflicts;
 
     public ConflictsDialog(List<Conflict> conflicts){
         super();
@@ -97,7 +97,7 @@ public class ConflictsDialog extends CustomDialog {
             for(Conflict conflict: this.conflicts){
                 if(conflict.getType().equals(neww.getType()) && !descriptions.contains(conflict.getDescription())){
                     conflictList.add(conflict);
-                    descriptions.add(neww.getDescription());
+                    descriptions.add(conflict.getDescription());
                 }
             }
         }

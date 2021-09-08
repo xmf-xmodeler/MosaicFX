@@ -17,6 +17,7 @@ import tool.clients.serializer.XmlManager;
 import tool.clients.xmlManipulator.XmlHandler;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.PropertyManager;
+import tool.xmodeler.XModeler;
 import xos.Value;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -1543,7 +1544,8 @@ public class FmmlxDiagramCommunicator {
     public void openXmlFile(String fileName) {
         FmmlxDeserializer fmmlxDeserializer = new FmmlxDeserializer(new XmlManager(fileName));
         new Thread(() -> fmmlxDeserializer.loadProject(this)).start(); // Very important. Otherwise assigning diagramID will get stuck
-    }
+		XModeler.bringControlCenterToFront();
+	}
 
     public void openPackageBrowser() {
         WorkbenchClient.theClient().send(handler, "openPackageBrowser()");
