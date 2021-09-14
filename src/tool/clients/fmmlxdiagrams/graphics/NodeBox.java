@@ -1,9 +1,7 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
-import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.transform.Affine;
 
 import org.w3c.dom.Element;
@@ -12,29 +10,21 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.xmlManipulator.XmlHandler;
 
-import java.util.Vector;
-
-public class NodeBox implements NodeElement {
+public class NodeBox extends NodeGroup{
 
 	public interface LineWidthGetter {
 		double getWidth(boolean selected);
 	}
 
-	double x;
-	double y;
 	double width;
 	double height;
 	Color bgColor;
 	Color fgColor;
 	LineWidthGetter lineWidth;
-	private Vector<NodeElement> nodeElements = new Vector<>();
 	private PropertyType propertyType;
-	private NodeElement owner;
 
 	public NodeBox(double x, double y, double width, double height, Color bgColor, Color fgColor, LineWidthGetter lineWidth, PropertyType propertyType) {
-		super();
-		this.x = x;
-		this.y = y;
+		super(new Affine(1,0,x,0,1,y));
 		this.width = width;
 		this.height = height;
 		this.bgColor = bgColor;
@@ -44,22 +34,22 @@ public class NodeBox implements NodeElement {
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram, boolean objectIsSelected) {
-		g.setTransform(getTotalTransform(diagram.getCanvasTransform()));
+	public void paintOn(FmmlxDiagram.DiagramViewPane diagramView, boolean objectIsSelected) {
+		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
+		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
 		g.setFill(bgColor);
 		g.fillRect(0,0, width, height);
 		g.setStroke(fgColor);
 		g.setLineWidth(lineWidth.getWidth(objectIsSelected));
 		g.strokeRect(0,0, width, height);
-		for (NodeElement e : new Vector<>(nodeElements)) {
-			e.paintOn(g, diagram, objectIsSelected);
-		}
+		super.paintOn(diagramView, objectIsSelected);
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram) {
+	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagramView) {
 		boolean hit = false;
-		g.setTransform(getTotalTransform(diagram.getCanvasTransform()));
+		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
+		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
 		g.beginPath();
 		g.moveTo(0, 0); g.lineTo(0, height); g.lineTo(width, height); g.lineTo(width, 0); g.lineTo(0, 0);
 		hit = g.isPointInPath(mouseX, mouseY);
@@ -71,33 +61,12 @@ public class NodeBox implements NodeElement {
 		return propertyType;
 	}
 
-	@Override public double getX() {return x;}
-	@Override public double getY() {return y;}
-	
-	@Override public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
-//		if(isHit(mouse.getX(), mouse.getY(), g, currentTransform, diagram)) {
-			Affine myTransform = new Affine(1, 0, x, 0, 1, y);
-			currentTransform = new Affine(currentTransform); // copy
-			currentTransform.append(myTransform);
-			NodeBaseElement hitLabel = null;
-			for(NodeElement e : nodeElements) if(hitLabel == null) {
-				 hitLabel = e.getHitLabel(mouse, g, currentTransform, diagram);
-			}
-			return hitLabel;
-//		} else {
-//			return null;
-//		} 
-	}
-
 	@Override
 	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup) {
 		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
 		group.setAttribute(SvgConstant.ATTRIBUTE_TRANSFORM, "matrix(1,0,0,1,"+getMyTransform().getTx()+","+getMyTransform().getTy()+")");
 		group.setAttribute("XModeler", "NodeBox");
 		xmlHandler.addXmlElement(parentGroup, group);
-
-//		String backgroundColor = bgColor.toString().split("x")[1].substring(0,6);
-//		String foregroundColor = fgColor.toString().split("x")[1].substring(0,6);
 
 		Element rect = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_RECT);
 		rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, "0");//(x + xOffset)+"");
@@ -113,22 +82,5 @@ public class NodeBox implements NodeElement {
 		for(NodeElement nodeElement : nodeElements){
 			nodeElement.paintToSvg(diagram, xmlHandler, group);
 		}
-	}
-
-	public void addNodeElement(NodeElement nodeElement) {
-		nodeElements.add(nodeElement);
-		nodeElement.setOwner(this);		
-	}
-	
-	public final Affine getMyTransform() {	return new Affine(1, 0, x, 0, 1, y); }
-	
-	public Affine getTotalTransform(Affine canvasTransform) {
-		Affine a = new Affine(owner == null?canvasTransform:owner.getTotalTransform(canvasTransform));
-		a.append(new Affine(1, 0, x, 0, 1, y));
-		return a;
-	}
-
-	public void setOwner(NodeElement owner) {
-		this.owner = owner;
 	}
 }

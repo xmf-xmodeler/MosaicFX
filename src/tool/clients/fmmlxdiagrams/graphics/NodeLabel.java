@@ -42,6 +42,32 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 		this.issueNumber = issueNumber;
 	}
 	
+	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
+			 String text) {
+		this(alignment, x, y, fgColor, bgColor, actionObject, action, text, FontPosture.REGULAR, FontWeight.NORMAL, 1.);
+	}
+	
+	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
+			 String text, FontPosture fontPosture, FontWeight fontWeight) {
+		this(alignment, x, y, fgColor, bgColor, actionObject, action, text, fontPosture, fontWeight, 1.);
+	}
+	
+	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
+				 String text, FontPosture fontPosture, FontWeight fontWeight, double fontScale) {
+		super(new Affine(1,0,x,0,1,y), actionObject, action);
+		this.alignment = alignment;
+		this.fgColor = fgColor;
+		this.bgColor = bgColor;
+		this.text = text;
+		this.fontWeight = fontWeight;
+		this.fontPosture = fontPosture;
+		this.selected = false;
+		this.fontScale = fontScale;
+		
+		textWidth = FmmlxDiagram.calculateTextWidth(text);
+		textHeight = FmmlxDiagram.calculateTextHeight()*fontScale;
+	}
+	
 	private Affine getBoxTransform(Affine canvasTransform) {
 		double hAlign = 0;
 		if (alignment != Pos.BASELINE_LEFT) {
@@ -63,59 +89,29 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 	}
 
 	@Override
-	public void paintOn(GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram, boolean objectIsSelected) {
+	public void paintOn(FmmlxDiagram.DiagramViewPane diagramView, boolean objectIsSelected) {
+		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
 		String textLocal = setTextLocal(text);
 		g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), fontWeight, fontPosture, fontSize * fontScale));
 
-		g.setTransform(getBoxTransform(diagram.getCanvasTransform()));
+		g.setTransform(getBoxTransform(diagramView.getCanvasTransform()));
 		
 		if (selected || bgColor != null) {
 			g.setFill(selected ? Color.DARKGREY : bgColor);
 			g.fillRect(0, 0, textWidth + 2 * BOX_GAP, textHeight + 2 * BOX_GAP);
 		}
 		
-//			String color = "00000" +Integer.toHexString(getText().hashCode());
-//			color = color.substring(color.length()-6);
-//			g.setFill(Color.web("#"+color));
-//			g.setTransform(getBoxTransform(diagram.getCanvasTransform()));
-//			g.fillRect(0, 0, textWidth + 2 * BOX_GAP, textHeight + 2 * BOX_GAP);
-		
-		g.setTransform(getTextTransform(diagram.getCanvasTransform()));		
+		g.setTransform(getTextTransform(diagramView.getCanvasTransform()));		
 		
 		g.setFill(fgColor);
 		g.fillText(textLocal, 0, 0);
 	}
 
-	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
-			 String text) {
-		this(alignment, x, y, fgColor, bgColor, actionObject, action, text, FontPosture.REGULAR, FontWeight.NORMAL, 1.);
-	}
-	
-	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
-			 String text, FontPosture fontPosture, FontWeight fontWeight) {
-		this(alignment, x, y, fgColor, bgColor, actionObject, action, text, fontPosture, fontWeight, 1.);
-	}
-	
-	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
-				 String text, FontPosture fontPosture, FontWeight fontWeight, double fontScale) {
-		super(x, y, actionObject, action);
-		this.alignment = alignment;
-		this.fgColor = fgColor;
-		this.bgColor = bgColor;
-		this.text = text;
-		this.fontWeight = fontWeight;
-		this.fontPosture = fontPosture;
-		this.selected = false;
-		this.fontScale = fontScale;
-		
-		textWidth = FmmlxDiagram.calculateTextWidth(text);
-		textHeight = FmmlxDiagram.calculateTextHeight()*fontScale;
-	}
-
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram) {
+	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagramView) {
 		boolean hit = false;
-		g.setTransform(getBoxTransform(diagram.getCanvasTransform()));
+		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
+		g.setTransform(getBoxTransform(diagramView.getCanvasTransform()));
 		g.beginPath();
 		g.moveTo(0, 0); 
 		g.lineTo(0, textHeight + 2 * BOX_GAP); 

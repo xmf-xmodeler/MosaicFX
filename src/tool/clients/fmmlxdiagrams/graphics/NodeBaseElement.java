@@ -13,8 +13,14 @@ public abstract class NodeBaseElement implements NodeElement {
 		public void perform();
 	}
 
-	public NodeBaseElement(double x, double y, FmmlxProperty actionObject, Action action) {
-		this.myTransform = new Affine(1,0,x,0,1,y);
+//	public NodeBaseElement(double x, double y, FmmlxProperty actionObject, Action action) {
+//		this.myTransform = new Affine(1,0,x,0,1,y);
+//		this.actionObject = actionObject;
+//		this.action = action;
+//	}
+	
+	public NodeBaseElement(Affine myTransform, FmmlxProperty actionObject, Action action) {
+		this.myTransform = myTransform;
 		this.actionObject = actionObject;
 		this.action = action;
 	}
@@ -24,15 +30,13 @@ public abstract class NodeBaseElement implements NodeElement {
 	protected Action action;
 	protected boolean selected = false;
 	private NodeElement owner;
-	
-	@Override public double getX() {return myTransform.getTx();}
-	@Override public double getY() {return myTransform.getTy();}	
+		
 	public void setSelected() { selected = true;}
 	public void setDeselected() { selected = false;}
 	public FmmlxProperty getActionObject() { return actionObject;}
 	
-	@Override public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
-		if(isHit(mouse.getX(), mouse.getY(), g, diagram))
+	@Override public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagramView) {
+		if(isHit(mouse.getX(), mouse.getY(), diagramView))
 			return this; return null;
 	}
 	

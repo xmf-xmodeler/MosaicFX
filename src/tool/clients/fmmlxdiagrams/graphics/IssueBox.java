@@ -2,12 +2,10 @@ package tool.clients.fmmlxdiagrams.graphics;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
-public class IssueBox extends NodeBox{
+public class IssueBox extends NodeBox {
 	
 	public final static double BOX_SIZE = 16;
 
@@ -17,21 +15,17 @@ public class IssueBox extends NodeBox{
 	}
 	
 	@Override
-	public void paintOn(GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram, boolean objectIsSelected) {
-		super.paintOn(g, diagram, objectIsSelected);
-		
+	public void paintOn(FmmlxDiagram.DiagramViewPane diagramView, boolean objectIsSelected) {
+		super.paintOn(diagramView, objectIsSelected);
+			GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
 			final double LAMP_SIZE = 2 * BOX_SIZE / (1 + Math.sqrt(5));
 			
-			double X1 = x;// + transform.getTx();
-			double X2 = x + width - BOX_SIZE;//+ transform.getTx()
-			double Y = y + 3;//+ transform.getTy()
+			double X1 = 0;
+			double X2 = width - BOX_SIZE;
+			double Y = 3;
 			
-			g.setTransform(getTotalTransform(diagram.getCanvasTransform()));
+			g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
 			
-//			g.setFill(Color.BLACK);
-//			g.fillRect(X1, Y, BOX_SIZE, BOX_SIZE);
-//			g.fillRect(X2, Y, BOX_SIZE, BOX_SIZE);
-
 			g.setFill(new Color(1., .8, 0., 1.));
 			if(System.currentTimeMillis()%1600<800) {
 				g.fillOval(X1 + BOX_SIZE/2 - LAMP_SIZE/2, Y + BOX_SIZE/2 - LAMP_SIZE/2, LAMP_SIZE, LAMP_SIZE);

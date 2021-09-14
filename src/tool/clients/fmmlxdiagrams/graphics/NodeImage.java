@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Base64;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.transform.Affine;
 
 import org.w3c.dom.Element;
 import tool.clients.exporter.svg.SvgConstant;
@@ -16,7 +17,7 @@ import tool.clients.xmlManipulator.XmlHandler;
 public class NodeImage extends NodeBaseElement implements NodeElement {
 	String iconSource;
 	public NodeImage(double x, double y, String iconSource, FmmlxProperty o, Action action) {
-		super(x, y, o, action);
+		super(new Affine(1,0,x,0,1,y), o, action);
 		this.image = new javafx.scene.image.Image(new File(iconSource).toURI().toString());
 		this.iconSource = iconSource;
 	}
@@ -24,14 +25,15 @@ public class NodeImage extends NodeBaseElement implements NodeElement {
 	private javafx.scene.image.Image image;	
 
 	@Override
-	public void paintOn(GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram,
+	public void paintOn(FmmlxDiagram.DiagramViewPane diagramView,
 			boolean objectIsSelected) {
-		g.setTransform(getTotalTransform(diagram.getCanvasTransform()));
+		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
+		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
 		g.drawImage(image, 0, 0 - image.getHeight());		
 	}
 
 	@Override
-	public boolean isHit(double mouseX, double mouseY, GraphicsContext g, FmmlxDiagram.DiagramViewPane diagram) {
+	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagram) {
 		return false;
 	}
 

@@ -522,6 +522,8 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutStopEvent();
 		} else if(ofPath.endsWith("Event")) {
 			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutEvent();
+		} else if(ofPath.endsWith("Signal")) {
+			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutSignal();
 		} else if(ofPath.endsWith("ComputerSupportedProcess")) {
 			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutComputerSupportedProcess();
 		} else if(ofPath.endsWith("AutomatedProcess")) {

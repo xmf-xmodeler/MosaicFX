@@ -51,7 +51,7 @@ public abstract class Node implements CanvasElement{
 		boolean selected = view.getDiagram().isSelected(this);
 	
 		if (rootNodeElement != null) {
-			rootNodeElement.paintOn(g, view, selected);
+			rootNodeElement.paintOn(view, selected);
 		}
 	}
 
@@ -75,7 +75,7 @@ public abstract class Node implements CanvasElement{
 	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
 		if(hidden) return false;
 		if(rootNodeElement != null){
-			if(rootNodeElement.isHit(mouseX, mouseY, g, diagram)) return true;
+			if(rootNodeElement.isHit(mouseX, mouseY, diagram)) return true;
 		}
 		return false;
 	}
