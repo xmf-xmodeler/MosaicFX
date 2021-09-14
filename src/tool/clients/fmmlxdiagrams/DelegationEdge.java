@@ -17,7 +17,7 @@ public class DelegationEdge extends Edge<FmmlxObject> {
 		this.level = level;
 	}
 	
-	private Integer level;
+	public Integer level;
 
 	protected void checkVisibilityMode() {visible = true;}
 	

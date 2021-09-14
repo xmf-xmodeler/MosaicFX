@@ -82,7 +82,7 @@ public class XModeler extends Application {
   static MenuBar		 menuBar			 = null;
   static Pane			 notificationPane 	 = null;
   
-  private static ControlCenter  newStage            = null;
+  public static ControlCenter  newStage            = null;
 
     public static ControlCenter getNewStage() {
         return newStage;
@@ -427,8 +427,8 @@ public class XModeler extends Application {
   public static void openXModeler() {
 		stage.show();
   }
-  
-  @Override
+
+    @Override
   public void start(Stage primaryStage) throws Exception {
       stage = primaryStage;
       createXmodeler();
@@ -582,5 +582,14 @@ public class XModeler extends Application {
 //			e.printStackTrace();
 //		}
 //  }
+
+    public static void finishOpenDiagramFromXml() {
+	    newStage.getControlCenterClient().getAllProjects();
+	    newStage.setAlwaysOnTop(true);
+	    newStage.toFront();
+	    newStage.requestFocus();
+	    newStage.setAlwaysOnTop(false);
+	    //TODO bring control-center to front
+    }
 }
 

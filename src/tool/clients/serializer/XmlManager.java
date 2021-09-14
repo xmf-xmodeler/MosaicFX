@@ -594,15 +594,6 @@ public class XmlManager extends XmlHandler {
                 comm.addOperation2(diagramID, className, level, body);
                 break;
             }
-            case "addOperation2": {
-                String classPath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
-                String[] classPathArray = classPath.split("::");
-                String className = classPathArray[classPathArray.length-1];
-                String body = parseBase64(logElement.getAttribute(SerializerConstant.ATTRIBUTE_BODY));
-                int level = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));
-                comm.addOperation2(diagramID, className, level, body);
-                break;
-            }
             case "addInstance": {
                 String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
                 String ofName = parseOf(logElement.getAttribute(SerializerConstant.ATTRIBUTE_OF));

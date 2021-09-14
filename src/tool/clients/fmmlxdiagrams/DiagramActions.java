@@ -36,7 +36,9 @@ import tool.clients.fmmlxdiagrams.dialogs.results.*;
 import tool.clients.fmmlxdiagrams.dialogs.shared.*;
 import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
+import tool.clients.importer.FMMLxImporter;
 import tool.clients.serializer.FmmlxSerializer;
+import tool.xmodeler.XModeler;
 import xos.Value;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -1185,7 +1187,7 @@ public class DiagramActions {
 		FileChooser fc = new FileChooser();
 		fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("svg", "*.svg"));
 		fc.setTitle("Export File");
-		File file = fc.showSaveDialog(null);
+		File file = fc.showSaveDialog(XModeler.getStage());
 
 		if(file!= null){
 			if(!(diagram instanceof FmmlxDiagram)) throw new IllegalArgumentException();
@@ -1239,6 +1241,21 @@ public class DiagramActions {
 	public void showAll() {
 		Platform.runLater(() ->{
 			hide(diagram.getObjects(), false);
+			updateDiagram();
+		});
+	}
+
+	public void importDiagram() {
+		Platform.runLater(() ->{
+			FileChooser fc = new FileChooser();
+			fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("xml", "*.xml"));
+			fc.setTitle("choose File");
+			File file = fc.showOpenDialog(XModeler.getStage());
+
+			if(file!= null){
+				FMMLxImporter importer = new FMMLxImporter(file.getPath(), diagram);
+				importer.handleLogs();
+			}
 			updateDiagram();
 		});
 	}

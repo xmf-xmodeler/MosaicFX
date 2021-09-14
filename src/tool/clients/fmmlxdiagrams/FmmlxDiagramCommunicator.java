@@ -1815,23 +1815,6 @@ public class FmmlxDiagramCommunicator {
 		new Thread(task).start();
 	}
 
-	public void populateDiagram(String file, String diagramName, Integer diagramID) {
-		Task<Void> task = new Task<Void>() {
-			@Override
-			protected Void call() {
-				FmmlxDeserializer deserializer = new FmmlxDeserializer(new XmlManager(file));
-				try {
-					deserializer.createModelElementsFromLogfile(diagramID);
-				} catch (Exception e) {
-					e.printStackTrace();
-					System.err.println("load xml file failed");
-				}
-				return null;
-			}
-		};
-		new Thread(task).start();
-	}
-
 	public void saveXmlFile2(String diagramPath, Integer id) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(id),
@@ -1988,5 +1971,88 @@ public class FmmlxDiagramCommunicator {
 		}
 		return null;
 	}
+	// -------------------- merge package ---------------------------- //
 
+	public void mergeMetaClass(int diagramID, String name, int level, Vector<String> parents, boolean isAbstract, int x, int y, boolean hidden) {
+		Value[] parentsArray = createValueArray(parents);
+
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(name),
+				new Value(level),
+				new Value(parentsArray),
+				new Value(isAbstract),
+				new Value(x), new Value(y), new Value(hidden)};
+		sendMessage("mergeMetaClass", message);
+	}
+
+	public void mergeParent(int diagramID, String className, Vector<String> oldParents, Vector<String> newParents) {
+		Value[] parentsArray = createValueArray(oldParents);
+		Value[] newParentsArray = createValueArray(newParents);
+
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(className),
+				new Value(parentsArray),
+				new Value(newParentsArray)};
+		sendMessage("mergeParent", message);
+	}
+
+	public void mergeAttribute(int diagramID, String className, String name, int level, String typeName, Multiplicity multiplicity) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(className),
+				new Value(name),
+				new Value(level),
+				new Value(typeName),
+				new Value(multiplicity.toValue())};
+		sendMessage("mergeAttribute", message);
+	}
+
+	public void mergeNewInstance(int diagramID, String className, String name, Vector<String> parents, boolean isAbstract, int x, int y, boolean hidden) {
+		Value[] parentsArray = createValueArray(parents);
+
+		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID), new Value(className), new Value(name),
+				new Value(parentsArray), new Value(isAbstract), new Value(x), new Value(y), new Value(hidden), new Value(new Value[] {})};
+		sendMessage("mergeInstance", message);
+	}
+
+	public void mergeEnumeration(int diagramID, String enumName) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(enumName)};
+		sendMessage("mergeEnumeration", message);
+	}
+
+	public void mergeEnumerationItem(int diagramID, String enumName, String itemName) throws TimeOutException {
+		Vector<Object> result = xmfRequest(handler, diagramID, "mergeEnumerationValue", new Value(enumName),
+				new Value(itemName));
+		showErrorMessage(result);
+	}
+
+	public void mergeAssociation(int diagramID, String classSourceName, String classTargetName,
+								 String accessSourceFromTargetName, String accessTargetFromSourceName,
+								 String fwName, String reverseName, Multiplicity multiplicityT2S, Multiplicity multiplicityS2T,
+								 int instLevelSource, int instLevelTarget, boolean sourceVisibleFromTarget,
+								 boolean targetVisibleFromSource, boolean isSymmetric, boolean isTransitive) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(classSourceName), new Value(classTargetName),
+				new Value(accessSourceFromTargetName), new Value(accessTargetFromSourceName),
+				new Value(fwName), reverseName == null ? new Value(-1) : new Value(reverseName),
+				new Value(multiplicityT2S.toValue()),
+				new Value(multiplicityS2T.toValue()),
+				new Value(instLevelSource), new Value(instLevelTarget),
+				new Value(sourceVisibleFromTarget), new Value(targetVisibleFromSource), new Value(isSymmetric), new Value(isTransitive)};
+		sendMessage("mergeAssociation", message);
+	}
+
+	public void mergeAssociationInstance(int diagramID, String className1, String className2, String name) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(className1),
+				new Value(className2),
+				new Value(name)};
+		sendMessage("mergeAssociationInstance", message);
+	}
 }

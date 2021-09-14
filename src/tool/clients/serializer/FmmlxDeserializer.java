@@ -1,10 +1,12 @@
 package tool.clients.serializer;
 
+import javafx.concurrent.Task;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
+import tool.xmodeler.XModeler;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -32,14 +34,14 @@ public class FmmlxDeserializer {
         fmmlxDiagramCommunicator.createProject(projectName, xmlManager.getAllDiagramNames(), this.xmlManager.getSourcePath());
         
         boolean populated = false;
-        for(int i = 0; i< diagramNodes.getLength(); i++){
+        for(int i =0; i< diagramNodes.getLength(); i++){
             Node diagramNode = diagramNodes.item(i);
             if(diagramNode.getNodeType()==Node.ELEMENT_NODE){
             	String diagramName = ((Element) diagramNode).getAttribute(SerializerConstant.ATTRIBUTE_LABEL);
             	Integer diagramId = fmmlxDiagramCommunicator.createDiagram(projectName, diagramName, this.xmlManager.getSourcePath(), FmmlxDiagramCommunicator.DiagramType.ClassDiagram);
             	if(!populated) {
                     fmmlxDiagramCommunicator.preparePositionInfo(diagramId, diagramNode);
-            		fmmlxDiagramCommunicator.populateDiagram(this.xmlManager.getSourcePath(), diagramName, diagramId);
+            		populateDiagram(diagramId);
             		populated = true;
             	}
             }    
@@ -48,11 +50,31 @@ public class FmmlxDeserializer {
 
     //This methode works to recreate all the existing components on a diagram-data in the xml file.
     //The sequence of its reproduction corresponds to the log order stored in XML.
-    public void createModelElementsFromLogfile(Integer newDiagramID) {
-        if(Files.exists(Paths.get(xmlManager.getSourcePath()))){
-            xmlManager.reproduceFromLog(newDiagramID);
-        }
+    public void populateDiagram(Integer diagramID) {
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() {
+                try {
+                    if(Files.exists(Paths.get(xmlManager.getSourcePath()))){
+                        xmlManager.reproduceFromLog(diagramID);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.err.println("load xml file failed");
+                }
+                XModeler.finishOpenDiagramFromXml();
+                return null;
+            }
+        };
+        new Thread(task).start();
     }
+
+
+//    public void createModelElementsFromLogfile(Integer newDiagramID) {
+//        if(Files.exists(Paths.get(xmlManager.getSourcePath()))){
+//            xmlManager.reproduceFromLog(newDiagramID);
+//        }
+//    }
 
     //This method is tasked with regulating the adjusting position of each component according to the data that stored in XML.
 	public void alignElements(FmmlxDiagram diagram, Element diagramElement) {

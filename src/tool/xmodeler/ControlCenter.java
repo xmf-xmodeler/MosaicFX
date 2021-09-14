@@ -1,41 +1,31 @@
 package tool.xmodeler;
 
-import java.io.File;
-import java.util.Optional;
-import java.util.Vector;
-
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-//import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.workbench.WorkbenchClient;
+
 import tool.helper.DrawingApplication;
 import tool.helper.IconGenerator;
+
+import java.io.File;
+import java.util.Optional;
+import java.util.Vector;
 
 public class ControlCenter extends Stage {
 	
@@ -51,7 +41,11 @@ public class ControlCenter extends Stage {
 	private final ListView<String> diagramLV = new ListView<String>();
 	//private ModelBrowser stage;
 	private MenuBar menuBar;
-			
+
+	public ControlCenterClient getControlCenterClient() {
+		return controlCenterClient;
+	}
+
 	public ControlCenter() {
 		setTitle("XModeler ML Control Center");
 		getIcons().add(IconGenerator.getImage("shell/mosaic32"));
@@ -66,7 +60,7 @@ public class ControlCenter extends Stage {
 				
 		Button newCategorie = new Button("new");
 		newCategorie.setDisable(true);
-		Label categorieLabel = new Label("Categories");
+//		Label categorieLabel = new Label("Categories");
 		
 		Button refreshAll = new Button("refresh");
 		Button newProject = new Button("Create Project");
@@ -207,24 +201,20 @@ public class ControlCenter extends Stage {
 		vBox.getChildren().addAll(hBox, grid);
 		Scene scene = new Scene(vBox, 800, 300);
 		setScene(scene);
-		this.setOnShown((event) -> {controlCenterClient.getAllCategories();});
-		refreshAll.setOnAction((event) -> {controlCenterClient.getAllProjects();});
+		this.setOnShown((event) -> controlCenterClient.getAllCategories());
+		refreshAll.setOnAction((event) -> controlCenterClient.getAllProjects());
 		newProject.setOnAction((event) -> {controlCenterClient.createNewProject();controlCenterClient.getAllProjects();});	
 		
-		this.setOnCloseRequest(  new EventHandler<WindowEvent>() {
-			  public void handle(WindowEvent event) {
-				  //propertyManager.writeXMLFile();
-                if (PropertyManager.getProperty("IGNORE_SAVE_IMAGE", false)) {
-                    System.exit(0);
-                } else {
-                	String loadedImagePath = null;
-                	if (loadedImagePath == null) WorkbenchClient.theClient().shutdownEvent();
-                    else WorkbenchClient.theClient().shutdownAndSaveEvent(loadedImagePath, loadedImagePath);
-                }
-				  event.consume();
+		this.setOnCloseRequest(event -> {
+			//propertyManager.writeXMLFile();
+			if (PropertyManager.getProperty("IGNORE_SAVE_IMAGE", false)) {
+				System.exit(0);
+			} else {
+			  WorkbenchClient.theClient().shutdownEvent();
+			}
+			event.consume();
 //				  event.doit = false;
-			  }
-	  });	
+		});
 		new java.util.Timer().schedule( 
 		        new java.util.TimerTask() {
 		            @Override
@@ -252,9 +242,9 @@ public class ControlCenter extends Stage {
 		stage.show();
 	}
 
-	private void categorySelected(String nEWW) {
-		
-	}
+//	private void categorySelected(String nEWW) {
+//		
+//	}
 	
 	public void getModelsFromProject() {
 		
@@ -307,22 +297,21 @@ public class ControlCenter extends Stage {
 		for (String projectString : vec) {
 			String[] projectPath = projectString.split("::");
 			TreeItem<String> currentTreeItemPosition = root;
-			for (int i=0; i<projectPath.length; i++) {
+			for (String s : projectPath) {
 				TreeItem<String> newTreeItem = null;
 				for (TreeItem<String> tempItem : currentTreeItemPosition.getChildren()) {
-					if (tempItem.getValue().equals(projectPath[i])) {
+					if (tempItem.getValue().equals(s)) {
 						newTreeItem = tempItem;
 					}
 				}
-				if (newTreeItem==null) {
-					newTreeItem = new TreeItem<>(projectPath[i]);
+				if (newTreeItem == null) {
+					newTreeItem = new TreeItem<>(s);
 					currentTreeItemPosition.getChildren().add(newTreeItem);
-					
+
 				}
 				currentTreeItemPosition = newTreeItem;
-				
-				
-				
+
+
 //				if(currentTreeItemPosition.getChildren().contains(newTreeItem)){
 //					
 //				}
@@ -365,12 +354,12 @@ public class ControlCenter extends Stage {
 	
 	public String getProjectPath(TreeItem<String> item) {
 		if(item==null) return null;
-		String projectPath=item.getValue();
+		StringBuilder projectPath= new StringBuilder(item.getValue());
 		while (item.getParent()!=projectTree.getRoot()) {
 			item=item.getParent();
-			projectPath=item.getValue()+"::"+projectPath;
+			projectPath.insert(0, item.getValue() + "::");
 		}
-		return projectPath;
+		return projectPath.toString();
 	}
 
 	public void setDiagrams(Vector<String> vec) {
@@ -378,15 +367,5 @@ public class ControlCenter extends Stage {
 			diagramLV.getItems().clear();
 			diagramLV.getItems().addAll(vec);
 		});
-		
 	}
-	
-	private class ControlCenterContextMenu extends ContextMenu {
-		
-		
-		
-	}
-	
-	
-	
 }
