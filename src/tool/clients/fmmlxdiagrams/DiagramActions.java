@@ -2,8 +2,10 @@ package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
@@ -41,6 +43,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Vector;
@@ -1083,29 +1087,91 @@ public class DiagramActions {
 		
 		ButtonType okButtonType = new ButtonType("Unhide", ButtonData.OK_DONE);
 		unhideElementsDialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
-
+		
+		
 		
 		Vector<FmmlxObject> hiddenElements = new Vector<>();
-		for(FmmlxObject o : diagram.getObjects()) if(o.hidden) hiddenElements.add(o); 
+		Vector<FmmlxObject> shownElements = new Vector<>();
+		for(FmmlxObject o : diagram.getObjects()) {
+			if(o.hidden) {
+				hiddenElements.add(o);
+			} else if (o.hidden==false) {
+				shownElements.add(o);
+			}
+		}
+		
 		ListView<FmmlxObject> listView = new ListView<>();
 		listView.getItems().addAll(hiddenElements);
+		sortListView(listView);
 		listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
-		unhideElementsDialog.getDialogPane().setContent(listView);
+		ListView<FmmlxObject> shownElementsListView = new ListView<>();
+		shownElementsListView.getItems().addAll(shownElements);
+		sortListView(shownElementsListView);
+		shownElementsListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		
+		GridPane gridPane = new GridPane();
+		Button toShow = new Button("<<");
+		toShow.setOnAction(e->{
+			shownElementsListView.getItems().addAll(listView.getSelectionModel().getSelectedItems());
+			listView.getItems().removeAll(listView.getSelectionModel().getSelectedItems());
+			sortListView(shownElementsListView);
+		});
+		Button toHide = new Button(">>");
+		toHide.setOnAction(e->{
+			listView.getItems().addAll(shownElementsListView.getSelectionModel().getSelectedItems());
+			shownElementsListView.getItems().removeAll(shownElementsListView.getSelectionModel().getSelectedItems());
+			sortListView(listView);
+		});
+		Button filter = new Button("Filters");
+		
+		Label shownElementsLabel = new Label("Shown Elements");
+		Label hiddenElementsLabel = new Label("Hidden Elements");
+		gridPane.add(shownElementsLabel, 0, 0,1,1);
+		gridPane.add(shownElementsListView, 0, 1,1,5);
+		gridPane.add(toHide, 1, 3,1,1);
+		gridPane.add(toShow, 1, 4,1,1);
+		gridPane.add(filter, 1, 5,1,1);
+		gridPane.add(hiddenElementsLabel, 2, 0,1,1);
+		gridPane.add(listView, 2, 1,1,5);
+		gridPane.setPadding(new Insets(15,15,15,15));
+		unhideElementsDialog.getDialogPane().setContent(gridPane);
+	
 
 		unhideElementsDialog.setResultConverter(dialogButton -> {
 		    if (dialogButton == okButtonType) {
 		    	Vector<FmmlxObject> result = new Vector<>();
-		    	result.addAll(listView.getSelectionModel().getSelectedItems());
+		    	result.addAll(shownElementsListView.getItems());
 		        return result;
 		    }
 		    return null;
 		});
 		
-		Optional<Vector<FmmlxObject>> result = unhideElementsDialog.showAndWait();
 		
-		result.ifPresent(vec -> {hide(vec, false);});
-			
+		Optional<Vector<FmmlxObject>> result = unhideElementsDialog.showAndWait();
+				
+    	result.ifPresent(vec -> {hide(vec, false);});
+    	
+    	Vector<FmmlxObject> resultHide = new Vector<>();
+    	resultHide.addAll(listView.getItems());
+    	hide(resultHide,true);
+    	
+	}
+	
+	public void sortListView(ListView<FmmlxObject> listView) {
+		Vector<FmmlxObject> v = new Vector<>(listView.getItems());
+		Collections.sort(v,new Comparator<FmmlxObject>() {
+			public int compare(FmmlxObject thisObject, FmmlxObject anotherObject) {
+				if(thisObject.getLevel()>anotherObject.getLevel()) {
+					return -1;
+				} else if (thisObject.getLevel()<anotherObject.getLevel()) {
+					return 1;
+				} else {
+					return thisObject.name.compareTo(anotherObject.getName());
+				}
+			}	
+		});
+		listView.getItems().clear();
+		listView.getItems().addAll(v);
 	}
 		
 	public void showObjectBrowser(FmmlxObject object) {
