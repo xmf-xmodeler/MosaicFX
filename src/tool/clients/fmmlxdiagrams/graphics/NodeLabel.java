@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -204,5 +206,10 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 			}
 		}
 		return textLocal;
+	}
+
+	@Override
+	public Bounds getBounds() {
+		return new BoundingBox(0, 0, -1, -1);
 	}
 }

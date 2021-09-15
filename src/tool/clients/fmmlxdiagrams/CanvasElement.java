@@ -8,7 +8,6 @@ import tool.clients.xmlManipulator.XmlHandler;
 
 public interface CanvasElement {
 
-//	@Deprecated void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram);
 	void paintOn(GraphicsContext g, Affine currentAffine, FmmlxDiagram.DiagramViewPane fmmlxDiagram);
 
 	ContextMenu getContextMenu(FmmlxDiagram.DiagramViewPane fmmlxDiagram, Point2D absolutePoint);
@@ -21,9 +20,6 @@ public interface CanvasElement {
 	void unHighlight();
 
 	void setOffsetAndStoreLastValidPosition(Point2D p);
-	
-	double getMouseMoveOffsetX();
-	double getMouseMoveOffsetY();
 
     void paintToSvg(XmlHandler xmlHandler, FmmlxDiagram diagram);
 }

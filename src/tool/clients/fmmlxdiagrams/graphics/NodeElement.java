@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import org.w3c.dom.Element;
@@ -46,5 +47,7 @@ public interface NodeElement {
     Affine getTotalTransform(Affine canvasTransform);
 
 	public void setOwner(NodeElement owner);
+
+	public Bounds getBounds();
 
 }

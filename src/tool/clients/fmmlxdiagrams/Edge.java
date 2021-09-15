@@ -669,16 +669,6 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		storeLatestValidPointConfiguration();
 	}
 
-	@Override
-	public double getMouseMoveOffsetX() {
-		return 0;
-	}
-
-	@Override
-	public double getMouseMoveOffsetY() {
-		return 0;
-	}
-
 	protected Point2D getLabelPosition(int localId) {
 		return labelPositions.get(localId);
 	}

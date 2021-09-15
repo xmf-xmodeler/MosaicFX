@@ -4,8 +4,11 @@ import java.util.Vector;
 
 import org.w3c.dom.Element;
 
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
 import tool.clients.exporter.svg.SvgConstant;
@@ -18,22 +21,28 @@ public class NodeGroup implements NodeElement {
 	private Affine myTransform;
 	private NodeElement owner;
 	private transient Affine dragAffine;
-	
-	public void addNodeElement(NodeElement nodeElement) {
-		nodeElements.add(nodeElement);
-		nodeElement.setOwner(this);
-		dragAffine = new Affine();
-	}
+	private Bounds bounds;
 	
 	public NodeGroup(Affine myTransform) {
 		this.myTransform = myTransform;
+		dragAffine = new Affine();
+		updateBounds();
+	}
+	
+	public final void addNodeElement(NodeElement nodeElement) {
+		nodeElements.add(nodeElement);
+		nodeElement.setOwner(this);
+		updateBounds();
 	}
 	
 	@Override
-	public void paintOn(FmmlxDiagram.DiagramViewPane diagram, boolean objectIsSelected) {
+	public void paintOn(FmmlxDiagram.DiagramViewPane diagramView, boolean objectIsSelected) {
 		for (NodeElement e : new Vector<>(nodeElements)) {
-			e.paintOn(diagram, objectIsSelected);
+			e.paintOn(diagramView, objectIsSelected);
 		}
+//		
+//		if(bounds == null) updateBounds();
+//		if(bounds == null) return;
 	}
 
 	@Override
@@ -77,6 +86,28 @@ public class NodeGroup implements NodeElement {
 
 	public void setOwner(NodeElement owner) {
 		this.owner = owner;
+		updateBounds();
+	}
+
+	private void updateBounds() {
+		Bounds bounds = null;
+		for (NodeElement e : new Vector<>(nodeElements)) {
+			if(bounds == null) {
+				bounds = e.getBounds(); 
+			} else {
+				Bounds bounds2 = e.getBounds();
+				if(bounds2 != null) {
+					double minX = Math.min(bounds.getMinX(), bounds2.getMinX());
+					double minY = Math.min(bounds.getMinY(), bounds2.getMinY());
+					double maxX = Math.max(bounds.getMaxX(), bounds2.getMaxX());
+					double maxY = Math.max(bounds.getMaxY(), bounds2.getMaxY());					
+					
+					bounds = new BoundingBox(minX, minY, maxX - minX, maxY - minY);
+				}
+			}
+		}
+//		System.err.println("Bounds updated (NodeGroup): " + bounds);
+		this.bounds = bounds;
 	}
 
 	public void dragTo(Affine dragAffine) {
@@ -92,5 +123,13 @@ public class NodeGroup implements NodeElement {
 		if(dragAffine == null) return new Affine(); // HACK
 		return dragAffine;
 	}
+
+	@Override
+	public Bounds getBounds() {
+		if(bounds == null) updateBounds();
+		return bounds;
+	}
+	
+	
 
 }

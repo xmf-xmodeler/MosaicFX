@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.geometry.Side;
@@ -178,14 +179,14 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		
 		new Thread(this::fetchDiagramData).start();
 
-		java.util.Timer timer = new Timer();
-		timer.schedule(new TimerTask() {
-
-			@Override
-			public void run() {
-				redraw();
-			}
-		}, 25, 25);
+//		java.util.Timer timer = new Timer();
+//		timer.schedule(new TimerTask() {
+//
+//			@Override
+//			public void run() {
+//				redraw();
+//			}
+//		}, 100, 100);
 	}
 
 	private void loadXMLAction() {
@@ -240,7 +241,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public FmmlxPalette getPalette() {
 		return newFmmlxPalette;
 	}
-
 
 	public void setEdgeCreationType(String edgeCreationType) {
 		this.edgeCreationType = edgeCreationType;
@@ -371,18 +371,16 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 	}
 
-
-
 	public void triggerOverallReLayout() {
-		for(int i = 0; i < 3; i++) {
-			for(FmmlxObject o : objects) {
+//		for(int i = 0; i < 3; i++) {
+			for(FmmlxObject o : new Vector<>(objects)) {
 				o.layout(this);
 			}
-			for(Edge<?> edge : edges) {
+			for(Edge<?> edge : new Vector<>(edges)) {
 				edge.align();
 				edge.layoutLabels(this);
 			}
-		}
+//		}
 	}
 
 	private void mouseReleasedStandard() {
@@ -485,29 +483,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 	}
 
-	private void handleMultiSelect() {
-		double x = Math.min(lastPointPressed.getX(), currentPointMoving.getX());
-		double y = Math.min(lastPointPressed.getY(), currentPointMoving.getY());
-		double w = Math.abs(currentPointMoving.getX() - lastPointPressed.getX());
-		double h = Math.abs(currentPointMoving.getY() - lastPointPressed.getY());
 
-		Rectangle rec = new Rectangle(x, y, w, h);
-		deselectAll();
-		for (FmmlxObject o : objects) {
-			if (isObjectContained(rec, o)) {
-				select(o);
-			}
-		}
-
-		mouseMode = MouseMode.STANDARD;
-	}
-
-	private boolean isObjectContained(Rectangle rec, FmmlxObject object) {
-		return rec.contains(object.getX(), object.getY())
-				&& rec.contains(
-				object.getX() + object.getWidth(),
-				object.getY() + object.getHeight());
-	}
 
 //	public Point2D scale(MouseEvent event) {
 //		Affine i;
@@ -796,12 +772,14 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			o.layout(this);
 		}
 
-		triggerOverallReLayout();
-		resizeCanvas();
+//		resizeCanvas();
 	}
 
 	@Override
 	protected void fetchDiagramDataSpecific2() {
+		
+		triggerOverallReLayout();
+
 		newFmmlxPalette.update();
 
 		if(filePath !=null && filePath.length()>0){
@@ -826,6 +804,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				nextIssue.performResolveAction(this);
 			}
 		}
+
+		redraw();
 	}
 
 	@Override
@@ -863,6 +843,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		xmlHandler.addXmlElement(xmlHandler.getRoot(), issueGroup); 
 	}
 
+	@Deprecated
 	public Affine getCanvasTransform() {
 		return mainViewPane.canvasTransform;
 	}
@@ -1381,7 +1362,34 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			canvasTransform = new Affine(wheelDragStartAffine);
 			canvasTransform.prependTranslation(e.getX() - wheelDragStartPoint.getX(), e.getY() - wheelDragStartPoint.getY());
 			redraw();
-		}		
+		}
+		
+		private void handleMultiSelect() {
+			double x = Math.min(lastPointPressed.getX(), currentPointMoving.getX());
+			double y = Math.min(lastPointPressed.getY(), currentPointMoving.getY());
+			double w = Math.abs(currentPointMoving.getX() - lastPointPressed.getX());
+			double h = Math.abs(currentPointMoving.getY() - lastPointPressed.getY());
+
+			Rectangle rec = new Rectangle(x, y, w, h);
+			deselectAll();
+			for (FmmlxObject o : objects) {
+				if (isObjectContained(rec, o)) {
+					select(o);
+				}
+			}
+
+			mouseMode = MouseMode.STANDARD;
+		}
+		
+		private boolean isObjectContained(Rectangle rec, FmmlxObject object) {
+			Bounds bounds = object.rootNodeElement.getBounds();
+			if(bounds == null) return false;
+			Point2D p1 = new Point2D(bounds.getMinX(), bounds.getMinY());
+			Point2D p2 = new Point2D(bounds.getMaxX(), bounds.getMaxY());
+			p1 = canvasTransform.transform(p1);
+			p2 = canvasTransform.transform(p2);
+			return rec.contains(p1) && rec.contains(p2);
+		}
 	}
 
 	public DiagramViewPane getActiveTab() {
@@ -1390,7 +1398,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		DiagramViewPane activeView = (DiagramViewPane) activeNode;
 		return activeView;
 	}
-	
 
 	
 

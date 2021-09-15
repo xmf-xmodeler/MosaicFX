@@ -1,7 +1,9 @@
 package tool.clients.fmmlxdiagrams;
 
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 
 import org.w3c.dom.Element;
@@ -9,10 +11,7 @@ import tool.clients.exporter.svg.SvgConstant;
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.xmlManipulator.XmlHandler;
 
-public abstract class Node implements CanvasElement{
-
-	private transient double mouseMoveOffsetX;
-	private transient double mouseMoveOffsetY;	
+public abstract class Node implements CanvasElement {
 	
 	protected boolean hidden;
 	protected double x;
@@ -49,8 +48,16 @@ public abstract class Node implements CanvasElement{
 		if(hidden) return;		
 		if(requiresReLayout) layout(view.getDiagram());
 		boolean selected = view.getDiagram().isSelected(this);
-	
+		
 		if (rootNodeElement != null) {
+			Bounds bounds = rootNodeElement.getBounds();
+//			if(bounds != null) {
+//			g.setFill(selected?Color.web("0xeedddd"):Color.web("0xddddee"));
+//			Affine a = new Affine(view.getCanvasTransform());
+//			a.append(rootNodeElement.getDragAffine());
+//			g.setTransform(a);
+//			g.fillRect(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());}
+		
 			rootNodeElement.paintOn(view, selected);
 		}
 	}
@@ -88,14 +95,9 @@ public abstract class Node implements CanvasElement{
 		this.y = Math.max(y, 0.0);
 	}
 	
-	@Override
-	public void setOffsetAndStoreLastValidPosition(Point2D p) {
-		mouseMoveOffsetX = p.getX() - x;
-		mouseMoveOffsetY = p.getY() - y;
-	}
+	@Override // no longer used
+	public void setOffsetAndStoreLastValidPosition(Point2D p) {	}
 	
-	@Override public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
-	@Override public double getMouseMoveOffsetY() {return mouseMoveOffsetY;}
 	@Override public void highlightElementAt(Point2D p, Affine a) {}
 	@Override public void unHighlight() {}
 

@@ -207,8 +207,8 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 //		lastValidRelativeY = - getReferenceY() + relativeY;
 	}
 
-	@Override public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
-	@Override public double getMouseMoveOffsetY() {return mouseMoveOffsetY;}
+	public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
+	public double getMouseMoveOffsetY() {return mouseMoveOffsetY;}
 
 	public static boolean isInteger(String s) {
 		try {
