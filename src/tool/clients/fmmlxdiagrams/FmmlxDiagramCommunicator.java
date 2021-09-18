@@ -1989,9 +1989,13 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void mergeEnumerationItem(int diagramID, String enumName, String itemName) throws TimeOutException {
-		Vector<Object> result = xmfRequest(handler, diagramID, "mergeEnumerationValue", new Value(enumName),
-				new Value(itemName));
-		showErrorMessage(result);
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(enumName),
+				new Value(itemName)
+		};
+		sendMessage("mergeEnumerationValue",message);
+
 	}
 
 	public void mergeAssociation(int diagramID, String classSourceName, String classTargetName,
@@ -2044,6 +2048,15 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(delegationFromName), new Value(delegationToName), new Value(delegateToLevel)};
 		sendMessage("mergeDelegation", message);
+	}
+
+	public void mergeSlotValue(int diagramID, String className, String slotName, String valueToBeParsed) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(className),
+				new Value(slotName),
+				new Value(valueToBeParsed)};
+		sendMessage("mergeSlotValue", message);
 	}
 
 

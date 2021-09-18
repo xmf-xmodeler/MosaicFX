@@ -28,6 +28,8 @@ public class ImporterStrings {
     public static final String PROBLEM_DIFFERENT_INST_LEVEL = "already exists but with different inst-level";
     public static final String PROBLEM_DIFFERENT_BODY = "already exists but with different body";
     public static final String PROBLEM_DIFFERENT_REASON = "already exists but with different reason";
+    public static final String OPERATION_NAME = "Operation_Name";
+    public static final String PROBLEM_DIFFERENT_MONITORED = "already exists but with different reason";
 
 
     public static class ConflictType {
