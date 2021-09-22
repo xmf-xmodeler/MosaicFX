@@ -30,6 +30,8 @@ public class ImporterStrings {
     public static final String PROBLEM_DIFFERENT_REASON = "already exists but with different reason";
     public static final String OPERATION_NAME = "Operation_Name";
     public static final String PROBLEM_DIFFERENT_MONITORED = "already exists but with different reason";
+    public static final String PROBLEM_DIFFERENT_PARAM_NAMES = "already exists but with different param-names";
+    public static final String PROBLEM_DIFFERENT_PARAM_TYPES = "already exists but with different param-types";
 
 
     public static class ConflictType {

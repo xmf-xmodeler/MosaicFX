@@ -100,7 +100,7 @@ public class FmmlxDiagramCommunicator {
 
 	private transient Integer _newDiagramID = null;
 
-	public static enum DiagramType {ClassDiagram, ModelBrowser};
+    public static enum DiagramType {ClassDiagram, ModelBrowser};
 	
 	public Integer createDiagram(String packagePath, String diagramName, String file, DiagramType type) {
 		//Creates a diagram which is not displayed yet.
@@ -2059,5 +2059,14 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("mergeSlotValue", message);
 	}
 
+	public void mergeOperation2(int diagramID, String className, int level, String body) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(className),
+				new Value(level),
+				new Value(body)
+		};
+		sendMessage("mergeOperation", message);
+	}
 
 }
