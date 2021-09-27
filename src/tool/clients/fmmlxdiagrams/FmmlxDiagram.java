@@ -39,6 +39,7 @@ import javafx.stage.FileChooser;
 import org.w3c.dom.Element;
 import tool.clients.exporter.svg.SvgConstant;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
 import tool.clients.serializer.FmmlxDeserializer;
@@ -848,7 +849,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return mainViewPane.canvasTransform;
 	}
 
-	public class DiagramViewPane extends Pane {
+	public class DiagramViewPane extends Pane implements View{
 		
 		private Canvas canvas;
 		private double zoom = 1.;
@@ -1336,15 +1337,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
 		}
 
-		public FmmlxDiagram getDiagram() { return FmmlxDiagram.this; }
-
-		public Affine getCanvasTransform() {
-			return canvasTransform;
-		}
-
-		public Canvas getCanvas() {
-			return canvas;
-		}
+		          public FmmlxDiagram getDiagram() { return FmmlxDiagram.this; }
+		@Override public Affine getCanvasTransform() { return canvasTransform; }
+		@Override public Canvas getCanvas() {	return canvas; }
 		
 		private transient Affine wheelDragStartAffine;
 		private transient Point2D wheelDragStartPoint;
@@ -1398,10 +1393,4 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		DiagramViewPane activeView = (DiagramViewPane) activeNode;
 		return activeView;
 	}
-
-	
-
-	
-	
-	
 }

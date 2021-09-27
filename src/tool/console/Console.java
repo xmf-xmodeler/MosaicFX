@@ -15,7 +15,6 @@ public class Console {
 
   static ConsoleView consoleView;
   static String      CONSOLE_LABEL = "XMF Console";
-  static boolean separate;
   static boolean visible;
   static boolean colorReverted;
   static Stage stage;
@@ -23,29 +22,24 @@ public class Console {
   
   
   
-  public static void start(TabPane tabPane, boolean separate, boolean visible, boolean colorReverted) {
+  public static void start(boolean visible, boolean colorReverted) {
 	  Console.colorReverted=colorReverted;
-	  Console.separate=separate;
 	  Console.visible=visible;
 	  Console.stage=null;
-	  Console.consoleView = new ConsoleView(colorReverted, !separate);
-	  if(visible)if(separate) {
-		showInStage();
-	  } else {
-		showInTab(tabPane);
-	  }
+	  Console.consoleView = new ConsoleView(colorReverted);
+	  if(visible) showInStage();
   }
   
   
-  public static void showInTab(TabPane tabPane) {
-	
-	tab = new Tab(CONSOLE_LABEL);
-	tab.setContent(consoleView.getView());
-	tabPane.getTabs().add(tab);
-	tabPane.toFront();
-	separate = false;
-	tab.setOnClosed((e)-> PropertyManager.setProperty("consoleVisible", "false"));
-  }
+//  public static void showInTab(TabPane tabPane) {
+//	
+//	tab = new Tab(CONSOLE_LABEL);
+//	tab.setContent(consoleView.getView());
+//	tabPane.getTabs().add(tab);
+//	tabPane.toFront();
+//	separate = false;
+//	tab.setOnClosed((e)-> PropertyManager.setProperty("consoleVisible", "false"));
+//  }
 
 
   public static void showInStage() {
@@ -53,7 +47,6 @@ public class Console {
       border.setCenter(consoleView.getView());
 	  Scene scene = new Scene(border, 1000, 605);
 	  Stage stage = new Stage();
-	  separate = true;
 	  Console.stage=stage;
 	  stage.setScene(scene);
 	  stage.setTitle("Console");
@@ -61,9 +54,8 @@ public class Console {
 	  stage.show();
   }
 
-
-private static void start() {
-	  Console.consoleView = new ConsoleView(colorReverted, !separate);
+  private static void start() {
+	  Console.consoleView = new ConsoleView(colorReverted);
   }
   
   
@@ -99,13 +91,7 @@ private static void start() {
 
   public static void unhide() {
 	  PropertyManager.setProperty("consoleVisible", "true");
-	  Platform.runLater(()->{
-		  if(PropertyManager.getProperty("showConsoleSeparately", false)) {
-			  showInStage();
-		  } else {
-			  showInTab(XModeler.propertyTabs);
-		  }
-	  });
+	  Platform.runLater(()->{showInStage();});
   }
   
   

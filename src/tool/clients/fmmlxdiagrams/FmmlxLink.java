@@ -11,18 +11,13 @@ import java.util.Vector;
 
 public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 
-//	FmmlxAssociation ofAssociation;
 	String ofPath;
-	//private FmmlxDiagram diagram;
 
 	public FmmlxLink(String path, String startPath, String endPath, String ofPath, Vector<Point2D> points,
 				PortRegion sourcePort, PortRegion targetPort, 
 				Vector<Object> labelPositions, AbstractPackageViewer diagram) {
 		super(path, diagram.getObjectByPath(startPath), diagram.getObjectByPath(endPath), points, sourcePort, targetPort, labelPositions, diagram);
-//		this.ofAssociation = (FmmlxAssociation) diagram.getAssociationById(ofId);
 		this.ofPath = ofPath;
-		//this.diagram = diagram;
-//		layout();
 	}
 
 	public String getOfPath() {
@@ -37,12 +32,12 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 
 	@Override protected void layoutLabels(FmmlxDiagram diagram) {
 		try{
-			createLabel(getOfAssociation().getName(), 0, Anchor.CENTRE, ()->{}, 0, diagram);
+			createLabel(getAssociation().getName(), 0, Anchor.CENTRE, ()->{}, 0, diagram);
 			layoutingFinishedSuccesfully = true;
 		} catch(Exception e) {}
 	}
 
-	public FmmlxAssociation getOfAssociation() {
+	public FmmlxAssociation getAssociation() {
 		return (FmmlxAssociation) diagram.getAssociationByPath(ofPath);
 	}
 
@@ -102,5 +97,15 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 	@Override
 	public PropertyType getPropertyType() {
 		return PropertyType.AssociationInstance;
+	}
+
+	@Override
+	public tool.clients.fmmlxdiagrams.Edge.HeadStyle getTargetDecoration() {
+		return getAssociation().getTargetDecoration();
+	}
+
+	@Override
+	public tool.clients.fmmlxdiagrams.Edge.HeadStyle getSourceDecoration() {
+		return getAssociation().getSourceDecoration();
 	}
 }

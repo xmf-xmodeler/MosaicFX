@@ -343,14 +343,8 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		g.setTransform(old);
 	}
 	
-
-	public HeadStyle getTargetDecoration() {
-		return HeadStyle.ARROW;
-	}
-
-	public HeadStyle getSourceDecoration() {
-		return HeadStyle.NO_ARROW;
-	}
+	public abstract HeadStyle getTargetDecoration();
+	public abstract HeadStyle getSourceDecoration();
 
 	protected Vector<Point2D> getAllPoints() {
 		Vector<Point2D> allPoints = new Vector<>();

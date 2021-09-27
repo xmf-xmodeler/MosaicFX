@@ -50,13 +50,16 @@ public abstract class Node implements CanvasElement {
 		boolean selected = view.getDiagram().isSelected(this);
 		
 		if (rootNodeElement != null) {
-			Bounds bounds = rootNodeElement.getBounds();
-//			if(bounds != null) {
-//			g.setFill(selected?Color.web("0xeedddd"):Color.web("0xddddee"));
-//			Affine a = new Affine(view.getCanvasTransform());
-//			a.append(rootNodeElement.getDragAffine());
-//			g.setTransform(a);
-//			g.fillRect(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());}
+
+			if(selected) {
+				g.setFill(Color.web("0xffdddd"));
+				Bounds bounds = rootNodeElement.getBounds();
+				if(bounds != null) {
+				Affine a = new Affine(view.getCanvasTransform());
+				a.append(rootNodeElement.getDragAffine());
+				g.setTransform(a);
+				g.fillRect(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());}
+			}
 		
 			rootNodeElement.paintOn(view, selected);
 		}

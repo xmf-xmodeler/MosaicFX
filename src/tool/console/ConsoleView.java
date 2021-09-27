@@ -52,13 +52,13 @@ public class ConsoleView {
   Stage owner;
   
   
-  public ConsoleView(boolean colorReverted, boolean docked) {
+  public ConsoleView(boolean colorReverted) {
 	
 	vBox = new VBox();
 	Menu menu = new Menu("View");
-	CheckMenuItem consoleSeparateItem = new CheckMenuItem("Docked");
+//	CheckMenuItem consoleSeparateItem = new CheckMenuItem("Docked");
 	CheckMenuItem changeColor = new CheckMenuItem("Change Color");
-	consoleSeparateItem.setSelected(docked);
+//	consoleSeparateItem.setSelected(docked);
 	changeColor.setSelected(colorReverted);
 	MenuItem hideItem = new MenuItem("Hide!");
 	MenuBar menuBar = new MenuBar();
@@ -67,10 +67,10 @@ public class ConsoleView {
 	//colorPicker.setValue(Color.RED);
 	//colorPicker.setStyle("-fx-background-color: white;");
 	//MenuItem fgColorItem = new MenuItem(null,colorPicker);
-	menu.getItems().addAll(consoleSeparateItem,hideItem, changeColor);
+	menu.getItems().addAll(/*consoleSeparateItem,*/hideItem, changeColor);
 	menuBar.getMenus().add(menu);
 	
-	consoleSeparateItem.setOnAction(e->separateConsole(((CheckMenuItem)e.getSource()).isSelected()));
+//	consoleSeparateItem.setOnAction(e->separateConsole(((CheckMenuItem)e.getSource()).isSelected()));
 	changeColor.setOnAction(e-> revertBackgroundColor(((CheckMenuItem)e.getSource()).isSelected()));
 	hideItem.setOnAction(e->hideConsole());
 	vBox.getChildren().add(menuBar);
@@ -85,16 +85,16 @@ public class ConsoleView {
 	addVerifyListener(textArea);
     setFont(textArea.getFont().getSize());
     vBox.getChildren().add(scrollpane);
+    
+    revertBackgroundColor(colorReverted);
   }
 
-
-
   private void hideConsole() {
-	  if(!Console.separate) {
-		  XModeler.propertyTabs.getTabs().remove(Console.tab);  
-	  } else {
+//	  if(!Console.separate) {
+//		  XModeler.propertyTabs.getTabs().remove(Console.tab);  
+//	  } else {
 		  Console.stage.close();
-	  }
+//	  }
 	  PropertyManager.setProperty("consoleVisible", "false");
   }
 
@@ -130,21 +130,21 @@ public class ConsoleView {
 
     }
   
-private void separateConsole(boolean docking) {
-	if(docking) {
-		if(Console.separate) {
-			PropertyManager.setProperty("showConsoleSeparately", "false");
-			Console.showInTab(XModeler.propertyTabs);
-			Console.stage.close();
-		}
-	}else {
-		if(!Console.separate) {
-		PropertyManager.setProperty("showConsoleSeparately", "true");
-		Console.showInStage();
-		XModeler.propertyTabs.getTabs().remove(Console.tab);
-		}
-	} 
-}
+//private void separateConsole(boolean docking) {
+//	if(docking) {
+//		if(Console.separate) {
+//			PropertyManager.setProperty("showConsoleSeparately", "false");
+//			Console.showInTab(XModeler.propertyTabs);
+//			Console.stage.close();
+//		}
+//	}else {
+//		if(!Console.separate) {
+//		PropertyManager.setProperty("showConsoleSeparately", "true");
+//		Console.showInStage();
+//		XModeler.propertyTabs.getTabs().remove(Console.tab);
+//		}
+//	} 
+//}
 
 private void setFont(double size) {
 	    try {

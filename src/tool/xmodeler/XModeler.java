@@ -418,7 +418,7 @@ public class XModeler extends Application {
 	  ModelBrowserClient.start(browserTab);
 	  EditorClient.start(editorTabs);
 	  FormsClient.start(propertyTabs);
-	  Console.start(propertyTabs,PropertyManager.getProperty("showConsoleSeparately", false), PropertyManager.getProperty("consoleVisible", false), PropertyManager.getProperty("consoleColorReverted", false));
+	  Console.start(PropertyManager.getProperty("consoleVisible", true), PropertyManager.getProperty("consoleColorReverted", false));
 	  DiagramClient.start(editorTabs);
 	  FmmlxDiagramCommunicator.start(editorTabs);
 	  //ClassBrowserClient.start();

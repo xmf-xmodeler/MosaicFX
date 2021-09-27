@@ -210,6 +210,6 @@ public class NodeLabel extends NodeBaseElement implements NodeElement {
 
 	@Override
 	public Bounds getBounds() {
-		return new BoundingBox(0, 0, -1, -1);
+		return null;
 	}
 }

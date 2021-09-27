@@ -667,7 +667,7 @@ public final class ModelBrowser extends CustomStage {
 				for (Edge<?> edge : activePackage.getEdges()) {
 					if (edge instanceof FmmlxLink) {
 						FmmlxLink link = (FmmlxLink) edge; 
-						if (link.getOfAssociation() == association) {
+						if (link.getAssociation() == association) {
 							if (link.getSourceNode() == obj) {
 								linkedObjectsListView.getItems().add(link.getTargetNode());
 							}
