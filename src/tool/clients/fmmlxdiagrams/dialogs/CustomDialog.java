@@ -25,6 +25,7 @@ public class CustomDialog<R> extends Dialog<R> {
 	protected GridPane grid;
 	protected Label errorLabel;
 	protected VBoxControl vBoxControl;
+	protected int listView_ROW_HEIGHT = 24;
 
 	public CustomDialog() {
 		super();

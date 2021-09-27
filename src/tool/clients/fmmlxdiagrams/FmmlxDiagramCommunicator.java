@@ -17,6 +17,7 @@ import tool.clients.serializer.XmlManager;
 import tool.clients.xmlManipulator.XmlHandler;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.PropertyManager;
+import tool.xmodeler.XModeler;
 import xos.Value;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -99,7 +100,7 @@ public class FmmlxDiagramCommunicator {
 
 	private transient Integer _newDiagramID = null;
 
-	public static enum DiagramType {ClassDiagram, ModelBrowser};
+    public static enum DiagramType {ClassDiagram, ModelBrowser};
 	
 	public Integer createDiagram(String packagePath, String diagramName, String file, DiagramType type) {
 		//Creates a diagram which is not displayed yet.
@@ -1577,7 +1578,8 @@ public class FmmlxDiagramCommunicator {
     public void openXmlFile(String fileName) {
         FmmlxDeserializer fmmlxDeserializer = new FmmlxDeserializer(new XmlManager(fileName));
         new Thread(() -> fmmlxDeserializer.loadProject(this)).start(); // Very important. Otherwise assigning diagramID will get stuck
-    }
+		XModeler.bringControlCenterToFront();
+	}
 
     public void openPackageBrowser() {
         WorkbenchClient.theClient().send(handler, "openPackageBrowser()");
@@ -2025,9 +2027,13 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	public void mergeEnumerationItem(int diagramID, String enumName, String itemName) throws TimeOutException {
-		Vector<Object> result = xmfRequest(handler, diagramID, "mergeEnumerationValue", new Value(enumName),
-				new Value(itemName));
-		showErrorMessage(result);
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(enumName),
+				new Value(itemName)
+		};
+		sendMessage("mergeEnumerationValue",message);
+
 	}
 
 	public void mergeAssociation(int diagramID, String classSourceName, String classTargetName,
@@ -2055,4 +2061,50 @@ public class FmmlxDiagramCommunicator {
 				new Value(name)};
 		sendMessage("mergeAssociationInstance", message);
 	}
+
+	public void mergeConstraint(int diagramID, String classPath, String constName, Integer instLevel, String body, String reason) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(classPath),
+				new Value(constName),
+				new Value(instLevel),
+				new Value(body),
+				new Value(reason)
+		};
+		sendMessage("mergeConstraint", message);
+	}
+
+	public void mergeRoleFiller(int diagramID, String role, String roleFiller) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(role), new Value(roleFiller)};
+		sendMessage("mergeRoleFiller", message);
+	}
+
+	public void mergeDelegation(int diagramID, String delegationFromName, String delegationToName, int delegateToLevel) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(delegationFromName), new Value(delegationToName), new Value(delegateToLevel)};
+		sendMessage("mergeDelegation", message);
+	}
+
+	public void mergeSlotValue(int diagramID, String className, String slotName, String valueToBeParsed) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(className),
+				new Value(slotName),
+				new Value(valueToBeParsed)};
+		sendMessage("mergeSlotValue", message);
+	}
+
+	public void mergeOperation2(int diagramID, String className, int level, String body) {
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(className),
+				new Value(level),
+				new Value(body)
+		};
+		sendMessage("mergeOperation", message);
+	}
+
 }

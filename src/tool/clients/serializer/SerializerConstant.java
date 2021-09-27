@@ -81,6 +81,10 @@ public class SerializerConstant {
     public static final String ATTRIBUTE_ANCHORS = "anchors";
     public static final String ATTRIBUTE_HIDDEN = "hidden";
     public static final String FILE_XML = "xml";
+    public static final String ATTRIBUTE_MONITORED = "monitored";
+    public static final String ATTRIBUTE_PACKAGE = "package";
+    public static final String ATTRIBUTE_PARAM_NAMES = "paramNames";
+    public static final String ATTRIBUTE_PARAM_TYPES = "paramTypes";
 
 
     public static class EdgeType {

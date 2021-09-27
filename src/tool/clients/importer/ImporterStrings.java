@@ -25,7 +25,14 @@ public class ImporterStrings {
     public static final String SOURCE_CLASS = "Source_Class";
     public static final String TARGET_CLASS = "Target_Class";
     public static final String DELEGATE_TO_LEVEL = "Delegate_To_Level";
-    public static final String DIALOG_TITLE = "Conflict List";
+    public static final String PROBLEM_DIFFERENT_INST_LEVEL = "already exists but with different inst-level";
+    public static final String PROBLEM_DIFFERENT_BODY = "already exists but with different body";
+    public static final String PROBLEM_DIFFERENT_REASON = "already exists but with different reason";
+    public static final String OPERATION_NAME = "Operation_Name";
+    public static final String PROBLEM_DIFFERENT_MONITORED = "already exists but with different reason";
+    public static final String PROBLEM_DIFFERENT_PARAM_NAMES = "already exists but with different param-names";
+    public static final String PROBLEM_DIFFERENT_PARAM_TYPES = "already exists but with different param-types";
+
 
     public static class ConflictType {
         public static final String CLASS = "Class";
@@ -36,12 +43,14 @@ public class ImporterStrings {
         public static final String LINK = "Link";
         public static final String DELEGATION = "Delegation";
         public static final String ROLE_FILLER = "RoleFiller";
+        public static final String CONSTRAINT = "Constraint";
     }
 
     public class ConflictDialogString {
         public static final String TYPE = "Type";
         public static final String DESCRIPTION = "Description";
-        public static final String WHERE = "where";
+        public static final String WHERE = "Where";
+        public static final String DIALOG_TITLE = "Conflict List";
     }
 }
 

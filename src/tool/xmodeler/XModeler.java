@@ -585,11 +585,14 @@ public class XModeler extends Application {
 
     public static void finishOpenDiagramFromXml() {
 	    newStage.getControlCenterClient().getAllProjects();
-	    newStage.setAlwaysOnTop(true);
-	    newStage.toFront();
-	    newStage.requestFocus();
-	    newStage.setAlwaysOnTop(false);
-	    //TODO bring control-center to front
+    }
+
+    public static void bringControlCenterToFront() {
+	    Platform.runLater(() -> newStage.toFront());
+    }
+
+    public static void bringControlCenterToBack() {
+        Platform.runLater(() -> newStage.toBack());
     }
 }
 

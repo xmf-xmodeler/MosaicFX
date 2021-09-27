@@ -26,10 +26,6 @@ public class FMMLxImporter {
         if(conflicts.size()==0){
             protocolHandler.executeMerge(logsNode, diagram.getComm());
         } else {
-            System.out.println("Conflict list : ");
-            for(int i = 0; i< conflicts.size(); i++){
-                System.out.println((i)+". "+ conflicts.get(i));
-            }
             ConflictsDialog conflictsDialog = new ConflictsDialog(conflicts);
             conflictsDialog.show();
         }

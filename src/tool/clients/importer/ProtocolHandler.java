@@ -16,6 +16,7 @@ public class ProtocolHandler {
     private final Vector<FmmlxLink> links;
     private final Vector<DelegationEdge> delegationEdges;
     private final Vector<RoleFillerEdge> roleFillerEdges;
+    private final String projectPath;
 
     public ProtocolHandler(AbstractPackageViewer diagram) {
         this.diagram = diagram;
@@ -25,6 +26,7 @@ public class ProtocolHandler {
         this.links = diagram.getAssociationInstance();
         this.delegationEdges = diagram.getDelegations();
         this.roleFillerEdges = diagram.getRoleFillerEdges();
+        this.projectPath = diagram.getPackagePath();
     }
 
     public void readLogs(Node logsNode) {
@@ -53,6 +55,7 @@ public class ProtocolHandler {
                             conflict.putIn(ImporterStrings.CLASS_NAME, object.getName());
                             conflicts.add(conflict);
                         }
+                        break;
                     }
                 }
                 break;
@@ -64,15 +67,10 @@ public class ProtocolHandler {
             case "addAttribute" : {
                 String conflictType = ImporterStrings.ConflictType.ATTRIBUTE;
                 String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
-                String classpath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
-                String[] classPathArray = classpath.split("::");
-                String className = classPathArray[classPathArray.length-1];
+                String className = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS));
                 int level = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));
-                String typePath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_TYPE);
+                String typeName = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_TYPE));
                 Multiplicity multiplicity = getMultiplicityFromXml(logElement.getAttribute(SerializerConstant.ATTRIBUTE_MULTIPLICITY));
-
-                String[] typePathArray = typePath.split("::");
-                String typeName = typePathArray[typePathArray.length-1];
 
                 for(FmmlxObject object : objects){
                     if(object.getName().equals(className)){
@@ -105,28 +103,16 @@ public class ProtocolHandler {
                                 break;
                             }
                         }
-                        break;
                     }
+                    break;
                 }
-                break;
-            }
-            case "addOperation": {
-                String conflictType = ImporterStrings.ConflictType.OPERATION;
-                String classPath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
-                String[] classPathArray = classPath.split("::");
-                String className = classPathArray[classPathArray.length-1];
-                String body = parseBase64(logElement.getAttribute(SerializerConstant.ATTRIBUTE_BODY));
-                int level = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));
-
                 break;
             }
             case "changeSlotValue" : {
                 String conflictType = ImporterStrings.ConflictType.SLOT;
-                String classpath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
-                String[] classPathArray = classpath.split("::");
-                String className = classPathArray[classPathArray.length-1];
+                String className = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS));
                 String slotName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_SLOT_NAME);
-                String valueToBeParsed = logElement.getAttribute(SerializerConstant.ATTRIBUTE_VALUE_TOBE_PARSED);
+                String valueToBeParsed = checkPathExists(logElement.getAttribute(SerializerConstant.ATTRIBUTE_VALUE_TOBE_PARSED), projectPath);
 
                 for(FmmlxObject object : objects){
                     if(object.getName().equals(className)){
@@ -138,15 +124,78 @@ public class ProtocolHandler {
                                     conflict.putIn(ImporterStrings.CLASS_NAME, className);
                                     conflict.putIn(ImporterStrings.SLOT_NAME, slotName);
                                     conflicts.add(conflict);
+                                    break;
                                 }
+                                break;
                             }
-                            break;
                         }
+                        break;
                     }
-                    break;
                 }
                 break;
             }
+            case "addOperation": {
+                String conflictType = ImporterStrings.ConflictType.OPERATION;
+                String className = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS));
+                String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
+                String type = logElement.getAttribute(SerializerConstant.ATTRIBUTE_TYPE);
+                boolean monitored = Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_MONITORED));
+                String body = replacePath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_BODY));
+                int level = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));
+                for(FmmlxObject object: objects){
+
+                    if(object.getName().equals(className)){
+                        Vector<FmmlxOperation> operations = object.getAllOperations();
+                        for(FmmlxOperation operation: operations){
+                            if(operation.getName().equals(name)){
+                                if(operation.getLevel()!=level){
+                                    Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_LEVEL);
+                                    conflict.putIn(ImporterStrings.CLASS_NAME, className);
+                                    conflict.putIn(ImporterStrings.OPERATION_NAME, name);
+                                    conflicts.add(conflict);
+                                }
+                                if(!operation.getType().equals(checkPathExists(type, projectPath))){
+                                    Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_TYPE);
+                                    conflict.putIn(ImporterStrings.CLASS_NAME, className);
+                                    conflict.putIn(ImporterStrings.OPERATION_NAME, name);
+                                    conflicts.add(conflict);
+                                }
+                                if(operation.isMonitored()!=monitored){
+                                    Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_MONITORED);
+                                    conflict.putIn(ImporterStrings.CLASS_NAME, className);
+                                    conflict.putIn(ImporterStrings.OPERATION_NAME, name);
+                                    conflicts.add(conflict);
+                                }
+                                String paramNames = logElement.getAttribute(SerializerConstant.ATTRIBUTE_PARAM_NAMES);
+                                String[] paramNameList = paramNames.split(",");
+                                if(!compareNames(paramNameList, operation.getParamNames())){
+                                    Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_PARAM_NAMES);
+                                    conflict.putIn(ImporterStrings.CLASS_NAME, className);
+                                    conflict.putIn(ImporterStrings.OPERATION_NAME, name);
+                                    conflicts.add(conflict);
+                                }
+                                String paramTypes = logElement.getAttribute(SerializerConstant.ATTRIBUTE_PARAM_TYPES);
+                                String[] paramTypeList = paramTypes.split(",");
+                                if(!compareTypes(paramTypeList, operation.getParamTypes())){
+                                    Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_PARAM_TYPES);
+                                    conflict.putIn(ImporterStrings.CLASS_NAME, className);
+                                    conflict.putIn(ImporterStrings.OPERATION_NAME, name);
+                                    conflicts.add(conflict);
+                                }
+                                if(!operation.getBody().equals(replacePath(body))){
+                                    Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_PARAM_TYPES);
+                                    conflict.putIn(ImporterStrings.CLASS_NAME, className);
+                                    conflict.putIn(ImporterStrings.OPERATION_NAME, name);
+                                    conflicts.add(conflict);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+            // TODO Bug
             case "addAssociation" : {
                 String conflictType = ImporterStrings.ConflictType.ASSOCIATION;
                 String sourceName = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE));
@@ -269,6 +318,7 @@ public class ProtocolHandler {
                             Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_REVERSE_SOURCE_AND_TARGET);
                             conflictAssocIn(conflict, name, className1, className2);
                             conflicts.add(conflict);
+                            break;
                         }
                     }
                 }
@@ -300,13 +350,8 @@ public class ProtocolHandler {
             }
             case "setRoleFiller" : {
                 String conflictType = ImporterStrings.ConflictType.ROLE_FILLER;
-                String rolePath = logElement.getAttribute("role");
-                String[] rolePathArray1 = rolePath.split("::");
-                String role = rolePathArray1[rolePathArray1.length-1];
-
-                String roleFillerPath = logElement.getAttribute("roleFiller");
-                String[] roleFillerPathArray = roleFillerPath.split("::");
-                String roleFiller = roleFillerPathArray[roleFillerPathArray.length-1];
+                String role =getNameFromPath(logElement.getAttribute("role"));
+                String roleFiller = getNameFromPath(logElement.getAttribute("roleFiller"));
 
                 for(RoleFillerEdge roleFillerEdge:roleFillerEdges){
                     if(roleFillerEdge.sourceEnd.getNode().getName().equals(roleFiller) && (roleFillerEdge.targetEnd.getNode().getName().equals(role))){
@@ -314,22 +359,85 @@ public class ProtocolHandler {
                         conflict.putIn(ImporterStrings.SOURCE_CLASS, role);
                         conflict.putIn(ImporterStrings.TARGET_CLASS, roleFiller);
                         conflicts.add(conflict);
+                        break;
                     }
                 }
-
                 break;
             }
-//            case "addConstraint" : {
-//                String path = logElement.getAttribute("class");
-//                String constName = logElement.getAttribute("constName");
-//                Integer instLevel = Integer.parseInt(logElement.getAttribute("instLevel"));
-//                String body = logElement.getAttribute("body");
-//                String reason = logElement.getAttribute("reason");
-//                break;
-//            }
+
+            case "addConstraint" : {
+                String conflictType = ImporterStrings.ConflictType.CONSTRAINT;
+                String path = logElement.getAttribute("class");
+                String className = getNameFromPath(path);
+                String constName = logElement.getAttribute("constName");
+                int instLevel = Integer.parseInt(logElement.getAttribute("instLevel"));
+                String body = logElement.getAttribute("body");
+                String reason = logElement.getAttribute("reason");
+
+                for(FmmlxObject object:objects){
+                    if(object.getName().equals(className)){
+                        Vector<Constraint> constraints = object.getConstraints();
+                        for(Constraint constraint: constraints){
+                            if(constraint.getName().equals(constName)){
+                                if(constraint.getLevel()!=instLevel){
+                                    Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_INST_LEVEL);
+                                    conflict.putIn(ImporterStrings.CLASS_NAME, className);
+                                    conflicts.add(conflict);
+                                }
+                                if(!constraint.getBodyFull().equals(replacePath(body))){
+                                    Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_BODY);
+                                    conflict.putIn(ImporterStrings.CLASS_NAME, className);
+                                    conflicts.add(conflict);
+                                }
+                                if(!constraint.getReasonFull().equals(replacePath(reason))){
+                                    Conflict conflict = new Conflict(conflictType, ImporterStrings.PROBLEM_DIFFERENT_REASON);
+                                    conflict.putIn(ImporterStrings.CLASS_NAME, className);
+                                    conflicts.add(conflict);
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+                break;
+            }
             default:
                 break;
         }
+    }
+
+    private String replacePath(String string) {
+        String result = string;
+        if(string.contains(projectPath)){
+            String currentPackagePath = diagram.getPackagePath();
+            result = result.replace(projectPath, currentPackagePath);
+        }
+        return result;
+    }
+
+    private boolean compareNames(String[] paramNameList, Vector<String> paramNames) {
+        for(String s : paramNameList){
+            if(!paramNames.contains(s)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean compareTypes(String[] paramTypeList, Vector<String> paramTypes) {
+        if(paramTypeList.length!=paramTypes.size()){
+            return false;
+        }
+        for(String p : paramTypeList){
+            if(p.contains(projectPath)){
+                String r = p.replace(projectPath, diagram.getPackagePath());
+                if(!paramTypes.contains(r)){
+                    return false;
+                }
+            }
+        }
+    return true;
     }
 
     private Multiplicity getMultiplicityFromXml(String attribute) {
@@ -351,16 +459,6 @@ public class ProtocolHandler {
         conflict.putIn(ImporterStrings.ASSOCIATION_NAME, fwName);
         conflict.putIn(ImporterStrings.SOURCE_CLASS, sourceName);
         conflict.putIn(ImporterStrings.TARGET_CLASS, targetName);
-    }
-
-    private String parseBase64(String body) {
-        byte[] decodedBytes = Base64.getDecoder().decode(body);
-        return new String(decodedBytes);
-    }
-
-    private String parseOf(String ofString) {
-        String[] ofStringArray = ofString.split("::");
-        return ofStringArray[2];
     }
 
     public void clearProblems(){
@@ -403,9 +501,7 @@ public class ProtocolHandler {
                 break;
             }
             case "changeParent" : {
-                String classpath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
-                String[] classPathArray = classpath.split("::");
-                String className = classPathArray[classPathArray.length-1];
+                String className = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS));
 
                 Vector<String> oldParents = new Vector<>();
                 Vector<String> parents1 = new Vector<>();
@@ -418,10 +514,8 @@ public class ProtocolHandler {
                 Vector<String> parents2 = new Vector<>();
                 if(!newParentPathsString.equals("")){
                     String[] newParentPathsArray = newParentPathsString.split(",");
-
                     for (String s : newParentPathsArray) {
-                        String[] newParentPathArray = s.split("::");
-                        parents2.add(newParentPathArray[newParentPathArray.length - 1]);
+                        parents2.add(getNameFromPath(s));
                     }
                 }
                 Vector<String> mergedParents = new Vector<>(parents1);
@@ -445,7 +539,7 @@ public class ProtocolHandler {
             }
             case "addInstance": {
                 String name = logElement.getAttribute(SerializerConstant.ATTRIBUTE_NAME);
-                String ofName = parseOf(logElement.getAttribute(SerializerConstant.ATTRIBUTE_OF));
+                String ofName = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_OF));
                 String parentPathsString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_PARENTS);
                 Vector<String> parents = new Vector<>();
 
@@ -466,18 +560,18 @@ public class ProtocolHandler {
                 comm.mergeEnumeration(diagramID, enumName);
                 break;
             }
-//            case "addEnumerationValue" : {
-//                String enumName = logElement.getAttribute("enum_name");
-//                String itemName = logElement.getAttribute("enum_value_name");
-//                try {
-//                    comm.mergeEnumerationItem(diagramID, enumName, itemName);
-//                } catch (TimeOutException e) {
-//                    e.printStackTrace();
-//                }
-//                break;
-//            }
+            case "addEnumerationValue" : {
+                String enumName = logElement.getAttribute("enum_name");
+                String itemName = checkPathExists(logElement.getAttribute("enum_value_name"), projectPath);
+                try {
+                    comm.mergeEnumerationItem(diagramID, enumName, itemName);
+                } catch (TimeOutException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
             case "addAssociation" : {
-                String projectPath = diagram.getPackagePath();
+
                 String classSourceName = projectPath+"::"+getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_SOURCE));
                 String classTargetName = projectPath+"::"+getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS_TARGET));
 
@@ -514,8 +608,63 @@ public class ProtocolHandler {
                 comm.mergeAssociationInstance(diagramID, className1, className2, name);
                 break;
             }
+            case "addConstraint" : {
+                String classPath = projectPath+"::"+getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS));
+                String constName = logElement.getAttribute("constName");
+                Integer instLevel = Integer.parseInt(logElement.getAttribute("instLevel"));
+                String body = replacePath(logElement.getAttribute("body"));
+                String reason = replacePath(logElement.getAttribute("reason"));
+                comm.mergeConstraint(diagramID, classPath, constName, instLevel, body, reason);
+                break;
+            }
+            case "addDelegation" : {
+                String delegationFromName = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_DELEGATE_FROM));
+                String delegationToName = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_DELEGATE_TO));
+                int delegateToLevel = Integer.parseInt(logElement.getAttribute("delegateToLevel"));
+
+                comm.mergeDelegation(diagramID, delegationFromName, delegationToName, delegateToLevel);
+                break;
+            }
+            case "setRoleFiller" : {
+                String role = getNameFromPath(logElement.getAttribute("role"));
+                String roleFiller = getNameFromPath(logElement.getAttribute("roleFiller"));
+
+                comm.mergeRoleFiller(diagramID, role, roleFiller);
+                break;
+            }
+            case "changeSlotValue" : {
+                String className = getNameFromPath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS));
+                String packagePath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_PACKAGE);
+                String slotName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_SLOT_NAME);
+                String value = logElement.getAttribute(SerializerConstant.ATTRIBUTE_VALUE_TOBE_PARSED);
+                String valueToBeParsed = checkPathExists(value, packagePath);
+                comm.mergeSlotValue(diagramID, className, slotName, valueToBeParsed);
+                break;
+            }
+            case "addOperation": {
+                String classPath = logElement.getAttribute(SerializerConstant.ATTRIBUTE_CLASS);
+                String[] classPathArray = classPath.split("::");
+                String className = classPathArray[classPathArray.length-1];
+                String body = replacePath(logElement.getAttribute(SerializerConstant.ATTRIBUTE_BODY));
+                int level = Integer.parseInt(logElement.getAttribute(SerializerConstant.ATTRIBUTE_LEVEL));
+                comm.mergeOperation2(diagramID, className, level, body);
+                break;
+            }
             default:
                 break;
         }
+    }
+
+    private String checkPathExists(String toBeParsed1, String packagePath) {
+        String result = toBeParsed1;
+        String currentPackagePath = "";
+        String[] path = toBeParsed1.split("::");
+        if (path.length>1){
+            if(toBeParsed1.contains(packagePath)){
+                currentPackagePath = diagram.getPackagePath();
+                result = result.replace(packagePath, currentPackagePath);
+            }
+        }
+        return result;
     }
 }

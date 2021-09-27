@@ -669,7 +669,6 @@ public class XmlManager extends XmlHandler {
                 String fwName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_FW_NAME);
                 String reverseName = logElement.getAttribute(SerializerConstant.ATTRIBUTE_REVERSE_NAME);
 
-
                 Multiplicity multiplicityT2S; {
                     String multiplicityString = logElement.getAttribute(SerializerConstant.ATTRIBUTE_T2S_MULTIPLICITY);
                     String multiplicitySubString = multiplicityString.substring(4, multiplicityString.length()-1);

@@ -16,15 +16,15 @@ public class ConflictsDialog extends CustomDialog {
     private ListView<Conflict> conflictTypeList;
     private ListView<Conflict> descriptionsListView;
     private ListView<Conflict> whereListView;
-    private List<Conflict> conflicts;
+    private final List<Conflict> conflicts;
 
     public ConflictsDialog(List<Conflict> conflicts){
         super();
         this.conflicts = conflicts;
 
         DialogPane dialogPane = getDialogPane();
-        dialogPane.setHeaderText(ImporterStrings.DIALOG_TITLE);
-        dialogPane.getButtonTypes().addAll(ButtonType.CANCEL);
+        dialogPane.setHeaderText(ImporterStrings.ConflictDialogString.DIALOG_TITLE);
+        dialogPane.getButtonTypes().addAll(ButtonType.CLOSE);
 
         setLayoutContent();
         dialogPane.setContent(flow);
@@ -44,6 +44,8 @@ public class ConflictsDialog extends CustomDialog {
         whereListView = initializeConflictListView(getConflictTypeList(new ArrayList<>()), SelectionMode.SINGLE, "w");
         whereListView.getItems().clear();
         whereListView.setEditable(false);
+
+        conflictTypeList.setPrefHeight(listView_ROW_HEIGHT * 7);
 
         conflictTypeList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             descriptionsListView.getItems().clear();
@@ -97,7 +99,7 @@ public class ConflictsDialog extends CustomDialog {
             for(Conflict conflict: this.conflicts){
                 if(conflict.getType().equals(neww.getType()) && !descriptions.contains(conflict.getDescription())){
                     conflictList.add(conflict);
-                    descriptions.add(neww.getDescription());
+                    descriptions.add(conflict.getDescription());
                 }
             }
         }
