@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.transform.Affine;
+import javafx.scene.transform.Transform;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement;
@@ -536,7 +537,8 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutAutomatedProcess();
 		} else if(ofPath.endsWith("Q")) {
 			try {
-				rootNodeElement=SVGReader.readSVG("C:\\circle.svg");
+				rootNodeElement=SVGReader.readSVG("resources/abstract-syntax-repository/circle.svg", new Affine(Transform.translate(x, y)));
+				
 			} catch (ParserConfigurationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

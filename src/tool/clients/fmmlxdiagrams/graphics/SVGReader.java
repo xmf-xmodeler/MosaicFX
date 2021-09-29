@@ -10,36 +10,40 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import javafx.scene.transform.Affine;
+
 public class SVGReader {
 
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
-		readSVG("C:\\circle.svg");
+		readSVG("resources/abstract-syntax-repository/circle.svg", new Affine());
 	}
 
-	public static NodeGroup readSVG(String fileName) throws ParserConfigurationException, SAXException, IOException {
-		return readSVG(new File(fileName));
+	public static NodeGroup readSVG(String fileName, Affine affine) throws ParserConfigurationException, SAXException, IOException {
+		return readSVG(new File(fileName), affine);
 	}
 
-	private static NodeGroup readSVG(File file) throws ParserConfigurationException, SAXException, IOException {
+	private static NodeGroup readSVG(File file, Affine affine) throws ParserConfigurationException, SAXException, IOException {
 		long start = System.currentTimeMillis(); 
 		System.err.println(System.currentTimeMillis());
 		Document doc = null;
 
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		
+		dbFactory.setNamespaceAware(false);
+        dbFactory.setValidating(false);
+        dbFactory.setFeature("http://xml.org/sax/features/namespaces", false);
+        dbFactory.setFeature("http://xml.org/sax/features/validation", false);
+        dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+        dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 		System.err.println(System.currentTimeMillis() - start);
 		doc = dBuilder.parse(file);
 		System.err.println(System.currentTimeMillis() - start);
 		Node svgNode = (Node) doc.getDocumentElement();
-
+		
 		if (!"svg".equals(svgNode.getNodeName()))
 			throw new IllegalArgumentException();
-
+		NodeGroup g = new NodeGroup(affine);
 		Vector<NodeElement> children = readChildren(svgNode);
-
-		NodeGroup g = new NodeGroup();
-
 		g.addAllNodeElements(children);
 		System.err.println(System.currentTimeMillis() - start);
 		return g;
@@ -62,6 +66,10 @@ public class SVGReader {
 			} else if("path".equals(n.getNodeName())) {
 				NodePath nP = new NodePath(n);
 				vec.add(nP);
+			} else if ("circle".contentEquals(n.getNodeName())) {
+				NodeEllipse nE = NodeEllipse.circle(n);
+				vec.add(nE);
+			
 			} else {
 				System.out.println("Child not recognized: " + parentNode + ":" + n);
 
@@ -71,6 +79,10 @@ public class SVGReader {
 
 		return vec;
 
+	}
+
+	public static Affine readTransform(Node n) {
+		return new Affine();
 	}
 
 }

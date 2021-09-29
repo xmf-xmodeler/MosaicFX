@@ -11,6 +11,9 @@ import tool.clients.fmmlxdiagrams.FmmlxProperty;
 
 public abstract class NodeBaseElement extends NodeElement {
 	
+	Color bgColor;
+	Color fgColor;
+	
 	public interface Action{
 		public void perform();
 	}

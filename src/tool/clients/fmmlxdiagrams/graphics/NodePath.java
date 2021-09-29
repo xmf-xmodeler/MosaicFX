@@ -24,8 +24,6 @@ import tool.clients.xmlManipulator.XmlHandler;
 public class NodePath extends NodeBaseElement{
 	
 	String textPath;
-	Color bgColor;
-	Color fgColor;
 	Bounds bounds = new BoundingBox(0, 0, 0, 0);
 	
 	public NodePath(Affine myTransform, String textPath, Color bgColor, Color fgColor, FmmlxProperty actionObject, Action action) {
@@ -43,7 +41,15 @@ public class NodePath extends NodeBaseElement{
 		Node bgColorNode = n.getAttributes().getNamedItem("fill");
 		if(bgColorNode!=null) {
 			this.bgColor = Color.web(bgColorNode.getNodeValue());
+		} else {
+			this.bgColor = Color.BLACK;
 		}
+//		Node fgColorNode = n.getAttributes().getNamedItem("style");
+//		if(fgColorNode!=null) {
+//			this.fgColor = Color.web(fgColorNode.getNodeValue());
+//		} else {
+			this.fgColor = Color.TRANSPARENT;
+//		}
 	}
 
 	@Override
@@ -103,7 +109,7 @@ public class NodePath extends NodeBaseElement{
 				a.getMxy(), a.getMyy(), 
 				a.getTx(), a.getTy()));
 		this.bounds = p.getBoundsInParent();
-//		System.err.println("Bounds updated (NodePath): " + bounds);
+		System.err.println("Bounds updated (NodePath): " + bounds);
 	}
 
 	@Override

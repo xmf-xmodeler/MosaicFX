@@ -28,9 +28,9 @@ public class NodeGroup extends NodeElement {
 		updateBounds();
 	}
 	
-	public NodeGroup() {
-		myTransform = new Affine();
-	}
+//	public NodeGroup() {
+//		myTransform = new Affine();
+//	}
 	
 	public NodeGroup(Node node) {
 		myTransform = new Affine();
@@ -110,6 +110,8 @@ public class NodeGroup extends NodeElement {
 	private void updateBounds() {
 		Bounds bounds = null;
 		for (NodeElement e : new Vector<>(nodeElements)) {
+			
+			System.err.println("Bounds updated (NodeGroupElement): " + e.getBounds());	
 			if(bounds == null) {
 				bounds = e.getBounds(); 
 			} else {
@@ -124,7 +126,7 @@ public class NodeGroup extends NodeElement {
 				}
 			}
 		}
-//		System.err.println("Bounds updated (NodeGroup): " + bounds);
+		System.err.println("Bounds updated (NodeGroup): " + bounds);
 		this.bounds = bounds;
 	}
 
