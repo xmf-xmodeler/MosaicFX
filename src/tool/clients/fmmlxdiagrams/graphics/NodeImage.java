@@ -16,7 +16,7 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.xmlManipulator.XmlHandler;
 
-public class NodeImage extends NodeBaseElement implements NodeElement {
+public class NodeImage extends NodeBaseElement {
 	String iconSource;
 	public NodeImage(double x, double y, String iconSource, FmmlxProperty o, Action action) {
 		super(new Affine(1,0,x,0,1,y), o, action);

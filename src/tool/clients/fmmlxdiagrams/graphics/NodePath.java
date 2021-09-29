@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import com.sun.javafx.geom.transform.Affine3D;
 import com.sun.javafx.geom.transform.BaseTransform;
@@ -33,6 +34,16 @@ public class NodePath extends NodeBaseElement{
 		this.fgColor = fgColor;
 		this.textPath = textPath;
 		updateBounds();
+	}
+
+	public NodePath(Node n) {
+		this.myTransform = new Affine();
+		this.action= ()->{};
+		this.textPath = n.getAttributes().getNamedItem("d").getNodeValue();
+		Node bgColorNode = n.getAttributes().getNamedItem("fill");
+		if(bgColorNode!=null) {
+			this.bgColor = Color.web(bgColorNode.getNodeValue());
+		}
 	}
 
 	@Override

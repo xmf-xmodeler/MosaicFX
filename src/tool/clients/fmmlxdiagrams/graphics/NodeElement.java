@@ -9,14 +9,18 @@ import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.xmlManipulator.XmlHandler;
 
-public interface NodeElement {
 
+
+public abstract class NodeElement {
+
+	protected Affine myTransform;
+	protected NodeElement owner;
 	/**
 	 * Paints this NodeElement and all its children to the diagramView's canvas.
 	 * @param diagramView the view the element will be painted on
 	 * @param objectIsSelected when the element should be displayed as selected.
 	 */
-	public void paintOn(FmmlxDiagram.DiagramViewPane diagramView, boolean objectIsSelected);
+	public abstract void paintOn(FmmlxDiagram.DiagramViewPane diagramView, boolean objectIsSelected);
 
 	/**
 	 * Checks whether this NodeElement has been hit with the mouse
@@ -25,17 +29,24 @@ public interface NodeElement {
 	 * @param diagramView
 	 * @return whether it has been hit
 	 */
-	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagramView);
+	public abstract boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagramView);
 
-	NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram);
+	abstract NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram);
 
-    void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup);
+	abstract void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup);
 
     /**
      * Returns the element's own transform, relative to its parent
      * @return the element's own transform, relative to its parent
      */
-    Affine getMyTransform();
+	public final Affine getMyTransform() {	
+		if (myTransform==null) {
+			System.err.println("myTransform not set: "+ this.getClass());
+			myTransform = new Affine();
+		}
+		return myTransform; 
+		
+	}
     
     /**
      * Returns the element's combined transform, with its parent's transforms prepended 
@@ -44,10 +55,10 @@ public interface NodeElement {
      * @param canvasTransform the transform of the canvas
      * @return the total transform
      */
-    Affine getTotalTransform(Affine canvasTransform);
+    abstract Affine getTotalTransform(Affine canvasTransform);
 
-	public void setOwner(NodeElement owner);
+	public abstract void setOwner(NodeElement owner);
 
-	public Bounds getBounds();
+	public abstract Bounds getBounds();
 
 }

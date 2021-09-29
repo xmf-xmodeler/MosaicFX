@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
+import org.w3c.dom.Node;
+
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -7,7 +9,7 @@ import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 
-public abstract class NodeBaseElement implements NodeElement {
+public abstract class NodeBaseElement extends NodeElement {
 	
 	public interface Action{
 		public void perform();
@@ -25,11 +27,13 @@ public abstract class NodeBaseElement implements NodeElement {
 		this.action = action;
 	}
 	
-	protected Affine myTransform = new Affine(); // where to be painted if the zoom were 1 and the origin has not moved
+	public NodeBaseElement() {}
+
+	//protected Affine myTransform = new Affine(); // where to be painted if the zoom were 1 and the origin has not moved
 	protected FmmlxProperty actionObject;
 	protected Action action;
 	protected boolean selected = false;
-	private NodeElement owner;
+	//private NodeElement owner;
 		
 	public void setSelected() { selected = true;}
 	public void setDeselected() { selected = false;}
@@ -42,7 +46,7 @@ public abstract class NodeBaseElement implements NodeElement {
 	
 	public void performDoubleClickAction() { action.perform();}
 	
-	public final Affine getMyTransform() {	return myTransform; }
+	//public final Affine getMyTransform() {	return myTransform; }
 	
 	public Affine getTotalTransform(Affine canvasTransform) {
 		Affine a = new Affine(owner == null?canvasTransform:owner.getTotalTransform(canvasTransform));

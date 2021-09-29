@@ -8,12 +8,18 @@ import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement;
+import tool.clients.fmmlxdiagrams.graphics.SVGReader;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteTool;
 import tool.clients.fmmlxdiagrams.newpalette.ToolClass;
 
+import java.io.IOException;
 import java.util.*;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
 
 public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, Comparable<FmmlxObject> {
 
@@ -528,6 +534,19 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutComputerSupportedProcess();
 		} else if(ofPath.endsWith("AutomatedProcess")) {
 			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutAutomatedProcess();
+		} else if(ofPath.endsWith("Q")) {
+			try {
+				rootNodeElement=SVGReader.readSVG("C:\\circle.svg");
+			} catch (ParserConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SAXException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else {
 			new DefaultFmmlxObjectDisplay(diagram, this).layout();
 		}

@@ -18,7 +18,7 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.xmlManipulator.XmlHandler;
 
-public class NodeLabel extends NodeBaseElement implements NodeElement {
+public class NodeLabel extends NodeBaseElement {
 	
 	private Pos alignment;
 	private final FontWeight fontWeight;

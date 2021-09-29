@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams.graphics;
 import java.util.Vector;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
@@ -15,11 +16,9 @@ import tool.clients.exporter.svg.SvgConstant;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.xmlManipulator.XmlHandler;
 
-public class NodeGroup implements NodeElement {
+public class NodeGroup extends NodeElement {
 	
 	protected Vector<NodeElement> nodeElements = new Vector<>();
-	private Affine myTransform;
-	private NodeElement owner;
 	private transient Affine dragAffine;
 	private Bounds bounds;
 	
@@ -29,10 +28,27 @@ public class NodeGroup implements NodeElement {
 		updateBounds();
 	}
 	
+	public NodeGroup() {
+		myTransform = new Affine();
+	}
+	
+	public NodeGroup(Node node) {
+		myTransform = new Affine();
+		Vector<NodeElement> children = SVGReader.readChildren(node);
+		this.addAllNodeElements(children);
+	}
+	
 	public final void addNodeElement(NodeElement nodeElement) {
 		nodeElements.add(nodeElement);
 		nodeElement.setOwner(this);
 		updateBounds();
+	}
+	
+	public final void addAllNodeElements(Vector<NodeElement> nodeElementList) {
+		nodeElements.addAll(nodeElementList);
+		for(NodeElement e : nodeElements) {
+			e.setOwner(this);
+		}
 	}
 	
 	@Override
@@ -75,11 +91,13 @@ public class NodeGroup implements NodeElement {
 		xmlHandler.addXmlElement(parentGroup, group);		
 	}
 
-	public final Affine getMyTransform() {	return myTransform; }
+	
 	
 	public Affine getTotalTransform(Affine canvasTransform) {
 		Affine a = new Affine(owner == null?canvasTransform:owner.getTotalTransform(canvasTransform));
+		//System.err.println("a = " + a + " myTransform = " + myTransform);
 		a.append(myTransform);
+		
 		a.append(getDragAffine());
 		return a;
 	}
