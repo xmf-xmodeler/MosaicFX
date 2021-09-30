@@ -1,5 +1,8 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
+import java.util.Arrays;
+import java.util.Vector;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -50,6 +53,35 @@ public class NodePath extends NodeBaseElement{
 //		} else {
 			this.fgColor = Color.TRANSPARENT;
 //		}
+	}
+	
+	public static NodePath polygon(Node n) {
+		String completeString = null;
+		String points = n.getAttributes().getNamedItem("points").getNodeValue();
+		String[] copiedPoints = points.split(" ");
+		System.err.println(Arrays.toString(copiedPoints));
+		for(int i=0; i<copiedPoints.length; i++) {
+			String[] commaPoints = copiedPoints[i].split(",");
+			if(commaPoints.length==2) {
+			if(completeString==null) {
+				completeString = "M " + commaPoints[0] + " "+ commaPoints[1];
+			} else {
+				completeString += " L " + commaPoints[0] + " " + commaPoints[1];
+			}
+			}
+		}
+		completeString += "z";
+		Node bgColorNode = n.getAttributes().getNamedItem("fill");
+		Color bgColor, fgColor;
+		if (bgColorNode != null) {
+			bgColor = Color.web(bgColorNode.getNodeValue());
+		} else {
+			bgColor = Color.BLACK;
+		}
+		fgColor = Color.TRANSPARENT;
+		NodePath newPath = new NodePath(new Affine(), completeString, bgColor, fgColor, null, ()->{});
+		System.err.println("Path: " + completeString);	
+		return newPath;
 	}
 
 	@Override
@@ -116,6 +148,8 @@ public class NodePath extends NodeBaseElement{
 	public Bounds getBounds() {
 		return bounds;
 	}
+	
+	
 	
 	
 

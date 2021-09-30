@@ -120,4 +120,27 @@ public class NodeEllipse extends NodeBaseElement {
 		return bounds;
 	}
 
+	public static NodeEllipse ellipse(Node n) {
+		NodeEllipse nE = new NodeEllipse();
+		nE.cx = Double.parseDouble(n.getAttributes().getNamedItem("cx").getNodeValue());
+		nE.cy = Double.parseDouble(n.getAttributes().getNamedItem("cy").getNodeValue());
+		nE.rx = Double.parseDouble(n.getAttributes().getNamedItem("rx").getNodeValue());
+		nE.ry = Double.parseDouble(n.getAttributes().getNamedItem("ry").getNodeValue());
+		Node bgColorNode = n.getAttributes().getNamedItem("fill");
+		if (bgColorNode != null) {
+			nE.bgColor = Color.web(bgColorNode.getNodeValue());
+		} else {
+			nE.bgColor = Color.BLACK;
+		}
+//		Node fgColorNode = n.getAttributes().getNamedItem("style");
+//		if(fgColorNode!=null) {
+//			nE.fgColor = Color.web(fgColorNode.getNodeValue());
+//		} else {
+		nE.fgColor = Color.TRANSPARENT;
+//		}
+		nE.myTransform= SVGReader.readTransform(n);
+		//nE.updateBounds();
+		return nE;
+	}
+
 }
