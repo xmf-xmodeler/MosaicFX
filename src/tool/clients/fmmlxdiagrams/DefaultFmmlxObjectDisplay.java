@@ -272,8 +272,8 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		NodeBox selectionBox = new NodeBox(0, 0, neededWidth, currentY, new Color(0, 0, 0, 0), Color.BLACK, (selected) -> selected?3:1, PropertyType.Selection);
 		group.addNodeElement(selectionBox);
 
-		object.width = (int) neededWidth;
-		object.height = (int) currentY;
+//		object.width = (int) neededWidth;
+//		object.height = (int) currentY;
 
 //		object.handlePressedOnNodeElement(object.lastClick, diagram);
 	}

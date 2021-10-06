@@ -22,11 +22,11 @@ public class NodeImage extends NodeBaseElement {
 		super(new Affine(1,0,x,0,1,y), o, action);
 		this.image = new javafx.scene.image.Image(new File(iconSource).toURI().toString());
 		this.iconSource = iconSource;
-		new BoundingBox(0, - image.getHeight(), image.getWidth(), image.getHeight());
+//		bounds = new BoundingBox(0, - image.getHeight(), image.getWidth(), image.getHeight());
 	}
 	
 	private javafx.scene.image.Image image;
-	private Bounds bounds;
+//	private Bounds bounds;
 
 	@Override
 	public void paintOn(FmmlxDiagram.DiagramViewPane diagramView,
@@ -71,7 +71,10 @@ public class NodeImage extends NodeBaseElement {
 
 	@Override
 	public Bounds getBounds() {
-		return bounds;
+		return null;
 	}
+
+	@Override
+	public void updateBounds() {}
 
 }

@@ -61,4 +61,6 @@ public abstract class NodeElement {
 
 	public abstract Bounds getBounds();
 
+	public abstract void updateBounds();
+
 }

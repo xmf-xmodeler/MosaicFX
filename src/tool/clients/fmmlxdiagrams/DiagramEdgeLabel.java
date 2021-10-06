@@ -249,7 +249,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 		int size=16;
 		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
 		group.setAttribute(SvgConstant.ATTRIBUTE_GROUP_TYPE, "edge_label");
-		if (isInteger(text)){
+		if (bgColor != null && bgColor != Color.TRANSPARENT) {
 
 			String color = bgColor.toString().split("x")[1].substring(0,6);
 			String styleString = "fill: #"+color+";";
@@ -266,7 +266,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (this.getReferenceY() + relativeY + height - MARGIN-2)+"");
 			text.setAttribute(SvgConstant.ATTRIBUTE_FONT_FAMILY, "Arial");
 			text.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, "13");
-			text.setAttribute(SvgConstant.ATTRIBUTE_FILL, "white");
+			text.setAttribute(SvgConstant.ATTRIBUTE_FILL, "#" + (fontColor.toString().split("x")[1].substring(0,6)));
 			text.setTextContent(this.text);
 			xmlHandler.addXmlElement(group, text);
 
@@ -276,7 +276,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (this.getReferenceY() + relativeY + height - MARGIN-2)+"");
 			text.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, "13");
 			text.setAttribute(SvgConstant.ATTRIBUTE_FONT_FAMILY, "Arial");
-			text.setAttribute(SvgConstant.ATTRIBUTE_FILL, "black");
+			text.setAttribute(SvgConstant.ATTRIBUTE_FILL, "#" + (fontColor.toString().split("x")[1].substring(0,6)));
 			text.setTextContent(this.text);
 			xmlHandler.addXmlElement(group, text);
 		}
@@ -312,7 +312,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 //		}
 		for(ConcreteNode anchor : anchors) {
 			tx += anchor.getOwnAndDragTransform().getTx() + anchor.getWidth() / 2;
-			ty += anchor.getOwnAndDragTransform().getTy() + anchor.getWidth() / 2;
+			ty += anchor.getOwnAndDragTransform().getTy() + anchor.getHeight() / 2;
 		}
 		
 		tx /= anchors.size();
@@ -326,7 +326,5 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 
 	public void setRelativePosition(double x, double y) {
 		myTransform = new Affine(1, 0, x, 0, 1, y);
-		
 	}
-
 }

@@ -69,8 +69,8 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		this.y = lastKnownY;
 		this.hidden = hidden;
 
-		width = 150;
-		height = 80;
+//		width = 150;
+//		height = 80;
 		this.level = level;
 		this.isAbstract = isAbstract;
 
@@ -567,6 +567,9 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	
 			new DefaultFmmlxObjectDisplay(diagram, this).layout();
 		}
+		
+		rootNodeElement.updateBounds();
+		
 	}
 
 	public void dragTo(Affine dragAffine) {

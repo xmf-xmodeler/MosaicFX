@@ -20,7 +20,7 @@ public class NodeGroup extends NodeElement {
 	
 	protected Vector<NodeElement> nodeElements = new Vector<>();
 	private transient Affine dragAffine;
-	private Bounds bounds;
+	protected Bounds bounds;
 	
 	public NodeGroup(Affine myTransform) {
 		this.myTransform = myTransform;
@@ -56,9 +56,6 @@ public class NodeGroup extends NodeElement {
 		for (NodeElement e : new Vector<>(nodeElements)) {
 			e.paintOn(diagramView, objectIsSelected);
 		}
-//		
-//		if(bounds == null) updateBounds();
-//		if(bounds == null) return;
 	}
 
 	@Override
@@ -107,11 +104,12 @@ public class NodeGroup extends NodeElement {
 		updateBounds();
 	}
 
-	private void updateBounds() {
+	@Override
+	public void updateBounds() {
 		Bounds bounds = null;
 		for (NodeElement e : new Vector<>(nodeElements)) {
+			e.updateBounds();
 			
-			System.err.println("Bounds updated (NodeGroupElement): " + e.getBounds());	
 			if(bounds == null) {
 				bounds = e.getBounds(); 
 			} else {
@@ -126,7 +124,6 @@ public class NodeGroup extends NodeElement {
 				}
 			}
 		}
-		System.err.println("Bounds updated (NodeGroup): " + bounds);
 		this.bounds = bounds;
 	}
 
@@ -146,7 +143,8 @@ public class NodeGroup extends NodeElement {
 
 	@Override
 	public Bounds getBounds() {
-		if(bounds == null) updateBounds();
+		if(bounds == null) 
+			updateBounds();
 		return bounds;
 	}
 	

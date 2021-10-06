@@ -212,4 +212,7 @@ public class NodeLabel extends NodeBaseElement {
 	public Bounds getBounds() {
 		return null;
 	}
+
+	@Override
+	public void updateBounds() {}
 }

@@ -132,7 +132,7 @@ public class NodePath extends NodeBaseElement{
 		updateBounds();
 	}
 
-	private void updateBounds() {
+	@Override public void updateBounds() {
 		Affine a = getTotalTransform(new Affine());
 		SVGPath p = new SVGPath(); 
 		p.setContent(textPath);
@@ -146,6 +146,7 @@ public class NodePath extends NodeBaseElement{
 
 	@Override
 	public Bounds getBounds() {
+//		updateBounds();
 		return bounds;
 	}
 	

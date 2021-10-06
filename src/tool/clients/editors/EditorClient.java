@@ -1001,39 +1001,39 @@ public void sendMessage(final Message message) {
 //		tab.setOnCloseRequest((e)->closeTab(tab,e, id, name, node));
 //	}
 	
-	private void closeTab(Tab item, Event wevent, String id, String name, javafx.scene.Node node) { 
-		// Careful because the diagrams and files share the same tab folder...
-		
-		if (id != null && (EditorClient.editors.containsKey(id) || EditorClient.browsers.containsKey(id))) {
-
-			Alert alert = new Alert(AlertType.CONFIRMATION);
-
-			ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
-			ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
-			ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-			alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
-			alert.setTitle("Open tab in separate window instead?");
-			alert.setHeaderText(null);
-
-			Optional<ButtonType> result = alert.showAndWait();
-			if (result.get().getButtonData() == ButtonData.YES) {
-				EditorClient.tabs.remove(id);
-				PropertyManager.setProperty("editorsSeparately", "true");
-				createStage(node, name, id);
-			} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
-				wevent.consume();
-			} else {
-				Message message = getHandler().newMessage("textClosed", 1);
-				message.args[0] = new Value(id);
-				getHandler().raiseEvent(message);
-				EditorClient.editors.remove(id);
-				EditorClient.browsers.remove(id);
-				EditorClient.tabs.remove(id);
-			}
-		} else {
-			DiagramClient.theClient().close(id); // TODO: consider reimplementing in javafx
-		}
-	}
+//	private void closeTab(Tab item, Event wevent, String id, String name, javafx.scene.Node node) { 
+//		// Careful because the diagrams and files share the same tab folder...
+//		
+//		if (id != null && (EditorClient.editors.containsKey(id) || EditorClient.browsers.containsKey(id))) {
+//
+//			Alert alert = new Alert(AlertType.CONFIRMATION);
+//
+//			ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+//			ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
+//			ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+//			alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
+//			alert.setTitle("Open tab in separate window instead?");
+//			alert.setHeaderText(null);
+//
+//			Optional<ButtonType> result = alert.showAndWait();
+//			if (result.get().getButtonData() == ButtonData.YES) {
+//				EditorClient.tabs.remove(id);
+//				PropertyManager.setProperty("editorsSeparately", "true");
+//				createStage(node, name, id);
+//			} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
+//				wevent.consume();
+//			} else {
+//				Message message = getHandler().newMessage("textClosed", 1);
+//				message.args[0] = new Value(id);
+//				getHandler().raiseEvent(message);
+//				EditorClient.editors.remove(id);
+//				EditorClient.browsers.remove(id);
+//				EditorClient.tabs.remove(id);
+//			}
+//		} else {
+//			DiagramClient.theClient().close(id); // TODO: consider reimplementing in javafx
+//		}
+//	}
 	
 	private void closeScene(Stage stage, Event wevent, String id, String name, javafx.scene.Node node) { 
 		// Careful because the diagrams and files share the same tab folder...

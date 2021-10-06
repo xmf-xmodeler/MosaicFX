@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
@@ -82,5 +84,20 @@ public class NodeBox extends NodeGroup{
 		for(NodeElement nodeElement : nodeElements){
 			nodeElement.paintToSvg(diagram, xmlHandler, group);
 		}
+	}
+	
+	@Override
+	public void updateBounds() {
+		
+		Point2D min = new Point2D(0, 0);
+		Point2D max = new Point2D(width, height);
+		
+		Affine a = getTotalTransform(new Affine());
+
+		min = a.transform(min);
+		max = a.transform(max);
+		
+		bounds = new BoundingBox(min.getX(), min.getY(), 
+		    max.getX() - min.getX(), max.getY() - min.getY()); 
 	}
 }

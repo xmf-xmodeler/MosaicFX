@@ -16,8 +16,8 @@ public abstract class Node implements CanvasElement {
 	protected boolean hidden;
 	protected double x;
 	protected double y;
-	protected int width;
-	protected int height;
+//	protected int width;
+//	protected int height;
 	protected transient Point2D lastClick = null;
 	private FmmlxObjectPort port;
 	
@@ -31,12 +31,15 @@ public abstract class Node implements CanvasElement {
 	
 	public double getX() { return x; }
 	public double getY() { return y; }
-	public int getWidth() { return width; }
-	public int getHeight() { return height; }
-	public double getCenterX() { return x + width / 2.; }
-	public double getCenterY() { return y + height / 2.; }
-	public double getRightX() { return x + width; }
-	public double getBottomY() { return y + height; }
+	
+	public double getWidth()   { return rootNodeElement==null?0:rootNodeElement.getBounds().getWidth(); }
+	public double getHeight()  { return rootNodeElement==null?0:rootNodeElement.getBounds().getHeight(); }
+	public double getCenterX() { return (getLeftX() + getRightX()) / 2; }
+	public double getCenterY() { return (getTopY() + getBottomY()) / 2; }
+	public double getLeftX()   { return rootNodeElement==null?x:rootNodeElement.getBounds().getMinX(); }
+	public double getRightX()  { return rootNodeElement==null?x:rootNodeElement.getBounds().getMaxX(); }
+	public double getTopY()    { return rootNodeElement==null?y:rootNodeElement.getBounds().getMinY(); }
+	public double getBottomY() { return rootNodeElement==null?y:rootNodeElement.getBounds().getMaxY(); }
 	
 	public Node() {
 		this.port = new FmmlxObjectPort(this);
@@ -50,17 +53,16 @@ public abstract class Node implements CanvasElement {
 		boolean selected = view.getDiagram().isSelected(this);
 		
 		if (rootNodeElement != null) {
-
 			if(selected) {
 				g.setFill(Color.web("0xffdddd"));
 				Bounds bounds = rootNodeElement.getBounds();
 				if(bounds != null) {
-				Affine a = new Affine(view.getCanvasTransform());
-				a.append(rootNodeElement.getDragAffine());
-				g.setTransform(a);
-				g.fillRect(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());}
+					Affine a = new Affine(view.getCanvasTransform());
+					a.append(rootNodeElement.getDragAffine());
+					g.setTransform(a);
+					g.fillRect(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
+				}
 			}
-		
 			rootNodeElement.paintOn(view, selected);
 		}
 	}

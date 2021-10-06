@@ -103,7 +103,7 @@ public class NodeEllipse extends NodeBaseElement {
 		updateBounds();
 	}
 
-	private void updateBounds() {
+	@Override public void updateBounds() {
 		Affine a = getTotalTransform(new Affine());
 		SVGPath p = new SVGPath(); 
 		p.setContent(getPath());

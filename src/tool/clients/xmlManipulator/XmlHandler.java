@@ -68,10 +68,12 @@ public class XmlHandler {
     }
 
     //This method remove an element from parent-element if parent-element has child-element with certain TAG
+    @Deprecated
     public void removeChildElement(Element parent, Element children){
         getXmlHelper().removeChildNode(parent, children);
     }
 
+    @Deprecated
     public void removeAllChildren(Element element){
         getXmlHelper().removeAllChildrenNode(element);
     }
@@ -80,6 +82,7 @@ public class XmlHandler {
         return (Element) getXmlHelper().createXmlNode(name);
     }
 
+    @Deprecated
     public void replaceElement(Element oldElement, String newNodeName) {
         Node newNode = getXmlHelper().createXmlNode(newNodeName);
         getXmlHelper().getRootNode().replaceChild(newNode, oldElement);
@@ -166,6 +169,7 @@ public class XmlHandler {
             parent.appendChild(newNode);
         }
 
+        @Deprecated
         private void removeAllChildrenNode(Node parentNode) {
             while(parentNode.hasChildNodes()){
                 parentNode.removeChild(parentNode.getFirstChild());
@@ -188,7 +192,7 @@ public class XmlHandler {
         }
 
         //This removes a certain childNode from from its parent
-        private void removeChildNode(Node parent, Node node) {
+        @Deprecated private void removeChildNode(Node parent, Node node) {
             parent.removeChild(node);
             int i = 0;
             while (parent.getChildNodes().item(i)!=null) {
