@@ -74,10 +74,10 @@ public class NodeEllipse extends NodeBaseElement {
 
 	private String getPath() {
 		String s = "M " + cx +" " + cy + " m -"+rx + " 0 ";
-		s = s+" a "+ rx + " " + ry + ", 0, 1, 0, " + rx + " -" + ry ;
-		s = s+" a "+ rx + " " + ry + ", 0, 1, 0, " + rx + " " + ry ;
-		s = s+" a "+ rx + " " + ry + ", 0, 1, 0, -" + rx + " " + ry ;
-		s = s+" a "+ rx + " " + ry + ", 0, 1, 0, -" + rx + " -" + ry ;
+		s = s+" a "+ rx + " " + ry + " 0 1 0 " + rx + " -" + ry ;
+		s = s+" a "+ rx + " " + ry + " 0 1 0 " + rx + " " + ry ;
+		s = s+" a "+ rx + " " + ry + " 0 1 0 -" + rx + " " + ry ;
+		s = s+" a "+ rx + " " + ry + " 0 1 0 -" + rx + " -" + ry ;
 		return s;
 	}
 
