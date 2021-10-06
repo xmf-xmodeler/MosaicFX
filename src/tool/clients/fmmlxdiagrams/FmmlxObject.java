@@ -578,6 +578,36 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 				e.printStackTrace();
 			}
 			
+		} else if(ofPath.endsWith("fov")) {
+			
+			try {
+				rootNodeElement=SVGReader.readSVG("resources/abstract-syntax-repository/Orga/fov2.svg", new Affine(Transform.translate(x, y)));
+			} catch (ParserConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SAXException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		} else if(ofPath.endsWith("com")) {
+		
+		try {
+			rootNodeElement=SVGReader.readSVG("resources/abstract-syntax-repository/Orga/Comment_txt.svg", new Affine(Transform.translate(x, y)));
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		} else {
 	
 			new DefaultFmmlxObjectDisplay(diagram, this).layout();

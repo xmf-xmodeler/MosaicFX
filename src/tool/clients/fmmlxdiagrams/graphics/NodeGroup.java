@@ -20,7 +20,6 @@ public class NodeGroup extends NodeElement {
 	
 	protected Vector<NodeElement> nodeElements = new Vector<>();
 	private transient Affine dragAffine;
-	protected Bounds bounds;
 	
 	public NodeGroup(Affine myTransform) {
 		this.myTransform = myTransform;

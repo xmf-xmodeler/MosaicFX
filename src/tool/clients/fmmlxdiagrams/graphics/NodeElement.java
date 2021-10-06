@@ -1,11 +1,14 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
+import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.shape.SVGPath;
+
 import org.w3c.dom.Element;
 import javafx.scene.transform.Affine;
-
+import javafx.scene.transform.Transform;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.xmlManipulator.XmlHandler;
 
@@ -15,6 +18,9 @@ public abstract class NodeElement {
 
 	protected Affine myTransform;
 	protected NodeElement owner;
+	Bounds bounds = new BoundingBox(0, 0, 0, 0);
+	public Style style;
+	
 	/**
 	 * Paints this NodeElement and all its children to the diagramView's canvas.
 	 * @param diagramView the view the element will be painted on
@@ -62,5 +68,16 @@ public abstract class NodeElement {
 	public abstract Bounds getBounds();
 
 	public abstract void updateBounds();
+	
+	protected void updateBoundsFromPath(String textPath) {
+		Affine a = getTotalTransform(new Affine());
+		SVGPath p = new SVGPath(); 
+		p.setContent(textPath);
+		p.getTransforms().add(Transform.affine(
+				a.getMxx(), a.getMyx(),
+				a.getMxy(), a.getMyy(), 
+				a.getTx(), a.getTy()));
+		this.bounds = p.getBoundsInParent();
+	};
 
 }

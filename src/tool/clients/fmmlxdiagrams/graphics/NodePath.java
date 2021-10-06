@@ -27,7 +27,6 @@ import tool.clients.xmlManipulator.XmlHandler;
 public class NodePath extends NodeBaseElement{
 	
 	String textPath;
-	Bounds bounds = new BoundingBox(0, 0, 0, 0);
 	
 	public NodePath(Affine myTransform, String textPath, Color bgColor, Color fgColor, FmmlxProperty actionObject, Action action) {
 		super(myTransform, actionObject, action);
@@ -38,14 +37,23 @@ public class NodePath extends NodeBaseElement{
 	}
 
 	public NodePath(Node n) {
-		this.myTransform = new Affine();
 		this.action= ()->{};
 		this.textPath = n.getAttributes().getNamedItem("d").getNodeValue();
+		
+		Node transformNode = n.getAttributes().getNamedItem("transform");
+		this.myTransform = transformNode==null?new Affine():TransformReader.getTransform(transformNode.getNodeValue());
+		
+		Node styleNode = n.getAttributes().getNamedItem("style");
+		this.style = styleNode==null?new Style(""):new Style(styleNode.getNodeValue());
+		
 		Node bgColorNode = n.getAttributes().getNamedItem("fill");
 		if(bgColorNode!=null) {
 			this.bgColor = Color.web(bgColorNode.getNodeValue());
 		} else {
-			this.bgColor = Color.BLACK;
+			this.bgColor = style.getFill();
+		}
+		if(bgColor==null) {
+			this.bgColor = Color.TRANSPARENT;
 		}
 //		Node fgColorNode = n.getAttributes().getNamedItem("style");
 //		if(fgColorNode!=null) {
@@ -53,13 +61,14 @@ public class NodePath extends NodeBaseElement{
 //		} else {
 			this.fgColor = Color.TRANSPARENT;
 //		}
+		
 	}
 	
 	public static NodePath polygon(Node n) {
 		String completeString = null;
 		String points = n.getAttributes().getNamedItem("points").getNodeValue();
 		String[] copiedPoints = points.split(" ");
-		System.err.println(Arrays.toString(copiedPoints));
+		//System.err.println(Arrays.toString(copiedPoints));
 		for(int i=0; i<copiedPoints.length; i++) {
 			String[] commaPoints = copiedPoints[i].split(",");
 			if(commaPoints.length==2) {
@@ -80,7 +89,7 @@ public class NodePath extends NodeBaseElement{
 		}
 		fgColor = Color.TRANSPARENT;
 		NodePath newPath = new NodePath(new Affine(), completeString, bgColor, fgColor, null, ()->{});
-		System.err.println("Path: " + completeString);	
+		//System.err.println("Path: " + completeString);	
 		return newPath;
 	}
 
@@ -132,21 +141,13 @@ public class NodePath extends NodeBaseElement{
 		updateBounds();
 	}
 
-	@Override public void updateBounds() {
-		Affine a = getTotalTransform(new Affine());
-		SVGPath p = new SVGPath(); 
-		p.setContent(textPath);
-		p.getTransforms().add(Transform.affine(
-				a.getMxx(), a.getMyx(),
-				a.getMxy(), a.getMyy(), 
-				a.getTx(), a.getTy()));
-		this.bounds = p.getBoundsInParent();
-		System.err.println("Bounds updated (NodePath): " + bounds);
+	@Override 
+	public void updateBounds() {
+		updateBoundsFromPath(textPath);
 	}
 
 	@Override
 	public Bounds getBounds() {
-//		updateBounds();
 		return bounds;
 	}
 	

@@ -20,8 +20,7 @@ import tool.clients.xmlManipulator.XmlHandler;
 public class NodeEllipse extends NodeBaseElement {
 
 	double rx, ry, cx, cy; // c=center , r=radius
-	Bounds bounds = new BoundingBox(0, 0, 0, 0);
-
+	
 	public static NodeEllipse circle(Node n) {
 		NodeEllipse nE = new NodeEllipse();
 		nE.cx = Double.parseDouble(n.getAttributes().getNamedItem("cx").getNodeValue());
@@ -104,15 +103,7 @@ public class NodeEllipse extends NodeBaseElement {
 	}
 
 	@Override public void updateBounds() {
-		Affine a = getTotalTransform(new Affine());
-		SVGPath p = new SVGPath(); 
-		p.setContent(getPath());
-		p.getTransforms().add(Transform.affine(
-				a.getMxx(), a.getMyx(),
-				a.getMxy(), a.getMyy(), 
-				a.getTx(), a.getTy()));
-		this.bounds = p.getBoundsInParent();
-		System.err.println("Bounds updated (Ellipse): " + bounds);
+		updateBoundsFromPath(getPath());
 	}
 
 	@Override

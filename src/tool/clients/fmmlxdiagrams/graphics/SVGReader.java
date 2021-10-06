@@ -15,7 +15,7 @@ import javafx.scene.transform.Affine;
 public class SVGReader {
 
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
-		readSVG("resources/abstract-syntax-repository/Orga/Comment2.svg", new Affine());
+		readSVG("resources/abstract-syntax-repository/Orga/Comment_txt.svg", new Affine());
 	}
 
 	public static NodeGroup readSVG(String fileName, Affine affine) throws ParserConfigurationException, SAXException, IOException {
@@ -24,7 +24,7 @@ public class SVGReader {
 
 	private static NodeGroup readSVG(File file, Affine affine) throws ParserConfigurationException, SAXException, IOException {
 		long start = System.currentTimeMillis(); 
-		System.err.println(System.currentTimeMillis());
+		//System.err.println(System.currentTimeMillis());
 		Document doc = null;
 
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -35,9 +35,9 @@ public class SVGReader {
         dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
         dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		System.err.println(System.currentTimeMillis() - start);
+		//System.err.println(System.currentTimeMillis() - start);
 		doc = dBuilder.parse(file);
-		System.err.println(System.currentTimeMillis() - start);
+		//System.err.println(System.currentTimeMillis() - start);
 		Node svgNode = (Node) doc.getDocumentElement();
 		
 		if (!"svg".equals(svgNode.getNodeName()))
@@ -45,7 +45,7 @@ public class SVGReader {
 		NodeGroup g = new NodeGroup(affine);
 		Vector<NodeElement> children = readChildren(svgNode);
 		g.addAllNodeElements(children);
-		System.err.println(System.currentTimeMillis() - start);
+		//System.err.println(System.currentTimeMillis() - start);
 		return g;
 		
 	}
@@ -78,6 +78,9 @@ public class SVGReader {
 			} else if ("rect".contentEquals(n.getNodeName())) {
 				NodeRectangle nR = NodeRectangle.rectangle(n);
 				vec.add(nR);
+			} else if("text".contentEquals(n.getNodeName())) {
+				NodeText nT = new NodeText(n);
+				vec.add(nT);
 			} else {
 				System.out.println("Child not recognized: " + parentNode + ":" + n);
 

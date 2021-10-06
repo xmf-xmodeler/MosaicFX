@@ -16,7 +16,6 @@ public class NodeRectangle extends NodeBaseElement	 {
 	double x,y,width,height,rx=0,ry=0; 
 	//The x and y coordinates refer to the left and top edges of the rectangle. The width and height properties define the overall width and height of the rectangle.
 	//For rounded rectangles, the computed values of the rx and ry properties define the x- and y-axis radii of elliptical arcs used to round off the corners of the rectangle.
-	Bounds bounds = new BoundingBox(0, 0, 0, 0);
 	
 	public static NodeRectangle rectangle(Node n) {
 		NodeRectangle nR = new NodeRectangle();
@@ -46,7 +45,7 @@ public class NodeRectangle extends NodeBaseElement	 {
 		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
 		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
 		g.beginPath();
-		System.err.println(getPath());
+		System.err.println(bgColor+" " + getPath() + "" + g.getTransform());
 		g.appendSVGPath(getPath());
 		g.setFill(bgColor);
 		g.fill();
@@ -89,6 +88,11 @@ public class NodeRectangle extends NodeBaseElement	 {
 		stringPath=stringPath + " l " + 0 + " " + (-(height -2*ry));
 		stringPath=stringPath + " a " + rx + " " + ry + " 0 0 1 " + " " + rx + " " + (-ry);
 		return stringPath;
+	}
+
+	@Override
+	public void updateBounds() {
+		updateBoundsFromPath(getPath());
 	}
 
 }
