@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 15.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+   version="1.1"
+   id="Ebene_1"
+   x="0px"
+   y="0px"
+   width="28.35px"
+   height="28.35px"
+   viewBox="0 0 28.35 28.35"
+   enable-background="new 0 0 28.35 28.35"
+   xml:space="preserve"
+   sodipodi:docname="Comment_txt.svg"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs23"><rect
+     x="-7.2237982"
+     y="-21.398798"
+     width="120.7601"
+     height="57.926683"
+     id="rect26139" /></defs><sodipodi:namedview
+   id="namedview21"
+   pagecolor="#505050"
+   bordercolor="#eeeeee"
+   borderopacity="1"
+   inkscape:pageshadow="0"
+   inkscape:pageopacity="0"
+   inkscape:pagecheckerboard="0"
+   showgrid="false"
+   inkscape:zoom="7.3368606"
+   inkscape:cx="52.065866"
+   inkscape:cy="16.832813"
+   inkscape:window-width="1920"
+   inkscape:window-height="1017"
+   inkscape:window-x="-8"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="g6" />
+<g
+   id="g18">
+	<g
+   id="g6">
+		<rect
+   x="4.224"
+   y="5.755"
+   fill="#FFFFFF"
+   width="19.916"
+   height="17.612"
+   id="rect2"
+   style="fill:#d40000" />
+		<path
+   d="M24.516,23.743H3.848V5.379h20.668V23.743z M4.6,22.991h19.164V6.131H4.6V22.991z"
+   id="path4" />
+	</g>
+	<g
+   id="g16">
+		<g
+   id="g10">
+			<path
+   d="M13.23,18.467c-0.372,0.191-1.15,0.384-2.135,0.384c-2.279,0-3.982-1.438-3.982-4.102c0-2.542,1.716-4.246,4.223-4.246     c0.996,0,1.643,0.216,1.919,0.359l-0.264,0.852c-0.385-0.191-0.948-0.335-1.619-0.335c-1.896,0-3.154,1.211-3.154,3.334     c0,1.99,1.139,3.25,3.094,3.25c0.648,0,1.295-0.132,1.715-0.336L13.23,18.467z"
+   id="path8" />
+		</g>
+		<g
+   id="g14">
+			<path
+   d="M19.017,11.907h-0.023l-1.355,0.73l-0.203-0.804l1.703-0.912h0.899v7.796h-1.021V11.907z"
+   id="path12" />
+		</g>
+	</g>
+</g>
+<text
+   xml:space="preserve"
+   style="font-style:normal;font-weight:normal;font-size:5.33333px;line-height:1.25;font-family:sans-serif;white-space:pre;inline-size:0;fill:#000000;fill-opacity:1;stroke:none"
+   x="13.220914"
+   y="22.352884"
+   id="text2425"
+   transform="translate(-8.3141828,-0.13629808)"><tspan
+     id="tspan2423"
+     x="13.220914"
+     y="22.352884"
+     style="font-size:5.33333px">Hier steht  ganz viel Text!</tspan></text><text
+   xml:space="preserve"
+   id="text26137"
+   style="font-style:normal;font-weight:normal;font-size:13.33333333px;line-height:1.25;font-family:sans-serif;white-space:pre;fill:#000000;fill-opacity:1;stroke:none;shape-inside:url(#rect26139)"><tspan
+     x="-7.2246094"
+     y="-9.2340336"
+     id="tspan39635">Hier steht  ganz </tspan><tspan
+     x="-7.2246094"
+     y="7.4326325"
+     id="tspan39637">viel Text!</tspan></text></svg>
