@@ -15,7 +15,7 @@ import javafx.scene.transform.Affine;
 public class SVGReader {
 
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
-		readSVG("resources/abstract-syntax-repository/ITML_Datenbank_a.svg", new Affine());
+		readSVG("resources/abstract-syntax-repository/Orga/Comment2.svg", new Affine());
 	}
 
 	public static NodeGroup readSVG(String fileName, Affine affine) throws ParserConfigurationException, SAXException, IOException {
@@ -75,6 +75,9 @@ public class SVGReader {
 			} else if ("polygon".contentEquals(n.getNodeName())) {
 				NodePath nP = NodePath.polygon(n);
 				vec.add(nP);
+			} else if ("rect".contentEquals(n.getNodeName())) {
+				NodeRectangle nR = NodeRectangle.rectangle(n);
+				vec.add(nR);
 			} else {
 				System.out.println("Child not recognized: " + parentNode + ":" + n);
 
