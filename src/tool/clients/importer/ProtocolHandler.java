@@ -475,7 +475,7 @@ public class ProtocolHandler {
         return conflicts;
     }
 
-    //If there is no conflict, this method will be called and this method implement the merge process
+    //If there is no conflict, this method will be called and this method implements the merge process
     public void executeMerge(Node logsNode, FmmlxDiagramCommunicator comm) {
         NodeList logList = logsNode.getChildNodes();
         for(int i = 0; i< logList.getLength(); i++){
@@ -487,7 +487,7 @@ public class ProtocolHandler {
     }
 
 
-    //this method merge just one log element.
+    //this method merge just one log element into current open project.
     private void mergeLog(Element logElement, FmmlxDiagramCommunicator comm, int diagramID) {
         String tagName = logElement.getTagName();
         switch (tagName) {
