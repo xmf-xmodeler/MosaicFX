@@ -8,6 +8,9 @@ import tool.clients.serializer.SerializerConstant;
 
 import java.util.*;
 
+/*this class is used to handle new logs/protocols.
+this class contains methods to read logs and collect conflicts that may occur and show them to the user,
+then in this class there is also a method for merging projects if there are no conflicts*/
 public class ProtocolHandler {
     private final AbstractPackageViewer diagram;
     public List<Conflict> conflicts;
@@ -29,6 +32,7 @@ public class ProtocolHandler {
         this.projectPath = diagram.getPackagePath();
     }
 
+    // before we merge a new Project, this method will be called in order to check every possible conflict
     public void readLogs(Node logsNode) {
         NodeList logList = logsNode.getChildNodes();
         for(int i = 0; i< logList.getLength(); i++){
@@ -39,6 +43,7 @@ public class ProtocolHandler {
         }
     }
 
+    //this method will check one log in the xml data that we want to merge
     public void checkProblem(Element logElement) {
         String tagName = logElement.getTagName();
         switch (tagName) {
@@ -470,6 +475,7 @@ public class ProtocolHandler {
         return conflicts;
     }
 
+    //If there is no conflict, this method will be called and this method implement the merge process
     public void executeMerge(Node logsNode, FmmlxDiagramCommunicator comm) {
         NodeList logList = logsNode.getChildNodes();
         for(int i = 0; i< logList.getLength(); i++){
@@ -480,6 +486,8 @@ public class ProtocolHandler {
         }
     }
 
+
+    //this method merge just one log element.
     private void mergeLog(Element logElement, FmmlxDiagramCommunicator comm, int diagramID) {
         String tagName = logElement.getTagName();
         switch (tagName) {
