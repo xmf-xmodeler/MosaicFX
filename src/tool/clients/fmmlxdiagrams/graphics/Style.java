@@ -29,4 +29,18 @@ public class Style {
 		return null;
 	}
 	
+	public Color getStrokeColor() {
+		String value = styles.get("stroke");
+		if ("none".equals(value)) {
+			return Color.TRANSPARENT;
+		}
+		if (value!=null) {
+			try { return Color.web(value);
+			} catch(IllegalArgumentException e) {
+				System.err.println("Color: " + value +  " not recognized!");
+			}
+		}
+		return null;
+	}
+	
 }

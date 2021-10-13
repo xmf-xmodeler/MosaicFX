@@ -6,6 +6,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javafx.geometry.Bounds;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
@@ -21,19 +22,7 @@ public class NodeText extends NodeBaseElement{
 		Node transformNode = n.getAttributes().getNamedItem("transform");
 		this.myTransform = transformNode==null?new Affine():TransformReader.getTransform(transformNode.getNodeValue());
 		
-		Node styleNode = n.getAttributes().getNamedItem("style");
-		this.style = styleNode==null?new Style(""):new Style(styleNode.getNodeValue());
-		
-		Node bgColorNode = n.getAttributes().getNamedItem("fill");
-		if(bgColorNode!=null) {
-			this.bgColor = Color.web(bgColorNode.getNodeValue());
-		} else {
-			this.bgColor = style.getFill();
-		}
-		if(bgColor==null) {
-			this.bgColor = Color.TRANSPARENT;
-		}
-		this.fgColor = Color.TRANSPARENT;
+		readStyleAndColor(n);
 		
 		for (int i = 0; i < n.getChildNodes().getLength(); i++) {
 
@@ -41,21 +30,26 @@ public class NodeText extends NodeBaseElement{
 
 			if ("tspan".equals(o.getNodeName())) {
 				TSpan span = new TSpan(o);
-				span.getText();
-				span.getX();
-				span.getY();
-				span.getStyle();
 				spans.add(span);
 			}
 		}
-		
-		
 	}
 	
 	@Override
 	public void paintOn(DiagramViewPane diagramView, boolean objectIsSelected) {
-		// TODO Auto-generated method stub
+		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
+
+		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
 		
+		g.setFill(bgColor);
+		g.setStroke(fgColor);
+		
+		for(TSpan span : spans) {
+			g.fillText(span.getText(), span.getX(), span.getY());
+			g.strokeText(span.getText(), span.getX(), span.getY());
+		}
+				
+		g.closePath();
 	}
 
 	@Override
@@ -82,37 +76,33 @@ public class NodeText extends NodeBaseElement{
 		
 	}
 
-private class TSpan{
-	
-	private Node n;
-	
-	public TSpan(Node n) {
-	 this.n=n;
+	private class TSpan{
+		
+		private Node n;
+		
+		public TSpan(Node n) {
+		 this.n=n;
+		}
+		
+		private String getText(){
+			Node o = n.getChildNodes().item(0);
+			return o.getNodeValue();
+		}
+		
+		private Double getX(){
+			Node o = n.getAttributes().getNamedItem("x");	
+			return Double.parseDouble(o.getNodeValue());
+		}
+		
+		private Double getY(){
+			Node o = n.getAttributes().getNamedItem("y");	
+			return Double.parseDouble(o.getNodeValue());
+		}
+		
+		private Style getStyle(){
+			Node styleNode = n.getAttributes().getNamedItem("style");
+			Style style = styleNode==null?new Style(""):new Style(styleNode.getNodeValue());
+			return style;
+		}		
 	}
-	
-	private String getText(){
-		Node o = n.getChildNodes().item(0);
-		return o.getNodeValue();
-	}
-	
-	private Double getX(){
-		Node o = n.getAttributes().getNamedItem("x");	
-		return Double.parseDouble(o.getNodeValue());
-	}
-	
-	private Double getY(){
-		Node o = n.getAttributes().getNamedItem("y");	
-		return Double.parseDouble(o.getNodeValue());
-	}
-	
-	private Style getStyle(){
-		Node styleNode = n.getAttributes().getNamedItem("style");
-		Style style = styleNode==null?new Style(""):new Style(styleNode.getNodeValue());
-		return style;
-	}
-	
-	
-}
-
-
 }

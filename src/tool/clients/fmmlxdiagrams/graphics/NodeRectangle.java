@@ -29,13 +29,7 @@ public class NodeRectangle extends NodeBaseElement	 {
 		}
 		nR.width = Double.parseDouble(n.getAttributes().getNamedItem("width").getNodeValue());
 		nR.height = Double.parseDouble(n.getAttributes().getNamedItem("height").getNodeValue());
-		Node bgColorNode = n.getAttributes().getNamedItem("fill");
-		if (bgColorNode != null) {
-			nR.bgColor = Color.web(bgColorNode.getNodeValue());
-		} else {
-			nR.bgColor = Color.BLACK;
-		}
-		nR.fgColor = Color.TRANSPARENT;
+		nR.readStyleAndColor(n);
 		nR.myTransform= SVGReader.readTransform(n);
 		return nR;
 	}
@@ -45,7 +39,6 @@ public class NodeRectangle extends NodeBaseElement	 {
 		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
 		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
 		g.beginPath();
-		System.err.println(bgColor+" " + getPath() + "" + g.getTransform());
 		g.appendSVGPath(getPath());
 		g.setFill(bgColor);
 		g.fill();

@@ -46,8 +46,7 @@ public class SVGReader {
 		Vector<NodeElement> children = readChildren(svgNode);
 		g.addAllNodeElements(children);
 		//System.err.println(System.currentTimeMillis() - start);
-		return g;
-		
+		return g;		
 	}
 
 	public static Vector<NodeElement> readChildren(Node parentNode) {
