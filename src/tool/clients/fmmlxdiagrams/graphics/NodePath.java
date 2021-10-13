@@ -43,25 +43,7 @@ public class NodePath extends NodeBaseElement{
 		Node transformNode = n.getAttributes().getNamedItem("transform");
 		this.myTransform = transformNode==null?new Affine():TransformReader.getTransform(transformNode.getNodeValue());
 		
-		Node styleNode = n.getAttributes().getNamedItem("style");
-		this.style = styleNode==null?new Style(""):new Style(styleNode.getNodeValue());
-		
-		Node bgColorNode = n.getAttributes().getNamedItem("fill");
-		if(bgColorNode!=null) {
-			this.bgColor = Color.web(bgColorNode.getNodeValue());
-		} else {
-			this.bgColor = style.getFill();
-		}
-		if(bgColor==null) {
-			this.bgColor = Color.TRANSPARENT;
-		}
-//		Node fgColorNode = n.getAttributes().getNamedItem("style");
-//		if(fgColorNode!=null) {
-//			this.fgColor = Color.web(fgColorNode.getNodeValue());
-//		} else {
-			this.fgColor = Color.TRANSPARENT;
-//		}
-		
+		readStyleAndColor(n);
 	}
 	
 	public static NodePath polygon(Node n) {

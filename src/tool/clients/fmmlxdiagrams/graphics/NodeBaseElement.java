@@ -56,6 +56,27 @@ public abstract class NodeBaseElement extends NodeElement {
 		a.append(myTransform);
 		return a;
 	}
+	
+	protected void readStyleAndColor(Node n) {
+		Node styleNode = n.getAttributes().getNamedItem("style");
+		style = styleNode==null?new Style(""):new Style(styleNode.getNodeValue());
+		
+		bgColor = style.getFill();
+		if(bgColor == null) {
+			Node bgColorNode = n.getAttributes().getNamedItem("fill");
+			if(bgColorNode!=null) {
+				this.bgColor = Color.web(bgColorNode.getNodeValue());
+			} else {
+				this.bgColor = style.getFill();
+			}
+		}
+		if(bgColor==null) {
+			this.bgColor = Color.TRANSPARENT;
+		}
+		
+		
+		this.fgColor = style.getStrokeColor();
+	}
 
 	public void setOwner(NodeElement owner) {
 		this.owner = owner;
