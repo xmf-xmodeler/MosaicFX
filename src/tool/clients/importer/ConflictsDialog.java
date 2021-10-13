@@ -9,6 +9,7 @@ import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import java.util.ArrayList;
 import java.util.List;
 
+//This dialog will appear if there is a conflict when you want to merge the currently open project with another project
 public class ConflictsDialog extends CustomDialog {
     private Label conflictTypeLabel;
     private Label descriptionLabel;

@@ -6,6 +6,7 @@ import tool.clients.serializer.XmlManager;
 
 import java.util.List;
 
+//this class serves a importer when you want to add another project to the current project
 public class FMMLxImporter {
     private final XmlManager xmlManager;
     private final AbstractPackageViewer diagram;
@@ -18,6 +19,10 @@ public class FMMLxImporter {
         protocolHandler = new ProtocolHandler(diagram);
     }
 
+    //this method is called if merge process starts,
+    //first, all possible conflicts will be collected
+    //if conflicts exist then all conflicts will be shown in a Dialog
+    //if there is no conflict, merge method will be called.
     public void handleLogs() {
         Node logsNode = xmlManager.getLogs();
 
