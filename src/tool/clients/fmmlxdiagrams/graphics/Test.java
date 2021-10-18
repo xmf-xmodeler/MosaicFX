@@ -24,7 +24,7 @@ public class Test {
 		String parser = XMLResourceDescriptor.getXMLParserClassName();
 		SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
 //		URI uri = new URI("file:///b://Betriebssystem1.svg"); // the URI of your SVG document
-		URI uri = new URI("file:///a://svgs/fov.svg"); // the URI of your SVG document
+		URI uri = new URI("resources/abstract-syntax-repository/Orga/Comment.svg"); // the URI of your SVG document
 		Document doc = f.createDocument(uri.toString());
 		
 		UserAgent      userAgent;
@@ -52,6 +52,7 @@ public class Test {
 		    String fillvalue = myRootSVGElement.getComputedStyle(elt, null).getPropertyValue("fill");
 		    SVGMatrix matrix = myRootSVGElement.getTransformToElement((SVGElement) elt);
 		    SVGElement S = (SVGElement) elt;
+		    
 		    System.err.print(S.getNodeName() + ": " + S.getAttribute("id") + " ");
 		    
 		    System.err.println(nl + " -fill: " + fillvalue);

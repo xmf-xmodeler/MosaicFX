@@ -15,7 +15,7 @@ import javafx.scene.transform.Affine;
 public class SVGReader {
 
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
-		readSVG("resources/abstract-syntax-repository/Orga/Comment_txt.svg", new Affine());
+		readSVG("resources/abstract-syntax-repository/Orga/Comment.svg", new Affine());
 	}
 
 	public static NodeGroup readSVG(String fileName, Affine affine) throws ParserConfigurationException, SAXException, IOException {
