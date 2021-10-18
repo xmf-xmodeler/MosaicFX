@@ -603,7 +603,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		} else if(ofPath.endsWith("com")) {
 		
 		try {
-			rootNodeElement=SVGReader.readSVG("resources/abstract-syntax-repository/Orga/Comment_txt.svg", new Affine(Transform.translate(x, y)));
+			rootNodeElement=SVGReader.readSVG("resources/abstract-syntax-repository/Orga/Sachbearbeiter.svg", new Affine(Transform.translate(x, y)));
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -75,16 +75,16 @@ public class Test {
 		 
 		for(int i=0;i<nl.getLength();++i){
 			System.err.println(nl.item(i).getClass());
-			if(true || ! ((nl.item(i)) instanceof SVGElement)) {} else {
+			if(! ((nl.item(i)) instanceof SVGElement)) {} else {
 //			    Element elt = (Element)nl.item(i);
 			    SVGElement S = (SVGElement) nl.item(i);
 			    
 			    //I am interested in the "fill" value of the current path element
-//			    String fillvalue = myRootSVGElement.getComputedStyle(S, null).getPropertyValue("fill");
+			    String fillvalue = myRootSVGElement.getComputedStyle(S, null).getPropertyValue("fill");
 			    SVGMatrix matrix = myRootSVGElement.getTransformToElement(S);
 			    System.err.println(S.getNodeName() + ": " + S.getAttribute("id") + " ");
 			    
-//			    System.err.println(nl + " -fill: " + fillvalue);
+			    System.err.println(nl + " -fill: " + fillvalue);
 			    if(matrix != null) {
 			    	try{
 			    		String transformString = S.getAttribute("transform");

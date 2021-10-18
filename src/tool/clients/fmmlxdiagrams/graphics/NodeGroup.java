@@ -2,6 +2,8 @@ package tool.clients.fmmlxdiagrams.graphics;
 
 import java.util.Vector;
 
+import org.apache.batik.anim.dom.SVGOMGElement;
+import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -31,12 +33,12 @@ public class NodeGroup extends NodeElement {
 //		myTransform = new Affine();
 //	}
 	
-	public NodeGroup(Node node) {
+	public NodeGroup(SVGOMGElement node, SVGOMSVGElement svgOMElement) {
 //		Node transformNode = node.getAttributes().getNamedItem("transform");
 		this.myTransform = SVGReader.readTransform(node);//)transformNode==null?new Affine():TransformReader.getTransform(transformNode.getNodeValue());
 		
 //		myTrans#form = new Affine();
-		Vector<NodeElement> children = SVGReader.readChildren(node);
+		Vector<NodeElement> children = SVGReader.readChildren(node, svgOMElement);
 		this.addAllNodeElements(children);
 	}
 	

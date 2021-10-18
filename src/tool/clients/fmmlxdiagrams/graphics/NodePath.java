@@ -3,8 +3,11 @@ package tool.clients.fmmlxdiagrams.graphics;
 import java.util.Arrays;
 import java.util.Vector;
 
+import org.apache.batik.anim.dom.SVGOMElement;
+import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.css.CSSStyleDeclaration;
 
 import com.sun.javafx.geom.transform.Affine3D;
 import com.sun.javafx.geom.transform.BaseTransform;
@@ -27,6 +30,7 @@ import tool.clients.xmlManipulator.XmlHandler;
 public class NodePath extends NodeBaseElement{
 	
 	String textPath;
+	CSSStyleDeclaration styleDeclaration;
 	
 	public NodePath(Affine myTransform, String textPath, Color bgColor, Color fgColor, FmmlxProperty actionObject, Action action) {
 		super(myTransform, actionObject, action);
@@ -36,14 +40,14 @@ public class NodePath extends NodeBaseElement{
 		updateBounds();
 	}
 
-	public NodePath(Node n) {
+	public NodePath(SVGOMElement n, SVGOMSVGElement svgOMElement) {
+		styleDeclaration = svgOMElement.getComputedStyle(n, null);
 		this.action= ()->{};
 		this.textPath = n.getAttributes().getNamedItem("d").getNodeValue();
 		
 		Node transformNode = n.getAttributes().getNamedItem("transform");
 		this.myTransform = transformNode==null?new Affine():TransformReader.getTransform(transformNode.getNodeValue());
 		
-		readStyleAndColor(n);
 	}
 	
 	public static NodePath polygon(Node n) {
@@ -82,9 +86,16 @@ public class NodePath extends NodeBaseElement{
 		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
 		g.beginPath();
 		g.appendSVGPath(textPath);
-		g.setFill(bgColor);
+		if (styleDeclaration==null) {
+			g.setFill(bgColor);
+			g.setStroke(fgColor);
+		} else {
+			String fillvalue = styleDeclaration.getPropertyValue("fill");
+			System.err.println(fillvalue);
+			g.setFill(Color.web(fillvalue));
+		}
+		
 		g.fill();
-		g.setStroke(fgColor);
 		g.stroke();
 
 		g.closePath();
