@@ -32,7 +32,10 @@ public class NodeGroup extends NodeElement {
 //	}
 	
 	public NodeGroup(Node node) {
-		myTransform = new Affine();
+//		Node transformNode = node.getAttributes().getNamedItem("transform");
+		this.myTransform = SVGReader.readTransform(node);//)transformNode==null?new Affine():TransformReader.getTransform(transformNode.getNodeValue());
+		
+//		myTrans#form = new Affine();
 		Vector<NodeElement> children = SVGReader.readChildren(node);
 		this.addAllNodeElements(children);
 	}

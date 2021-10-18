@@ -15,6 +15,7 @@ import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteTool;
 import tool.clients.fmmlxdiagrams.newpalette.ToolClass;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -535,9 +536,15 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutComputerSupportedProcess();
 		} else if(ofPath.endsWith("AutomatedProcess")) {
 			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutAutomatedProcess();
-		} else if(ofPath.endsWith("Q")) {
+		} else if(ofPath.endsWith("Q") && getSlotNames().contains("file")) {
 			try {
-				rootNodeElement=SVGReader.readSVG("resources/abstract-syntax-repository/circle.svg", new Affine(Transform.translate(x, y)));
+				String s = getSlot("file").getValue();
+				System.err.println("String: " + s);
+				File f = new File(s);
+				System.err.println("File: " + f);
+				System.err.println(f.exists());
+				
+				rootNodeElement=SVGReader.readSVG(getSlot("file").getValue(), new Affine(Transform.translate(x, y)));
 				
 			} catch (ParserConfigurationException e) {
 				// TODO Auto-generated catch block
@@ -613,7 +620,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			new DefaultFmmlxObjectDisplay(diagram, this).layout();
 		}
 		
-		rootNodeElement.updateBounds();
+		if(rootNodeElement != null) rootNodeElement.updateBounds();
 		
 	}
 

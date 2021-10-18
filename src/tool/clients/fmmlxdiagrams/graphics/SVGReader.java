@@ -92,7 +92,8 @@ public class SVGReader {
 	}
 
 	public static Affine readTransform(Node n) {
-		return new Affine();
+		Node transformNode = n.getAttributes().getNamedItem("transform");
+		return transformNode==null?new Affine():TransformReader.getTransform(transformNode.getNodeValue());
 	}
 
 }

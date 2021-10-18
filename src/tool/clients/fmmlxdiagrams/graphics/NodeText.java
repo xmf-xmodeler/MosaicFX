@@ -7,7 +7,6 @@ import org.w3c.dom.Node;
 
 import javafx.geometry.Bounds;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
@@ -42,39 +41,30 @@ public class NodeText extends NodeBaseElement{
 		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
 		
 		g.setFill(bgColor);
-		g.setStroke(fgColor);
+		g.setStroke(fgColor.deriveColor(0., 1., 1., 0.5));
 		
 		for(TSpan span : spans) {
-			g.fillText(span.getText(), span.getX(), span.getY());
+			g.fillText(  span.getText(), span.getX(), span.getY());
 			g.strokeText(span.getText(), span.getX(), span.getY());
-		}
-				
-		g.closePath();
+		}				
 	}
 
 	@Override
 	public boolean isHit(double mouseX, double mouseY, DiagramViewPane diagramView) {
-		// TODO Auto-generated method stub
+		// The text itself is never clickable
 		return false;
 	}
 
 	@Override
 	void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup) {
 		// TODO Auto-generated method stub
-		
 	}
 
-	@Override
-	public Bounds getBounds() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	// Do not count for bounds
+	@Override public Bounds getBounds() { return null; }
 
-	@Override
-	public void updateBounds() {
-		// TODO Auto-generated method stub
-		
-	}
+	// Just ignore it
+	@Override public void updateBounds() {}
 
 	private class TSpan{
 		

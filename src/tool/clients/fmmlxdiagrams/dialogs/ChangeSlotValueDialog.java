@@ -42,7 +42,7 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 
 		dialog.setContent(flow);
 
-		setResult();
+		setResultConverter();
 
 		if (mode != Mode.ENUM) Platform.runLater(() -> slotValueTextField.requestFocus());
 	}
@@ -104,7 +104,7 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 		}
 	}*/
 
-	private void setResult() {
+	private void setResultConverter() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
 
