@@ -457,8 +457,10 @@ if(newValue.startsWith(oldValue)) {
         try {
             if(Console.colorReverted){
                 region=(Region)textArea.lookup(".content");
-                region.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
-                textArea.setStyle("-fx-text-fill: #cccccc;");
+                if(region != null){
+                	region.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
+                	textArea.setStyle("-fx-text-fill: #cccccc;");
+                }
             }
         } catch(Exception e) {
             e.printStackTrace();

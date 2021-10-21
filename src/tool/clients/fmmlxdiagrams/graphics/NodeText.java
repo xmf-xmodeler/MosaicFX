@@ -2,11 +2,18 @@ package tool.clients.fmmlxdiagrams.graphics;
 
 import java.util.Vector;
 
+import org.apache.batik.anim.dom.SVGOMElement;
+import org.apache.batik.anim.dom.SVGOMSVGElement;
+import org.apache.batik.anim.dom.SVGOMTSpanElement;
+import org.apache.batik.anim.dom.SVGOMTextElement;
+import org.apache.batik.dom.GenericText;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.css.CSSStyleDeclaration;
 
 import javafx.geometry.Bounds;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
@@ -14,24 +21,31 @@ import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeText extends NodeBaseElement{
 	
-	Vector<TSpan> spans = new Vector<TSpan>();
+//	Vector<TSpan> spans = new Vector<TSpan>();
+	final SVGOMTextElement textRootNode;
+	private SVGOMSVGElement root;
 	
-	public NodeText(Node n) {
+	public NodeText(SVGOMTextElement n, SVGOMSVGElement root) {
+		super(SVGReader.readTransform(n), root.getComputedStyle(n, null), null, () -> {});
+		this.root = root;
+		this.textRootNode = n;
 		this.action= ()->{};
 		Node transformNode = n.getAttributes().getNamedItem("transform");
 		this.myTransform = transformNode==null?new Affine():TransformReader.getTransform(transformNode.getNodeValue());
 		
 		readStyleAndColor(n);
+		if(bgColor == null) bgColor = Color.BLACK;
+		if(fgColor == null) fgColor = Color.TRANSPARENT;
 		
-		for (int i = 0; i < n.getChildNodes().getLength(); i++) {
-
-			Node o = n.getChildNodes().item(i);
-
-			if ("tspan".equals(o.getNodeName())) {
-				TSpan span = new TSpan(o);
-				spans.add(span);
-			}
-		}
+//		for (int i = 0; i < n.getChildNodes().getLength(); i++) {
+//
+//			Node o = n.getChildNodes().item(i);
+//
+//			if ("tspan".equals(o.getNodeName())) {
+//				TSpan span = new TSpan(o);
+//				spans.add(span);
+//			}
+//		}
 	}
 	
 	@Override
@@ -43,10 +57,53 @@ public class NodeText extends NodeBaseElement{
 		g.setFill(bgColor);
 		g.setStroke(fgColor.deriveColor(0., 1., 1., 0.5));
 		
-		for(TSpan span : spans) {
-			g.fillText(  span.getText(), span.getX(), span.getY());
-			g.strokeText(span.getText(), span.getX(), span.getY());
-		}				
+		paintOnLocal(g, textRootNode,0,0);
+		
+		
+		
+//		for(TSpan span : spans) {
+//			g.fillText(  span.getText(), span.getX(), span.getY());
+//			g.strokeText(span.getText(), span.getX(), span.getY());
+//		}				
+	}
+
+	private void paintOnLocal(GraphicsContext g, SVGOMElement parentNode, double x, double y) {
+		for (int i = 0; i < parentNode.getChildNodes().getLength(); i++) {
+			Node n = parentNode.getChildNodes().item(i);
+			System.err.println("read SVG-Text: " + n.getNodeName() + " of " + n.getClass().getSimpleName());
+			if(n instanceof GenericText) {
+				GenericText gt = (GenericText) n;
+				System.err.println(x + "," + y + ": " + gt.getTextContent());
+				
+				CSSStyleDeclaration styleDeclaration = root.getComputedStyle(parentNode, null);
+				
+				String fillColor = styleDeclaration.getPropertyValue("fill");
+				g.setFill(Color.web(fillColor));
+
+				String strokeColor = styleDeclaration.getPropertyValue("stroke");
+				if("none".equals(strokeColor)) {
+					g.setStroke(Color.TRANSPARENT);
+				} else {
+					g.setStroke(Color.web(strokeColor));
+				}
+				String strokeWidth = styleDeclaration.getPropertyValue("stroke-width");
+				g.setLineWidth(SVGReader.parseLength(strokeWidth, null));
+				
+				
+				g.fillText(  gt.getTextContent(), x, y);
+				g.strokeText(gt.getTextContent(), x, y);
+			} else if (n instanceof SVGOMTSpanElement) {
+				SVGOMTSpanElement span = (SVGOMTSpanElement) n;
+				double X = 0; double Y = 0;
+				try{
+					X = Double.parseDouble(n.getAttributes().getNamedItem("x").getNodeValue()); 
+					Y = Double.parseDouble(n.getAttributes().getNamedItem("y").getNodeValue());
+				} catch (Exception e) {}
+				X+=x; Y+=y;
+				paintOnLocal(g, span, X, Y);
+			}
+			
+		}
 	}
 
 	@Override

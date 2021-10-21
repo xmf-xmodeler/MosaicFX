@@ -1,27 +1,19 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
 import java.util.Arrays;
-import java.util.Vector;
 
 import org.apache.batik.anim.dom.SVGOMElement;
+import org.apache.batik.anim.dom.SVGOMLineElement;
+import org.apache.batik.anim.dom.SVGOMPathElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.css.CSSStyleDeclaration;
 
-import com.sun.javafx.geom.transform.Affine3D;
-import com.sun.javafx.geom.transform.BaseTransform;
-
-import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.SVGPath;
-import javafx.scene.shape.Shape;
 import javafx.scene.transform.Affine;
-import javafx.scene.transform.Transform;
 import tool.clients.exporter.svg.SvgConstant;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
@@ -30,52 +22,60 @@ import tool.clients.xmlManipulator.XmlHandler;
 public class NodePath extends NodeBaseElement{
 	
 	String textPath;
-	CSSStyleDeclaration styleDeclaration;
 	
-	public NodePath(Affine myTransform, String textPath, Color bgColor, Color fgColor, FmmlxProperty actionObject, Action action) {
-		super(myTransform, actionObject, action);
+	@Deprecated
+	public NodePath(Affine myTransform, String textPath, Color bgColor, Color fgColor, FmmlxProperty actionObject, Action action, CSSStyleDeclaration styleDeclaration) {
+		super(myTransform, styleDeclaration, actionObject, action);
 		this.bgColor = bgColor;
 		this.fgColor = fgColor;
 		this.textPath = textPath;
 		updateBounds();
 	}
+	
+	public NodePath(Affine myTransform, String textPath, FmmlxProperty actionObject, Action action, CSSStyleDeclaration styleDeclaration) {
+		super(myTransform, styleDeclaration, actionObject, action);
+		this.textPath = textPath;
+		updateBounds();
+	}
 
-	public NodePath(SVGOMElement n, SVGOMSVGElement svgOMElement) {
-		styleDeclaration = svgOMElement.getComputedStyle(n, null);
+	public NodePath(SVGOMPathElement n, SVGOMSVGElement root) {
+		super(n.getAttributes().getNamedItem("transform")==null?new Affine():TransformReader.getTransform(n.getAttributes().getNamedItem("transform").getNodeValue()), 
+				root.getComputedStyle(n, null), null, ()->{});
 		this.action= ()->{};
 		this.textPath = n.getAttributes().getNamedItem("d").getNodeValue();
 		
-		Node transformNode = n.getAttributes().getNamedItem("transform");
-		this.myTransform = transformNode==null?new Affine():TransformReader.getTransform(transformNode.getNodeValue());
-		
+//		Node transformNode = n.getAttributes().getNamedItem("transform");
+//		this.myTransform = transformNode==null?new Affine():TransformReader.getTransform(transformNode.getNodeValue());
+		updateBounds();
+	}
+
+	public static NodePath line(SVGOMLineElement n, SVGOMSVGElement root) {
+		CSSStyleDeclaration styleDeclaration = root.getComputedStyle(n, null);
+		NodePath newPath = new NodePath(new Affine(), 
+				"M "  + n.getAttributes().getNamedItem("x1").getNodeValue() +
+				","   + n.getAttributes().getNamedItem("y1").getNodeValue() + 
+				" L " + n.getAttributes().getNamedItem("x2").getNodeValue() +
+				","   + n.getAttributes().getNamedItem("y2").getNodeValue()
+				, null, ()->{}, styleDeclaration);
+		return newPath;
 	}
 	
-	public static NodePath polygon(Node n) {
+	public static NodePath polygon(SVGOMElement n, SVGOMSVGElement root) {
 		String completeString = null;
 		String points = n.getAttributes().getNamedItem("points").getNodeValue();
-		String[] copiedPoints = points.split(" ");
-		//System.err.println(Arrays.toString(copiedPoints));
-		for(int i=0; i<copiedPoints.length; i++) {
-			String[] commaPoints = copiedPoints[i].split(",");
-			if(commaPoints.length==2) {
-			if(completeString==null) {
-				completeString = "M " + commaPoints[0] + " "+ commaPoints[1];
+		String[] allPoints = points.split("[\\s,]+");
+		
+		if(allPoints.length % 2 == 0) for(int i=0; i<allPoints.length/2; i++) {
+			if(i == 0) {
+				completeString = "M " + allPoints[0] + " "+ allPoints[1];
 			} else {
-				completeString += " L " + commaPoints[0] + " " + commaPoints[1];
-			}
+				completeString += " L " + allPoints[i*2] + " " + allPoints[i*2+1];
 			}
 		}
 		completeString += "z";
-		Node bgColorNode = n.getAttributes().getNamedItem("fill");
-		Color bgColor, fgColor;
-		if (bgColorNode != null) {
-			bgColor = Color.web(bgColorNode.getNodeValue());
-		} else {
-			bgColor = Color.BLACK;
-		}
-		fgColor = Color.TRANSPARENT;
-		NodePath newPath = new NodePath(new Affine(), completeString, bgColor, fgColor, null, ()->{});
-		//System.err.println("Path: " + completeString);	
+		
+		CSSStyleDeclaration styleDeclaration = root.getComputedStyle(n, null);
+		NodePath newPath = new NodePath(new Affine(), completeString, null, ()->{}, styleDeclaration);
 		return newPath;
 	}
 
@@ -90,9 +90,13 @@ public class NodePath extends NodeBaseElement{
 			g.setFill(bgColor);
 			g.setStroke(fgColor);
 		} else {
-			String fillvalue = styleDeclaration.getPropertyValue("fill");
-			System.err.println(fillvalue);
-			g.setFill(Color.web(fillvalue));
+			String fillColor = styleDeclaration.getPropertyValue("fill");
+			if("none".equals(fillColor)) {
+				g.setFill(Color.TRANSPARENT);
+			} else {
+				g.setFill(Color.web(fillColor));
+			}
+			setStrokeStyle(g, styleDeclaration);
 		}
 		
 		g.fill();
@@ -100,6 +104,8 @@ public class NodePath extends NodeBaseElement{
 
 		g.closePath();
 	}
+
+
 
 	@Override
 	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagramView) {

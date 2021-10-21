@@ -1,14 +1,20 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
+import org.apache.batik.anim.dom.SVGOMRectElement;
+import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.css.CSSStyleDeclaration;
 
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
+import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement.Action;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeRectangle extends NodeBaseElement	 {
@@ -17,20 +23,31 @@ public class NodeRectangle extends NodeBaseElement	 {
 	//The x and y coordinates refer to the left and top edges of the rectangle. The width and height properties define the overall width and height of the rectangle.
 	//For rounded rectangles, the computed values of the rx and ry properties define the x- and y-axis radii of elliptical arcs used to round off the corners of the rectangle.
 	
-	public static NodeRectangle rectangle(Node n) {
-		NodeRectangle nR = new NodeRectangle();
-		nR.x = Double.parseDouble(n.getAttributes().getNamedItem("x").getNodeValue());
-		nR.y = Double.parseDouble(n.getAttributes().getNamedItem("y").getNodeValue());
+	private NodeRectangle(Affine myTransform, CSSStyleDeclaration styleDeclaration, FmmlxProperty actionObject, Action action) {
+		super(myTransform, styleDeclaration, actionObject, action);
+	}
+	
+	public static NodeRectangle rectangle(SVGOMRectElement n, SVGOMSVGElement rootNode) {
+		double x, y, rx = 0, ry = 0, width, height;
+		x = Double.parseDouble(n.getAttributes().getNamedItem("x").getNodeValue());
+		y = Double.parseDouble(n.getAttributes().getNamedItem("y").getNodeValue());
 		if (n.getAttributes().getNamedItem("rx")!=null) {
-			nR.rx = Double.parseDouble(n.getAttributes().getNamedItem("rx").getNodeValue());
+			rx = Double.parseDouble(n.getAttributes().getNamedItem("rx").getNodeValue());
 		} 
 		if (n.getAttributes().getNamedItem("rx")!=null) {
-			nR.ry = Double.parseDouble(n.getAttributes().getNamedItem("ry").getNodeValue());
+			ry = Double.parseDouble(n.getAttributes().getNamedItem("ry").getNodeValue());
 		}
-		nR.width = Double.parseDouble(n.getAttributes().getNamedItem("width").getNodeValue());
-		nR.height = Double.parseDouble(n.getAttributes().getNamedItem("height").getNodeValue());
-		nR.readStyleAndColor(n);
-		nR.myTransform= SVGReader.readTransform(n);
+		width = Double.parseDouble(n.getAttributes().getNamedItem("width").getNodeValue());
+		height = Double.parseDouble(n.getAttributes().getNamedItem("height").getNodeValue());
+		Affine myTransform= SVGReader.readTransform(n);
+		
+		NodeRectangle nR = new NodeRectangle(myTransform, rootNode.getComputedStyle(n, null), null, ()->{});
+		nR.x = x;
+		nR.y = y;
+		nR.rx = rx;
+		nR.ry = ry;
+		nR.width = width;
+		nR.height = height;
 		return nR;
 	}
 	
@@ -40,9 +57,16 @@ public class NodeRectangle extends NodeBaseElement	 {
 		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
 		g.beginPath();
 		g.appendSVGPath(getPath());
-		g.setFill(bgColor);
+		
+		String fillColor = styleDeclaration.getPropertyValue("fill");
+		if("none".equals(fillColor)) {
+			g.setFill(Color.TRANSPARENT);
+		} else {
+			g.setFill(Color.web(fillColor));
+		}
+		setStrokeStyle(g, styleDeclaration);
+		
 		g.fill();
-		g.setStroke(fgColor);
 		g.stroke();
 		g.closePath();
 		

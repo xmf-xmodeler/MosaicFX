@@ -19,7 +19,7 @@ import tool.clients.xmlManipulator.XmlHandler;
 public class NodeImage extends NodeBaseElement {
 	String iconSource;
 	public NodeImage(double x, double y, String iconSource, FmmlxProperty o, Action action) {
-		super(new Affine(1,0,x,0,1,y), o, action);
+		super(new Affine(1,0,x,0,1,y), null, o, action);
 		this.image = new javafx.scene.image.Image(new File(iconSource).toURI().toString());
 		this.iconSource = iconSource;
 //		bounds = new BoundingBox(0, - image.getHeight(), image.getWidth(), image.getHeight());

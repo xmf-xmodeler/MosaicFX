@@ -56,7 +56,7 @@ public class NodeLabel extends NodeBaseElement {
 	
 	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
 				 String text, FontPosture fontPosture, FontWeight fontWeight, double fontScale) {
-		super(new Affine(1,0,x,0,1,y), actionObject, action);
+		super(new Affine(1,0,x,0,1,y), null, actionObject, action);
 		this.alignment = alignment;
 		this.fgColor = fgColor;
 		this.bgColor = bgColor;

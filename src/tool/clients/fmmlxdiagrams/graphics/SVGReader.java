@@ -9,9 +9,15 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
+import org.apache.batik.anim.dom.SVGOMCircleElement;
 import org.apache.batik.anim.dom.SVGOMElement;
+import org.apache.batik.anim.dom.SVGOMEllipseElement;
 import org.apache.batik.anim.dom.SVGOMGElement;
+import org.apache.batik.anim.dom.SVGOMLineElement;
+import org.apache.batik.anim.dom.SVGOMPathElement;
+import org.apache.batik.anim.dom.SVGOMRectElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
+import org.apache.batik.anim.dom.SVGOMTextElement;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.DocumentLoader;
 import org.apache.batik.bridge.GVTBuilder;
@@ -36,36 +42,17 @@ public class SVGReader {
 	}
 
 	private static NodeGroup readSVG(File file, Affine affine) throws ParserConfigurationException, SAXException, IOException {
-		long start = System.currentTimeMillis(); 
+		//long start = System.currentTimeMillis(); 
 		//System.err.println(System.currentTimeMillis());
-//		Document doc = null;
-//
-//		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-//		dbFactory.setNamespaceAware(false);
-//        dbFactory.setValidating(false);
-//        dbFactory.setFeature("http://xml.org/sax/features/namespaces", false);
-//        dbFactory.setFeature("http://xml.org/sax/features/validation", false);
-//        dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
-//        dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-//		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-//		//System.err.println(System.currentTimeMillis() - start);
-//		doc = dBuilder.parse(file);
-//		//System.err.println(System.currentTimeMillis() - start);
-//		Node svgNode = (Node) doc.getDocumentElement();
-//		
-//		if (!"svg".equals(svgNode.getNodeName()))
-//			throw new IllegalArgumentException();
 		
 		String parser = XMLResourceDescriptor.getXMLParserClassName();
 		SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
-//		URI uri = new URI("resources/abstract-syntax-repository/Orga/Sachbearbeiter.svg"); // the URI of your SVG document
-//		URI uri = new URI("file:///a://svgs/fov.svg"); // the URI of your SVG document
 		Document doc = f.createDocument(file.toURI().toString());
 		
-		UserAgent      userAgent;
-		DocumentLoader loader;
-		BridgeContext  ctx;
-		GVTBuilder     builder;
+		UserAgent          userAgent;
+		DocumentLoader     loader;
+		BridgeContext      ctx;
+		GVTBuilder         builder;
 		RootGraphicsNode   rootGN;
 		             
 		userAgent = new UserAgentAdapter();
@@ -83,48 +70,6 @@ public class SVGReader {
 		return g;		
 	}
 
-//	public static Vector<NodeElement> readChildren(Node parentNode) {
-//
-//		Vector<NodeElement> vec = new Vector<>();
-//
-//		for (int i = 0; i < parentNode.getChildNodes().getLength(); i++) {
-//
-//			Node n = parentNode.getChildNodes().item(i);
-//
-//			if ("#text".equals(n.getNodeName())) {
-//				// ignore !!!
-//			} else if ("g".equals(n.getNodeName())) {
-//				NodeGroup g = new NodeGroup(n);
-//				vec.add(g);
-//			} else if("path".equals(n.getNodeName())) {
-//				NodePath nP = new NodePath(n);
-//				vec.add(nP);
-//			} else if ("circle".contentEquals(n.getNodeName())) {
-//				NodeEllipse nE = NodeEllipse.circle(n);
-//				vec.add(nE);
-//			} else if ("ellipse".contentEquals(n.getNodeName())) {
-//				NodeEllipse nE = NodeEllipse.ellipse(n);
-//				vec.add(nE);
-//			} else if ("polygon".contentEquals(n.getNodeName())) {
-//				NodePath nP = NodePath.polygon(n);
-//				vec.add(nP);
-//			} else if ("rect".contentEquals(n.getNodeName())) {
-//				NodeRectangle nR = NodeRectangle.rectangle(n);
-//				vec.add(nR);
-//			} else if("text".contentEquals(n.getNodeName())) {
-//				NodeText nT = new NodeText(n);
-//				vec.add(nT);
-//			} else {
-//				System.out.println("Child not recognized: " + parentNode + ":" + n);
-//
-//			}
-//
-//		}
-//
-//		return vec;
-//
-//	}
-	
 	public static Vector<NodeElement> readChildren(SVGOMElement parentNode, SVGOMSVGElement rootNode) {
 
 		Vector<NodeElement> vec = new Vector<>();
@@ -133,35 +78,38 @@ public class SVGReader {
 
 			Node n = parentNode.getChildNodes().item(i);
 
-			if ("#text".equals(n.getNodeName())) {
+			if ("#text".equals(n.getNodeName()) ||  "defs".equals(n.getNodeName()) || "title".equals(n.getNodeName())) {
 				// ignore !!!
 			} else if ("g".equals(n.getNodeName())) {
-				System.err.println("Class: " + n.getClass());
-				SVGOMGElement n2= (SVGOMGElement) n;
-				NodeGroup g = new NodeGroup(n2, rootNode);
+				NodeGroup g = new NodeGroup((SVGOMGElement) n, rootNode);
 				vec.add(g);
 			} else if("path".equals(n.getNodeName())) {
-				NodePath nP = new NodePath((SVGOMElement)n, rootNode);
+				NodePath nP = new NodePath((SVGOMPathElement) n, rootNode);
 				vec.add(nP);
 			} else if ("circle".contentEquals(n.getNodeName())) {
-				NodeEllipse nE = NodeEllipse.circle(n);
+				NodeEllipse nE = NodeEllipse.circle((SVGOMCircleElement) n, rootNode);
 				vec.add(nE);
 			} else if ("ellipse".contentEquals(n.getNodeName())) {
-				NodeEllipse nE = NodeEllipse.ellipse(n);
+				NodeEllipse nE = NodeEllipse.ellipse((SVGOMEllipseElement) n, rootNode);
 				vec.add(nE);
 			} else if ("polygon".contentEquals(n.getNodeName())) {
-				NodePath nP = NodePath.polygon(n);
+				System.err.println("read SVG: " + n.getNodeName() + " of " + n.getClass().getSimpleName());
+				NodePath nP = NodePath.polygon((SVGOMElement) n, rootNode);
 				vec.add(nP);
+			} else if("line".contentEquals(n.getNodeName())) {
+				NodePath nP = NodePath.line((SVGOMLineElement) n, rootNode);
+				vec.add(nP);			
 			} else if ("rect".contentEquals(n.getNodeName())) {
-				NodeRectangle nR = NodeRectangle.rectangle(n);
+				NodeRectangle nR = NodeRectangle.rectangle((SVGOMRectElement) n, rootNode);
 				vec.add(nR);
 			} else if("text".contentEquals(n.getNodeName())) {
-				NodeText nT = new NodeText(n);
+				NodeText nT = new NodeText((SVGOMTextElement) n, rootNode);
 				vec.add(nT);
-			} else {
-				System.out.println("Child not recognized: " + parentNode + ":" + n);
-			}
 
+			} else {
+				System.out.println("Child ("+n.getNodeName()+") not recognized: " + parentNode + ":" + n + " of " + n.getClass().getSimpleName());
+			}
+			/// "line" --> org.apache.batik.anim.dom.SVGOMLineElement
 		}
 
 		return vec;
@@ -171,6 +119,26 @@ public class SVGReader {
 	public static Affine readTransform(Node n) {
 		Node transformNode = n.getAttributes().getNamedItem("transform");
 		return transformNode==null?new Affine():TransformReader.getTransform(transformNode.getNodeValue());
+	}
+	
+	public static double parseLength(String strokeWidth, Double percentBase){
+		try{
+			return Double.parseDouble(strokeWidth);
+		} catch (NumberFormatException e) {
+			if(strokeWidth.endsWith("%") && strokeWidth.length() > 1) {
+				return Double.parseDouble(strokeWidth.substring(0,strokeWidth.length()-1)) / 100. * percentBase;
+			}
+			if(strokeWidth.length() < 2) throw new IllegalArgumentException("Cannot read length: " + strokeWidth);
+			String subString = strokeWidth.substring(0,strokeWidth.length()-2);
+			String unit = strokeWidth.substring(strokeWidth.length()-2);
+			try{
+				Double value = Double.parseDouble(subString);
+				if("px".equals(unit)) return value;
+				throw new IllegalArgumentException("Unknown unit: " + unit);
+			} catch (NumberFormatException e2) {
+				throw new IllegalArgumentException("Cannot read length: " + strokeWidth);
+			}
+		}
 	}
 
 }
