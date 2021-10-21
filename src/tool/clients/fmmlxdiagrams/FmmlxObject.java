@@ -538,12 +538,6 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutAutomatedProcess();
 		} else if(ofPath.endsWith("Q") && getSlotNames().contains("file")) {
 			try {
-				String s = getSlot("file").getValue();
-				System.err.println("String: " + s);
-				File f = new File(s);
-				System.err.println("File: " + f);
-				System.err.println(f.exists());
-				
 				rootNodeElement=SVGReader.readSVG(getSlot("file").getValue(), new Affine(Transform.translate(x, y)));
 				
 			} catch (ParserConfigurationException e) {

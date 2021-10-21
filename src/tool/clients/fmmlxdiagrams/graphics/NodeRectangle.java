@@ -97,13 +97,13 @@ public class NodeRectangle extends NodeBaseElement	 {
 		String stringPath="M " + x + " " + y;
 		stringPath=stringPath + " m " + rx + " " + 0;
 		stringPath=stringPath + " l " + (width - 2*rx)+ " " +0;
-		stringPath=stringPath + " a " + rx + " " + ry + " 0 0 1 " + rx + " " + ry;
+		if(rx>0 || ry >0) stringPath=stringPath + " a " + rx + " " + ry + " 0 0 1 " + rx + " " + ry;
 		stringPath=stringPath + " l " + 0 + " " + (height -2*ry);
-		stringPath=stringPath + " a " + rx + " " + ry + " 0 0 1 " + " "+ (-rx) + " " + ry;
+		if(rx>0 || ry >0) stringPath=stringPath + " a " + rx + " " + ry + " 0 0 1 " + " "+ (-rx) + " " + ry;
 		stringPath=stringPath + " l " + " " + (-(width - 2*rx))+ " " +0;
-		stringPath=stringPath + " a " + rx + " " + ry + " 0 0 1 " + " " + (-rx) + " " + (-ry);
+		if(rx>0 || ry >0) stringPath=stringPath + " a " + rx + " " + ry + " 0 0 1 " + " " + (-rx) + " " + (-ry);
 		stringPath=stringPath + " l " + 0 + " " + (-(height -2*ry));
-		stringPath=stringPath + " a " + rx + " " + ry + " 0 0 1 " + " " + rx + " " + (-ry);
+		if(rx>0 || ry >0) stringPath=stringPath + " a " + rx + " " + ry + " 0 0 1 " + " " + rx + " " + (-ry);
 		return stringPath;
 	}
 

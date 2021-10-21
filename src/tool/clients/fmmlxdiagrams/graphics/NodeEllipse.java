@@ -64,9 +64,16 @@ public class NodeEllipse extends NodeBaseElement {
 		g.beginPath();
 		
 		g.appendSVGPath(getPath());
-		g.setFill(bgColor);
+		
+		String fillColor = styleDeclaration.getPropertyValue("fill");
+		if("none".equals(fillColor)) {
+			g.setFill(Color.TRANSPARENT);
+		} else {
+			g.setFill(Color.web(fillColor));
+		}
+		setStrokeStyle(g, styleDeclaration);		
+		
 		g.fill();
-		g.setStroke(fgColor);
 		g.stroke();
 
 		g.closePath();

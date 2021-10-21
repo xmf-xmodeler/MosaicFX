@@ -15,6 +15,7 @@ import org.apache.batik.anim.dom.SVGOMEllipseElement;
 import org.apache.batik.anim.dom.SVGOMGElement;
 import org.apache.batik.anim.dom.SVGOMLineElement;
 import org.apache.batik.anim.dom.SVGOMPathElement;
+import org.apache.batik.anim.dom.SVGOMPolygonElement;
 import org.apache.batik.anim.dom.SVGOMRectElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.anim.dom.SVGOMTextElement;
@@ -93,8 +94,7 @@ public class SVGReader {
 				NodeEllipse nE = NodeEllipse.ellipse((SVGOMEllipseElement) n, rootNode);
 				vec.add(nE);
 			} else if ("polygon".contentEquals(n.getNodeName())) {
-				System.err.println("read SVG: " + n.getNodeName() + " of " + n.getClass().getSimpleName());
-				NodePath nP = NodePath.polygon((SVGOMElement) n, rootNode);
+				NodePath nP = NodePath.polygon((SVGOMPolygonElement) n, rootNode);
 				vec.add(nP);
 			} else if("line".contentEquals(n.getNodeName())) {
 				NodePath nP = NodePath.line((SVGOMLineElement) n, rootNode);
@@ -118,6 +118,9 @@ public class SVGReader {
 
 	public static Affine readTransform(Node n) {
 		Node transformNode = n.getAttributes().getNamedItem("transform");
+		if(transformNode==null) return new Affine();
+		String transformString = transformNode.getNodeValue();
+		
 		return transformNode==null?new Affine():TransformReader.getTransform(transformNode.getNodeValue());
 	}
 	

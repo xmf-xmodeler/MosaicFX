@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.apache.batik.anim.dom.SVGOMElement;
 import org.apache.batik.anim.dom.SVGOMLineElement;
 import org.apache.batik.anim.dom.SVGOMPathElement;
+import org.apache.batik.anim.dom.SVGOMPolygonElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -60,7 +61,7 @@ public class NodePath extends NodeBaseElement{
 		return newPath;
 	}
 	
-	public static NodePath polygon(SVGOMElement n, SVGOMSVGElement root) {
+	public static NodePath polygon(SVGOMPolygonElement n, SVGOMSVGElement root) {
 		String completeString = null;
 		String points = n.getAttributes().getNamedItem("points").getNodeValue();
 		String[] allPoints = points.split("[\\s,]+");
