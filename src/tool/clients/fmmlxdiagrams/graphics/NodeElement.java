@@ -87,7 +87,8 @@ public abstract class NodeElement {
 	protected abstract Vector<NodeElement> getChildren();
 	
 	protected void setID(SVGOMElement node) {
-		id = node.getId();	
+		String id = node.getId();
+		this.id = ("".equals(id) || id == null)?null:node.getId();
 	}
 	
 

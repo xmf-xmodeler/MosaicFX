@@ -21,6 +21,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.stage.FileChooser;
@@ -31,7 +32,7 @@ import javafx.stage.Stage;
 public class ConcreteSyntaxWizard extends Application {
 
 	private GridPane gridPane;
-	private MyCanvas canvas;
+	private MyCanvas myCanvas;
 	private final TreeView<NodeElement> SVGtree = new TreeView<NodeElement>();
 	private FileChooser fileChooser;
 	
@@ -43,17 +44,35 @@ public class ConcreteSyntaxWizard extends Application {
 		gridPane.setHgap(10.0);
 		gridPane.setVgap(10.0);
 		
-		canvas = new MyCanvas();
-		canvas.getCanvas().getGraphicsContext2D().setFill(Color.FLORALWHITE);
-		canvas.getCanvas().getGraphicsContext2D().fillRect(0, 0, 500, 500);
+		myCanvas = new MyCanvas();		
 		
-		
-		TreeItem<NodeElement> rootTreeItem = new TreeItem();
+		TreeItem<NodeElement> rootTreeItem = new TreeItem<>();
 		SVGtree.setRoot(rootTreeItem);
 		SVGtree.getSelectionModel().selectedItemProperty().addListener((a,b,item)->{
-			canvas.getCanvas().getGraphicsContext2D().setFill(Color.FLORALWHITE);
-			canvas.getCanvas().getGraphicsContext2D().fillRect(0, 0, 500, 500);
-			item.getValue().paintOn(canvas, false);
+			if(item == null) return;
+			myCanvas.getCanvas().getGraphicsContext2D().setFill(Color.DARKGRAY);
+			myCanvas.getCanvas().getGraphicsContext2D().setTransform(new Affine());
+			myCanvas.getCanvas().getGraphicsContext2D().fillRect(0, 0, myCanvas.getCanvas().getWidth(), myCanvas.getCanvas().getHeight());
+			NodeElement item4Bounds = SVGtree.getRoot().getValue();
+			item4Bounds.updateBounds();
+			if(item4Bounds.bounds != null) {
+			myCanvas.affine = new Affine(1,0, 
+					myCanvas.getCanvas().getWidth() / 2
+					-(item4Bounds.bounds.getMinX() + item4Bounds.bounds.getWidth() / 2),
+					0,1, 
+					myCanvas.getCanvas().getHeight() / 2
+					-(item4Bounds.bounds.getMinY() + item4Bounds.bounds.getHeight() / 2));
+//			myCanvas.getCanvas().getGraphicsContext2D().setTransform(myCanvas.affine);
+			myCanvas.getCanvas().getGraphicsContext2D().setFill(Color.WHITE);
+			myCanvas.getCanvas().getGraphicsContext2D().fillRect(
+					myCanvas.getCanvas().getWidth() / 2
+					-item4Bounds.bounds.getWidth() / 2, 
+					myCanvas.getCanvas().getHeight() / 2
+					-item4Bounds.bounds.getHeight() / 2,
+					item4Bounds.bounds.getWidth(), 
+					item4Bounds.bounds.getHeight());
+			}
+			item.getValue().paintOn(myCanvas, false);
 		});
 		
 		
@@ -74,8 +93,9 @@ public class ConcreteSyntaxWizard extends Application {
             directoryTextField.setText(selectedFile.toString());
             try {
 				NodeGroup group = SVGReader.readSVG(selectedFile, new Affine());
-				group.paintOn(canvas, false);
+				group.paintOn(myCanvas, false);
 				setTree(group);
+				SVGtree.getSelectionModel().select(0);;
 			} catch (ParserConfigurationException | SAXException | IOException e1) {
 				e1.printStackTrace();
 			}
@@ -87,7 +107,7 @@ public class ConcreteSyntaxWizard extends Application {
 		gridPane.setHalignment(fileDirectory, HPos.RIGHT);
 		gridPane.add(directoryTextField, 1, 0);
 		gridPane.add(SVGtree, 0, 1);
-		gridPane.add(canvas.getCanvas(), 1, 1);
+		gridPane.add(myCanvas, 1, 1);
 		
 		
 		Scene scene = new Scene(gridPane);
@@ -125,20 +145,24 @@ public class ConcreteSyntaxWizard extends Application {
 	}
 
 
-	public class MyCanvas implements View{
+	public class MyCanvas extends Pane implements View{
 		
-		Canvas myCanvas; 
+		Canvas canvas; 
 		Affine affine;
 		
 		public MyCanvas() {
-			myCanvas = new Canvas(500,500);
+			canvas = new Canvas(1000,800);
 			affine = new Affine();
+			getChildren().add(canvas);
+			canvas.widthProperty().bind(this.widthProperty());
+			canvas.heightProperty().bind(this.heightProperty());
+			setPrefSize(1400, 1000);
 		}
 		
 		
 		@Override
 		public Canvas getCanvas() {
-			return myCanvas;
+			return canvas;
 		}
 
 		@Override

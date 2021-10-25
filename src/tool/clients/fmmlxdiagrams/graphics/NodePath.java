@@ -19,6 +19,7 @@ import tool.clients.xmlManipulator.XmlHandler;
 public class NodePath extends NodeBaseElement{
 	
 	String textPath;
+	final String type;
 	
 	@Deprecated
 	public NodePath(Affine myTransform, String textPath, Color bgColor, Color fgColor, FmmlxProperty actionObject, Action action, CSSStyleDeclaration styleDeclaration) {
@@ -26,18 +27,21 @@ public class NodePath extends NodeBaseElement{
 		this.bgColor = bgColor;
 		this.fgColor = fgColor;
 		this.textPath = textPath;
+		this.type = "Path";
 		updateBounds();
 	}
 	
-	public NodePath(Affine myTransform, String textPath, FmmlxProperty actionObject, Action action, CSSStyleDeclaration styleDeclaration) {
+	public NodePath(Affine myTransform, String textPath, FmmlxProperty actionObject, Action action, CSSStyleDeclaration styleDeclaration, String type) {
 		super(myTransform, styleDeclaration, actionObject, action);
 		this.textPath = textPath;
+		this.type = type;
 		updateBounds();
 	}
 
 	public NodePath(SVGOMPathElement n, SVGOMSVGElement root) {
 		super(n.getAttributes().getNamedItem("transform")==null?new Affine():TransformReader.getTransform(n.getAttributes().getNamedItem("transform").getNodeValue()), 
 				root.getComputedStyle(n, null), null, ()->{});
+		this.type = "Path";
 		this.action= ()->{};
 		this.textPath = n.getAttributes().getNamedItem("d").getNodeValue();
 		setID(n);
@@ -54,7 +58,8 @@ public class NodePath extends NodeBaseElement{
 				","   + n.getAttributes().getNamedItem("y1").getNodeValue() + 
 				" L " + n.getAttributes().getNamedItem("x2").getNodeValue() +
 				","   + n.getAttributes().getNamedItem("y2").getNodeValue()
-				, null, ()->{}, styleDeclaration);
+				, null, ()->{}, styleDeclaration, "Line");
+		newPath.setID(n);
 		return newPath;
 	}
 	
@@ -73,7 +78,8 @@ public class NodePath extends NodeBaseElement{
 		completeString += "z";
 		
 		CSSStyleDeclaration styleDeclaration = root.getComputedStyle(n, null);
-		NodePath newPath = new NodePath(new Affine(), completeString, null, ()->{}, styleDeclaration);
+		NodePath newPath = new NodePath(new Affine(), completeString, null, ()->{}, styleDeclaration, "Polygon");
+		newPath.setID(n);
 		return newPath;
 	}
 
@@ -150,11 +156,6 @@ public class NodePath extends NodeBaseElement{
 	
 	@Override
 	public String toString() {
-		return "Path"+ (id==null?"":("("+id+")"));
+		return type + (id==null?"":("("+id+")"));
 	}
-	
-	
-	
-	
-
 }

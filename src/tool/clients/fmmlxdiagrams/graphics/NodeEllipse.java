@@ -1,26 +1,18 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
-import java.util.Vector;
-
 import org.apache.batik.anim.dom.SVGOMCircleElement;
 import org.apache.batik.anim.dom.SVGOMEllipseElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.css.CSSStyleDeclaration;
 
-import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
-import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.SVGPath;
 import javafx.scene.transform.Affine;
-import javafx.scene.transform.Transform;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
-import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement.Action;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeEllipse extends NodeBaseElement {

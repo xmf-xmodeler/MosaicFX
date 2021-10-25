@@ -152,14 +152,11 @@ public class NodeGroup extends NodeElement {
 
 	@Override
 	protected Vector<NodeElement> getChildren() {
-		
 		return nodeElements;
 	}
 	
 	@Override
 	public String toString() {
 		return "G"+ (id==null?"":("("+id+")"));
-	}
-	
-
+	}	
 }
