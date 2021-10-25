@@ -3,10 +3,8 @@ package tool.clients.fmmlxdiagrams.graphics;
 import org.apache.batik.anim.dom.SVGOMRectElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.css.CSSStyleDeclaration;
 
-import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -14,7 +12,6 @@ import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
-import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement.Action;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeRectangle extends NodeBaseElement	 {
@@ -52,7 +49,7 @@ public class NodeRectangle extends NodeBaseElement	 {
 	}
 	
 	@Override
-	public void paintOn(DiagramViewPane diagramView, boolean objectIsSelected) {
+	public void paintOn(View diagramView, boolean objectIsSelected) {
 		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
 		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
 		g.beginPath();

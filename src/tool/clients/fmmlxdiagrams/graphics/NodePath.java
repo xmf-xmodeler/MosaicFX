@@ -1,14 +1,10 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
-import java.util.Arrays;
-
-import org.apache.batik.anim.dom.SVGOMElement;
 import org.apache.batik.anim.dom.SVGOMLineElement;
 import org.apache.batik.anim.dom.SVGOMPathElement;
 import org.apache.batik.anim.dom.SVGOMPolygonElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.css.CSSStyleDeclaration;
 
 import javafx.geometry.Bounds;
@@ -81,7 +77,7 @@ public class NodePath extends NodeBaseElement{
 	}
 
 	@Override
-	public void paintOn(FmmlxDiagram.DiagramViewPane diagramView, boolean objectIsSelected) {
+	public void paintOn(View diagramView, boolean objectIsSelected) {
 		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
 
 		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));

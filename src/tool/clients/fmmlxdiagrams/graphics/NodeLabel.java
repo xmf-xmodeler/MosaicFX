@@ -1,6 +1,5 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
-import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
@@ -91,7 +90,7 @@ public class NodeLabel extends NodeBaseElement {
 	}
 
 	@Override
-	public void paintOn(FmmlxDiagram.DiagramViewPane diagramView, boolean objectIsSelected) {
+	public void paintOn(View diagramView, boolean objectIsSelected) {
 		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
 		String textLocal = setTextLocal(text);
 		g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), fontWeight, fontPosture, fontSize * fontScale));

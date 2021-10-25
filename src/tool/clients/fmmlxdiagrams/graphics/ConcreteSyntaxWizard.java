@@ -69,7 +69,7 @@ public class ConcreteSyntaxWizard extends Application {
             directoryTextField.setText(selectedFile.toString());
             try {
 				NodeGroup group = SVGReader.readSVG(selectedFile, new Affine());
-				//group.paintOn(diagramView, objectIsSelected);
+				group.paintOn(canvas, false);
 			} catch (ParserConfigurationException | SAXException | IOException e1) {
 				e1.printStackTrace();
 			}
@@ -97,7 +97,7 @@ public class ConcreteSyntaxWizard extends Application {
 		Affine affine;
 		
 		public MyCanvas() {
-			myCanvas = new Canvas();
+			myCanvas = new Canvas(500,500);
 			affine = new Affine();
 		}
 		

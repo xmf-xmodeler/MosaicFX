@@ -56,7 +56,7 @@ public class NodeEllipse extends NodeBaseElement {
 	}
 
 	@Override
-	public void paintOn(DiagramViewPane diagramView, boolean objectIsSelected) {
+	public void paintOn(View diagramView, boolean objectIsSelected) {
 		
 		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
 

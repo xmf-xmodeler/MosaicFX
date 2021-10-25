@@ -1,7 +1,5 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
-import java.util.Vector;
-
 import org.apache.batik.anim.dom.SVGOMElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.anim.dom.SVGOMTSpanElement;
@@ -24,6 +22,7 @@ public class NodeText extends NodeBaseElement{
 //	Vector<TSpan> spans = new Vector<TSpan>();
 	final SVGOMTextElement textRootNode;
 	private SVGOMSVGElement root;
+	private double x,y;
 	
 	public NodeText(SVGOMTextElement n, SVGOMSVGElement root) {
 		super(SVGReader.readTransform(n), root.getComputedStyle(n, null), null, () -> {});
@@ -32,7 +31,12 @@ public class NodeText extends NodeBaseElement{
 		this.action= ()->{};
 		Node transformNode = n.getAttributes().getNamedItem("transform");
 		this.myTransform = transformNode==null?new Affine():TransformReader.getTransform(transformNode.getNodeValue());
-		
+		try{
+			this.x = Double.parseDouble(n.getAttributes().getNamedItem("x").getNodeValue());
+			this.y = Double.parseDouble(n.getAttributes().getNamedItem("y").getNodeValue());
+		} catch(Exception e) {
+			x = 0; y = 0;
+		}
 		readStyleAndColor(n);
 		if(bgColor == null) bgColor = Color.BLACK;
 		if(fgColor == null) fgColor = Color.TRANSPARENT;
@@ -49,7 +53,7 @@ public class NodeText extends NodeBaseElement{
 	}
 	
 	@Override
-	public void paintOn(DiagramViewPane diagramView, boolean objectIsSelected) {
+	public void paintOn(View diagramView, boolean objectIsSelected) {
 		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
 
 		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
@@ -57,7 +61,7 @@ public class NodeText extends NodeBaseElement{
 		g.setFill(bgColor);
 		g.setStroke(fgColor.deriveColor(0., 1., 1., 0.5));
 		
-		paintOnLocal(g, textRootNode,0,0);
+		paintOnLocal(g, textRootNode,this.x,this.y);
 		
 		
 		
@@ -70,10 +74,8 @@ public class NodeText extends NodeBaseElement{
 	private void paintOnLocal(GraphicsContext g, SVGOMElement parentNode, double x, double y) {
 		for (int i = 0; i < parentNode.getChildNodes().getLength(); i++) {
 			Node n = parentNode.getChildNodes().item(i);
-			System.err.println("read SVG-Text: " + n.getNodeName() + " of " + n.getClass().getSimpleName());
 			if(n instanceof GenericText) {
 				GenericText gt = (GenericText) n;
-				System.err.println(x + "," + y + ": " + gt.getTextContent());
 				
 				CSSStyleDeclaration styleDeclaration = root.getComputedStyle(parentNode, null);
 				
