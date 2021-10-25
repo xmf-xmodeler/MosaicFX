@@ -26,7 +26,7 @@ public abstract class NodeElement {
 	 * @param diagramView the view the element will be painted on
 	 * @param objectIsSelected when the element should be displayed as selected.
 	 */
-	public abstract void paintOn(FmmlxDiagram.DiagramViewPane diagramView, boolean objectIsSelected);
+	public abstract void paintOn(View diagramView, boolean objectIsSelected);
 
 	/**
 	 * Checks whether this NodeElement has been hit with the mouse

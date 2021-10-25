@@ -36,7 +36,7 @@ public class NodeBox extends NodeGroup{
 	}
 
 	@Override
-	public void paintOn(FmmlxDiagram.DiagramViewPane diagramView, boolean objectIsSelected) {
+	public void paintOn(View diagramView, boolean objectIsSelected) {
 		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
 		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
 		g.setFill(bgColor);

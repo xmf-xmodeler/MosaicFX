@@ -2,7 +2,6 @@ package tool.clients.fmmlxdiagrams.graphics;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
 public class IssueBox extends NodeBox {
@@ -15,7 +14,7 @@ public class IssueBox extends NodeBox {
 	}
 	
 	@Override
-	public void paintOn(FmmlxDiagram.DiagramViewPane diagramView, boolean objectIsSelected) {
+	public void paintOn(View diagramView, boolean objectIsSelected) {
 		super.paintOn(diagramView, objectIsSelected);
 			GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
 			final double LAMP_SIZE = 2 * BOX_SIZE / (1 + Math.sqrt(5));

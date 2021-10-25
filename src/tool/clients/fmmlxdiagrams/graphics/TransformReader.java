@@ -6,7 +6,6 @@ import org.apache.batik.parser.AWTTransformProducer;
 import org.apache.batik.parser.TransformListParser;
 
 import javafx.scene.transform.Affine;
-import javafx.scene.transform.Transform;
 
 public class TransformReader {
 

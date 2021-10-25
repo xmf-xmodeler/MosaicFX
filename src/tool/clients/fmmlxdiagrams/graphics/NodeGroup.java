@@ -5,13 +5,11 @@ import java.util.Vector;
 import org.apache.batik.anim.dom.SVGOMGElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
 import tool.clients.exporter.svg.SvgConstant;
@@ -56,7 +54,7 @@ public class NodeGroup extends NodeElement {
 	}
 	
 	@Override
-	public void paintOn(FmmlxDiagram.DiagramViewPane diagramView, boolean objectIsSelected) {
+	public void paintOn(View diagramView, boolean objectIsSelected) {
 		for (NodeElement e : new Vector<>(nodeElements)) {
 			e.paintOn(diagramView, objectIsSelected);
 		}

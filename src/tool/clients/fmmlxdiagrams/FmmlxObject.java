@@ -550,9 +550,10 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} else if(ofPath.endsWith("ITML")) {
+		} else if(ofPath.endsWith("test")) {
 			try {
-				rootNodeElement=SVGReader.readSVG("resources/abstract-syntax-repository/ITML_Datenbank_a.svg", new Affine(Transform.translate(x, y)));
+				rootNodeElement=SVGReader.readSVG("a:\\testsvg.svg", new Affine(Transform.translate(x, y)));
+				System.err.println("rootNodeElement: " + rootNodeElement);
 			} catch (ParserConfigurationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -563,52 +564,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-		} else if(ofPath.endsWith("Rec")) {
-			
-			try {
-				rootNodeElement=SVGReader.readSVG("resources/abstract-syntax-repository/Orga/Comment2.svg", new Affine(Transform.translate(x, y)));
-			} catch (ParserConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		} else if(ofPath.endsWith("fov")) {
-			
-			try {
-				rootNodeElement=SVGReader.readSVG("resources/abstract-syntax-repository/Orga/fov2.svg", new Affine(Transform.translate(x, y)));
-			} catch (ParserConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		} else if(ofPath.endsWith("com")) {
-		
-		try {
-			rootNodeElement=SVGReader.readSVG("resources/abstract-syntax-repository/Orga/Sachbearbeiter.svg", new Affine(Transform.translate(x, y)));
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+					
 		} else {
 	
 			new DefaultFmmlxObjectDisplay(diagram, this).layout();

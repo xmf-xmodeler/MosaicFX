@@ -29,7 +29,7 @@ public class NodeImage extends NodeBaseElement {
 //	private Bounds bounds;
 
 	@Override
-	public void paintOn(FmmlxDiagram.DiagramViewPane diagramView,
+	public void paintOn(View diagramView,
 			boolean objectIsSelected) {
 		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
 		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
