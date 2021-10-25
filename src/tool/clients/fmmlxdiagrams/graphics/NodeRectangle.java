@@ -45,6 +45,7 @@ public class NodeRectangle extends NodeBaseElement	 {
 		nR.ry = ry;
 		nR.width = width;
 		nR.height = height;
+		nR.setID(n);
 		return nR;
 	}
 	
@@ -107,6 +108,11 @@ public class NodeRectangle extends NodeBaseElement	 {
 	@Override
 	public void updateBounds() {
 		updateBoundsFromPath(getPath());
+	}
+	
+	@Override
+	public String toString() {
+		return "Rectangle"+ (id==null?"":("("+id+")"));
 	}
 
 }

@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
+import java.util.Vector;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.css.CSSStyleDeclaration;
 
@@ -124,4 +126,13 @@ public abstract class NodeBaseElement extends NodeElement {
 			g.setLineJoin(StrokeLineJoin.valueOf(strokeLinejoin.toUpperCase()));
 		} catch(Exception e) {System.err.println("strokeLinejoin: " + strokeLinejoin);}
 	}
+	
+	@Override
+	protected Vector<NodeElement> getChildren() {
+				
+		return new Vector<>();
+	}
+	
+	
+	
 }

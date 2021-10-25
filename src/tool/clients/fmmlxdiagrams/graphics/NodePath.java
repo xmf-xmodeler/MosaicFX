@@ -40,6 +40,7 @@ public class NodePath extends NodeBaseElement{
 				root.getComputedStyle(n, null), null, ()->{});
 		this.action= ()->{};
 		this.textPath = n.getAttributes().getNamedItem("d").getNodeValue();
+		setID(n);
 		
 //		Node transformNode = n.getAttributes().getNamedItem("transform");
 //		this.myTransform = transformNode==null?new Affine():TransformReader.getTransform(transformNode.getNodeValue());
@@ -145,6 +146,11 @@ public class NodePath extends NodeBaseElement{
 	@Override
 	public Bounds getBounds() {
 		return bounds;
+	}
+	
+	@Override
+	public String toString() {
+		return "Path"+ (id==null?"":("("+id+")"));
 	}
 	
 	

@@ -6,6 +6,9 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.SVGPath;
 
+import java.util.Vector;
+
+import org.apache.batik.anim.dom.SVGOMElement;
 import org.w3c.dom.Element;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
@@ -20,6 +23,7 @@ public abstract class NodeElement {
 	protected NodeElement owner;
 	Bounds bounds = new BoundingBox(0, 0, 0, 0);
 	public Style style;
+	protected String id;
 	
 	/**
 	 * Paints this NodeElement and all its children to the diagramView's canvas.
@@ -78,6 +82,13 @@ public abstract class NodeElement {
 				a.getMxy(), a.getMyy(), 
 				a.getTx(), a.getTy()));
 		this.bounds = p.getBoundsInParent();
-	};
+	}
+
+	protected abstract Vector<NodeElement> getChildren();
+	
+	protected void setID(SVGOMElement node) {
+		id = node.getId();	
+	}
+	
 
 }

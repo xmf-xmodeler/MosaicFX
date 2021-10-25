@@ -26,9 +26,11 @@ import tool.clients.xmlManipulator.XmlHandler;
 public class NodeEllipse extends NodeBaseElement {
 
 	double rx, ry, cx, cy; // c=center , r=radius
+	final String type;
 	
-	private NodeEllipse(Affine myTransform, CSSStyleDeclaration styleDeclaration, FmmlxProperty actionObject, Action action) {
+	private NodeEllipse(Affine myTransform, CSSStyleDeclaration styleDeclaration, FmmlxProperty actionObject, Action action, String type) {
 		super(myTransform, styleDeclaration, actionObject, action);
+		this.type=type;
 	}
 	
 	public static NodeEllipse circle(SVGOMCircleElement n, SVGOMSVGElement rootNode) {
@@ -38,8 +40,9 @@ public class NodeEllipse extends NodeBaseElement {
 		rx = Double.parseDouble(n.getAttributes().getNamedItem("r").getNodeValue());
 		ry = rx;
 
-		NodeEllipse nE = new NodeEllipse(SVGReader.readTransform(n), rootNode.getComputedStyle(n, null), null, () -> {});
-		nE.cx = cx; nE.cy = cy; nE.rx = rx; nE.ry = ry; 
+		NodeEllipse nE = new NodeEllipse(SVGReader.readTransform(n), rootNode.getComputedStyle(n, null), null, () -> {}, "Circle");
+		nE.cx = cx; nE.cy = cy; nE.rx = rx; nE.ry = ry;
+		nE.setID(n);
 		return nE;
 	}
 	
@@ -50,8 +53,9 @@ public class NodeEllipse extends NodeBaseElement {
 		rx = Double.parseDouble(n.getAttributes().getNamedItem("rx").getNodeValue());
 		ry = Double.parseDouble(n.getAttributes().getNamedItem("ry").getNodeValue());
 
-		NodeEllipse nE = new NodeEllipse(SVGReader.readTransform(n), rootNode.getComputedStyle(n, null), null, () -> {});
-		nE.cx = cx; nE.cy = cy; nE.rx = rx; nE.ry = ry; 
+		NodeEllipse nE = new NodeEllipse(SVGReader.readTransform(n), rootNode.getComputedStyle(n, null), null, () -> {}, "Ellipse");
+		nE.cx = cx; nE.cy = cy; nE.rx = rx; nE.ry = ry;
+		nE.setID(n);
 		return nE;	
 	}
 
@@ -128,7 +132,11 @@ public class NodeEllipse extends NodeBaseElement {
 	public Bounds getBounds() {
 		return bounds;
 	}
-
+	
+	@Override
+	public String toString() {
+		return type + (id==null?"":("("+id+")"));
+	}
 
 
 }

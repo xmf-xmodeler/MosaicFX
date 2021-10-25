@@ -37,6 +37,7 @@ public class NodeText extends NodeBaseElement{
 		} catch(Exception e) {
 			x = 0; y = 0;
 		}
+		setID(n);
 		readStyleAndColor(n);
 		if(bgColor == null) bgColor = Color.BLACK;
 		if(fgColor == null) fgColor = Color.TRANSPARENT;
@@ -124,6 +125,11 @@ public class NodeText extends NodeBaseElement{
 
 	// Just ignore it
 	@Override public void updateBounds() {}
+	
+	@Override
+	public String toString() {
+		return "Text"+ (id==null?"":("("+id+")"));
+	}
 
 	private class TSpan{
 		

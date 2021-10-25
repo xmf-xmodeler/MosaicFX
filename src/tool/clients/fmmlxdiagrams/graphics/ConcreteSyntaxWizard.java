@@ -32,8 +32,7 @@ public class ConcreteSyntaxWizard extends Application {
 
 	private GridPane gridPane;
 	private MyCanvas canvas;
-	private final TreeView<String> SVGtree = new TreeView<String>();
-	private final ListView<String> listView = new ListView<String>();
+	private final TreeView<NodeElement> SVGtree = new TreeView<NodeElement>();
 	private FileChooser fileChooser;
 	
 	@Override
@@ -49,8 +48,14 @@ public class ConcreteSyntaxWizard extends Application {
 		canvas.getCanvas().getGraphicsContext2D().fillRect(0, 0, 500, 500);
 		
 		
-		TreeItem firstTreeItem = new TreeItem("ASD");
-		SVGtree.setRoot(firstTreeItem);
+		TreeItem<NodeElement> rootTreeItem = new TreeItem();
+		SVGtree.setRoot(rootTreeItem);
+		SVGtree.getSelectionModel().selectedItemProperty().addListener((a,b,item)->{
+			canvas.getCanvas().getGraphicsContext2D().setFill(Color.FLORALWHITE);
+			canvas.getCanvas().getGraphicsContext2D().fillRect(0, 0, 500, 500);
+			item.getValue().paintOn(canvas, false);
+		});
+		
 		
 		File file = new File("");
 		file=new File(file.toURI()).getParentFile();
@@ -70,6 +75,7 @@ public class ConcreteSyntaxWizard extends Application {
             try {
 				NodeGroup group = SVGReader.readSVG(selectedFile, new Affine());
 				group.paintOn(canvas, false);
+				setTree(group);
 			} catch (ParserConfigurationException | SAXException | IOException e1) {
 				e1.printStackTrace();
 			}
@@ -91,6 +97,34 @@ public class ConcreteSyntaxWizard extends Application {
 	}
 
 	
+	private void setTree(NodeGroup group) {
+		TreeItem<NodeElement> rootElement = new TreeItem<NodeElement>(group);
+		SVGtree.setRoot(rootElement);
+		setListener(group,rootElement);
+		
+		for (NodeElement child : group.nodeElements) {
+			addToTree(child,rootElement);
+		}
+		rootElement.setExpanded(true);
+	}
+
+
+	private void setListener(NodeElement e, TreeItem<NodeElement> item) {
+		
+	}
+
+
+	private void addToTree(NodeElement element, TreeItem<NodeElement> parentItem) {
+		TreeItem<NodeElement> item = new TreeItem<NodeElement>(element);
+		parentItem.getChildren().add(item);
+		setListener(element,item);
+		for (NodeElement elm : element.getChildren()) {
+			addToTree(elm,item);
+		}
+		item.setExpanded(true);
+	}
+
+
 	public class MyCanvas implements View{
 		
 		Canvas myCanvas; 

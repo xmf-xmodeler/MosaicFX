@@ -34,7 +34,7 @@ public class NodeGroup extends NodeElement {
 	public NodeGroup(SVGOMGElement node, SVGOMSVGElement svgOMElement) {
 //		Node transformNode = node.getAttributes().getNamedItem("transform");
 		this.myTransform = SVGReader.readTransform(node);//)transformNode==null?new Affine():TransformReader.getTransform(transformNode.getNodeValue());
-		
+		setID(node);
 //		myTrans#form = new Affine();
 		Vector<NodeElement> children = SVGReader.readChildren(node, svgOMElement);
 		this.addAllNodeElements(children);
@@ -149,7 +149,17 @@ public class NodeGroup extends NodeElement {
 			updateBounds();
 		return bounds;
 	}
+
+	@Override
+	protected Vector<NodeElement> getChildren() {
+		
+		return nodeElements;
+	}
 	
+	@Override
+	public String toString() {
+		return "G"+ (id==null?"":("("+id+")"));
+	}
 	
 
 }
