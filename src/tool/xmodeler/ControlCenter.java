@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
+import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxWizard;
 import tool.clients.workbench.WorkbenchClient;
 
 import tool.helper.DrawingApplication;
@@ -73,11 +74,11 @@ public class ControlCenter extends Stage {
 		Label modelLabel = new Label("Models");
 		CreatedModifiedGridPane modelGridPane = new CreatedModifiedGridPane();
 		
-		Button drawingApp = new Button("Start Drawing App");
-		drawingApp.setOnAction(e -> { 
-			DrawingApplication draw = new DrawingApplication();
+		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard");
+		concreteSyntaxWizardStart.setOnAction(e -> { 
+			ConcreteSyntaxWizard wizard = new ConcreteSyntaxWizard();
 			try {
-				draw.start(new Stage());
+				wizard.start(new Stage());
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -167,7 +168,7 @@ public class ControlCenter extends Stage {
 		diagramLV.setPrefSize(250, 150);
 		grid.add(diagramLV, 4, 2);
 		grid.add(diagramsGridPane, 4, 3);
-		grid.add(drawingApp, 4, 4);
+		grid.add(concreteSyntaxWizardStart, 4, 4);
 
 		init();
 		//categoryLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->categorySelected(NEWW));

@@ -42,7 +42,7 @@ public class SVGReader {
 		return readSVG(new File(fileName), affine);
 	}
 
-	private static NodeGroup readSVG(File file, Affine affine) throws ParserConfigurationException, SAXException, IOException {
+	static NodeGroup readSVG(File file, Affine affine) throws ParserConfigurationException, SAXException, IOException {
 		//long start = System.currentTimeMillis(); 
 		//System.err.println(System.currentTimeMillis());
 		
