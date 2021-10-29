@@ -13,6 +13,9 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -20,6 +23,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.stage.FileChooser;
@@ -29,7 +33,11 @@ import javafx.stage.Stage;
 
 public class ConcreteSyntaxWizard extends Application {
 
-	private GridPane gridPane;
+	
+	
+	private ListView<String> listView = new ListView<String>();
+	private SplitPane splitPane;
+	private VBox leftControl, rightControl;
 	private MyCanvas myCanvas;
 	private final TreeView<NodeElement> SVGtree = new TreeView<NodeElement>();
 	private FileChooser fileChooser;
@@ -37,11 +45,10 @@ public class ConcreteSyntaxWizard extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		
-		gridPane = new GridPane();
-		gridPane.setPadding(new Insets(10,10,10,10));
-		gridPane.setHgap(10.0);
-		gridPane.setVgap(10.0);
 		
+		splitPane = new SplitPane();
+		splitPane.setPadding(new Insets(10,10,10,10));
+			
 		myCanvas = new MyCanvas();		
 		
 		TreeItem<NodeElement> rootTreeItem = new TreeItem<>();
@@ -98,17 +105,17 @@ public class ConcreteSyntaxWizard extends Application {
 				e1.printStackTrace();
 			}
             
-        });
-		
-	    
-		gridPane.add(fileDirectory, 0, 0);
-		gridPane.setHalignment(fileDirectory, HPos.RIGHT);
-		gridPane.add(directoryTextField, 1, 0);
-		gridPane.add(SVGtree, 0, 1);
-		gridPane.add(myCanvas, 1, 1);
+        });	
 		
 		
-		Scene scene = new Scene(gridPane);
+		Label labelListView = new Label("ListView");
+		Label labelTreeView = new Label("TreeView");
+		leftControl  = new VBox(labelListView, listView, labelTreeView, SVGtree);
+		rightControl  = new VBox(fileDirectory,directoryTextField,myCanvas);
+		splitPane.getItems().addAll(leftControl, rightControl);
+		
+		
+		Scene scene = new Scene(splitPane);
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("Concrete Syntax Wizard");
 		primaryStage.show();
