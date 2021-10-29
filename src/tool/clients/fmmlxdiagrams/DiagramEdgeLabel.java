@@ -11,7 +11,6 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Affine;
 
-import org.eclipse.jface.text.AbstractInformationControlManager.Anchor;
 import org.w3c.dom.Element;
 import tool.clients.exporter.svg.SvgConstant;
 import tool.clients.xmlManipulator.XmlHandler;

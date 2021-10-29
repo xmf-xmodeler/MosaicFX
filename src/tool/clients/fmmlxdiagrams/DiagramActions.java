@@ -2,7 +2,6 @@ package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -139,7 +138,8 @@ public class DiagramActions {
 				final AddInstanceDialogResult aidResult = result.get();
 
 				if(canvas == null) {
-					diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), aidResult.getName(),
+					diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), 
+							aidResult.getName(), aidResult.getLevel(),
                             aidResult.getParentNames(), aidResult.isAbstract(), 0, 0, true);
 					diagram.updateDiagram();
 				} else {
@@ -152,8 +152,9 @@ public class DiagramActions {
 							int y = (int) e.getY();
 	
 							if (x > 0 && y > 0) {
-								diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), aidResult.getName(),
-	                                    aidResult.getParentNames(), aidResult.isAbstract(), x, y, false);
+								diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), 
+										aidResult.getName(), aidResult.getLevel(), 
+										aidResult.getParentNames(), aidResult.isAbstract(), x, y, false);
 	
 								canvas.setCursor(Cursor.DEFAULT);
 								canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
@@ -181,7 +182,9 @@ public class DiagramActions {
 				int y = (int) e.getY();
 				
 				if (x > 0 && y > 0) {
-					diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), aidResult.getName(),
+					diagram.getComm().addNewInstance(
+							diagram.getID(), aidResult.getOfName(), aidResult.getName(),
+							aidResult.getLevel(),
                             aidResult.getParentNames(), aidResult.isAbstract(), x, y, false);
 
 					diagram.updateDiagram();

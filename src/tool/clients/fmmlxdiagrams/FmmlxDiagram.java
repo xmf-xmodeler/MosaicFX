@@ -92,7 +92,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private transient Point2D dragStart;
 	private transient Point2D lastPointPressed;
 	private transient Point2D currentPointMoving;
-	private transient Point2D currentPointHover = new Point2D(0, 0);
+//	private transient Point2D currentPointHover = new Point2D(0, 0);
 	private transient Affine dragAffine = new Affine();
 	private transient MouseMode mouseMode = MouseMode.STANDARD;
 	private transient FmmlxObject newEdgeSource;
@@ -918,7 +918,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		private transient CanvasElement lastElementUnderMouse = null;
 
 		private void mouseMoved(MouseEvent e) {
-			currentPointHover = new Point2D(e.getX(), e.getY());
+//			currentPointHover = new Point2D(e.getX(), e.getY());
 			
 //			Point2D p = scale(e);
 			if (mouseMode == MouseMode.DRAW_EDGE) {

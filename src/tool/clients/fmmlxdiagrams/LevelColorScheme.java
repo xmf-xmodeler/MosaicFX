@@ -105,6 +105,7 @@ public abstract class LevelColorScheme {
 				case 7: return mix(B, BG, opacity);
 				case 8: return mix(C, BG, opacity);
 				case 9: return mix(D, BG, opacity);
+				case -1: return mix(Color.DARKRED, BG, opacity);
 				default: return mix(G, BG, opacity);
 			}
 		}
@@ -125,6 +126,7 @@ public abstract class LevelColorScheme {
 				case 3: return D;
 				case 4: return E;
 				case 5: return F;
+				case -1: return Color.LIGHTYELLOW;
 				default: return Color.BLACK;
 			}
 		}
