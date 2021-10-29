@@ -12,4 +12,8 @@ java -Xmx640m \
 :lib/xmlbeans-2.6.0.jar\
 :lib/kodkod.jar\
 :lib/org.eclipse.draw2d_3.5.0.jar\
+:lib/batik-all-1.14.jar\
+:lib/batik-xml-1.14.jar\
+:lib/xml-apis-ext-1.3.04.jar\
+:lib/xmlgraphics-commons-2.6.jar\
 :lib/richtextfx-fat-0.8.1.jar tool.xmodeler.XModeler ./ini-linux.txt
