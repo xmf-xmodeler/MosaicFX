@@ -242,6 +242,13 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 				}
 			}
 		}
+		for (FmmlxObject ancestor : getAllAncestorsNextLevel()) {
+			for (FmmlxAttribute attribute : ancestor.getAllAttributes()) {
+				if (attribute.level == -1 && !slotNames.contains(attribute.name)) {
+					slotNames.add(attribute.name);
+				}
+			}
+		}
 		return slotNames;
 	}
 
@@ -276,6 +283,41 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		for (FmmlxObject o : result1) if (o.level != -1) {
 			result2.addAll(o.getAllAncestors());
 		}
+		return result2;
+	}
+	
+	public Vector<FmmlxObject> getAllAncestorsNextLevel() {
+		if("Root::XCore::Class".equals(ownPath)) return new Vector<FmmlxObject>();
+		Vector<FmmlxObject> result1 = new Vector<>();
+		if (ofPath != null) {
+			try{FmmlxObject of = diagram.getObjectByPath(getOfPath());result1.add(of);}
+			catch (PathNotFoundException e) {} // if(of==null){}
+		}
+//		for (String p : getParentsPaths()) {
+//			try
+//			  {FmmlxObject parent = diagram.getObjectByPath(p); result1.add(parent); }
+//			catch(PathNotFoundException e) {} // if(parent==null){}
+//		}
+		
+		Vector<FmmlxObject> result2 = new Vector<>(result1);
+		while(!result1.isEmpty()) {
+			FmmlxObject first = result1.firstElement();
+			result1.remove(0);
+			if(!result2.contains(first)) {
+				result2.add(first);
+			
+				for (String p : first.getParentsPaths()) {
+					try
+					  {FmmlxObject parent = diagram.getObjectByPath(p); 
+					  if(!result1.contains(parent)) result1.add(parent); }
+					catch(PathNotFoundException e) {} // if(parent==null){}
+				}
+			}
+		}
+		
+//		for (FmmlxObject o : result1) if (o.level != -1) {
+//			result2.addAll(o.getAllAncestors());
+//		}
 		return result2;
 	}
 

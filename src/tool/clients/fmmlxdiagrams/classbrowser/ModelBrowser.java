@@ -781,15 +781,16 @@ public final class ModelBrowser extends CustomStage {
 	}
 	
 	private Node getClassLevelGraphic(int level) {
-		if(level == -1) return null;
+//		if(level == -1) return null;
 		double SIZE = 16;
 		Canvas canvas = new Canvas(SIZE, SIZE);
-		Text temp = new Text(level+"");
+		String text = level == -1 ? "?" : (level+"");
+		Text temp = new Text(text);
 		GraphicsContext g = canvas.getGraphicsContext2D();
 		g.setFill(levelColorScheme.getLevelBgColor(level));
 		g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/2, SIZE/2);
 		g.setFill(levelColorScheme.getLevelFgColor(level, 1.));
-		g.fillText(level+"", 
+		g.fillText(text, 
 				SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
 				SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
 		return canvas;

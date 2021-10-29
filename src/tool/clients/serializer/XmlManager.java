@@ -609,7 +609,7 @@ public class XmlManager extends XmlHandler {
                     }
                 }
                 boolean isAbstract = Boolean.parseBoolean(logElement.getAttribute(SerializerConstant.ATTRIBUTE_IS_ABSTRACT));
-                comm.addNewInstance(diagramID, ofName, name, parents, isAbstract, 0, 0, false);
+                comm.addNewInstance(diagramID, ofName, name, -2, parents, isAbstract, 0, 0, false);
                 break;
             }
             case "changeOperationBody" : {

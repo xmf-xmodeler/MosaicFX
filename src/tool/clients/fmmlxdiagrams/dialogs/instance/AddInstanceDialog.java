@@ -22,6 +22,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	private TextField nameTextField;
 	private ListView<FmmlxObject> parentListView;
 	private ComboBox<FmmlxObject> ofComboBox;
+	private ComboBox<String> levelBox;
 	private CheckBox abstractCheckBox;
 	private ObservableList<FmmlxObject> parentList;
 	private final Vector<FmmlxObject> objects;
@@ -49,13 +50,15 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 		setResult();
 	}
 
-	private void layoutContent(FmmlxObject selectedObject) {
+	private void layoutContent(FmmlxObject selectedClass) {
 
 		ObservableList<FmmlxObject> ofList = getAllOfList();
 		nameTextField = new TextField();
 		abstractCheckBox = new CheckBox();
 		parentListView = initializeListView(parentList, SelectionMode.MULTIPLE);
 
+		levelBox = new ComboBox<>();
+		
 		ofComboBox = (ComboBox<FmmlxObject>) initializeComboBox(ofList);
 		ofComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue != null) {
@@ -64,18 +67,39 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 			}
 		});
 
-		if (selectedObject != null) {
-			setOf(selectedObject);
+		ofComboBox.getSelectionModel().selectedItemProperty().addListener((a,b,newClass) -> {
+			int level = newClass.getLevel();
+			if(level > 0) {
+				levelBox.getItems().clear();
+				Integer newLevel = level - 1;
+				levelBox.getItems().add(""+newLevel);
+				levelBox.setEditable(false);
+			} else if(level == -1){
+				levelBox.getItems().clear();
+				levelBox.getItems().add("-1");
+				levelBox.setEditable(true);
+			} else {
+				levelBox.getItems().clear();
+				levelBox.setEditable(false);
+			}
+		});
+		
+		if (selectedClass != null) {
+			setOf(selectedClass);
 			createAndSetParentList();
 			ofComboBox.setDisable(true);
-			setInstanceName(selectedObject);
+			setInstanceName(selectedClass);
 		}
 		ofComboBox.setPrefWidth(COLUMN_WIDTH);
+		
+
 
 		grid.add(new Label(StringValue.LabelAndHeaderTitle.name), 0, 0);
 		grid.add(nameTextField, 1, 0);
 		grid.add(new Label(StringValue.LabelAndHeaderTitle.of), 0, 1);
 		grid.add(ofComboBox, 1, 1);
+		grid.add(new Label(StringValue.LabelAndHeaderTitle.level), 0, 2);
+		grid.add(levelBox, 1, 2);
 		grid.add(new Label(StringValue.LabelAndHeaderTitle.abstractBig), 0, 3);
 		grid.add(abstractCheckBox, 1, 3);
 		grid.add(new Label(StringValue.LabelAndHeaderTitle.parent), 0, 4);
@@ -97,7 +121,9 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				return new AddInstanceDialogResult(nameTextField.getText(), selectedObject.getLevel() - 1,
+				Integer level = -1;
+				try{level = Integer.parseInt(levelBox.getSelectionModel().getSelectedItem()); } catch (Exception e) {}
+				return new AddInstanceDialogResult(nameTextField.getText(), level, 
 						parentListView.getSelectionModel().getSelectedItems(), selectedObject.getName(),
 						abstractCheckBox.isSelected());
 			}

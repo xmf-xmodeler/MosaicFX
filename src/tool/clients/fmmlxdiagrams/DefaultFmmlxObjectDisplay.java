@@ -65,7 +65,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		String ofName = (ofObj == null) ? "MetaClass" : ofObj.name;
 		
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65, diagram), null, object, NO_ACTION, "^" + ofName + "^", FontPosture.REGULAR, FontWeight.BOLD) ;
-		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight * 2, getLevelFontColor(.4, diagram), null, object, NO_ACTION, "" + object.level, FontPosture.REGULAR, FontWeight.BOLD, 2.);
+		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight * 2, getLevelFontColor(.4, diagram), null, object, NO_ACTION, "" + (-1==object.level?"?":object.level), FontPosture.REGULAR, FontWeight.BOLD, 2.);
 		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, getLevelFontColor(1., diagram), null, object, NO_ACTION, object.name, object.isAbstract()?FontPosture.ITALIC:FontPosture.REGULAR, FontWeight.BOLD);
 		header.addNodeElement(metaclassLabel);
 		header.addNodeElement(levelLabel);

@@ -1,14 +1,12 @@
 package tool.clients.fmmlxdiagrams;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Vector;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.canvas.Canvas;
-import org.w3c.dom.Element;
 
 public abstract class AbstractPackageViewer {
 	

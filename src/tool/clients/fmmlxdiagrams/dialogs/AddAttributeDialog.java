@@ -30,7 +30,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
 	private TextField nameTextField;
 	private TextField classTextField;
-	private ComboBox<Integer> levelComboBox;
+	private ComboBox<String> levelComboBox;
 	private ComboBox<String> typeComboBox;
 
 	private FmmlxObject selectedObject;
@@ -74,7 +74,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 				return new AddAttributeDialogResult(
 						selectedObject.getName(),
 						nameTextField.getText(),
-						levelComboBox.getSelectionModel().getSelectedItem(),
+						getIntLevel(),
 						getComboBoxStringValue(typeComboBox),
 						multiplicity);
 			}
@@ -83,6 +83,14 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
 	}
 
+
+	private Integer getIntLevel() {
+		try{
+			return Integer.parseInt(levelComboBox.getSelectionModel().getSelectedItem());
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 	private boolean validateUserInput() {
 		if (!validateName()) {
@@ -108,8 +116,8 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
 	private boolean validateLevel() {
 		Label errorLabel = getErrorLabel();
-
-		if (levelComboBox.getSelectionModel().getSelectedIndex() == -1) {
+		
+		if (getIntLevel() == null) {
 			errorLabel.setText(StringValue.ErrorMessage.selectLevel);
 			return false;
 		}
@@ -147,9 +155,14 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		classTextField = new TextField();
 		classTextField.setText(selectedObject.getName());
 		classTextField.setDisable(true);
-		levelComboBox = new ComboBox<>(AllValueList.getLevelInterval(selectedObject));
-		levelComboBox.setConverter(new IntegerStringConverter());
+//		levelComboBox = new ComboBox<>(AllValueList.getLevelInterval(selectedObject));
+//		levelComboBox.setConverter(new IntegerStringConverter());
+		levelComboBox = new ComboBox<>();
+		for(int i = selectedObject.getLevel() -1 ; i >= 0; i--) {
+			levelComboBox.getItems().add(""+i);
+		}
 		levelComboBox.getSelectionModel().selectLast();
+		if(selectedObject.getLevel() == -1) levelComboBox.setEditable(true);
 		typeComboBox = new ComboBox<>(typeList);
 		typeComboBox.setEditable(true);
 		multiplicityButton = new Button();

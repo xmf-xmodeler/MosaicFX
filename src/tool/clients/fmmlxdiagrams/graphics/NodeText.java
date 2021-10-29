@@ -39,8 +39,8 @@ public class NodeText extends NodeBaseElement{
 		}
 		setID(n);
 		readStyleAndColor(n);
-		if(bgColor == null) bgColor = Color.BLACK;
-		if(fgColor == null) fgColor = Color.TRANSPARENT;
+//		if(bgColor == null) bgColor = Color.BLACK;
+//		if(fgColor == null) fgColor = Color.TRANSPARENT;
 		
 //		for (int i = 0; i < n.getChildNodes().getLength(); i++) {
 //
@@ -59,8 +59,8 @@ public class NodeText extends NodeBaseElement{
 
 		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
 		
-		g.setFill(bgColor);
-		g.setStroke(fgColor.deriveColor(0., 1., 1., 0.5));
+//		g.setFill(bgColor);
+//		g.setStroke(fgColor.deriveColor(0., 1., 1., 0.5));
 		
 		paintOnLocal(g, textRootNode,this.x,this.y);
 		
@@ -130,34 +130,34 @@ public class NodeText extends NodeBaseElement{
 	public String toString() {
 		return "Text"+ (id==null?"":("("+id+")"));
 	}
-
-	private class TSpan{
-		
-		private Node n;
-		
-		public TSpan(Node n) {
-		 this.n=n;
-		}
-		
-		private String getText(){
-			Node o = n.getChildNodes().item(0);
-			return o.getNodeValue();
-		}
-		
-		private Double getX(){
-			Node o = n.getAttributes().getNamedItem("x");	
-			return Double.parseDouble(o.getNodeValue());
-		}
-		
-		private Double getY(){
-			Node o = n.getAttributes().getNamedItem("y");	
-			return Double.parseDouble(o.getNodeValue());
-		}
-		
-		private Style getStyle(){
-			Node styleNode = n.getAttributes().getNamedItem("style");
-			Style style = styleNode==null?new Style(""):new Style(styleNode.getNodeValue());
-			return style;
-		}		
-	}
+//
+//	private class TSpan{
+//		
+//		private Node n;
+//		
+//		public TSpan(Node n) {
+//		 this.n=n;
+//		}
+//		
+//		private String getText(){
+//			Node o = n.getChildNodes().item(0);
+//			return o.getNodeValue();
+//		}
+//		
+//		private Double getX(){
+//			Node o = n.getAttributes().getNamedItem("x");	
+//			return Double.parseDouble(o.getNodeValue());
+//		}
+//		
+//		private Double getY(){
+//			Node o = n.getAttributes().getNamedItem("y");	
+//			return Double.parseDouble(o.getNodeValue());
+//		}
+//		
+//		private Style getStyle(){
+//			Node styleNode = n.getAttributes().getNamedItem("style");
+//			Style style = styleNode==null?new Style(""):new Style(styleNode.getNodeValue());
+//			return style;
+//		}		
+//	}
 }

@@ -2,10 +2,7 @@ package tool.clients.fmmlxdiagrams.graphics;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.Vector;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
@@ -43,7 +40,7 @@ public class SVGReader {
 	}
 
 	static NodeGroup readSVG(File file, Affine affine) throws ParserConfigurationException, SAXException, IOException {
-		long start = System.currentTimeMillis(); 
+//		long start = System.currentTimeMillis(); 
 		
 		String parser = XMLResourceDescriptor.getXMLParserClassName();
 		SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
@@ -70,7 +67,7 @@ public class SVGReader {
 		Vector<NodeElement> children = readChildren(myRootSVGElement, myRootSVGElement);
 		System.err.println("ende svgReader");
 		g.addAllNodeElements(children);
-		System.err.println(System.currentTimeMillis() - start);
+//		System.err.println(System.currentTimeMillis() - start);
 		return g;		
 	}
 
@@ -146,5 +143,4 @@ public class SVGReader {
 			}
 		}
 	}
-
 }
