@@ -2,9 +2,6 @@ package tool.helper;
 
 import java.util.Vector;
 
-import com.sun.javafx.geom.transform.Affine3D;
-import com.sun.javafx.geom.transform.BaseTransform;
-
 import javafx.application.Application;
 import javafx.event.Event;
 import javafx.geometry.Point2D;

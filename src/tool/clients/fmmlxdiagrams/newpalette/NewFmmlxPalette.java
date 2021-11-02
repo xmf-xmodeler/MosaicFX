@@ -1,6 +1,5 @@
 package tool.clients.fmmlxdiagrams.newpalette;
 
-import com.sun.prism.paint.Paint;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.TreeCell;
