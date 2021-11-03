@@ -51,7 +51,7 @@ public class XModeler extends Application {
   // XModeler is a tool that controls and is controlled by the XMF VM that runs
   // on the XMF operating system.
 	
-  private static Integer DEVICE_ZOOM_PERCENT = null;
+//  private static Integer DEVICE_ZOOM_PERCENT = null;
 
   static XModeler singleton = null;
   
@@ -136,10 +136,9 @@ public class XModeler extends Application {
     return encoded.toString();
   }
 
+  @Deprecated
   public static int getDeviceZoomPercent() {
-    if (DEVICE_ZOOM_PERCENT == null) DEVICE_ZOOM_PERCENT = 100;
-    return DEVICE_ZOOM_PERCENT;
-    // return(display.getDPI().x*100/96);
+    return 100;
   }
 
   private static String getImage(String[] args) {

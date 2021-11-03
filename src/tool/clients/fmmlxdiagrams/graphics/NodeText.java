@@ -19,7 +19,6 @@ import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeText extends NodeBaseElement{
 	
-//	Vector<TSpan> spans = new Vector<TSpan>();
 	final SVGOMTextElement textRootNode;
 	private SVGOMSVGElement root;
 	private double x,y;
@@ -30,7 +29,7 @@ public class NodeText extends NodeBaseElement{
 		this.textRootNode = n;
 		this.action= ()->{};
 		Node transformNode = n.getAttributes().getNamedItem("transform");
-		this.myTransform = transformNode==null?new Affine():TransformReader.getTransform(transformNode.getNodeValue());
+		this.myTransform = transformNode==null?new Affine():SVGReader.readTransform(transformNode.getNodeValue());
 		try{
 			this.x = Double.parseDouble(n.getAttributes().getNamedItem("x").getNodeValue());
 			this.y = Double.parseDouble(n.getAttributes().getNamedItem("y").getNodeValue());
@@ -38,38 +37,13 @@ public class NodeText extends NodeBaseElement{
 			x = 0; y = 0;
 		}
 		setID(n);
-		readStyleAndColor(n);
-//		if(bgColor == null) bgColor = Color.BLACK;
-//		if(fgColor == null) fgColor = Color.TRANSPARENT;
-		
-//		for (int i = 0; i < n.getChildNodes().getLength(); i++) {
-//
-//			Node o = n.getChildNodes().item(i);
-//
-//			if ("tspan".equals(o.getNodeName())) {
-//				TSpan span = new TSpan(o);
-//				spans.add(span);
-//			}
-//		}
 	}
 	
 	@Override
 	public void paintOn(View diagramView, boolean objectIsSelected) {
 		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
-
 		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
-		
-//		g.setFill(bgColor);
-//		g.setStroke(fgColor.deriveColor(0., 1., 1., 0.5));
-		
 		paintOnLocal(g, textRootNode,this.x,this.y);
-		
-		
-		
-//		for(TSpan span : spans) {
-//			g.fillText(  span.getText(), span.getX(), span.getY());
-//			g.strokeText(span.getText(), span.getX(), span.getY());
-//		}				
 	}
 
 	private void paintOnLocal(GraphicsContext g, SVGOMElement parentNode, double x, double y) {
@@ -130,34 +104,4 @@ public class NodeText extends NodeBaseElement{
 	public String toString() {
 		return "Text"+ (id==null?"":("("+id+")"));
 	}
-//
-//	private class TSpan{
-//		
-//		private Node n;
-//		
-//		public TSpan(Node n) {
-//		 this.n=n;
-//		}
-//		
-//		private String getText(){
-//			Node o = n.getChildNodes().item(0);
-//			return o.getNodeValue();
-//		}
-//		
-//		private Double getX(){
-//			Node o = n.getAttributes().getNamedItem("x");	
-//			return Double.parseDouble(o.getNodeValue());
-//		}
-//		
-//		private Double getY(){
-//			Node o = n.getAttributes().getNamedItem("y");	
-//			return Double.parseDouble(o.getNodeValue());
-//		}
-//		
-//		private Style getStyle(){
-//			Node styleNode = n.getAttributes().getNamedItem("style");
-//			Style style = styleNode==null?new Style(""):new Style(styleNode.getNodeValue());
-//			return style;
-//		}		
-//	}
 }

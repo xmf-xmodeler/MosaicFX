@@ -38,7 +38,6 @@ import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerat
 import tool.clients.importer.FMMLxImporter;
 import tool.clients.serializer.FmmlxSerializer;
 import tool.xmodeler.XModeler;
-import xos.Value;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;

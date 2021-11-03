@@ -1,7 +1,5 @@
 package tool.clients.editors.texteditor;
 
-import java.io.File;
-
 import tool.clients.editors.EditorClient;
 import xos.Message;
 import xos.Value;

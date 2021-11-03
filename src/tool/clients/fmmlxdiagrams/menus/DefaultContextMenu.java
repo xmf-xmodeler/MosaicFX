@@ -3,20 +3,22 @@ package tool.clients.fmmlxdiagrams.menus;
 import javafx.scene.control.*;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
 
 import java.util.Optional;
 import java.util.Vector;
 
 public class DefaultContextMenu extends ContextMenu {
 
-	public DefaultContextMenu(FmmlxDiagram diagram) {
+	public DefaultContextMenu(DiagramViewPane view) {
+		FmmlxDiagram diagram = view.getDiagram();
 		DiagramActions actions = diagram.getActions();
 		setAutoHide(true);
 
 		MenuItem addClassItem = new MenuItem("Add Class");
-		addClassItem.setOnAction(e -> actions.addMetaClassDialog(diagram.getCanvas()));
+		addClassItem.setOnAction(e -> actions.addMetaClassDialog(view.getCanvas()));
 		MenuItem addInstanceItem = new MenuItem("Add Instance");
-		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(diagram.getCanvas()));
+		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(view.getCanvas()));
 		
 		// Submenu for association
 //		Menu associationMenu = new Menu("Association");

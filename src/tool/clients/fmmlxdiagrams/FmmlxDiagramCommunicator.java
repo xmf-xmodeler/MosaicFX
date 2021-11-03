@@ -14,7 +14,6 @@ import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.FmmlxSerializer;
 import tool.clients.serializer.XmlManager;
-import tool.clients.xmlManipulator.XmlHandler;
 import tool.clients.workbench.WorkbenchClient;
 import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;

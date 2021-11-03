@@ -25,28 +25,16 @@ public abstract class NodeBaseElement extends NodeElement {
 		public void perform();
 	}
 
-//	public NodeBaseElement(double x, double y, FmmlxProperty actionObject, Action action) {
-//		this.myTransform = new Affine(1,0,x,0,1,y);
-//		this.actionObject = actionObject;
-//		this.action = action;
-//	}
-	
 	public NodeBaseElement(Affine myTransform, CSSStyleDeclaration styleDeclaration, FmmlxProperty actionObject, Action action) {
 		this.myTransform = myTransform;
 		this.actionObject = actionObject;
 		this.action = action;
 		this.styleDeclaration = styleDeclaration;
 	}
-	
-//	public NodeBaseElement() {
-//		this.styleDeclaration = null;
-//	}
 
-	//protected Affine myTransform = new Affine(); // where to be painted if the zoom were 1 and the origin has not moved
 	protected FmmlxProperty actionObject;
 	protected Action action;
 	protected boolean selected = false;
-	//private NodeElement owner;
 		
 	public void setSelected() { selected = true;}
 	public void setDeselected() { selected = false;}
@@ -59,15 +47,13 @@ public abstract class NodeBaseElement extends NodeElement {
 	
 	public void performDoubleClickAction() { action.perform();}
 	
-	//public final Affine getMyTransform() {	return myTransform; }
-	
 	public Affine getTotalTransform(Affine canvasTransform) {
 		Affine a = new Affine(owner == null?canvasTransform:owner.getTotalTransform(canvasTransform));
 		a.append(myTransform);
 		return a;
 	}
 	
-	protected void readStyleAndColor(Node n) {
+	/*protected void readStyleAndColor(Node n) {
 		Node styleNode = n.getAttributes().getNamedItem("style");
 		style = styleNode==null?new Style(""):new Style(styleNode.getNodeValue());
 		
@@ -86,7 +72,7 @@ public abstract class NodeBaseElement extends NodeElement {
 		
 		
 		this.fgColor = style.getStrokeColor();
-	}
+	}*/
 
 	public void setOwner(NodeElement owner) {
 		this.owner = owner;

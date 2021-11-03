@@ -162,7 +162,6 @@ public class GraphViz {
 
   public Node addNode(String id) {
     if (!hasNode(id)) {
-      Node node = new Node(id);
       nodes.add(new Node(id));
     }
     return getNode(id);

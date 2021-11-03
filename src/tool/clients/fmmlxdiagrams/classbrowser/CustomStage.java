@@ -11,7 +11,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import tool.helper.IconGenerator;
-import tool.xmodeler.XModeler;
 
 public abstract class CustomStage extends Stage{
 
