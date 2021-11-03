@@ -1,6 +1,6 @@
 package tool.clients.editors.texteditor;
 
-import org.eclipse.jface.window.DefaultToolTip;
+//import org.eclipse.jface.window.DefaultToolTip;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tool.clients.editors.EditorClient;
@@ -69,7 +69,7 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
   String                  label;
 //  StyledText              text;
 //  FontData                fontData;
-  DefaultToolTip          toolTip;
+//  DefaultToolTip          toolTip;
   Signature               signature      = new Signature();
   LineStyler              lineStyler     = new LineStyler(this);
   Vector<Integer>         highlights     = new Vector<>();

@@ -15,8 +15,6 @@ import javafx.scene.transform.Transform;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.xmlManipulator.XmlHandler;
 
-
-
 public abstract class NodeElement {
 
 	protected Affine myTransform; // where to be painted if the zoom were 1 and the origin has not moved
@@ -55,7 +53,6 @@ public abstract class NodeElement {
 			myTransform = new Affine();
 		}
 		return myTransform; 
-		
 	}
     
     /**

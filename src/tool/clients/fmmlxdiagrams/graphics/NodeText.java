@@ -7,7 +7,6 @@ import org.apache.batik.anim.dom.SVGOMTextElement;
 import org.apache.batik.dom.GenericText;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.css.CSSStyleDeclaration;
 
 import javafx.geometry.Bounds;
 import javafx.scene.canvas.GraphicsContext;
@@ -20,12 +19,10 @@ import tool.clients.xmlManipulator.XmlHandler;
 public class NodeText extends NodeBaseElement{
 	
 	final SVGOMTextElement textRootNode;
-	private SVGOMSVGElement root;
 	private double x,y;
 	
 	public NodeText(SVGOMTextElement n, SVGOMSVGElement root) {
 		super(SVGReader.readTransform(n), root.getComputedStyle(n, null), null, () -> {});
-		this.root = root;
 		this.textRootNode = n;
 		this.action= ()->{};
 		Node transformNode = n.getAttributes().getNamedItem("transform");
@@ -51,8 +48,6 @@ public class NodeText extends NodeBaseElement{
 			Node n = parentNode.getChildNodes().item(i);
 			if(n instanceof GenericText) {
 				GenericText gt = (GenericText) n;
-				
-				CSSStyleDeclaration styleDeclaration = root.getComputedStyle(parentNode, null);
 				
 				String fillColor = styleDeclaration.getPropertyValue("fill");
 				g.setFill(Color.web(fillColor));

@@ -1,12 +1,12 @@
 package tool.clients.oleBridge;
 
-import org.eclipse.ui.IStartup;
+//import org.eclipse.ui.IStartup;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class OleStartup.
  */
-public class OleStartup implements IStartup {
+public class OleStartup { //implements IStartup {
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IStartup#earlyStartup()
