@@ -7,6 +7,51 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JavaFX17">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/lucam/Documents/Dokumente/UMO/XModeler Entwicklung/javafx-sdk-17.0.1/lib/javafx.base.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/lucam/Documents/Dokumente/UMO/XModeler Entwicklung/javafx-sdk-17.0.1/lib/javafx.controls.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/lucam/Documents/Dokumente/UMO/XModeler Entwicklung/javafx-sdk-17.0.1/lib/javafx.fxml.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/lucam/Documents/Dokumente/UMO/XModeler Entwicklung/javafx-sdk-17.0.1/lib/javafx.graphics.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/lucam/Documents/Dokumente/UMO/XModeler Entwicklung/javafx-sdk-17.0.1/lib/javafx.media.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/lucam/Documents/Dokumente/UMO/XModeler Entwicklung/javafx-sdk-17.0.1/lib/javafx.swing.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/lucam/Documents/Dokumente/UMO/XModeler Entwicklung/javafx-sdk-17.0.1/lib/javafx.web.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/lucam/Documents/Dokumente/UMO/XModeler Entwicklung/javafx-sdk-17.0.1/lib/javafx-swt.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/jacob-1.14.3.jar"/>
 	<classpathentry kind="lib" path="lib/kodkod.jar"/>
 	<classpathentry kind="lib" path="lib/batik-all-1.14.jar"/>
@@ -15,13 +60,5 @@
 	<classpathentry kind="lib" path="lib/xmlgraphics-commons-2.6.jar"/>
 	<classpathentry kind="lib" path="lib/richtextfx-fat-0.8.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JavaFX"/>
-	<classpathentry kind="lib" path="lib/javafx.base.jar"/>
-	<classpathentry kind="lib" path="lib/javafx.controls.jar"/>
-	<classpathentry kind="lib" path="lib/javafx.fxml.jar"/>
-	<classpathentry kind="lib" path="lib/javafx.graphics.jar"/>
-	<classpathentry kind="lib" path="lib/javafx.media.jar"/>
-	<classpathentry kind="lib" path="lib/javafx.swing.jar"/>
-	<classpathentry kind="lib" path="lib/javafx.web.jar"/>
-	<classpathentry kind="lib" path="lib/javafx-swt.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
