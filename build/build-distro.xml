@@ -191,6 +191,8 @@
 				<include name="setting/**" />
 				<exclude name="**/.DS_Store" />
 				<include name="resources/**" />
+				<include name="javafx/bin/*.dll" />
+				<include name="javafx/lib/*.jar" />
 			</zipfileset>
 			<zipfileset dir="./output/" prefix="${prefix}">
 				<!-- ini files -->
