@@ -36,8 +36,8 @@ public class CurrencyRates {
 				}
 			}
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			System.err.println("Unable to get exchange rates: " + e.getMessage());
 		}
-		throw new RuntimeException();
+		return 1;
 	}
 }
