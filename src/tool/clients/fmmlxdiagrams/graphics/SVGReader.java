@@ -38,7 +38,7 @@ public class SVGReader {
 		readSVG("A:\\testsvg.svg", new Affine());
 	}
 
-	public static NodeGroup readSVG(String fileName, Affine affine) throws ParserConfigurationException, SAXException, IOException {
+	public static SVGGroup readSVG(String fileName, Affine affine) throws ParserConfigurationException, SAXException, IOException {
 		return readSVG(new File(fileName), affine);
 	}
 

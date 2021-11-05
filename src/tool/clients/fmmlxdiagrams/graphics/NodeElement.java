@@ -88,5 +88,11 @@ public abstract class NodeElement {
 		this.id = ("".equals(id) || id == null)?null:node.getId();
 	}
 	
-
+	// Anchor is CENTRE by default.
+	// if not, the reference frame is shifted by the difference of the corner/side and the centre.   
+	public static enum Anchor {
+		NORTHWEST,   NORTH,  NORTHEAST,
+             WEST,   CENTRE,      EAST, 
+		SOUTHWEST,   SOUTH,  SOUTHEAST;
+	}
 }
