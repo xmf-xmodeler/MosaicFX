@@ -10,18 +10,12 @@ import org.apache.batik.bridge.DocumentLoader;
 import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgent;
 import org.apache.batik.bridge.UserAgentAdapter;
-import org.apache.batik.ext.awt.geom.ExtendedGeneralPath;
-import org.apache.batik.gvt.CanvasGraphicsNode;
-import org.apache.batik.gvt.CompositeGraphicsNode;
-import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.gvt.RootGraphicsNode;
-import org.apache.batik.gvt.ShapeNode;
 import org.apache.batik.parser.AWTTransformProducer;
 import org.apache.batik.parser.TransformListParser;
 import org.apache.batik.util.XMLResourceDescriptor;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGElement;
 import org.w3c.dom.svg.SVGMatrix;

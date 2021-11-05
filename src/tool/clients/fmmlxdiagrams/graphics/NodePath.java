@@ -1,8 +1,11 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
+import org.apache.batik.anim.dom.SVGOMCircleElement;
+import org.apache.batik.anim.dom.SVGOMEllipseElement;
 import org.apache.batik.anim.dom.SVGOMLineElement;
 import org.apache.batik.anim.dom.SVGOMPathElement;
 import org.apache.batik.anim.dom.SVGOMPolygonElement;
+import org.apache.batik.anim.dom.SVGOMRectElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.w3c.dom.Element;
 import org.w3c.dom.css.CSSStyleDeclaration;
@@ -39,7 +42,7 @@ public class NodePath extends NodeBaseElement{
 	}
 
 	public NodePath(SVGOMPathElement n, SVGOMSVGElement root) {
-		super(n.getAttributes().getNamedItem("transform")==null?new Affine():TransformReader.getTransform(n.getAttributes().getNamedItem("transform").getNodeValue()), 
+		super(n.getAttributes().getNamedItem("transform")==null?new Affine():SVGReader.readTransform(n.getAttributes().getNamedItem("transform").getNodeValue()), 
 				root.getComputedStyle(n, null), null, ()->{});
 		this.type = "Path";
 		this.action= ()->{};
@@ -53,7 +56,7 @@ public class NodePath extends NodeBaseElement{
 
 	public static NodePath line(SVGOMLineElement n, SVGOMSVGElement root) {
 		CSSStyleDeclaration styleDeclaration = root.getComputedStyle(n, null);
-		NodePath newPath = new NodePath(new Affine(), 
+		NodePath newPath = new NodePath(SVGReader.readTransform(n), 
 				"M "  + n.getAttributes().getNamedItem("x1").getNodeValue() +
 				","   + n.getAttributes().getNamedItem("y1").getNodeValue() + 
 				" L " + n.getAttributes().getNamedItem("x2").getNodeValue() +
@@ -78,7 +81,7 @@ public class NodePath extends NodeBaseElement{
 		completeString += "z";
 		
 		CSSStyleDeclaration styleDeclaration = root.getComputedStyle(n, null);
-		NodePath newPath = new NodePath(new Affine(), completeString, null, ()->{}, styleDeclaration, "Polygon");
+		NodePath newPath = new NodePath(SVGReader.readTransform(n), completeString, null, ()->{}, styleDeclaration, "Polygon");
 		newPath.setID(n);
 		return newPath;
 	}
@@ -158,4 +161,71 @@ public class NodePath extends NodeBaseElement{
 	public String toString() {
 		return type + (id==null?"":("("+id+")"));
 	}
+	
+	public static NodePath circle(SVGOMCircleElement n, SVGOMSVGElement rootNode) {
+		double cx, cy, rx;
+		cx = Double.parseDouble(n.getAttributes().getNamedItem("cx").getNodeValue());
+		cy = Double.parseDouble(n.getAttributes().getNamedItem("cy").getNodeValue());
+		rx = Double.parseDouble(n.getAttributes().getNamedItem("r").getNodeValue());
+		
+		String path = getEllipsePath(cx, cy, rx, rx);
+
+		NodePath nE = new NodePath(SVGReader.readTransform(n), path, null, () -> {}, rootNode.getComputedStyle(n, null), "Circle");
+		nE.setID(n);
+		return nE;
+	}
+	
+	public static NodePath ellipse(SVGOMEllipseElement n, SVGOMSVGElement rootNode) {
+		double cx, cy, rx, ry;
+		cx = Double.parseDouble(n.getAttributes().getNamedItem("cx").getNodeValue());
+		cy = Double.parseDouble(n.getAttributes().getNamedItem("cy").getNodeValue());
+		rx = Double.parseDouble(n.getAttributes().getNamedItem("rx").getNodeValue());
+		ry = Double.parseDouble(n.getAttributes().getNamedItem("ry").getNodeValue());
+
+		String path = getEllipsePath(cx, cy, rx, ry);
+				
+		NodePath nE = new NodePath(SVGReader.readTransform(n), path,  null, () -> {}, rootNode.getComputedStyle(n, null),"Ellipse");
+		nE.setID(n);
+		return nE;	
+	}
+	
+	private static String getEllipsePath(double cx, double cy, double rx, double ry) {
+		String s = "M " + cx +" " + cy + " m -"+rx + " 0 ";
+		s = s+" a "+ rx + " " + ry + " 0 1 0 " + rx + " -" + ry ;
+		s = s+" a "+ rx + " " + ry + " 0 1 0 " + rx + " " + ry ;
+		s = s+" a "+ rx + " " + ry + " 0 1 0 -" + rx + " " + ry ;
+		s = s+" a "+ rx + " " + ry + " 0 1 0 -" + rx + " -" + ry ;
+		return s;
+	}
+	
+	public static NodePath rectangle(SVGOMRectElement n, SVGOMSVGElement rootNode) {
+		double x, y, rx = 0, ry = 0, width, height;
+		x = Double.parseDouble(n.getAttributes().getNamedItem("x").getNodeValue());
+		y = Double.parseDouble(n.getAttributes().getNamedItem("y").getNodeValue());
+		if (n.getAttributes().getNamedItem("rx")!=null) {
+			rx = Double.parseDouble(n.getAttributes().getNamedItem("rx").getNodeValue());
+		} 
+		if (n.getAttributes().getNamedItem("rx")!=null) {
+			ry = Double.parseDouble(n.getAttributes().getNamedItem("ry").getNodeValue());
+		}
+		width = Double.parseDouble(n.getAttributes().getNamedItem("width").getNodeValue());
+		height = Double.parseDouble(n.getAttributes().getNamedItem("height").getNodeValue());		
+		
+		String path="M " + x + " " + y;
+		path=path + " m " + rx + " " + 0;
+		path=path + " l " + (width - 2*rx)+ " " +0;
+		if(rx>0 || ry >0) path=path + " a " + rx + " " + ry + " 0 0 1 " + rx + " " + ry;
+		path=path + " l " + 0 + " " + (height -2*ry);
+		if(rx>0 || ry >0) path=path + " a " + rx + " " + ry + " 0 0 1 " + " "+ (-rx) + " " + ry;
+		path=path + " l " + " " + (-(width - 2*rx))+ " " +0;
+		if(rx>0 || ry >0) path=path + " a " + rx + " " + ry + " 0 0 1 " + " " + (-rx) + " " + (-ry);
+		path=path + " l " + 0 + " " + (-(height -2*ry));
+		if(rx>0 || ry >0) path=path + " a " + rx + " " + ry + " 0 0 1 " + " " + rx + " " + (-ry);
+
+		
+		NodePath nR = new NodePath(SVGReader.readTransform(n), path,  null, ()->{}, rootNode.getComputedStyle(n, null), "Rectangle");
+		nR.setID(n);
+		return nR;
+	}
+	
 }

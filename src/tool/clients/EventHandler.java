@@ -1,7 +1,6 @@
 package tool.clients;
 
 import xos.Message;
-import xos.Value;
 
 public class EventHandler {
 

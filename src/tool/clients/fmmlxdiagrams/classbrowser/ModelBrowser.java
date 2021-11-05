@@ -924,13 +924,10 @@ public final class ModelBrowser extends CustomStage {
 		parentMenu.getItems().add(item);
 	}
 	
-	private void notYetImplemented() {
-		new javafx.scene.control.Alert(AlertType.ERROR, "Not yet implemented", ButtonType.CANCEL).showAndWait(); return;
-	}
-	
 	private interface Enabler {
 		boolean isEnabled();
 	}
+	
 	private static final Enabler ALWAYS = () -> true; 
 	private static final Enabler NEVER = () -> false; 
 }

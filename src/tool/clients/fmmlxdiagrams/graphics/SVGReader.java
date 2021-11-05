@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
@@ -22,6 +23,8 @@ import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgent;
 import org.apache.batik.bridge.UserAgentAdapter;
 import org.apache.batik.gvt.RootGraphicsNode;
+import org.apache.batik.parser.AWTTransformProducer;
+import org.apache.batik.parser.TransformListParser;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -88,10 +91,10 @@ public class SVGReader {
 				NodePath nP = new NodePath((SVGOMPathElement) n, rootNode);
 				vec.add(nP);
 			} else if("circle".contentEquals(n.getNodeName())) {
-				NodeEllipse nE = NodeEllipse.circle((SVGOMCircleElement) n, rootNode);
+				NodePath nE = NodePath.circle((SVGOMCircleElement) n, rootNode);
 				vec.add(nE);
 			} else if("ellipse".contentEquals(n.getNodeName())) {
-				NodeEllipse nE = NodeEllipse.ellipse((SVGOMEllipseElement) n, rootNode);
+				NodePath nE = NodePath.ellipse((SVGOMEllipseElement) n, rootNode);
 				vec.add(nE);
 			} else if("polygon".contentEquals(n.getNodeName())) {
 				NodePath nP = NodePath.polygon((SVGOMPolygonElement) n, rootNode);
@@ -100,7 +103,7 @@ public class SVGReader {
 				NodePath nP = NodePath.line((SVGOMLineElement) n, rootNode);
 				vec.add(nP);			
 			} else if("rect".contentEquals(n.getNodeName())) {
-				NodeRectangle nR = NodeRectangle.rectangle((SVGOMRectElement) n, rootNode);
+				NodePath nR = NodePath.rectangle((SVGOMRectElement) n, rootNode);
 				vec.add(nR);
 			} else if("text".contentEquals(n.getNodeName())) {
 				NodeText nT = new NodeText((SVGOMTextElement) n, rootNode);
@@ -109,7 +112,6 @@ public class SVGReader {
 			} else {
 				System.err.println("Child ("+n.getNodeName()+") not recognized: " + parentNode + ":" + n + " of " + n.getClass().getSimpleName());
 			}
-			/// "line" --> org.apache.batik.anim.dom.SVGOMLineElement
 		}
 
 		return vec;
@@ -118,10 +120,20 @@ public class SVGReader {
 
 	public static Affine readTransform(Node n) {
 		Node transformNode = n.getAttributes().getNamedItem("transform");
-		if(transformNode==null) return new Affine();
-//		String transformString = transformNode.getNodeValue();
-		
-		return transformNode==null?new Affine():TransformReader.getTransform(transformNode.getNodeValue());
+		if(transformNode==null) return new Affine();		
+		return transformNode==null?new Affine():readTransform(transformNode.getNodeValue());
+	}
+	
+	public static Affine readTransform(String transformString) {
+		TransformListParser p = new TransformListParser();
+        AWTTransformProducer tp = new AWTTransformProducer();
+        p.setTransformListHandler(tp);
+        p.parse(transformString);
+        AffineTransform m1 = tp.getAffineTransform();
+        double[] m = new double[6];
+        m1.getMatrix(m);
+        
+        return new Affine(m[0], m[2], m[4], m[1], m[3], m[5]);
 	}
 	
 	public static double parseLength(String strokeWidth, Double percentBase){

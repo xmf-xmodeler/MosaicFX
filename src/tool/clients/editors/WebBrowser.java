@@ -38,7 +38,7 @@ public class WebBrowser {
     //exposed
     protected CompletableFuture<VBox> getBrowserVBox(String url, String text) {
         CompletableFuture<VBox> result = new CompletableFuture<>();
-        result.runAsync(() -> {
+        CompletableFuture.runAsync(() -> {
             Platform.runLater(() -> {
                 createBrowser(url, text);
                 result.complete(browserVBox);

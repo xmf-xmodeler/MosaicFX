@@ -24,12 +24,12 @@ public class ObjectContextMenu extends ContextMenu {
 		this.diagram = view.getDiagram();
 		this.actions = diagram.getActions();
 		this.object = object;
-		NodeBaseElement nl = this.object.getHitLabel(relativePoint, view.getCanvas().getGraphicsContext2D(), diagram.getCanvasTransform(), view);
+		NodeBaseElement nl = this.object.getHitLabel(relativePoint, view.getCanvas().getGraphicsContext2D(), view.getCanvasTransform(), view);
 		activeProperty = nl==null?null:nl.getActionObject();
 		setAutoHide(true);
 
 		MenuItem addInstanceItem = new MenuItem("Add instance");
-		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object, diagram.getCanvas()));
+		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object, view.getCanvas()));
 		if((object.getLevel() >= 1 || object.getLevel() == -1) && !object.isAbstract()) getItems().add(addInstanceItem);
 		
 		MenuItem removeItem = new MenuItem("Remove");

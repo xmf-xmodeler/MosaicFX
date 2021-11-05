@@ -1094,7 +1094,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					selectedObjects.add(hitObject);
 				}
 			} else {
-				activeContextMenu = new DefaultContextMenu(FmmlxDiagram.this);
+				activeContextMenu = new DefaultContextMenu(this);
 			}
 			showContextMenu(e);
 		}

@@ -356,7 +356,7 @@ public class FormsClient extends Client {
 		String parentId = message.args[0].strValue();
 		String id = message.args[1].strValue();
 		String label = message.args[2].strValue();
-		int zoom = getDeviceZoomPercent();
+//		int zoom = getDeviceZoomPercent();
 		newButton(parentId, id, label);
 	}
 
@@ -377,7 +377,7 @@ public class FormsClient extends Client {
 	private void newCheckBox(Message message) {
 		String parentId = message.args[0].strValue();
 		String id = message.args[1].strValue();
-		int zoom = getDeviceZoomPercent();
+//		int zoom = getDeviceZoomPercent();
 		boolean checked = message.args[2].boolValue;
 		String labelText = message.args[3].strValue();
 		newCheckBox(parentId, id, checked, labelText);
@@ -400,7 +400,7 @@ public class FormsClient extends Client {
 	private void newComboBox(Message message) {
 		String parentId = message.args[0].strValue();
 		String id = message.args[1].strValue();
-		int zoom = getDeviceZoomPercent();
+//		int zoom = getDeviceZoomPercent();
 		newComboBox(parentId, id);
 	}
 
@@ -516,7 +516,7 @@ public class FormsClient extends Client {
 	private void newList(Message message) {
 		String parentId = message.args[0].strValue();
 		String id = message.args[1].strValue();
-		int zoom = getDeviceZoomPercent();
+//		int zoom = getDeviceZoomPercent();
 		String labelText = message.args[2].strValue();
 		newList(parentId, id, labelText);
 	}
@@ -554,7 +554,7 @@ public class FormsClient extends Client {
 		String parentId = message.args
 				[0].strValue();
 		String id = message.args[1].strValue();
-		int zoom = getDeviceZoomPercent();
+//		int zoom = getDeviceZoomPercent();
 		boolean editable = message.args[2].boolValue;
 		String labelText = message.args[3].strValue();
 		newTextBox(parentId, id, editable, labelText);
@@ -577,7 +577,7 @@ public class FormsClient extends Client {
 	private void newTextField(Message message) {
 		String parentId = message.args[0].strValue();
 		String id = message.args[1].strValue();
-		int zoom = getDeviceZoomPercent();
+//		int zoom = getDeviceZoomPercent();
 		boolean editable = message.args[2].boolValue;
 		String labelText = message.args[3].strValue();
 		newTextField(parentId, id, editable, labelText);
@@ -603,7 +603,7 @@ public class FormsClient extends Client {
 	private void newTree(Message message) {
 		String parentId = message.args[0].strValue();
 		String id = message.args[1].strValue();
-		int zoom = getDeviceZoomPercent();
+//		int zoom = getDeviceZoomPercent();
 		boolean editable = message.args[6].boolValue;
 		newTree(parentId, id, editable);
 	}

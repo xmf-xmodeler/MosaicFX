@@ -1,8 +1,6 @@
 package tool.clients.editors.texteditor;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Vector;
 
 import javafx.scene.canvas.GraphicsContext;
@@ -52,10 +50,10 @@ public class SignatureEntry implements Comparable<SignatureEntry> {
 //      toggle();
 //    else textEditor.setSelection(start+100);
 //  }
-
-  private void toggle() {
-    isOpen = !isOpen;
-  }
+//
+//  private void toggle() {
+//    isOpen = !isOpen;
+//  }
 
   public String getLabel() {
     if (children.isEmpty())

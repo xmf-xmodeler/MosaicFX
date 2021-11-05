@@ -1,12 +1,12 @@
 package tool.clients.undo;
 
-import org.eclipse.ui.IStartup;
+//import org.eclipse.ui.IStartup;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class UndoStartup.
  */
-public class UndoStartup implements IStartup {
+public class UndoStartup { //implements IStartup {
 	
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IStartup#earlyStartup()
