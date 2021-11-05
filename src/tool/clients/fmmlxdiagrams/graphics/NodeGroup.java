@@ -19,6 +19,10 @@ import tool.clients.xmlManipulator.XmlHandler;
 public class NodeGroup extends NodeElement {
 	
 	protected Vector<NodeElement> nodeElements = new Vector<>();
+	
+	/*
+	 * This should be on a higher level, as only the whole group can be dragged
+	 */
 	private transient Affine dragAffine;
 	
 	public NodeGroup(Affine myTransform) {
@@ -27,15 +31,13 @@ public class NodeGroup extends NodeElement {
 		updateBounds();
 	}
 	
-//	public NodeGroup() {
-//		myTransform = new Affine();
-//	}
+	public NodeGroup() {
+		myTransform = new Affine();
+	}
 	
 	public NodeGroup(SVGOMGElement node, SVGOMSVGElement svgOMElement) {
-//		Node transformNode = node.getAttributes().getNamedItem("transform");
 		this.myTransform = SVGReader.readTransform(node);//)transformNode==null?new Affine():TransformReader.getTransform(transformNode.getNodeValue());
 		setID(node);
-//		myTrans#form = new Affine();
 		Vector<NodeElement> children = SVGReader.readChildren(node, svgOMElement);
 		this.addAllNodeElements(children);
 	}

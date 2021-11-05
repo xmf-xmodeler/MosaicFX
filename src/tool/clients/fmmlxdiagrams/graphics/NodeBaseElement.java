@@ -2,7 +2,6 @@ package tool.clients.fmmlxdiagrams.graphics;
 
 import java.util.Vector;
 
-import org.w3c.dom.Node;
 import org.w3c.dom.css.CSSStyleDeclaration;
 
 import javafx.geometry.Point2D;
@@ -16,65 +15,41 @@ import tool.clients.fmmlxdiagrams.FmmlxProperty;
 
 public abstract class NodeBaseElement extends NodeElement {
 	
-	@Deprecated Color bgColor;
-	@Deprecated Color fgColor;
-
 	final CSSStyleDeclaration styleDeclaration;
 	
 	public interface Action{
 		public void perform();
 	}
 
-	public NodeBaseElement(Affine myTransform, CSSStyleDeclaration styleDeclaration, FmmlxProperty actionObject, Action action) {
+	protected NodeBaseElement(Affine myTransform, CSSStyleDeclaration styleDeclaration, FmmlxProperty actionObject, Action action) {
 		this.myTransform = myTransform;
 		this.actionObject = actionObject;
 		this.action = action;
 		this.styleDeclaration = styleDeclaration;
 	}
 
-	protected FmmlxProperty actionObject;
+	private FmmlxProperty actionObject;
 	protected Action action;
 	protected boolean selected = false;
 		
-	public void setSelected() { selected = true;}
-	public void setDeselected() { selected = false;}
-	public FmmlxProperty getActionObject() { return actionObject;}
+	public final void setSelected() { selected = true;}
+	public final void setDeselected() { selected = false;}
+	public final FmmlxProperty getActionObject() { return actionObject;}
 	
-	@Override public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagramView) {
+	@Override public final NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagramView) {
 		if(isHit(mouse.getX(), mouse.getY(), diagramView))
 			return this; return null;
 	}
 	
-	public void performDoubleClickAction() { action.perform();}
+	public final void performDoubleClickAction() { action.perform();}
 	
-	public Affine getTotalTransform(Affine canvasTransform) {
+	public final Affine getTotalTransform(Affine canvasTransform) {
 		Affine a = new Affine(owner == null?canvasTransform:owner.getTotalTransform(canvasTransform));
 		a.append(myTransform);
 		return a;
 	}
 	
-	/*protected void readStyleAndColor(Node n) {
-		Node styleNode = n.getAttributes().getNamedItem("style");
-		style = styleNode==null?new Style(""):new Style(styleNode.getNodeValue());
-		
-		bgColor = style.getFill();
-		if(bgColor == null) {
-			Node bgColorNode = n.getAttributes().getNamedItem("fill");
-			if(bgColorNode!=null) {
-				this.bgColor = Color.web(bgColorNode.getNodeValue());
-			} else {
-				this.bgColor = style.getFill();
-			}
-		}
-		if(bgColor==null) {
-			this.bgColor = Color.TRANSPARENT;
-		}
-		
-		
-		this.fgColor = style.getStrokeColor();
-	}*/
-
-	public void setOwner(NodeElement owner) {
+	public void setOwner(NodeElement owner) { // final?
 		this.owner = owner;
 	}
 	
@@ -88,13 +63,13 @@ public abstract class NodeBaseElement extends NodeElement {
 	            .toUpperCase();
 	}
 
-	protected String getMatrix4svg() {
+	protected final String getMatrix4svg() {
 		return "matrix(" + getMyTransform().getMxx() + "," + getMyTransform().getMyx() + "," 
 	                     + getMyTransform().getMxy() + "," + getMyTransform().getMyy() + ","
 	                     + getMyTransform().getTx() + "," + getMyTransform().getTy() + ")";
 	}
 	
-	protected void setStrokeStyle(GraphicsContext g, CSSStyleDeclaration styleDeclaration) {
+	protected final void setStrokeStyle(GraphicsContext g, CSSStyleDeclaration styleDeclaration) {
 		String strokeColor = styleDeclaration.getPropertyValue("stroke");
 		if("none".equals(strokeColor)) {
 			g.setStroke(Color.TRANSPARENT);
@@ -114,11 +89,8 @@ public abstract class NodeBaseElement extends NodeElement {
 	}
 	
 	@Override
-	protected Vector<NodeElement> getChildren() {
-				
+	protected final Vector<NodeElement> getChildren() {
 		return new Vector<>();
 	}
-	
-	
 	
 }
