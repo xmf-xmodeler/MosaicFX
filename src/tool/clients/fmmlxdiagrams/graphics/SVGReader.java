@@ -42,9 +42,7 @@ public class SVGReader {
 		return readSVG(new File(fileName), affine);
 	}
 
-	static NodeGroup readSVG(File file, Affine affine) throws ParserConfigurationException, SAXException, IOException {
-//		long start = System.currentTimeMillis(); 
-		
+	static SVGGroup readSVG(File file, Affine affine) throws ParserConfigurationException, SAXException, IOException {
 		String parser = XMLResourceDescriptor.getXMLParserClassName();
 		SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
 		Document doc = f.createDocument(file.toURI().toString());
@@ -64,8 +62,8 @@ public class SVGReader {
 		rootGN    = (RootGraphicsNode) builder.build(ctx, doc);
 		System.err.println("svgReader 1");
 		SVGOMSVGElement myRootSVGElement = (SVGOMSVGElement) doc.getDocumentElement();
-		
-		NodeGroup g = new NodeGroup(affine);
+		SVGGroup g = new SVGGroup();
+		g.file = file;
 		System.err.println("svgReader 2");
 		Vector<NodeElement> children = readChildren(myRootSVGElement, myRootSVGElement);
 		System.err.println("ende svgReader");

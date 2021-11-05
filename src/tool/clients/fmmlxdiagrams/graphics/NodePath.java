@@ -20,7 +20,9 @@ import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodePath extends NodeBaseElement{
-	
+
+	@Deprecated Color bgColor;
+	@Deprecated Color fgColor;
 	String textPath;
 	final String type;
 	
