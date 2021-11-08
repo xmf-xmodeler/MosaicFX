@@ -3,7 +3,6 @@ package tool.clients.fmmlxdiagrams.graphics;
 import java.util.Vector;
 
 public class AbstractSyntax extends NodeGroup{
-	public Vector<Condition> conditions;
 	
 	public void save() {
 		throw new RuntimeException("Not yet implemented!");

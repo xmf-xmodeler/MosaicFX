@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
+import java.util.Arrays;
+
 import org.apache.batik.anim.dom.SVGOMCircleElement;
 import org.apache.batik.anim.dom.SVGOMEllipseElement;
 import org.apache.batik.anim.dom.SVGOMLineElement;
@@ -70,9 +72,8 @@ public class NodePath extends NodeBaseElement{
 	
 	public static NodePath polygon(SVGOMPolygonElement n, SVGOMSVGElement root) {
 		String completeString = null;
-		String points = n.getAttributes().getNamedItem("points").getNodeValue();
-		String[] allPoints = points.split("[\\s,]+");
-		
+		String points = n.getAttributes().getNamedItem("points").getNodeValue().trim();
+		String[] allPoints = points.split("[\\s\\n\\r,]+");
 		if(allPoints.length % 2 == 0) for(int i=0; i<allPoints.length/2; i++) {
 			if(i == 0) {
 				completeString = "M " + allPoints[0] + " "+ allPoints[1];
@@ -102,6 +103,8 @@ public class NodePath extends NodeBaseElement{
 			String fillColor = styleDeclaration.getPropertyValue("fill");
 			if("none".equals(fillColor)) {
 				g.setFill(Color.TRANSPARENT);
+			} else if(fillColor.startsWith("url")) {
+				g.setFill(Color.MAGENTA);
 			} else {
 				g.setFill(Color.web(fillColor));
 			}

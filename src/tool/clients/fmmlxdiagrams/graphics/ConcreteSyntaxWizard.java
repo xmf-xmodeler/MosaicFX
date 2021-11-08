@@ -22,10 +22,12 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -40,7 +42,7 @@ public class ConcreteSyntaxWizard extends Application {
 	private VBox leftControl, rightControl;
 	private MyCanvas myCanvas;
 	private final TreeView<NodeElement> SVGtree = new TreeView<NodeElement>();
-	private FileChooser fileChooser;
+	private DirectoryChooser directoryChooser;
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -85,33 +87,23 @@ public class ConcreteSyntaxWizard extends Application {
 		file=new File(file.toURI()).getParentFile();
 		TextField directoryTextField = new TextField(new File(file, "/MosaicFX/resources/abstract-syntax-repository/Orga/").toString());
 		directoryTextField.setDisable(true);
-		//directoryTextField.setMaxWidth(300);
-		fileChooser = new FileChooser();
-		fileChooser.setInitialDirectory(new File(file, "/MosaicFX/resources/abstract-syntax-repository/Orga/"));
+		directoryChooser = new DirectoryChooser();
+		directoryChooser.setInitialDirectory(new File(file, "/MosaicFX/resources/abstract-syntax-repository/Orga/"));
 		
 		Image icon = new Image(new File("resources/gif/Package.gif").toURI().toString());
 	    ImageView imageView = new ImageView(icon);
 	    Button fileDirectory = new Button();
 		fileDirectory.setGraphic(imageView);
 		fileDirectory.setOnAction(e -> {
-            File selectedFile = fileChooser.showOpenDialog(primaryStage);
-            directoryTextField.setText(selectedFile.toString());
-            try {
-				NodeGroup group = SVGReader.readSVG(selectedFile, new Affine());
-				group.paintOn(myCanvas, false);
-				setTree(group);
-				SVGtree.getSelectionModel().select(0);;
-			} catch (ParserConfigurationException | SAXException | IOException e1) {
-				e1.printStackTrace();
-			}
-            
+            File selectedDirectory = directoryChooser.showDialog(primaryStage);
+            directoryTextField.setText(selectedDirectory.toString());          
         });	
 		
-		
+		HBox directoryBox = new HBox(fileDirectory, directoryTextField);
 		Label labelListView = new Label("ListView");
 		Label labelTreeView = new Label("TreeView");
-		leftControl  = new VBox(labelListView, listView, labelTreeView, SVGtree);
-		rightControl  = new VBox(fileDirectory,directoryTextField,myCanvas);
+		leftControl  = new VBox(directoryBox,labelListView, listView, labelTreeView, SVGtree);
+		rightControl  = new VBox(myCanvas);
 		splitPane.getItems().addAll(leftControl, rightControl);
 		
 		
@@ -119,9 +111,44 @@ public class ConcreteSyntaxWizard extends Application {
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("Concrete Syntax Wizard");
 		primaryStage.show();
+		loadConcreteSyntax();
+		
+		listView.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->getConcreteSyntax(listView.getSelectionModel().getSelectedItem()));
 	}
 
 	
+	private void getConcreteSyntax(String path) {
+		String newPath= "resources/abstract-syntax-repository/Orga/"+path;
+		try {
+			NodeGroup group = SVGReader.readSVG(newPath, new Affine());
+			group.paintOn(myCanvas, false);
+			setTree(group);
+			SVGtree.getSelectionModel().select(0);
+		} catch (ParserConfigurationException | SAXException | IOException e1) {
+			e1.printStackTrace();
+		}
+	}
+
+
+	private void loadConcreteSyntax() {
+		File file = new File("");
+		file=new File(file.toURI()).getParentFile();
+		File initialDirectory = new File(file, "/MosaicFX/resources/abstract-syntax-repository/Orga/");
+		if (initialDirectory.isDirectory()) {
+			File[] files = initialDirectory.listFiles();
+			for (File fileSearch : files) {
+				if (fileSearch.isFile()) {
+					if(fileSearch.getName().endsWith("csd.svg")) {
+						listView.getItems().add(fileSearch.getName());
+					}
+				}
+			}
+		}
+		
+		
+	}
+
+
 	private void setTree(NodeGroup group) {
 		TreeItem<NodeElement> rootElement = new TreeItem<NodeElement>(group);
 		SVGtree.setRoot(rootElement);
