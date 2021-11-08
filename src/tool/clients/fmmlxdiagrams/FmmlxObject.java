@@ -15,7 +15,6 @@ import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteTool;
 import tool.clients.fmmlxdiagrams.newpalette.ToolClass;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
