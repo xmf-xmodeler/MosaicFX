@@ -120,13 +120,19 @@ public class ConcreteSyntaxWizard extends Application {
 	private void getConcreteSyntax(String path) {
 		String newPath= "resources/abstract-syntax-repository/Orga/"+path;
 		try {
-			NodeGroup group = SVGReader.readSVG(newPath, new Affine());
+			AbstractSyntax group = AbstractSyntax.load(new File(newPath));
 			group.paintOn(myCanvas, false);
 			setTree(group);
 			SVGtree.getSelectionModel().select(0);
-		} catch (ParserConfigurationException | SAXException | IOException e1) {
-			e1.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+		//		try {
+//			NodeGroup group = SVGReader.readSVG(newPath, new Affine());
+//			
+//		} catch (ParserConfigurationException | SAXException | IOException e1) {
+//			e1.printStackTrace();
+//		}
 	}
 
 
@@ -138,7 +144,7 @@ public class ConcreteSyntaxWizard extends Application {
 			File[] files = initialDirectory.listFiles();
 			for (File fileSearch : files) {
 				if (fileSearch.isFile()) {
-					if(fileSearch.getName().endsWith("csd.svg")) {
+					if(fileSearch.getName().endsWith(".xml")) {
 						listView.getItems().add(fileSearch.getName());
 					}
 				}

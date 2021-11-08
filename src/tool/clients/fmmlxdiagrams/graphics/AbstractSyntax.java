@@ -32,6 +32,7 @@ public class AbstractSyntax extends NodeGroup{
         document.getDocumentElement().normalize();
 		Element root = document.getDocumentElement();
 		NodeList nl = root.getChildNodes();
+		System.err.println("lengt: " + nl.getLength());
 		Vector<NodeElement> vec = new Vector<>();	
 		for(int i = 0; i < nl.getLength(); i++) {
 			Node n = nl.item(i);
@@ -44,17 +45,17 @@ public class AbstractSyntax extends NodeGroup{
 				double tx = e.hasAttribute("tx")?Double.parseDouble(e.getAttribute("tx")):0;
 				double ty = e.hasAttribute("ty")?Double.parseDouble(e.getAttribute("ty")):0;
 				Affine transform = new Affine(xx,xy,tx,yx,yy,ty);
-				SVGGroup svg = SVGReader.readSVG(e.getAttribute("path"), transform);
+				SVGGroup svg = SVGReader.readSVG(new File(file.getParentFile(),e.getAttribute("path")), transform);
 				vec.add(svg);
 			} else {
-				System.out.println("Child not recognized: " + root + ":" + n);
+				System.err.println("Child not recognized: " + root + ":" + n);
 			}
 		}
 		
 		AbstractSyntax object; 
 		
 		if("ConcreteSyntax".equals(root.getNodeName())) {
-			object = ConcreteSyntax.load(file);
+			object = ConcreteSyntax.load2(file,root);
 		} else {
 			object = new AbstractSyntax();
 		}
