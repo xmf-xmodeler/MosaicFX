@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ConcreteSyntax classPath="bvb::fcb" level="3">
 	
-	<SVG path="Einkaeufer.svg" tx="50" xx="2">
+	<SVG path="Orga_alt/Einkaeufer.svg" tx="50" xx="2">
 	
 	</SVG>
 </ConcreteSyntax>

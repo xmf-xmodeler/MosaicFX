@@ -32,7 +32,6 @@ public class AbstractSyntax extends NodeGroup{
         document.getDocumentElement().normalize();
 		Element root = document.getDocumentElement();
 		NodeList nl = root.getChildNodes();
-		System.err.println("lengt: " + nl.getLength());
 		Vector<NodeElement> vec = new Vector<>();	
 		for(int i = 0; i < nl.getLength(); i++) {
 			Node n = nl.item(i);
@@ -48,7 +47,7 @@ public class AbstractSyntax extends NodeGroup{
 				SVGGroup svg = SVGReader.readSVG(new File(file.getParentFile(),e.getAttribute("path")), transform);
 				vec.add(svg);
 			} else {
-				System.err.println("Child not recognized: " + root + ":" + n);
+				//System.err.println("Child not recognized: " + root + ":" + n);
 			}
 		}
 		
@@ -60,9 +59,15 @@ public class AbstractSyntax extends NodeGroup{
 			object = new AbstractSyntax();
 		}
 		
+		object.nodeElements = vec;
+		
 		return object;
 	}
 	
+	@Override
+	public String toString() {
+		return "G"+ (id==null?"":("("+id+")"));
+	}	
 
 	
 }

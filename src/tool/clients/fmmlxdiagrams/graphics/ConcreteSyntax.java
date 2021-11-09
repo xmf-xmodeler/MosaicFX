@@ -42,9 +42,15 @@ public class ConcreteSyntax extends AbstractSyntax{
 				Modification m=null;
 				object.modifications.add(m);
 			} else {
-				System.err.println("Child not recognized: " + root + ":" + n);
+				//System.err.println("Child not recognized: " + root + ":" + n);
 			}
 		}
 	return object;	
 	}
+	
+	
+	@Override
+	public String toString() {
+		return "Concrete Syntax for " + classPath + "@" + level;
+	}	
 }

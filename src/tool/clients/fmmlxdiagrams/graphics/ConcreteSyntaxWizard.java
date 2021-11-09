@@ -10,6 +10,7 @@ import org.xml.sax.SAXException;
 import javafx.application.Application;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
@@ -21,12 +22,15 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
+import javafx.scene.transform.NonInvertibleTransformException;
+import javafx.scene.transform.Scale;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -37,6 +41,7 @@ public class ConcreteSyntaxWizard extends Application {
 
 	
 	
+	private static final String RESOURCES_ABSTRACT_SYNTAX_REPOSITORY = "resources/abstract-syntax-repository/";
 	private ListView<String> listView = new ListView<String>();
 	private SplitPane splitPane;
 	private VBox leftControl, rightControl;
@@ -56,39 +61,18 @@ public class ConcreteSyntaxWizard extends Application {
 		TreeItem<NodeElement> rootTreeItem = new TreeItem<>();
 		SVGtree.setRoot(rootTreeItem);
 		SVGtree.getSelectionModel().selectedItemProperty().addListener((a,b,item)->{
-			if(item == null) return;
-			myCanvas.getCanvas().getGraphicsContext2D().setFill(Color.DARKGRAY);
-			myCanvas.getCanvas().getGraphicsContext2D().setTransform(new Affine());
-			myCanvas.getCanvas().getGraphicsContext2D().fillRect(0, 0, myCanvas.getCanvas().getWidth(), myCanvas.getCanvas().getHeight());
-			NodeElement item4Bounds = SVGtree.getRoot().getValue();
-			item4Bounds.updateBounds();
-			if(item4Bounds.bounds != null) {
-			myCanvas.affine = new Affine(1,0, 
-					myCanvas.getCanvas().getWidth() / 2
-					-(item4Bounds.bounds.getMinX() + item4Bounds.bounds.getWidth() / 2),
-					0,1, 
-					myCanvas.getCanvas().getHeight() / 2
-					-(item4Bounds.bounds.getMinY() + item4Bounds.bounds.getHeight() / 2));
-//			myCanvas.getCanvas().getGraphicsContext2D().setTransform(myCanvas.affine);
-			myCanvas.getCanvas().getGraphicsContext2D().setFill(Color.WHITE);
-			myCanvas.getCanvas().getGraphicsContext2D().fillRect(
-					myCanvas.getCanvas().getWidth() / 2
-					-item4Bounds.bounds.getWidth() / 2, 
-					myCanvas.getCanvas().getHeight() / 2
-					-item4Bounds.bounds.getHeight() / 2,
-					item4Bounds.bounds.getWidth(), 
-					item4Bounds.bounds.getHeight());
-			}
-			item.getValue().paintOn(myCanvas, false);
+			paint(item,1.);
 		});
 		
 		
-		File file = new File("");
+		File file = new File(".");
+		System.err.println(file.toURI());
 		file=new File(file.toURI()).getParentFile();
-		TextField directoryTextField = new TextField(new File(file, "/MosaicFX/resources/abstract-syntax-repository/Orga/").toString());
+		System.err.println(file);
+		TextField directoryTextField = new TextField(new File(RESOURCES_ABSTRACT_SYNTAX_REPOSITORY).toString());
 		directoryTextField.setDisable(true);
 		directoryChooser = new DirectoryChooser();
-		directoryChooser.setInitialDirectory(new File(file, "/MosaicFX/resources/abstract-syntax-repository/Orga/"));
+		directoryChooser.setInitialDirectory(new File(RESOURCES_ABSTRACT_SYNTAX_REPOSITORY));
 		
 		Image icon = new Image(new File("resources/gif/Package.gif").toURI().toString());
 	    ImageView imageView = new ImageView(icon);
@@ -117,8 +101,54 @@ public class ConcreteSyntaxWizard extends Application {
 	}
 
 	
+	private void paint(TreeItem<NodeElement> item, double zoom) {
+		myCanvas.getCanvas().getGraphicsContext2D().setTransform(new Affine());
+		myCanvas.getCanvas().getGraphicsContext2D().setFill(Color.DARKGRAY);
+		myCanvas.getCanvas().getGraphicsContext2D().fillRect(0, 0, myCanvas.getCanvas().getWidth(), myCanvas.getCanvas().getHeight());
+		if(item == null) return;
+		NodeElement item4Bounds = SVGtree.getRoot().getValue();
+		item4Bounds.updateBounds();
+		if(item4Bounds.bounds != null) {
+			myCanvas.affine = new Affine(zoom,0, 
+				myCanvas.getCanvas().getWidth() / 2
+				-zoom*(item4Bounds.bounds.getMinX() + item4Bounds.bounds.getWidth() / 2),
+				0,zoom, 
+				myCanvas.getCanvas().getHeight() / 2
+				-zoom*(item4Bounds.bounds.getMinY() + item4Bounds.bounds.getHeight() / 2));
+//			myCanvas.getCanvas().getGraphicsContext2D().setTransform(myCanvas.affine);
+//			item4Bounds.updateBounds();
+//			myCanvas.getCanvas().getGraphicsContext2D().setFill(Color.WHITE);
+//			myCanvas.getCanvas().getGraphicsContext2D().fillRect(
+//				//myCanvas.getCanvas().getWidth() / 2 / zoom
+//				0,//-item4Bounds.bounds.getWidth() / 2, 
+//				//myCanvas.getCanvas().getHeight() / 2 / zoom
+//				0,//-item4Bounds.bounds.getHeight() / 2,
+//				item4Bounds.bounds.getWidth(), 
+//				item4Bounds.bounds.getHeight());
+		}
+		item.getValue().paintOn(myCanvas, false);
+		try{ 
+			Affine a = item.getValue().getTotalTransform(myCanvas.affine);
+//			Point2D o = a.inverseTransform(new Point2D(0, 0));
+			Point2D o = a.transform(new Point2D(0, 0));
+			System.err.println(o);
+			myCanvas.getCanvas().getGraphicsContext2D().setTransform(new Affine());
+			myCanvas.getCanvas().getGraphicsContext2D().setStroke(Color.GRAY);
+			myCanvas.getCanvas().getGraphicsContext2D().strokeLine(0, o.getY(), myCanvas.getCanvas().getWidth(),  o.getY());
+			myCanvas.getCanvas().getGraphicsContext2D().strokeLine(o.getX(), 0, o.getX(),  myCanvas.getCanvas().getHeight());
+			
+		} catch (Exception e) {
+			System.err.println(e);
+		}
+		
+		
+//		myCanvas.getCanvas().getGraphicsContext2D().setTransform(new Affine());
+	}
+
+
 	private void getConcreteSyntax(String path) {
-		String newPath= "resources/abstract-syntax-repository/Orga/"+path;
+		String newPath= RESOURCES_ABSTRACT_SYNTAX_REPOSITORY+path;
+		System.err.print("newPath:" + newPath);
 		try {
 			AbstractSyntax group = AbstractSyntax.load(new File(newPath));
 			group.paintOn(myCanvas, false);
@@ -137,9 +167,7 @@ public class ConcreteSyntaxWizard extends Application {
 
 
 	private void loadConcreteSyntax() {
-		File file = new File("");
-		file=new File(file.toURI()).getParentFile();
-		File initialDirectory = new File(file, "/MosaicFX/resources/abstract-syntax-repository/Orga/");
+		File initialDirectory = new File(RESOURCES_ABSTRACT_SYNTAX_REPOSITORY);
 		if (initialDirectory.isDirectory()) {
 			File[] files = initialDirectory.listFiles();
 			for (File fileSearch : files) {
@@ -149,9 +177,7 @@ public class ConcreteSyntaxWizard extends Application {
 					}
 				}
 			}
-		}
-		
-		
+		}		
 	}
 
 
@@ -195,6 +221,7 @@ public class ConcreteSyntaxWizard extends Application {
 			canvas.widthProperty().bind(this.widthProperty());
 			canvas.heightProperty().bind(this.heightProperty());
 			setPrefSize(1400, 1000);
+			canvas.addEventFilter(ScrollEvent.ANY, this::handleScroll);
 		}
 		
 		
@@ -208,6 +235,13 @@ public class ConcreteSyntaxWizard extends Application {
 			return affine;
 		}
 		
+		private double zoom = 1.;
+		
+		private void handleScroll(ScrollEvent e) {
+			double delta = e.getDeltaY();
+			zoom = zoom * Math.pow(Math.pow(2, 1/3.), delta > 0 ? 1 : -1);	
+			paint(SVGtree.getSelectionModel().getSelectedItem(), zoom);
+		}
+		
 	}
-	
 }
