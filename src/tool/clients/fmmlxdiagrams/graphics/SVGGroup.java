@@ -12,4 +12,8 @@ public class SVGGroup extends NodeGroup {
 		super(affine);
 		this.file=file;
 	}
+	
+	public String toString() {
+		return "SVG(" + file.toString() + ")";
+	};
 }
