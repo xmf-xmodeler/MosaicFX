@@ -62,7 +62,7 @@ public class SVGReader {
 		rootGN    = (RootGraphicsNode) builder.build(ctx, doc);
 		System.err.println("svgReader 1");
 		SVGOMSVGElement myRootSVGElement = (SVGOMSVGElement) doc.getDocumentElement();
-		SVGGroup g = new SVGGroup();
+		SVGGroup g = new SVGGroup(file,affine);
 		g.file = file;
 		System.err.println("svgReader 2");
 		Vector<NodeElement> children = readChildren(myRootSVGElement, myRootSVGElement);

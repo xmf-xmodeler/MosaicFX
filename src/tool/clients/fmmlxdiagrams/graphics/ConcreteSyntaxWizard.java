@@ -61,14 +61,10 @@ public class ConcreteSyntaxWizard extends Application {
 		TreeItem<NodeElement> rootTreeItem = new TreeItem<>();
 		SVGtree.setRoot(rootTreeItem);
 		SVGtree.getSelectionModel().selectedItemProperty().addListener((a,b,item)->{
-			paint(item,1.);
+			paint(item,myCanvas.zoom);
 		});
 		
-		
-		File file = new File(".");
-		System.err.println(file.toURI());
-		file=new File(file.toURI()).getParentFile();
-		System.err.println(file);
+
 		TextField directoryTextField = new TextField(new File(RESOURCES_ABSTRACT_SYNTAX_REPOSITORY).toString());
 		directoryTextField.setDisable(true);
 		directoryChooser = new DirectoryChooser();
@@ -115,25 +111,20 @@ public class ConcreteSyntaxWizard extends Application {
 				0,zoom, 
 				myCanvas.getCanvas().getHeight() / 2
 				-zoom*(item4Bounds.bounds.getMinY() + item4Bounds.bounds.getHeight() / 2));
-//			myCanvas.getCanvas().getGraphicsContext2D().setTransform(myCanvas.affine);
-//			item4Bounds.updateBounds();
-//			myCanvas.getCanvas().getGraphicsContext2D().setFill(Color.WHITE);
-//			myCanvas.getCanvas().getGraphicsContext2D().fillRect(
-//				//myCanvas.getCanvas().getWidth() / 2 / zoom
-//				0,//-item4Bounds.bounds.getWidth() / 2, 
-//				//myCanvas.getCanvas().getHeight() / 2 / zoom
-//				0,//-item4Bounds.bounds.getHeight() / 2,
-//				item4Bounds.bounds.getWidth(), 
-//				item4Bounds.bounds.getHeight());
+			myCanvas.getCanvas().getGraphicsContext2D().setTransform(myCanvas.affine);
+			myCanvas.getCanvas().getGraphicsContext2D().setFill(Color.WHITE);
+			myCanvas.getCanvas().getGraphicsContext2D().fillRect(
+					item4Bounds.bounds.getMinX(),item4Bounds.bounds.getMinY(),item4Bounds.bounds.getWidth(),item4Bounds.bounds.getHeight());
+
 		}
 		item.getValue().paintOn(myCanvas, false);
 		try{ 
 			Affine a = item.getValue().getTotalTransform(myCanvas.affine);
-//			Point2D o = a.inverseTransform(new Point2D(0, 0));
 			Point2D o = a.transform(new Point2D(0, 0));
-			System.err.println(o);
 			myCanvas.getCanvas().getGraphicsContext2D().setTransform(new Affine());
 			myCanvas.getCanvas().getGraphicsContext2D().setStroke(Color.GRAY);
+			myCanvas.getCanvas().getGraphicsContext2D().setLineWidth(1);
+			myCanvas.getCanvas().getGraphicsContext2D().setLineDashes(null);
 			myCanvas.getCanvas().getGraphicsContext2D().strokeLine(0, o.getY(), myCanvas.getCanvas().getWidth(),  o.getY());
 			myCanvas.getCanvas().getGraphicsContext2D().strokeLine(o.getX(), 0, o.getX(),  myCanvas.getCanvas().getHeight());
 			
