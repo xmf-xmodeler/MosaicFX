@@ -8,6 +8,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -16,6 +17,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Slider;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
@@ -44,10 +48,24 @@ public class ConcreteSyntaxWizard extends Application {
 	private static final String RESOURCES_ABSTRACT_SYNTAX_REPOSITORY = "resources/abstract-syntax-repository/";
 	private ListView<String> listView = new ListView<String>();
 	private SplitPane splitPane;
-	private VBox leftControl, rightControl;
+	private VBox leftControl;
+	private HBox rightControl;
 	private MyCanvas myCanvas;
 	private final TreeView<NodeElement> SVGtree = new TreeView<NodeElement>();
 	private DirectoryChooser directoryChooser;
+	
+	Spinner<Double> yPosition = new Spinner<Double>(-1000.,1000.,0.);
+	Spinner<Double> xPosition = new Spinner<Double>(-1000.,1000.,0.);
+		
+	Spinner<Double> scale = new Spinner<>(new SpinnerValueFactory<Double>() {
+        double STEP = Math.pow(2, 0.25);              
+        @Override public void decrement(int steps) { setValue(Math.pow(STEP, -steps) * getValue()); }
+        @Override public void increment(int steps) { setValue(Math.pow(STEP, steps) * getValue()); }
+  });
+
+	
+	
+	
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -55,18 +73,26 @@ public class ConcreteSyntaxWizard extends Application {
 		
 		splitPane = new SplitPane();
 		splitPane.setPadding(new Insets(10,10,10,10));
+		
 			
 		myCanvas = new MyCanvas();		
 		
 		TreeItem<NodeElement> rootTreeItem = new TreeItem<>();
 		SVGtree.setRoot(rootTreeItem);
 		SVGtree.getSelectionModel().selectedItemProperty().addListener((a,b,item)->{
-			paint(item,myCanvas.zoom);
+			if (item!=null) {
+				setCurrentGraphicElement(item.getValue());	
+			} else {
+				
+			}
+				
+			
 		});
 		
 
 		TextField directoryTextField = new TextField(new File(RESOURCES_ABSTRACT_SYNTAX_REPOSITORY).toString());
 		directoryTextField.setDisable(true);
+		directoryTextField.setMinWidth(300);
 		directoryChooser = new DirectoryChooser();
 		directoryChooser.setInitialDirectory(new File(RESOURCES_ABSTRACT_SYNTAX_REPOSITORY));
 		
@@ -80,12 +106,30 @@ public class ConcreteSyntaxWizard extends Application {
         });	
 		
 		HBox directoryBox = new HBox(fileDirectory, directoryTextField);
+		directoryBox.setPadding(new Insets(10,10,10,10));
 		Label labelListView = new Label("ListView");
 		Label labelTreeView = new Label("TreeView");
-		leftControl  = new VBox(directoryBox,labelListView, listView, labelTreeView, SVGtree);
-		rightControl  = new VBox(myCanvas);
-		splitPane.getItems().addAll(leftControl, rightControl);
 		
+		Label propertiesLabel = new Label("Properties");
+		Label space = new Label("");
+		Label xLabel = new Label("X: ");
+		xPosition.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+		xPosition.setEditable(true);
+		Label yLabel = new Label("Y: ");
+		yPosition.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_VERTICAL);
+		yPosition.setEditable(true);
+		Label scaleLabel = new Label("Scale: ");
+		
+		scale.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+		scale.setEditable(true);
+		scale.getValueFactory().setValue(1.);
+		
+		VBox properties = new VBox(propertiesLabel, space, xLabel,xPosition,yLabel,yPosition,scaleLabel,scale);
+				
+		leftControl  = new VBox(directoryBox,labelListView, listView, labelTreeView, SVGtree);
+		rightControl  = new HBox(myCanvas,properties);
+		splitPane.getItems().addAll(leftControl, rightControl);
+		splitPane.setDividerPosition(0, 0.2);
 		
 		Scene scene = new Scene(splitPane);
 		primaryStage.setScene(scene);
@@ -96,8 +140,37 @@ public class ConcreteSyntaxWizard extends Application {
 		listView.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->getConcreteSyntax(listView.getSelectionModel().getSelectedItem()));
 	}
 
+	ChangeListener<Double> xListener, yListener, scaleListener;
 	
-	private void paint(TreeItem<NodeElement> item, double zoom) {
+	private void setCurrentGraphicElement(NodeElement item) {
+		paint(item,myCanvas.zoom);
+		if(xListener!=null)xPosition.valueProperty().removeListener(xListener);
+		if(yListener!=null)yPosition.valueProperty().removeListener(yListener);
+		if(scaleListener!=null)scale.valueProperty().removeListener(scaleListener);
+		if(item instanceof SVGGroup) {
+			xPosition.setDisable(false);
+			yPosition.setDisable(false);
+			scale.setDisable(false);
+			xPosition.getValueFactory().setValue(item.myTransform.getTx());
+			yPosition.getValueFactory().setValue(item.myTransform.getTy());
+			scale.getValueFactory().setValue(Math.sqrt(item.myTransform.getMxx()*item.myTransform.getMyy()));
+			
+			xListener =(a,b,x)->{item.myTransform.setTx(x);paint(item,myCanvas.zoom);};
+			yListener =(a,b,y)->{item.myTransform.setTy(y);paint(item,myCanvas.zoom);};
+			scaleListener =(a,b,s)->{item.myTransform.setMxx(s);item.myTransform.setMyy(s);paint(item,myCanvas.zoom);};
+			
+			xPosition.valueProperty().addListener(xListener);
+			yPosition.valueProperty().addListener(yListener);
+			scale.valueProperty().addListener(scaleListener);
+		} else {
+			xPosition.setDisable(true);
+			yPosition.setDisable(true);
+			scale.setDisable(true);
+		}
+	}
+
+
+	private void paint(NodeElement item, double zoom) {
 		myCanvas.getCanvas().getGraphicsContext2D().setTransform(new Affine());
 		myCanvas.getCanvas().getGraphicsContext2D().setFill(Color.DARKGRAY);
 		myCanvas.getCanvas().getGraphicsContext2D().fillRect(0, 0, myCanvas.getCanvas().getWidth(), myCanvas.getCanvas().getHeight());
@@ -111,15 +184,22 @@ public class ConcreteSyntaxWizard extends Application {
 				0,zoom, 
 				myCanvas.getCanvas().getHeight() / 2
 				-zoom*(item4Bounds.bounds.getMinY() + item4Bounds.bounds.getHeight() / 2));
+			
 			myCanvas.getCanvas().getGraphicsContext2D().setTransform(myCanvas.affine);
 			myCanvas.getCanvas().getGraphicsContext2D().setFill(Color.WHITE);
 			myCanvas.getCanvas().getGraphicsContext2D().fillRect(
 					item4Bounds.bounds.getMinX(),item4Bounds.bounds.getMinY(),item4Bounds.bounds.getWidth(),item4Bounds.bounds.getHeight());
-
+			item4Bounds.paintOn(myCanvas, false);
+			myCanvas.getCanvas().getGraphicsContext2D().setTransform(myCanvas.affine);
+			myCanvas.getCanvas().getGraphicsContext2D().setFill(Color.web("#ffffff88"));
+			myCanvas.getCanvas().getGraphicsContext2D().fillRect(
+					item4Bounds.bounds.getMinX(),item4Bounds.bounds.getMinY(),item4Bounds.bounds.getWidth(),item4Bounds.bounds.getHeight());
 		}
-		item.getValue().paintOn(myCanvas, false);
+		
+		item.paintOn(myCanvas, false);
+		
 		try{ 
-			Affine a = item.getValue().getTotalTransform(myCanvas.affine);
+			Affine a = item4Bounds.getTotalTransform(myCanvas.affine);
 			Point2D o = a.transform(new Point2D(0, 0));
 			myCanvas.getCanvas().getGraphicsContext2D().setTransform(new Affine());
 			myCanvas.getCanvas().getGraphicsContext2D().setStroke(Color.GRAY);
@@ -148,6 +228,7 @@ public class ConcreteSyntaxWizard extends Application {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 		//		try {
 //			NodeGroup group = SVGReader.readSVG(newPath, new Affine());
 //			
@@ -231,7 +312,7 @@ public class ConcreteSyntaxWizard extends Application {
 		private void handleScroll(ScrollEvent e) {
 			double delta = e.getDeltaY();
 			zoom = zoom * Math.pow(Math.pow(2, 1/3.), delta > 0 ? 1 : -1);	
-			paint(SVGtree.getSelectionModel().getSelectedItem(), zoom);
+			paint(SVGtree.getSelectionModel().getSelectedItem().getValue(),zoom);
 		}
 		
 	}
