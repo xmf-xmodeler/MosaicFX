@@ -43,7 +43,6 @@ public class ConcreteSyntax extends AbstractSyntax{
 		}
 		
 		NodeList nl = root.getChildNodes();
-		System.err.println(nl);
 		for(int i = 0; i < nl.getLength(); i++) {
 			Node n = nl.item(i);
 			if("Modification".equals(n.getNodeName())) {

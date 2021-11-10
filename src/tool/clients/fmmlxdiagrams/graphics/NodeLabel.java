@@ -37,9 +37,9 @@ public class NodeLabel extends NodeBaseElement {
 	private boolean special = false;
 	private double availableWidth;
 
-	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxObject actionObject, Action action, String text, boolean b, int issueNumber) {
+	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxObject actionObject, Action action, String text, boolean isIssue, int issueNumber) {
 		this(alignment, x, y, fgColor, bgColor, actionObject, action, text, FontPosture.REGULAR, FontWeight.NORMAL, 1.);
-		this.isIssue = b;
+		this.isIssue = isIssue;
 		this.issueNumber = issueNumber;
 	}
 	
