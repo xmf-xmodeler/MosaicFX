@@ -4,7 +4,10 @@ import java.util.Vector;
 
 import org.apache.batik.anim.dom.SVGOMGElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
+import org.graalvm.compiler.lir.alloc.SaveCalleeSaveRegisters;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
@@ -160,5 +163,17 @@ public class NodeGroup extends NodeElement {
 	@Override
 	public String toString() {
 		return "G"+ (id==null?"":("("+id+")"));
+	}
+
+	public Node save(Document document) {
+		Element myElement = document.createElement("Group");
+		myElement.setAttribute("xx", myTransform.getMxx()+"");
+		myElement.setAttribute("yy", myTransform.getMyy()+"");
+		myElement.setAttribute("xy", myTransform.getMxy()+"");
+		myElement.setAttribute("yx", myTransform.getMyx()+"");
+		myElement.setAttribute("tx", myTransform.getTx()+"");
+		myElement.setAttribute("ty", myTransform.getTy()+"");
+		ConcreteSyntax.saveChildren(document, nodeElements, myElement);
+		return myElement;
 	}	
 }

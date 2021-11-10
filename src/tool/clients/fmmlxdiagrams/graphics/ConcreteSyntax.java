@@ -71,15 +71,8 @@ public class ConcreteSyntax extends AbstractSyntax{
 	        root.setAttribute("classPath", classPath);
 	        root.setAttribute("level",  "" + level);
 	        
-	        for (NodeElement element : this.nodeElements) {
-	        	if (element instanceof SVGGroup) {
-	        		
-	        		root.appendChild(((SVGGroup)element).save(document));
-	        	}
-	        }
-	       
-	        
-	        
+	        saveChildren(document, nodeElements,root);
+	               
 	        TransformerFactory transformerFactory = TransformerFactory.newInstance();
 	        Transformer transformer = transformerFactory.newTransformer();
 	        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -92,6 +85,19 @@ public class ConcreteSyntax extends AbstractSyntax{
 		} catch (Exception e){
 			e.printStackTrace();
 		}
+	}
+	
+	public static void saveChildren(Document document, Vector<NodeElement> nodeElements, Element parent) {
+		 for (NodeElement element : nodeElements) {
+	        	if (element instanceof SVGGroup) {
+	        		parent.appendChild(((SVGGroup)element).save(document));
+	        		
+	        	} else if (element instanceof NodeLabel) {
+	        		parent.appendChild(((NodeLabel)element).save(document));
+	        	} else if (element instanceof NodeGroup){
+	        		parent.appendChild(((NodeGroup)element).save(document));
+	        	}
+	        }
 	}
 	
 	@Override

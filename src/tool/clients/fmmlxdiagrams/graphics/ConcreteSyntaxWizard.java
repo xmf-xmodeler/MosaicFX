@@ -124,7 +124,10 @@ public class ConcreteSyntaxWizard extends Application {
 		scale.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
 		scale.setEditable(true);
 		scale.getValueFactory().setValue(1.);
+		Image saveIcon = new Image(new File("resources/gif/img/save.gif").toURI().toString());
+		ImageView imageViewSaveIcon = new ImageView(saveIcon);
 		Button freezeSVG = new Button("Freeze");
+		freezeSVG.setGraphic(imageViewSaveIcon);
 		freezeSVG.setOnAction(e -> {
 			
 			if (selectedSyntax !=null) {
@@ -133,10 +136,10 @@ public class ConcreteSyntaxWizard extends Application {
 		
 		});
 		
-		VBox properties = new VBox(propertiesLabel, space, xLabel,xPosition,yLabel,yPosition,scaleLabel,scale);
+		VBox properties = new VBox(propertiesLabel, space, xLabel,xPosition,yLabel,yPosition,scaleLabel,scale,freezeSVG);
 				
 		leftControl  = new VBox(directoryBox,labelListView, listView, labelTreeView, SVGtree);
-		rightControl  = new HBox(myCanvas,properties, freezeSVG);
+		rightControl  = new HBox(myCanvas,properties);
 		splitPane.getItems().addAll(leftControl, rightControl);
 		splitPane.setDividerPosition(0, 0.2);
 		
@@ -156,7 +159,7 @@ public class ConcreteSyntaxWizard extends Application {
 		if(xListener!=null)xPosition.valueProperty().removeListener(xListener);
 		if(yListener!=null)yPosition.valueProperty().removeListener(yListener);
 		if(scaleListener!=null)scale.valueProperty().removeListener(scaleListener);
-		if(item instanceof SVGGroup) {
+		if(item instanceof SVGGroup || item instanceof NodeLabel || item instanceof NodeGroup) {
 			xPosition.setDisable(false);
 			yPosition.setDisable(false);
 			scale.setDisable(false);
@@ -171,6 +174,8 @@ public class ConcreteSyntaxWizard extends Application {
 			xPosition.valueProperty().addListener(xListener);
 			yPosition.valueProperty().addListener(yListener);
 			scale.valueProperty().addListener(scaleListener);
+			
+			
 		} else {
 			xPosition.setDisable(true);
 			yPosition.setDisable(true);
