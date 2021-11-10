@@ -15,6 +15,8 @@ import javafx.scene.transform.Affine;
 
 public class AbstractSyntax extends NodeGroup{
 	
+	protected File file;
+
 	public void save() {
 		throw new RuntimeException("Not yet implemented!");
 	}
@@ -60,7 +62,7 @@ public class AbstractSyntax extends NodeGroup{
 		}
 		
 		object.nodeElements = vec;
-		
+		object.file=file;
 		return object;
 	}
 	

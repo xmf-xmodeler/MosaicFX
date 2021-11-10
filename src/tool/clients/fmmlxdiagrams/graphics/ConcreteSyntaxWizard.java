@@ -45,7 +45,7 @@ public class ConcreteSyntaxWizard extends Application {
 
 	
 	
-	private static final String RESOURCES_ABSTRACT_SYNTAX_REPOSITORY = "resources/abstract-syntax-repository/";
+	static final String RESOURCES_ABSTRACT_SYNTAX_REPOSITORY = "resources/abstract-syntax-repository/";
 	private ListView<String> listView = new ListView<String>();
 	private SplitPane splitPane;
 	private VBox leftControl;
@@ -53,6 +53,7 @@ public class ConcreteSyntaxWizard extends Application {
 	private MyCanvas myCanvas;
 	private final TreeView<NodeElement> SVGtree = new TreeView<NodeElement>();
 	private DirectoryChooser directoryChooser;
+	private AbstractSyntax selectedSyntax;
 	
 	Spinner<Double> yPosition = new Spinner<Double>(-1000.,1000.,0.);
 	Spinner<Double> xPosition = new Spinner<Double>(-1000.,1000.,0.);
@@ -123,11 +124,19 @@ public class ConcreteSyntaxWizard extends Application {
 		scale.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
 		scale.setEditable(true);
 		scale.getValueFactory().setValue(1.);
+		Button freezeSVG = new Button("Freeze");
+		freezeSVG.setOnAction(e -> {
+			
+			if (selectedSyntax !=null) {
+				selectedSyntax.save();
+			}
+		
+		});
 		
 		VBox properties = new VBox(propertiesLabel, space, xLabel,xPosition,yLabel,yPosition,scaleLabel,scale);
 				
 		leftControl  = new VBox(directoryBox,labelListView, listView, labelTreeView, SVGtree);
-		rightControl  = new HBox(myCanvas,properties);
+		rightControl  = new HBox(myCanvas,properties, freezeSVG);
 		splitPane.getItems().addAll(leftControl, rightControl);
 		splitPane.setDividerPosition(0, 0.2);
 		
@@ -172,7 +181,7 @@ public class ConcreteSyntaxWizard extends Application {
 
 	private void paint(NodeElement item, double zoom) {
 		myCanvas.getCanvas().getGraphicsContext2D().setTransform(new Affine());
-		myCanvas.getCanvas().getGraphicsContext2D().setFill(Color.DARKGRAY);
+		myCanvas.getCanvas().getGraphicsContext2D().setFill(Color.BLACK);
 		myCanvas.getCanvas().getGraphicsContext2D().fillRect(0, 0, myCanvas.getCanvas().getWidth(), myCanvas.getCanvas().getHeight());
 		if(item == null) return;
 		NodeElement item4Bounds = SVGtree.getRoot().getValue();
@@ -190,11 +199,13 @@ public class ConcreteSyntaxWizard extends Application {
 			myCanvas.getCanvas().getGraphicsContext2D().fillRect(
 					item4Bounds.bounds.getMinX(),item4Bounds.bounds.getMinY(),item4Bounds.bounds.getWidth(),item4Bounds.bounds.getHeight());
 			item4Bounds.paintOn(myCanvas, false);
-			myCanvas.getCanvas().getGraphicsContext2D().setTransform(myCanvas.affine);
+			myCanvas.getCanvas().getGraphicsContext2D().setTransform(new Affine());
 			myCanvas.getCanvas().getGraphicsContext2D().setFill(Color.web("#ffffff88"));
-			myCanvas.getCanvas().getGraphicsContext2D().fillRect(
-					item4Bounds.bounds.getMinX(),item4Bounds.bounds.getMinY(),item4Bounds.bounds.getWidth(),item4Bounds.bounds.getHeight());
+			myCanvas.getCanvas().getGraphicsContext2D().fillRect(0, 0, myCanvas.getCanvas().getWidth(), myCanvas.getCanvas().getHeight());
+//			myCanvas.getCanvas().getGraphicsContext2D().fillRect(
+//					item4Bounds.bounds.getMinX(),item4Bounds.bounds.getMinY(),item4Bounds.bounds.getWidth(),item4Bounds.bounds.getHeight());
 		}
+		
 		
 		item.paintOn(myCanvas, false);
 		
@@ -216,12 +227,13 @@ public class ConcreteSyntaxWizard extends Application {
 //		myCanvas.getCanvas().getGraphicsContext2D().setTransform(new Affine());
 	}
 
-
 	private void getConcreteSyntax(String path) {
+		selectedSyntax = null;
 		String newPath= RESOURCES_ABSTRACT_SYNTAX_REPOSITORY+path;
-		System.err.print("newPath:" + newPath);
+		
 		try {
 			AbstractSyntax group = AbstractSyntax.load(new File(newPath));
+			selectedSyntax = group;
 			group.paintOn(myCanvas, false);
 			setTree(group);
 			SVGtree.getSelectionModel().select(0);
