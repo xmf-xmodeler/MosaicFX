@@ -10,7 +10,10 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Translate;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
 import tool.clients.exporter.svg.SvgConstant;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
@@ -214,4 +217,12 @@ public class NodeLabel extends NodeBaseElement {
 
 	@Override
 	public void updateBounds() {}
+
+	public Node save(Document document) {
+		Element myElement = document.createElement("Label");
+		myElement.setAttribute("align", alignment==Pos.BASELINE_CENTER?"CENTER":alignment==Pos.BASELINE_RIGHT?"RIGHT":"LEFT");
+		myElement.setAttribute("tx", myTransform.getTx()+"");
+		myElement.setAttribute("ty", myTransform.getTy()+"");
+		return myElement;
+	}
 }
