@@ -565,49 +565,13 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	@Override
 	protected void layout(FmmlxDiagram diagram) {
-		if(ofPath.endsWith("StartEvent")) {
-			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutStartEvent();
-		} else if(ofPath.endsWith("StopEvent")) {
-			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutStopEvent();
-		} else if(ofPath.endsWith("Event")) {
-			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutEvent();
-		} else if(ofPath.endsWith("Signal")) {
-			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutSignal();
-		} else if(ofPath.endsWith("ComputerSupportedProcess")) {
-			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutComputerSupportedProcess();
-		} else if(ofPath.endsWith("AutomatedProcess")) {
-			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutAutomatedProcess();
-		} else if(ofPath.endsWith("Q") && getSlotNames().contains("file")) {
+		if(ofPath.endsWith("QX") && getSlotNames().contains("file")) {
 			try {
 				rootNodeElement=SVGReader.readSVG(getSlot("file").getValue(), new Affine(Transform.translate(x, y)));
-				
-			} catch (ParserConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		} else if(ofPath.endsWith("test")) {
-			try {
-				rootNodeElement=SVGReader.readSVG("a:\\testsvg.svg", new Affine(Transform.translate(x, y)));
-				System.err.println("rootNodeElement: " + rootNodeElement);
-			} catch (ParserConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SAXException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-					
-		} else {
-	
+		} else {	
 			new DefaultFmmlxObjectDisplay(diagram, this).layout();
 		}
 		

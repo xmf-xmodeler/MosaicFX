@@ -3,5 +3,8 @@
 	
 	<SVG path="Orga_Modelle_neu/Automated_external_Process.svg"/>
 	<SVG path="ampel.svg" xx="0.5" yy="0.5" tx="80" ty="-10"/>
+	<Label align="LEFT" tx="40" ty="60"/>
+	<Label align="CENTER" tx="40" ty="80"/>
+	<Label align="RIGHT" tx="40" ty="100"/>
 	
 </ConcreteSyntax>
