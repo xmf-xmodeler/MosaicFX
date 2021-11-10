@@ -209,7 +209,7 @@ public class ConcreteSyntaxWizard extends Application {
 			myCanvas.getCanvas().getGraphicsContext2D().strokeLine(o.getX(), 0, o.getX(),  myCanvas.getCanvas().getHeight());
 			
 		} catch (Exception e) {
-			System.err.println(e);
+			e.printStackTrace();
 		}
 		
 		

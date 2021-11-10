@@ -105,6 +105,7 @@ public class AbstractSyntax extends NodeGroup{
 			}else {
 				System.err.println("Child not recognized: " + parent + ":" + n);
 			}
+			ng.addAllNodeElements(vec);
 		}
 
 		if(parent.hasAttribute("id")) ng.id = parent.getAttribute("id");
