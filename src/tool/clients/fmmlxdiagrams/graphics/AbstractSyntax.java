@@ -99,6 +99,7 @@ public class AbstractSyntax extends NodeGroup{
 			if ("#text".equals(n.getNodeName()) ||  "defs".equals(n.getNodeName()) || "title".equals(n.getNodeName())) {
 				// ignore !!!
 			} else if("SVG".equals(n.getNodeName())) {
+				System.err.println("X");
 				vec.add(readSVG(dir, (Element) n));
 			} else if("Label".equals(n.getNodeName())){
 				vec.add(readLabel((Element) n));
@@ -107,9 +108,9 @@ public class AbstractSyntax extends NodeGroup{
 			}else {
 				System.err.println("Child not recognized: " + parent + ":" + n);
 			}
-			ng.addAllNodeElements(vec);
 		}
-
+		
+		ng.addAllNodeElements(vec);
 		if(parent.hasAttribute("id")) ng.id = parent.getAttribute("id");
 		return ng;
 		
