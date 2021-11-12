@@ -873,24 +873,24 @@ public void sendMessage(final Message message) {
     System.out.println("addBrowser, id: " + id + ", url: " + url);
     WebBrowser browser = new WebBrowser(id, getHandler());
     browsers.put(id, browser);
-
-    browser.getBrowserVBox(url, text)
-            .thenAccept(browserVbox -> Platform.runLater(() -> {
-              HBox hbox = new HBox();
-              VBox vbox = new VBox();
-              Tab tab = createBrowserTab(id, label, tooltip);
-
-              vbox.getChildren().addAll(hbox, browserVbox);
-              tab.setContent(vbox);
-              tabs.put(id, tab);
-
-              tabPane.getTabs().add(tab);
-              tabPane.getSelectionModel().select(tab);
-            }))
-            .exceptionally(throwable -> {
-              System.err.println("Error creating new Browser: "+throwable);
-              return null;
-            });
+    
+    //LM, 11.11.21, removed as getBrowserVBox causes a dump under unix.
+    System.err.println("Error creating new Browser");
+    return;
+    
+	/*
+	 * browser.getBrowserVBox(url, text) .thenAccept(browserVbox ->
+	 * Platform.runLater(() -> { HBox hbox = new HBox(); VBox vbox = new VBox(); Tab
+	 * tab = createBrowserTab(id, label, tooltip);
+	 * 
+	 * vbox.getChildren().addAll(hbox, browserVbox); tab.setContent(vbox);
+	 * tabs.put(id, tab);
+	 * 
+	 * tabPane.getTabs().add(tab); tabPane.getSelectionModel().select(tab); }))
+	 * .exceptionally(throwable -> {
+	 * System.err.println("Error creating new Browser: "+throwable); return null;
+	 * });
+	 */
   }
 
   private Tab createBrowserTab(String id, String label, String tooltip) {

@@ -193,6 +193,8 @@
 				<include name="resources/**" />
 				<include name="javafx/bin/*.dll" />
 				<include name="javafx/lib/*.jar" />
+				<include name="u_javafx/lib/*.jar" />
+				<include name="u_javafx/lib/*.so" />
 			</zipfileset>
 			<zipfileset dir="./output/" prefix="${prefix}">
 				<!-- ini files -->

@@ -34,18 +34,16 @@ public class WebBrowser {
         this.id = id;
         this.eventHandler = eventHandler;
     }
-
+ 
     //exposed
-    protected CompletableFuture<VBox> getBrowserVBox(String url, String text) {
-        CompletableFuture<VBox> result = new CompletableFuture<>();
-        CompletableFuture.runAsync(() -> {
-            Platform.runLater(() -> {
-                createBrowser(url, text);
-                result.complete(browserVBox);
-            });
-        });
-        return result;
-    }
+    //LM, 11.11.21, causes dump under unix
+	/*
+	 * protected CompletableFuture<VBox> getBrowserVBox(String url, String text) {
+	 * CompletableFuture<VBox> result = new CompletableFuture<>();
+	 * CompletableFuture.runAsync(() -> { Platform.runLater(() -> {
+	 * createBrowser(url, text); result.complete(browserVBox); }); }); return
+	 * result; }
+	 */
 
     protected void setUrl(String url) {
 //        System.err.println(url);
