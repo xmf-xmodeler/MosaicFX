@@ -195,6 +195,8 @@
 				<include name="javafx/lib/*.jar" />
 				<include name="u_javafx/lib/*.jar" />
 				<include name="u_javafx/lib/*.so" />
+				<include name="m_javafx/lib/*.jar" />
+				<include name="m_javafx/lib/*.dylib" />
 			</zipfileset>
 			<zipfileset dir="./output/" prefix="${prefix}">
 				<!-- ini files -->
