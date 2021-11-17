@@ -15,8 +15,6 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -59,7 +57,6 @@ import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
-
 public class FmmlxDiagram extends AbstractPackageViewer{
 
 	enum MouseMode {
@@ -71,11 +68,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	// The elements which the diagram consists of GUI-wise
 	private SplitPane splitPane;
 	private VBox mainView;
-	private VBox vBox;
-	private Menu menu;
-	private MenuBar menuBar;
-	private MenuItem loadXML;
-	private MenuItem saveXML;
+//	private VBox vBox;
+//	private Menu menu;
+//	private MenuBar menuBar;
+//	private MenuItem loadXML;
+//	private MenuItem saveXML;
 	// The communication to the xmf and other actions
 
 	// The elements representing the model which is displayed in the GUI
@@ -86,21 +83,20 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	// Temporary variables storing the current state of user interactions
 	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
-	private ContextMenu activeContextMenu;
-	public transient boolean objectsMoved = false;
+	private transient ContextMenu activeContextMenu;
+	public  transient boolean objectsMoved = false;
 	private transient PropertyType drawEdgeType = null;
 	private transient Point2D dragStart;
 	private transient Point2D lastPointPressed;
 	private transient Point2D currentPointMoving;
-//	private transient Point2D currentPointHover = new Point2D(0, 0);
 	private transient Affine dragAffine = new Affine();
 	private transient MouseMode mouseMode = MouseMode.STANDARD;
 	private transient FmmlxObject newEdgeSource;
 	private transient FmmlxProperty lastHitProperty = null;
-	private boolean diagramRequiresUpdate = false;
+	private transient boolean diagramRequiresUpdate = false;
 
 	private static final Point2D CANVAS_RAW_SIZE = new Point2D(1400, 1000);
-	public static final Font FONT;
+	public  static final Font FONT;
 
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
@@ -126,8 +122,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	static{
 		FONT = Font.font(Font.getDefault().getFamily(), FontPosture.REGULAR, 14);
-	}
-	
+	}	
 
 	@Deprecated private DiagramViewPane mainViewPane; 
 	private Vector<DiagramViewPane> views = new Vector<>(); 
@@ -141,17 +136,17 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String name, String packagePath) {
 		super(comm,diagramID,packagePath);
 		this.diagramName = name;
-		vBox = new VBox();
-		menu = new Menu("Save & Load");
-		menuBar = new MenuBar();
-		loadXML = new MenuItem("Load Diagram via XML");
-		saveXML = new MenuItem("Save Diagram as XML");
-		saveXML.setOnAction(e->saveXMLAction());
-		loadXML.setOnAction(e->loadXMLAction());
-		menu.getItems().addAll(loadXML, saveXML);
-		menuBar.getMenus().add(menu);
+//		vBox = new VBox();
+//		menu = new Menu("Save & Load");
+//		menuBar = new MenuBar();
+//		loadXML = new MenuItem("Load Diagram via XML");
+//		saveXML = new MenuItem("Save Diagram as XML");
+//		saveXML.setOnAction(e->saveXMLAction());
+//		loadXML.setOnAction(e->loadXMLAction());
+//		menu.getItems().addAll(loadXML, saveXML);
+//		menuBar.getMenus().add(menu);
 		splitPane = new SplitPane();
-		vBox.getChildren().addAll(menuBar, splitPane);
+//		vBox.getChildren().addAll(menuBar, splitPane);
 		mainView = new VBox();
 //		canvas = new Canvas(CANVAS_RAW_SIZE.getX(), CANVAS_RAW_SIZE.getY());
 		
@@ -171,7 +166,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         tabPane.getTabs().add(new Tab("Tab 1", new DiagramViewPane()));
         tabPane.getTabs().add(new Tab("Tab 2", new DiagramViewPane()));
 		
-		mainView.getChildren().addAll(palette,palette2, tabPane);//scrollerCanvas);
+		mainView.getChildren().addAll(palette, palette2, tabPane);//scrollerCanvas);
 
 		splitPane.setOrientation(Orientation.HORIZONTAL);
 		splitPane.setDividerPosition(0, 0.2);
@@ -323,10 +318,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 //	    setZoom(zoom);
 	}
-	// Only used to set the diagram into the tab. Find a better solution
+//	// Only used to set the diagram into the tab. Find a better solution
 	@Deprecated
-	public VBox getView() {
-		return vBox;
+	public javafx.scene.Node getView() {
+		return splitPane;
 	}
 
 	private void updateDiagramLater() {
@@ -373,15 +368,13 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	public void triggerOverallReLayout() {
-//		for(int i = 0; i < 3; i++) {
-			for(FmmlxObject o : new Vector<>(objects)) {
-				o.layout(this);
-			}
-			for(Edge<?> edge : new Vector<>(edges)) {
-				edge.align();
-				edge.layoutLabels(this);
-			}
-//		}
+		for(FmmlxObject o : new Vector<>(objects)) {
+			o.layout(this);
+		}
+		for(Edge<?> edge : new Vector<>(edges)) {
+			edge.align();
+			edge.layoutLabels(this);
+		}
 	}
 
 	private void mouseReleasedStandard() {
@@ -1011,17 +1004,21 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				
 				Point2D p = new Point2D(e.getX(), e.getY());				
 				
-				try {
-					Point2D p_ = canvasTransform.inverseTransform(p);
-					canvasTransform.append(new Scale(zoom, zoom, p_.getX(), p_.getY()));	
-				} catch (NonInvertibleTransformException e1) {
-					e1.printStackTrace();
-				}
+				zoomBy(zoom, p);
 				
 				redraw();
 			}
 		}
 		
+		private void zoomBy(double zoomFactor, Point2D p) {
+			try {
+				Point2D p_ = canvasTransform.inverseTransform(p);
+				canvasTransform.append(new Scale(zoomFactor, zoomFactor, p_.getX(), p_.getY()));	
+			} catch (NonInvertibleTransformException e1) {
+				e1.printStackTrace();
+			}
+		}
+
 		private void handleLeftPressed(MouseEvent e) {
 			CanvasElement hitObject = getElementAt(e.getX(), e.getY());
 
@@ -1311,17 +1308,20 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		
 		public void zoomIn() {
-			setZoom(Math.min(2, getZoom() * ZOOM_STEP));
+			zoomBy(getZoom() * ZOOM_STEP, new Point2D(canvas.getWidth()/2, canvas.getHeight()/2));
+//			setZoom(Math.min(2, getZoom() * ZOOM_STEP));
 			redraw();
 		}
 
 		public void zoomOut() {
-			setZoom(getZoom() / ZOOM_STEP);
+			zoomBy(getZoom() / ZOOM_STEP, new Point2D(canvas.getWidth()/2, canvas.getHeight()/2));
+//			setZoom(getZoom() / ZOOM_STEP);
 			redraw();
 		}
 
 		public void zoomOne() {
-			setZoom(1.);
+			canvasTransform = new Affine();
+//			setZoom(1.);
 			redraw();
 		}
 		

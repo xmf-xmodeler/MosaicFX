@@ -201,6 +201,13 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return result;
 	}
 	
+	public FmmlxOperationValue getOperationValue(String opVName) {
+		for(FmmlxOperationValue opValue : operationValues) {
+			if(opValue.getName().equals(opVName)) return opValue;
+		}
+		return null;
+	}
+	
 	public Vector<String> getParentsPaths() {
 		return parentsPaths;
 	}

@@ -82,11 +82,11 @@ public class FmmlxDiagramCommunicator {
 			} else {
 				diagram.setFilePath(copyFilePath(packagePath));
 			}
-			if(!PropertyManager.getProperty("diagramsInSeparateTab", true)) {
-				createTab(diagram.getView(), diagramName, this.handler, diagram);
-			}else {
+//			if(!PropertyManager.getProperty("diagramsInSeparateTab", true)) {
+//				createTab(diagram.getView(), diagramName, this.handler, diagram);
+//			}else {
 				createStage(diagram.getView(), diagramName, this.handler, diagram);	
-			}
+//			}
 			diagrams.add(diagram);
 			l.countDown();
 		});
@@ -1692,16 +1692,16 @@ public class FmmlxDiagramCommunicator {
 		stage.setOnCloseRequest((e) -> closeScene(stage, e, id, name, node, diagram));
 	}
 
-	private void createTab(javafx.scene.Node node, String name, int id, final FmmlxDiagram diagram) {
-		Tab tab = new Tab(name);
-		tab.setTooltip(new Tooltip(name));
-		tab.setContent(node);
-		tab.setClosable(true);
-		tabs.put(id, tab);
-		tabPane.getTabs().add(tab);
-		tabPane.getSelectionModel().selectLast();
-		tab.setOnCloseRequest((e) -> closeTab(tab, e, id, name, node, diagram));
-	}
+//	private void createTab(javafx.scene.Node node, String name, int id, final FmmlxDiagram diagram) {
+//		Tab tab = new Tab(name);
+//		tab.setTooltip(new Tooltip(name));
+//		tab.setContent(node);
+//		tab.setClosable(true);
+//		tabs.put(id, tab);
+//		tabPane.getTabs().add(tab);
+//		tabPane.getSelectionModel().selectLast();
+//		tab.setOnCloseRequest((e) -> closeTab(tab, e, id, name, node, diagram));
+//	}
 
 	private void closeTab(Tab item, Event wevent, int id, String name, javafx.scene.Node node, FmmlxDiagram diagram) {
 
@@ -1731,29 +1731,9 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	private void closeScene(Stage stage, Event wevent, int id, String name, javafx.scene.Node node, FmmlxDiagram diagram) {
+		close(diagram, true);
+	}
 
-//TODO : Implement Dialog!		
-//		Alert alert = new Alert(AlertType.CONFIRMATION);
-//
-//		ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
-//		ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
-//		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-//		alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
-//		alert.setTitle("Open stage as tab in editor instead?");
-//		alert.setHeaderText(null);
-//
-//		Optional<ButtonType> result = alert.showAndWait();
-//		if (result.isPresent()){
-//			if (result.get().getButtonData() == ButtonData.YES) {
-//				PropertyManager.setProperty("diagramsInSeparateTab", "false");
-//				createTab(node, name, id, diagram);
-//			} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
-//				wevent.consume();
-//			} else {
-				close(diagram, true);
-			}
-//		}
-//	}
 
 	public void saveFile(String packageString) {
 		String packageName = packageString.substring(1,packageString.length()-1).split(" ")[1];

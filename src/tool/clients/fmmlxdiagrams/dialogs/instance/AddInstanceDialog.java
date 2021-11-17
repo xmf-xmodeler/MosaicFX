@@ -73,6 +73,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 				levelBox.getItems().clear();
 				Integer newLevel = level - 1;
 				levelBox.getItems().add(""+newLevel);
+				levelBox.getSelectionModel().select(0);
 				levelBox.setEditable(false);
 			} else if(level == -1){
 				levelBox.getItems().clear();

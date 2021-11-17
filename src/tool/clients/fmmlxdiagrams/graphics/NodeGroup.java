@@ -4,7 +4,6 @@ import java.util.Vector;
 
 import org.apache.batik.anim.dom.SVGOMGElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
-import org.graalvm.compiler.lir.alloc.SaveCalleeSaveRegisters;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

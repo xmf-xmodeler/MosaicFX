@@ -1,6 +1,8 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.FmmlxOperationValue;
+import tool.clients.fmmlxdiagrams.FmmlxSlot;
 
 public interface Condition {
 
@@ -11,22 +13,36 @@ public interface Condition {
 		
 	}
 	
-	public static class BooleanCondition implements Condition{
+	public static class BooleanSlotCondition implements Condition{
 		
 		private FmmlxObject object;
 		private String slotName;
-		private boolean value;
-		
-		
+		private boolean value;		
 		
 		@Override
 		public boolean eval() throws SlotNotFoundException {
-			if (object.attributeExists(slotName)) {
+			FmmlxSlot slot = object.getSlot(slotName);
+			if (slot == null) {
 				throw new SlotNotFoundException();
 			}
-			return value=="true".equals(object.getSlot(slotName).getValue());
-		}
+			return value=="true".equals(slot.getValue());
+		}		
+	}
+	
+	public static class BooleanOpValCondition implements Condition{
 		
+		private FmmlxObject object;
+		private String opName;
+		private boolean value;		
+		
+		@Override
+		public boolean eval() throws SlotNotFoundException {
+			FmmlxOperationValue opVal = object.getOperationValue(opName);
+			if (opVal == null) {
+				throw new SlotNotFoundException();
+			}
+			return value=="true".equals(opVal.getValue());
+		}		
 	}
 	
 
