@@ -9,8 +9,6 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
-import tool.clients.fmmlxdiagrams.dialogs.association.MultiplicityDialog;
-import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.*;
@@ -197,12 +195,11 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 
 	private void showMultiplicityDialog() {
 		MultiplicityDialog dlg = new MultiplicityDialog(multiplicity);
-		Optional<MultiplicityDialogResult> opt = dlg.showAndWait();
+		Optional<Multiplicity> opt = dlg.showAndWait();
 
 		if (opt.isPresent()) {
-			MultiplicityDialogResult result = opt.get();
+			multiplicity = opt.get();
 
-			multiplicity = result.convertToMultiplicity();
 			displayMultiplicityLabel.setText(multiplicity.toString());
 		}
 	}

@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs.association;
+package tool.clients.fmmlxdiagrams.dialogs;
 
 import static tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue.LabelAndHeaderTitle;
 
@@ -8,11 +8,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.Multiplicity;
-import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
 
-public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
+public class MultiplicityDialog extends CustomDialog<Multiplicity> {
 
 	private ComboBox<Integer> minimumComboBox;
 	private ComboBox<Integer> maximumComboBox;
@@ -50,7 +48,7 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				return new MultiplicityDialogResult(
+				return new Multiplicity(
 						getComboBoxIntegerValue(minimumComboBox),
 						isUpperLimitCheckBox.isSelected()?getComboBoxIntegerValue(maximumComboBox):Integer.MAX_VALUE,
 						isUpperLimitCheckBox.isSelected(),

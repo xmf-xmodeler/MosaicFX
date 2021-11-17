@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs.association;
+package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +19,9 @@ import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxLink;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.dialogs.results.AssociationValueDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
-public class AssociationValueDialog extends CustomDialog<AssociationValueDialogResult>{
+public class AssociationValueDialog extends CustomDialog<Void>{
 	
 	private AbstractPackageViewer diagram;
 	private DialogPane dialogPane;

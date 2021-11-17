@@ -4,9 +4,8 @@ import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.paint.Color;
+import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
-import tool.clients.fmmlxdiagrams.dialogs.association.MultiplicityDialog;
-import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
 import tool.clients.fmmlxdiagrams.menus.AssociationContextMenu;
 
 import java.util.Optional;
@@ -199,9 +198,9 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	
 	private final Runnable showChangeS2EMultDialog = () -> {
 		MultiplicityDialog md = new MultiplicityDialog(multiplicityStartToEnd);
-		Optional<MultiplicityDialogResult> mr = md.showAndWait();
+		Optional<Multiplicity> mr = md.showAndWait();
 		if(mr.isPresent()) {
-			diagram.getComm().changeAssociationStart2EndMultiplicity(diagram.getID(), this.getName(), mr.get().convertToMultiplicity());
+			diagram.getComm().changeAssociationStart2EndMultiplicity(diagram.getID(), this.getName(), mr.get());
 			diagram.updateDiagram();
 		}
 	};
@@ -233,9 +232,9 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 	
 	private final Runnable showChangeE2SMultDialog = () -> {
 		MultiplicityDialog md = new MultiplicityDialog(multiplicityEndToStart);
-		Optional<MultiplicityDialogResult> mr = md.showAndWait();
+		Optional<Multiplicity> mr = md.showAndWait();
 		if(mr.isPresent()) {
-			diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram.getID(), this.getName(), mr.get().convertToMultiplicity());
+			diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram.getID(), this.getName(), mr.get());
 			diagram.updateDiagram();
 		}
 	};

@@ -1,10 +1,9 @@
-package tool.clients.fmmlxdiagrams.dialogs.association;
+package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.Optional;
 
 import javafx.scene.control.Button;
 import tool.clients.fmmlxdiagrams.Multiplicity;
-import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
 
 public class MultiplicityBox extends Button {
 	private Multiplicity multi;
@@ -31,12 +30,12 @@ public class MultiplicityBox extends Button {
 	
 	private Multiplicity showMultiplicityDialog(Multiplicity multiplicity) {
 		MultiplicityDialog dlg = new MultiplicityDialog(multiplicity);
-		Optional<MultiplicityDialogResult> opt = dlg.showAndWait();
+		Optional<Multiplicity> opt = dlg.showAndWait();
 
 		if (opt.isPresent()) {
-			MultiplicityDialogResult result = opt.get();
+			Multiplicity result = opt.get();
 
-			return result.convertToMultiplicity();
+			return result;
 		}
 		
 		return null;

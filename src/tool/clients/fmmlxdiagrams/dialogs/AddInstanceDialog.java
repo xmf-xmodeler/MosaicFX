@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs.instance;
+package tool.clients.fmmlxdiagrams.dialogs;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -7,15 +7,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
-import tool.clients.fmmlxdiagrams.dialogs.results.AddInstanceDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.ArrayList;
 import java.util.Vector;
 
-public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
+public class AddInstanceDialog extends CustomDialog<AddInstanceDialog.Result> {
 
 	private final AbstractPackageViewer diagram;
 	private FmmlxObject selectedObject;
@@ -124,7 +121,7 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				Integer level = -1;
 				try{level = Integer.parseInt(levelBox.getSelectionModel().getSelectedItem()); } catch (Exception e) {}
-				return new AddInstanceDialogResult(nameTextField.getText(), level, 
+				return new Result(nameTextField.getText(), level, 
 						parentListView.getSelectionModel().getSelectedItems(), selectedObject.getName(),
 						abstractCheckBox.isSelected());
 			}
@@ -195,5 +192,49 @@ public class AddInstanceDialog extends CustomDialog<AddInstanceDialogResult> {
 	private boolean validateCircularDependecies() {
 		// TODO Auto-generated method stub
 		return true;
+	}
+	
+	public class Result {
+
+		public final String name;
+		public final int level;
+		public final ObservableList<FmmlxObject> parents;
+		public final String ofName;
+		public final boolean isAbstract;
+
+		public Result(String name, int level, ObservableList<FmmlxObject> parents, String ofName,
+									   boolean isAbstract) {
+			this.name = name;
+			this.level = level;
+			this.parents = parents;
+			this.ofName = ofName;
+			this.isAbstract = isAbstract;
+		}
+
+		public Vector<String> getParentPaths() {
+			Vector<String> parentPaths = new Vector<>();
+
+			if (!parents.isEmpty()) {
+				for (FmmlxObject o : parents) {
+					parentPaths.add(o.getPath());
+				}
+			}
+			return parentPaths;
+		}
+
+		public String getOfName() {
+			return ofName;
+		}
+
+		public Vector<String> getParentNames() {
+			Vector<String> parentnames = new Vector<>();
+
+			if (!parents.isEmpty()) {
+				for (FmmlxObject o : parents) {
+					parentnames.add(o.getName());
+				}
+			}
+			return parentnames;
+		}
 	}
 }
