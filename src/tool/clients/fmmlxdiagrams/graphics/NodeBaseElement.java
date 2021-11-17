@@ -41,7 +41,7 @@ public abstract class NodeBaseElement extends NodeElement {
 			return this; return null;
 	}
 	
-	public final void performDoubleClickAction() { action.perform();}
+	public final void performDoubleClickAction(View view) { action.perform();}
 	
 	public final Affine getTotalTransform(Affine canvasTransform) {
 		Affine a = new Affine(owner == null?canvasTransform:owner.getTotalTransform(canvasTransform));

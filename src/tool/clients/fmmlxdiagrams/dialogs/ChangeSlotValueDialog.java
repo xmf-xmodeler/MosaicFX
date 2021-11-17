@@ -6,13 +6,12 @@ import javafx.scene.control.*;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeSlotValueDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue.LabelAndHeaderTitle;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogResult> {
+public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialog.Result> {
 
 	private final AbstractPackageViewer diagram;
 	private final FmmlxObject object;
@@ -109,19 +108,31 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialogRes
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
 
 				if (isExpressionCheckBox.isSelected()) {
-					return new ChangeSlotValueDialogResult(object, slot, slotValueTextField.getText());
+					return new Result(object, slot, slotValueTextField.getText());
 				} else {
 					if(mode != Mode.ENUM) {
 						String slotValue = "\"" + slotValueTextField.getText() + "\"";
-						return new ChangeSlotValueDialogResult(object, slot, slotValue);
+						return new Result(object, slot, slotValue);
 					} else {
 						String enumItem = type + "::" + slotValueComboBox.getSelectionModel().getSelectedItem();
 						System.err.println("enumItem: "+enumItem);
-						return new ChangeSlotValueDialogResult(object, slot, enumItem);
+						return new Result(object, slot, enumItem);
 					}
 				}
 			}
 			return null;
 		});
+	}
+	
+	public class Result {
+		public final FmmlxObject object;
+		public final FmmlxSlot slot;
+		public final String newValue;
+
+		public Result(FmmlxObject object, FmmlxSlot slot, String newValue) {
+			this.object = object;
+			this.slot = slot;
+			this.newValue = newValue;
+		}
 	}
 }

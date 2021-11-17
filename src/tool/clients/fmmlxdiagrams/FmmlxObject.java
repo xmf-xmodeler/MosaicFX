@@ -536,7 +536,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	public void performDoubleClickAction(Point2D p, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
 		if(p == null) return;
 		NodeBaseElement hitLabel = getHitLabel(p, g, currentTransform, view);
-		if(hitLabel != null) hitLabel.performDoubleClickAction();
+		if(hitLabel != null) hitLabel.performDoubleClickAction(view);
 	}
 
 	public PaletteItem toPaletteItem(FmmlxDiagram fmmlxDiagram) {

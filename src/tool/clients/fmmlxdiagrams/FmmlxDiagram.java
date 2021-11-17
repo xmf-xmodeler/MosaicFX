@@ -28,6 +28,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
@@ -165,6 +166,22 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         tabPane.getTabs().add(new Tab("Main Tab", mainViewPane));
         tabPane.getTabs().add(new Tab("Tab 1", new DiagramViewPane()));
         tabPane.getTabs().add(new Tab("Tab 2", new DiagramViewPane()));
+        
+        tabPane.setFocusTraversable(true);
+        tabPane.setOnKeyReleased(new javafx.event.EventHandler<javafx.scene.input.KeyEvent>() {
+
+            @Override
+            public void handle(javafx.scene.input.KeyEvent event) {
+                if(event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.M) {
+                	getActiveTab().canvasTransform.prependScale(-1, 1, new Point2D(getActiveTab().canvas.getWidth()/2 , getActiveTab().canvas.getHeight()/2));
+                	redraw();
+                }
+                if(event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.R) {
+                	getActiveTab().canvasTransform.prependRotation(10, new Point2D(getActiveTab().canvas.getWidth()/2 , getActiveTab().canvas.getHeight()/2));
+                	redraw();
+                }
+            }
+        });
 		
         //LM, 17.11.2021, Resize of Canvas on rescale
         tabPane.heightProperty().addListener( ( observable ) -> redraw() );
@@ -189,42 +206,42 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 //		}, 100, 100);
 	}
 
-	private void loadXMLAction() {
-		ChoiceDialog<String> dialog = new ChoiceDialog<>();
-		dialog.setTitle("Load XML File");
-		dialog.setHeaderText(null);
-		dialog.setContentText("Choose one of your saved XML files:");
-
-		Optional<String> result = dialog.showAndWait();
-		if (result.isPresent()){
-		    
-		}
-		
-		File tempDirectory = new File("");
-		tempDirectory=new File(tempDirectory.toURI()).getParentFile();
-		//boolean exists = tempDirectory.exists();
-		
-		String dirLocation = tempDirectory.toString();
-		System.err.println("Directory: " + tempDirectory.toString());
-        try {
-            List<File> files = Files.list(Paths.get(dirLocation))
-                                    .filter(Files::isRegularFile)
-                                    .filter(path -> path.toString().endsWith(".xml"))
-                                    .map(Path::toFile)
-                                    .collect(Collectors.toList());
-           
-            files.forEach(System.err::println);
-            
-        } catch (IOException e) {
-            // Error while reading the directory
-        }
-
-	}
-
-	private Object saveXMLAction() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	private void loadXMLAction() {
+//		ChoiceDialog<String> dialog = new ChoiceDialog<>();
+//		dialog.setTitle("Load XML File");
+//		dialog.setHeaderText(null);
+//		dialog.setContentText("Choose one of your saved XML files:");
+//
+//		Optional<String> result = dialog.showAndWait();
+//		if (result.isPresent()){
+//		    
+//		}
+//		
+//		File tempDirectory = new File("");
+//		tempDirectory=new File(tempDirectory.toURI()).getParentFile();
+//		//boolean exists = tempDirectory.exists();
+//		
+//		String dirLocation = tempDirectory.toString();
+//		System.err.println("Directory: " + tempDirectory.toString());
+//        try {
+//            List<File> files = Files.list(Paths.get(dirLocation))
+//                                    .filter(Files::isRegularFile)
+//                                    .filter(path -> path.toString().endsWith(".xml"))
+//                                    .map(Path::toFile)
+//                                    .collect(Collectors.toList());
+//           
+//            files.forEach(System.err::println);
+//            
+//        } catch (IOException e) {
+//            // Error while reading the directory
+//        }
+//
+//	}
+//
+//	private Object saveXMLAction() {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 	// Only used to set the mouse pointer. Find a better solution
 	@Deprecated
@@ -436,18 +453,29 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public void setDrawEdgeMode(FmmlxObject source, PropertyType type) {
 		setSelectedObject(source);
 		setDrawEdgeMouseMode(type, source);
-		storeLastClick(source.getCenterX(), source.getCenterY());
+		Point2D p = getActiveView().getCanvasTransform().transform(new Point2D(source.getCenterX(), source.getCenterY()));
+		storeLastClick(p.getX(), p.getY());
 		deselectAll();
 	}
 
 	////////////////////////////////////////////////////////////////////
 
-	public void storeLastClick(double x, double y) {
-		lastPointPressed = new Point2D(x, y);
+	private void storeLastClick(double x, double y) {
+		try{
+			View view = getActiveView();
+			lastPointPressed = view.getCanvasTransform().inverseTransform(new Point2D(x, y));
+		} catch (Exception ex) {
+			lastPointPressed = new Point2D(x, y);
+		}		
 	}
 
 	private void storeCurrentPoint(double x, double y) {
-		currentPointMoving = new Point2D(x, y);
+		try{
+			View view = getActiveView();
+			currentPointMoving = view.getCanvasTransform().inverseTransform(new Point2D(x, y));
+		} catch (Exception ex) {
+			currentPointMoving = new Point2D(x, y);
+		}				
 	}
 
 	private void setMouseOffset(Point2D p) {
@@ -846,6 +874,12 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return mainViewPane.canvasTransform;
 	}
 
+	@Override
+	public View getActiveView() {
+//		System.err.println("getActiveView():" + tabPane.getSelectionModel().getSelectedItem().getContent());
+		return (DiagramViewPane) tabPane.getSelectionModel().getSelectedItem().getContent();
+	}
+
 	public class DiagramViewPane extends Pane implements View{
 		
 		private Canvas canvas;
@@ -867,6 +901,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			canvas.setOnMouseReleased(this::mouseReleased);
 			canvas.setOnMouseMoved(this::mouseMoved);
 			canvas.addEventFilter(ScrollEvent.ANY, this::handleScroll);
+
 			
 			views.add(this);
 			
@@ -1025,6 +1060,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 		private void handleLeftPressed(MouseEvent e) {
 			CanvasElement hitObject = getElementAt(e.getX(), e.getY());
+			Point2D unTransformedPoint = null;
+			try{
+				unTransformedPoint = getCanvasTransform().inverseTransform(new Point2D(e.getX(), e.getY()));
+			} catch (javafx.scene.transform.NonInvertibleTransformException ex) {}
+			
 
 			if (nodeCreationType == null && edgeCreationType == null) {
 				handleLeftPressedDefault(e, hitObject);
@@ -1052,9 +1092,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				}
 			} else {
 				if (nodeCreationType.equals("MetaClass")) {
-					actions.addMetaClassDialog(e);
+					actions.addMetaClassDialog(unTransformedPoint);
 				} else {
-					actions.addInstanceDialog(getObjectByPath((nodeCreationType)),e);
+					actions.addInstanceDialog(getObjectByPath((nodeCreationType)),unTransformedPoint);
 				}
 				canvas.setCursor(Cursor.DEFAULT);
 				deselectAll();
@@ -1071,13 +1111,12 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		private void handleDoubleClickOnNodeElement(Point2D p, CanvasElement hitObject) {
 			if (hitObject instanceof FmmlxObject) {
 				FmmlxObject obj = (FmmlxObject) hitObject;
-//				Point2D relativePoint = new Point2D(p.getX() - obj.getX(), p.getY() - obj.getY());
 				obj.performDoubleClickAction(p, canvas.getGraphicsContext2D(), canvasTransform, this);
 			} else if (hitObject instanceof DiagramEdgeLabel) {
 				DiagramEdgeLabel<?> l = (DiagramEdgeLabel<?>) hitObject;
 				l.performAction();
 			} else if (hitObject instanceof FmmlxAssociation) {
-				actions.editAssociationDialog((FmmlxAssociation)hitObject);
+				actions.editAssociationDialog((FmmlxAssociation) hitObject);
 			}
 		}
 
@@ -1238,12 +1277,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			g.setLineWidth(1);
 			g.setLineDashes(null);
 			
-			g.setTransform(new Affine());		
+			g.setTransform(canvasTransform);		
 			if (mouseMode == MouseMode.MULTISELECT) {drawMultiSelectRect(g);}
 			drawNewEdgeLine(g);
 			
-			g.setFill(Color.RED);
-	//
+			g.setTransform(new Affine());	
+			g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), FontWeight.NORMAL, FontPosture.REGULAR, 14));
+
+//			g.setFill(Color.RED);
+//
 //			g.fillText(""+currentPointHover, currentPointHover.getX(), currentPointHover.getY());
 //					
 //			try {
@@ -1253,6 +1295,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 //			
 //			g.setFill(Color.PURPLE);
 //			g.fillText(canvas.getWidth() + ":"  +canvas.getHeight(), 0, 20);
+//
+			
+			g.setFill(Color.PURPLE);
+			try{g.fillText((int)(lastPointPressed.getX()) + ":"  +(int)(lastPointPressed.getY()), 0, 20);} catch (Exception E) {}
+			try{g.fillText((int)(currentPointMoving.getX()) + ":"  +(int)(currentPointMoving.getY()), 0, 40);} catch (Exception E) {}
 //			
 //			g.setStroke(Color.PURPLE);
 //			g.strokeLine(0, 0, canvas.getWidth(), canvas.getHeight());

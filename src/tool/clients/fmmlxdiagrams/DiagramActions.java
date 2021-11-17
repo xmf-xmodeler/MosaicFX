@@ -5,6 +5,7 @@ import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
@@ -17,6 +18,7 @@ import tool.clients.dialogs.enquiries.FindClassDialog;
 import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.exporter.svg.SvgExporter;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ObjectBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.*;
@@ -33,6 +35,7 @@ import tool.clients.fmmlxdiagrams.dialogs.operation.AddOperationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.operation.ChangeBodyDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
 import tool.clients.fmmlxdiagrams.dialogs.shared.*;
+import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
 import tool.clients.importer.FMMLxImporter;
@@ -65,36 +68,51 @@ public class DiagramActions {
 		}
 	}
 
-	public void addMetaClassDialog(Canvas canvas) {
+	public void addMetaClassDialog(final View view) {
 
 		Platform.runLater(() -> {
 			CreateMetaClassDialog dlg = new CreateMetaClassDialog(diagram);
 			dlg.setTitle("Add metaclass");
-			Optional<MetaClassDialogResult> result = dlg.showAndWait();
+			Optional<CreateMetaClassDialog.Result> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
-				final MetaClassDialogResult mcdResult = result.get();
+				final CreateMetaClassDialog.Result mcdResult = result.get();
 
-				if(canvas != null) {				
-					canvas.setCursor(Cursor.CROSSHAIR);
+				if(view != null) {				
+					view.getCanvas().setCursor(Cursor.CROSSHAIR);
 	
 					EventHandler<MouseEvent> chooseLocation = new EventHandler<MouseEvent>() {
 						public void handle(MouseEvent e) {
-	
-							int x = (int) e.getX();
-							int y = (int) e.getY();
+							// use mouse x/y to have a result in matrix does not invert
+							double x = e.getX();
+							double y = e.getY();
+							
+							try{
+								Point2D p = view.getCanvasTransform().inverseTransform(new Point2D(x, y));
+								x = p.getX(); y = p.getY();
+							} catch (javafx.scene.transform.NonInvertibleTransformException ex) {}
+													
 							if (x > 0 && y > 0) {
-								diagram.getComm().addMetaClass(diagram.getID(), mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentNames(), mcdResult.isAbstract(), x, y, false);
+								diagram.getComm().addMetaClass(diagram.getID(), 
+										mcdResult.name, 
+										mcdResult.level, 
+										mcdResult.getParentNames(), 
+										mcdResult.isAbstract, 
+										(int) (x+.5), (int) (y+.5), false);
 	
-								canvas.setCursor(Cursor.DEFAULT);
-								canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
+								view.getCanvas().setCursor(Cursor.DEFAULT);
+								view.getCanvas().removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
 								diagram.updateDiagram();
 							}
 						}
 					};
-					canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
+					view.getCanvas().addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
 				} else {
-					diagram.getComm().addMetaClass(diagram.getID(), mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentNames(), mcdResult.isAbstract(), 0, 0, true);
+					diagram.getComm().addMetaClass(diagram.getID(), 
+							mcdResult.name, 
+							mcdResult.level, 
+							mcdResult.getParentNames(),
+							mcdResult.isAbstract, 0, 0, true);
 					diagram.updateDiagram();
 				}
 
@@ -102,31 +120,30 @@ public class DiagramActions {
 		});
 	}
 	
-	public void addMetaClassDialog(MouseEvent e) {
+	public void addMetaClassDialog(Point2D p) {
 		Platform.runLater(() -> {
 			CreateMetaClassDialog dlg = new CreateMetaClassDialog(diagram);
 			dlg.setTitle("Add metaclass");
-			Optional<MetaClassDialogResult> result = dlg.showAndWait();
+			Optional<CreateMetaClassDialog.Result> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
-				final MetaClassDialogResult mcdResult = result.get();
+				final CreateMetaClassDialog.Result mcdResult = result.get();
 
-				int x = (int) e.getX();
-				int y = (int) e.getY();
-
-				if (x > 0 && y > 0) {
-					diagram.getComm().addMetaClass(diagram.getID(), mcdResult.getName(), mcdResult.getLevel(), mcdResult.getParentNames(), mcdResult.isAbstract(), x, y, false);
-					diagram.updateDiagram();
-				}
+				diagram.getComm().addMetaClass(diagram.getID(), mcdResult.name, 
+						mcdResult.level, mcdResult.getParentNames(), mcdResult.isAbstract, 
+						(int) (p.getX()+.5), (int) (p.getY()+.5), 
+						false);
+				diagram.updateDiagram();
+			
 			}
 		});
 	}
 
-	public void addInstanceDialog(Canvas canvas) {
-		addInstanceDialog(null, canvas);
+	public void addInstanceDialog(View view) {
+		addInstanceDialog(null, view);
 	}
 
-	public void addInstanceDialog(FmmlxObject object, Canvas canvas) {
+	public void addInstanceDialog(FmmlxObject object, View view) {
 
 		Platform.runLater(() -> {
 			AddInstanceDialog dialog = new AddInstanceDialog(diagram, object);
@@ -136,39 +153,45 @@ public class DiagramActions {
 			if (result.isPresent()) {
 				final AddInstanceDialogResult aidResult = result.get();
 
-				if(canvas == null) {
+				if(view == null) {
 					diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), 
 							aidResult.getName(), aidResult.getLevel(),
                             aidResult.getParentNames(), aidResult.isAbstract(), 0, 0, true);
 					diagram.updateDiagram();
 				} else {
-					canvas.setCursor(Cursor.CROSSHAIR);
+					view.getCanvas().setCursor(Cursor.CROSSHAIR);
 	
 					EventHandler<MouseEvent> chooseLocation = new EventHandler<MouseEvent>() {
 						public void handle(MouseEvent e) {
-	
-							int x = (int) e.getX();
-							int y = (int) e.getY();
+							double x = e.getX();
+							double y = e.getY();
+							
+							try{
+								Point2D p = view.getCanvasTransform().inverseTransform(new Point2D(x, y));
+								x = p.getX(); y = p.getY();
+							} catch (javafx.scene.transform.NonInvertibleTransformException ex) {}
+							
 	
 							if (x > 0 && y > 0) {
 								diagram.getComm().addNewInstance(diagram.getID(), aidResult.getOfName(), 
 										aidResult.getName(), aidResult.getLevel(), 
-										aidResult.getParentNames(), aidResult.isAbstract(), x, y, false);
+										aidResult.getParentNames(), aidResult.isAbstract(), 
+										(int) (x+.5), (int) (y+.5), false);
 	
-								canvas.setCursor(Cursor.DEFAULT);
-								canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
+								view.getCanvas().setCursor(Cursor.DEFAULT);
+								view.getCanvas().removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
 	
 								diagram.updateDiagram();
 							}
 						}
 					};
-					canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
+					view.getCanvas().addEventHandler(MouseEvent.MOUSE_CLICKED, chooseLocation);
 				}
 			}
 		});
 	}
 	
-	public void addInstanceDialog(FmmlxObject object, MouseEvent e) {
+	public void addInstanceDialog(FmmlxObject object, Point2D p) {
 		Platform.runLater(() -> {
 			AddInstanceDialog dialog = new AddInstanceDialog(diagram, object);
 			dialog.setTitle("Add instance");
@@ -177,17 +200,14 @@ public class DiagramActions {
 			if (result.isPresent()) {
 				final AddInstanceDialogResult aidResult = result.get();
 
-				int x = (int) e.getX();
-				int y = (int) e.getY();
-				
-				if (x > 0 && y > 0) {
-					diagram.getComm().addNewInstance(
-							diagram.getID(), aidResult.getOfName(), aidResult.getName(),
-							aidResult.getLevel(),
-                            aidResult.getParentNames(), aidResult.isAbstract(), x, y, false);
+				diagram.getComm().addNewInstance(
+						diagram.getID(), aidResult.getOfName(), aidResult.getName(),
+						aidResult.getLevel(),
+                        aidResult.getParentNames(), aidResult.isAbstract(), 
+                        (int) (p.getX()+.5), (int) (p.getY()+.5), false);
 
-					diagram.updateDiagram();
-				}
+				diagram.updateDiagram();
+
 			}
 		});
 	}
@@ -198,7 +218,7 @@ public class DiagramActions {
 
 	public void addAttributeDialog(FmmlxObject object) {
 		Platform.runLater(() -> {
-			AddAttributeDialog dlg;
+			final AddAttributeDialog dlg;
 			if (object != null) {
 				dlg = new AddAttributeDialog(diagram, object);
 			} else {
@@ -206,10 +226,10 @@ public class DiagramActions {
 			}
 
 			dlg.setTitle("Add Attribute");
-			Optional<AddAttributeDialogResult> result = dlg.showAndWait();
+			Optional<AddAttributeDialog.Result> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
-				AddAttributeDialogResult aad = result.get();
+				AddAttributeDialog.Result aad = result.get();
 				diagram.getComm().addAttribute(diagram.getID(), aad.className, aad.name, aad.level, aad.type, aad.multi);
 			}
 			diagram.updateDiagram();
@@ -504,11 +524,11 @@ public class DiagramActions {
 
 //		Platform.runLater(() -> {
 			ChangeSlotValueDialog dlg = new ChangeSlotValueDialog(diagram, hitObject, hitProperty);
-			Optional<ChangeSlotValueDialogResult> result = dlg.showAndWait();
+			Optional<ChangeSlotValueDialog.Result> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
-				ChangeSlotValueDialogResult slotValueDialogResult = result.get();
-				diagram.getComm().changeSlotValue(diagram.getID(), slotValueDialogResult.getObject().getName(), slotValueDialogResult.getSlot().getName(), slotValueDialogResult.getNewValue());
+				ChangeSlotValueDialog.Result slotValueDialogResult = result.get();
+				diagram.getComm().changeSlotValue(diagram.getID(), slotValueDialogResult.object.getName(), slotValueDialogResult.slot.getName(), slotValueDialogResult.newValue);
 				diagram.updateDiagram();
 			}
 //		});
@@ -545,10 +565,10 @@ public class DiagramActions {
 
 		Platform.runLater(() -> {
 			AddConstraintDialog dlg = new AddConstraintDialog(diagram, object);
-			Optional<AddConstraintDialog.AddConstraintDialogResult> opt = dlg.showAndWait();
+			Optional<AddConstraintDialog.Result> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
-				final AddConstraintDialog.AddConstraintDialogResult result = opt.get();
+				final AddConstraintDialog.Result result = opt.get();
 				diagram.getComm().addConstraint(
 						diagram.getID(), 
 						result.object.getPath(), 
@@ -564,9 +584,9 @@ public class DiagramActions {
 	public void editConstraint(FmmlxObject object, Constraint constraint) {
 		Platform.runLater(() -> {
 		AddConstraintDialog dlg = new AddConstraintDialog(diagram,object,constraint);
-		Optional<AddConstraintDialog.AddConstraintDialogResult> opt = dlg.showAndWait();
+		Optional<AddConstraintDialog.Result> opt = dlg.showAndWait();
 		if(opt.isPresent()) {
-			final AddConstraintDialog.AddConstraintDialogResult result = opt.get();
+			final AddConstraintDialog.Result result = opt.get();
 					diagram.getComm().editConstraint(
 							diagram.getID(), 
 							object.getPath(),
@@ -986,14 +1006,14 @@ public class DiagramActions {
 		diagram.getComm().showBody(diagram, object, operation);
 	}
 
-	public void addMissingLink(FmmlxObject obj, FmmlxAssociation assoc, Canvas canvas) {
+	public void addMissingLink(FmmlxObject obj, FmmlxAssociation assoc) {
 		Platform.runLater(() -> {
 			AddMissingLinkDialog dlg = new AddMissingLinkDialog(obj, assoc);
-			Optional<AddMissingLinkDialogResult> solution = dlg.showAndWait();
+			Optional<AddMissingLinkDialog.Result> solution = dlg.showAndWait();
 
 			if(solution.isPresent()) {
 				if(solution.get().createNew) {
-					addInstanceDialog(solution.get().selection, canvas);
+					addInstanceDialog(solution.get().selection, diagram.getActiveView());
 				} else {
 					diagram.getComm().addAssociationInstance(diagram.getID(), obj.getName(), solution.get().selection.getName(), assoc.getName());
 					diagram.updateDiagram();

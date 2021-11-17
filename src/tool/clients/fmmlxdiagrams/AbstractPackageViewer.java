@@ -7,6 +7,7 @@ import java.util.Vector;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.canvas.Canvas;
+import tool.clients.fmmlxdiagrams.graphics.View;
 
 public abstract class AbstractPackageViewer {
 	
@@ -398,4 +399,6 @@ public abstract class AbstractPackageViewer {
 		Collections.reverse(result);
 		return result;
 	}
+
+	public View getActiveView() {return null;}
 }

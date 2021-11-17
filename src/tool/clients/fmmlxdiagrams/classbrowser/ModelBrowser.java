@@ -860,9 +860,9 @@ public final class ModelBrowser extends CustomStage {
 			this.object = fmmlxObjectListView.getSelectionModel().getSelectedItem();
 			setAutoHide(true);
 			
-			addNewMenuItem(this, "Add Class", e -> actions.addMetaClassDialog((javafx.scene.canvas.Canvas) null), ALWAYS);
+			addNewMenuItem(this, "Add Class", e -> actions.addMetaClassDialog((tool.clients.fmmlxdiagrams.graphics.View) null), ALWAYS);
 			if(object!=null) {
-				addNewMenuItem(this, "Add Instance of " + object.getName(), e -> actions.addInstanceDialog(object, (javafx.scene.canvas.Canvas) null), () -> {return object.getLevel() >= 1 && !object.isAbstract();});
+				addNewMenuItem(this, "Add Instance of " + object.getName(), e -> actions.addInstanceDialog(object, (tool.clients.fmmlxdiagrams.graphics.View) null), () -> {return object.getLevel() >= 1 && !object.isAbstract();});
 				addNewMenuItem(this, "Instance Generator", e -> actions.runInstanceGenerator(object), NEVER);
 	
 				getItems().add(new SeparatorMenuItem());

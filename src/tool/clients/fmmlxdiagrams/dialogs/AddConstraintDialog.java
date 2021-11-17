@@ -16,7 +16,7 @@ import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.Constraint;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 
-public class AddConstraintDialog extends Dialog<AddConstraintDialog.AddConstraintDialogResult> {
+public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 
 	private Label label1 = new Label();
 	private TextField nameField = new TextField();
@@ -59,7 +59,7 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.AddConstrain
 		validator();
 		setResultConverter(button -> {
 			if (button != null && button.getButtonData() == ButtonData.OK_DONE) {
-				return new AddConstraintDialogResult(object, nameField.getText(),
+				return new Result(object, nameField.getText(),
 						Integer.parseInt(levelField.getText()),
 						"@Operation body(classifier : Class, level : Integer) : Boolean " + bodyBox.getText() + " end",
 						"@Operation reason(classifier : Class, level : Integer) : String " + reasonBox.getText()
@@ -96,7 +96,7 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.AddConstrain
 		validator();
 		setResultConverter(button -> {
 			if (button != null && button.getButtonData() == ButtonData.OK_DONE) {
-				return new AddConstraintDialogResult(object, nameField.getText(),
+				return new Result(object, nameField.getText(),
 						Integer.parseInt(levelField.getText()),
 						bodyBox.getText(),
 						reasonBox.getText()
@@ -119,7 +119,7 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.AddConstrain
 		return true;
 	}
 
-	public class AddConstraintDialogResult {
+	public class Result {
 
 		public final FmmlxObject object;
 		public final String constName;
@@ -128,7 +128,7 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.AddConstrain
 		public final String reason;
 		public Constraint constraint;
 
-		public AddConstraintDialogResult(FmmlxObject object, String constName, Integer instLevel, String body,
+		public Result(FmmlxObject object, String constName, Integer instLevel, String body,
 				String reason) {
 			this.object = object;
 			this.constName = constName;
@@ -137,7 +137,7 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.AddConstrain
 			this.reason = reason;
 		}
 		
-		public AddConstraintDialogResult(FmmlxObject object, String constName, Integer instLevel, String body,
+		public Result(FmmlxObject object, String constName, Integer instLevel, String body,
 				String reason, Constraint constraint) {
 			this.object = object;
 			this.constName = constName;
@@ -166,7 +166,7 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.AddConstrain
 	private void setResultConverter() {
 		setResultConverter(button -> {
 			if (button != null && button.getButtonData() == ButtonData.OK_DONE) {
-				return new AddConstraintDialogResult(
+				return new Result(
 						object, 
 						constraint.getName(),
 						constraint.getLevel(),

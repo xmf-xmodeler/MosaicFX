@@ -29,7 +29,7 @@ public class ObjectContextMenu extends ContextMenu {
 		setAutoHide(true);
 
 		MenuItem addInstanceItem = new MenuItem("Add instance");
-		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object, view.getCanvas()));
+		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object, view));
 		if((object.getLevel() >= 1 || object.getLevel() == -1) && !object.isAbstract()) getItems().add(addInstanceItem);
 		
 		MenuItem removeItem = new MenuItem("Remove");

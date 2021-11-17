@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import java.util.Vector;
+
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
@@ -10,7 +12,7 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.dialogs.results.MetaClassDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 
-public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
+public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Result> {
 
 	private AbstractPackageViewer diagram;
 	private ObservableList<FmmlxObject> possibleParents;
@@ -85,7 +87,7 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				return new MetaClassDialogResult(nameTextField.getText(),
+				return new Result(nameTextField.getText(),
 						getComboBoxIntegerValue(levelComboBox), abstractCheckbox.isSelected(), parentListView.getSelectionModel().getSelectedItems());
 			}
 			return null;
@@ -108,5 +110,41 @@ public class CreateMetaClassDialog extends CustomDialog<MetaClassDialogResult> {
 			return false;
 		}
 		return true;
+	}
+	
+	public class Result {
+		public final String name;
+		public final  int level;
+		public final  boolean isAbstract;
+		public final  ObservableList<FmmlxObject> parent;
+
+		public Result(String name, int level, boolean isAbstract, ObservableList<FmmlxObject> parent) {
+			this.name = name;
+			this.level = level;
+			this.isAbstract = isAbstract;
+			this.parent = parent;
+		}
+
+		public Vector<String> getParentPaths() {
+			Vector<String> parentPaths = new Vector<>();
+
+			if (parent.size() > 0) {
+				for (FmmlxObject object : parent) {
+					parentPaths.add(object.getPath());
+				}
+			}
+			return parentPaths;
+		}
+
+		public Vector<String> getParentNames() {
+			Vector<String> parentNames = new Vector<>();
+
+			if (parent.size() > 0) {
+				for (FmmlxObject object : parent) {
+					parentNames.add(object.getName());
+				}
+			}
+			return parentNames;
+		}
 	}
 }

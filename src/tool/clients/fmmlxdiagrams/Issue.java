@@ -7,6 +7,7 @@ import javafx.scene.paint.Color;
 import org.w3c.dom.Element;
 import tool.clients.exporter.svg.SvgConstant;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.xmlManipulator.XmlHandler;
 
 import java.util.Vector;
@@ -107,7 +108,7 @@ public class Issue implements FmmlxProperty{
 		} else if("addMissingLink".equals(actionName)) { 
 			FmmlxObject obj = diagram.getObjectByPath((String) solution.get(1));
 			FmmlxAssociation assoc = diagram.getAssociationByPath((String) solution.get(2));
-			diagram.getActions().addMissingLink(obj, assoc, diagram.getCanvas());
+			diagram.getActions().addMissingLink(obj, assoc);
 //			Platform.runLater(()->{
 //		        Alert alert = new Alert(AlertType.INFORMATION);
 //		        alert.setTitle("Resolving Issue");

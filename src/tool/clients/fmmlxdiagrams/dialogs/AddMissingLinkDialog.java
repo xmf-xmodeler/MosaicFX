@@ -12,9 +12,8 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.dialogs.results.AddMissingLinkDialogResult;
 
-public class AddMissingLinkDialog extends CustomDialog<AddMissingLinkDialogResult> {
+public class AddMissingLinkDialog extends CustomDialog<AddMissingLinkDialog.Result> {
 	
 	private final boolean objIsSource;
 	private final FmmlxObject classAtOtherEnd;
@@ -77,9 +76,9 @@ public class AddMissingLinkDialog extends CustomDialog<AddMissingLinkDialogResul
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
                 if(createLabel.isSelected() && createComboBox.getSelectionModel().getSelectedIndex() >= 0) {
-                	return new AddMissingLinkDialogResult(true, createComboBox.getSelectionModel().getSelectedItem());
+                	return new Result(true, createComboBox.getSelectionModel().getSelectedItem());
                 } else if (pickLabel.isSelected() && pickComboBox.getSelectionModel().getSelectedIndex() >= 0) {
-                    return new AddMissingLinkDialogResult(false, pickComboBox.getSelectionModel().getSelectedItem());
+                    return new Result(false, pickComboBox.getSelectionModel().getSelectedItem());
                 }
 			}
 			return null;
@@ -89,5 +88,15 @@ public class AddMissingLinkDialog extends CustomDialog<AddMissingLinkDialogResul
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		dialogPane.setContent(flow);
 	}
+	
+	public static class Result {
+		
+		public final boolean createNew;
+		public final FmmlxObject selection;
 
+		public Result(boolean createNew, FmmlxObject selection) {
+			this.createNew = createNew; this.selection = selection;
+		}
+
+	}
 }

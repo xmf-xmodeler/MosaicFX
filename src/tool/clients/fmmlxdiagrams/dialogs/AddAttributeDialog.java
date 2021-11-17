@@ -10,14 +10,13 @@ import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.Multiplicity;
 import tool.clients.fmmlxdiagrams.dialogs.association.MultiplicityDialog;
-import tool.clients.fmmlxdiagrams.dialogs.results.AddAttributeDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.*;
 
 
-public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
+public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> {
 
 	private Label nameLabel;
 	private Label classLabel;
@@ -69,7 +68,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 
-				return new AddAttributeDialogResult(
+				return new Result(
 						selectedObject.getName(),
 						nameTextField.getText(),
 						getIntLevel(),
@@ -205,6 +204,23 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialogResult> {
 
 			multiplicity = result.convertToMultiplicity();
 			displayMultiplicityLabel.setText(multiplicity.toString());
+		}
+	}
+		
+	public static class Result {
+		
+		public final String name;
+		public final String type;
+		public final int level;
+		public final String className;
+		public final Multiplicity multi;
+
+		private Result(String className, String name, int level, String type, Multiplicity multi) {
+			this.className= className;
+			this.name = name;
+			this.level = level;
+			this.type =type;
+			this.multi=multi;
 		}
 	}
 }
