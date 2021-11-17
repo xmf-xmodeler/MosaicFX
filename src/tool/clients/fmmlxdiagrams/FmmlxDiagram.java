@@ -166,6 +166,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         tabPane.getTabs().add(new Tab("Tab 1", new DiagramViewPane()));
         tabPane.getTabs().add(new Tab("Tab 2", new DiagramViewPane()));
 		
+        //LM, 17.11.2021, Resize of Canvas on rescale
+        tabPane.heightProperty().addListener( ( observable ) -> redraw() );
+        tabPane.widthProperty().addListener( ( observable ) -> redraw() );
+        
 		mainView.getChildren().addAll(palette, palette2, tabPane);//scrollerCanvas);
 
 		splitPane.setOrientation(Orientation.HORIZONTAL);
