@@ -1,6 +1,8 @@
 package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.geometry.Point2D;
@@ -1681,13 +1683,24 @@ public class FmmlxDiagramCommunicator {
 
 	// ########################## Tab ### Stage #######################
 
-	private void createStage(javafx.scene.Node node, String name, int id, final  FmmlxDiagram diagram) {
+	private void createStage(javafx.scene.Node node, String name, int id, final FmmlxDiagram diagram) {
 		Stage stage = new Stage();
 		BorderPane border = new BorderPane();
 		border.setCenter(node);
 		Scene scene = new Scene(border, 1000, 605);
 		stage.setScene(scene);
 		stage.setTitle(name);
+		
+		//LM, 17.11.2021, resize canvas on maximize
+		// The update can only be achieved in a parallel thread as the actual size of the stage is
+		// not updated at the same time as the attribute "maximized".
+		stage.maximizedProperty().addListener( (observer, x, y) -> {
+			Thread newThread = new Thread(() -> {
+				diagram.redraw();
+			});
+			newThread.start();
+		});;
+		
 		stage.show();
 		stage.setOnCloseRequest((e) -> closeScene(stage, e, id, name, node, diagram));
 	}
