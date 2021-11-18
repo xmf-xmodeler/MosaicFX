@@ -14,111 +14,81 @@ public class DefaultContextMenu extends ContextMenu {
 		FmmlxDiagram diagram = view.getDiagram();
 		DiagramActions actions = diagram.getActions();
 		setAutoHide(true);
+		
+		Menu addMenu = new Menu("Add");
 
-		MenuItem addClassItem = new MenuItem("Add Class");
+		MenuItem addClassItem = new MenuItem("Class");
 		addClassItem.setOnAction(e -> actions.addMetaClassDialog(view));
-		MenuItem addInstanceItem = new MenuItem("Add Instance");
+		MenuItem addInstanceItem = new MenuItem("Instance");
 		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(view));
-		
-		// Submenu for association
-//		Menu associationMenu = new Menu("Association");
-		MenuItem addAssociationItem = new MenuItem("Add Association");
+		MenuItem addAssociationItem = new MenuItem("Association");
 		addAssociationItem.setOnAction(e -> actions.addAssociationDialog(null, null));
-//		associationMenu.getItems().add(addAssociationItem);
-		
+		addMenu.getItems().addAll(addClassItem, addInstanceItem, addAssociationItem);
 		
 		Menu levelMenu = new Menu("Levels");
 		MenuItem levelRaiseAllItem = new MenuItem("Raise all");
 		levelRaiseAllItem.setOnAction(e -> actions.levelRaiseAll());
 		MenuItem levelLowerAllItem = new MenuItem("Lower all");
 		levelLowerAllItem.setOnAction(e -> actions.levelLowerAll());
-		
 		levelMenu.getItems().addAll(levelRaiseAllItem, levelLowerAllItem);
 	
-		Menu enumeration = new Menu("Enumeration");
+		Menu enumerationMenu = new Menu("Enumerations");
 		MenuItem createEnumeration = new MenuItem("Create Enumeration");
 		createEnumeration.setOnAction(e -> actions.addEnumerationDialog());
 		MenuItem editEnumeration = new MenuItem("Edit Enumeration");
 		editEnumeration.setOnAction(e -> actions.editEnumerationDialog("edit_element",""));
 		MenuItem deleteEnumeration = new MenuItem("Delete Enumeration");
 		deleteEnumeration.setOnAction(e -> actions.deleteEnumerationDialog());
-		MenuItem packageListView_LOCAL = new MenuItem("Package ListView (Local)");
-		packageListView_LOCAL.setOnAction(e -> actions.openClassBrowserStage(false));
-		MenuItem packageListView = new MenuItem("Package ListView");
+		MenuItem packageListView = new MenuItem("Class Browser (BETA)");
 		packageListView.setOnAction(e -> actions.openClassBrowserStage(false));
-		enumeration.getItems().addAll(createEnumeration, editEnumeration, deleteEnumeration);
+		enumerationMenu.getItems().addAll(createEnumeration, editEnumeration, deleteEnumeration);
 
-		MenuItem exportSvgDefault = new MenuItem("Export SVG");
-		exportSvgDefault.setOnAction(e -> actions.exportSvg());
+		Menu exportMenu = new Menu("Export as");
+		MenuItem exportSVG = new MenuItem("SVG");
+		exportSVG.setOnAction(e -> actions.exportSvg());
+		MenuItem exportPNG = new MenuItem("PNG");
+		exportPNG.setOnAction(a -> diagram.savePNG());	
+		exportMenu.getItems().add(exportSVG);
+		exportMenu.getItems().add(exportPNG);
 
 		MenuItem importDiagram = new MenuItem("Import Package (BETA)");
 		importDiagram.setOnAction(e -> actions.importDiagram());
 
-		Menu filterObjects = new Menu("Filter Objects");
+		Menu filterObjectsMenu = new Menu("Filter Objects (BETA)");
 		MenuItem showAll = new MenuItem("Show All");
 		showAll.setOnAction(e -> actions.showAll());
-		MenuItem showCertainLevel = new MenuItem("Show Certain Level (BETA)");
+		MenuItem showCertainLevel = new MenuItem("Filter by Level");
 		showCertainLevel.setOnAction(e -> actions.showCertainLevel());
-		filterObjects.getItems().addAll(showAll, showCertainLevel);
+		filterObjectsMenu.getItems().addAll(showAll, showCertainLevel);
 
 		MenuItem unhideItem = new MenuItem("Unhide Elements");
 		unhideItem.setOnAction(e -> actions.unhideElementsDialog());
 		
-		getItems().addAll(addClassItem, addInstanceItem, addAssociationItem, levelMenu, enumeration, unhideItem, packageListView, packageListView_LOCAL, exportSvgDefault, importDiagram, filterObjects);
+		MenuItem saveAs = new MenuItem("Save As...");
+		saveAs.setOnAction(a -> diagram.getComm().saveXmlFile2(diagram.getPackagePath(), diagram.getID()));
 
-		{ // test
-			MenuItem testEvalList = new MenuItem("TEST EVAL LIST");
-			testEvalList.setOnAction(e -> {
-				TextInputDialog dialog = new TextInputDialog("x");
-				dialog.setTitle("evalList Test Dialog");
-//				dialog.setHeaderText("Look, a Text Input Dialog");
-				dialog.setContentText("Enter a reference:");
+		Menu searchMenu = new Menu("Search for");
+		MenuItem openFindImplementationDialog = new MenuItem("Implementations");
+		openFindImplementationDialog.setOnAction(e -> actions.openFindImplementationDialog());
+		
+		MenuItem openFindClassDialog = new MenuItem("Classes");
+		openFindClassDialog.setOnAction(e -> actions.openFindClassDialog());
 
-				Optional<String> result = dialog.showAndWait();
-				if (result.isPresent()){
-				    Vector<String> list = actions.testEvalList(result.get());
-				    
-				    ChoiceDialog<String> dialog2 = new ChoiceDialog<>(null, list);
-				    dialog2.setTitle("Result Dialog");
-//				    dialog2.setHeaderText("Look, a Choice Dialog");
-				    dialog2.setContentText("Found this list:");
+		MenuItem openFindSendersOfMessages = new MenuItem("Senders");
+		openFindSendersOfMessages.setOnAction(e -> actions.openFindSendersDialog());
+		searchMenu.getItems().addAll(openFindImplementationDialog, openFindClassDialog, openFindSendersOfMessages);
 
-				    //Optional<String> result2 = 
-				    	dialog2.showAndWait();
-				}
-
-			});
-			
-//			getItems().addAll(testEvalList);
-
-			MenuItem save = new MenuItem("Save");
-			save.setOnAction(a -> actions.save());
-			getItems().addAll(save);
-			save.setDisable(true);
-
-			MenuItem saveAs = new MenuItem("Save As...");
-			saveAs.setOnAction(a -> diagram.getComm().saveXmlFile2(diagram.getPackagePath(), diagram.getID()));
-			getItems().addAll(saveAs);
-
-			MenuItem pngItem = new MenuItem("Export as PNG...");
-			pngItem.setOnAction(a -> {
-				diagram.savePNG();
-			});	
-
-			getItems().add(pngItem);
-
-			MenuItem openFindImplementationDialog = new MenuItem("Search for Implementation");
-			openFindImplementationDialog.setOnAction(e -> actions.openFindImplementationDialog());
-			getItems().addAll(openFindImplementationDialog);
-	
-			MenuItem openFindClassDialog = new MenuItem("Search for Class");
-			openFindClassDialog.setOnAction(e -> actions.openFindClassDialog());
-			getItems().addAll(openFindClassDialog);
-
-			MenuItem openFindSendersOfMessages = new MenuItem("Search for Senders");
-			openFindSendersOfMessages.setOnAction(e -> actions.openFindSendersDialog());
-			getItems().addAll(openFindSendersOfMessages);
-
-		}
+		getItems().addAll(
+			addMenu, 
+			levelMenu, 
+			enumerationMenu, 
+			unhideItem, 
+			packageListView, 
+			exportMenu, 
+			importDiagram, 
+			filterObjectsMenu,
+			saveAs,
+			searchMenu);
 	}
 }
+
