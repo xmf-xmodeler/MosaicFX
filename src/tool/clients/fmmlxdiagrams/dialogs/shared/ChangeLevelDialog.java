@@ -10,14 +10,13 @@ import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeLevelDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.Vector;
 
 
-public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
+public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialog.Result> {
 
 	private final PropertyType type;
 	private FmmlxObject object;
@@ -78,7 +77,7 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				return new ChangeLevelDialogResult(object, name, currentLevel, newLevel, type);
+				return new Result(object, name, currentLevel, newLevel, type);
 			}
 			return null;
 		});
@@ -354,4 +353,26 @@ public class ChangeLevelDialog extends CustomDialog<ChangeLevelDialogResult> {
 			selectOperationComboBox.getSelectionModel().select((FmmlxOperation) selectedProperty);
 		}
 	}
+	
+	public class Result {
+
+		public final PropertyType type;
+		public final  FmmlxObject object;
+		public final  int oldLevel;
+		public final  int newLevel;
+		public final  String name;
+		
+		public Result(FmmlxObject object, String name, Integer currentLevel, Integer newLevel, PropertyType type) {
+			this.type = type;
+			this.object = object;
+			this.oldLevel = currentLevel;
+			this.newLevel= newLevel;
+			this.name= name;
+		}		
+
+		public String getObjectName() {
+			return object.getName();
+		}
+	}
+
 }

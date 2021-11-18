@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs.instance;
+package tool.clients.fmmlxdiagrams.dialogs;
 
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -6,11 +6,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOfDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
-public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult> {
+public class ChangeOfDialog extends CustomDialog<ChangeOfDialog.Result> {
 
 	private FmmlxObject object;
 	private final AbstractPackageViewer diagram;
@@ -50,7 +48,7 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult> {
 
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				return new ChangeOfDialogResult(object, object.getOfPath(), newOfComboBox.getSelectionModel().getSelectedItem());
+				return new Result(object, object.getOfPath(), newOfComboBox.getSelectionModel().getSelectedItem());
 			}
 			return null;
 		});
@@ -110,4 +108,15 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult> {
 		grid.add(errorLabel, 0, 3);
 	}
 
+	public class Result {	
+		public final FmmlxObject object;
+		public final String oldOfName;
+		public final FmmlxObject newOf;
+		
+		public Result(FmmlxObject object, String oldOfName, FmmlxObject newOf) {
+			this.object = object;
+			this.oldOfName = oldOfName;
+			this.newOf = newOf;
+		}
+	}
 }

@@ -8,12 +8,11 @@ import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeNameDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.Vector;
 
-public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDialog<ChangeNameDialogResult> {
+public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDialog<ChangeNameDialog<?>.Result> {
 
 	private final PropertyType type;
 	private final AbstractPackageViewer diagram;
@@ -73,11 +72,11 @@ public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDial
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
 				switch (type) {
 					case Class:
-						return new ChangeNameDialogResult(object, newNameTextField.getText());
+						return new Result(type, object, object.getName(), newNameTextField.getText());
 					case Attribute:
-						return new ChangeNameDialogResult(type, object, (FmmlxAttribute) comboBox.getSelectionModel().getSelectedItem(), newNameTextField.getText());
+						return new Result(type, object, ((FmmlxAttribute) comboBox.getSelectionModel().getSelectedItem()).getName(), newNameTextField.getText());
 					case Operation:
-						return new ChangeNameDialogResult(type, object, (FmmlxOperation) comboBox.getSelectionModel().getSelectedItem(), newNameTextField.getText());
+						return new Result(type, object, ((FmmlxOperation) comboBox.getSelectionModel().getSelectedItem()).getName(), newNameTextField.getText());
 					default:
 						System.err.println("ChangeNameDialog: No matching content type!");
 				}
@@ -223,7 +222,7 @@ public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDial
 		if (comboBox.getSelectionModel().getSelectedItem() == null) {
 			errorLabel.setText(StringValue.ErrorMessage.selectAssociation);
 			return false;
-		} else if (!InputChecker.getInstance().validateName(name)) {
+		} else if (!InputChecker.validateName(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else if (!InputChecker.getInstance().associationNameIsAvailable(name, object)) {
@@ -236,7 +235,7 @@ public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDial
 	private boolean validateClassName() {
 		String name = newNameTextField.getText();
 
-		if (!InputChecker.getInstance().validateName(name)) {
+		if (!InputChecker.validateName(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else if (!InputChecker.getInstance().classNameIsAvailable(name, diagram)) {
@@ -282,6 +281,25 @@ public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDial
 		} else {
 			errorLabel.setText("");
 			return true;
+		}
+	}
+	
+	public class Result {
+
+		public final PropertyType type;
+		public final FmmlxObject object;
+		public final String oldName;
+		public final String newName;
+
+		public Result(PropertyType type, FmmlxObject object, String oldName, String newName) {
+			this.type = type;
+			this.object = object;
+			this.oldName = oldName;
+			this.newName = newName;
+		}
+		
+		public String getObjectName() {
+			return object.getName();
 		}
 	}
 }

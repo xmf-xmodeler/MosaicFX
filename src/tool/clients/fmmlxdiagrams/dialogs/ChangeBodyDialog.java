@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs.operation;
+package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.Vector;
 
@@ -16,11 +16,9 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
-import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeBodyDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
-public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
+public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialog.Result>{
 	
 	private DialogPane dialogPane;
 	private AbstractPackageViewer diagram;
@@ -84,7 +82,7 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 	private void setResultConverter() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				return new ChangeBodyDialogResult(object, selectOperationComboBox.getSelectionModel().getSelectedItem(), 
+				return new ChangeBodyDialog.Result(object, selectOperationComboBox.getSelectionModel().getSelectedItem(), 
 						bodyTextArea.getText());
 			}
 			return null;
@@ -145,6 +143,19 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 	
 	private void resetOperationBody() {
 		bodyTextArea.setText(StringValue.OperationStringValues.emptyOperation);
+	}
+	
+	public class Result {
+		
+		public final FmmlxObject object;
+		public final FmmlxOperation selectedItem;
+		public final String body;
+
+		public Result(FmmlxObject object, FmmlxOperation selectedItem, String text) {
+			this.object = object;
+			this.selectedItem = selectedItem;
+			this.body = text;
+		}
 	}
 
 }

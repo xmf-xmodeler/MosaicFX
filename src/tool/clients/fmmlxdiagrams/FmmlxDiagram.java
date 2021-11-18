@@ -12,9 +12,7 @@ import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -49,12 +47,9 @@ import tool.xmodeler.XModeler;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collections;
+import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
-import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
@@ -548,7 +543,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	// TODO: delete and use method with level
 	public ObservableList<FmmlxObject> getPossibleAssociationEnds() {
-		ArrayList<FmmlxObject> objectList = new ArrayList<>();
+		Vector<FmmlxObject> objectList = new Vector<>();
 
 		if (!objects.isEmpty()) {
 			for (FmmlxObject object : objects) {
@@ -649,7 +644,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	public ObservableList<FmmlxEnum> getEnumsObservableList() {
-		ArrayList<FmmlxEnum> objectList = new ArrayList<>();
+		Vector<FmmlxEnum> objectList = new Vector<>();
 
 		if (!enums.isEmpty()) {
 			for (FmmlxEnum fmmlxEnum : enums) {

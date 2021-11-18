@@ -7,7 +7,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
@@ -18,13 +17,9 @@ import tool.clients.dialogs.enquiries.FindClassDialog;
 import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.exporter.svg.SvgExporter;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ObjectBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.*;
-import tool.clients.fmmlxdiagrams.dialogs.instance.ChangeOfDialog;
-import tool.clients.fmmlxdiagrams.dialogs.operation.AddOperationDialog;
-import tool.clients.fmmlxdiagrams.dialogs.operation.ChangeBodyDialog;
 import tool.clients.fmmlxdiagrams.dialogs.results.*;
 import tool.clients.fmmlxdiagrams.dialogs.shared.*;
 import tool.clients.fmmlxdiagrams.graphics.View;
@@ -313,7 +308,6 @@ public class DiagramActions {
 				}
 			}
 			diagram.updateDiagram();
-//			l.countDown();
 		});
 	}
 
@@ -321,24 +315,22 @@ public class DiagramActions {
 
 
 	public <Property extends FmmlxProperty> void changeNameDialog(FmmlxObject object, PropertyType type, Property selectedProperty) {
-//		CountDownLatch latch = new CountDownLatch(1);
-
 		Platform.runLater(() -> {
 			ChangeNameDialog<Property> dlg = new ChangeNameDialog<Property>(diagram, object, type, selectedProperty);
 
-			Optional<ChangeNameDialogResult> opt = dlg.showAndWait();
+			Optional<ChangeNameDialog<?>.Result> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
-				final ChangeNameDialogResult result = opt.get();
-				switch (result.getType()) {
+				final ChangeNameDialog<?>.Result result = opt.get();
+				switch (result.type) {
 					case Class:
-						diagram.getComm().changeClassName(diagram.getID(), result.getObjectName(), result.getNewName());
+						diagram.getComm().changeClassName(diagram.getID(), result.getObjectName(), result.newName);
 						break;
 					case Operation:
-						diagram.getComm().changeOperationName(diagram.getID(), result.getObjectName(), result.getOldName(), result.getNewName());
+						diagram.getComm().changeOperationName(diagram.getID(), result.getObjectName(), result.oldName, result.newName);
 						break;
 					case Attribute:
-						diagram.getComm().changeAttributeName(diagram.getID(), result.getObjectName(), result.getOldName(), result.getNewName());
+						diagram.getComm().changeAttributeName(diagram.getID(), result.getObjectName(), result.oldName, result.newName);
 						break;
 //					case Association:
 //						diagram.getComm().changeAssociationName(result.getObjectId(), result.getOldName(), result.getNewName());
@@ -347,7 +339,6 @@ public class DiagramActions {
 				}
 			}
 			diagram.updateDiagram();
-//			latch.countDown();
 		});
 	}
 
@@ -394,19 +385,19 @@ public class DiagramActions {
 			if (belongsPropertyToObject(object, selectedProperty, type)) {
 				dlg.setSelected(selectedProperty);
 			}
-			Optional<ChangeLevelDialogResult> opt = dlg.showAndWait();
+			Optional<ChangeLevelDialog.Result> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
-				final ChangeLevelDialogResult result = opt.get();
-				switch (result.getType()) {
+				final ChangeLevelDialog.Result result = opt.get();
+				switch (result.type) {
 					case Class:
-						diagram.getComm().changeClassLevel(diagram.getID(), result.getObjectName(), result.getNewLevel());
+						diagram.getComm().changeClassLevel(diagram.getID(), result.getObjectName(), result.newLevel);
 						break;
 					case Attribute:
-						diagram.getComm().changeAttributeLevel(diagram.getID(), result.getObjectName(), result.getName(), result.getOldLevel(), result.getNewLevel());
+						diagram.getComm().changeAttributeLevel(diagram.getID(), result.getObjectName(), result.name, result.oldLevel, result.newLevel);
 						break;
 					case Operation:
-						diagram.getComm().changeOperationLevel(diagram.getID(), result.getObjectName(), result.getName(), result.getOldLevel(), result.getNewLevel());
+						diagram.getComm().changeOperationLevel(diagram.getID(), result.getObjectName(), result.name, result.oldLevel, result.newLevel);
 						break;
 //					case Association:
 //						diagram.getComm().changeAssociationLevel(result.getObjectId(), result.getOldLevel(), result.getNewLevel());
@@ -447,11 +438,11 @@ public class DiagramActions {
 
 		Platform.runLater(() -> {
 			ChangeOfDialog dlg = new ChangeOfDialog(diagram, object);
-			Optional<ChangeOfDialogResult> cod = dlg.showAndWait();
+			Optional<ChangeOfDialog.Result> cod = dlg.showAndWait();
 
 			if (cod.isPresent()) {
-				final ChangeOfDialogResult result = cod.get();
-				diagram.getComm().changeOf(diagram.getID(), result.getObject().getName(), result.getOldOfName(), result.getNewOf().getName());
+				final ChangeOfDialog.Result result = cod.get();
+				diagram.getComm().changeOf(diagram.getID(), result.object.getName(), result.oldOfName, result.newOf.getName());
 				diagram.updateDiagram();
 			}
 //			l.countDown();
@@ -543,11 +534,11 @@ public class DiagramActions {
 
 		Platform.runLater(() -> {
 			AddOperationDialog dlg = new AddOperationDialog(diagram, object);
-			Optional<AddOperationDialogResult> opt = dlg.showAndWait();
+			Optional<AddOperationDialog.Result> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
-				final AddOperationDialogResult result = opt.get();
-				diagram.getComm().addOperation2(diagram.getID(), result.getObject().getName(), result.getLevel(), result.getBody());
+				final AddOperationDialog.Result result = opt.get();
+				diagram.getComm().addOperation2(diagram.getID(), result.object.getName(), result.level, result.body);
 				diagram.updateDiagram();
 			}
 		});
@@ -598,8 +589,6 @@ public class DiagramActions {
 	
 	public Object removeConstraintDialog(FmmlxObject object) {
 		FmmlxProperty property = diagram.getSelectedProperty();
-		
-		
 				
 		return null;
 	}
@@ -662,18 +651,15 @@ public class DiagramActions {
 	}
 
 	public void changeBodyDialog(FmmlxObject object, FmmlxOperation initiallySelectedOperation) {
-//		CountDownLatch latch = new CountDownLatch(1);
-
 		Platform.runLater(() -> {
 			ChangeBodyDialog dlg = new ChangeBodyDialog(diagram, object, initiallySelectedOperation);
-			Optional<ChangeBodyDialogResult> opt = dlg.showAndWait();
+			Optional<ChangeBodyDialog.Result> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
-				final ChangeBodyDialogResult result = opt.get();
-				diagram.getComm().changeOperationBody(diagram.getID(), result.getObject().getName(), result.getSelectedItem().getName(), result.getBody());
+				final ChangeBodyDialog.Result result = opt.get();
+				diagram.getComm().changeOperationBody(diagram.getID(), result.object.getName(), result.selectedItem.getName(), result.body);
 				diagram.updateDiagram();
 			}
-//			latch.countDown();
 		});
 	}
 
