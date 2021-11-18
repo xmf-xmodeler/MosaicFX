@@ -283,25 +283,25 @@ public class DiagramActions {
 			if (belongsPropertyToObject(object, selectedFmmlxProperty, type)) {
 				dlg.setSelected(selectedFmmlxProperty);
 			}
-			Optional<RemoveDialogResult<Property>> opt = dlg.showAndWait();
+			Optional<RemoveDialog<Property>.Result> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
-				final RemoveDialogResult<Property> result = opt.get();
+				final RemoveDialog<Property>.Result result = opt.get();
 				switch (type) {
 					case Class:
-						diagram.getComm().removeClass(diagram.getID(), result.getObject().getName(), 0);
+						diagram.getComm().removeClass(diagram.getID(), result.object.getName(), 0);
 						break;
 					case Operation:
-						diagram.getComm().removeOperation(diagram.getID(), result.getObject().getName(), result.getProperty().getName(), 0);
+						diagram.getComm().removeOperation(diagram.getID(), result.object.getName(), result.property.getName(), 0);
 						break;
 					case Attribute:
-						diagram.getComm().removeAttribute(diagram.getID(), result.getObject().getName(), result.getProperty().getName(), 0);
+						diagram.getComm().removeAttribute(diagram.getID(), result.object.getName(), result.property.getName(), 0);
 						break;
 					case Association:
-						diagram.getComm().removeAssociation(diagram.getID(), result.getProperty().getName(), 0);
+						diagram.getComm().removeAssociation(diagram.getID(), result.object.getName(), 0);
 						break;
 					case Constraint:
-						diagram.getComm().removeConstraint(diagram.getID(), result.getObject().getPath(), result.getProperty().getName());
+						diagram.getComm().removeConstraint(diagram.getID(), result.object.getPath(), result.property.getName());
 						break;
 					default:
 						System.err.println("RemoveDialogResult: No matching content type!");

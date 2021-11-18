@@ -7,9 +7,8 @@ import javafx.scene.control.*;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
-import tool.clients.fmmlxdiagrams.dialogs.results.RemoveDialogResult;
 
-public class RemoveDialog<Property extends FmmlxProperty> extends CustomDialog<RemoveDialogResult<Property>> {
+public class RemoveDialog<Property extends FmmlxProperty> extends CustomDialog<RemoveDialog<Property>.Result> {
 
 	private DialogPane dialogPane;
 	private FmmlxObject object;
@@ -48,8 +47,8 @@ public class RemoveDialog<Property extends FmmlxProperty> extends CustomDialog<R
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
 				if(propertyType == PropertyType.Class)
-					return new RemoveDialogResult<>(object, null);
-				else return new RemoveDialogResult<>(object, propertyBox.getSelectionModel().getSelectedItem());
+					return new Result(object, null);
+				else return new Result(object, propertyBox.getSelectionModel().getSelectedItem());
 			}
 			return null;
 		});
@@ -105,5 +104,16 @@ public class RemoveDialog<Property extends FmmlxProperty> extends CustomDialog<R
 
 	public void setSelected(Property property) {
 		propertyBox.getSelectionModel().select(property);
+	}
+	
+	public class Result {
+		
+		public final FmmlxObject object;
+		public final Property property;
+		
+		public Result(FmmlxObject object, Property property) {
+			this.object=object;
+			this.property=property;
+		}
 	}
 }
