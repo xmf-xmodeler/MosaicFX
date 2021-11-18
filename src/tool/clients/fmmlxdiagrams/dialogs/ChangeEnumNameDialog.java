@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs.enumeration;
+package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +13,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
-import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeEnumNameDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
-public class ChangeEnumName extends CustomDialog<ChangeEnumNameDialogResult>{
+public class ChangeEnumNameDialog extends CustomDialog<ChangeEnumNameDialog.Result>{
 	
 	private AbstractPackageViewer diagram;
 	private FmmlxEnum selectedEnum;
@@ -29,7 +26,7 @@ public class ChangeEnumName extends CustomDialog<ChangeEnumNameDialogResult>{
 	private TextField newNameTextField;
 	
 
-	public ChangeEnumName(AbstractPackageViewer diagram, FmmlxEnum selectedItem) {
+	public ChangeEnumNameDialog(AbstractPackageViewer diagram, FmmlxEnum selectedItem) {
 		super();
 		this.selectedEnum=selectedItem;
 		this.diagram=diagram;
@@ -37,7 +34,6 @@ public class ChangeEnumName extends CustomDialog<ChangeEnumNameDialogResult>{
 		DialogPane dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		
-
 		dialogPane.setHeaderText("Change Enum Name");
 
 		addElementToGrid();
@@ -57,7 +53,7 @@ public class ChangeEnumName extends CustomDialog<ChangeEnumNameDialogResult>{
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {				
-				return new ChangeEnumNameDialogResult(selectedEnum.getName(),newNameTextField.getText());
+				return new Result(selectedEnum.getName(),newNameTextField.getText());
 			}
 			return null;
 		});
@@ -115,4 +111,14 @@ public class ChangeEnumName extends CustomDialog<ChangeEnumNameDialogResult>{
 		addNodesToGrid(editorNode, 1);
 	}
 
+	public class Result {
+
+		public final String oldName;
+		public final String newName;	
+		
+		public Result(String oldName, String newName) {
+			this.oldName = oldName;
+			this.newName = newName;
+		}
+	}
 }

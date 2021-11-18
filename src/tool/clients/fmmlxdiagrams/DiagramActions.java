@@ -22,9 +22,6 @@ import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ObjectBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.*;
-import tool.clients.fmmlxdiagrams.dialogs.enumeration.AddEnumerationDialog;
-import tool.clients.fmmlxdiagrams.dialogs.enumeration.DeleteEnumerationDialog;
-import tool.clients.fmmlxdiagrams.dialogs.enumeration.EditEnumerationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.instance.ChangeOfDialog;
 import tool.clients.fmmlxdiagrams.dialogs.operation.AddOperationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.operation.ChangeBodyDialog;
@@ -238,11 +235,11 @@ public class DiagramActions {
 			dlg = new AddEnumerationDialog();
 
 			dlg.setTitle("Create Enumeration");
-			Optional<AddEnumerationDialogResult> result = dlg.showAndWait();
+			Optional<String> result = dlg.showAndWait();
 
 			if (result.isPresent()) {
-				AddEnumerationDialogResult aed = result.get();
-				diagram.getComm().addEnumeration(diagram.getID(), aed.getEnumeration().getName()); 
+				String aed = result.get();
+				diagram.getComm().addEnumeration(diagram.getID(), aed); 
 			}
 			diagram.updateDiagram();
 		});

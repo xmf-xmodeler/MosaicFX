@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs.enumeration;
+package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -13,18 +13,12 @@ import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldListCell;
-import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
-import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumElementDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeEnumItemNameDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeEnumNameDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.results.EditEnumerationDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.TimeOutException;
 
-public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogResult>{
+public class EditEnumerationDialog extends CustomDialog<Void>{
 	
 	private Label chooseEnumLabel;
 	private Label inputElementLabel;
@@ -168,26 +162,26 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 	} 
 
 	private void changeEnumNameDialog(FmmlxEnum selectedItem) {
-		ChangeEnumName dlg = new ChangeEnumName(diagram, selectedItem);
-		Optional<ChangeEnumNameDialogResult> opt = dlg.showAndWait();
+		ChangeEnumNameDialog dlg = new ChangeEnumNameDialog(diagram, selectedItem);
+		Optional<ChangeEnumNameDialog.Result> opt = dlg.showAndWait();
 
 		if (opt.isPresent()) {
-			ChangeEnumNameDialogResult result = opt.get();
-			diagram.getComm().changeEnumerationName(diagram.getID(), result.getOldName(), result.getNewName());
-		}
-		
+			ChangeEnumNameDialog.Result result = opt.get();
+			diagram.getComm().changeEnumerationName(diagram.getID(), result.oldName, result.newName);
+		}		
 	}
 	
 	private void changeItemNameDialog(FmmlxEnum selectedEnum, String selectedItem, ListView<String> list) throws TimeOutException {
-		ChangeEnumItemName dlg = new ChangeEnumItemName(diagram, selectedEnum, selectedItem);
-		Optional<ChangeEnumItemNameDialogResult> opt = dlg.showAndWait();
+		ChangeEnumItemNameDialog dlg = new ChangeEnumItemNameDialog(diagram, selectedEnum, selectedItem);
+		Optional<ChangeEnumItemNameDialog.Result> opt = dlg.showAndWait();
 
 		list.getItems().clear();
 		dlg.close();
 		
 		if(opt.isPresent()) {
-			ChangeEnumItemNameDialogResult result = opt.get();
-				diagram.getComm().changeEnumerationItemName(diagram.getID(), result.getEnumName(), result.getOldName(), result.getNewName());
+			ChangeEnumItemNameDialog.Result result = opt.get();
+				diagram.getComm().changeEnumerationItemName(diagram.getID(), 
+						result.enumName, result.oldName, result.newName);
 				diagram.updateEnums();
 				diagram.updateDiagram();
 				updated = true;
@@ -237,11 +231,11 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 
 	private void addElement(FmmlxEnum selectedEnum, ListView<String> list) {
 		if(chooseEnumComboBox.getSelectionModel().getSelectedItem()!=null) {
-			AddEnumElement dlg = new AddEnumElement(selectedEnum, list);
-			Optional<AddEnumElementDialogResult> opt = dlg.showAndWait();
+			AddEnumElementDialog dlg = new AddEnumElementDialog(selectedEnum, list);
+			Optional<String> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
-				AddEnumElementDialogResult result = opt.get();
+				String result = opt.get();
 
 				list.getItems().clear();
 				dlg.close();
@@ -254,7 +248,7 @@ public class EditEnumerationDialog extends CustomDialog<EditEnumerationDialogRes
 					        diagram.getComm().addEnumerationItem(
 							diagram.getID(), 
 							chooseEnumComboBox.getSelectionModel().getSelectedItem().getName(), 
-							result.getName());
+							result);
 					        diagram.updateEnums();
 					        updated = true;
 					} catch (TimeOutException e) {

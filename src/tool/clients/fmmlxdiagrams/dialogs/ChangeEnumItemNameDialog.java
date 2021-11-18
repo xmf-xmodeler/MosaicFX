@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs.enumeration;
+package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +13,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
-import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeEnumItemNameDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
-public class ChangeEnumItemName  extends CustomDialog<ChangeEnumItemNameDialogResult> {
+public class ChangeEnumItemNameDialog extends CustomDialog<ChangeEnumItemNameDialog.Result> {
 
 	private FmmlxEnum selectedEnum;
 	private String selectedItem;
@@ -28,7 +25,7 @@ public class ChangeEnumItemName  extends CustomDialog<ChangeEnumItemNameDialogRe
 	private TextField currentNameTextField;
 	private TextField newNameTextField;
 	
-	public ChangeEnumItemName(AbstractPackageViewer diagram, FmmlxEnum selectedEnum, String selectedItem) {
+	public ChangeEnumItemNameDialog(AbstractPackageViewer diagram, FmmlxEnum selectedEnum, String selectedItem) {
 		super();
 		this.selectedEnum=selectedEnum;
 //		this.diagram = diagram;
@@ -55,7 +52,7 @@ public class ChangeEnumItemName  extends CustomDialog<ChangeEnumItemNameDialogRe
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {				
-				return new ChangeEnumItemNameDialogResult(selectedEnum.getName(), currentNameTextField.getText(), newNameTextField.getText());
+				return new Result(selectedEnum.getName(), currentNameTextField.getText(), newNameTextField.getText());
 			}
 			return null;
 		});		
@@ -111,5 +108,18 @@ public class ChangeEnumItemName  extends CustomDialog<ChangeEnumItemNameDialogRe
 		addNodesToGrid(editorNode, 1);		
 	}
 	
+	public class Result {
+		
+		public final String oldName;
+		public final String newName;
+		public final String enumName;
+		
+		public Result(String enumName, String oldName, String newName) {
+			this.oldName = oldName;
+			this.newName = newName;
+			this.enumName=enumName;
+		}
+	}
+
 	
 }

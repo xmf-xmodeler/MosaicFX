@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs.enumeration;
+package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,17 +13,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
-import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
-import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumElementDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
-public class AddEnumElement extends CustomDialog<AddEnumElementDialogResult>{
+public class AddEnumElementDialog extends CustomDialog<String>{
 	private Label inputElementNameLabel;
 	private TextField inputElementNameTextField;
 	private ListView<String> list;
 
-	public AddEnumElement(FmmlxEnum selectedEnum, ListView<String> list) {
+	public AddEnumElementDialog(FmmlxEnum selectedEnum, ListView<String> list) {
 		super();
 
 		this.list= list;
@@ -47,7 +44,7 @@ public class AddEnumElement extends CustomDialog<AddEnumElementDialogResult>{
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {				
-				return new AddEnumElementDialogResult(inputElementNameTextField.getText());
+				return inputElementNameTextField.getText();
 			}
 			return null;
 		});

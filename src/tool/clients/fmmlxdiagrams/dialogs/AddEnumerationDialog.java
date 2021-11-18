@@ -1,5 +1,5 @@
 
-package tool.clients.fmmlxdiagrams.dialogs.enumeration;
+package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +13,10 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
-import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
-import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumerationDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import javafx.scene.Node;
 
-public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResult>{
+public class AddEnumerationDialog extends CustomDialog<String>{
 	private Label nameLabel;
 	
 	private TextField nameTextField;
@@ -55,8 +52,7 @@ public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResul
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				Vector<String> elements = new Vector<String>();
-				return new AddEnumerationDialogResult(new FmmlxEnum(nameTextField.getText(),elements));
+				return nameTextField.getText();
 			}
 			return null;
 		});

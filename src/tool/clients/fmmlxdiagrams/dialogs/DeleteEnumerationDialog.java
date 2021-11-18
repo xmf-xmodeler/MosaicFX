@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs.enumeration;
+package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +15,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxEnum;
-import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.dialogs.results.DeleteEnumerationDialogResult;
 
-public class DeleteEnumerationDialog extends CustomDialog<DeleteEnumerationDialogResult>{
+public class DeleteEnumerationDialog extends CustomDialog<Void>{
 	private Label enumListLabel;	
 	private ListView<FmmlxEnum> enumListview;
 	private Button deleteButton;
@@ -81,11 +79,12 @@ public class DeleteEnumerationDialog extends CustomDialog<DeleteEnumerationDialo
 
 	private void removeEnum() {
 		if(validateUserInput()) {
-			DeleteEnumerationDialogResult aed = new DeleteEnumerationDialogResult(enumListview.getSelectionModel().getSelectedItems());
-			for(String s : aed.getEnumList()) {
-				diagram.getComm().removeEnumeration(this.diagram.getID(), s);
+//			DeleteEnumerationDialogResult aed = new DeleteEnumerationDialogResult(enumListview.getSelectionModel().getSelectedItems());
+			for(FmmlxEnum e : enumListview.getSelectionModel().getSelectedItems()) {
+				diagram.getComm().removeEnumeration(this.diagram.getID(), e.getName());
 			}
 		}
 	}
+
 
 }
