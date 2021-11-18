@@ -20,7 +20,6 @@ import tool.clients.exporter.svg.SvgExporter;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ObjectBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.*;
-import tool.clients.fmmlxdiagrams.dialogs.results.*;
 import tool.clients.fmmlxdiagrams.dialogs.shared.*;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
@@ -311,9 +310,6 @@ public class DiagramActions {
 		});
 	}
 
-
-
-
 	public <Property extends FmmlxProperty> void changeNameDialog(FmmlxObject object, PropertyType type, Property selectedProperty) {
 		Platform.runLater(() -> {
 			ChangeNameDialog<Property> dlg = new ChangeNameDialog<Property>(diagram, object, type, selectedProperty);
@@ -350,7 +346,6 @@ public class DiagramActions {
 			changeNameDialog(object, type, null);
 		}
 	}
-
 
 	public void changeMultiplicityDialog(FmmlxObject object, PropertyType type) {
 		changeMultiplicityDialog(object, type, diagram.getSelectedProperty());
@@ -433,9 +428,6 @@ public class DiagramActions {
 	}
 
 	public void changeOfDialog(FmmlxObject object) {
-
-//		CountDownLatch l = new CountDownLatch(1);
-
 		Platform.runLater(() -> {
 			ChangeOfDialog dlg = new ChangeOfDialog(diagram, object);
 			Optional<ChangeOfDialog.Result> cod = dlg.showAndWait();
@@ -445,33 +437,35 @@ public class DiagramActions {
 				diagram.getComm().changeOf(diagram.getID(), result.object.getName(), result.oldOfName, result.newOf.getName());
 				diagram.updateDiagram();
 			}
-//			l.countDown();
 		});
-
-
 	}
-
+	
 	public void changeOwnerDialog(FmmlxObject object, PropertyType type) {
-//		CountDownLatch l = new CountDownLatch(1);
-
 		FmmlxProperty selectedProperty = diagram.getSelectedProperty();
-
+		if (belongsPropertyToObject(object, selectedProperty, type)) {
+			changeOwnerDialog(object, type, selectedProperty);
+		} else {
+			changeOwnerDialog(object, type, null);
+		}
+	}
+	
+	private <Property extends FmmlxProperty> void changeOwnerDialog(FmmlxObject object, PropertyType type, Property selectedProperty) {
 		Platform.runLater(() -> {
-			ChangeOwnerDialog dlg = new ChangeOwnerDialog(diagram, object, type);
+			ChangeOwnerDialog<Property> dlg = new ChangeOwnerDialog<Property>(diagram, object, type);
 			if (belongsPropertyToObject(object, selectedProperty, type)) {
 				dlg.setSelected(selectedProperty);
 			}
 
-			Optional<ChangeOwnerDialogResult> opt = dlg.showAndWait();
+			Optional<ChangeOwnerDialog<Property>.Result> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
-				final ChangeOwnerDialogResult result = opt.get();
-				switch (result.getType()) {
+				final ChangeOwnerDialog<Property>.Result result = opt.get();
+				switch (result.type) {
 					case Attribute:
-						diagram.getComm().changeAttributeOwner(diagram.getID(), result.getObject().getName(), result.getAttribute().getName(), result.getNewOwner());
+						diagram.getComm().changeAttributeOwner(diagram.getID(), result.object.getName(), result.property.getName(), result.newOwner.name);
 						break;
 					case Operation:
-						diagram.getComm().changeOperationOwner(diagram.getID(), result.getObject().getName(), result.getOperation().getName(), result.getNewOwnerName());
+						diagram.getComm().changeOperationOwner(diagram.getID(), result.object.getName(), result.property.getName(), result.newOwner.name);
 						break;
 					default:
 						System.err.println("ChangeOwnerDialogResult: No matching content type!");
@@ -479,26 +473,19 @@ public class DiagramActions {
 				}
 				diagram.updateDiagram();
 			}
-
-//			l.countDown();
 		});
 	}
 
 	public void changeParentsDialog(FmmlxObject object) {
-
-//		CountDownLatch l = new CountDownLatch(1);
-
 		Platform.runLater(() -> {
 			ChangeParentDialog dlg = new ChangeParentDialog(diagram, object);
-			Optional<ChangeParentDialogResult> cpd = dlg.showAndWait();
+			Optional<ChangeParentDialog.Result> cpd = dlg.showAndWait();
 
 			if (cpd.isPresent()) {
-				ChangeParentDialogResult result = cpd.get();
+				ChangeParentDialog.Result result = cpd.get();
 				diagram.getComm().changeParent(diagram.getID(), result.object.getName(), result.getCurrentParentNames(), result.getNewParentNames());
 				diagram.updateDiagram();
 			}
-
-//			l.countDown();
 		});
 
 	}
@@ -593,30 +580,30 @@ public class DiagramActions {
 		return null;
 	}
 
-	public void changeTypeDialog(FmmlxObject object, PropertyType type) {
-		changeTypeDialog(object, type, diagram.getSelectedProperty());
-	}
+//	public <Property extends FmmlxProperty> void changeTypeDialog(FmmlxObject object, PropertyType type) {
+//		changeTypeDialog(object, type, diagram.getSelectedProperty());
+//	}
 	
-    public void changeTypeDialog(FmmlxObject object, PropertyType type, FmmlxProperty selectedProperty) {
+    public <Property extends FmmlxProperty> void changeTypeDialog(FmmlxObject object, PropertyType type, Property selectedProperty, Vector<Property> availableProperties) {
 
 		Platform.runLater(() -> {
-			ChangeTypeDialog dlg = new ChangeTypeDialog(object, type);
+			ChangeTypeDialog<Property> dlg = new ChangeTypeDialog<Property>(object, type, availableProperties, selectedProperty);
 			if (belongsPropertyToObject(object, selectedProperty, type)) {
 				dlg.setSelected(selectedProperty);
 			}
-			Optional<ChangeTypeDialogResult> opt = dlg.showAndWait();
+			Optional<ChangeTypeDialog<?>.Result> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
-				final ChangeTypeDialogResult result = opt.get();
+				final ChangeTypeDialog<?>.Result result = opt.get();
 
-				switch (result.getType()) {
+				switch (result.type) {
 					case Attribute:
-						diagram.getComm().changeAttributeType(diagram.getID(), result.getObject().getName(), result.getAttribute().getName(),
-								result.getOldType(), result.getNewType());
+						diagram.getComm().changeAttributeType(diagram.getID(), result.object.getName(), result.property.getName(),
+								result.oldType, result.newType);
 						break;
 					case Operation:
-						diagram.getComm().changeOperationType(diagram.getID(), result.getObject().getName(), result.getOperation().getName(),
-								result.getNewType());
+						diagram.getComm().changeOperationType(diagram.getID(), result.object.getName(), result.property.getName(),
+								result.newType);
 						break;
 //					case Association:
 //						diagram.getComm().changeAssociationType(result.getObject().getId(), result.getAssociation().getName(),
@@ -1216,11 +1203,11 @@ public class DiagramActions {
 	public void showCertainLevel() {
 		Platform.runLater(() ->{
 			ShowCertainLevelDialog dlg = new ShowCertainLevelDialog(diagram);
-			Optional<ShowCertainLevelDialogResult> result = dlg.showAndWait();
+			Optional<Vector<Integer>> result = dlg.showAndWait();
 
 			if(result.isPresent()){
-				final ShowCertainLevelDialogResult sclResult = result.get();
-				Vector<Integer> chosenLevel = sclResult.getChosenLevels();
+				final Vector<Integer> chosenLevel = result.get();
+//				Vector<Integer> chosenLevel = sclResult.getChosenLevels();
 
 				Vector<FmmlxObject> objects = diagram.getObjects();
 				Vector<FmmlxObject> hiddenObjects = new Vector<>();

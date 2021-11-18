@@ -3,7 +3,6 @@ package tool.clients.fmmlxdiagrams.dialogs;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
-import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 

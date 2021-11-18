@@ -8,25 +8,20 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOwnerDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.Vector;
 
-public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
+public class ChangeOwnerDialog<Property extends FmmlxProperty> extends CustomDialog<ChangeOwnerDialog<Property>.Result> {
 
 	private DialogPane dialogPane;
 	private final PropertyType type;
 	private FmmlxObject object;
 	private Vector<FmmlxObject> objects;
-
-	//For Attribute
-	private Label selectAttribute;
-	private ComboBox<FmmlxAttribute> selectAttributeComboBox;
-
-	//For Operation
-	private Label selectOperation;
-	private ComboBox<FmmlxOperation> selectOperationComboBox;
+	
+	//For Each
+	private Label selectProperty;
+	private ComboBox<Property> selectPropertyComboBox;
 
 	//For All
 	private Label classLabel;
@@ -35,9 +30,7 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 	private TextField classNameTextfield;
 	private ComboBox<FmmlxObject> newOwnerComboBox;
 
-	private Vector<FmmlxAttribute> attributes;
-	private Vector<FmmlxOperation> operations;
-
+	private Vector<Property> propertyItems;
 
 	public ChangeOwnerDialog(AbstractPackageViewer diagram, FmmlxObject object, PropertyType type) {
 		super();
@@ -66,11 +59,13 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				switch (type) {
 					case Attribute:
-						return new ChangeOwnerDialogResult(type, object,
-								selectAttributeComboBox.getSelectionModel().getSelectedItem(), newOwnerComboBox.getSelectionModel().getSelectedItem());
+						return new Result(type, object,
+								selectPropertyComboBox.getSelectionModel().getSelectedItem(), 
+								newOwnerComboBox.getSelectionModel().getSelectedItem());
 					case Operation:
-						return new ChangeOwnerDialogResult(type, object,
-								selectOperationComboBox.getSelectionModel().getSelectedItem(), newOwnerComboBox.getSelectionModel().getSelectedItem());
+						return new Result(type, object,
+								selectPropertyComboBox.getSelectionModel().getSelectedItem(), 
+								newOwnerComboBox.getSelectionModel().getSelectedItem());
 					default:
 						System.err.println("ChangeOwnerDialog: No matching content type!");
 				}
@@ -93,7 +88,7 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 
 
 	private boolean validateChangeOwnerOperation() {
-		if (selectOperationComboBox.getSelectionModel().getSelectedItem() == null) {
+		if (selectPropertyComboBox.getSelectionModel().getSelectedItem() == null) {
 			errorLabel.setText(StringValue.ErrorMessage.selectOperation);
 			return false;
 		} else if (newOwnerComboBox.getSelectionModel().getSelectedItem() == null) {
@@ -108,7 +103,7 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 
 
 	private boolean validateChangeOwnerAttribute() {
-		if (selectAttributeComboBox.getSelectionModel().getSelectedItem() == null) {
+		if (selectPropertyComboBox.getSelectionModel().getSelectedItem() == null) {
 			errorLabel.setText(StringValue.ErrorMessage.selectAttribute);
 			return false;
 		} else if (newOwnerComboBox.getSelectionModel().getSelectedItem() == null) {
@@ -132,8 +127,8 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 		classNameTextfield.setDisable(true);
 
 
-		attributes = object.getOwnAttributes();
-		attributes.addAll(object.getOtherAttributes());
+//		attributes = object.getOwnAttributes();
+//		attributes.addAll(object.getOtherAttributes());
 
 
 		ObservableList<FmmlxObject> objectList = FXCollections.observableList(objects);
@@ -150,30 +145,30 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 		switch (type) {
 			case Attribute:
 				dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeAttributeOwner);
-				attributes = object.getOwnAttributes();
-				attributes.addAll(object.getOtherAttributes());
+				propertyItems = (Vector<Property>) (object.getOwnAttributes());
+				propertyItems.addAll((Vector<Property>)(object.getOtherAttributes()));
 
-				ObservableList<FmmlxAttribute> attributeList;
-				attributeList = FXCollections.observableList(attributes);
+				ObservableList<Property> attributeList;
+				attributeList = FXCollections.observableList(propertyItems);
 
-				selectAttribute = new Label(StringValue.LabelAndHeaderTitle.selectAttribute);
-				selectAttributeComboBox = (ComboBox<FmmlxAttribute>) initializeComboBox(attributeList);
-				selectAttributeComboBox.setPrefWidth(COLUMN_WIDTH);
-				grid.add(selectAttribute, 0, 1);
-				grid.add(selectAttributeComboBox, 1, 1);
+				selectProperty = new Label(StringValue.LabelAndHeaderTitle.selectAttribute);
+				selectPropertyComboBox = (ComboBox<Property>) initializeComboBox(attributeList);
+				selectPropertyComboBox.setPrefWidth(COLUMN_WIDTH);
+				grid.add(selectProperty, 0, 1);
+				grid.add(selectPropertyComboBox, 1, 1);
 				break;
 			case Operation:
 				dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeOperationOwner);
-				operations = object.getOwnOperations();
-				operations.addAll(object.getOtherOperations());
+				propertyItems = (Vector<Property>) (object.getOwnOperations());
+				propertyItems.addAll((Vector<Property>)(object.getOtherOperations()));
 
-				ObservableList<FmmlxOperation> operationList;
-				operationList = FXCollections.observableList(operations);
-				selectOperation = new Label(StringValue.LabelAndHeaderTitle.selectOperation);
-				selectOperationComboBox = (ComboBox<FmmlxOperation>) initializeComboBox(operationList);
-				selectOperationComboBox.setPrefWidth(COLUMN_WIDTH);
-				grid.add(selectOperation, 0, 1);
-				grid.add(selectOperationComboBox, 1, 1);
+				ObservableList<Property> operationList;
+				operationList = FXCollections.observableList(propertyItems);
+				selectProperty = new Label(StringValue.LabelAndHeaderTitle.selectOperation);
+				selectPropertyComboBox = (ComboBox<Property>) initializeComboBox(operationList);
+				selectPropertyComboBox.setPrefWidth(COLUMN_WIDTH);
+				grid.add(selectProperty, 0, 1);
+				grid.add(selectPropertyComboBox, 1, 1);
 				break;
 			default:
 				System.err.println("AddDialog: No matching content type!");
@@ -181,12 +176,31 @@ public class ChangeOwnerDialog extends CustomDialog<ChangeOwnerDialogResult> {
 
 	}
 
-
 	public void setSelected(FmmlxProperty selectedProperty) {
-		if (type == PropertyType.Attribute) {
-			selectAttributeComboBox.getSelectionModel().select((FmmlxAttribute) selectedProperty);
-		} else if (type == PropertyType.Operation) {
-			selectOperationComboBox.getSelectionModel().select((FmmlxOperation) selectedProperty);
+		selectPropertyComboBox.getSelectionModel().select((Property) selectedProperty);
+//		if (type == PropertyType.Attribute) {
+//			selectAttributeComboBox.getSelectionModel().select((FmmlxAttribute) selectedProperty);
+//		} else if (type == PropertyType.Operation) {
+//			selectOperationComboBox.getSelectionModel().select((FmmlxOperation) selectedProperty);
+//		}
+	}
+	
+	public class Result {
+		
+		public final PropertyType type;
+		public final FmmlxObject object;
+		public final Property property;
+		public final FmmlxObject newOwner;
+
+		public Result(PropertyType type, FmmlxObject object, Property property, FmmlxObject newOwner) {
+			this.type = type;
+			this.object = object;
+			this.property = property;
+			this.newOwner = newOwner;
+		}
+
+		public String getNewOwnerName() {
+			return newOwner.getName();
 		}
 	}
 }

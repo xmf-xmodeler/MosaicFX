@@ -124,7 +124,7 @@ public class ObjectContextMenu extends ContextMenu {
 		changeOwnerItem.setOnAction(e -> actions.changeOwnerDialog(object, PropertyType.Attribute));
 		changeOwnerItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		MenuItem changeTypeItem = new MenuItem("Change type");
-		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Attribute));
+		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Attribute, null, object.getOwnAttributes()));
 		MenuItem changeLevelItem = new MenuItem("Change level");
 		changeLevelItem.setOnAction(e -> actions.changeLevelDialog(object, PropertyType.Attribute));
 		MenuItem changeMulItem = new MenuItem("Change multiplicity");
@@ -232,7 +232,7 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem changeOwnerItem = new MenuItem("Change owner");
 		changeOwnerItem.setOnAction(e -> actions.changeOwnerDialog(object, PropertyType.Operation));
 		MenuItem changeTypeItem = new MenuItem("Change type (use Change body instead)");
-		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Operation));
+		changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Operation, null, object.getOwnOperations()));
 		changeTypeItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 		
 		/*MenuItem showBodyItem = new MenuItem("Show body in editor");

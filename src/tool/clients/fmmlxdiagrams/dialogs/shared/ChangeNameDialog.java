@@ -12,7 +12,7 @@ import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.Vector;
 
-public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDialog<ChangeNameDialog<?>.Result> {
+public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDialog<ChangeNameDialog<Property>.Result> {
 
 	private final PropertyType type;
 	private final AbstractPackageViewer diagram;

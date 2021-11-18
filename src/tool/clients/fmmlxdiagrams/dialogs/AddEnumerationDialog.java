@@ -3,7 +3,6 @@ package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
@@ -12,7 +11,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import tool.clients.fmmlxdiagrams.FmmlxEnum;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import javafx.scene.Node;
 

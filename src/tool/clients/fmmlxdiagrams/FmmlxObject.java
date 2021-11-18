@@ -14,13 +14,7 @@ import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteTool;
 import tool.clients.fmmlxdiagrams.newpalette.ToolClass;
-
-import java.io.IOException;
 import java.util.*;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.xml.sax.SAXException;
 
 public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, Comparable<FmmlxObject> {
 

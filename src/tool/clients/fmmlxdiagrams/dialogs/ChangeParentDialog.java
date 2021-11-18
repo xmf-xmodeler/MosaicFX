@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.dialogs.shared;
+package tool.clients.fmmlxdiagrams.dialogs;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -8,14 +8,12 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeParentDialogResult;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.ArrayList;
 import java.util.Vector;
 
-public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
+public class ChangeParentDialog extends CustomDialog<ChangeParentDialog.Result> {
 
 	private final AbstractPackageViewer diagram;
 	private FmmlxObject object;
@@ -55,7 +53,7 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				return new ChangeParentDialogResult(object, 
+				return new Result(object, 
 						new Vector<>(newParentListView.getSelectionModel().getSelectedItems()), 
 						new Vector<>(currentParentList));
 			}
@@ -115,5 +113,35 @@ public class ChangeParentDialog extends CustomDialog<ChangeParentDialogResult> {
 		}
 
 		return FXCollections.observableArrayList(resultList);
+	}
+	
+
+	public class Result {
+		
+		public final FmmlxObject object;
+		public final Vector<FmmlxObject> oldParents;
+		public final Vector<FmmlxObject> newParents;
+		
+		public Result(FmmlxObject object, Vector<FmmlxObject> newList, Vector<FmmlxObject> oldList) {
+			this.object=object;
+			this.oldParents=oldList;
+			this.newParents=newList;
+		}
+	
+		public Vector<String> getCurrentParentNames() {
+			Vector<String> parentNames = new Vector<>();
+			for (FmmlxObject p : oldParents) {
+				parentNames.add(p.getName());
+			}
+			return parentNames;
+		}
+		
+		public Vector<String> getNewParentNames() {
+			Vector<String> parentNames = new Vector<>();
+			for (FmmlxObject p : newParents) {
+				parentNames.add(p.getName());
+			}
+			return parentNames;
+		}
 	}
 }

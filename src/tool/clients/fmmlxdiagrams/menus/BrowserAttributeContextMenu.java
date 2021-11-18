@@ -36,7 +36,7 @@ public class BrowserAttributeContextMenu extends ContextMenu {
 				getItems().add(changeNameItem);
 							
 				MenuItem changeTypeItem = new MenuItem("Change type");
-				changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Attribute, attribute));
+				changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Attribute, attribute, object.getOwnAttributes()));
 				getItems().add(changeTypeItem);
 				
 				MenuItem changeLevelItem = new MenuItem("Change level");

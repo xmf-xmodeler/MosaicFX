@@ -3,11 +3,10 @@ package tool.clients.fmmlxdiagrams.dialogs;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
-import tool.clients.fmmlxdiagrams.dialogs.results.ShowCertainLevelDialogResult;
 
 import java.util.Vector;
 
-public class ShowCertainLevelDialog extends CustomDialog<ShowCertainLevelDialogResult>{
+public class ShowCertainLevelDialog extends CustomDialog<Vector<Integer>>{
 
     private ListView<Integer> levelListView;
 
@@ -34,7 +33,7 @@ public class ShowCertainLevelDialog extends CustomDialog<ShowCertainLevelDialogR
 
         setResultConverter(dlgBtn -> {
             if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-                return new ShowCertainLevelDialogResult(levelListView.getSelectionModel().getSelectedItems());
+                return new Vector<Integer>(levelListView.getSelectionModel().getSelectedItems());
             }
             return null;
         });

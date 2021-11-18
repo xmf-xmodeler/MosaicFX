@@ -35,7 +35,7 @@ public class BrowserOperationContextMenu extends ContextMenu {
 				getItems().add(changeNameItem);
 							
 				MenuItem changeTypeItem = new MenuItem("Change type");
-				changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Operation, operation));
+				changeTypeItem.setOnAction(e -> actions.changeTypeDialog(object, PropertyType.Operation, operation, object.getOwnOperations()));
 				getItems().add(changeTypeItem);
 				
 				MenuItem changeLevelItem = new MenuItem("Change level");
