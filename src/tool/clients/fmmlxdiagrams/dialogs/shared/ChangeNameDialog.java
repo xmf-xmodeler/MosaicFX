@@ -222,7 +222,7 @@ public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDial
 		if (comboBox.getSelectionModel().getSelectedItem() == null) {
 			errorLabel.setText(StringValue.ErrorMessage.selectAssociation);
 			return false;
-		} else if (!InputChecker.validateName(name)) {
+		} else if (!InputChecker.isValidIdentifier(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else if (!InputChecker.getInstance().associationNameIsAvailable(name, object)) {
@@ -235,7 +235,7 @@ public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDial
 	private boolean validateClassName() {
 		String name = newNameTextField.getText();
 
-		if (!InputChecker.validateName(name)) {
+		if (!InputChecker.isValidIdentifier(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else if (!InputChecker.getInstance().classNameIsAvailable(name, diagram)) {
@@ -255,7 +255,7 @@ public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDial
 			return false;
 		}
 
-		if (!InputChecker.validateName(name)) {
+		if (!InputChecker.isValidIdentifier(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 //		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, object)) {
@@ -272,7 +272,7 @@ public class ChangeNameDialog<Property extends FmmlxProperty> extends CustomDial
 			errorLabel.setText(StringValue.ErrorMessage.selectAttribute);
 			return false;
 		}
-		if (!InputChecker.validateName(name)) {
+		if (!InputChecker.isValidIdentifier(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 //		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, object)) {

@@ -466,22 +466,22 @@ public class FormsClient extends Client {
 	}
 	
 	private void closeStage(Stage stage, Event wevent, String id, String name, javafx.scene.Node node, Form form) {
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
-		ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
-		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-		alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
-		alert.setTitle("Open form as tab instead?");
-		alert.setHeaderText(null);
-		Optional<ButtonType> result = alert.showAndWait();
-		if (result.get().getButtonData() == ButtonData.YES) {
-			PropertyManager.setProperty("formsSeparately", "false");
-			createTab(form, id, name);
-		} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
-			wevent.consume();
-		} else {
+//		Alert alert = new Alert(AlertType.CONFIRMATION);
+//		ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+//		ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
+//		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+//		alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
+//		alert.setTitle("Open form as tab instead?");
+//		alert.setHeaderText(null);
+//		Optional<ButtonType> result = alert.showAndWait();
+//		if (result.get().getButtonData() == ButtonData.YES) {
+//			PropertyManager.setProperty("formsSeparately", "false");
+//			createTab(form, id, name);
+//		} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
+//			wevent.consume();
+//		} else {
 			close(form);
-		}
+//		}
 	}
 	
 	private void closeTab(Event wevent, String id, String name, Form form) {

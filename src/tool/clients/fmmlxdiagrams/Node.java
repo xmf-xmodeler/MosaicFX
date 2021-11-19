@@ -7,8 +7,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 
 import org.w3c.dom.Element;
-import tool.clients.exporter.svg.SvgConstant;
+
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
+import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public abstract class Node implements CanvasElement {

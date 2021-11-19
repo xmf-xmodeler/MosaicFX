@@ -1,4 +1,4 @@
-package tool.clients.exporter.svg;
+package tool.clients.fmmlxdiagrams.graphics;
 
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.xmlManipulator.XmlCreator;

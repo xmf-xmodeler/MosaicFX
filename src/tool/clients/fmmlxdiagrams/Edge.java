@@ -11,7 +11,8 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 
 import org.w3c.dom.Element;
-import tool.clients.exporter.svg.SvgConstant;
+
+import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.xmlManipulator.XmlHandler;
 
 import java.util.Comparator;

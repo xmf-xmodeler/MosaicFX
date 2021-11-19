@@ -75,7 +75,7 @@ public class ChangeEnumItemNameDialog extends CustomDialog<ChangeEnumItemNameDia
 	private boolean validateName() {
 		String name = newNameTextField.getText();
 
-		if (!InputChecker.validateName(name)) {
+		if (!InputChecker.isValidIdentifier(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else {

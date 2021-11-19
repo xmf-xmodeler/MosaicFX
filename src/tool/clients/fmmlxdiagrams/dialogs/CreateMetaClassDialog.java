@@ -98,7 +98,7 @@ public class CreateMetaClassDialog extends CustomDialog<CreateMetaClassDialog.Re
 
 		Label errorLabel = getErrorLabel();
 		
-		if (!InputChecker.validateName(name)) {	
+		if (!InputChecker.isValidIdentifier(name)) {	
 			errorLabel.setText("Enter valid name!");
 			return false;
 		} else if (!InputChecker.getInstance().classNameIsAvailable(name, diagram)) {

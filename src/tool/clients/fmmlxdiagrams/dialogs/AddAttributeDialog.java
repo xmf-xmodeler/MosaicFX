@@ -125,7 +125,7 @@ public class AddAttributeDialog extends CustomDialog<AddAttributeDialog.Result> 
 		Label errorLabel = getErrorLabel();
 		String name = nameTextField.getText();
 
-		if (!InputChecker.validateName(name)) {
+		if (!InputChecker.isValidIdentifier(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 //		} else if (!InputChecker.getInstance().attributeNameIsAvailable(name, selectedObject)) {

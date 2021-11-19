@@ -4,10 +4,14 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Vector;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
+import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.workbench.WorkbenchClient;
 import xos.Message;
 import xos.Value;
@@ -112,10 +116,16 @@ public class ControlCenterClient {
 		Optional<String> result = dialog.showAndWait();
 		String projectName = "";
 		if (result.isPresent()) {
-		    projectName = result.get();
-			Message message = WorkbenchClient.theClient().getHandler().newMessage("addProject",1);
-			message.args[0] = new Value(projectName);
-			WorkbenchClient.theClient().getHandler().raiseEvent(message);
+			if(InputChecker.isValidIdentifier(result.get())) {
+				projectName = result.get();
+				Message message = WorkbenchClient.theClient().getHandler().newMessage("addProject",1);
+				message.args[0] = new Value(projectName);
+				WorkbenchClient.theClient().getHandler().raiseEvent(message);
+			} else {
+				new Alert(AlertType.ERROR, 
+					"\"" + result.get() + "\" is not a valid identifier.", 
+					new ButtonType("Damned", ButtonData.YES)).showAndWait();
+			}
 		}
 	}
 }

@@ -96,7 +96,7 @@ public class EditEnumerationDialog extends CustomDialog<Void>{
 		}
 		
 		for (String tmp : inputElementListview.getItems()) {
-			if (!InputChecker.validateName(tmp)) {
+			if (!InputChecker.isValidIdentifier(tmp)) {
 				errorLabel.setText("\""+tmp+"\""+ " is not valid name for enumeration's element");
 				return false;
 			} 

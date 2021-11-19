@@ -25,19 +25,18 @@ public class FmmlxSerializer  {
     private final XmlManager xmlManager;
     private final String filePath;
 
-
     public FmmlxSerializer(String filePath) throws TransformerException, ParserConfigurationException {
         this.filePath = filePath;
-        initUserXMLFile(filePath);
+//        initUserXMLFile(filePath);
+        XmlCreator xmlCreator = new XmlCreator();
+        xmlCreator.createXml(filePath);
         this.xmlManager = new XmlManager(this.filePath);
     }
 
-    //This method is used to make xml files according to the address in parameters
-    //and it will be automatically called when FmmlxSerializer-Class created
-    public void initUserXMLFile(String file) throws TransformerException, ParserConfigurationException {
-        XmlCreator xmlCreator = new XmlCreator();
-        xmlCreator.createXml(file);
-    }
+//    //This method is used to make xml files according to the address in parameters
+//    //and it will be automatically called when FmmlxSerializer-Class created
+//    public void initUserXMLFile(String file) throws TransformerException, ParserConfigurationException {
+//    }
 
     //This Method is the main "save as" method
     /*This method is divided into 4 main processes
@@ -213,6 +212,7 @@ public class FmmlxSerializer  {
         return Files.exists(Paths.get(file));
     }
 
+    @Deprecated
     public void clearAllData() {
         Element Root = xmlManager.getRoot();
         Element logsElement = xmlManager.getChildWithTag(Root, SerializerConstant.TAG_NAME_LOGS);

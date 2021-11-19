@@ -12,7 +12,8 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Affine;
 
 import org.w3c.dom.Element;
-import tool.clients.exporter.svg.SvgConstant;
+
+import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.xmlManipulator.XmlHandler;
 import xos.Value;
 

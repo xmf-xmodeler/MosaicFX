@@ -1,4 +1,4 @@
-package tool.clients.exporter.svg;
+package tool.clients.fmmlxdiagrams.graphics;
 
 public class SvgConstant {
     public static final String FILE_NAME = "testSVG.svg";

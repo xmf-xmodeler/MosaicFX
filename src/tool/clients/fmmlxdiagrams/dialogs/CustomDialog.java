@@ -412,7 +412,7 @@ public class CustomDialog<R> extends Dialog<R> {
 	public boolean validateString(String string) {
 
 		InputChecker.getInstance();
-		if (!InputChecker.validateName(string)) {
+		if (!InputChecker.isValidIdentifier(string)) {
 			errorLabel.setText("Enter valid String!");
 			return false;
 		} else {

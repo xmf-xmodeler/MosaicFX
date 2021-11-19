@@ -25,12 +25,12 @@ In addition, this class also has functions that are not found in basic functions
 public class XmlHandler {
     private final Document document;
     private final XmlHelper xmlHelper;
-    private static String sourcePath;
+    private  String sourcePath;
 
     public XmlHandler(String sourcePath){
-        XmlHandler.sourcePath = sourcePath;
+        this.sourcePath = sourcePath;
         this.document = buildDocument(sourcePath);
-        this.xmlHelper = XmlHelper.getInstance(getDocument());
+        this.xmlHelper = new XmlHelper(getDocument());
     }
 
     public String getSourcePath() {
@@ -39,7 +39,7 @@ public class XmlHandler {
 
     /*This method serves to create a dom-document instance,
     then copy the existing data on the XML/SVG-file then transformed into a dom-document that can be manipulated.*/
-    private Document buildDocument(String sourcePath) {
+    private static Document buildDocument(String sourcePath) {
         Document doc = null;
         try {
             File fXmlFile = new File(sourcePath);
@@ -131,12 +131,12 @@ public class XmlHandler {
     *XMLHelper is a class that functions to be the main communicator between the XML-File and Dom-Document.
     *Before being manipulated, the data from the XML-file loaded into Dom-Document and the Instance of this DOM-Document will be manipulated which can later be saved back to the real XML-file.
     *Besides, XMLHelper has basic functions to manipulate XML-Document.*/
-    public static class XmlHelper {
+    public class XmlHelper {
         private final Document document;
 
-        private static synchronized XmlHelper getInstance(Document document) {
-            return new XmlHelper(document);
-        }
+//        private static synchronized XmlHelper getInstance(Document document) {
+//            return new XmlHelper(document);
+//        }
 
         private XmlHelper(Document document) {
             this.document = document;

@@ -2,7 +2,8 @@ package tool.clients.xmlManipulator;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import tool.clients.exporter.svg.SvgConstant;
+
+import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.serializer.SerializerConstant;
 
 import javax.xml.parsers.DocumentBuilder;

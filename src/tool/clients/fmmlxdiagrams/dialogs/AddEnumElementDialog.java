@@ -54,7 +54,7 @@ public class AddEnumElementDialog extends CustomDialog<String>{
 
 		String name = inputElementNameTextField.getText();
 
-		if (!InputChecker.validateName(name)) {
+		if (!InputChecker.isValidIdentifier(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else if(list.getItems().contains(name)){

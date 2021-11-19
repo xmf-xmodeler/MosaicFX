@@ -68,7 +68,7 @@ public class AddEnumerationDialog extends CustomDialog<String>{
 	private boolean validateName() {
 		String name = nameTextField.getText();
 
-		if (!InputChecker.validateName(name)) {
+		if (!InputChecker.isValidIdentifier(name)) {
 			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else {

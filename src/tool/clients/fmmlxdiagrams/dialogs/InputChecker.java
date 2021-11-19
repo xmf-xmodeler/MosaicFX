@@ -21,15 +21,18 @@ public class InputChecker {
 		return instance;
 	}
 
-	public static boolean validateName(String name) {
-		if (name.equals("")) {
-			return false;
-		} else if (checkFirstStringIsDigit(name)) {
-			return false;
-		} else if (name.contains(" ")) {
-			return false;
-		}
-		return true;
+	public static boolean isValidIdentifier(String name) {
+		return name.matches("[a-zA-Z][_a-zA-Z0-9]*");
+//		if(name.equals("")) {
+//			return false;
+//		} else if(checkFirstStringIsDigit(name)) {
+//			return false;
+//		} else if(name.contains(" ")) {
+//			return false;
+//		} else if(!name.matches("[a-zA-Z][_a-zA-Z0-9]*")) {
+//			return false;
+//		}
+//		return true;
 	}
 
 	private static boolean checkFirstStringIsDigit(String name) {
