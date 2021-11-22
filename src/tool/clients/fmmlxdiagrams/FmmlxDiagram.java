@@ -64,6 +64,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	// The elements which the diagram consists of GUI-wise
 	private SplitPane splitPane;
+	private SplitPane splitPane2;
 	private VBox mainView;
 //	private VBox vBox;
 //	private Menu menu;
@@ -92,7 +93,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private transient FmmlxProperty lastHitProperty = null;
 	private transient boolean diagramRequiresUpdate = false;
 
-	private static final Point2D CANVAS_RAW_SIZE = new Point2D(1400, 1000);
+//	private static final Point2D CANVAS_RAW_SIZE = new Point2D(1400, 1000);
 	public  static final Font FONT;
 
 	private boolean showOperations = true;
@@ -102,6 +103,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private boolean showDerivedOperations=true;
 	private boolean showDerivedAttributes=true;
 	private boolean showMetaClassName = false;
+	private DiagramViewPane zoomView;
 	@Override protected boolean loadOnlyVisibleObjects() { return true; }	
 
 	public final String diagramName;
@@ -143,6 +145,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 //		menu.getItems().addAll(loadXML, saveXML);
 //		menuBar.getMenus().add(menu);
 		splitPane = new SplitPane();
+		splitPane2 = new SplitPane();
 //		vBox.getChildren().addAll(menuBar, splitPane);
 		mainView = new VBox();
 //		canvas = new Canvas(CANVAS_RAW_SIZE.getX(), CANVAS_RAW_SIZE.getY());
@@ -156,12 +159,13 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 //        canvas.widthProperty().bind(canvasPane.widthProperty());
 //        canvas.heightProperty().bind(canvasPane.heightProperty());
 ////        canvasPane.setPrefSize(1400, 1000);
-		mainViewPane = new DiagramViewPane();
+		mainViewPane = new DiagramViewPane(false);
 				
         tabPane = new TabPane();
         tabPane.getTabs().add(new Tab("Main Tab", mainViewPane));
-        tabPane.getTabs().add(new Tab("Tab 1", new DiagramViewPane()));
-        tabPane.getTabs().add(new Tab("Tab 2", new DiagramViewPane()));
+        tabPane.getTabs().add(new Tab("Tab 1", new DiagramViewPane(false)));
+        tabPane.getTabs().add(new Tab("Tab 2", new DiagramViewPane(false)));
+        zoomView = new DiagramViewPane(true);
         
         tabPane.setFocusTraversable(true);
         tabPane.setOnKeyReleased(new javafx.event.EventHandler<javafx.scene.input.KeyEvent>() {
@@ -178,17 +182,28 @@ public class FmmlxDiagram extends AbstractPackageViewer{
                 }
             }
         });
+        
+//        zoomView.setZoomParent(mainViewPane);
+        tabPane.getSelectionModel().selectedItemProperty().addListener((foo,goo,newTabItem)-> {
+        	redraw();
+//        	zoomView.setZoomParent(getActiveView());
+        });
 		
         //LM, 17.11.2021, Resize of Canvas on rescale
         tabPane.heightProperty().addListener( ( observable, x, y ) -> redraw() );
         tabPane.widthProperty().addListener( ( observable, x, y ) -> redraw() );
         
 		mainView.getChildren().addAll(palette, palette2, tabPane);//scrollerCanvas);
+		
+		splitPane2.setOrientation(Orientation.VERTICAL);
+		splitPane2.setDividerPosition(0, 0.8);
+		splitPane2.getItems().addAll(newFmmlxPalette.getToolBar(), zoomView);
+		SplitPane.setResizableWithParent(zoomView, false);
 
 		splitPane.setOrientation(Orientation.HORIZONTAL);
 		splitPane.setDividerPosition(0, 0.2);
-		splitPane.getItems().addAll(newFmmlxPalette.getToolBar(), mainView);
-		SplitPane.setResizableWithParent(newFmmlxPalette.getToolBar(), false);
+		splitPane.getItems().addAll(splitPane2, mainView);
+		SplitPane.setResizableWithParent(splitPane2, false);
 		
 		new Thread(this::fetchDiagramData).start();
 
@@ -881,31 +896,46 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		private Canvas canvas;
 		private double zoom = 1.;
 		private Affine canvasTransform = new Affine();
+//		private DiagramViewPane zoomParent = null;
+		private final boolean isZoomView;
 
 		
-		private DiagramViewPane() {
+		private DiagramViewPane(boolean isZoomView) {
 			super();
 
-			canvas = new Canvas(CANVAS_RAW_SIZE.getX(), CANVAS_RAW_SIZE.getY());
+			this.isZoomView = isZoomView;
+			
+			canvas = new Canvas();
 			getChildren().add(canvas);
 			canvas.widthProperty().bind(this.widthProperty());
 			canvas.heightProperty().bind(this.heightProperty());
-			setPrefSize(1400, 1000);
+			setMaxSize(2048, 2048);
+			setPrefSize(2048, 2048);
 			
-			canvas.setOnMousePressed(this::mousePressed);
-			canvas.setOnMouseDragged(this::mouseDragged);
-			canvas.setOnMouseReleased(this::mouseReleased);
-			canvas.setOnMouseMoved(this::mouseMoved);
-			canvas.addEventFilter(ScrollEvent.ANY, this::handleScroll);
-
+			if(isZoomView) {
+				canvas.setOnMouseClicked(mE -> zoomClicked(mE));
+			}
+			else {
+				canvas.setOnMousePressed(this::mousePressed);
+				canvas.setOnMouseDragged(this::mouseDragged);
+				canvas.setOnMouseReleased(this::mouseReleased);
+				canvas.setOnMouseMoved(this::mouseMoved);
+				canvas.addEventFilter(ScrollEvent.ANY, this::handleScroll);
+			}
 			
 			views.add(this);
 			
 		}
+
+//		private void setZoomParent(View activeView) {
+////			zoomParent = (DiagramViewPane) activeView;
+//			redraw();
+//		}
 		
 		////////////////////////////////////////////////////////////////////
 		////						MouseListener						////
 		////////////////////////////////////////////////////////////////////
+
 
 		private void mousePressed(MouseEvent e) {
 			if(fetchingData) return;
@@ -970,6 +1000,22 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 
 		private void mouseDraggedStandard(Point2D p) {
+			final double DRAG_LIMIT=5 ,DRAG_STEP = 5;
+			if(p.getX() < DRAG_LIMIT) {
+				canvasTransform.prependTranslation(DRAG_STEP,0);
+				dragStart = new Point2D(dragStart.getX()+DRAG_STEP, dragStart.getY());
+			} else if (p.getX() > canvas.getWidth() - DRAG_LIMIT) {
+				canvasTransform.prependTranslation(-DRAG_STEP,0);
+				dragStart = new Point2D(dragStart.getX()-DRAG_STEP, dragStart.getY());
+			}
+			
+			if(p.getY() < DRAG_LIMIT) {
+				canvasTransform.prependTranslation(0,DRAG_STEP);
+				dragStart = new Point2D(dragStart.getX(), dragStart.getY()+DRAG_STEP);
+			} else if (p.getY() > canvas.getHeight() - DRAG_LIMIT) {
+				canvasTransform.prependTranslation(0,-DRAG_STEP);
+				dragStart = new Point2D(dragStart.getX(), dragStart.getY()-DRAG_STEP);
+			}			
 			
 			try {
 				Affine b = new Affine(Transform.translate(p.getX() - dragStart.getX(), p.getY() - dragStart.getY()));
@@ -1230,6 +1276,30 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
 		}
 		
+		private void zoomClicked(MouseEvent e) {
+			if(e.getButton() == MouseButton.PRIMARY) try {
+				Point2D p = canvasTransform.inverseTransform(e.getX(), e.getY());
+					// p is now the point which should appear 
+					// in the active view in the centre 
+					// with the zoom unchanged.
+				View activeView = getActiveView();
+				double zoom = activeView.getCanvasTransform().getMxx();
+					// assuming that xx and yy are always equal.
+					// (otherwise they will be from now on)				
+				Affine a = new Affine(Affine.translate(-p.getX(), -p.getY()));
+					// the point is moved to 0,0
+				a.appendScale(zoom, zoom);
+					// the canvas is scaled
+				a.appendTranslation(activeView.getCanvas().getWidth()/2, activeView.getCanvas().getHeight()/2);
+					// and moved by half a canvas
+				((DiagramViewPane) activeView).canvasTransform = a;
+				redraw();
+				
+			} catch (Exception E) {
+				E.printStackTrace();
+			}
+		}
+		
 	    private void highlightElementAt(CanvasElement hitObject, Point2D mouse) {
 			for (CanvasElement object : objects) {
 				object.highlightElementAt(null, canvasTransform);
@@ -1244,9 +1314,53 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			final GraphicsContext g = canvas.getGraphicsContext2D();
 			// blank bg first:
 			g.setTransform(new Affine());
-			g.setFill(Color.WHITE);
-			g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+			
+			if(!isZoomView) {
+				g.setFill(Color.LIGHTSKYBLUE);
+				g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+				g.setStroke(Color.ROYALBLUE);
+				g.setLineWidth(2.5);
+				g.setFill(Color.WHITE);
+				for(FmmlxObject o : objects) if (!o.hidden) {
+					Point2D p = canvasTransform.transform(o.getCenterX(), o.getCenterY());
+					g.strokeLine(canvas.getWidth()/2, canvas.getHeight()/2, p.getX(), p.getY()); 
+				}
+				g.fillRect(5, 5, canvas.getWidth()-10, canvas.getHeight()-10);
+			} else {
+				g.setFill(Color.WHITE);
+				g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+				
+				Affine newTransform = getZoomViewTransform();
+				
+				try{
 					
+				g.beginPath();
+				g.moveTo(0, 0);
+				g.lineTo(0, getHeight());
+				g.lineTo(getWidth(), getHeight());
+				g.lineTo(getWidth(), 0);
+				g.lineTo(0, 0);
+
+				Point2D p1 = getActiveView().getCanvasTransform().inverseTransform(new Point2D(0, 0));
+				p1 = newTransform.transform(p1);
+
+				Point2D p2 = getActiveView().getCanvasTransform().inverseTransform(new Point2D(getActiveView().getCanvas().getWidth(), getActiveView().getCanvas().getHeight()));
+				p2 = newTransform.transform(p2);
+
+				g.moveTo(p1.getX(), p1.getY());
+				g.lineTo(p2.getX(), p1.getY());
+				g.lineTo(p2.getX(), p2.getY());
+				g.lineTo(p1.getX(), p2.getY());
+				g.lineTo(p1.getX(), p1.getY());
+				
+				g.setFill(new Color(.5, .5, .5, .5));
+				g.fill();
+				
+				} catch (Exception E) {}
+				canvasTransform = newTransform;
+				
+			}
+								
 			if (objects.size() <= 0) {return;} // if no objects yet: out, avoid div/0 or similar
 			
 			// otherwise gather (first-level) objects to be painted
@@ -1292,10 +1406,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 //			g.setFill(Color.PURPLE);
 //			g.fillText(canvas.getWidth() + ":"  +canvas.getHeight(), 0, 20);
 //
-			
-			g.setFill(Color.PURPLE);
-			try{g.fillText((int)(lastPointPressed.getX()) + ":"  +(int)(lastPointPressed.getY()), 0, 20);} catch (Exception E) {}
-			try{g.fillText((int)(currentPointMoving.getX()) + ":"  +(int)(currentPointMoving.getY()), 0, 40);} catch (Exception E) {}
+//			
+//			g.setFill(Color.PURPLE);
+//			try{g.fillText((int)(lastPointPressed.getX()) + ":"  +(int)(lastPointPressed.getY()), 0, 20);} catch (Exception E) {}
+//			try{g.fillText((int)(currentPointMoving.getX()) + ":"  +(int)(currentPointMoving.getY()), 0, 40);} catch (Exception E) {}
 //			
 //			g.setStroke(Color.PURPLE);
 //			g.strokeLine(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -1309,6 +1423,30 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 //			}
 		}
 		
+		private Affine getZoomViewTransform() {
+			double minX = Double.MAX_VALUE;
+			double minY = Double.MAX_VALUE;
+			double maxX = Double.MIN_VALUE;
+			double maxY = Double.MIN_VALUE;	
+			boolean valid = false;
+			
+			for(FmmlxObject o : objects) if (!o.hidden) {
+				if(o.getLeftX() < minX) minX = o.getLeftX();
+				if(o.getTopY() < minY) minY = o.getTopY();
+				if(o.getRightX() > maxX) maxX = o.getRightX();
+				if(o.getBottomY() > maxY) maxY = o.getBottomY();
+				valid = true;
+			}
+			
+			if(!valid) return new Affine();
+
+			double xZoom = canvas.getWidth() / (maxX - minX); 
+			double yZoom = canvas.getHeight() / (maxY - minY);
+			double zoom = Math.min(xZoom, yZoom);
+			
+			return new Affine(zoom,0,-zoom*minX,0,zoom,-zoom*minY);
+		}
+
 		public double getZoom() {
 			return zoom;
 		}
