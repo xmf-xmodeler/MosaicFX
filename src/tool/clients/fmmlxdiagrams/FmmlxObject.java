@@ -5,11 +5,10 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.transform.Affine;
-import javafx.scene.transform.Transform;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement;
-import tool.clients.fmmlxdiagrams.graphics.SVGReader;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteTool;
@@ -566,15 +565,38 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	@Override
 	protected void layout(FmmlxDiagram diagram) {
-		if(ofPath.endsWith("QX") && getSlotNames().contains("file")) {
-			try {
-				rootNodeElement=SVGReader.readSVG(getSlot("file").getValue(), new Affine(Transform.translate(x, y)));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		// try to find concrete syntax:
+		ConcreteSyntax myConcreteSyntax = null;
+		
+		for(ConcreteSyntax c : diagram.syntaxes.values()) if(myConcreteSyntax == null) {
+			try{
+				FmmlxObject classs = diagram.getObjectByPath("Root::" + c.classPath);
+				if(this.isInstanceOf(classs, this.level) && this.level == c.level) {
+					myConcreteSyntax = c;
+				}
+			} catch (Exception e) {}
+		}
+		
+		if(myConcreteSyntax != null) {
+			rootNodeElement = myConcreteSyntax.createInstance(this);
+		} else if(ofPath.endsWith("Event")) {
+			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutEvent();
 		} else {	
 			new DefaultFmmlxObjectDisplay(diagram, this).layout();
 		}
+		
+		
+		
+		
+//		if(ofPath.endsWith("QX") && getSlotNames().contains("file")) {
+//			try {
+//				rootNodeElement=SVGReader.readSVG(getSlot("file").getValue(), new Affine(Transform.translate(x, y)));
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		} else {	
+//			new DefaultFmmlxObjectDisplay(diagram, this).layout();
+//		}
 		
 		if(rootNodeElement != null) rootNodeElement.updateBounds();
 		

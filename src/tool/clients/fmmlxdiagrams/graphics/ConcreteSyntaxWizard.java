@@ -1,15 +1,9 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
 import java.io.File;
-import java.io.IOException;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.xml.sax.SAXException;
 
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
@@ -17,7 +11,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.SplitPane;
@@ -27,25 +20,17 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
-import javafx.scene.transform.NonInvertibleTransformException;
-import javafx.scene.transform.Scale;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-
-
 public class ConcreteSyntaxWizard extends Application {
-
 	
-	
-	static final String RESOURCES_ABSTRACT_SYNTAX_REPOSITORY = "resources/abstract-syntax-repository/";
+	public static final String RESOURCES_ABSTRACT_SYNTAX_REPOSITORY = "resources/abstract-syntax-repository/";
 	private ListView<String> listView = new ListView<String>();
 	private SplitPane splitPane;
 	private VBox leftControl;
