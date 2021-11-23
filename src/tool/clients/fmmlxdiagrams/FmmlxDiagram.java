@@ -1,9 +1,13 @@
 package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
@@ -13,9 +17,12 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -49,6 +56,7 @@ import tool.xmodeler.XModeler;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
@@ -162,9 +170,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		mainViewPane = new DiagramViewPane(false);
 				
         tabPane = new TabPane();
-        tabPane.getTabs().add(new Tab("Main Tab", mainViewPane));
-        tabPane.getTabs().add(new Tab("Tab 1", new DiagramViewPane(false)));
-        tabPane.getTabs().add(new Tab("Tab 2", new DiagramViewPane(false)));
+        tabPane.getTabs().add(createEditableTab("Main Tab", mainViewPane));
+        tabPane.getTabs().add(createEditableTab("Tab 1", new DiagramViewPane(false)));
+        tabPane.getTabs().add(createEditableTab("Tab 2", new DiagramViewPane(false)));
         tabPane.getTabs().add(getHackTab());
         zoomView = new DiagramViewPane(true);
         
@@ -1597,4 +1605,57 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		DiagramViewPane activeView = (DiagramViewPane) activeNode;
 		return activeView;
 	}
+	
+	public Tab createEditableTab(String text, DiagramViewPane DVpane) {  
+		final Tab tab = new Tab("",DVpane);
+		final Label label = new Label(text);
+		tab.setGraphic(label);
+		label.setOnMouseClicked(new EventHandler<MouseEvent>() {  
+			  @Override  
+			  public void handle(MouseEvent event) {  
+			    if (event.getClickCount()==2) {
+			    	TextInputDialog dialog = new TextInputDialog("new tab name");
+			    	dialog.setTitle("Change tab name");
+			    	dialog.setHeaderText("Change tab name");
+			    	dialog.setContentText("Please enter the new name for this tab:");
+			    	Optional<String> result = dialog.showAndWait();
+			    	if (result.isPresent()){
+			    		label.setText(result.get());
+			    	}
+
+//			      textField.setText(label.getText());  
+//			      tab.setGraphic(textField);  
+//			      textField.selectAll();  
+//			      textField.requestFocus();  
+			    }  
+			  }  
+			}); 
+		
+		
+//		final Label label = new Label(text);  
+//		final Tab tab = new Tab();  
+//		  
+//		final TextField textField = new TextField();  
+//		textField.setOnAction(new EventHandler<ActionEvent>() {  
+//		  @Override  
+//		  public void handle(ActionEvent event) {  
+//		    label.setText(textField.getText());  
+//		    tab.setGraphic(label);  
+//		  }  
+//		});
+//
+//
+//		textField.focusedProperty().addListener(new ChangeListener<Boolean>() {  
+//		  @Override  
+//		  public void changed(ObservableValue<? extends Boolean> observable,  
+//		      Boolean oldValue, Boolean newValue) {  
+//		    if (! newValue) {  
+//		      label.setText(textField.getText());  
+//		      tab.setGraphic(label);            
+//		    }  
+//		  }  
+//		});  
+		return tab ;  
+		}  
+	
 }
