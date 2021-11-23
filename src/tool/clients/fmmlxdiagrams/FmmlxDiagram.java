@@ -909,7 +909,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			getChildren().add(canvas);
 			canvas.widthProperty().bind(this.widthProperty());
 			canvas.heightProperty().bind(this.heightProperty());
-			setMaxSize(2048, 2048);
+			setMaxSize(4096, 4096);
 			setPrefSize(2048, 2048);
 			
 			if(isZoomView) {

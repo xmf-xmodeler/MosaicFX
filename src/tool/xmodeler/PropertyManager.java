@@ -330,13 +330,13 @@ public class PropertyManager {
 	}
 
 	private void onSaveButtonClicked(ActionEvent actionEvent) {
-		parseGridPane(generalGrid);
-		parseGridPane(debugGrid);
-		parseGridPane(pathGrid);
+		saveGridPane(generalGrid);
+		saveGridPane(debugGrid);
+		saveGridPane(pathGrid);
 		stage.close();
 	}
 
-	private void parseGridPane(GridPane gridPane) {
+	private void saveGridPane(GridPane gridPane) {
 		
 			//parse rows and col into array
 			Node[][] gridPaneNodes = getGridPaneRows(gridPane);
@@ -485,7 +485,7 @@ public class PropertyManager {
 		return button;
 	}
 
-	private int getGridLength(GridPane gridPane) { // Reimplementing. Does not work for JAVA 14!
+	private int getGridLength(GridPane gridPane) { // Need for Reimplementing. Does not work for JAVA 14!
 		int rows = 0;
 		try {
 			Method method = gridPane.getClass().getDeclaredMethod("getNumberOfRows");
