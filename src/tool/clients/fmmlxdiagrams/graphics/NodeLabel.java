@@ -10,6 +10,8 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Translate;
 
+import java.util.Vector;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -223,5 +225,15 @@ public class NodeLabel extends NodeBaseElement {
 		myElement.setAttribute("tx", myTransform.getTx()+"");
 		myElement.setAttribute("ty", myTransform.getTy()+"");
 		return myElement;
+	}
+
+	@Override
+	protected NodeLabel createInstance(FmmlxObject object, Vector<Modification> modifications) {
+		NodeLabel that = new NodeLabel(alignment, myTransform.getTx(), myTransform.getTy(), fgColor, bgColor, actionObject, action, text, fontPosture, fontWeight, fontScale);
+		return that;
+	}
+	
+	void setText(String newText) {
+		this.text = newText;
 	}
 }

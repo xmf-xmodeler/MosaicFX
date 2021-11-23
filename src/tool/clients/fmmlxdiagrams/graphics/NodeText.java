@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
+import java.util.Vector;
+
 import org.apache.batik.anim.dom.SVGOMElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.anim.dom.SVGOMTSpanElement;
@@ -13,34 +15,37 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeText extends NodeBaseElement{
-	
-	final SVGOMTextElement textRootNode;
+
+	final SVGOMTextElement textNode;
+	final SVGOMSVGElement rootNode;
 	private double x,y;
 	
-	public NodeText(SVGOMTextElement n, SVGOMSVGElement root) {
-		super(SVGReader.readTransform(n), root.getComputedStyle(n, null), null, () -> {});
-		this.textRootNode = n;
+	public NodeText(SVGOMTextElement textNode, SVGOMSVGElement rootNode) {
+		super(SVGReader.readTransform(textNode), rootNode.getComputedStyle(textNode, null), null, () -> {});
+		this.textNode = textNode;
+		this.rootNode = rootNode;
 		this.action= ()->{};
-		Node transformNode = n.getAttributes().getNamedItem("transform");
+		Node transformNode = textNode.getAttributes().getNamedItem("transform");
 		this.myTransform = transformNode==null?new Affine():SVGReader.readTransform(transformNode.getNodeValue());
 		try{
-			this.x = Double.parseDouble(n.getAttributes().getNamedItem("x").getNodeValue());
-			this.y = Double.parseDouble(n.getAttributes().getNamedItem("y").getNodeValue());
+			this.x = Double.parseDouble(textNode.getAttributes().getNamedItem("x").getNodeValue());
+			this.y = Double.parseDouble(textNode.getAttributes().getNamedItem("y").getNodeValue());
 		} catch(Exception e) {
 			x = 0; y = 0;
 		}
-		setID(n);
+		setID(textNode);
 	}
 	
 	@Override
 	public void paintOn(View diagramView, boolean objectIsSelected) {
 		GraphicsContext g = diagramView.getCanvas().getGraphicsContext2D();
 		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
-		paintOnLocal(g, textRootNode,this.x,this.y);
+		paintOnLocal(g, textNode, this.x, this.y);
 	}
 
 	private void paintOnLocal(GraphicsContext g, SVGOMElement parentNode, double x, double y) {
@@ -98,5 +103,10 @@ public class NodeText extends NodeBaseElement{
 	@Override
 	public String toString() {
 		return "Text"+ (id==null?"":("("+id+")"));
+	}
+	
+	@Override
+	protected NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications) {
+		return new NodeText(textNode, rootNode);
 	}
 }

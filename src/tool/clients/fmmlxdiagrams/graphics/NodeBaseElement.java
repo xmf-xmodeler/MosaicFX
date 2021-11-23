@@ -28,7 +28,7 @@ public abstract class NodeBaseElement extends NodeElement {
 		this.styleDeclaration = styleDeclaration;
 	}
 
-	private FmmlxProperty actionObject;
+	protected FmmlxProperty actionObject;
 	protected Action action;
 	protected boolean selected = false;
 		

@@ -61,20 +61,12 @@ public class ConcreteSyntaxWizard extends Application {
 	Spinner<Double> scale = new Spinner<>(new SpinnerValueFactory<Double>() {
         double STEP = Math.pow(2, 0.25);              
         @Override public void decrement(int steps) { setValue(Math.pow(STEP, -steps) * getValue()); }
-        @Override public void increment(int steps) { setValue(Math.pow(STEP, steps) * getValue()); }
-  });
+        @Override public void increment(int steps) { setValue(Math.pow(STEP, steps) * getValue()); }});
 
-	
-	
-	
-	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		
-		
 		splitPane = new SplitPane();
 		splitPane.setPadding(new Insets(10,10,10,10));
-		
 			
 		myCanvas = new MyCanvas();		
 		
@@ -83,11 +75,7 @@ public class ConcreteSyntaxWizard extends Application {
 		SVGtree.getSelectionModel().selectedItemProperty().addListener((a,b,item)->{
 			if (item!=null) {
 				setCurrentGraphicElement(item.getValue());	
-			} else {
-				
-			}
-				
-			
+			}			
 		});
 		
 

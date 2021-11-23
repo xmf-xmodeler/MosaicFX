@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Vector;
 
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
@@ -13,6 +14,7 @@ import javafx.scene.transform.Affine;
 import org.w3c.dom.Element;
 
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.xmlManipulator.XmlHandler;
 
@@ -76,5 +78,10 @@ public class NodeImage extends NodeBaseElement {
 
 	@Override
 	public void updateBounds() {}
+
+	@Override
+	protected NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications) {
+		throw new RuntimeException("Not yet implemented!");
+	}
 
 }
