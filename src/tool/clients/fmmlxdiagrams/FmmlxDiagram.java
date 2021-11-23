@@ -165,6 +165,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         tabPane.getTabs().add(new Tab("Main Tab", mainViewPane));
         tabPane.getTabs().add(new Tab("Tab 1", new DiagramViewPane(false)));
         tabPane.getTabs().add(new Tab("Tab 2", new DiagramViewPane(false)));
+        tabPane.getTabs().add(getHackTab());
         zoomView = new DiagramViewPane(true);
         
         tabPane.setFocusTraversable(true);
@@ -183,10 +184,24 @@ public class FmmlxDiagram extends AbstractPackageViewer{
             }
         });
         
-//        zoomView.setZoomParent(mainViewPane);
         tabPane.getSelectionModel().selectedItemProperty().addListener((foo,goo,newTabItem)-> {
-        	redraw();
-//        	zoomView.setZoomParent(getActiveView());
+        	if(newTabItem.getContent() == null) {
+        		// hackPane selected
+        		tabPane.getTabs().add(getHackTab());
+        		newTabItem.setText("new Tab");
+        		final DiagramViewPane newView = new DiagramViewPane(false);
+        		newTabItem.setContent(newView);
+        		
+        		final java.util.Timer timer = new java.util.Timer();
+        		timer.schedule(new java.util.TimerTask() {
+        			@Override public void run() {
+        				redraw();
+        				if(newView.getCanvas().getWidth() > 0) timer.cancel();
+        			}
+        		}, 100, 100);      		
+        	} else {
+        		redraw();
+			}
         });
 		
         //LM, 17.11.2021, Resize of Canvas on rescale
@@ -215,6 +230,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 //				redraw();
 //			}
 //		}, 100, 100);
+	}
+
+	private Tab getHackTab() {
+		return new Tab("*");		
 	}
 
 //	private void loadXMLAction() {
@@ -1288,9 +1307,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					// (otherwise they will be from now on)				
 				Affine a = new Affine(Affine.translate(-p.getX(), -p.getY()));
 					// the point is moved to 0,0
-				a.appendScale(zoom, zoom);
+				a.prependScale(zoom, zoom);
 					// the canvas is scaled
-				a.appendTranslation(activeView.getCanvas().getWidth()/2, activeView.getCanvas().getHeight()/2);
+				a.prependTranslation(activeView.getCanvas().getWidth()/2, activeView.getCanvas().getHeight()/2);
 					// and moved by half a canvas
 				((DiagramViewPane) activeView).canvasTransform = a;
 				redraw();
@@ -1424,16 +1443,16 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		
 		private Affine getZoomViewTransform() {
-			double minX = Double.MAX_VALUE;
-			double minY = Double.MAX_VALUE;
-			double maxX = Double.MIN_VALUE;
-			double maxY = Double.MIN_VALUE;	
+			double minX = Double.POSITIVE_INFINITY;
+			double minY = Double.POSITIVE_INFINITY;
+			double maxX = Double.NEGATIVE_INFINITY;
+			double maxY = Double.NEGATIVE_INFINITY;	
 			boolean valid = false;
 			
 			for(FmmlxObject o : objects) if (!o.hidden) {
-				if(o.getLeftX() < minX) minX = o.getLeftX();
-				if(o.getTopY() < minY) minY = o.getTopY();
-				if(o.getRightX() > maxX) maxX = o.getRightX();
+				if(o.getLeftX()   < minX) minX = o.getLeftX();
+				if(o.getRightX()  > maxX) maxX = o.getRightX();
+				if(o.getTopY()    < minY) minY = o.getTopY();
 				if(o.getBottomY() > maxY) maxY = o.getBottomY();
 				valid = true;
 			}
