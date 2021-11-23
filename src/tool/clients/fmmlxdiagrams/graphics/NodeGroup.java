@@ -15,6 +15,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeGroup extends NodeElement {
@@ -33,7 +34,7 @@ public class NodeGroup extends NodeElement {
 	}
 	
 	public NodeGroup() {
-		myTransform = new Affine();
+		this(new Affine());
 	}
 	
 	public NodeGroup(SVGOMGElement node, SVGOMSVGElement svgOMElement) {
@@ -173,5 +174,44 @@ public class NodeGroup extends NodeElement {
 		myElement.setAttribute("ty", myTransform.getTy()+"");
 		ConcreteSyntax.saveChildren(document, nodeElements, myElement);
 		return myElement;
+	}
+
+	private static Modification findMod(Vector<Modification> modifications, String id) {
+		for(Modification mod : modifications) {
+			if(id.equals(mod.getID())) {
+				return mod;
+			}
+		}
+		return null;
+	}
+	
+	@Override
+	protected NodeGroup createInstance(FmmlxObject object, Vector<Modification> modifications) {
+		NodeGroup that = new NodeGroup(new Affine(this.myTransform));
+		for(NodeElement nodeElement : this.nodeElements) {
+			Modification mod = findMod(modifications, nodeElement.id);
+				boolean add = mod == null || mod.getConsequence() == Modification.Consequence.SHOW_ALWAYS
+					|| mod.getConsequence() == Modification.Consequence.SHOW_IF && mod.getCondition().eval(object)
+					|| mod.getConsequence() == Modification.Consequence.SHOW_IF_NOT && !mod.getCondition().eval(object);
+			
+			/// Special case for labels( and later also texts):
+			if(nodeElement instanceof NodeLabel) {
+				if(add) {
+					that.nodeElements.add(nodeElement.createInstance(object, modifications));
+				} else {
+					if(mod.getConsequence() == Modification.Consequence.READ_FROM_SLOT) {
+						NodeLabel thatLabel = ((NodeLabel)nodeElement).createInstance(object, modifications);
+						thatLabel.setText(((Condition.ReadFromSlotCondition)mod.getCondition()).evalText(object));
+						that.nodeElements.add(thatLabel);
+					}
+				}
+			} else {
+				if(add) {
+					that.nodeElements.add(nodeElement.createInstance(object, modifications));
+				}
+			}			
+		}
+		return that;
 	}	
+	
 }

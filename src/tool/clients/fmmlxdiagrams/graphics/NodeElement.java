@@ -13,6 +13,7 @@ import org.w3c.dom.Element;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public abstract class NodeElement {
@@ -95,4 +96,6 @@ public abstract class NodeElement {
              WEST,   CENTRE,      EAST, 
 		SOUTHWEST,   SOUTH,  SOUTHEAST;
 	}
+	
+	protected abstract NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications);
 }

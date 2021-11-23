@@ -18,6 +18,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javafx.scene.transform.Affine;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.serializer.SerializerConstant;
 
 public class ConcreteSyntax extends AbstractSyntax{
@@ -25,8 +26,7 @@ public class ConcreteSyntax extends AbstractSyntax{
 	public Vector<Modification> modifications;
 	public String classPath;
 	public int level;
-	
-	
+
 	
 	public static ConcreteSyntax load2(File arg, Element root) {
 		ConcreteSyntax object = new ConcreteSyntax();
@@ -47,7 +47,7 @@ public class ConcreteSyntax extends AbstractSyntax{
 			Node n = nl.item(i);
 			if("Modification".equals(n.getNodeName())) {
 				Element e = (Element) n;
-				Modification m=null;
+				Modification m = new Modification(e);
 				object.modifications.add(m);
 			} else {
 				//System.err.println("Child not recognized: " + root + ":" + n);
@@ -104,4 +104,13 @@ public class ConcreteSyntax extends AbstractSyntax{
 	public String toString() {
 		return "Concrete Syntax for " + classPath + "@" + level;
 	}	
+	
+	
+	public NodeGroup createInstance(final FmmlxObject object) {
+		NodeGroup instance = createInstance(object, modifications);
+		instance.myTransform = new Affine(1, 0, object.getX(), 0, 1, object.getY());
+		return instance;
+	}
+
+	
 }

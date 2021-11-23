@@ -6,27 +6,28 @@ import tool.clients.fmmlxdiagrams.FmmlxSlot;
 
 public interface Condition {
 
-	public boolean eval() throws SlotNotFoundException;
+	public boolean eval(FmmlxObject object) throws SlotNotFoundException;
+//	public boolean evalString(FmmlxObject object) throws SlotNotFoundException;
 	
 	@SuppressWarnings("serial")
-	public static class SlotNotFoundException extends Exception{
+	public static class SlotNotFoundException extends RuntimeException{
 		
 	}
 	
 	public static class BooleanSlotCondition implements Condition{
 		
-		private FmmlxObject object;
+//		private FmmlxObject object;
 		private String slotName;
 		private boolean value;		
 		
 		@Override
-		public boolean eval() throws SlotNotFoundException {
+		public boolean eval(FmmlxObject object) throws SlotNotFoundException {
 			FmmlxSlot slot = object.getSlot(slotName);
 			if (slot == null) {
 				throw new SlotNotFoundException();
 			}
 			return value=="true".equals(slot.getValue());
-		}		
+		}
 	}
 	
 	public static class BooleanOpValCondition implements Condition{
@@ -36,13 +37,37 @@ public interface Condition {
 		private boolean value;		
 		
 		@Override
-		public boolean eval() throws SlotNotFoundException {
+		public boolean eval(FmmlxObject object) throws SlotNotFoundException {
 			FmmlxOperationValue opVal = object.getOperationValue(opName);
 			if (opVal == null) {
 				throw new SlotNotFoundException();
 			}
 			return value=="true".equals(opVal.getValue());
 		}		
+	}
+	
+	public static class ReadFromSlotCondition implements Condition{
+		
+		private final String slotName;	
+		
+		public ReadFromSlotCondition(String slotName) {
+			super();
+			this.slotName = slotName;
+		}
+
+		public String evalText(FmmlxObject object) throws SlotNotFoundException {
+			FmmlxSlot slot = object.getSlot(slotName);
+			if (slot == null) {
+				throw new SlotNotFoundException();
+			}
+			return slot.getValue();
+		}
+		
+		@Override
+		public boolean eval(FmmlxObject object) throws SlotNotFoundException {
+			return true;
+		}		
+
 	}
 	
 

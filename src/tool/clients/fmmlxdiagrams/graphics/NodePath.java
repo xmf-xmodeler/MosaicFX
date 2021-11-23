@@ -1,6 +1,6 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
-import java.util.Arrays;
+import java.util.Vector;
 
 import org.apache.batik.anim.dom.SVGOMCircleElement;
 import org.apache.batik.anim.dom.SVGOMEllipseElement;
@@ -17,6 +17,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.xmlManipulator.XmlHandler;
 
@@ -231,5 +232,13 @@ public class NodePath extends NodeBaseElement{
 		nR.setID(n);
 		return nR;
 	}
+
+	@Override
+	protected NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications) {
+		NodePath n = new NodePath(new Affine(myTransform), textPath, actionObject, action, styleDeclaration, type);
+		return n;
+	}
+	
+	
 	
 }
