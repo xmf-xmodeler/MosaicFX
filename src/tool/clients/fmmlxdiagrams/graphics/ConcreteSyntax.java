@@ -19,11 +19,10 @@ import org.w3c.dom.NodeList;
 
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.serializer.SerializerConstant;
 
 public class ConcreteSyntax extends AbstractSyntax{
 	
-	public Vector<Modification> modifications;
+	public Vector<Modification> modifications = new Vector<>();
 	public String classPath;
 	public int level;
 

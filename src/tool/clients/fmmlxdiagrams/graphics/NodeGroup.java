@@ -197,17 +197,17 @@ public class NodeGroup extends NodeElement {
 			/// Special case for labels( and later also texts):
 			if(nodeElement instanceof NodeLabel) {
 				if(add) {
-					that.nodeElements.add(nodeElement.createInstance(object, modifications));
+					that.addNodeElement(nodeElement.createInstance(object, modifications));
 				} else {
 					if(mod.getConsequence() == Modification.Consequence.READ_FROM_SLOT) {
 						NodeLabel thatLabel = ((NodeLabel)nodeElement).createInstance(object, modifications);
 						thatLabel.setText(((Condition.ReadFromSlotCondition)mod.getCondition()).evalText(object));
-						that.nodeElements.add(thatLabel);
+						that.addNodeElement(thatLabel);
 					}
 				}
 			} else {
 				if(add) {
-					that.nodeElements.add(nodeElement.createInstance(object, modifications));
+					that.addNodeElement(nodeElement.createInstance(object, modifications));
 				}
 			}			
 		}

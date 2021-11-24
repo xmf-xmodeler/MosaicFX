@@ -1,12 +1,9 @@
 package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
@@ -21,7 +18,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
@@ -1611,7 +1607,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		final Label label = new Label(text);
 		tab.setGraphic(label);
 		label.setOnMouseClicked(new EventHandler<MouseEvent>() {  
-			  @Override  
 			  public void handle(MouseEvent event) {  
 			    if (event.getClickCount()==2) {
 			    	TextInputDialog dialog = new TextInputDialog("new tab name");
