@@ -39,6 +39,9 @@ import javafx.stage.FileChooser;
 import org.w3c.dom.Element;
 
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.graphics.AbstractSyntax;
+import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
+import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxWizard;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.menus.DefaultContextMenu;
@@ -52,6 +55,7 @@ import tool.xmodeler.XModeler;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
@@ -127,6 +131,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		FONT = Font.font(Font.getDefault().getFamily(), FontPosture.REGULAR, 14);
 	}	
 
+	public final HashMap<String, ConcreteSyntax> syntaxes = new HashMap<>();
 	@Deprecated private DiagramViewPane mainViewPane; 
 	private Vector<DiagramViewPane> views = new Vector<>(); 
 
@@ -234,6 +239,29 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 //				redraw();
 //			}
 //		}, 100, 100);
+	
+		File syntaxDir = new File(ConcreteSyntaxWizard.RESOURCES_ABSTRACT_SYNTAX_REPOSITORY);
+		if (syntaxDir.isDirectory()) {
+			File[] files = syntaxDir.listFiles();
+			for (File file : files) {
+				if (file.isFile()) {
+					if(file.getName().endsWith(".xml")) {
+						try {
+							AbstractSyntax group = AbstractSyntax.load(file);
+							if(group instanceof ConcreteSyntax) {
+								ConcreteSyntax c = ((ConcreteSyntax) group);
+								syntaxes.put(c.classPath, c);
+							}
+						} catch (Exception e) {
+							System.err.println("reading " + file.getName() + " failed. Ignoring..."); 
+						}
+					}
+				}
+			}
+		}	
+	
+	
+	
 	}
 
 	private Tab getHackTab() {
