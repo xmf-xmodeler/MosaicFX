@@ -51,7 +51,7 @@ public class AbstractSyntax extends NodeGroup{
 			} else if("Group".equals(n.getNodeName())){
 				vec.add(readGroup((Element) n, file.getParentFile()));
 			} else {
-				System.err.println("Child not recognized: " + root + ":" + n);
+//				System.err.println("Child not recognized: " + root + ":" + n);
 			}
 		}
 		

@@ -14,7 +14,7 @@ public class SVGGroup extends NodeGroup {
 	
 	public SVGGroup(File file,Affine affine) {
 		super(affine);
-		this.file=file;
+		this.file = file;
 	}
 	
 	public String toString() {

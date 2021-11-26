@@ -250,7 +250,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 								syntaxes.put(c.classPath, c);
 							}
 						} catch (Exception e) {
-							System.err.println("reading " + file.getName() + " failed. Ignoring..."); 
+							System.err.println("reading " + file.getName() + " failed (" + e.getMessage() + "). Ignoring..."); 
 						}
 					}
 				}
@@ -1355,6 +1355,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
 			hitObject.highlightElementAt(mouse, canvasTransform);
 		}
+	    
+//	    private int[][] h = new int[200][200];
 		
 		private void paintOn() {
 			final GraphicsContext g = canvas.getGraphicsContext2D();
@@ -1372,6 +1374,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					g.strokeLine(canvas.getWidth()/2, canvas.getHeight()/2, p.getX(), p.getY()); 
 				}
 				g.fillRect(5, 5, canvas.getWidth()-10, canvas.getHeight()-10);
+				//g.setFill(new Color(.8,.9,.8,1.));java.util.Random r = new java.util.Random(); h[r.nextInt(200)][r.nextInt(200)] = r.nextInt(0126)+03_01_01; for(int i = 0; i < canvas.getWidth()/016-1; i++) for(int j = 0; j < canvas.getHeight()/024-1; j++) g.fillText("" + (char)h[i][j], i*016+7, 025+j*024);
 			} else {
 				g.setFill(Color.WHITE);
 				g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());

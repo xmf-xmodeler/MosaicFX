@@ -98,4 +98,15 @@ public abstract class NodeElement {
 	}
 	
 	protected abstract NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications);
+	
+	public boolean matchID(String svgID, String localID) {
+		if(!localID.equals(this.id)) return false;
+		return matchParentId(svgID);
+	}
+
+	private boolean matchParentId(String parentID) {
+		if(parentID.equals(this.id)) return true;
+		if(owner == null) return false;
+		return owner.matchParentId(parentID);
+	}
 }

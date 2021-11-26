@@ -11,6 +11,7 @@ public class Modification {
 	private Condition condition;
 	private Consequence consequence;
 	private String affectedId;
+	private String affectedParentId;
 	
 	public static enum Consequence{
 		SHOW_ALWAYS, SHOW_NEVER,
@@ -43,27 +44,38 @@ public class Modification {
 			throw new IllegalArgumentException("<Modification> element incomplete, requires one <Condition>, <Consequence> and <Affected> each.");
 		}
 		
-		try{
+		try {
 			consequence = Consequence.valueOf(consequenceElement.getAttribute("type"));
 		} catch (Exception e) {
 			throw new IllegalArgumentException("<Consequence type=...> not recognized. Try " + Arrays.toString(Consequence.values()));
 		}
 		
-		try{
+		try {
 			String conditionType = conditionElement.getAttribute("type");
 			if("ReadFromSlot".equals(conditionType)) {
 				String slotName =  conditionElement.getAttribute("slotName");
 				condition = new Condition.ReadFromSlotCondition(slotName);
+			} else if("BooleanSlotCondition".equals(conditionType)) {
+				String slotName =  conditionElement.getAttribute("slotName");
+				condition = new Condition.BooleanSlotCondition(slotName);
 			} else {
 				throw new RuntimeException("not yet implemented");
 			}
 		} catch (Exception e) {
-			throw new IllegalArgumentException("<Condition...> not readable", e);
+			throw new IllegalArgumentException("<Condition...> not readable (" + e.getMessage() + ")", e);
 			//throw new IllegalArgumentException("<Consequence type=...> not recognized. Try " + Arrays.toString(Consequence.values()));
 		}
+		
+		try {
+			affectedParentId = affectedIdElement.getAttribute("id");
+			affectedId = affectedIdElement.getAttribute("localId");
+		} catch (Exception e) {
+			throw new IllegalArgumentException("<Affected...>  IDs not readable (" + e.getMessage() + ")", e);
+		}
 	}
-	
+
 	public String getID() {return affectedId;} 
+	public String getParentID() {return affectedParentId;} 
 	public Consequence getConsequence() {return consequence;} 
 	public Condition getCondition() {return condition;} 
 		

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <ConcreteSyntax classPath="Project0::Activity" level="1">
-<!--  <SVG path="Orga_Modelle_neu/Automated_Process_arrow.svg"/>
-  <SVG path="Orga_Modelle_neu/Automated_Process_pc.svg" tx="25"/> -->
-  <AbstractSyntax file="Process_prepared.xml">
+  <SVG path="Orga_Modelle_neu/Automated_Process_arrow.svg"/>
+  <SVG path="Orga_Modelle_neu/Automated_Process_pc.svg" tx="25"/>
+<!--    <AbstractSyntax file="Process_prepared.xml"> -->
   <Modification>
     <Affected id="trafficLightRed"/>
 	<Condition type="Boolean_ShowOnlyOnTrue" slot="danger"/>
-	<Condition type="Integer_ShowOnlyInRange" slot="danger" min="100" max="200"/>
+<!--	<Condition type="Integer_ShowOnlyInRange" slot="danger" min="100" max="200"/>
 	<Condition type="evalXmf" slot="self.danger < 1000"/>
-  </Modification>
+-->  </Modification>
   <Modification>
     <Affected id="bottomLabel"/>
 	<Condition type="textFrom" slot="danger"/>

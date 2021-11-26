@@ -58,15 +58,11 @@ public class SVGReader {
 		ctx       = new BridgeContext(userAgent, loader);
 		ctx.setDynamicState(BridgeContext.DYNAMIC);
 		builder   = new GVTBuilder();
-		System.err.println("start svgReader");
 		rootGN    = (RootGraphicsNode) builder.build(ctx, doc);
-		System.err.println("svgReader 1");
 		SVGOMSVGElement myRootSVGElement = (SVGOMSVGElement) doc.getDocumentElement();
-		SVGGroup g = new SVGGroup(file,affine);
+		SVGGroup g = new SVGGroup(file, affine);
 		g.file = file;
-		System.err.println("svgReader 2");
 		Vector<NodeElement> children = readChildren(myRootSVGElement, myRootSVGElement);
-		System.err.println("ende svgReader");
 		g.addAllNodeElements(children);
 //		System.err.println(System.currentTimeMillis() - start);
 		return g;		
@@ -80,7 +76,7 @@ public class SVGReader {
 
 			Node n = parentNode.getChildNodes().item(i);
 
-			if ("#text".equals(n.getNodeName()) ||  "defs".equals(n.getNodeName()) || "title".equals(n.getNodeName())) {
+			if ("#text".equals(n.getNodeName()) || "Modification".equals(n.getNodeName()) || "clipPath".equals(n.getNodeName()) || "sodipodi:namedview".equals(n.getNodeName()) || "metadata".equals(n.getNodeName()) || "#comment".equals(n.getNodeName()) || "defs".equals(n.getNodeName()) || "title".equals(n.getNodeName())) {
 				// ignore !!!
 			} else if("g".equals(n.getNodeName())) {
 				NodeGroup g = new NodeGroup((SVGOMGElement) n, rootNode);
@@ -108,7 +104,7 @@ public class SVGReader {
 				vec.add(nT);
 
 			} else {
-				System.err.println("Child ("+n.getNodeName()+") not recognized: " + parentNode + ":" + n + " of " + n.getClass().getSimpleName());
+//				System.err.println("Child ("+n.getNodeName()+") not recognized: " + parentNode + ":" + n + " of " + n.getClass().getSimpleName());
 			}
 		}
 

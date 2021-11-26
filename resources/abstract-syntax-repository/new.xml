@@ -2,12 +2,27 @@
 <ConcreteSyntax classPath="bvb::fcb" level="3">
 	
 	<SVG path="Orga_Modelle_neu/Automated_external_Process.svg"/>
-	<SVG path="ampel.svg" xx="0.5" yy="0.5" tx="80" ty="-10"/>
+	<SVG path="ampel.svg" xx="0.5" yy="0.5" tx="80" ty="-10" id="ampel"/>
 	<Label align="CENTER" tx="40" ty="70"/>
-	<Group tx="-20" ty="-20" xx=".317" yx="-.103" xy=".103" yy=".317">
+	<Modification>
+		<Condition type="BooleanSlotCondition" slotName="danger"/>
+		<Affected id="ampel" localId="redLight"/>
+		<Consequence type="SHOW_IF"/>
+    </Modification>
+	<Modification>
+		<Condition type="BooleanSlotCondition" slotName="danger"/>
+		<Affected id="ampel" localId="greenLight"/>
+		<Consequence type="SHOW_IF_NOT"/>
+    </Modification>
+	<Modification>
+		<Condition type="BooleanSlotCondition" slotName="danger"/>
+		<Affected id="ampel" localId="yellowLight"/>
+		<Consequence type="SHOW_NEVER"/>
+    </Modification>
+	<!--Group tx="-20" ty="-20" xx=".317" yx="-.103" xy=".103" yy=".317">
 		<SVG path="Orga_Modelle_neu/Automated_external_Process.svg"/>
 		<SVG path="ampel.svg" xx="0.5" yy="0.5" tx="80" ty="-10"/>
 		<Label align="CENTER" tx="40" ty="70"/>
-	</Group>
+	</Group>-->
 	
 </ConcreteSyntax>
