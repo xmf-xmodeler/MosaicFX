@@ -65,7 +65,8 @@ public interface Condition {
 		public String evalText(FmmlxObject object) throws SlotNotFoundException {
 			FmmlxSlot slot = object.getSlot(slotName);
 			if (slot == null) {
-				throw new SlotNotFoundException();
+				return "!SLOT NOT FOUND!";
+//				throw new SlotNotFoundException();
 			}
 			return slot.getValue();
 		}

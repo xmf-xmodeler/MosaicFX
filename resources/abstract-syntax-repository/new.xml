@@ -3,7 +3,7 @@
 	
 	<SVG path="Orga_Modelle_neu/Automated_external_Process.svg"/>
 	<SVG path="ampel.svg" xx="0.5" yy="0.5" tx="80" ty="-10" id="ampel"/>
-	<Label align="CENTER" tx="40" ty="70"/>
+	<Label id="bottomLabel" align="CENTER" tx="40" ty="70"/>
 	<Modification>
 		<Condition type="BooleanSlotCondition" slotName="danger"/>
 		<Affected id="ampel" localId="redLight"/>
@@ -18,6 +18,11 @@
 		<Condition type="BooleanSlotCondition" slotName="danger"/>
 		<Affected id="ampel" localId="yellowLight"/>
 		<Consequence type="SHOW_NEVER"/>
+    </Modification>
+	<Modification>
+		<Condition type="ReadFromSlot" slotName="info"/>
+		<Affected id="bottomLabel" localId="bottomLabel"/>
+		<Consequence type="READ_FROM_SLOT"/>
     </Modification>
 	<!--Group tx="-20" ty="-20" xx=".317" yx="-.103" xy=".103" yy=".317">
 		<SVG path="Orga_Modelle_neu/Automated_external_Process.svg"/>

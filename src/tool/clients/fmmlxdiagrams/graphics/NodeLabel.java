@@ -235,5 +235,6 @@ public class NodeLabel extends NodeBaseElement {
 	
 	void setText(String newText) {
 		this.text = newText;
+		textWidth = FmmlxDiagram.calculateTextWidth(text);
 	}
 }
