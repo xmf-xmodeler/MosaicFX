@@ -446,7 +446,6 @@ public class XModeler extends Application {
 
     public void createXmodeler() throws Exception {
 	  		outerSplitPane = new SplitPane();
-			
 			// Tabs for projects
 //			browserTab = new TabPane();
 			
@@ -488,8 +487,9 @@ public class XModeler extends Application {
 			stage.setOnCloseRequest(  new EventHandler<WindowEvent>() {
 				  public void handle(WindowEvent event) {
 					  //propertyManager.writeXMLFile();
-                      if (PropertyManager.getProperty("IGNORE_SAVE_IMAGE", false)) {
-                          System.exit(0);
+                     
+					  if (PropertyManager.getProperty("IGNORE_SAVE_IMAGE",true)) {
+                      System.exit(0);
                       } else {
                           if (loadedImagePath == null) WorkbenchClient.theClient().shutdownEvent();
                           else WorkbenchClient.theClient().shutdownAndSaveEvent(loadedImagePath, inflationPath());

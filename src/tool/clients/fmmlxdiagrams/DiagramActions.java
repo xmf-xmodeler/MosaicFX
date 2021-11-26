@@ -314,7 +314,7 @@ public class DiagramActions {
 		Platform.runLater(() -> {
 			ChangeNameDialog<Property> dlg = new ChangeNameDialog<Property>(diagram, object, type, selectedProperty);
 
-			Optional<ChangeNameDialog<?>.Result> opt = dlg.showAndWait();
+			Optional<ChangeNameDialog<Property>.Result> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
 				final ChangeNameDialog<?>.Result result = opt.get();
@@ -591,7 +591,7 @@ public class DiagramActions {
 			if (belongsPropertyToObject(object, selectedProperty, type)) {
 				dlg.setSelected(selectedProperty);
 			}
-			Optional<ChangeTypeDialog<?>.Result> opt = dlg.showAndWait();
+			Optional<ChangeTypeDialog<Property>.Result> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
 				final ChangeTypeDialog<?>.Result result = opt.get();

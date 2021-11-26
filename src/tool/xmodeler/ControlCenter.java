@@ -6,6 +6,8 @@ import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -18,6 +20,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
+import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxWizard;
 import tool.clients.workbench.WorkbenchClient;
 
@@ -92,18 +95,25 @@ public class ControlCenter extends Stage {
 			);
 		Label diagramLabel = new Label("Diagrams");
 		CreatedModifiedGridPane diagramsGridPane = new CreatedModifiedGridPane();
-		newDiagram.setOnAction(e -> {
+		
+		newDiagram.setOnAction(e -> { 
 			TextInputDialog dialog = new TextInputDialog();
 			dialog.setTitle("Create new Diagram");
 			dialog.setContentText("New diagram name:");
-
 			Optional<String> result = dialog.showAndWait();
-			result.ifPresent(name -> 
-			    {Integer diagramID = FmmlxDiagramCommunicator.getCommunicator().createDiagram(
+			if (result.isPresent()) {
+				if(InputChecker.isValidIdentifier(result.get())) {
+			    	Integer diagramID = FmmlxDiagramCommunicator.getCommunicator().createDiagram(
 			        modelLV.getSelectionModel().getSelectedItem(), 
-			        name, "", FmmlxDiagramCommunicator.DiagramType.ClassDiagram); System.err.println("diagramID "  +diagramID);});
+			        result.get(), "", FmmlxDiagramCommunicator.DiagramType.ClassDiagram);
+			    System.err.println("diagramID "  +diagramID);
+			    }  else {
+					new Alert(AlertType.ERROR, 
+							"\"" + result.get() + "\" is not a valid identifier.", 
+							new ButtonType("Damned", ButtonData.YES)).showAndWait();
+				};
 			controlCenterClient.getDiagrams(modelLV.getSelectionModel().getSelectedItem());
-		});
+		}}); 
 		diagramLV.setOnMouseClicked(me -> {
 
 		        if (me.getClickCount() == 2 && me.getButton() == MouseButton.PRIMARY) {
@@ -208,7 +218,7 @@ public class ControlCenter extends Stage {
 		
 		this.setOnCloseRequest(event -> {
 			//propertyManager.writeXMLFile();
-			if (PropertyManager.getProperty("IGNORE_SAVE_IMAGE", false)) {
+			if (PropertyManager.getProperty("IGNORE_SAVE_IMAGE", true)) {
 				System.exit(0);
 			} else {
 			  WorkbenchClient.theClient().shutdownEvent();
