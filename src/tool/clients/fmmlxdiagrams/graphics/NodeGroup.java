@@ -98,9 +98,7 @@ public class NodeGroup extends NodeElement {
 	
 	public Affine getTotalTransform(Affine canvasTransform) {
 		Affine a = new Affine(owner == null?canvasTransform:owner.getTotalTransform(canvasTransform));
-		//System.err.println("a = " + a + " myTransform = " + myTransform);
 		a.append(myTransform);
-		
 		a.append(getDragAffine());
 		return a;
 	}

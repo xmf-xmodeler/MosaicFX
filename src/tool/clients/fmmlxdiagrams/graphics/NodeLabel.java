@@ -155,9 +155,10 @@ public class NodeLabel extends NodeBaseElement {
 		if (alignment != Pos.BASELINE_LEFT) {
 			hAlign = (alignment == Pos.BASELINE_CENTER ? 0.5 : 1) * textWidth;
 		}
-		if(selected || bgColor!=null){
-			Color color = selected ? Color.DARKGREY : bgColor;
-			String styleString = "fill: "+NodeBaseElement.toRGBHexString(color)+";";
+//		if(selected || bgColor!=null){
+		if(bgColor!=null && !bgColor.equals(Color.TRANSPARENT)) {
+//			Color color = selected ? Color.DARKGREY : bgColor;
+			String styleString = "fill:"+NodeBaseElement.toRGBHexString(bgColor)+";";
 			Element rect = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_RECT);
 			rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, ( - hAlign - BOX_GAP)+"");
 			rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, ( - BOX_GAP - textHeight)+"");

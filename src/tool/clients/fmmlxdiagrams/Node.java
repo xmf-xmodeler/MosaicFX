@@ -17,8 +17,6 @@ public abstract class Node implements CanvasElement {
 	protected boolean hidden;
 	protected double x;
 	protected double y;
-//	protected int width;
-//	protected int height;
 	protected transient Point2D lastClick = null;
 	private FmmlxObjectPort port;
 	

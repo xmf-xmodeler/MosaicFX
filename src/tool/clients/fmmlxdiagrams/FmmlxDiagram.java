@@ -476,6 +476,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					comm.sendCurrentPositions(this.getID(), (Edge<?>) s);
 				} else if (s instanceof DiagramEdgeLabel) {
 					DiagramEdgeLabel<?> del = (DiagramEdgeLabel<?>) s;
+					del.drop();
 					del.owner.updatePosition(del);
 					comm.storeLabelInfo(this, del);
 				}
@@ -1086,8 +1087,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					}
 				} else if (s instanceof DiagramEdgeLabel) {
 					DiagramEdgeLabel<?> o = (DiagramEdgeLabel<?>) s;
-
-					s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
+					o.dragTo(dragAffine);
+//					s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
 				} else { // must be edge
 					s.moveTo(p.getX(), p.getY(), this);
 				}
@@ -1618,8 +1619,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			if(bounds == null) return false;
 			Point2D p1 = new Point2D(bounds.getMinX(), bounds.getMinY());
 			Point2D p2 = new Point2D(bounds.getMaxX(), bounds.getMaxY());
-			p1 = canvasTransform.transform(p1);
-			p2 = canvasTransform.transform(p2);
+//			p1 = canvasTransform.transform(p1);
+//			p2 = canvasTransform.transform(p2);
 			return rec.contains(p1) && rec.contains(p2);
 		}
 	}
