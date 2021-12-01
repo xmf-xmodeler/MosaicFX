@@ -24,8 +24,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import tool.clients.Client;
 import tool.clients.EventHandler;
-import tool.clients.diagrams.DiagramClient;
-import tool.clients.editors.EditorClient;
 import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
 import xos.Message;
@@ -45,10 +43,6 @@ public class FormsClient extends Client {
 	}
 
 	public static final int HIGH_RESOLUTION_FACTOR_OLD = 2;
-
-	public static int getDeviceZoomPercent() {
-		return XModeler.getDeviceZoomPercent();
-	}
 
 	public static FormsClient theClient() {
 		return theClient;

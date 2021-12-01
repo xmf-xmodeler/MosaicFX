@@ -163,19 +163,14 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		Palette palette2 = new Palette(this,2);
 		newFmmlxPalette = new FmmlxPalette(this);
 		
-//		Pane canvasPane = new Pane();
-//		canvasPane.getChildren().add(canvas);
-//        canvas.widthProperty().bind(canvasPane.widthProperty());
-//        canvas.heightProperty().bind(canvasPane.heightProperty());
-////        canvasPane.setPrefSize(1400, 1000);
-		mainViewPane = new DiagramViewPane(false);
+		mainViewPane = new DiagramViewPane("Main View", false);
 				
         tabPane = new TabPane();
-        tabPane.getTabs().add(createEditableTab("Main Tab", mainViewPane));
-        tabPane.getTabs().add(createEditableTab("Tab 1", new DiagramViewPane(false)));
-        tabPane.getTabs().add(createEditableTab("Tab 2", new DiagramViewPane(false)));
-        tabPane.getTabs().add(getHackTab());
-        zoomView = new DiagramViewPane(true);
+        tabPane.getTabs().add(new MyTab(mainViewPane));
+        tabPane.getTabs().add(new MyTab(new DiagramViewPane("View 1", false)));
+        tabPane.getTabs().add(new MyTab(new DiagramViewPane("View 2", false)));
+        tabPane.getTabs().add(new MyTab());
+        zoomView = new DiagramViewPane("", true);
         
         tabPane.setFocusTraversable(true);
         tabPane.setOnKeyReleased(new javafx.event.EventHandler<javafx.scene.input.KeyEvent>() {
@@ -196,11 +191,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         tabPane.getSelectionModel().selectedItemProperty().addListener((foo,goo,newTabItem)-> {
         	if(newTabItem.getContent() == null) {
         		// hackPane selected
-        		tabPane.getTabs().add(getHackTab());
-        		newTabItem.setText("new Tab");
-        		final DiagramViewPane newView = new DiagramViewPane(false);
-        		newTabItem.setContent(newView);
-        		
+        		tabPane.getTabs().add(new Tab());
+        		final DiagramViewPane newView = new DiagramViewPane("new View", false);
+        		((MyTab)newTabItem).setView(newView);        		
         		final java.util.Timer timer = new java.util.Timer();
         		timer.schedule(new java.util.TimerTask() {
         			@Override public void run() {
@@ -213,7 +206,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
         });
 		
-        //LM, 17.11.2021, Resize of Canvas on rescale
+        // Resize of Canvas on rescale
         tabPane.heightProperty().addListener( ( observable, x, y ) -> redraw() );
         tabPane.widthProperty().addListener( ( observable, x, y ) -> redraw() );
         
@@ -258,50 +251,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					}
 				}
 			}
-		}		
-
+		}
 	}
-
-	private Tab getHackTab() {
-		return new Tab("*");		
-	}
-
-//	private void loadXMLAction() {
-//		ChoiceDialog<String> dialog = new ChoiceDialog<>();
-//		dialog.setTitle("Load XML File");
-//		dialog.setHeaderText(null);
-//		dialog.setContentText("Choose one of your saved XML files:");
-//
-//		Optional<String> result = dialog.showAndWait();
-//		if (result.isPresent()){
-//		    
-//		}
-//		
-//		File tempDirectory = new File("");
-//		tempDirectory=new File(tempDirectory.toURI()).getParentFile();
-//		//boolean exists = tempDirectory.exists();
-//		
-//		String dirLocation = tempDirectory.toString();
-//		System.err.println("Directory: " + tempDirectory.toString());
-//        try {
-//            List<File> files = Files.list(Paths.get(dirLocation))
-//                                    .filter(Files::isRegularFile)
-//                                    .filter(path -> path.toString().endsWith(".xml"))
-//                                    .map(Path::toFile)
-//                                    .collect(Collectors.toList());
-//           
-//            files.forEach(System.err::println);
-//            
-//        } catch (IOException e) {
-//            // Error while reading the directory
-//        }
-//
-//	}
-//
-//	private Object saveXMLAction() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
 
 	// Only used to set the mouse pointer. Find a better solution
 	@Deprecated
@@ -345,29 +296,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
-	}
-
-	// This operation resets the size of the canvas when needed
-	private void resizeCanvas() {
-//		try {
-//			double maxRight = canvasRawSize.getX();
-//			double maxBottom = canvasRawSize.getY();
-//
-//			for (FmmlxObject object : objects) {
-//				maxRight = Math.max(maxRight, object.getRightX());
-//				maxBottom = Math.max(maxBottom, object.getBottomY());
-//			}
-//			for (Edge<?> edge : edges) {
-//				maxRight = Math.max(maxRight, edge.getMaxX());
-//				maxBottom = Math.max(maxBottom, edge.getMaxY());
-//			}
-//			canvasRawSize = new Point2D(maxRight, maxBottom);
-//			Point2D canvasScreenSize = canvasTransform.transform(canvasRawSize);
-//			canvas.setWidth(Math.min(4096, canvasScreenSize.getX() + 5));
-//			canvas.setHeight(Math.min(4096, canvasScreenSize.getY() + 5));
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
 	}
 
 	public void savePNG(){
@@ -482,20 +410,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				}
 		}
 		objectsMoved = false;
-
 	}
 
 	private boolean isLeftButton(MouseEvent e) {return e.getButton() == MouseButton.PRIMARY;}
-
 	private boolean isRightButton(MouseEvent e) {return e.getButton() == MouseButton.SECONDARY;}
-
 	private boolean isCenterButton(MouseEvent e) {return e.getButton() == MouseButton.MIDDLE;}
-
-
-
-
-	
-
 
 	private final double ZOOM_STEP = Math.sqrt(Math.sqrt(Math.sqrt(2)));
 
@@ -539,11 +458,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}				
 	}
 
-	private void setMouseOffset(Point2D p) {
-		for (CanvasElement s : selectedObjects)
-			s.setOffsetAndStoreLastValidPosition(p);
-	}
-
 	public boolean isSelected(CanvasElement element) {
 		return selectedObjects.contains(element);
 	}
@@ -551,10 +465,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	void deselectAll() {
 		deselectPalette();
 		selectedObjects.clear();
-//		if (lastHitLabel != null) {
-//			lastHitLabel.setDeselected();
-//			lastHitLabel = null;
-//		}
 	}
 
 	public void setSelectedObject(FmmlxObject source) {
@@ -569,25 +479,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			selectedObjects.add(o);
 		}
 	}
-
-
-
-//	public Point2D scale(MouseEvent event) {
-//		Affine i;
-//		try {
-//			i = canvasTransform.createInverse();
-//			return i.transform(event.getX(), event.getY());
-//		} catch (NonInvertibleTransformException e) {
-//			e.printStackTrace();
-//			return new javafx.geometry.Point2D(event.getX(), event.getY());
-//		}
-//	}
-
+	
 	public FmmlxProperty getSelectedProperty() {
 		return lastHitProperty;
 	}
-
-
 
 	@Deprecated
 	//needs filter
@@ -843,8 +738,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		} else if (show==false) {
 			newFmmlxPalette.setShowMetaClassName(false);
 			newFmmlxPalette.update();
-		}
-		
+		}		
 	}
 
 	@Override
@@ -854,12 +748,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	@Override
 	protected void fetchDiagramDataSpecific() throws TimeOutException {
-//		levelColorScheme = new LevelColorScheme.RedLevelColorScheme(objects);
 		for(FmmlxObject o : objects) {
 			o.layout(this);
 		}
-
-//		resizeCanvas();
 	}
 
 	@Override
@@ -898,7 +789,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	@Override
 	protected void updateViewerStatusInGUI(ViewerStatus newStatus) {
 		// TODO Auto-generated method stub
-
 	}
 
 	public void paintToSvg(XmlHandler xmlHandler, double extraHeight){
@@ -937,7 +827,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	@Override
 	public View getActiveView() {
-//		System.err.println("getActiveView():" + tabPane.getSelectionModel().getSelectedItem().getContent());
 		return (DiagramViewPane) tabPane.getSelectionModel().getSelectedItem().getContent();
 	}
 
@@ -946,13 +835,13 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		private Canvas canvas;
 		private double zoom = 1.;
 		private Affine canvasTransform = new Affine();
-//		private DiagramViewPane zoomParent = null;
 		private final boolean isZoomView;
-
+		private String name;
 		
-		private DiagramViewPane(boolean isZoomView) {
+		private DiagramViewPane(String name, boolean isZoomView) {
 			super();
 
+			this.name = name;
 			this.isZoomView = isZoomView;
 			
 			canvas = new Canvas();
@@ -973,15 +862,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				canvas.addEventFilter(ScrollEvent.ANY, this::handleScroll);
 			}
 			
-			views.add(this);
-			
+			views.add(this);			
 		}
 
-//		private void setZoomParent(View activeView) {
-////			zoomParent = (DiagramViewPane) activeView;
-//			redraw();
-//		}
-		
 		////////////////////////////////////////////////////////////////////
 		////						MouseListener						////
 		////////////////////////////////////////////////////////////////////
@@ -993,7 +876,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 			if (isLeftButton(e)) {
 				handleLeftPressed(e);
-				setMouseOffset(new Point2D(e.getX(), e.getY()));
 				dragStart = new Point2D(e.getX(), e.getY());
 			}
 			if (isRightButton(e)) {
@@ -1026,9 +908,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		private transient CanvasElement lastElementUnderMouse = null;
 
 		private void mouseMoved(MouseEvent e) {
-//			currentPointHover = new Point2D(e.getX(), e.getY());
-			
-//			Point2D p = scale(e);
 			if (mouseMode == MouseMode.DRAW_EDGE) {
 				storeCurrentPoint(e.getX(), e.getY());
 				redraw();
@@ -1080,7 +959,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			for (CanvasElement s : selectedObjects)
 				if (s instanceof FmmlxObject) {
 					FmmlxObject o = (FmmlxObject) s;
-//					s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
 					o.dragTo(dragAffine);
 					for(Edge<?> e : edges) {
 						if(e.isSourceNode(o) || e.isTargetNode(o)) e.align();
@@ -1088,7 +966,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				} else if (s instanceof DiagramEdgeLabel) {
 					DiagramEdgeLabel<?> o = (DiagramEdgeLabel<?>) s;
 					o.dragTo(dragAffine);
-//					s.moveTo(p.getX() - o.getMouseMoveOffsetX(), p.getY() - o.getMouseMoveOffsetY(), this);
 				} else { // must be edge
 					s.moveTo(p.getX(), p.getY(), this);
 				}
@@ -1122,29 +999,23 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					updateDiagram();
 				}
 			} else if(isCenterButton(e)) {
-				handleCenterReleased(e);
+				sendViewStatus();
 			}
 			redraw();
 		}
 		
 		private void handleScroll(ScrollEvent e) {
-			if (e.isControlDown()) {
-				double delta = e.getDeltaY();
-				
-				double zoom = Math.pow(ZOOM_STEP, delta > 0 ? 1 : -1);
-				
-				Point2D p = new Point2D(e.getX(), e.getY());				
-				
-				zoomBy(zoom, p);
-				
-				redraw();
-			}
+			double zoom = Math.pow(ZOOM_STEP, e.getDeltaY() > 0 ? 1 : -1);
+			Point2D pivot = new Point2D(e.getX(), e.getY());				
+			zoomBy(zoom, pivot);				
+			redraw();
+			sendViewStatus();
 		}
 		
-		private void zoomBy(double zoomFactor, Point2D p) {
+		private void zoomBy(double zoomFactor, Point2D pivot) {
 			try {
-				Point2D p_ = canvasTransform.inverseTransform(p);
-				canvasTransform.append(new Scale(zoomFactor, zoomFactor, p_.getX(), p_.getY()));	
+				Point2D pivot_ = canvasTransform.inverseTransform(pivot);
+				canvasTransform.append(new Scale(zoomFactor, zoomFactor, pivot_.getX(), pivot_.getY()));	
 			} catch (NonInvertibleTransformException e1) {
 				e1.printStackTrace();
 			}
@@ -1163,15 +1034,12 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 			} else if (edgeCreationType != null) {
 				if (edgeCreationType.equals("association")) {
-					//hitObject = getElementAt(p.getX(), p.getY());
-					//System.out.println("asso");
 					if(hitObject instanceof FmmlxObject) {		
 						setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.Association);
 						canvas.setCursor(Cursor.DEFAULT);
 
 					}
 				} else if (edgeCreationType.equals("associationInstance")) {
-					//System.out.println("instance");
 					if(hitObject instanceof FmmlxObject) {
 						setDrawEdgeMode((FmmlxObject) hitObject, PropertyType.AssociationInstance);
 						canvas.setCursor(Cursor.DEFAULT);
@@ -1213,7 +1081,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 
 		private void handleRightPressed(MouseEvent e) {
-//			Point2D p = scale(e);
 			CanvasElement hitObject = getElementAt(e.getX(), e.getY());
 			if (hitObject != null) {
 				if (hitObject instanceof FmmlxObject) {
@@ -1232,7 +1099,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		
 		private void handleLeftPressedDefault(MouseEvent e, CanvasElement hitObject) {
-//			Point2D p = scale(e);
 			Point2D p = new Point2D(e.getX(), e.getY());
 
 			if (hitObject != null) {
@@ -1261,7 +1127,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 							final FmmlxObject delegateTo = newEdgeTarget;
 							Platform.runLater(() -> {
 								actions.setDelegation(delegateFrom, delegateTo);
-//								updateDiagramLater();
 							});
 							break;
 						}
@@ -1271,7 +1136,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 							final FmmlxObject delegateTo = newEdgeTarget;
 							Platform.runLater(() -> {
 								actions.setRoleFiller(delegateFrom, delegateTo);
-//								updateDiagramLater();
 							});
 							break;
 						}
@@ -1528,7 +1392,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 			canvasTransform = new Affine();
 			canvasTransform.appendScale(zoom, zoom);
-			resizeCanvas();
 		}
 		
 		private CanvasElement getElementAt(double x, double y) {
@@ -1541,26 +1404,25 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			for (DiagramEdgeLabel<?> l : new Vector<>(labels))
 				if (l.isHit(x, y, canvas.getGraphicsContext2D(), canvasTransform, this))
 					return l;
-
 			return null;
 		}
 		
 		public void zoomIn() {
 			zoomBy(getZoom() * ZOOM_STEP, new Point2D(canvas.getWidth()/2, canvas.getHeight()/2));
-//			setZoom(Math.min(2, getZoom() * ZOOM_STEP));
 			redraw();
+			sendViewStatus();
 		}
 
 		public void zoomOut() {
 			zoomBy(getZoom() / ZOOM_STEP, new Point2D(canvas.getWidth()/2, canvas.getHeight()/2));
-//			setZoom(getZoom() / ZOOM_STEP);
 			redraw();
+			sendViewStatus();
 		}
 
 		public void zoomOne() {
 			canvasTransform = new Affine();
-//			setZoom(1.);
 			redraw();
+			sendViewStatus();
 		}
 		
 		private void clearContextMenus() {
@@ -1587,8 +1449,14 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			wheelDragStartPoint = new Point2D(e.getX(), e.getY());
 		}
 		
-		private void handleCenterReleased(MouseEvent e) {
-			// ???
+		private void sendViewStatus() {
+			Vector<String> names = new Vector<>();
+			Vector<Affine> transformations = new Vector<>();
+			for(DiagramViewPane view : views) if(!view.isZoomView) {
+				names.add(view.name);
+				transformations.add(view.canvasTransform);
+			}
+			comm.sendViewStatus(diagramID, names, transformations);			
 		}
 
 		private void handleCenterDragged(MouseEvent e) {
@@ -1619,8 +1487,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			if(bounds == null) return false;
 			Point2D p1 = new Point2D(bounds.getMinX(), bounds.getMinY());
 			Point2D p2 = new Point2D(bounds.getMaxX(), bounds.getMaxY());
-//			p1 = canvasTransform.transform(p1);
-//			p2 = canvasTransform.transform(p2);
 			return rec.contains(p1) && rec.contains(p2);
 		}
 	}
@@ -1630,30 +1496,68 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		javafx.scene.Node activeNode = activeTab.getContent();
 		DiagramViewPane activeView = (DiagramViewPane) activeNode;
 		return activeView;
-	}
+	}	
 	
+//	public Tab createEditableTab(DiagramViewPane view) {
+//		final Tab tab = new Tab("", view);
+//		final Label label = new Label(view.name);
+//		tab.setGraphic(label);
+//		label.setOnMouseClicked(new EventHandler<MouseEvent>() {
+//			@Override
+//			public void handle(MouseEvent event) {
+//				if (event.getClickCount() == 2) {
+//					TextInputDialog dialog = new TextInputDialog("new tab name");
+//					dialog.setTitle("Change tab name");
+//					dialog.setHeaderText("Change tab name");
+//					dialog.setContentText("Please enter the new name for this tab:");
+//					java.util.Optional<String> result = dialog.showAndWait();
+//					if (result.isPresent()) {
+//						label.setText(result.get());
+//					}
+//				}
+//			}
+//		});
+//
+//		return tab;
+//	}
 	
-	public Tab createEditableTab(String text, DiagramViewPane DVpane) {  
-		final Tab tab = new Tab("",DVpane);
-		final Label label = new Label(text);
-		tab.setGraphic(label);
-		label.setOnMouseClicked(new EventHandler<MouseEvent>() {  
-			  @Override  
-			  public void handle(MouseEvent event) {  
-			    if (event.getClickCount()==2) {
-			    	TextInputDialog dialog = new TextInputDialog("new tab name");
-			    	dialog.setTitle("Change tab name");
-			    	dialog.setHeaderText("Change tab name");
-			    	dialog.setContentText("Please enter the new name for this tab:");
-			    	java.util.Optional<String> result = dialog.showAndWait();
-			    	if (result.isPresent()){
-			    		label.setText(result.get());
-			    	}
-			    }  
-			  }  
-			}); 
+	private class MyTab extends Tab {
+		final Label label;
+		DiagramViewPane view;
 		
-		return tab ;  
-		}  
+		private MyTab(DiagramViewPane view) {
+			super(view.name, view);
+			this.view = view;
+			this.label = new Label(view.name);
+			setLabel();
+		}
+
+		public void setView(DiagramViewPane newView) {
+			setLabel();
+    		setContent(newView);
+		}
+
+		private void setLabel() {			
+			setGraphic(label);
+			label.setOnMouseClicked((event) -> {
+				if (event.getClickCount() == 2) {
+					TextInputDialog dialog = new TextInputDialog("new tab name");
+					dialog.setTitle("Change tab name");
+					dialog.setHeaderText("Change tab name");
+					dialog.setContentText("Please enter the new name for this tab:");
+					java.util.Optional<String> result = dialog.showAndWait();
+					if (result.isPresent()) {
+						view.name = result.get();
+						label.setText(view.name);
+					}
+				}
+			});
+		}
+
+		public MyTab() {
+			super("*", null);
+			this.label = new Label("void");
+		}		
+	}
 	
 }

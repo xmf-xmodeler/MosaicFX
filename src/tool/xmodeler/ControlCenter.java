@@ -2,7 +2,6 @@ package tool.xmodeler;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -23,8 +22,6 @@ import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxWizard;
 import tool.clients.workbench.WorkbenchClient;
-
-import tool.helper.DrawingApplication;
 import tool.helper.IconGenerator;
 
 import java.io.File;

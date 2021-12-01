@@ -311,20 +311,6 @@ public class PropertyManager {
 
 	}
 
-	private HBox getControlButtons() {
-		Button btnCancel = new Button("Cancel");
-		btnCancel.setOnAction(this::onCancelButtonClicked);
-
-		Button btnSave = new Button("Save");
-		btnSave.setOnAction(this::onSaveButtonClicked);
-
-		//layout
-		HBox buttons = new HBox(btnCancel, btnSave);
-		buttons.setSpacing(10);
-		buttons.setAlignment(Pos.CENTER_RIGHT);
-		return buttons;
-	}
-
 	private void onCancelButtonClicked(ActionEvent actionEvent) {
 		stage.close();
 	}
@@ -378,14 +364,6 @@ public class PropertyManager {
 		return gridPaneNodes;
 	}
 
-	private GridPane getGridpane() {
-		GridPane gridPane = new GridPane();
-		gridPane.setPadding(new Insets(10, 0, 10, 0));
-		gridPane.setHgap(10);
-		gridPane.setVgap(10);
-		return gridPane;
-	}
-
 	private void initScene(VBox vb) {
 		if (stage != null) stage.close();
 
@@ -399,92 +377,6 @@ public class PropertyManager {
 		stage.initModality(Modality.APPLICATION_MODAL);
 		stage.show();
 	}
-
-	private void fillPropGrid() {
-		addRow(generalGrid, "TOOL_X", getProperty("TOOL_X", 100));
-		addRow(generalGrid, "TOOL_Y", getProperty("TOOL_Y", 100));
-		addRow(generalGrid, "TOOL_WIDTH",  getProperty("TOOL_WIDTH", 1200));
-		addRow(generalGrid, "TOOL_HEIGHT", getProperty("TOOL_HEIGHT", 900));
-		addRow(generalGrid, "fileDialogPath", getProperty("fileDialogPath", ""));
-	}
-
-	private void fillDebugGrid() {
-		addRow(debugGrid, "MONITOR_CLIENT_COMMUNICATION", getProperty("MONITOR_CLIENT_COMMUNICATION", false));
-		addRow(debugGrid, "MONITOR_DAEMON_FIRING", getProperty("MONITOR_DAEMON_FIRING", false));
-		addRow(debugGrid, "IGNORE_SAVE_IMAGE", getProperty("IGNORE_SAVE_IMAGE", false));
-		addRow(debugGrid, "LOG_XMF_OUTPUT", getProperty("LOG_XMF_OUTPUT", false));
-		addRow(debugGrid, "MONITOR_CALLS", "Open", actionEvent -> {
-			MenuClient.openCallMonitor();
-		});
-		addRow(debugGrid, "PERFORMANCE_MONITOR", "Open", actionEvent -> {
-			MenuClient.openPerformanceMonitor();
-		});
-	}
-
-	private void fillPathGrid() {
-		//It looks doubled, but its necessary to get to the current folder.
-		File folder = new File("");
-		folder=new File(folder.toURI()).getParentFile();
-		addRow(pathGrid, "Save", getProperty("backUpPath",new File(folder, "Saves").toString()));
-		addRow(pathGrid, "BackUp", getProperty("backUpPath",new File(folder, "BackUps").toString()));
-		addRow(pathGrid, "Graphics", getProperty("backUpPath",new File(folder, "Graphics").toString()));
-	}
-	
-	private GridPane addRow(GridPane pane, String key, String value) {		
-		pane.addRow(getGridLength(pane), getKeyLabel(key), getValueTextField(value));		
-		return pane;
-	}
-
-	private GridPane addRow(GridPane pane, String key, int value) {
-		pane.addRow(getGridLength(pane), getKeyLabel(key), getValueIntField(value));
-		return pane;
-	}
-
-	private GridPane addRow(GridPane pane, String key, boolean value) {
-		pane.addRow(getGridLength(pane), getKeyLabel(key), getValueCheckBox(value));
-		return pane;
-	}
-
-	private GridPane addRow(GridPane pane, String key, String buttonText, EventHandler<ActionEvent> onAction) {
-		pane.addRow(getGridLength(pane), getKeyLabel(key), getButton(buttonText, onAction));	
-		return pane;
-	}
-	
-	
-
-	private Label getKeyLabel(String value) {
-		return new Label(value);
-	}
-
-	private TextField getValueTextField(String value) {
-		return new TextField(value);
-	}
-
-	private TextField getValueIntField(int value) {
-		TextField textField = new TextField(value + "");
-
-		// force the field to accept int only
-		textField.textProperty().addListener((observableValue, oldValue, newValue) -> {
-			if (!newValue.matches("\\d*")) {
-				textField.setText(newValue.replaceAll("[^\\d]", ""));
-			}
-		});
-
-		return textField;
-	}
-
-	private CheckBox getValueCheckBox(boolean value) {
-		CheckBox checkBox = new CheckBox("");
-		checkBox.setSelected(value);
-		return checkBox;
-	}
-
-	private Button getButton(String text, EventHandler<ActionEvent> onAction) {
-		Button button = new Button(text);
-		button.setOnAction(onAction);
-		return button;
-	}
-
 	private int getGridLength(GridPane gridPane) { // Need for Reimplementing. Does not work for JAVA 14!
 		int rows = 0;
 		try {

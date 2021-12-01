@@ -27,8 +27,6 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 	private double width;
 	private double height;
 	private Vector<ConcreteNode> anchors;
-	private transient double mouseMoveOffsetX;
-	private transient double mouseMoveOffsetY;
 	private transient boolean highlighted = false;
 	private final Color bgColor;
 	private Color fontColor;
@@ -195,13 +193,13 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 		return hit;
 	}
 	
-	@Override @Deprecated
-	public void setOffsetAndStoreLastValidPosition(Point2D p) {
-		mouseMoveOffsetX = p.getX()/* - getReferenceX() */ - getX();
-		mouseMoveOffsetY = p.getY()/*  - getReferenceY() */ - getY();
-//		lastValidRelativeX = - getReferenceX() + relativeX;
-//		lastValidRelativeY = - getReferenceY() + relativeY;
-	}
+//	@Override @Deprecated
+//	public void setOffsetAndStoreLastValidPosition(Point2D p) {
+////		mouseMoveOffsetX = p.getX()/* - getReferenceX() */ - getX();
+////		mouseMoveOffsetY = p.getY()/*  - getReferenceY() */ - getY();
+//////		lastValidRelativeX = - getReferenceX() + relativeX;
+//////		lastValidRelativeY = - getReferenceY() + relativeY;
+//	}
 
 //	public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
 //	public double getMouseMoveOffsetY() {return mouseMoveOffsetY;}

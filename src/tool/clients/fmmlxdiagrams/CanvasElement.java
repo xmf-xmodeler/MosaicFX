@@ -19,7 +19,7 @@ public interface CanvasElement {
 	void highlightElementAt(Point2D mouse, Affine canvasTransform);
 	void unHighlight();
 
-	void setOffsetAndStoreLastValidPosition(Point2D p);
+//	void setOffsetAndStoreLastValidPosition(Point2D p);
 
     void paintToSvg(XmlHandler xmlHandler, FmmlxDiagram diagram);
 }
