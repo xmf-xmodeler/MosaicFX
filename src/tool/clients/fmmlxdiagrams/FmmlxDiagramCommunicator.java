@@ -68,11 +68,11 @@ public class FmmlxDiagramCommunicator {
 	
 	/* Setting up new or existing diagrams, as well as closing */
 	
-	public void newDiagram(int diagramID, String diagramName, String packagePath, String file) {
+	public void newDiagram(int diagramID, String diagramName, String packagePath, String file, Vector<Vector<Object>> listOfViews) {
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			if (DEBUG) System.err.println("Create FMMLx-Diagram ("+diagramName+") ...");
-			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packagePath);
+			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packagePath, listOfViews);
 			if(file != null && file.length()>0){
 				diagram.setFilePath(file);
 			} else {
@@ -2066,8 +2066,7 @@ public class FmmlxDiagramCommunicator {
 				getNoReturnExpectedMessageID(diagramID),
 				new Value(listOfViews)
 		};
-		System.err.println("listOfViews: " + listOfViews[0]);
-//		sendMessage("mergeOperation", message);
+		sendMessage("sendViewStatusToModel", message);
 	}
 
 }

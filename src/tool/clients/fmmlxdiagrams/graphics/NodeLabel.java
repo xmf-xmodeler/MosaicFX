@@ -159,6 +159,7 @@ public class NodeLabel extends NodeBaseElement {
 		if(bgColor!=null && !bgColor.equals(Color.TRANSPARENT)) {
 //			Color color = selected ? Color.DARKGREY : bgColor;
 			String styleString = "fill:"+NodeBaseElement.toRGBHexString(bgColor)+";";
+//			styleString += "italic;"
 			Element rect = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_RECT);
 			rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, ( - hAlign - BOX_GAP)+"");
 			rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, ( - BOX_GAP - textHeight)+"");
@@ -166,6 +167,7 @@ public class NodeLabel extends NodeBaseElement {
 			rect.setAttribute(SvgConstant.ATTRIBUTE_WIDTH, (textWidth + 2 * BOX_GAP)+"");
 			rect.setAttribute(SvgConstant.ATTRIBUTE_FILL_OPACITY, bgColor.getOpacity()<.5?"0":"1");
 			rect.setAttribute(SvgConstant.ATTRIBUTE_STYLE, styleString);
+			rect.setAttribute(SvgConstant.ATTRIBUTE_FILL, NodeBaseElement.toRGBHexString(bgColor));
 			xmlHandler.addXmlElement(group, rect);
 		}
 		String color = fgColor.toString().split("x")[1].substring(0,6);
@@ -184,7 +186,7 @@ public class NodeLabel extends NodeBaseElement {
 		}
 		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, ((fontSize-1)*fontScale)+"");
 		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_OPACITY, fgColor.getOpacity()+"");
-		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_STYLE, fgColor.getOpacity()+"");
+		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_STYLE, fontPosture == FontPosture.ITALIC?"italic":"normal");
 		text.setAttribute(SvgConstant.ATTRIBUTE_FILL, "#"+color);
 		if(isIssue){
 			text.setTextContent(" issue ["+issueNumber+"]");

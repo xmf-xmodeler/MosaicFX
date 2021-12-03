@@ -141,7 +141,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		this.diagramName = null;
 	}
 
-	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String name, String packagePath) {
+	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String name, String packagePath, Vector<Vector<Object>> listOfViews) {
 		super(comm,diagramID,packagePath);
 		this.diagramName = name;
 //		vBox = new VBox();
@@ -166,9 +166,16 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		mainViewPane = new DiagramViewPane("Main View", false);
 				
         tabPane = new TabPane();
-        tabPane.getTabs().add(new MyTab(mainViewPane));
-        tabPane.getTabs().add(new MyTab(new DiagramViewPane("View 1", false)));
-        tabPane.getTabs().add(new MyTab(new DiagramViewPane("View 2", false)));
+        
+        for(Vector<Object> view : listOfViews) {
+        	DiagramViewPane dvp = new DiagramViewPane((String) view.get(0), false);
+        	tabPane.getTabs().add(new MyTab(dvp));
+        	if(mainViewPane == null) mainViewPane = dvp;
+        }
+        
+//        tabPane.getTabs().add(new MyTab(mainViewPane));
+//        tabPane.getTabs().add(new MyTab(new DiagramViewPane("View 1", false)));
+//        tabPane.getTabs().add(new MyTab(new DiagramViewPane("View 2", false)));
         tabPane.getTabs().add(new MyTab());
         zoomView = new DiagramViewPane("", true);
         
@@ -190,10 +197,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         
         tabPane.getSelectionModel().selectedItemProperty().addListener((foo,goo,newTabItem)-> {
         	if(newTabItem.getContent() == null) {
-        		// hackPane selected
-        		tabPane.getTabs().add(new Tab());
+        		// pane with star selected
+        		tabPane.getTabs().add(new MyTab());
         		final DiagramViewPane newView = new DiagramViewPane("new View", false);
-        		((MyTab)newTabItem).setView(newView);        		
+        		((MyTab)newTabItem).setText("");
+        		((MyTab)newTabItem).setView(newView);
         		final java.util.Timer timer = new java.util.Timer();
         		timer.schedule(new java.util.TimerTask() {
         			@Override public void run() {
@@ -830,7 +838,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return (DiagramViewPane) tabPane.getSelectionModel().getSelectedItem().getContent();
 	}
 
-	public class DiagramViewPane extends Pane implements View{
+	public class DiagramViewPane extends Pane implements View {
 		
 		private Canvas canvas;
 		private double zoom = 1.;
@@ -1497,44 +1505,23 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		DiagramViewPane activeView = (DiagramViewPane) activeNode;
 		return activeView;
 	}	
-	
-//	public Tab createEditableTab(DiagramViewPane view) {
-//		final Tab tab = new Tab("", view);
-//		final Label label = new Label(view.name);
-//		tab.setGraphic(label);
-//		label.setOnMouseClicked(new EventHandler<MouseEvent>() {
-//			@Override
-//			public void handle(MouseEvent event) {
-//				if (event.getClickCount() == 2) {
-//					TextInputDialog dialog = new TextInputDialog("new tab name");
-//					dialog.setTitle("Change tab name");
-//					dialog.setHeaderText("Change tab name");
-//					dialog.setContentText("Please enter the new name for this tab:");
-//					java.util.Optional<String> result = dialog.showAndWait();
-//					if (result.isPresent()) {
-//						label.setText(result.get());
-//					}
-//				}
-//			}
-//		});
-//
-//		return tab;
-//	}
-	
+		
 	private class MyTab extends Tab {
 		final Label label;
 		DiagramViewPane view;
 		
 		private MyTab(DiagramViewPane view) {
-			super(view.name, view);
+			super("", view);
 			this.view = view;
 			this.label = new Label(view.name);
 			setLabel();
 		}
 
 		public void setView(DiagramViewPane newView) {
-			setLabel();
+			this.view = newView;
     		setContent(newView);
+    		label.setText(view.name);
+			setLabel();
 		}
 
 		private void setLabel() {			
