@@ -540,9 +540,9 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	@Override
 	public int compareTo(FmmlxObject anotherObject) {
 		if(this.getLevel()>anotherObject.getLevel()) {
-			return 1;
-		} else if (this.getLevel()<anotherObject.getLevel()) {
 			return -1;
+		} else if (this.getLevel()<anotherObject.getLevel()) {
+			return 1;
 		} else {
 			return this.name.compareTo(anotherObject.getName());
 		}

@@ -95,7 +95,6 @@ public final class ModelBrowser extends CustomStage {
 		if (initialModel!=null) {
 			modelListView.getSelectionModel().select(initialModel);
 		}
-
 		fmmlxObjectListView.setContextMenu(new BrowserObjectContextMenu());
 	}
 

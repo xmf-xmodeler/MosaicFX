@@ -1075,14 +1075,15 @@ public class DiagramActions {
 		Dialog<Vector<FmmlxObject>> unhideElementsDialog = new Dialog<>();
 		unhideElementsDialog.setTitle("Unhide Elements");
 		
-		ButtonType okButtonType = new ButtonType("Unhide", ButtonData.OK_DONE);
-		unhideElementsDialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
-		
+		ButtonType okButtonType = new ButtonType("Close", ButtonData.CANCEL_CLOSE);
+		unhideElementsDialog.getDialogPane().getButtonTypes().add(okButtonType);
 		
 		
 		Vector<FmmlxObject> hiddenElements = new Vector<>();
 		Vector<FmmlxObject> shownElements = new Vector<>();
-		for(FmmlxObject o : diagram.getObjects()) {
+		Vector<FmmlxObject> objects = diagram.getObjects();
+		Collections.sort(objects);
+		for(FmmlxObject o : objects) {
 			if(o.hidden) {
 				hiddenElements.add(o);
 			} else if (o.hidden==false) {

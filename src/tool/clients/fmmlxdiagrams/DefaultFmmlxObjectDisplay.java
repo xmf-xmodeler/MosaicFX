@@ -146,8 +146,8 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 						opsBox.addNodeElement(delIcon);
 						labelX +=16;
 					}					
-					NodeLabel.Action changeOpNameAction = () -> diagram.getActions().changeNameDialog(object, PropertyType.Operation, o);
-					NodeLabel opLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.BLACK, null, o, changeOpNameAction, o.getFullString(diagram));
+					NodeLabel.Action changeOpBodyAction = () -> diagram.getActions().changeBodyDialog(object, o);
+					NodeLabel opLabel = new NodeLabel(Pos.BASELINE_LEFT, labelX, opsY, Color.BLACK, null, o, changeOpBodyAction, o.getFullString(diagram));
 					opsBox.addNodeElement(opLabel);
 				}
 			}

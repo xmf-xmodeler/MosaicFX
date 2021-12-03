@@ -118,7 +118,6 @@ public class FmmlxDiagramCommunicator {
 	}
 	
 	public void openDiagram(String packagePath, String diagramName) {
-		//TODO: Not yet implemented. To open an existing diagram.
 		Value[] message = new Value[]{
 				new Value(packagePath),
 				new Value(diagramName)

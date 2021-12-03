@@ -157,11 +157,14 @@ public class FmmlxPalette {
 			Collections.sort(levelList, Collections.reverseOrder());
 			HashMap<Integer, TreeItem<AbstractTreeType>> levels = new HashMap<>();
 			for (int i : levelList) {
-				TreeItem<AbstractTreeType> levelGroup = new TreeItem<AbstractTreeType>(new TreeGroup("Level " + i));
-				levels.put(i, levelGroup);
-				levelGroup.setExpanded(true);
-				elements.getChildren().add(levelGroup);
+				if(i!=0) {
+					TreeItem<AbstractTreeType> levelGroup = new TreeItem<AbstractTreeType>(new TreeGroup("Level " + i));
+					levels.put(i, levelGroup);
+					levelGroup.setExpanded(true);
+					elements.getChildren().add(levelGroup);
+				}
 			}
+			Collections.sort(objects);
 			for(final FmmlxObject o : objects) {
 				if (o.getLevel() > 0 && !o.isAbstract()) {
 					TreeItem<AbstractTreeType> levelGroup = levels.get(o.getLevel());

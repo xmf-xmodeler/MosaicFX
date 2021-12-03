@@ -9,6 +9,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
+import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.workbench.WorkbenchClient;
 import xos.Message;
@@ -98,12 +99,19 @@ public class ControlCenterClient {
 		Vector<String> vec = new Vector<>();
 		for (int i = 0; i<message.args[0].values.length;i++) {
 			Value value = message.args[0].values[i];
-			int id = value.values[0].intValue;
+			System.err.println("Value: "+value);
+			//int id = value.values[0].intValue;
 			String name = value.values[1].strValue();
-			vec.add(name);
-			System.err.println("Message: "+ value);
+			String type = value.values[2].strValue();
+			try {
+				if (FmmlxDiagramCommunicator.DiagramType.valueOf(type)==FmmlxDiagramCommunicator.DiagramType.ClassDiagram) {
+					vec.add(name);
+				}
+			}
+			catch(NullPointerException|ArrayIndexOutOfBoundsException|IllegalArgumentException exception) {
+				System.err.println("DiagramType is missing! In line " + exception.getStackTrace()[0].getLineNumber());
+			}
 		}
-		System.err.println("Message: "+ message);
 		controlCenter.setDiagrams(vec);
 	}
 	
