@@ -659,10 +659,10 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		firstHoverPointIndex = isHit(mouse, .2, canvasTransform);
 	}
 
-	@Override
-	public void setOffsetAndStoreLastValidPosition(Point2D p) {
-		storeLatestValidPointConfiguration();
-	}
+//	@Override
+//	public void setOffsetAndStoreLastValidPosition(Point2D p) {
+//		storeLatestValidPointConfiguration();
+//	}
 
 	protected Point2D getLabelPosition(int localId) {
 		return labelPositions.get(localId);

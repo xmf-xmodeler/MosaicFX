@@ -18,15 +18,22 @@ public interface Condition {
 		
 //		private FmmlxObject object;
 		private String slotName;
-		private boolean value;		
+//		private boolean value;		
 		
+		public BooleanSlotCondition(String slotName) {
+			super();
+			this.slotName = slotName;
+//			this.value = value;
+		}
+
 		@Override
 		public boolean eval(FmmlxObject object) throws SlotNotFoundException {
 			FmmlxSlot slot = object.getSlot(slotName);
 			if (slot == null) {
-				throw new SlotNotFoundException();
+//				throw new SlotNotFoundException();
+				return false;
 			}
-			return value=="true".equals(slot.getValue());
+			return "true".equals(slot.getValue());
 		}
 	}
 	
@@ -58,7 +65,8 @@ public interface Condition {
 		public String evalText(FmmlxObject object) throws SlotNotFoundException {
 			FmmlxSlot slot = object.getSlot(slotName);
 			if (slot == null) {
-				throw new SlotNotFoundException();
+				return "!SLOT NOT FOUND!";
+//				throw new SlotNotFoundException();
 			}
 			return slot.getValue();
 		}

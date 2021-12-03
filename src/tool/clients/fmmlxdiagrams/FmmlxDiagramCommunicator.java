@@ -7,24 +7,21 @@ import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.FmmlxSerializer;
 import tool.clients.serializer.XmlManager;
 import tool.clients.workbench.WorkbenchClient;
-import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
 import xos.Value;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
@@ -36,7 +33,6 @@ public class FmmlxDiagramCommunicator {
 	private int handler;
 	int idCounter = 0;
 	private final HashMap<Integer, Vector<Object>> results = new HashMap<>();
-	private static final Hashtable<Integer, Tab> tabs = new Hashtable<>();
 	private static final Vector<FmmlxDiagram> diagrams = new Vector<>();
 	private static final boolean DEBUG = false;
 	static TabPane tabPane;
@@ -72,21 +68,17 @@ public class FmmlxDiagramCommunicator {
 	
 	/* Setting up new or existing diagrams, as well as closing */
 	
-	public void newDiagram(int diagramID, String diagramName, String packagePath, String file) {
+	public void newDiagram(int diagramID, String diagramName, String packagePath, String file, Vector<Vector<Object>> listOfViews) {
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			if (DEBUG) System.err.println("Create FMMLx-Diagram ("+diagramName+") ...");
-			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packagePath);
+			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packagePath, listOfViews);
 			if(file != null && file.length()>0){
 				diagram.setFilePath(file);
 			} else {
 				diagram.setFilePath(copyFilePath(packagePath));
 			}
-//			if(!PropertyManager.getProperty("diagramsInSeparateTab", true)) {
-//				createTab(diagram.getView(), diagramName, this.handler, diagram);
-//			}else {
-				createStage(diagram.getView(), diagramName, this.handler, diagram);	
-//			}
+			createStage(diagram.getView(), diagramName, this.handler, diagram);	
 			diagrams.add(diagram);
 			l.countDown();
 		});
@@ -1697,48 +1689,10 @@ public class FmmlxDiagramCommunicator {
 				diagram.redraw();
 			});
 			newThread.start();
-		});;
+		});
 		
 		stage.show();
 		stage.setOnCloseRequest((e) -> closeScene(stage, e, id, name, node, diagram));
-	}
-
-//	private void createTab(javafx.scene.Node node, String name, int id, final FmmlxDiagram diagram) {
-//		Tab tab = new Tab(name);
-//		tab.setTooltip(new Tooltip(name));
-//		tab.setContent(node);
-//		tab.setClosable(true);
-//		tabs.put(id, tab);
-//		tabPane.getTabs().add(tab);
-//		tabPane.getSelectionModel().selectLast();
-//		tab.setOnCloseRequest((e) -> closeTab(tab, e, id, name, node, diagram));
-//	}
-
-	private void closeTab(Tab item, Event wevent, int id, String name, javafx.scene.Node node, FmmlxDiagram diagram) {
-
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-
-		ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
-		ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
-		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-		alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
-		alert.setTitle("Open tab in separate window instead?");
-		alert.setHeaderText(null);
-
-		Optional<ButtonType> result = alert.showAndWait();
-		if(result.isPresent()){
-			if (result.get().getButtonData() == ButtonData.YES) {
-				tabs.remove(id);
-				PropertyManager.setProperty("diagramsInSeparateTab", "true");
-				createStage(node, name, id, diagram);
-
-			} else if (result.get().getButtonData() == ButtonData.CANCEL_CLOSE) {
-				wevent.consume();
-			} else {
-				close(diagram, true);
-				tabs.remove(id);
-			}
-		}
 	}
 
 	private void closeScene(Stage stage, Event wevent, int id, String name, javafx.scene.Node node, FmmlxDiagram diagram) {
@@ -2095,6 +2049,24 @@ public class FmmlxDiagramCommunicator {
 				new Value(body)
 		};
 		sendMessage("mergeOperation", message);
+	}
+
+	public void sendViewStatus(int diagramID, Vector<String> names, Vector<Affine> transformations) {
+		if(names.size() != transformations.size()) throw new IllegalArgumentException("list sizes do not match");
+		Value[] listOfViews = new Value[names.size()];
+		for(int i = 0; i < names.size(); i++) {
+			Value[] view = new Value[4];
+			view[0] = new Value(names.get(i));
+			view[1] = new Value(new Float(transformations.get(i).getMxx()));
+			view[2] = new Value(new Float(transformations.get(i).getTx()));
+			view[3] = new Value(new Float(transformations.get(i).getTy()));
+			listOfViews[i] = new Value(view);
+		}
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(listOfViews)
+		};
+		sendMessage("sendViewStatusToModel", message);
 	}
 
 }

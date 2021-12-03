@@ -27,13 +27,12 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 	private double width;
 	private double height;
 	private Vector<ConcreteNode> anchors;
-	private transient double mouseMoveOffsetX;
-	private transient double mouseMoveOffsetY;
 	private transient boolean highlighted = false;
 	private final Color bgColor;
 	private Color fontColor;
 	private final static int MARGIN = 1;
 	private Affine myTransform;
+	private transient Affine dragAffine;
 
 	public DiagramEdgeLabel(Edge<ConcreteNode> owner, int localID, Runnable action, ContextMenu menu, Vector<ConcreteNode> anchors, String value, 
 			double relativeX, double relativeY, double w, double h,
@@ -49,6 +48,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 		this.anchors = anchors;
 		this.fontColor = fontColor;
 		this.bgColor = bgColor;
+		this.dragAffine = new Affine();
 	}
 	
 	@Deprecated private double getX() {return this.myTransform.getTx();}
@@ -59,9 +59,11 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 		if(!owner.isVisible()) return;		
 		int size=16;
 		g.setTransform(getTotalTransform(view.getCanvasTransform()));
-		g.setFill(bgColor);
-		g.fillRect(0, 0, this.width, this.height);
-		
+		if(bgColor != null) {
+			g.setFill(bgColor);
+			g.fillRect(0, 0, this.width, this.height);
+		}
+				
 		g.setFill(highlighted ? new Color(1.,0.,0.,1.):fontColor);
 		g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), FontWeight.NORMAL, FontPosture.REGULAR, 14));
 
@@ -159,14 +161,6 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 		return getY();
 	}
 
-//	public void setRelativeX(double relativeX) {
-//		this.relativeX = relativeX;
-//	}
-//
-//	public void setRelativeY(double relativeY) {
-//		this.relativeY = relativeY;
-//	}
-
 	@Override
 	public ContextMenu getContextMenu(FmmlxDiagram.DiagramViewPane diagram, Point2D absolutePoint) {
 		return menu;
@@ -199,16 +193,16 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 		return hit;
 	}
 	
-	@Override
-	public void setOffsetAndStoreLastValidPosition(Point2D p) {
-		mouseMoveOffsetX = p.getX()/* - getReferenceX() */ - getX();
-		mouseMoveOffsetY = p.getY()/*  - getReferenceY() */ - getY();
-//		lastValidRelativeX = - getReferenceX() + relativeX;
-//		lastValidRelativeY = - getReferenceY() + relativeY;
-	}
+//	@Override @Deprecated
+//	public void setOffsetAndStoreLastValidPosition(Point2D p) {
+////		mouseMoveOffsetX = p.getX()/* - getReferenceX() */ - getX();
+////		mouseMoveOffsetY = p.getY()/*  - getReferenceY() */ - getY();
+//////		lastValidRelativeX = - getReferenceX() + relativeX;
+//////		lastValidRelativeY = - getReferenceY() + relativeY;
+//	}
 
-	public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
-	public double getMouseMoveOffsetY() {return mouseMoveOffsetY;}
+//	public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
+//	public double getMouseMoveOffsetY() {return mouseMoveOffsetY;}
 
 	public static boolean isInteger(String s) {
 		try {
@@ -321,9 +315,19 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 		Affine a = new Affine(canvasTransform);
 		a.append(new Affine(1, 0, tx, 0, 1, ty));
 		a.append(myTransform);
+		a.append(dragAffine);
 		return a;
 	}
+	
+	public void dragTo(Affine dragAffine) {
+		this.dragAffine = dragAffine;		
+	}
 
+	public void drop() {
+		myTransform.append(dragAffine);
+		dragAffine = new Affine();		
+	}
+	
 	public void setRelativePosition(double x, double y) {
 		myTransform = new Affine(1, 0, x, 0, 1, y);
 	}

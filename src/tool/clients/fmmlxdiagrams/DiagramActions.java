@@ -875,7 +875,7 @@ public class DiagramActions {
 	}
 
 	public void addAssociationInstanceDialog(FmmlxObject source, FmmlxObject target, FmmlxAssociation association) {
-		Dialog dialog = new Dialog();
+		Dialog<Void> dialog = new Dialog<Void>();
 		dialog.setTitle("Generate Instance for Link");
 		dialog.setHeaderText("Choose Source & Target for the Link via Dropdown Menu");
 		Label sourceLabel = new Label("Source: ");
@@ -910,11 +910,11 @@ public class DiagramActions {
 		dialog.getDialogPane().setContent(grid);
 		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		dialog.getDialogPane().lookupButton(ButtonType.OK).disableProperty().bind(Bindings.createBooleanBinding(
-			    () -> (sourceCB.getValue() == null) || targetCB.getValue()==null,
+			    () -> sourceCB.getValue() == null || targetCB.getValue() == null,
 			    sourceCB.valueProperty(),
 			    targetCB.valueProperty()
 			));
-		Optional result= dialog.showAndWait();
+		Optional<Void> result= dialog.showAndWait();
 		if (result.isPresent()) {
 			diagram.getComm().addAssociationInstance(diagram.getID(), sourceCB.getSelectionModel().getSelectedItem().getName(), targetCB.getSelectionModel().getSelectedItem().getName(), association.getName());
 		} else {

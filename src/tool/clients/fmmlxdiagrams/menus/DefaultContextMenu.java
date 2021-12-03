@@ -5,9 +5,6 @@ import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
 
-import java.util.Optional;
-import java.util.Vector;
-
 public class DefaultContextMenu extends ContextMenu {
 
 	public DefaultContextMenu(DiagramViewPane view) {

@@ -98,9 +98,7 @@ public class NodeGroup extends NodeElement {
 	
 	public Affine getTotalTransform(Affine canvasTransform) {
 		Affine a = new Affine(owner == null?canvasTransform:owner.getTotalTransform(canvasTransform));
-		//System.err.println("a = " + a + " myTransform = " + myTransform);
 		a.append(myTransform);
-		
 		a.append(getDragAffine());
 		return a;
 	}
@@ -176,11 +174,10 @@ public class NodeGroup extends NodeElement {
 		return myElement;
 	}
 
-	private static Modification findMod(Vector<Modification> modifications, String id) {
+	private static Modification findMod(Vector<Modification> modifications, NodeElement nodeElement) {
 		for(Modification mod : modifications) {
-			if(id.equals(mod.getID())) {
+			if(nodeElement.matchID(mod.getParentID(), mod.getID()))
 				return mod;
-			}
 		}
 		return null;
 	}
@@ -189,7 +186,7 @@ public class NodeGroup extends NodeElement {
 	protected NodeGroup createInstance(FmmlxObject object, Vector<Modification> modifications) {
 		NodeGroup that = new NodeGroup(new Affine(this.myTransform));
 		for(NodeElement nodeElement : this.nodeElements) {
-			Modification mod = findMod(modifications, nodeElement.id);
+			Modification mod = findMod(modifications, nodeElement);
 				boolean add = mod == null || mod.getConsequence() == Modification.Consequence.SHOW_ALWAYS
 					|| mod.getConsequence() == Modification.Consequence.SHOW_IF && mod.getCondition().eval(object)
 					|| mod.getConsequence() == Modification.Consequence.SHOW_IF_NOT && !mod.getCondition().eval(object);

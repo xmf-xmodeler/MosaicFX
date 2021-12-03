@@ -7,13 +7,8 @@ import tool.clients.fmmlxdiagrams.FmmlxLink;
 
 public class AssociationInstanceContextMenu extends ContextMenu {
 
-	private final FmmlxLink instance;
-	private final DiagramActions actions;
-
-	public AssociationInstanceContextMenu(FmmlxLink instance, DiagramActions actions) {
+	public AssociationInstanceContextMenu(final FmmlxLink instance, final DiagramActions actions) {
 		setAutoHide(true);
-		this.instance = instance;
-		this.actions = actions;
 
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeAssociationInstance(instance));

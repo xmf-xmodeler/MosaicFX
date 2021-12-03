@@ -117,6 +117,7 @@ public class ChangeOwnerDialog<Property extends FmmlxProperty> extends CustomDia
 	}
 
 
+	@SuppressWarnings("unchecked")
 	private void layoutContent() {
 		classLabel = new Label(StringValue.LabelAndHeaderTitle.selectedObject);
 
@@ -176,13 +177,9 @@ public class ChangeOwnerDialog<Property extends FmmlxProperty> extends CustomDia
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setSelected(FmmlxProperty selectedProperty) {
 		selectPropertyComboBox.getSelectionModel().select((Property) selectedProperty);
-//		if (type == PropertyType.Attribute) {
-//			selectAttributeComboBox.getSelectionModel().select((FmmlxAttribute) selectedProperty);
-//		} else if (type == PropertyType.Operation) {
-//			selectOperationComboBox.getSelectionModel().select((FmmlxOperation) selectedProperty);
-//		}
 	}
 	
 	public class Result {

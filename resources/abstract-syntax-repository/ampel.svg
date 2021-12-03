@@ -98,17 +98,17 @@
 
 <circle
    style="fill:#d40000;stroke:none;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;paint-order:markers fill stroke"
-   id="path55"
+   id="redLight"
    cx="8.5"
    cy="8.5"
    r="5" /><circle
    style="fill:#ffe100;fill-opacity:1;stroke:none;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;paint-order:markers fill stroke"
-   id="path55-7"
+   id="yellowLight"
    cx="8.5"
    cy="20.5"
    r="5" /><circle
    style="fill:#00d455;fill-opacity:1;stroke:none;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;paint-order:markers fill stroke"
-   id="path55-75"
+   id="greenLight"
    cx="8.5"
    cy="32.5"
    r="5" /><rect

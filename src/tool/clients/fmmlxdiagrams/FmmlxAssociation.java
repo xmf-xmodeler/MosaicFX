@@ -30,7 +30,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 
 //	HeadStyle sourceHead; 
 //	HeadStyle targetHead;
-	private final static Color TRANSPARENT = new Color(0, 0, 0, 0);
+	private final static Color TRANSPARENT = null;//new Color(0, 0, 0, 0);
 	private final static Color BLACK = new Color(0, 0, 0, 1);
 	private final static Color WHITE = new Color(1, 1, 1, 1);
 
@@ -81,7 +81,7 @@ public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty
 		if( sourceNode == targetNode) {
 			createLabel(name, 0, Anchor.CENTRE_SELFASSOCIATION, showChangeFwNameDialog, BLACK, TRANSPARENT, diagram);
 		}else {
-		createLabel(name, 0, Anchor.CENTRE_MOVABLE, showChangeFwNameDialog, BLACK, TRANSPARENT, diagram);
+			createLabel(name, 0, Anchor.CENTRE_MOVABLE, showChangeFwNameDialog, BLACK, TRANSPARENT, diagram);
 		}
 //		if(reverseName != null) 
 //	    createLabel(reverseName, 1, Anchor.CENTRE, showChangeRvNameDialog, -20, BLACK, TRANSPARENT);

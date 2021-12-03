@@ -17,8 +17,6 @@ public abstract class Node implements CanvasElement {
 	protected boolean hidden;
 	protected double x;
 	protected double y;
-//	protected int width;
-//	protected int height;
 	protected transient Point2D lastClick = null;
 	private FmmlxObjectPort port;
 	
@@ -101,8 +99,8 @@ public abstract class Node implements CanvasElement {
 		this.y = Math.max(y, 0.0);
 	}
 	
-	@Override // no longer used
-	public void setOffsetAndStoreLastValidPosition(Point2D p) {	}
+//	@Override // no longer used
+//	public void setOffsetAndStoreLastValidPosition(Point2D p) {	}
 	
 	@Override public void highlightElementAt(Point2D p, Affine a) {}
 	@Override public void unHighlight() {}
