@@ -119,9 +119,22 @@ public class FmmlxSerializer  {
         saveObjectsIntoDiagramElement(id, ParentElement);
         saveEdgesIntoDiagramElement(id, diagramPath, ParentElement);
         saveLabelsIntoDiagramElement(id, ParentElement);
+        saveViewsIntoDiagramElement(id, ParentElement);
     }
 
-    private void saveLabelsIntoDiagramElement(Integer id, Element diagramElement) {
+    private void saveViewsIntoDiagramElement(Integer id, Element diagramElement) {
+    	Vector<Vector<Object>> result = FmmlxDiagramCommunicator.getCommunicator().getAllViews(id);
+    	for(Vector<Object> viewVec : result) {    		
+    		Element viewElement = xmlManager.createXmlElement("View");
+    		viewElement.setAttribute("name", ""+viewVec.get(0));
+    		viewElement.setAttribute("xx", ""+viewVec.get(1));
+    		viewElement.setAttribute("tx", ""+viewVec.get(2));
+    		viewElement.setAttribute("ty", ""+viewVec.get(3));
+    		diagramElement.appendChild(viewElement);
+    	}
+	}
+
+	private void saveLabelsIntoDiagramElement(Integer id, Element diagramElement) {
         HashMap<String, HashMap<String, Object>> result = FmmlxDiagramCommunicator.getCommunicator().getAllLabelPositions(id);
 
         for (String key : result.keySet()){

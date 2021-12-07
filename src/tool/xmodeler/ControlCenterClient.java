@@ -87,7 +87,6 @@ public class ControlCenterClient {
 	}
 	
 	public void getDiagrams(String modelPath) {
-		System.err.println("Modelpath: "+ modelPath);
 		if(modelPath == null) return;
 		if(!modelPath.startsWith("Root::")) modelPath = "Root::" + modelPath;
 		Message message = WorkbenchClient.theClient().getHandler().newMessage("getDiagrams", 1);
@@ -99,7 +98,6 @@ public class ControlCenterClient {
 		Vector<String> vec = new Vector<>();
 		for (int i = 0; i<message.args[0].values.length;i++) {
 			Value value = message.args[0].values[i];
-			System.err.println("Value: "+value);
 			//int id = value.values[0].intValue;
 			String name = value.values[1].strValue();
 			String type = value.values[2].strValue();

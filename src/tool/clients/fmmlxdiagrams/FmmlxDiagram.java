@@ -144,31 +144,23 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String name, String packagePath, Vector<Vector<Object>> listOfViews) {
 		super(comm,diagramID,packagePath);
 		this.diagramName = name;
-//		vBox = new VBox();
-//		menu = new Menu("Save & Load");
-//		menuBar = new MenuBar();
-//		loadXML = new MenuItem("Load Diagram via XML");
-//		saveXML = new MenuItem("Save Diagram as XML");
-//		saveXML.setOnAction(e->saveXMLAction());
-//		loadXML.setOnAction(e->loadXMLAction());
-//		menu.getItems().addAll(loadXML, saveXML);
-//		menuBar.getMenus().add(menu);
 		splitPane = new SplitPane();
 		splitPane2 = new SplitPane();
-//		vBox.getChildren().addAll(menuBar, splitPane);
 		mainView = new VBox();
-//		canvas = new Canvas(CANVAS_RAW_SIZE.getX(), CANVAS_RAW_SIZE.getY());
 		
 		Palette palette = new Palette(this);
 		Palette palette2 = new Palette(this,2);
 		newFmmlxPalette = new FmmlxPalette(this);
 		
-		mainViewPane = new DiagramViewPane("Main View", false);
-				
         tabPane = new TabPane();
         
         for(Vector<Object> view : listOfViews) {
         	DiagramViewPane dvp = new DiagramViewPane((String) view.get(0), false);
+        	double xx = 1., tx = 0., ty = 0.;
+        	try{ xx = (float) view.get(1); } catch (Exception e) {System.err.println("Cannot read xx: " + e.getMessage() + " Using default instead");}
+        	try{ tx = (float) view.get(2); } catch (Exception e) {System.err.println("Cannot read xx: " + e.getMessage() + " Using default instead");}
+        	try{ ty = (float) view.get(3); } catch (Exception e) {System.err.println("Cannot read xx: " + e.getMessage() + " Using default instead");}
+        	dvp.canvasTransform = new Affine(xx, 0, tx, 0, xx, ty);
         	tabPane.getTabs().add(new MyTab(dvp));
         	if(mainViewPane == null) mainViewPane = dvp;
         }

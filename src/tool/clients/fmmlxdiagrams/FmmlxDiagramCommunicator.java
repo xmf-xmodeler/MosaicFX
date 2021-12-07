@@ -2068,4 +2068,16 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("sendViewStatusToModel", message);
 	}
 
+	public Vector<Vector<Object>> getAllViews(Integer diagramID) {
+		try {
+			Vector<Object> response = xmfRequest(handler, diagramID, "getAllViews");
+			return (Vector<Vector<Object>>) (response.get(0));
+		} catch (TimeOutException e) {
+			e.printStackTrace();
+			Vector<Object> v = new Vector<Object>();
+			v.add("Emergency Tab");v.add(1.0);v.add(0.0);v.add(0.0);
+			Vector<Vector<Object>> V = new Vector<>(); V.add(v);
+			return V;
+		}
+	}
 }
