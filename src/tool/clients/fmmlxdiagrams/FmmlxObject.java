@@ -265,6 +265,21 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		}
 		return monitorNames;
 	}
+	
+	public Vector<String> getAvailableNoArgumentOperationNames() {
+		Vector<String> availableNames = new Vector<>();
+		for (FmmlxObject ancestor : getAllAncestors()) {
+			Vector<FmmlxOperation> ops = new Vector<>();
+			ops.addAll(ancestor.getAllOperations());
+			ops.addAll(ancestor.getDelegatedOperations());
+			for (FmmlxOperation operation : ops) {
+				if (operation.getLevel() == this.level && !availableNames.contains(operation.getName()) && operation.getParamNames().size() == 0) {
+					availableNames.add(operation.getName());
+				}
+			}
+		}
+		return availableNames;
+	}
 
 	public Vector<FmmlxObject> getAllAncestors() {
 		if("Root::XCore::Class".equals(ownPath)) return new Vector<FmmlxObject>();

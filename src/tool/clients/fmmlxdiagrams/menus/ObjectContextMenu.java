@@ -40,13 +40,13 @@ public class ObjectContextMenu extends ContextMenu {
 		changeNameItem.setOnAction(e -> actions.changeNameDialog(object, PropertyType.Class));
 		getItems().add(changeNameItem);
 		
-		MenuItem instanceGenerator = new MenuItem("Instance Generator");
-
-		instanceGenerator.setOnAction(e -> actions.runInstanceGenerator(object));
-		if(object.notTraditionalDataTypeExists() || object.getLevel()<=0){
-			instanceGenerator.setDisable(true);
-		}
-		getItems().add(instanceGenerator);
+//		MenuItem instanceGenerator = new MenuItem("Instance Generator");
+//
+//		instanceGenerator.setOnAction(e -> actions.runInstanceGenerator(object));
+//		if(object.notTraditionalDataTypeExists() || object.getLevel()<=0){
+//			instanceGenerator.setDisable(true);
+//		}
+//		getItems().add(instanceGenerator);
 		
 		MenuItem changeOfItem = new MenuItem("Change of (Metaclass)");
 		changeOfItem.setOnAction(e -> actions.changeOfDialog(object));
@@ -103,11 +103,26 @@ public class ObjectContextMenu extends ContextMenu {
 
 		getItems().addAll(attributeMenu, associationMenu, operationMenu, constraintMenu, delegationMenu, slotMenu, associationInstanceMenu, levelMenu, showMenu, assignItem);
 		
+		addRunMenu();
+		
 		addNewMenuItem(this, "Hide", e -> {
 			Vector<FmmlxObject> v = new Vector<>();
 			v.add(object); 
 			actions.hide(v, true);
 		}, ALWAYS);
+	}
+
+	private void addRunMenu() {
+		Vector<String> names = object.getAvailableNoArgumentOperationNames();
+		if(names.isEmpty()) return;
+		Menu run = new Menu("Run");
+		for(String opName : names) {
+			addNewMenuItem(run, opName, e -> {
+				actions.runOperation(object.getPath(), opName);
+			}, ALWAYS);
+		}
+		getItems().add(run);
+		
 	}
 
 	private Menu createAttributeSubMenu() {

@@ -23,12 +23,12 @@ public class Palette extends ToolBar {
 		CheckBox metaClassName = addCheckBox("Name of Metaclass in Palette");
 		metaClassName.setSelected(false);
 		getItems().add(new Separator());
-		boxO.setOnAction(e -> diagram.setShowOperations(boxO));
-		boxOV.setOnAction(e -> diagram.setShowOperationValues(boxOV));
-		boxS.setOnAction(e -> diagram.setShowSlots(boxS));
-		boxGettersAndSetters.setOnAction(e-> diagram.setShowGettersAndSetters(boxGettersAndSetters));
-		boxDerivedOperations.setOnAction(e-> diagram.setShowDerivedOperations(boxDerivedOperations));
-		boxDerivedAttributes.setOnAction(e-> diagram.setShowDerivedAttributes(boxDerivedAttributes));
+		boxO.setOnAction(e -> {diagram.setShowOperations(boxO); diagram.comm.sendViewOptions(diagram.diagramID);});
+		boxOV.setOnAction(e -> {diagram.setShowOperationValues(boxOV); diagram.comm.sendViewOptions(diagram.diagramID);});
+		boxS.setOnAction(e -> {diagram.setShowSlots(boxS); diagram.comm.sendViewOptions(diagram.diagramID);});
+		boxGettersAndSetters.setOnAction(e-> {diagram.setShowGettersAndSetters(boxGettersAndSetters); diagram.comm.sendViewOptions(diagram.diagramID);});
+		boxDerivedOperations.setOnAction(e-> {diagram.setShowDerivedOperations(boxDerivedOperations); diagram.comm.sendViewOptions(diagram.diagramID);});
+		boxDerivedAttributes.setOnAction(e-> {diagram.setShowDerivedAttributes(boxDerivedAttributes); diagram.comm.sendViewOptions(diagram.diagramID);});
 		metaClassName.setOnAction(e-> diagram.setMetaClassNameInPalette(metaClassName));
 		
 		

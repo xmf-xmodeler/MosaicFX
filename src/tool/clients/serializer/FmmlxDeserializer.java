@@ -4,6 +4,7 @@ import javafx.concurrent.Task;
 import javafx.scene.transform.Affine;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
@@ -13,6 +14,7 @@ import tool.xmodeler.XModeler;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Vector;
 
 /*This Class is an abstract layer over XML to allow loading FmmlxDiagram-data from Xml file
@@ -72,7 +74,16 @@ public class FmmlxDeserializer {
 				}
 			} catch (Exception e) {} // Ignore the stuff we don't need to worry about
 		}    	
-    	fmmlxDiagramCommunicator.sendViewStatus(diagramID, names, transformations);		
+    	fmmlxDiagramCommunicator.sendViewStatus(diagramID, names, transformations);
+    	NamedNodeMap attributes = diagramNode.getAttributes();
+    	HashMap<String, Boolean> map = new HashMap<>();
+    	for(int i = 0; i < attributes.getLength(); i++) { 
+    		// this adds all attributes to the options list.
+    		// However those we don't care about will be dropped later on anyway
+    		Node attribute = attributes.item(i);
+    		map.put(attribute.getNodeName(), "true".equals(attribute.getNodeValue()));
+    	}
+    	fmmlxDiagramCommunicator.sendViewOptions(diagramID, map);
 	}
 	//This methode works to recreate all the existing components on a diagram-data in the xml file.
     //The sequence of its reproduction corresponds to the log order stored in XML.

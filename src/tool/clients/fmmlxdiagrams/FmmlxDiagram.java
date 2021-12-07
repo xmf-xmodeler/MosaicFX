@@ -141,7 +141,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		this.diagramName = null;
 	}
 
-	public FmmlxDiagram(FmmlxDiagramCommunicator comm, int diagramID, String name, String packagePath, Vector<Vector<Object>> listOfViews) {
+	public FmmlxDiagram(FmmlxDiagramCommunicator comm, 
+			int diagramID, String name, String packagePath, 
+			Vector<Vector<Object>> listOfViews, 
+			Vector<Vector<Object>> listOfOptions) {
 		super(comm,diagramID,packagePath);
 		this.diagramName = name;
 		splitPane = new SplitPane();
@@ -165,9 +168,18 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         	if(mainViewPane == null) mainViewPane = dvp;
         }
         
-//        tabPane.getTabs().add(new MyTab(mainViewPane));
-//        tabPane.getTabs().add(new MyTab(new DiagramViewPane("View 1", false)));
-//        tabPane.getTabs().add(new MyTab(new DiagramViewPane("View 2", false)));
+        System.err.println("listOfOptions: " + listOfOptions);
+        for(Vector<Object> option : listOfOptions) {
+        	String  key   = (String)  option.get(0);
+        	Boolean value = (Boolean) option.get(1);
+        	if("showDerivedAttributes".equals(key)) setShowDerivedAttributes(value);
+        	if("showDerivedOperations".equals(key)) setShowDerivedOperations(value);
+        	if("showGettersAndSetters".equals(key)) setShowGettersAndSetters(value);
+        	if("showOperations".equals(key)) setShowOperations(value);
+        	if("showOperationValues".equals(key)) setShowOperationValues(value);
+        	if("showSlots".equals(key)) setShowSlots(value);
+        }        
+
         tabPane.getTabs().add(new MyTab());
         zoomView = new DiagramViewPane("", true);
         
@@ -751,6 +763,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		for(FmmlxObject o : objects) {
 			o.layout(this);
 		}
+		comm.sendViewOptions(diagramID); // make sure it is at least transferred regularly
 	}
 
 	@Override
@@ -874,20 +887,20 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			if(fetchingData) return;
 			clearContextMenus();
 
-			if (isLeftButton(e)) {
+			if (isLeftButton(e) && !e.isAltDown()) {
 				handleLeftPressed(e);
 				dragStart = new Point2D(e.getX(), e.getY());
 			}
 			if (isRightButton(e)) {
 				handleRightPressed(e);
 			}
-			if (isCenterButton(e)) {
+			if (isCenterButton(e) || (isLeftButton(e) && e.isAltDown())) {
 				handleCenterPressed(e);
 			}
 		}
 
 		private void mouseDragged(MouseEvent e) {
-			if(isLeftButton(e)) {	
+			if(isLeftButton(e) && !e.isAltDown()) {	
 				if (mouseMode == MouseMode.MULTISELECT) {
 					storeCurrentPoint(e.getX(), e.getY());
 					redraw();
@@ -900,7 +913,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					mouseDraggedStandard(new Point2D(e.getX(), e.getY()));
 				}
 			}
-			if (isCenterButton(e)) {
+			if (isCenterButton(e) || (isLeftButton(e) && e.isAltDown())) {
 				handleCenterDragged(e);
 			}
 		}

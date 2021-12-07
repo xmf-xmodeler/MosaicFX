@@ -20,6 +20,9 @@ import xos.Value;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Vector;
@@ -68,11 +71,11 @@ public class FmmlxDiagramCommunicator {
 	
 	/* Setting up new or existing diagrams, as well as closing */
 	
-	public void newDiagram(int diagramID, String diagramName, String packagePath, String file, Vector<Vector<Object>> listOfViews) {
+	public void newDiagram(int diagramID, String diagramName, String packagePath, String file, Vector<Vector<Object>> listOfViews, Vector<Vector<Object>> listOfOptions) {
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			if (DEBUG) System.err.println("Create FMMLx-Diagram ("+diagramName+") ...");
-			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packagePath, listOfViews);
+			FmmlxDiagram diagram = new FmmlxDiagram(this, diagramID, diagramName, packagePath, listOfViews, listOfOptions);
 			if(file != null && file.length()>0){
 				diagram.setFilePath(file);
 			} else {
@@ -2068,6 +2071,7 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("sendViewStatusToModel", message);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Vector<Vector<Object>> getAllViews(Integer diagramID) {
 		try {
 			Vector<Object> response = xmfRequest(handler, diagramID, "getAllViews");
@@ -2080,4 +2084,65 @@ public class FmmlxDiagramCommunicator {
 			return V;
 		}
 	}
+	
+	public void sendViewOptions(int diagramID) {
+		Vector<Value> items = new Vector<>();
+		FmmlxDiagram diagram = getDiagram(diagramID);
+		items.add(new Value(new Value[] {new Value("showDerivedAttributes"), 	new Value(diagram.isShowDerivedAttributes())}));
+		items.add(new Value(new Value[] {new Value("showDerivedOperations"), 	new Value( diagram.isShowDerivedOperations())}));
+		items.add(new Value(new Value[] {new Value("showGettersAndSetters"), 	new Value( diagram.isShowGetterAndSetter())}));
+		items.add(new Value(new Value[] {new Value("showOperations"), 			new Value( diagram.isShowOperations())}));
+		items.add(new Value(new Value[] {new Value("showOperationValues"), 		new Value( diagram.isShowOperationValues())}));
+		items.add(new Value(new Value[] {new Value("showSlots"), 				new Value( diagram.isShowSlots())}));
+		Value[] itemArray = new Value[items.size()];
+		for(int i = 0; i < itemArray.length; i++) {
+			itemArray[i] = items.get(i);
+		}
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(itemArray)
+		};
+		sendMessage("sendViewOptions", message);
+	}
+
+
+	public void sendViewOptions(Integer diagramID, HashMap<String, Boolean> map) {
+		Vector<Value> items = new Vector<>();
+		for(String key : map.keySet()) {
+			items.add(new Value(new Value[] {new Value(key), new Value(map.get(key))}));
+		}
+		Value[] itemArray = new Value[items.size()];
+		for(int i = 0; i< itemArray.length; i++) {
+			itemArray[i] = items.get(i);
+		}
+		Value[] message = new Value[]{
+				getNoReturnExpectedMessageID(diagramID),
+				new Value(itemArray)
+		};
+		sendMessage("sendViewOptions", message);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Boolean> getViewOptions(Integer diagramID) {
+		try {
+			Vector<Object> response = xmfRequest(handler, diagramID, "getViewOptions");
+			HashMap<String, Boolean> result = new HashMap<String, Boolean>();
+			Vector<Vector<Object>> list = (Vector<Vector<Object>>) response.get(0);
+			for(Vector<Object> item : list) {
+				result.put((String) item.get(0), (Boolean) item.get(1));
+			}			
+			return result;
+		} catch (TimeOutException e) {
+			e.printStackTrace();
+			return new HashMap<String, Boolean>();
+		}
+	}
+	
+
+    
+    public void runOperation(Integer diagramID, String text) throws TimeOutException {
+        sendMessage("runOperation", new Value[]{
+			getNoReturnExpectedMessageID(diagramID),
+			new Value(text)});
+    }
 }

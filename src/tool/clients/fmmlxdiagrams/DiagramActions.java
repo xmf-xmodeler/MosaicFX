@@ -1248,4 +1248,13 @@ public class DiagramActions {
 			updateDiagram();
 		});
 	}
+
+	public void runOperation(String path, String opName) {
+		try {
+			diagram.getComm().runOperation(diagram.diagramID, path+"."+opName+"()");
+			updateDiagram();
+		} catch (TimeOutException e) {
+			throw new RuntimeException("runOperation failed", e);
+		}	
+	}
 }

@@ -3,6 +3,7 @@ package tool.clients.serializer;
 import javafx.util.Pair;
 import org.w3c.dom.Element;
 import tool.clients.fmmlxdiagrams.FaXML;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.TimeOutException;
 import tool.clients.xmlManipulator.XmlCreator;
@@ -123,8 +124,12 @@ public class FmmlxSerializer  {
     }
 
     private void saveViewsIntoDiagramElement(Integer id, Element diagramElement) {
-    	Vector<Vector<Object>> result = FmmlxDiagramCommunicator.getCommunicator().getAllViews(id);
-    	for(Vector<Object> viewVec : result) {    		
+    	HashMap<String,Boolean> optionsResult = FmmlxDiagramCommunicator.getCommunicator().getViewOptions(id);
+    	Vector<Vector<Object>> viewsResult = FmmlxDiagramCommunicator.getCommunicator().getAllViews(id);
+    	for(String key : optionsResult.keySet()) {
+    		diagramElement.setAttribute(key, optionsResult.get(key)?"true":"false");
+    	}	
+    	for(Vector<Object> viewVec : viewsResult) {    		
     		Element viewElement = xmlManager.createXmlElement("View");
     		viewElement.setAttribute("name", ""+viewVec.get(0));
     		viewElement.setAttribute("xx", ""+viewVec.get(1));
