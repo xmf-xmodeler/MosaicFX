@@ -503,7 +503,6 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	@Deprecated public void fetchDataValues(FmmlxDiagramCommunicator comm) throws TimeOutException {
 		slots = comm.fetchSlots(diagram, this, this.getSlotNames());
-
 		operationValues = comm.fetchOperationValues(diagram, this.name, this.getMonitoredOperationsNames());
 	}
 
@@ -594,8 +593,8 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		
 		if(myConcreteSyntax != null) {
 			rootNodeElement = myConcreteSyntax.createInstance(this);
-		} else if(ofPath.endsWith("Event")) {
-			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutEvent();
+//		} else if(ofPath.endsWith("Event")) {
+//			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutEvent();
 		} else {	
 			new DefaultFmmlxObjectDisplay(diagram, this).layout();
 		}

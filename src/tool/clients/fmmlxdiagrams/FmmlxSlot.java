@@ -59,4 +59,6 @@ public class FmmlxSlot implements FmmlxProperty {
 		
 		throw new RuntimeException("Slot type not found");
 	}
+	
+	@Override public String toString() { return name; }
 }

@@ -111,7 +111,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private boolean showDerivedAttributes=true;
 	private boolean showMetaClassName = false;
 	private DiagramViewPane zoomView;
-	@Override protected boolean loadOnlyVisibleObjects() { return true; }	
+	@Override protected boolean loadOnlyVisibleObjects() { return false; }	// Did not work. Attributes from invisible classes did not cause slots on visible classes
 
 	public final String diagramName;
 	private final FmmlxPalette newFmmlxPalette;
@@ -168,7 +168,12 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         	if(mainViewPane == null) mainViewPane = dvp;
         }
         
-        System.err.println("listOfOptions: " + listOfOptions);
+        if(listOfViews.size() == 0) {
+        	DiagramViewPane dvp = new DiagramViewPane("default view", false);
+        	tabPane.getTabs().add(new MyTab(dvp));
+        	if(mainViewPane == null) mainViewPane = dvp;
+        }
+        
         for(Vector<Object> option : listOfOptions) {
         	String  key   = (String)  option.get(0);
         	Boolean value = (Boolean) option.get(1);

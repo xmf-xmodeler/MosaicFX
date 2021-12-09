@@ -74,11 +74,13 @@ public class ObjectContextMenu extends ContextMenu {
 		Menu associationMenu = createAssociationSubMenu();
 		Menu operationMenu = createOperationSubMenu();
 		Menu constraintMenu = createConstraintSubMenu();
-		Menu slotMenu = createSlotSubMenu();
+		MenuItem slotMenu = new MenuItem("Change Slot Value");
+		slotMenu.setOnAction(e -> diagram.getActions().changeSlotValue(object, null));
 		Menu associationInstanceMenu = createAssociationInstanceSubMenu();
 		Menu showMenu = createShowSubMenu();
 		Menu delegationMenu = createDelegationSubMenu();
 		
+		/*
 		Menu levelMenu = new Menu("Levels");
 		MenuItem levelRaiseAllItem = new MenuItem("Raise all");
 		levelRaiseAllItem.setOnAction(e -> actions.levelRaiseAll());
@@ -96,12 +98,12 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem levelMergeItem = new MenuItem("Merge with Metaclass");
 		levelMergeItem.setOnAction(e -> actions.levelLowerAll());
 		levelMergeItem.setDisable(true);
+		levelMenu.getItems().addAll(levelRaiseAllItem, levelLowerAllItem, levelRaiseHereItem, levelLowerHereItem, levelSplitItem, levelMergeItem);*/
+
 		MenuItem assignItem = new MenuItem("Assign to Global Variable");
 		assignItem.setOnAction(e -> actions.assignToGlobal(object));
 		
-		levelMenu.getItems().addAll(levelRaiseAllItem, levelLowerAllItem, levelRaiseHereItem, levelLowerHereItem, levelSplitItem, levelMergeItem);
-
-		getItems().addAll(attributeMenu, associationMenu, operationMenu, constraintMenu, delegationMenu, slotMenu, associationInstanceMenu, levelMenu, showMenu, assignItem);
+		getItems().addAll(attributeMenu, associationMenu, operationMenu, constraintMenu, delegationMenu, slotMenu, associationInstanceMenu, showMenu, assignItem);
 		
 		addRunMenu();
 		
@@ -268,21 +270,21 @@ public class ObjectContextMenu extends ContextMenu {
 		return operationMenu;
 	}
 
-	private Menu createSlotSubMenu() {
-		Menu slotMenu = new Menu("Slot");
-		slotMenu.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
-
-//		MenuItem addValueItem = new MenuItem("Add value");
-//		addValueItem.setOnAction(e -> System.out.println("OCM: add slot value called"));
-//		MenuItem removeValueItem = new MenuItem("Remove value");
-//		removeValueItem.setOnAction(e -> System.out.println("OCM: remove slot value called"));
-		MenuItem changeValueItem = new MenuItem("Change value");
-		changeValueItem.setOnAction(e -> System.out.println("OCM: change slot value called"));
-
-		slotMenu.getItems().addAll(changeValueItem);
-
-		return slotMenu;
-	}
+//	private Menu createSlotSubMenu() {
+//		Menu slotMenu = new Menu("Slot");
+////		slotMenu.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
+//
+////		MenuItem addValueItem = new MenuItem("Add value");
+////		addValueItem.setOnAction(e -> System.out.println("OCM: add slot value called"));
+////		MenuItem removeValueItem = new MenuItem("Remove value");
+////		removeValueItem.setOnAction(e -> System.out.println("OCM: remove slot value called"));
+//		MenuItem changeValueItem = new MenuItem("Change value");
+//		changeValueItem.setOnAction(e -> System.out.println("OCM: change slot value called"));
+//
+//		slotMenu.getItems().addAll(changeValueItem);
+//
+//		return slotMenu;
+//	}
 
 	private Menu createAssociationInstanceSubMenu() {
 		Menu associationInstanceMenu = new Menu("Association instance");
