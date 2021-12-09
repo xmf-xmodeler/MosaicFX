@@ -12,6 +12,8 @@ import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.view.InstanceGeneratorGenerateTypeComboBox;
 import tool.clients.importer.Conflict;
+import tool.xmodeler.ControlCenter;
+import tool.xmodeler.ControlCenterClient;
 import tool.xmodeler.XModeler;
 
 import java.util.List;
@@ -31,7 +33,12 @@ public class CustomDialog<R> extends Dialog<R> {
 		super();
 		
 		initializeGrid();
-		
+		setOnShowing(e ->{
+			ControlCenter controlCenter = ControlCenterClient.getClient().getControlCenter();
+			if(controlCenter.isIconified()) {
+				controlCenter.setIconified(false);
+			}
+		});
 		flow = new FlowPane();
 		flow.setHgap(3);
 		flow.setVgap(3);

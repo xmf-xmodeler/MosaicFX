@@ -132,4 +132,8 @@ public class ControlCenterClient {
 			}
 		}
 	}
+
+	public ControlCenter getControlCenter() {
+		return controlCenter;
+	}
 }
