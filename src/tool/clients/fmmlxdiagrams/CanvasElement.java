@@ -12,14 +12,10 @@ public interface CanvasElement {
 
 	ContextMenu getContextMenu(FmmlxDiagram.DiagramViewPane fmmlxDiagram, Point2D absolutePoint);
 
-	void moveTo(double d, double e, FmmlxDiagram.DiagramViewPane diagram);
-	
 	boolean isHit(double x, double y, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram);
 
 	void highlightElementAt(Point2D mouse, Affine canvasTransform);
 	void unHighlight();
-
-//	void setOffsetAndStoreLastValidPosition(Point2D p);
 
     void paintToSvg(XmlHandler xmlHandler, FmmlxDiagram diagram);
 }

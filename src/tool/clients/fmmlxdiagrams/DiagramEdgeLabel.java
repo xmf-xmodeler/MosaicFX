@@ -167,12 +167,6 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 	}
 
 	@Override
-	public void moveTo(double x, double y, FmmlxDiagram.DiagramViewPane diagram) {
-		this.myTransform = new Affine(1,0,x,0,1,y);
-	}
-	
-
-	@Override
 	public void highlightElementAt(Point2D p, Affine a) {
 		this.highlighted=true;
 	}
@@ -193,17 +187,6 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 		return hit;
 	}
 	
-//	@Override @Deprecated
-//	public void setOffsetAndStoreLastValidPosition(Point2D p) {
-////		mouseMoveOffsetX = p.getX()/* - getReferenceX() */ - getX();
-////		mouseMoveOffsetY = p.getY()/*  - getReferenceY() */ - getY();
-//////		lastValidRelativeX = - getReferenceX() + relativeX;
-//////		lastValidRelativeY = - getReferenceY() + relativeY;
-//	}
-
-//	public double getMouseMoveOffsetX() {return mouseMoveOffsetX;}
-//	public double getMouseMoveOffsetY() {return mouseMoveOffsetY;}
-
 	public static boolean isInteger(String s) {
 		try {
 			Integer.parseInt(s);
@@ -300,10 +283,6 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 		double tx = 0;
 		double ty = 0;
 		
-//		for(ConcreteNode anchor : anchors) {
-//			tx += anchor.getOwnAndDragTransform().getTx() + anchor.getWidth() * anchor.getOwnAndDragTransform().getMxx() / 2;
-//			ty += anchor.getOwnAndDragTransform().getTy() + anchor.getWidth() * anchor.getOwnAndDragTransform().getMyy() / 2;
-//		}
 		for(ConcreteNode anchor : anchors) {
 			tx += anchor.getOwnAndDragTransform().getTx() + anchor.getWidth() / 2;
 			ty += anchor.getOwnAndDragTransform().getTy() + anchor.getHeight() / 2;

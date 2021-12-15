@@ -465,7 +465,6 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 
 	public abstract ContextMenu getContextMenuLocal(DiagramActions actions);
 	
-	@Override
 	public void moveTo(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane view) {
 	  try {
 		Point2D mouse = new Point2D(mouseX, mouseY);
@@ -473,7 +472,6 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
         lastMousePositionRaw = raw;
 		double x = raw.getX();
 		double y = raw.getY();
-		//System.err.println("move point " + pointToBeMoved + " to " + x + "," + y + (movementDirectionHorizontal?"H":"V"));
 		if (pointToBeMoved != -1 && moveMode == MoveMode.normal) {
 			if (movementDirectionHorizontal) {
 				intermediatePoints.setElementAt(new Point2D(x, intermediatePoints.get(pointToBeMoved - 1).getY()),
@@ -658,11 +656,6 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	public void highlightElementAt(Point2D mouse, Affine canvasTransform) {
 		firstHoverPointIndex = isHit(mouse, .2, canvasTransform);
 	}
-
-//	@Override
-//	public void setOffsetAndStoreLastValidPosition(Point2D p) {
-//		storeLatestValidPointConfiguration();
-//	}
 
 	protected Point2D getLabelPosition(int localId) {
 		return labelPositions.get(localId);
