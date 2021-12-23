@@ -10,8 +10,9 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
@@ -42,8 +43,33 @@ public class CustomGUIController {
 	   public void initialize() {
 		   // initialize the missing attributes after the loading of the controller is finished
 		   // determine the id-node-map for access to I/O
-		   customGUI = (Parent) loader.getRoot();
-		   ObservableList<Node> children = customGUI.getChildrenUnmodifiable();
+		   this.customGUI = (Parent) loader.getRoot();
+		   
+		   // required to get children
+		   Parent content;
+		   
+		   // Handle different kinds of custom GUIs
+		   Class<?> cls = customGUI.getClass();
+		   if( TabPane.class.isAssignableFrom( cls ) ) {
+			   ObservableList<Tab> tabs = ((TabPane) customGUI).getTabs();
+			   for(Tab tab: tabs) {
+				   content = (Parent) tab.getContent();
+				   fillChildren(content);
+			   }
+		   } else {
+			   content = customGUI;
+			   fillChildren(content);
+		   }
+		   
+		   // now inject the input values for the custom gui based on the slots of the current instance
+		   setObject(this.object);
+		   
+		   // Output information
+		   System.err.println("Load finished!");
+	   }
+	   
+	   public void fillChildren(Parent content) {
+		   ObservableList<Node> children = content.getChildrenUnmodifiable();
 		   String id;
 		   Node obj;
 		   for(Node currEl: children) {
@@ -54,12 +80,6 @@ public class CustomGUIController {
 				   objToID.put(id, obj);
 			   }
 		   }
-		   
-		   // now inject the input values for the custom gui based on the slots of the current instance
-		   setObject(this.object);
-		   
-		   // Output information
-		   System.err.println("Load finished!");
 	   }
 	   
 	   public void setObject(FmmlxObject object) {
