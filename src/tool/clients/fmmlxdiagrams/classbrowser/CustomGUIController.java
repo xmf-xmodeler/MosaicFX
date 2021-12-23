@@ -11,6 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 
@@ -56,6 +57,9 @@ public class CustomGUIController {
 				   content = (Parent) tab.getContent();
 				   fillChildren(content);
 			   }
+		   } else if( TitledPane.class.isAssignableFrom( cls ) ) {
+			   content = (Parent) ((TitledPane) customGUI).getContent();
+			   fillChildren(content);
 		   } else {
 			   content = customGUI;
 			   fillChildren(content);
@@ -68,7 +72,7 @@ public class CustomGUIController {
 		   System.err.println("Load finished!");
 	   }
 	   
-	   public void fillChildren(Parent content) {
+	   private void fillChildren(Parent content) {
 		   ObservableList<Node> children = content.getChildrenUnmodifiable();
 		   String id;
 		   Node obj;
