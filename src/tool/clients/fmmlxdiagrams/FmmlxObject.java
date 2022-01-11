@@ -596,27 +596,11 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		
 		if(myConcreteSyntax != null) {
 			rootNodeElement = myConcreteSyntax.createInstance(this);
-//		} else if(ofPath.endsWith("Event")) {
-//			new ExperimentalFmmlxObjectDisplay(diagram, this).layoutEvent();
 		} else {	
 			new DefaultFmmlxObjectDisplay(diagram, this).layout();
 		}
 		
-		
-		
-		
-//		if(ofPath.endsWith("QX") && getSlotNames().contains("file")) {
-//			try {
-//				rootNodeElement=SVGReader.readSVG(getSlot("file").getValue(), new Affine(Transform.translate(x, y)));
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//		} else {	
-//			new DefaultFmmlxObjectDisplay(diagram, this).layout();
-//		}
-		
 		if(rootNodeElement != null) rootNodeElement.updateBounds();
-		
 	}
 
 	public void dragTo(Affine dragAffine) {

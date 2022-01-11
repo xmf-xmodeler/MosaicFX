@@ -797,7 +797,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
 	
 			if(nextIssue != null) {
-				nextIssue.performResolveAction(this);
+				final Issue ISSUE = nextIssue;
+				Platform.runLater(() -> ISSUE.performResolveAction(this));
 			}
 		}
 
@@ -985,7 +986,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					DiagramEdgeLabel<?> o = (DiagramEdgeLabel<?>) s;
 					o.dragTo(dragAffine);
 				} else { // must be edge
-					s.moveTo(p.getX(), p.getY(), this);
+					Edge<?> e = (Edge<?>) s;
+					e.moveTo(p.getX(), p.getY(), this);
 				}
 			objectsMoved = true;
 

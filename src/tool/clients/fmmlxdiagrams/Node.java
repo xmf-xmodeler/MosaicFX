@@ -21,8 +21,7 @@ public abstract class Node implements CanvasElement {
 	private FmmlxObjectPort port;
 	
 	transient boolean requiresReLayout;
-	NodeGroup rootNodeElement = null;
-	
+	NodeGroup rootNodeElement = null;	
 	
 	public void triggerLayout() {
 		this.requiresReLayout = true;
@@ -93,18 +92,8 @@ public abstract class Node implements CanvasElement {
 
 	protected abstract void layout(FmmlxDiagram diagram) ;
 	
-	@Override
-	public void moveTo(double x, double y, FmmlxDiagram.DiagramViewPane diagram) {
-		this.x = Math.max(x, 0.0);
-		this.y = Math.max(y, 0.0);
-	}
-	
-//	@Override // no longer used
-//	public void setOffsetAndStoreLastValidPosition(Point2D p) {	}
-	
 	@Override public void highlightElementAt(Point2D p, Affine a) {}
 	@Override public void unHighlight() {}
-
 
 	public boolean isHidden() {
 		return hidden;
@@ -133,7 +122,6 @@ public abstract class Node implements CanvasElement {
 	public abstract String getName();
 
 	public Affine getOwnAndDragTransform() {
-//		NodeGroup group = (NodeGroup) rootNodeElement;
 		Affine a = new Affine(rootNodeElement.getMyTransform());
 		a.append(rootNodeElement.getDragAffine());		
 		return a;
