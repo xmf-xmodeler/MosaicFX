@@ -1555,6 +1555,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			super("*", null);
 			this.label = new Label("void");
 		}		
+	
+	
 	}
 	
 }
