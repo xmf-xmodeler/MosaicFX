@@ -62,10 +62,10 @@ public class FmmlxObjectPort {
 			for(int i = 0; i < edgesOnOneSide.size(); i++) {
 				if(edgesOnOneSide.get(i).edge.isVisible()) visibleEdgeCount++;
 				if(edgesOnOneSide.get(i) == edgeEnd && edgeEnd.getNode() == owner) {//(isStartNode?edgeEnd.startNode:edgeEnd.endNode) == owner) {
-					double maxX = direction == PortRegion.NORTH || direction == PortRegion.WEST ? 0 : owner.getWidth();
-					double minX = direction == PortRegion.SOUTH || direction == PortRegion.WEST ? 0 : owner.getWidth();
-					double minY = direction == PortRegion.NORTH || direction == PortRegion.WEST ? 0 : owner.getHeight();
-					double maxY = direction == PortRegion.NORTH || direction == PortRegion.EAST ? 0 : owner.getHeight();
+					double maxX = direction == PortRegion.NORTH || direction == PortRegion.WEST ? owner.getLeftX() : owner.getRightX();
+					double minX = direction == PortRegion.SOUTH || direction == PortRegion.WEST ? owner.getLeftX() : owner.getRightX();
+					double minY = direction == PortRegion.NORTH || direction == PortRegion.WEST ? owner.getTopY() : owner.getBottomY();
+					double maxY = direction == PortRegion.NORTH || direction == PortRegion.EAST ? owner.getTopY() : owner.getBottomY();
 					
 					double diffX = maxX - minX;
 					double diffY = maxY - minY;
@@ -80,7 +80,7 @@ public class FmmlxObjectPort {
 					}	else {
 						result =  new Point2D(minX + diffX / 2, minY + diffY / 2);
 					}
-					return owner.getOwnAndDragTransform().transform(result);
+					return owner.rootNodeElement.getDragAffine().transform(result);
 					}
 			}
 		}
