@@ -99,7 +99,7 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 	}
 
 	@Override
-	public tool.clients.fmmlxdiagrams.Edge.HeadStyle getTargetDecoration() {
+	public tool.clients.fmmlxdiagrams.Edge.HeadStyle getTargetDecoration() { //TODO: Breakpoint here to check why TargetDecoration is causing problems
 		return getAssociation().getTargetDecoration();
 	}
 

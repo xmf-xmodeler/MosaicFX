@@ -30,7 +30,7 @@ import javafx.stage.Stage;
 
 public class ConcreteSyntaxWizard extends Application {
 	
-	public static final String RESOURCES_CONCRETE_SYNTAX_REPOSITORY = "resources/concreteSyntaxRepository/OrgML_BusinessProcessControlFlowDiagram";
+	public static final String RESOURCES_CONCRETE_SYNTAX_REPOSITORY = "resources/concreteSyntaxRepository/OrgML_BusinessProcessControlFlowDiagram/";
 	private ListView<String> listView = new ListView<String>();
 	private SplitPane splitPane;
 	private VBox leftControl;

@@ -1,5 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <ConcreteSyntax classPath="Challenge::CompSupported" level="1">
-<SVG path="ProcessArrow.svg"/>
-<SVG path="Computer_supported2.svg"/>
+  <SVG path="ProcessArrow.svg" tx="0.0" ty="0.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+  <SVG path="Computer_supported2.svg" tx="0.0" ty="0.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+  <Label align="CENTER" tx="45.0" ty="60.0" id="bottomLabelID"/>
+  <Label align="CENTER" tx="45.0" ty="85.0" id="bottomLabel"/>
+  <SVG path="critical.svg" tx="70.0" ty="-8.0" xx="0.026278012976678634" xy="0.0" yx="0.0" yy="0.026278012976678634" id="criticalIcon"/>
+  <Modification>
+		<Condition type="ReadFromSlot" slotName="id"/>
+		<Affected id="bottomLabelID" localId="bottomLabelID"/>
+		<Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+  <Modification>
+		<Condition type="ReadFromSlot" slotName="prettyName"/>
+		<Affected id="bottomLabel" localId="bottomLabel"/>
+		<Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+  <Modification>
+		<Condition type="BooleanSlotCondition" slotName="critical"/>
+		<Affected id="criticalIcon" localId="g5496"/>
+		<Consequence type="SHOW_IF"/>
+    </Modification>
 </ConcreteSyntax>
