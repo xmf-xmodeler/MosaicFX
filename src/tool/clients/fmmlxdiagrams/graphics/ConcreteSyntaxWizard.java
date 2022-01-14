@@ -30,7 +30,7 @@ import javafx.stage.Stage;
 
 public class ConcreteSyntaxWizard extends Application {
 	
-	public static final String RESOURCES_ABSTRACT_SYNTAX_REPOSITORY = "resources/abstract-syntax-repository/";
+	public static final String RESOURCES_CONCRETE_SYNTAX_REPOSITORY = "resources/concreteSyntaxRepository/OrgML_BusinessProcessControlFlowDiagram";
 	private ListView<String> listView = new ListView<String>();
 	private SplitPane splitPane;
 	private VBox leftControl;
@@ -64,11 +64,11 @@ public class ConcreteSyntaxWizard extends Application {
 		});
 		
 
-		TextField directoryTextField = new TextField(new File(RESOURCES_ABSTRACT_SYNTAX_REPOSITORY).toString());
+		TextField directoryTextField = new TextField(new File(RESOURCES_CONCRETE_SYNTAX_REPOSITORY).toString());
 		directoryTextField.setDisable(true);
 		directoryTextField.setMinWidth(300);
 		directoryChooser = new DirectoryChooser();
-		directoryChooser.setInitialDirectory(new File(RESOURCES_ABSTRACT_SYNTAX_REPOSITORY));
+		directoryChooser.setInitialDirectory(new File(RESOURCES_CONCRETE_SYNTAX_REPOSITORY));
 		
 		Image icon = new Image(new File("resources/gif/Package.gif").toURI().toString());
 	    ImageView imageView = new ImageView(icon);
@@ -207,7 +207,7 @@ public class ConcreteSyntaxWizard extends Application {
 
 	private void getConcreteSyntax(String path) {
 		selectedSyntax = null;
-		String newPath= RESOURCES_ABSTRACT_SYNTAX_REPOSITORY+path;
+		String newPath= RESOURCES_CONCRETE_SYNTAX_REPOSITORY+path;
 		
 		try {
 			AbstractSyntax group = AbstractSyntax.load(new File(newPath));
@@ -229,7 +229,7 @@ public class ConcreteSyntaxWizard extends Application {
 
 
 	private void loadConcreteSyntax() {
-		File initialDirectory = new File(RESOURCES_ABSTRACT_SYNTAX_REPOSITORY);
+		File initialDirectory = new File(RESOURCES_CONCRETE_SYNTAX_REPOSITORY);
 		if (initialDirectory.isDirectory()) {
 			File[] files = initialDirectory.listFiles();
 			for (File fileSearch : files) {

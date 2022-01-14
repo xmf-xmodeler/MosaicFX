@@ -23,7 +23,7 @@ public class SVGGroup extends NodeGroup {
 
 	public Node save(Document document) {
 		Element myElement = document.createElement("SVG");
-		myElement.setAttribute("path", new File(ConcreteSyntaxWizard.RESOURCES_ABSTRACT_SYNTAX_REPOSITORY).toURI().relativize(file.toURI()).getPath());
+		myElement.setAttribute("path", new File(ConcreteSyntaxWizard.RESOURCES_CONCRETE_SYNTAX_REPOSITORY).toURI().relativize(file.toURI()).getPath());
 		myElement.setAttribute("xx", myTransform.getMxx()+"");
 		myElement.setAttribute("yy", myTransform.getMyy()+"");
 		myElement.setAttribute("xy", myTransform.getMxy()+"");
