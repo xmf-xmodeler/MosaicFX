@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams;
 
+import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -30,14 +31,22 @@ public abstract class Node implements CanvasElement {
 	public double getX() { return x; }
 	public double getY() { return y; }
 	
-	public double getWidth()   { return rootNodeElement==null?0:rootNodeElement.getBounds().getWidth(); }
-	public double getHeight()  { return rootNodeElement==null?0:rootNodeElement.getBounds().getHeight(); }
+	public double getWidth()   { return getBounds().getWidth(); }
+	public double getHeight()  { return getBounds().getHeight(); }
 	public double getCenterX() { return (getLeftX() + getRightX()) / 2; }
 	public double getCenterY() { return (getTopY() + getBottomY()) / 2; }
-	public double getLeftX()   { return rootNodeElement==null?x:rootNodeElement.getBounds().getMinX(); }
-	public double getRightX()  { return rootNodeElement==null?x:rootNodeElement.getBounds().getMaxX(); }
-	public double getTopY()    { return rootNodeElement==null?y:rootNodeElement.getBounds().getMinY(); }
-	public double getBottomY() { return rootNodeElement==null?y:rootNodeElement.getBounds().getMaxY(); }
+	public double getLeftX()   { return getBounds().getMinX(); }
+	public double getRightX()  { return getBounds().getMaxX(); }
+	public double getTopY()    { return getBounds().getMinY(); }
+	public double getBottomY() { return getBounds().getMaxY(); }
+	
+	private Bounds getBounds() { 
+		if(rootNodeElement!=null) {
+			Bounds b = rootNodeElement.getBounds();
+			if(b != null) return b;
+		} // if fail:
+		return new BoundingBox(x, y, x, y);
+	}
 	
 	public Node() {
 		this.port = new FmmlxObjectPort(this);
