@@ -4,6 +4,7 @@
   <SVG path="Computer_supported2.svg" tx="0.0" ty="0.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
   <Label align="CENTER" tx="45.0" ty="60.0" id="bottomLabelID"/>
   <Label align="CENTER" tx="45.0" ty="85.0" id="bottomLabel"/>
+  <Label align="CENTER" tx="45.0" ty="-20.0" id="OrgaLabel"/>
   <SVG path="critical.svg" tx="70.0" ty="-8.0" xx="0.026278012976678634" xy="0.0" yx="0.0" yy="0.026278012976678634" id="criticalIcon"/>
   <Modification>
 		<Condition type="ReadFromSlot" slotName="id"/>
@@ -19,5 +20,11 @@
 		<Condition type="BooleanSlotCondition" slotName="critical"/>
 		<Affected id="criticalIcon" localId="g5496"/>
 		<Consequence type="SHOW_IF"/>
-    </Modification>
+  </Modification>
+  <Modification>
+  		<Condition type="ReadFromOpValCondition" opName="getQualifiedSingleUnit"/>
+  		<Affected id="OrgaLabel" localId="OrgaLabel"/>
+  		<Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+  
 </ConcreteSyntax>

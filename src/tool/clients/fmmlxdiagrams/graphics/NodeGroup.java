@@ -187,18 +187,19 @@ public class NodeGroup extends NodeElement {
 		NodeGroup that = new NodeGroup(new Affine(this.myTransform));
 		for(NodeElement nodeElement : this.nodeElements) {
 			Modification mod = findMod(modifications, nodeElement);
-				boolean add = mod == null || mod.getConsequence() == Modification.Consequence.SHOW_ALWAYS
+			boolean add = mod == null || mod.getConsequence() == Modification.Consequence.SHOW_ALWAYS
 					|| mod.getConsequence() == Modification.Consequence.SHOW_IF && mod.getCondition().eval(object)
 					|| mod.getConsequence() == Modification.Consequence.SHOW_IF_NOT && !mod.getCondition().eval(object);
 			
 			/// Special case for labels( and later also texts):
 			if(nodeElement instanceof NodeLabel) {
+				System.err.println(mod.toString());
 				if(add) {
 					that.addNodeElement(nodeElement.createInstance(object, modifications));
 				} else {
 					if(mod.getConsequence() == Modification.Consequence.READ_FROM_SLOT) {
 						NodeLabel thatLabel = ((NodeLabel)nodeElement).createInstance(object, modifications);
-						thatLabel.setText(((Condition.ReadFromSlotCondition)mod.getCondition()).evalText(object));
+						thatLabel.setText((mod.getCondition()).evalText(object));
 						that.addNodeElement(thatLabel);
 					}
 				}
