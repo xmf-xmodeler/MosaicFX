@@ -26,5 +26,4 @@
   		<Affected id="OrgaLabel" localId="OrgaLabel"/>
   		<Consequence type="READ_FROM_SLOT"/>
   </Modification>
-  
 </ConcreteSyntax>
