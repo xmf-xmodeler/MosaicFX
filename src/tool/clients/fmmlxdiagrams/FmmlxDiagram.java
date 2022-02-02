@@ -1556,6 +1556,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		public MyTab() {
 			super("*", null);
 			this.label = new Label("void");
+			
 		}		
 	
 	

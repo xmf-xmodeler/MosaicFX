@@ -1182,9 +1182,9 @@ public class DiagramActions {
 			if(!(diagram instanceof FmmlxDiagram)) throw new IllegalArgumentException();
 			Platform.runLater(() -> {
 				String filePath = file.getPath();
-				double width = diagram.getCanvas().getWidth();
-				double height = diagram.getCanvas().getHeight() ;
-				double extraHeight = getExtraHeight();
+				double width = diagram.getCanvas().getWidth()+5000;
+				double height = diagram.getCanvas().getHeight()+5000;
+				double extraHeight = getExtraHeight()+1000;
 				SvgExporter svgExporter;
 				try {
 					svgExporter = new SvgExporter(filePath, width, height+extraHeight);
