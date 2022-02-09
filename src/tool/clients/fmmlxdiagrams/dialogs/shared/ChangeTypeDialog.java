@@ -50,6 +50,8 @@ public class ChangeTypeDialog<Property
 		this.type = type;
 		this.selectedItem = selectedItem;
 		this.propertyItems = propertyItems;
+		
+		System.err.println("Object: " + object + " Type: " + type + " Selected Item: " + selectedItem + " PropertyItems: " + propertyItems);
 
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -135,7 +137,7 @@ public class ChangeTypeDialog<Property
 //
 //	private boolean validateChangeTypeAssociation() {
 		if (selectPropertyComboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText(StringValue.ErrorMessage.selectAssociation);
+			errorLabel.setText(StringValue.ErrorMessage.selectDifferentType);
 			return false;
 		} else if (newTypeComboBox.getSelectionModel().getSelectedItem() == null) {
 			errorLabel.setText(StringValue.ErrorMessage.selectNewType);
@@ -191,7 +193,11 @@ public class ChangeTypeDialog<Property
 		classTextField = new TextField();
 		classTextField.setText(object.getName());
 		classTextField.setDisable(true);
-
+		
+		selectPropertyLabel = new Label("Select " + type.name());
+		selectPropertyComboBox = new ComboBox<Property>();
+		selectPropertyComboBox.getItems().addAll(propertyItems);
+		
 		currentTypeLabel = new Label("Current Type");
 		currentTypeTextField = new TextField();
 		currentTypeTextField.setDisable(true);
@@ -200,7 +206,7 @@ public class ChangeTypeDialog<Property
 		typesArray = Arrays.asList(types);
 		ObservableList<String> newTypeList = FXCollections.observableArrayList(typesArray);
 
-		newTypeLabel = new Label("Select New Type!");
+		newTypeLabel = new Label("Select New Type");
 		newTypeComboBox = new ComboBox<String>(newTypeList);
 		newTypeComboBox.setEditable(true);
 
@@ -208,6 +214,8 @@ public class ChangeTypeDialog<Property
 
 		grid.add(classLabel, 0, 0);
 		grid.add(classTextField, 1, 0);
+		grid.add(selectPropertyLabel, 0, 1);
+		grid.add(selectPropertyComboBox, 1, 1);
 		grid.add(currentTypeLabel, 0, 2);
 		grid.add(currentTypeTextField, 1, 2);
 		grid.add(newTypeLabel, 0, 3);
@@ -225,12 +233,8 @@ public class ChangeTypeDialog<Property
 				System.err.println("ChangeTypeDialog: No matching content type!");
 				break;
 		}
-		
-		ObservableList<Property> attributeList;
-		attributeList = FXCollections.observableList(propertyItems);
-
-		selectPropertyLabel = new Label("Select " + type.name());
-		selectPropertyComboBox = (ComboBox<Property>) initializeComboBox(attributeList);
+			
+		//selectPropertyComboBox = (ComboBox<Property>) initializeComboBox(attributeList);
 		selectPropertyComboBox.valueProperty().addListener(new ChangeListener<Property>() {
 
 			@Override
@@ -243,6 +247,10 @@ public class ChangeTypeDialog<Property
 				} 
 			}
 		});
+		
+		if (selectedItem!=null) {
+			selectPropertyComboBox.getSelectionModel().select(selectedItem);
+		}
 	}
 
 	public void setSelected(Property selectedProperty) {

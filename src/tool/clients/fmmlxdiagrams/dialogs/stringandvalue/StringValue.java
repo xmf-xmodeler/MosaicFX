@@ -14,12 +14,13 @@ public class StringValue {
 		public static final String selectNewType = "Select New Type!";
 		public static final String selectAnotherType = "Select Another Type!";
 		public static final String selectNewParent = "Select New Parent!";
-		public static final String selectAnotherClass = "Select Another Class";
+		public static final String selectAnotherClass = "Select Another Class!";
+		public static final String selectDifferentType = "Select different Type!";
 
 		public static final String enterValidName = "Type Valid Name!";
 		public static final String nameAlreadyUsed = "Name Already Used.";
 
-		public static final String pleaseSelectAnotherLevel = "Please select another level!";
+		public static final String pleaseSelectAnotherLevel = "Select another level!";
 		public static final String inputBody = "Input Body!";
 		public static final String selectTarget = "Select Target";
 

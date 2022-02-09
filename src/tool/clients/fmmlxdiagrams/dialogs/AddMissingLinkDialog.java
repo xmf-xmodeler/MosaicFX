@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import java.util.HashSet;
 import java.util.Vector;
 
 import javafx.collections.FXCollections;
@@ -19,8 +20,8 @@ public class AddMissingLinkDialog extends CustomDialog<AddMissingLinkDialog.Resu
 	private final FmmlxObject classAtOtherEnd;
 	private final Integer levelAtOtherEnd;
 
-	private Vector<FmmlxObject> listOfPossibleLinkEnds;
-	private Vector<FmmlxObject> listOfPossibleClassesForCreateAndLink;
+	private HashSet<FmmlxObject> listOfPossibleLinkEnds;
+	private HashSet<FmmlxObject> listOfPossibleClassesForCreateAndLink;
 
 	private final Label instructionLabel;
 	private final RadioButton createLabel = new RadioButton("Create a new instance of");
@@ -44,8 +45,7 @@ public class AddMissingLinkDialog extends CustomDialog<AddMissingLinkDialog.Resu
 		listOfPossibleClassesForCreateAndLink = classAtOtherEnd.getInstancesByLevel(levelAtOtherEnd+1);
 		
 		if(classAtOtherEnd.getLevel() == levelAtOtherEnd+1) {
-			listOfPossibleClassesForCreateAndLink.add(classAtOtherEnd);
-			listOfPossibleClassesForCreateAndLink.addAll(classAtOtherEnd.getAllChildren());
+			listOfPossibleClassesForCreateAndLink.addAll(classAtOtherEnd.getAllSubclasses());
 		}
 		
 		instructionLabel = new Label("The object " + obj.getName()

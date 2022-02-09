@@ -7,6 +7,7 @@ import tool.clients.fmmlxdiagrams.FmmlxSlot;
 public interface Condition {
 
 	public boolean eval(FmmlxObject object) throws SlotNotFoundException;
+	public String evalText(FmmlxObject object) throws SlotNotFoundException;
 //	public boolean evalString(FmmlxObject object) throws SlotNotFoundException;
 	
 	@SuppressWarnings("serial")
@@ -35,11 +36,15 @@ public interface Condition {
 			}
 			return "true".equals(slot.getValue());
 		}
+
+		@Override
+		public String evalText(FmmlxObject object) throws SlotNotFoundException {
+			return "";
+		}
 	}
 	
 	public static class BooleanOpValCondition implements Condition{
 		
-		private FmmlxObject object;
 		private String opName;
 		private boolean value;		
 		
@@ -50,6 +55,11 @@ public interface Condition {
 				throw new SlotNotFoundException();
 			}
 			return value=="true".equals(opVal.getValue());
+		}
+
+		@Override
+		public String evalText(FmmlxObject object) throws SlotNotFoundException {
+			return "";
 		}		
 	}
 	
@@ -76,6 +86,29 @@ public interface Condition {
 			return true;
 		}		
 
+	}
+	
+public static class ReadFromOpValCondition implements Condition{
+		
+		private String opName;		
+		
+		public ReadFromOpValCondition(String opName) {
+			super();
+			this.opName = opName;
+		}
+
+		@Override
+		public boolean eval(FmmlxObject object) throws SlotNotFoundException {
+			return true;
+		}
+		
+		public String evalText(FmmlxObject object) throws SlotNotFoundException {
+			FmmlxOperationValue opVal = object.getOperationValue(opName);
+			if (opVal == null) {
+				return "Operation NOT FOUND!";
+			}
+			return opVal.getValue();
+		}	
 	}
 	
 

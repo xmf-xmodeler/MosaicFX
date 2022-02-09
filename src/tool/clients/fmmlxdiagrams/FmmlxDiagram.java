@@ -250,7 +250,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 //			}
 //		}, 200, 200);
 		
-		File syntaxDir = new File(ConcreteSyntaxWizard.RESOURCES_ABSTRACT_SYNTAX_REPOSITORY);
+		File syntaxDir = new File(ConcreteSyntaxWizard.RESOURCES_CONCRETE_SYNTAX_REPOSITORY); //TODO: recursively searching all 
 		if (syntaxDir.isDirectory()) {
 			File[] files = syntaxDir.listFiles();
 			for (File file : files) {
@@ -1556,7 +1556,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		public MyTab() {
 			super("*", null);
 			this.label = new Label("void");
+			
 		}		
+	
+	
 	}
 	
 }

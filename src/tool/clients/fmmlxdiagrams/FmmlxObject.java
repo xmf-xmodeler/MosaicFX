@@ -215,19 +215,16 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return result;
 	}
 
-	public Vector<FmmlxObject> getInstancesByLevel(Integer level) {
-		Vector<FmmlxObject> result = new Vector<>();
-		if (this.getInstances().size() != 0) {
-
-			if (this.getInstances().get(0).getLevel() == level) {
-				result.addAll(this.getInstances());
-			} else {
-				for (FmmlxObject tmp : this.getInstances()) {
-					result.addAll(tmp.getInstancesByLevel(level));
-				}
+	public HashSet<FmmlxObject> getInstancesByLevel(Integer level) {
+		HashSet<FmmlxObject> allClasses = this.getAllSubclasses();
+		while (allClasses.size()>0 && allClasses.iterator().next().level>level) {
+			HashSet<FmmlxObject> allInstances = new HashSet<FmmlxObject>();
+			for (FmmlxObject classs : allClasses) {
+				allInstances.addAll(classs.getInstances());
 			}
+			allClasses = allInstances;
 		}
-		return result;
+		return allClasses;
 	}
 	
 	public boolean isAbstract() {return isAbstract;}
@@ -365,12 +362,18 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return null;
 	}
 
-	public Vector<FmmlxObject> getAllChildren() {
-		System.err.println("FmmlxObject::getAllChildren() not yet implemented.");
-		return new Vector<>();
+	public HashSet<FmmlxObject> getAllSubclasses() {
+		HashSet<FmmlxObject> subclasses = new HashSet<FmmlxObject>();
+		subclasses.add(this);
+		for (FmmlxObject o : diagram.getObjects()) {
+			if(o.parentsPaths.contains(this.ownPath)) {
+				subclasses.addAll(o.getAllSubclasses());
+			}
+		}
+		return subclasses;
 	}
 	
-    public int getAttributeCountByLevel(int level) {
+	public int getAttributeCountByLevel(int level) {
 		int count = 0;
 		for(FmmlxAttribute attribute : getAllAttributes()){
 			if(attribute.getLevel()==level){
