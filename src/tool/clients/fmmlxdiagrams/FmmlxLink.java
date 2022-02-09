@@ -52,9 +52,9 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 			anchors.add(getSourceNode());
 			anchors.add(getTargetNode());
 			if(storedPostion != null) {
-				diagram.addLabel(new DiagramEdgeLabel<FmmlxObject>(this, localId, action, null, anchors, value, storedPostion.getX(), storedPostion.getY(), w, h, Color.BLACK, new Color(0,0,0,0)));
+				diagram.addLabel(new DiagramEdgeLabel<FmmlxObject>(this, localId, action, null, anchors, value, storedPostion.getX(), storedPostion.getY(), w, h, Color.BLACK, null));
 			} else {
-				diagram.addLabel(new DiagramEdgeLabel<FmmlxObject>(this, localId, action, null, anchors, value, 0, -h*1.5, w, h, Color.BLACK, new Color(0,0,0,0)));
+				diagram.addLabel(new DiagramEdgeLabel<FmmlxObject>(this, localId, action, null, anchors, value, 0, -h*1.5, w, h, Color.BLACK, null));
 			}	
 		}
 	}

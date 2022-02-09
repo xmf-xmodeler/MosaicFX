@@ -1367,7 +1367,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			double maxY = Double.NEGATIVE_INFINITY;	
 			boolean valid = false;
 			
-			for(FmmlxObject o : objects) if (!o.hidden) {
+			for(FmmlxObject o : new Vector<>(objects)) if (!o.hidden) {
 				if(o.getLeftX()   < minX) minX = o.getLeftX();
 				if(o.getRightX()  > maxX) maxX = o.getRightX();
 				if(o.getTopY()    < minY) minY = o.getTopY();
