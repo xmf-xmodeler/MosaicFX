@@ -3,17 +3,29 @@ package tool.clients.fmmlxdiagrams.classbrowser;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 
+import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import org.dom4j.Attribute;
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventDispatcher;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 
@@ -33,6 +45,7 @@ public class CustomGUIController {
 	   FXMLLoader loader;
 	   Parent customGUI;
 	   private Map<String, Node> objToID = new HashMap<>(); // required to reference all children with id
+	   private Map<String, String> opToEvent = new HashMap<>(); // required to reference operations for combination of ID and event
 	   
 	   public CustomGUIController(AbstractPackageViewer diagram, FmmlxObject metaClass, FXMLLoader loader, FmmlxObject object , ObjectBrowser parent) {
 		   this.diagram = diagram;
@@ -54,8 +67,50 @@ public class CustomGUIController {
 		   // now inject the input values for the custom gui based on the slots of the current instance
 		   setObject(this.object);
 		   
+		   // determine possible actions
+		   fillActions(this.loader);
+		   
 		   // Output information
 		   System.err.println("Load finished!");
+	   }
+	   
+	   private void fillActions(FXMLLoader loader) {
+		   URL xmlFile = (URL) loader.getNamespace().get("location");
+		   String fileName = xmlFile.getFile();
+		   SAXReader reader = new SAXReader();
+		   try {
+			   // Read FXML file
+			   Document document = reader.read(fileName);
+			   
+			   // Get all Nodes with an Id
+			   List<org.dom4j.Node> elements = document.selectNodes("//*[@fx:id]");
+			   for(org.dom4j.Node node : elements ) {
+				   Element element = (Element) node;
+				   
+				   // Get all attributes of nodes with id
+				   Iterator<Attribute> currAttributes = element.attributeIterator();
+				   String id = "";
+				   while( currAttributes.hasNext() ) {
+					   Attribute currAtt = currAttributes.next();
+					   String att = currAtt.getName();
+					   
+					   if(att.equals("id")) {
+						   id = currAtt.getValue();
+					   } else if(att.substring(0, 2).equals("on")) {
+						   // Only event attributes are starting with the prefix on
+						   // Build entry for every event in map
+						   if (!id.equals("")) {
+							   opToEvent.put(id+"/"+currAtt.getName().toUpperCase().substring(2), currAtt.getValue().substring(1));
+						   }
+					   }
+					   
+				   }
+			   }
+
+		   } catch(Exception e) { 
+			   System.err.println("Failure on creating events of custom GUI!");
+		   }
+		   
 	   }
 	   
 	   private void fillChildren(Parent content) {
@@ -97,6 +152,16 @@ public class CustomGUIController {
 				   if( id != null ) {
 					   // this has to be done this way as the Parent class does not allow read access to its children
 					   obj = customGUI.lookup("#" + id);
+					   
+					   // TBD: All possible action handlers have to be replaced the same way!
+					   // for all possible objects!!
+					   if( Button.class.isAssignableFrom( currCls )) {						   
+						   Button test = ((Button) obj );
+						   
+						   // Exchange action handler
+						   test.setOnAction((e)-> { execCustomAction(e); });
+					   }
+					   
 					   objToID.put(id, obj);
 				   }
 			   }
@@ -124,8 +189,21 @@ public class CustomGUIController {
 			   i++;
 		   }
 	   }
+	   
+	   // This method allows the execution of operations which are attached to the gui
+	   private void execCustomAction(ActionEvent event) {
+		   // Determine the associated name of the operation for current id
+		   String id = ((Node) event.getSource()).getId()  ;
+		   id = id + "/" + event.getEventType().getName();
+		   
+		   // Get actions helper from diagram and trigger operation for current object
+		   diagram.getActions().runOperation(object.getPath(), opToEvent.get(id) );
+	   }
 	   	  
 	  // this is an action, which is called by the buttons in the gui
+	  // TBD: Might be removed later as it is only a setter. Therefore the
+	  // the implementation of parameters have to be handled properly!
+	  // I think there is no need to handle return parameters as well?
 	  @FXML private void setSlot(ActionEvent event) { 
 		  event.consume();
 		  
@@ -167,4 +245,25 @@ public class CustomGUIController {
 	      // also update the object list of the parent as it gets outdated otherwise
 		  parent.updateObjectList();
 		}
+	  
+	  // TBD: Remove dummy implementation; therefore the xml file has to be passed earlier!
+	  @FXML private void op0(ActionEvent event) {
+		
+		  event.consume();
+		  
+		  // Get actions helper from diagram
+		  diagram.getActions().runOperation(object.getPath(), "op0");
+		  
+		  // Update diagram 
+		  diagram.updateDiagram();
+		  
+		  // wait a few moments until update is commited 
+		  try { Thread.sleep(100); }
+		  catch( Exception e ) { e.printStackTrace(); }
+		  
+		  // also update the object list of the parent as it gets outdated otherwise
+		  parent.updateObjectList();
+		  
+		  }
+		 
 }
