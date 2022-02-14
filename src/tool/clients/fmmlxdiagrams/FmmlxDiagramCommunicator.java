@@ -1245,6 +1245,14 @@ public class FmmlxDiagramCommunicator {
         sendMessage("changeAssociationForwardName", message);
     }
 
+    public void changeDelegationLevel(int diagramID, String sourceName, Integer newLevel) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(sourceName),
+                new Value(newLevel)};
+        sendMessage("changeDelegationLevel", message);
+    }
+    
     public void changeAssociationStart2EndLevel(int diagramID, String associationName, Integer newLevel) {
         Value[] message = new Value[]{
                 getNoReturnExpectedMessageID(diagramID),

@@ -1,9 +1,11 @@
 package tool.clients.fmmlxdiagrams;
 
+import java.util.Optional;
 import java.util.Vector;
 
 import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.paint.Color;
 
 public class DelegationEdge extends Edge<FmmlxObject> {
@@ -22,10 +24,25 @@ public class DelegationEdge extends Edge<FmmlxObject> {
 	
 	@Override
 	protected void layoutLabels(FmmlxDiagram diagram) {
-		createLabel(""+level, 2, Anchor.TARGET_LEVEL, ()->{}, Color.WHITE, getPrimaryColor(), diagram);
+		createLabel(""+level, 2, Anchor.TARGET_LEVEL, showChangeLevelDialog, Color.WHITE, getPrimaryColor(), diagram);
 
 		layoutingFinishedSuccesfully = true;
 	} // NONE
+	
+	private final Runnable showChangeLevelDialog = () -> {
+		TextInputDialog td = new TextInputDialog(""+level);
+		td.setHeaderText("Change Delegation Level");
+		Optional<String> result = td.showAndWait();
+		if(result.isPresent()) {
+			try {
+				Integer level = Integer.parseInt(result.get());
+				diagram.getComm().changeDelegationLevel(diagram.getID(), sourceEnd.getNode().getName(), level);
+				diagram.updateDiagram();
+			} catch (Exception e) {
+				System.err.println("Number not readable. Change Nothing.");
+			}
+		}
+	};
 
 	@Override
 	public ContextMenu getContextMenuLocal(DiagramActions actions) {

@@ -33,7 +33,7 @@ public class NodeLabel extends NodeBaseElement {
 	private String text;
 	private double textWidth;
 	private double textHeight;
-	private final static int Y_BASELINE_DIFF = 3;
+	private final static int Y_BASELINE_DIFF = 4;
 	private final static int BOX_GAP = 1;
 	boolean isIssue;
 	int issueNumber;

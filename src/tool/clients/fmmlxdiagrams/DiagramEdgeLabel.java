@@ -67,7 +67,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 		g.setFill(highlighted ? new Color(1.,0.,0.,1.):fontColor);
 		g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), FontWeight.NORMAL, FontPosture.REGULAR, 14));
 
-		g.fillText(this.text, MARGIN, height - MARGIN-2);
+		g.fillText(this.text, MARGIN, height - MARGIN-4);
 		if(anchors.size()>=2) {
 			if(anchors.firstElement().getCenterX() <= anchors.elementAt(1).getCenterX()) {		
 				g.fillPolygon(new double[] { width, width + size-5, width },
@@ -240,7 +240,7 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 
 			Element text = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_TEXT);
 			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, (this.getReferenceX() + relativeX + MARGIN)+"");
-			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (this.getReferenceY() + relativeY + height - MARGIN-2)+"");
+			text.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, (this.getReferenceY() + relativeY + height - MARGIN-4)+"");
 			text.setAttribute(SvgConstant.ATTRIBUTE_FONT_FAMILY, "Arial");
 			text.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, "13");
 			text.setAttribute(SvgConstant.ATTRIBUTE_FILL, "#" + (fontColor.toString().split("x")[1].substring(0,6)));
