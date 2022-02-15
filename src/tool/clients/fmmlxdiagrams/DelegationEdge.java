@@ -67,4 +67,6 @@ public class DelegationEdge extends Edge<FmmlxObject> {
 	public String getName() {
 		return "doesNotMatter";
 	}
+
+
 }

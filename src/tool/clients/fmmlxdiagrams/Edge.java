@@ -1148,4 +1148,53 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 		}
 
 	}
+	
+	@Override
+	public boolean isHidden() {
+		return !isVisible();
+	}
+
+	@Override
+	public Double getLeftX() {
+		double min = Double.POSITIVE_INFINITY;
+		for (Point2D point : intermediatePoints) {
+			if (point.getX()<min) {
+				min=point.getX();
+			}
+		}
+		return min;
+	}
+
+	@Override
+	public Double getRightX() {
+		double max = Double.NEGATIVE_INFINITY;
+		for (Point2D point : intermediatePoints) {
+			if (point.getX()>max) {
+				max=point.getX();
+			}
+		}
+		return max;
+	}
+
+	@Override
+	public Double getTopY() {
+		double min = Double.POSITIVE_INFINITY;
+		for (Point2D point : intermediatePoints) {
+			if (point.getY()<min) {
+				min=point.getY();
+			}
+		}
+		return min;
+	}
+
+	@Override
+	public Double getBottomY() {
+		double max = Double.NEGATIVE_INFINITY;
+		for (Point2D point : intermediatePoints) {
+			if (point.getY()>max) {
+				max=point.getY();
+			}
+		}
+		return max;
+	}
 }

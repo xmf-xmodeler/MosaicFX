@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
+import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
@@ -37,6 +38,8 @@ import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 import org.w3c.dom.Element;
+
+import com.sun.javafx.geom.BoxBounds;
 
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.AbstractSyntax;
@@ -848,7 +851,39 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public View getActiveView() {
 		return (DiagramViewPane) tabPane.getSelectionModel().getSelectedItem().getContent();
 	}
-
+	
+	public BoundingBox getBounds() {
+		double minX = Double.POSITIVE_INFINITY;
+		double minY = Double.POSITIVE_INFINITY;
+		double maxX = Double.NEGATIVE_INFINITY;
+		double maxY = Double.NEGATIVE_INFINITY;	
+		boolean valid = false;
+		
+		Vector<CanvasElement> elements = new Vector<CanvasElement>();
+		elements.addAll(objects);
+		elements.addAll(edges);
+		//elements.addAll(labels);
+		
+		for(CanvasElement cE : elements) if (!cE.isHidden()) {
+			
+			Double left = cE.getLeftX();
+			Double right = cE.getRightX();
+			Double top = cE.getTopY();
+			Double bottom = cE.getBottomY();
+			
+			if(left!=null && left   < minX) minX = left;
+			if(right!=null && right  > maxX) maxX = right;
+			if(top!=null && top    < minY) minY = top;
+			if(bottom!=null && bottom > maxY) maxY = bottom;
+			valid = true;
+			//System.err.println("BoundingBox MinX: " + left  +" MinY: " + top + " MaxX: " + right + " MaxY: " + bottom);	
+		}
+		//System.err.println("BoundingBox MinX: " + minX  +" MinY: " + minY + " Width: " + (maxX-minX) + " Height: " + (maxY-minY));
+		Double MARGIN = 5.;
+		if(valid) return new BoundingBox(minX-MARGIN, minY-MARGIN, (maxX-minX)+2*MARGIN, (maxY-minY)+2*MARGIN);
+		return new BoundingBox(0,0,100,100);
+	}
+		
 	public class DiagramViewPane extends Pane implements View {
 		
 		private Canvas canvas;
@@ -1332,14 +1367,17 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), FontWeight.NORMAL, FontPosture.REGULAR, 14));
 
 //			g.setFill(Color.RED);
-//
+//			if (lastPointPressed!=null) {
+//				
+//			Point2D currentPointHover = lastPointPressed;
 //			g.fillText(""+currentPointHover, currentPointHover.getX(), currentPointHover.getY());
 //					
 //			try {
 //				Point2D hoverRaw = canvasTransform.inverseTransform(currentPointHover);
 //				g.fillText(""+hoverRaw, currentPointHover.getX(), currentPointHover.getY()+15);
 //			} catch (NonInvertibleTransformException e) {}
-//			
+//			}
+			//			
 //			g.setFill(Color.PURPLE);
 //			g.fillText(canvas.getWidth() + ":"  +canvas.getHeight(), 0, 20);
 //
@@ -1359,6 +1397,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 //				g.strokeLine(0, x*100, 1000, x*100);
 //			}
 		}
+		
 		
 		private Affine getZoomViewTransform() {
 			double minX = Double.POSITIVE_INFINITY;

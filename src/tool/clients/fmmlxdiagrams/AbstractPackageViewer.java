@@ -401,4 +401,5 @@ public abstract class AbstractPackageViewer {
 	}
 
 	public View getActiveView() {return null;}
+	
 }

@@ -3,6 +3,7 @@ package tool.clients.xmlManipulator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import javafx.geometry.Bounds;
 import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
 import tool.clients.serializer.SerializerConstant;
 
@@ -30,9 +31,9 @@ public class XmlCreator {
         transformDocument(document, new File(file));
     }
 
-    public void createSvg(String file, double width, double height) throws TransformerException, ParserConfigurationException {
+    public void createSvg(String file, Bounds bounds, double extraHeight) throws TransformerException, ParserConfigurationException {
         Document document = createDocument();
-        initSvg(document, width, height);
+        initSvg(document, bounds, extraHeight);
         transformDocument(document, new File(file));
     }
 
@@ -56,12 +57,13 @@ public class XmlCreator {
     }
 
     /*This function initializes the basic structure of the XML file that later will be able to be manipulated which aims to store svg data.*/
-    private void initSvg(Document document, double width, double height){
+    private void initSvg(Document document, Bounds bounds, double extraHeight){
         Element root = document.createElement(SvgConstant.TAG_NAME_ROOT);
+        root.setAttribute("viewBox", bounds.getMinX()+" "+bounds.getMinY()+" "+bounds.getWidth()+" "+bounds.getHeight()+" ");
         root.setAttribute(SvgConstant.ATTRIBUTE_XMLNS, SvgConstant.XMLNS_VALUE);
         root.setAttribute(SvgConstant.ATTRIBUTE_XMLNS_XLINK, SvgConstant.XMLNS_XLINK_VALUE);
-        root.setAttribute(SvgConstant.ATTRIBUTE_WIDTH, width+"");
-        root.setAttribute(SvgConstant.ATTRIBUTE_HEIGHT, height+"");
+        root.setAttribute(SvgConstant.ATTRIBUTE_WIDTH, bounds.getWidth()+"");
+        root.setAttribute(SvgConstant.ATTRIBUTE_HEIGHT, bounds.getHeight()+"");
         document.appendChild(root);
     }
 

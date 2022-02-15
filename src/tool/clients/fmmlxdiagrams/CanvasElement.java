@@ -18,4 +18,14 @@ public interface CanvasElement {
 	void unHighlight();
 
     void paintToSvg(XmlHandler xmlHandler, FmmlxDiagram diagram);
+
+	boolean isHidden();
+
+	Double getLeftX();
+
+	Double getRightX();
+
+	Double getTopY();
+
+	Double getBottomY();
 }

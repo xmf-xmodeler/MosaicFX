@@ -310,4 +310,29 @@ public class DiagramEdgeLabel<ConcreteNode extends Node> implements CanvasElemen
 	public void setRelativePosition(double x, double y) {
 		myTransform = new Affine(1, 0, x, 0, 1, y);
 	}
+	
+	@Override
+	public boolean isHidden() {
+		return false;
+	}
+
+	@Override
+	public Double getLeftX() {
+		return myTransform.getTx();
+	}
+
+	@Override
+	public Double getRightX() {
+		return getLeftX() + width;
+	}
+
+	@Override
+	public Double getTopY() {
+		return myTransform.getTy();
+	}
+
+	@Override
+	public Double getBottomY() {
+		return getTopY() + height;
+	}
 }

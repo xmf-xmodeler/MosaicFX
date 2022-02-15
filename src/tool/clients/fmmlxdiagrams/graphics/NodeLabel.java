@@ -187,6 +187,7 @@ public class NodeLabel extends NodeBaseElement {
 		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, ((fontSize-1)*fontScale)+"");
 		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_OPACITY, fgColor.getOpacity()+"");
 		text.setAttribute(SvgConstant.ATTRIBUTE_FONT_STYLE, fontPosture == FontPosture.ITALIC?"italic":"normal");
+		text.setAttribute("font-weight", fontWeight == FontWeight.BOLD?"bold":"normal");
 		text.setAttribute(SvgConstant.ATTRIBUTE_FILL, "#"+color);
 		if(isIssue){
 			text.setTextContent(" issue ["+issueNumber+"]");

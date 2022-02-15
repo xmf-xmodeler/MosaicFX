@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
@@ -1182,12 +1183,12 @@ public class DiagramActions {
 			if(!(diagram instanceof FmmlxDiagram)) throw new IllegalArgumentException();
 			Platform.runLater(() -> {
 				String filePath = file.getPath();
-				double width = diagram.getCanvas().getWidth()+5000;
-				double height = diagram.getCanvas().getHeight()+5000;
-				double extraHeight = getExtraHeight()+1000;
+				FmmlxDiagram diagram2 = (FmmlxDiagram) diagram;
+				Bounds bounds = diagram2.getBounds();
+				double extraHeight = getExtraHeight();
 				SvgExporter svgExporter;
 				try {
-					svgExporter = new SvgExporter(filePath, width, height+extraHeight);
+					svgExporter = new SvgExporter(filePath, bounds,extraHeight);
 					svgExporter.export(diagram, extraHeight);
 				} catch (TransformerException | ParserConfigurationException e) {
 					e.printStackTrace();

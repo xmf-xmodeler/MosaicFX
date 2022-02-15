@@ -35,10 +35,10 @@ public abstract class Node implements CanvasElement {
 	public double getHeight()  { return getBounds().getHeight(); }
 	public double getCenterX() { return (getLeftX() + getRightX()) / 2; }
 	public double getCenterY() { return (getTopY() + getBottomY()) / 2; }
-	public double getLeftX()   { return getBounds().getMinX(); }
-	public double getRightX()  { return getBounds().getMaxX(); }
-	public double getTopY()    { return getBounds().getMinY(); }
-	public double getBottomY() { return getBounds().getMaxY(); }
+	public Double getLeftX()   { return getBounds().getMinX(); }
+	public Double getRightX()  { return getBounds().getMaxX(); }
+	public Double getTopY()    { return getBounds().getMinY(); }
+	public Double getBottomY() { return getBounds().getMaxY(); }
 	
 	private Bounds getBounds() { 
 		if(rootNodeElement!=null) {
