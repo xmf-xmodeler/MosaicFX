@@ -8,15 +8,20 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import tool.clients.dialogs.enquiries.FindClassDialog;
 import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
+import tool.clients.fmmlxdiagrams.LevelColorScheme.FixedBlueLevelColorScheme;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ObjectBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.*;
@@ -1092,10 +1097,10 @@ public class DiagramActions {
 			}
 		}
 		
-		ListView<FmmlxObject> listView = new ListView<>();
-		listView.getItems().addAll(hiddenElements);
-		sortListView(listView);
-		listView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		ListView<FmmlxObject> hiddenElementsListView = new ListView<>();
+		hiddenElementsListView.getItems().addAll(hiddenElements);
+		sortListView(hiddenElementsListView);
+		hiddenElementsListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		ListView<FmmlxObject> shownElementsListView = new ListView<>();
 		shownElementsListView.getItems().addAll(shownElements);
 		sortListView(shownElementsListView);
@@ -1104,16 +1109,19 @@ public class DiagramActions {
 		GridPane gridPane = new GridPane();
 		Button toShow = new Button("<<");
 		toShow.setOnAction(e->{
-			shownElementsListView.getItems().addAll(listView.getSelectionModel().getSelectedItems());
-			listView.getItems().removeAll(listView.getSelectionModel().getSelectedItems());
+			shownElementsListView.getItems().addAll(hiddenElementsListView.getSelectionModel().getSelectedItems());
+			hiddenElementsListView.getItems().removeAll(hiddenElementsListView.getSelectionModel().getSelectedItems());
 			sortListView(shownElementsListView);
 		});
 		Button toHide = new Button(">>");
 		toHide.setOnAction(e->{
-			listView.getItems().addAll(shownElementsListView.getSelectionModel().getSelectedItems());
+			hiddenElementsListView.getItems().addAll(shownElementsListView.getSelectionModel().getSelectedItems());
 			shownElementsListView.getItems().removeAll(shownElementsListView.getSelectionModel().getSelectedItems());
-			sortListView(listView);
+			sortListView(hiddenElementsListView);
 		});
+		
+		addCellFactory(shownElementsListView);
+		addCellFactory(hiddenElementsListView);
 		Button filter = new Button("Filters");
 		
 		Label shownElementsLabel = new Label("Shown Elements");
@@ -1124,7 +1132,7 @@ public class DiagramActions {
 		gridPane.add(toShow, 1, 4,1,1);
 		gridPane.add(filter, 1, 5,1,1);
 		gridPane.add(hiddenElementsLabel, 2, 0,1,1);
-		gridPane.add(listView, 2, 1,1,5);
+		gridPane.add(hiddenElementsListView, 2, 1,1,5);
 		gridPane.setPadding(new Insets(15,15,15,15));
 		unhideElementsDialog.getDialogPane().setContent(gridPane);
 	
@@ -1144,9 +1152,39 @@ public class DiagramActions {
     	result.ifPresent(vec -> {hide(vec, false);});
     	
     	Vector<FmmlxObject> resultHide = new Vector<>();
-    	resultHide.addAll(listView.getItems());
+    	resultHide.addAll(hiddenElementsListView.getItems());
     	hide(resultHide,true);
     	
+	}
+	
+	private void addCellFactory(ListView<FmmlxObject> listView) {
+		listView.setCellFactory( lv -> { return new ListCell<FmmlxObject>() {
+    		protected void updateItem(FmmlxObject o, boolean empty) {
+    			super.updateItem(o, empty);
+    			if (o != null) {
+    				if(o.isAbstract()) setText("(" + o.getName() + " ^"+ o.getMetaClassName() + "^ " + ")"); else setText(o.getName()+ " ^"+ o.getMetaClassName() + "^");
+    				setGraphic(getClassLevelGraphic(o.getLevel()));
+    			} else { setText(""); setGraphic(null); }
+    		}
+    	};	
+    	});
+	}
+
+	private Node getClassLevelGraphic(int level) {
+//		if(level == -1) return null;
+		FixedBlueLevelColorScheme levelColorScheme = new FixedBlueLevelColorScheme();
+		double SIZE = 16;
+		Canvas canvas = new Canvas(SIZE, SIZE);
+		String text = level == -1 ? "?" : (level+"");
+		Text temp = new Text(text);
+		GraphicsContext g = canvas.getGraphicsContext2D();
+		g.setFill(levelColorScheme.getLevelBgColor(level));
+		g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/2, SIZE/2);
+		g.setFill(levelColorScheme.getLevelFgColor(level, 1.));
+		g.fillText(text, 
+				SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
+				SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
+		return canvas;
 	}
 	
 	public void sortListView(ListView<FmmlxObject> listView) {
