@@ -59,11 +59,11 @@ public class XmlCreator {
     /*This function initializes the basic structure of the XML file that later will be able to be manipulated which aims to store svg data.*/
     private void initSvg(Document document, Bounds bounds, double extraHeight){
         Element root = document.createElement(SvgConstant.TAG_NAME_ROOT);
-        root.setAttribute("viewBox", bounds.getMinX()+" "+bounds.getMinY()+" "+bounds.getWidth()+" "+bounds.getHeight()+" ");
+        root.setAttribute("viewBox", bounds.getMinX()+" "+bounds.getMinY()+" "+bounds.getWidth()+" "+bounds.getHeight()+extraHeight+" ");
         root.setAttribute(SvgConstant.ATTRIBUTE_XMLNS, SvgConstant.XMLNS_VALUE);
         root.setAttribute(SvgConstant.ATTRIBUTE_XMLNS_XLINK, SvgConstant.XMLNS_XLINK_VALUE);
         root.setAttribute(SvgConstant.ATTRIBUTE_WIDTH, bounds.getWidth()+"");
-        root.setAttribute(SvgConstant.ATTRIBUTE_HEIGHT, bounds.getHeight()+"");
+        root.setAttribute(SvgConstant.ATTRIBUTE_HEIGHT, bounds.getHeight()+extraHeight*3+"");
         document.appendChild(root);
     }
 

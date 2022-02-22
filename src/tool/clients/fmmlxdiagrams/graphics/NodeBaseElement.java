@@ -59,8 +59,7 @@ public abstract class NodeBaseElement extends NodeElement {
 	}
 
 	public static String toRGBHexString(Color value) {
-	    return "#" + (format(value.getRed()) + format(value.getGreen()) + format(value.getBlue()))
-	            .toUpperCase();
+	    return "#" + (format(value.getRed()) + format(value.getGreen()) + format(value.getBlue())).toUpperCase();
 	}
 
 	protected final String getMatrix4svg() {

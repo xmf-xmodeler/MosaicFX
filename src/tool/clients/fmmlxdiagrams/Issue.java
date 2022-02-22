@@ -31,7 +31,6 @@ public class Issue implements FmmlxProperty{
 		String textColor = this.color.toString().split("x")[1].substring(0,6);
 		Element textElement = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_TEXT);
 		textElement.setAttribute(SvgConstant.ATTRIBUTE_FONT_FAMILY, "Arial");
-
 		textElement.setAttribute(SvgConstant.ATTRIBUTE_FONT_SIZE, 13+"");
 		textElement.setAttribute(SvgConstant.ATTRIBUTE_FONT_OPACITY, 1+"");
 		textElement.setAttribute(SvgConstant.ATTRIBUTE_FILL, "#"+textColor);

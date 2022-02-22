@@ -827,17 +827,18 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		Element issueGroup = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
 		issueGroup.setAttribute(SvgConstant.ATTRIBUTE_GROUP_TYPE, "issues");
-
+		
+				
 		Element rect = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_RECT);
 		rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_X, 0+"");
-		rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, mainViewPane.canvas.getHeight()+"");
+		rect.setAttribute(SvgConstant.ATTRIBUTE_COORDINATE_Y, getBounds().getMaxY()+""); //mainViewPane.canvas.getHeight();
 		rect.setAttribute(SvgConstant.ATTRIBUTE_HEIGHT, extraHeight+7+"");
 		rect.setAttribute(SvgConstant.ATTRIBUTE_WIDTH, mainViewPane.canvas.getWidth()+"");
 		rect.setAttribute(SvgConstant.ATTRIBUTE_FILL, "black");
 		rect.setAttribute(SvgConstant.ATTRIBUTE_FILL_OPACITY, 1 +"");
 		xmlHandler.addXmlElement(issueGroup, rect);
 		for(Issue issue : issues){
-			issue.paintToSvg(xmlHandler, issueGroup, 14, 16, 0, mainViewPane.canvas.getHeight()+issue.issueNumber*14);
+			issue.paintToSvg(xmlHandler, issueGroup, 14, 16, 0, getBounds().getMaxY()+issue.issueNumber*14);
 		}
 		xmlHandler.addXmlElement(xmlHandler.getRoot(), issueGroup); 
 	}
