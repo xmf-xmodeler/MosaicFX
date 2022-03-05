@@ -513,8 +513,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	
 	@Override
 	public ObjectContextMenu getContextMenu(FmmlxDiagram.DiagramViewPane fmmlxDiagram, Point2D absolutePoint) {
-		Point2D relativePoint = new Point2D(absolutePoint.getX() - getX(), absolutePoint.getY() - getY());
-		return new ObjectContextMenu(this, fmmlxDiagram, relativePoint);
+		return new ObjectContextMenu(this, fmmlxDiagram, absolutePoint);
 	}
 	
 	public FmmlxProperty handlePressedOnNodeElement(Point2D relativePoint, FmmlxDiagram.DiagramViewPane view, GraphicsContext g, Affine currentTransform) {
