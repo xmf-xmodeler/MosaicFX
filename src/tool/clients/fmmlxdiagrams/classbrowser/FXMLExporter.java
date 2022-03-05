@@ -199,7 +199,6 @@ public class FXMLExporter {
 	        			fxml.addProperty("xmlns", "http://javafx.com/javafx/17"); // Default Action
 	        			
 	        			// hier ist ggf. auch ein Controller zu definieren
-	        			// der soll vorerst immer der ObjectBrowser sein
 	        			fxml.addProperty("fx:controller", "tool.clients.fmmlxdiagrams.classbrowser.CustomGUIController");
 	        			
 	        			break;
