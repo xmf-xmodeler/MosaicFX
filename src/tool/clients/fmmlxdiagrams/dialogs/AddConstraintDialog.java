@@ -1,7 +1,6 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
 import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -30,8 +29,6 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 
 	private DialogPane dialogPane;
 	private GridPane grid;
-	private FmmlxObject object;
-	private Constraint constraint;
 
 	public AddConstraintDialog(AbstractPackageViewer diagram, FmmlxObject object) {
 
@@ -61,27 +58,22 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 			if (button != null && button.getButtonData() == ButtonData.OK_DONE) {
 				return new Result(object, nameField.getText(),
 						Integer.parseInt(levelField.getText()),
-						"@Operation body(classifier : Class, level : Integer) : Boolean " + bodyBox.getText() + " end",
-						"@Operation reason(classifier : Class, level : Integer) : String " + reasonBox.getText()
-								+ " end");
+						bodyBox.getText(),
+						reasonBox.getText());
 			} else {
 				return null;
 			}
-			});
-		//setResultConverter();
-		
-		
+		});	
 	}
 
 	public AddConstraintDialog(AbstractPackageViewer diagram, FmmlxObject object, Constraint constraint) {
-		this.object = object;
 		label1.setText("@Constraint");
 		nameField.setText(constraint.getName());
 		label2.setText("@");
 		levelField.setText(String.valueOf(constraint.getLevel()));
-		bodyBox.setText(constraint.getBodyFull());
+		bodyBox.setText(constraint.getBodyRaw());
 		label3.setText("fail");
-		reasonBox.setText(constraint.getReasonFull());
+		reasonBox.setText(constraint.getReasonRaw());
 		label4.setText("end");
 		statusLabel.setText("");
 
@@ -104,7 +96,7 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 			} else {
 				return null;
 			}
-			});
+		});
 	}
 	
 
@@ -162,21 +154,6 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 		grid.add(label4, 0, 4, 4, 1);
 		grid.add(statusLabel, 0, 5, 4, 1);
 	}
-
-	private void setResultConverter() {
-		setResultConverter(button -> {
-			if (button != null && button.getButtonData() == ButtonData.OK_DONE) {
-				return new Result(
-						object, 
-						constraint.getName(),
-						constraint.getLevel(),
-						constraint.getBodyFull(),
-						constraint.getReasonFull()
-						);
-				} 
-				return null;
-			});
-	}
 	
 	private void validator() {
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
@@ -186,5 +163,4 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 			}
 		});
 	}
-
 }

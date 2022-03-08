@@ -36,8 +36,8 @@ import tool.xmodeler.XModeler;
 public final class ModelBrowser extends CustomStage {
 	
 	private final CodeBox operationCodeArea = new CodeBox(10,true,"");
-	private final CodeBox constraintBodyArea = new CodeBox(10,false,"");
-	private final CodeBox constraintReasonArea = new CodeBox(10,false,"");
+	private final CodeBox constraintBodyArea = new CodeBox(10,true,"");
+	private final CodeBox constraintReasonArea = new CodeBox(10,true,"");
 	private final CodeBox issueArea = new CodeBox(10,false,"");
 	private final ListView<String> modelListView   = new ListView<>();
 	private final ListView<String> parentsListView = new ListView<>();
@@ -700,8 +700,8 @@ public final class ModelBrowser extends CustomStage {
 		if(select) codeAndConstraintTabPane.getSelectionModel().select(constraintTab);
 		conCodeButton.setDisable(!editable);
 		if(constraint != null) {
-			constraintBodyArea.setText(constraint.getBodyFull());
-			constraintReasonArea.setText(constraint.getReasonFull());
+			constraintBodyArea.setText(constraint.getBodyRaw());
+			constraintReasonArea.setText(constraint.getReasonRaw());
 			constraintTab.setText("Constraint" + " (" + constraint.getName()+ ")");
 		} else {
 			constraintBodyArea.setText("");

@@ -833,6 +833,21 @@ public class XmlManager extends XmlHandler {
                 Integer instLevel = Integer.parseInt(logElement.getAttribute("instLevel"));
                 String body = logElement.getAttribute("body");
                 String reason = logElement.getAttribute("reason");
+                
+                // FOR SAVEFILES BEFORE 5/3/22
+                
+                if(body.startsWith("@Operation body(classifier : Class,level : Integer):Boolean")) {
+                	body = body.substring("@Operation body(classifier : Class,level : Integer):Boolean".length());
+                	body = body.substring(0, body.length()-3);
+                	System.err.println("(old constraint body definition loaded)");
+                }
+                
+                if(reason.startsWith("@Operation reason(classifier : Class,level : Integer):String")) {
+                	reason = reason.substring("@Operation reason(classifier : Class,level : Integer):String".length());
+                	reason = reason.substring(0, reason.length()-3);
+                	System.err.println("(old constraint reason definition loaded)");
+                }
+
                 comm.addConstraint(diagramID, path, constName, instLevel, body, reason);
                 break;
             }

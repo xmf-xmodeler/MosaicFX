@@ -20,11 +20,11 @@ public class ObjectContextMenu extends ContextMenu {
 	private final DiagramActions actions;
 	private final FmmlxProperty activeProperty;
 
-	public ObjectContextMenu(FmmlxObject object, FmmlxDiagram.DiagramViewPane view, Point2D relativePoint) {
+	public ObjectContextMenu(FmmlxObject object, FmmlxDiagram.DiagramViewPane view, Point2D mouse) {
 		this.diagram = view.getDiagram();
 		this.actions = diagram.getActions();
 		this.object = object;
-		NodeBaseElement nl = this.object.getHitLabel(relativePoint, view.getCanvas().getGraphicsContext2D(), view.getCanvasTransform(), view);
+		NodeBaseElement nl = this.object.getHitLabel(mouse, view.getCanvas().getGraphicsContext2D(), view.getCanvasTransform(), view);
 		activeProperty = nl==null?null:nl.getActionObject();
 		setAutoHide(true);
 
@@ -183,6 +183,7 @@ public class ObjectContextMenu extends ContextMenu {
 	}
 	
 	private Menu createConstraintSubMenu() {
+		System.err.println("activeProperty: " + activeProperty);
 		final Constraint activeConstraint = 
 				(activeProperty != null && activeProperty instanceof Constraint)
 					?(Constraint) activeProperty

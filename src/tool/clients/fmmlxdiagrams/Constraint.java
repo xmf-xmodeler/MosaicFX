@@ -27,15 +27,14 @@ public class Constraint implements FmmlxProperty, Comparable<Constraint>{
 	@Override public String getName() { return name;}
 	public int getLevel() { return level;}
 	public String getBodyRaw() { return bodyRaw;}
-	public String getBodyFull() { return bodyFull;}
+	@Deprecated public String getBodyFull() { return bodyFull;}
 	public String getReasonRaw() { return reasonRaw;}
-	public String getReasonFull() { return reasonFull;}
+	@Deprecated public String getReasonFull() { return reasonFull;}
 	public void setName(String name) { this.name=name;}
 	public void setBodyRaw(String bodyRaw) { this.bodyRaw=bodyRaw;}
 	public void setBodyFull(String bodyFull) { this.bodyFull=bodyFull;}
 	public void setReasonRaw(String reasonRaw) { this.bodyRaw=reasonRaw;}
 	public void setReasonFull(String reasonFull) { this.bodyRaw=reasonFull;}
 	public void setBodyRaw(Integer level) { this.level=level;}
-	
 
 }
