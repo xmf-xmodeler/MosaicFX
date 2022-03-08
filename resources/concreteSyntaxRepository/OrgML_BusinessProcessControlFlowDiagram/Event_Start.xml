@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<ConcreteSyntax classPath="Challenge2::AsynchStart" level="1">
+<ConcreteSyntax classPath="Challenge::AsynchStart" level="1">
 <SVG path="Start.svg"/>
 <Label align="CENTER" tx="20.0" ty="60" id="bottomLabelID"/>
 <Label align="CENTER" tx="20.0" ty="85.0" id="bottomLabel"/>
