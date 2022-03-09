@@ -85,7 +85,7 @@ public class NodeGroup extends NodeElement {
 	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup) {
 		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
 
-		group.setAttribute(SvgConstant.ATTRIBUTE_TRANSFORM, "matrix(1,0,0,1,"+getMyTransform().getTx()+","+getMyTransform().getTy()+")");
+		group.setAttribute(SvgConstant.ATTRIBUTE_TRANSFORM, "matrix("+ getMyTransform().getMxx() +","+ getMyTransform().getMxy()+","+getMyTransform().getMyx()+","+getMyTransform().getMyy()+","+getMyTransform().getTx()+","+getMyTransform().getTy()+")");
 
 		for(NodeElement nodeElement : nodeElements){
 			nodeElement.paintToSvg(diagram, xmlHandler, group);

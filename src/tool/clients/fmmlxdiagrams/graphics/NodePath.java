@@ -13,6 +13,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.css.CSSStyleDeclaration;
 
 import javafx.geometry.Bounds;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
@@ -96,20 +97,13 @@ public class NodePath extends NodeBaseElement{
 		g.setTransform(getTotalTransform(diagramView.getCanvasTransform()));
 		g.beginPath();
 		g.appendSVGPath(textPath);
-		if (styleDeclaration==null) {
-			g.setFill(bgColor);
-			g.setStroke(fgColor);
-		} else {
-			String fillColor = styleDeclaration.getPropertyValue("fill");
-			if("none".equals(fillColor)) {
-				g.setFill(Color.TRANSPARENT);
-			} else if(fillColor.startsWith("url")) {
-				g.setFill(Color.MAGENTA);
-			} else {
-				g.setFill(Color.web(fillColor));
-			}
+		//if (styleDeclaration==null) {
+		//	g.setFill(bgColor);
+		//	g.setStroke(fgColor);
+		//} else {
+			setFill(g, styleDeclaration);
 			setStrokeStyle(g, styleDeclaration);
-		}
+	//	}
 		
 		g.fill();
 		g.stroke();
@@ -118,6 +112,17 @@ public class NodePath extends NodeBaseElement{
 	}
 
 
+
+	private void setFill(GraphicsContext g, CSSStyleDeclaration styleDeclaration) {
+		String fillColor = styleDeclaration.getPropertyValue("fill");
+		if("none".equals(fillColor)) {
+			g.setFill(Color.TRANSPARENT);
+		} else if(fillColor.startsWith("url")) {
+			g.setFill(Color.MAGENTA);
+		} else {
+			g.setFill(Color.web(fillColor));
+		}		
+	}
 
 	@Override
 	public boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagramView) {
@@ -136,8 +141,12 @@ public class NodePath extends NodeBaseElement{
 		group.setAttribute(SvgConstant.ATTRIBUTE_TRANSFORM, getMatrix4svg());
 		group.setAttribute("XModeler", "NodePath");
 		Element path = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
+		Canvas c = new Canvas();
+		GraphicsContext g = c.getGraphicsContext2D();
+		setFill(g, styleDeclaration);
+		setStrokeStyle(g, styleDeclaration);
 		path.setAttribute(SvgConstant.ATTRIBUTE_D, textPath);
-		path.setAttribute(SvgConstant.ATTRIBUTE_FILL, NodeBaseElement.toRGBHexString(bgColor));
+		path.setAttribute(SvgConstant.ATTRIBUTE_FILL, NodeBaseElement.toRGBHexString((Color)g.getFill()));
 //		path.setAttribute(SvgConstant.ATTRIBUTE_STROKE, NodeBaseElement.toRGBHexString(fgColor));
 //		path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, lineWidth.getWidth(false)+"");
 //		path.setAttribute(SvgConstant.ATTRIBUTE_FILL_OPACITY, bgColor.getOpacity()<.5?"0":"1");

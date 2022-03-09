@@ -835,11 +835,14 @@ public class XmlManager extends XmlHandler {
                 String reason = logElement.getAttribute("reason");
                 
                 // FOR SAVEFILES BEFORE 5/3/22
-                
+                					
                 if(body.startsWith("@Operation body(classifier : Class,level : Integer):Boolean")) {
                 	body = body.substring("@Operation body(classifier : Class,level : Integer):Boolean".length());
                 	body = body.substring(0, body.length()-3);
                 	System.err.println("(old constraint body definition loaded)");
+                	System.err.println(body);
+                } else {
+                	System.err.println("Constraint not found!" + " " +body);
                 }
                 
                 if(reason.startsWith("@Operation reason(classifier : Class,level : Integer):String")) {
