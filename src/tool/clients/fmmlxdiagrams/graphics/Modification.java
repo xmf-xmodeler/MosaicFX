@@ -63,6 +63,10 @@ public class Modification {
 			} else if("ReadFromOpValCondition".equals(conditionType)) {
 				String opName = conditionElement.getAttribute("opName");
 				condition = new Condition.ReadFromOpValCondition(opName);
+			} else if("StringMatchSlotCondition".equals(conditionType)) {
+				String slotName =  conditionElement.getAttribute("slotName");
+				String match = conditionElement.getAttribute("match");
+				condition = new Condition.StringMatchSlotCondition(slotName,match);
 			} else {
 				throw new RuntimeException("not yet implemented");
 			}

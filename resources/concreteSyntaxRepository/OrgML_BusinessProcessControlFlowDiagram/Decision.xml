@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ConcreteSyntax classPath="Challenge::Fork" level="1">
+<SVG path="Decision_notSpeci.svg" id="notSpeci"/>
+<SVG path="Decision_Automated.svg" id="auto"/>
+<SVG path="Decision_Human_clear_Rules.svg" id="human_rules"/>
+<SVG path="Decision_Human.svg" id="human"/>
+<SVG path="Decision_Probability.svg" id="prob"/>
+<Modification>
+		<Condition type="StringMatchSlotCondition" slotName="typeID" match="automated"/>
+		<Affected id="auto" localId="auto"/>
+		<Consequence type="SHOW_IF"/>
+</Modification>
+<Modification>
+		<Condition type="StringMatchSlotCondition" slotName="typeID" match="rules"/>
+		<Affected id="human_rules" localId="human_rules"/>
+		<Consequence type="SHOW_IF"/>
+</Modification>
+<Modification>
+		<Condition type="StringMatchSlotCondition" slotName="typeID" match="human"/>
+		<Affected id="human" localId="human"/>
+		<Consequence type="SHOW_IF"/>
+</Modification>
+<Modification>
+		<Condition type="StringMatchSlotCondition" slotName="typeID" match="probability"/>
+		<Affected id="prob" localId="prob"/>
+		<Consequence type="SHOW_IF"/>
+</Modification>
+</ConcreteSyntax>

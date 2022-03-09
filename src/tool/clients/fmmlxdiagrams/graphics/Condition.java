@@ -43,6 +43,33 @@ public interface Condition {
 		}
 	}
 	
+	public static class StringMatchSlotCondition implements Condition{
+		
+
+		private String slotName;
+		private String match;
+
+		public StringMatchSlotCondition(String slotName, String match) {
+			super();
+			this.slotName = slotName;
+			this.match = match;
+			
+		}
+		@Override
+		public boolean eval(FmmlxObject object) throws SlotNotFoundException {
+			FmmlxSlot slot = object.getSlot(slotName);
+			if (slot == null) {
+				return false;
+			}
+			return match.equals(slot.getValue());
+		}
+
+		@Override
+		public String evalText(FmmlxObject object) throws SlotNotFoundException {
+			return "";
+		}
+	}
+	
 	public static class BooleanOpValCondition implements Condition{
 		
 		private String opName;
