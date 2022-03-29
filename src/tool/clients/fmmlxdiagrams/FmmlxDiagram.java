@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
@@ -38,8 +37,6 @@ import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 import org.w3c.dom.Element;
-
-import com.sun.javafx.geom.BoxBounds;
 
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.AbstractSyntax;
@@ -400,7 +397,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		for(FmmlxObject o : new Vector<>(objects)) {
 			o.layout(this);
 		}
-		for(Edge<?> edge : new Vector<>(edges)) {
+		// TODO evil hack. not kosher
+		for(int i = 0; i < 2; i++) for(Edge<?> edge : new Vector<>(edges)) {
 			edge.align();
 			edge.layoutLabels(this);
 		}
