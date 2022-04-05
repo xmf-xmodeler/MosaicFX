@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="5.38516mm"
+   height="5.3844118mm"
+   viewBox="0 0 5.38516 5.3844118"
+   version="1.1"
+   id="svg149"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   sodipodi:docname="Concurrency.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview151"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:snap-center="true"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="1.4823793"
+     inkscape:cx="234.42043"
+     inkscape:cy="230.37288"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="text11050" />
+  <defs
+     id="defs146">
+    <rect
+       x="275.7106"
+       y="391.14655"
+       width="322.4574"
+       height="228.96384"
+       id="rect11052" />
+  </defs>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g197"
+       transform="rotate(-45,-93.345016,184.56127)">
+      <g
+         id="g14"
+         transform="matrix(0.26458333,0,0,0.26458333,87.197853,116.18549)">
+        <g
+           id="g12">
+          <g
+             id="g6">
+            <polygon
+               fill="#dae5eb"
+               points="60.346,42.719 46.667,29.04 60.346,15.361 74.024,29.041 "
+               id="polygon2" />
+            <path
+               fill="#044254"
+               d="M 60.346,43.43 45.956,29.04 60.346,14.65 74.738,29.042 Z M 47.38,29.04 60.346,42.006 73.314,29.041 60.346,16.072 Z"
+               id="path4" />
+          </g>
+          <g
+             id="g10">
+            <path
+               fill="#dae5eb"
+               d="M 60.346,29.042"
+               id="path8" />
+          </g>
+        </g>
+      </g>
+    </g>
+    <g
+       aria-label="="
+       transform="matrix(0.15152788,0,0,0.15152788,58.90687,60.999825)"
+       id="text11050"
+       style="font-size:40px;line-height:1.25;white-space:pre;shape-inside:url(#rect11052)">
+      <path
+         d="m -359.40111,-387.33456 h -23.16407 v -3.125 h 23.16407 z m 0,8.20312 h -23.16407 v -3.125 h 23.16407 z"
+         id="path12016"
+         style="fill:#044254;fill-opacity:1" />
+    </g>
+  </g>
+</svg>
