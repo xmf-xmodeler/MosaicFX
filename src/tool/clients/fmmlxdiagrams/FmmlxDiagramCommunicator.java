@@ -2102,6 +2102,7 @@ public class FmmlxDiagramCommunicator {
 		items.add(new Value(new Value[] {new Value("showOperations"), 			new Value( diagram.isShowOperations())}));
 		items.add(new Value(new Value[] {new Value("showOperationValues"), 		new Value( diagram.isShowOperationValues())}));
 		items.add(new Value(new Value[] {new Value("showSlots"), 				new Value( diagram.isShowSlots())}));
+		items.add(new Value(new Value[] {new Value("showMetaClassName"),		new Value( diagram.isMetaClassNameInPalette())}));
 		Value[] itemArray = new Value[items.size()];
 		for(int i = 0; i < itemArray.length; i++) {
 			itemArray[i] = items.get(i);

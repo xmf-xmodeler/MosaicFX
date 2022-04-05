@@ -8,19 +8,29 @@ import javafx.scene.control.*;
 
 public class Palette extends ToolBar {
 
+	CheckBox boxO;
+	CheckBox boxOV;
+	CheckBox boxS;
+	CheckBox boxGettersAndSetters;
+	CheckBox boxDerivedOperations;
+	CheckBox boxDerivedAttributes;
+	CheckBox metaClassName;
+	
 	public Palette(FmmlxDiagram diagram) {
 		setPadding(new Insets(5, 5, 5, 5));
 		setOrientation(Orientation.HORIZONTAL);
 		isResizable();
 		
 		getItems().add(new Label("Show: "));
-		CheckBox boxO = addCheckBox("Operations");
-		CheckBox boxOV = addCheckBox("Operation Values");
-		CheckBox boxS = addCheckBox("Slots");
-		CheckBox boxGettersAndSetters = addCheckBox("Getters & Setters");
-		CheckBox boxDerivedOperations = addCheckBox("Derived Operations");
-		CheckBox boxDerivedAttributes = addCheckBox("Derived Attributes");
-		CheckBox metaClassName = addCheckBox("Name of Metaclass in Palette");
+		
+		boxO = addCheckBox("Operations");
+		boxOV = addCheckBox("Operation Values");
+		boxS = addCheckBox("Slots");
+		boxGettersAndSetters = addCheckBox("Getters & Setters");
+		boxDerivedOperations = addCheckBox("Derived Operations");
+		boxDerivedAttributes = addCheckBox("Derived Attributes");
+		metaClassName = addCheckBox("Name of Metaclass in Palette");
+		
 		metaClassName.setSelected(false);
 		getItems().add(new Separator());
 		boxO.setOnAction(e -> {diagram.setShowOperations(boxO); diagram.comm.sendViewOptions(diagram.diagramID);});
@@ -29,11 +39,18 @@ public class Palette extends ToolBar {
 		boxGettersAndSetters.setOnAction(e-> {diagram.setShowGettersAndSetters(boxGettersAndSetters); diagram.comm.sendViewOptions(diagram.diagramID);});
 		boxDerivedOperations.setOnAction(e-> {diagram.setShowDerivedOperations(boxDerivedOperations); diagram.comm.sendViewOptions(diagram.diagramID);});
 		boxDerivedAttributes.setOnAction(e-> {diagram.setShowDerivedAttributes(boxDerivedAttributes); diagram.comm.sendViewOptions(diagram.diagramID);});
-		metaClassName.setOnAction(e-> diagram.setMetaClassNameInPalette(metaClassName));
-		
-		
-		
+		metaClassName.setOnAction(e-> {diagram.setMetaClassNameInPalette(metaClassName); diagram.comm.sendViewOptions(diagram.diagramID);});
 		}
+	
+	public void updateToolbar(FmmlxDiagram diagram) {
+		metaClassName.setSelected(diagram.isMetaClassNameInPalette()); 
+		boxO.setSelected(diagram.isShowOperations());
+		boxOV.setSelected(diagram.isShowOperationValues());
+		boxS.setSelected(diagram.isShowSlots());
+		boxGettersAndSetters.setSelected(diagram.isShowGetterAndSetter());
+		boxDerivedOperations.setSelected(diagram.isShowDerivedOperations());
+		boxDerivedAttributes.setSelected(diagram.isShowDerivedAttributes());
+	}
 	
 	public Palette(FmmlxDiagram diagram, int secondRow) {
 		autosize();
@@ -46,6 +63,7 @@ public class Palette extends ToolBar {
 		addButton("Update Diagram", e -> diagram.updateDiagram());
 		addButton("Print Protocol", e -> diagram.actions.printProtocol());
 	}
+	
 	private void addButton(String string, EventHandler<ActionEvent> eventHandler) {
 		Button button = new Button(string);
 		button.setOnAction(eventHandler);

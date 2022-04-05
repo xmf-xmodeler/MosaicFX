@@ -36,6 +36,8 @@ import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
+
+import org.reactfx.util.Try;
 import org.w3c.dom.Element;
 
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
@@ -102,7 +104,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 //	private static final Point2D CANVAS_RAW_SIZE = new Point2D(1400, 1000);
 	public  static final Font FONT;
-
+	Palette palette = new Palette(this);
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
 	private boolean showSlots = true;
@@ -151,7 +153,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		splitPane2 = new SplitPane();
 		mainView = new VBox();
 		
-		Palette palette = new Palette(this);
+		
 		Palette palette2 = new Palette(this,2);
 		newFmmlxPalette = new FmmlxPalette(this);
 		
@@ -802,9 +804,12 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				Platform.runLater(() -> ISSUE.performResolveAction(this));
 			}
 		}
-
+		
+		palette.updateToolbar(this);
 		redraw();
 	}
+	
+	
 
 	@Override
 	protected void updateViewerStatusInGUI(ViewerStatus newStatus) {
