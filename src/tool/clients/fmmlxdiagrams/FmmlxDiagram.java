@@ -112,6 +112,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private boolean showDerivedOperations=true;
 	private boolean showDerivedAttributes=true;
 	private boolean showMetaClassName = false;
+	private boolean showConstraints = true;
+	private boolean showConstraintReports = true;
 	private DiagramViewPane zoomView;
 	@Override protected boolean loadOnlyVisibleObjects() { return false; }	// Did not work. Attributes from invisible classes did not cause slots on visible classes
 
@@ -185,6 +187,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         	if("showOperations".equals(key)) setShowOperations(value);
         	if("showOperationValues".equals(key)) setShowOperationValues(value);
         	if("showSlots".equals(key)) setShowSlots(value);
+        	if("showConstraintReports".equals(key)) setConstraintReportsInDiagram(value);
+        	if("showConstraints".equals(key)) setConstraintsInDiagram(value);
         }        
 
         tabPane.getTabs().add(new MyTab());
@@ -608,6 +612,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public void setShowDerivedOperations(boolean show) {this.showDerivedOperations = show;}
 	public void setShowDerivedAttributes(boolean show) {this.showDerivedAttributes = show;}
 	public void setMetaClassNanmeInPalette(boolean show) {this.showMetaClassName = show;} 
+	public void setConstraintsInDiagram(boolean show) {this.showConstraints = show;} 
+	public void setConstraintReportsInDiagram(boolean show) {this.showConstraintReports = show;} 
 
 	public boolean isShowOperations() {return this.showOperations;}
 	public boolean isShowOperationValues() {return this.showOperationValues;}
@@ -616,6 +622,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public boolean isShowDerivedOperations() {return this.showDerivedOperations;}
 	public boolean isShowDerivedAttributes() {return this.showDerivedAttributes;}
 	public boolean isMetaClassNameInPalette() {return this.showMetaClassName;}
+	public boolean isConstraintsInDiagram() {return this.showConstraints;}
+	public boolean isConstraintReportsInDiagram() {return this.showConstraintReports;} 
 
 	public Vector<String> getEnumItems(String enumName) {
 		for (FmmlxEnum e : enums) {
@@ -749,6 +757,26 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		redraw();
 	}
 	
+	public void setShowConstraints(CheckBox box) {
+		boolean show = box.isSelected();
+		setConstraintsInDiagram(show);
+		for (FmmlxObject o : getObjects()) {
+			o.setShowConstraints(show);
+		}
+		triggerOverallReLayout();
+		redraw();
+	}
+	
+	public void setShowConstraintReports(CheckBox box) {
+		boolean show = box.isSelected();
+		setConstraintReportsInDiagram(show);
+		for (FmmlxObject o : getObjects()) {
+			o.setShowConstraintReports(show);
+		}
+		triggerOverallReLayout();
+		redraw();
+	}
+	
 	public void setMetaClassNameInPalette(CheckBox metaClassName) {
 		boolean show=metaClassName.isSelected();
 		setMetaClassNanmeInPalette(show);
@@ -760,6 +788,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			newFmmlxPalette.update();
 		}		
 	}
+	
+	
 
 	@Override
 	protected void clearDiagram_specific() {

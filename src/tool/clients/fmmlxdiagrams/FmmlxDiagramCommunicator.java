@@ -2096,13 +2096,15 @@ public class FmmlxDiagramCommunicator {
 	public void sendViewOptions(int diagramID) {
 		Vector<Value> items = new Vector<>();
 		FmmlxDiagram diagram = getDiagram(diagramID);
-		items.add(new Value(new Value[] {new Value("showDerivedAttributes"), 	new Value(diagram.isShowDerivedAttributes())}));
+		items.add(new Value(new Value[] {new Value("showDerivedAttributes"), 	new Value( diagram.isShowDerivedAttributes())}));
 		items.add(new Value(new Value[] {new Value("showDerivedOperations"), 	new Value( diagram.isShowDerivedOperations())}));
 		items.add(new Value(new Value[] {new Value("showGettersAndSetters"), 	new Value( diagram.isShowGetterAndSetter())}));
 		items.add(new Value(new Value[] {new Value("showOperations"), 			new Value( diagram.isShowOperations())}));
 		items.add(new Value(new Value[] {new Value("showOperationValues"), 		new Value( diagram.isShowOperationValues())}));
 		items.add(new Value(new Value[] {new Value("showSlots"), 				new Value( diagram.isShowSlots())}));
 		items.add(new Value(new Value[] {new Value("showMetaClassName"),		new Value( diagram.isMetaClassNameInPalette())}));
+		items.add(new Value(new Value[] {new Value("showConstraints"),		    new Value( diagram.isConstraintsInDiagram())}));
+		items.add(new Value(new Value[] {new Value("showConstraintReports"),    new Value( diagram.isConstraintReportsInDiagram())}));
 		Value[] itemArray = new Value[items.size()];
 		for(int i = 0; i < itemArray.length; i++) {
 			itemArray[i] = items.get(i);

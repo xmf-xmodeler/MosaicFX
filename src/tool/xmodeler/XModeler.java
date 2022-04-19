@@ -221,7 +221,8 @@ public class XModeler extends Application {
           EditorClient.theClient().inflateXML(doc);
           ConsoleClient.theConsole().inflateXML(doc);
           FormsClient.theClient().inflateXML(doc);
-          FmmlxDiagramCommunicator.initCommunicator();        }
+          FmmlxDiagramCommunicator.initCommunicator();        
+        }
       }
     } catch (Throwable e) {
       e.printStackTrace(System.err);

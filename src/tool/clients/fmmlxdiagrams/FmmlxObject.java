@@ -45,6 +45,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	 boolean showDerivedOperations = true;
 	 boolean showDerivedAttributes = true;
 	 boolean showConstraints = true;
+	 boolean showConstraintReports = true;
 
 	public FmmlxObject(
 			String name, 
@@ -79,6 +80,8 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			this.showDerivedOperations = D.isShowDerivedOperations();
 			this.showDerivedAttributes = D.isShowDerivedAttributes();
 			this.showGettersAndSetters = D.isShowGetterAndSetter();
+			this.showConstraints = D.isConstraintsInDiagram();
+			this.showConstraintReports = D.isConstraintReportsInDiagram();
 		}
 	}
 
@@ -473,7 +476,17 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	public void setShowDerivedAttributes(boolean show) {
 		requiresReLayout |= showDerivedAttributes!=show;
 		showDerivedAttributes = show;
-	}	
+	}
+	
+	public void setShowConstraints(boolean show) {
+		requiresReLayout |= showConstraints!=show;
+		showConstraints = show;
+	}
+	
+	public void setShowConstraintReports(boolean show) {
+		requiresReLayout |= showConstraintReports!=show;
+		showConstraintReports = show;
+	}
 
 	
 	/// Setters

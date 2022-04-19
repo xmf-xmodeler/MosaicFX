@@ -79,7 +79,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		currentY += headerLines * textHeight + EXTRA_Y_PER_LINE;
 		
 		Vector<Issue> issues = diagram.getIssues(object);
-		if(issues.size() > 0) {
+		if(issues.size() > 0 && object.showConstraintReports) {
 			double issueBoxHeight = lineHeight * issues.size() + EXTRA_Y_PER_LINE;
 			NodeBox issueBox = new IssueBox(0, currentY, neededWidth, issueBoxHeight, 
 				Color.BLACK, Color.BLACK, (x) -> 1., PropertyType.Issue);

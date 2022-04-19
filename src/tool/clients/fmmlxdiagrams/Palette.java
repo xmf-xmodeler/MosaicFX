@@ -15,6 +15,8 @@ public class Palette extends ToolBar {
 	CheckBox boxDerivedOperations;
 	CheckBox boxDerivedAttributes;
 	CheckBox metaClassName;
+	CheckBox boxConstraints;
+	CheckBox boxConstraintReports;
 	
 	public Palette(FmmlxDiagram diagram) {
 		setPadding(new Insets(5, 5, 5, 5));
@@ -29,7 +31,10 @@ public class Palette extends ToolBar {
 		boxGettersAndSetters = addCheckBox("Getters & Setters");
 		boxDerivedOperations = addCheckBox("Derived Operations");
 		boxDerivedAttributes = addCheckBox("Derived Attributes");
-		metaClassName = addCheckBox("Name of Metaclass in Palette");
+		boxConstraints = addCheckBox("Constraints");
+		boxConstraintReports = addCheckBox("Constraint Reports");
+		metaClassName = addCheckBox("Metaclass name");
+		
 		
 		metaClassName.setSelected(false);
 		getItems().add(new Separator());
@@ -40,6 +45,8 @@ public class Palette extends ToolBar {
 		boxDerivedOperations.setOnAction(e-> {diagram.setShowDerivedOperations(boxDerivedOperations); diagram.comm.sendViewOptions(diagram.diagramID);});
 		boxDerivedAttributes.setOnAction(e-> {diagram.setShowDerivedAttributes(boxDerivedAttributes); diagram.comm.sendViewOptions(diagram.diagramID);});
 		metaClassName.setOnAction(e-> {diagram.setMetaClassNameInPalette(metaClassName); diagram.comm.sendViewOptions(diagram.diagramID);});
+		boxConstraints.setOnAction(e->{diagram.setShowConstraints(boxConstraints); diagram.comm.sendViewOptions(diagram.diagramID);});
+		boxConstraintReports.setOnAction(e->{diagram.setShowConstraintReports(boxConstraintReports); diagram.comm.sendViewOptions(diagram.diagramID);});
 		}
 	
 	public void updateToolbar(FmmlxDiagram diagram) {
@@ -50,6 +57,8 @@ public class Palette extends ToolBar {
 		boxGettersAndSetters.setSelected(diagram.isShowGetterAndSetter());
 		boxDerivedOperations.setSelected(diagram.isShowDerivedOperations());
 		boxDerivedAttributes.setSelected(diagram.isShowDerivedAttributes());
+		boxConstraints.setSelected(diagram.isConstraintsInDiagram());
+		boxConstraintReports.setSelected(diagram.isConstraintReportsInDiagram());
 	}
 	
 	public Palette(FmmlxDiagram diagram, int secondRow) {
