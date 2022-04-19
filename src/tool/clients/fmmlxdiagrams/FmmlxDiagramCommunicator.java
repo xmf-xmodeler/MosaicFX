@@ -677,6 +677,7 @@ public class FmmlxDiagramCommunicator {
 			String name = (String) (slot.get(0));
 			String value = (String) (slot.get(1));
 			result.add(new FmmlxSlot(name, value, owner));
+			Collections.sort(result);
 		}
 		return result;
 	}

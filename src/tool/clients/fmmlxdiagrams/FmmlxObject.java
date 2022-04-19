@@ -493,9 +493,9 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	public void setAttributes(Vector<FmmlxAttribute> ownAttributes, Vector<FmmlxAttribute> otherAttributes) {
 		this.ownAttributes = ownAttributes;
-		ownAttributes.sort(Collections.reverseOrder());
+		Collections.sort(ownAttributes);
 		this.otherAttributes = otherAttributes;
-		otherAttributes.sort(Collections.reverseOrder());
+		Collections.sort(otherAttributes);
 	}
 	
 	public void setOperations(Vector<FmmlxOperation> operations) {
@@ -504,10 +504,10 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		for (FmmlxOperation o : operations) {
 			if (o.getOwner().equals(this.ownPath)) {
 				ownOperations.add(o);
-				ownOperations.sort(Collections.reverseOrder());
+				Collections.sort(ownOperations);
 			} else {
 				otherOperations.add(o);
-				otherOperations.sort(Collections.reverseOrder());
+				Collections.sort(otherOperations);
 			}
 		}
 	}
