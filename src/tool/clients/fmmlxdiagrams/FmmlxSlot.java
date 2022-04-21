@@ -5,7 +5,7 @@ import java.util.Vector;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
-public class FmmlxSlot implements FmmlxProperty {
+public class FmmlxSlot implements FmmlxProperty, Comparable<FmmlxSlot> {
 	private PropertyType propertyType = PropertyType.Slot;
 	private FmmlxObject owner;
 	private String name;
@@ -61,4 +61,9 @@ public class FmmlxSlot implements FmmlxProperty {
 	}
 	
 	@Override public String toString() { return name; }
+
+	@Override
+	public int compareTo(FmmlxSlot that) {
+		return this.name.compareTo(that.name);
+	}
 }

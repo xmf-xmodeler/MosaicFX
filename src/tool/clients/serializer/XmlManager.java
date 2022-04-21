@@ -839,18 +839,13 @@ public class XmlManager extends XmlHandler {
                 if(body.startsWith("@Operation body(classifier : Class,level : Integer):Boolean")) {
                 	body = body.substring("@Operation body(classifier : Class,level : Integer):Boolean".length());
                 	body = body.substring(0, body.length()-3);
-                	System.err.println("(old constraint body definition loaded)");
-                	System.err.println(body);
-                } else {
-                	System.err.println("Constraint not found!" + " " +body);
                 }
                 
                 if(reason.startsWith("@Operation reason(classifier : Class,level : Integer):String")) {
                 	reason = reason.substring("@Operation reason(classifier : Class,level : Integer):String".length());
                 	reason = reason.substring(0, reason.length()-3);
-                	System.err.println("(old constraint reason definition loaded)");
                 }
-
+                
                 comm.addConstraint(diagramID, path, constName, instLevel, body, reason);
                 break;
             }

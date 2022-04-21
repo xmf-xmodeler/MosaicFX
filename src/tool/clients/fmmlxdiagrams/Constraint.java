@@ -22,7 +22,12 @@ public class Constraint implements FmmlxProperty, Comparable<Constraint>{
 		this.reasonFull = reasonFull;
 	}
 
-	@Override public int compareTo(Constraint that) { return this.name.compareTo(that.name); }
+	public int compareTo(Constraint that) { 
+		if(this.level > that.level) return -1; 
+		if(this.level < that.level) return 1;
+		return this.name.compareTo(that.name);
+	}
+	
 	@Override public PropertyType getPropertyType() { return PropertyType.Constraint; }
 	@Override public String getName() { return name;}
 	public int getLevel() { return level;}

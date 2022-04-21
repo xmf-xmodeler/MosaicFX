@@ -36,6 +36,8 @@ import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
+
+import org.reactfx.util.Try;
 import org.w3c.dom.Element;
 
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
@@ -102,7 +104,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 //	private static final Point2D CANVAS_RAW_SIZE = new Point2D(1400, 1000);
 	public  static final Font FONT;
-
+	Palette palette = new Palette(this);
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
 	private boolean showSlots = true;
@@ -110,6 +112,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private boolean showDerivedOperations=true;
 	private boolean showDerivedAttributes=true;
 	private boolean showMetaClassName = false;
+	private boolean showConstraints = true;
+	private boolean showConstraintReports = true;
 	private DiagramViewPane zoomView;
 	@Override protected boolean loadOnlyVisibleObjects() { return false; }	// Did not work. Attributes from invisible classes did not cause slots on visible classes
 
@@ -151,7 +155,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		splitPane2 = new SplitPane();
 		mainView = new VBox();
 		
-		Palette palette = new Palette(this);
+		
 		Palette palette2 = new Palette(this,2);
 		newFmmlxPalette = new FmmlxPalette(this);
 		
@@ -183,6 +187,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         	if("showOperations".equals(key)) setShowOperations(value);
         	if("showOperationValues".equals(key)) setShowOperationValues(value);
         	if("showSlots".equals(key)) setShowSlots(value);
+        	if("showConstraintReports".equals(key)) setConstraintReportsInDiagram(value);
+        	if("showConstraints".equals(key)) setConstraintsInDiagram(value);
         }        
 
         tabPane.getTabs().add(new MyTab());
@@ -606,6 +612,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public void setShowDerivedOperations(boolean show) {this.showDerivedOperations = show;}
 	public void setShowDerivedAttributes(boolean show) {this.showDerivedAttributes = show;}
 	public void setMetaClassNanmeInPalette(boolean show) {this.showMetaClassName = show;} 
+	public void setConstraintsInDiagram(boolean show) {this.showConstraints = show;} 
+	public void setConstraintReportsInDiagram(boolean show) {this.showConstraintReports = show;} 
 
 	public boolean isShowOperations() {return this.showOperations;}
 	public boolean isShowOperationValues() {return this.showOperationValues;}
@@ -614,6 +622,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public boolean isShowDerivedOperations() {return this.showDerivedOperations;}
 	public boolean isShowDerivedAttributes() {return this.showDerivedAttributes;}
 	public boolean isMetaClassNameInPalette() {return this.showMetaClassName;}
+	public boolean isConstraintsInDiagram() {return this.showConstraints;}
+	public boolean isConstraintReportsInDiagram() {return this.showConstraintReports;} 
 
 	public Vector<String> getEnumItems(String enumName) {
 		for (FmmlxEnum e : enums) {
@@ -747,6 +757,26 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		redraw();
 	}
 	
+	public void setShowConstraints(CheckBox box) {
+		boolean show = box.isSelected();
+		setConstraintsInDiagram(show);
+		for (FmmlxObject o : getObjects()) {
+			o.setShowConstraints(show);
+		}
+		triggerOverallReLayout();
+		redraw();
+	}
+	
+	public void setShowConstraintReports(CheckBox box) {
+		boolean show = box.isSelected();
+		setConstraintReportsInDiagram(show);
+		for (FmmlxObject o : getObjects()) {
+			o.setShowConstraintReports(show);
+		}
+		triggerOverallReLayout();
+		redraw();
+	}
+	
 	public void setMetaClassNameInPalette(CheckBox metaClassName) {
 		boolean show=metaClassName.isSelected();
 		setMetaClassNanmeInPalette(show);
@@ -758,6 +788,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			newFmmlxPalette.update();
 		}		
 	}
+	
+	
 
 	@Override
 	protected void clearDiagram_specific() {
@@ -802,9 +834,12 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				Platform.runLater(() -> ISSUE.performResolveAction(this));
 			}
 		}
-
+		
+		palette.updateToolbar(this);
 		redraw();
 	}
+	
+	
 
 	@Override
 	protected void updateViewerStatusInGUI(ViewerStatus newStatus) {

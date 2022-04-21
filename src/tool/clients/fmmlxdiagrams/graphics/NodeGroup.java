@@ -193,7 +193,6 @@ public class NodeGroup extends NodeElement {
 			
 			/// Special case for labels( and later also texts):
 			if(nodeElement instanceof NodeLabel) {
-				System.err.println(mod.toString());
 				if(add) {
 					that.addNodeElement(nodeElement.createInstance(object, modifications));
 				} else {

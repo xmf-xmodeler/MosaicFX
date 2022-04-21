@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ConcreteSyntax classPath="Challenge::Aggregated1" level="1">
+  <SVG path="ProcessAggregated.svg" tx="0.0" ty="0.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+  <Label align="CENTER" tx="70.0" ty="80.0" id="bottomLabelID"/>
+  <Label align="CENTER" tx="70.0" ty="105.0" id="bottomLabel"/>
+  <Label align="CENTER" tx="70.0" ty="-5.0" id="OrgaLabel"/>
+  <SVG path="External.svg" tx="65.0" ty="10" xx="0.5" xy="0.0" yx="0.0" yy="0.5"  id="external"/>
+  <Modification>
+		<Condition type="ReadFromSlot" slotName="id"/>
+		<Affected id="bottomLabelID" localId="bottomLabelID"/>
+		<Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+  <Modification>
+		<Condition type="ReadFromSlot" slotName="prettyName"/>
+		<Affected id="bottomLabel" localId="bottomLabel"/>
+		<Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+  <Modification>
+  		<Condition type="ReadFromOpValCondition" opName="getQualifiedSingleUnit"/>
+  		<Affected id="OrgaLabel" localId="OrgaLabel"/>
+  		<Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+   <Modification>
+		<Condition type="BooleanSlotCondition" slotName="external"/>
+		<Affected id="external" localId="54"/>
+		<Consequence type="SHOW_IF"/>
+  </Modification>
+</ConcreteSyntax>
