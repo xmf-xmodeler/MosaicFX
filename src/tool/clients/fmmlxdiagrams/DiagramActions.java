@@ -32,7 +32,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
@@ -1082,7 +1081,6 @@ public class DiagramActions {
 		Vector<FmmlxObject> hiddenElements = new Vector<>();
 		Vector<FmmlxObject> shownElements = new Vector<>();
 		Vector<FmmlxObject> objects = diagram.getObjects();
-		Collections.sort(objects);
 		for(FmmlxObject o : objects) {
 			if(o.hidden) {
 				hiddenElements.add(o);
@@ -1150,7 +1148,7 @@ public class DiagramActions {
 	
 	public void sortListView(ListView<FmmlxObject> listView) {
 		Vector<FmmlxObject> v = new Vector<>(listView.getItems());
-		Collections.sort(v,new Comparator<FmmlxObject>() {
+		v.sort( new Comparator<FmmlxObject>() {
 			public int compare(FmmlxObject thisObject, FmmlxObject anotherObject) {
 				if(thisObject.getLevel()>anotherObject.getLevel()) {
 					return -1;
@@ -1167,7 +1165,7 @@ public class DiagramActions {
 		
 	public void showObjectBrowser(FmmlxObject object) {
 			
-		Platform.runLater(() -> new ObjectBrowser(diagram, object, null).show());
+		Platform.runLater(() -> new ObjectBrowser(diagram, object).show());
 			
 	}
 
