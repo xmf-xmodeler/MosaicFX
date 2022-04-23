@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -18,6 +19,7 @@ import org.dom4j.io.SAXReader;
 
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -32,8 +34,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.ListView;
 
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
+import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
@@ -43,7 +47,6 @@ public class CustomGUIController {
 	   // These attributes are required to change the diagram/model
 	   AbstractPackageViewer diagram;
 	   FmmlxObject metaClass;
-	   FmmlxObject object;
 	   
 	   // Access to the surrounding object browser and 
 	   // the elements of the custom gui
@@ -53,12 +56,19 @@ public class CustomGUIController {
 	   private Map<String, Node> objToID = new HashMap<>(); // required to reference all children with id
 	   Map<String, String> opToEvent; // required to reference operations for combination of ID and event
 	   
-	   public CustomGUIController(AbstractPackageViewer diagram, FmmlxObject metaClass, FXMLLoader loader, FmmlxObject object , Map<String, String> opToEvent, ObjectBrowser parent) {
+	   HashMap<AssociationInstanceMapping, List<String>> linksPerAssociationPerInstance; // required to handle data refreshing recursively
+	   HashMap<String, ListView<String>> listViewsForAssociations = new HashMap<>();
+	   
+	   ListView mainListView;
+	   
+	   boolean refreshInProgress = false;
+	   
+	   public CustomGUIController(AbstractPackageViewer diagram, FmmlxObject metaClass, FXMLLoader loader, Map<String, String> opToEvent, HashMap<AssociationInstanceMapping, List<String>> linksPerAssociationPerInstance, ObjectBrowser parent) {
 		   this.diagram = diagram;
-		   this.metaClass = metaClass;
+		   this.metaClass = metaClass; // depending on CREF ?
 		   this.loader = loader;
-		   this.object = object;
 		   this.opToEvent = opToEvent;
+		   this.linksPerAssociationPerInstance = linksPerAssociationPerInstance;
 		   this.parent = parent;
 	   }
 	   
@@ -71,14 +81,72 @@ public class CustomGUIController {
 		   // Handle different kinds of custom GUIs recursively
 		   fillChildren(customGUI);
 		   
-		   // now inject the input values for the custom gui based on the slots of the current instance
-		   setObject(this.object);
+		   // TBD: order objToID; therefore -> own class with interface comparable..
+		   // CREF has to be first and REFs have to be afterwards in chronological order
+		   // The order of the ref depends on their distance to the CREF!
 		   
+		   // set Main ListView to determine items
+		   mainListView = (ListView) objToID.get("CREF" + metaClass);
+		   mainListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue)-> refreshGUI(oldValue, newValue));
+		   
+		   // Link listviews to associations and add action listeners to all list views
+		   for( Node currEl : objToID.values() ) {
+			   if( currEl instanceof ListView ) {
+				   // ignore main reference
+				   if( currEl.getId().startsWith("CREF") ){
+					   continue;
+				   }
+				   
+				   ((ListView) currEl).getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue)-> injectGUI(oldValue, newValue));
+				   
+				   // Figure out the proper Association
+				   // TBD: This will not work if a class has more than one association to the main class
+				   // This analysis has to occur recursively as well!!
+				   String refName = currEl.getId().split("REF")[1];
+				   Vector<FmmlxAssociation> assocs = diagram.getAssociations();
+				   for( FmmlxAssociation assoc : assocs ) {
+					   if( assoc.getSourceNode().getName().equals(metaClass.getName() ) 
+							   && assoc.getTargetNode().getName().equals(refName) ) {
+						   // Persist association and listview combination
+						   listViewsForAssociations.put(assoc.getName(), (ListView) currEl);
+					   }
+				   }
+			   }
+		   }
+		   
+		   // now inject the input values for the custom gui based on the slots of the current instance
+		   refreshGUI("OLD", "NEW");
+		   //setObject(this.object);
+		   		   
 		   // determine possible actions
 		   //fillActions(this.loader);
 		   
 		   // Output information
 		   System.err.println("Load finished!");
+	   }
+	   
+	   public void refreshGUI(Object oldValue, Object newValue){
+		   // prevent unintended execution of the method
+		   if(  oldValue == null || newValue == null || oldValue.equals(newValue) ) {
+			   return;
+		   }
+		   
+		   // Start by CREF ListView
+		   Vector<String> objectsVector = new Vector<>();
+		   for( FmmlxObject el : metaClass.getInstances() ) {
+			   objectsVector.add(el.getName());
+		   }
+		   objectsVector.sort(null);
+		   ObservableList<String> objectList = FXCollections.observableArrayList(objectsVector);
+		   mainListView.setItems( objectList );
+		   	
+		   if( mainListView.getSelectionModel().isEmpty() ) {
+			   mainListView.getSelectionModel().select(0);
+			   //oldValue = mainListView.getItems().get(0);
+		   } 
+			   
+		   // Inject GUI based on currObj
+		   injectGUI("OLD", "NEW");
 	   }
 	   
 //	   private void fillActions(FXMLLoader loader) {
@@ -159,6 +227,12 @@ public class CustomGUIController {
 				   if( id != null ) {
 					   // this has to be done this way as the Parent class does not allow read access to its children
 					   obj = customGUI.lookup("#" + id);
+					   // alternative approach also not advised
+					   if( obj == null) {
+						   Map<String, Object> namespace = loader.getNamespace();
+						   obj = (Node) namespace.get(id);
+					   }
+					   
 					   objToID.put(id, obj);
 					   
 					   // Fetch all methods of the current GUI element and place default event handlers on it
@@ -176,62 +250,95 @@ public class CustomGUIController {
 				   }
 			   }
 		   }
-		   
-		   // Ähnliche Funktion im Control Center anlegen?
-		   // GUIs je Diagramm anlegen + für ein Level
 	   }
 	   
-	   public void injectGUI(FmmlxObject object) {		   
+	   public void injectGUI(Object oldValue, Object newValue) {
+		   // prevent unintended execution of the method
+		   if(  oldValue == null || newValue == null || oldValue.equals(newValue) ) {
+			   return;
+		   }
+		   
 		   // inject values into fields with respective instruction
 		   for( String currID : objToID.keySet() ) {
-			   if( currID.contains("INJ") ) {
-				   String injectValue;
-
-				   // Differenciate INJ, ACTINJ and REF ... INJ				   
-				   if( currID.contains("ACTINJ") ) {
-					   // inject result of action
-					   injectValue = object.getOperationValue(currID.replace("ACTINJ", "")).getValue();
-					   
-				   } else if( currID.contains("REF") ) {
-					   // inject slot of of reference
-					   String ref = currID.split("INJ")[0].replace("REF", "");
-					   String slot = currID.split("INJ")[1];
-					   
-					   // grab relevant associated object
-					   FmmlxObject refObj = diagram.getObjectByPath(diagram.getPackagePath() + "::" + ref);
-					   
-					   // grab slot value
-					   injectValue = refObj.getSlot(slot).getValue();
-					   
-				   } else {
-					   // grab slot value
-					   injectValue = object.getSlot(currID.replace("INJ", "")).getValue();
-					   
-				   }
+			   // 1.) only REF / CREF
+			   if( ! ( currID.contains("ACT") || currID.contains("INJ") ) ) {
+			   
+				   // TBD: Get rid of ListViews to Associations as parameter.. data should be fetched from the diagram!
+				   ControllerLanguageInterpreter2 exec = new ControllerLanguageInterpreter2(currID, diagram, mainListView, linksPerAssociationPerInstance, listViewsForAssociations);
 				   
-				   // setText-Method with grabbed valued
-				   Class<?> currCls = (objToID.get(currID)).getClass(); // find a better way for this
-				   // tbd: especially allow multiple elements on the same slot!! number?
-				   
-				   // simply inject value
+				   Class<?> currCls = (objToID.get(currID)).getClass();
 				   Method[] methods = currCls.getMethods();
-				   for( Method method : methods ) {
-					   if( Modifier.isPublic(method.getModifiers()) && method.getName().equals("setText")){
-						   try {
-							   method.invoke(objToID.get(currID), injectValue );
-						   } catch(Exception e) {
-							   e.printStackTrace();
-						   }
-					   }
+				   Node currElem = objToID.get(currID);
+				   
+				   Object res;
+				   try {
+					   res = exec.fetchResult();
+				   } catch( Exception e ) {
+					   e.printStackTrace();
+					   res = "null";
 				   }
-
+				   
+				   try {								
+					   for( Method method : methods ) {
+						   if( Modifier.isPublic( method.getModifiers() )
+								   && ( ( method.getName().equals("setText") && ! exec.isResultList() ) )
+						   			|| ( method.getName().equals("setItems") && exec.isResultList() ) ){
+									method.invoke(currElem, res );
+						   }   
+					   }
+					} catch( Exception e ) {
+						e.printStackTrace();
+					}
 			   }
 		   }
+		   
+		   // 2. everything else
+		   for( String currID : objToID.keySet() ) {
+			   if( currID.contains("ACT") || currID.contains("INJ") ) {
+			   
+				   // TBD: Get rid of ListViews to Associations as parameter.. data should be fetched from the diagram!
+				   ControllerLanguageInterpreter2 exec = new ControllerLanguageInterpreter2(currID, diagram, mainListView, linksPerAssociationPerInstance, listViewsForAssociations);
+				   
+				   Class<?> currCls = (objToID.get(currID)).getClass();
+				   Method[] methods = currCls.getMethods();
+				   Node currElem = objToID.get(currID);
+				   
+				   Object res;
+				   try {
+					   res = exec.fetchResult();
+				   } catch( Exception e ) {
+					   e.printStackTrace();
+					   res = "null";
+				   }
+				   
+				   try {								
+					   for( Method method : methods ) {
+						   if( Modifier.isPublic( method.getModifiers() )
+								   && ( ( method.getName().equals("setText") && ! exec.isResultList() ) )
+						   			|| ( method.getName().equals("setItems") && exec.isResultList() ) ){
+									method.invoke(currElem, res );
+						   }   
+					   }
+					} catch( Exception e ) {
+						e.printStackTrace();
+					}
+			   }
+		   }
+		   
 	   }
 	   
-	   public void setObject(FmmlxObject object) {
-		   this.object = object;
-		   injectGUI(object);
+	   public void updateClassReferences(Object newValue) {
+		   	// get selected instance
+			FmmlxObject currObj = diagram.getObjectByPath(diagram.getPackagePath() + "::" + ((FmmlxObject) newValue).getName());
+			
+			// updated all class references with the slot value of the selected instance
+			for( FmmlxSlot slot: currObj.getAllSlots()) {
+				String id = "CREF" + currObj.getMetaClassName();
+				id += "INJ" + slot.getName();
+				
+				Node text = customGUI.lookup("#" + id);					
+				((TextField) text).setText(slot.getValue());
+			}
 	   }
 	   
 	   // This method allows the execution of operations which are attached to the gui
@@ -242,6 +349,10 @@ public class CustomGUIController {
 			   id = id + "/" + event.getEventType().getName(); // get id of current action
 			   String op = opToEvent.get(id); // determine name of operation
 			   if( op != null ){
+					// TBD: More flexible depending on REF of ACT
+					String name = mainListView.getSelectionModel().getSelectedItem().toString();
+					FmmlxObject object = diagram.getObjectByPath(diagram.getPackagePath() + "::" + name);
+				   
 				   // Get actions helper from diagram and trigger operation for current object
 				   diagram.getActions().runOperation(object.getPath(), op );
 				   //tbd: How to handle operations with parameters??
@@ -255,7 +366,9 @@ public class CustomGUIController {
 			   }
 			   
 			   // also update the object list of the parent as it gets outdated otherwise
-			   parent.updateObjectList();
+			   //parent.updateObjectList();
+			   
+			   // TBD: Update object list!
 		   }
 		   
 	   }
@@ -276,6 +389,12 @@ public class CustomGUIController {
 		  			
 		  // Now we need the slot, which is corresponding to the required TextField (so the row no)
 		  id = id.replaceFirst("INJ", ""); 
+		  
+		  // Determine main object
+		  // TBD: More flexible depending on REF of ACT
+		  String name = mainListView.getSelectionModel().getSelectedItem().toString();
+		  FmmlxObject object = diagram.getObjectByPath(diagram.getPackagePath() + "::" + name);
+		  
 		  for( FmmlxSlot currSlot : object.getAllSlots() ) {
 			   String slotName = currSlot.getName();
 			   
