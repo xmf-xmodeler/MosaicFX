@@ -228,6 +228,14 @@ public class FXMLExporter {
 	        			value = GridPane.getRowIndex((Node)object);
 	        			if( (int) value != 0 ) fxml.addProperty("GridPane.rowIndex", String.valueOf(value));
 	        			break;
+	        			
+	        		case "ListView":
+	        			value = GridPane.getColumnIndex((Node)object);
+	        			if( (int) value != 0 ) fxml.addProperty("GridPane.columnIndex", String.valueOf(value));
+	        			
+	        			value = GridPane.getRowIndex((Node)object);
+	        			if( (int) value != 0 ) fxml.addProperty("GridPane.rowIndex", String.valueOf(value));
+	        			break;
 	        	}
 	        } catch (Exception e) {
 	        	System.err.println(e.getMessage());
