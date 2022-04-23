@@ -38,6 +38,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
@@ -1205,7 +1206,7 @@ public class DiagramActions {
 		
 	public void showObjectBrowser(FmmlxObject object) {
 			
-		Platform.runLater(() -> new ObjectBrowser(diagram, object, null).show());
+		Platform.runLater(() -> new ObjectBrowser(diagram, object).show());
 			
 	}
 
