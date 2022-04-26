@@ -4,6 +4,8 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
@@ -12,8 +14,12 @@ import javafx.geometry.Side;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
@@ -58,6 +64,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
@@ -1594,12 +1601,31 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private class MyTab extends Tab {
 		final Label label;
 		DiagramViewPane view;
+		boolean open = true;
 		
 		private MyTab(DiagramViewPane view) {
 			super("", view);
 			this.view = view;
 			this.label = new Label(view.name);
 			setLabel();
+			
+		    this.setOnCloseRequest(new EventHandler<Event>() {
+
+		        public void handle(Event e) {
+		        	Alert alert = new Alert(AlertType.CONFIRMATION);
+		        	alert.setTitle("Confirmation Dialog");
+		        	alert.setHeaderText("Close Tab");
+		        	alert.setContentText("Press OK to close the tab!");
+
+		        	Optional<ButtonType> result = alert.showAndWait();
+		        	if (result.get() == ButtonType.OK){
+		        	    open=false;
+		        	} else {
+		        		e.consume();
+		        	}
+		        }
+		    });
+			
 		}
 
 		public void setView(DiagramViewPane newView) {
@@ -1625,10 +1651,31 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				}
 			});
 		}
+		
+		protected void close() {
+	        Event.fireEvent(this, new Event(Tab.CLOSED_EVENT));
+	    }
 
 		public MyTab() {
 			super("*", null);
 			this.label = new Label("void");
+			this.setOnCloseRequest(new EventHandler<Event>() {
+				
+		        public void handle(Event e) {
+		        	
+		        	Alert alert = new Alert(AlertType.CONFIRMATION);
+		        	alert.setTitle("Close tab?");
+		        	alert.setHeaderText("Close tab?");
+		        	alert.setContentText("Press OK to close the tab!");
+
+		        	Optional<ButtonType> result = alert.showAndWait();
+		        	if (result.get() == ButtonType.OK){
+		        	    open=false;
+		        	} else {
+		        		e.consume();
+		        	}
+		        }
+		    });
 			
 		}		
 	

@@ -409,7 +409,6 @@ public class XModeler extends Application {
     xos.newMessageClient("com.ceteva.forms", new FormsClient()); PropertyManager.setXmfSettings();
     xos.newMessageClient("com.ceteva.undo", new UndoClient());
     xos.newMessageClient("com.ceteva.oleBridge", new OleBridgeClient());
-    
     WorkbenchClient.theClient().startFmmlxClient();
 //    xos.newMessageClient("screenGeneration", new ScreenGenerationClient()); // BB
   }

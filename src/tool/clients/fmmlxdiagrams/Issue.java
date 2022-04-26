@@ -103,6 +103,7 @@ public class Issue implements FmmlxProperty{
 			FmmlxObject obj = diagram.getObjectByPath((String) solution.get(1));
 			String slotName = (String) solution.get(2);
 			FmmlxSlot slot = obj.getSlot(slotName);
+			System.err.println(obj.getName() + " " + obj.getConstraints());
 			diagram.getActions().changeSlotValue(obj, slot);
 		} else if("addMissingLink".equals(actionName)) { 
 			FmmlxObject obj = diagram.getObjectByPath((String) solution.get(1));
