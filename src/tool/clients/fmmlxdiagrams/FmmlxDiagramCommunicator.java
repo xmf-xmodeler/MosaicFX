@@ -184,6 +184,10 @@ public class FmmlxDiagramCommunicator {
 							Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
 							//alert.showAndWait(); NOPE
 							alert.show();
+							if(err.size() > 1) {
+								System.err.println("error handling: " + err.get(1));
+								handleErrorMessage((java.util.Vector<Object>) err.get(1), getDiagram(diagramID));
+								}								
 							l.countDown();
 						});
 						try {
@@ -199,6 +203,19 @@ public class FmmlxDiagramCommunicator {
 		} else {
 			if (DEBUG) System.err.println("o: " + msgAsObj + "(" + msgAsObj.getClass() + ")");
 		}
+	}
+
+	private void handleErrorMessage(Vector<Object> errorInfo, FmmlxDiagram diagram) {
+		Object problem = errorInfo.get(0);
+		if("addOperation:failed".equals(problem)) {
+//			System.err.println("diagramObjects: " + diagram.diagramID + ": " + diagram.objects);
+//			FmmlxObject o = diagram.getObjectByPath((String)errorInfo.get(1));
+//			int level = (Integer) errorInfo.get(2);
+//			String code = (String) errorInfo.get(3);
+//			
+//			diagram.actions.addOperationDialog(o);
+		}
+		
 	}
 
 	/**
