@@ -1550,13 +1550,16 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		
 		private void sendViewStatus() {
+			int n=1;
+			System.err.println("SendViewStatus: " + n);
+			n++;
 			Vector<String> names = new Vector<>();
 			Vector<Affine> transformations = new Vector<>();
 			for(DiagramViewPane view : views) if(!view.isZoomView) {
 				names.add(view.name);
 				transformations.add(view.canvasTransform);
 			}
-			comm.sendViewStatus(diagramID, names, transformations);			
+			comm.sendViewStatus(diagramID, names, transformations);		
 		}
 
 		private void handleCenterDragged(MouseEvent e) {
@@ -1601,15 +1604,19 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private class MyTab extends Tab {
 		final Label label;
 		DiagramViewPane view;
-		boolean open = true;
 		
 		private MyTab(DiagramViewPane view) {
 			super("", view);
 			this.view = view;
 			this.label = new Label(view.name);
 			setLabel();
+			setCloseListener();
+		    
 			
-		    this.setOnCloseRequest(new EventHandler<Event>() {
+		}
+		
+		public void setCloseListener() {
+			this.setOnCloseRequest(new EventHandler<Event>() {
 
 		        public void handle(Event e) {
 		        	Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -1619,13 +1626,12 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 		        	Optional<ButtonType> result = alert.showAndWait();
 		        	if (result.get() == ButtonType.OK){
-		        	    open=false;
+		        	   views.remove(view);
 		        	} else {
 		        		e.consume();
 		        	}
 		        }
 		    });
-			
 		}
 
 		public void setView(DiagramViewPane newView) {
@@ -1652,30 +1658,14 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			});
 		}
 		
-		protected void close() {
-	        Event.fireEvent(this, new Event(Tab.CLOSED_EVENT));
-	    }
+//		protected void close() {
+//	        Event.fireEvent(this, new Event(Tab.CLOSED_EVENT));
+//	    }
 
 		public MyTab() {
 			super("*", null);
 			this.label = new Label("void");
-			this.setOnCloseRequest(new EventHandler<Event>() {
-				
-		        public void handle(Event e) {
-		        	
-		        	Alert alert = new Alert(AlertType.CONFIRMATION);
-		        	alert.setTitle("Close tab?");
-		        	alert.setHeaderText("Close tab?");
-		        	alert.setContentText("Press OK to close the tab!");
-
-		        	Optional<ButtonType> result = alert.showAndWait();
-		        	if (result.get() == ButtonType.OK){
-		        	    open=false;
-		        	} else {
-		        		e.consume();
-		        	}
-		        }
-		    });
+			setCloseListener();
 			
 		}		
 	
