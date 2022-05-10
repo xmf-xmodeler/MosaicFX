@@ -294,6 +294,11 @@ public class CustomDialog<R> extends Dialog<R> {
 			@Override
 			protected void updateItem(Property item, boolean empty) {
 				super.updateItem(item, empty);
+				
+				// Notlösung..
+				if ( item == null ) {
+					empty = true;
+				}
 
 				if (empty || isNullOrEmpty(item.getName())) {
 					setText(null);

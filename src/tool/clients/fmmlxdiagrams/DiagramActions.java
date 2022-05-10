@@ -1206,7 +1206,7 @@ public class DiagramActions {
 		
 	public void showObjectBrowser(FmmlxObject object) {
 			
-		Platform.runLater(() -> new ObjectBrowser(diagram, object, null).show());
+		Platform.runLater(() -> new ObjectBrowser(diagram, object).show());
 			
 	}
 

@@ -199,7 +199,6 @@ public class FXMLExporter {
 	        			fxml.addProperty("xmlns", "http://javafx.com/javafx/17"); // Default Action
 	        			
 	        			// hier ist ggf. auch ein Controller zu definieren
-	        			// der soll vorerst immer der ObjectBrowser sein
 	        			fxml.addProperty("fx:controller", "tool.clients.fmmlxdiagrams.classbrowser.CustomGUIController");
 	        			
 	        			break;
@@ -223,6 +222,14 @@ public class FXMLExporter {
 	        			break;
 	        			
 	        		case "TextField":
+	        			value = GridPane.getColumnIndex((Node)object);
+	        			if( (int) value != 0 ) fxml.addProperty("GridPane.columnIndex", String.valueOf(value));
+	        			
+	        			value = GridPane.getRowIndex((Node)object);
+	        			if( (int) value != 0 ) fxml.addProperty("GridPane.rowIndex", String.valueOf(value));
+	        			break;
+	        			
+	        		case "ListView":
 	        			value = GridPane.getColumnIndex((Node)object);
 	        			if( (int) value != 0 ) fxml.addProperty("GridPane.columnIndex", String.valueOf(value));
 	        			
