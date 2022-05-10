@@ -416,6 +416,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			edge.layoutLabels(this);
 		}
 	}
+	
+	public Vector<CanvasElement> getSelectedObjects() {
+		return new Vector<>(selectedObjects);
+	}
 
 	private void mouseReleasedStandard() {
 		for (Edge<?> e : edges) e.removeRedundantPoints();

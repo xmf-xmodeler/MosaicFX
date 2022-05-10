@@ -48,6 +48,25 @@ public class ObjectContextMenu extends ContextMenu {
 //		}
 //		getItems().add(instanceGenerator);
 		
+		
+		if(diagram.getSelectedObjects().size() > 1) {
+			boolean classifyPossible = true;
+			Vector<FmmlxObject> objs = new Vector<>();
+			for(CanvasElement ce : diagram.getSelectedObjects()) {
+				if(! (ce instanceof FmmlxObject))  classifyPossible = false;
+				else {
+					FmmlxObject o = (FmmlxObject) ce;
+					objs.add(o);
+					if(!("Root::FMML::MetaClass".equals(o.getOfPath())))  classifyPossible = false;
+				}
+			}
+			if(classifyPossible) {
+				MenuItem classify = new MenuItem("Classify");
+				getItems().add(classify);
+				classify.setOnAction(e -> actions.classify(objs));
+			}
+		}
+		
 		MenuItem changeOfItem = new MenuItem("Change of (Metaclass)");
 		changeOfItem.setOnAction(e -> actions.changeOfDialog(object));
 		changeOfItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);

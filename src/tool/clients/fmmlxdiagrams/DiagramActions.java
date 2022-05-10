@@ -1296,4 +1296,8 @@ public class DiagramActions {
 			throw new RuntimeException("runOperation failed", e);
 		}	
 	}
+
+	public void classify(Vector<FmmlxObject> objs) {
+		diagram.getComm().classify(diagram.diagramID, objs);
+	}
 }

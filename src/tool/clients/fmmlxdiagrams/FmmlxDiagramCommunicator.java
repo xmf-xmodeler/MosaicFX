@@ -882,6 +882,17 @@ public class FmmlxDiagramCommunicator {
 				new Value(parentsArray), new Value(false), new Value(x), new Value(y), new Value(slotList)};
 		sendMessage("addInstance", message);
 	}
+	
+	public void classify(int diagramID, Vector<FmmlxObject> objs) {
+		Value[] classNames = new Value[objs.size()];
+		for(int i = 0; i < classNames.length; i++) {
+			classNames[i] = new Value(objs.get(i).name);
+		}
+		Value[] message = new Value[]{
+			getNoReturnExpectedMessageID(diagramID),
+			new Value(classNames)};
+		sendMessage("classify", message);
+	}
 
 	public void removeClass(int diagramID, String className, int strategy) {
 		Value[] message = new Value[]{
@@ -2174,4 +2185,6 @@ public class FmmlxDiagramCommunicator {
 			getNoReturnExpectedMessageID(diagramID),
 			new Value(text)});
     }
+
+
 }
