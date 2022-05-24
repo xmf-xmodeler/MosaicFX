@@ -15,7 +15,10 @@ public class InheritanceEdge extends Edge<FmmlxObject> {
 				diagram);
 	}
 
-	protected void checkVisibilityMode() {visible = targetNode.getPointForEdge(targetEnd, false).distance(sourceNode.getPointForEdge(sourceEnd, true))<1000;}
+	protected void checkVisibilityMode() {
+		System.err.println("POINT target: "+targetNode.getPointForEdge(targetEnd, false).toString());
+		System.err.println("POINT source: "+sourceNode.getPointForEdge(sourceEnd, true).toString());
+		visible = targetNode.getPointForEdge(targetEnd, false).distance(sourceNode.getPointForEdge(sourceEnd, true))<1000;}
 	
 	@Override
 	protected void layoutLabels(FmmlxDiagram diagram) {

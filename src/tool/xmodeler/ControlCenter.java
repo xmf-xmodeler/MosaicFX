@@ -74,7 +74,7 @@ public class ControlCenter extends Stage {
 		Label modelLabel = new Label("Models");
 		CreatedModifiedGridPane modelGridPane = new CreatedModifiedGridPane();
 		
-		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard");
+		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard"); //Button for ConcreteSyntaxWizard
 		concreteSyntaxWizardStart.setOnAction(e -> { 
 			ConcreteSyntaxWizard wizard = new ConcreteSyntaxWizard();
 			try {
@@ -175,7 +175,7 @@ public class ControlCenter extends Stage {
 		diagramLV.setPrefSize(250, 150);
 		grid.add(diagramLV, 4, 2);
 		grid.add(diagramsGridPane, 4, 3);
-		grid.add(concreteSyntaxWizardStart, 4, 4);
+		//grid.add(concreteSyntaxWizardStart, 4, 4); //Buton for ConcreteSyntaxWizard
 
 		init();
 		//categoryLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->categorySelected(NEWW));

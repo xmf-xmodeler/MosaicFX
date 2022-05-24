@@ -18,8 +18,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
@@ -41,9 +41,8 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
+import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
-
-import org.reactfx.util.Try;
 import org.w3c.dom.Element;
 
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
@@ -214,6 +213,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
                 	getActiveTab().canvasTransform.prependRotation(10, new Point2D(getActiveTab().canvas.getWidth()/2 , getActiveTab().canvas.getHeight()/2));
                 	redraw();
                 }
+                if(event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.F) {
+                	getActiveView().findObject();
+                }
             }
         });
         
@@ -366,7 +368,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private void updateDiagramLater() {
 		diagramRequiresUpdate = true;
 	}
-
+	
+	
+	
+	
 	public void redraw() {
 		if (fetchingData) {
 			return;}
@@ -407,13 +412,16 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	public void triggerOverallReLayout() {
-		for(FmmlxObject o : new Vector<>(objects)) {
-			o.layout(this);
-		}
+		
 		// TODO evil hack. not kosher
-		for(int i = 0; i < 2; i++) for(Edge<?> edge : new Vector<>(edges)) {
-			edge.align();
-			edge.layoutLabels(this);
+		for(int i = 0; i < 2; i++) { 
+			for(FmmlxObject o : new Vector<>(objects)) {
+				o.layout(this);
+			}
+			for(Edge<?> edge : new Vector<>(edges)) {
+				edge.align();
+				edge.layoutLabels(this);
+			}
 		}
 	}
 	
@@ -1549,9 +1557,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		
 		private void sendViewStatus() {
-			int n=1;
-			System.err.println("SendViewStatus: " + n);
-			n++;
 			Vector<String> names = new Vector<>();
 			Vector<Affine> transformations = new Vector<>();
 			for(DiagramViewPane view : views) if(!view.isZoomView) {
@@ -1591,6 +1596,47 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			Point2D p2 = new Point2D(bounds.getMaxX(), bounds.getMaxY());
 			return rec.contains(p1) && rec.contains(p2);
 		}
+		
+		
+		public void findObject() {
+			Vector<FmmlxObject> allObjects = getObjects();
+			Vector<FmmlxObject> allVisibleObjects = new Vector<FmmlxObject>();
+			
+			for (FmmlxObject o : allObjects) {
+				if (o.hidden==false)
+					allVisibleObjects.add(o);
+			}
+			
+			ChoiceDialog<FmmlxObject> dialog = new ChoiceDialog<FmmlxObject>(null, allVisibleObjects);
+			dialog.setTitle("Choice Dialog");
+			dialog.setHeaderText("A wonderfull Choice to make!");
+			dialog.setContentText("Choose your FmmlxObject:");
+
+			Optional<FmmlxObject> result = dialog.showAndWait();
+			if (result.isPresent()){
+			    System.err.println("Your choice: " + result.get()+ " CenterX: " + result.get().getCenterX()+ " CenterY: " + result.get().getCenterY());
+			    System.err.println("Width: " + this.getWidth());   
+			    System.err.println("Height: " + this.getHeight());   
+			    
+			    Point2D viewCenter = new Point2D(this.getWidth()/2,this.getHeight()/2);
+			    try {
+			    Point2D viewCenter2 = canvasTransform.inverseTransform(viewCenter);
+			    canvasTransform.append(new Translate(viewCenter2.getX()-result.get().getCenterX(), viewCenter2.getY()-result.get().getCenterY()));
+			    } catch (NonInvertibleTransformException e) {
+			    	e.printStackTrace();
+			    }
+			    
+//				try {
+//					Point2D pivot_ = canvasTransform.inverseTransform(pivot);
+			   	
+//				} catch (NonInvertibleTransformException e1) {
+//					e1.printStackTrace();
+//				}
+			}
+			
+		}
+	
+	
 	}
 
 	public DiagramViewPane getActiveTab() {
@@ -1600,6 +1646,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return activeView;
 	}	
 		
+	
+	
+	
 	private class MyTab extends Tab {
 		final Label label;
 		DiagramViewPane view;

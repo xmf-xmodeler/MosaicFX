@@ -456,10 +456,10 @@ public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 	@Override
 	public final ContextMenu getContextMenu(FmmlxDiagram.DiagramViewPane diagram, Point2D absolutePoint) {
 		ContextMenu localMenu = getContextMenuLocal(diagram.getDiagram().actions);
-		if(localMenu.getItems().size()>0) localMenu.getItems().add(new SeparatorMenuItem());
-		MenuItem repairItem = new MenuItem("Repair Edge Alignment");
-		repairItem.setOnAction(e -> ensure90DegreeAngles());
-		localMenu.getItems().add(repairItem);
+		//if(localMenu.getItems().size()>0) localMenu.getItems().add(new SeparatorMenuItem());
+		//MenuItem repairItem = new MenuItem("Repair Edge Alignment");
+		//repairItem.setOnAction(e -> ensure90DegreeAngles());
+		//localMenu.getItems().add(repairItem);
 		return localMenu;
 	}
 

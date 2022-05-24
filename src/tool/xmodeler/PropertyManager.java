@@ -88,7 +88,7 @@ public class PropertyManager {
 	public void getUserInterface() {
 		
 		TabPane tabPane = new TabPane();
-		Tab saveTab = new Tab("Savings");
+		Tab saveTab = new Tab("Saved Models");
 		Tab userInterfaceTab  = new Tab("UserInterface");
 		Tab debugTab = new Tab("Debugging");
 		
@@ -175,7 +175,7 @@ public class PropertyManager {
 		saveInfo.setStyle("-fx-font-weight: bold");
 		File folder = new File("");
 		folder=new File(folder.toURI()).getParentFile();
-		Label saveLabel = new Label("Directory for save files ");
+		Label saveLabel = new Label("Directory for saved models ");
 		TextField saveTextField = new TextField(new File(folder, "Saves").toString());
 		
 		
@@ -196,6 +196,8 @@ public class PropertyManager {
 		backUpDirectory.setOnAction(e -> {
             File selectedBackUpDirectory = backUpDirectoryChooser.showDialog(stage);
         });
+		backUpDirectory.setDisable(true);
+		backUpTextField.setDisable(true);
 		
 		DirectoryChooser graphicDirectoryChooser = new DirectoryChooser();
 		graphicDirectoryChooser.setInitialDirectory(folder);
@@ -206,6 +208,8 @@ public class PropertyManager {
 		graphicDirectory.setOnAction(e -> {
             File selectedGraphicDirectory = graphicDirectoryChooser.showDialog(stage);
         });
+		graphicTextField.setDisable(true);
+		graphicDirectory.setDisable(true);
 		
 		
 		pathGrid.add(saveInfo, 0, 0);
@@ -264,6 +268,7 @@ public class PropertyManager {
 		
 		//fillDebugGrid();
 		debugTab.setContent(debugGrid);
+		debugTab.setDisable(true);
 		
 		
 		
