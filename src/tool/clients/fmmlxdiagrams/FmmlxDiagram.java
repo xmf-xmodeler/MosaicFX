@@ -1552,9 +1552,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		
 		private void sendViewStatus() {
-			int n=1;
-			System.err.println("SendViewStatus: " + n);
-			n++;
 			Vector<String> names = new Vector<>();
 			Vector<Affine> transformations = new Vector<>();
 			for(DiagramViewPane view : views) if(!view.isZoomView) {
