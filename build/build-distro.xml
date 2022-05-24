@@ -221,6 +221,7 @@
 			<zipfileset dir="../../XMF/com.ceteva.xmf.system" prefix="${prefix}">
 				<include name="xmf-addons/**" />
 				<include name="xmf-src/**" />
+				<include name="models/**" />
 				<include name="xmf-img/compiler.img" />
 				<include name="xmf-img/xmf.img" />
 				<include name="xmf-img/mosaic.img" />

@@ -21,6 +21,7 @@ import xos.Value;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ public class FmmlxDiagramCommunicator {
 	private int handler;
 	int idCounter = 0;
 	private final HashMap<Integer, Vector<Object>> results = new HashMap<>();
+	private final HashMap<Integer, ReturnCall<Vector<Object>>> returnMap = new HashMap<>();
 	private static final Vector<FmmlxDiagram> diagrams = new Vector<>();
 	private static final boolean DEBUG = false;
 	static TabPane tabPane;
@@ -164,6 +166,7 @@ public class FmmlxDiagramCommunicator {
 	 */
 	@SuppressWarnings("unchecked")
 	public void sendMessageToJava(Object msgAsObj) {
+//		System.err.println(returnMap);
 		if (msgAsObj instanceof java.util.Vector) {
 			java.util.Vector<Object> msgAsVec = (java.util.Vector<Object>) msgAsObj;
 			java.util.Vector<Object> ids = (java.util.Vector<Object>) msgAsVec.get(0);
@@ -198,6 +201,9 @@ public class FmmlxDiagramCommunicator {
 					}
 				}
 			} else {
+				if(returnMap.containsKey(requestID)) {
+					Platform.runLater(() -> {returnMap.remove(requestID).run(msgAsVec);});
+				} else
 				results.put(requestID, msgAsVec);
 			}
 		} else {
@@ -256,6 +262,18 @@ public class FmmlxDiagramCommunicator {
 			throw new TimeOutException(message + args);
 		return results.remove(requestID);
 	}
+	
+	private void xmfRequestAsync(int targetHandle, int diagramID, 
+			String message, ReturnCall<Vector<Object>> returnCall, Value... args) {
+
+		Value[] args2 = new Value[args.length + 1];
+		int requestID = idCounter++;
+		if (DEBUG) System.err.println(": Sending request " + message + "(" + requestID + ") handle" + targetHandle);
+		System.arraycopy(args, 0, args2, 1, args.length);
+		args2[0] = new Value(new Value[] {new Value(diagramID), new Value(requestID)});
+		returnMap.put(requestID, returnCall);
+		WorkbenchClient.theClient().send(targetHandle, message, args2);
+	}
 
 	private void sendMessage(String command, Value[] message) {
 		if (DEBUG) System.err.println(": Sending command " + command);
@@ -267,158 +285,168 @@ public class FmmlxDiagramCommunicator {
 	/////////////////////////////////////////
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxObject> getAllObjects(AbstractPackageViewer diagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllObjects");
-		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-		Vector<FmmlxObject> result = new Vector<>();
-		for (Object responseObject : responseContent) {
-			Vector<Object> responseObjectList = (Vector<Object>) (responseObject);
-			
-			Vector<Object> parentListO2 = (Vector<Object>) responseObjectList.get(12);
-			Vector<String> parentListS = new Vector<>();
-			for (Object o : parentListO2) {
-				parentListS.add((String) o);
+	public void  getAllObjects(AbstractPackageViewer diagram, ReturnCall<Vector<FmmlxObject>> objectsReceivedReturn) {
+		
+		ReturnCall<Vector<Object>> localReturn = (response) -> {
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			Vector<FmmlxObject> result = new Vector<>();
+			for (Object responseObject : responseContent) {
+				Vector<Object> responseObjectList = (Vector<Object>) (responseObject);
+				
+				Vector<Object> parentListO2 = (Vector<Object>) responseObjectList.get(12);
+				Vector<String> parentListS = new Vector<>();
+				for (Object o : parentListO2) {
+					parentListS.add((String) o);
+				}
+				FmmlxObject object = new FmmlxObject(
+						(String)  responseObjectList.get(1), // name
+						(Integer) responseObjectList.get(2), // level
+						(String)  responseObjectList.get(10), // ownPath
+						(String)  responseObjectList.get(11), // ofPath
+						parentListS,                          // parentsPath
+						(Boolean) responseObjectList.get(5),
+						(Integer) responseObjectList.get(6), // x-Position
+						(Integer) responseObjectList.get(7), // y-Position 
+						(Boolean) responseObjectList.get(8), // hidden
+						diagram);
+				result.add(object);
 			}
-			FmmlxObject object = new FmmlxObject(
-					(String)  responseObjectList.get(1), // name
-					(Integer) responseObjectList.get(2), // level
-					(String)  responseObjectList.get(10), // ownPath
-					(String)  responseObjectList.get(11), // ofPath
-					parentListS,                          // parentsPath
-					(Boolean) responseObjectList.get(5),
-					(Integer) responseObjectList.get(6), // x-Position
-					(Integer) responseObjectList.get(7), // y-Position 
-					(Boolean) responseObjectList.get(8), // hidden
-					diagram);
-			result.add(object);
-
-			//sendCurrentPosition(diagram.getID(), object.getPath(), (int)Math.round(object.getX()), (int)Math.round(object.getY()), object.hidden); // make sure to store position if newly created
-		}
-		return result;
+			objectsReceivedReturn.run(result);
+		};
+		
+		xmfRequestAsync(handler, diagram.getID(), "getAllObjects", localReturn);
+		
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<Edge<?>> getAllInheritanceEdges(AbstractPackageViewer diagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllInheritanceEdges");
-		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-		Vector<Edge<?>> result = new Vector<>();
-
-		for (Object edgeInfo : responseContent) {
-			Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
-
-			Vector<Point2D> listOfPoints = null;
-			Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(3);
-			PortRegion startRegion = null;
-			PortRegion endRegion = null;
-			if(pointsListO != null && pointsListO.size()>=2) {
-				listOfPoints = new Vector<>();
-				if("startNode".equals(((Vector<Object>)(pointsListO.firstElement())).get(0)))
-					startRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.firstElement())).get(1)));
-				if("endNode".equals(((Vector<Object>)(pointsListO.lastElement())).get(0)))
-					endRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.lastElement())).get(1)));
-				for (Object pointO : pointsListO) {
-					Vector<Object> pointV = (Vector<Object>) pointO;
-					if("defaultPoint".equals(pointV.get(0))) {
-						Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); 
-						listOfPoints.addElement(pointP);
+	public void getAllInheritanceEdges(AbstractPackageViewer diagram, ReturnCall<Vector<Edge<?>>> inheritanceEdgeReceivedReturn) {
+		ReturnCall<Vector<Object>> localReturn = (response) -> {
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			Vector<Edge<?>> result = new Vector<>();
+	
+			for (Object edgeInfo : responseContent) {
+				Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
+	
+				Vector<Point2D> listOfPoints = null;
+				Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(3);
+				PortRegion startRegion = null;
+				PortRegion endRegion = null;
+				if(pointsListO != null && pointsListO.size()>=2) {
+					listOfPoints = new Vector<>();
+					if("startNode".equals(((Vector<Object>)(pointsListO.firstElement())).get(0)))
+						startRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.firstElement())).get(1)));
+					if("endNode".equals(((Vector<Object>)(pointsListO.lastElement())).get(0)))
+						endRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.lastElement())).get(1)));
+					for (Object pointO : pointsListO) {
+						Vector<Object> pointV = (Vector<Object>) pointO;
+						if("defaultPoint".equals(pointV.get(0))) {
+							Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); 
+							listOfPoints.addElement(pointP);
+						}
 					}
 				}
+	
+				InheritanceEdge object = new InheritanceEdge(
+						(String) edgeInfoAsList.get(0), // id
+						(String) edgeInfoAsList.get(1), //TODO startId
+						(String) edgeInfoAsList.get(2), //TODO endId
+						listOfPoints, // points
+						startRegion, endRegion,
+						diagram);
+	
+				result.add(object);
 			}
-
-			InheritanceEdge object = new InheritanceEdge(
-					(String) edgeInfoAsList.get(0), // id
-					(String) edgeInfoAsList.get(1), //TODO startId
-					(String) edgeInfoAsList.get(2), //TODO endId
-					listOfPoints, // points
-					startRegion, endRegion,
-					diagram);
-
-			result.add(object);
-		}
-		return result;
+			inheritanceEdgeReceivedReturn.run(result);
+		};
+		xmfRequestAsync(handler, diagram.getID(), "getAllInheritanceEdges", localReturn);		
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Vector<Edge<?>> getAllDelegationEdges(AbstractPackageViewer diagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllDelegationEdges");
-		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-		Vector<Edge<?>> result = new Vector<>();
-
-		for (Object edgeInfo : responseContent) {
-			Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
-
-			Vector<Point2D> listOfPoints = null;
-			Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(4);
-			PortRegion startRegion = null;
-			PortRegion endRegion = null;
-			if(pointsListO != null && pointsListO.size()>=2) {
-				listOfPoints = new Vector<>();
-				if("startNode".equals(((Vector<Object>)(pointsListO.firstElement())).get(0)))
-					startRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.firstElement())).get(1)));
-				if("endNode".equals(((Vector<Object>)(pointsListO.lastElement())).get(0)))
-					endRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.lastElement())).get(1)));
-				for (Object pointO : pointsListO) {
-					Vector<Object> pointV = (Vector<Object>) pointO;
-					if("defaultPoint".equals(pointV.get(0))) {
-						Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); 
-						listOfPoints.addElement(pointP);
+	public void getAllDelegationEdges(AbstractPackageViewer diagram, ReturnCall<Vector<Edge<?>>> delegationEdgeReceivedReturn) {
+		ReturnCall<Vector<Object>> localReturn = (response) -> {
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			Vector<Edge<?>> result = new Vector<>();
+	
+			for (Object edgeInfo : responseContent) {
+				Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
+	
+				Vector<Point2D> listOfPoints = null;
+				Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(4);
+				PortRegion startRegion = null;
+				PortRegion endRegion = null;
+				if(pointsListO != null && pointsListO.size()>=2) {
+					listOfPoints = new Vector<>();
+					if("startNode".equals(((Vector<Object>)(pointsListO.firstElement())).get(0)))
+						startRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.firstElement())).get(1)));
+					if("endNode".equals(((Vector<Object>)(pointsListO.lastElement())).get(0)))
+						endRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.lastElement())).get(1)));
+					for (Object pointO : pointsListO) {
+						Vector<Object> pointV = (Vector<Object>) pointO;
+						if("defaultPoint".equals(pointV.get(0))) {
+							Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); 
+							listOfPoints.addElement(pointP);
+						}
 					}
 				}
+	
+				DelegationEdge object = new DelegationEdge(
+						(String) edgeInfoAsList.get(0), // id
+						(String) edgeInfoAsList.get(1), // startId
+						(String) edgeInfoAsList.get(2), // endId
+						(Integer) edgeInfoAsList.get(3), // level
+						listOfPoints, // points
+						startRegion, endRegion,
+						diagram);
+				result.add(object);
+	
 			}
-
-			DelegationEdge object = new DelegationEdge(
-					(String) edgeInfoAsList.get(0), // id
-					(String) edgeInfoAsList.get(1), // startId
-					(String) edgeInfoAsList.get(2), // endId
-					(Integer) edgeInfoAsList.get(3), // level
-					listOfPoints, // points
-					startRegion, endRegion,
-					diagram);
-			result.add(object);
-
-		}
-		return result;
+			delegationEdgeReceivedReturn.run(result);
+		};
+		xmfRequestAsync(handler, diagram.getID(), "getAllDelegationEdges", localReturn);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Vector<Edge<?>> getAllRoleFillerEdges(AbstractPackageViewer diagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllRoleFillerEdges");
-		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-		Vector<Edge<?>> result = new Vector<>();
-
-		for (Object edgeInfo : responseContent) {
-			Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
-
-			Vector<Point2D> listOfPoints = null;
-			Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(3);
-			PortRegion startRegion = null;
-			PortRegion endRegion = null;
-			if(pointsListO != null && pointsListO.size()>=2) {
-				listOfPoints = new Vector<>();
-				if("startNode".equals(((Vector<Object>)(pointsListO.firstElement())).get(0)))
-					startRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.firstElement())).get(1)));
-				if("endNode".equals(((Vector<Object>)(pointsListO.lastElement())).get(0)))
-					endRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.lastElement())).get(1)));
-				for (Object pointO : pointsListO) {
-					Vector<Object> pointV = (Vector<Object>) pointO;
-					if("defaultPoint".equals(pointV.get(0))) {
-						Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); 
-						listOfPoints.addElement(pointP);
+	public void getAllRoleFillerEdges(AbstractPackageViewer diagram, ReturnCall<Vector<Edge<?>>> roleFillerEdgesReceivedReturn) {
+		ReturnCall<Vector<Object>> localReturn = (response) -> {
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			Vector<Edge<?>> result = new Vector<>();
+	
+			for (Object edgeInfo : responseContent) {
+				Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
+	
+				Vector<Point2D> listOfPoints = null;
+				Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(3);
+				PortRegion startRegion = null;
+				PortRegion endRegion = null;
+				if(pointsListO != null && pointsListO.size()>=2) {
+					listOfPoints = new Vector<>();
+					if("startNode".equals(((Vector<Object>)(pointsListO.firstElement())).get(0)))
+						startRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.firstElement())).get(1)));
+					if("endNode".equals(((Vector<Object>)(pointsListO.lastElement())).get(0)))
+						endRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.lastElement())).get(1)));
+					for (Object pointO : pointsListO) {
+						Vector<Object> pointV = (Vector<Object>) pointO;
+						if("defaultPoint".equals(pointV.get(0))) {
+							Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); 
+							listOfPoints.addElement(pointP);
+						}
 					}
 				}
+	
+				RoleFillerEdge object = new RoleFillerEdge(
+						(String) edgeInfoAsList.get(0), // id
+						(String) edgeInfoAsList.get(1), //TODO startId
+						(String) edgeInfoAsList.get(2), //TODO endId
+						listOfPoints, // points
+						startRegion, endRegion,
+						diagram);
+	
+				result.add(object);
 			}
-
-			RoleFillerEdge object = new RoleFillerEdge(
-					(String) edgeInfoAsList.get(0), // id
-					(String) edgeInfoAsList.get(1), //TODO startId
-					(String) edgeInfoAsList.get(2), //TODO endId
-					listOfPoints, // points
-					startRegion, endRegion,
-					diagram);
-
-			result.add(object);
-		}
-		return result;
+			roleFillerEdgesReceivedReturn.run(result);
+		};
+		xmfRequestAsync(handler, diagram.getID(), "getAllRoleFillerEdges", localReturn);
+		
 	}
 
     @SuppressWarnings("unchecked")
@@ -457,231 +485,287 @@ public class FmmlxDiagramCommunicator {
     }
 	
 	@SuppressWarnings("unchecked")
-	public Vector<Edge<?>> getAllAssociations(AbstractPackageViewer diagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllAssociations");
-		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-		Vector<Edge<?>> result = new Vector<>();
-
-		for (Object edgeInfo : responseContent) {
-			Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
-
-			Vector<Point2D> listOfPoints = null;
-			Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(4);
-			PortRegion startRegion = null;
-			PortRegion endRegion = null;
-			if(pointsListO != null && pointsListO.size()>=2) {
-				listOfPoints = new Vector<>();
-				if("startNode".equals(((Vector<Object>)(pointsListO.firstElement())).get(0)))
-					startRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.firstElement())).get(1)));
-				if("endNode".equals(((Vector<Object>)(pointsListO.lastElement())).get(0)))
-					endRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.lastElement())).get(1)));
-				for (Object pointO : pointsListO) {
-					Vector<Object> pointV = (Vector<Object>) pointO;
-					if("defaultPoint".equals(pointV.get(0))) {
-						Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); 
-						listOfPoints.addElement(pointP);
+	public void getAllAssociations(AbstractPackageViewer diagram, ReturnCall<Vector<Edge<?>>> associationsReceivedReturn) {
+		ReturnCall<Vector<Object>> returnCall = response -> {
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			Vector<Edge<?>> result = new Vector<>();
+	
+			for (Object edgeInfo : responseContent) {
+				Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
+	
+				Vector<Point2D> listOfPoints = null;
+				Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(4);
+				PortRegion startRegion = null;
+				PortRegion endRegion = null;
+				if(pointsListO != null && pointsListO.size()>=2) {
+					listOfPoints = new Vector<>();
+					if("startNode".equals(((Vector<Object>)(pointsListO.firstElement())).get(0)))
+						startRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.firstElement())).get(1)));
+					if("endNode".equals(((Vector<Object>)(pointsListO.lastElement())).get(0)))
+						endRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.lastElement())).get(1)));
+					for (Object pointO : pointsListO) {
+						Vector<Object> pointV = (Vector<Object>) pointO;
+						if("defaultPoint".equals(pointV.get(0))) {
+							Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); 
+							listOfPoints.addElement(pointP);
+						}
 					}
 				}
+				
+				Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(13);
+	
+				FmmlxAssociation object = new FmmlxAssociation(
+						(String) edgeInfoAsList.get(0), // id
+						(String) edgeInfoAsList.get(1), // startId
+						(String) edgeInfoAsList.get(2), // endId
+						(Integer) edgeInfoAsList.get(3), // parentId
+						listOfPoints, // points
+						startRegion, endRegion,
+						(String) edgeInfoAsList.get(5), // name 1
+						(String) edgeInfoAsList.get(6), // name 2
+						(String) edgeInfoAsList.get(7), // name source->target
+						(String) edgeInfoAsList.get(8), // name target->source
+						(Integer) edgeInfoAsList.get(9), // level source
+						(Integer) edgeInfoAsList.get(10), // level target
+						Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(11)), //mul source->target
+						Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(12)), //mul target->source
+						(Boolean) edgeInfoAsList.get(14), // visibility target->source
+						(Boolean) edgeInfoAsList.get(15), // visibility source->target
+						(Boolean) edgeInfoAsList.get(16), // symmetric
+						(Boolean) edgeInfoAsList.get(17), // transitive
+						labelPositions,
+						diagram 
+						//,(Integer) edgeInfoAsList.get(13), // sourceHead
+						//(Integer) edgeInfoAsList.get(14) // targetHead
+				);
+	
+				result.add(object);
 			}
-			
-			Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(13);
-
-			FmmlxAssociation object = new FmmlxAssociation(
-					(String) edgeInfoAsList.get(0), // id
-					(String) edgeInfoAsList.get(1), // startId
-					(String) edgeInfoAsList.get(2), // endId
-					(Integer) edgeInfoAsList.get(3), // parentId
-					listOfPoints, // points
-					startRegion, endRegion,
-					(String) edgeInfoAsList.get(5), // name 1
-					(String) edgeInfoAsList.get(6), // name 2
-					(String) edgeInfoAsList.get(7), // name source->target
-					(String) edgeInfoAsList.get(8), // name target->source
-					(Integer) edgeInfoAsList.get(9), // level source
-					(Integer) edgeInfoAsList.get(10), // level target
-					Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(11)), //mul source->target
-					Multiplicity.parseMultiplicity((Vector<Object>) edgeInfoAsList.get(12)), //mul target->source
-					(Boolean) edgeInfoAsList.get(14), // visibility target->source
-					(Boolean) edgeInfoAsList.get(15), // visibility source->target
-					(Boolean) edgeInfoAsList.get(16), // symmetric
-					(Boolean) edgeInfoAsList.get(17), // transitive
-					labelPositions,
-					diagram 
-					//,(Integer) edgeInfoAsList.get(13), // sourceHead
-					//(Integer) edgeInfoAsList.get(14) // targetHead
-			);
-
-			result.add(object);
-		}
-		return result;
+			associationsReceivedReturn.run(result);
+		};
+		
+		xmfRequestAsync(handler, diagram.getID(), "getAllAssociations", returnCall);
+	
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<Edge<?>> getAllAssociationsInstances(AbstractPackageViewer diagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllAssociationInstances");
-		Vector<Object> responseContent = (Vector<Object>) (response.get(0));
-		Vector<Edge<?>> result = new Vector<>();
-
-		for (Object edgeInfo : responseContent) {
-			Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
-
-			Vector<Point2D> listOfPoints = null;
-			Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(4);
-			PortRegion startRegion = null;
-			PortRegion endRegion = null;
-			if(pointsListO != null && pointsListO.size()>=2) {
-				listOfPoints = new Vector<>();
-				if("startNode".equals(((Vector<Object>)(pointsListO.firstElement())).get(0)))
-					startRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.firstElement())).get(1)));
-				if("endNode".equals(((Vector<Object>)(pointsListO.lastElement())).get(0)))
-					endRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.lastElement())).get(1)));
-				for (Object pointO : pointsListO) {
-					Vector<Object> pointV = (Vector<Object>) pointO;
-					if("defaultPoint".equals(pointV.get(0))) {
-						Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); 
-						listOfPoints.addElement(pointP);
+	public void getAllAssociationsInstances(AbstractPackageViewer diagram, ReturnCall<Vector<Edge<?>>> linksReceivedReturn) {
+		ReturnCall<Vector<Object>> returnCall = response -> {
+			Vector<Object> responseContent = (Vector<Object>) (response.get(0));
+			Vector<Edge<?>> result = new Vector<>();
+	
+			for (Object edgeInfo : responseContent) {
+				Vector<Object> edgeInfoAsList = (Vector<Object>) (edgeInfo);
+	
+				Vector<Point2D> listOfPoints = null;
+				Vector<Object> pointsListO = (Vector<Object>) edgeInfoAsList.get(4);
+				PortRegion startRegion = null;
+				PortRegion endRegion = null;
+				if(pointsListO != null && pointsListO.size()>=2) {
+					listOfPoints = new Vector<>();
+					if("startNode".equals(((Vector<Object>)(pointsListO.firstElement())).get(0)))
+						startRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.firstElement())).get(1)));
+					if("endNode".equals(((Vector<Object>)(pointsListO.lastElement())).get(0)))
+						endRegion = PortRegion.valueOf((String)(((Vector<Object>)(pointsListO.lastElement())).get(1)));
+					for (Object pointO : pointsListO) {
+						Vector<Object> pointV = (Vector<Object>) pointO;
+						if("defaultPoint".equals(pointV.get(0))) {
+							Point2D pointP = new Point2D((float) pointV.get(1), (float) pointV.get(2)); 
+							listOfPoints.addElement(pointP);
+						}
 					}
 				}
+	
+				Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(5);
+				
+				FmmlxLink object = new FmmlxLink(
+						(String) edgeInfoAsList.get(0), // id
+						(String) edgeInfoAsList.get(1), // startId //TODO
+						(String) edgeInfoAsList.get(2), // endId //TODO
+						(String) edgeInfoAsList.get(3), // ofId	//TODO
+						listOfPoints, // points
+						startRegion, endRegion,
+						labelPositions,
+						diagram);
+	
+				result.add(object);
 			}
+			linksReceivedReturn.run(result);
+		};
+		
+		xmfRequestAsync(handler, diagram.getID(), "getAllAssociationInstances", returnCall);
 
-			Vector<Object> labelPositions = (Vector<Object>) edgeInfoAsList.get(5);
-			
-			FmmlxLink object = new FmmlxLink(
-					(String) edgeInfoAsList.get(0), // id
-					(String) edgeInfoAsList.get(1), // startId //TODO
-					(String) edgeInfoAsList.get(2), // endId //TODO
-					(String) edgeInfoAsList.get(3), // ofId	//TODO
-					listOfPoints, // points
-					startRegion, endRegion,
-					labelPositions,
-					diagram);
-
-			result.add(object);
-		}
-		return result;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void fetchAllAttributes(AbstractPackageViewer diagram, Vector<FmmlxObject> objects) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllAttributes");
-		Vector<Object> listOfAllAttributes = (Vector<Object>) (response.get(0));
-		
-		for(Object attributeListforOneObject : listOfAllAttributes) {
-			String objPath = (String) (((Vector<Object>) attributeListforOneObject).get(0));
-			for(FmmlxObject o : objects) if (o.getPath().equals(objPath)) {
-				Vector<Object> ownAttList = (Vector<Object>) (((Vector<Object>) attributeListforOneObject).get(1));
-				Vector<Object> otherAttList = (Vector<Object>) (((Vector<Object>) attributeListforOneObject).get(2));
-				Vector<FmmlxAttribute> resultOwn = new Vector<>();
-				Vector<FmmlxAttribute> resultOther = new Vector<>();
-				
-				for (Object a : ownAttList) {
-					Vector<Object> attInfo = (Vector<Object>) a;
-					FmmlxAttribute object = new FmmlxAttribute(
-							(String) attInfo.get(0),
-							(Integer) attInfo.get(2),
-							(String) attInfo.get(1),
-							(String) attInfo.get(4),
-							Multiplicity.parseMultiplicity((Vector<Object>) attInfo.get(3)));
-					resultOwn.add(object);
-				}
-				for (Object a : otherAttList) {
-					Vector<Object> attInfo = (Vector<Object>) a;
-					FmmlxAttribute object = new FmmlxAttribute(
-							(String) attInfo.get(0),
-							(Integer) attInfo.get(2),
-							(String) attInfo.get(1),
-							(String) attInfo.get(4),
-							Multiplicity.parseMultiplicity((Vector<Object>) attInfo.get(3)));
-					resultOther.add(object);
-				}
-				
-				o.setAttributes(resultOwn, resultOther);
-			}
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public void fetchAllOperations(AbstractPackageViewer diagram, Vector<FmmlxObject> objects) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllOperations");
-		Vector<Object> listOfAllOperations = (Vector<Object>) (response.get(0));
-//		System.err.println("listOfAllOperations: " +listOfAllOperations);
-		
-		for(Object operationListforOneObject : listOfAllOperations) {
-		  if(operationListforOneObject != null) {
-			String objPath = (String) (((Vector<Object>) operationListforOneObject).get(0));
-//			System.err.println("objPath: " +objPath + " " + ((Vector<Object>) (((Vector<Object>) operationListforOneObject).get(1))).size());
-			for(FmmlxObject obj : objects) if (obj.getPath().equals(objPath)) {
-				Vector<Object> ownOpList = (Vector<Object>) (((Vector<Object>) operationListforOneObject).get(1));
-				Vector<FmmlxOperation> result = new Vector<>();
-				
-				for (Object o : ownOpList) {
-					Vector<Object> opInfo = (Vector<Object>) o;
-
-					Vector<Object> paramNamesO = (Vector<Object>) opInfo.get(1);
-					Vector<String> paramNamesS = new Vector<>();
-					for (Object O : paramNamesO) {
-						paramNamesS.add((String) O);
+	public void fetchAllAttributes(AbstractPackageViewer diagram, Vector<FmmlxObject> objects, ReturnCall<Vector<FmmlxObject>> attributesReceivedReturn) {
+		ReturnCall<Vector<Object>> returnCall = response -> {			
+			Vector<Object> listOfAllAttributes = (Vector<Object>) (response.get(0));
+			
+			for(Object attributeListforOneObject : listOfAllAttributes) {
+				String objPath = (String) (((Vector<Object>) attributeListforOneObject).get(0));
+				for(FmmlxObject o : objects) if (o.getPath().equals(objPath)) {
+					Vector<Object> ownAttList = (Vector<Object>) (((Vector<Object>) attributeListforOneObject).get(1));
+					Vector<Object> otherAttList = (Vector<Object>) (((Vector<Object>) attributeListforOneObject).get(2));
+					Vector<FmmlxAttribute> resultOwn = new Vector<>();
+					Vector<FmmlxAttribute> resultOther = new Vector<>();
+					
+					for (Object a : ownAttList) {
+						Vector<Object> attInfo = (Vector<Object>) a;
+						FmmlxAttribute object = new FmmlxAttribute(
+								(String) attInfo.get(0),
+								(Integer) attInfo.get(2),
+								(String) attInfo.get(1),
+								(String) attInfo.get(4),
+								Multiplicity.parseMultiplicity((Vector<Object>) attInfo.get(3)));
+						resultOwn.add(object);
+					}
+					for (Object a : otherAttList) {
+						Vector<Object> attInfo = (Vector<Object>) a;
+						FmmlxAttribute object = new FmmlxAttribute(
+								(String) attInfo.get(0),
+								(Integer) attInfo.get(2),
+								(String) attInfo.get(1),
+								(String) attInfo.get(4),
+								Multiplicity.parseMultiplicity((Vector<Object>) attInfo.get(3)));
+						resultOther.add(object);
 					}
 					
-					Vector<Object> paramTypesO = (Vector<Object>) opInfo.get(2);
-					Vector<String> paramTypesS = new Vector<>();
-					for (Object O : paramTypesO) {
-						paramTypesS.add((String) O);
-					}
-				
-					FmmlxOperation op =
-						new FmmlxOperation(
-							(String) opInfo.get(0), // name
-							paramNamesS, // paramNames
-							paramTypesS, // paramTypes
-							(Integer) opInfo.get(3), // level
-							(String) opInfo.get(4), // type
-							(String) opInfo.get(5), // body
-							(String) opInfo.get(6), // owner
-							null, // multiplicity
-							(Boolean) opInfo.get(8), // isMonitored
-							(Boolean) opInfo.get(9) // delToClass
-						);
-					result.add(op);
+					o.setAttributes(resultOwn, resultOther);
 				}
-				
-				obj.setOperations(result);
 			}
-		  }
-		}
+			
+			attributesReceivedReturn.run(objects);
+		};
+		xmfRequestAsync(handler, diagram.getID(), "getAllAttributes", returnCall);
+		
+	}
+
+	@SuppressWarnings("unchecked")
+	public void fetchAllOperations(AbstractPackageViewer diagram, Vector<FmmlxObject> objects, ReturnCall<Vector<FmmlxObject>> operationsReceivedReturn) {
+		ReturnCall<Vector<Object>> returnCall = response -> {
+			Vector<Object> listOfAllOperations = (Vector<Object>) (response.get(0));
+			
+			for(Object operationListforOneObject : listOfAllOperations) {
+			  if(operationListforOneObject != null) {
+				String objPath = (String) (((Vector<Object>) operationListforOneObject).get(0));
+				for(FmmlxObject obj : objects) if (obj.getPath().equals(objPath)) {
+					Vector<Object> ownOpList = (Vector<Object>) (((Vector<Object>) operationListforOneObject).get(1));
+					Vector<FmmlxOperation> result = new Vector<>();
+					
+					for (Object o : ownOpList) {
+						Vector<Object> opInfo = (Vector<Object>) o;
+	
+						Vector<Object> paramNamesO = (Vector<Object>) opInfo.get(1);
+						Vector<String> paramNamesS = new Vector<>();
+						for (Object O : paramNamesO) {
+							paramNamesS.add((String) O);
+						}
+						
+						Vector<Object> paramTypesO = (Vector<Object>) opInfo.get(2);
+						Vector<String> paramTypesS = new Vector<>();
+						for (Object O : paramTypesO) {
+							paramTypesS.add((String) O);
+						}
+					
+						FmmlxOperation op =
+							new FmmlxOperation(
+								(String) opInfo.get(0), // name
+								paramNamesS, // paramNames
+								paramTypesS, // paramTypes
+								(Integer) opInfo.get(3), // level
+								(String) opInfo.get(4), // type
+								(String) opInfo.get(5), // body
+								(String) opInfo.get(6), // owner
+								null, // multiplicity
+								(Boolean) opInfo.get(8), // isMonitored
+								(Boolean) opInfo.get(9) // delToClass
+							);
+						result.add(op);
+					}
+					
+					obj.setOperations(result);
+				}
+			  }
+			}
+			operationsReceivedReturn.run(objects);
+		};
+		xmfRequestAsync(handler, diagram.getID(), "getAllOperations", returnCall);
+		
 	}
 	
 
 	
 	@SuppressWarnings("unchecked")
-	public void fetchAllConstraints(AbstractPackageViewer diagram, Vector<FmmlxObject> objects) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllConstraints");
-		Vector<Object> listOfAllConstraints = (Vector<Object>) (response.get(0));
+	public void fetchAllConstraints(AbstractPackageViewer diagram, Vector<FmmlxObject> objects, ReturnCall<Vector<FmmlxObject>> constraintsReceivedReturn) {
+		ReturnCall<Vector<Object>> returnCall = response -> {
+			Vector<Object> listOfAllConstraints = (Vector<Object>) (response.get(0));
 		
-		for(Object constraintListForOneObject : listOfAllConstraints) {
-			String objPath = (String) (((Vector<Object>) constraintListForOneObject).get(0));
-			for(FmmlxObject obj : objects) if (obj.getPath().equals(objPath)) {
-				Vector<Object> constraintList = (Vector<Object>) (((Vector<Object>) constraintListForOneObject).get(1));
-				Vector<Constraint> result = new Vector<>();
-	
-				for (Object o : constraintList) {
-					Vector<Object> conInfo = (Vector<Object>) o;
-				
-					Constraint con =
-						new Constraint(
-							(String)  conInfo.get(0), // name
-							(Integer) conInfo.get(1), // level
-							(String)  conInfo.get(2), // body-raw
-							(String)  conInfo.get(3), // body-full
-							(String)  conInfo.get(4), // reason-raw
-							(String)  conInfo.get(5) // reason-full
-						);
-					result.add(con);
+			for(Object constraintListForOneObject : listOfAllConstraints) {
+				String objPath = (String) (((Vector<Object>) constraintListForOneObject).get(0));
+				for(FmmlxObject obj : objects) if (obj.getPath().equals(objPath)) {
+					Vector<Object> constraintList = (Vector<Object>) (((Vector<Object>) constraintListForOneObject).get(1));
+					Vector<Constraint> result = new Vector<>();
+		
+					for (Object o : constraintList) {
+						Vector<Object> conInfo = (Vector<Object>) o;
+					
+						Constraint con =
+							new Constraint(
+								(String)  conInfo.get(0), // name
+								(Integer) conInfo.get(1), // level
+								(String)  conInfo.get(2), // body-raw
+								(String)  conInfo.get(3), // body-full
+								(String)  conInfo.get(4), // reason-raw
+								(String)  conInfo.get(5) // reason-full
+							);
+						result.add(con);
+					}
+					obj.setConstraints(result);
 				}
-				obj.setConstraints(result);
 			}
-		}
+			constraintsReceivedReturn.run(objects);
+		};
+		xmfRequestAsync(handler, diagram.getID(), "getAllConstraints", returnCall);
 	}
+	
+    @SuppressWarnings("unchecked")
+    public void fetchIssues(AbstractPackageViewer abstractPackageViewer, ReturnCall<Vector<Issue>> issuesReceivedReturn) {
+    	ReturnCall<Vector<Object>> returnCall = response -> {
+    		Vector<Object> issueList = (Vector<Object>) (response.get(0));
+
+		    Vector<Issue> result = new Vector<>();
+		    int issueNumber = 0;
+		    for (Object issueO : issueList) {
+		        Vector<Object> issueV = (Vector<Object>) issueO;
+		        try {
+		            Issue issue = Issue.readIssue(issueV);
+		            issue.setIssueNumber(issueNumber);
+					issueNumber++;
+		            result.add(issue);
+		        } catch (Issue.IssueNotReadableException e) {
+		            e.printStackTrace();
+		        }
+		    }
+		    issuesReceivedReturn.run(result);
+    	};        
+        xmfRequestAsync(handler, abstractPackageViewer.getID(), "getAllIssues", returnCall);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void fetchAllAuxTypes(AbstractPackageViewer fmmlxDiagram, ReturnCall<Vector<String>> auxReceivedReturn) {
+	    ReturnCall<Vector<Object>> returnCall = response -> {
+	    	Vector<Object> auxList = (Vector<Object>) (response.get(0));
+	        Vector<String> result = new Vector<>();
+	        for (Object auxO : auxList) {
+	            Vector<Object> auxV = (Vector<Object>) auxO;
+	            String name = (String) (auxV.get(0));
+	            result.add(name);
+	        }
+	        auxReceivedReturn.run(result);
+	    };
+	    xmfRequestAsync(handler, fmmlxDiagram.getID(), "getAllAuxTypes", returnCall);
+    }
 
 	@SuppressWarnings("unchecked")
 	public Vector<FmmlxSlot> fetchSlots(AbstractPackageViewer diagram, FmmlxObject owner, Vector<String> slotNames) throws TimeOutException {
@@ -717,22 +801,24 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Vector<FmmlxEnum> fetchAllEnums(AbstractPackageViewer diagram) throws TimeOutException {
-		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getAllEnums");
-		Vector<Object> enumList = (Vector<Object>) (response.get(0));
-		Vector<FmmlxEnum> result = new Vector<>();
-		for (Object enumO : enumList) {
-			Vector<Object> enumV = (Vector<Object>) enumO;
-			String           name = (String)         (enumV.get(0));
-			Vector<Object> itemsV = (Vector<Object>) (enumV.get(1));
-			Vector<String> items = new Vector<>();
-			for(Object itemO : itemsV) {
-				String itemName = (String) itemO;
-				items.add(itemName);
+	public void fetchAllEnums(AbstractPackageViewer diagram, ReturnCall<Vector<FmmlxEnum>> enumsReceivedReturn) {
+		ReturnCall<Vector<Object>> returnCall = response -> {
+			Vector<Object> enumList = (Vector<Object>) (response.get(0));
+			Vector<FmmlxEnum> result = new Vector<>();
+			for (Object enumO : enumList) {
+				Vector<Object> enumV = (Vector<Object>) enumO;
+				String           name = (String)         (enumV.get(0));
+				Vector<Object> itemsV = (Vector<Object>) (enumV.get(1));
+				Vector<String> items = new Vector<>();
+				for(Object itemO : itemsV) {
+					String itemName = (String) itemO;
+					items.add(itemName);
+				}
+				result.add(new FmmlxEnum(name, items));
 			}
-			result.add(new FmmlxEnum(name, items));
-		}
-		return result;
+			enumsReceivedReturn.run(result);
+		};		
+		xmfRequestAsync(handler, diagram.getID(), "getAllEnums", returnCall);
 	}
 	
 	////////////////////////////////////////////////
@@ -883,14 +969,15 @@ public class FmmlxDiagramCommunicator {
 		sendMessage("addInstance", message);
 	}
 	
-	public void classify(int diagramID, Vector<FmmlxObject> objs) {
-		Value[] classNames = new Value[objs.size()];
-		for(int i = 0; i < classNames.length; i++) {
-			classNames[i] = new Value(objs.get(i).name);
+	public void classify(int diagramID, Vector<FmmlxObject> objects, String className) {
+		Value[] objectNames = new Value[objects.size()];
+		for(int i = 0; i < objectNames.length; i++) {
+			objectNames[i] = new Value(objects.get(i).name);
 		}
 		Value[] message = new Value[]{
 			getNoReturnExpectedMessageID(diagramID),
-			new Value(classNames)};
+			new Value(objectNames),
+			new Value(className)};
 		sendMessage("classify", message);
 	}
 
@@ -1528,41 +1615,6 @@ public class FmmlxDiagramCommunicator {
 		};
         sendMessage("removeConstraint", message);
 	}
-	
-	
-
-    @SuppressWarnings("unchecked")
-    public Vector<Issue> fetchIssues(AbstractPackageViewer abstractPackageViewer) throws TimeOutException {
-        Vector<Object> response = xmfRequest(handler, abstractPackageViewer.getID(), "getAllIssues");
-        Vector<Object> issueList = (Vector<Object>) (response.get(0));
-        Vector<Issue> result = new Vector<>();
-        int issueNumber = 0;
-        for (Object issueO : issueList) {
-            Vector<Object> issueV = (Vector<Object>) issueO;
-            try {
-                Issue issue = Issue.readIssue(issueV);
-                issue.setIssueNumber(issueNumber);
-				issueNumber++;
-                result.add(issue);
-            } catch (Issue.IssueNotReadableException e) {
-                e.printStackTrace();
-            }
-        }
-        return result;
-    }
-
-    @SuppressWarnings("unchecked")
-    public Vector<String> fetchAllAuxTypes(AbstractPackageViewer fmmlxDiagram) throws TimeOutException {
-        Vector<Object> response = xmfRequest(handler, fmmlxDiagram.getID(), "getAllAuxTypes");
-        Vector<Object> auxList = (Vector<Object>) (response.get(0));
-        Vector<String> result = new Vector<>();
-        for (Object auxO : auxList) {
-            Vector<Object> auxV = (Vector<Object>) auxO;
-            String name = (String) (auxV.get(0));
-            result.add(name);
-        }
-        return result;
-    }
 
     public void hideElements(int diagramID, Vector<FmmlxObject> objects, Boolean hide) {
         Value[] vec = new Value[objects.size()];

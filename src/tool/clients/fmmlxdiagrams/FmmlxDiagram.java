@@ -654,13 +654,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return FXCollections.observableArrayList(objectList);
 	}
 
-	public synchronized void updateEnums() {
-		try {
-			enums.clear();
-			enums = comm.fetchAllEnums(this); }
-		catch (TimeOutException e) {
-			e.printStackTrace();
-		}
+	public void updateEnums() {
+		comm.fetchAllEnums(this, enumsReceived -> {enums = enumsReceived;});
 	}
 
 	public FmmlxEnum getEnum(String enumName) {
