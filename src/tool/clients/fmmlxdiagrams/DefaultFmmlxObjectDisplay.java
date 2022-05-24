@@ -415,7 +415,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 				parentsList.append(parentName).append(", ");
 			}
 		}
-		System.err.println(parentsList);
+		//System.err.println(parentsList);
 		if(!("extends ".equals(parentsList.toString()))) return parentsList.substring(0, parentsList.length() - 2);
 		
 		return "";
