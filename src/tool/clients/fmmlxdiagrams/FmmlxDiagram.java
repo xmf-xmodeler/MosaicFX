@@ -407,16 +407,18 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	public void triggerOverallReLayout() {
-		for(FmmlxObject o : new Vector<>(objects)) {
-			o.layout(this);
-		}
+		
 		// TODO evil hack. not kosher
-		for(int i = 0; i < 2; i++) for(Edge<?> edge : new Vector<>(edges)) {
-			edge.align();
-			edge.layoutLabels(this);
+		for(int i = 0; i < 2; i++) { 
+			for(FmmlxObject o : new Vector<>(objects)) {
+				o.layout(this);
+			}
+			for(Edge<?> edge : new Vector<>(edges)) {
+				edge.align();
+				edge.layoutLabels(this);
+			}
 		}
 	}
-
 	private void mouseReleasedStandard() {
 		for (Edge<?> e : edges) e.removeRedundantPoints();
 

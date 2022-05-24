@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<ConcreteSyntax classPath="Challenge::Fork1" level="1">
+<ConcreteSyntax classPath="Challenge::Fork" level="1">
 <SVG path="Sync_Concurrency.svg" id="concurrency" xx="4.00" yy="4.00"/>
 </ConcreteSyntax>
