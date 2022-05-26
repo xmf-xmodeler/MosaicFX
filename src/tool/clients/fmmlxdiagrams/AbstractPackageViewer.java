@@ -2,6 +2,7 @@ package tool.clients.fmmlxdiagrams;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Vector;
 
 import javafx.collections.FXCollections;
@@ -102,16 +103,10 @@ public abstract class AbstractPackageViewer {
 			}
 		this.clearDiagram();
 				
-		ReturnCall<Vector<String>> auxTypeReturn = fetchedAuxTypes -> {
-			try {					
-				
-				
-				auxTypes = fetchedAuxTypes;
-							
-				for(FmmlxObject o : objects) {
-					o.fetchDataValues(comm);
-				}
-	
+
+
+		ReturnCall<Vector<String>> opValReturn = x3 -> {
+			try {	
 				if(TIMER) System.err.println("Object values loaded after      " + (System.currentTimeMillis() - START) + " ms.");
 				
 				fetchDiagramDataSpecific();
@@ -124,6 +119,23 @@ public abstract class AbstractPackageViewer {
 			fetchingData = false;
 			setViewerStatus(ViewerStatus.CLEAN);
 			fetchDiagramDataSpecific2();
+		};
+		
+		ReturnCall<Vector<String>> slotsReturn = x2 -> {
+			HashMap<FmmlxObject, Vector<String>> opValNames = new HashMap<>();
+			for(FmmlxObject o : objects) {
+				opValNames.put(o, o.getMonitoredOperationsNames());
+			}
+			comm.fetchAllOperationValues(this, opValNames, opValReturn);
+		};
+		
+		ReturnCall<Vector<String>> auxTypeReturn = fetchedAuxTypes -> {
+			auxTypes = fetchedAuxTypes;
+			HashMap<FmmlxObject, Vector<String>> slotNames = new HashMap<>();
+			for(FmmlxObject o : objects) {
+				slotNames.put(o, o.getSlotNames());
+			}
+			comm.fetchAllSlots(this, slotNames, slotsReturn);
 		};
 
 		ReturnCall<Vector<FmmlxEnum>> enumsReturn = fetchedEnums -> {

@@ -26,7 +26,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	final int level;
     
 	Vector<FmmlxSlot> slots = new Vector<>();
-	private Vector<FmmlxOperationValue> operationValues = new Vector<>();
+	Vector<FmmlxOperationValue> operationValues = new Vector<>();
 
 	private Vector<FmmlxAttribute> ownAttributes = new Vector<>();
 	private Vector<FmmlxAttribute> otherAttributes = new Vector<>();
@@ -232,7 +232,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	
 	public boolean isAbstract() {return isAbstract;}
 
-	private Vector<String> getSlotNames() {
+	Vector<String> getSlotNames() {
 		Vector<String> slotNames = new Vector<>();
 		for (FmmlxObject ancestor : getAllAncestors()) {
 			for (FmmlxAttribute attribute : ancestor.getAllAttributes()) {
@@ -251,7 +251,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return slotNames;
 	}
 
-	private Vector<String> getMonitoredOperationsNames() {
+	Vector<String> getMonitoredOperationsNames() {
 		Vector<String> monitorNames = new Vector<>();
 		for (FmmlxObject ancestor : getAllAncestors()) {
 			Vector<FmmlxOperation> ops = new Vector<>();
@@ -517,10 +517,10 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		this.constraints = constraints;
 	}
 
-	@Deprecated public void fetchDataValues(FmmlxDiagramCommunicator comm) throws TimeOutException {
-		slots = comm.fetchSlots(diagram, this, this.getSlotNames());
-		operationValues = comm.fetchOperationValues(diagram, this.name, this.getMonitoredOperationsNames());
-	}
+//	@Deprecated public void fetchDataValues(FmmlxDiagramCommunicator comm) throws TimeOutException {
+////		slots = comm.fetchSlots(diagram, this, this.getSlotNames());
+//		operationValues = comm.fetchOperationValues(diagram, this.name, this.getMonitoredOperationsNames());
+//	}
 
 	/// User interaction
 	

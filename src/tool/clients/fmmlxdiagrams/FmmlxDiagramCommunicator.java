@@ -766,39 +766,114 @@ public class FmmlxDiagramCommunicator {
 	    };
 	    xmfRequestAsync(handler, fmmlxDiagram.getID(), "getAllAuxTypes", returnCall);
     }
+    
+    @SuppressWarnings("unchecked")
+    public void fetchAllSlots(AbstractPackageViewer diagram, HashMap<FmmlxObject, Vector<String>> slotNames, ReturnCall<?> slotsReceivedReturn) {
+    	java.util.Set<FmmlxObject> objects = slotNames.keySet();
+    	Value[] objectSlotList = new Value[slotNames.size()];
+    	int count = 0;
+    	for(FmmlxObject o : slotNames.keySet()) {
+    		Value[] slotNameArray = createValueArray(slotNames.get(o));
+    		Value[] objInfo = new Value[] {new Value(o.getName()), new Value(slotNameArray)};
+    		objectSlotList[count] = new Value(objInfo); count++;
+    	}
+    	
+    	ReturnCall<Vector<Object>> returnCall = responseAllObjects -> {
+    		Vector<Object> response = (Vector<Object>) (responseAllObjects.get(0));
+    		for(Object o : response) {
+    			Vector<Object> responseO = (Vector<Object>) o;
+    			String objName = (String) (responseO.get(0));
+    			Vector<Object> slotList = (Vector<Object>) (responseO.get(1));
+    			for(FmmlxObject obj : objects) if (obj.getName().equals(objName)) {
+	    			Vector<FmmlxSlot> result = new Vector<>();
+	    			for (Object slotO : slotList) {
+	    				Vector<Object> slot = (Vector<Object>) (slotO);
+	    				String name = (String) (slot.get(0));
+	    				String value = (String) (slot.get(1));
+	    				result.add(new FmmlxSlot(name, value, obj));
+	    				Collections.sort(result);
+	    			}   	
+	    			obj.slots = result;
+    			}
+    		}
+    		slotsReceivedReturn.run(null);
+    	};
+    	System.err.println(objectSlotList.length);
+    	xmfRequestAsync(handler, diagram.getID(), "getAllSlots", returnCall, new Value(objectSlotList));
+    }
+    
+    
+//	@SuppressWarnings("unchecked")
+//	public Vector<FmmlxSlot> fetchSlots(AbstractPackageViewer diagram, FmmlxObject owner, Vector<String> slotNames) throws TimeOutException {
+//		Value[] slotNameArray = createValueArray(slotNames);
+//		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getSlots", new Value(owner.getName()), new Value(slotNameArray));
+//		Vector<Object> slotList = (Vector<Object>) (response.get(0));
+//		Vector<FmmlxSlot> result = new Vector<>();
+//		for (Object slotO : slotList) {
+//			Vector<Object> slot = (Vector<Object>) (slotO);
+//			String name = (String) (slot.get(0));
+//			String value = (String) (slot.get(1));
+//			result.add(new FmmlxSlot(name, value, owner));
+//			Collections.sort(result);
+//		}
+//		return result;
+//	}
 
-	@SuppressWarnings("unchecked")
-	public Vector<FmmlxSlot> fetchSlots(AbstractPackageViewer diagram, FmmlxObject owner, Vector<String> slotNames) throws TimeOutException {
-		Value[] slotNameArray = createValueArray(slotNames);
-		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getSlots", new Value(owner.getName()), new Value(slotNameArray));
-		Vector<Object> slotList = (Vector<Object>) (response.get(0));
-		Vector<FmmlxSlot> result = new Vector<>();
-		for (Object slotO : slotList) {
-			Vector<Object> slot = (Vector<Object>) (slotO);
-			String name = (String) (slot.get(0));
-			String value = (String) (slot.get(1));
-			result.add(new FmmlxSlot(name, value, owner));
-			Collections.sort(result);
-		}
-		return result;
-	}
-
-	@SuppressWarnings("unchecked")
-	public Vector<FmmlxOperationValue> fetchOperationValues(AbstractPackageViewer diagram, String objectName, Vector<String> monitoredOperationsNames) throws TimeOutException {
-		Value[] monitoredOperationsNameArray = createValueArray(monitoredOperationsNames);
-		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getOperationValues", new Value(objectName), new Value(monitoredOperationsNameArray));
-		Vector<Object> returnValuesList = (Vector<Object>) (response.get(0));
-		Vector<FmmlxOperationValue> result = new Vector<>();
-		for (Object returnValueO : returnValuesList) {
-			Vector<Object> returnValue = (Vector<Object>) (returnValueO);
-			String name = (String) (returnValue.get(0));
-			String value = returnValue.get(1) == null?"null":(returnValue.get(1)).toString();
-			Boolean hasRange = (Boolean) returnValue.get(2);
-			Boolean isInRange = (Boolean) returnValue.get(3);
-			result.add(new FmmlxOperationValue(name, value, hasRange, isInRange));
-		}
-		return result;
-	}
+    @SuppressWarnings("unchecked")
+    public void fetchAllOperationValues(AbstractPackageViewer diagram, HashMap<FmmlxObject, Vector<String>> monOpNames, ReturnCall<?> opValReceivedReturn) {
+    	System.err.println(monOpNames);
+    	java.util.Set<FmmlxObject> objects = monOpNames.keySet();
+    	Value[] objectOpValList = new Value[monOpNames.size()];
+    	int count = 0;
+    	for(FmmlxObject o : monOpNames.keySet()) {
+    		Value[] slotNameArray = createValueArray(monOpNames.get(o));
+    		Value[] objInfo = new Value[] {new Value(o.getName()), new Value(slotNameArray)};
+    		objectOpValList[count] = new Value(objInfo); count++;
+    	}
+    	
+    	ReturnCall<Vector<Object>> returnCall = responseAllObjects -> {
+    		Vector<Object> response = (Vector<Object>) (responseAllObjects.get(0));
+    		System.err.println(responseAllObjects);
+    		for(Object o : response) {
+    			System.err.println(o);
+    			Vector<Object> responseO = (Vector<Object>) o;
+    			String objName = (String) (responseO.get(0));
+    			Vector<Object> returnValuesList = (Vector<Object>) (responseO.get(1));
+    			for(FmmlxObject obj : objects) if (obj.getName().equals(objName)) {
+    				Vector<FmmlxOperationValue> result = new Vector<>();
+	    			for (Object returnValueO : returnValuesList) {
+	    				Vector<Object> returnValue = (Vector<Object>) (returnValueO);
+	    				String name = (String) (returnValue.get(0));
+	    				String value = returnValue.get(1) == null?"null":(returnValue.get(1)).toString();
+	    				Boolean hasRange = (Boolean) returnValue.get(2);
+	    				Boolean isInRange = (Boolean) returnValue.get(3);
+	    				result.add(new FmmlxOperationValue(name, value, hasRange, isInRange));
+	    			}	
+	    			obj.operationValues = result;
+    			}
+    		}
+    		opValReceivedReturn.run(null);
+    	};
+    	System.err.println(objectOpValList.length);
+    	xmfRequestAsync(handler, diagram.getID(), "getAllOperationValues", returnCall, new Value(objectOpValList));
+    }
+    
+//    @SuppressWarnings("unchecked")
+//	public Vector<FmmlxOperationValue> fetchOperationValues(AbstractPackageViewer diagram, String objectName, Vector<String> monitoredOperationsNames) throws TimeOutException {
+//		Value[] monitoredOperationsNameArray = createValueArray(monitoredOperationsNames);
+//		Vector<Object> response = xmfRequest(handler, diagram.getID(), "getOperationValues", new Value(objectName), new Value(monitoredOperationsNameArray));
+//		Vector<Object> returnValuesList = (Vector<Object>) (response.get(0));
+//		Vector<FmmlxOperationValue> result = new Vector<>();
+//		for (Object returnValueO : returnValuesList) {
+//			Vector<Object> returnValue = (Vector<Object>) (returnValueO);
+//			String name = (String) (returnValue.get(0));
+//			String value = returnValue.get(1) == null?"null":(returnValue.get(1)).toString();
+//			Boolean hasRange = (Boolean) returnValue.get(2);
+//			Boolean isInRange = (Boolean) returnValue.get(3);
+//			result.add(new FmmlxOperationValue(name, value, hasRange, isInRange));
+//		}
+//		return result;
+//	}
 
 	@SuppressWarnings("unchecked")
 	public void fetchAllEnums(AbstractPackageViewer diagram, ReturnCall<Vector<FmmlxEnum>> enumsReceivedReturn) {
