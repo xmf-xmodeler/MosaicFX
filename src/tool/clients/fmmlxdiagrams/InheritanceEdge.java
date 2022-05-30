@@ -16,8 +16,8 @@ public class InheritanceEdge extends Edge<FmmlxObject> {
 	}
 
 	protected void checkVisibilityMode() {
-		System.err.println("POINT target: "+targetNode.getPointForEdge(targetEnd, false).toString());
-		System.err.println("POINT source: "+sourceNode.getPointForEdge(sourceEnd, true).toString());
+//		System.err.println("POINT target: "+targetNode.getPointForEdge(targetEnd, false).toString());
+//		System.err.println("POINT source: "+sourceNode.getPointForEdge(sourceEnd, true).toString());
 		visible = targetNode.getPointForEdge(targetEnd, false).distance(sourceNode.getPointForEdge(sourceEnd, true))<1000;}
 	
 	@Override

@@ -4,14 +4,17 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> {
 	private DialogPane dialogPane;
@@ -75,6 +78,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 		    }
 		);
 		bodyTextArea = new TextArea(StringValue.OperationStringValues.emptyOperation);
+		bodyTextArea.textProperty().addListener((a,b,c) -> {getDialogPane().lookupButton(ButtonType.OK).setDisable(true);});
 		Button checkSyntaxButton = new Button(StringValue.LabelAndHeaderTitle.checkSyntax);
 		checkSyntaxButton.setOnAction(event -> AddOperationDialog.this.checkBodySyntax());
 		checkSyntaxButton.setPrefWidth(COLUMN_WIDTH * 0.5);
@@ -103,13 +107,29 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 		grid.add(checkSyntaxButton, 0, 2);
 		grid.add(defaultOperationButton, 0, 3);
 		grid.add(monitorButton, 0, 4);
+		
+		getDialogPane().lookupButton(ButtonType.OK).setDisable(true);
 	}
 
 		
 	private void checkBodySyntax() {
-		if (!isNullOrEmpty(bodyTextArea.getText()) && !bodyTextArea.getText().contentEquals(StringValue.OperationStringValues.emptyOperation)) {
-			diagram.getComm().checkOperationBody(bodyTextArea.getText());
-		}
+		ReturnCall<OperationException> returnCall = opException -> {
+			if(opException == null) {
+				getDialogPane().lookupButton(ButtonType.OK).setDisable(false);
+			} else {
+				Alert alert = new Alert(AlertType.ERROR, opException.message, ButtonType.CLOSE);
+				//alert.showAndWait(); NOPE
+				alert.show();
+			}
+		};
+		
+		diagram.getComm().checkSyntax(diagram, bodyTextArea.getText(), returnCall);
+	}
+	
+	public static class OperationException {
+		public String message;
+		public Integer lineCount;
+		public Integer charCount;
 	}
 
 	private void resetOperationBody(String name, boolean monitor) {

@@ -202,7 +202,7 @@ public class ObjectContextMenu extends ContextMenu {
 	}
 	
 	private Menu createConstraintSubMenu() {
-		System.err.println("activeProperty: " + activeProperty);
+//		System.err.println("activeProperty: " + activeProperty);
 		final Constraint activeConstraint = 
 				(activeProperty != null && activeProperty instanceof Constraint)
 					?(Constraint) activeProperty

@@ -11,6 +11,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
+import tool.clients.fmmlxdiagrams.dialogs.AddOperationDialog;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.FmmlxSerializer;
 import tool.clients.serializer.XmlManager;
@@ -180,7 +181,7 @@ public class FmmlxDiagramCommunicator {
 				java.util.Vector<Object> err = (java.util.Vector<Object>) msgAsVec.get(0);
 				if (err != null && err.size() > 0 && err.get(0) != null ) {
 			        if(silent) {
-			        	System.err.println(err.get(0));
+			        	System.err.println("Error:" + err.get(0));
 			        } else {
 						CountDownLatch l = new CountDownLatch(1);
 						Platform.runLater(() -> {
@@ -203,8 +204,10 @@ public class FmmlxDiagramCommunicator {
 			} else {
 				if(returnMap.containsKey(requestID)) {
 					Platform.runLater(() -> {returnMap.remove(requestID).run(msgAsVec);});
-				} else
-				results.put(requestID, msgAsVec);
+				} else {
+					System.err.println("Old queue still in use");
+					results.put(requestID, msgAsVec);
+				}
 			}
 		} else {
 			if (DEBUG) System.err.println("o: " + msgAsObj + "(" + msgAsObj.getClass() + ")");
@@ -214,7 +217,6 @@ public class FmmlxDiagramCommunicator {
 	private void handleErrorMessage(Vector<Object> errorInfo, FmmlxDiagram diagram) {
 		Object problem = errorInfo.get(0);
 		if("addOperation:failed".equals(problem)) {
-//			System.err.println("diagramObjects: " + diagram.diagramID + ": " + diagram.objects);
 //			FmmlxObject o = diagram.getObjectByPath((String)errorInfo.get(1));
 //			int level = (Integer) errorInfo.get(2);
 //			String code = (String) errorInfo.get(3);
@@ -798,9 +800,31 @@ public class FmmlxDiagramCommunicator {
     		}
     		slotsReceivedReturn.run(null);
     	};
-    	System.err.println(objectSlotList.length);
     	xmfRequestAsync(handler, diagram.getID(), "getAllSlots", returnCall, new Value(objectSlotList));
     }
+    
+
+	public void checkSyntax(AbstractPackageViewer diagram, String operationBody, ReturnCall<AddOperationDialog.OperationException> result) {
+		ReturnCall<Vector<Object>> returnCall = syntaxCheckResponse -> {
+			Object response = syntaxCheckResponse.get(0);
+			if(response == null) {
+				result.run(null);
+			} else {
+				Vector<Object> responseV = (Vector<Object>) response;
+				Object message = ((Vector<Object>)responseV.get(0)).get(0);
+				Object lineCount = ((Vector<Object>)responseV.get(1)).get(0);
+				Object charCount = ((Vector<Object>)responseV.get(2)).get(0);
+				AddOperationDialog.OperationException e = new AddOperationDialog.OperationException();
+				e.message = (String) message;
+				e.lineCount = (Integer) lineCount;
+				e.charCount = (Integer) charCount;
+				result.run(e);
+			}
+			
+		};
+		
+		xmfRequestAsync(handler, diagram.getID(), "checkSyntax", returnCall, new Value(operationBody));
+	}
     
     
 //	@SuppressWarnings("unchecked")
@@ -821,7 +845,6 @@ public class FmmlxDiagramCommunicator {
 
     @SuppressWarnings("unchecked")
     public void fetchAllOperationValues(AbstractPackageViewer diagram, HashMap<FmmlxObject, Vector<String>> monOpNames, ReturnCall<?> opValReceivedReturn) {
-    	System.err.println(monOpNames);
     	java.util.Set<FmmlxObject> objects = monOpNames.keySet();
     	Value[] objectOpValList = new Value[monOpNames.size()];
     	int count = 0;
@@ -833,9 +856,7 @@ public class FmmlxDiagramCommunicator {
     	
     	ReturnCall<Vector<Object>> returnCall = responseAllObjects -> {
     		Vector<Object> response = (Vector<Object>) (responseAllObjects.get(0));
-    		System.err.println(responseAllObjects);
     		for(Object o : response) {
-    			System.err.println(o);
     			Vector<Object> responseO = (Vector<Object>) o;
     			String objName = (String) (responseO.get(0));
     			Vector<Object> returnValuesList = (Vector<Object>) (responseO.get(1));
@@ -854,7 +875,6 @@ public class FmmlxDiagramCommunicator {
     		}
     		opValReceivedReturn.run(null);
     	};
-    	System.err.println(objectOpValList.length);
     	xmfRequestAsync(handler, diagram.getID(), "getAllOperationValues", returnCall, new Value(objectOpValList));
     }
     
@@ -1775,7 +1795,6 @@ public class FmmlxDiagramCommunicator {
         HashMap<String, String> result = new HashMap<>();
         for (Object resultItemO : responseContent) {
             Vector<Object> resultItem = (Vector<Object>) (resultItemO);
-//			System.err.println(resultItem);
 			result.put((String) resultItem.get(0), (String)resultItem.get(6));
 		}
 		return result;
@@ -1790,7 +1809,6 @@ public class FmmlxDiagramCommunicator {
 		HashMap<String, String> result = new HashMap<>();
 		for(Object resultItemO : responseContent) {
 			Vector<Object> resultItem = (Vector<Object>) (resultItemO);
-//			System.err.println(resultItem);
 			result.put((String) resultItem.get(0), (String)resultItem.get(6));
 		}
 		return result;
@@ -2304,8 +2322,6 @@ public class FmmlxDiagramCommunicator {
 			return new HashMap<String, Boolean>();
 		}
 	}
-	
-
     
     public void runOperation(Integer diagramID, String text) throws TimeOutException {
         sendMessage("runOperation", new Value[]{

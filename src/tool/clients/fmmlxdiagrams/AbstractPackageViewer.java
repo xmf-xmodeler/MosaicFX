@@ -102,8 +102,6 @@ public abstract class AbstractPackageViewer {
 				justLoaded = true;
 			}
 		this.clearDiagram();
-				
-
 
 		ReturnCall<Vector<String>> opValReturn = x3 -> {
 			try {	
@@ -184,11 +182,12 @@ public abstract class AbstractPackageViewer {
 			comm.fetchAllConstraints(this, visibleObjects, allConstraintsReturn);	
 		};
 
-		ReturnCall<Vector<FmmlxObject>> allAttributesReturn = visibleObjects -> {
-			comm.fetchAllOperations(this, visibleObjects, allOperationsReturn);	
-		};
+//		ReturnCall<Vector<FmmlxObject>> allAttributesReturn = 
+//		};
 		
-		ReturnCall<Vector<FmmlxObject>> allObjectsReturn = fetchedObjects -> {
+//		ReturnCall<Vector<FmmlxObject>> allObjectsReturn = ;
+		
+		comm.getAllObjects(this, fetchedObjects -> {
 			objects.addAll(fetchedObjects);
 
 			if(TIMER) System.err.println("\nObjects loaded after            " + (System.currentTimeMillis() - START) + " ms.");
@@ -198,11 +197,11 @@ public abstract class AbstractPackageViewer {
 				for(FmmlxObject o : objects)
 					if(!o.hidden) visibleObjects.add(o); }
 				else visibleObjects = objects;
+			Vector<FmmlxObject> _visibleObjects = visibleObjects;
 			
-			comm.fetchAllAttributes(this, visibleObjects, allAttributesReturn);
-		};
-		
-		comm.getAllObjects(this, allObjectsReturn);
+			comm.fetchAllAttributes(this, _visibleObjects, visibleObjects2 -> {
+				comm.fetchAllOperations(this, _visibleObjects, allOperationsReturn);}	);
+		});
 
 	}
 	
