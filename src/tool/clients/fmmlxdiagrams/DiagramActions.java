@@ -1206,7 +1206,7 @@ public class DiagramActions {
 		
 	public void showObjectBrowser(FmmlxObject object) {
 			
-		Platform.runLater(() -> new ObjectBrowser(diagram, object, null).show());
+		Platform.runLater(() -> new ObjectBrowser(diagram, object).show());
 			
 	}
 
@@ -1295,5 +1295,30 @@ public class DiagramActions {
 		} catch (TimeOutException e) {
 			throw new RuntimeException("runOperation failed", e);
 		}	
+	}
+
+	public void classify(Vector<FmmlxObject> objs) {
+		String m = "";
+		if(objs.size() == 1) {
+			m = "Meta" + objs.get(0).getName();
+		} else { for(int i = 0; i < objs.size(); i++) {
+			int a = (int) (objs.get(i).getName().length() * 1. * i / objs.size());
+			int b = -(int) (-objs.get(i).getName().length() * 1. * (i+1) / objs.size());
+//			System.err.println(objs.get(i).getName()+","+a+","+b);
+			m += objs.get(i).getName().substring(a,b);
+		}}
+		TextInputDialog dialog = new TextInputDialog(m);
+
+		dialog.setTitle("Classify Elements");
+		dialog.setHeaderText("New class requires a unique and valid name:");
+		dialog.setContentText("Name:");
+
+		Optional<String> result = dialog.showAndWait();
+
+		result.ifPresent(name -> {
+			diagram.getComm().classify(diagram.diagramID, objs, result.get());
+//		    this.label.setText(name);
+		});
+		
 	}
 }

@@ -13,14 +13,14 @@ public class DefaultContextMenu extends ContextMenu {
 		setAutoHide(true);
 		
 		Menu addMenu = new Menu("Add");
-
-		MenuItem addClassItem = new MenuItem("Class...");
-		addClassItem.setOnAction(e -> actions.addMetaClassDialog(view));
-		MenuItem addInstanceItem = new MenuItem("Instance...");
-		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(view));
-		MenuItem addAssociationItem = new MenuItem("Association...");
-		addAssociationItem.setOnAction(e -> actions.addAssociationDialog(null, null));
-		addMenu.getItems().addAll(addClassItem, addInstanceItem, addAssociationItem);
+			MenuItem addClassItem = new MenuItem("Class...");
+			addClassItem.setOnAction(e -> actions.addMetaClassDialog(view));
+			MenuItem addInstanceItem = new MenuItem("Instance...");
+			addInstanceItem.setOnAction(e -> actions.addInstanceDialog(view));
+			MenuItem addAssociationItem = new MenuItem("Association...");
+			addAssociationItem.setOnAction(e -> actions.addAssociationDialog(null, null));
+			addMenu.getItems().addAll(addClassItem, addInstanceItem, addAssociationItem);
+		getItems().add(addMenu);
 		
 		Menu levelMenu = new Menu("Levels");
 		MenuItem levelRaiseAllItem = new MenuItem("Raise all");
@@ -78,8 +78,7 @@ public class DefaultContextMenu extends ContextMenu {
 		openFindSendersOfMessages.setOnAction(e -> actions.openFindSendersDialog());
 		searchMenu.getItems().addAll(openFindImplementationDialog, openFindClassDialog, openFindSendersOfMessages);
 
-		getItems().addAll(
-			addMenu, 
+		getItems().addAll( 
 			levelMenu, 
 			enumerationMenu, 
 			unhideItem,

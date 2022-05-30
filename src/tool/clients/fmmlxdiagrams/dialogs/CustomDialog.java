@@ -99,9 +99,9 @@ public class CustomDialog<R> extends Dialog<R> {
 		return errorLabel;
 	}
 
-	protected boolean isNullOrEmpty(String string) {
-		return string == null || string.length() == 0;
-	}
+//	protected boolean isNullOrEmpty(String string) {
+//		return string == null || string.length() == 0;
+//	}
 
 	public Integer getComboBoxIntegerValue(ComboBox<Integer> box) {
 		int result;
@@ -294,12 +294,22 @@ public class CustomDialog<R> extends Dialog<R> {
 			@Override
 			protected void updateItem(Property item, boolean empty) {
 				super.updateItem(item, empty);
-
-				if (empty || isNullOrEmpty(item.getName())) {
+				
+				if(item == null || empty) {
 					setText(null);
 				} else {
 					setText(item.getName());
 				}
+//				// Notlösung..
+//				if ( item == null ) {
+//					empty = true;
+//				}
+//
+//				if (empty || isNullOrEmpty(item.getName())) {
+//					setText(null);
+//				} else {
+//					setText(item.getName());
+//				}
 			}
 		});
 		comboBox.setConverter(new StringConverter<Property>() {
@@ -328,7 +338,7 @@ public class CustomDialog<R> extends Dialog<R> {
 			protected void updateItem(IValueGenerator item, boolean empty) {
 				super.updateItem(item, empty);
 
-				if (empty || isNullOrEmpty(item.getValueGeneratorName())) {
+				if (empty || item == null) {
 					setText(null);
 				} else {
 					setText(item.getValueGeneratorName());
@@ -365,7 +375,7 @@ public class CustomDialog<R> extends Dialog<R> {
 			protected void updateItem(FmmlxEnum item, boolean empty) {
 				super.updateItem(item, empty);
 
-				if (empty || isNullOrEmpty(item.getName())) {
+				if (empty || item == null) {
 					setText(null);
 				} else {
 					setText(item.getName());

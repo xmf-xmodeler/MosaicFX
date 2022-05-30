@@ -82,7 +82,7 @@ public class AbstractSyntax extends NodeGroup{
 				transform.getTx(), transform.getTy(), 
 				Color.BLACK, new Color(.9,1.,1.,1.), 
 				null, ()->{}, 
-				"Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch", 
+				"label test", 
 				false, -1);
 		if(e.hasAttribute("id")) label.id = e.getAttribute("id");
 		return label;
