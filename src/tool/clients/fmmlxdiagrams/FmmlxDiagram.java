@@ -214,7 +214,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
                 	redraw();
                 }
                 if(event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.F) {
-                	getActiveView().findObject();
+                	getActiveView().centerObject();
                 }
             }
         });
@@ -1598,7 +1598,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		
 		
-		public void findObject() {
+		public void centerObject() {
 			Vector<FmmlxObject> allObjects = getObjects();
 			Vector<FmmlxObject> allVisibleObjects = new Vector<FmmlxObject>();
 			
@@ -1633,7 +1633,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 //					e1.printStackTrace();
 //				}
 			}
-			
+			redraw();
 		}
 	
 	

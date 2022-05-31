@@ -307,7 +307,7 @@ public class ConcreteSyntaxWizard extends Application {
 
 
 		@Override
-		public void findObject() {
+		public void centerObject() {
 			// TODO Auto-generated method stub
 			
 		}
