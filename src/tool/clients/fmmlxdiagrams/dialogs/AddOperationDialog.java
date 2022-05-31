@@ -23,10 +23,15 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 
 	private TextField classTextField; 
 	private ComboBox<Integer> levelComboBox;
-	private Button monitorButton;
+	private Label bodyLabel;
+	private Label parseResLabel;
+	//private Button monitorButton;
 
 	ObservableList<String> classList;
-	private TextArea bodyTextArea;
+	//private TextArea bodyTextArea;
+	//private TextArea errorTextArea;
+	private CodeBox bodyCodeBox;
+	
 	
 	private ArrayList<Node> labelsNode;
 	private List<Node> mainNodes;
@@ -47,7 +52,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 				e.consume();
 			}
 		});
-
+		bodyCodeBox.checkBodySyntax();
 		setResult();
 
 	}
@@ -57,7 +62,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				return new Result(object, 
 						levelComboBox.getSelectionModel().getSelectedItem(),
-						bodyTextArea.getText());
+						bodyCodeBox.bodyTextArea.getText());
 			}
 			return null;
 		});
@@ -70,18 +75,26 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 		classTextField.setText(object.getName());
 		classTextField.setDisable(true);
 		
+		bodyCodeBox = new CodeBox(diagram,e->{
+			getDialogPane().lookupButton(ButtonType.OK).setDisable(!bodyCodeBox.getCheckPassed());
+		});
+		bodyCodeBox.errorTextArea.setMinWidth(COLUMN_WIDTH*2);
+		
+		
 		levelComboBox = new ComboBox<>(AllValueList.generateLevelListToThreshold(0, object.getLevel()));
 		levelComboBox.getSelectionModel().selectLast();
-		monitorButton = new Button("Monitor Operation Values");
-		monitorButton.setOnAction(event -> {
-		        resetOperationBody("op0", true);
-		    }
-		);
-		bodyTextArea = new TextArea(StringValue.OperationStringValues.emptyOperation);
-		bodyTextArea.textProperty().addListener((a,b,c) -> {getDialogPane().lookupButton(ButtonType.OK).setDisable(true);});
-		Button checkSyntaxButton = new Button(StringValue.LabelAndHeaderTitle.checkSyntax);
-		checkSyntaxButton.setOnAction(event -> AddOperationDialog.this.checkBodySyntax());
-		checkSyntaxButton.setPrefWidth(COLUMN_WIDTH * 0.5);
+//		monitorButton = new Button("Monitor Operation Values");
+//		monitorButton.setOnAction(event -> {
+//		        resetOperationBody("op0", true);
+//		    }
+//		);
+		bodyCodeBox.bodyTextArea.setText(StringValue.OperationStringValues.emptyOperation);
+		//bodyTextArea = new TextArea(StringValue.OperationStringValues.emptyOperation);
+		//bodyTextArea.textProperty().addListener((a,b,c) -> {getDialogPane().lookupButton(ButtonType.OK).setDisable(true);checkBodySyntax();});
+		bodyCodeBox.bodyTextArea.setMinWidth(COLUMN_WIDTH*2);
+		//Button checkSyntaxButton = new Button(StringValue.LabelAndHeaderTitle.checkSyntax);
+		//checkSyntaxButton.setOnAction(event -> AddOperationDialog.this.checkBodySyntax());
+		//checkSyntaxButton.setPrefWidth(COLUMN_WIDTH * 0.5);
 		Button defaultOperationButton = new Button(StringValue.LabelAndHeaderTitle.defaultOperation);
 		defaultOperationButton.setOnAction(event -> {
 			AddOperationDialog.this.resetOperationBody("op0", false);
@@ -103,37 +116,41 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 		addNodesToGrid(labelsNode, 0);
 		addNodesToGrid(mainNodes, 1);
 		
-		grid.add(bodyTextArea, 1, 2, 1, 4);
-		grid.add(checkSyntaxButton, 0, 2);
-		grid.add(defaultOperationButton, 0, 3);
-		grid.add(monitorButton, 0, 4);
+		grid.setMinWidth(COLUMN_WIDTH*3);
+		bodyLabel=new Label("Operation body");
+		grid.add(bodyLabel, 0, 2);
+		grid.add(bodyCodeBox.bodyTextArea, 0, 3);
+		//grid.add(checkSyntaxButton, 0, 2);
+		grid.add(defaultOperationButton, 1, 7);
+		//grid.add(monitorButton, 0, 4);
+		parseResLabel = new Label("Parse result");
+		grid.add(bodyCodeBox.errorTextArea, 0, 5);
 		
-		getDialogPane().lookupButton(ButtonType.OK).setDisable(true);
+		//getDialogPane().lookupButton(ButtonType.OK).setDisable(true);
 	}
 
 		
-	private void checkBodySyntax() {
-		ReturnCall<OperationException> returnCall = opException -> {
-			if(opException == null) {
-				getDialogPane().lookupButton(ButtonType.OK).setDisable(false);
-			} else {
-				Alert alert = new Alert(AlertType.ERROR, opException.message, ButtonType.CLOSE);
-				//alert.showAndWait(); NOPE
-				alert.show();
-			}
-		};
-		
-		diagram.getComm().checkSyntax(diagram, bodyTextArea.getText(), returnCall);
-	}
+//	private void checkBodySyntax() {
+//		ReturnCall<OperationException> returnCall = opException -> {
+//			if(opException == null) {
+//				getDialogPane().lookupButton(ButtonType.OK).setDisable(false);
+//				errorTextArea.setText("This operation compiles without parse/syntax error!");
+//				errorTextArea.setStyle("-fx-text-fill: darkgreen;" +"-fx-font-weight: bold;");
+//			} else {
+//				errorTextArea.setText(opException.message);
+//				errorTextArea.setStyle("-fx-text-fill: darkred;" +"-fx-font-weight: bold;");
+//				errorTextArea.setWrapText(true);
+//				//Alert alert = new Alert(AlertType.ERROR, opException.message, ButtonType.CLOSE);
+//				//alert.showAndWait(); NOPE
+//				//alert.show();
+//			}
+//		};
+//		
+//		diagram.getComm().checkSyntax(diagram, bodyTextArea.getText(), returnCall);
+//	}
 	
-	public static class OperationException {
-		public String message;
-		public Integer lineCount;
-		public Integer charCount;
-	}
-
 	private void resetOperationBody(String name, boolean monitor) {
-		bodyTextArea.setText(
+		bodyCodeBox.bodyTextArea.setText(
 				"@Operation "+name
 				+(monitor?"[monitor=true]":"")
 				+"()"+":XCore::Element"+"\n" +
@@ -146,7 +163,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 	    if (levelComboBox.getSelectionModel().getSelectedIndex() == -1) {
 			errorLabel.setText(StringValue.ErrorMessage.selectLevel);
 			return false;
-		} else if (bodyTextArea.getText().equals("")) {
+		} else if (bodyCodeBox.bodyTextArea.getText().equals("")) {
 			errorLabel.setText(StringValue.ErrorMessage.inputBody);
 			return false;
 		}

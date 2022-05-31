@@ -104,7 +104,7 @@ public class StringValue {
 		//New
 		public static final String newOwner = "New Owner";
 		public static final String newLevel = "New Level";
-		public static final String newOperation = "New Operation";
+		public static final String newOperation = "Create Operation";
 		public static final String newAssociation = "New Association";
 
 		//Change

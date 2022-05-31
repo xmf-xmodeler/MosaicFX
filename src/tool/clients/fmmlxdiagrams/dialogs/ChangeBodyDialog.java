@@ -17,8 +17,8 @@ import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.ReturnCall;
-import tool.clients.fmmlxdiagrams.dialogs.AddOperationDialog.OperationException;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
+import tool.clients.fmmlxdiagrams.dialogs.CodeBox.OperationException;
 
 public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialog.Result>{
 	
