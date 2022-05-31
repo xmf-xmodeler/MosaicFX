@@ -811,9 +811,9 @@ public class FmmlxDiagramCommunicator {
 				result.run(null);
 			} else {
 				Vector<Object> responseV = (Vector<Object>) response;
-				Object message = ((Vector<Object>)responseV.get(0)).get(0);
-				Object lineCount = ((Vector<Object>)responseV.get(1)).get(0);
-				Object charCount = ((Vector<Object>)responseV.get(2)).get(0);
+				Object message = responseV.get(0);
+				Object lineCount = responseV.get(1);
+				Object charCount = responseV.get(2);
 				AddOperationDialog.OperationException e = new AddOperationDialog.OperationException();
 				e.message = (String) message;
 				e.lineCount = (Integer) lineCount;
