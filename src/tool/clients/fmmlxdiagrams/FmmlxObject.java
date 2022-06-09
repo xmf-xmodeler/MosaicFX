@@ -26,7 +26,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	final int level;
     
 	Vector<FmmlxSlot> slots = new Vector<>();
-	private Vector<FmmlxOperationValue> operationValues = new Vector<>();
+	Vector<FmmlxOperationValue> operationValues = new Vector<>();
 
 	private Vector<FmmlxAttribute> ownAttributes = new Vector<>();
 	private Vector<FmmlxAttribute> otherAttributes = new Vector<>();
@@ -45,6 +45,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	 boolean showDerivedOperations = true;
 	 boolean showDerivedAttributes = true;
 	 boolean showConstraints = true;
+	 boolean showConstraintReports = true;
 
 	public FmmlxObject(
 			String name, 
@@ -79,6 +80,8 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			this.showDerivedOperations = D.isShowDerivedOperations();
 			this.showDerivedAttributes = D.isShowDerivedAttributes();
 			this.showGettersAndSetters = D.isShowGetterAndSetter();
+			this.showConstraints = D.isConstraintsInDiagram();
+			this.showConstraintReports = D.isConstraintReportsInDiagram();
 		}
 	}
 
@@ -229,7 +232,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	
 	public boolean isAbstract() {return isAbstract;}
 
-	private Vector<String> getSlotNames() {
+	Vector<String> getSlotNames() {
 		Vector<String> slotNames = new Vector<>();
 		for (FmmlxObject ancestor : getAllAncestors()) {
 			for (FmmlxAttribute attribute : ancestor.getAllAttributes()) {
@@ -248,7 +251,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return slotNames;
 	}
 
-	private Vector<String> getMonitoredOperationsNames() {
+	Vector<String> getMonitoredOperationsNames() {
 		Vector<String> monitorNames = new Vector<>();
 		for (FmmlxObject ancestor : getAllAncestors()) {
 			Vector<FmmlxOperation> ops = new Vector<>();
@@ -473,16 +476,26 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	public void setShowDerivedAttributes(boolean show) {
 		requiresReLayout |= showDerivedAttributes!=show;
 		showDerivedAttributes = show;
-	}	
+	}
+	
+	public void setShowConstraints(boolean show) {
+		requiresReLayout |= showConstraints!=show;
+		showConstraints = show;
+	}
+	
+	public void setShowConstraintReports(boolean show) {
+		requiresReLayout |= showConstraintReports!=show;
+		showConstraintReports = show;
+	}
 
 	
 	/// Setters
 
 	public void setAttributes(Vector<FmmlxAttribute> ownAttributes, Vector<FmmlxAttribute> otherAttributes) {
 		this.ownAttributes = ownAttributes;
-		ownAttributes.sort(Collections.reverseOrder());
+		Collections.sort(ownAttributes);
 		this.otherAttributes = otherAttributes;
-		otherAttributes.sort(Collections.reverseOrder());
+		Collections.sort(otherAttributes);
 	}
 	
 	public void setOperations(Vector<FmmlxOperation> operations) {
@@ -491,10 +504,10 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		for (FmmlxOperation o : operations) {
 			if (o.getOwner().equals(this.ownPath)) {
 				ownOperations.add(o);
-				ownOperations.sort(Collections.reverseOrder());
+				Collections.sort(ownOperations);
 			} else {
 				otherOperations.add(o);
-				otherOperations.sort(Collections.reverseOrder());
+				Collections.sort(otherOperations);
 			}
 		}
 	}
@@ -504,10 +517,10 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		this.constraints = constraints;
 	}
 
-	@Deprecated public void fetchDataValues(FmmlxDiagramCommunicator comm) throws TimeOutException {
-		slots = comm.fetchSlots(diagram, this, this.getSlotNames());
-		operationValues = comm.fetchOperationValues(diagram, this.name, this.getMonitoredOperationsNames());
-	}
+//	@Deprecated public void fetchDataValues(FmmlxDiagramCommunicator comm) throws TimeOutException {
+////		slots = comm.fetchSlots(diagram, this, this.getSlotNames());
+//		operationValues = comm.fetchOperationValues(diagram, this.name, this.getMonitoredOperationsNames());
+//	}
 
 	/// User interaction
 	

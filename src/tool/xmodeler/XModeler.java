@@ -221,7 +221,8 @@ public class XModeler extends Application {
           EditorClient.theClient().inflateXML(doc);
           ConsoleClient.theConsole().inflateXML(doc);
           FormsClient.theClient().inflateXML(doc);
-          FmmlxDiagramCommunicator.initCommunicator();        }
+          FmmlxDiagramCommunicator.initCommunicator();        
+        }
       }
     } catch (Throwable e) {
       e.printStackTrace(System.err);
@@ -408,7 +409,6 @@ public class XModeler extends Application {
     xos.newMessageClient("com.ceteva.forms", new FormsClient()); PropertyManager.setXmfSettings();
     xos.newMessageClient("com.ceteva.undo", new UndoClient());
     xos.newMessageClient("com.ceteva.oleBridge", new OleBridgeClient());
-    
     WorkbenchClient.theClient().startFmmlxClient();
 //    xos.newMessageClient("screenGeneration", new ScreenGenerationClient()); // BB
   }

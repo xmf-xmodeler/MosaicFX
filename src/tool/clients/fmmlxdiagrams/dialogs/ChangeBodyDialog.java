@@ -16,7 +16,9 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
+import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
+import tool.clients.fmmlxdiagrams.dialogs.CodeBox.OperationException;
 
 public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialog.Result>{
 	
@@ -136,9 +138,11 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialog.Result>{
 	}
 	
 	private void checkBodySyntax() {
-		if (!isNullOrEmpty(bodyTextArea.getText()) && !bodyTextArea.getText().contentEquals(StringValue.OperationStringValues.emptyOperation)) {
-			diagram.getComm().checkOperationBody(bodyTextArea.getText());
-		}
+		ReturnCall<OperationException> returnCall = opException -> {
+			System.err.println("opException:" + opException);
+		};
+		
+		diagram.getComm().checkSyntax(diagram, bodyTextArea.getText(), returnCall);
 	}
 	
 	private void resetOperationBody() {

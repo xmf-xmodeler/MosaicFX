@@ -1,13 +1,17 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
 import javafx.application.Platform;
+import javafx.geometry.HPos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue.LabelAndHeaderTitle;
 
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +27,17 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialog.Re
 	private CheckBox isExpressionCheckBox;
 	private ComboBox<FmmlxSlot> slotBox;
 	private TextField slotTypeTextfield;
+	private ToggleGroup toggleGroup = new ToggleGroup();
+	private RadioButton trueButton = new RadioButton("true");
+	private RadioButton falseButton = new RadioButton("false");
+	private RadioButton selectedRadioButton = new RadioButton();
+	private String trueOrFalse="false";
+	private DatePicker datePicker = new DatePicker();
 	
-	private enum Mode {DEFAULT, STRING, ENUM, INVALID}
+	private ComboBox<String> currency = new ComboBox<>();
+	private TextField money = new TextField();
+	
+	private enum Mode {DEFAULT, STRING, ENUM, INVALID, DATE, BOOLEAN, MONEY}
 	private Mode mode;
 
 	public ChangeSlotValueDialog(AbstractPackageViewer diagram, FmmlxObject object, FmmlxSlot initialSlot) {
@@ -43,25 +56,29 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialog.Re
 		dialog.setContent(flow);
 
 		setResultConverter();
-
-		if (mode != Mode.ENUM) Platform.runLater(() -> slotValueTextField.requestFocus());
+		
+		//If TextField is in use, then the cursor should jump there!
+		if (mode==Mode.STRING || mode==Mode.DEFAULT) Platform.runLater(() -> slotValueTextField.requestFocus());
+		
 	}
 
 	private void setMode(FmmlxSlot slot) {
 		this.type = slot == null ? null : slot.getType(diagram);
+		
 		this.mode = 
 				type==null?Mode.INVALID:
 				"String".equals(type)?Mode.STRING:
 				diagram.isEnum(type)?Mode.ENUM:
+				"Date".equals(type)?Mode.DATE:
+				"Boolean".equals(type)?Mode.BOOLEAN:
+				"MonetaryValue".equals(type)?Mode.MONEY:	
 				Mode.DEFAULT;
 
 		setInputItem();
 		
 		slotTypeTextfield.setText(this.type);
-				
 		isExpressionCheckBox.setSelected(mode == Mode.DEFAULT);
-		isExpressionCheckBox.setDisable(mode == Mode.ENUM);
-		
+		isExpressionCheckBox.setDisable(mode!=Mode.DEFAULT && mode!=Mode.STRING);		
 	}
 
 	private void layoutContent() {
@@ -114,10 +131,31 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialog.Re
 	private void setInputItem() {
 		FmmlxSlot currentSlot = initialSlot != null ? initialSlot : slotBox.getSelectionModel().getSelectedItem();
 		if(currentSlot==null) mode = Mode.INVALID;
-		if(mode != Mode.ENUM) {
+		if(mode != Mode.ENUM && mode!=Mode.DATE && mode!=Mode.BOOLEAN && mode!=Mode.MONEY) {
 			slotValueTextField = new TextField(mode == Mode.INVALID?"":currentSlot.getValue());
 			grid.add(slotValueTextField, 1, 3);
 			slotValueTextField.setDisable(mode == Mode.INVALID);
+		} else if (mode==Mode.DATE) {
+	        datePicker.setShowWeekNumbers(true);
+	        grid.add(datePicker, 1, 3);
+		} else if (mode==Mode.BOOLEAN) {
+			trueButton.setToggleGroup(toggleGroup);
+			falseButton.setToggleGroup(toggleGroup);
+			toggleGroup.selectedToggleProperty().addListener(
+					   (observable, oldToggle, newToggle) -> {
+					       if (newToggle == trueButton) {
+					    	   trueOrFalse = "true";
+					       } else if (newToggle == falseButton) {
+					    	   trueOrFalse = "false";
+					       }});
+			grid.add(trueButton, 1, 3);
+			grid.add(falseButton, 1, 3);
+			grid.setHalignment(falseButton, HPos.RIGHT);
+		} else if (mode==Mode.MONEY) {
+			currency.setEditable(true);
+			currency.getItems().addAll("USD","EUR","GBP","AUD","NZD");
+			HBox moneyHBox = new HBox(money,currency);
+			grid.add(moneyHBox, 1, 3);
 		} else {
 			slotValueComboBox = new ComboBox<>();
 			slotValueComboBox.getItems().addAll(diagram.getEnumItems(type));
@@ -151,9 +189,22 @@ public class ChangeSlotValueDialog extends CustomDialog<ChangeSlotValueDialog.Re
 				if (isExpressionCheckBox.isSelected()) {
 					return new Result(object, currentSlot, slotValueTextField.getText());
 				} else {
-					if(mode != Mode.ENUM) {
+					if(mode != Mode.ENUM && mode!=Mode.BOOLEAN && mode!=Mode.DATE && mode!=Mode.MONEY) {
 						String slotValue = "\"" + slotValueTextField.getText() + "\"";
 						return new Result(object, currentSlot, slotValue);
+					} else if(mode==Mode.BOOLEAN) {
+						return new Result(object, currentSlot, trueOrFalse);
+					} else if(mode==Mode.DATE) {
+						int year = datePicker.getValue().getYear();
+						int month = datePicker.getValue().getMonthValue();
+						int day = datePicker.getValue().getDayOfMonth();
+						String date = "Date::createDate("+year+","+month+","+day+")";
+						return new Result(object, currentSlot, date);
+					} else if(mode==Mode.MONEY) {
+						String currencyString = "Auxiliary::Currency(\"" + currency.getSelectionModel().getSelectedItem() + "\", \"" + currency.getSelectionModel().getSelectedItem() + "\", 1.0)";
+						String moneyValue = "Auxiliary::MonetaryValue(" + money.getText() + ", " + currencyString + ")";
+						System.err.println(moneyValue);
+						return new Result(object, currentSlot, moneyValue);
 					} else {
 						String enumItem = currentSlot.getType(diagram) + "::" + slotValueComboBox.getSelectionModel().getSelectedItem();
 						return new Result(object, currentSlot, enumItem);

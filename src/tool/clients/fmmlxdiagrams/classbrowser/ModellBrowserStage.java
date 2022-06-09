@@ -274,6 +274,7 @@ public class ModellBrowserStage extends CustomStage {
 		
 		for(FmmlxAttribute att : selectedObject.getAllAttributes()) {
 			result.add("("+att.getLevel()+") "+att.getName());
+			Collections.sort(result);
 		}
 		return result;
 	}
@@ -292,6 +293,7 @@ public class ModellBrowserStage extends CustomStage {
 			}
 			
 			result.add(op.getName()+" ("+stringBuilderType.toString()+")");
+			Collections.sort(result);
 		}
 		return result;
 	}

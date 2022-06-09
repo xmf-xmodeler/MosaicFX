@@ -4,6 +4,8 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
@@ -12,7 +14,11 @@ import javafx.geometry.Side;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
@@ -35,6 +41,7 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
+import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 import org.w3c.dom.Element;
 
@@ -56,6 +63,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
@@ -102,7 +110,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 //	private static final Point2D CANVAS_RAW_SIZE = new Point2D(1400, 1000);
 	public  static final Font FONT;
-
+	Palette palette = new Palette(this);
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
 	private boolean showSlots = true;
@@ -110,6 +118,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private boolean showDerivedOperations=true;
 	private boolean showDerivedAttributes=true;
 	private boolean showMetaClassName = false;
+	private boolean showConstraints = true;
+	private boolean showConstraintReports = true;
 	private DiagramViewPane zoomView;
 	@Override protected boolean loadOnlyVisibleObjects() { return false; }	// Did not work. Attributes from invisible classes did not cause slots on visible classes
 
@@ -151,7 +161,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		splitPane2 = new SplitPane();
 		mainView = new VBox();
 		
-		Palette palette = new Palette(this);
+		
 		Palette palette2 = new Palette(this,2);
 		newFmmlxPalette = new FmmlxPalette(this);
 		
@@ -183,6 +193,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         	if("showOperations".equals(key)) setShowOperations(value);
         	if("showOperationValues".equals(key)) setShowOperationValues(value);
         	if("showSlots".equals(key)) setShowSlots(value);
+        	if("showConstraintReports".equals(key)) setConstraintReportsInDiagram(value);
+        	if("showConstraints".equals(key)) setConstraintsInDiagram(value);
         }        
 
         tabPane.getTabs().add(new MyTab());
@@ -200,6 +212,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
                 if(event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.R) {
                 	getActiveTab().canvasTransform.prependRotation(10, new Point2D(getActiveTab().canvas.getWidth()/2 , getActiveTab().canvas.getHeight()/2));
                 	redraw();
+                }
+                if(event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.F) {
+                	getActiveView().centerObject();
                 }
             }
         });
@@ -353,7 +368,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private void updateDiagramLater() {
 		diagramRequiresUpdate = true;
 	}
-
+	
+	
+	
+	
 	public void redraw() {
 		if (fetchingData) {
 			return;}
@@ -394,14 +412,21 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	public void triggerOverallReLayout() {
-		for(FmmlxObject o : new Vector<>(objects)) {
-			o.layout(this);
-		}
+		
 		// TODO evil hack. not kosher
-		for(int i = 0; i < 2; i++) for(Edge<?> edge : new Vector<>(edges)) {
-			edge.align();
-			edge.layoutLabels(this);
+		for(int i = 0; i < 2; i++) { 
+			for(FmmlxObject o : new Vector<>(objects)) {
+				o.layout(this);
+			}
+			for(Edge<?> edge : new Vector<>(edges)) {
+				edge.align();
+				edge.layoutLabels(this);
+			}
 		}
+	}
+	
+	public Vector<CanvasElement> getSelectedObjects() {
+		return new Vector<>(selectedObjects);
 	}
 
 	private void mouseReleasedStandard() {
@@ -606,6 +631,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public void setShowDerivedOperations(boolean show) {this.showDerivedOperations = show;}
 	public void setShowDerivedAttributes(boolean show) {this.showDerivedAttributes = show;}
 	public void setMetaClassNanmeInPalette(boolean show) {this.showMetaClassName = show;} 
+	public void setConstraintsInDiagram(boolean show) {this.showConstraints = show;} 
+	public void setConstraintReportsInDiagram(boolean show) {this.showConstraintReports = show;} 
 
 	public boolean isShowOperations() {return this.showOperations;}
 	public boolean isShowOperationValues() {return this.showOperationValues;}
@@ -614,6 +641,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public boolean isShowDerivedOperations() {return this.showDerivedOperations;}
 	public boolean isShowDerivedAttributes() {return this.showDerivedAttributes;}
 	public boolean isMetaClassNameInPalette() {return this.showMetaClassName;}
+	public boolean isConstraintsInDiagram() {return this.showConstraints;}
+	public boolean isConstraintReportsInDiagram() {return this.showConstraintReports;} 
 
 	public Vector<String> getEnumItems(String enumName) {
 		for (FmmlxEnum e : enums) {
@@ -633,13 +662,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return FXCollections.observableArrayList(objectList);
 	}
 
-	public synchronized void updateEnums() {
-		try {
-			enums.clear();
-			enums = comm.fetchAllEnums(this); }
-		catch (TimeOutException e) {
-			e.printStackTrace();
-		}
+	public void updateEnums() {
+		comm.fetchAllEnums(this, enumsReceived -> {enums = enumsReceived;});
 	}
 
 	public FmmlxEnum getEnum(String enumName) {
@@ -747,6 +771,26 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		redraw();
 	}
 	
+	public void setShowConstraints(CheckBox box) {
+		boolean show = box.isSelected();
+		setConstraintsInDiagram(show);
+		for (FmmlxObject o : getObjects()) {
+			o.setShowConstraints(show);
+		}
+		triggerOverallReLayout();
+		redraw();
+	}
+	
+	public void setShowConstraintReports(CheckBox box) {
+		boolean show = box.isSelected();
+		setConstraintReportsInDiagram(show);
+		for (FmmlxObject o : getObjects()) {
+			o.setShowConstraintReports(show);
+		}
+		triggerOverallReLayout();
+		redraw();
+	}
+	
 	public void setMetaClassNameInPalette(CheckBox metaClassName) {
 		boolean show=metaClassName.isSelected();
 		setMetaClassNanmeInPalette(show);
@@ -758,6 +802,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			newFmmlxPalette.update();
 		}		
 	}
+	
+	
 
 	@Override
 	protected void clearDiagram_specific() {
@@ -802,9 +848,12 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				Platform.runLater(() -> ISSUE.performResolveAction(this));
 			}
 		}
-
+		
+		palette.updateToolbar(this);
 		redraw();
 	}
+	
+	
 
 	@Override
 	protected void updateViewerStatusInGUI(ViewerStatus newStatus) {
@@ -1514,7 +1563,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				names.add(view.name);
 				transformations.add(view.canvasTransform);
 			}
-			comm.sendViewStatus(diagramID, names, transformations);			
+			comm.sendViewStatus(diagramID, names, transformations);		
 		}
 
 		private void handleCenterDragged(MouseEvent e) {
@@ -1547,6 +1596,47 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			Point2D p2 = new Point2D(bounds.getMaxX(), bounds.getMaxY());
 			return rec.contains(p1) && rec.contains(p2);
 		}
+		
+		
+		public void centerObject() {
+			Vector<FmmlxObject> allObjects = getObjects();
+			Vector<FmmlxObject> allVisibleObjects = new Vector<FmmlxObject>();
+			
+			for (FmmlxObject o : allObjects) {
+				if (o.hidden==false)
+					allVisibleObjects.add(o);
+			}
+			
+			ChoiceDialog<FmmlxObject> dialog = new ChoiceDialog<FmmlxObject>(null, allVisibleObjects);
+			dialog.setTitle("Choice Dialog");
+			dialog.setHeaderText("A wonderfull Choice to make!");
+			dialog.setContentText("Choose your FmmlxObject:");
+
+			Optional<FmmlxObject> result = dialog.showAndWait();
+			if (result.isPresent()){
+			    System.err.println("Your choice: " + result.get()+ " CenterX: " + result.get().getCenterX()+ " CenterY: " + result.get().getCenterY());
+			    System.err.println("Width: " + this.getWidth());   
+			    System.err.println("Height: " + this.getHeight());   
+			    
+			    Point2D viewCenter = new Point2D(this.getWidth()/2,this.getHeight()/2);
+			    try {
+			    Point2D viewCenter2 = canvasTransform.inverseTransform(viewCenter);
+			    canvasTransform.append(new Translate(viewCenter2.getX()-result.get().getCenterX(), viewCenter2.getY()-result.get().getCenterY()));
+			    } catch (NonInvertibleTransformException e) {
+			    	e.printStackTrace();
+			    }
+			    
+//				try {
+//					Point2D pivot_ = canvasTransform.inverseTransform(pivot);
+			   	
+//				} catch (NonInvertibleTransformException e1) {
+//					e1.printStackTrace();
+//				}
+			}
+			redraw();
+		}
+	
+	
 	}
 
 	public DiagramViewPane getActiveTab() {
@@ -1556,6 +1646,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return activeView;
 	}	
 		
+	
+	
+	
 	private class MyTab extends Tab {
 		final Label label;
 		DiagramViewPane view;
@@ -1565,6 +1658,28 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			this.view = view;
 			this.label = new Label(view.name);
 			setLabel();
+			setCloseListener();
+		    
+			
+		}
+		
+		public void setCloseListener() {
+			this.setOnCloseRequest(new EventHandler<Event>() {
+
+		        public void handle(Event e) {
+		        	Alert alert = new Alert(AlertType.CONFIRMATION);
+		        	alert.setTitle("Confirmation Dialog");
+		        	alert.setHeaderText("Close Tab");
+		        	alert.setContentText("Press OK to close the tab!");
+
+		        	Optional<ButtonType> result = alert.showAndWait();
+		        	if (result.get() == ButtonType.OK){
+		        	   views.remove(view);
+		        	} else {
+		        		e.consume();
+		        	}
+		        }
+		    });
 		}
 
 		public void setView(DiagramViewPane newView) {
@@ -1590,10 +1705,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				}
 			});
 		}
+		
+//		protected void close() {
+//	        Event.fireEvent(this, new Event(Tab.CLOSED_EVENT));
+//	    }
 
 		public MyTab() {
 			super("*", null);
 			this.label = new Label("void");
+			setCloseListener();
 			
 		}		
 	

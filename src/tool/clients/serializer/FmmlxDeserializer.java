@@ -68,8 +68,8 @@ public class FmmlxDeserializer {
 					names.add(view.getAttribute("name"));
 		        	double xx = 1., tx = 0., ty = 0.;
 		        	try{ xx = Double.parseDouble(view.getAttribute("xx")); } catch (Exception e) {System.err.println("Cannot read xx: " + e.getMessage() + " Using default instead");}
-		        	try{ tx = Double.parseDouble(view.getAttribute("tx")); } catch (Exception e) {System.err.println("Cannot read xx: " + e.getMessage() + " Using default instead");}
-		        	try{ ty = Double.parseDouble(view.getAttribute("ty")); } catch (Exception e) {System.err.println("Cannot read xx: " + e.getMessage() + " Using default instead");}
+		        	try{ tx = Double.parseDouble(view.getAttribute("tx")); } catch (Exception e) {System.err.println("Cannot read tx: " + e.getMessage() + " Using default instead");}
+		        	try{ ty = Double.parseDouble(view.getAttribute("ty")); } catch (Exception e) {System.err.println("Cannot read ty: " + e.getMessage() + " Using default instead");}
 		        	transformations.add(new Affine(xx, 0, tx, 0, xx, ty));
 				}
 			} catch (Exception e) {} // Ignore the stuff we don't need to worry about

@@ -304,6 +304,13 @@ public class ConcreteSyntaxWizard extends Application {
 			zoom = zoom * Math.pow(Math.pow(2, 1/3.), delta > 0 ? 1 : -1);	
 			paint(SVGtree.getSelectionModel().getSelectedItem().getValue(),zoom);
 		}
+
+
+		@Override
+		public void centerObject() {
+			// TODO Auto-generated method stub
+			
+		}
 		
 	}
 }

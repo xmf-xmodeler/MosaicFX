@@ -92,8 +92,8 @@ public class FmmlxOperation implements FmmlxProperty, Comparable<FmmlxOperation>
 
 	@Override
 	public int compareTo(FmmlxOperation that) {
-		if(this.level < that.level) return -1; 
-		if(this.level > that.level) return 1;
+		if(this.level > that.level) return -1; 
+		if(this.level < that.level) return 1;
 		return this.name.compareTo(that.name);
 	}
 }
