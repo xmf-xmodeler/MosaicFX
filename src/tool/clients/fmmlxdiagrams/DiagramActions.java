@@ -1186,12 +1186,12 @@ public class DiagramActions {
 				double height = diagram.getCanvas().getHeight()+5000;
 				double extraHeight = getExtraHeight()+1000;
 				SvgExporter svgExporter;
-				try {
-					svgExporter = new SvgExporter(filePath, width, height+extraHeight);
-					svgExporter.export(diagram, extraHeight);
-				} catch (TransformerException | ParserConfigurationException e) {
-					e.printStackTrace();
-				}
+				//try {
+					//svgExporter = new SvgExporter(filePath, width, height+extraHeight);
+					//svgExporter.export(diagram, extraHeight);
+				//} catch (TransformerException | ParserConfigurationException e) {
+					//e.printStackTrace();
+				//}
 			});
 		}
 		});
