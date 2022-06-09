@@ -24,10 +24,10 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 	private Label label2 = new Label();
 	private TextField levelField = new TextField();
 	//private TextArea bodyBox = new TextArea();
-	private CodeBox bodyBox;
+	private CodeBoxPair bodyBox;
 	private Label label3 = new Label();
 	//private TextArea reasonBox = new TextArea();
-	private CodeBox reasonBox;
+	private CodeBoxPair reasonBox;
 	private Label label4 = new Label();
 	private Label statusLabel = new Label();
 
@@ -39,14 +39,14 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 		setTitle("Add constraint to " + object.getName());
 		nameField.setText("enterConstraintNameHere");
 		levelField.setText((object.getLevel() - 1) + "");
-		bodyBox.bodyTextArea.setText("false");
-		reasonBox.bodyTextArea.setText("\"This constraint always fails.\"");
+		bodyBox.setBodyText("false");
+		reasonBox.setBodyText("\"This constraint always fails.\"");
 		setResultConverter(button -> {
 			if (button != null && button.getButtonData() == ButtonData.OK_DONE) {
 				return new Result(object, nameField.getText(),
 						Integer.parseInt(levelField.getText()),
-						bodyBox.bodyTextArea.getText(),
-						reasonBox.bodyTextArea.getText());
+						bodyBox.getBodyText(),
+						reasonBox.getBodyText());
 			} else {
 				return null;
 			}
@@ -58,15 +58,15 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 		setTitle("Edit Constraint " + constraint.getName() + " from " + object.getName());
 		nameField.setText(constraint.getName());
 		levelField.setText(constraint.getLevel()+"");
-		bodyBox.bodyTextArea.setText(constraint.getBodyRaw());
-		reasonBox.bodyTextArea.setText(constraint.getReasonRaw());
+		bodyBox.setBodyText(constraint.getBodyRaw());
+		reasonBox.setBodyText(constraint.getReasonRaw());
 		validator();
 		setResultConverter(button -> {
 			if (button != null && button.getButtonData() == ButtonData.OK_DONE) {
 				return new Result(object, nameField.getText(),
 						Integer.parseInt(levelField.getText()),
-						bodyBox.bodyTextArea.getText(),
-						reasonBox.bodyTextArea.getText()
+						bodyBox.getBodyText(),
+						reasonBox.getBodyText()
 						);
 			} else {
 				return null;
@@ -91,11 +91,11 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 			getDialogPane().lookupButton(ButtonType.OK).setDisable(!bodyBox.getCheckPassed()||!reasonBox.getCheckPassed());
 		};
 		
-		bodyBox = new CodeBox(diagram,checkActionForSyntax);
-		reasonBox = new CodeBox(diagram,checkActionForSyntax);
+		bodyBox = new CodeBoxPair(diagram,checkActionForSyntax);
+		reasonBox = new CodeBoxPair(diagram,checkActionForSyntax);
 		
-		bodyBox.errorTextArea.setMaxHeight(60);
-		reasonBox.errorTextArea.setMaxHeight(60);
+		bodyBox.getBodyScrollPane().setMaxHeight(60);
+		reasonBox.getBodyScrollPane().setMaxHeight(60);
 		
 		label1.setText("@Constraint");
 		label2.setText("@");
@@ -118,11 +118,11 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 		grid.add(label2, 2, 0);
 		grid.add(levelField, 3, 0);
 
-		grid.add(bodyBox.bodyTextArea, 0, 1, 4, 1);
-		grid.add(bodyBox.errorTextArea, 0,2,4,1);
+		grid.add(bodyBox.getBodyScrollPane(), 0, 1, 4, 1);
+		grid.add(bodyBox.getErrorTextArea(), 0,2,4,1);
 		grid.add(label3, 0, 3, 4, 1);
-		grid.add(reasonBox.bodyTextArea, 0, 4, 4, 1);
-		grid.add(reasonBox.errorTextArea, 0, 5, 4, 1);
+		grid.add(reasonBox.getBodyScrollPane(), 0, 4, 4, 1);
+		grid.add(reasonBox.getErrorTextArea(), 0, 5, 4, 1);
 		grid.add(label4, 0, 6, 4, 1);
 		grid.add(statusLabel, 0, 7, 4, 1);
 		

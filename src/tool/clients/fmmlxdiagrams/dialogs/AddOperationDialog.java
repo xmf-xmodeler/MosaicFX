@@ -30,7 +30,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 	ObservableList<String> classList;
 	//private TextArea bodyTextArea;
 	//private TextArea errorTextArea;
-	private CodeBox bodyCodeBox;
+	private CodeBoxPair codeBoxPair;
 	
 	
 	private ArrayList<Node> labelsNode;
@@ -52,7 +52,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 				e.consume();
 			}
 		});
-		bodyCodeBox.checkBodySyntax();
+		codeBoxPair.checkBodySyntax();
 		setResult();
 
 	}
@@ -62,7 +62,8 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				return new Result(object, 
 						levelComboBox.getSelectionModel().getSelectedItem(),
-						bodyCodeBox.bodyTextArea.getText());
+						codeBoxPair.getBodyText());
+						//bodyCodeBox.getBodyTextArea().getText());
 			}
 			return null;
 		});
@@ -75,11 +76,14 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 		classTextField.setText(object.getName());
 		classTextField.setDisable(true);
 		
-		bodyCodeBox = new CodeBox(diagram,e->{
-			getDialogPane().lookupButton(ButtonType.OK).setDisable(!bodyCodeBox.getCheckPassed());
+		codeBoxPair = new CodeBoxPair(diagram,e->{
+			getDialogPane().lookupButton(ButtonType.OK).setDisable(!codeBoxPair.getCheckPassed());
 		});
-		bodyCodeBox.errorTextArea.setMinWidth(COLUMN_WIDTH*2);
-		
+		codeBoxPair.getErrorTextArea().setMinWidth(COLUMN_WIDTH*2);
+		codeBoxPair.getErrorTextArea().setMaxHeight(100);
+		codeBoxPair.getBodyScrollPane().setMaxHeight(300);
+		codeBoxPair.getBodyScrollPane().setMinHeight(300);
+		codeBoxPair.getErrorTextArea().setMinHeight(100);
 		
 		levelComboBox = new ComboBox<>(AllValueList.generateLevelListToThreshold(0, object.getLevel()));
 		levelComboBox.getSelectionModel().selectLast();
@@ -88,10 +92,10 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 //		        resetOperationBody("op0", true);
 //		    }
 //		);
-		bodyCodeBox.bodyTextArea.setText(StringValue.OperationStringValues.emptyOperation);
+		codeBoxPair.setBodyText(StringValue.OperationStringValues.emptyOperation);
 		//bodyTextArea = new TextArea(StringValue.OperationStringValues.emptyOperation);
 		//bodyTextArea.textProperty().addListener((a,b,c) -> {getDialogPane().lookupButton(ButtonType.OK).setDisable(true);checkBodySyntax();});
-		bodyCodeBox.bodyTextArea.setMinWidth(COLUMN_WIDTH*2);
+		codeBoxPair.getBodyScrollPane().setMinWidth(COLUMN_WIDTH*2);
 		//Button checkSyntaxButton = new Button(StringValue.LabelAndHeaderTitle.checkSyntax);
 		//checkSyntaxButton.setOnAction(event -> AddOperationDialog.this.checkBodySyntax());
 		//checkSyntaxButton.setPrefWidth(COLUMN_WIDTH * 0.5);
@@ -108,7 +112,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 		
 		labelsNode.add(new Label(StringValue.LabelAndHeaderTitle.aClass));
 		labelsNode.add(new Label(StringValue.LabelAndHeaderTitle.level));
-		labelsNode.add(new Label(StringValue.LabelAndHeaderTitle.body));
+		//labelsNode.add(new Label(StringValue.LabelAndHeaderTitle.body));
 		
 		mainNodes.add(classTextField);
 		mainNodes.add(levelComboBox);
@@ -116,17 +120,14 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 		addNodesToGrid(labelsNode, 0);
 		addNodesToGrid(mainNodes, 1);
 		
-		grid.setMinWidth(COLUMN_WIDTH*3);
+		grid.setMinWidth(COLUMN_WIDTH*2);
 		bodyLabel=new Label("Operation body");
 		grid.add(bodyLabel, 0, 2);
-		grid.add(bodyCodeBox.bodyTextArea, 0, 3);
-		//grid.add(checkSyntaxButton, 0, 2);
-		grid.add(defaultOperationButton, 1, 7);
-		//grid.add(monitorButton, 0, 4);
+		grid.add(codeBoxPair.getBodyScrollPane(), 0, 3);
+		grid.add(defaultOperationButton, 1, 2);
 		parseResLabel = new Label("Parse result");
-		grid.add(bodyCodeBox.errorTextArea, 0, 5);
-		
-		//getDialogPane().lookupButton(ButtonType.OK).setDisable(true);
+		grid.add(parseResLabel, 0, 4);
+		grid.add(codeBoxPair.getErrorTextArea(), 0, 5);
 	}
 
 		
@@ -150,7 +151,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 //	}
 	
 	private void resetOperationBody(String name, boolean monitor) {
-		bodyCodeBox.bodyTextArea.setText(
+		codeBoxPair.setBodyText(
 				"@Operation "+name
 				+(monitor?"[monitor=true]":"")
 				+"()"+":XCore::Element"+"\n" +
@@ -163,7 +164,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 	    if (levelComboBox.getSelectionModel().getSelectedIndex() == -1) {
 			errorLabel.setText(StringValue.ErrorMessage.selectLevel);
 			return false;
-		} else if (bodyCodeBox.bodyTextArea.getText().equals("")) {
+		} else if (codeBoxPair.getBodyText().equals("")) {
 			errorLabel.setText(StringValue.ErrorMessage.inputBody);
 			return false;
 		}
