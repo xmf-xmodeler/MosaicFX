@@ -11,6 +11,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
+import tool.clients.fmmlxdiagrams.classbrowser.CodeBox;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.FmmlxSerializer;
@@ -812,13 +813,13 @@ public class FmmlxDiagramCommunicator {
 			} else {
 				Vector<Object> responseV = (Vector<Object>) response;
 				Object message = responseV.get(0);
-				CodeBoxPair.OperationException e = new CodeBox.OperationException();
+				CodeBoxPair.OperationException e = new CodeBoxPair.OperationException();
 				e.message = ""+message;
 				e.lineCount = 0;//(Integer) lineCount;
 				e.charCount = 0;//(Integer) charCount;
 				result.run(e);
+			}
 		};
-		
 		xmfRequestAsync(handler, diagram.getID(), "checkSyntax", returnCall, new Value(operationBody));
 	}
     
