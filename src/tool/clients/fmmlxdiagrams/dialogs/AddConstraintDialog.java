@@ -94,8 +94,16 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 		bodyBox = new CodeBoxPair(diagram,checkActionForSyntax);
 		reasonBox = new CodeBoxPair(diagram,checkActionForSyntax);
 		
-		bodyBox.getBodyScrollPane().setMaxHeight(60);
-		reasonBox.getBodyScrollPane().setMaxHeight(60);
+		bodyBox.getBodyScrollPane().setMinHeight(250);
+		bodyBox.getBodyScrollPane().setMaxHeight(250);
+		reasonBox.getBodyScrollPane().setMinHeight(250);
+		reasonBox.getBodyScrollPane().setMaxHeight(250);
+		
+		bodyBox.getErrorTextArea().setMinHeight(100);
+		bodyBox.getErrorTextArea().setMaxHeight(100);
+		reasonBox.getErrorTextArea().setMinHeight(100);
+		reasonBox.getErrorTextArea().setMaxHeight(100);
+		
 		
 		label1.setText("@Constraint");
 		label2.setText("@");

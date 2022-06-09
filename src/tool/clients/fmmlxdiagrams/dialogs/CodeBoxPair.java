@@ -27,6 +27,7 @@ public class CodeBoxPair {
 		this.okButtonListener = okButtonListener;
 		bodyCodeBox.setSyntaxCheckListener((e -> {checkPassed=false;okButtonListener.actionPerformed(null);checkBodySyntax();}));
 		errorTextArea.setEditable(false);
+		//errorTextArea.setDisable(true);
 	}
 
 	void checkBodySyntax() {
@@ -70,6 +71,10 @@ public class CodeBoxPair {
 
 	public String getBodyText() {
 		return bodyCodeBox.getText();
+	}
+
+	public void setDiagram(AbstractPackageViewer activePackage) {
+		this.diagram=activePackage;
 	}
 
 }

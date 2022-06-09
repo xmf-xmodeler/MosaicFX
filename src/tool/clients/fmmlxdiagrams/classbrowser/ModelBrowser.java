@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.classbrowser;
 
+import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.ViewerStatus;
 import tool.clients.fmmlxdiagrams.LevelColorScheme.FixedBlueLevelColorScheme;
+import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.menus.BrowserAssociationContextMenu;
@@ -35,9 +37,9 @@ import tool.xmodeler.XModeler;
 
 public final class ModelBrowser extends CustomStage {
 	
-	private final CodeBox operationCodeArea = new CodeBox(10,true,"");
-	private final CodeBox constraintBodyArea = new CodeBox(10,true,"");
-	private final CodeBox constraintReasonArea = new CodeBox(10,true,"");
+	private CodeBoxPair operationCodeArea = null;
+	private CodeBoxPair constraintBodyArea = null;
+	private CodeBoxPair constraintReasonArea = null;
 	private final CodeBox issueArea = new CodeBox(10,false,"");
 	private final ListView<String> modelListView   = new ListView<>();
 	private final ListView<String> parentsListView = new ListView<>();
@@ -78,11 +80,24 @@ public final class ModelBrowser extends CustomStage {
 	public ModelBrowser(String project, String initialModel, ObservableList<String> models) {
 		super(StringValue.LabelAndHeaderTitle.modelBrowser+" " + project, XModeler.getStage(), 1500, 800);
 		communicator = FmmlxDiagramCommunicator.getCommunicator();
-		
+		operationCodeArea = new CodeBoxPair(activePackage,e->{
+			opCodeButton.setDisable(
+					!operationCodeArea.getCheckPassed()||
+					fmmlxOperationListView.getSelectionModel().getSelectedItem()==null||
+					fmmlxOperationListView.getSelectionModel().getSelectedItem().getName().startsWith("set")||
+					fmmlxOperationListView.getSelectionModel().getSelectedItem().getName().startsWith("get")
+					);});
+		ActionListener checkActionForSyntax = e -> {
+			conCodeButton.setDisable(!constraintBodyArea.getCheckPassed()||!constraintReasonArea.getCheckPassed());
+		};
+		constraintBodyArea = new CodeBoxPair(activePackage,checkActionForSyntax);
+		constraintReasonArea = new CodeBoxPair(activePackage,checkActionForSyntax);
 		initElements();
 		addSelectionListeners();
 		addCellFactories();
 		addDoubleClickListeners();
+
+		
 		SplitPane outerSplitPane = layoutElements();		
 		
 		getContainer().getChildren().addAll(outerSplitPane);
@@ -472,19 +487,31 @@ public final class ModelBrowser extends CustomStage {
 		
 		GridPane operationPane = new GridPane();
 		operationPane.setVgap(3);
-		operationPane.add(operationCodeArea.getTextArea(), 0, 0);
-		operationPane.add(opCodeButton, 0, 1);
+		Label parseResult = new Label("Parse Result");
+		operationPane.add(operationCodeArea.getBodyScrollPane(), 0, 0);
+		operationPane.add(parseResult, 0, 1);
+		operationPane.add(operationCodeArea.getErrorTextArea(), 0, 2);
+		operationPane.add(opCodeButton, 0, 3);
 		operationPane.getColumnConstraints().add(FILL);
 		operationPane.getRowConstraints().add(new RowConstraints(1, Integer.MAX_VALUE, Integer.MAX_VALUE));
 		operationTab.setContent(operationPane);
 		
 		GridPane constraintPane = new GridPane();
 		constraintPane.setVgap(3);
-		constraintPane.add(constraintBodyArea.getTextArea(), 0, 0);
-		constraintPane.add(constraintReasonArea.getTextArea(), 0, 1);
-		constraintPane.add(conCodeButton, 0, 2);
-		constraintPane.getRowConstraints().add(new RowConstraints(1, Integer.MAX_VALUE, Integer.MAX_VALUE));
-		constraintPane.getRowConstraints().add(new RowConstraints(1, Integer.MAX_VALUE, Integer.MAX_VALUE));
+		Label parseResultCon = new Label("Parse Result");
+		constraintPane.add(constraintBodyArea.getBodyScrollPane(), 0, 0);
+		constraintPane.add(parseResultCon, 0, 1);
+		constraintPane.add(constraintBodyArea.getErrorTextArea(), 0, 2);
+		constraintPane.add(constraintReasonArea.getBodyScrollPane(), 0, 3);
+		constraintPane.add(new Label("Parse Result"), 0, 4);
+		constraintPane.add(constraintReasonArea.getErrorTextArea(), 0, 5);
+		constraintPane.add(conCodeButton, 0, 6);
+		constraintPane.getRowConstraints().add(new RowConstraints(1, 100, Integer.MAX_VALUE));
+		constraintPane.getRowConstraints().add(new RowConstraints(1, 20, 20));
+		constraintPane.getRowConstraints().add(new RowConstraints(1, 50, 50));
+		constraintPane.getRowConstraints().add(new RowConstraints(1, 100, Integer.MAX_VALUE));
+		constraintPane.getRowConstraints().add(new RowConstraints(1, 20, 20));
+		constraintPane.getRowConstraints().add(new RowConstraints(1, 50, 50));
 		constraintPane.getColumnConstraints().add(FILL);
 		constraintTab.setContent(constraintPane);
 		
@@ -582,6 +609,9 @@ public final class ModelBrowser extends CustomStage {
 			models.put(selectedPath, tempViewer);
 		}
 		activePackage = models.get(selectedPath);
+		operationCodeArea.setDiagram(activePackage);
+		constraintBodyArea.setDiagram(activePackage);
+		constraintReasonArea.setDiagram(activePackage);
 		activePackage.updateDiagram();
 	}	
 
@@ -595,14 +625,14 @@ public final class ModelBrowser extends CustomStage {
 			selection.put("OPE", newOp.getName());
 			updateOperationTab(newOp, activePackage.getObjectByPath(newOp.getOwner()) == fmmlxObjectListView.getSelectionModel().getSelectedItem(), true);
 			fmmlxOperationListView.setContextMenu(new BrowserOperationContextMenu(fmmlxObjectListView.getSelectionModel().getSelectedItem(), newOp, activePackage));
-//			opCodeButton.setOnAction(e -> {
-//				activePackage.getComm().changeOperationBody(
-//						activePackage.getID(), 
-//						activePackage.getObjectByPath(newOp.getOwner()).getName(), 
-//						newOp.getName(), 
-//						operationCodeArea.getText());
-//				activePackage.updateDiagram();
-//			});
+			opCodeButton.setOnAction(e -> {
+				activePackage.getComm().changeOperationBody(
+						activePackage.getID(), 
+						activePackage.getObjectByPath(newOp.getOwner()).getName(), 
+						newOp.getName(), 
+						operationCodeArea.getBodyText());
+				activePackage.updateDiagram();
+			});
 		} else{
 			updateOperationTab(null, false, false);
 			fmmlxOperationListView.setContextMenu(new BrowserOperationContextMenu(fmmlxObjectListView.getSelectionModel().getSelectedItem(), newOp, activePackage));
@@ -688,10 +718,10 @@ public final class ModelBrowser extends CustomStage {
 		if(select) codeAndConstraintTabPane.getSelectionModel().select(operationTab);
 		opCodeButton.setDisable(!editable);
 		if(operation != null) {
-			operationCodeArea.setText(operation.getBody());
+			operationCodeArea.setBodyText(operation.getBody());
 			operationTab.setText("Operation" + " (" + operation.getName() + ")");
 		} else {
-			operationCodeArea.setText("");
+			operationCodeArea.setBodyText("");
 			operationTab.setText("Operation");
 		}
 	}	
@@ -700,20 +730,20 @@ public final class ModelBrowser extends CustomStage {
 		if(select) codeAndConstraintTabPane.getSelectionModel().select(constraintTab);
 		conCodeButton.setDisable(!editable);
 		if(constraint != null) {
-			constraintBodyArea.setText(constraint.getBodyRaw());
-			constraintReasonArea.setText(constraint.getReasonRaw());
+			constraintBodyArea.setBodyText(constraint.getBodyRaw());
+			constraintReasonArea.setBodyText(constraint.getReasonRaw());
 			constraintTab.setText("Constraint" + " (" + constraint.getName()+ ")");
 		} else {
-			constraintBodyArea.setText("");
-			constraintReasonArea.setText("");
+			constraintBodyArea.setBodyText("");
+			constraintReasonArea.setBodyText("");
 			constraintTab.setText("Constraint");			
 		}
 		conCodeButton.setOnAction(e->{activePackage.getComm().changeConstraintBodyAndReason(
 				activePackage.getID(), 
 				fmmlxObjectListView.getSelectionModel().getSelectedItem().getPath(), 
 				constraint.getName(), 
-				constraintBodyArea.getText(), 
-				constraintReasonArea.getText());});
+				constraintBodyArea.getBodyText(), 
+				constraintReasonArea.getBodyText());});
 	}
 	
 	private void updateIssueTab(Issue issue, boolean editable, boolean select) {
