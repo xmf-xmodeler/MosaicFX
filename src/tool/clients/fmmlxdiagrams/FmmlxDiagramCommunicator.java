@@ -811,16 +811,16 @@ public class FmmlxDiagramCommunicator {
 				result.run(null);
 			} else {
 				Vector<Object> responseV = (Vector<Object>) response;
+//				System.err.println(responseV);
 				Object message = responseV.get(0);
-				Object lineCount = responseV.get(1);
-				Object charCount = responseV.get(2);
+//				Object lineCount = responseV.get(1);
+//				Object charCount = responseV.get(2);
 				CodeBox.OperationException e = new CodeBox.OperationException();
-				e.message = (String) message;
-				e.lineCount = (Integer) lineCount;
-				e.charCount = (Integer) charCount;
+				e.message = ""+message;
+				e.lineCount = 0;//(Integer) lineCount;
+				e.charCount = 0;//(Integer) charCount;
 				result.run(e);
-			}
-			
+			}			
 		};
 		
 		xmfRequestAsync(handler, diagram.getID(), "checkSyntax", returnCall, new Value(operationBody));

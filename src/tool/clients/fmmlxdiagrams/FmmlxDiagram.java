@@ -811,7 +811,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	@Override
-	protected void fetchDiagramDataSpecific() throws TimeOutException {
+	protected void fetchDiagramDataSpecific() {
 		for(FmmlxObject o : objects) {
 			o.layout(this);
 		}

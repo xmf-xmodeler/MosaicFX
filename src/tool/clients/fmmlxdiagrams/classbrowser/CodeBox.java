@@ -35,7 +35,11 @@ public class CodeBox {
 			int start = change.getPosition();
 			int length = change.getNetLength();
 			if (length > 0)
-				addStylesQueueRequest(start, length, textArea.getText());
+				try{
+					addStylesQueueRequest(start, length, textArea.getText());
+				} catch(IndexOutOfBoundsException e) {
+					
+				}
 			syntaxDirty++;
 			Platform.runLater(() -> {
 				syntaxDirty--;
