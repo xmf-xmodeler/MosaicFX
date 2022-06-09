@@ -36,8 +36,8 @@ public class DefaultContextMenu extends ContextMenu {
 		editEnumeration.setOnAction(e -> actions.editEnumerationDialog("edit_element",""));
 		MenuItem deleteEnumeration = new MenuItem("Delete Enumeration...");
 		deleteEnumeration.setOnAction(e -> actions.deleteEnumerationDialog());
-		MenuItem packageListView = new MenuItem("Class Browser (BETA)...");
-		packageListView.setOnAction(e -> actions.openClassBrowserStage(false));
+		//MenuItem packageListView = new MenuItem("Class Browser (BETA)...");
+		//packageListView.setOnAction(e -> actions.openClassBrowserStage(false));
 		enumerationMenu.getItems().addAll(createEnumeration, editEnumeration, deleteEnumeration);
 
 		Menu exportMenu = new Menu("Export as");
@@ -83,7 +83,7 @@ public class DefaultContextMenu extends ContextMenu {
 			enumerationMenu, 
 			unhideItem,
 			centerObject,
-			packageListView, 
+			//packageListView, 
 			exportMenu, 
 			importDiagram, 
 			filterObjectsMenu,

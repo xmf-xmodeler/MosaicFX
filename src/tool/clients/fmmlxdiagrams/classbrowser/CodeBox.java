@@ -1,37 +1,65 @@
 package tool.clients.fmmlxdiagrams.classbrowser;
 
+import java.awt.event.ActionListener;
 import java.util.Vector;
 
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.InlineCssTextArea;
+import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import tool.clients.editors.MultiLineRule;
 import tool.clients.editors.WordRule;
+import tool.clients.editors.texteditor.CheckSyntax;
 
 public class CodeBox {
-
+	
+	private ActionListener syntaxCheckListener;
 	private InlineCssTextArea textArea;
 	private transient boolean syntaxBusy;
 	private transient int syntaxDirty = 0;
 	private Vector<WordRule> wordRules = new Vector<WordRule>();
 	public VirtualizedScrollPane<InlineCssTextArea> virtualizedScrollPane;
-
+	
+	
 	public CodeBox(int fontsize, boolean editable, String s) {
 		
 		initWordRules();
 
 		textArea = new InlineCssTextArea(s);
+		textArea.setParagraphGraphicFactory(LineNumberFactory.get(textArea));
 		virtualizedScrollPane = new VirtualizedScrollPane<InlineCssTextArea>(textArea);
 		textArea.setEditable(editable);
 		textArea.setStyle("-fx-font-size:" + fontsize + "pt;");
 		textArea.setStyle("-fx-font-family: 'DejaVu Sans Mono'");
+		BorderStroke borderStroke =
+		        new BorderStroke(
+		                Color.valueOf("BABABA"),
+		                BorderStrokeStyle.SOLID,
+		                new CornerRadii(2),
+		                new BorderWidths(1)
+		        );
+
+		Border border = new Border(borderStroke);
+		
+		textArea.setBorder(border);
 
 		textArea.plainTextChanges().filter(ch -> !ch.getInserted().equals(ch.getRemoved())).subscribe(change -> {
+			if (syntaxCheckListener!=null) {
+				syntaxCheckListener.actionPerformed(null);
+			}
 			int start = change.getPosition();
 			int length = change.getNetLength();
 			if (length > 0)
@@ -206,5 +234,17 @@ public class CodeBox {
 
 	public String getText() {
 		return textArea.getText();
+	}
+	
+	public void setSyntaxCheckListener(ActionListener syntaxCheckListener) {
+		this.syntaxCheckListener=syntaxCheckListener;
+	}
+	
+	public Region getTextArea() {
+		return textArea;
+	}
+	
+	public VirtualizedScrollPane<InlineCssTextArea> getVirtualizedScrollPane() {
+		return virtualizedScrollPane;
 	}
 }

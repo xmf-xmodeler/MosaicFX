@@ -472,7 +472,7 @@ public final class ModelBrowser extends CustomStage {
 		
 		GridPane operationPane = new GridPane();
 		operationPane.setVgap(3);
-		operationPane.add(operationCodeArea.virtualizedScrollPane, 0, 0);
+		operationPane.add(operationCodeArea.getTextArea(), 0, 0);
 		operationPane.add(opCodeButton, 0, 1);
 		operationPane.getColumnConstraints().add(FILL);
 		operationPane.getRowConstraints().add(new RowConstraints(1, Integer.MAX_VALUE, Integer.MAX_VALUE));
@@ -480,8 +480,8 @@ public final class ModelBrowser extends CustomStage {
 		
 		GridPane constraintPane = new GridPane();
 		constraintPane.setVgap(3);
-		constraintPane.add(constraintBodyArea.virtualizedScrollPane, 0, 0);
-		constraintPane.add(constraintReasonArea.virtualizedScrollPane, 0, 1);
+		constraintPane.add(constraintBodyArea.getTextArea(), 0, 0);
+		constraintPane.add(constraintReasonArea.getTextArea(), 0, 1);
 		constraintPane.add(conCodeButton, 0, 2);
 		constraintPane.getRowConstraints().add(new RowConstraints(1, Integer.MAX_VALUE, Integer.MAX_VALUE));
 		constraintPane.getRowConstraints().add(new RowConstraints(1, Integer.MAX_VALUE, Integer.MAX_VALUE));
@@ -490,7 +490,7 @@ public final class ModelBrowser extends CustomStage {
 		
 		GridPane issuePane = new GridPane();
 		issuePane.setVgap(3);
-		issuePane.add(issueArea.virtualizedScrollPane, 0, 0);
+		issuePane.add(issueArea.getTextArea(), 0, 0);
 		issuePane.getColumnConstraints().add(FILL);
 		issuePane.getRowConstraints().add(new RowConstraints(1, Integer.MAX_VALUE, Integer.MAX_VALUE));
 		issueTab.setContent(issuePane);
@@ -595,17 +595,17 @@ public final class ModelBrowser extends CustomStage {
 			selection.put("OPE", newOp.getName());
 			updateOperationTab(newOp, activePackage.getObjectByPath(newOp.getOwner()) == fmmlxObjectListView.getSelectionModel().getSelectedItem(), true);
 			fmmlxOperationListView.setContextMenu(new BrowserOperationContextMenu(fmmlxObjectListView.getSelectionModel().getSelectedItem(), newOp, activePackage));
-			opCodeButton.setDisable(false);
-			opCodeButton.setOnAction(e -> {
-				activePackage.getComm().changeOperationBody(
-						activePackage.getID(), 
-						activePackage.getObjectByPath(newOp.getOwner()).getName(), 
-						newOp.getName(), 
-						operationCodeArea.getText());
-				activePackage.updateDiagram();
-			});
+//			opCodeButton.setOnAction(e -> {
+//				activePackage.getComm().changeOperationBody(
+//						activePackage.getID(), 
+//						activePackage.getObjectByPath(newOp.getOwner()).getName(), 
+//						newOp.getName(), 
+//						operationCodeArea.getText());
+//				activePackage.updateDiagram();
+//			});
 		} else{
 			updateOperationTab(null, false, false);
+			fmmlxOperationListView.setContextMenu(new BrowserOperationContextMenu(fmmlxObjectListView.getSelectionModel().getSelectedItem(), newOp, activePackage));
 		}
 	}
 

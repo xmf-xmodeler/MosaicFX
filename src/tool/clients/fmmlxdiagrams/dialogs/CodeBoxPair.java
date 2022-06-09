@@ -1,24 +1,31 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.awt.event.ActionListener;
+
+import org.fxmisc.richtext.InlineCssTextArea;
+
+import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.Region;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.ReturnCall;
+import tool.clients.fmmlxdiagrams.classbrowser.CodeBox;
 
-public class CodeBox {
+public class CodeBoxPair {
 
-	public final TextArea bodyTextArea;
-	public final TextArea errorTextArea;
+	public final CodeBox bodyCodeBox;
+	private final TextArea errorTextArea;
 	private AbstractPackageViewer diagram;
 	private ActionListener okButtonListener;
 	private Boolean checkPassed = false;
 
-	public CodeBox(AbstractPackageViewer diagram, ActionListener okButtonListener) {
+	public CodeBoxPair(AbstractPackageViewer diagram, ActionListener okButtonListener) {
 		errorTextArea = new TextArea();
-		bodyTextArea = new TextArea();
+		bodyCodeBox = new CodeBox(10,true,"");
 		this.diagram = diagram;
 		this.okButtonListener = okButtonListener;
-		bodyTextArea.textProperty().addListener((a,b,c) -> {checkPassed=false;okButtonListener.actionPerformed(null);checkBodySyntax();});
+		bodyCodeBox.setSyntaxCheckListener((e -> {checkPassed=false;okButtonListener.actionPerformed(null);checkBodySyntax();}));
 		errorTextArea.setEditable(false);
 	}
 
@@ -36,7 +43,7 @@ public class CodeBox {
 			okButtonListener.actionPerformed(null);
 		};
 
-		diagram.getComm().checkSyntax(diagram, bodyTextArea.getText(), returnCall);
+		diagram.getComm().checkSyntax(diagram, bodyCodeBox.getText(), returnCall);
 	}
 	
 	public Boolean getCheckPassed() {
@@ -48,4 +55,21 @@ public class CodeBox {
 		public Integer lineCount;
 		public Integer charCount;
 	}
+	
+	public TextArea getErrorTextArea() {
+		return errorTextArea;
+	}
+	
+	public Region getBodyScrollPane() {
+		return bodyCodeBox.getVirtualizedScrollPane();
+	}
+	
+	public void setBodyText(String code) {
+		bodyCodeBox.setText(code);
+	}
+
+	public String getBodyText() {
+		return bodyCodeBox.getText();
+	}
+
 }
