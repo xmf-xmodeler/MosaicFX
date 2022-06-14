@@ -50,6 +50,7 @@ public class CustomGUIController {
 	   // These attributes are required to change the diagram/model
 	   AbstractPackageViewer diagram;
 	   FmmlxObject metaClass;
+	   String metaClassName;
 	   
 	   // Access to the surrounding object browser and 
 	   // the elements of the custom gui
@@ -73,6 +74,7 @@ public class CustomGUIController {
 		   this.opToEvent = opToEvent;
 		   this.linksPerAssociationPerInstance = linksPerAssociationPerInstance;
 		   this.parent = parent;
+		   this.metaClassName = metaClass.getName();
 	   }
 	   
 	   @FXML
@@ -134,6 +136,9 @@ public class CustomGUIController {
 			   return;
 		   }
 		   
+		   // determine new metaclass reference as it may have been updated
+		   metaClass = diagram.getObjectByPath(diagram.getPackagePath() + "::" + metaClassName);
+		   
 		   // Start by CREF ListView
 		   Vector<String> objectsVector = new Vector<>();
 		   for( FmmlxObject el : metaClass.getInstances() ) {
@@ -142,7 +147,7 @@ public class CustomGUIController {
 		   objectsVector.sort(null);
 		   ObservableList<String> objectList = FXCollections.observableArrayList(objectsVector);
 		   mainListView.setItems( objectList );
-		   	
+		   
 		   if( mainListView.getSelectionModel().isEmpty() ) {
 			   mainListView.getSelectionModel().select(0);
 			   //oldValue = mainListView.getItems().get(0);
@@ -387,11 +392,9 @@ public class CustomGUIController {
 					   System.arraycopy(obtParams.toArray(), 0, obtParameters, 0, obtParams.size());
 					   Object res = exec.fetchResult(obtParameters); 
 					   
-					   // TBD: Update GUI!!
-					   diagram.updateDiagram();
-					   //refreshGUI("OLD", "NEW");
-					   // funktioniert noch nicht.. vorher aufräumen?? alles leer machen?
-					   //TBD: Update ohne das man was anklicken muss..
+					   // Update first diagram (due to possible changes) and afterwards the GUI
+					   diagram.updateDiagram( e -> { refreshGUI("OLD","NEW"); } );
+					   
 				   } catch( Exception e ) {
 					   e.printStackTrace();
 				   }
@@ -403,12 +406,18 @@ public class CustomGUIController {
 				   if( op == null || op.contains("setSlot") ) {
 					   setSlot((ActionEvent) event);
 					   
-					   // TBD: Update GUI!!
-					   diagram.updateDiagram();
-					   //refreshGUI("OLD", "NEW");
-					   // funktioniert noch nicht.. vorher aufräumen?? alles leer machen?
+					   // Update first diagram (due to possible changes) and afterwards the GUI
+					   diagram.updateDiagram( e -> { refreshGUI("OLD","NEW"); } );
+					   
+					   // wait some time until the diagram has updated
+					   while( diagram.isUpdating() ) {		   
+					   }
+					   
+					   refreshGUI("OLD","NEW");
 				   }
 			   }
+			   
+
 		   }
 		   
 	   }
