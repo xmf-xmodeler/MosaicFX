@@ -195,7 +195,9 @@ public class ControllerLanguageInterpreter2 {
 		return lastView;
 	}
 	
-	public Object fetchResult() throws IllegalClassFormatException{
+	
+	
+	public Object fetchResult(String... parameters) throws IllegalClassFormatException{
 		// Handle CREF
 		//if( isMain && isInstanceFiller ) {
 		//	FmmlxObject mainObj = underlyingDiagram.getObjectByPath(packageName + "::" + nameOfReference);
@@ -235,27 +237,59 @@ public class ControllerLanguageInterpreter2 {
 			// try to discover attribute on a higher level
 			while( injSlot == null ) {
 				currEl = underlyingDiagram.getObjectByPath( currEl.getOfPath() );
+				injSlot = currEl.getSlot(classComponent);
 				if( currEl.getOfPath().equals("Root::FMML::MetaClass")) {
 					break;
 				}
-				injSlot = currEl.getSlot(classComponent);
-
 			}
 			return injSlot.getValue();
 		}
 		
 		if( isAction ) {
 			FmmlxOperation actOp = currEl.getOperationByName(classComponent);
+			// try to discover operation on a higher level
+			while( actOp == null ) {
+				currEl = underlyingDiagram.getObjectByPath( currEl.getOfPath() );
+				actOp = currEl.getOperationByName(classComponent);
+				if( currEl.getOfPath().equals("Root::FMML::MetaClass")) {
+					break;
+				}
+			}
 			
-			// underlyingDiagram.getComm().runOperation(underlyingDiagram.getID(), "");
-			// Parameter über neues Sprachelement "USE.."
+			// create XMF-statement
+			String comm = packageName + "::" + selEl; // relevant object
+			comm = comm + "." + classComponent + "("; // operation to be called
+			int i = 0;
+			for( String el : parameters ) {
+				if( actOp.getParamTypes().get(i).equals("Root::XCore::String") ) {
+					comm = comm + "\"" + el + "\"" + ","; // add each parameter (String handling)
+				} else {
+					comm = comm + el + ","; // add each parameter
+				}
+
+				i++;
+			}
+			if( comm.charAt(comm.length()-1) == ',' ) {
+				comm = comm.substring(0, comm.length()-1); // remove last comma
+			}
+			comm = comm + ")";
+					
+			// Call xmf-statement to trigger operation (and technically be able to get return)
+			try {
+				underlyingDiagram.getComm().runOperation(underlyingDiagram.getID(), comm);
+			} catch(Exception e) {
+				e.printStackTrace();	
+			}
+						
+			// TBD: Parameter formatting into expression? e. g. Date for XMF?
+
+			// Get actions helper from diagram and trigger operation for current object
+			//underlyingDiagram.getActions().runOperation(currEl.getPath(), actOp.getName() );
 			
-			// Konsolen inhalt, ggf. mit Semikolon
-			// Qualified name: Invoicing::i1.invoiceTotal()
-			// TBD: Wie muss hier der Befehl aussehen, um eine Operation auszuführen?
-			// XMF-Statement als String?
-			// For Now: No-arg-Actions?
-			return "";
+			
+			return ""; // no returning expected for now
+			
+			// TBD: Result formatting
 		}
 		
 		if( isActionInjection ) {
