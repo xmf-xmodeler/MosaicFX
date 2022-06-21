@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -21,10 +22,14 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -81,6 +86,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private SplitPane splitPane;
 	private SplitPane splitPane2;
 	private VBox mainView;
+	private TableView<Issue> tableView;
 //	private VBox vBox;
 //	private Menu menu;
 //	private MenuBar menuBar;
@@ -160,7 +166,25 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		splitPane = new SplitPane();
 		splitPane2 = new SplitPane();
 		mainView = new VBox();
+		tableView = new TableView<Issue>();
 		
+		TableColumn<Issue, String> column1 = new TableColumn<>("FMMLX Object");
+
+		column1.setCellValueFactory(new PropertyValueFactory<>("name"));
+		
+		column1.setCellValueFactory(cellData -> {
+		     String objectName = cellData.getValue().getAffectedObjects() + "";
+		    return new SimpleStringProperty(objectName);
+		});
+		
+		TableColumn<Issue, String> column2 = new TableColumn<>("Issue");
+
+		column2.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+		tableView.getColumns().add(column1);
+		tableView.getColumns().add(column2);
+
+		tableView.getItems().add(new Issue("ZZZZZZZZZZZ"));
 		
 		Palette palette2 = new Palette(this,2);
 		newFmmlxPalette = new FmmlxPalette(this);
@@ -242,7 +266,16 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         tabPane.heightProperty().addListener( ( observable, x, y ) -> redraw() );
         tabPane.widthProperty().addListener( ( observable, x, y ) -> redraw() );
         
-		mainView.getChildren().addAll(palette, palette2, tabPane);//scrollerCanvas);
+        tableView.prefHeightProperty().bind(tabPane.heightProperty());
+        tableView.prefWidthProperty().bind(tabPane.widthProperty());
+        
+        SplitPane splitPane3 = new SplitPane(tabPane, new ScrollPane(tableView));
+        splitPane3.setOrientation(Orientation.VERTICAL);
+        
+        
+        
+        
+		mainView.getChildren().addAll(palette, palette2, splitPane3);//scrollerCanvas);
 		
 		splitPane2.setOrientation(Orientation.VERTICAL);
 		splitPane2.setDividerPosition(0, 0.8);
@@ -375,7 +408,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public void redraw() {
 		if (fetchingData) {
 			return;}
-
+		
+		tableView.getItems().clear();
+		tableView.getItems().addAll(issues);
+		
+		
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
 			// we are on the right Thread already:
 			for(DiagramViewPane view : views) {

@@ -19,7 +19,7 @@ public class Issue implements FmmlxProperty{
 
 	private Issue() {}
 	
-	private Issue(String text) {this.text = text;}
+	Issue(String text) {this.text = text;}
 	
 	private String type;
 	private Color color = new Color(1., .8, 0., 1.);
@@ -162,6 +162,10 @@ public class Issue implements FmmlxProperty{
 	@Override
 	public String getName() {
 		return text;
+	}
+	
+	public Vector<String> getAffectedObjects(){
+		return affectedObjects;
 	}
 
 }
