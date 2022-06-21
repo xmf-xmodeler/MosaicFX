@@ -507,8 +507,8 @@ public class ObjectBrowser {
 					
 					listViewsForAssociations.put(link.getAssociation().getName(), listView);
 	
-					rechteSeiteGrid.add(new Label("Links to instances of class "+ otherobject.getMetaClassName()), 0, rechteSeiteGrid.getRowCount() + 1);
-					rechteSeiteGrid.add(listView, 0, rechteSeiteGrid.getRowCount() + 1);
+					rechteSeiteGrid.add(new Label("Links to instances of class "+ otherobject.getMetaClassName()), 0, rechteSeiteGrid.getRowConstraints().size() + 1);
+					rechteSeiteGrid.add(listView, 0, rechteSeiteGrid.getRowConstraints().size() + 1);
 					
 					appendToDefaultGUI(otherobject);
 					
@@ -522,7 +522,7 @@ public class ObjectBrowser {
 						
 						noListBoxAssocs.add(link.getAssociation());
 						
-						rechteSeiteGrid.add(new Label("Link to instance of class "+ otherobject.getMetaClassName()), 0, rechteSeiteGrid.getRowCount() + 1); //
+						rechteSeiteGrid.add(new Label("Link to instance of class "+ otherobject.getMetaClassName()), 0, rechteSeiteGrid.getRowConstraints().size() + 1); //
 						
 						appendToDefaultGUI(otherobject);
 					}
@@ -541,7 +541,7 @@ public class ObjectBrowser {
 	public void appendToDefaultGUI(FmmlxObject object) {
 		// create the slots for the selected link once
 		if(object.getAllSlots().size()>0) {
-			rechteSeiteGrid.add(new Label("Slots:"), 0, rechteSeiteGrid.getRowCount());
+			rechteSeiteGrid.add(new Label("Slots:"), 0, rechteSeiteGrid.getRowConstraints().size());
 		}
 		
 		for(FmmlxSlot slot: object.getAllSlots()) {
@@ -559,7 +559,7 @@ public class ObjectBrowser {
 			
 			
 			
-			int rowCount = rechteSeiteGrid.getRowCount();
+			int rowCount = rechteSeiteGrid.getRowConstraints().size();
 			
 			rechteSeiteGrid.add(new Label(slot.getName()), 0, rowCount);
 			rechteSeiteGrid.add( valueTextField, 1, rowCount);
@@ -569,7 +569,7 @@ public class ObjectBrowser {
 		// So there is no need for an update function in a custom gui
 		// Nevertheless they should also be accounted for display
 		if(object.getAllOperationValues().size()>0) {
-			rechteSeiteGrid.add(new Label("Operations:"), 0, rechteSeiteGrid.getRowCount());
+			rechteSeiteGrid.add(new Label("Operations:"), 0, rechteSeiteGrid.getRowConstraints().size());
 		}
 		
 		for(FmmlxOperationValue operationValue: object.getAllOperationValues()) {
@@ -583,7 +583,7 @@ public class ObjectBrowser {
 			String maxMetaClass = maxParent.max(diagram, object);
 			valueTextField.setId( "REF" + maxMetaClass + "ACTINJ" + operationValue.getName() );
 			
-			int rowCount = rechteSeiteGrid.getRowCount();
+			int rowCount = rechteSeiteGrid.getRowConstraints().size();
 			
 			rechteSeiteGrid.add(new Label(operationValue.getName()), 0, rowCount);
 			rechteSeiteGrid.add(valueTextField, 1, rowCount);

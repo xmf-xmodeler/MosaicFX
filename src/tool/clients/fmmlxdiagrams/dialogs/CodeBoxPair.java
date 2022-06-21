@@ -19,14 +19,16 @@ public class CodeBoxPair {
 	private AbstractPackageViewer diagram;
 	private ActionListener okButtonListener;
 	private Boolean checkPassed = false;
+	private final boolean isConstraint;
 
-	public CodeBoxPair(AbstractPackageViewer diagram, ActionListener okButtonListener) {
+	public CodeBoxPair(AbstractPackageViewer diagram, ActionListener okButtonListener, boolean isConstraint) {
 		errorTextArea = new TextArea();
 		bodyCodeBox = new CodeBox(10,true,"");
 		this.diagram = diagram;
 		this.okButtonListener = okButtonListener;
 		bodyCodeBox.setSyntaxCheckListener((e -> {checkPassed=false;okButtonListener.actionPerformed(null);checkBodySyntax();}));
 		errorTextArea.setEditable(false);
+		this.isConstraint = isConstraint;
 		//errorTextArea.setDisable(true);
 	}
 
@@ -44,7 +46,7 @@ public class CodeBoxPair {
 			okButtonListener.actionPerformed(null);
 		};
 
-		diagram.getComm().checkSyntax(diagram, bodyCodeBox.getText(), returnCall);
+		diagram.getComm().checkSyntax(diagram, isConstraint?("@Operation test() " + bodyCodeBox.getText() + " end"):bodyCodeBox.getText(), returnCall);
 	}
 	
 	public Boolean getCheckPassed() {

@@ -115,7 +115,7 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialog.Result>{
 					selectOperationComboBox.getSelectionModel().getSelectedItem()==null||
 					selectOperationComboBox.getSelectionModel().getSelectedItem().getName().startsWith("set")||
 					selectOperationComboBox.getSelectionModel().getSelectedItem().getName().startsWith("get"));
-		});
+		}, false);
 		
 		dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeOperationsBody);
 		
