@@ -23,7 +23,10 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
@@ -270,7 +273,10 @@ public class ObjectBrowser {
 		}
 	}
 	
+	private transient int rowCount;
+	
 	private void newInstanceSelected() {
+		rowCount = 0;
 		// only execute, if the last selected instance is different
 		// from the currently selected one.
 		Integer selEl;
@@ -290,122 +296,120 @@ public class ObjectBrowser {
 			objectsVector.sort(null);
 			ObservableList<String> objectList = FXCollections.observableArrayList(objectsVector);
 			
-			FmmlxObject currObj = diagram.getObjectByPath(diagram.getPackagePath() + "::" + objectList.get(selEl));
+			// Current implementation of the GUI generator
+			rechteSeiteGrid = new GridPane();
+			rechteSeiteGrid.setHgap(3);
+			rechteSeiteGrid.setVgap(3);
+			rechteSeiteGrid.setPadding(new Insets(3, 3, 3, 3));
+
+			if(!objectList.isEmpty()) {
+				FmmlxObject currObj = diagram.getObjectByPath(diagram.getPackagePath() + "::" + objectList.get(selEl));
+				
+				// So far the custom GUI supports only slots/attributes and not operations / links
+				// Also there is no support for non direct instances as the GUI has to be rebuilt for non direct instances
+				if(customGUIinUse) {
+					// Unfortunately the default object browser is only updating the diagram
+					// but not the instances already read
+					// This is fixed by the CustomGUI controller
+					//controller.setObject(currObj); // obsolete - the method is never called in a custom gui ?
+				} else {
+									
+					// Header label
+					instancesOfClassLabel = new Label("Instances of "+this.metaClass.getName());
+					instancesOfClassLabel.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, FontPosture.REGULAR, Font.getDefault().getSize()));
+					rechteSeiteGrid.add(instancesOfClassLabel, 0, rowCount++);
+					
+					// Main objects to be browsed
+					objectListView = new ListView<>();
+					rechteSeiteGrid.add(objectListView, 0, rowCount++);
+					
+					objectListView.setItems(objectList);
+					objectListView.getSelectionModel().select(selEl);
+									
+					// CREF is used to inject all instances of a class without any dependence
+					String maxMetaClass = maxParent.max(diagram, metaClass);
+					objectListView.setId("CREF" + maxMetaClass );
+					
+					// Handle updates
+					objectListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue)-> newInstanceSelected());
+					
+					// Output additional class components for main class to be browsed
+					if(currObj.getAllSlots().size()>0) {
+						Label initLabel = new Label("Slots:");
+						rechteSeiteGrid.add(initLabel, 0, rowCount++);
+					}
+					for(FmmlxSlot slot: currObj.getAllSlots()) {
+						TextField valueTextField = new TextField(slot.getValue());
+						Button wertAendern = new Button("Submit");
+						
+						// ID of a slot will be defined as the slotname
+						// Also there will be instructions defined for the respective slot
+						// INJ = inject value of slot
+						// ACT = setter of slot as action
+						// labels will not get an id
+						
+						valueTextField.setId("REF" +  maxMetaClass + "INJ" + slot.getName() );
+						wertAendern.setId( "REF" +  maxMetaClass + "ACT" + slot.getName() );
+						
+						wertAendern.setOnAction((e)-> {
+							diagram.getComm().changeSlotValue(diagram.getID(), currObj.getName(), slot.getName(), valueTextField.getText());;
+						diagram.updateDiagram();
+						});
+						Label slotName = new Label(slot.getName());
+	
+						rechteSeiteGrid.add(slotName, 0, rowCount);
+						rechteSeiteGrid.add(valueTextField, 1, rowCount);
+						rechteSeiteGrid.add(wertAendern, 2, rowCount);
+						rowCount++;
+					}
+					
+					// Operations and links are only displayed
+					// So there is no need for an update function in a custom gui
+					// Nevertheless they should also be accounted for display
+					if(currObj.getAllOperationValues().size()>0) {
+						rechteSeiteGrid.add(new Label("Operations:"), 0, rowCount++);
+					}
+					for(FmmlxOperationValue operationValue: currObj.getAllOperationValues()) {
+						
+						TextField valueTextField = new TextField(operationValue.getValue());
+						
+						// ID of an operation will be defined as its name
+						// Also there will be instructions defined for the respective field
+						// ACTINJ = inject result of operation
+						// labels will not get an id
+						valueTextField.setId( "REF" +  maxMetaClass + "ACTINJ" + operationValue.getName() );
+						
+						rechteSeiteGrid.add(new Label(operationValue.getName()), 0, rowCount);
+						rechteSeiteGrid.add(valueTextField, 1, rowCount);
+						rowCount++;
+					}
+					
+					// Evtl. Logik von ID trennen in anderer Information?`
+					// z. B. fx:reference??
+					// https://docs.oracle.com/javase/8/javafx/api/javafx/fxml/doc-files/introduction_to_fxml.html
+					
+					// How to trigger actions / set actions?
+					// Hot to allow parameters? / set parameters?
+					
+					// clean up previous calls
+					linksPerAssociationPerInstance.clear();
+					visitedLinks.clear();
+					noListBoxAssocs.clear();
+					listViewsForAssociations.clear();
+					
+					// recursive handling of references
+					recursiveAssocs(currObj, 0);
+					
+					// end of current implementation of the GUI generator
+				}
+				
+				// LM, 22.12.2021
+				// Remember that an instance has been selected
+				instanceIsSelected = true;
+				selectedInstance = currObj;
+				selectedEl = selEl;
 			
-			// So far the custom GUI supports only slots/attributes and not operations / links
-			// Also there is no support for non direct instances as the GUI has to be rebuilt for non direct instances
-			if(customGUIinUse) {
-				// Unfortunately the default object browser is only updating the diagram
-				// but not the instances already read
-				// This is fixed by the CustomGUI controller
-				//controller.setObject(currObj); // obsolete - the method is never called in a custom gui ?
-			} else {
-				// Current implementation of the GUI generator
-				rechteSeiteGrid = new GridPane();
-				rechteSeiteGrid.setHgap(3);
-				rechteSeiteGrid.setVgap(3);
-				rechteSeiteGrid.setPadding(new Insets(3, 3, 3, 3));
-				
-				int i=0;
-				
-				// Header label
-				instancesOfClassLabel = new Label("Instances of "+this.metaClass.getName());
-				instancesOfClassLabel.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, FontPosture.REGULAR, Font.getDefault().getSize()));
-				rechteSeiteGrid.add(instancesOfClassLabel, 0, i);
-				i++;
-				
-				// Main objects to be browsed
-				objectListView = new ListView<>();
-				rechteSeiteGrid.add(objectListView, 0, i);
-				i++;
-				
-				objectListView.setItems(objectList);
-				objectListView.getSelectionModel().select(selEl);
-								
-				// CREF is used to inject all instances of a class without any dependence
-				String maxMetaClass = maxParent.max(diagram, metaClass);
-				objectListView.setId("CREF" + maxMetaClass );
-				
-				// Handle updates
-				objectListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue)-> newInstanceSelected());
-				
-				// Output additional class components for main class to be browsed
-//				if(currObj.getAllSlots().size()>0) {
-//					Label initLabel = new Label("Slots:");
-//					rechteSeiteGrid.add(initLabel, 0, i);
-//					i++;
-//				}
-//				for(FmmlxSlot slot: currObj.getAllSlots()) {
-//					TextField valueTextField = new TextField(slot.getValue());
-//					Button wertAendern = new Button("Submit");
-//					
-//					// ID of a slot will be defined as the slotname
-//					// Also there will be instructions defined for the respective slot
-//					// INJ = inject value of slot
-//					// ACT = setter of slot as action
-//					// labels will not get an id
-//					
-//					valueTextField.setId("REF" +  maxMetaClass + "INJ" + slot.getName() );
-//					wertAendern.setId( "REF" +  maxMetaClass + "ACT" + slot.getName() );
-//					
-//					wertAendern.setOnAction((e)-> {
-//						diagram.getComm().changeSlotValue(diagram.getID(), currObj.getName(), slot.getName(), valueTextField.getText());;
-//					diagram.updateDiagram();
-//					});
-//					Label slotName = new Label(slot.getName());
-//
-//					rechteSeiteGrid.add(slotName, 0, i);
-//					rechteSeiteGrid.add(valueTextField, 1, i);
-//					rechteSeiteGrid.add(wertAendern, 2, i);
-//					i++;
-//				}
-//				
-//				// Operations and links are only displayed
-//				// So there is no need for an update function in a custom gui
-//				// Nevertheless they should also be accounted for display
-//				if(currObj.getAllOperationValues().size()>0) {
-//					rechteSeiteGrid.add(new Label("Operations:"), 0, i);
-//					i++;
-//				}
-//				for(FmmlxOperationValue operationValue: currObj.getAllOperationValues()) {
-//					
-//					TextField valueTextField = new TextField(operationValue.getValue());
-//					
-//					// ID of an operation will be defined as its name
-//					// Also there will be instructions defined for the respective field
-//					// ACTINJ = inject result of operation
-//					// labels will not get an id
-//					valueTextField.setId( "REF" +  maxMetaClass + "ACTINJ" + operationValue.getName() );
-//					
-//					rechteSeiteGrid.add(new Label(operationValue.getName()), 0, i);
-//					rechteSeiteGrid.add(valueTextField, 1, i);
-//					i++;
-//				}
-				
-				// Evtl. Logik von ID trennen in anderer Information?`
-				// z. B. fx:reference??
-				// https://docs.oracle.com/javase/8/javafx/api/javafx/fxml/doc-files/introduction_to_fxml.html
-				
-				// How to trigger actions / set actions?
-				// Hot to allow parameters? / set parameters?
-				
-				// clean up previous calls
-				linksPerAssociationPerInstance.clear();
-				visitedLinks.clear();
-				noListBoxAssocs.clear();
-				listViewsForAssociations.clear();
-				
-				// recursive handling of references
-				recursiveAssocs(currObj, 0);
-				
-				// end of current implementation of the GUI generator
 			}
-			
-			// LM, 22.12.2021
-			// Remember that an instance has been selected
-			instanceIsSelected = true;
-			selectedInstance = currObj;
-			selectedEl = selEl;
 			
 			// Repaint layout
 			int childrenNo = grid.getChildren().size();
@@ -507,8 +511,8 @@ public class ObjectBrowser {
 					
 					listViewsForAssociations.put(link.getAssociation().getName(), listView);
 	
-					rechteSeiteGrid.add(new Label("Links to instances of class "+ otherobject.getMetaClassName()), 0, rechteSeiteGrid.getRowConstraints().size() + 1);
-					rechteSeiteGrid.add(listView, 0, rechteSeiteGrid.getRowConstraints().size() + 1);
+					rechteSeiteGrid.add(new Label("Links to instances of class "+ otherobject.getMetaClassName()), 0, rowCount++);
+					rechteSeiteGrid.add(listView, 0, rowCount++);
 					
 					appendToDefaultGUI(otherobject);
 					
@@ -522,7 +526,7 @@ public class ObjectBrowser {
 						
 						noListBoxAssocs.add(link.getAssociation());
 						
-						rechteSeiteGrid.add(new Label("Link to instance of class "+ otherobject.getMetaClassName()), 0, rechteSeiteGrid.getRowConstraints().size() + 1); //
+						rechteSeiteGrid.add(new Label("Link to instance of class "+ otherobject.getMetaClassName()), 0, rowCount++); //
 						
 						appendToDefaultGUI(otherobject);
 					}
@@ -541,7 +545,7 @@ public class ObjectBrowser {
 	public void appendToDefaultGUI(FmmlxObject object) {
 		// create the slots for the selected link once
 		if(object.getAllSlots().size()>0) {
-			rechteSeiteGrid.add(new Label("Slots:"), 0, rechteSeiteGrid.getRowConstraints().size());
+			rechteSeiteGrid.add(new Label("Slots:"), 0, rowCount++);
 		}
 		
 		for(FmmlxSlot slot: object.getAllSlots()) {
@@ -559,17 +563,18 @@ public class ObjectBrowser {
 			
 			
 			
-			int rowCount = rechteSeiteGrid.getRowConstraints().size();
+//			int rowCount = rechteSeiteGrid.getRowConstraints().size();
 			
 			rechteSeiteGrid.add(new Label(slot.getName()), 0, rowCount);
 			rechteSeiteGrid.add( valueTextField, 1, rowCount);
+			rowCount++;
 		}
 		
 		// Operations and links are only displayed
 		// So there is no need for an update function in a custom gui
 		// Nevertheless they should also be accounted for display
 		if(object.getAllOperationValues().size()>0) {
-			rechteSeiteGrid.add(new Label("Operations:"), 0, rechteSeiteGrid.getRowConstraints().size());
+			rechteSeiteGrid.add(new Label("Operations:"), 0, rowCount++);
 		}
 		
 		for(FmmlxOperationValue operationValue: object.getAllOperationValues()) {
@@ -583,10 +588,11 @@ public class ObjectBrowser {
 			String maxMetaClass = maxParent.max(diagram, object);
 			valueTextField.setId( "REF" + maxMetaClass + "ACTINJ" + operationValue.getName() );
 			
-			int rowCount = rechteSeiteGrid.getRowConstraints().size();
+//			int rowCount = rechteSeiteGrid.getRowConstraints().size();
 			
 			rechteSeiteGrid.add(new Label(operationValue.getName()), 0, rowCount);
 			rechteSeiteGrid.add(valueTextField, 1, rowCount);
+			rowCount++;
 		}
 	}
 	
@@ -645,6 +651,9 @@ public class ObjectBrowser {
 			}
 			
 			// TBD: Call Update of GUI as new Instance does exist!
+		} else {
+			Alert a = new Alert(AlertType.INFORMATION, "This button is not active in the default GUI.", ButtonType.CLOSE);
+			a.showAndWait();
 		}
 	}
 	
