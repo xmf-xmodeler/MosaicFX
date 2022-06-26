@@ -87,6 +87,10 @@ public class ControllerLanguageInterpreter {
 	}
 	
 	private ListView<String> determineReference(ListView<String> lastListView) {
+		if( lastListView.getSelectionModel().getSelectedItem() == null ) {
+			lastListView.getSelectionModel().select(0);
+		}
+		
 		String selEl = lastListView.getSelectionModel().getSelectedItem();
 		
 		FmmlxObject currEl = underlyingDiagram.getObjectByPath(packageName + "::" + selEl);
@@ -131,6 +135,17 @@ public class ControllerLanguageInterpreter {
 							if( maxMetaClass.equals(nameOfReference)) {
 								resVal = link.getSourceNode().getName();
 							}
+						} else {
+							visitedAssocs.add(assoc.getName());
+							String newVal =  link.getTargetNode().getName();
+							
+							ListView<String> newValList = new ListView<>();
+							newValList.setItems(FXCollections.observableArrayList(newVal));
+							
+							ListView<String> curr = determineReference(newValList);
+							if( curr.getItems().size() > 0) {
+								return curr;
+							}
 						}
 					}
 				}
@@ -155,6 +170,17 @@ public class ControllerLanguageInterpreter {
 							String maxMetaClass = maxParent.max( underlyingDiagram, link.getTargetNode() );
 							if( maxMetaClass.equals(nameOfReference)) {
 								resVal = link.getTargetNode().getName();
+							} else {
+								visitedAssocs.add(assoc.getName());
+								String newVal =  link.getTargetNode().getName();
+								
+								ListView<String> newValList = new ListView<>();
+								newValList.setItems(FXCollections.observableArrayList(newVal));
+								
+								ListView<String> curr = determineReference(newValList);
+								if( curr.getItems().size() > 0) {
+									return curr;
+								}
 							}
 						}
 						
