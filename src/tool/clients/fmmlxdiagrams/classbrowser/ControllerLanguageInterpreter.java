@@ -92,9 +92,16 @@ public class ControllerLanguageInterpreter {
 		FmmlxObject currEl = underlyingDiagram.getObjectByPath(packageName + "::" + selEl);
 		Vector<FmmlxAssociation> assocs = currEl.findAssociationsForLinks();
 		
-		// is current instance of the expected ref class
-		if( currEl.getMetaClassName().equals(nameOfReference) ) {
-			return lastListView;
+		FmmlxObject fetchEl = underlyingDiagram.getObjectByPath(packageName + "::" + selEl);
+		while( true ) {
+			if( fetchEl.getMetaClassName().equals(nameOfReference) ) {
+				return lastListView;
+			}
+			
+			fetchEl = underlyingDiagram.getObjectByPath( fetchEl.getOfPath() );
+			if( fetchEl.getOfPath().equals("Root::FMML::MetaClass")) {
+				break;
+			}
 		}
 				
 		// analyze subnodes

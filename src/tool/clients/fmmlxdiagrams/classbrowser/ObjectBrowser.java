@@ -74,6 +74,7 @@ public class ObjectBrowser {
 	private HashMap<AssociationInstanceMapping, List<String>> linksPerAssociationPerInstance = new HashMap<>();
 	private List<FmmlxLink> visitedLinks = new ArrayList<>();
 	private List<FmmlxAssociation> noListBoxAssocs = new ArrayList<>();
+	private List<String> paintedElements = new ArrayList<>();
 	HashMap<String, ListView<String>> listViewsForAssociations = new HashMap<>();
 	
 	public ObjectBrowser(AbstractPackageViewer diagram, FmmlxObject metaClass) {
@@ -306,6 +307,8 @@ public class ObjectBrowser {
 				rechteSeiteGrid.setVgap(3);
 				rechteSeiteGrid.setPadding(new Insets(3, 3, 3, 3));
 				
+				// allow repaint of layout
+				paintedElements.clear();
 				int i=0;
 				
 				// Header label
@@ -330,57 +333,75 @@ public class ObjectBrowser {
 				objectListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue)-> newInstanceSelected());
 				
 				// Output additional class components for main class to be browsed
-//				if(currObj.getAllSlots().size()>0) {
-//					Label initLabel = new Label("Slots:");
-//					rechteSeiteGrid.add(initLabel, 0, i);
-//					i++;
-//				}
-//				for(FmmlxSlot slot: currObj.getAllSlots()) {
-//					TextField valueTextField = new TextField(slot.getValue());
-//					Button wertAendern = new Button("Submit");
-//					
-//					// ID of a slot will be defined as the slotname
-//					// Also there will be instructions defined for the respective slot
-//					// INJ = inject value of slot
-//					// ACT = setter of slot as action
-//					// labels will not get an id
-//					
-//					valueTextField.setId("REF" +  maxMetaClass + "INJ" + slot.getName() );
-//					wertAendern.setId( "REF" +  maxMetaClass + "ACT" + slot.getName() );
-//					
-//					wertAendern.setOnAction((e)-> {
-//						diagram.getComm().changeSlotValue(diagram.getID(), currObj.getName(), slot.getName(), valueTextField.getText());;
-//					diagram.updateDiagram();
-//					});
-//					Label slotName = new Label(slot.getName());
-//
-//					rechteSeiteGrid.add(slotName, 0, i);
-//					rechteSeiteGrid.add(valueTextField, 1, i);
-//					rechteSeiteGrid.add(wertAendern, 2, i);
-//					i++;
-//				}
-//				
-//				// Operations and links are only displayed
-//				// So there is no need for an update function in a custom gui
-//				// Nevertheless they should also be accounted for display
-//				if(currObj.getAllOperationValues().size()>0) {
-//					rechteSeiteGrid.add(new Label("Operations:"), 0, i);
-//					i++;
-//				}
-//				for(FmmlxOperationValue operationValue: currObj.getAllOperationValues()) {
-//					
-//					TextField valueTextField = new TextField(operationValue.getValue());
-//					
-//					// ID of an operation will be defined as its name
-//					// Also there will be instructions defined for the respective field
-//					// ACTINJ = inject result of operation
-//					// labels will not get an id
-//					valueTextField.setId( "REF" +  maxMetaClass + "ACTINJ" + operationValue.getName() );
-//					
-//					rechteSeiteGrid.add(new Label(operationValue.getName()), 0, i);
-//					rechteSeiteGrid.add(valueTextField, 1, i);
-//					i++;
-//				}
+				if(currObj.getAllSlots().size()>0) {
+					Label initLabel = new Label("Slots:");
+					rechteSeiteGrid.add(initLabel, 0, i);
+					i++;
+				}
+				for(FmmlxSlot slot: currObj.getAllSlots()) {
+					TextField valueTextField = new TextField(slot.getValue());
+					Button wertAendern = new Button("Submit");
+					
+					// ID of a slot will be defined as the slotname
+					// Also there will be instructions defined for the respective slot
+					// INJ = inject value of slot
+					// ACT = setter of slot as action
+					// labels will not get an id
+					
+					valueTextField.setId("REF" +  maxMetaClass + "INJ" + slot.getName() );
+					wertAendern.setId( "REF" +  maxMetaClass + "ACT" + slot.getName() );
+					
+					wertAendern.setOnAction((e)-> {
+						diagram.getComm().changeSlotValue(diagram.getID(), currObj.getName(), slot.getName(), valueTextField.getText());;
+					diagram.updateDiagram();
+					});
+					Label slotName = new Label(slot.getName());
+
+					// remember painted slot
+					if( ! paintedElements.contains( currObj.getMetaClassName() + slot.getName() ) ) {
+						
+						paintedElements.add(currObj.getMetaClassName() + slot.getName());
+						
+						rechteSeiteGrid.add(slotName, 0, i);
+						rechteSeiteGrid.add(valueTextField, 1, i);
+						rechteSeiteGrid.add(wertAendern, 2, i);
+						i++;
+					
+					}
+					
+					
+
+				}
+				
+				// Operations and links are only displayed
+				// So there is no need for an update function in a custom gui
+				// Nevertheless they should also be accounted for display
+				if(currObj.getAllOperationValues().size()>0) {
+					rechteSeiteGrid.add(new Label("Operations:"), 0, i);
+					i++;
+				}
+				for(FmmlxOperationValue operationValue: currObj.getAllOperationValues()) {
+					
+					TextField valueTextField = new TextField(operationValue.getValue());
+					
+					// ID of an operation will be defined as its name
+					// Also there will be instructions defined for the respective field
+					// ACTINJ = inject result of operation
+					// labels will not get an id
+					valueTextField.setId( "REF" +  maxMetaClass + "ACTINJ" + operationValue.getName() );
+					
+					// remember painted operations
+					if( ! paintedElements.contains( currObj.getMetaClassName() + operationValue.getName() ) ) {
+						
+						paintedElements.add(currObj.getMetaClassName() + operationValue.getName());
+						
+						rechteSeiteGrid.add(new Label(operationValue.getName()), 0, i);
+						rechteSeiteGrid.add(valueTextField, 1, i);
+						i++;
+					
+					}		
+
+				}
 				
 				// Evtl. Logik von ID trennen in anderer Information?`
 				// z. B. fx:reference??
@@ -507,10 +528,17 @@ public class ObjectBrowser {
 					
 					listViewsForAssociations.put(link.getAssociation().getName(), listView);
 	
-					rechteSeiteGrid.add(new Label("Links to instances of class "+ otherobject.getMetaClassName()), 0, rechteSeiteGrid.getRowCount() + 1);
-					rechteSeiteGrid.add(listView, 0, rechteSeiteGrid.getRowCount() + 1);
+					// remember painted assocs
+					if( ! paintedElements.contains( otherobject.getMetaClassName() ) ) {
+						
+						paintedElements.add( otherobject.getMetaClassName() );
+						
+						rechteSeiteGrid.add(new Label("Links to instances of class "+ otherobject.getMetaClassName()), 0, rechteSeiteGrid.getRowCount() + 1);
+						rechteSeiteGrid.add(listView, 0, rechteSeiteGrid.getRowCount() + 1);
+						
+						appendToDefaultGUI(otherobject);
 					
-					appendToDefaultGUI(otherobject);
+					}	
 					
 				} else {
 					// add items of other source node?
@@ -522,9 +550,17 @@ public class ObjectBrowser {
 						
 						noListBoxAssocs.add(link.getAssociation());
 						
-						rechteSeiteGrid.add(new Label("Link to instance of class "+ otherobject.getMetaClassName()), 0, rechteSeiteGrid.getRowCount() + 1); //
+						// remember painted assocs
+						if( ! paintedElements.contains( otherobject.getMetaClassName() ) ) {
+							
+							paintedElements.add( otherobject.getMetaClassName() );
+							
+							rechteSeiteGrid.add(new Label("Link to instance of class "+ otherobject.getMetaClassName()), 0, rechteSeiteGrid.getRowCount() + 1); //
+							
+							appendToDefaultGUI(otherobject);
 						
-						appendToDefaultGUI(otherobject);
+						}
+						
 					}
 			} else {
 				// j == 0
@@ -556,13 +592,19 @@ public class ObjectBrowser {
 			String maxMetaClass = maxParent.max(diagram, object);
 			valueTextField.setId( "REF" + maxMetaClass + "INJ" + slot.getName() );
 				
+			// remember painted slots
+			if( ! paintedElements.contains( object.getMetaClassName() + slot.getName() ) ) {
+				
+				paintedElements.add( object.getMetaClassName() + slot.getName() );
+				
+				
+				int rowCount = rechteSeiteGrid.getRowCount();
+				
+				rechteSeiteGrid.add(new Label(slot.getName()), 0, rowCount);
+				rechteSeiteGrid.add( valueTextField, 1, rowCount);
 			
-			
-			
-			int rowCount = rechteSeiteGrid.getRowCount();
-			
-			rechteSeiteGrid.add(new Label(slot.getName()), 0, rowCount);
-			rechteSeiteGrid.add( valueTextField, 1, rowCount);
+			}
+
 		}
 		
 		// Operations and links are only displayed
@@ -585,8 +627,17 @@ public class ObjectBrowser {
 			
 			int rowCount = rechteSeiteGrid.getRowCount();
 			
-			rechteSeiteGrid.add(new Label(operationValue.getName()), 0, rowCount);
-			rechteSeiteGrid.add(valueTextField, 1, rowCount);
+			// remember painted operations
+			if( ! paintedElements.contains( object.getMetaClassName() + operationValue.getName() ) ) {
+			
+				paintedElements.add( object.getMetaClassName() + operationValue.getName() );
+				
+				
+				rechteSeiteGrid.add(new Label(operationValue.getName()), 0, rowCount);
+				rechteSeiteGrid.add(valueTextField, 1, rowCount);
+			
+			}
+			
 		}
 	}
 	
