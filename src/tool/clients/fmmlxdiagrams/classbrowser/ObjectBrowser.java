@@ -635,6 +635,7 @@ public class ObjectBrowser {
 				
 				rechteSeiteGrid.add(new Label(operationValue.getName()), 0, rowCount);
 				rechteSeiteGrid.add(valueTextField, 1, rowCount);
+				rowCount++;
 			
 			}
 			

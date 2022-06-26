@@ -135,15 +135,18 @@ public class ControllerLanguageInterpreter {
 								resVal = link.getSourceNode().getName();
 							}
 						} else {
-							visitedAssocs.add(assoc.getName());
-							String newVal =  link.getTargetNode().getName();
-							
-							ListView<String> newValList = new ListView<>();
-							newValList.setItems(FXCollections.observableArrayList(newVal));
-							
-							ListView<String> curr = determineReference(newValList);
-							if( curr.getItems().size() > 0) {
-								return curr;
+							if( ! visitedAssocs.contains(assoc.getName())) {
+								
+								visitedAssocs.add(assoc.getName());
+								String newVal =  link.getSourceNode().getName();
+								
+								ListView<String> newValList = new ListView<>();
+								newValList.setItems(FXCollections.observableArrayList(newVal));
+								
+								ListView<String> curr = determineReference(newValList);
+								if( curr.getItems().size() > 0) {
+									return curr;
+								}
 							}
 						}
 					}
@@ -170,15 +173,18 @@ public class ControllerLanguageInterpreter {
 							if( maxMetaClass.equals(nameOfReference)) {
 								resVal = link.getTargetNode().getName();
 							} else {
-								visitedAssocs.add(assoc.getName());
-								String newVal =  link.getTargetNode().getName();
+								if( ! visitedAssocs.contains(assoc.getName())) {
 								
-								ListView<String> newValList = new ListView<>();
-								newValList.setItems(FXCollections.observableArrayList(newVal));
-								
-								ListView<String> curr = determineReference(newValList);
-								if( curr.getItems().size() > 0) {
-									return curr;
+									visitedAssocs.add(assoc.getName());
+									String newVal =  link.getTargetNode().getName();
+									
+									ListView<String> newValList = new ListView<>();
+									newValList.setItems(FXCollections.observableArrayList(newVal));
+									
+									ListView<String> curr = determineReference(newValList);
+									if( curr.getItems().size() > 0) {
+										return curr;
+									}
 								}
 							}
 						}
