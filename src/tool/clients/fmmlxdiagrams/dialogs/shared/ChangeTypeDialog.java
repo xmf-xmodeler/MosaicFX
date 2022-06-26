@@ -51,7 +51,7 @@ public class ChangeTypeDialog<Property
 		this.selectedItem = selectedItem;
 		this.propertyItems = propertyItems;
 		
-		System.err.println("Object: " + object + " Type: " + type + " Selected Item: " + selectedItem + " PropertyItems: " + propertyItems);
+//		System.err.println("Object: " + object + " Type: " + type + " Selected Item: " + selectedItem + " PropertyItems: " + propertyItems);
 
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -76,66 +76,12 @@ public class ChangeTypeDialog<Property
 								  selectPropertyComboBox.getSelectionModel().getSelectedItem(), 
 								  currentTypeTextField.getText(), 
 								  newTypeComboBox.getSelectionModel().getSelectedItem());
-				
-//				switch (type) {
-//
-//					case Attribute:
-//						return setResultChangeTypeAttribute(type);
-//					case Operation:
-//						return setResultChangeTypeOperation(type);
-//					case Association:
-//						return setResultChangeTypeAssociation(type);
-//					default:
-//						System.err.println("AddDialogResult: No matching content type!");
-//				}
 			}
 			return null;
 		});
 	}
 
-//	private Result setResultChangeTypeAssociation(PropertyType type) {
-//		return new ChangeTypeDialogResult(
-//				type, 
-//				object, 
-//				selectAssociationComboBox.getSelectionModel().getSelectedItem(),
-//				currentTypeTextField.getText(), 
-//				newTypeComboBox.getSelectionModel().getSelectedItem());
-//	}
-//
-//
-//	private Result setResultChangeTypeOperation(PropertyType type) {
-//		return new ChangeTypeDialogResult(
-//				type, 
-//				object, 
-//				selectOperationComboBox.getSelectionModel().getSelectedItem(),
-//				currentTypeTextField.getText(), 
-//				newTypeComboBox.getSelectionModel().getSelectedItem());
-//	}
-//
-//	private Result setResultChangeTypeAttribute(PropertyType type) {
-//		return new ChangeTypeDialogResult(
-//				type, 
-//				object, 
-//				selectAttributeComboBox.getSelectionModel().getSelectedItem(),
-//				currentTypeTextField.getText(), 
-//				newTypeComboBox.getSelectionModel().getSelectedItem());
-//	}
-
 	private boolean validateUserInput() {
-//		switch (type) {
-//			case Attribute:
-//				return validateChangeTypeAttribute();
-//			case Operation:
-//				return validateChangeTypeOperation();
-//			case Association:
-//				return validateChangeTypeAssociation();
-//			default:
-//				System.err.println("ChangeTypeDialog: No matching content type!");
-//		}
-//		return false;
-//	}
-//
-//	private boolean validateChangeTypeAssociation() {
 		if (selectPropertyComboBox.getSelectionModel().getSelectedItem() == null) {
 			errorLabel.setText(StringValue.ErrorMessage.selectDifferentType);
 			return false;
@@ -147,47 +93,7 @@ public class ChangeTypeDialog<Property
 		}
 		return true;
 	}
-//	
-//	private boolean validateChangeTypeAssociation() {
-//		if (selectAssociationComboBox.getSelectionModel().getSelectedItem() == null) {
-//			errorLabel.setText(StringValue.ErrorMessage.selectAssociation);
-//			return false;
-//		} else if (newTypeComboBox.getSelectionModel().getSelectedItem() == null) {
-//			errorLabel.setText(StringValue.ErrorMessage.selectNewType);
-//			return false;
-//		} else if (newTypeComboBox.getSelectionModel().getSelectedItem().equals(currentTypeTextField.getText())) {
-//			errorLabel.setText(StringValue.ErrorMessage.selectAnotherType);
-//		}
-//		return true;
-//	}
-//
-//	private boolean validateChangeTypeOperation() {
-//		if (selectOperationComboBox.getSelectionModel().getSelectedItem() == null) {
-//			errorLabel.setText(StringValue.ErrorMessage.selectOperation);
-//			return false;
-//		} else if (newTypeComboBox.getSelectionModel().getSelectedItem() == null) {
-//			errorLabel.setText(StringValue.ErrorMessage.selectNewType);
-//			return false;
-//		} else if (newTypeComboBox.getSelectionModel().getSelectedItem().equals(currentTypeTextField.getText())) {
-//			errorLabel.setText(StringValue.ErrorMessage.selectAnotherType);
-//		}
-//		return true;
-//	}
-//
-//	private boolean validateChangeTypeAttribute() {
-//		if (selectAttributeComboBox.getSelectionModel().getSelectedItem() == null) {
-//			errorLabel.setText(StringValue.ErrorMessage.selectAttribute);
-//			return false;
-//		} else if (newTypeComboBox.getSelectionModel().getSelectedItem() == null) {
-//			errorLabel.setText(StringValue.ErrorMessage.selectNewType);
-//			return false;
-//		} else if (newTypeComboBox.getSelectionModel().getSelectedItem().equals(currentTypeTextField.getText())) {
-//			errorLabel.setText(StringValue.ErrorMessage.selectAnotherType);
-//			return false;
-//		}
-//		return true;
-//	}
-
+	
 	private void layoutContent(PropertyType type) {
 		classLabel = new Label("Class");
 		classTextField = new TextField();
@@ -224,17 +130,14 @@ public class ChangeTypeDialog<Property
 			case Attribute:
 				dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeAttributeType);
 				break;
-//			case Association:
-//				dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeAssociationType);
-//				break;
 			case Operation:
 				dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeOperationType);
+				break;
 			default:
 				System.err.println("ChangeTypeDialog: No matching content type!");
 				break;
 		}
 			
-		//selectPropertyComboBox = (ComboBox<Property>) initializeComboBox(attributeList);
 		selectPropertyComboBox.valueProperty().addListener(new ChangeListener<Property>() {
 
 			@Override
@@ -243,7 +146,7 @@ public class ChangeTypeDialog<Property
 				if(newValue instanceof FmmlxAttribute) {
 					currentTypeTextField.setText(((FmmlxAttribute)newValue).getType());
 				} else if(newValue instanceof FmmlxOperation) {
-					currentTypeTextField.setText(((FmmlxAttribute)newValue).getType());
+					currentTypeTextField.setText(((FmmlxOperation)newValue).getType());
 				} 
 			}
 		});
@@ -254,11 +157,7 @@ public class ChangeTypeDialog<Property
 	}
 
 	public void setSelected(Property selectedProperty) {
-//		if (selectedProperty.getPropertyType() == PropertyType.Attribute) {
-			selectPropertyComboBox.getSelectionModel().select(selectedProperty);
-//		} else if (selectedProperty.getPropertyType() == PropertyType.Operation) {
-//			selectPropertyComboBox.getSelectionModel().select((FmmlxOperation) selectedProperty);
-//		}
+		selectPropertyComboBox.getSelectionModel().select(selectedProperty);
 	}
 	
 	public class Result {

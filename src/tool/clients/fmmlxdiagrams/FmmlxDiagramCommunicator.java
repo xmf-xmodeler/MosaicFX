@@ -11,7 +11,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
-import tool.clients.fmmlxdiagrams.dialogs.CodeBox;
+import tool.clients.fmmlxdiagrams.classbrowser.CodeBox;
+import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.FmmlxSerializer;
 import tool.clients.serializer.XmlManager;
@@ -804,7 +805,7 @@ public class FmmlxDiagramCommunicator {
     }
     
 
-	public void checkSyntax(AbstractPackageViewer diagram, String operationBody, ReturnCall<CodeBox.OperationException> result) {
+	public void checkSyntax(AbstractPackageViewer diagram, String operationBody, ReturnCall<CodeBoxPair.OperationException> result) {
 		ReturnCall<Vector<Object>> returnCall = syntaxCheckResponse -> {
 			Object response = syntaxCheckResponse.get(0);
 			if(response == null) {
@@ -812,17 +813,13 @@ public class FmmlxDiagramCommunicator {
 			} else {
 				Vector<Object> responseV = (Vector<Object>) response;
 				Object message = responseV.get(0);
-				Object lineCount = responseV.get(1);
-				Object charCount = responseV.get(2);
-				CodeBox.OperationException e = new CodeBox.OperationException();
-				e.message = (String) message;
-				e.lineCount = (Integer) lineCount;
-				e.charCount = (Integer) charCount;
+				CodeBoxPair.OperationException e = new CodeBoxPair.OperationException();
+				e.message = ""+message;
+				e.lineCount = 0;//(Integer) lineCount;
+				e.charCount = 0;//(Integer) charCount;
 				result.run(e);
 			}
-			
 		};
-		
 		xmfRequestAsync(handler, diagram.getID(), "checkSyntax", returnCall, new Value(operationBody));
 	}
     

@@ -47,7 +47,7 @@ public class ClassBrowserPackageViewer extends AbstractPackageViewer{
 	}
 
 	@Override
-	protected void fetchDiagramDataSpecific() throws TimeOutException {}
+	protected void fetchDiagramDataSpecific() {}
 
 	@Override
 	protected void fetchDiagramDataSpecific2() {view.notifyModelHasLoaded();}

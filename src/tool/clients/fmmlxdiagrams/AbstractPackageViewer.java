@@ -40,7 +40,7 @@ public abstract class AbstractPackageViewer {
 
 		@Override public ObservableList<FmmlxObject> getPossibleAssociationEnds() { return null;}
 
-		@Override protected void fetchDiagramDataSpecific() throws TimeOutException { }
+		@Override protected void fetchDiagramDataSpecific() { }
 		@Override protected void fetchDiagramDataSpecific2() { }
 		@Override protected void clearDiagram_specific() { }
 		@Override public void setSelectedObjectAndProperty(FmmlxObject objectByPath, FmmlxProperty property) {}
@@ -118,20 +118,19 @@ public abstract class AbstractPackageViewer {
 				justLoaded = true;
 			}
 		this.clearDiagram();
+				
+
 
 		
 		
 		ReturnCall<Vector<String>> opValReturn = x3 -> {
-			try {	
-				if(TIMER) System.err.println("Object values loaded after      " + (System.currentTimeMillis() - START) + " ms.");
-				
-				fetchDiagramDataSpecific();
-				
-				if(TIMER) System.err.println("Other stuff loaded after        " + (System.currentTimeMillis() - START) + " ms.");
+
+			if(TIMER) System.err.println("Object values loaded after      " + (System.currentTimeMillis() - START) + " ms.");
+			
+			fetchDiagramDataSpecific();
+			
+			if(TIMER) System.err.println("Other stuff loaded after        " + (System.currentTimeMillis() - START) + " ms.");
 	
-			} catch (TimeOutException e) {
-				e.printStackTrace();
-			}
 			fetchingData = false;
 			setViewerStatus(ViewerStatus.CLEAN);
 			fetchDiagramDataSpecific2();
@@ -146,16 +145,66 @@ public abstract class AbstractPackageViewer {
 			comm.fetchAllOperationValues(this, opValNames, opValReturn);
 		};
 		
-//		ReturnCall<Vector<String>> auxTypeReturn = fetchedAuxTypes -> {
-//			auxTypes = fetchedAuxTypes;
-//			HashMap<FmmlxObject, Vector<String>> slotNames = new HashMap<>();
-//			for(FmmlxObject o : objects) {
-//				slotNames.put(o, o.getSlotNames());
-//			}
-//			comm.fetchAllSlots(this, slotNames, slotsReturn);
-//		};
+		ReturnCall<Vector<String>> auxTypeReturn = fetchedAuxTypes -> {
+			auxTypes = fetchedAuxTypes;
+			HashMap<FmmlxObject, Vector<String>> slotNames = new HashMap<>();
+			for(FmmlxObject o : objects) {
+				slotNames.put(o, o.getSlotNames());
+			}
+			comm.fetchAllSlots(this, slotNames, slotsReturn);
+		};
+
+		ReturnCall<Vector<FmmlxEnum>> enumsReturn = fetchedEnums -> {
+			enums = fetchedEnums;
+			comm.fetchAllAuxTypes(this, auxTypeReturn);
+		};
 		
-		comm.getAllObjects(this, fetchedObjects -> {
+		ReturnCall<Vector<Edge<?>>> allRoleFillerEdgesReturn = fetchedRoleFillerEdges -> {
+			edges.addAll(fetchedRoleFillerEdges);
+			if(TIMER) System.err.println("Edges loaded after              " + (System.currentTimeMillis() - START) + " ms.");
+			comm.fetchAllEnums(this, enumsReturn);
+		};
+		
+		ReturnCall<Vector<Edge<?>>> allDelegationEdgesReturn = fetchedDelegationEdges -> {
+			edges.addAll(fetchedDelegationEdges);
+			comm.getAllRoleFillerEdges(this, allRoleFillerEdgesReturn);
+		};
+
+		ReturnCall<Vector<Edge<?>>> allInheritanceEdgesReturn = fetchedInheritanceEdges -> {
+			edges.addAll(fetchedInheritanceEdges);
+			comm.getAllDelegationEdges(this, allDelegationEdgesReturn);
+		};
+		
+		ReturnCall<Vector<Edge<?>>> allAssociationsInstancesReturn = fetchedLinks -> {
+			edges.addAll(fetchedLinks);
+			comm.getAllInheritanceEdges(this, allInheritanceEdgesReturn);
+		};
+		
+		ReturnCall<Vector<Edge<?>>> allAssociationsReturn = fetchedAssociations -> {
+			edges.addAll(fetchedAssociations);
+			comm.getAllAssociationsInstances(this, allAssociationsInstancesReturn);
+		};
+		
+		ReturnCall<Vector<Issue>> allIssuesReturn = fetchedIssues -> {	
+			issues.addAll(fetchedIssues);	
+			if(TIMER) System.err.println("Issues loaded after             " + (System.currentTimeMillis() - START) + " ms.");
+			comm.getAllAssociations(this, allAssociationsReturn);
+		};
+				
+		ReturnCall<Vector<FmmlxObject>> allConstraintsReturn = x1 -> {
+			if(TIMER) System.err.println("Object definitions loaded after " + (System.currentTimeMillis() - START) + " ms.");
+			comm.fetchIssues(this, allIssuesReturn);
+		};
+		
+		ReturnCall<Vector<FmmlxObject>> allOperationsReturn = visibleObjects -> {
+			comm.fetchAllConstraints(this, visibleObjects, allConstraintsReturn);	
+		};
+
+		ReturnCall<Vector<FmmlxObject>> allAttributesReturn = visibleObjects -> {
+			comm.fetchAllOperations(this, visibleObjects, allOperationsReturn);	
+		};
+		
+		ReturnCall<Vector<FmmlxObject>> allObjectsReturn = fetchedObjects -> {
 			objects.addAll(fetchedObjects);
 
 			if(TIMER) System.err.println("\nObjects loaded after            " + (System.currentTimeMillis() - START) + " ms.");
@@ -165,47 +214,11 @@ public abstract class AbstractPackageViewer {
 				for(FmmlxObject o : objects)
 					if(!o.hidden) visibleObjects.add(o); }
 				else visibleObjects = objects;
-			Vector<FmmlxObject> _visibleObjects = visibleObjects;
 			
-			comm.fetchAllAttributes(this, _visibleObjects, visibleObjects2 -> {
-				comm.fetchAllOperations(this, _visibleObjects, visibleObjects3 -> {
-					comm.fetchAllConstraints(this, _visibleObjects, x1 -> {
-						if(TIMER) System.err.println("Object definitions loaded after " + (System.currentTimeMillis() - START) + " ms.");
-						comm.fetchIssues(this, fetchedIssues -> {	
-							issues.addAll(fetchedIssues);	
-							if(TIMER) System.err.println("Issues loaded after             " + (System.currentTimeMillis() - START) + " ms.");
-							comm.getAllAssociations(this, fetchedAssociations -> {
-								edges.addAll(fetchedAssociations);
-								comm.getAllAssociationsInstances(this, fetchedLinks -> {
-									edges.addAll(fetchedLinks);
-									comm.getAllInheritanceEdges(this, fetchedInheritanceEdges -> {
-										edges.addAll(fetchedInheritanceEdges);
-										comm.getAllDelegationEdges(this, fetchedDelegationEdges -> {
-											edges.addAll(fetchedDelegationEdges);
-											comm.getAllRoleFillerEdges(this, fetchedRoleFillerEdges -> {
-												edges.addAll(fetchedRoleFillerEdges);
-												if(TIMER) System.err.println("Edges loaded after              " + (System.currentTimeMillis() - START) + " ms.");
-												comm.fetchAllEnums(this, fetchedEnums -> {
-													enums = fetchedEnums;
-													comm.fetchAllAuxTypes(this, fetchedAuxTypes -> {
-														auxTypes = fetchedAuxTypes;
-														HashMap<FmmlxObject, Vector<String>> slotNames = new HashMap<>();
-														for(FmmlxObject o : objects) {
-															slotNames.put(o, o.getSlotNames());
-														}
-														comm.fetchAllSlots(this, slotNames, slotsReturn);
-													});
-												});
-											});
-										});
-									});
-								});
-							});
-						});
-					});
-				});
-			});
-		});
+			comm.fetchAllAttributes(this, visibleObjects, allAttributesReturn);
+		};
+		
+		comm.getAllObjects(this, allObjectsReturn);
 
 	}
 	
@@ -217,7 +230,7 @@ public abstract class AbstractPackageViewer {
 
 	protected abstract void updateViewerStatusInGUI(ViewerStatus newStatus);
 
-	protected abstract void fetchDiagramDataSpecific() throws TimeOutException;
+	protected abstract void fetchDiagramDataSpecific();
 	protected abstract void fetchDiagramDataSpecific2();
 
 	public void clearDiagram(){
@@ -449,6 +462,5 @@ public abstract class AbstractPackageViewer {
 	}
 
 	public View getActiveView() {return null;}
-	
 	
 }
