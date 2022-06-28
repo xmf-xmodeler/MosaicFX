@@ -78,7 +78,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 		
 		codeBoxPair = new CodeBoxPair(diagram,e->{
 			getDialogPane().lookupButton(ButtonType.OK).setDisable(!codeBoxPair.getCheckPassed());
-		});
+		}, false);
 		codeBoxPair.getErrorTextArea().setMinWidth(COLUMN_WIDTH*2);
 		codeBoxPair.getErrorTextArea().setMaxHeight(100);
 		codeBoxPair.getBodyScrollPane().setMaxHeight(300);

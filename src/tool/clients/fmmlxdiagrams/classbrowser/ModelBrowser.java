@@ -86,12 +86,12 @@ public final class ModelBrowser extends CustomStage {
 					fmmlxOperationListView.getSelectionModel().getSelectedItem()==null||
 					fmmlxOperationListView.getSelectionModel().getSelectedItem().getName().startsWith("set")||
 					fmmlxOperationListView.getSelectionModel().getSelectedItem().getName().startsWith("get")
-					);});
+					);}, false);
 		ActionListener checkActionForSyntax = e -> {
 			conCodeButton.setDisable(!constraintBodyArea.getCheckPassed()||!constraintReasonArea.getCheckPassed());
 		};
-		constraintBodyArea = new CodeBoxPair(activePackage,checkActionForSyntax);
-		constraintReasonArea = new CodeBoxPair(activePackage,checkActionForSyntax);
+		constraintBodyArea = new CodeBoxPair(activePackage,checkActionForSyntax, true);
+		constraintReasonArea = new CodeBoxPair(activePackage,checkActionForSyntax, true);
 		initElements();
 		addSelectionListeners();
 		addCellFactories();

@@ -2,6 +2,7 @@ package tool.clients.fmmlxdiagrams;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -72,8 +73,17 @@ public abstract class AbstractPackageViewer {
 	}
 	
 	public void updateDiagram() {
+		updateDiagram( (ReturnCall<Object>) e -> { } );
+	}
+	
+	
+	public void updateDiagram( ReturnCall<Object> a ) {
 		setViewerStatus(ViewerStatus.DIRTY);
-		new Thread(this::fetchDiagramData).start();
+		
+		Thread t = new Thread( () -> {
+			this.fetchDiagramData( a );
+		});
+		t.start();
 	}
 
 	//for test
@@ -86,8 +96,14 @@ public abstract class AbstractPackageViewer {
 			getComm().sendCurrentPositions(getID(), edge);
 		}
 	}
+	
+	public boolean isUpdating() {
+		// this method allows to figure out, if the diagram is currently updating
+		// it is required to allow waiting for completion of this update
+		return fetchingData;
+	}
 
-	protected void fetchDiagramData() {
+	protected void fetchDiagramData( ReturnCall<Object> a ) {
 		
 		final boolean TIMER = false;
 		final long START = System.currentTimeMillis();
@@ -105,6 +121,8 @@ public abstract class AbstractPackageViewer {
 				
 
 
+		
+		
 		ReturnCall<Vector<String>> opValReturn = x3 -> {
 
 			if(TIMER) System.err.println("Object values loaded after      " + (System.currentTimeMillis() - START) + " ms.");
@@ -116,6 +134,7 @@ public abstract class AbstractPackageViewer {
 			fetchingData = false;
 			setViewerStatus(ViewerStatus.CLEAN);
 			fetchDiagramDataSpecific2();
+			a.run(null);
 		};
 		
 		ReturnCall<Vector<String>> slotsReturn = x2 -> {

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Vector;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
@@ -92,9 +91,16 @@ public class ControllerLanguageInterpreter {
 		FmmlxObject currEl = underlyingDiagram.getObjectByPath(packageName + "::" + selEl);
 		Vector<FmmlxAssociation> assocs = currEl.findAssociationsForLinks();
 		
-		// is current instance of the expected ref class
-		if( currEl.getMetaClassName().equals(nameOfReference) ) {
-			return lastListView;
+		FmmlxObject fetchEl = underlyingDiagram.getObjectByPath(packageName + "::" + selEl);
+		while( true ) {
+			if( fetchEl.getMetaClassName().equals(nameOfReference) ) {
+				return lastListView;
+			}
+			
+			fetchEl = underlyingDiagram.getObjectByPath( fetchEl.getOfPath() );
+			if( fetchEl.getOfPath().equals("Root::FMML::MetaClass")) {
+				break;
+			}
 		}
 				
 		// analyze subnodes

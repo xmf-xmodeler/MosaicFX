@@ -91,8 +91,8 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 			getDialogPane().lookupButton(ButtonType.OK).setDisable(!bodyBox.getCheckPassed()||!reasonBox.getCheckPassed());
 		};
 		
-		bodyBox = new CodeBoxPair(diagram,checkActionForSyntax);
-		reasonBox = new CodeBoxPair(diagram,checkActionForSyntax);
+		bodyBox = new CodeBoxPair(diagram,checkActionForSyntax, true);
+		reasonBox = new CodeBoxPair(diagram,checkActionForSyntax, true);
 		
 		bodyBox.getBodyScrollPane().setMinHeight(250);
 		bodyBox.getBodyScrollPane().setMaxHeight(250);

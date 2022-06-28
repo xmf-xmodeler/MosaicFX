@@ -346,7 +346,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		splitPane.getItems().addAll(splitPane2, mainView);
 		SplitPane.setResizableWithParent(splitPane2, false);
 		
-		new Thread(this::fetchDiagramData).start();
+
+		Thread t = new Thread( () -> {
+			this.fetchDiagramData( a -> { } );
+		});
+		t.start();
 
 //		java.util.Timer timer = new java.util.Timer();
 //		timer.schedule(new java.util.TimerTask() {

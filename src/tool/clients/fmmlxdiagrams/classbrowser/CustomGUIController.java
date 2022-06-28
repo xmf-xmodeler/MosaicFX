@@ -6,47 +6,39 @@ import javafx.fxml.FXMLLoader;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.nio.file.FileSystems;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.dom4j.Attribute;
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
-
-import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.event.EventDispatcher;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.ListView;
 
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
-import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
 
 public class CustomGUIController {
 	   // These attributes are required to change the diagram/model
 	   AbstractPackageViewer diagram;
 	   FmmlxObject metaClass;
+	   String metaClassName;
 	   
 	   // Access to the surrounding object browser and 
 	   // the elements of the custom gui
@@ -70,6 +62,7 @@ public class CustomGUIController {
 		   this.opToEvent = opToEvent;
 		   this.linksPerAssociationPerInstance = linksPerAssociationPerInstance;
 		   this.parent = parent;
+		   this.metaClassName = metaClass.getName();
 	   }
 	   
 	   @FXML
@@ -131,6 +124,9 @@ public class CustomGUIController {
 			   return;
 		   }
 		   
+		   // determine new metaclass reference as it may have been updated
+		   metaClass = diagram.getObjectByPath(diagram.getPackagePath() + "::" + metaClassName);
+		   
 		   // Start by CREF ListView
 		   Vector<String> objectsVector = new Vector<>();
 		   for( FmmlxObject el : metaClass.getInstances() ) {
@@ -139,7 +135,7 @@ public class CustomGUIController {
 		   objectsVector.sort(null);
 		   ObservableList<String> objectList = FXCollections.observableArrayList(objectsVector);
 		   mainListView.setItems( objectList );
-		   	
+		   
 		   if( mainListView.getSelectionModel().isEmpty() ) {
 			   mainListView.getSelectionModel().select(0);
 			   //oldValue = mainListView.getItems().get(0);
@@ -294,7 +290,7 @@ public class CustomGUIController {
 		   
 		   // 2. everything else
 		   for( String currID : objToID.keySet() ) {
-			   if( currID.contains("ACT") || currID.contains("INJ") ) {
+			   if( currID.contains("ACTINJ") || currID.contains("INJ") ) {
 			   
 				   // TBD: Get rid of ListViews to Associations as parameter.. data should be fetched from the diagram!
 				   ControllerLanguageInterpreter2 exec = new ControllerLanguageInterpreter2(currID, diagram, mainListView, linksPerAssociationPerInstance, listViewsForAssociations);
@@ -346,29 +342,70 @@ public class CustomGUIController {
 		   // Determine the associated name of the operation for current id
 		   String id = ((Node) event.getSource()).getId();
 		   if( !id.equals("") ){
-			   id = id + "/" + event.getEventType().getName(); // get id of current action
-			   String op = opToEvent.get(id); // determine name of operation
-			   if( op != null ){
-					// TBD: More flexible depending on REF of ACT
-					String name = mainListView.getSelectionModel().getSelectedItem().toString();
-					FmmlxObject object = diagram.getObjectByPath(diagram.getPackagePath() + "::" + name);
+			   String lookupId = id + "/" + event.getEventType().getName(); // get id of current action
+			   String op = opToEvent.get(lookupId); // determine name of operation
+			   if( op != null ){				   
+				   ControllerLanguageInterpreter2 exec = new ControllerLanguageInterpreter2(id, diagram, mainListView, linksPerAssociationPerInstance, listViewsForAssociations);
 				   
-				   // Get actions helper from diagram and trigger operation for current object
-				   diagram.getActions().runOperation(object.getPath(), op );
-				   //tbd: How to handle operations with parameters??
 				   
+				   
+				   try {
+					   // Call with parameters
+					   // "USE" as Part of the Operation which references the GUI-elements
+					   // which contents shall be used as parameters in the method.
+					   // Each parameter is separated by another USE.   
+					   Vector<String> params = new Vector<>( Arrays.asList(op.split("USE") ));
+					   params.remove(0);
+					   
+					   Vector<String> obtParams = new Vector<>();
+					   // obtain user input from the gui for parametrized ids
+					   for( String currId : params) {
+						   Node el = customGUI.lookup("#" + currId);
+						   if( el instanceof ListView ) {
+							   String currParam = ((ListView) el).getSelectionModel().getSelectedItem().toString();
+							   obtParams.add( currParam );
+						   }
+						   
+						   if( el instanceof TextField ) {
+							   String currParam = ((TextField) el).getText();
+							   obtParams.add( currParam );
+						   }
+					   }
+					   
+					  
+					   // maybe a setParameters operation?? and another instance attribute?
+					   // no conflicts with other calls!
+					   
+					   String[] obtParameters = new String[obtParams.size()];
+					   System.arraycopy(obtParams.toArray(), 0, obtParameters, 0, obtParams.size());
+					   Object res = exec.fetchResult(obtParameters); 
+					   
+					   // Update first diagram (due to possible changes) and afterwards the GUI
+					   diagram.updateDiagram( e -> { refreshGUI("OLD","NEW"); } );
+					   
+				   } catch( Exception e ) {
+					   e.printStackTrace();
+				   }
 			   }
 			   
 			   // Use setter if intended
 			   // tbd: optimize this with parameter handling!
-			   if(id.length() > 2 && id.substring(0, 3).equals("ACT") && event.getEventType().getName().equals("ACTION")) {
-				   setSlot((ActionEvent) event);
+			   if(id.length() > 2 && id.contains("ACT") && event.getEventType().getName().equals("ACTION")) {
+				   if( op == null || op.contains("setSlot") ) {
+					   setSlot((ActionEvent) event);
+					   
+					   // Update first diagram (due to possible changes) and afterwards the GUI
+					   diagram.updateDiagram( e -> { refreshGUI("OLD","NEW"); } );
+					   
+					   // wait some time until the diagram has updated
+					   while( diagram.isUpdating() ) {		   
+					   }
+					   
+					   refreshGUI("OLD","NEW");
+				   }
 			   }
 			   
-			   // also update the object list of the parent as it gets outdated otherwise
-			   //parent.updateObjectList();
-			   
-			   // TBD: Update object list!
+
 		   }
 		   
 	   }
@@ -381,31 +418,49 @@ public class CustomGUIController {
 		  event.consume();
 		  
 		  // Get ID of triggering object
-		  String id = ((Node) event.getSource()).getId()  ;
-		  id = "INJ" + id.substring(3); // id of textfield
+		  String id = ((Node) event.getSource()).getId();
+		  
+		  id = id.replace("ACTset", "INJ"); // injection value for setter (requires corresponding textField on GUI!)
 		  
 		  // get value from the textfield by using the map
-		  String value = ((TextField) objToID.get(id)).getText();
-		  			
-		  // Now we need the slot, which is corresponding to the required TextField (so the row no)
-		  id = id.replaceFirst("INJ", ""); 
+		  String value;
+		  if( objToID.containsKey(id) ) {
+			  value = ((TextField) objToID.get(id)).getText();
+		  } else {
+			  // manipulateID due to setter manipulation
+			  int toUpper = id.indexOf("INJ")+3; // generated setters use capital letters!
+			  String newChar = "" + id.charAt(toUpper);
+			  newChar = newChar.toLowerCase();
+			  id = id.substring(0, toUpper) + newChar + id.substring(toUpper+1);
+			  value = ((TextField) objToID.get(id)).getText();
+		  }
+		  
+		  // manipulate value for dates into corresponding XMF expression
+		  if( id.toLowerCase().contains("date") ) {
+			  if( value.matches("[0-3][0-9]\\.[0-1][0-9]\\.[0-9][0-9][0-9][0-9]")) {
+				  value = "Auxiliary::Date::createDate(" + value.split("\\.")[2] + "," + value.split("\\.")[1] + "," + value.split("\\.")[0] + ")";
+			  }
+		  }
 		  
 		  // Determine main object
 		  // TBD: More flexible depending on REF of ACT
+		  // TBD: Call actual setter as soon parameters are supported!
+		  // Will make this operation obsolete!
+		  // Still it shall be kept to show the injection through annotations within the FXML controller
 		  String name = mainListView.getSelectionModel().getSelectedItem().toString();
 		  FmmlxObject object = diagram.getObjectByPath(diagram.getPackagePath() + "::" + name);
 		  
 		  for( FmmlxSlot currSlot : object.getAllSlots() ) {
 			   String slotName = currSlot.getName();
 			   
-			   if(slotName.equals(id)) {
+			   if(slotName.equals(id.split("INJ")[1])) {
 					  // send value to XMF, update the diagram and then update the object browser
 					  diagram.getComm().changeSlotValue(diagram.getID(), object.getName(), slotName, value);;
-					  diagram.updateDiagram();   
 			   }
 		  }
 		  
 		  // Note: The current implementation of the GUI is only supporting expressions as input.
+		  // (Except for date..)
 		}
 	  		 
 }

@@ -16,21 +16,11 @@ import java.util.TreeSet;
 
 import javafx.collections.ObservableArray;
 import javafx.geometry.Insets;
-import javafx.geometry.Point3D;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
-import javafx.scene.shape.MeshView;
-import javafx.scene.shape.Shape3D;
-import javafx.scene.shape.TriangleMesh;
-import javafx.scene.transform.Affine;
-import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
-import javafx.scene.transform.Translate;
 
 // This class is only capable of extracting a specific kind of nodes from JFX so far
 // Mostly, the GridPanes generated within the ObjectBrowser!
