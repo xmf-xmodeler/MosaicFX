@@ -71,6 +71,7 @@ public class Palette extends ToolBar {
 		getItems().add(new Separator());
 		addButton("Update Diagram", e -> diagram.updateDiagram());
 		addButton("Print Protocol", e -> diagram.actions.printProtocol());
+		addButton("Table for Issues On/Off", e-> diagram.switchTableOnAndOffForIssues());
 	}
 	
 	private void addButton(String string, EventHandler<ActionEvent> eventHandler) {

@@ -27,6 +27,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 public class ConcreteSyntaxWizard extends Application {
 	
@@ -308,6 +309,13 @@ public class ConcreteSyntaxWizard extends Application {
 
 		@Override
 		public void centerObject() {
+			// TODO Auto-generated method stub
+			
+		}
+
+
+		@Override
+		public void centerObject(FmmlxObject affectedObject) {
 			// TODO Auto-generated method stub
 			
 		}

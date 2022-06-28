@@ -75,7 +75,7 @@ public final class ModelBrowser extends CustomStage {
 	Label statusLabel = new Label("Status: not initialized");
 	
 	private HashMap<String,AbstractPackageViewer> models = new HashMap<>();
-	private FixedBlueLevelColorScheme levelColorScheme;
+	private static FixedBlueLevelColorScheme levelColorScheme = new LevelColorScheme.FixedBlueLevelColorScheme();
 	
 	public ModelBrowser(String project, String initialModel, ObservableList<String> models) {
 		super(StringValue.LabelAndHeaderTitle.modelBrowser+" " + project, XModeler.getStage(), 1500, 800);
@@ -809,7 +809,7 @@ public final class ModelBrowser extends CustomStage {
 		}
 	}
 	
-	private Node getClassLevelGraphic(int level) {
+	public static Node getClassLevelGraphic(int level) {
 //		if(level == -1) return null;
 		double SIZE = 16;
 		Canvas canvas = new Canvas(SIZE, SIZE);

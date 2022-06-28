@@ -25,7 +25,7 @@ public class Issue implements FmmlxProperty{
 	private Color color = new Color(1., .8, 0., 1.);
 	private String text;
 	private Vector<Object> solution;
-	private Vector<String> affectedObjects = new Vector<>();
+	private String affectedObject;
 
 	public void paintToSvg(XmlHandler xmlHandler, Element group, int xOffset, int yOffset, int x, double y) {
 		String textColor = this.color.toString().split("x")[1].substring(0,6);
@@ -62,10 +62,13 @@ public class Issue implements FmmlxProperty{
 			Issue i = new Issue();
 			i.type = (String) message.get(0);
 			i.text = (String) message.get(1);
+			
 			Vector<Object> objList = (Vector<Object>) (message.get(2));
-			for(Object o : objList) {
-				i.affectedObjects.add((String) o);
+			if(objList.size()!=1) {
+				throw new IllegalArgumentException();	
 			}
+			i.affectedObject = (String) objList.firstElement();
+			
 			i.solution = (Vector<Object>) message.get(3);
 						
 			return i;
@@ -78,7 +81,7 @@ public class Issue implements FmmlxProperty{
 	
 	public static boolean isAffected(Vector<Issue> issues, FmmlxObject o) {
 		for(Issue issue : issues) {
-			if(issue.affectedObjects.contains(o.getPath())) {
+			if(issue.affectedObject.equals(o.getPath())) {
 				return true;
 			}
 		}
@@ -86,7 +89,7 @@ public class Issue implements FmmlxProperty{
 	}
 	
 	public boolean isAffected(FmmlxObject o) {
-		return affectedObjects.contains(o.getPath());
+		return affectedObject.equals(o.getPath());
 	}
 
 	public String getText() {
@@ -164,8 +167,12 @@ public class Issue implements FmmlxProperty{
 		return text;
 	}
 	
-	public Vector<String> getAffectedObjects(){
-		return affectedObjects;
+	public String getAffectedObjectPath(){
+		return affectedObject;
+	}
+	
+	public FmmlxObject getAffectedObject(AbstractPackageViewer diagram) {
+		return diagram.getObjectByPath(affectedObject);
 	}
 
 }
