@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.classbrowser.CodeBox;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
+import tool.clients.fmmlxdiagrams.dialogs.MergePropertyDialog.Result;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.FmmlxSerializer;
 import tool.clients.serializer.XmlManager;
@@ -43,7 +44,7 @@ public class FmmlxDiagramCommunicator {
 	private static final Vector<FmmlxDiagram> diagrams = new Vector<>();
 	private static final boolean DEBUG = false;
 	static TabPane tabPane;
-	private Value getNoReturnExpectedMessageID(int diagramID) {return new Value(new Value[] {new Value(diagramID), new Value(-1)});}
+	public static Value getNoReturnExpectedMessageID(int diagramID) {return new Value(new Value[] {new Value(diagramID), new Value(-1)});}
 	private boolean silent;
 	
 	/* Operations for setting up the Communicator */
@@ -1246,6 +1247,9 @@ public class FmmlxDiagramCommunicator {
         sendMessage("removeOperation", message);
     }
 
+	public void mergeProperties(FmmlxObject mergeIntoClass, Value[] message) {
+		sendMessage("mergeProperties", message);
+	}
 
     public void changeClassName(int diagramID, String className, String newName) {
         Value[] message = new Value[]{
@@ -1554,33 +1558,29 @@ public class FmmlxDiagramCommunicator {
         sendMessage("removeEnumeration", message);
     }
 
-    public void addEnumerationItem(int diagramID, String enumName, String newEnumValueName) throws TimeOutException {
-        Vector<Object> result = xmfRequest(handler, diagramID, "addEnumerationValue", new Value(enumName),
-                new Value(newEnumValueName));
-        showErrorMessage(result);
+    public void addEnumerationItem(int diagramID, String enumName, String newEnumValueName) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(enumName),
+                new Value(newEnumValueName)};
+        sendMessage("addEnumerationValue", message);
     }
     
-    @SuppressWarnings("unchecked")
-    private void showErrorMessage(Vector<Object> msgAsVec) {
-        if (msgAsVec.size() <= 0) return;
-        java.util.Vector<Object> err = (java.util.Vector<Object>) msgAsVec.get(0);
-        if (err != null && err.size() > 0 && err.get(0) != null) {
-            Platform.runLater(() -> {
-                Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
-                alert.showAndWait();
-            });
-        }
-    }
-
-    public void changeEnumerationItemName(int diagramID, String enumName, String oldEnumValueName, String newEnumValueName) throws TimeOutException {
-        xmfRequest(handler, diagramID, "changeEnumerationValueName", new Value(enumName),
+    public void changeEnumerationItemName(int diagramID, String enumName, String oldEnumValueName, String newEnumValueName) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(enumName),
                 new Value(oldEnumValueName),
-                new Value(newEnumValueName));
+                new Value(newEnumValueName)};
+        sendMessage("changeEnumerationValueName", message);
     }
     
-    public void removeEnumerationItem(int diagramID, String enumName, String enumValueName) throws TimeOutException {
-        xmfRequest(handler, diagramID, "removeEnumerationValue", new Value(enumName),
-                new Value(enumValueName));
+    public void removeEnumerationItem(int diagramID, String enumName, String enumValueName) {
+        Value[] message = new Value[]{
+                getNoReturnExpectedMessageID(diagramID),
+                new Value(enumName),
+                new Value(enumValueName)};
+        sendMessage("removeEnumerationValue", message);
     }
 
     public void editEnumeration(int diagramID, String enumName, Vector<String> elements) {
@@ -2325,6 +2325,8 @@ public class FmmlxDiagramCommunicator {
 			getNoReturnExpectedMessageID(diagramID),
 			new Value(text)});
     }
+
+
 
 
 }

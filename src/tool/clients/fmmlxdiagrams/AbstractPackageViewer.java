@@ -27,6 +27,7 @@ public abstract class AbstractPackageViewer {
 
 	public static enum ViewerStatus { CLEAN, DIRTY, LOADING }
 
+	/*
 	public static final AbstractPackageViewer SIMPLE_VIEWER = new AbstractPackageViewer(FmmlxDiagramCommunicator.getCommunicator(),
 			-2, "simple_viewer") {
 
@@ -46,7 +47,7 @@ public abstract class AbstractPackageViewer {
 		@Override public void setSelectedObjectAndProperty(FmmlxObject objectByPath, FmmlxProperty property) {}
 		@Override protected void updateViewerStatusInGUI(ViewerStatus newStatus) {}
 		@Override protected boolean loadOnlyVisibleObjects() { return false; }	
-	};
+	}; */
 	
 	protected AbstractPackageViewer(FmmlxDiagramCommunicator comm, int diagramID, String packagePath) {
 		this.diagramID = diagramID;
@@ -59,7 +60,7 @@ public abstract class AbstractPackageViewer {
 		return comm;
 	}
 
-	public abstract void updateEnums();
+//	public abstract void updateEnums();
 	public abstract FmmlxProperty getSelectedProperty();
 	public abstract Vector<String> getEnumItems(String type);
 	public abstract ObservableList<FmmlxObject> getPossibleAssociationEnds();

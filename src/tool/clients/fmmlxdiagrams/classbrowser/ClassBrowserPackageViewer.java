@@ -18,11 +18,6 @@ public class ClassBrowserPackageViewer extends AbstractPackageViewer{
 	}
 
 	@Override
-	public void updateEnums() {
-		throw new RuntimeException();
-	}
-
-	@Override
 	public FmmlxProperty getSelectedProperty() {
 		throw new RuntimeException();
 	}

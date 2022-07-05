@@ -122,7 +122,15 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem assignItem = new MenuItem("Assign to Global Variable");
 		assignItem.setOnAction(e -> actions.assignToGlobal(object));
 		
-		getItems().addAll(attributeMenu, associationMenu, operationMenu, constraintMenu, delegationMenu, slotMenu, associationInstanceMenu, showMenu, assignItem);
+		getItems().addAll(attributeMenu, 
+				associationMenu, 
+				operationMenu, 
+				constraintMenu, 
+				delegationMenu, 
+				slotMenu, 
+				associationInstanceMenu, 
+				showMenu, 
+				assignItem);
 		
 		addRunMenu();
 		
@@ -131,6 +139,11 @@ public class ObjectContextMenu extends ContextMenu {
 			v.add(object); 
 			actions.hide(v, true);
 		}, ALWAYS);
+
+		MenuItem mergeProperties = new MenuItem("Merge Properties");
+		mergeProperties.setOnAction(e -> actions.openMergePropertiesDialog(object));
+		getItems().add(mergeProperties);
+		
 	}
 
 	private void addRunMenu() {
@@ -307,14 +320,14 @@ public class ObjectContextMenu extends ContextMenu {
 //	}
 
 	private Menu createAssociationInstanceSubMenu() {
-		Menu associationInstanceMenu = new Menu("Association instance");
+		Menu associationInstanceMenu = new Menu("Link");
 
-		MenuItem addValueItem = new MenuItem("Add instance");
+		MenuItem addValueItem = new MenuItem("Add link");
 		addValueItem.setOnAction(e -> diagram.setDrawEdgeMode(object, PropertyType.AssociationInstance));
-		MenuItem removeValueItem = new MenuItem("Remove instance");
+		MenuItem removeValueItem = new MenuItem("Remove link");
 		removeValueItem.setOnAction(e -> System.out.println("OCM: remove association instance value called"));
 		removeValueItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
-		MenuItem changeValueItem = new MenuItem("Change instance");
+		MenuItem changeValueItem = new MenuItem("Change link");
 		changeValueItem.setOnAction(e -> System.out.println("OCM: change association instance value called"));
 		changeValueItem.setDisable(!FmmlxDiagram.SHOW_MENUITEMS_IN_DEVELOPMENT);
 

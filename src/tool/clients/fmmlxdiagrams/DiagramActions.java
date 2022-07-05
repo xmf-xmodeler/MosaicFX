@@ -1321,4 +1321,12 @@ public class DiagramActions {
 		});
 		
 	}
+
+	public void openMergePropertiesDialog(FmmlxObject mergeIntoClass) {
+		MergePropertyDialog dialog = new MergePropertyDialog(mergeIntoClass, diagram);
+		Optional<MergePropertyDialog.Result> result = dialog.showAndWait();
+		if(result.isPresent()) {
+			diagram.getComm().mergeProperties(mergeIntoClass, result.get().createMessage());
+		}
+	}
 }

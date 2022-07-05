@@ -809,11 +809,7 @@ public class XmlManager extends XmlHandler {
             case "addEnumerationValue" : {
                 String enumName = logElement.getAttribute("enum_name");
                 String itemName = logElement.getAttribute("enum_value_name");
-                try {
-                    comm.addEnumerationItem(diagramID, enumName, itemName);
-                } catch (TimeOutException e) {
-                    e.printStackTrace();
-                }
+                comm.addEnumerationItem(diagramID, enumName, itemName);
                 break;
             }
             case "levelRaiseAll" : {
