@@ -1,6 +1,9 @@
 package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -21,10 +24,17 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -43,8 +53,11 @@ import javafx.scene.transform.Scale;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
+import javafx.util.Callback;
+
 import org.w3c.dom.Element;
 
+import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.AbstractSyntax;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
@@ -80,7 +93,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	// The elements which the diagram consists of GUI-wise
 	private SplitPane splitPane;
 	private SplitPane splitPane2;
+	private SplitPane splitPane3;
+	private ScrollPane scrollPane;
 	private VBox mainView;
+	private TableView<Issue> tableView;
 //	private VBox vBox;
 //	private Menu menu;
 //	private MenuBar menuBar;
@@ -160,7 +176,74 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		splitPane = new SplitPane();
 		splitPane2 = new SplitPane();
 		mainView = new VBox();
+		tableView = new TableView<Issue>();
 		
+		TableColumn<Issue, FmmlxObject> objectColumn = new TableColumn<>("Object");
+
+//		objectColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+//		
+//		objectColumn.setCellValueFactory(cellData -> {
+//			try {
+//				String objectName = cellData.getValue().getAffectedObject(this).name;
+//				return new SimpleStringProperty(objectName);
+//			} catch (Exception e) {
+//				return new SimpleStringProperty(e.getMessage());
+//			}
+//		});
+		
+		TableColumn<Issue, String> issueColumn = new TableColumn<>("Issue");
+
+		issueColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+		tableView.getColumns().add(objectColumn);
+		tableView.getColumns().add(issueColumn);
+		tableView.getSelectionModel().setCellSelectionEnabled(true);
+		tableView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent click) {
+				if (click.getClickCount() == 2) {
+					getActiveView().centerObject(tableView.getSelectionModel().getSelectedItem().getAffectedObject(FmmlxDiagram.this));
+				}
+			}
+			
+		});
+		
+		objectColumn.setCellValueFactory(new Callback<CellDataFeatures<Issue,FmmlxObject>, ObservableValue<FmmlxObject>>() {
+
+			@Override
+			public ObservableValue<FmmlxObject> call(CellDataFeatures<Issue, FmmlxObject> f) {
+				try {
+				return new ReadOnlyObjectWrapper<FmmlxObject>(f.getValue().getAffectedObject(FmmlxDiagram.this));
+				} catch(Exception e) {
+					return null;
+				}
+			}
+			
+		});
+		
+		
+		objectColumn.setCellFactory((listView) -> {
+			return new TableCell<Issue,FmmlxObject>() {
+
+				@Override
+	            protected void updateItem(FmmlxObject o, boolean empty) {
+	                super.updateItem(o, empty);
+	                if (o != null) {
+//	                    if (getIssues(o).size()>0) {
+//	                    	setStyle("-fx-control-inner-background: tomato;");
+//	                    } 
+//	                    else {
+//	                    	setStyle("-fx-control-inner-background: white;");
+//	                    }
+	                    
+	                	if(o.isAbstract()) setText("(" + o.getName() + " ^"+ o.getMetaClassName() + "^ " + ")"); else setText(o.getName()+ " ^"+ o.getMetaClassName() + "^");
+	                	
+	                    setGraphic(ModelBrowser.getClassLevelGraphic(o.getLevel()));
+	                } else { setText(""); setGraphic(null); }
+	            }
+	        };
+	    });
 		
 		Palette palette2 = new Palette(this,2);
 		newFmmlxPalette = new FmmlxPalette(this);
@@ -242,7 +325,16 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         tabPane.heightProperty().addListener( ( observable, x, y ) -> redraw() );
         tabPane.widthProperty().addListener( ( observable, x, y ) -> redraw() );
         
-		mainView.getChildren().addAll(palette, palette2, tabPane);//scrollerCanvas);
+        //tableView.prefHeightProperty().bind(tabPane.heightProperty());
+        tableView.prefWidthProperty().bind(tabPane.widthProperty());
+        scrollPane = new ScrollPane(tableView);
+        splitPane3 = new SplitPane(tabPane, scrollPane);
+        splitPane3.setOrientation(Orientation.VERTICAL);
+        
+        
+        
+        
+		mainView.getChildren().addAll(palette, palette2, splitPane3);//scrollerCanvas);
 		
 		splitPane2.setOrientation(Orientation.VERTICAL);
 		splitPane2.setDividerPosition(0, 0.8);
@@ -379,7 +471,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public void redraw() {
 		if (fetchingData) {
 			return;}
-
+		
 		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
 			// we are on the right Thread already:
 			for(DiagramViewPane view : views) {
@@ -852,6 +944,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				Platform.runLater(() -> ISSUE.performResolveAction(this));
 			}
 		}
+		
+		tableView.getItems().clear();
+		tableView.getItems().addAll(issues);
 		
 		palette.updateToolbar(this);
 		redraw();
@@ -1605,42 +1700,44 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		public void centerObject() {
 			Vector<FmmlxObject> allObjects = getObjects();
 			Vector<FmmlxObject> allVisibleObjects = new Vector<FmmlxObject>();
-			
+
 			for (FmmlxObject o : allObjects) {
-				if (o.hidden==false)
+				if (o.hidden == false)
 					allVisibleObjects.add(o);
 			}
-			
+
 			ChoiceDialog<FmmlxObject> dialog = new ChoiceDialog<FmmlxObject>(null, allVisibleObjects);
-			dialog.setTitle("Choice Dialog");
-			dialog.setHeaderText("A wonderfull Choice to make!");
-			dialog.setContentText("Choose your FmmlxObject:");
+			dialog.setTitle("Center view on specific Object");
+			dialog.setContentText("Choose your FmmlxObject: ");
 
 			Optional<FmmlxObject> result = dialog.showAndWait();
-			if (result.isPresent()){
-			    System.err.println("Your choice: " + result.get()+ " CenterX: " + result.get().getCenterX()+ " CenterY: " + result.get().getCenterY());
-			    System.err.println("Width: " + this.getWidth());   
-			    System.err.println("Height: " + this.getHeight());   
-			    
-			    Point2D viewCenter = new Point2D(this.getWidth()/2,this.getHeight()/2);
-			    try {
-			    Point2D viewCenter2 = canvasTransform.inverseTransform(viewCenter);
-			    canvasTransform.append(new Translate(viewCenter2.getX()-result.get().getCenterX(), viewCenter2.getY()-result.get().getCenterY()));
-			    } catch (NonInvertibleTransformException e) {
-			    	e.printStackTrace();
-			    }
-			    
-//				try {
-//					Point2D pivot_ = canvasTransform.inverseTransform(pivot);
-			   	
-//				} catch (NonInvertibleTransformException e1) {
-//					e1.printStackTrace();
-//				}
+			if (result.isPresent()) {
+				Point2D viewCenter = new Point2D(this.getWidth() / 2, this.getHeight() / 2);
+				try {
+					Point2D viewCenter2 = canvasTransform.inverseTransform(viewCenter);
+					canvasTransform.append(new Translate(viewCenter2.getX() - result.get().getCenterX(),
+							viewCenter2.getY() - result.get().getCenterY()));
+				} catch (NonInvertibleTransformException e) {
+					e.printStackTrace();
+				}
 			}
 			redraw();
 		}
-	
-	
+		
+		public void centerObject(FmmlxObject object) {
+
+			Point2D viewCenter = new Point2D(this.getWidth() / 2, this.getHeight() / 2);
+			try {
+				Point2D viewCenter2 = canvasTransform.inverseTransform(viewCenter);
+				canvasTransform.append(new Translate(viewCenter2.getX() - object.getCenterX(),
+						viewCenter2.getY() - object.getCenterY()));
+			} catch (NonInvertibleTransformException e) {
+				e.printStackTrace();
+			}
+			redraw();
+		}
+		
+		
 	}
 
 	public DiagramViewPane getActiveTab() {
@@ -1722,6 +1819,14 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}		
 	
 	
+	}
+
+	public void switchTableOnAndOffForIssues() {
+		if(scrollPane.isVisible()) {
+			scrollPane.setVisible(false);
+		} else {
+			scrollPane.setVisible(true);
+		}
 	}
 	
 }
