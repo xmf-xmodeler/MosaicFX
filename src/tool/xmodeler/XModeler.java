@@ -37,11 +37,16 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
+
+import static org.burningwave.core.assembler.StaticComponentContainer.Modules;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 
 //import com.ceteva.oleBridge.OleBridgeClient;
 //import com.ceteva.undo.UndoClient;
@@ -253,6 +258,22 @@ public class XModeler extends Application {
 //	} catch (FileNotFoundException e) {
 //		e.printStackTrace();
 //	} 
+	  
+	// Prevent loggin of external library
+	PrintStream out = System.out;
+	OutputStream tmp = new OutputStream() {
+		@Override
+		public void write(int b) throws IOException {
+		}
+	};
+	PrintStream nul = new PrintStream(tmp);
+	System.setOut(nul);  
+	
+	// Allow compatibility of Java 9 or newer with older libraries
+	// Open all Modules to each other
+	AllModulesToAllModulesExporter.execute();
+	System.setOut(out);
+	
 	  
     copyOfArgs = Arrays.copyOf(args, args.length);
     textEditorClass = args.length > 1 ? args[1] : "tool.clients.editors.TextEditor";
@@ -595,3 +616,24 @@ public class XModeler extends Application {
     }
 }
 
+@SuppressWarnings("unchecked")
+class AllModulesToAllModulesExporter {
+    public static void execute() {
+    	try {
+    		Modules.exportAllToAll();
+    		Class<?> bootClassLoaderClass = Class.forName("jdk.internal.loader.ClassLoaders$BootClassLoader");
+			Constructor<? extends ClassLoader> constructor = 
+    			(Constructor<? extends ClassLoader>)
+    				Class.forName("jdk.internal.loader.ClassLoaders$PlatformClassLoader")
+    					.getDeclaredConstructor(bootClassLoaderClass);
+    		constructor.setAccessible(true);
+    		Class<?> classLoadersClass = Class.forName("jdk.internal.loader.ClassLoaders");
+    		Method bootClassLoaderRetriever = classLoadersClass.getDeclaredMethod("bootLoader");
+    		bootClassLoaderRetriever.setAccessible(true);
+    		constructor.newInstance(bootClassLoaderRetriever.invoke(classLoadersClass));
+    		// System.out.println(newBuiltinclassLoader + " instantiated");
+    	} catch (Exception exc) {
+    		exc.printStackTrace();
+    	}
+    }
+}
