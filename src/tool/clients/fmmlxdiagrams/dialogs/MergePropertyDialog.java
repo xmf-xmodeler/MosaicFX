@@ -262,9 +262,7 @@ public class MergePropertyDialog extends Dialog<MergePropertyDialog.Result>{
 			return new Value[]{
 					FmmlxDiagramCommunicator.getNoReturnExpectedMessageID(diagram.getID()),
 					new Value(mergeIntoClass.getName()),
-					new Value(resolutions),
-					new Value("foo"),
-					new Value("goo")};
+					new Value(resolutions)};
 		}
 
 	}
