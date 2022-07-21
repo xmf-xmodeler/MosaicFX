@@ -48,7 +48,6 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperationValue;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
 
-// Test commit on new notebook
 
 public class ObjectBrowser {
 	private Stage stage;
