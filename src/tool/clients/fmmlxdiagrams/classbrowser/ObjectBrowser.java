@@ -48,6 +48,8 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperationValue;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
 
+// Test commit on new notebook
+
 public class ObjectBrowser {
 	private Stage stage;
 	private Scene scene;
@@ -247,7 +249,7 @@ public class ObjectBrowser {
 					});
 					
 					// Load custom GUI from URL
-					//loader.setLocation(selectedFile.toURI().toURL()); // Datei als URL in den FXMLLoader übergeben
+					//loader.setLocation(selectedFile.toURI().toURL()); // Datei als URL in den FXMLLoader ï¿½bergeben
 					//Parent customGUI = loader.load();
 					
 					// Read manipulated xml file instead of original file
