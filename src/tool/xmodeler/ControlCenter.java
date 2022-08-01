@@ -215,9 +215,13 @@ public class ControlCenter extends Stage {
 		
 		this.setOnCloseRequest(event -> {
 			//propertyManager.writeXMLFile();
+			System.err.println("CloseRequest");
 			if (PropertyManager.getProperty("IGNORE_SAVE_IMAGE", true)) {
+				System.err.println("CloseRequest-true");
+				Platform.exit();
 				System.exit(0);
 			} else {
+				System.err.println("CloseRequest-false");
 			  WorkbenchClient.theClient().shutdownEvent();
 			}
 			event.consume();

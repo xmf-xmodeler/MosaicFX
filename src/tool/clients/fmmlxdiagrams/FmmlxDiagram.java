@@ -334,7 +334,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         
         
         
-		mainView.getChildren().addAll(palette, palette2, splitPane3);//scrollerCanvas);
+		mainView.getChildren().addAll(palette, palette2, tabPane);//scrollerCanvas);
 		
 		splitPane2.setOrientation(Orientation.VERTICAL);
 		splitPane2.setDividerPosition(0, 0.8);

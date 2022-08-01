@@ -220,11 +220,11 @@ public class MergePropertyDialog extends Dialog<MergePropertyDialog.Result>{
 	}
 
 	private final void  initValues() {
-		tableView.getItems().add(new TestRow("Car",   "maxPax",    "1", "Attribute", "Integer"));
-		tableView.getItems().add(new TestRow("Lorry", "maxWeight", "1", "Attribute", "Float"));
-		tableView.getItems().add(new TestRow("Car",   "lenght",    "1", "Attribute", "Float"));
-		tableView.getItems().add(new TestRow("Lorry", "length",    "1", "Attribute", "Float"));
-		tableView.getItems().add(new TestRow("Lorry", "width",     "1", "Attribute", "Float"));	
+//		tableView.getItems().add(new TestRow("Car",   "maxPax",    "1", "Attribute", "Integer"));
+//		tableView.getItems().add(new TestRow("Lorry", "maxWeight", "1", "Attribute", "Float"));
+//		tableView.getItems().add(new TestRow("Car",   "lenght",    "1", "Attribute", "Float"));
+//		tableView.getItems().add(new TestRow("Lorry", "length",    "1", "Attribute", "Float"));
+//		tableView.getItems().add(new TestRow("Lorry", "width",     "1", "Attribute", "Float"));	
 		
 		addProperties(mergeIntoClass);
 		for(FmmlxObject o : mergeIntoClass.getInstances()) {
@@ -238,9 +238,9 @@ public class MergePropertyDialog extends Dialog<MergePropertyDialog.Result>{
 		for(FmmlxAttribute att : object.getOwnAttributes()) {
 			tableView.getItems().add(new AttributeRow(att));
 		}
-		for(FmmlxOperation att : object.getOwnOperations()) {
-			tableView.getItems().add(new OperationRow(att));
-		}
+//		for(FmmlxOperation att : object.getOwnOperations()) {
+//			tableView.getItems().add(new OperationRow(att));
+//		}
 		
 	}
 
