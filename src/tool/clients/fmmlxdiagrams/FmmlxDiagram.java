@@ -936,7 +936,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		} else {		
 			Issue nextIssue = null;
 			for(int i = 0; i < issues.size() && nextIssue == null; i++) {
-				if(issues.get(i).isSoluble()) nextIssue = issues.get(i);
+				if(issues.get(i).isSoluble() && !("BAD_PRACTICE".equals(issues.get(i).getSeverity()))) nextIssue = issues.get(i);
 			}
 	
 			if(nextIssue != null) {
