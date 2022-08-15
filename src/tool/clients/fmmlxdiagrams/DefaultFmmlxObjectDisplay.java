@@ -90,7 +90,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 				
 				NodeLabel issueLabel = new NodeLabel(
 						Pos.BASELINE_LEFT, 
-						IssueBox.BOX_SIZE * 1.5, 
+						IssueBox.BOX_SIZE * .5, 
 						issY, 
 						i.getSeverity().equals("BAD_PRACTICE")
 							? new Color(0., .7, .4, 1.)
@@ -102,7 +102,7 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 						true, 
 						i.issueNumber);
 				issueBox.addNodeElement(issueLabel);
-				issueLabel.activateSpecialMode(neededWidth - 3 * IssueBox.BOX_SIZE);
+				issueLabel.activateSpecialMode(neededWidth - IssueBox.BOX_SIZE);
 			}
 		
 			currentY += issueBoxHeight;
