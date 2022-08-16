@@ -76,12 +76,8 @@ public class Issue implements FmmlxProperty{
 				i.severity = message.get(4)+"";
 			} catch (Exception e4) {
 				i.severity = "SEVERITY_UNREADABLE";
-			}
-			System.err.println(i.type + " | " + i.text + " | " + i.severity);
-						
+			}		
 			return i;
-//		} catch (IssueNotReadableException e) {
-//			throw e;
 		} catch (Exception e) {
 			throw new IssueNotReadableException("Could not read message.", e);
 		}
