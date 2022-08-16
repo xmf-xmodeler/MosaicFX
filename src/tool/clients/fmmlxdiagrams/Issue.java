@@ -26,6 +26,7 @@ public class Issue implements FmmlxProperty{
 	private String text;
 	private Vector<Object> solution;
 	private String affectedObject;
+	private String severity;
 
 	public void paintToSvg(XmlHandler xmlHandler, Element group, int xOffset, int yOffset, int x, double y) {
 		String textColor = this.color.toString().split("x")[1].substring(0,6);
@@ -67,13 +68,16 @@ public class Issue implements FmmlxProperty{
 			if(objList.size()!=1) {
 				throw new IllegalArgumentException();	
 			}
-			i.affectedObject = (String) objList.firstElement();
 			
+			i.affectedObject = (String) objList.firstElement();
 			i.solution = (Vector<Object>) message.get(3);
-						
+			
+			try{
+				i.severity = message.get(4)+"";
+			} catch (Exception e4) {
+				i.severity = "SEVERITY_UNREADABLE";
+			}		
 			return i;
-//		} catch (IssueNotReadableException e) {
-//			throw e;
 		} catch (Exception e) {
 			throw new IssueNotReadableException("Could not read message.", e);
 		}
@@ -173,6 +177,10 @@ public class Issue implements FmmlxProperty{
 	
 	public FmmlxObject getAffectedObject(AbstractPackageViewer diagram) {
 		return diagram.getObjectByPath(affectedObject);
+	}
+
+	public String getSeverity() {
+		return severity;
 	}
 
 }
