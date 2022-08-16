@@ -127,6 +127,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 //	private static final Point2D CANVAS_RAW_SIZE = new Point2D(1400, 1000);
 	public  static final Font FONT;
 	Palette palette = new Palette(this);
+	Palette palette2 = new Palette(this,2);
 	private boolean showOperations = true;
 	private boolean showOperationValues = true;
 	private boolean showSlots = true;
@@ -136,6 +137,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private boolean showMetaClassName = false;
 	private boolean showConstraints = true;
 	private boolean showConstraintReports = true;
+	private boolean issueTableVisible = true;
 	private DiagramViewPane zoomView;
 	@Override protected boolean loadOnlyVisibleObjects() { return false; }	// Did not work. Attributes from invisible classes did not cause slots on visible classes
 
@@ -194,6 +196,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		TableColumn<Issue, String> issueColumn = new TableColumn<>("Issue");
 
 		issueColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+		
+	
+		
+        objectColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.3));
+        issueColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.7));
 
 		tableView.getColumns().add(objectColumn);
 		tableView.getColumns().add(issueColumn);
@@ -245,7 +252,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	        };
 	    });
 		
-		Palette palette2 = new Palette(this,2);
 		newFmmlxPalette = new FmmlxPalette(this);
 		
         tabPane = new TabPane();
@@ -300,8 +306,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
                 	getActiveView().centerObject();
                 }
             }
-        });
-        
+        });   
         tabPane.getSelectionModel().selectedItemProperty().addListener((foo,goo,newTabItem)-> {
         	if(newTabItem.getContent() == null) {
         		// pane with star selected
@@ -325,15 +330,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         tabPane.heightProperty().addListener( ( observable, x, y ) -> redraw() );
         tabPane.widthProperty().addListener( ( observable, x, y ) -> redraw() );
         
-        //tableView.prefHeightProperty().bind(tabPane.heightProperty());
-        tableView.prefWidthProperty().bind(tabPane.widthProperty());
         scrollPane = new ScrollPane(tableView);
-        splitPane3 = new SplitPane(tabPane, scrollPane);
-        splitPane3.setOrientation(Orientation.VERTICAL);
-        
-        
-        
-        
+         
 		mainView.getChildren().addAll(palette, palette2, tabPane);//scrollerCanvas);
 		
 		splitPane2.setOrientation(Orientation.VERTICAL);
@@ -346,7 +344,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		splitPane.getItems().addAll(splitPane2, mainView);
 		SplitPane.setResizableWithParent(splitPane2, false);
 		
-
+		switchTableOnAndOffForIssues();
 		Thread t = new Thread( () -> {
 			this.fetchDiagramData( a -> { } );
 		});
@@ -1822,11 +1820,29 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	public void switchTableOnAndOffForIssues() {
-		if(scrollPane.isVisible()) {
-			scrollPane.setVisible(false);
+		issueTableVisible=!issueTableVisible;
+		mainView.getChildren().clear();
+		if (issueTableVisible) {
+			tableView.prefHeightProperty().bind(scrollPane.heightProperty());
+	        tableView.prefWidthProperty().bind(scrollPane.widthProperty());
+			splitPane3 = new SplitPane(tabPane, scrollPane);
+			splitPane3.setOrientation(Orientation.VERTICAL);
+			mainView.getChildren().addAll(palette, palette2, splitPane3);
 		} else {
-			scrollPane.setVisible(true);
+			mainView.getChildren().addAll(palette, palette2, tabPane);
 		}
+		Thread t = new Thread(() -> {
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			redraw();
+		});
+		t.start();
+		
+		
 	}
 	
 }
