@@ -35,6 +35,7 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -180,6 +181,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		mainView = new VBox();
 		tableView = new TableView<Issue>();
 		
+		
 		TableColumn<Issue, FmmlxObject> objectColumn = new TableColumn<>("Object");
 
 //		objectColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -193,7 +195,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 //			}
 //		});
 		
-		TableColumn<Issue, String> issueColumn = new TableColumn<>("Issue");
+		TableColumn<Issue, Issue> issueColumn = new TableColumn<>("Issue");
 
 		issueColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 		
@@ -201,7 +203,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		
         objectColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.3));
         issueColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.7));
-
+        
+       
+        
+        
+        
 		tableView.getColumns().add(objectColumn);
 		tableView.getColumns().add(issueColumn);
 		tableView.getSelectionModel().setCellSelectionEnabled(true);
@@ -248,6 +254,59 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	                	
 	                    setGraphic(ModelBrowser.getClassLevelGraphic(o.getLevel()));
 	                } else { setText(""); setGraphic(null); }
+	            }
+	        };
+	    });
+		
+		issueColumn.setCellValueFactory(new Callback<CellDataFeatures<Issue,Issue>, ObservableValue<Issue>>() {
+
+			@Override
+			public ObservableValue<Issue> call(CellDataFeatures<Issue, Issue> f) {
+				try {
+				return new ReadOnlyObjectWrapper<Issue>(f.getValue());
+				} catch(Exception e) {
+					return null;
+				}
+			}
+			
+		});
+		
+		
+		issueColumn.setCellFactory((listView) -> {
+			return new TableCell<Issue,Issue>() {
+
+				@Override
+	            protected void updateItem(Issue issue, boolean empty) {
+	                super.updateItem(issue, empty);
+	               // setBackground(null);
+	                
+	                	//Issue issue = getTableView().getItems().get(getIndex());
+	                	if(issue!=null) {
+	                		if(Issue.Severity.FATAL.equals(issue.getSeverity())) {
+	                		//	setStyle("-fx-background-color: #FF8888;");
+	                			setGraphic(new ImageView(new javafx.scene.image.Image(new File("resources/gif/Classify/error.gif").toURI().toString())));
+	                		}
+	                		if(Issue.Severity.NORMAL.equals(issue.getSeverity())) {
+	                		//	setStyle("-fx-background-color: #FFDDDD;");
+	                			setGraphic(new ImageView(new javafx.scene.image.Image(new File("resources/gif/Classify/error.gif").toURI().toString())));
+	                		}
+	                		if(Issue.Severity.BAD_PRACTICE.equals(issue.getSeverity())) {
+	                		//	setStyle("-fx-background-color: #DDDDDD;");
+	                			setGraphic(new ImageView(new javafx.scene.image.Image(new File("resources/gif/User/Warning.gif").toURI().toString())));
+	                		}
+	                		if(Issue.Severity.USER_DEFINED.equals(issue.getSeverity())) {
+	                		//	setStyle("-fx-background-color: #FFF6DD;");
+	                			setGraphic(new ImageView(new javafx.scene.image.Image(new File("resources/gif/MDC/Listener.gif").toURI().toString())));
+	                		}
+	                		setText(issue.getText());
+	                	} else { setText(""); setGraphic(null); }
+//	                    if (getIssues(o).size()>0) {
+//	                    	setStyle("-fx-control-inner-background: tomato;");
+//	                    } 
+//	                    else {
+//	                    	setStyle("-fx-control-inner-background: white;");
+//	                    }                                    	
+//	                    setGraphic(ModelBrowser.getClassLevelGraphic(o.getLevel()));
 	            }
 	        };
 	    });
@@ -944,6 +1003,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 		
 		tableView.getItems().clear();
+		tableView.refresh();
 		tableView.getItems().addAll(issues);
 		
 		palette.updateToolbar(this);
@@ -1844,5 +1904,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		
 		
 	}
+	
+	
 	
 }

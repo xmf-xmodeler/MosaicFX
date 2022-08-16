@@ -187,7 +187,8 @@ public abstract class AbstractPackageViewer {
 		};
 		
 		ReturnCall<Vector<Issue>> allIssuesReturn = fetchedIssues -> {	
-			issues.addAll(fetchedIssues);	
+			issues.addAll(fetchedIssues);
+			Collections.sort(issues);
 			if(TIMER) System.err.println("Issues loaded after             " + (System.currentTimeMillis() - START) + " ms.");
 			comm.getAllAssociations(this, allAssociationsReturn);
 		};
