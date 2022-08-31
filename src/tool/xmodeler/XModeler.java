@@ -633,7 +633,11 @@ class AllModulesToAllModulesExporter {
     		constructor.newInstance(bootClassLoaderRetriever.invoke(classLoadersClass));
     		// System.out.println(newBuiltinclassLoader + " instantiated");
     	} catch (Exception exc) {
-    		exc.printStackTrace();
+    		System.err.println("WARNING: Exporting modules did not work. ");
+    		System.err.println("It is not necessary for older Java versions.");
+    		System.err.println("Check File-->Open XML File.");
+    		System.err.println("If the editor shows up, there is no problem with the modules.");
+//    		exc.printStackTrace();
     	}
     }
 }

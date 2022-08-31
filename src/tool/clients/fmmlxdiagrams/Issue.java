@@ -12,10 +12,14 @@ import tool.clients.xmlManipulator.XmlHandler;
 
 import java.util.Vector;
 
-public class Issue implements FmmlxProperty{
+public class Issue implements FmmlxProperty, Comparable<Issue>{
 	
 	public static final Issue NOT_YET_IMPLEMENTED = new Issue("This feature has not been implemented yet.");
 	public int issueNumber;
+	
+	public static enum Severity {
+		BAD_PRACTICE, USER_DEFINED, NORMAL, FATAL
+	}
 
 	private Issue() {}
 	
@@ -26,6 +30,7 @@ public class Issue implements FmmlxProperty{
 	private String text;
 	private Vector<Object> solution;
 	private String affectedObject;
+	private Severity severity;
 
 	public void paintToSvg(XmlHandler xmlHandler, Element group, int xOffset, int yOffset, int x, double y) {
 		String textColor = this.color.toString().split("x")[1].substring(0,6);
@@ -67,13 +72,16 @@ public class Issue implements FmmlxProperty{
 			if(objList.size()!=1) {
 				throw new IllegalArgumentException();	
 			}
-			i.affectedObject = (String) objList.firstElement();
 			
+			i.affectedObject = (String) objList.firstElement();
 			i.solution = (Vector<Object>) message.get(3);
-						
+			System.err.println("ISSUE SOLUTION :"+ message.get(3));
+			try{
+				i.severity = Severity.valueOf(message.get(4)+"");
+			} catch (Exception e4) {
+				i.severity = Severity.FATAL;
+			}		
 			return i;
-//		} catch (IssueNotReadableException e) {
-//			throw e;
 		} catch (Exception e) {
 			throw new IssueNotReadableException("Could not read message.", e);
 		}
@@ -173,6 +181,17 @@ public class Issue implements FmmlxProperty{
 	
 	public FmmlxObject getAffectedObject(AbstractPackageViewer diagram) {
 		return diagram.getObjectByPath(affectedObject);
+	}
+
+	public Severity getSeverity() {
+		return severity;
+	}
+
+	@Override
+	public int compareTo(Issue that) {
+		int severityCompare = this.severity.compareTo(that.severity);
+		if (severityCompare!=0) return -severityCompare;
+		return this.affectedObject.compareTo(that.affectedObject);
 	}
 
 }

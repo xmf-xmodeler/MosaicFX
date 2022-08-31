@@ -88,9 +88,25 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 			for(Issue i : issues) {
 				issY += lineHeight;
 				
-				NodeLabel issueLabel = new NodeLabel(Pos.BASELINE_LEFT, IssueBox.BOX_SIZE * 1.5, issY, new Color(1., .8, 0., 1.), null, object, () -> i.performResolveAction(diagram), i.getText(), true, i.issueNumber);
+				NodeLabel issueLabel = new NodeLabel(
+						Pos.BASELINE_LEFT, 
+						IssueBox.BOX_SIZE * .5, 
+						issY, 
+						i.getSeverity().equals(Issue.Severity.BAD_PRACTICE)
+							? new Color(0., .7, .4, 1.)
+							: i.getSeverity().equals(Issue.Severity.FATAL)
+							? new Color(.9, .3, .6, 1.)
+							: i.getSeverity().equals(Issue.Severity.NORMAL)
+							? new Color(1., .1, .1, 1.)
+							: new Color(1., .8, 0., 1.), 
+						null, 
+						object, 
+						() -> i.performResolveAction(diagram), 
+						i.getText(), 
+						true, 
+						i.issueNumber);
 				issueBox.addNodeElement(issueLabel);
-				issueLabel.activateSpecialMode(neededWidth - 3 * IssueBox.BOX_SIZE);
+				issueLabel.activateSpecialMode(neededWidth - IssueBox.BOX_SIZE);
 			}
 		
 			currentY += issueBoxHeight;

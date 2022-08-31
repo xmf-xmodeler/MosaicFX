@@ -17,7 +17,11 @@ import javafx.scene.control.Skin;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.Callback;
+import javafx.util.converter.DefaultStringConverter;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
@@ -56,6 +60,7 @@ public class MergePropertyDialog extends Dialog<MergePropertyDialog.Result>{
 	    TableColumn<MergePropertyDialog.Row, String> valTypeColumn = new TableColumn<>("Value Type");
 	    TableColumn<MergePropertyDialog.Row, Action> resolveColumn = new TableColumn<>("Resolve");
 	    TableColumn<MergePropertyDialog.Row, String> mergeWithColumn = new TableColumn<>("Merge With");
+	    TableColumn<MergePropertyDialog.Row, String> keepAsColumn = new TableColumn<>("Keep As");
 	    
 	    /*DO NOT DELETE: this is how the lambda expression looks like extended:
 	     *  ownerColumn.setCellValueFactory(new Callback<CellDataFeatures<MergePropertyDialog.Row, String>, ObservableValue<String>>() {
@@ -119,15 +124,21 @@ public class MergePropertyDialog extends Dialog<MergePropertyDialog.Result>{
 	    valTypeColumn.setCellFactory(defaultStringCellFactory);
 	    
 	    resolveColumn.setCellFactory(column -> {
-            ComboBox<Action> combo = new ComboBox<>();
-            combo.getItems().addAll(Action.values());
+            
             TableCell<MergePropertyDialog.Row, Action> cell = new TableCell<MergePropertyDialog.Row, Action>() {
                 @Override
                 protected void updateItem(Action action, boolean empty) {
                     super.updateItem(action, empty);
+                    
                     if (empty) {
                         setGraphic(null);
                     } else {
+                    	ComboBox<Action> combo = new ComboBox<>();
+                    	Row row = tableView.getItems().get(getIndex());
+                    	boolean isTargetClass = row.getOwner().equals(mergeIntoClass.getName());
+//                    	Vector<Action> availableActions = new Vector<>();
+                    	
+                    	combo.getItems().addAll(isTargetClass?new Action[] {Action.KEEP}:Action.values());
                         combo.setValue(action);
                         combo.setOnAction(e -> {
                         	tableView.getItems().get(getIndex()).action = combo.getValue();
@@ -149,7 +160,7 @@ public class MergePropertyDialog extends Dialog<MergePropertyDialog.Result>{
                     super.updateItem(otherProperty, empty);
                     if (empty) {
                         setGraphic(null);
-                    } else if(tableView.getItems().get(getIndex()).action != Action.MERGE_WITH){
+                    } else if(tableView.getItems().get(getIndex()).action != Action.MERGE_INTO){
                     	setGraphic(null);
                     } else {
                         combo.setValue(otherProperty);
@@ -164,7 +175,50 @@ public class MergePropertyDialog extends Dialog<MergePropertyDialog.Result>{
             return cell ;
         });
 	    
+	    keepAsColumn.setCellFactory(column -> {
+            TextField textField = new TextField();
+            textField.setText("not yet implemented");
+            TableCell<MergePropertyDialog.Row, String> cell = new TableCell<MergePropertyDialog.Row, String>() {
+                @Override
+                protected void updateItem(String otherProperty, boolean empty) {
+                    super.updateItem(otherProperty, empty);
+                    if (empty) {
+                        setGraphic(null);
+                    } else if(tableView.getItems().get(getIndex()).action != Action.KEEP_AS){
+                    	setGraphic(null);
+                    } else {
+                    	textField.setText(otherProperty);
+                    	textField.setOnKeyReleased(event -> {
+                    		Row row = tableView.getItems().get(getIndex());
+//                    		System.err.println(row.keepAs+" <== "+textField.getText());
+                    		row.keepAs = textField.getText();
+                    		getDialogPane().lookupButton(ButtonType.OK).setDisable(!dataIsValid());
+					    });
+//                        combo.setOnAction(e -> {
+//                        	getTableView().getItems().get(getIndex()).mergeWith = combo.getValue();
+//                        	refresh();});
+                        setGraphic(textField);
+                        setPadding(new Insets(0));
+                    }
+                }
+            };
+            return cell ;
+        });
 	    
+	    keepAsColumn.setCellValueFactory(dataFeature-> new ReadOnlyObjectWrapper<>(dataFeature.getValue().keepAs));
+//	    keepAsColumn.setCellValueFactory(new PropertyValueFactory<>("keepAs"));
+//	    keepAsColumn.setCellFactory(TextFieldTableCell.forTableColumn(new DefaultStringConverter()));
+	    keepAsColumn.setOnEditCommit(event -> {
+	    	System.err.print(event.getRowValue().keepAs+" <== "+event.getNewValue());
+//	        String newValue = event.getNewValue();
+//	        String oldValue = event.getOldValue();
+	        event.getRowValue().keepAs = event.getNewValue();
+//	        lookupTable.put(newKey,lookupTable.get(oldKey));
+//	        lookupTable.remove(oldKey);
+//	        updateOBList(lookupTable);
+	    });
+	    keepAsColumn.setEditable(true);
+
 	    tableView.getColumns().add(ownerColumn);
 	    tableView.getColumns().add(nameColumn);
 	    tableView.getColumns().add(levelColumn);
@@ -172,18 +226,20 @@ public class MergePropertyDialog extends Dialog<MergePropertyDialog.Result>{
 	    tableView.getColumns().add(valTypeColumn);
 	    tableView.getColumns().add(resolveColumn);
 	    tableView.getColumns().add(mergeWithColumn);
+	    tableView.getColumns().add(keepAsColumn);
 
-	    ownerColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.15));
-	    nameColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.15));
-	    levelColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.08));
-	    propTypeColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.15));
-	    valTypeColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.15));
-	    resolveColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.15));
-	    mergeWithColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.15));
+	    ownerColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.13));
+	    nameColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.13));
+	    levelColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.05));
+	    propTypeColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.13));
+	    valTypeColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.13));
+	    resolveColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.13));
+	    mergeWithColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.13));
+	    keepAsColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.13));
 	    	    
 	    dialogPane.setContent(tableView);
 	    setTitle("Merge Properties into " + mergeIntoClass.getName());
-	    dialogPane.setPrefSize(1100, 500);
+	    dialogPane.setPrefSize(1200, 500);
 	}
 
 	private void refresh() {
@@ -193,17 +249,57 @@ public class MergePropertyDialog extends Dialog<MergePropertyDialog.Result>{
 	
 	private boolean dataIsValid() {
 		boolean ok = true;
+		Vector<Row> futureFeaturesInTarget = new Vector<>();
+		for(Row row : tableView.getItems()) {
+			if(row.action == Action.KEEP && row.getOwner().equals(mergeIntoClass.getName())) 
+				futureFeaturesInTarget.add(row);
+			if(row.action == Action.PULL_UP) 
+				futureFeaturesInTarget.add(row);
+		}
 		for(Row row : tableView.getItems()) {
 			if(row.action == Action.UNRESOLVED) ok = false;
-			if(row.action == Action.KEEP || row.action == Action.MOVE_UP) {
-				boolean duplicates = false;
-				for(Row row2 : tableView.getItems()) {
-					if(row != row2 && 
-						row.getName().equals(row2.getName()) &&
-						(row.action == Action.KEEP || row.action == Action.MOVE_UP))
-						duplicates = true;
+			if(!row.getOwner().equals(mergeIntoClass.getName())) {
+				if(row.action == Action.KEEP) {
+					for(Row row2 : futureFeaturesInTarget) {
+						if(row.getName().equals(row2.getName())) {
+						ok = false;
+						System.err.println("Conflict: KEEP: "+row.getName()); }
+					}	
+				} else if(row.action == Action.KEEP_AS) {
+					for(Row row2 : futureFeaturesInTarget) {
+						if(row.keepAs.equals(row2.getName())) {
+						ok = false;
+						System.err.println("Conflict: KEEP_AS: "+row.getName()); }
+					}	
+				} else if(row.action == Action.MERGE_INTO) {
+					boolean found = false;
+					for(Row row2 : futureFeaturesInTarget) {
+						if(row.mergeWith != null && row.mergeWith.equals(row2.getName()))
+							found = true;
+					}
+					if(!found) {
+						ok = false;
+						System.err.println("Conflict: MERGE_INTO: "+row.getName());
+					}
 				}
-				if(duplicates) ok = false;
+//			}
+//			
+//			if(row.action == Action.PULL_UP) {
+//				boolean duplicates = false;
+//
+//				if(duplicates) ok = false;
+//			}
+//			
+//			
+//			if(row.action == Action.KEEP || row.action == Action.PULL_UP) {
+//				boolean duplicates = false;
+//				for(Row row2 : tableView.getItems()) {
+//					if(row != row2 && 
+//						row.getName().equals(row2.getName()) &&
+//						(row.action == Action.KEEP || row.action == Action.PULL_UP))
+//						duplicates = true;
+//				}
+//				if(duplicates) ok = false;
 			}
 		}
 		return ok;
@@ -212,19 +308,19 @@ public class MergePropertyDialog extends Dialog<MergePropertyDialog.Result>{
 	private Vector<String> getAvailableMergeIntos() {
 		Vector<String> vec = new Vector<>();
 		for(Row row : tableView.getItems()) {
-			if(row.action == Action.KEEP || row.action == Action.MOVE_UP) {
+			if(row.action == Action.KEEP || row.action == Action.PULL_UP) {
 				vec.add(row.getName());
 			}
 		}
 		return vec;
 	}
 
-	private final void  initValues() {
-		tableView.getItems().add(new TestRow("Car",   "maxPax",    "1", "Attribute", "Integer"));
-		tableView.getItems().add(new TestRow("Lorry", "maxWeight", "1", "Attribute", "Float"));
-		tableView.getItems().add(new TestRow("Car",   "lenght",    "1", "Attribute", "Float"));
-		tableView.getItems().add(new TestRow("Lorry", "length",    "1", "Attribute", "Float"));
-		tableView.getItems().add(new TestRow("Lorry", "width",     "1", "Attribute", "Float"));	
+	private final void initValues() {
+//		tableView.getItems().add(new TestRow("Car",   "maxPax",    "1", "Attribute", "Integer"));
+//		tableView.getItems().add(new TestRow("Lorry", "maxWeight", "1", "Attribute", "Float"));
+//		tableView.getItems().add(new TestRow("Car",   "lenght",    "1", "Attribute", "Float"));
+//		tableView.getItems().add(new TestRow("Lorry", "length",    "1", "Attribute", "Float"));
+//		tableView.getItems().add(new TestRow("Lorry", "width",     "1", "Attribute", "Float"));	
 		
 		addProperties(mergeIntoClass);
 		for(FmmlxObject o : mergeIntoClass.getInstances()) {
@@ -238,25 +334,32 @@ public class MergePropertyDialog extends Dialog<MergePropertyDialog.Result>{
 		for(FmmlxAttribute att : object.getOwnAttributes()) {
 			tableView.getItems().add(new AttributeRow(att));
 		}
-		for(FmmlxOperation att : object.getOwnOperations()) {
-			tableView.getItems().add(new OperationRow(att));
-		}
+//		for(FmmlxOperation att : object.getOwnOperations()) {
+//			tableView.getItems().add(new OperationRow(att));
+//		}
 		
 	}
 
 	public class Result {
 
 		public Value[] createMessage() {
-			Vector<Row> rows = new Vector<>(tableView.getItems());
-			Collections.sort(rows);
+			Vector<Row> rows0 = new Vector<>(tableView.getItems());
+			Collections.sort(rows0);
+			Vector<Row> rows = new Vector<>(); 
+			for(Row row : rows0) {
+				if(row.action != Action.KEEP) rows.add(row);
+			}
 			Value[] resolutions = new Value[rows.size()];
 			for(int r = 0; r < rows.size(); r++) {
 				Row row = rows.get(r);
 				resolutions[r] = new Value(new Value[]{
+						new Value("Attribute"), // for now only Attributes
 						new Value(row.getOwner()),
 						new Value(row.getName()),
 						new Value(row.action.toString()),
-						new Value(row.action == Action.MERGE_WITH?row.mergeWith:"void")});
+						new Value(
+							row.action == Action.MERGE_INTO?row.mergeWith:
+							row.action == Action.KEEP_AS?row.keepAs:"void")});
 			}
 			
 			return new Value[]{
@@ -275,24 +378,30 @@ public class MergePropertyDialog extends Dialog<MergePropertyDialog.Result>{
 		public abstract String getValueType();
 		public Action action = Action.UNRESOLVED;;
 		public String mergeWith;
+		public String keepAs = "";
 
 		public final String getColor() {
-			if(action == Action.UNRESOLVED) return "-fx-background-color: #ffbbbb;";
-			else if(action == Action.KEEP || action == Action.MOVE_UP) {
+			if(getOwner().equals(mergeIntoClass.getName())) return "-fx-background-color: #aaffdd;";
+			else if(action == Action.UNRESOLVED) return "-fx-background-color: #ffbbbb;";
+			else if((action == Action.KEEP || action == Action.KEEP_AS || action == Action.PULL_UP)) {
 				boolean noDuplicates = true;
+				String newName = action == Action.KEEP_AS?keepAs:getName();
+				
 				for(Row row : tableView.getItems()) {
 					if(row != this && 
-							row.getName().equals(this.getName()) &&
-							(row.action == Action.KEEP || row.action == Action.MOVE_UP))
+							row.getName().equals(newName) &&
+							(row.action == Action.KEEP && getOwner().equals(mergeIntoClass.getName()) 
+							|| row.action == Action.PULL_UP))
 						noDuplicates = false;
 				}
+				
 				if(noDuplicates) {
 					return "-fx-background-color: #aaffdd;";
 				} else {
 					return "-fx-background-color: #ffbbbb;";
 				}
 			} else if(action == Action.DROP) return "-fx-background-color: #ffeebb;";
-			else if(action == Action.MERGE_WITH) return "-fx-background-color: #eeeeee;";
+			else if(action == Action.MERGE_INTO) return "-fx-background-color: #eeeeee;";
 			return "-fx-background-color: #ffffff;";
 		}
 		
@@ -314,6 +423,9 @@ public class MergePropertyDialog extends Dialog<MergePropertyDialog.Result>{
 
 		public AttributeRow(FmmlxAttribute property) {
 			this.property = property;
+			if(getOwner().equals(mergeIntoClass.getName())) {
+				this.action = Action.KEEP;
+			}
 		}
 
 		@Override public String getName() { return property.getName();}
@@ -369,15 +481,17 @@ public class MergePropertyDialog extends Dialog<MergePropertyDialog.Result>{
 
 	}
 
-	private enum Action {KEEP, DROP, MOVE_UP, MERGE_WITH, UNRESOLVED;
+	private enum Action {KEEP, KEEP_AS, DROP, PULL_UP, MERGE_INTO, UNRESOLVED;
 
 	public int compareTo2(Action that) {
 		if(this == DROP && that != DROP) return -1;
 		if(that == DROP && this != DROP) return 1;
 		if(this == KEEP && that != KEEP) return -1;
 		if(that == KEEP && this != KEEP) return 1;
-		if(this == MOVE_UP && that != MOVE_UP) return -1;
-		if(that == MOVE_UP && this != MOVE_UP) return 1;
+		if(this == KEEP_AS && that != KEEP_AS) return -1;
+		if(that == KEEP_AS && this != KEEP_AS) return 1;
+		if(this == PULL_UP && that != PULL_UP) return -1;
+		if(that == PULL_UP && this != PULL_UP) return 1;
 		return 0;
 	}} 
 }

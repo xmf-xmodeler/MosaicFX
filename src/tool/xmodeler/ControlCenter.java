@@ -214,14 +214,12 @@ public class ControlCenter extends Stage {
 		newProject.setOnAction((event) -> {controlCenterClient.createNewProject();controlCenterClient.getAllProjects();});	
 		
 		this.setOnCloseRequest(event -> {
-			//propertyManager.writeXMLFile();
 			if (PropertyManager.getProperty("IGNORE_SAVE_IMAGE", true)) {
-				System.exit(0);
+				Runtime.getRuntime().halt(0);
 			} else {
-			  WorkbenchClient.theClient().shutdownEvent();
+			    WorkbenchClient.theClient().shutdownEvent();
 			}
 			event.consume();
-//				  event.doit = false;
 		});
 		new java.util.Timer().schedule( 
 		        new java.util.TimerTask() {
