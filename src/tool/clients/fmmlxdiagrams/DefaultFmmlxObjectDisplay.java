@@ -92,11 +92,11 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 						Pos.BASELINE_LEFT, 
 						IssueBox.BOX_SIZE * .5, 
 						issY, 
-						i.getSeverity().equals("BAD_PRACTICE")
+						i.getSeverity().equals(Issue.Severity.BAD_PRACTICE)
 							? new Color(0., .7, .4, 1.)
-							: i.getSeverity().equals("FATAL")
+							: i.getSeverity().equals(Issue.Severity.FATAL)
 							? new Color(.9, .3, .6, 1.)
-							: i.getSeverity().equals("NORMAL")
+							: i.getSeverity().equals(Issue.Severity.NORMAL)
 							? new Color(1., .1, .1, 1.)
 							: new Color(1., .8, 0., 1.), 
 						null, 
