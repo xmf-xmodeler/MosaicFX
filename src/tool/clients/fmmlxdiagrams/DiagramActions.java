@@ -1327,6 +1327,7 @@ public class DiagramActions {
 		Optional<MergePropertyDialog.Result> result = dialog.showAndWait();
 		if(result.isPresent()) {
 			diagram.getComm().mergeProperties(mergeIntoClass, result.get().createMessage());
+			diagram.updateDiagram();
 		}
 	}
 }

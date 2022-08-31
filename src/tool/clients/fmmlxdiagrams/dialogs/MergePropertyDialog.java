@@ -249,17 +249,57 @@ public class MergePropertyDialog extends Dialog<MergePropertyDialog.Result>{
 	
 	private boolean dataIsValid() {
 		boolean ok = true;
+		Vector<Row> futureFeaturesInTarget = new Vector<>();
+		for(Row row : tableView.getItems()) {
+			if(row.action == Action.KEEP && row.getOwner().equals(mergeIntoClass.getName())) 
+				futureFeaturesInTarget.add(row);
+			if(row.action == Action.PULL_UP) 
+				futureFeaturesInTarget.add(row);
+		}
 		for(Row row : tableView.getItems()) {
 			if(row.action == Action.UNRESOLVED) ok = false;
-			if(row.action == Action.KEEP || row.action == Action.PULL_UP) {
-				boolean duplicates = false;
-				for(Row row2 : tableView.getItems()) {
-					if(row != row2 && 
-						row.getName().equals(row2.getName()) &&
-						(row.action == Action.KEEP || row.action == Action.PULL_UP))
-						duplicates = true;
+			if(!row.getOwner().equals(mergeIntoClass.getName())) {
+				if(row.action == Action.KEEP) {
+					for(Row row2 : futureFeaturesInTarget) {
+						if(row.getName().equals(row2.getName())) {
+						ok = false;
+						System.err.println("Conflict: KEEP: "+row.getName()); }
+					}	
+				} else if(row.action == Action.KEEP_AS) {
+					for(Row row2 : futureFeaturesInTarget) {
+						if(row.keepAs.equals(row2.getName())) {
+						ok = false;
+						System.err.println("Conflict: KEEP_AS: "+row.getName()); }
+					}	
+				} else if(row.action == Action.MERGE_INTO) {
+					boolean found = false;
+					for(Row row2 : futureFeaturesInTarget) {
+						if(row.mergeWith != null && row.mergeWith.equals(row2.getName()))
+							found = true;
+					}
+					if(!found) {
+						ok = false;
+						System.err.println("Conflict: MERGE_INTO: "+row.getName());
+					}
 				}
-				if(duplicates) ok = false;
+//			}
+//			
+//			if(row.action == Action.PULL_UP) {
+//				boolean duplicates = false;
+//
+//				if(duplicates) ok = false;
+//			}
+//			
+//			
+//			if(row.action == Action.KEEP || row.action == Action.PULL_UP) {
+//				boolean duplicates = false;
+//				for(Row row2 : tableView.getItems()) {
+//					if(row != row2 && 
+//						row.getName().equals(row2.getName()) &&
+//						(row.action == Action.KEEP || row.action == Action.PULL_UP))
+//						duplicates = true;
+//				}
+//				if(duplicates) ok = false;
 			}
 		}
 		return ok;
@@ -303,12 +343,17 @@ public class MergePropertyDialog extends Dialog<MergePropertyDialog.Result>{
 	public class Result {
 
 		public Value[] createMessage() {
-			Vector<Row> rows = new Vector<>(tableView.getItems());
-			Collections.sort(rows);
+			Vector<Row> rows0 = new Vector<>(tableView.getItems());
+			Collections.sort(rows0);
+			Vector<Row> rows = new Vector<>(); 
+			for(Row row : rows0) {
+				if(row.action != Action.KEEP) rows.add(row);
+			}
 			Value[] resolutions = new Value[rows.size()];
 			for(int r = 0; r < rows.size(); r++) {
 				Row row = rows.get(r);
 				resolutions[r] = new Value(new Value[]{
+						new Value("Attribute"), // for now only Attributes
 						new Value(row.getOwner()),
 						new Value(row.getName()),
 						new Value(row.action.toString()),
@@ -336,15 +381,20 @@ public class MergePropertyDialog extends Dialog<MergePropertyDialog.Result>{
 		public String keepAs = "";
 
 		public final String getColor() {
-			if(action == Action.UNRESOLVED) return "-fx-background-color: #ffbbbb;";
-			else if(action == Action.KEEP || action == Action.KEEP_AS || action == Action.PULL_UP) {
+			if(getOwner().equals(mergeIntoClass.getName())) return "-fx-background-color: #aaffdd;";
+			else if(action == Action.UNRESOLVED) return "-fx-background-color: #ffbbbb;";
+			else if((action == Action.KEEP || action == Action.KEEP_AS || action == Action.PULL_UP)) {
 				boolean noDuplicates = true;
+				String newName = action == Action.KEEP_AS?keepAs:getName();
+				
 				for(Row row : tableView.getItems()) {
 					if(row != this && 
-							row.getName().equals(this.getName()) &&
-							(row.action == Action.KEEP || row.action == Action.PULL_UP))
+							row.getName().equals(newName) &&
+							(row.action == Action.KEEP && getOwner().equals(mergeIntoClass.getName()) 
+							|| row.action == Action.PULL_UP))
 						noDuplicates = false;
 				}
+				
 				if(noDuplicates) {
 					return "-fx-background-color: #aaffdd;";
 				} else {

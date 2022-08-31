@@ -1140,13 +1140,12 @@ public class FmmlxDiagramCommunicator {
 
 	}
 
-	public void changeAttributeOwner(int diagramID, String objectName, String name, String newOwnerPath) {
+	public void changeAttributeOwner(int diagramID, String oldClassName, String name, String newClassName) {
 		Value[] message = new Value[]{
 				getNoReturnExpectedMessageID(diagramID),
-				new Value(objectName),
+				new Value(oldClassName),
 				new Value(name),
-				//TODO new Value(newOwnerID),
-				new Value(newOwnerPath)};
+				new Value(newClassName)};
 		sendMessage("changeAttributeOwner", message);
 	}
 
