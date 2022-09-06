@@ -164,15 +164,12 @@ public class NodeGroup extends NodeElement {
 
 	public Node save(Document document) {
 		Element myElement = document.createElement("Group");
-		myElement.setAttribute("xx", myTransform.getMxx()+"");
-		myElement.setAttribute("yy", myTransform.getMyy()+"");
-		myElement.setAttribute("xy", myTransform.getMxy()+"");
-		myElement.setAttribute("yx", myTransform.getMyx()+"");
-		myElement.setAttribute("tx", myTransform.getTx()+"");
-		myElement.setAttribute("ty", myTransform.getTy()+"");
-		ConcreteSyntax.saveChildren(document, nodeElements, myElement);
+		saveTransformation(myElement);
+		ConcreteSyntax.saveChildren(document, nodeElements, new Vector<Modification>(), myElement);
 		return myElement;
 	}
+
+	
 
 	private static Modification findMod(Vector<Modification> modifications, NodeElement nodeElement) {
 		for(Modification mod : modifications) {

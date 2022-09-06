@@ -99,6 +99,15 @@ public abstract class NodeElement {
 	
 	protected abstract NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications);
 	
+	protected void saveTransformation(Element myElement) {
+		myElement.setAttribute("xx", myTransform.getMxx()+"");
+		myElement.setAttribute("yy", myTransform.getMyy()+"");
+		myElement.setAttribute("xy", myTransform.getMxy()+"");
+		myElement.setAttribute("yx", myTransform.getMyx()+"");
+		myElement.setAttribute("tx", myTransform.getTx()+"");
+		myElement.setAttribute("ty", myTransform.getTy()+"");
+	}
+	
 	public boolean matchID(String svgID, String localID) {
 		if(!localID.equals(this.id)) return false;
 		return matchParentId(svgID);
