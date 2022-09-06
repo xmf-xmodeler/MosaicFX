@@ -37,6 +37,7 @@ import tool.xmodeler.XModeler;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.File;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -1079,7 +1080,7 @@ public class DiagramActions {
 
 	public void unhideElementsDialog() {
 		Dialog<Vector<FmmlxObject>> unhideElementsDialog = new Dialog<>();
-		unhideElementsDialog.setTitle("Unhide Elements");
+		unhideElementsDialog.setTitle("Hide/ Unhide Elements");
 		
 		ButtonType okButtonType = new ButtonType("Close", ButtonData.CANCEL_CLOSE);
 		unhideElementsDialog.getDialogPane().getButtonTypes().add(okButtonType);
@@ -1108,31 +1109,72 @@ public class DiagramActions {
 		
 		GridPane gridPane = new GridPane();
 		Button toShow = new Button("<<");
+		toShow.setMinWidth(75);
+		//the following lines are used four times and are kind of redundant, should i build a function for that?
+		Tooltip toShowTooltip = new Tooltip(); 
+		toShowTooltip.setText("Unhide singel Elements or a list of selected Elements");
+		toShowTooltip.setShowDelay(javafx.util.Duration.millis(100));
+		toShow.setTooltip(toShowTooltip);	
 		toShow.setOnAction(e->{
 			shownElementsListView.getItems().addAll(hiddenElementsListView.getSelectionModel().getSelectedItems());
 			hiddenElementsListView.getItems().removeAll(hiddenElementsListView.getSelectionModel().getSelectedItems());
+			sortListView(shownElementsListView);	
+		});
+		
+		Button allToShow = new Button("<<<");
+		allToShow.setMinWidth(75);
+		Tooltip allToShowTooltip = new Tooltip(); 
+		allToShowTooltip.setText("Unhide all Elements");
+		allToShowTooltip.setShowDelay(javafx.util.Duration.millis(100));
+		allToShow.setTooltip(allToShowTooltip);
+		allToShow.setOnAction(e -> {
+			shownElementsListView.getItems().addAll(hiddenElementsListView.getItems());
+			hiddenElementsListView.getItems().removeAll(hiddenElementsListView.getItems());
 			sortListView(shownElementsListView);
 		});
+		
 		Button toHide = new Button(">>");
+		toHide.setMinWidth(75);
+		Tooltip toHideTooltip = new Tooltip(); 
+		toHideTooltip.setText("Hide singel Elements or a list of selected Elements");
+		toHideTooltip.setShowDelay(javafx.util.Duration.millis(100));
+		toHide.setTooltip(toHideTooltip);		
 		toHide.setOnAction(e->{
 			hiddenElementsListView.getItems().addAll(shownElementsListView.getSelectionModel().getSelectedItems());
 			shownElementsListView.getItems().removeAll(shownElementsListView.getSelectionModel().getSelectedItems());
 			sortListView(hiddenElementsListView);
 		});
 		
+		
+		Button allToHide = new Button(">>>");
+		allToHide.setMinWidth(75);
+		Tooltip allToHideTooltip = new Tooltip(); 
+		allToHideTooltip.setText("Hide all Elements");
+		allToHideTooltip.setShowDelay(javafx.util.Duration.millis(100));
+		allToHide.setTooltip(allToHideTooltip);		
+		allToHide.setOnAction(e -> {
+			hiddenElementsListView.getItems().addAll(shownElementsListView.getItems());
+			shownElementsListView.getItems().removeAll(shownElementsListView.getItems());
+			sortListView(hiddenElementsListView);
+		});
+		
 		addCellFactory(shownElementsListView);
 		addCellFactory(hiddenElementsListView);
-		Button filter = new Button("Filters");
+
 		
 		Label shownElementsLabel = new Label("Shown Elements");
 		Label hiddenElementsLabel = new Label("Hidden Elements");
 		gridPane.add(shownElementsLabel, 0, 0,1,1);
-		gridPane.add(shownElementsListView, 0, 1,1,5);
-		gridPane.add(toHide, 1, 3,1,1);
-		gridPane.add(toShow, 1, 4,1,1);
-		gridPane.add(filter, 1, 5,1,1);
+		gridPane.add(shownElementsListView, 0, 1,1,1);
+		GridPane buttonGridPane = new GridPane();
+		buttonGridPane.setAlignment(javafx.geometry.Pos.CENTER);
+		gridPane.add(buttonGridPane,1,1,1,1);
+		buttonGridPane.add(toHide, 0, 0,1,1);
+		buttonGridPane.add(toShow, 0, 1,1,1);
+		buttonGridPane.add(allToHide, 0, 2,1,1);
+		buttonGridPane.add(allToShow, 0, 3,1,1);
 		gridPane.add(hiddenElementsLabel, 2, 0,1,1);
-		gridPane.add(hiddenElementsListView, 2, 1,1,5);
+		gridPane.add(hiddenElementsListView, 2, 1,1,1);
 		gridPane.setPadding(new Insets(15,15,15,15));
 		unhideElementsDialog.getDialogPane().setContent(gridPane);
 	
