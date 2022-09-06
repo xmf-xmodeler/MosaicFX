@@ -175,7 +175,7 @@ public class ControlCenter extends Stage {
 		diagramLV.setPrefSize(250, 150);
 		grid.add(diagramLV, 4, 2);
 		grid.add(diagramsGridPane, 4, 3);
-		//grid.add(concreteSyntaxWizardStart, 4, 4); //Buton for ConcreteSyntaxWizard
+		grid.add(concreteSyntaxWizardStart, 4, 4); //Buton for ConcreteSyntaxWizard
 
 		init();
 		//categoryLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->categorySelected(NEWW));

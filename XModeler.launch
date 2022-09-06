@@ -17,4 +17,5 @@
     <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="MosaicFX"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="./ini3.txt"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="MosaicFX"/>
+    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="--add-modules javafx.base,javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web"/>
 </launchConfiguration>

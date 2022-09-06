@@ -1112,8 +1112,8 @@ public class DiagramActions {
 		toShow.setMinWidth(75);
 		//the following lines are used four times and are kind of redundant, should i build a function for that?
 		Tooltip toShowTooltip = new Tooltip(); 
-		toShowTooltip.setText("Unhide singel Elements or a list of selected Elements");
-		toShowTooltip.setShowDelay(javafx.util.Duration.millis(100));
+		toShowTooltip.setText("Unhide single Elements or a list of selected Elements");
+//		toShowTooltip.setShowDelay(javafx.util.Duration.millis(100));
 		toShow.setTooltip(toShowTooltip);	
 		toShow.setOnAction(e->{
 			shownElementsListView.getItems().addAll(hiddenElementsListView.getSelectionModel().getSelectedItems());
@@ -1125,7 +1125,7 @@ public class DiagramActions {
 		allToShow.setMinWidth(75);
 		Tooltip allToShowTooltip = new Tooltip(); 
 		allToShowTooltip.setText("Unhide all Elements");
-		allToShowTooltip.setShowDelay(javafx.util.Duration.millis(100));
+//		allToShowTooltip.setShowDelay(javafx.util.Duration.millis(100));
 		allToShow.setTooltip(allToShowTooltip);
 		allToShow.setOnAction(e -> {
 			shownElementsListView.getItems().addAll(hiddenElementsListView.getItems());
@@ -1136,8 +1136,8 @@ public class DiagramActions {
 		Button toHide = new Button(">>");
 		toHide.setMinWidth(75);
 		Tooltip toHideTooltip = new Tooltip(); 
-		toHideTooltip.setText("Hide singel Elements or a list of selected Elements");
-		toHideTooltip.setShowDelay(javafx.util.Duration.millis(100));
+		toHideTooltip.setText("Hide single Elements or a list of selected Elements");
+//		toHideTooltip.setShowDelay(javafx.util.Duration.millis(100));
 		toHide.setTooltip(toHideTooltip);		
 		toHide.setOnAction(e->{
 			hiddenElementsListView.getItems().addAll(shownElementsListView.getSelectionModel().getSelectedItems());
@@ -1150,7 +1150,7 @@ public class DiagramActions {
 		allToHide.setMinWidth(75);
 		Tooltip allToHideTooltip = new Tooltip(); 
 		allToHideTooltip.setText("Hide all Elements");
-		allToHideTooltip.setShowDelay(javafx.util.Duration.millis(100));
+//		allToHideTooltip.setShowDelay(javafx.util.Duration.millis(100));
 		allToHide.setTooltip(allToHideTooltip);		
 		allToHide.setOnAction(e -> {
 			hiddenElementsListView.getItems().addAll(shownElementsListView.getItems());
