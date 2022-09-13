@@ -234,7 +234,9 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	Vector<String> getSlotNames() {
 		Vector<String> slotNames = new Vector<>();
-		for (FmmlxObject ancestor : getAllAncestors()) {
+		Vector<FmmlxObject> ancestors = getAllAncestors();
+		ancestors.add(this);
+		for (FmmlxObject ancestor : ancestors) {
 			for (FmmlxAttribute attribute : ancestor.getAllAttributes()) {
 				if (attribute.level == this.level && !slotNames.contains(attribute.name)) {
 					slotNames.add(attribute.name);
