@@ -9,7 +9,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
-import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement;
+import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 
 import java.util.Vector;
 
@@ -24,7 +24,7 @@ public class ObjectContextMenu extends ContextMenu {
 		this.diagram = view.getDiagram();
 		this.actions = diagram.getActions();
 		this.object = object;
-		NodeBaseElement nl = this.object.getHitLabel(mouse, view.getCanvas().getGraphicsContext2D(), view.getCanvasTransform(), view);
+		NodeElement nl = this.object.getHitElement(mouse, view.getCanvas().getGraphicsContext2D(), view.getCanvasTransform(), view);
 		activeProperty = nl==null?null:nl.getActionObject();
 		setAutoHide(true);
 

@@ -14,15 +14,31 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.FmmlxProperty;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public abstract class NodeElement {
 
+	protected FmmlxProperty actionObject;
+	protected boolean selected = false;
+		
 	protected Affine myTransform; // where to be painted if the zoom were 1 and the origin has not moved
 	protected NodeElement owner;
 	Bounds bounds = new BoundingBox(0, 0, 0, 0);
 	public Style style;
 	protected String id;
+	protected Action action;
+	
+	public interface Action{
+		public void perform();
+	}
+	
+	abstract NodeElement getHitElement(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram);
+	abstract void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup);
+	public final void setSelected() { selected = true;}
+	public final void setDeselected() { selected = false;}
+	public final FmmlxProperty getActionObject() { return actionObject;}
+	public final void performDoubleClickAction(View view) { if(action!=null) action.perform();}
 	
 	/**
 	 * Paints this NodeElement and all its children to the diagramView's canvas.
@@ -38,13 +54,9 @@ public abstract class NodeElement {
 	 * @param diagramView
 	 * @return whether it has been hit
 	 */
-	public abstract boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagramView);
-
-	abstract NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram);
-
-	abstract void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup);
-
-    /**
+	public abstract boolean isHit(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane diagramView);	
+    
+	/**
      * Returns the element's own transform, relative to its parent
      * @return the element's own transform, relative to its parent
      */

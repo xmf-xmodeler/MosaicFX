@@ -192,15 +192,12 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				final AddInstanceDialog.Result aidResult = result.get();
-
 				diagram.getComm().addNewInstance(
 						diagram.getID(), aidResult.getOfName(), aidResult.name,
 						aidResult.level,
                         aidResult.getParentNames(), aidResult.isAbstract, 
                         (int) (p.getX()+.5), (int) (p.getY()+.5), false);
-
 				diagram.updateDiagram();
-
 			}
 		});
 	}

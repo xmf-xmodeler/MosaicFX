@@ -16,6 +16,7 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.graphics.NodeElement.Action;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeGroup extends NodeElement {
@@ -73,11 +74,12 @@ public class NodeGroup extends NodeElement {
 	}
 
 	@Override
-	public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
-		NodeBaseElement hitLabel = null;
+	public NodeElement getHitElement(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
+		NodeElement hitLabel = null;
 		for(NodeElement e : nodeElements) if(hitLabel == null) {
-			 hitLabel =  e.getHitLabel(mouse, g, currentTransform, diagram);
+			 hitLabel =  e.getHitElement(mouse, g, currentTransform, diagram);
 		}
+		if(hitLabel==null && isHit(mouse.getX(), mouse.getY(), diagram)) return this;
 		return hitLabel;
 	}
 
@@ -211,4 +213,7 @@ public class NodeGroup extends NodeElement {
 		return that;
 	}	
 	
+	public void setAction(Action action) {
+		this.action=action;
+	}
 }
