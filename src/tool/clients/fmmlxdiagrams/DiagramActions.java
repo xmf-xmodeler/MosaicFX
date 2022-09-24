@@ -717,7 +717,7 @@ public class DiagramActions {
 				}
 				
 				if(!result.selectedAssociation.getName().equals(result.newDisplayName)) {
-					System.err.println("getName:" +result.selectedAssociation.getName()  + "--> " + result.newDisplayName);
+					System.err.println("changeName:" +result.selectedAssociation.getName()  + "-->" + result.newDisplayName);
 					diagram.getComm().changeAssociationForwardName(diagram.getID(), result.selectedAssociation.getName(), result.newDisplayName);
 				}
 					
