@@ -36,6 +36,9 @@ import tool.xmodeler.XModeler;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+
+import org.eclipse.swt.widgets.Event;
+
 import java.io.File;
 import java.time.Duration;
 import java.util.Arrays;
@@ -1152,10 +1155,10 @@ public class DiagramActions {
 		allToHideTooltip.setText("Hide all Elements");
 //		allToHideTooltip.setShowDelay(javafx.util.Duration.millis(100));
 		allToHide.setTooltip(allToHideTooltip);		
-		allToHide.setOnAction(e -> {
-			hiddenElementsListView.getItems().addAll(shownElementsListView.getItems());
-			shownElementsListView.getItems().removeAll(shownElementsListView.getItems());
-			sortListView(hiddenElementsListView);
+		allToHide.setOnMouseClicked(e -> {
+				hiddenElementsListView.getItems().addAll(shownElementsListView.getItems());
+				shownElementsListView.getItems().removeAll(shownElementsListView.getItems());
+				sortListView(hiddenElementsListView);
 		});
 		
 		addCellFactory(shownElementsListView);
@@ -1177,7 +1180,36 @@ public class DiagramActions {
 		gridPane.add(hiddenElementsListView, 2, 1,1,1);
 		gridPane.setPadding(new Insets(15,15,15,15));
 		unhideElementsDialog.getDialogPane().setContent(gridPane);
+		
+		hiddenElementsListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+	        @Override
+	        public void handle(MouseEvent event) {
+	        	if (event.getClickCount() == 2) {
+	        		FmmlxObject selectedItem = hiddenElementsListView.getSelectionModel().getSelectedItem();
+	        		shownElementsListView.getItems().add(selectedItem);
+	        		hiddenElementsListView.getItems().remove(selectedItem);
+	        		;
+					
+				}
+	        }
+		});
+		
+		shownElementsListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+	        @Override
+	        public void handle(MouseEvent event) {
+	        	if (event.getClickCount() == 2) {
+	        		FmmlxObject selectedItem = shownElementsListView.getSelectionModel().getSelectedItem();
+	        		hiddenElementsListView.getItems().add(selectedItem);
+	        		shownElementsListView.getItems().remove(selectedItem);
+	        		;
+					
+				}
+	        }
+		});
 	
+		
 
 		unhideElementsDialog.setResultConverter(dialogButton -> {
 		    if (dialogButton == okButtonType) {
