@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ConcreteSyntax classPath="OrgStructure::Department" level="0">
+  <SVG path="Textkasten_blau_1.svg" tx="-88.0" ty="-55.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+  <SVG path="department.svg" tx="39.0" ty="-38.0" xx="1.0" xy="0.0" yx="-0.0" yy="1.0"/>
+  <Label align="CENTER" tx="0.0" ty="10.0"  id="bottomLabel"/>
+  <Modification>
+		<Condition type="ReadFromOpValCondition" opName="op0"/>
+		<Affected id="bottomLabel" localId="bottomLabel"/>
+		<Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+</ConcreteSyntax>

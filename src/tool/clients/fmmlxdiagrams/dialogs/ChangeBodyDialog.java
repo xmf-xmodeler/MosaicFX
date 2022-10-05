@@ -20,6 +20,7 @@ import tool.clients.fmmlxdiagrams.ReturnCall;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair.OperationException;
 
+@Deprecated
 public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialog.Result>{
 	
 	private DialogPane dialogPane;

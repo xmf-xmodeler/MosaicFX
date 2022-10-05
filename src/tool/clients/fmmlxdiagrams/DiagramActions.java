@@ -37,7 +37,6 @@ import tool.xmodeler.XModeler;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.File;
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -642,13 +641,18 @@ public class DiagramActions {
 	}
 
 	public void changeBodyDialog(FmmlxObject object, FmmlxOperation initiallySelectedOperation) {
+		if(initiallySelectedOperation == null) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setContentText("This MenuItem requires an Operation to be selected.");
+			alert.show(); return;
+		} 
 		Platform.runLater(() -> {
-			ChangeBodyDialog dlg = new ChangeBodyDialog(diagram, object, initiallySelectedOperation);
-			Optional<ChangeBodyDialog.Result> opt = dlg.showAndWait();
+			AddOperationDialog dlg = new AddOperationDialog(diagram, object, initiallySelectedOperation);
+			Optional<AddOperationDialog.Result> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
-				final ChangeBodyDialog.Result result = opt.get();
-				diagram.getComm().changeOperationBody(diagram.getID(), result.object.getName(), result.selectedItem.getName(), result.body);
+				final AddOperationDialog.Result result = opt.get();
+				diagram.getComm().changeOperationBody(diagram.getID(), result.object.getName(), result.name, result.body);
 				diagram.updateDiagram();
 			}
 		});
