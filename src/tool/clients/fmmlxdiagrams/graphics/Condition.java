@@ -1,5 +1,7 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
+import org.w3c.dom.Element;
+
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperationValue;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
@@ -41,6 +43,14 @@ public interface Condition {
 		public String evalText(FmmlxObject object) throws SlotNotFoundException {
 			return "";
 		}
+
+		@Override
+		public void save(Element conditionElement) {
+			 conditionElement.setAttribute("type", "BooleanSlotCondition");
+			 conditionElement.setAttribute("slotName", slotName);
+
+			
+		}
 	}
 	
 	public static class StringMatchSlotCondition implements Condition{
@@ -68,6 +78,13 @@ public interface Condition {
 		public String evalText(FmmlxObject object) throws SlotNotFoundException {
 			return "";
 		}
+		@Override
+		public void save(Element conditionElement) {
+			conditionElement.setAttribute("type", "StringMatchSlotCondition");
+			conditionElement.setAttribute("slotName", slotName);
+			conditionElement.setAttribute("match", match );
+			
+		}
 	}
 	
 	public static class BooleanOpValCondition implements Condition{
@@ -87,6 +104,13 @@ public interface Condition {
 		@Override
 		public String evalText(FmmlxObject object) throws SlotNotFoundException {
 			return "";
+		}
+
+		@Override
+		public void save(Element conditionElement) {
+			conditionElement.setAttribute("type", "BooleanOpValCondition");
+			conditionElement.setAttribute("opName", opName);
+			
 		}		
 	}
 	
@@ -111,6 +135,13 @@ public interface Condition {
 		@Override
 		public boolean eval(FmmlxObject object) throws SlotNotFoundException {
 			return true;
+		}
+
+		@Override
+		public void save(Element conditionElement) {
+			conditionElement.setAttribute("type", "ReadFromSlot");
+			conditionElement.setAttribute("slotName", slotName);
+			
 		}		
 
 	}
@@ -135,8 +166,17 @@ public static class ReadFromOpValCondition implements Condition{
 				return "Operation NOT FOUND!";
 			}
 			return opVal.getValue();
+		}
+
+		@Override
+		public void save(Element conditionElement) {
+			conditionElement.setAttribute("type", "ReadFromOpValCondition");
+			conditionElement.setAttribute("opName", opName);
+			
 		}	
 	}
+
+public void save(Element conditionElement);
 	
 
 	

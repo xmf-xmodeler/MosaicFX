@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import javax.management.RuntimeErrorException;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -89,7 +90,27 @@ public class Modification {
 	public String getID() {return affectedId;} 
 	public String getParentID() {return affectedParentId;} 
 	public Consequence getConsequence() {return consequence;} 
-	public Condition getCondition() {return condition;} 
+	public Condition getCondition() {return condition;}
+
+	
+	public Node save(Document document) { Element modificationElement = document.createElement("Modification");
+		 
+	 
+	 Element conditionElement = document.createElement("Condition");
+	 modificationElement.appendChild(conditionElement);
+	 condition.save(conditionElement);
+	 
+	 Element affectedElement = document.createElement("Affected");
+	 modificationElement.appendChild(affectedElement);
+	 affectedElement.setAttribute("id", affectedParentId);
+	 affectedElement.setAttribute("localId", affectedId);
+	 
+	 
+	 Element consequenceElement = document.createElement("Consequence");
+	 modificationElement.appendChild(consequenceElement);
+	 consequenceElement.setAttribute("type", consequence.toString());
+	 return modificationElement;
+	} 
 		
 	
 }

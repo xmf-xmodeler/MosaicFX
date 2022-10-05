@@ -17,6 +17,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javafx.geometry.Pos;
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 
@@ -70,7 +71,7 @@ public class ConcreteSyntax extends AbstractSyntax{
 	        root.setAttribute("classPath", classPath);
 	        root.setAttribute("level",  "" + level);
 	        
-	        saveChildren(document, nodeElements,root);
+	        saveChildren(document, nodeElements,modifications, root);
 	               
 	        TransformerFactory transformerFactory = TransformerFactory.newInstance();
 	        Transformer transformer = transformerFactory.newTransformer();
@@ -86,7 +87,7 @@ public class ConcreteSyntax extends AbstractSyntax{
 		}
 	}
 	
-	public static void saveChildren(Document document, Vector<NodeElement> nodeElements, Element parent) {
+	public static void saveChildren(Document document, Vector<NodeElement> nodeElements, Vector<Modification> modifications, Element parent) {
 		 for (NodeElement element : nodeElements) {
 	        	if (element instanceof SVGGroup) {
 	        		parent.appendChild(((SVGGroup)element).save(document));
@@ -97,6 +98,10 @@ public class ConcreteSyntax extends AbstractSyntax{
 	        		parent.appendChild(((NodeGroup)element).save(document));
 	        	}
 	        }
+		 for (Modification modification: modifications) {
+			 parent.appendChild(modification.save(document));
+			
+		 }
 	}
 	
 	@Override

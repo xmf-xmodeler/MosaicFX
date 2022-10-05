@@ -226,8 +226,8 @@ public class NodeLabel extends NodeBaseElement {
 	public Node save(Document document) {
 		Element myElement = document.createElement("Label");
 		myElement.setAttribute("align", alignment==Pos.BASELINE_CENTER?"CENTER":alignment==Pos.BASELINE_RIGHT?"RIGHT":"LEFT");
-		myElement.setAttribute("tx", myTransform.getTx()+"");
-		myElement.setAttribute("ty", myTransform.getTy()+"");
+		saveTransformation(myElement);
+		myElement.setAttribute("id", id );
 		return myElement;
 	}
 
