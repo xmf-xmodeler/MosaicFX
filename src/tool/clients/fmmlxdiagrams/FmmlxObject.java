@@ -9,6 +9,7 @@ import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement;
+import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.menus.ObjectContextMenu;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteItem;
 import tool.clients.fmmlxdiagrams.newpalette.PaletteTool;
@@ -234,7 +235,9 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	Vector<String> getSlotNames() {
 		Vector<String> slotNames = new Vector<>();
-		for (FmmlxObject ancestor : getAllAncestors()) {
+		Vector<FmmlxObject> ancestors = getAllAncestors();
+		ancestors.add(this);
+		for (FmmlxObject ancestor : ancestors) {
 			for (FmmlxAttribute attribute : ancestor.getAllAttributes()) {
 				if (attribute.level == this.level && !slotNames.contains(attribute.name)) {
 					slotNames.add(attribute.name);
@@ -537,7 +540,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		lastClick = relativePoint;
 		currentTransform = new Affine(currentTransform); // copy
 		currentTransform.append(new Affine(1, 0, x, 0, 1, y));
-		NodeBaseElement hitLabel = getHitLabel(relativePoint, g, currentTransform, view);
+		NodeElement hitLabel = getHitElement(relativePoint, g, currentTransform, view);
 		if (hitLabel != null && hitLabel.getActionObject() != null) {
 			if (hitLabel.getActionObject().getPropertyType() != PropertyType.Class) {
 				hitLabel.setSelected();
@@ -547,18 +550,23 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return null;
 	}
 
-	public NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
-		NodeBaseElement hitLabel = null;
+	public NodeElement getHitElement(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
+		NodeElement hitLabel = null;
 		if(rootNodeElement != null) if(hitLabel == null) {
-			 hitLabel = rootNodeElement.getHitLabel(mouse, g, currentTransform, view);//new Point2D(relativePoint.getX() - e.getX(), relativePoint.getY() - e.getY()));
+			 hitLabel = rootNodeElement.getHitElement(mouse, g, currentTransform, view);//new Point2D(relativePoint.getX() - e.getX(), relativePoint.getY() - e.getY()));
 		}
 		return hitLabel;
 	}
 
 	public void performDoubleClickAction(Point2D p, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
 		if(p == null) return;
-		NodeBaseElement hitLabel = getHitLabel(p, g, currentTransform, view);
-		if(hitLabel != null) hitLabel.performDoubleClickAction(view);
+		NodeElement.Action action = null;
+		if(rootNodeElement != null) if(action == null) {
+			action = rootNodeElement.getAction(p, g, currentTransform, view);
+		}
+		
+		System.err.println("Action=" + action);
+		if(action != null) action.perform();
 	}
 
 	public PaletteItem toPaletteItem(FmmlxDiagram fmmlxDiagram) {
@@ -607,7 +615,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		}
 		
 		if(myConcreteSyntax != null) {
-			rootNodeElement = myConcreteSyntax.createInstance(this);
+			rootNodeElement = myConcreteSyntax.createInstance(this, diagram);
 		} else {	
 			new DefaultFmmlxObjectDisplay(diagram, this).layout();
 		}
@@ -623,5 +631,14 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		rootNodeElement.drop();
 		this.x = rootNodeElement.getMyTransform().getTx();
 		this.y = rootNodeElement.getMyTransform().getTy();
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(o==null) return false;
+		if(o instanceof FmmlxObject) {
+			return ownPath.equals(((FmmlxObject)o).ownPath);
+		} else return false;
+		
 	}
 }

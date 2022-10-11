@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams.classbrowser;
 
 import java.awt.event.ActionListener;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -77,7 +78,7 @@ public final class ModelBrowser extends CustomStage {
 	private HashMap<String,AbstractPackageViewer> models = new HashMap<>();
 	private static FixedBlueLevelColorScheme levelColorScheme = new LevelColorScheme.FixedBlueLevelColorScheme();
 	
-	public ModelBrowser(String project, String initialModel, ObservableList<String> models) {
+	public ModelBrowser(String project, String initialModel, Collection<String> models) {
 		super(StringValue.LabelAndHeaderTitle.modelBrowser+" " + project, XModeler.getStage(), 1500, 800);
 		communicator = FmmlxDiagramCommunicator.getCommunicator();
 		operationCodeArea = new CodeBoxPair(activePackage,e->{
@@ -841,11 +842,11 @@ public final class ModelBrowser extends CustomStage {
 	}
 
 	public void setSelectedObjectAndProperty(FmmlxObject object, FmmlxProperty property) {
+		int number = fmmlxObjectListView.getItems().indexOf(object);
+		fmmlxObjectListView.getSelectionModel().select(number);
+		fmmlxObjectListView.refresh();
 		fmmlxObjectListView.scrollTo(object);
-		fmmlxObjectListView.getSelectionModel().select(object);
-		
 		if(property == null) return;
-		
 		if(property instanceof FmmlxAttribute) {
 			FmmlxAttribute att = (FmmlxAttribute) property;
 			fmmlxAttributeListView.scrollTo(att);
@@ -856,7 +857,8 @@ public final class ModelBrowser extends CustomStage {
 			fmmlxOperationListView.getSelectionModel().select(att);
 		} else{
 			throw new RuntimeException("not yet implemented for " + property.getClass().getName());
-		}		
+		}
+		
 	}
 
 	public void setStatusButton(ViewerStatus newStatus) {

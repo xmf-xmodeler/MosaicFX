@@ -420,10 +420,20 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		
 		File syntaxDir = new File(ConcreteSyntaxWizard.RESOURCES_CONCRETE_SYNTAX_REPOSITORY); //TODO: recursively searching all 
 		if (syntaxDir.isDirectory()) {
-			File[] files = syntaxDir.listFiles();
+			Vector<File> directories = new Vector<>();
+			Vector<File> files = new Vector<>();
+			directories.add(syntaxDir);
+			while(!directories.isEmpty()) {
+				File dir = directories.remove(0);
+				for (File file : dir.listFiles()) {
+					if(file.isDirectory()) directories.add(file); else
+					if(file.getName().endsWith(".xml")) files.add(file);
+				}
+			}
+//			File[] files = syntaxDir.listFiles();
 			for (File file : files) {
-				if (file.isFile()) {
-					if(file.getName().endsWith(".xml")) {
+//				if (file.isFile()) {
+//					if(file.getName().endsWith(".xml")) {
 						try {
 							AbstractSyntax group = AbstractSyntax.load(file);
 							if(group instanceof ConcreteSyntax) {
@@ -433,8 +443,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 						} catch (Exception e) {
 							System.err.println("reading " + file.getName() + " failed (" + e.getMessage() + "). Ignoring..."); 
 						}
-					}
-				}
+//					}
+//				}
 			}
 		}
 	}

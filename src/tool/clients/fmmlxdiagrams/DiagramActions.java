@@ -2,12 +2,9 @@ package tool.clients.fmmlxdiagrams;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Vector;
-
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
@@ -25,12 +22,10 @@ import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
-import tool.clients.dialogs.UnhideElementsDialog;
 import tool.clients.dialogs.enquiries.FindClassDialog;
 import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
@@ -44,7 +39,6 @@ import tool.clients.fmmlxdiagrams.dialogs.AddMissingLinkDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AddOperationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationDialog;
 import tool.clients.fmmlxdiagrams.dialogs.AssociationValueDialog;
-import tool.clients.fmmlxdiagrams.dialogs.ChangeBodyDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeOfDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeParentDialog;
 import tool.clients.fmmlxdiagrams.dialogs.ChangeSlotValueDialog;
@@ -56,6 +50,7 @@ import tool.clients.fmmlxdiagrams.dialogs.MergePropertyDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.ShowCertainLevelDialog;
+import tool.clients.fmmlxdiagrams.dialogs.UnhideElementsDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeLevelDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeNameDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeOwnerDialog;
@@ -220,15 +215,12 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				final AddInstanceDialog.Result aidResult = result.get();
-
 				diagram.getComm().addNewInstance(
 						diagram.getID(), aidResult.getOfName(), aidResult.name,
 						aidResult.level,
                         aidResult.getParentNames(), aidResult.isAbstract, 
                         (int) (p.getX()+.5), (int) (p.getY()+.5), false);
-
 				diagram.updateDiagram();
-
 			}
 		});
 	}
@@ -673,13 +665,18 @@ public class DiagramActions {
 	}
 
 	public void changeBodyDialog(FmmlxObject object, FmmlxOperation initiallySelectedOperation) {
+		if(initiallySelectedOperation == null) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setContentText("This MenuItem requires an Operation to be selected.");
+			alert.show(); return;
+		} 
 		Platform.runLater(() -> {
-			ChangeBodyDialog dlg = new ChangeBodyDialog(diagram, object, initiallySelectedOperation);
-			Optional<ChangeBodyDialog.Result> opt = dlg.showAndWait();
+			AddOperationDialog dlg = new AddOperationDialog(diagram, object, initiallySelectedOperation);
+			Optional<AddOperationDialog.Result> opt = dlg.showAndWait();
 
 			if (opt.isPresent()) {
-				final ChangeBodyDialog.Result result = opt.get();
-				diagram.getComm().changeOperationBody(diagram.getID(), result.object.getName(), result.selectedItem.getName(), result.body);
+				final AddOperationDialog.Result result = opt.get();
+				diagram.getComm().changeOperationBody(diagram.getID(), result.object.getName(), result.name, result.body);
 				diagram.updateDiagram();
 			}
 		});
@@ -748,7 +745,7 @@ public class DiagramActions {
 				}
 				
 				if(!result.selectedAssociation.getName().equals(result.newDisplayName)) {
-					System.err.println("getName:" +result.selectedAssociation.getName()  + "--> " + result.newDisplayName);
+					System.err.println("changeName:" +result.selectedAssociation.getName()  + "-->" + result.newDisplayName);
 					diagram.getComm().changeAssociationForwardName(diagram.getID(), result.selectedAssociation.getName(), result.newDisplayName);
 				}
 					
@@ -1237,6 +1234,6 @@ public class DiagramActions {
 		}
 	}
 	public void showUnhideElementsDialog(AbstractPackageViewer dialog) {
-		new UnhideElementsDialog(dialog);
+		new UnhideElementsDialog(dialog).showDialog();
 	}
 }

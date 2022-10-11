@@ -1,20 +1,19 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.ReturnCall;
+import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> {
 	private DialogPane dialogPane;
@@ -28,22 +27,25 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 	//private Button monitorButton;
 
 	ObservableList<String> classList;
-	//private TextArea bodyTextArea;
-	//private TextArea errorTextArea;
-	private CodeBoxPair codeBoxPair;
-	
+	private CodeBoxPair codeBoxPair;	
 	
 	private ArrayList<Node> labelsNode;
 	private List<Node> mainNodes;
+	private final String oldOpName;
 
 	public AddOperationDialog(AbstractPackageViewer diagram, FmmlxObject object) {
+		this(diagram, object, null);
+	}
+	
+	public AddOperationDialog(AbstractPackageViewer diagram, FmmlxObject object, FmmlxOperation oldOp) {
 		super();
 		this.diagram = diagram;
 		this.object = object;
+		this.oldOpName = oldOp == null?null:oldOp.getName();
 
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		layoutContent();
+		layoutContent(oldOp);
 		dialogPane.setContent(flow);
 
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
@@ -53,8 +55,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 			}
 		});
 		codeBoxPair.checkBodySyntax();
-		setResult();
-
+		setResult();		
 	}
 
 	private void setResult() {
@@ -62,47 +63,54 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
 				return new Result(object, 
 						levelComboBox.getSelectionModel().getSelectedItem(),
-						codeBoxPair.getBodyText());
+						codeBoxPair.getBodyText(),
+						oldOpName);
 						//bodyCodeBox.getBodyTextArea().getText());
 			}
 			return null;
 		});
 	}
 
-	private void layoutContent() {
-		dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.newOperation);
+	private void layoutContent(FmmlxOperation oldOp) {
+		Button defaultOperationButton = new Button(StringValue.LabelAndHeaderTitle.defaultOperation);
+		dialogPane.setHeaderText(oldOp == null?
+				StringValue.LabelAndHeaderTitle.newOperation:
+				StringValue.LabelAndHeaderTitle.changeOperationsBody);
 
 		classTextField = new TextField();
 		classTextField.setText(object.getName());
 		classTextField.setDisable(true);
 		
-		codeBoxPair = new CodeBoxPair(diagram,e->{
-			getDialogPane().lookupButton(ButtonType.OK).setDisable(!codeBoxPair.getCheckPassed());
-		}, false);
+		codeBoxPair = new CodeBoxPair(diagram,
+				e->{getDialogPane().lookupButton(ButtonType.OK).setDisable(!codeBoxPair.getCheckPassed());},
+				false);
 		codeBoxPair.getErrorTextArea().setMinWidth(COLUMN_WIDTH*2);
 		codeBoxPair.getErrorTextArea().setMaxHeight(100);
 		codeBoxPair.getBodyScrollPane().setMaxHeight(300);
 		codeBoxPair.getBodyScrollPane().setMinHeight(300);
 		codeBoxPair.getErrorTextArea().setMinHeight(100);
+		codeBoxPair.getBodyScrollPane().setMinWidth(COLUMN_WIDTH*2);
 		
-		levelComboBox = new ComboBox<>(AllValueList.generateLevelListToThreshold(0, object.getLevel()));
-		levelComboBox.getSelectionModel().selectLast();
+		if(oldOp == null) {
+			levelComboBox = new ComboBox<>(AllValueList.generateLevelListToThreshold(0, object.getLevel()));
+			levelComboBox.getSelectionModel().selectLast();
+			codeBoxPair.setBodyText(StringValue.OperationStringValues.emptyOperation);
+			defaultOperationButton.setOnAction(event -> {
+				AddOperationDialog.this.resetOperationBody("op0", false);});
+		} else {
+			levelComboBox = new ComboBox<>(FXCollections.observableArrayList(oldOp.getLevel()));
+			levelComboBox.getSelectionModel().selectLast();
+			codeBoxPair.setBodyText(oldOp.getBody());
+			defaultOperationButton.setOnAction(event -> {
+				codeBoxPair.setBodyText(oldOp.getBody());});
+		}
 //		monitorButton = new Button("Monitor Operation Values");
 //		monitorButton.setOnAction(event -> {
 //		        resetOperationBody("op0", true);
 //		    }
 //		);
-		codeBoxPair.setBodyText(StringValue.OperationStringValues.emptyOperation);
-		//bodyTextArea = new TextArea(StringValue.OperationStringValues.emptyOperation);
-		//bodyTextArea.textProperty().addListener((a,b,c) -> {getDialogPane().lookupButton(ButtonType.OK).setDisable(true);checkBodySyntax();});
-		codeBoxPair.getBodyScrollPane().setMinWidth(COLUMN_WIDTH*2);
-		//Button checkSyntaxButton = new Button(StringValue.LabelAndHeaderTitle.checkSyntax);
-		//checkSyntaxButton.setOnAction(event -> AddOperationDialog.this.checkBodySyntax());
-		//checkSyntaxButton.setPrefWidth(COLUMN_WIDTH * 0.5);
-		Button defaultOperationButton = new Button(StringValue.LabelAndHeaderTitle.defaultOperation);
-		defaultOperationButton.setOnAction(event -> {
-			AddOperationDialog.this.resetOperationBody("op0", false);
-		});
+
+
 		defaultOperationButton.setPrefWidth(COLUMN_WIDTH * 0.5);
 
 		levelComboBox.setPrefWidth(COLUMN_WIDTH);
@@ -130,26 +138,6 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 		grid.add(codeBoxPair.getErrorTextArea(), 0, 5);
 	}
 
-		
-//	private void checkBodySyntax() {
-//		ReturnCall<OperationException> returnCall = opException -> {
-//			if(opException == null) {
-//				getDialogPane().lookupButton(ButtonType.OK).setDisable(false);
-//				errorTextArea.setText("This operation compiles without parse/syntax error!");
-//				errorTextArea.setStyle("-fx-text-fill: darkgreen;" +"-fx-font-weight: bold;");
-//			} else {
-//				errorTextArea.setText(opException.message);
-//				errorTextArea.setStyle("-fx-text-fill: darkred;" +"-fx-font-weight: bold;");
-//				errorTextArea.setWrapText(true);
-//				//Alert alert = new Alert(AlertType.ERROR, opException.message, ButtonType.CLOSE);
-//				//alert.showAndWait(); NOPE
-//				//alert.show();
-//			}
-//		};
-//		
-//		diagram.getComm().checkSyntax(diagram, bodyTextArea.getText(), returnCall);
-//	}
-	
 	private void resetOperationBody(String name, boolean monitor) {
 		codeBoxPair.setBodyText(
 				"@Operation "+name
@@ -176,11 +164,13 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 		public final FmmlxObject object;
 		public final int level;
 		public final String body;
+		public final String name;
 
-		public Result(FmmlxObject object, int level, String body) {
+		public Result(FmmlxObject object, int level, String body, String name) {
 			this.object = object;
 			this.level = level;
 			this.body = body;
+			this.name = name;
 		}
 	}
 }

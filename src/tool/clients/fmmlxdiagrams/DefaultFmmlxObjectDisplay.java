@@ -2,12 +2,14 @@ package tool.clients.fmmlxdiagrams;
 
 import java.util.Vector;
 
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.paint.Color;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
+import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.IssueBox;
 import tool.clients.fmmlxdiagrams.graphics.NodeBaseElement;
@@ -15,10 +17,11 @@ import tool.clients.fmmlxdiagrams.graphics.NodeBox;
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.fmmlxdiagrams.graphics.NodeImage;
 import tool.clients.fmmlxdiagrams.graphics.NodeLabel;
+import tool.xmodeler.ControlCenterClient;
 
 public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	
-	private final static NodeBaseElement.Action NO_ACTION = () -> {};
+	private final static NodeBaseElement.Action NO_ACTION = null;//() -> {};
 
 	static int GAP = 5;
 	protected int minWidth = 100;
@@ -54,8 +57,15 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		String parentString = getParentsList(diagram);
 		int headerLines = /*hasParents()*/(!"".equals(parentString)) ? 3 : 2;
 		NodeBox header = new NodeBox(0, currentY, neededWidth, textHeight * headerLines + EXTRA_Y_PER_LINE, getLevelBackgroundColor(diagram), Color.BLACK, (x) -> 1., PropertyType.Class);
+		header.setAction( ()-> {
+			Vector<String> models = new Vector<>(); 
+			models.add(diagram.packagePath);
+			ModelBrowser modelBrowser = ControlCenterClient.getClient().getControlCenter().showModelBrowser("(Project)", diagram.packagePath, models);
+			Platform.runLater(()-> modelBrowser.setSelectedObjectAndProperty(object, null));
+		});
 		group.addNodeElement(header);
 		FmmlxObject ofObj = null;
+		
 		try {
 			ofObj = diagram.getObjectByPath(object.getOfPath());
 		} catch (PathNotFoundException e) {
@@ -65,8 +75,8 @@ public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 		String ofName = (ofObj == null) ? "MetaClass" : ofObj.name;
 		
 		NodeLabel metaclassLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight, getLevelFontColor(.65, diagram), null, object, NO_ACTION, "^" + ofName + "^", FontPosture.REGULAR, FontWeight.BOLD) ;
-		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, 4, textHeight * 2, getLevelFontColor(.4, diagram), null, object, NO_ACTION, "" + (-1==object.level?"?":object.level), FontPosture.REGULAR, FontWeight.BOLD, 2.);
-		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, getLevelFontColor(1., diagram), null, object, NO_ACTION, object.name, object.isAbstract()?FontPosture.ITALIC:FontPosture.REGULAR, FontWeight.BOLD);
+		NodeLabel levelLabel = new NodeLabel(Pos.BASELINE_LEFT, new Affine(1,0,4,0,1,textHeight * 2), getLevelFontColor(.4, diagram), null, object, NO_ACTION, "" + (-1==object.level?"?":object.level), FontPosture.REGULAR, FontWeight.BOLD, 2.);
+		NodeLabel nameLabel = new NodeLabel(Pos.BASELINE_CENTER, neededWidth / 2, textHeight * 2, getLevelFontColor(1., diagram), null, object, ()-> diagram.getActions().changeNameDialog(object, PropertyType.Class), object.name, object.isAbstract()?FontPosture.ITALIC:FontPosture.REGULAR, FontWeight.BOLD);
 		header.addNodeElement(metaclassLabel);
 		header.addNodeElement(levelLabel);
 		header.addNodeElement(nameLabel);

@@ -41,25 +41,31 @@ public class NodeLabel extends NodeBaseElement {
 	private boolean special = false;
 	private double availableWidth;
 
+	public NodeLabel(Pos alignment, Affine a, Color fgColor, Color bgColor, FmmlxObject actionObject, Action action, String text, boolean isIssue, int issueNumber) {
+		this(alignment, a, fgColor, bgColor, actionObject, action, text, FontPosture.REGULAR, FontWeight.NORMAL, 1.);
+		this.isIssue = isIssue;
+		this.issueNumber = issueNumber;
+	}
+	
 	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxObject actionObject, Action action, String text, boolean isIssue, int issueNumber) {
-		this(alignment, x, y, fgColor, bgColor, actionObject, action, text, FontPosture.REGULAR, FontWeight.NORMAL, 1.);
+		this(alignment, new Affine(1,0,x,0,1,y), fgColor, bgColor, actionObject, action, text, FontPosture.REGULAR, FontWeight.NORMAL, 1.);
 		this.isIssue = isIssue;
 		this.issueNumber = issueNumber;
 	}
 	
 	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
 			 String text) {
-		this(alignment, x, y, fgColor, bgColor, actionObject, action, text, FontPosture.REGULAR, FontWeight.NORMAL, 1.);
+		this(alignment, new Affine(1,0,x,0,1,y), fgColor, bgColor, actionObject, action, text, FontPosture.REGULAR, FontWeight.NORMAL, 1.);
 	}
 	
 	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
 			 String text, FontPosture fontPosture, FontWeight fontWeight) {
-		this(alignment, x, y, fgColor, bgColor, actionObject, action, text, fontPosture, fontWeight, 1.);
+		this(alignment, new Affine(1,0,x,0,1,y), fgColor, bgColor, actionObject, action, text, fontPosture, fontWeight, 1.);
 	}
 	
-	public NodeLabel(Pos alignment, double x, double y, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
+	public NodeLabel(Pos alignment, Affine a, Color fgColor, Color bgColor, FmmlxProperty actionObject, Action action,
 				 String text, FontPosture fontPosture, FontWeight fontWeight, double fontScale) {
-		super(new Affine(1,0,x,0,1,y), null, actionObject, action);
+		super(a, null, actionObject, action);
 		this.alignment = alignment;
 		this.fgColor = fgColor;
 		this.bgColor = bgColor;
@@ -232,8 +238,8 @@ public class NodeLabel extends NodeBaseElement {
 	}
 
 	@Override
-	protected NodeLabel createInstance(FmmlxObject object, Vector<Modification> modifications) {
-		NodeLabel that = new NodeLabel(alignment, myTransform.getTx(), myTransform.getTy(), fgColor, bgColor, actionObject, action, text, fontPosture, fontWeight, fontScale);
+	protected NodeLabel createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagram diagram) {
+		NodeLabel that = new NodeLabel(alignment, myTransform, fgColor, bgColor, actionObject, action, text, fontPosture, fontWeight, fontScale);
 		return that;
 	}
 	

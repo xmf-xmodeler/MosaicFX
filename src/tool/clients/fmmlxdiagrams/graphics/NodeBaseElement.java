@@ -17,31 +17,23 @@ public abstract class NodeBaseElement extends NodeElement {
 	
 	final CSSStyleDeclaration styleDeclaration;
 	
-	public interface Action{
-		public void perform();
-	}
-
 	protected NodeBaseElement(Affine myTransform, CSSStyleDeclaration styleDeclaration, FmmlxProperty actionObject, Action action) {
 		this.myTransform = myTransform;
 		this.actionObject = actionObject;
 		this.action = action;
 		this.styleDeclaration = styleDeclaration;
-	}
-
-	protected FmmlxProperty actionObject;
-	protected Action action;
-	protected boolean selected = false;
-		
-	public final void setSelected() { selected = true;}
-	public final void setDeselected() { selected = false;}
-	public final FmmlxProperty getActionObject() { return actionObject;}
+	}	
 	
-	@Override public final NodeBaseElement getHitLabel(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagramView) {
+	@Override public final NodeBaseElement getHitElement(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagramView) {
 		if(isHit(mouse.getX(), mouse.getY(), diagramView))
 			return this; return null;
 	}
 	
-	public final void performDoubleClickAction(View view) { action.perform();}
+	@Override public final Action getAction(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagramView) {
+		if(isHit(mouse.getX(), mouse.getY(), diagramView))
+			return this.action;
+		return null;
+	}	
 	
 	public final Affine getTotalTransform(Affine canvasTransform) {
 		Affine a = new Affine(owner == null?canvasTransform:owner.getTotalTransform(canvasTransform));

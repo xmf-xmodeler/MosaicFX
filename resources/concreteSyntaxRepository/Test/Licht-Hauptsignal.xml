@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<AbstractSyntax>
+	<SVG path="mast-gross.svg" id="mast"/>  
+	<SVG path="hl-schirm.svg" id="haupt"/>  
+	<SVG path="hl-ersatz.svg" id="ersatz"/>  
+	<SVG path="vl-schirm.svg" id="vor" ty="12"/>  
+	<!-- Modification>
+		<Condition type="StringMatchSlotCondition" slotName="status" match="2"/>
+		<Affected id="main" localId="g1040"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification>  
+	<Modification>
+		<Condition type="StringMatchSlotCondition" slotName="status" match="2"/>
+		<Affected id="main" localId="g1048"/>
+		<Consequence type="SHOW_IF_NOT"/>
+	</Modification> 
+	<Modification>
+		<Condition type="StringMatchSlotCondition" slotName="status" match="0"/>
+		<Affected id="main" localId="g869"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification>  
+	<Modification>
+		<Condition type="StringMatchSlotCondition" slotName="status" match="0"/>
+		<Affected id="main" localId="g862"/>
+		<Consequence type="SHOW_IF_NOT"/>
+	</Modification>	 
+	<Action id="main" localId="g862" type="CHANGE_SLOT_VALUE:status"/>
+	<Action id="main" localId="g869" type="CHANGE_SLOT_VALUE:status"/-->
+</AbstractSyntax>

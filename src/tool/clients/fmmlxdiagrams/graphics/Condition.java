@@ -18,22 +18,17 @@ public interface Condition {
 	}
 	
 	public static class BooleanSlotCondition implements Condition{
-		
-//		private FmmlxObject object;
 		private String slotName;
-//		private boolean value;		
 		
 		public BooleanSlotCondition(String slotName) {
 			super();
 			this.slotName = slotName;
-//			this.value = value;
 		}
 
 		@Override
 		public boolean eval(FmmlxObject object) throws SlotNotFoundException {
 			FmmlxSlot slot = object.getSlot(slotName);
 			if (slot == null) {
-//				throw new SlotNotFoundException();
 				return false;
 			}
 			return "true".equals(slot.getValue());
@@ -112,6 +107,38 @@ public interface Condition {
 			conditionElement.setAttribute("opName", opName);
 			
 		}		
+	}
+	
+	public static class StringMatchOpValCondition implements Condition{
+		private String opName;
+		private String match;
+
+		public StringMatchOpValCondition(String opName, String match) {
+			super();
+			this.opName = opName;
+			this.match = match;
+			
+		}
+		@Override
+		public boolean eval(FmmlxObject object) throws SlotNotFoundException {
+			FmmlxOperationValue val = object.getOperationValue(opName);
+			if (val == null) {
+				return false;
+			}
+			return match.equals(val.getValue());
+		}
+
+		@Override
+		public String evalText(FmmlxObject object) throws SlotNotFoundException {
+			return "";
+		}
+		@Override
+		public void save(Element conditionElement) {
+			conditionElement.setAttribute("type", "StringMatchOpValCondition");
+			conditionElement.setAttribute("opName", opName);
+			conditionElement.setAttribute("match", match );
+			
+		}
 	}
 	
 	public static class ReadFromSlotCondition implements Condition{

@@ -100,4 +100,5 @@ public class NodeBox extends NodeGroup{
 		bounds = new BoundingBox(min.getX(), min.getY(), 
 		    max.getX() - min.getX(), max.getY() - min.getY()); 
 	}
+
 }
