@@ -178,6 +178,37 @@ public static class ReadFromOpValCondition implements Condition{
 
 public void save(Element conditionElement);
 	
+public static class ReadClassName implements Condition{
+
+    private String className;
+
+    public ReadClassName(String className) {
+        super();
+        this.className=className;
+    }
+
+    @Override
+    public String evalText(FmmlxObject object) throws SlotNotFoundException {
+        String name = object.getName();
+        if (name == null) {
+            return "!NAME NOT FOUND!";
+//           throw new SlotNotFoundException();
+        }
+        return name;
+    }
+
+    @Override
+    public void save(Element conditionElement) {
+        conditionElement.setAttribute("type", "ReadClassName");
+        conditionElement.setAttribute("name", className);
+    }
+
+    @Override
+    public boolean eval(FmmlxObject object) throws SlotNotFoundException {
+        return true;
+    }
+
+}
 
 	
 }
