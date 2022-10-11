@@ -91,7 +91,7 @@ public class AbstractSyntax extends NodeGroup{
 		}
 		NodeLabel label = new NodeLabel(
 				alignment, 
-				transform.getTx(), transform.getTy(), 
+				transform, 
 				c, Color.TRANSPARENT,//new Color(.9,1.,1.,1.), 
 				null, null, 
 				"label test", 
