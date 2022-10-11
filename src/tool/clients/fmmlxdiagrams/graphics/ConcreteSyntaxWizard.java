@@ -1,6 +1,7 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
 import java.io.File;
+import java.util.Vector;
 
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -31,7 +32,7 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 public class ConcreteSyntaxWizard extends Application {
 	
-	public static final String RESOURCES_CONCRETE_SYNTAX_REPOSITORY = "resources/concreteSyntaxRepository/OrgML_BusinessProcessControlFlowDiagram/";
+	public static final String RESOURCES_CONCRETE_SYNTAX_REPOSITORY = "resources/concreteSyntaxRepository/";
 	private ListView<String> listView = new ListView<String>();
 	private SplitPane splitPane;
 	private VBox leftControl;
@@ -208,10 +209,10 @@ public class ConcreteSyntaxWizard extends Application {
 
 	private void getConcreteSyntax(String path) {
 		selectedSyntax = null;
-		String newPath= RESOURCES_CONCRETE_SYNTAX_REPOSITORY+path;
+//		String newPath= RESOURCES_CONCRETE_SYNTAX_REPOSITORY+path;
 		
 		try {
-			AbstractSyntax group = AbstractSyntax.load(new File(newPath));
+			AbstractSyntax group = AbstractSyntax.load(new File(path));
 			selectedSyntax = group;
 			group.paintOn(myCanvas, false);
 			setTree(group);
@@ -232,14 +233,29 @@ public class ConcreteSyntaxWizard extends Application {
 	private void loadConcreteSyntax() {
 		File initialDirectory = new File(RESOURCES_CONCRETE_SYNTAX_REPOSITORY);
 		if (initialDirectory.isDirectory()) {
-			File[] files = initialDirectory.listFiles();
-			for (File fileSearch : files) {
-				if (fileSearch.isFile()) {
-					if(fileSearch.getName().endsWith(".xml")) {
-						listView.getItems().add(fileSearch.getName());
-					}
+			
+			Vector<File> directories = new Vector<>();
+//			Vector<File> files = new Vector<>();
+			directories.add(initialDirectory);
+			while(!directories.isEmpty()) {
+				File dir = directories.remove(0);
+				for (File file : dir.listFiles()) {
+					if(file.isDirectory()) directories.add(file); else
+					if(file.getName().endsWith(".xml")) listView.getItems().add(file.getAbsolutePath());
 				}
-			}
+			}			
+			
+			
+			
+			
+//			File[] files = initialDirectory.listFiles();
+//			for (File fileSearch : files) {
+//				if (fileSearch.isFile()) {
+//					if(fileSearch.getName().endsWith(".xml")) {
+//						listView.getItems().add(fileSearch.getAbsolutePath());
+//					}
+//				}
+//			}
 		}		
 	}
 

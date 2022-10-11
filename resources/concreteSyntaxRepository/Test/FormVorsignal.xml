@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ConcreteSyntax classPath="Test::VorsignalForm3" level="0">
+<SVG path="vf3.svg" id="main"/>  
+<Modification>
+	<Condition type="StringMatchOpValCondition" opName="getVrStatus" match="0"/>
+	<Affected id="main" localId="vr0"/>
+	<Consequence type="SHOW_IF"/>
+</Modification> 
+<Modification>
+	<Condition type="StringMatchOpValCondition" opName="getVrStatus" match="E"/>
+	<Affected id="main" localId="vrE"/>
+	<Consequence type="SHOW_IF"/>
+</Modification> 
+<Modification>
+	<Condition type="StringMatchOpValCondition" opName="getVrStatus" match="R"/>
+	<Affected id="main" localId="vrR"/>
+	<Consequence type="SHOW_IF"/>
+</Modification> 
+<Modification>
+	<Condition type="StringMatchOpValCondition" opName="getVrStatus" match="-1"/>
+	<Affected id="main" localId="vrU"/>
+	<Consequence type="SHOW_IF"/>
+</Modification> 
+<Modification>
+	<Condition type="StringMatchOpValCondition" opName="getVrStatus" match="1"/>
+	<Affected id="main" localId="vr1"/>
+	<Consequence type="SHOW_IF"/>
+</Modification>  
+<Modification>
+	<Condition type="StringMatchOpValCondition" opName="getVrStatus" match="1"/>
+	<Affected id="main" localId="vr1a"/>
+	<Consequence type="SHOW_IF"/>
+</Modification>  
+<Modification>
+	<Condition type="StringMatchOpValCondition" opName="getVrStatus" match="2"/>
+	<Affected id="main" localId="vr2"/>
+	<Consequence type="SHOW_IF"/>
+</Modification>  
+<Modification>
+	<Condition type="StringMatchOpValCondition" opName="getVrStatus" match="2"/>
+	<Affected id="main" localId="vr2a"/>
+	<Consequence type="SHOW_IF"/>
+</Modification>  
+</ConcreteSyntax>
