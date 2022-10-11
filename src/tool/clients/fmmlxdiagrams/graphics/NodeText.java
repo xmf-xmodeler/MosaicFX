@@ -26,10 +26,9 @@ public class NodeText extends NodeBaseElement{
 	private double x,y;
 	
 	public NodeText(SVGOMTextElement textNode, SVGOMSVGElement rootNode) {
-		super(SVGReader.readTransform(textNode), rootNode.getComputedStyle(textNode, null), null, () -> {});
+		super(SVGReader.readTransform(textNode), rootNode.getComputedStyle(textNode, null), null, null);
 		this.textNode = textNode;
 		this.rootNode = rootNode;
-		this.action= ()->{};
 		Node transformNode = textNode.getAttributes().getNamedItem("transform");
 		this.myTransform = transformNode==null?new Affine():SVGReader.readTransform(transformNode.getNodeValue());
 		try{
@@ -106,7 +105,7 @@ public class NodeText extends NodeBaseElement{
 	}
 	
 	@Override
-	protected NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications) {
+	protected NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagram diagram) {
 		return new NodeText(textNode, rootNode);
 	}
 }

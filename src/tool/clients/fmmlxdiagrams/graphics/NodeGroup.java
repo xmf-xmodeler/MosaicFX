@@ -82,6 +82,16 @@ public class NodeGroup extends NodeElement {
 		if(hitLabel==null && isHit(mouse.getX(), mouse.getY(), diagram)) return this;
 		return hitLabel;
 	}
+	
+	@Override
+	public Action getAction(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram) {
+		Action action = null;
+		for(NodeElement e : nodeElements) if(action == null) {
+			action =  e.getAction(mouse, g, currentTransform, diagram);
+		}
+		if(action==null && isHit(mouse.getX(), mouse.getY(), diagram)) return this.action;
+		return action;
+	}
 
 	@Override
 	public void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup) {
@@ -171,8 +181,6 @@ public class NodeGroup extends NodeElement {
 		return myElement;
 	}
 
-	
-
 	private static Modification findMod(Vector<Modification> modifications, NodeElement nodeElement) {
 		for(Modification mod : modifications) {
 			if(nodeElement.matchID(mod.getParentID(), mod.getID()))
@@ -181,11 +189,21 @@ public class NodeGroup extends NodeElement {
 		return null;
 	}
 	
+	private static Action findAction(Vector<ActionInfo> actions, NodeElement nodeElement, FmmlxObject object, FmmlxDiagram diagram)  {
+		for(ActionInfo a : actions) {
+			if(nodeElement.matchID(a.id, a.localId))
+				return a.getAction(object, diagram);
+		}
+		return null;
+	}
+	
 	@Override
-	protected NodeGroup createInstance(FmmlxObject object, Vector<Modification> modifications) {
+	protected NodeGroup createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagram diagram) {
 		NodeGroup that = new NodeGroup(new Affine(this.myTransform));
 		for(NodeElement nodeElement : this.nodeElements) {
 			Modification mod = findMod(modifications, nodeElement);
+			Action action = findAction(actions, nodeElement, object, diagram);
+			nodeElement.action = action;
 			boolean add = mod == null || mod.getConsequence() == Modification.Consequence.SHOW_ALWAYS
 					|| mod.getConsequence() == Modification.Consequence.SHOW_IF && mod.getCondition().eval(object)
 					|| mod.getConsequence() == Modification.Consequence.SHOW_IF_NOT && !mod.getCondition().eval(object);
@@ -193,23 +211,29 @@ public class NodeGroup extends NodeElement {
 			/// Special case for labels( and later also texts):
 			if(nodeElement instanceof NodeLabel) {
 				if(add) {
-					that.addNodeElement(nodeElement.createInstance(object, modifications));
+					NodeElement nl = nodeElement.createInstance(object, modifications, actions, diagram);
+					nl.action = action;
+					that.addNodeElement(nl);
 				} else {
 					if(mod.getConsequence() == Modification.Consequence.READ_FROM_SLOT) {
-						NodeLabel thatLabel = ((NodeLabel)nodeElement).createInstance(object, modifications);
+						NodeLabel thatLabel = ((NodeLabel)nodeElement).createInstance(object, modifications, actions, diagram);
 						thatLabel.setText((mod.getCondition()).evalText(object));
+						thatLabel.action = action;
 						that.addNodeElement(thatLabel);
 					}
 				}
 			} else {
 				if(add) {
-					that.addNodeElement(nodeElement.createInstance(object, modifications));
+					NodeElement ne = nodeElement.createInstance(object, modifications, actions, diagram);
+					ne.action = action;
+					that.addNodeElement(ne);
 				}
-			}			
+			}	
 		}
 		return that;
 	}	
-	
+
+
 	public void setAction(Action action) {
 		this.action=action;
 	}

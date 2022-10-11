@@ -50,6 +50,9 @@ public class AbstractSyntax extends NodeGroup{
 				vec.add(readLabel((Element) n));
 			} else if("Group".equals(n.getNodeName())){
 				vec.add(readGroup((Element) n, file.getParentFile()));
+			} else if("Import".equals(n.getNodeName())){
+				File f = new File(file.getParentFile(), ((Element) n).getAttribute("path"));
+				vec.add(load(f));
 			} else {
 //				System.err.println("Child not recognized: " + root + ":" + n);
 			}
@@ -81,7 +84,7 @@ public class AbstractSyntax extends NodeGroup{
 				alignment, 
 				transform.getTx(), transform.getTy(), 
 				Color.BLACK, new Color(.9,1.,1.,1.), 
-				null, ()->{}, 
+				null, null, 
 				"label test", 
 				false, -1);
 		if(e.hasAttribute("id")) label.id = e.getAttribute("id");

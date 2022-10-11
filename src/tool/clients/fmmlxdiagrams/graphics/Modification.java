@@ -67,7 +67,11 @@ public class Modification {
 			} else if("StringMatchSlotCondition".equals(conditionType)) {
 				String slotName =  conditionElement.getAttribute("slotName");
 				String match = conditionElement.getAttribute("match");
-				condition = new Condition.StringMatchSlotCondition(slotName,match);
+				condition = new Condition.StringMatchSlotCondition(slotName, match);
+			} else if("StringMatchOpValCondition".equals(conditionType)) {
+				String opName =  conditionElement.getAttribute("opName");
+				String match = conditionElement.getAttribute("match");
+				condition = new Condition.StringMatchOpValCondition(opName, match);
 			} else {
 				throw new RuntimeException("not yet implemented");
 			}

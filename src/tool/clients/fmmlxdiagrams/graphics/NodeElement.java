@@ -34,6 +34,7 @@ public abstract class NodeElement {
 	}
 	
 	abstract NodeElement getHitElement(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram);
+	abstract Action getAction(Point2D mouse, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane diagram);
 	abstract void paintToSvg(FmmlxDiagram diagram, XmlHandler xmlHandler, Element parentGroup);
 	public final void setSelected() { selected = true;}
 	public final void setDeselected() { selected = false;}
@@ -109,7 +110,7 @@ public abstract class NodeElement {
 		SOUTHWEST,   SOUTH,  SOUTHEAST;
 	}
 	
-	protected abstract NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications);
+	protected abstract NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagram diagram);
 	
 	protected void saveTransformation(Element myElement) {
 		myElement.setAttribute("xx", myTransform.getMxx()+"");
@@ -129,5 +130,19 @@ public abstract class NodeElement {
 		if(parentID.equals(this.id)) return true;
 		if(owner == null) return false;
 		return owner.matchParentId(parentID);
-	}
+	}	
+	
+//	protected void addActions(Vector<ActionInfo> actions, FmmlxObject o, FmmlxDiagram diagram) {
+//		System.err.println("adding Action for ("+this.id+"): " + action);
+//		for(ActionInfo a : actions) {
+//			if(matchID(a.id, a.localId)) {
+////				if(action == null) {
+//					action = a.getAction(o, diagram);
+//					System.err.println("Adding new action: "+ action + "/" + this.id);
+////				} else {
+////					System.err.println("Duplicate Action detected. Ignore all but first...");
+////				}
+//			}
+//		}
+//	}
 }

@@ -22,14 +22,18 @@ public abstract class NodeBaseElement extends NodeElement {
 		this.actionObject = actionObject;
 		this.action = action;
 		this.styleDeclaration = styleDeclaration;
-	}
-
-	
+	}	
 	
 	@Override public final NodeBaseElement getHitElement(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagramView) {
 		if(isHit(mouse.getX(), mouse.getY(), diagramView))
 			return this; return null;
 	}
+	
+	@Override public final Action getAction(Point2D mouse, GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane diagramView) {
+		if(isHit(mouse.getX(), mouse.getY(), diagramView))
+			return this.action;
+		return null;
+	}	
 	
 	public final Affine getTotalTransform(Affine canvasTransform) {
 		Affine a = new Affine(owner == null?canvasTransform:owner.getTotalTransform(canvasTransform));

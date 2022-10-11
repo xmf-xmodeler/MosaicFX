@@ -232,7 +232,7 @@ public class NodeLabel extends NodeBaseElement {
 	}
 
 	@Override
-	protected NodeLabel createInstance(FmmlxObject object, Vector<Modification> modifications) {
+	protected NodeLabel createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagram diagram) {
 		NodeLabel that = new NodeLabel(alignment, myTransform.getTx(), myTransform.getTy(), fgColor, bgColor, actionObject, action, text, fontPosture, fontWeight, fontScale);
 		return that;
 	}

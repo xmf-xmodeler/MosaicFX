@@ -80,7 +80,7 @@ public class NodeImage extends NodeBaseElement {
 	public void updateBounds() {}
 
 	@Override
-	protected NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications) {
+	protected NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagram diagram) {
 		throw new RuntimeException("Not yet implemented!");
 	}
 

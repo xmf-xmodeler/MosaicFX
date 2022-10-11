@@ -21,7 +21,7 @@ import tool.xmodeler.ControlCenterClient;
 
 public class DefaultFmmlxObjectDisplay extends AbstractFmmlxObjectDisplay {
 	
-	private final static NodeBaseElement.Action NO_ACTION = () -> {};
+	private final static NodeBaseElement.Action NO_ACTION = null;//() -> {};
 
 	static int GAP = 5;
 	protected int minWidth = 100;
