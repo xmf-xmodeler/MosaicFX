@@ -59,7 +59,7 @@ public class DefaultContextMenu extends ContextMenu {
 		filterObjectsMenu.getItems().addAll(showAll, showCertainLevel);
 
 		MenuItem unhideItem = new MenuItem("Hide/Unhide Elements...");
-		unhideItem.setOnAction(e -> actions.unhideElementsDialog());
+		unhideItem.setOnAction(e -> actions.showUnhideElementsDialog(diagram));
 		
 		MenuItem centerObject = new MenuItem("Center view on specific Element...");
 		centerObject.setOnAction(e -> view.centerObject());
