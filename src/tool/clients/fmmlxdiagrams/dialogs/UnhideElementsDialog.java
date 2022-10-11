@@ -1,4 +1,4 @@
-package tool.clients.dialogs;
+package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,8 +25,8 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.LevelColorScheme.FixedBlueLevelColorScheme;
 
 public class UnhideElementsDialog extends Dialog<Vector<FmmlxObject>> {
-	private AbstractPackageViewer dialog;
-	private ButtonType okButtonType = new ButtonType("Close", ButtonData.CANCEL_CLOSE);
+	private AbstractPackageViewer diagram;
+	private ButtonType okButtonType = new ButtonType("OK", ButtonData.OK_DONE);
 	private Vector<FmmlxObject> hiddenElements = new Vector<>();
 	private Vector<FmmlxObject> shownElements = new Vector<>();
 	private Vector<FmmlxObject> objects;
@@ -40,18 +40,18 @@ public class UnhideElementsDialog extends Dialog<Vector<FmmlxObject>> {
 	private Label shownElementsLabel = new Label("Shown Elements");
 	private Label hiddenElementsLabel = new Label("Hidden Elements");
 
-	public UnhideElementsDialog(AbstractPackageViewer dialog) {
+	public UnhideElementsDialog(AbstractPackageViewer diagram) {
 		super();
-		this.dialog = dialog;
+		this.diagram = diagram;
 		this.setTitle("Hide/ Unhide Elements");
 		this.getDialogPane().getButtonTypes().add(okButtonType);
-		objects = dialog.getObjects();
+		objects = diagram.getObjects();
 		distributeObjects();
 		buildListViews();
 		customizeButtons();
 		buildGridPane();
 		setTableDoubleclickAction();
-		hideFmmlxObjects();
+		addOKButtonListener();
 	}
 
 	private void distributeObjects() {
@@ -146,7 +146,7 @@ public class UnhideElementsDialog extends Dialog<Vector<FmmlxObject>> {
 		});
 	}
 
-	private void hideFmmlxObjects() {
+	private void addOKButtonListener() {
 		setResultConverter(dialogButton -> {
 			if (dialogButton == okButtonType) {
 				Vector<FmmlxObject> result = new Vector<>();
@@ -156,14 +156,17 @@ public class UnhideElementsDialog extends Dialog<Vector<FmmlxObject>> {
 			return null;
 		});
 
+	}
+	
+	public void showDialog() {
 		Optional<Vector<FmmlxObject>> result = showAndWait();
 		if (result.isPresent()) {
-			new DiagramActions(dialog).hide(result.get(), false);
+			new DiagramActions(diagram).hide(result.get(), false);
 		}
 
 		Vector<FmmlxObject> resultHide = new Vector<>();
 		resultHide.addAll(hiddenElementsListView.getItems());
-		new DiagramActions(dialog).hide(resultHide, true);
+		new DiagramActions(diagram).hide(resultHide, true);
 	}
 
 	private void addCellFactory(ListView<FmmlxObject> listView) {

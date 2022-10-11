@@ -26,7 +26,6 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
-import tool.clients.dialogs.UnhideElementsDialog;
 import tool.clients.dialogs.enquiries.FindClassDialog;
 import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
@@ -51,6 +50,7 @@ import tool.clients.fmmlxdiagrams.dialogs.MergePropertyDialog;
 import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.ShowCertainLevelDialog;
+import tool.clients.fmmlxdiagrams.dialogs.UnhideElementsDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeLevelDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeNameDialog;
 import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeOwnerDialog;
@@ -1234,6 +1234,6 @@ public class DiagramActions {
 		}
 	}
 	public void showUnhideElementsDialog(AbstractPackageViewer dialog) {
-		new UnhideElementsDialog(dialog);
+		new UnhideElementsDialog(dialog).showDialog();
 	}
 }
