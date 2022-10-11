@@ -80,10 +80,19 @@ public class AbstractSyntax extends NodeGroup{
 			if("CENTER".equals(s)) alignment = Pos.BASELINE_CENTER;
 			if("RIGHT".equals(s)) alignment = Pos.BASELINE_RIGHT;
 		}
+		Color c = Color.BLACK;
+		if(e.hasAttribute("color")) {
+			String s = e.getAttribute("color");
+			try{
+				c = Color.web(s);
+			} catch(Exception ex) {
+				System.err.println("Color not found: " + s);
+			}
+		}
 		NodeLabel label = new NodeLabel(
 				alignment, 
 				transform.getTx(), transform.getTy(), 
-				Color.BLACK, new Color(.9,1.,1.,1.), 
+				c, Color.TRANSPARENT,//new Color(.9,1.,1.,1.), 
 				null, null, 
 				"label test", 
 				false, -1);
