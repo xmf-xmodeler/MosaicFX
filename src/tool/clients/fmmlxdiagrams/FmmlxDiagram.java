@@ -438,7 +438,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 							AbstractSyntax group = AbstractSyntax.load(file);
 							if(group instanceof ConcreteSyntax) {
 								ConcreteSyntax c = ((ConcreteSyntax) group);
-								syntaxes.put(c.classPath, c);
+								syntaxes.put(c.classPath + "@" + c.level, c);
 							}
 						} catch (Exception e) {
 							System.err.println("reading " + file.getName() + " failed (" + e.getMessage() + "). Ignoring..."); 
