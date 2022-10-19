@@ -364,6 +364,14 @@ public class FmmlxDiagram extends AbstractPackageViewer{
                 if(event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.F) {
                 	getActiveView().centerObject();
                 }
+                if (event.getCode() == javafx.scene.input.KeyCode.DELETE) {
+				Vector<CanvasElement> hitObjects = getSelectedObjects();
+				for (CanvasElement element : hitObjects) {
+					new DiagramActions(FmmlxDiagram.this)
+					.removeDialog((FmmlxObject)element, PropertyType.Class);
+					;
+				}
+				}
             }
         });   
         tabPane.getSelectionModel().selectedItemProperty().addListener((foo,goo,newTabItem)-> {

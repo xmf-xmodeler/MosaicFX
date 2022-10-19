@@ -302,7 +302,6 @@ public class DiagramActions {
 	}
 	
 	public <Property extends FmmlxProperty> void removeDialog(FmmlxObject object, PropertyType type, Property selectedFmmlxProperty) {
-//		FmmlxProperty selectedFmmlxProperty = diagram.getSelectedProperty();
 
 		Platform.runLater(() -> {
 			RemoveDialog<Property> dlg = new RemoveDialog<Property>(object, type);
