@@ -1177,7 +1177,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 
 		private void mouseDragged(MouseEvent e) {
-			if(isLeftButton(e) && !e.isAltDown()) {	
+			if(isLeftButton(e) && !e.isAltDown() && !comm.getPressedKeys().contains(KeyCode.SPACE)) {	
 				if (mouseMode == MouseMode.MULTISELECT) {
 					storeCurrentPoint(e.getX(), e.getY());
 					redraw();
