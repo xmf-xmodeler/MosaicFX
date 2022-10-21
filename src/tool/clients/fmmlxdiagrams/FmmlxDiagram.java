@@ -23,6 +23,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ScrollPane;
@@ -37,6 +38,8 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -59,6 +62,7 @@ import javafx.util.Callback;
 import org.w3c.dom.Element;
 
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
+import tool.clients.fmmlxdiagrams.dialogs.CustomDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.AbstractSyntax;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
@@ -70,6 +74,7 @@ import tool.clients.fmmlxdiagrams.newpalette.FmmlxPalette;
 import tool.clients.serializer.FmmlxDeserializer;
 import tool.clients.serializer.XmlManager;
 import tool.clients.xmlManipulator.XmlHandler;
+import tool.xmodeler.ControlCenter;
 import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
 
@@ -77,7 +82,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
@@ -1151,7 +1158,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			if(fetchingData) return;
 			clearContextMenus();
 
-			if (isLeftButton(e) && !e.isAltDown()) {
+			if (isLeftButton(e) && !e.isAltDown() &&  !comm.getPressedKeys().contains(KeyCode.SPACE)) {
 				handleLeftPressed(e);
 				dragStart = new Point2D(e.getX(), e.getY());
 			}
@@ -1160,6 +1167,12 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
 			if (isCenterButton(e) || (isLeftButton(e) && e.isAltDown())) {
 				handleCenterPressed(e);
+			}
+			if (isLeftButton(e)&& comm.getPressedKeys().contains(KeyCode.SPACE) ){
+				handleCenterPressed(e);
+			}
+			{
+				
 			}
 		}
 
@@ -1177,7 +1190,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					mouseDraggedStandard(new Point2D(e.getX(), e.getY()));
 				}
 			}
-			if (isCenterButton(e) || (isLeftButton(e) && e.isAltDown())) {
+			if (isCenterButton(e) || (isLeftButton(e) && comm.getPressedKeys().contains(KeyCode.ALT) || isLeftButton(e) && comm.getPressedKeys().contains(KeyCode.SPACE))){
 				handleCenterDragged(e);
 			}
 		}
