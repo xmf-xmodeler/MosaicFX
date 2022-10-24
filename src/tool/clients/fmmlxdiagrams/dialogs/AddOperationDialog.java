@@ -3,35 +3,31 @@ package tool.clients.fmmlxdiagrams.dialogs;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.AllValueList;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> {
+public class AddOperationDialog extends Dialog<AddOperationDialog.Result> {
 	private DialogPane dialogPane;
 	private AbstractPackageViewer diagram;
 	private FmmlxObject object;
 
 	private TextField classTextField; 
 	private ComboBox<Integer> levelComboBox;
-	private Label bodyLabel;
-	private Label parseResLabel;
-	//private Button monitorButton;
 
 	ObservableList<String> classList;
 	private CodeBoxPair codeBoxPair;	
 	
-	private ArrayList<Node> labelsNode;
-	private List<Node> mainNodes;
 	private final String oldOpName;
+
+	private Label statusLabel = new Label();
 
 	public AddOperationDialog(AbstractPackageViewer diagram, FmmlxObject object) {
 		this(diagram, object, null);
@@ -46,7 +42,7 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		layoutContent(oldOp);
-		dialogPane.setContent(flow);
+		setResizable(true);
 
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
@@ -65,7 +61,6 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 						levelComboBox.getSelectionModel().getSelectedItem(),
 						codeBoxPair.getBodyText(),
 						oldOpName);
-						//bodyCodeBox.getBodyTextArea().getText());
 			}
 			return null;
 		});
@@ -84,12 +79,14 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 		codeBoxPair = new CodeBoxPair(diagram,
 				e->{getDialogPane().lookupButton(ButtonType.OK).setDisable(!codeBoxPair.getCheckPassed());},
 				false);
-		codeBoxPair.getErrorTextArea().setMinWidth(COLUMN_WIDTH*2);
-		codeBoxPair.getErrorTextArea().setMaxHeight(100);
-		codeBoxPair.getBodyScrollPane().setMaxHeight(300);
-		codeBoxPair.getBodyScrollPane().setMinHeight(300);
-		codeBoxPair.getErrorTextArea().setMinHeight(100);
-		codeBoxPair.getBodyScrollPane().setMinWidth(COLUMN_WIDTH*2);
+		
+		codeBoxPair.getBodyScrollPane().setMinHeight(200);
+		codeBoxPair.getBodyScrollPane().setPrefHeight(200);
+		codeBoxPair.getBodyScrollPane().setMaxHeight(750);
+		codeBoxPair.getBodyScrollPane().setPrefHeight(100);
+		
+		codeBoxPair.getErrorTextArea().setMinHeight(40);
+		codeBoxPair.getErrorTextArea().setMaxHeight(80);
 		
 		if(oldOp == null) {
 			levelComboBox = new ComboBox<>(AllValueList.generateLevelListToThreshold(0, object.getLevel()));
@@ -104,38 +101,31 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 			defaultOperationButton.setOnAction(event -> {
 				codeBoxPair.setBodyText(oldOp.getBody());});
 		}
-//		monitorButton = new Button("Monitor Operation Values");
-//		monitorButton.setOnAction(event -> {
-//		        resetOperationBody("op0", true);
-//		    }
-//		);
 
+		classTextField.setPrefWidth(150);
+		levelComboBox.setPrefWidth(150);
+		defaultOperationButton.setPrefWidth(150);
 
-		defaultOperationButton.setPrefWidth(COLUMN_WIDTH * 0.5);
-
-		levelComboBox.setPrefWidth(COLUMN_WIDTH);
-
-		labelsNode = new ArrayList<>();
-		mainNodes = new ArrayList<>();
+		GridPane theGrid = new GridPane();
+		theGrid.add(new Label(StringValue.LabelAndHeaderTitle.aClass), 0, 0);
+		theGrid.add(new Label(StringValue.LabelAndHeaderTitle.level), 0, 1);
+		theGrid.add(new Label("Operation body"), 0, 2);
+		theGrid.add(classTextField, 1, 0);
+		theGrid.add(levelComboBox, 1, 1);
+		theGrid.add(defaultOperationButton, 1, 2);
+		theGrid.setHgap(5);
+		theGrid.setVgap(5);
 		
-		labelsNode.add(new Label(StringValue.LabelAndHeaderTitle.aClass));
-		labelsNode.add(new Label(StringValue.LabelAndHeaderTitle.level));
-		//labelsNode.add(new Label(StringValue.LabelAndHeaderTitle.body));
+		VBox mainBox = new VBox(5, 
+			theGrid, 
+			codeBoxPair.getBodyScrollPane(),
+			new Label("Parse result"),
+			codeBoxPair.getErrorTextArea(),
+			statusLabel
+			);
+		VBox.setVgrow(codeBoxPair.getBodyScrollPane(), Priority.ALWAYS);
 		
-		mainNodes.add(classTextField);
-		mainNodes.add(levelComboBox);
-		
-		addNodesToGrid(labelsNode, 0);
-		addNodesToGrid(mainNodes, 1);
-		
-		grid.setMinWidth(COLUMN_WIDTH*2);
-		bodyLabel=new Label("Operation body");
-		grid.add(bodyLabel, 0, 2);
-		grid.add(codeBoxPair.getBodyScrollPane(), 0, 3);
-		grid.add(defaultOperationButton, 1, 2);
-		parseResLabel = new Label("Parse result");
-		grid.add(parseResLabel, 0, 4);
-		grid.add(codeBoxPair.getErrorTextArea(), 0, 5);
+		dialogPane.setContent(mainBox);
 	}
 
 	private void resetOperationBody(String name, boolean monitor) {
@@ -150,10 +140,10 @@ public class AddOperationDialog extends CustomDialog<AddOperationDialog.Result> 
 	private boolean validateUserInput() {
 
 	    if (levelComboBox.getSelectionModel().getSelectedIndex() == -1) {
-			errorLabel.setText(StringValue.ErrorMessage.selectLevel);
+			statusLabel.setText(StringValue.ErrorMessage.selectLevel);
 			return false;
 		} else if (codeBoxPair.getBodyText().equals("")) {
-			errorLabel.setText(StringValue.ErrorMessage.inputBody);
+			statusLabel.setText(StringValue.ErrorMessage.inputBody);
 			return false;
 		}
 		return true;
