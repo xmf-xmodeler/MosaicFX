@@ -1856,19 +1856,11 @@ public class FmmlxDiagramCommunicator {
 
 	// ########################## Tab ### Stage #######################
 		
-	  private final Set<KeyCode> pressedKeys = new HashSet<>();
-	  
-	  public Set<KeyCode> getPressedKeys () {
-		  return pressedKeys;
-	  }
-	  
 	private void createStage(javafx.scene.Node node, String name, int id, final FmmlxDiagram diagram) {
 		Stage stage = new Stage();
 		BorderPane border = new BorderPane();
 		border.setCenter(node);
 		Scene scene = new Scene(border, 1000, 605);
-		scene.setOnKeyPressed(e -> pressedKeys.add(e.getCode()));
-		scene.setOnKeyReleased(e -> pressedKeys.remove(e.getCode()));
 		stage.setScene(scene);
 		stage.setTitle(name);
 		

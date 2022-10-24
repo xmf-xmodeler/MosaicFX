@@ -176,10 +176,12 @@ public class Diagram implements Display {
 //        //help();
 //        redraw();
 //      }
-		if (e.getCode() == KeyCode.DELETE) {
-			sendMessageToDeleteSelection();
-			redraw();
-		}
+
+//		TS - 22.10.2022: This if is depricated, the handling now is in the FmmlxDiagrammClass
+//		if (e.getCode() == KeyCode.DELETE) {
+//			sendMessageToDeleteSelection();
+//			redraw();
+//		}
 	}
 
 	public void keyReleased(KeyEvent event) {
