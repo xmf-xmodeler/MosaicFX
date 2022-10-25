@@ -21,6 +21,7 @@ import javafx.scene.transform.Affine;
 public class AbstractSyntax extends NodeGroup{
 	
 	protected File file;
+	private boolean metaImport = false;
 
 	public void save() {
 		throw new RuntimeException("Not yet implemented!");
@@ -53,6 +54,11 @@ public class AbstractSyntax extends NodeGroup{
 			} else if("Import".equals(n.getNodeName())){
 				File f = new File(file.getParentFile(), ((Element) n).getAttribute("path"));
 				vec.add(load(f));
+			} else if("ImportMeta".equals(n.getNodeName())){
+				File f = new File(file.getParentFile(), ((Element) n).getAttribute("path"));
+				AbstractSyntax metaSyntax = load(f);
+				metaSyntax.metaImport = true;
+				vec.add(metaSyntax);
 			} else {
 //				System.err.println("Child not recognized: " + root + ":" + n);
 			}
@@ -148,7 +154,11 @@ public class AbstractSyntax extends NodeGroup{
 	@Override
 	public String toString() {
 		return "G"+ (id==null?"":("("+id+")"));
-	}	
+	}
+
+	public boolean isMetaImport() {
+		return metaImport;
+	}
 
 	
 }

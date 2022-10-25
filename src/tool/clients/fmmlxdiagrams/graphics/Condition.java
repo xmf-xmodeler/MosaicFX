@@ -6,27 +6,31 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperationValue;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
 
-public interface Condition {
+public abstract class Condition<ReturnType>{
 
-	public boolean eval(FmmlxObject object) throws SlotNotFoundException;
-	public String evalText(FmmlxObject object) throws SlotNotFoundException;
-//	public boolean evalString(FmmlxObject object) throws SlotNotFoundException;
+	public abstract ReturnType eval(FmmlxObject object) throws SlotNotFoundException;
+	public boolean evalBool(FmmlxObject object) throws SlotNotFoundException {
+		return Boolean.TRUE.equals(eval(object));
+	}
+	public String evalString(FmmlxObject object) throws SlotNotFoundException {
+		return eval(object).toString();
+	}
+	public abstract void save(Element conditionElement);
+	
 	
 	@SuppressWarnings("serial")
-	public static class SlotNotFoundException extends RuntimeException{
-		
-	}
+	public static class SlotNotFoundException extends RuntimeException{}
 	
-	public static class BooleanSlotCondition implements Condition{
+	public static class BooleanSlotCondition extends Condition<Boolean>{
 		private String slotName;
 		
 		public BooleanSlotCondition(String slotName) {
 			super();
 			this.slotName = slotName;
 		}
-
+		
 		@Override
-		public boolean eval(FmmlxObject object) throws SlotNotFoundException {
+		public Boolean eval(FmmlxObject object) throws SlotNotFoundException {
 			FmmlxSlot slot = object.getSlot(slotName);
 			if (slot == null) {
 				return false;
@@ -35,20 +39,13 @@ public interface Condition {
 		}
 
 		@Override
-		public String evalText(FmmlxObject object) throws SlotNotFoundException {
-			return "";
-		}
-
-		@Override
 		public void save(Element conditionElement) {
 			 conditionElement.setAttribute("type", "BooleanSlotCondition");
-			 conditionElement.setAttribute("slotName", slotName);
-
-			
+			 conditionElement.setAttribute("slotName", slotName);		
 		}
 	}
 	
-	public static class StringMatchSlotCondition implements Condition{
+	public static class StringMatchSlotCondition extends Condition<Boolean>{
 		
 
 		private String slotName;
@@ -57,38 +54,33 @@ public interface Condition {
 		public StringMatchSlotCondition(String slotName, String match) {
 			super();
 			this.slotName = slotName;
-			this.match = match;
-			
+			this.match = match;			
 		}
+		
 		@Override
-		public boolean eval(FmmlxObject object) throws SlotNotFoundException {
+		public Boolean eval(FmmlxObject object) throws SlotNotFoundException {
 			FmmlxSlot slot = object.getSlot(slotName);
 			if (slot == null) {
 				return false;
 			}
 			return match.equals(slot.getValue());
 		}
-
-		@Override
-		public String evalText(FmmlxObject object) throws SlotNotFoundException {
-			return "";
-		}
+		
 		@Override
 		public void save(Element conditionElement) {
 			conditionElement.setAttribute("type", "StringMatchSlotCondition");
 			conditionElement.setAttribute("slotName", slotName);
-			conditionElement.setAttribute("match", match );
-			
+			conditionElement.setAttribute("match", match);			
 		}
 	}
 	
-	public static class BooleanOpValCondition implements Condition{
+	public static class BooleanOpValCondition extends Condition<Boolean>{
 		
 		private String opName;
 		private boolean value;		
 		
 		@Override
-		public boolean eval(FmmlxObject object) throws SlotNotFoundException {
+		public Boolean eval(FmmlxObject object) throws SlotNotFoundException {
 			FmmlxOperationValue opVal = object.getOperationValue(opName);
 			if (opVal == null) {
 				throw new SlotNotFoundException();
@@ -97,19 +89,13 @@ public interface Condition {
 		}
 
 		@Override
-		public String evalText(FmmlxObject object) throws SlotNotFoundException {
-			return "";
-		}
-
-		@Override
 		public void save(Element conditionElement) {
 			conditionElement.setAttribute("type", "BooleanOpValCondition");
-			conditionElement.setAttribute("opName", opName);
-			
+			conditionElement.setAttribute("opName", opName);			
 		}		
 	}
 	
-	public static class StringMatchOpValCondition implements Condition{
+	public static class StringMatchOpValCondition extends Condition<Boolean>{
 		private String opName;
 		private String match;
 
@@ -120,28 +106,23 @@ public interface Condition {
 			
 		}
 		@Override
-		public boolean eval(FmmlxObject object) throws SlotNotFoundException {
+		public Boolean eval(FmmlxObject object) throws SlotNotFoundException {
 			FmmlxOperationValue val = object.getOperationValue(opName);
 			if (val == null) {
 				return false;
 			}
 			return match.equals(val.getValue());
 		}
-
-		@Override
-		public String evalText(FmmlxObject object) throws SlotNotFoundException {
-			return "";
-		}
+		
 		@Override
 		public void save(Element conditionElement) {
 			conditionElement.setAttribute("type", "StringMatchOpValCondition");
 			conditionElement.setAttribute("opName", opName);
-			conditionElement.setAttribute("match", match );
-			
+			conditionElement.setAttribute("match", match );			
 		}
 	}
 	
-	public static class ReadFromSlotCondition implements Condition{
+	public static class ReadFromSlotCondition extends Condition<String>{
 		
 		private final String slotName;	
 		
@@ -150,30 +131,23 @@ public interface Condition {
 			this.slotName = slotName;
 		}
 
-		public String evalText(FmmlxObject object) throws SlotNotFoundException {
+		public String eval(FmmlxObject object) throws SlotNotFoundException {
 			FmmlxSlot slot = object.getSlot(slotName);
 			if (slot == null) {
 				return "!SLOT NOT FOUND!";
-//				throw new SlotNotFoundException();
 			}
 			return slot.getValue();
 		}
 		
 		@Override
-		public boolean eval(FmmlxObject object) throws SlotNotFoundException {
-			return true;
-		}
-
-		@Override
 		public void save(Element conditionElement) {
 			conditionElement.setAttribute("type", "ReadFromSlot");
 			conditionElement.setAttribute("slotName", slotName);
-			
 		}		
 
 	}
 	
-public static class ReadFromOpValCondition implements Condition{
+public static class ReadFromOpValCondition extends Condition<String>{
 		
 		private String opName;		
 		
@@ -181,13 +155,8 @@ public static class ReadFromOpValCondition implements Condition{
 			super();
 			this.opName = opName;
 		}
-
-		@Override
-		public boolean eval(FmmlxObject object) throws SlotNotFoundException {
-			return true;
-		}
 		
-		public String evalText(FmmlxObject object) throws SlotNotFoundException {
+		public String eval(FmmlxObject object) throws SlotNotFoundException {
 			FmmlxOperationValue opVal = object.getOperationValue(opName);
 			if (opVal == null) {
 				return "Operation NOT FOUND!";
@@ -198,12 +167,10 @@ public static class ReadFromOpValCondition implements Condition{
 		@Override
 		public void save(Element conditionElement) {
 			conditionElement.setAttribute("type", "ReadFromOpValCondition");
-			conditionElement.setAttribute("opName", opName);
-			
+			conditionElement.setAttribute("opName", opName);			
 		}	
 	}
 
-public void save(Element conditionElement);
 	
 
 	

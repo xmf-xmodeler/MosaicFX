@@ -26,6 +26,7 @@ public class NodePath extends NodeBaseElement{
 
 	@Deprecated Color bgColor;
 	@Deprecated Color fgColor;
+	Color overrideFillColor = null;
 	String textPath;
 	final String type;
 	
@@ -100,14 +101,18 @@ public class NodePath extends NodeBaseElement{
 
 
 	private void setFill(GraphicsContext g, CSSStyleDeclaration styleDeclaration) {
-		String fillColor = styleDeclaration.getPropertyValue("fill");
-		if("none".equals(fillColor)) {
-			g.setFill(Color.TRANSPARENT);
-		} else if(fillColor.startsWith("url")) {
-			g.setFill(Color.MAGENTA);
+		if(overrideFillColor == null) {
+			String fillColor = styleDeclaration.getPropertyValue("fill");
+			if("none".equals(fillColor)) {
+				g.setFill(Color.TRANSPARENT);
+			} else if(fillColor.startsWith("url")) {
+				g.setFill(Color.MAGENTA);
+			} else {
+				g.setFill(Color.web(fillColor));
+			}		
 		} else {
-			g.setFill(Color.web(fillColor));
-		}		
+			g.setFill(overrideFillColor);
+		}
 	}
 
 	@Override
@@ -229,9 +234,14 @@ public class NodePath extends NodeBaseElement{
 	}
 
 	@Override
-	protected NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagram diagram) {
+	protected NodePath createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagram diagram) {
 		NodePath n = new NodePath(new Affine(myTransform), textPath, actionObject, action, styleDeclaration, type);
 		return n;
+	}
+
+	public void setColor(String colorString) {
+		try{overrideFillColor = Color.web(colorString);}
+		catch(Exception e) {e.printStackTrace();}
 	}
 	
 	

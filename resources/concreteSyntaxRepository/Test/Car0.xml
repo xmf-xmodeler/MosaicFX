@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ConcreteSyntax classPath="Test::Car" level="0">
+	<ImportMeta path="car1.xml" id="of"/>
+    <Label align="CENTER" ty="-157.0" xx="0.6" yy="0.6" id="reglabel" color="222222"/>
+	<Modification>
+		<Condition type="ReadFromSlot" slotName="color"/>
+		<Affected id="of" localId="changeColor"/>
+		<Consequence type="SHOW_NEVER"/>
+	</Modification> 
+	<Action id="of" localId="of" type="CHANGE_SLOT_VALUE:registration"/>
+	<Action id="reglabel" localId="reglabel" type="CHANGE_SLOT_VALUE:registration"/>
+</ConcreteSyntax>

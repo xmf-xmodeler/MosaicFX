@@ -641,4 +641,12 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		} else return false;
 		
 	}
+
+	public FmmlxObject getOf() {
+		try{
+			return diagram.getObjectByPath(ofPath);
+		} catch (Exception e) {
+			throw new IllegalStateException("The meta-class of this element is not available.");
+		}
+	}
 }
