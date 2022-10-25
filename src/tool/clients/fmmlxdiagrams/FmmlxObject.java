@@ -564,8 +564,6 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		if(rootNodeElement != null) if(action == null) {
 			action = rootNodeElement.getAction(p, g, currentTransform, view);
 		}
-		
-		System.err.println("Action=" + action);
 		if(action != null) action.perform();
 	}
 

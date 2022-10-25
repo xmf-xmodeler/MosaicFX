@@ -78,6 +78,13 @@ public class Modification{
 				String opName =  conditionElement.getAttribute("opName");
 				String match = conditionElement.getAttribute("match");
 				condition = new Condition.StringMatchOpValCondition(opName, match);
+			} else if("SlotNumCompareCondition".equals(conditionType)) {
+				String slotName =  conditionElement.getAttribute("slotName");
+				Double low = Double.NEGATIVE_INFINITY;
+				Double high = Double.POSITIVE_INFINITY;
+				try{low = Double.parseDouble(conditionElement.getAttribute("lowBound"));} catch (Exception e) {}
+				try{high = Double.parseDouble(conditionElement.getAttribute("highBound"));} catch (Exception e) {}
+				condition = new Condition.SlotNumCompareCondition(slotName, low, high);
 			} else {
 				throw new RuntimeException("not yet implemented");
 			}

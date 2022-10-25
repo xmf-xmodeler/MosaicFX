@@ -209,8 +209,11 @@ public class NodeGroup extends NodeElement {
 					|| mod.getConsequence() == Modification.Consequence.SHOW_IF_NOT && !mod.getCondition().evalBool(object);
 			
 			/// Special case for importing meta
-			if(nodeElement instanceof AbstractSyntax && ((AbstractSyntax)nodeElement).isMetaImport()) {
-				NodeElement nl = nodeElement.createInstance(object.getOf(), modifications, actions, diagram);
+			if(nodeElement instanceof ConcreteSyntax && ((ConcreteSyntax)nodeElement).isMetaImport()) {
+				Vector<Modification> allMods = new Vector<>(); 
+				allMods.addAll(modifications);
+				allMods.addAll(((ConcreteSyntax)nodeElement).modifications);
+				NodeElement nl = nodeElement.createInstance(object.getOf(), allMods, actions, diagram);
 				nl.action = action;
 				that.addNodeElement(nl);
 			} else

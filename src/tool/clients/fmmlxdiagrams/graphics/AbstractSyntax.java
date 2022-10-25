@@ -58,6 +58,9 @@ public class AbstractSyntax extends NodeGroup{
 				File f = new File(file.getParentFile(), ((Element) n).getAttribute("path"));
 				AbstractSyntax metaSyntax = load(f);
 				metaSyntax.metaImport = true;
+				Affine transform = readTransform((Element) n);
+//				System.err.println(transform);
+				metaSyntax.myTransform = transform;
 				vec.add(metaSyntax);
 			} else {
 //				System.err.println("Child not recognized: " + root + ":" + n);

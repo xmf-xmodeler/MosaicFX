@@ -73,6 +73,38 @@ public abstract class Condition<ReturnType>{
 			conditionElement.setAttribute("match", match);			
 		}
 	}
+
+	public static class SlotNumCompareCondition extends Condition<Boolean> {
+		private String slotName;
+		private Double low;
+		private Double high;
+		
+		public SlotNumCompareCondition(String slotName, Double low, Double high) {
+			super();
+			this.slotName = slotName;
+			this.low = low;
+			this.high = high;
+		}
+
+		@Override
+		public Boolean eval(FmmlxObject object) throws SlotNotFoundException {
+			FmmlxSlot slot = object.getSlot(slotName);
+			if(slot == null) {
+				return false;
+			}
+			try{
+				double value = Double.parseDouble(slot.getValue());
+				return this.low < value && value < this.high;
+			} catch(Exception e) {}
+			return false;
+		}
+
+		@Override
+		public void save(Element conditionElement) {
+			 conditionElement.setAttribute("type", "BooleanSlotCondition");
+			 conditionElement.setAttribute("slotName", slotName);		
+		}
+	}
 	
 	public static class BooleanOpValCondition extends Condition<Boolean>{
 		
@@ -143,8 +175,7 @@ public abstract class Condition<ReturnType>{
 		public void save(Element conditionElement) {
 			conditionElement.setAttribute("type", "ReadFromSlot");
 			conditionElement.setAttribute("slotName", slotName);
-		}		
-
+		}	
 	}
 	
 public static class ReadFromOpValCondition extends Condition<String>{
@@ -172,7 +203,7 @@ public static class ReadFromOpValCondition extends Condition<String>{
 	}
 
 	
-public static class ReadClassName implements Condition{
+public static class ReadClassName extends Condition<String>{
 
     private String className;
 
@@ -182,7 +213,7 @@ public static class ReadClassName implements Condition{
     }
 
     @Override
-    public String evalText(FmmlxObject object) throws SlotNotFoundException {
+    public String eval(FmmlxObject object) throws SlotNotFoundException {
         String name = object.getName();
         if (name == null) {
             return "!NAME NOT FOUND!";
@@ -197,10 +228,6 @@ public static class ReadClassName implements Condition{
         conditionElement.setAttribute("name", className);
     }
 
-    @Override
-    public boolean eval(FmmlxObject object) throws SlotNotFoundException {
-        return true;
-    }
 
 }
 
