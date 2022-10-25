@@ -1858,6 +1858,7 @@ public class FmmlxDiagramCommunicator {
 		
 	private void createStage(javafx.scene.Node node, String name, int id, final FmmlxDiagram diagram) {
 		Stage stage = new Stage();
+		stage.setMaximized(true);
 		BorderPane border = new BorderPane();
 		border.setCenter(node);
 		Scene scene = new Scene(border, 1000, 605);

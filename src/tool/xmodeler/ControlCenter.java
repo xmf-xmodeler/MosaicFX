@@ -266,22 +266,9 @@ public class ControlCenter extends Stage {
 		return modelBrowser;
 	}
 
-//	private void categorySelected(String nEWW) {
-//		
-//	}
-	
-	public void getModelsFromProject() {
-		
-	}
-	
-	public void getDiagramsFromModel() {
-		
-	}
-	
 	private void init() {
-		//categoryLV.getItems().clear();
-		//categoryLV.getItems().addAll(controlCenterClient.getAllCategories());
-		}
+
+	}
 
 	public Stage getStageForConsole() {
 		return new Stage();
