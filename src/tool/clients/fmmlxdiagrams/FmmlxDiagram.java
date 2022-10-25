@@ -431,6 +431,11 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 					getPressedKeys().contains(KeyCode.A)) {
 					selectAll();
 				}
+				if (getPressedKeys().contains(KeyCode.CONTROL) &&
+						getPressedKeys().contains(KeyCode.S)) {
+					//are this the right inputs?
+						getComm().saveXmlFile2(packagePath, diagramID);;
+					}
 			}
 		});
 		tabPane.getSelectionModel().selectedItemProperty().addListener((foo, goo, newTabItem) -> {
@@ -1289,22 +1294,14 @@ public class FmmlxDiagram extends AbstractPackageViewer {
 				canvas.setOnMouseReleased(this::mouseReleased);
 				canvas.setOnMouseMoved(this::mouseMoved);
 				canvas.addEventFilter(ScrollEvent.ANY, this::handleScroll);
-				canvas.setOnKeyReleased(this::keyPressed);
 			}
 
 			views.add(this);
 		}
 
 		////////////////////////////////////////////////////////////////////
-		//// MouseListener ////
+		//// 					MouseListener 							////
 		////////////////////////////////////////////////////////////////////
-
-		private void keyPressed(KeyEvent e) {
-			if (e.isControlDown()) {
-				System.err.println("hi");
-			}
-
-		}
 
 		private void mousePressed(MouseEvent e) {
 
