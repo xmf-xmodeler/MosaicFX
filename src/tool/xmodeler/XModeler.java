@@ -444,10 +444,6 @@ public class XModeler extends Application {
 	  //ClassBrowserClient.start();
   }
   
-  public static void openXModeler() {
-		stage.show();
-  }
-
     @Override
   public void start(Stage primaryStage) throws Exception {
       stage = primaryStage;
@@ -456,7 +452,6 @@ public class XModeler extends Application {
 	  singleton = this;
 	  initClients();
       startClients();
-	  //openXModeler();
       newStage = new ControlCenter();
       stage= newStage;
       newStage.show();

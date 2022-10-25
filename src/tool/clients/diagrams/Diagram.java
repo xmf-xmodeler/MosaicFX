@@ -119,10 +119,11 @@ public class Diagram implements Display {
 //        //layout(); 
 //        redraw(); 
 //      }
-		if (e.isControlDown() && (e.getCode() == KeyCode.A)) {
-			selectAll();
-			redraw();
-		}
+//		TS - 25.10.2022: This if is deprecated, the handling now is in the FmmlxDiagrammClass
+//		if (e.isControlDown() && (e.getCode() == KeyCode.A)) {
+//			selectAll();
+//			redraw();
+//		}
 //      if (e.isControlDown() && (e.getCode() == KeyCode.C)) {
 //        copyToClipboard();
 //        redraw();
@@ -132,10 +133,12 @@ public class Diagram implements Display {
 			// help();
 			redraw();
 		}
-		if (e.isControlDown() && (e.getCode() == KeyCode.S)) {
-			straightenEdges();
-			redraw();
-		}
+//		TS - 25.10.2022: This if is deprecated, the handling now is in the FmmlxDiagrammClass.
+//		The implementation changed. Now you save the Model on this shortcut.		
+//		if (e.isControlDown() && (e.getCode() == KeyCode.S)) {
+//			straightenEdges();
+//			redraw();
+//		}
 		if (e.isControlDown() && (e.getCode() == KeyCode.M)) {
 			magneticWaypoints = !magneticWaypoints;
 			// help();
@@ -176,10 +179,12 @@ public class Diagram implements Display {
 //        //help();
 //        redraw();
 //      }
-		if (e.getCode() == KeyCode.DELETE) {
-			sendMessageToDeleteSelection();
-			redraw();
-		}
+
+//		TS - 22.10.2022: This if is deprecated, the handling now is in the FmmlxDiagrammClass
+//		if (e.getCode() == KeyCode.DELETE) {
+//			sendMessageToDeleteSelection();
+//			redraw();
+//		}
 	}
 
 	public void keyReleased(KeyEvent event) {

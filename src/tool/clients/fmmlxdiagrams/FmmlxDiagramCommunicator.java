@@ -7,6 +7,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
@@ -28,7 +29,9 @@ import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
@@ -1852,9 +1855,10 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	// ########################## Tab ### Stage #######################
-
+		
 	private void createStage(javafx.scene.Node node, String name, int id, final FmmlxDiagram diagram) {
 		Stage stage = new Stage();
+		stage.setMaximized(true);
 		BorderPane border = new BorderPane();
 		border.setCenter(node);
 		Scene scene = new Scene(border, 1000, 605);

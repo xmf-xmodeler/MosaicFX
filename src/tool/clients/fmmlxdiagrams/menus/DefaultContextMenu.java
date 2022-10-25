@@ -64,8 +64,8 @@ public class DefaultContextMenu extends ContextMenu {
 		MenuItem centerObject = new MenuItem("Center view on specific Element...");
 		centerObject.setOnAction(e -> view.centerObject());
 		
-		MenuItem saveAs = new MenuItem("Save Model...");
-		saveAs.setOnAction(a -> diagram.getComm().saveXmlFile2(diagram.getPackagePath(), diagram.getID()));
+		MenuItem saveModel = new MenuItem("Save Model...");
+		saveModel.setOnAction(a -> diagram.getComm().saveXmlFile2(diagram.getPackagePath(), diagram.getID()));
 
 		Menu searchMenu = new Menu("Search for");
 		MenuItem openFindImplementationDialog = new MenuItem("Implementations...");
@@ -87,7 +87,7 @@ public class DefaultContextMenu extends ContextMenu {
 			exportMenu, 
 			importDiagram, 
 			filterObjectsMenu,
-			saveAs,
+			saveModel,
 			searchMenu);
 	}
 }
