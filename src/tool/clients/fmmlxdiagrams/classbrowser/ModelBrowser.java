@@ -112,6 +112,7 @@ public final class ModelBrowser extends CustomStage {
 			modelListView.getSelectionModel().select(initialModel);
 		}
 		fmmlxObjectListView.setContextMenu(new BrowserObjectContextMenu());
+		setMaximized(true);
 	}
 
 	public void onClose() {
