@@ -53,13 +53,15 @@ public class AbstractSyntax extends NodeGroup{
 				vec.add(readGroup((Element) n, file.getParentFile()));
 			} else if("Import".equals(n.getNodeName())){
 				File f = new File(file.getParentFile(), ((Element) n).getAttribute("path"));
-				vec.add(load(f));
+				AbstractSyntax importElements = load(f);
+				Affine transform = readTransform((Element) n);
+				importElements.myTransform = transform;
+				vec.add(importElements);
 			} else if("ImportMeta".equals(n.getNodeName())){
 				File f = new File(file.getParentFile(), ((Element) n).getAttribute("path"));
 				AbstractSyntax metaSyntax = load(f);
 				metaSyntax.metaImport = true;
 				Affine transform = readTransform((Element) n);
-//				System.err.println(transform);
 				metaSyntax.myTransform = transform;
 				vec.add(metaSyntax);
 			} else {
@@ -76,6 +78,7 @@ public class AbstractSyntax extends NodeGroup{
 		}
 		
 		object.nodeElements = vec;
+		for(NodeElement e : object.nodeElements) e.owner = object;
 		object.file=file;
 		return object;
 	}
