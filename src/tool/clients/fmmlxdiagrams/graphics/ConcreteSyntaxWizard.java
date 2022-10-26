@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Vector;
 
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
@@ -21,6 +20,26 @@ import javafx.scene.transform.Affine;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+
+/**
+ * This "wizard" consists of the following parts:
+ * 
+ * * A preview pane in the centre
+ * 
+ * * A listview where all defined syntaxes are shown. 
+ *   There is one xml-file per syntax. 
+ *   All files in the stated directory and below are shown
+ * * A treeview of all elements in the selected syntax file
+ *   * NOT YET: a menu allowing to add/remove elements of the tree
+ * * NOT YET: A place to assign the syntax to a class and a level
+ * 
+ * * A property pane on the right including 
+ *   * an affine-controller for aligning the element
+ *   * NOT YET: A place to assign modifications
+ *   * NOT YET: A place to assign Identifiers if necessary
+ *   * A freeze-button
+ * 
+ */
 
 public class ConcreteSyntaxWizard extends Application {
 	
@@ -100,14 +119,17 @@ public class ConcreteSyntaxWizard extends Application {
 	}
 
 	private void setCurrentGraphicElement(NodeElement item) {
-		paint(item,myCanvas.zoom);
-		boolean editable = item instanceof SVGGroup || item instanceof NodeLabel || item instanceof NodeGroup;
+		paint(item, myCanvas.zoom);
+		/** an item is editable if it is any kind of a group or a label.
+		 * editable means that the transformation can be changed.
+		 */
+		boolean editable = item instanceof NodeLabel || item instanceof NodeGroup;
 		affineController.setEditable(editable);
 		affineController.setAffine(item.getMyTransform());
 		affineController.setListener(() -> {
 			if(editable) {
 				item.myTransform = affineController.getAffine();
-				paint(item,myCanvas.zoom);
+				paint(item, myCanvas.zoom);
 			}
 		});
 	}
