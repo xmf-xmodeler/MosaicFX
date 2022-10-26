@@ -1113,8 +1113,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			if(fetchingData) return;
 			clearContextMenus();
 
-			if (isLeftButton(e) && !e.isAltDown()) {
-		// 	if (isLeftButton(e) && !getPressedKeys().contains(KeyCode.ALT) && !getPressedKeys().contains(KeyCode.SPACE)) {
+		// 	if (isLeftButton(e) && !e.isAltDown()) {
+			if (isLeftButton(e) && !getPressedKeys().contains(KeyCode.ALT) && !getPressedKeys().contains(KeyCode.SPACE)) {
 
 				handleLeftPressed(e);
 				dragStart = new Point2D(e.getX(), e.getY());
@@ -1122,9 +1122,9 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			if (isRightButton(e)) {
 				handleRightPressed(e);
 			}
-			if (isCenterButton(e) || (isLeftButton(e) && e.isAltDown())) {
-		//  if (isCenterButton(e) || (isLeftButton(e) && !getPressedKeys().contains(KeyCode.ALT)) ||
-		//  isLeftButton(e) && getPressedKeys().contains(KeyCode.SPACE)) {
+		//	if (isCenterButton(e) || (isLeftButton(e) && e.isAltDown())) {
+		    if (isCenterButton(e) || (isLeftButton(e) && getPressedKeys().contains(KeyCode.ALT)) ||
+		    		isLeftButton(e) && getPressedKeys().contains(KeyCode.SPACE)) {
 
 				handleCenterPressed(e);
 			}
