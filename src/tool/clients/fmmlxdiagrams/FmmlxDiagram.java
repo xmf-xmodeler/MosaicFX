@@ -718,6 +718,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			((DiagramViewPane) getActiveView()).highlightElementAt(object,
 					new Point2D(object.getCenterX(), object.getCenterY()));
 		}
+		for (Edge edge : getEdges()) {
+			selectedObjects.add(edge);
+			((DiagramViewPane) getActiveView()).highlightElementAt(edge,
+					new Point2D(edge.getMaxX(), edge.getMaxY()));
+		}
 		redraw(); 
 	}
 
