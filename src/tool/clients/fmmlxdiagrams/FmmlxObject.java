@@ -564,8 +564,6 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		if(rootNodeElement != null) if(action == null) {
 			action = rootNodeElement.getAction(p, g, currentTransform, view);
 		}
-		
-		System.err.println("Action=" + action);
 		if(action != null) action.perform();
 	}
 
@@ -640,5 +638,13 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			return ownPath.equals(((FmmlxObject)o).ownPath);
 		} else return false;
 		
+	}
+
+	public FmmlxObject getOf() {
+		try{
+			return diagram.getObjectByPath(ofPath);
+		} catch (Exception e) {
+			throw new IllegalStateException("The meta-class of this element is not available.");
+		}
 	}
 }

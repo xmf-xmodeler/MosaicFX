@@ -8,10 +8,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -26,24 +24,34 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 	private TextField nameField = new TextField();
 	private Label label2 = new Label();
 	private TextField levelField = new TextField();
-	//private TextArea bodyBox = new TextArea();
 	private CodeBoxPair bodyBox;
 	private Label label3 = new Label();
-	//private TextArea reasonBox = new TextArea();
 	private CodeBoxPair reasonBox;
 	private Label label4 = new Label();
 	private Label statusLabel = new Label();
 
 	private DialogPane dialogPane;
-//	private GridPane grid;
 	
 	public AddConstraintDialog(AbstractPackageViewer diagram, FmmlxObject object) {
-		layoutContent(object,diagram);
 		setTitle("Add constraint to " + object.getName());
+		init(object,diagram);
 		nameField.setText("enterConstraintNameHere");
 		levelField.setText((object.getLevel() - 1) + "");
 		bodyBox.setBodyText("false");
 		reasonBox.setBodyText("\"This constraint always fails.\"");
+	}
+
+	public AddConstraintDialog(AbstractPackageViewer diagram, FmmlxObject object, Constraint constraint) {
+		setTitle("Edit Constraint " + constraint.getName() + " from " + object.getName());
+		init(object,diagram);
+		nameField.setText(constraint.getName());
+		levelField.setText(constraint.getLevel()+"");
+		bodyBox.setBodyText(constraint.getBodyRaw());
+		reasonBox.setBodyText(constraint.getReasonRaw());
+	}
+	
+	private void init(FmmlxObject object, AbstractPackageViewer diagram) {
+		layoutContent(object,diagram);
 		addValidator();
 		setResizable(true);
 		setResultConverter(button -> {
@@ -57,30 +65,7 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 			}
 		});
 	}
-
-	public AddConstraintDialog(AbstractPackageViewer diagram, FmmlxObject object, Constraint constraint) {
-		layoutContent(object,diagram);
-		setTitle("Edit Constraint " + constraint.getName() + " from " + object.getName());
-		nameField.setText(constraint.getName());
-		levelField.setText(constraint.getLevel()+"");
-		bodyBox.setBodyText(constraint.getBodyRaw());
-		reasonBox.setBodyText(constraint.getReasonRaw());
-		addValidator();
-		setResizable(true);
-		setResultConverter(button -> {
-			if (button != null && button.getButtonData() == ButtonData.OK_DONE) {
-				return new Result(object, nameField.getText(),
-						Integer.parseInt(levelField.getText()),
-						bodyBox.getBodyText(),
-						reasonBox.getBodyText()
-						);
-			} else {
-				return null;
-			}
-		});
-	}
 	
-
 	private boolean validateUserInput() {
 		statusLabel.setText("");
 		try {
@@ -111,7 +96,6 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 		bodyBox.getErrorTextArea().setMaxHeight(80);
 		reasonBox.getErrorTextArea().setMinHeight(40);
 		reasonBox.getErrorTextArea().setMaxHeight(80);
-		
 		
 		label1.setText("@Constraint");
 		label2.setText("@");
@@ -148,7 +132,6 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 		public final Integer instLevel;
 		public final String body;
 		public final String reason;
-		public Constraint constraint;
 
 		public Result(FmmlxObject object, String constName, Integer instLevel, String body,
 				String reason) {
@@ -158,16 +141,6 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 			this.body = body;
 			this.reason = reason;
 		}
-		
-//		public Result(FmmlxObject object, String constName, Integer instLevel, String body,
-//				String reason, Constraint constraint) {
-//			this.object = object;
-//			this.constName = constName;
-//			this.instLevel = instLevel;
-//			this.body = body;
-//			this.reason = reason;
-//			this.constraint = constraint;
-//		}
 	}
 	
 	private void addValidator() {

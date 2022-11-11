@@ -31,31 +31,8 @@ import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ObjectBrowser;
-import tool.clients.fmmlxdiagrams.dialogs.AddAttributeDialog;
-import tool.clients.fmmlxdiagrams.dialogs.AddConstraintDialog;
-import tool.clients.fmmlxdiagrams.dialogs.AddEnumerationDialog;
-import tool.clients.fmmlxdiagrams.dialogs.AddInstanceDialog;
-import tool.clients.fmmlxdiagrams.dialogs.AddMissingLinkDialog;
-import tool.clients.fmmlxdiagrams.dialogs.AddOperationDialog;
-import tool.clients.fmmlxdiagrams.dialogs.AssociationDialog;
-import tool.clients.fmmlxdiagrams.dialogs.AssociationValueDialog;
-import tool.clients.fmmlxdiagrams.dialogs.ChangeOfDialog;
-import tool.clients.fmmlxdiagrams.dialogs.ChangeParentDialog;
-import tool.clients.fmmlxdiagrams.dialogs.ChangeSlotValueDialog;
-import tool.clients.fmmlxdiagrams.dialogs.ChangeTargetDialog;
-import tool.clients.fmmlxdiagrams.dialogs.CreateMetaClassDialog;
-import tool.clients.fmmlxdiagrams.dialogs.DeleteEnumerationDialog;
-import tool.clients.fmmlxdiagrams.dialogs.EditEnumerationDialog;
-import tool.clients.fmmlxdiagrams.dialogs.MergePropertyDialog;
-import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
-import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
-import tool.clients.fmmlxdiagrams.dialogs.ShowCertainLevelDialog;
-import tool.clients.fmmlxdiagrams.dialogs.UnhideElementsDialog;
-import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeLevelDialog;
-import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeNameDialog;
-import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeOwnerDialog;
-import tool.clients.fmmlxdiagrams.dialogs.shared.ChangeTypeDialog;
-import tool.clients.fmmlxdiagrams.dialogs.shared.RemoveDialog;
+import tool.clients.fmmlxdiagrams.dialogs.*;
+import tool.clients.fmmlxdiagrams.dialogs.shared.*;
 import tool.clients.fmmlxdiagrams.graphics.SvgExporter;
 import tool.clients.fmmlxdiagrams.graphics.View;
 import tool.clients.fmmlxdiagrams.instancegenerator.InstanceGenerator;
@@ -557,6 +534,24 @@ public class DiagramActions {
 		});
 	}
 	
+	public void changeBodyDialog(FmmlxObject object, FmmlxOperation initiallySelectedOperation) {
+		if(initiallySelectedOperation == null) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setContentText("This MenuItem requires an Operation to be selected.");
+			alert.show(); return;
+		} 
+		Platform.runLater(() -> {
+			AddOperationDialog dlg = new AddOperationDialog(diagram, object, initiallySelectedOperation);
+			Optional<AddOperationDialog.Result> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final AddOperationDialog.Result result = opt.get();
+				diagram.getComm().changeOperationBody(diagram.getID(), result.object.getName(), result.name, result.body);
+				diagram.updateDiagram();
+			}
+		});
+	}
+	
 	public void addConstraintDialog(FmmlxObject object) {
 
 		Platform.runLater(() -> {
@@ -660,24 +655,6 @@ public class DiagramActions {
 			}
 
 //			latch.countDown();
-		});
-	}
-
-	public void changeBodyDialog(FmmlxObject object, FmmlxOperation initiallySelectedOperation) {
-		if(initiallySelectedOperation == null) {
-			Alert alert = new Alert(AlertType.INFORMATION);
-			alert.setContentText("This MenuItem requires an Operation to be selected.");
-			alert.show(); return;
-		} 
-		Platform.runLater(() -> {
-			AddOperationDialog dlg = new AddOperationDialog(diagram, object, initiallySelectedOperation);
-			Optional<AddOperationDialog.Result> opt = dlg.showAndWait();
-
-			if (opt.isPresent()) {
-				final AddOperationDialog.Result result = opt.get();
-				diagram.getComm().changeOperationBody(diagram.getID(), result.object.getName(), result.name, result.body);
-				diagram.updateDiagram();
-			}
 		});
 	}
 

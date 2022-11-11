@@ -205,10 +205,36 @@ public class NodeGroup extends NodeElement {
 			Action action = findAction(actions, nodeElement, object, diagram);
 			nodeElement.action = action;
 			boolean add = mod == null || mod.getConsequence() == Modification.Consequence.SHOW_ALWAYS
-					|| mod.getConsequence() == Modification.Consequence.SHOW_IF && mod.getCondition().eval(object)
-					|| mod.getConsequence() == Modification.Consequence.SHOW_IF_NOT && !mod.getCondition().eval(object);
+					|| mod.getConsequence() == Modification.Consequence.SHOW_IF && mod.getCondition().evalBool(object)
+					|| mod.getConsequence() == Modification.Consequence.SHOW_IF_NOT && !mod.getCondition().evalBool(object);
 			
-			/// Special case for labels( and later also texts):
+			/// Special case for importing meta
+			if(nodeElement instanceof ConcreteSyntax && ((ConcreteSyntax)nodeElement).isMetaImport()) {
+				Vector<Modification> allMods = new Vector<>(); 
+				allMods.addAll(modifications);
+				allMods.addAll(((ConcreteSyntax)nodeElement).modifications);
+				NodeElement nl = nodeElement.createInstance(object.getOf(), allMods, actions, diagram);
+				nl.action = action;
+				that.addNodeElement(nl);
+			} else
+				
+			/// Special case for changing colours
+			if(nodeElement instanceof NodePath) {
+				if(add) {
+					NodeElement nl = nodeElement.createInstance(object, modifications, actions, diagram);
+					nl.action = action;
+					that.addNodeElement(nl);
+				} else {
+					if(mod.getConsequence() == Modification.Consequence.SET_COLOR) {
+						NodePath thatPath = ((NodePath)nodeElement).createInstance(object, modifications, actions, diagram);
+						thatPath.setColor((mod.getCondition()).evalString(object));
+						thatPath.action = action;
+						that.addNodeElement(thatPath);
+					}
+				}
+			} else
+			
+			/// Special case for labels
 			if(nodeElement instanceof NodeLabel) {
 				if(add) {
 					NodeElement nl = nodeElement.createInstance(object, modifications, actions, diagram);
@@ -217,7 +243,7 @@ public class NodeGroup extends NodeElement {
 				} else {
 					if(mod.getConsequence() == Modification.Consequence.READ_FROM_SLOT) {
 						NodeLabel thatLabel = ((NodeLabel)nodeElement).createInstance(object, modifications, actions, diagram);
-						thatLabel.setText((mod.getCondition()).evalText(object));
+						thatLabel.setText((mod.getCondition()).evalString(object));
 						thatLabel.action = action;
 						that.addNodeElement(thatLabel);
 					}
