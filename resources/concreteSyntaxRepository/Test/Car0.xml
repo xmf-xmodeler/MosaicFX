@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <ConcreteSyntax classPath="Test::Car" level="0">
-	<ImportMeta path="car1.xml" id="of" xx="0.6" yy="0.6"/>
+	<ImportMeta path="Car1.xml" id="of" xx="0.6" yy="0.6"/>
     <Label align="CENTER" tx="19.0" ty="35.0" xx="0.3" yy="0.3" id="reglabel" color="222222"/>
 	<!--SVG path="Warning-Speed Trap.svg" id="warning" xx=".05" yy=".05" tx="0" ty="0"/-->  
 	<Modification>

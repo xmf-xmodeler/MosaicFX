@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.Vector;
 
-import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.transform.Affine;

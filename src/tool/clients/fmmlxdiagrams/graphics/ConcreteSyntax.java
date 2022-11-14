@@ -3,7 +3,6 @@ package tool.clients.fmmlxdiagrams.graphics;
 import java.io.File;
 import java.util.Vector;
 
-import javax.management.RuntimeErrorException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -17,7 +16,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javafx.geometry.Pos;
 import javafx.scene.transform.Affine;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;

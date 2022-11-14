@@ -2,7 +2,6 @@ package tool.clients.fmmlxdiagrams;
 
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,7 +23,6 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
@@ -101,18 +99,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private ScrollPane scrollPane;
 	private VBox mainView;
 	private TableView<Issue> tableView;
-//	private VBox vBox;
-//	private Menu menu;
-//	private MenuBar menuBar;
-//	private MenuItem loadXML;
-//	private MenuItem saveXML;
-	// The communication to the xmf and other actions
-
-	// The elements representing the model which is displayed in the GUI
-
 	private Vector<DiagramEdgeLabel<?>> labels = new Vector<>();
 	private TabPane tabPane;
-
 
 	// Temporary variables storing the current state of user interactions
 	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
@@ -128,7 +116,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private transient FmmlxProperty lastHitProperty = null;
 	private transient boolean diagramRequiresUpdate = false;
 
-//	private static final Point2D CANVAS_RAW_SIZE = new Point2D(1400, 1000);
 	public  static final Font FONT;
 	Palette palette = new Palette(this);
 	Palette palette2 = new Palette(this,2);
@@ -1868,16 +1855,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			redraw();
 		});
 		t.start();
-		
-		
 	}
-	
-	
-	
 }

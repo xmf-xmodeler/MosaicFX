@@ -16,7 +16,6 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.graphics.NodeElement.Action;
 import tool.clients.xmlManipulator.XmlHandler;
 
 public class NodeGroup extends NodeElement {
