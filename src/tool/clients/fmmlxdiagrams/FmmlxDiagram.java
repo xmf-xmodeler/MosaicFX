@@ -36,6 +36,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -323,31 +324,44 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
             @Override
             public void handle(javafx.scene.input.KeyEvent event) {
-                if(event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.M) {
-                	getActiveTab().canvasTransform.prependScale(-1, 1, new Point2D(getActiveTab().canvas.getWidth()/2 , getActiveTab().canvas.getHeight()/2));
-                	redraw();
-                }
-                if(event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.R) {
-                	getActiveTab().canvasTransform.prependRotation(10, new Point2D(getActiveTab().canvas.getWidth()/2 , getActiveTab().canvas.getHeight()/2));
-                	redraw();
-                }
-                if(event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.F) {
-                	getActiveView().centerObject();
-                }
-  				if(event.getCode() == javafx.scene.input.KeyCode.DELETE) {
+            	pressedKeys.remove(event.getCode());
+				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.M) {
+					getActiveTab().canvasTransform.prependScale(-1, 1,
+							new Point2D(getActiveTab().canvas.getWidth() / 2, getActiveTab().canvas.getHeight() / 2));
+					redraw();
+				}
+				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.R) {
+					getActiveTab().canvasTransform.prependRotation(10,
+							new Point2D(getActiveTab().canvas.getWidth() / 2, getActiveTab().canvas.getHeight() / 2));
+					redraw();
+				}
+				if (event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.F) {
+					getActiveView().centerObject();
+				}
+				if (event.getCode() == javafx.scene.input.KeyCode.DELETE) {
 					Vector<CanvasElement> hitObjects = getSelectedObjects();
 					for (CanvasElement element : hitObjects) {
 						new DiagramActions(FmmlxDiagram.this).removeDialog((FmmlxObject) element, PropertyType.Class);
 					}
 				}
-                if(event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.A) {
+			}
+        });
+        tabPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent e) {
+				pressedKeys.add(e.getCode());
+				if (getPressedKeys().contains(KeyCode.CONTROL) &&
+					getPressedKeys().contains(KeyCode.A)) {
 					selectAll();
 				}
-                if(event.isControlDown() && event.getCode() == javafx.scene.input.KeyCode.S) {
-					getComm().saveXmlFile2(packagePath, diagramID);
-				}
-            }
-        });   
+				if (getPressedKeys().contains(KeyCode.CONTROL) &&
+						getPressedKeys().contains(KeyCode.S)) {
+					//are this the right inputs?
+						getComm().saveXmlFile2(packagePath, diagramID);;
+					}
+			}
+		});
         tabPane.getSelectionModel().selectedItemProperty().addListener((foo,goo,newTabItem)-> {
         	if(newTabItem.getContent() == null) {
         		// pane with star selected
@@ -370,11 +384,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         // Resize of Canvas on rescale
         tabPane.heightProperty().addListener( ( observable, x, y ) -> redraw() );
         tabPane.widthProperty().addListener( ( observable, x, y ) -> redraw() );
-
+        
         scrollPane = new ScrollPane(tableView);
-
+         
 		mainView.getChildren().addAll(palette, palette2, tabPane);//scrollerCanvas);
-
+		
 		splitPane2.setOrientation(Orientation.VERTICAL);
 		splitPane2.setDividerPosition(0, 0.8);
 		splitPane2.getItems().addAll(newFmmlxPalette.getToolBar(), zoomView);
@@ -386,9 +400,20 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		SplitPane.setResizableWithParent(splitPane2, false);
 		
 		switchTableOnAndOffForIssues();
-		Thread t = new Thread(() -> { this.fetchDiagramData(a -> {}); });
+		Thread t = new Thread( () -> {
+			this.fetchDiagramData( a -> { } );
+		});
 		t.start();
 
+//		java.util.Timer timer = new java.util.Timer();
+//		timer.schedule(new java.util.TimerTask() {
+//
+//			@Override
+//			public void run() {
+//				redraw();
+//			}
+//		}, 200, 200);
+		
 		File syntaxDir = new File(ConcreteSyntaxWizard.RESOURCES_CONCRETE_SYNTAX_REPOSITORY); //TODO: recursively searching all 
 		if (syntaxDir.isDirectory()) {
 			Vector<File> directories = new Vector<>();
@@ -401,16 +426,21 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					if(file.getName().endsWith(".xml")) files.add(file);
 				}
 			}
+//			File[] files = syntaxDir.listFiles();
 			for (File file : files) {
-				try {
-					AbstractSyntax group = AbstractSyntax.load(file);
-					if(group instanceof ConcreteSyntax) {
-						ConcreteSyntax c = ((ConcreteSyntax) group);
-						syntaxes.put(c.classPath + "@" + c.level, c);
-					}
-				} catch (Exception e) {
-					System.err.println("reading " + file.getName() + " failed (" + e.getMessage() + "). Ignoring..."); 
-				}
+//				if (file.isFile()) {
+//					if(file.getName().endsWith(".xml")) {
+						try {
+							AbstractSyntax group = AbstractSyntax.load(file);
+							if(group instanceof ConcreteSyntax) {
+								ConcreteSyntax c = ((ConcreteSyntax) group);
+								syntaxes.put(c.classPath + "@" + c.level, c);
+							}
+						} catch (Exception e) {
+							System.err.println("reading " + file.getName() + " failed (" + e.getMessage() + "). Ignoring..."); 
+						}
+//					}
+//				}
 			}
 		}
 	}
@@ -471,7 +501,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
     	fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG","*.png"));
     	fileChooser.setTitle("Save Diagram to PNG");
-    	File file = fileChooser.showSaveDialog(XModeler.getStage());
+	    File file = fileChooser.showSaveDialog(XModeler.getStage());
 
 	    if(file != null){
 	        WritableImage wi = new WritableImage((int)mainViewPane.canvas.getWidth(),(int)mainViewPane.canvas.getHeight());
@@ -482,6 +512,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	        }
 	    }
 
+//	    setZoom(zoom);
 	}
 //	// Only used to set the diagram into the tab. Find a better solution
 	@Deprecated
@@ -492,10 +523,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private void updateDiagramLater() {
 		diagramRequiresUpdate = true;
 	}
-		
+	
 	public void redraw() {
 		if(fetchingData) return;
-		if(Thread.currentThread().getName().equals("JavaFX Application Thread")) {
+		if (Thread.currentThread().getName().equals("JavaFX Application Thread")) {
 			// we are on the right Thread already:
 			for(DiagramViewPane view : views) {
 				view.paintOn();
@@ -515,13 +546,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
 		}
 	}
-
-
-
+	
 	private void drawMultiSelectRect(GraphicsContext g) {
-		double x = Math.min(lastPointPressed.getX(), currentPointMoving.getX());
-		double y = Math.min(lastPointPressed.getY(), currentPointMoving.getY());
-		g.strokeRect(x, y, Math.abs(currentPointMoving.getX() - lastPointPressed.getX()), Math.abs(currentPointMoving.getY() - lastPointPressed.getY()));
+			double x = Math.min(lastPointPressed.getX(), currentPointMoving.getX());
+			double y = Math.min(lastPointPressed.getY(), currentPointMoving.getY());
+			g.strokeRect(x, y, Math.abs(currentPointMoving.getX() - lastPointPressed.getX()), Math.abs(currentPointMoving.getY() - lastPointPressed.getY()));
 	}
 
 	private void drawNewEdgeLine(GraphicsContext g) {
@@ -530,7 +559,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		}
 	}
 
-	public void triggerOverallReLayout() {		
+	public void triggerOverallReLayout() {
+		
 		// TODO evil hack. not kosher
 		for(int i = 0; i < 2; i++) { 
 			for(FmmlxObject o : new Vector<>(objects)) {
@@ -542,7 +572,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
 		}
 	}
-
+	
 	public Vector<CanvasElement> getSelectedObjects() {
 		return new Vector<>(selectedObjects);
 	}
@@ -923,8 +953,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		boolean show=metaClassName.isSelected();
 		setMetaClassNanmeInPalette(show);
 		newFmmlxPalette.setShowMetaClassName(show);
-		newFmmlxPalette.update();
-	}
+			newFmmlxPalette.update();
+		}		
 	
 	
 
@@ -965,6 +995,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			for(int i = 0; i < issues.size() && nextIssue == null; i++) {
 				if(issues.get(i).isSoluble() && !("BAD_PRACTICE".equals(issues.get(i).getSeverity()))) nextIssue = issues.get(i);
 			}
+	
 			if(nextIssue != null) {
 				final Issue ISSUE = nextIssue;
 				Platform.runLater(() -> ISSUE.performResolveAction(this));
@@ -995,7 +1026,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		for (FmmlxObject o : objects) {
 			o.updatePortOrder();
 		}
-		for(CanvasElement c : objectsToBePainted) {
+		for(CanvasElement c : objectsToBePainted){
 			c.paintToSvg(xmlHandler, this);
 		}
 		Element issueGroup = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
@@ -1010,7 +1041,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		rect.setAttribute(SvgConstant.ATTRIBUTE_FILL, "black");
 		rect.setAttribute(SvgConstant.ATTRIBUTE_FILL_OPACITY, 1 +"");
 		xmlHandler.addXmlElement(issueGroup, rect);
-		for(Issue issue : issues) {
+		for(Issue issue : issues){
 			issue.paintToSvg(xmlHandler, issueGroup, 14, 16, 0, getBounds().getMaxY()+issue.issueNumber*14);
 		}
 		xmlHandler.addXmlElement(xmlHandler.getRoot(), issueGroup); 
@@ -1099,39 +1130,35 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		private void mousePressed(MouseEvent e) {
 			if(fetchingData) return;
 			clearContextMenus();
-
-		// 	if (isLeftButton(e) && !e.isAltDown()) {
 			if (isLeftButton(e) && !getPressedKeys().contains(KeyCode.ALT) && !getPressedKeys().contains(KeyCode.SPACE)) {
-
 				handleLeftPressed(e);
 				dragStart = new Point2D(e.getX(), e.getY());
 			}
 			if (isRightButton(e)) {
 				handleRightPressed(e);
 			}
-		//	if (isCenterButton(e) || (isLeftButton(e) && e.isAltDown())) {
-		    if (isCenterButton(e) || (isLeftButton(e) && getPressedKeys().contains(KeyCode.ALT)) ||
-		    		isLeftButton(e) && getPressedKeys().contains(KeyCode.SPACE)) {
-
+			if (isCenterButton(e) || (isLeftButton(e) && getPressedKeys().contains(KeyCode.ALT)) ||
+					isLeftButton(e) && getPressedKeys().contains(KeyCode.SPACE)) {
 				handleCenterPressed(e);
 			}
 		}
 		
 		private void mouseDragged(MouseEvent e) {
-			if(isLeftButton(e) && !e.isAltDown()) {	
-				if (mouseMode == MouseMode.MULTISELECT) {
-					storeCurrentPoint(e.getX(), e.getY());
-					redraw();
+			if (mouseMode == MouseMode.MULTISELECT) {
+				storeCurrentPoint(e.getX(), e.getY());
+				redraw();
+			}
+			if (mouseMode == MouseMode.STANDARD) {
+				if (selectedObjects.size() == 1 && selectedObjects.firstElement() instanceof Edge) {
+				((Edge<?>) selectedObjects.firstElement()).setPointAtToBeMoved(new Point2D(e.getX(), e.getY()),
+				canvasTransform);
 				}
-				if (mouseMode == MouseMode.STANDARD) {
-					if (selectedObjects.size() == 1 && selectedObjects.firstElement() instanceof Edge) {
-						((Edge<?>) selectedObjects.firstElement()).setPointAtToBeMoved(new Point2D(e.getX(), e.getY()), canvasTransform);
-	
-					}
-					mouseDraggedStandard(new Point2D(e.getX(), e.getY()));
+				mouseDraggedStandard(new Point2D(e.getX(), e.getY()));
+				if (!pressedKeys.contains(KeyCode.ALT) && !pressedKeys.contains(KeyCode.SPACE) && !isCenterButton(e)) {
+					moveObjectsOnDrag(new Point2D(e.getX(), e.getY()));
 				}
 			}
-			if (isCenterButton(e) || (isLeftButton(e) && e.isAltDown())) {
+			if (isCenterButton(e) || (isLeftButton(e) && getPressedKeys().contains(KeyCode.ALT) || isLeftButton(e) && getPressedKeys().contains(KeyCode.SPACE))){
 				handleCenterDragged(e);
 			}
 		}
@@ -1187,6 +1214,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				e1.printStackTrace();
 			}
 			
+			
+		}
+
+		private void moveObjectsOnDrag(Point2D p) {
 			for (CanvasElement s : selectedObjects)
 				if (s instanceof FmmlxObject) {
 					FmmlxObject o = (FmmlxObject) s;
@@ -1202,9 +1233,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					e.moveTo(p.getX(), p.getY(), this);
 				}
 			objectsMoved = true;
-
 			for(Edge<?> e : edges) {e.align();}
-
 			redraw();
 		}
 
@@ -1455,8 +1484,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}
 			hitObject.highlightElementAt(mouse, canvasTransform);
 		}
-
-	    private void paintOn() {
+	    
+		private void paintOn() {
 			final GraphicsContext g = canvas.getGraphicsContext2D();
 			// blank bg first:
 			g.setTransform(new Affine());
@@ -1478,31 +1507,31 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 				
 				Affine newTransform = getZoomViewTransform();
-
+				
 				try{
-
-					g.beginPath();
-					g.moveTo(0, 0);
-					g.lineTo(0, getHeight());
-					g.lineTo(getWidth(), getHeight());
-					g.lineTo(getWidth(), 0);
-					g.lineTo(0, 0);
-	
-					Point2D p1 = getActiveView().getCanvasTransform().inverseTransform(new Point2D(0, 0));
-					p1 = newTransform.transform(p1);
-
-					Point2D p2 = getActiveView().getCanvasTransform().inverseTransform(new Point2D(getActiveView().getCanvas().getWidth(), getActiveView().getCanvas().getHeight()));
-					p2 = newTransform.transform(p2);
-	
-					g.moveTo(p1.getX(), p1.getY());
-					g.lineTo(p2.getX(), p1.getY());
-					g.lineTo(p2.getX(), p2.getY());
-					g.lineTo(p1.getX(), p2.getY());
-					g.lineTo(p1.getX(), p1.getY());
 					
-					g.setFill(new Color(.5, .5, .5, .5));
-					g.fill();
-					
+				g.beginPath();
+				g.moveTo(0, 0);
+				g.lineTo(0, getHeight());
+				g.lineTo(getWidth(), getHeight());
+				g.lineTo(getWidth(), 0);
+				g.lineTo(0, 0);
+
+				Point2D p1 = getActiveView().getCanvasTransform().inverseTransform(new Point2D(0, 0));
+				p1 = newTransform.transform(p1);
+
+				Point2D p2 = getActiveView().getCanvasTransform().inverseTransform(new Point2D(getActiveView().getCanvas().getWidth(), getActiveView().getCanvas().getHeight()));
+				p2 = newTransform.transform(p2);
+
+				g.moveTo(p1.getX(), p1.getY());
+				g.lineTo(p2.getX(), p1.getY());
+				g.lineTo(p2.getX(), p2.getY());
+				g.lineTo(p1.getX(), p2.getY());
+				g.lineTo(p1.getX(), p1.getY());
+				
+				g.setFill(new Color(.5, .5, .5, .5));
+				g.fill();
+				
 				} catch (Exception E) {}
 				canvasTransform = newTransform;
 				
@@ -1773,7 +1802,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		javafx.scene.Node activeNode = activeTab.getContent();
 		DiagramViewPane activeView = (DiagramViewPane) activeNode;
 		return activeView;
-	}
+	}	
+		
+	
+	
 	
 	private class MyTab extends Tab {
 		final Label label;
@@ -1832,11 +1864,18 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			});
 		}
 		
+//		protected void close() {
+//	        Event.fireEvent(this, new Event(Tab.CLOSED_EVENT));
+//	    }
+
 		public MyTab() {
 			super("*", null);
 			this.label = new Label("void");
 			setCloseListener();
-		}			
+			
+		}		
+	
+	
 	}
 
 	public void switchTableOnAndOffForIssues() {
@@ -1860,5 +1899,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			redraw();
 		});
 		t.start();
+		
+		
 	}
+	
+	
+	
 }
