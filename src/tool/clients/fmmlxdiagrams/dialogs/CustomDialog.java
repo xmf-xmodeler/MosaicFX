@@ -5,24 +5,26 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.instancegenerator.valuegenerator.IValueGenerator;
 import tool.clients.fmmlxdiagrams.instancegenerator.view.InstanceGeneratorGenerateTypeComboBox;
 import tool.clients.importer.Conflict;
+import tool.helper.IconGenerator;
 import tool.xmodeler.ControlCenter;
 import tool.xmodeler.ControlCenterClient;
 import tool.xmodeler.XModeler;
 
+import java.io.File;
 import java.util.List;
-
 
 public class CustomDialog<R> extends Dialog<R> {
 
 	protected int COLUMN_WIDTH = 150;
-
 	protected FlowPane flow;
 	protected GridPane grid;
 	protected Label errorLabel;
@@ -31,24 +33,22 @@ public class CustomDialog<R> extends Dialog<R> {
 
 	public CustomDialog() {
 		super();
-		
 		initializeGrid();
-		setOnShowing(e ->{
-			ControlCenter controlCenter = ControlCenterClient.getClient().getControlCenter();
-			if(controlCenter.isIconified()) {
-				controlCenter.setIconified(false);
-			}
-		});
 		flow = new FlowPane();
 		flow.setHgap(3);
 		flow.setVgap(3);
 		flow.setPrefWrapLength(250);
 		vBoxControl = new VBoxControl();
-
-		initOwner(XModeler.getStage());
-		
+		/*
+		 * 2022-11-04-TS If you set the Stage.Modality to Application_Modal, the Dialog
+		 * will block all open application windows. if you want to focus field in other
+		 * windows you have to close the dialog. This prevents, that the user will do
+		 * actions in the background which could corrupt the running application
+		 */
+		initModality(javafx.stage.Modality.APPLICATION_MODAL);
+		Stage stage = (Stage) getDialogPane().getScene().getWindow();
+		stage.getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		flow.getChildren().add(grid);
-
 		errorLabel = new Label();
 		errorLabel.setTextFill(Color.RED);
 		flow.getChildren().add(errorLabel);
@@ -300,7 +300,7 @@ public class CustomDialog<R> extends Dialog<R> {
 				} else {
 					setText(item.getName());
 				}
-//				// Notlösung..
+//				// Notlï¿½sung..
 //				if ( item == null ) {
 //					empty = true;
 //				}
