@@ -1,7 +1,5 @@
 package tool.clients.forms;
 
-import tool.xmodeler.XModeler;
-
 public class FormToolItem {
 
   String id;

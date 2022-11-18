@@ -2,7 +2,6 @@ package tool.clients.forms;
 
 import java.io.PrintStream;
 import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javafx.application.Platform;
 
@@ -110,7 +109,7 @@ public class FormTools {
 	}
 
 	public void populateToolBar(Object toolBar) {
-		boolean test = false;
+//		boolean test = false;
 //		for (FormToolDef def : tools)
 			// for (FormToolDef def : tools_new.values())
 //			def.populateToolBar(toolBar);

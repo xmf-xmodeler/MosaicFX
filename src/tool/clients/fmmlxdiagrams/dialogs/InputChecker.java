@@ -2,8 +2,7 @@ package tool.clients.fmmlxdiagrams.dialogs;
 
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
-import tool.clients.fmmlxdiagrams.FmmlxAttribute;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
 
@@ -13,9 +12,7 @@ public class InputChecker {
 
 	private static InputChecker instance;
 
-	public InputChecker() {
-		// Blank Constructor needed
-	}
+	private InputChecker() { }
 
 	public static InputChecker getInstance() {
 		if (instance == null) {
@@ -24,18 +21,21 @@ public class InputChecker {
 		return instance;
 	}
 
-	public boolean validateName(String name) {
-		if (name.equals("")) {
-			return false;
-		} else if (checkFirstStringIsDigit(name)) {
-			return false;
-		} else if (name.contains(" ")) {
-			return false;
-		}
-		return true;
+	public static boolean isValidIdentifier(String name) {
+		return name.matches("[a-zA-Z][_a-zA-Z0-9]*");
+//		if(name.equals("")) {
+//			return false;
+//		} else if(checkFirstStringIsDigit(name)) {
+//			return false;
+//		} else if(name.contains(" ")) {
+//			return false;
+//		} else if(!name.matches("[a-zA-Z][_a-zA-Z0-9]*")) {
+//			return false;
+//		}
+//		return true;
 	}
 
-	private boolean checkFirstStringIsDigit(String name) {
+	private static boolean checkFirstStringIsDigit(String name) {
 		char[] c = name.toCharArray();
 
 		if (Character.isDigit(c[0])) {
@@ -51,17 +51,17 @@ public class InputChecker {
 		return false;
 	}
 
-	public boolean attributeNameIsAvailable(String name, FmmlxObject object) {
-		for (FmmlxAttribute attribute : object.getOwnAttributes()) {
-			if (name.equals(attribute.getName())) return false;
-		}
-		for (FmmlxAttribute attribute : object.getOtherAttributes()) {
-			if (name.equals(attribute.getName())) return false;
-		}
-		return true;
-	}
+//	public static boolean attributeNameIsAvailable(String name, FmmlxObject object) {
+//		for (FmmlxAttribute attribute : object.getOwnAttributes()) {
+//			if (name.equals(attribute.getName())) return false;
+//		}
+//		for (FmmlxAttribute attribute : object.getOtherAttributes()) {
+//			if (name.equals(attribute.getName())) return false;
+//		}
+//		return true;
+//	}
 
-	public boolean classNameIsAvailable(String name, FmmlxDiagram diagram) {
+	public boolean classNameIsAvailable(String name, AbstractPackageViewer diagram) {
 		for (FmmlxObject object : diagram.getObjects()) {
 			if (name.equals(object.getName())) return false;
 		}
@@ -84,13 +84,60 @@ public class InputChecker {
 		return true;
 	}
 
-	public boolean isComboBoxItemNull(ComboBox comboBox) {
+	public boolean isComboBoxItemNull(ComboBox<?> comboBox) {
 		return comboBox.getSelectionModel().getSelectedItem() == null;
 	}
 
 	public boolean isTextfieldEmpty(TextField textField) {
 		return textField.getText() == null
 				|| textField.getText().length() == 0;
+	}
+	
+	public static boolean validateInteger(String string) {
+		boolean isValidInteger = false;
+	      try
+	      {
+	         Integer.parseInt(string); 
+	         isValidInteger = true;
+	      }
+	      catch (NumberFormatException ex)
+	      {
+	         //
+	      }	 
+	      return isValidInteger;
+		
+	}
+	
+	public static boolean validateFloat(String string) {
+		boolean isValidFloat = false;
+	      try
+	      {
+	         Float.parseFloat(string);
+	         isValidFloat = true;
+	         
+	      }
+	      catch (NumberFormatException ex)
+	      {
+	    	  //
+	      }
+	 
+	      return isValidFloat;
+	}
+	
+	public static boolean validateBoolean(String string) {
+		boolean isValidBoolean = false;
+	      try
+	      {
+	         Boolean.parseBoolean(string);
+	         isValidBoolean = true;
+	         
+	      }
+	      catch (NumberFormatException ex)
+	      {
+	    	  //
+	      }
+	 
+	      return isValidBoolean;
 	}
 
 }

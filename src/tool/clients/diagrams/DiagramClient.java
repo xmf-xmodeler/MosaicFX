@@ -2,6 +2,7 @@ package tool.clients.diagrams;
 
 import java.io.PrintStream;
 import java.util.Hashtable;
+import java.util.Objects;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
@@ -296,10 +297,11 @@ public class DiagramClient extends Client {
 	private void inflateDiagram(Node diagram) {
 		String id = XModeler.attributeValue(diagram, "id");
 		String label = XModeler.attributeValue(diagram, "label");
-		boolean magnetic = XModeler.attributeValue(diagram, "magnetic").equals("true");
+		boolean magnetic = Objects.equals(XModeler.attributeValue(diagram, "magnetic"), "true");
 		float zoom = Float.parseFloat(XModeler.attributeValue(diagram, "zoom", "1.0"));
 		newDiagram(id, label);
 		Diagram d = getDiagram(id);
+		assert d != null;
 		d.setMagneticWaypoints(magnetic);
 		d.renderOff();
 		d.setZoom(zoom);
@@ -320,25 +322,26 @@ public class DiagramClient extends Client {
 		// String target = XModeler.attributeValue(edge, "target");
 		String sourcePort = XModeler.attributeValue(edge, "sourcePort");
 		String targetPort = XModeler.attributeValue(edge, "targetPort");
-		int sourceHead = Integer.parseInt(XModeler.attributeValue(edge, "sourceHead"));
-		int targetHead = Integer.parseInt(XModeler.attributeValue(edge, "targetHead"));
-		int lineStyle = Integer.parseInt(XModeler.attributeValue(edge, "lineStyle"));
-		int red = Integer.parseInt(XModeler.attributeValue(edge, "red"));
-		int green = Integer.parseInt(XModeler.attributeValue(edge, "green"));
-		int blue = Integer.parseInt(XModeler.attributeValue(edge, "blue"));
+		int sourceHead = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(edge, "sourceHead")));
+		int targetHead = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(edge, "targetHead")));
+		int lineStyle = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(edge, "lineStyle")));
+		int red = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(edge, "red")));
+		int green = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(edge, "green")));
+		int blue = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(edge, "blue")));
 		Integer sourceX = null;
 		Integer sourceY = null;
 		Integer targetX = null;
 		Integer targetY = null;
 		try {
-			sourceX = Integer.parseInt(XModeler.attributeValue(edge, "sourceX"));
-			sourceY = Integer.parseInt(XModeler.attributeValue(edge, "sourceY"));
-			targetX = Integer.parseInt(XModeler.attributeValue(edge, "targetX"));
-			targetY = Integer.parseInt(XModeler.attributeValue(edge, "targetY"));
-		} catch (Exception ex) {
+			sourceX = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(edge, "sourceX")));
+			sourceY = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(edge, "sourceY")));
+			targetX = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(edge, "targetX")));
+			targetY = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(edge, "targetY")));
+		} catch (Exception ignored) {
 		}
-		if (sourceX == null || sourceY == null || targetX == null || targetY == null)
+		if (sourceX == null || sourceY == null || targetX == null || targetY == null){
 			System.err.println("No edge termination points specified. Using centre instead");
+		}
 		newEdge(parentId, id, sourcePort, targetPort, -1, -1, sourceHead, targetHead, lineStyle, red, green, blue,
 				sourceX, sourceY, targetX, targetY);
 		NodeList children = edge.getChildNodes();
@@ -347,33 +350,44 @@ public class DiagramClient extends Client {
 	}
 
 	private void inflateDiagramElement(String id, Node node) {
-		if (node.getNodeName().equals("Palette"))
-			inflatePalette(id, node);
-		else if (node.getNodeName().equals("Node"))
-			inflateDiagramNode(id, node);
-		else if (node.getNodeName().equals("Edge"))
-			inflateDiagramEdge(id, node);
-		else if (node.getNodeName().equals("Box"))
-			inflateBox(id, node);
-		else if (node.getNodeName().equals("Text"))
-			inflateText(id, node);
-		else if (node.getNodeName().equals("MultilineText"))
-			inflateMultilineText(id, node);
-		else if (node.getNodeName().equals("Ellipse"))
-			inflateEllipse(id, node);
-		else if (node.getNodeName().equals("Image"))
-			inflateImage(id, node);
-		else
-			System.err.println("Unknown type of diagram node " + node.getNodeName());
+		switch (node.getNodeName()) {
+			case "Palette":
+				inflatePalette(id, node);
+				break;
+			case "Node":
+				inflateDiagramNode(id, node);
+				break;
+			case "Edge":
+				inflateDiagramEdge(id, node);
+				break;
+			case "Box":
+				inflateBox(id, node);
+				break;
+			case "Text":
+				inflateText(id, node);
+				break;
+			case "MultilineText":
+				inflateMultilineText(id, node);
+				break;
+			case "Ellipse":
+				inflateEllipse(id, node);
+				break;
+			case "Image":
+				inflateImage(id, node);
+				break;
+			default:
+				System.err.println("Unknown type of diagram node " + node.getNodeName());
+				break;
+		}
 	}
 
 	private void inflateDiagramNode(String diagramId, Node node) {
 		String nodeId = XModeler.attributeValue(node, "id");
-		int x = Integer.parseInt(XModeler.attributeValue(node, "x"));
-		int y = Integer.parseInt(XModeler.attributeValue(node, "y"));
-		int width = Integer.parseInt(XModeler.attributeValue(node, "width"));
-		int height = Integer.parseInt(XModeler.attributeValue(node, "height"));
-		boolean selectable = XModeler.attributeValue(node, "selectable").equals("true");
+		int x = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(node, "x")));
+		int y = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(node, "y")));
+		int width = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(node, "width")));
+		int height = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(node, "height")));
+		boolean selectable = Objects.equals(XModeler.attributeValue(node, "selectable"), "true");
 		newNode(diagramId, nodeId, x, y, width, height, selectable);
 		NodeList children = node.getChildNodes();
 		for (int i = 0; i < children.getLength(); i++)
@@ -480,20 +494,29 @@ public class DiagramClient extends Client {
 	}
 
 	private void inflateNodeElement(String id, Node node) {
-		if (node.getNodeName().equals("Port"))
-			inflatePort(id, node);
-		else if (node.getNodeName().equals("Box"))
-			inflateBox(id, node);
-		else if (node.getNodeName().equals("Text"))
-			inflateText(id, node);
-		else if (node.getNodeName().equals("MultilineText"))
-			inflateMultilineText(id, node);
-		else if (node.getNodeName().equals("Ellipse"))
-			inflateEllipse(id, node);
-		else if (node.getNodeName().equals("Image"))
-			inflateImage(id, node);
-		else
-			System.err.println("Unknown type of node element " + node.getNodeName());
+		switch (node.getNodeName()) {
+			case "Port":
+				inflatePort(id, node);
+				break;
+			case "Box":
+				inflateBox(id, node);
+				break;
+			case "Text":
+				inflateText(id, node);
+				break;
+			case "MultilineText":
+				inflateMultilineText(id, node);
+				break;
+			case "Ellipse":
+				inflateEllipse(id, node);
+				break;
+			case "Image":
+				inflateImage(id, node);
+				break;
+			default:
+				System.err.println("Unknown type of node element " + node.getNodeName());
+				break;
+		}
 	}
 
 	private void inflatePalette(String id, Node node) {
@@ -527,9 +550,9 @@ public class DiagramClient extends Client {
 
 	private void inflateWaypoint(String edgeId, Node node) {
 		String id = XModeler.attributeValue(node, "id");
-		int index = Integer.parseInt(XModeler.attributeValue(node, "index"));
-		int x = Integer.parseInt(XModeler.attributeValue(node, "x"));
-		int y = Integer.parseInt(XModeler.attributeValue(node, "y"));
+		int index = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(node, "index")));
+		int x = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(node, "x")));
+		int y = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(node, "y")));
 		newWaypoint(edgeId, id, index, x, y, true);
 	}
 
@@ -619,7 +642,7 @@ public class DiagramClient extends Client {
 		final Value y = message.args[3];
 		final Value width = message.args[4];
 		final Value height = message.args[5];
-		newlyCreatedDiagrams = new Vector<Diagram>(); // to avoid java.util.ConcurrentModificationException
+		newlyCreatedDiagrams = new Vector<>(); // to avoid java.util.ConcurrentModificationException
 		newNestedDiagram(parentId.strValue(), groupId.strValue(), x.intValue, y.intValue, width.intValue,
 				height.intValue);
 		diagrams.addAll(newlyCreatedDiagrams);
@@ -639,12 +662,7 @@ public class DiagramClient extends Client {
 			diagrams.add(diagram);
 			tabPane.getTabs().add(tab);
 			tabPane.getSelectionModel().selectLast();
-			tab.setOnCloseRequest(new javafx.event.EventHandler<javafx.event.Event>() {
-				@Override
-				public void handle(javafx.event.Event arg0) {
-					close(id);
-				}
-			});
+			tab.setOnCloseRequest(arg0 -> close(id));
 			l.countDown();
 		});
 		try {
@@ -678,10 +696,11 @@ public class DiagramClient extends Client {
 		Integer sourceY = message.arity > 13 ? message.args[13].intValue : null;
 		Integer targetX = message.arity > 14 ? message.args[14].intValue : null;
 		Integer targetY = message.arity > 15 ? message.args[15].intValue : null;
-		if (sourceX == null || sourceY == null || targetX == null || targetY == null)
+		if (sourceX == null || sourceY == null || targetX == null || targetY == null){
 			System.err.println("No edge termination points specified. Using centre instead");
+		}
 		newEdge(parentId, id, sourceId, targetId, refx, refy, sourceHead, targetHead, lineStyle, red, green, blue,
-				sourceX, sourceY, targetX, targetY);
+					sourceX, sourceY, targetX, targetY);
 	}
 
 	private void newEdge(String parentId, String id, String sourceId, String targetId, int refx, int refy,
@@ -766,6 +785,7 @@ public class DiagramClient extends Client {
 //      runOnDisplay(new Runnable() {
 //        public void run() {
 			Diagram diagram = getDiagram(diagramId);
+			assert diagram != null;
 			diagram.newGroup(name);
 //        }
 //      });
@@ -816,12 +836,12 @@ public class DiagramClient extends Client {
 		boolean hidden = false;
 		try {
 			hidden = message.args[18].boolValue;
-		} catch (Exception e) {
+		} catch (Exception ignored) {
 		}
 		boolean fill = false;
 		try {
 			fill = message.args[19].boolValue;
-		} catch (Exception e) {
+		} catch (Exception ignored) {
 		}
 		newLabel(parentId, id, text, position, x, y, editable, underline, condense, red, green, blue, border, borderRed,
 				borderGreen, borderBlue, font, arrow, hidden, fill);
@@ -896,6 +916,7 @@ public class DiagramClient extends Client {
 	private void newNode(String parentId, String id, int x, int y, int width, int height, boolean selectable) {
 		if (getDiagram(parentId) != null) {
 			Diagram diagram = getDiagram(parentId);
+			assert diagram != null;
 			diagram.newNode(id, x, y, width, height, selectable);
 		} else
 			System.err.println("cannot find diagram " + parentId);
@@ -990,6 +1011,7 @@ public class DiagramClient extends Client {
 //      runOnDisplay(new Runnable() {
 //        public void run() {
 			Diagram diagram = getDiagram(diagramId);
+			assert diagram != null;
 			diagram.removeAny(toolId);
 //        }
 //      });
@@ -1002,6 +1024,7 @@ public class DiagramClient extends Client {
 //      runOnDisplay(new Runnable() {
 //        public void run() {
 			Diagram diagram = getDiagram(diagramId);
+			assert diagram != null;
 			diagram.renameAny(newName, oldName);
 //        }
 //      });
@@ -1015,6 +1038,7 @@ public class DiagramClient extends Client {
 //      runOnDisplay(new Runnable() {
 //        public void run() {
 			Diagram diagram = getDiagram(diagramId);
+			assert diagram != null;
 			diagram.newTool(groupId, label, toolId, isEdge, icon);
 //        }
 //      });
@@ -1028,6 +1052,7 @@ public class DiagramClient extends Client {
 //      runOnDisplay(new Runnable() {
 //        public void run() {
 			Diagram diagram = getDiagram(diagramId);
+			assert diagram != null;
 			diagram.newToggle(groupId, label, toolId, state, iconTrue, iconFalse);
 //        }
 //      });
@@ -1041,11 +1066,12 @@ public class DiagramClient extends Client {
 //      runOnDisplay(new Runnable() {
 //        public void run() {
 			Diagram diagram = getDiagram(diagramId);
+			assert diagram != null;
 			diagram.newAction(groupId, label, toolId, icon);
 //        }
 //      });
 			if (label.equals("Update")) {
-				getDiagram(diagramId).updateID = toolId;
+				Objects.requireNonNull(getDiagram(diagramId)).updateID = toolId;
 				// addUpdateTimer(diagramId, toolId);
 			}
 		} else
@@ -1623,9 +1649,8 @@ public class DiagramClient extends Client {
 		final double width = t.getLayoutBounds().getWidth();
 		final double height = t.getLayoutBounds().getHeight();
 //	if("Boolean".equals(text)) System.err.println(text.hashCode() + " font = " + t.getFont() + " t = " + t.hashCode() + "  dim=" + width + "x" + height);
-		javafx.geometry.Point2D extent = new javafx.geometry.Point2D(width, height);
 
-		return extent;
+		return new javafx.geometry.Point2D(width, height);
 	}
 
 	public void writeXML(PrintStream out) {

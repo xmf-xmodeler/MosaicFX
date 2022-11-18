@@ -1,43 +1,43 @@
 package tool.clients.fmmlxdiagrams;
 
 import javafx.geometry.Point2D;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.paint.Color;
-import tool.clients.fmmlxdiagrams.Edge.HeadStyle;
 import tool.clients.fmmlxdiagrams.dialogs.MultiplicityDialog;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
-import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
 import tool.clients.fmmlxdiagrams.menus.AssociationContextMenu;
 
 import java.util.Optional;
 import java.util.Vector;
 
-public class FmmlxAssociation extends Edge implements FmmlxProperty {
+public class FmmlxAssociation extends Edge<FmmlxObject> implements FmmlxProperty {
 
 	private final PropertyType propertyType = PropertyType.Association;
 	private String name;
-	private String reverseName;
+	private final String reverseName;
 	private String accessNameStartToEnd;
 	private String accessNameEndToStart;
-	private Integer levelStartToEnd;
-	private Integer levelEndToStart;
+	private Integer levelStart;
+	private Integer levelEnd;
+	private final Integer parentAssociationId;
 	private Multiplicity multiplicityStartToEnd;
 	private Multiplicity multiplicityEndToStart;
-	protected boolean sourceVisible;
-	protected boolean targetVisible;
+	private boolean sourceFromTargetVisible;
+	private boolean targetFromSourceVisible;
+	private boolean symmetric;
+	private boolean transitive;
 
-	HeadStyle sourceHead; 
-	HeadStyle targetHead;
-	private final static Color TRANSPARENT = new Color(0, 0, 0, 0);
+//	HeadStyle sourceHead; 
+//	HeadStyle targetHead;
+	private final static Color TRANSPARENT = null;//new Color(0, 0, 0, 0);
 	private final static Color BLACK = new Color(0, 0, 0, 1);
 	private final static Color WHITE = new Color(1, 1, 1, 1);
 
 	FmmlxAssociation(
-			Integer id,
-			Integer startId,
-			Integer endId,
+			String path,
+			String startPath,
+			String endPath,
 			Integer parentAssociationId,
 			Vector<Point2D> points,
 			PortRegion startPortRegion, PortRegion endPortRegion,
@@ -45,80 +45,54 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 			String reverseName,
 			String accessNameStartToEnd,
 			String accessNameEndToStart,
-			int levelStartToEnd,
-			int levelEndToStart,
+			int levelStart,
+			int levelEnd,
 			Multiplicity multiplicityStartToEnd,
 			Multiplicity multiplicityEndToStart,
+			boolean sourceFromTargetVisible,
+			boolean targetFromSourceVisible,
+			boolean symmetric,
+			boolean transitive,
 			Vector<Object> labelPositions,
-			FmmlxDiagram diagram) {
+			AbstractPackageViewer diagram) {
 
-		super(id, diagram.getObjectById(startId), diagram.getObjectById(endId), points, startPortRegion, endPortRegion, labelPositions, diagram);
+		super(path, diagram.getObjectByPath(startPath), diagram.getObjectByPath(endPath), points, startPortRegion, endPortRegion, labelPositions, diagram);
 
 		this.name = name;
+		this.parentAssociationId = parentAssociationId;
 		this.reverseName = reverseName;
 		this.accessNameStartToEnd = accessNameStartToEnd;
 		this.accessNameEndToStart = accessNameEndToStart;
-		this.levelStartToEnd = levelStartToEnd;
-		this.levelEndToStart = levelEndToStart;
+		this.levelStart = levelStart;
+		this.levelEnd = levelEnd;
 		this.multiplicityStartToEnd = multiplicityStartToEnd;
 		this.multiplicityEndToStart = multiplicityEndToStart;
-		
-//		layout();
+		this.sourceFromTargetVisible = sourceFromTargetVisible;
+		this.targetFromSourceVisible = targetFromSourceVisible;
+		this.symmetric = symmetric;
+		this.transitive = transitive;
 	}
-	
-	private enum Anchor {SOURCE,CENTRE,TARGET};
 
-	@Override protected void layoutLabels() {
-		createLabel(name, 0, Anchor.CENTRE, showChangeFwNameDialog, 0, BLACK, TRANSPARENT);
-		if(reverseName != null) 
-	    createLabel(reverseName, 1, Anchor.CENTRE, showChangeRvNameDialog, -20, BLACK, TRANSPARENT);
-		createLabel(accessNameStartToEnd, 2, Anchor.TARGET, showChangeS2ENameDialog, 0, BLACK, TRANSPARENT);
-		createLabel(accessNameEndToStart, 3, Anchor.SOURCE, showChangeE2SNameDialog, 0, BLACK, TRANSPARENT);
-		createLabel(""+levelStartToEnd, 4, Anchor.TARGET, showChangeS2ELevelDialog, -20, WHITE, BLACK);
-		createLabel(""+levelEndToStart, 5, Anchor.SOURCE, showChangeE2SLevelDialog, -20, WHITE, BLACK);
-		createLabel(multiplicityStartToEnd.toString(), 6, Anchor.TARGET, showChangeS2EMultDialog, -40, BLACK, TRANSPARENT);
-		createLabel(multiplicityEndToStart.toString(), 7, Anchor.SOURCE, showChangeE2SMultDialog, -40, BLACK, TRANSPARENT);
+	public Integer getParentAssociationId() {
+		return parentAssociationId;
+	}
+
+	@Override protected void layoutLabels(FmmlxDiagram diagram) {
+		if( sourceNode == targetNode) {
+			createLabel(name, 0, Anchor.CENTRE_SELFASSOCIATION, showChangeFwNameDialog, BLACK, TRANSPARENT, diagram);
+		}else {
+			createLabel(name, 0, Anchor.CENTRE_MOVABLE, showChangeFwNameDialog, BLACK, TRANSPARENT, diagram);
+		}
+//		if(reverseName != null) 
+//	    createLabel(reverseName, 1, Anchor.CENTRE, showChangeRvNameDialog, -20, BLACK, TRANSPARENT);
+		
+		createLabel(""+levelEnd, 2, Anchor.TARGET_LEVEL, showChangeS2ELevelDialog, WHITE, BLACK,diagram);
+		createLabel(""+levelStart, 3, Anchor.SOURCE_LEVEL, showChangeE2SLevelDialog, WHITE, BLACK, diagram); 
+		createLabel(multiplicityStartToEnd.toString(), 4, Anchor.TARGET_MULTI, showChangeS2EMultDialog, BLACK, TRANSPARENT, diagram);
+		createLabel(multiplicityEndToStart.toString(), 5, Anchor.SOURCE_MULTI, showChangeE2SMultDialog, BLACK, TRANSPARENT, diagram);
 		layoutingFinishedSuccesfully = true;
 	}
 	
-	
-
-	private void createLabel(String value, int localId, Anchor anchor, Runnable action, int yDiff, Color textColor, Color bgColor) {
-		Point2D storedPostion = getLabelPosition(localId);
-		
-		double w = diagram.calculateTextWidth(value);
-		double h = diagram.calculateTextHeight();
-		
-		Vector<FmmlxObject> anchors = new Vector<>();
-		if(anchor!=Anchor.TARGET) anchors.add(getSourceNode());
-		if(anchor!=Anchor.SOURCE) anchors.add(getTargetNode());
-		
-		if(storedPostion != null) {
-			diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, storedPostion.getX(), storedPostion.getY(), w, h, textColor, bgColor));
-		} else {
-			double boxHeight = anchor==Anchor.CENTRE?-20:
-				(anchor==Anchor.SOURCE?sourceNode:targetNode).getHeight()/2;
-			diagram.addLabel(new DiagramEdgeLabel(this, localId, action, null, anchors, value, 50, -boxHeight-30+yDiff, w, h, textColor, bgColor));
-		}
-	}
-	
-	///////////////////////////////////////////////////////////////////////////
-	private void createAssociationInformationLabels(String value, int localId, Runnable action) {
-		Point2D storedPostion = getLabelPosition(localId);
-		
-		double w = diagram.calculateTextWidth(value);
-		double h = diagram.calculateTextHeight();
-		
-		if(storedPostion != null) {
-			//TODO create information container ([informationen])
-			
-		} else {
-			//TODO
-		}
-	}
-	///////////////////////////////////////////////////////////////////////////
-
-
 	@Override
 	public String getName() {
 		return name;
@@ -133,24 +107,12 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		return propertyType;
 	}
 
-	public int getId() {
-		return id;
+	public Integer getLevelSource() {
+		return levelStart;
 	}
 
-	public FmmlxObject getSourceNode() {
-		return sourceNode;
-	}
-
-	public FmmlxObject getTargetNode() {
-		return targetNode;
-	}
-
-	public Integer getLevelStartToEnd() {
-		return levelStartToEnd;
-	}
-
-	public Integer getLevelEndToStart() {
-		return levelEndToStart;
+	public Integer getLevelTarget() {
+		return levelEnd;
 	}
 
 	public String getAccessNameStartToEnd() {
@@ -169,31 +131,24 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		return multiplicityEndToStart;
 	}
 
-	public boolean getTargetVisible() {
-		return targetVisible;
+	public boolean isTargetVisible() {
+		return targetFromSourceVisible;
 	}
 
-	public boolean getSourceVisible() {
-		return sourceVisible;
+	public boolean isSourceVisible() {
+		return sourceFromTargetVisible;
 	}
 
 	public String toPair() {
 		String firstString = this.getSourceNode().getName();
 		String seconString = this.getTargetNode().getName();
 		return "( " + firstString + " ; " + seconString + " )";
-	}
-	
-	public Vector<FmmlxLink> getInstance(){
-		return diagram.getAssociationInstance();
 	}	
 	
 	public boolean doObjectsFit(FmmlxObject source, FmmlxObject target) {
-		if(source==null || target == null) return false;
-		if (source.isInstanceOf(getSourceNode(), levelEndToStart) && target.isInstanceOf(getTargetNode(), levelStartToEnd))
+		if ((source==null || source.isInstanceOf(getSourceNode(), levelStart)) && (target==null || target.isInstanceOf(getTargetNode(), levelEnd)))
 			return true;
-		if (target.isInstanceOf(getSourceNode(), levelEndToStart) && source.isInstanceOf(getTargetNode(), levelStartToEnd))
-			return true;
-		return false;
+		return (target==null || target.isInstanceOf(getSourceNode(), levelStart)) && (source==null || source.isInstanceOf(getTargetNode(), levelEnd));
 	}
 
 	@Override
@@ -203,29 +158,27 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 
 	@Override
 	protected Double getLineDashes() {
-		return new Double(0);
+		return (double) 0;
 	}
 
-	private Runnable showChangeFwNameDialog = () -> { 
+	private final Runnable showChangeFwNameDialog = () -> {
 		TextInputDialog td = new TextInputDialog(name);
 		td.setHeaderText("Change Forward Association Name");
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
-			diagram.getComm().changeAssociationForwardName(diagram, this.id, result.get());
+			diagram.getComm().changeAssociationForwardName(diagram.getID(), this.getName(), result.get());
 			diagram.updateDiagram();
 		}
 	};
-
-	private Runnable showChangeRvNameDialog = null;
 	
-	private Runnable showChangeS2ELevelDialog = () -> {
-		TextInputDialog td = new TextInputDialog(levelStartToEnd+"");
+	private final Runnable showChangeS2ELevelDialog = () -> {
+		TextInputDialog td = new TextInputDialog(levelEnd+"");
 		td.setHeaderText("Change Start to End Level");
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
 			try {
 				Integer level = Integer.parseInt(result.get());
-				diagram.getComm().changeAssociationStart2EndLevel(diagram, this.id, level);
+				diagram.getComm().changeAssociationStart2EndLevel(diagram.getID(), this.getName(), level);
 				diagram.updateDiagram();
 			} catch (Exception e) {
 				System.err.println("Number not readable. Change Nothing.");
@@ -233,33 +186,33 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		}
 	};
 	
-	private Runnable showChangeS2ENameDialog = () -> { 
+	private final Runnable showChangeS2ENameDialog = () -> {
 		TextInputDialog td = new TextInputDialog(accessNameStartToEnd);
 		td.setHeaderText("Change Start to End Access Name");
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
-			diagram.getComm().changeAssociationStart2EndAccessName(diagram, this.id, result.get());
+			diagram.getComm().changeAssociationStart2EndAccessName(diagram.getID(), this.getName(), result.get());
 			diagram.updateDiagram();
 		}
 	};
 	
-	private Runnable showChangeS2EMultDialog = () -> {
+	private final Runnable showChangeS2EMultDialog = () -> {
 		MultiplicityDialog md = new MultiplicityDialog(multiplicityStartToEnd);
-		Optional<MultiplicityDialogResult> mr = md.showAndWait();
+		Optional<Multiplicity> mr = md.showAndWait();
 		if(mr.isPresent()) {
-			diagram.getComm().changeAssociationStart2EndMultiplicity(diagram, this.id, mr.get().convertToMultiplicity());
+			diagram.getComm().changeAssociationStart2EndMultiplicity(diagram.getID(), this.getName(), mr.get());
 			diagram.updateDiagram();
 		}
 	};
 	
-	private Runnable showChangeE2SLevelDialog = () -> {
-		TextInputDialog td = new TextInputDialog(levelEndToStart+"");
+	private final Runnable showChangeE2SLevelDialog = () -> {
+		TextInputDialog td = new TextInputDialog(levelStart+"");
 		td.setHeaderText("Change End to Start Level");
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
 			try {
 				Integer level = Integer.parseInt(result.get());
-				diagram.getComm().changeAssociationEnd2StartLevel(diagram, this.id, level);
+				diagram.getComm().changeAssociationEnd2StartLevel(diagram.getID(), this.getName(), level);
 				diagram.updateDiagram();
 			} catch (Exception e) {
 				System.err.println("Number not readable. Change Nothing.");
@@ -267,28 +220,40 @@ public class FmmlxAssociation extends Edge implements FmmlxProperty {
 		}
 	};
 	
-	private Runnable showChangeE2SNameDialog = () -> { 
+	private final Runnable showChangeE2SNameDialog = () -> {
 		TextInputDialog td = new TextInputDialog(accessNameEndToStart);
 		td.setHeaderText("Change End to Start Access Name");
 		Optional<String> result = td.showAndWait();
 		if(result.isPresent()) {
-			diagram.getComm().changeAssociationEnd2StartAccessName(diagram, this.id, result.get());
+			diagram.getComm().changeAssociationEnd2StartAccessName(diagram.getID(), this.getName(), result.get());
 			diagram.updateDiagram();
 		}
 	};
 	
-	private Runnable showChangeE2SMultDialog = () -> {
+	private final Runnable showChangeE2SMultDialog = () -> {
 		MultiplicityDialog md = new MultiplicityDialog(multiplicityEndToStart);
-		Optional<MultiplicityDialogResult> mr = md.showAndWait();
+		Optional<Multiplicity> mr = md.showAndWait();
 		if(mr.isPresent()) {
-			diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram, this.id, mr.get().convertToMultiplicity());
+			diagram.getComm().changeAssociationEnd2StartMultiplicity(diagram.getID(), this.getName(), mr.get());
 			diagram.updateDiagram();
 		}
 	};
 	
 	@Override
 	public HeadStyle getTargetDecoration() {
-		
-		return HeadStyle.ARROW;
+		return targetFromSourceVisible?HeadStyle.ARROW:HeadStyle.NO_ARROW;
+	}
+	
+	@Override
+	public HeadStyle getSourceDecoration() {
+		return sourceFromTargetVisible?HeadStyle.ARROW:HeadStyle.NO_ARROW;
+	}
+
+	public boolean isSymmetric() {return symmetric;}
+	public boolean isTransitive() {return transitive;}
+
+	@Override
+	public String toString() {
+		return "FmmlxAssociation [name=" + name + "]";
 	}
 }

@@ -66,28 +66,15 @@ public class MultiplicityDialog extends Dialog<ButtonType>{
 		grid.setHgap(10);
 		grid.setVgap(10);
 		grid.setPadding(new Insets(20, 100, 10, 10));
-		
-//		    EXAMPLE
-//        searchField = new TextField();
-//        searchField.setText("Search here...");
-//        grid.add(searchField, 0, 0);
-//		searchField.setOnKeyPressed(new MySearchListener_Pressed());
-//		searchField.setOnKeyReleased(new MySearchListener_Released());
-		
+				
 		createDialogArea(grid);
-
 		
 		getDialogPane().setContent(grid);
 		
         setValues(min+"", max<0?"*":(""+max), ordered);
-//		searchField.requestFocus();
 
 		Optional<ButtonType> result = showAndWait();
 		return getResult(result.get() == ButtonType.OK);
-
-//        return result==null?"":result;
-        
-//		return "not yet implemented";
 	}
 		
 	private String getResult(boolean ok) {

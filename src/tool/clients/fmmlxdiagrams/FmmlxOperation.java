@@ -4,26 +4,41 @@ import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
 import java.util.Vector;
 
-public class FmmlxOperation implements FmmlxProperty {
+public class FmmlxOperation implements FmmlxProperty, Comparable<FmmlxOperation> {
 	private final PropertyType propertyType = PropertyType.Operation;
 
-	String name;
-	Integer level;
-	String type;
-	Integer owner;
+	private String name;
+	private int level;
+	private String type;
+	private String owner;
 	private boolean isMonitored;
-	String body;
+	private String body;
+	private Vector<String> paramNames;
+	private Vector<String> paramTypes;
+	private boolean delegateToClassAllowed;
 
 
-	public FmmlxOperation(String name, Integer level, String type, String body, Integer owner, Multiplicity multiplicity, boolean isMonitored, Vector<Object> args) {
+	public FmmlxOperation(String name, Vector<String> paramNames, Vector<String> paramTypes, Integer level, String type, String body, String owner, Multiplicity multiplicity, boolean isMonitored, boolean delegateToClassAllowed) {
 		this.name = name;
 		this.level = level;
 		this.type = type;
 		this.owner = owner;
 //		this.multiplicity = multiplicity;
+		this.delegateToClassAllowed = delegateToClassAllowed;
 		this.isMonitored = isMonitored;
 		this.body = body;
+		this.paramNames = paramNames;
+		this.paramTypes = paramTypes;
 	}
+	
+	public Vector<String> getParamNames() {
+		return paramNames;
+	}
+
+	public Vector<String> getParamTypes() {
+		return paramTypes;
+	}
+
 
 	public String getName() {
 		return name;
@@ -41,12 +56,16 @@ public class FmmlxOperation implements FmmlxProperty {
 		return type;
 	}
 
-	public Integer getOwner() {
+	public String getOwner() {
 		return owner;
 	}
 
 	public boolean isMonitored() {
 		return isMonitored;
+	}
+
+	public boolean isDelegateToClassAllowed() {
+		return delegateToClassAllowed;
 	}
 
 	@Override
@@ -60,5 +79,21 @@ public class FmmlxOperation implements FmmlxProperty {
 		} else {
 			return body;
 		}
+	}
+
+	public String getFullString(AbstractPackageViewer diagram) {
+		String params = "";
+		for(int i = 0; i < paramNames.size(); i++) {
+			if(!"".equals(params)) params = params+", ";
+			params = params + paramNames.get(i)+ ": " + diagram.convertPath2Short(paramTypes.get(i));
+		}
+		return name + "("+params+"): " + diagram.convertPath2Short(type);
+	}
+
+	@Override
+	public int compareTo(FmmlxOperation that) {
+		if(this.level > that.level) return -1; 
+		if(this.level < that.level) return 1;
+		return this.name.compareTo(that.name);
 	}
 }

@@ -362,8 +362,8 @@ public class DialogsClient extends Client {
 				}
 
 				if (file != null) {
-					String lastFile = file.isDirectory() ? file.getPath() : file.getParentFile().getPath();
-					PropertyManager.setProperty("fileDialogPath", lastFile);
+					lastFile = file;
+					PropertyManager.setProperty("fileDialogPath", file.getParent());
 					result[0] = new Value(file.getAbsolutePath());
 				} else {
 					result[0] = new Value("");

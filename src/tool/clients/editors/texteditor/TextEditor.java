@@ -1,33 +1,28 @@
 package tool.clients.editors.texteditor;
 
-import java.io.PrintStream;
-import java.util.Stack;
-import java.util.Vector;
-
-import org.eclipse.jface.text.JFaceTextUtil;
-import org.eclipse.jface.window.DefaultToolTip;
-import org.eclipse.jface.window.ToolTip;
+//import org.eclipse.jface.window.DefaultToolTip;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import tool.clients.editors.EditorClient;
-import tool.clients.editors.FindUtil;
 import tool.clients.editors.ITextEditor;
-import tool.clients.editors.UndoRedoImpl;
-import tool.clients.menus.MenuClient;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
 
+import java.io.PrintStream;
+import java.util.Objects;
+import java.util.Stack;
+import java.util.Vector;
+
 public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyListener, MouseMoveListener, MouseListener, MouseWheelListener, LineBackgroundListener, ExtendedModifyListener, PaintObjectListener, SelectionListener, LineStyleListener, PaintListener, MouseTrackListener, */ITextEditor {
 
-  private static final int   ZOOM              = 2;
-  private static final int   MAX_FONT_SIZE     = 40;
-  private static final int   MIN_FONT_SIZE     = 2;
-  private static final int   LEFT_BUTTON       = 1;
-  private static final int   MIDDLE_BUTTON     = 2;
-  private static final int   RIGHT_BUTTON      = 3;
-  private static final int   TRAY_PAD          = 5;
+//  private static final int   ZOOM              = 2;
+//  private static final int   MAX_FONT_SIZE     = 40;
+//  private static final int   MIN_FONT_SIZE     = 2;
+//  private static final int   LEFT_BUTTON       = 1;
+//  private static final int   MIDDLE_BUTTON     = 2;
+//  private static final int   RIGHT_BUTTON      = 3;
+//  private static final int   TRAY_PAD          = 5;
   private static final int   SYNTAX_DELAY      = 2000;
   private static final int   SYNTAX_INC        = 200;
 //  private static final Color RED               = Display.getDefault().getSystemColor(SWT.COLOR_RED);
@@ -74,17 +69,17 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
   String                  label;
 //  StyledText              text;
 //  FontData                fontData;
-  DefaultToolTip          toolTip;
+//  DefaultToolTip          toolTip;
   Signature               signature      = new Signature();
   LineStyler              lineStyler     = new LineStyler(this);
-  Vector<Integer>         highlights     = new Vector<Integer>();
-  Vector<ErrorListener>   errorListeners = new Vector<ErrorListener>();
-  Vector<FileError>       errors         = new Vector<FileError>();
-  Vector<VarInfo>         varInfo        = new Vector<VarInfo>();
-  Vector<Tooltip>         tooltips       = new Vector<Tooltip>();
-  Vector<Terminal>        terminals      = new Vector<Terminal>();
-  Vector<Action>          actions        = new Vector<Action>();
-  Stack<Vector<Terminal>> tStack         = new Stack<Vector<Terminal>>();
+  Vector<Integer>         highlights     = new Vector<>();
+  Vector<ErrorListener>   errorListeners = new Vector<>();
+  Vector<FileError>       errors         = new Vector<>();
+  Vector<VarInfo>         varInfo        = new Vector<>();
+  Vector<Tooltip>         tooltips       = new Vector<>();
+  Vector<Terminal>        terminals      = new Vector<>();
+  Vector<Action>          actions        = new Vector<>();
+  Stack<Vector<Terminal>> tStack         = new Stack<>();
   int[]                   terminal       = new int[] { -1, -1, -1, -1 };
   AST                     ast            = null;
   AST                     hover          = null;
@@ -120,6 +115,13 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
 //    redraw();
   }
 
+  @Override
+  public void addMultilineRule(String id, String start, String end, double red, double green, double blue) {
+    if (getId().equals(id)) {
+      lineStyler.addMultilineRule(id, start, end, red, green, blue);
+    }
+  }
+
   public void addMultilineRule(String id, String start, String end, int red, int green, int blue) {
     if (getId().equals(id)) {
       lineStyler.addMultilineRule(id, start, end, red, green, blue);
@@ -134,10 +136,10 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
 //    ast.add(new AST(text, tooltip, charStart, charEnd));
   }
 
-  private void cancelToolTip() {
-    if (toolTip != null) toolTip.deactivate();
-    toolTip = null;
-  }
+//  private void cancelToolTip() {
+//    if (toolTip != null) toolTip.deactivate();
+//    toolTip = null;
+//  }
 
 //  private void checkBracket(ExtendedModifyEvent event) {
 //
@@ -336,15 +338,15 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
 //    return text.getLineCount();
 //  }
 
-  private char getOpening(char closing) {
-    if (closing == ')')
-      return '(';
-    else if (closing == '}')
-      return '{';
-    else if (closing == ']')
-      return '[';
-    else throw new Error("unknown closing bracket " + closing);
-  }
+//  private char getOpening(char closing) {
+//    if (closing == ')')
+//      return '(';
+//    else if (closing == '}')
+//      return '{';
+//    else if (closing == ']')
+//      return '[';
+//    else throw new Error("unknown closing bracket " + closing);
+//  }
 
 //  public String getString() {
 //    return text.getText();
@@ -378,23 +380,23 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
   private void inflateMultiLineRule(Node item) {
     String word = XModeler.attributeValue(item, "word");
     String end = XModeler.attributeValue(item, "end");
-    int red = Integer.parseInt(XModeler.attributeValue(item, "red"));
-    int green = Integer.parseInt(XModeler.attributeValue(item, "green"));
-    int blue = Integer.parseInt(XModeler.attributeValue(item, "blue"));
+    int red = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(item, "red")));
+    int green = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(item, "green")));
+    int blue = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(item, "blue")));
     addMultilineRule(getId(), word, end, red, green, blue);
   }
 
   private void inflateWordRule(Node item) {
     String word = XModeler.attributeValue(item, "word");
-    int red = Integer.parseInt(XModeler.attributeValue(item, "red"));
-    int green = Integer.parseInt(XModeler.attributeValue(item, "green"));
-    int blue = Integer.parseInt(XModeler.attributeValue(item, "blue"));
+    int red = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(item, "red")));
+    int green = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(item, "green")));
+    int blue = Integer.parseInt(Objects.requireNonNull(XModeler.attributeValue(item, "blue")));
     addWordRule(getId(), word, red, green, blue);
   }
 
-  private boolean isAlpha(char c) {
-    return 'a' <= c && c <= 'z';
-  }
+//  private boolean isAlpha(char c) {
+//    return 'a' <= c && c <= 'z';
+//  }
 
   public boolean isCheckingSyntax() {
     return checkingSyntax;
@@ -416,16 +418,16 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
 //    return event.button == RIGHT_BUTTON || isCntrl(event);
 //  }
 
-  private Vector<Terminal> isTerminator(String s, int index) {
-    Vector<Terminal> terminates = null;
-    for (Terminal t : terminals) {
-      if (t.terminates(s, index)) {
-        if (terminates == null) terminates = new Stack<Terminal>();
-        terminates.add(t);
-      }
-    }
-    return terminates;
-  }
+//  private Vector<Terminal> isTerminator(String s, int index) {
+//    Vector<Terminal> terminates = null;
+//    for (Terminal t : terminals) {
+//      if (t.terminates(s, index)) {
+//        if (terminates == null) terminates = new Stack<>();
+//        terminates.add(t);
+//      }
+//    }
+//    return terminates;
+//  }
 
 //  public void keyPressed(KeyEvent arg0) {
 //    ast = new AST(text, "", 0, text.getText().length());
@@ -752,11 +754,11 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
     this.dirty = dirty;
   }
 
-  private void setMouseOverVar(int x, int y) {
-//    boolean isOverVar = mouseOverVar != null;
-//    mouseOverVar = selectVarInfo(x, y);
-//    if (mouseOverVar != null || isOverVar) redraw();
-  }
+//  private void setMouseOverVar(int x, int y) {
+////    boolean isOverVar = mouseOverVar != null;
+////    mouseOverVar = selectVarInfo(x, y);
+////    if (mouseOverVar != null || isOverVar) redraw();
+//  }
 
   public void setRendering(boolean rendering) {
 //    this.rendering = rendering;
@@ -793,38 +795,38 @@ public class TextEditor implements  /*KeyListener, VerifyListener, VerifyKeyList
     tooltips.add(new Tooltip(tooltip, charStart, charEnd));
   }
 
-  private void setToolTip(int x, int y, String message) {
-//    if (toolTip == null) {
-//      toolTip = new DefaultToolTip(text, ToolTip.NO_RECREATE, false);
-//    }
-//    if (toolTip != null) {
-//      toolTip.setHideDelay(2000);
-//      toolTip.setText(message);
-//    }
-  }
+//  private void setToolTip(int x, int y, String message) {
+////    if (toolTip == null) {
+////      toolTip = new DefaultToolTip(text, ToolTip.NO_RECREATE, false);
+////    }
+////    if (toolTip != null) {
+////      toolTip.setHideDelay(2000);
+////      toolTip.setText(message);
+////    }
+//  }
 
   public void showLine(int line) {
 //    text.setCaretOffset(text.getOffsetAtLine(line));
 //    redraw();
   }
 
-  private int starts(String s, int index) {
-    if (tStack.isEmpty())
-      return -1;
-    else {
-      for (Terminal t : tStack.peek()) {
-        if (t.starts(s, index)) return t.getStart().length();
-      }
-      Vector<Terminal> ts = tStack.pop();
-      int starts = starts(s, index);
-      if (starts >= 0)
-        return starts;
-      else {
-        tStack.push(ts);
-        return starts;
-      }
-    }
-  }
+//  private int starts(String s, int index) {
+//    if (tStack.isEmpty())
+//      return -1;
+//    else {
+//      for (Terminal t : tStack.peek()) {
+//        if (t.starts(s, index)) return t.getStart().length();
+//      }
+//      Vector<Terminal> ts = tStack.pop();
+//      int starts = starts(s, index);
+//      if (starts >= 0)
+//        return starts;
+//      else {
+//        tStack.push(ts);
+//        return starts;
+//      }
+//    }
+//  }
 
   public void syntaxError(int pos, String error) {
 //    this.errorPosition = Math.min(pos - 10, text.getText().length() - 1);

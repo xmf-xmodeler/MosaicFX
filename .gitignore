@@ -1,10 +1,11 @@
 # java
 /bin/
-*.log
-
+/out/
+*.logManager
 # idea
 .idea
 *.iml
+/resources/tmp4ops/*
 
 # user
 /ini_Bjoern_win_multi.txt
@@ -26,3 +27,9 @@
 
 # /build/.gitignore
 /build/output/
+
+# Test
+/XModeler2.launch
+
+#wahidClassPath
+/.classpath

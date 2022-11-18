@@ -13,16 +13,17 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperation;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeBodyDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.ReturnCall;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
+import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair.OperationException;
 
-public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
+public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialog.Result>{
 	
 	private DialogPane dialogPane;
-	private FmmlxDiagram diagram;
+	private AbstractPackageViewer diagram;
 	private FmmlxObject object;
 	
 	private Label classLabel;
@@ -31,55 +32,65 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 	
 	private TextField classTextField;
 	private ComboBox<FmmlxOperation> selectOperationComboBox;
-	private TextArea bodyTextArea;
+	private CodeBoxPair codeBoxPair;
 	
 	private Vector<FmmlxOperation> operations;
 	
-	private ButtonType checkSyntaxButtonType;
 	private ButtonType defaultOperationButtonType;
+	private Button resetBodyButton;
 
-	public ChangeBodyDialog(FmmlxDiagram diagram, FmmlxObject object) {
+	public ChangeBodyDialog(AbstractPackageViewer diagram, FmmlxObject object, final FmmlxOperation initiallySelectedOperation) {
 		super();
 		this.diagram=diagram;
 		this.object=object;
+		setResizable(true);
 		
 		dialogPane = getDialogPane();
-		
-		checkSyntaxButtonType = new ButtonType(StringValueDialog.LabelAndHeaderTitle.checkSyntax);
-		defaultOperationButtonType = new ButtonType(StringValueDialog.LabelAndHeaderTitle.defaultOperation);
-		
-		dialogPane.getButtonTypes().addAll(checkSyntaxButtonType, defaultOperationButtonType, ButtonType.OK, ButtonType.CANCEL);
-		layoutContent();
-		dialogPane.setContent(flow);
-		
-		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
-		okButton.addEventFilter(ActionEvent.ACTION, e -> {
-			if (!validateUserInput()) {
-				e.consume();
-			}
-		});
-		
-		final Button defaultOperationButton = (Button) getDialogPane().lookupButton(defaultOperationButtonType);
-		defaultOperationButton.addEventFilter(ActionEvent.ACTION, e -> {
-				ChangeBodyDialog.this.resetOperationBody();
-				e.consume();	
-		});
-		
-		final Button checkSyntaxButton = (Button) getDialogPane().lookupButton(checkSyntaxButtonType);
-		checkSyntaxButton.addEventFilter(ActionEvent.ACTION, e -> {		
-			ChangeBodyDialog.this.checkBodySyntax();
+
+		defaultOperationButtonType = new ButtonType(StringValue.LabelAndHeaderTitle.defaultOperation);
+		resetBodyButton = new Button("Reset Body");
+		resetBodyButton.setOnAction(e -> {		
+			resetOperationBody();
 			e.consume();	
 		});
 		
-		setResult();
+		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+		layoutContent();
+		dialogPane.setContent(flow);
+		
+		
+		//final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
+		//okButton.addEventFilter(ActionEvent.ACTION, e -> {
+		//	if (!validateUserInput()) {
+		//		e.consume();
+		//	}
+		//});
+		
+//		final Button defaultOperationButton = (Button) getDialogPane().lookupButton(defaultOperationButtonType);
+//		defaultOperationButton.addEventFilter(ActionEvent.ACTION, e -> {
+//				ChangeBodyDialog.this.resetOperationBody();
+//				e.consume();	
+//		});
+		
+//		final Button checkSyntaxButton = (Button) getDialogPane().lookupButton(checkSyntaxButtonType);
+//		checkSyntaxButton.addEventFilter(ActionEvent.ACTION, e -> {		
+//			ChangeBodyDialog.this.checkBodySyntax();
+//			e.consume();	
+//		});
+		
+		setResultConverter();
+		
+		setResizable(true);
+		dialogPane.setMinSize(630, 400);
 
+		if(initiallySelectedOperation != null) selectOperationComboBox.getSelectionModel().select(initiallySelectedOperation);
 	}
 	
-	private void setResult() {
+	private void setResultConverter() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				return new ChangeBodyDialogResult(object, selectOperationComboBox.getSelectionModel().getSelectedItem(), 
-						bodyTextArea.getText());
+				return new ChangeBodyDialog.Result(object, selectOperationComboBox.getSelectionModel().getSelectedItem(), 
+						codeBoxPair.getBodyText());
 			}
 			return null;
 		});
@@ -87,7 +98,7 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 
 	private boolean validateUserInput() {
 		if(selectOperationComboBox.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectOperation);
+			errorLabel.setText(StringValue.ErrorMessage.selectOperation);
 			return false;
 		}
 		return true;
@@ -99,7 +110,14 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 		ObservableList<FmmlxOperation> operationsList;
 		operationsList = FXCollections.observableList(operations);
 		
-		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.changeOperationsBody);
+		codeBoxPair = new CodeBoxPair(diagram,e->{getDialogPane().lookupButton(ButtonType.OK).setDisable(
+					!codeBoxPair.getCheckPassed()||
+					selectOperationComboBox.getSelectionModel().getSelectedItem()==null||
+					selectOperationComboBox.getSelectionModel().getSelectedItem().getName().startsWith("set")||
+					selectOperationComboBox.getSelectionModel().getSelectedItem().getName().startsWith("get"));
+		}, false);
+		
+		dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeOperationsBody);
 		
 		classLabel = new Label("Class");
 		selectOperationLabel = new Label("Select operation");
@@ -108,13 +126,19 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 		classTextField = new TextField();
 		classTextField.setText(object.getName());
 		classTextField.setDisable(true);
-		
-		bodyTextArea = new TextArea();
-		
+		classTextField.setMinWidth(COLUMN_WIDTH);
+		classTextField.isResizable();
+		codeBoxPair.getBodyScrollPane().setMinWidth(COLUMN_WIDTH*2);
+		codeBoxPair.getBodyScrollPane().setMaxWidth(COLUMN_WIDTH*4);
+		//codeBoxPair.getBodyScrollPane().resize(COLUMN_WIDTH, grid.getHeight());
+		codeBoxPair.getErrorTextArea().setMinWidth(COLUMN_WIDTH*2);
+		codeBoxPair.getErrorTextArea().setMaxWidth(COLUMN_WIDTH*4);
+		codeBoxPair.getErrorTextArea().setMaxHeight(100);
+		//codeBoxPair.getErrorTextArea().resize(COLUMN_WIDTH, grid.getHeight());
 		selectOperationComboBox = (ComboBox<FmmlxOperation>)initializeComboBox(operationsList);
 		selectOperationComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue != null) {
-				bodyTextArea.setText(newValue.getBody());
+				codeBoxPair.setBodyText(newValue.getBody());
 			}
 		});
 		
@@ -124,19 +148,36 @@ public class ChangeBodyDialog extends CustomDialog<ChangeBodyDialogResult>{
 		grid.add(classTextField, 1, 0);
 		grid.add(selectOperationLabel, 0, 1);
 		grid.add(selectOperationComboBox, 1, 1);
+		grid.add(resetBodyButton, 1, 2);
 		grid.add(bodyLabel, 0, 2);
-		grid.add(bodyTextArea, 1, 2, 1, 2);
-		
+		grid.add(codeBoxPair.getBodyScrollPane(), 0, 3);
+		grid.add(new Label("Parse Result"), 0, 4);
+		grid.add(codeBoxPair.getErrorTextArea(), 0, 5);
 	}
 	
 	private void checkBodySyntax() {
-		if (!isNullOrEmpty(bodyTextArea.getText()) && !bodyTextArea.getText().contentEquals(StringValueDialog.OperationStringValues.emptyOperation)) {
-			diagram.getComm().checkOperationBody(bodyTextArea.getText());
-		}
+		ReturnCall<OperationException> returnCall = opException -> {
+			System.err.println("opException:" + opException);
+		};
+		
+		diagram.getComm().checkSyntax(diagram, codeBoxPair.getBodyText(), returnCall);
 	}
 	
 	private void resetOperationBody() {
-		bodyTextArea.setText(StringValueDialog.OperationStringValues.emptyOperation);
+		codeBoxPair.setBodyText(StringValue.OperationStringValues.emptyOperation);
+	}
+	
+	public class Result {
+		
+		public final FmmlxObject object;
+		public final FmmlxOperation selectedItem;
+		public final String body;
+
+		public Result(FmmlxObject object, FmmlxOperation selectedItem, String text) {
+			this.object = object;
+			this.selectedItem = selectedItem;
+			this.body = text;
+		}
 	}
 
 }

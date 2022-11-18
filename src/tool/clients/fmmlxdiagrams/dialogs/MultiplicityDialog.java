@@ -1,16 +1,16 @@
 package tool.clients.fmmlxdiagrams.dialogs;
 
+import static tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue.LabelAndHeaderTitle;
+
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.util.converter.IntegerStringConverter;
 import tool.clients.fmmlxdiagrams.Multiplicity;
-import tool.clients.fmmlxdiagrams.dialogs.results.MultiplicityDialogResult;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.ValueList;
 
-import static tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog.LabelAndHeaderTitle;
-
-public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
+public class MultiplicityDialog extends CustomDialog<Multiplicity> {
 
 	private ComboBox<Integer> minimumComboBox;
 	private ComboBox<Integer> maximumComboBox;
@@ -32,11 +32,11 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 			this.oldMultiplicity = Multiplicity.OPTIONAL;
 		}
 		DialogPane dialogPane = getDialogPane();
-		dialogPane.setHeaderText("Add / Edit Multiplicity");
+		dialogPane.setHeaderText("Edit Multiplicity");
 
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-		addElementToGrid();
+		addElementsToGrid();
 		dialogPane.setContent(flow);
 
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
@@ -48,9 +48,9 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				return new MultiplicityDialogResult(
+				return new Multiplicity(
 						getComboBoxIntegerValue(minimumComboBox),
-						getComboBoxIntegerValue(maximumComboBox),
+						isUpperLimitCheckBox.isSelected()?getComboBoxIntegerValue(maximumComboBox):Integer.MAX_VALUE,
 						isUpperLimitCheckBox.isSelected(),
 						orderedCheckBox.isSelected(),
 						duplicatesCheckBox.isSelected());
@@ -59,7 +59,7 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 		});
 	}
 
-	public void addElementToGrid() {
+	public void addElementsToGrid() {
 		Label labelMin = new Label(LabelAndHeaderTitle.minimum);
 		Label labelMax = new Label(LabelAndHeaderTitle.maximum);
 		Label labelOrdered = new Label(LabelAndHeaderTitle.ordered);
@@ -70,9 +70,14 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 		minimumComboBox.setValue(oldMultiplicity.min);
 
 		maximumComboBox = new ComboBox<>();
-		if(oldMultiplicity.upperLimit) maximumComboBox.setValue(oldMultiplicity.max);
 		maximumComboBox.setEditable(true);
 		maximumComboBox.setConverter(new IntegerStringConverter());
+		if(oldMultiplicity.upperLimit) {
+			maximumComboBox.setValue(oldMultiplicity.max);
+		} else {
+			maximumComboBox.setValue(0);
+			maximumComboBox.setDisable(true);
+		}
 		minimumComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue != null) {
 				maximumComboBox.setItems(ValueList.getValueInterval(newValue));
@@ -107,7 +112,7 @@ public class MultiplicityDialog extends CustomDialog<MultiplicityDialogResult> {
 
 	private boolean validateInput() {
 		if (minimumComboBox.getSelectionModel().getSelectedItem() == null || maximumComboBox.getSelectionModel().getSelectedItem() == null) {
-			errorLabel.setText("Minimum and Maximum cannot be blank.");
+			errorLabel.setText("Minimum or Maximum cannot be blank.");
 			return false;
 		}
 		if (!validateMax()) {

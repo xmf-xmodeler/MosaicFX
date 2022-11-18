@@ -8,119 +8,152 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.scene.transform.Affine;
-import tool.clients.fmmlxdiagrams.PortRegion;
+import javafx.scene.transform.NonInvertibleTransformException;
 
-import java.text.DecimalFormat;
-import java.util.Collections;
+import org.w3c.dom.Element;
+
+import tool.clients.fmmlxdiagrams.graphics.SvgConstant;
+import tool.clients.xmlManipulator.XmlHandler;
+
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Vector;
 
-public abstract class Edge implements CanvasElement {
+public abstract class Edge<ConcreteNode extends Node> implements CanvasElement {
 
-	final public int id;
-	protected Vector<Point2D> intermediatePoints = new Vector<>();
-	protected FmmlxObject sourceNode;
-	protected FmmlxObject targetNode;
-	protected FmmlxDiagram diagram;
+	final public String path;
+	private Vector<Point2D> intermediatePoints = new Vector<>();
+	final protected ConcreteNode sourceNode;
+	final protected ConcreteNode targetNode;
 	protected final Double DEFAULT_TOLERANCE = 6.;
 	protected boolean layoutingFinishedSuccesfully;
+	protected AbstractPackageViewer diagram;
 	
-	public final Edge.End sourceEnd = new Edge.Source(this);
-	public final Edge.End targetEnd = new Edge.Target(this);
-	
-	public static abstract class End {public final Edge edge; private End(Edge edge) {this.edge = edge;} public abstract FmmlxObject getNode();};
-	public static class Source extends End{private Source(Edge edge) {super(edge);} public FmmlxObject getNode() {return edge.sourceNode;}};
-	public static class Target extends End{private Target(Edge edge) {super(edge);} public FmmlxObject getNode() {return edge.targetNode;}};
+	public final Edge<ConcreteNode>.End sourceEnd = new Source(this);
+	public final Edge<ConcreteNode>.End targetEnd = new Target(this);
+
+	private transient MoveMode moveMode;
+	private transient PortRegion newSourcePortRegion;
+	private transient PortRegion newTargetPortRegion;
+
+	protected transient PortRegion sourcePortRegion;
+	protected transient PortRegion targetPortRegion;
+	private transient Point2D lastMousePositionRaw;
+
+	public abstract class End {public final Edge<ConcreteNode> edge; private End(Edge<ConcreteNode> edge) {this.edge = edge;} public abstract ConcreteNode getNode();}
+	public class Source extends End{private Source(Edge<ConcreteNode> edge) {super(edge);} public ConcreteNode getNode() {return edge.sourceNode;}}
+	public class Target extends End{private Target(Edge<ConcreteNode> edge) {super(edge);} public ConcreteNode getNode() {return edge.targetNode;}}
 
 	protected boolean visible;
 
-	private Vector<Object> labelPositions;
+	private HashMap<Integer, Point2D> labelPositions;
 
 	protected enum HeadStyle {
-		NO_ARROW(0), ARROW(1), FULL_TRIANGLE(2), CIRCLE(3);
-
-		int id;
-
-		private HeadStyle(int id) {
-			this.id = id;
-		}
-
-		// private int getID() {return id;}
-		private static HeadStyle getHeadStyle(int id) {
-			for (HeadStyle headStyle : HeadStyle.values())
-				if (headStyle.id == id)
-					return headStyle;
-			throw new IllegalArgumentException("HeadStyle ID " + id + " not in use!");
-		}
-
+		NO_ARROW, ARROW, FULL_TRIANGLE, CIRCLE
 	}
 
-	public Edge(int id, 
-			FmmlxObject startNode, FmmlxObject endNode, 
+	private transient Vector<Point2D> latestValidPointConfiguration = new Vector<>();
+	private transient int pointToBeMoved = -1;
+	private transient boolean movementDirectionHorizontal;
+	private Integer firstHoverPointIndex;
+
+	private enum MoveMode {
+		normal, moveSourcePortArea, moveTargetPortArea
+	}
+	
+	public enum Anchor {CENTRE_MOVABLE, SOURCE_LEVEL, TARGET_LEVEL, SOURCE_MULTI, TARGET_MULTI,CENTRE_SELFASSOCIATION}
+
+	public Edge(String path, 
+			ConcreteNode startNode, ConcreteNode endNode, 
 			Vector<Point2D> intermediatePoints,
 			PortRegion sourcePortRegion, PortRegion targetPortRegion,
-			Vector<Object> labelPositions, FmmlxDiagram diagram) {
+			Vector<Object> labelPositions, AbstractPackageViewer diagram) {
 		layoutingFinishedSuccesfully = false;
-		this.labelPositions = labelPositions;
-		this.id = id;
-		this.diagram = diagram;
+		initLabelPositionMap(labelPositions);
+		this.path = path;
 		this.sourceNode = startNode;
 		this.targetNode = endNode;
-		if (intermediatePoints == null || intermediatePoints.size() < 1) {
-//			this.points.add(new Point2D(startNode.getX() + startNode.getWidth() / 2, startNode.getY() + startNode.getHeight() / 2));
-//			this.points.add(new Point2D(endNode.getX() + endNode.getWidth() / 2, endNode.getY() + endNode.getHeight() / 2));
-		} else {
+		this.diagram = diagram;
+		if (intermediatePoints == null || intermediatePoints.size() < 1) {} else {
 			this.intermediatePoints.addAll(intermediatePoints);
 		}
 		storeLatestValidPointConfiguration();
-		
+
 		if(sourcePortRegion==null) {
-			if(startNode == endNode) sourcePortRegion = PortRegion.EAST; else
-			sourcePortRegion = determinePort(startNode,
+			if(this instanceof InheritanceEdge) sourcePortRegion = PortRegion.NORTH;
+			else if(startNode == endNode) sourcePortRegion = PortRegion.EAST; 
+			else
+			sourcePortRegion = determineInitialPort(startNode,
 				this.intermediatePoints.size() < 1 ? null : this.intermediatePoints.firstElement(),
 				startNode.getCenterX() < endNode.getCenterX() ? PortRegion.EAST : PortRegion.WEST);
+			this.sourcePortRegion = sourcePortRegion;
 		}
 		if(targetPortRegion==null) {
-			if(startNode == endNode) targetPortRegion = PortRegion.NORTH; else
-			targetPortRegion = determinePort(endNode,
+			if(this instanceof InheritanceEdge) targetPortRegion = PortRegion.SOUTH;
+			else if(startNode == endNode) targetPortRegion = PortRegion.NORTH; 
+			else
+			targetPortRegion = determineInitialPort(endNode,
 				this.intermediatePoints.size() < 1 ? null : this.intermediatePoints.lastElement(),
 				startNode.getCenterX() < endNode.getCenterX() ? PortRegion.WEST : PortRegion.EAST);
+			this.targetPortRegion = targetPortRegion;
 		}
         startNode.addEdgeEnd(this.sourceEnd, sourcePortRegion);
         endNode.addEdgeEnd(this.targetEnd, targetPortRegion);
 
 	}
 
-	private PortRegion determinePort(FmmlxObject node, Point2D nextPoint, PortRegion defaultRegion) {
+	public ConcreteNode getSourceNode() {
+		return sourceNode;
+	}
+
+	public ConcreteNode getTargetNode() {
+		return targetNode;
+	}
+
+	public void setIntermediatePoints(Vector<Point2D> intermediatePoints) {
+		this.intermediatePoints = intermediatePoints;
+	}
+
+	public PortRegion getSourcePortRegion() {
+		return sourceNode.getDirectionForEdge(this.sourceEnd, true);
+	}
+
+	public PortRegion getTargetPortRegion() {
+		return targetNode.getDirectionForEdge(this.targetEnd, false);
+	}
+
+	private PortRegion determineInitialPort(ConcreteNode node, Point2D nextPoint, PortRegion defaultRegion) {
 		if (nextPoint == null) {
 			return defaultRegion;
 		}
-		if (node.getX() < nextPoint.getX() && nextPoint.getX() < node.getMaxRight()) {
+		if (node.getLeftX() < nextPoint.getX() && nextPoint.getX() < node.getRightX()) {
 			// N or S
-			if (node.getY() > nextPoint.getY())
+			if (node.getTopY() > nextPoint.getY())
 				return PortRegion.NORTH;
 			return PortRegion.SOUTH;
 		} else {
 			// E or W
-			if (node.getX() > nextPoint.getX())
+			if (node.getLeftX() > nextPoint.getX())
 				return PortRegion.WEST;
 			return PortRegion.EAST;
 		}
 	}
-
+	
 	@Override
-	public void paintOn(GraphicsContext g, int xOffset, int yOffset, FmmlxDiagram fmmlxDiagram) {
-		if(!visible) return;
+	public final void paintOn(GraphicsContext g, Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
+		if(!isVisible()) return;
 		if(!layoutingFinishedSuccesfully) {
-			layoutLabels(); diagram.redraw();
+			layoutLabels(view.getDiagram()); 
+			view.getDiagram().redraw();
 		} else {
 			Vector<Point2D> points = getAllPoints();
-			g.setFill(new Color(.8, .8, .9, 1.));
+			/* SHOW ANGLE 
+            g.setFill(new Color(.8, .8, .9, 1.));
 			g.fillText(
 					new DecimalFormat("0.00").format(Math.atan2(-targetNode.getCenterY() + sourceNode.getCenterY(),
 							targetNode.getCenterX() - sourceNode.getCenterX()) / Math.PI) + "\u03C0",
 					.5 * (sourceNode.getCenterX() + targetNode.getCenterX()),
-					.5 * (sourceNode.getCenterY() + targetNode.getCenterY()) - 12);
+					.5 * (sourceNode.getCenterY() + targetNode.getCenterY()) - 12); */
 
 			// hover
 			if (firstHoverPointIndex != null) {
@@ -131,12 +164,18 @@ public abstract class Edge implements CanvasElement {
 			}
 
 			// normal
-			g.setStroke(fmmlxDiagram.isSelected(this) ? Color.RED : getPrimaryColor());
+			g.setStroke(view.getDiagram().isSelected(this) ? Color.RED : getPrimaryColor());
 			g.setLineWidth(isSelected() ? 3 : 1);
 			g.setLineDashes(getLineDashes());
 
 			for (int i = 0; i < points.size() - 1; i++) {
-				Vector<Point2D> intersections = diagram.findEdgeIntersections(points.get(i), points.get(i + 1));
+//				if(i!=0) try {
+//					g.setFill(Color.PURPLE);
+//					Point2D hoverRaw = g.getTransform().inverseTransform(points.get(i));
+//					g.fillText(""+hoverRaw, points.get(i).getX(), points.get(i).getY()+15);
+//				} catch (NonInvertibleTransformException e) {}
+				
+				Vector<Point2D> intersections = view.getDiagram().findEdgeIntersections(points.get(i), points.get(i + 1));
 
 				if (intersections.size() == 0) {
 					g.strokeLine(points.get(i).getX(), points.get(i).getY(), points.get(i + 1).getX(),
@@ -149,13 +188,7 @@ public abstract class Edge implements CanvasElement {
 					Point2D now = first.getX() < last.getX() ? first : last;
 					Point2D endOfLine = first.getX() < last.getX() ? last : first;
 
-					Collections.sort(intersections, new Comparator<Point2D>() {
-
-						@Override
-						public int compare(Point2D o1, Point2D o2) {
-							return o1.getX() < o2.getX() ? -1 : o1.getX() == o2.getX() ? 0 : 1;
-						}
-					});
+					intersections.sort(Comparator.comparingDouble(Point2D::getX));
 
 					boolean tunnelMode = false;
 					final int R = 5;
@@ -196,14 +229,14 @@ public abstract class Edge implements CanvasElement {
 
 			if (newSourcePortRegion != null) {
 				double[] xPoints2 = new double[] { (points.get(0).getX() + points.get(1).getX()) / 2,
-						lastMousePosition.getX(),
-						newSourcePortRegion == PortRegion.WEST ? sourceNode.getX()
-								: newSourcePortRegion == PortRegion.EAST ? sourceNode.getMaxRight()
+						lastMousePositionRaw.getX(),
+						newSourcePortRegion == PortRegion.WEST ? sourceNode.getLeftX()
+								: newSourcePortRegion == PortRegion.EAST ? sourceNode.getRightX()
 										: sourceNode.getCenterX() };
 				double[] yPoints2 = new double[] { (points.get(0).getY() + points.get(1).getY()) / 2,
-						lastMousePosition.getY(),
-						newSourcePortRegion == PortRegion.NORTH ? sourceNode.getY()
-								: newSourcePortRegion == PortRegion.SOUTH ? sourceNode.getMaxBottom()
+						lastMousePositionRaw.getY(),
+						newSourcePortRegion == PortRegion.NORTH ? sourceNode.getTopY()
+								: newSourcePortRegion == PortRegion.SOUTH ? sourceNode.getBottomY()
 										: sourceNode.getCenterY() };
 
 				g.setStroke(new Color(1., .8, .2, 1.));
@@ -216,15 +249,15 @@ public abstract class Edge implements CanvasElement {
 			if (newTargetPortRegion != null) {
 				double[] xPoints2 = new double[] {
 						(points.get(points.size() - 1).getX() + points.get(points.size() - 2).getX()) / 2,
-						lastMousePosition.getX(),
-						newSourcePortRegion == PortRegion.WEST ? targetNode.getX()
-								: newTargetPortRegion == PortRegion.EAST ? targetNode.getMaxRight()
+						lastMousePositionRaw.getX(),
+						newSourcePortRegion == PortRegion.WEST ? targetNode.getLeftX()
+								: newTargetPortRegion == PortRegion.EAST ? targetNode.getRightX()
 										: targetNode.getCenterX() };
 				double[] yPoints2 = new double[] {
 						(points.get(points.size() - 1).getY() + points.get(points.size() - 2).getY()) / 2,
-						lastMousePosition.getY(),
-						newSourcePortRegion == PortRegion.NORTH ? targetNode.getY()
-								: newTargetPortRegion == PortRegion.SOUTH ? targetNode.getMaxBottom()
+						lastMousePositionRaw.getY(),
+						newSourcePortRegion == PortRegion.NORTH ? targetNode.getTopY()
+								: newTargetPortRegion == PortRegion.SOUTH ? targetNode.getBottomY()
 										: targetNode.getCenterY() };
 
 				g.setStroke(new Color(1., .8, .2, 1.));
@@ -253,8 +286,11 @@ public abstract class Edge implements CanvasElement {
 	private void drawDecoration(GraphicsContext g, HeadStyle decoration, PortRegion directionForEdge,
 			Point2D pointForEdge) {
 
-		Affine old = g.getTransform();
-		Affine local = new Affine(old);
+		Affine old;
+		Affine local;
+		
+		old = g.getTransform();
+		local = new Affine(old);
 		double angle = (directionForEdge == PortRegion.EAST ? -0.5
 				: directionForEdge == PortRegion.WEST ? 0.5 : directionForEdge == PortRegion.NORTH ? 1 : 0) * 180;
 		local.appendRotation(angle, pointForEdge.getX(), pointForEdge.getY());
@@ -293,10 +329,12 @@ public abstract class Edge implements CanvasElement {
 			break;
 
 		case CIRCLE: {
-			double size = 16;
+			double size = 14;
 			g.setFill(Color.WHITE);
-			g.fillOval(pointForEdge.getX() - size / 2, pointForEdge.getY() + 1, size, size);
-			g.strokeOval(pointForEdge.getX() - size / 2, pointForEdge.getY() + 1, size, size);
+			g.setLineWidth(2);
+			g.fillOval(pointForEdge.getX() - size / 2, pointForEdge.getY() + 2, size, size);
+			g.strokeOval(pointForEdge.getX() - size / 2, pointForEdge.getY() + 2, size, size);
+			g.setLineWidth(1);
 		}
 			break;
 		default:
@@ -306,27 +344,20 @@ public abstract class Edge implements CanvasElement {
 		g.setTransform(old);
 	}
 	
-
-	public HeadStyle getTargetDecoration() {
-
-		return HeadStyle.ARROW;
-	}
-
-	public HeadStyle getSourceDecoration() {
-		return HeadStyle.NO_ARROW;
-	}
+	public abstract HeadStyle getTargetDecoration();
+	public abstract HeadStyle getSourceDecoration();
 
 	protected Vector<Point2D> getAllPoints() {
-		Vector<Point2D> allPoints = new Vector<Point2D>();
+		Vector<Point2D> allPoints = new Vector<>();
 		allPoints.add(sourceNode.getPointForEdge(sourceEnd, true));
 		allPoints.addAll(intermediatePoints);
 		allPoints.add(targetNode.getPointForEdge(targetEnd, false));
 		return allPoints;
 	}
 
-	protected abstract void layoutLabels();
+	protected abstract void layoutLabels(FmmlxDiagram diagram);
 
-	protected void align() {
+	public void align() {
 		checkVisibilityMode();
 		if(intermediatePoints.size() < 2) {
 			if(sourceNode.getDirectionForEdge(sourceEnd, true).isHorizontal() == targetNode.getDirectionForEdge(targetEnd, false).isHorizontal()) {
@@ -340,13 +371,12 @@ public abstract class Edge implements CanvasElement {
 				else
 					intermediatePoints.add(new Point2D(targetNode.getCenterX(), (sourceNode.getCenterY() + targetNode.getCenterY()) / 2));
 			} else if(sourceNode.getDirectionForEdge(sourceEnd, true) == PortRegion.EAST && targetNode.getDirectionForEdge(targetEnd, false) == PortRegion.NORTH) {
-				intermediatePoints.add(new Point2D(sourceNode.getMaxRight() + 40, sourceNode.getCenterY())); 
-				intermediatePoints.add(new Point2D(sourceNode.getMaxRight() + 40, targetNode.getY() - 40)); 
-				intermediatePoints.add(new Point2D(targetNode.getCenterX(), targetNode.getY() - 40)); 
+				intermediatePoints.add(new Point2D(sourceNode.getRightX() + 40, sourceNode.getCenterY())); 
+				intermediatePoints.add(new Point2D(sourceNode.getRightX() + 40, targetNode.getTopY() - 40)); 
+				intermediatePoints.add(new Point2D(targetNode.getCenterX(), targetNode.getTopY() - 40)); 
 			} else {
 				System.err.println("Unexpected initial edge alignment");
 			}
-			
 		}
 		
 		
@@ -377,26 +407,42 @@ public abstract class Edge implements CanvasElement {
 		return (double) 0;
 	}
 
+	protected String getSvgDashes() {
+		return "0";
+	}
+
+	protected String getSvgStrokeWidth() {
+		return "1";
+	}
+
 	private boolean isSelected() {
 		return false;
 	}
 
-	public boolean isHit(double x, double y) {
-		if(!visible) return false;
-		return null != isHit(new Point2D(x, y), 2.5);
+	@Override
+	public boolean isHit(double mouseX, double mouseY, GraphicsContext g,  Affine currentTransform, FmmlxDiagram.DiagramViewPane view) {
+		if(!isVisible()) return false;
+		return null != isHit(new Point2D(mouseX, mouseY), 2.5, view.getCanvasTransform());
 	}
 
-	public Integer isHit(Point2D p, Double tolerance) {
-		if (p == null)
+	public Integer isHit(Point2D mouse, Double tolerance, Affine canvasTransform) {
+		if (mouse == null)
 			return null;
-		Vector<Point2D> points = getAllPoints();
-		for (int i = 0; i < points.size() - 1; i++) {
-			if (distance(p, points.get(i),
-					points.get(i + 1)) < 0.2/* (tolerance == null ? DEFAULT_TOLERANCE : tolerance) */) {
-				return i;
+		Point2D p;
+		try {
+			p = canvasTransform.inverseTransform(mouse);
+//			System.err.println(getName() + ": " + p);
+			Vector<Point2D> points = getAllPoints();
+			for (int i = 0; i < points.size() - 1; i++) {
+				if (distance(p, points.get(i),
+						points.get(i + 1)) < 0.2/* (tolerance == null ? DEFAULT_TOLERANCE : tolerance) */) {
+					return i;
+				}
 			}
+			return null;
+		} catch (NonInvertibleTransformException e) {
+			return null;
 		}
-		return null;
 	}
 
 	private double distance(Point2D p, Point2D a, Point2D b) { // assume lines to be aligned
@@ -407,31 +453,25 @@ public abstract class Edge implements CanvasElement {
 		return Math.abs(angleAB);
 	}
 
-	/*private double distance_OLD(Point2D testPoint, Point2D lineStart, Point2D lineEnd) { // some fancy math copied from
-																							// the old diagram
-		double normalLength = Math.sqrt((lineEnd.getX() - lineStart.getX()) * (lineEnd.getX() - lineStart.getX())
-				+ (lineEnd.getY() - lineStart.getY()) * (lineEnd.getY() - lineStart.getY()));
-
-		return Math.abs((testPoint.getX() - lineStart.getX()) * (lineEnd.getY() - lineStart.getY())
-				- (testPoint.getY() - lineStart.getY()) * (lineEnd.getX() - lineStart.getX())) / normalLength;
-	}*/
-
 	@Override
-	public final ContextMenu getContextMenu(DiagramActions actions) {
-		ContextMenu localMenu = getContextMenuLocal(actions);
-		if(localMenu.getItems().size()>0) localMenu.getItems().add(new SeparatorMenuItem());
-		MenuItem repairItem = new MenuItem("Repair Edge Alignment");
-		repairItem.setOnAction(e -> ensure90DegreeAngles());
-		localMenu.getItems().add(repairItem);
+	public final ContextMenu getContextMenu(FmmlxDiagram.DiagramViewPane diagram, Point2D absolutePoint) {
+		ContextMenu localMenu = getContextMenuLocal(diagram.getDiagram().actions);
+		//if(localMenu.getItems().size()>0) localMenu.getItems().add(new SeparatorMenuItem());
+		//MenuItem repairItem = new MenuItem("Repair Edge Alignment");
+		//repairItem.setOnAction(e -> ensure90DegreeAngles());
+		//localMenu.getItems().add(repairItem);
 		return localMenu;
 	}
 
 	public abstract ContextMenu getContextMenuLocal(DiagramActions actions);
 	
-	@Override
-	public void moveTo(double x, double y, FmmlxDiagram diagram) {
-		lastMousePosition = new Point2D(x, y);
-		//System.err.println("move point " + pointToBeMoved + " to " + x + "," + y + (movementDirectionHorizontal?"H":"V"));
+	public void moveTo(double mouseX, double mouseY, FmmlxDiagram.DiagramViewPane view) {
+	  try {
+		Point2D mouse = new Point2D(mouseX, mouseY);
+		Point2D raw = view.getCanvasTransform().inverseTransform(mouse);
+        lastMousePositionRaw = raw;
+		double x = raw.getX();
+		double y = raw.getY();
 		if (pointToBeMoved != -1 && moveMode == MoveMode.normal) {
 			if (movementDirectionHorizontal) {
 				intermediatePoints.setElementAt(new Point2D(x, intermediatePoints.get(pointToBeMoved - 1).getY()),
@@ -446,22 +486,25 @@ public abstract class Edge implements CanvasElement {
 			}
 		} else if (moveMode == MoveMode.moveSourcePortArea) {
 			newSourcePortRegion = findBestRegion(sourceNode, x, y);
+			this.sourcePortRegion = newSourcePortRegion;
 		} else if (moveMode == MoveMode.moveTargetPortArea) {
 			newTargetPortRegion = findBestRegion(targetNode, x, y);
+			this.targetPortRegion = newTargetPortRegion;
 		}
+      } catch (NonInvertibleTransformException e) {}
 	}
 
-	private PortRegion findBestRegion(FmmlxObject node, double x, double y) {
+	private PortRegion findBestRegion(Node node, double x, double y) {
 		double angleMouse = Math.atan2(y - node.getCenterY(), x - node.getCenterX());
 		double diffAngleNW = (4 * Math.PI + angleMouse
-				- Math.atan2(node.getY() - node.getCenterY(), node.getX() - node.getCenterX())) % (2 * Math.PI);
+				- Math.atan2(node.getTopY() - node.getCenterY(), node.getLeftX() - node.getCenterX())) % (2 * Math.PI);
 		double diffAngleNE = (4 * Math.PI + angleMouse
-				- Math.atan2(node.getY() - node.getCenterY(), node.getMaxRight() - node.getCenterX())) % (2 * Math.PI);
+				- Math.atan2(node.getTopY() - node.getCenterY(), node.getRightX() - node.getCenterX())) % (2 * Math.PI);
 		double diffAngleSE = (4 * Math.PI + angleMouse
-				- Math.atan2(node.getMaxBottom() - node.getCenterY(), node.getMaxRight() - node.getCenterX()))
+				- Math.atan2(node.getBottomY() - node.getCenterY(), node.getRightX() - node.getCenterX()))
 				% (2 * Math.PI);
 		double diffAngleSW = (4 * Math.PI + angleMouse
-				- Math.atan2(node.getMaxBottom() - node.getCenterY(), node.getX() - node.getCenterX())) % (2 * Math.PI);
+				- Math.atan2(node.getBottomY() - node.getCenterY(), node.getLeftX() - node.getCenterX())) % (2 * Math.PI);
 
 		if (diffAngleNW < diffAngleNE && diffAngleNW < diffAngleSE && diffAngleNW < diffAngleSW)
 			return PortRegion.NORTH;
@@ -473,11 +516,11 @@ public abstract class Edge implements CanvasElement {
 		return PortRegion.WEST;
 	}
 
-	public boolean isStartNode(FmmlxObject fmmlxObject) {
+	public boolean isSourceNode(FmmlxObject fmmlxObject) {
 		return sourceNode == fmmlxObject;
 	}
 
-	public boolean isEndNode(FmmlxObject fmmlxObject) {
+	public boolean isTargetNode(FmmlxObject fmmlxObject) {
 		return targetNode == fmmlxObject;
 	}
 
@@ -486,28 +529,16 @@ public abstract class Edge implements CanvasElement {
 		latestValidPointConfiguration.addAll(intermediatePoints);
 	}
 
-	private transient Vector<Point2D> latestValidPointConfiguration = new Vector<>();
-	private transient int pointToBeMoved = -1;
-	private transient boolean movementDirectionHorizontal;
-	private Integer firstHoverPointIndex;
 
-	private enum MoveMode {
-		normal, moveSourcePortArea, moveTargetPortArea
-	}
 
-	private transient MoveMode moveMode;
-	private transient PortRegion newSourcePortRegion;
-	private transient PortRegion newTargetPortRegion;
-	private transient Point2D lastMousePosition;
-
-	public void setPointAtToBeMoved(Point2D mousePoint) {
+	public void setPointAtToBeMoved(Point2D mousePoint, Affine canvasTransform) {
 		Vector<Point2D> points = getAllPoints();
 		// An edge has been dragged on at Point p.
 		// if a point is already found
 		if (pointToBeMoved != -1)
 			return;
 
-		Integer hitLine = isHit(mousePoint, 0.2);
+		Integer hitLine = isHit(mousePoint, 0.2, canvasTransform);
 		if(hitLine != null) { 
 			if(hitLine > 0 && hitLine < points.size() - 2) {
 			pointToBeMoved = hitLine;
@@ -524,7 +555,7 @@ public abstract class Edge implements CanvasElement {
 		}
 	}
 
-	public void dropPoint() {
+	public void dropPoint(FmmlxDiagram diagram) {
 		/*
 		 * Vector<Point2D> points = getAllPoints(); if (pointToBeMoved != -1) { // if
 		 * point very close to other point, remove it. if
@@ -541,22 +572,22 @@ public abstract class Edge implements CanvasElement {
 			} else { // requires a new point
 				if (newSourcePortRegion == PortRegion.SOUTH) {
 					intermediatePoints
-							.insertElementAt(new Point2D(0 /* does not matter */, sourceNode.getMaxBottom() + 30), 0);
+							.insertElementAt(new Point2D(0 /* does not matter */, sourceNode.getBottomY() + 30), 0);
 					intermediatePoints.setElementAt(
-							new Point2D(intermediatePoints.get(1).getX(), sourceNode.getMaxBottom() + 30), 1);
+							new Point2D(intermediatePoints.get(1).getX(), sourceNode.getBottomY() + 30), 1);
 				} else if (newSourcePortRegion == PortRegion.NORTH) {
-					intermediatePoints.insertElementAt(new Point2D(0 /* does not matter */, sourceNode.getY() - 30), 0);
+					intermediatePoints.insertElementAt(new Point2D(0 /* does not matter */, sourceNode.getTopY() - 30), 0);
 					intermediatePoints
-							.setElementAt(new Point2D(intermediatePoints.get(1).getX(), sourceNode.getY() - 30), 1);
+							.setElementAt(new Point2D(intermediatePoints.get(1).getX(), sourceNode.getTopY() - 30), 1);
 				} else if (newSourcePortRegion == PortRegion.WEST) {
-					intermediatePoints.insertElementAt(new Point2D(sourceNode.getX() - 30, 0 /* does not matter */), 0);
+					intermediatePoints.insertElementAt(new Point2D(sourceNode.getLeftX() - 30, 0 /* does not matter */), 0);
 					intermediatePoints
-							.setElementAt(new Point2D(sourceNode.getX() - 30, intermediatePoints.get(1).getY()), 1);
+							.setElementAt(new Point2D(sourceNode.getLeftX() - 30, intermediatePoints.get(1).getY()), 1);
 				} else if (newSourcePortRegion == PortRegion.EAST) {
 					intermediatePoints
-							.insertElementAt(new Point2D(sourceNode.getMaxRight() + 30, 0 /* does not matter */), 0);
+							.insertElementAt(new Point2D(sourceNode.getRightX() + 30, 0 /* does not matter */), 0);
 					intermediatePoints.setElementAt(
-							new Point2D(sourceNode.getMaxRight() + 30, intermediatePoints.get(1).getY()), 1);
+							new Point2D(sourceNode.getRightX() + 30, intermediatePoints.get(1).getY()), 1);
 				}
 				sourceNode.setDirectionForEdge(sourceEnd, true, newSourcePortRegion);
 			}
@@ -567,25 +598,25 @@ public abstract class Edge implements CanvasElement {
 				targetNode.setDirectionForEdge(targetEnd, false, newTargetPortRegion);
 			} else { // requires a new point
 				if (newTargetPortRegion == PortRegion.SOUTH) {
-					intermediatePoints.add(new Point2D(0 /* does not matter */, targetNode.getMaxBottom() + 30));
+					intermediatePoints.add(new Point2D(0 /* does not matter */, targetNode.getBottomY() + 30));
 					intermediatePoints
 							.setElementAt(new Point2D(intermediatePoints.get(intermediatePoints.size() - 2).getX(),
-									targetNode.getMaxBottom() + 30), intermediatePoints.size() - 2);
+									targetNode.getBottomY() + 30), intermediatePoints.size() - 2);
 				} else if (newTargetPortRegion == PortRegion.NORTH) {
-					intermediatePoints.add(new Point2D(0 /* does not matter */, targetNode.getY() - 30));
+					intermediatePoints.add(new Point2D(0 /* does not matter */, targetNode.getTopY() - 30));
 					intermediatePoints
 							.setElementAt(new Point2D(intermediatePoints.get(intermediatePoints.size() - 2).getX(),
-									targetNode.getY() - 30), intermediatePoints.size() - 2);
+									targetNode.getTopY() - 30), intermediatePoints.size() - 2);
 				} else if (newTargetPortRegion == PortRegion.WEST) {
-					intermediatePoints.add(new Point2D(targetNode.getX() - 30, 0 /* does not matter */));
+					intermediatePoints.add(new Point2D(targetNode.getLeftX() - 30, 0 /* does not matter */));
 					intermediatePoints.setElementAt(
-							new Point2D(targetNode.getX() - 30,
+							new Point2D(targetNode.getLeftX() - 30,
 									intermediatePoints.get(intermediatePoints.size() - 2).getY()),
 							intermediatePoints.size() - 2);
 				} else if (newTargetPortRegion == PortRegion.EAST) {
-					intermediatePoints.add(new Point2D(targetNode.getMaxRight() + 30, 0 /* does not matter */));
+					intermediatePoints.add(new Point2D(targetNode.getRightX() + 30, 0 /* does not matter */));
 					intermediatePoints.setElementAt(
-							new Point2D(targetNode.getMaxRight() + 30,
+							new Point2D(targetNode.getRightX() + 30,
 									intermediatePoints.get(intermediatePoints.size() - 2).getY()),
 							intermediatePoints.size() - 2);
 				}
@@ -593,18 +624,21 @@ public abstract class Edge implements CanvasElement {
 			}
 		}
 
+		storeLatestValidPointConfiguration();
+
+		if(pointToBeMoved != -1 || newSourcePortRegion!= null || newTargetPortRegion != null) {
+				diagram.getComm().sendCurrentPositions(diagram.getID(), this);
+		}
+		 
 		pointToBeMoved = -1;
 		newSourcePortRegion = null;
 		newTargetPortRegion = null;
 		moveMode = MoveMode.normal;
 
-		storeLatestValidPointConfiguration();
-
-		diagram.getComm().sendCurrentPositions(diagram, this);
 	}
 
 	public Vector<Point2D> getIntermediatePoints() {
-		return new Vector<Point2D>(intermediatePoints);
+		return new Vector<>(intermediatePoints);
 	}
 
 	protected Point2D getCentreAnchor() {
@@ -614,40 +648,29 @@ public abstract class Edge implements CanvasElement {
 				(points.get(n).getY() + points.get(n - 1).getY()) / 2);
 	}
 
-	public int getId() {
-		return id;
+	public String getPath() {
+		return path;
 	}
 
 	@Override
-	public void highlightElementAt(Point2D p) {
-		firstHoverPointIndex = isHit(p, .2);
+	public void highlightElementAt(Point2D mouse, Affine canvasTransform) {
+		firstHoverPointIndex = isHit(mouse, .2, canvasTransform);
 	}
 
-	@Override
-	public void setOffsetAndStoreLastValidPosition(Point2D p) {
-		storeLatestValidPointConfiguration();
-	}
-
-	@Override
-	public double getMouseMoveOffsetX() {
-		return 0;
-	}
-
-	@Override
-	public double getMouseMoveOffsetY() {
-		return 0;
-	}
-
-	@SuppressWarnings("unchecked")
 	protected Point2D getLabelPosition(int localId) {
-		for (Object labelPositionO : labelPositions) {
+		return labelPositions.get(localId);
+	}
+
+	private void initLabelPositionMap(Vector<Object> labelPositions2) {
+		labelPositions = new HashMap<>();
+		for (Object labelPositionO : labelPositions2) {
 			Vector<Object> labelPosition = (Vector<Object>) labelPositionO;
 			int theirLocalId = (Integer) labelPosition.get(1);
-			if (theirLocalId == localId) {
-				return new Point2D((Float) labelPosition.get(2), (Float) labelPosition.get(3));
-			}
+			float x = (Float) labelPosition.get(2);
+			float y = (Float) labelPosition.get(3);
+			Point2D p = new Point2D(x, y);
+			labelPositions.put(theirLocalId, p);
 		}
-		return null;
 	}
 
 	@Override
@@ -660,7 +683,7 @@ public abstract class Edge implements CanvasElement {
 		firstHoverPointIndex = null;
 		final double TOLERANCE = 3;
 
-		if (intermediatePoints.size() < 3)
+		if (intermediatePoints.size() <= 3)
 			return;
 		Integer removeIndex = null;
 		for (int i = 0; removeIndex == null && i < intermediatePoints.size() - 1; i++) {
@@ -693,7 +716,485 @@ public abstract class Edge implements CanvasElement {
 		}
 	}
 
-	public boolean isVisible() {
-		return true;
+	public final boolean isVisible() {
+		return visible && !sourceNode.isHidden() && !targetNode.isHidden();
+	}
+	
+	public void updatePosition(DiagramEdgeLabel<?> del) {
+		labelPositions.put(del.localID, new Point2D(del.getRelativeX(), del.getRelativeY()));
+	}
+
+	public abstract String getName();
+	
+	protected void createLabel(String value, int localId, Anchor anchor, Runnable action, Color textColor, Color bgColor, FmmlxDiagram diagram) {
+		double w = FmmlxDiagram.calculateTextWidth(value);
+		double h = FmmlxDiagram.calculateTextHeight();
+		
+		if(Anchor.CENTRE_MOVABLE == anchor) {
+			Point2D storedPostion = getLabelPosition(localId);
+			Vector<ConcreteNode> anchors = new Vector<>();
+			anchors.add(getSourceNode());
+			anchors.add(getTargetNode());
+			if(storedPostion != null) {
+				diagram.addLabel(new DiagramEdgeLabel<>(this, localId, action, null, anchors, value, storedPostion.getX(), storedPostion.getY(), w, h, textColor, bgColor));
+			} else {
+				diagram.addLabel(new DiagramEdgeLabel<>(this, localId, action, null, anchors, value, 0, -h*1.5, w, h, textColor, bgColor));
+			}
+		} else if (Anchor.CENTRE_SELFASSOCIATION==anchor) {
+			Point2D storedPosition = getLabelPosition(localId);
+			Vector<ConcreteNode> anchors = new Vector<>();
+			anchors.add(getSourceNode());
+			anchors.add(getTargetNode());
+			if(storedPosition != null) {
+				diagram.addLabel(new DiagramEdgeLabel<>(this, localId, action, null, anchors, value, storedPosition.getX(), storedPosition.getY(), w, h, textColor, bgColor));
+			} else {
+				diagram.addLabel(new DiagramEdgeLabel<>(this, localId, action, null, anchors, value, sourceNode.getWidth()/2, -4*h-0.5*sourceNode.getHeight(), w, h, textColor, bgColor));
+			}
+		} else {
+			Vector<ConcreteNode> anchors = new Vector<>();
+			double x,y;
+			Point2D p;
+			PortRegion dir;
+			if(anchor == Anchor.SOURCE_LEVEL || anchor == Anchor.SOURCE_MULTI) {
+				p = getSourceNode().getPointForEdge(sourceEnd, true);
+				dir = getSourceNode().getDirectionForEdge(sourceEnd, true);
+				anchors.add(getSourceNode());
+			} else {
+				p = getTargetNode().getPointForEdge(targetEnd, false);
+				dir = getTargetNode().getDirectionForEdge(targetEnd, false); 
+				anchors.add(getTargetNode());
+			}
+			ConcreteNode node = anchors.firstElement();
+
+			final double TEXT_X_DIFF = 10;
+			final double TEXT_Y_DIFF = 10;
+			switch(anchor) {
+			case SOURCE_LEVEL:
+			case TARGET_LEVEL: {
+				if(dir == PortRegion.SOUTH) {
+					y = TEXT_Y_DIFF;
+				} else {
+					y = -TEXT_Y_DIFF-h;
+				}
+				if(dir == PortRegion.EAST) {
+					x = TEXT_X_DIFF;
+				} else {
+					x = -TEXT_X_DIFF - w;
+				}
+				break;}
+			case SOURCE_MULTI: 
+			case TARGET_MULTI: {
+				if(dir == PortRegion.NORTH) {
+					y = -TEXT_Y_DIFF-h;
+				} else {
+					y = TEXT_Y_DIFF;
+				}
+				if(dir == PortRegion.WEST) {
+					x = -TEXT_X_DIFF - w;
+				} else {
+					x = TEXT_X_DIFF;
+				}
+				break;}
+			default: {x=0;y=0;break;}
+			}
+			diagram.addLabel(new DiagramEdgeLabel<>(this, localId, action, null, anchors, value, 
+					p.getX() - node.getCenterX() + x, 
+					p.getY() - node.getCenterY() + y, 
+					w, h, textColor, bgColor));
+		}
+	}
+
+	public double getMaxX() {
+		double i = Double.NEGATIVE_INFINITY;
+		for(Point2D p : intermediatePoints) {
+			i = Math.max(i, p.getX());
+		}
+		return i;
+	}
+
+	public double getMaxY() {
+		double i = Double.NEGATIVE_INFINITY;
+		for(Point2D p : intermediatePoints) {
+			i = Math.max(i, p.getY());
+		}
+		return i;
+	}
+
+	@Override
+	public void paintToSvg(XmlHandler xmlHandler, FmmlxDiagram diagram) {
+		if(!isVisible()) return;
+
+		Color color = diagram.isSelected(this) ? Color.RED : getPrimaryColor();
+		String strokeColor = color.toString().split("x")[1].substring(0,6);
+
+		Element group = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_GROUP);
+		group.setAttribute(SvgConstant.ATTRIBUTE_GROUP_TYPE, "edge");
+
+		Vector<Point2D> points = getAllPoints();
+		for (int i = 0; i < points.size() - 1; i++) {
+			Vector<Point2D> intersections = diagram.findEdgeIntersections(points.get(i), points.get(i + 1));
+
+			if (intersections.size() == 0) {
+
+				Element path = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
+				path.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
+				path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
+				path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
+				String pathString = "M" + points.get(i).getX() + " " + points.get(i).getY() +
+						" L" + points.get(i + 1).getX() + " " + points.get(i + 1).getY();
+				path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString);
+				path.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
+				xmlHandler.addXmlElement(group, path);
+
+			} else {
+
+				Point2D first = points.get(i);
+				Point2D last = points.get(i + 1);
+
+				Point2D now = first.getX() < last.getX() ? first : last;
+				Point2D endOfLine = first.getX() < last.getX() ? last : first;
+
+				intersections.sort(Comparator.comparingDouble(Point2D::getX));
+
+				boolean tunnelMode = false;
+				final int R = 5;
+
+				while (intersections.size() > 0) {
+					Point2D next = intersections.remove(0);
+					if (tunnelMode) {
+						if (next.getX() - 2 * R > now.getX()) { // enough space to next
+							Element path = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
+							path.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
+							path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
+							path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
+							String pathString = "M" + now.getX() + " " + (now.getY() - R) +
+									"A" +
+									" 5 5" + // radiusX radiusY
+									" 0" + // rotation
+									" 0" +
+									" 1" + // Clockwise
+									" " + (now.getX() + R) +// X-Endpoint
+									" " + now.getY();// Y-Endpoint
+							path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString);
+							path.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
+							xmlHandler.addXmlElement(group, path);
+
+							Element path1 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
+							path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
+							path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
+							path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
+							String pathString1 = "M" + (now.getX() + R) + " " + now.getY() +
+									" L" + (next.getX() - R) + " " + next.getY();
+							path1.setAttribute(SvgConstant.ATTRIBUTE_D, pathString1);
+							path1.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
+							xmlHandler.addXmlElement(group, path1);
+
+							Element path2 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
+							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
+							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
+							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
+							String pathString2 = "M" + (next.getX() - R) + " " + next.getY() +
+									"A" +
+									" 5 5" + // radiusX radiusY
+									" 0" + // rotation
+									" 0" +
+									" 1" + // Clockwise
+									" " + next.getX() +// X-Endpoint
+									" " + (next.getY() - R);// Y-Endpoint
+							path2.setAttribute(SvgConstant.ATTRIBUTE_D, pathString2);
+							path2.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
+							xmlHandler.addXmlElement(group, path2);
+
+
+						} else { // not enough space -> just line to next
+							Element path = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
+							path.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
+							path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
+							path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
+							String pathString = "M" + now.getX() + " " + (now.getY() - R) +
+									" L" + next.getX() + " " + (next.getY() - R);
+							path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString);
+							path.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
+							xmlHandler.addXmlElement(group, path);
+						}
+					} else {
+						if (next.getX() - R > now.getX()) {
+							Element path1 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
+							path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
+							path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
+							path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
+							String pathString1 = "M" + now.getX() + " " + now.getY() +
+									" L" + (next.getX() - R) + " " + next.getY();
+							path1.setAttribute(SvgConstant.ATTRIBUTE_D, pathString1);
+							path1.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
+							xmlHandler.addXmlElement(group, path1);
+
+							Element path2 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
+							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
+							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
+							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
+							String pathString2 = "M" + (next.getX() - R) + " " + next.getY() +
+									"A" +
+									" 5 5" + // radiusX radiusY
+									" 0" + // rotation
+									" 0" + //
+									" 1" + // Clockwise
+									" " + next.getX() +// X-Endpoint
+									" " + (next.getY() - R);// Y-Endpoint
+							path2.setAttribute(SvgConstant.ATTRIBUTE_D, pathString2);
+							path2.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
+							xmlHandler.addXmlElement(group, path2);
+
+						} else {
+							Element path1 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
+							path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
+							path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
+							path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
+							String pathString1 = "M" + now.getX() + " " + now.getY() +
+									" L" + now.getX() + " " + (next.getY() - R);
+							path1.setAttribute(SvgConstant.ATTRIBUTE_D, pathString1);
+							path1.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
+							xmlHandler.addXmlElement(group, path1);
+
+							Element path2 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
+							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
+							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
+							path2.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
+							String pathString2 = "M" + now.getX() + " " + (now.getY() - R) +
+									" L" + next.getX() + " " + (next.getY() - R);
+							path2.setAttribute(SvgConstant.ATTRIBUTE_D, pathString2);
+							path2.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
+							xmlHandler.addXmlElement(group, path2);
+						}
+						tunnelMode = true;
+					}
+					now = next;
+				}
+				// last intersection to end of line
+
+				if (endOfLine.getX() - R > now.getX()) {
+
+					Element path = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
+					path.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
+					path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
+					path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
+					String pathString = "M" + now.getX() + " " + (now.getY() - R) +
+							"A" +
+							" 5 5" + // radiusX radiusY
+							" 0" + // rotation
+							" 0" +
+							" 1" + // Clockwise
+							" " + (now.getX() + R) +// X-Endpoint
+							" " + now.getY();// Y-Endpoint
+					path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString);
+					path.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
+					xmlHandler.addXmlElement(group, path);
+
+
+					Element path1 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
+					path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
+					path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
+					path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
+					String pathString1 = "M" + (now.getX() + R) + " " + now.getY() +
+							" L" + endOfLine.getX() + " " + endOfLine.getY();
+					path1.setAttribute(SvgConstant.ATTRIBUTE_D, pathString1);
+					path1.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
+					xmlHandler.addXmlElement(group, path1);
+
+				} else {
+
+					Element path = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
+					path.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
+					path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
+					path.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
+					String pathString = "M" + now.getX() + " " + (now.getY() - R) +
+							" L" + endOfLine.getX() + " " + (endOfLine.getY() - R);
+					path.setAttribute(SvgConstant.ATTRIBUTE_D, pathString);
+					path.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
+					xmlHandler.addXmlElement(group, path);
+
+					Element path1 = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
+					path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
+					path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE_DASHARRAY, getSvgDashes()+"");
+					path1.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
+					String pathString1 = "M" + endOfLine.getX() + " " + (now.getY() - R) +
+							" L" + endOfLine.getX() + " " + endOfLine.getY();
+					path1.setAttribute(SvgConstant.ATTRIBUTE_D, pathString1);
+					path1.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
+					xmlHandler.addXmlElement(group, path1);
+				}
+			}
+		}
+
+		drawEdgeSvgDecoration(xmlHandler, group, getTargetDecoration(), targetNode.getDirectionForEdge(targetEnd, false),
+				targetNode.getPointForEdge(targetEnd, false), strokeColor);
+		drawEdgeSvgDecoration(xmlHandler, group, getSourceDecoration(), sourceNode.getDirectionForEdge(sourceEnd, true),
+				sourceNode.getPointForEdge(sourceEnd, true), strokeColor);
+
+		xmlHandler.addXmlElement(xmlHandler.getRoot(), group);
+	}
+
+	protected void drawEdgeSvgDecoration(XmlHandler xmlHandler, Element group, HeadStyle decoration, PortRegion directionForEdge,
+										 Point2D pointForEdge, String strokeColor){
+		Element decor;
+
+		switch (decoration) {
+			case NO_ARROW: {
+				final double size = 3;
+				decor =  xmlHandler.createXmlElement(SvgConstant.TAG_NAME_CIRCLE);
+				decor.setAttribute(SvgConstant.ATTRIBUTE_CX, (pointForEdge.getX())+"");
+				decor.setAttribute(SvgConstant.ATTRIBUTE_CY, (pointForEdge.getY())+"");
+				decor.setAttribute(SvgConstant.ATTRIBUTE_R, size+"");
+				xmlHandler.addXmlElement(group, decor);
+			}
+			break;
+
+			case ARROW: {
+				final double size = 16;
+				decor = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
+				StringBuilder pathString = new StringBuilder("M");
+				StringBuilder transform = new StringBuilder("rotate");
+				if(PortRegion.WEST.equals(directionForEdge)){
+					transform.append("(90,").append(pointForEdge.getX() - size / 2).append(", ").append(pointForEdge.getY()).append(")");
+					pathString.append(pointForEdge.getX() - size).append(" ").append(pointForEdge.getY() + size/2);
+					pathString.append(" L").append(pointForEdge.getX()- size/2).append(" ").append(pointForEdge.getY()-size/2);
+					pathString.append(" L").append(pointForEdge.getX()).append(" ").append(pointForEdge.getY() + size/2);
+				} else if (PortRegion.EAST.equals(directionForEdge)){
+					transform.append("(270,").append(pointForEdge.getX() + size / 2).append(", ").append(pointForEdge.getY()).append(")");
+					pathString.append(pointForEdge.getX()).append(" ").append(pointForEdge.getY() + size/2);
+					pathString.append(" L").append(pointForEdge.getX()+ size/2).append(" ").append(pointForEdge.getY()-size/2);
+					pathString.append(" L").append(pointForEdge.getX() +size).append(" ").append(pointForEdge.getY() + size/2);
+				} else if (PortRegion.SOUTH.equals(directionForEdge)){
+					transform.append("(0,").append(pointForEdge.getX()).append(", ").append(pointForEdge.getY()).append(")");
+					pathString.append(pointForEdge.getX() - size/2).append(" ").append(pointForEdge.getY() + size);
+					pathString.append(" L").append(pointForEdge.getX()).append(" ").append(pointForEdge.getY());
+					pathString.append(" L").append(pointForEdge.getX() + size/2).append(" ").append(pointForEdge.getY() + size);
+				} else {
+					transform.append("(180,").append(pointForEdge.getX()).append(", ").append(pointForEdge.getY() - size / 2).append(")");
+					pathString.append(pointForEdge.getX() - size/2).append(" ").append(pointForEdge.getY());
+					pathString.append(" L").append(pointForEdge.getX()).append(" ").append(pointForEdge.getY()-size);
+					pathString.append(" L").append(pointForEdge.getX() + size/2).append(" ").append(pointForEdge.getY());
+				}
+				decor.setAttribute(SvgConstant.ATTRIBUTE_D, pathString.toString());
+				decor.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
+				decor.setAttribute(SvgConstant.ATTRIBUTE_FILL, "none");
+				decor.setAttribute(SvgConstant.ATTRIBUTE_TRANSFORM, transform.toString());
+				decor.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
+				xmlHandler.addXmlElement(group, decor);
+			}
+			break;
+
+			case FULL_TRIANGLE: {
+				final double size = 16;
+				decor = xmlHandler.createXmlElement(SvgConstant.TAG_NAME_PATH);
+				StringBuilder pathString = new StringBuilder("M");
+				StringBuilder transform = new StringBuilder("rotate");
+				if(PortRegion.WEST.equals(directionForEdge)){
+					transform.append("(90,").append(pointForEdge.getX() - size / 2).append(", ").append(pointForEdge.getY()).append(")");
+					pathString.append(pointForEdge.getX() - size).append(" ").append(pointForEdge.getY() + size/2);
+					pathString.append(" L").append(pointForEdge.getX()- size/2).append(" ").append(pointForEdge.getY()-size/2);
+					pathString.append(" L").append(pointForEdge.getX()).append(" ").append(pointForEdge.getY() + size/2).append(" z");
+				} else if (PortRegion.EAST.equals(directionForEdge)){
+					transform.append("(270,").append(pointForEdge.getX() + size / 2).append(", ").append(pointForEdge.getY()).append(")");
+					pathString.append(pointForEdge.getX()).append(" ").append(pointForEdge.getY() + size/2);
+					pathString.append(" L").append(pointForEdge.getX()+ size/2).append(" ").append(pointForEdge.getY()-size/2);
+					pathString.append(" L").append(pointForEdge.getX() +size).append(" ").append(pointForEdge.getY() + size/2).append(" z");
+				} else if (PortRegion.SOUTH.equals(directionForEdge)){
+					transform.append("(0,").append(pointForEdge.getX()).append(", ").append(pointForEdge.getY()).append(")");
+					pathString.append(pointForEdge.getX() - size/2).append(" ").append(pointForEdge.getY() + size);
+					pathString.append(" L").append(pointForEdge.getX()).append(" ").append(pointForEdge.getY());
+					pathString.append(" L").append(pointForEdge.getX() + size/2).append(" ").append(pointForEdge.getY() + size).append(" z");
+				} else {
+					transform.append("(180,").append(pointForEdge.getX()).append(", ").append(pointForEdge.getY() - size / 2).append(")");
+					pathString.append(pointForEdge.getX() - size/2).append(" ").append(pointForEdge.getY());
+					pathString.append(" L").append(pointForEdge.getX()).append(" ").append(pointForEdge.getY()-size);
+					pathString.append(" L").append(pointForEdge.getX() + size/2).append(" ").append(pointForEdge.getY()).append(" z");
+				}
+				decor.setAttribute(SvgConstant.ATTRIBUTE_D, pathString.toString());
+				decor.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
+				decor.setAttribute(SvgConstant.ATTRIBUTE_FILL, "white");
+				decor.setAttribute(SvgConstant.ATTRIBUTE_TRANSFORM, transform.toString());
+				decor.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, getSvgStrokeWidth());
+				xmlHandler.addXmlElement(group, decor);
+			}break;
+
+			case CIRCLE: {
+				double size = 7;
+				String color = Color.WHITE.toString().split("x")[1].substring(0,6);
+				decor =  xmlHandler.createXmlElement(SvgConstant.TAG_NAME_CIRCLE);
+				if(PortRegion.EAST.equals(directionForEdge)){
+					decor.setAttribute(SvgConstant.ATTRIBUTE_CX, (pointForEdge.getX()+size)+"");
+					decor.setAttribute(SvgConstant.ATTRIBUTE_CY, (pointForEdge.getY())+"");
+				} else if (PortRegion.WEST.equals(directionForEdge)){
+					decor.setAttribute(SvgConstant.ATTRIBUTE_CX, (pointForEdge.getX()-size)+"");
+					decor.setAttribute(SvgConstant.ATTRIBUTE_CY, (pointForEdge.getY())+"");
+				} else if (PortRegion.NORTH.equals(directionForEdge)){
+					decor.setAttribute(SvgConstant.ATTRIBUTE_CX, (pointForEdge.getX())+"");
+					decor.setAttribute(SvgConstant.ATTRIBUTE_CY, (pointForEdge.getY()-size)+"");
+				} else {
+					decor.setAttribute(SvgConstant.ATTRIBUTE_CX, (pointForEdge.getX())+"");
+					decor.setAttribute(SvgConstant.ATTRIBUTE_CY, (pointForEdge.getY()+size)+"");
+				}
+				decor.setAttribute(SvgConstant.ATTRIBUTE_R, size+"");
+				decor.setAttribute(SvgConstant.ATTRIBUTE_FILL, "#"+color);
+				decor.setAttribute(SvgConstant.ATTRIBUTE_STROKE, "#"+strokeColor);
+				decor.setAttribute(SvgConstant.ATTRIBUTE_STROKE_WIDTH, "1");
+				xmlHandler.addXmlElement(group, decor);
+			}
+			break;
+			default:
+				break;
+
+		}
+
+	}
+	
+	@Override
+	public boolean isHidden() {
+		return !isVisible();
+	}
+
+	@Override
+	public Double getLeftX() {
+		double min = Double.POSITIVE_INFINITY;
+		for (Point2D point : intermediatePoints) {
+			if (point.getX()<min) {
+				min=point.getX();
+			}
+		}
+		return min;
+	}
+
+	@Override
+	public Double getRightX() {
+		double max = Double.NEGATIVE_INFINITY;
+		for (Point2D point : intermediatePoints) {
+			if (point.getX()>max) {
+				max=point.getX();
+			}
+		}
+		return max;
+	}
+
+	@Override
+	public Double getTopY() {
+		double min = Double.POSITIVE_INFINITY;
+		for (Point2D point : intermediatePoints) {
+			if (point.getY()<min) {
+				min=point.getY();
+			}
+		}
+		return min;
+	}
+
+	@Override
+	public Double getBottomY() {
+		double max = Double.NEGATIVE_INFINITY;
+		for (Point2D point : intermediatePoints) {
+			if (point.getY()>max) {
+				max=point.getY();
+			}
+		}
+		return max;
 	}
 }

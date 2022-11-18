@@ -1,7 +1,5 @@
 package tool.clients.editors.texteditor;
 
-import tool.clients.editors.EditorClient;
-
 public class MultiLineStyle {
 
   int   start;

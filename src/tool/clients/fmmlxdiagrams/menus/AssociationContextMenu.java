@@ -7,17 +7,20 @@ import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 
 public class AssociationContextMenu extends ContextMenu {
 
-	private final FmmlxAssociation association;
-	private final DiagramActions actions;
+//	private final FmmlxAssociation association;
+//	private final DiagramActions actions;
 
-	public AssociationContextMenu(FmmlxAssociation association, DiagramActions actions) {
+	public AssociationContextMenu(final FmmlxAssociation association, final DiagramActions actions) {
 		setAutoHide(true);
-		this.association = association;
-		this.actions = actions;
+//		this.association = association;
+//		this.actions = actions;
 
+		MenuItem editItem = new MenuItem("Edit");
+		editItem.setOnAction(e -> actions.editAssociationDialog(association));
+		
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeAssociation(association));
 
-		getItems().addAll(removeItem);
+		getItems().addAll(editItem, removeItem);
 	}
 }

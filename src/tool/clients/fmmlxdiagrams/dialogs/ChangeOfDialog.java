@@ -4,15 +4,14 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonBar.ButtonData;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.dialogs.results.ChangeOfDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
-public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult> {
+public class ChangeOfDialog extends CustomDialog<ChangeOfDialog.Result> {
 
 	private FmmlxObject object;
-	private final FmmlxDiagram diagram;
+	private final AbstractPackageViewer diagram;
 	private DialogPane dialogPane;
 
 	private Label selectedObjectLabel;
@@ -26,7 +25,7 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult> {
 	private ObservableList<FmmlxObject> allPossibleOf;
 
 
-	public ChangeOfDialog(FmmlxDiagram diagram, FmmlxObject object) {
+	public ChangeOfDialog(AbstractPackageViewer diagram, FmmlxObject object) {
 		super();
 		this.object = object;
 		this.diagram = diagram;
@@ -49,7 +48,7 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult> {
 
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonData.OK_DONE) {
-				return new ChangeOfDialogResult(object, object.getOf(), newOfComboBox.getSelectionModel().getSelectedItem());
+				return new Result(object, object.getOfPath(), newOfComboBox.getSelectionModel().getSelectedItem());
 			}
 			return null;
 		});
@@ -64,7 +63,7 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult> {
 		}
 
 		if (newOfComboBox.getSelectionModel().isEmpty()) {
-			errorLabel.setText(StringValueDialog.LabelAndHeaderTitle.selectNewOf);
+			errorLabel.setText(StringValue.LabelAndHeaderTitle.selectNewOf);
 			return false;
 		}
 
@@ -74,9 +73,9 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult> {
 
 	private void addElementToLayout() {
 
-		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.changeOf);
+		dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.changeOf);
 
-		selectedObjectLabel = new Label(StringValueDialog.LabelAndHeaderTitle.selectedObject);
+		selectedObjectLabel = new Label(StringValue.LabelAndHeaderTitle.selectedObject);
 		currentOf = new Label("Current Of");
 		newOf = new Label("New Of");
 		errorLabel = getErrorLabel();
@@ -87,7 +86,7 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult> {
 		currentOfTextField = new TextField();
 
 		for (FmmlxObject fmmlxObject : diagram.getObjects()) {
-			if (object.getOf() == fmmlxObject.getId()) {
+			if (object.getOfPath().equals(fmmlxObject.getName())) {
 				currentOfTextField.setText(fmmlxObject.getName());
 			}
 		}
@@ -109,4 +108,15 @@ public class ChangeOfDialog extends CustomDialog<ChangeOfDialogResult> {
 		grid.add(errorLabel, 0, 3);
 	}
 
+	public class Result {	
+		public final FmmlxObject object;
+		public final String oldOfName;
+		public final FmmlxObject newOf;
+		
+		public Result(FmmlxObject object, String oldOfName, FmmlxObject newOf) {
+			this.object = object;
+			this.oldOfName = oldOfName;
+			this.newOf = newOf;
+		}
+	}
 }

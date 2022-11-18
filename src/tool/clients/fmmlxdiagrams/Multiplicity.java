@@ -37,12 +37,14 @@ public class Multiplicity {
 		this.duplicates = old.duplicates;
 	}
 
-	public static Multiplicity OPTIONAL = new Multiplicity(0, 1, true, true, true);
-	public static Multiplicity MANDATORY = new Multiplicity(1, 1, true, true, true);
+	public static Multiplicity OPTIONAL = new Multiplicity(0, 1, true, false, false);
+	public static Multiplicity MANDATORY = new Multiplicity(1, 1, true, false, false);
 
 	@Override
 	public String toString() {
-		return ((ordered ? "$" : "") + min + ".." + (upperLimit ? max : "*"));
+		return (ordered && max >= 2 ? "$" : "") 
+				+ min 
+				+ (min == max?"":(".." + (upperLimit ? max : "*")));
 //		return (max > 2 ? duplicates ? "[" : "{" : "") + (ordered ? "$" : "") + min + ".." + (upperLimit ? max : "*") + (max > 2 ? duplicates ? "]" : "}" : "");
 	}
 
@@ -50,7 +52,7 @@ public class Multiplicity {
 		try{
 			return new Multiplicity(
 				(Integer) xmfValue.get(0), 
-				(Integer) xmfValue.get(1), 
+				((Boolean) xmfValue.get(2))?(Integer) xmfValue.get(1):Integer.MAX_VALUE, 
 				(Boolean) xmfValue.get(2), 
 				(Boolean) xmfValue.get(3), 
 				true); // unused
@@ -68,6 +70,8 @@ public class Multiplicity {
 			new Value(ordered),
 			new Value(duplicates)};
 	}
+
+
 
 
 }

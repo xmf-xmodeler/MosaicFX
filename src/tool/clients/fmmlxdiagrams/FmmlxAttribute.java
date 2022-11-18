@@ -2,11 +2,11 @@ package tool.clients.fmmlxdiagrams;
 
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
-public class FmmlxAttribute implements FmmlxProperty {
+public class FmmlxAttribute implements FmmlxProperty, Comparable<FmmlxAttribute>{
 
 	String name;
-//	private Multiplicity multiplicity;
-	Integer owner;
+	private Multiplicity multiplicity;
+	String ownerPath;
 	int level;
 	String type;
 	private PropertyType propertyType = PropertyType.Attribute;
@@ -19,12 +19,12 @@ public class FmmlxAttribute implements FmmlxProperty {
 		this.name = name;
 	}
 
-	public FmmlxAttribute(String name, int level, String type, Integer owner, Multiplicity multiplicity) {
+	public FmmlxAttribute(String name, int level, String type, String owner, Multiplicity multiplicity) {
 		this.name = name;
 		this.level = level;
 		this.type = type;
-//		this.multiplicity = multiplicity;
-		this.owner = owner;
+		this.multiplicity = multiplicity;
+		this.ownerPath = owner;
 	}
 
 	@Override
@@ -36,19 +36,34 @@ public class FmmlxAttribute implements FmmlxProperty {
 		return level;
 	}
 
-	public int getOwnerId() {
-		// TODO Auto-generated method stub
-		return owner;
+	public String getOwnerPath() {
+		return ownerPath;
 	}
 
 	public String getType() {
-		// TODO Auto-generated method stub
+		return type;
+	}
+	
+	public String getTypeShort() {
+		if(type.startsWith("Auxiliary::")) return type.substring("Auxiliary::".length());
 		return type;
 	}
 
-//	public Multiplicity getMultiplicity() {
-//		return multiplicity;
-//	}
+	@Override
+	public int compareTo(FmmlxAttribute that) {
+		if(this.level > that.level) return -1;
+		if(this.level < that.level) return 1;
+		return this.name.compareTo(that.name);
+	}
+
+	public Multiplicity getMultiplicity() {
+		return multiplicity;
+	}
+	
+	public String toString() {
+		return name;
+		
+	}
 //
 //	public void setMultiplicity(Multiplicity multiplicity) {
 //		this.multiplicity = multiplicity;

@@ -1,23 +1,17 @@
 package tool.clients.menus;
 
 import java.io.PrintStream;
-import java.util.Hashtable;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
-//import org.eclipse.swt.SWT;
-//import org.eclipse.swt.events.SelectionEvent;
-//import org.eclipse.swt.events.SelectionListener;
-//import org.eclipse.swt.widgets.Display;
-//import org.eclipse.swt.widgets.Menu;
-//import org.eclipse.swt.widgets.MenuItem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.geometry.Side;
 import javafx.scene.control.ContextMenu;
-//import javafx.event.EventHandler;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import tool.clients.Client;
@@ -68,8 +62,13 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
 
   private void writeMenuBar(PrintStream out) {
     out.print("<MenuBar>");
-    for (String id : menus.keySet()) {
-      if (isRootMenu(menus.get(id))) writeMenu(id, menus.get(id), rootMenuText(menus.get(id)), out);
+    List<String> sortedID = new ArrayList<>(menus.keySet());
+    Collections.sort(sortedID);
+    for (String id : sortedID) {
+      if (isRootMenu(menus.get(id))) {
+        rootMenuText(menus.get(id));
+        writeMenu(id, menus.get(id), rootMenuText(menus.get(id)), out);
+      }
     }
     out.print("</MenuBar>");
   }
@@ -114,7 +113,7 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
   }
 
   private boolean isRootMenu(Menu menu) {
-    return XModeler.getMenuBar().getMenus().contains(menu);
+    return XModeler.getNewStage().getMenuBar().getMenus().contains(menu);
 //	for (MenuItem item : XModeler.getMenuBar().getItems())
 //      if (item.getMenu() == menu) return true;
 //    return false;
@@ -244,7 +243,7 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
     String id = XModeler.attributeValue(item, "id");
     String name = XModeler.attributeValue(item, "name");
     String keyBinding = XModeler.attributeValue(item, "keyBinding");
-    boolean supportsMulti = XModeler.attributeValue(item, "supportsMulti").equals("true");
+    boolean supportsMulti = Objects.equals(XModeler.attributeValue(item, "supportsMulti"), "true");
     String handlerPointIdentity = XModeler.attributeValue(item, "handlerPointIdentity");
     newPopupItem(parentId, id, name, keyBinding, supportsMulti, handlerPointIdentity);
     NodeList children = item.getChildNodes();
@@ -308,19 +307,17 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
     	CountDownLatch l = new CountDownLatch(1);
     	Platform.runLater(
 //      Display.getDefault().syncExec(
-    			new Runnable() {
-    				public void run() {
-          Menu menu = menus.get(parent);
-          MenuItem item = new MenuItem(name.replace('&', '_')); //new MenuItem(menu, SWT.PUSH);
+                () -> {
+Menu menu = menus.get(parent);
+MenuItem item = new MenuItem(name.replace('&', '_')); //new MenuItem(menu, SWT.PUSH);
 //          item.setText(name);
-          menu.getItems().add(item);
-          items.put(id, item);
-          item.setOnAction(MenuClient.theClient);
-          l.countDown();
-          //item.addSelectionListener(MenuClient.this);
-          //XModeler.getXModeler().setMenuBar(XModeler.getMenuBar());
-    	}
-      });
+menu.getItems().add(item);
+items.put(id, item);
+item.setOnAction(MenuClient.theClient);
+l.countDown();
+//item.addSelectionListener(MenuClient.this);
+//XModeler.getXModeler().setMenuBar(XModeler.getMenuBar());
+});
       try {
 		l.await();
 	} catch (InterruptedException e) {
@@ -352,21 +349,19 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
 //    Display.getDefault().syncExec(
   	CountDownLatch l = new CountDownLatch(1);
   	Platform.runLater(
-	  new Runnable() {
-      public void run() {
-        if (menus.containsKey(parent)) {
-          Menu menu = menus.get(parent);
-          Menu subMenu = new Menu(name.replace('&', '_'));//new Menu(XModeler.getXModeler(), SWT.DROP_DOWN);
-//          MenuItem menuItem = new MenuItem(menu, SWT.CASCADE);
-//          menuItem.setMenu(subMenu);
-//          menuItem.setText(name);
-          menu.getItems().add(subMenu);
-          menus.put(id, subMenu);
-//          XModeler.getXModeler().setMenuBar(XModeler.getMenuBar());
-          l.countDown();
-        } else System.err.println("Cannot find menu " + parent);
-      }
-    });
+            () -> {
+              if (menus.containsKey(parent)) {
+                Menu menu = menus.get(parent);
+                Menu subMenu = new Menu(name.replace('&', '_'));//new Menu(XModeler.getXModeler(), SWT.DROP_DOWN);
+      //          MenuItem menuItem = new MenuItem(menu, SWT.CASCADE);
+      //          menuItem.setMenu(subMenu);
+      //          menuItem.setText(name);
+                menu.getItems().add(subMenu);
+                menus.put(id, subMenu);
+      //          XModeler.getXModeler().setMenuBar(XModeler.getMenuBar());
+                l.countDown();
+              } else System.err.println("Cannot find menu " + parent);
+            });
   	try {
 		l.await();
 	} catch (InterruptedException e) {
@@ -378,26 +373,26 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
 //    runOnDisplay(
   	CountDownLatch l = new CountDownLatch(1);
   	Platform.runLater(
-	  new Runnable() {
-      public void run() {
-        Menu oldMenu = getRootMenuItemNamed(name);
-        if (oldMenu != null) {
-        	XModeler.getMenuBar().getMenus().remove(oldMenu);
-        	String oldId = getId(oldMenu);
-        	menus.remove(oldId);
-        }
-        //Menu menuBar = XModeler.getMenuBar();
-        //MenuItem menuItem = new MenuItem(menuBar, SWT.CASCADE);
-        Menu menu = new Menu(name.replace('&', '_'));//(XModeler.getXModeler(), SWT.DROP_DOWN);
-        
-        //menuItem.setMenu(menu);
-        //menuItem.setText(name);
-        XModeler.getMenuBar().getMenus().add(menu);
-//        XModeler.getXModeler().setMenuBar(XModeler.getMenuBar());
-        menus.put(id, menu);
-        l.countDown();
-      }
-    });
+            () -> {
+              Menu oldMenu = getRootMenuItemNamed(name);
+              if (oldMenu != null) {
+                  //XModeler.getMenuBar().getMenus().remove(oldMenu);
+                  XModeler.getNewStage().getMenuBar().getMenus().remove(oldMenu);
+                  String oldId = getId(oldMenu);
+                  menus.remove(oldId);
+              }
+              //Menu menuBar = XModeler.getMenuBar();
+              //MenuItem menuItem = new MenuItem(menuBar, SWT.CASCADE);
+              Menu menu = new Menu(name.replace('&', '_'));//(XModeler.getXModeler(), SWT.DROP_DOWN);
+
+              //menuItem.setMenu(menu);
+              //menuItem.setText(name);
+              //XModeler.getMenuBar().getMenus().add(menu);
+              XModeler.getNewStage().getMenuBar().getMenus().add(menu);
+      //        XModeler.getXModeler().setMenuBar(XModeler.getMenuBar());
+              menus.put(id, menu);
+              l.countDown();
+            });
   	try {
 		l.await();
 	} catch (InterruptedException e) {
@@ -442,16 +437,21 @@ public class MenuClient extends Client implements javafx.event.EventHandler<Acti
 //    } else System.err.println("no menu for " + id);
   }
 
-  public static ContextMenu popup(String id, javafx.scene.Node anchor, int x, int y) 
-  {
+  public static ContextMenu popup(String id, javafx.scene.Node anchor, int x, int y) {
+//	  return MenuClient.popup(id, anchor, XModeler.getStage(), x, y);
+//  }
+//  
+//  
+//  public static ContextMenu popup(String id, javafx.scene.Node anchor, Stage stage, int x, int y) 
+//  {
 	  if (popupAssignments.containsKey(id)) {
       PopupMenu pmenu = popupAssignments.get(id);
       ContextMenu contextmenu = pmenu.popup(id);
       contextmenu.setAutoHide(true);
       
-      contextmenu.show(anchor,
-    			  x + XModeler.getStage().getX() + XModeler.getVerticalBorderSize() ,
-    			  y + XModeler.getStage().getY() + XModeler.getHorizontalBorderSize(true));
+      contextmenu.show(anchor, Side.LEFT, x, y);
+//    			  x + stage.getX() + XModeler.getVerticalBorderSize() ,
+//    			  y + stage.getY() + XModeler.getHorizontalBorderSize(true));
     	  return contextmenu;
     	  
     } else {System.err.println("no menu for " + id); return null;}

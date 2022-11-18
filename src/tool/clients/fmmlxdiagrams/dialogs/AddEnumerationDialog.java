@@ -3,7 +3,6 @@ package tool.clients.fmmlxdiagrams.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
@@ -12,20 +11,17 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import tool.clients.fmmlxdiagrams.FmmlxEnum;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
-import tool.clients.fmmlxdiagrams.dialogs.results.AddEnumerationDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 import javafx.scene.Node;
 
-public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResult>{
+public class AddEnumerationDialog extends CustomDialog<String>{
 	private Label nameLabel;
 	
 	private TextField nameTextField;
 
 	
 
-	public AddEnumerationDialog(FmmlxDiagram diagram) {
+	public AddEnumerationDialog() {
 		super();
 		DialogPane dialogPane = getDialogPane();
 
@@ -54,8 +50,7 @@ public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResul
 	private void setResult() {
 		setResultConverter(dlgBtn -> {
 			if (dlgBtn != null && dlgBtn.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-				Vector<String> elements = new Vector<String>();
-				return new AddEnumerationDialogResult(new FmmlxEnum(nameTextField.getText(),elements));
+				return nameTextField.getText();
 			}
 			return null;
 		});
@@ -73,8 +68,8 @@ public class AddEnumerationDialog extends CustomDialog<AddEnumerationDialogResul
 	private boolean validateName() {
 		String name = nameTextField.getText();
 
-		if (!InputChecker.getInstance().validateName(name)) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.enterValidName);
+		if (!InputChecker.isValidIdentifier(name)) {
+			errorLabel.setText(StringValue.ErrorMessage.enterValidName);
 			return false;
 		} else {
 			errorLabel.setText("");

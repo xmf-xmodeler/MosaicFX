@@ -2,20 +2,20 @@ package tool.clients.fmmlxdiagrams;
 
 import java.util.Vector;
 
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer.PathNotFoundException;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 
-public class FmmlxSlot implements FmmlxProperty {
+public class FmmlxSlot implements FmmlxProperty, Comparable<FmmlxSlot> {
 	private PropertyType propertyType = PropertyType.Slot;
 	private FmmlxObject owner;
+	private String name;
+	private String value;
 
 	public FmmlxSlot(String name, String value, FmmlxObject owner) {
 		this.name = name;
 		this.value = value;
 		this.owner = owner;
 	}
-
-	private String name;
-	private String value;
 
 	public String getName() {
 		return name;
@@ -38,13 +38,17 @@ public class FmmlxSlot implements FmmlxProperty {
 		return propertyType;
 	}
 	
-	public String getType(FmmlxDiagram diagram) {
+	public String getType(AbstractPackageViewer diagram) {
 		Vector<FmmlxAttribute> allAttributes = new Vector<>();
 		FmmlxObject next = owner;
 		while (next != null) {
 			allAttributes.addAll(next.getOwnAttributes());
 			allAttributes.addAll(next.getOtherAttributes());
-			next = diagram.getObjectById(next.getOf());
+			try{ 
+				next = diagram.getObjectByPath(next.getOfPath());
+			} catch (PathNotFoundException pe) {
+				next = null;
+			}
 		}
 
 		for (FmmlxAttribute attribute : allAttributes) {
@@ -54,5 +58,12 @@ public class FmmlxSlot implements FmmlxProperty {
 		}
 		
 		throw new RuntimeException("Slot type not found");
+	}
+	
+	@Override public String toString() { return name; }
+
+	@Override
+	public int compareTo(FmmlxSlot that) {
+		return this.name.compareTo(that.name);
 	}
 }

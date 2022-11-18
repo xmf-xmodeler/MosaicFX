@@ -15,16 +15,15 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAssociation;
 import tool.clients.fmmlxdiagrams.FmmlxLink;
-import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.dialogs.results.AssociationValueDialogResult;
-import tool.clients.fmmlxdiagrams.dialogs.stringvalue.StringValueDialog;
+import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
 
-public class AssociationValueDialog extends CustomDialog<AssociationValueDialogResult>{
+public class AssociationValueDialog extends CustomDialog<Void>{
 	
-	private FmmlxDiagram diagram;
+	private AbstractPackageViewer diagram;
 	private DialogPane dialogPane;
 	
 	private Label selectAssociation;
@@ -55,7 +54,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 	private Vector<FmmlxObject> instancesB;
 	
 	
-	public AssociationValueDialog(FmmlxDiagram diagram) {
+	public AssociationValueDialog(AbstractPackageViewer diagram) {
 		this.diagram=diagram;
 		
 		dialogPane = getDialogPane();
@@ -93,7 +92,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 
 	private boolean validateAdd() {
 		if(selectAssociationComboBox.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociation);
+			errorLabel.setText(StringValue.ErrorMessage.selectAssociation);
 			return false;
 		} else if(classAListView.getSelectionModel().getSelectedItem()==null) {
 			errorLabel.setText("Select instance from class "+ classANameTextField.getText());
@@ -109,10 +108,10 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 	
 	private boolean validateRemove() {
 		if(selectAssociationComboBox.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociation);
+			errorLabel.setText(StringValue.ErrorMessage.selectAssociation);
 			return false;
 		} else if(associationListView.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociationInstance);
+			errorLabel.setText(StringValue.ErrorMessage.selectAssociationInstance);
 			return false;
 		}
 		errorLabel.setText("");
@@ -122,10 +121,10 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 
 	private boolean validateChange() {
 		if(selectAssociationComboBox.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociation);
+			errorLabel.setText(StringValue.ErrorMessage.selectAssociation);
 			return false;
 		} else if(associationListView.getSelectionModel().getSelectedItem()==null) {
-			errorLabel.setText(StringValueDialog.ErrorMessage.selectAssociationInstance);
+			errorLabel.setText(StringValue.ErrorMessage.selectAssociationInstance);
 			return false;
 		} else if(classAListView.getSelectionModel().getSelectedItem()==null) {
 			errorLabel.setText("Select instance from class "+ classANameTextField.getText());
@@ -139,43 +138,45 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 	}
 
 	private void addAssociationInstance(FmmlxObject startNode, FmmlxObject endNode){		
-		diagram.getComm().addAssociationInstance(diagram, startNode.getId(), endNode.getId(), selectAssociationComboBox.getSelectionModel().getSelectedItem().id);
+		diagram.getComm().addAssociationInstance(diagram.getID(), startNode.getName(), endNode.getName(), selectAssociationComboBox.getSelectionModel().getSelectedItem().getName());
 		diagram.updateDiagram();
 		updateAssociationListView(selectAssociationComboBox.getSelectionModel().getSelectedItem());
 	}
 	
-	private void removeAssociationInstance(FmmlxLink selectedItem) {
-		diagram.getComm().removeAssociationInstance(diagram, selectedItem.id);
-		associationListView.getItems().remove(selectedItem);
+	private void removeAssociationInstance(FmmlxLink link) {
+		diagram.getComm().removeAssociationInstance(diagram.getID(), 
+				link.getOfName(), 
+				link.getSourceNode().getName(), 
+				link.getTargetNode().getName());
+		associationListView.getItems().remove(link);
 		diagram.updateDiagram();
 	}
 
 	private void editAssociationInstance(FmmlxLink selectedAssociationInstance, FmmlxObject newStartObject,
 			FmmlxObject newEndObject) {
-		diagram.getComm().updateAssociationInstance(diagram, selectedAssociationInstance.id, newStartObject.getId(), newEndObject.getId());
-		selectedAssociationInstance.edit(newStartObject, newEndObject);
+		diagram.getComm().updateAssociationInstance(diagram.getID(), selectedAssociationInstance.path, newStartObject.getPath(), newEndObject.getPath());
+//		selectedAssociationInstance.edit(newStartObject, newEndObject);
 		updateAssociationListView(selectAssociationComboBox.getSelectionModel().getSelectedItem());
 	}
 	
-	@SuppressWarnings({ "deprecation", "unchecked" })
 	private void layoutContent() {
 		associations = diagram.getAssociations();
 		ObservableList<FmmlxAssociation> associationList;
 		associationList = FXCollections.observableList(associations);
 		
-		dialogPane.setHeaderText(StringValueDialog.LabelAndHeaderTitle.associationValue);
+		dialogPane.setHeaderText(StringValue.LabelAndHeaderTitle.associationValue);
 		
-		selectAssociation = new Label(StringValueDialog.LabelAndHeaderTitle.selectAssociation);
+		selectAssociation = new Label(StringValue.LabelAndHeaderTitle.selectAssociation);
 		selectAssociationComboBox = (ComboBox<FmmlxAssociation>) initializeComboBox(associationList);
 		selectAssociationComboBox.valueProperty().addListener((observable, oldValue,
 				newValue) -> { 		
-					classALabel.setText("Level : "+selectAssociationComboBox.getSelectionModel().getSelectedItem().getLevelStartToEnd());
-					classBLabel.setText("Level : "+selectAssociationComboBox.getSelectionModel().getSelectedItem().getLevelEndToStart());
+					classALabel.setText("Level : "+selectAssociationComboBox.getSelectionModel().getSelectedItem().getLevelSource());
+					classBLabel.setText("Level : "+selectAssociationComboBox.getSelectionModel().getSelectedItem().getLevelTarget());
 					refreshAllDialogElement(newValue); 
 			});
 
 		classALabel = new Label(" ");
-		associationLabel = new Label(StringValueDialog.LabelAndHeaderTitle.association);
+		associationLabel = new Label(StringValue.LabelAndHeaderTitle.association);
 		classBLabel = new Label(" ");
 		
 		classANameTextField= new TextField();
@@ -225,8 +226,7 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 	}
 	
 	private void updateAssociationListView(FmmlxAssociation newValue) {
-		FmmlxAssociation association = (FmmlxAssociation) diagram.getAssociationById(newValue.getId());
-		associationInstances = association.getInstance();
+		associationInstances = diagram.getAssociationInstance();
 		ObservableList<FmmlxLink> instanceOfAssociation = FXCollections.observableList(associationInstances);
 		associationListView = initializeListViewAssociation(instanceOfAssociation, SelectionMode.SINGLE);
 		updateNodeInsideGrid(associationListView, associationListView, 1, 5);
@@ -234,12 +234,13 @@ public class AssociationValueDialog extends CustomDialog<AssociationValueDialogR
 
 
 	private void updateMetaClassListView(FmmlxAssociation newValue) {
-		instancesA = newValue.getSourceNode().getInstancesByLevel(newValue.getLevelStartToEnd());
+		
+		instancesA = new Vector<>(newValue.getSourceNode().getInstancesByLevel(newValue.getLevelTarget()));
 		ObservableList<FmmlxObject> instanceOfClassA = FXCollections.observableList(instancesA); 
 		classAListView = initializeListView(instanceOfClassA, SelectionMode.SINGLE);
 		updateNodeInsideGrid(classAListView, classAListView, 0, 5);
 		
-		instancesB = newValue.getTargetNode().getInstancesByLevel(newValue.getLevelEndToStart());
+		instancesB = new Vector<>(newValue.getTargetNode().getInstancesByLevel(newValue.getLevelSource()));
 		ObservableList<FmmlxObject> instanceOfClassB = FXCollections.observableList(instancesB); 
 		classBListView = initializeListView(instanceOfClassB, SelectionMode.SINGLE);
 		updateNodeInsideGrid(classBListView, classBListView, 2, 5);

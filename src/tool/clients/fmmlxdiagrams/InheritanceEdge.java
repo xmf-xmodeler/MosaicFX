@@ -5,21 +5,23 @@ import java.util.Vector;
 import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
-import tool.clients.fmmlxdiagrams.Edge.HeadStyle;
 
-public class InheritanceEdge extends Edge {
+public class InheritanceEdge extends Edge<FmmlxObject> {
 
-	public InheritanceEdge(int id, int childID, int parentID, Vector<Point2D> intermediatePoints,
+	public InheritanceEdge(String path, String childPath, String parentPath, Vector<Point2D> intermediatePoints,
 			PortRegion startPortRegion, PortRegion endPortRegion,
-			FmmlxDiagram diagram) {
-		super(id, diagram.getObjectById(childID), diagram.getObjectById(parentID), intermediatePoints, startPortRegion, endPortRegion, new Vector<>(),
+			AbstractPackageViewer diagram) {
+		super(path, diagram.getObjectByPath(childPath), diagram.getObjectByPath(parentPath), intermediatePoints, startPortRegion, endPortRegion, new Vector<>(),
 				diagram);
 	}
 
-	protected void checkVisibilityMode() {visible = targetNode.getPointForEdge(targetEnd, false).distance(sourceNode.getPointForEdge(sourceEnd, true))<1000;}
+	protected void checkVisibilityMode() {
+//		System.err.println("POINT target: "+targetNode.getPointForEdge(targetEnd, false).toString());
+//		System.err.println("POINT source: "+sourceNode.getPointForEdge(sourceEnd, true).toString());
+		visible = targetNode.getPointForEdge(targetEnd, false).distance(sourceNode.getPointForEdge(sourceEnd, true))<1000;}
 	
 	@Override
-	protected void layoutLabels() {
+	protected void layoutLabels(FmmlxDiagram diagram) {
 		layoutingFinishedSuccesfully = true;
 	} // NONE
 
@@ -41,8 +43,9 @@ public class InheritanceEdge extends Edge {
 	public HeadStyle getSourceDecoration() {
 		return HeadStyle.NO_ARROW;
 	}
-	
-	public boolean isVisible() {
-		return visible;
+
+	@Override
+	public String getName() {
+		return "doesNotMatter";
 	}
 }

@@ -1,36 +1,12 @@
 package tool.xmodeler;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.concurrent.CountDownLatch;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
-
-//import com.ceteva.oleBridge.OleBridgeClient;
-//import com.ceteva.undo.UndoClient;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -38,6 +14,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import tool.clients.browser.ModelBrowserClient;
 import tool.clients.diagrams.DiagramClient;
 import tool.clients.dialogs.DialogsClient;
@@ -53,12 +33,30 @@ import tool.console.ConsoleClient;
 import tool.helper.IconGenerator;
 import xos.OperatingSystem;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
+
+import static org.burningwave.core.assembler.StaticComponentContainer.Modules;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+
+//import com.ceteva.oleBridge.OleBridgeClient;
+//import com.ceteva.undo.UndoClient;
+
 public class XModeler extends Application {
 
   // XModeler is a tool that controls and is controlled by the XMF VM that runs
   // on the XMF operating system.
 	
-  private static Integer DEVICE_ZOOM_PERCENT = null;
+//  private static Integer DEVICE_ZOOM_PERCENT = null;
 
   static XModeler singleton = null;
   
@@ -71,7 +69,7 @@ public class XModeler extends Application {
   static OperatingSystem xos                 = new OperatingSystem();
   static String          projDir             = null;
   static String          loadedImagePath     = null;
-  static String          version             = null;
+  static String          version             = "";
   static String[]        copyOfArgs          = null;
   static boolean         showLoad            = false;
   public static String   textEditorClass     = "tool.clients.editors.TextEditor";
@@ -85,11 +83,17 @@ public class XModeler extends Application {
   static SplitPane       rightSplitPane      = null;
   static TabPane 		 browserTab 		 = null;
   static TabPane 		 editorTabs 		 = null;
-  static TabPane 		 propertyTabs 		 = null;
+  public static TabPane  propertyTabs 		 = null;
   static MenuBar		 menuBar			 = null;
   static Pane			 notificationPane 	 = null;
   
-  public static String attributeValue(Node node, String name) {
+  public static ControlCenter  newStage            = null;
+
+    public static ControlCenter getNewStage() {
+        return newStage;
+    }
+
+    public static String attributeValue(Node node, String name) {
     NamedNodeMap attrs = node.getAttributes();
     for (int i = 0; i < attrs.getLength(); i++) {
       Attr attribute = (Attr) attrs.item(i);
@@ -111,7 +115,7 @@ public class XModeler extends Application {
     int len = str.length();
     if (len == 0) return str;
 
-    StringBuffer encoded = new StringBuffer();
+    StringBuilder encoded = new StringBuilder();
     for (int i = 0; i < len; i++) {
       char c = str.charAt(i);
       char cc = (i + 1) < (len - 1) ? str.charAt(i + 1) : 0;
@@ -137,10 +141,9 @@ public class XModeler extends Application {
     return encoded.toString();
   }
 
+  @Deprecated
   public static int getDeviceZoomPercent() {
-    if (DEVICE_ZOOM_PERCENT == null) DEVICE_ZOOM_PERCENT = 100;
-    return DEVICE_ZOOM_PERCENT;
-    // return(display.getDPI().x*100/96);
+    return 100;
   }
 
   private static String getImage(String[] args) {
@@ -153,11 +156,7 @@ public class XModeler extends Application {
   private static boolean getImageDialog(String[] args) {
     for (int i = 0; i < args.length; i++) {
       if (args[i].equals("-imagedialog")) {
-        if (args[i + 1].equalsIgnoreCase("true")) {
-          return true;
-        } else {
-          return false;
-        }
+          return args[i + 1].equalsIgnoreCase("true");
       }
     }
     return true;
@@ -168,14 +167,16 @@ public class XModeler extends Application {
   }
 
   private static String getVersion(String[] args) {
-    for (int i = 0; i < args.length; i++) {
-      if (args[i].startsWith("version:")) { return args[i].replace("version:", ""); }
-    }
+      for (String arg : args) {
+          if (arg.startsWith("version:")) {
+              return arg.replace("version:", "");
+          }
+      }
     return "";
   }
   
   public static Stage getStage() {
-	    return stage;
+	  return stage;
 	  }
   
   public static PropertyManager getPropertyManager() {
@@ -211,10 +212,10 @@ public class XModeler extends Application {
         String root = doc.getDocumentElement().getNodeName();
         Node node = doc.getDocumentElement();
         if (root.equals("XModeler")) {
-          final int x = Integer.parseInt(attributeValue(node, "x"));
-          final int y = Integer.parseInt(attributeValue(node, "y"));
-          final int width = Integer.parseInt(attributeValue(node, "width"));
-          final int height = Integer.parseInt(attributeValue(node, "height"));
+          final int x = Integer.parseInt(Objects.requireNonNull(attributeValue(node, "x")));
+          final int y = Integer.parseInt(Objects.requireNonNull(attributeValue(node, "y")));
+          final int width = Integer.parseInt(Objects.requireNonNull(attributeValue(node, "width")));
+          final int height = Integer.parseInt(Objects.requireNonNull(attributeValue(node, "height")));
           stage.setX(x);
           stage.setY(y);
           stage.setHeight(height);
@@ -225,16 +226,11 @@ public class XModeler extends Application {
           EditorClient.theClient().inflateXML(doc);
           ConsoleClient.theConsole().inflateXML(doc);
           FormsClient.theClient().inflateXML(doc);
+          FmmlxDiagramCommunicator.initCommunicator();        
         }
       }
-    } catch (IOException e) {
+    } catch (Throwable e) {
       e.printStackTrace(System.err);
-    } catch (ParserConfigurationException e) {
-      e.printStackTrace(System.err);
-    } catch (SAXException e) {
-      e.printStackTrace(System.err);
-    } catch (Throwable t) {
-      t.printStackTrace(System.err);
     }
   }
 
@@ -254,6 +250,31 @@ public class XModeler extends Application {
   }
 
   public static void main(String[] args) {
+	  System.setProperty("prism.order", "sw");
+	  Locale.setDefault(Locale.ENGLISH);
+//	try {
+//		PrintStream R = new PrintStream(new File("err.txt"));
+//		System.setErr(R);
+//	} catch (FileNotFoundException e) {
+//		e.printStackTrace();
+//	} 
+	  
+	// Prevent loggin of external library
+	PrintStream out = System.out;
+	OutputStream tmp = new OutputStream() {
+		@Override
+		public void write(int b) throws IOException {
+		}
+	};
+	PrintStream nul = new PrintStream(tmp);
+	System.setOut(nul);  
+	
+	// Allow compatibility of Java 9 or newer with older libraries
+	// Open all Modules to each other
+	AllModulesToAllModulesExporter.execute();
+	System.setOut(out);
+	
+	  
     copyOfArgs = Arrays.copyOf(args, args.length);
     textEditorClass = args.length > 1 ? args[1] : "tool.clients.editors.TextEditor";
     launch(args);
@@ -283,6 +304,7 @@ public class XModeler extends Application {
 					PrintStream out = new PrintStream(file, "UTF-8");
 					out.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?><XModeler x='" + x + "' y='" + y + "' width='"
 							+ width + "' height = '" + height + "'>");
+                    System.err.println("start write xml");
 					ModelBrowserClient.theClient().writeXML(out);
 					DiagramClient.theClient().writeXML(out);
 					MenuClient.theClient().writeXML(out);
@@ -319,15 +341,19 @@ public class XModeler extends Application {
     	fileChooser.getExtensionFilters().add(filter);
     	fileChooser.setSelectedExtensionFilter(filter);
         
-    	String initalDirectory = propertyManager.getProperty("loadImageDirectory", "");
-    	if (!initalDirectory.equals(""))
-    	fileChooser.setInitialDirectory(new File(initalDirectory));
+    	String initalDirectory = PropertyManager.getProperty("fileDialogPath", "");
+    	if (!initalDirectory.equals("")) {
+    		File dir = new File(initalDirectory);
+    		if(dir.exists()) {
+    			fileChooser.setInitialDirectory(dir);
+    		}
+    	}
     	
     	File file = fileChooser.showOpenDialog(stage);
     	
     	if(file != null){
     		selectedImage = file.getAbsolutePath();
-    		System.err.println("propertyManager.setProperty(\"loadImageDirectory\", file.getParent());");
+//    		PropertyManager.setProperty("fileDialogPath", file.getParent());
     	}
     	
     }
@@ -404,6 +430,7 @@ public class XModeler extends Application {
     xos.newMessageClient("com.ceteva.forms", new FormsClient()); PropertyManager.setXmfSettings();
     xos.newMessageClient("com.ceteva.undo", new UndoClient());
     xos.newMessageClient("com.ceteva.oleBridge", new OleBridgeClient());
+    WorkbenchClient.theClient().startFmmlxClient();
 //    xos.newMessageClient("screenGeneration", new ScreenGenerationClient()); // BB
   }
   
@@ -411,44 +438,50 @@ public class XModeler extends Application {
 	  ModelBrowserClient.start(browserTab);
 	  EditorClient.start(editorTabs);
 	  FormsClient.start(propertyTabs);
-	  Console.start(propertyTabs); // only one which does more
+	  Console.start(PropertyManager.getProperty("consoleVisible", true), PropertyManager.getProperty("consoleColorReverted", false));
 	  DiagramClient.start(editorTabs);
 	  FmmlxDiagramCommunicator.start(editorTabs);
+	  //ClassBrowserClient.start();
   }
-  
   
   public static void openXModeler() {
-		stage.show();		
+		stage.show();
   }
-  
-  @Override
+
+    @Override
   public void start(Stage primaryStage) throws Exception {
-	  singleton = this;
-	  stage = primaryStage;
+      stage = primaryStage;
+      createXmodeler();
 	  startXOS(copyOfArgs[0]);
-	  createXmodeler();
+	  singleton = this;
 	  initClients();
       startClients();
-	  openXModeler();
-  }	  
-	
-  public void createXmodeler() throws Exception {
+	  //openXModeler();
+      newStage = new ControlCenter();
+      stage= newStage;
+      newStage.show();
+      
+  }
+
+
+
+    public void createXmodeler() throws Exception {
 	  		outerSplitPane = new SplitPane();
-			
 			// Tabs for projects
-			browserTab = new TabPane();//new Tab("MyProjects",projectTree),new Tab("Project0",new TreeView<String>()));
+//			browserTab = new TabPane();
 			
 			rightSplitPane = new SplitPane();
 			rightSplitPane.setOrientation(Orientation.VERTICAL);
-			rightSplitPane.setDividerPosition(0, 0.66);
+			rightSplitPane.setDividerPosition(0, 0.68);
+			rightSplitPane.setPrefHeight(1000);
 			
 			editorTabs = new TabPane();// welcomeTab ,new Tab("Diagram", new DiagramPanel()));
 			propertyTabs = new TabPane();
 			
 			rightSplitPane.getItems().addAll(editorTabs, propertyTabs);
-			
-			outerSplitPane.getItems().addAll(browserTab, rightSplitPane);
-			outerSplitPane.setDividerPosition(0, 0.2 );
+			outerSplitPane = rightSplitPane;
+//			outerSplitPane.getItems().addAll(browserTab, rightSplitPane);
+//			outerSplitPane.setDividerPosition(0, 0.01 );
 			
 			menuBar = new MenuBar(); //MyMenuBar();
 			
@@ -464,19 +497,20 @@ public class XModeler extends Application {
 			VBox.setVgrow(outerSplitPane,Priority.ALWAYS);
 			scene = new Scene(stackPane, TOOL_WIDTH, TOOL_HEIGHT);
 			//scene = new Scene(containingBox,TOOL_WIDTH,TOOL_HEIGHT);
-			
+			scene.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
 			// Set up Stage
 			stage.getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 			setToolTitle();
 			
-			stage.setX(propertyManager.getProperty("TOOL_X", TOOL_X));
-			stage.setY(propertyManager.getProperty("TOOL_Y", TOOL_Y));
+			stage.setX(PropertyManager.getProperty("TOOL_X", TOOL_X));
+			stage.setY(PropertyManager.getProperty("TOOL_Y", TOOL_Y));
 			stage.setScene(scene);
 			stage.setOnCloseRequest(  new EventHandler<WindowEvent>() {
 				  public void handle(WindowEvent event) {
 					  //propertyManager.writeXMLFile();
-                      if (propertyManager.getProperty("IGNORE_SAVE_IMAGE", false)) {
-                          System.exit(0);
+                     
+					  if (PropertyManager.getProperty("IGNORE_SAVE_IMAGE",true)) {
+                      System.exit(0);
                       } else {
                           if (loadedImagePath == null) WorkbenchClient.theClient().shutdownEvent();
                           else WorkbenchClient.theClient().shutdownAndSaveEvent(loadedImagePath, inflationPath());
@@ -484,29 +518,7 @@ public class XModeler extends Application {
 					  event.consume();
 //					  event.doit = false;
 				  }
-		  });
-			//propertyManager.getUserInterface(); //comment out to see the Interface
-			
-//TODO Why timer? Can we intergrate it properly?
-//			XModeler.getDisplay().timerExec(3000, 
-//					new Runnable() {
-//			      public void run() {
-			
-			/*MenuItem itemVMPanic = new MenuItem("VM Panic");
-			itemVMPanic.setOnAction(new EventHandler<ActionEvent>() {
-	            public void handle(ActionEvent t) {
-	            	Machine.interrupt = true;
-	            }
-	        }); 
-
-			Menu menuDebug = new Menu("Debug");
-			menuDebug.getItems().add(itemVMPanic);
-			menuBar.getMenus().add(menuDebug);
-			
-			 */
-//			      }});			
-
-			
+		  });			
   }
   
   public static void loadImage(){
@@ -590,5 +602,42 @@ public class XModeler extends Application {
 //			e.printStackTrace();
 //		}
 //  }
+
+    public static void finishOpenDiagramFromXml() {
+	    newStage.getControlCenterClient().getAllProjects();
+    }
+
+    public static void bringControlCenterToFront() {
+	    Platform.runLater(() -> newStage.toFront());
+    }
+
+    public static void bringControlCenterToBack() {
+        Platform.runLater(() -> newStage.toBack());
+    }
 }
 
+@SuppressWarnings("unchecked")
+class AllModulesToAllModulesExporter {
+    public static void execute() {
+    	try {
+    		Modules.exportAllToAll();
+    		Class<?> bootClassLoaderClass = Class.forName("jdk.internal.loader.ClassLoaders$BootClassLoader");
+			Constructor<? extends ClassLoader> constructor = 
+    			(Constructor<? extends ClassLoader>)
+    				Class.forName("jdk.internal.loader.ClassLoaders$PlatformClassLoader")
+    					.getDeclaredConstructor(bootClassLoaderClass);
+    		constructor.setAccessible(true);
+    		Class<?> classLoadersClass = Class.forName("jdk.internal.loader.ClassLoaders");
+    		Method bootClassLoaderRetriever = classLoadersClass.getDeclaredMethod("bootLoader");
+    		bootClassLoaderRetriever.setAccessible(true);
+    		constructor.newInstance(bootClassLoaderRetriever.invoke(classLoadersClass));
+    		// System.out.println(newBuiltinclassLoader + " instantiated");
+    	} catch (Exception exc) {
+    		System.err.println("WARNING: Exporting modules did not work. ");
+    		System.err.println("It is not necessary for older Java versions.");
+    		System.err.println("Check File-->Open XML File.");
+    		System.err.println("If the editor shows up, there is no problem with the modules.");
+//    		exc.printStackTrace();
+    	}
+    }
+}

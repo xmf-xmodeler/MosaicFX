@@ -45,7 +45,7 @@ public class ConsoleClient extends Thread {
         int size = in.read(buffer);
         if (size > 0) sendInput(new String(buffer).substring(0, size));
       } catch (IOException e) {
-        System.out.println(e);
+        // ignore ... System.err.println(e);
       }
     }
   }
@@ -107,7 +107,7 @@ public class ConsoleClient extends Thread {
     if (item.getNodeName().equals("Command")) Console.addCommand(XModeler.attributeValue(item, "text"));
   }
 
-  public void dot(Message message) {
+  public void dot(Message message) { //method call for Auto-Completion
     view.dot(message);
   }
 

@@ -2,6 +2,7 @@ package tool.clients.workbench;
 
 import tool.clients.Client;
 import tool.console.ConsoleClient;
+import tool.xmodeler.ControlCenterClient;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
@@ -16,7 +17,7 @@ public class WorkbenchClient extends Client {
   }
 
   public void sendMessage(final Message message) {
-	System.err.println("message:" + message);
+	System.err.println("WorkbenchClient message:" + message);
     if (message.hasName("shutdown"))
       shutdown(message);
     else if (message.hasName("saveInflater"))
@@ -28,10 +29,35 @@ public class WorkbenchClient extends Client {
     else if (message.hasName("namespace"))
       consoleNamespace(message);
     else if (message.hasName("loadImage"))
-    	loadImage(message);
+      loadImage(message);
+    else if (message.hasName("setAllProjects"))
+      setAllProjects(message);
+    else if (message.hasName("setProjectModels"))
+      setProjectModels(message);
+    else if (message.hasName("setAllCategories"))
+        setAllCategories(message);
+    else if (message.hasName("setDiagrams"))
+    	setDiagrams(message);
     else super.sendMessage(message);
   }
 
+  private void setAllProjects(Message message) {
+	ControlCenterClient.getClient().setAllProjects(message);
+  }
+  
+  private void setAllCategories(Message message) {
+	ControlCenterClient.getClient().setAllCategories(message);  
+  }
+
+  private void setProjectModels(Message message) {
+	ControlCenterClient.getClient().setProjectModels(message);
+  }
+  
+  private void setDiagrams(Message message) {
+	  ControlCenterClient.getClient().setDiagrams(message);
+  }
+  
+  
   private void consoleDot(Message message) {
     ConsoleClient.theConsole().dot(message);
   }
@@ -97,4 +123,18 @@ public class WorkbenchClient extends Client {
     message.args[0] = new Value(command);
     getHandler().raiseEvent(message);
   }
+  
+  public void startFmmlxClient() {
+    Message message = getHandler().newMessage("startFmmlxClient", 0);
+    getHandler().raiseEvent(message);
+  }
+  
+  /*public Integer getRandomNumber(int min, int max) {
+	Message message = getHandler().newMessage("getRandomNumber", 2);
+	message.args[0] = new Value(min);
+	message.args[1] = new Value(max);
+	
+	Value value = getHandler().call(message);
+	return value.intValue;
+  }*/
 }

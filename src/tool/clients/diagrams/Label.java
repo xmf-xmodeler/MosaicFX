@@ -276,7 +276,7 @@ public class Label implements Selectable {
 //        tr.rotate((float)(angle)); // Rotate again???
         gc.setTransform(newTransform);
 	  	
-	  	int zoom = XModeler.getDeviceZoomPercent();
+	  	final int zoom = 100;//XModeler.getDeviceZoomPercent();
 	  	
         double arrowAngle = 180/Math.PI*Math.atan2(edge.getTargetNode().getY()-edge.getSourceNode().getY(),edge.getTargetNode().getX()-edge.getSourceNode().getX());
 //        arrowAngle = ((arrowAngle+450)%180-90);
@@ -420,7 +420,7 @@ public class Label implements Selectable {
   public void paintSelected(GraphicsContext gc, int x, int y) { // TODO:ADAPT X/Y
 	  if (hidden) return;
 //    Color c = gc.getForeground();
-    gc.setStroke(Color.RED);
+    gc.setStroke(Color.GREEN);
     gc.strokeRect(getAbsoluteX() - 2, getAbsoluteY() - 2, getWidth() + 4, getHeight() + 4);
     EdgePainter.Point source = edge.sourceIntercept();
     EdgePainter.Point target = edge.targetIntercept();

@@ -1,31 +1,14 @@
 package tool.console;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
-import java.util.concurrent.CountDownLatch;
-
-//import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
-
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 import tool.clients.consoleInterface.EscapeHandler;
 import tool.clients.dialogs.notifier.NotificationType;
 import tool.clients.dialogs.notifier.NotifierDialog;
@@ -34,6 +17,13 @@ import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
 import xos.Message;
 import xos.Value;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
+import java.util.concurrent.CountDownLatch;
+
+//import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
 
 
 public class ConsoleView {
@@ -47,61 +37,126 @@ public class ConsoleView {
   }
 
   static EscapeHandler escape          = null;
-
-//  StyledText           text            = null;
   History              history         = new History();
   int                  inputStart      = 0;
-//  FontData             fontData;
-  // Font textFont = new Font(Display.getCurrent(), "Monaco", 14, SWT.NORMAL);
-  Color                backgroundColor = Color.WHEAT;//new Color(org.eclipse.swt.widgets.Display.getCurrent(), 255, 255, 255); 
-  Color                foregroundColor = Color.CHOCOLATE;//new Color(org.eclipse.swt.widgets.Display.getCurrent(), 0, 0, 0);
+  Color                backgroundColor = new Color(.1,.1,.1,1.);
   int                  waterMark       = 1000;
   PrintStream          out             = null;
   Object               overflowLock    = new Object();
-  AutoComplete         autoComplete    = AutoComplete.newDefault();                    // de-activated for now for better usability
-
+  AutoComplete         autoComplete    = AutoComplete.newDefault();// de-activated for now for better usability
+  Region				region = null;
   private final ScrollPane scrollpane; 
   private final TextArea textArea;
+  private final VBox vBox;
+
+  Stage owner;
   
-  public ConsoleView() {
+  
+  public ConsoleView(boolean colorReverted) {
+	
+	vBox = new VBox();
+	Menu menu = new Menu("View");
+//	CheckMenuItem consoleSeparateItem = new CheckMenuItem("Docked");
+	CheckMenuItem changeColor = new CheckMenuItem("Change Color");
+//	consoleSeparateItem.setSelected(docked);
+	changeColor.setSelected(colorReverted);
+	MenuItem hideItem = new MenuItem("Hide!");
+	MenuBar menuBar = new MenuBar();
+
+	//ColorPicker colorPicker = new ColorPicker();
+	//colorPicker.setValue(Color.RED);
+	//colorPicker.setStyle("-fx-background-color: white;");
+	//MenuItem fgColorItem = new MenuItem(null,colorPicker);
+	menu.getItems().addAll(/*consoleSeparateItem,*/hideItem, changeColor);
+	menuBar.getMenus().add(menu);
+	
+//	consoleSeparateItem.setOnAction(e->separateConsole(((CheckMenuItem)e.getSource()).isSelected()));
+	changeColor.setOnAction(e-> revertBackgroundColor(((CheckMenuItem)e.getSource()).isSelected()));
+	hideItem.setOnAction(e->hideConsole());
+	vBox.getChildren().add(menuBar);
 	scrollpane = new ScrollPane();
 	textArea = new TextArea();
+	textArea.setPrefHeight(600);
 	scrollpane.setContent(textArea);
 	scrollpane.setFitToWidth(true);
 	scrollpane.setFitToHeight(true);
-	  	
+	VBox.setVgrow(scrollpane, Priority.ALWAYS);
 	textArea.setWrapText(true);
-	textArea.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
-
-	//	Region node = textArea.lookup("content");
-	
-//	System.err.println(node);
-//	node.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
-	
-	//    setFont("fonts/DejaVuSansMono.ttf", "DejaVu Sans Mono");
-    addVerifyListener(textArea);
-    try {
-    	Font defaultFont = textArea.getFont();
-        Font f = Font.loadFont(new FileInputStream(new File("resources/fonts/DejaVuSansMono.ttf")), defaultFont.getSize());
-		textArea.setFont(f);
-	} catch (FileNotFoundException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-//    tabItem.setControl(c1);
-	
-//	textArea.textProperty().addListener(new ChangeListener<String>() {
-//	    @Override
-//	    public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
-//	    	Region r = (Region) textArea.lookup(".content");
-//	    	r.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
-//	    }
-//	});
+	addVerifyListener(textArea);
+    setFont(textArea.getFont().getSize());
+    vBox.getChildren().add(scrollpane);
+    
+    revertBackgroundColor(colorReverted);
   }
+
+  private void hideConsole() {
+//	  if(!Console.separate) {
+//		  XModeler.propertyTabs.getTabs().remove(Console.tab);  
+//	  } else {
+		  Console.stage.close();
+//	  }
+	  PropertyManager.setProperty("consoleVisible", "false");
+  }
+
+    public void revertBackgroundColor(boolean reverted) {
+        if(reverted){
+            if(!Console.colorReverted){
+                  //Set backgroundColor and fontColor of the console
+                    try {
+                        region=(Region)textArea.lookup(".content");
+                        region.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
+                        textArea.setStyle("-fx-text-fill: #cccccc;");
+                        PropertyManager.setProperty("consoleColorReverted", "true");
+                        Console.colorReverted =true;
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+            }
+        } else {
+            if(Console.colorReverted){
+                  //Set backgroundColor and fontColor of the console
+                    try {
+                        region=(Region)textArea.lookup(".content");
+                        region.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+                        textArea.setStyle("-fx-text-fill: #000000;");
+                        PropertyManager.setProperty("consoleColorReverted", "false");
+                        Console.colorReverted =false;
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+
+            }
+        }
+
+    }
   
-  public Node getView() {
-	// TODO Auto-generated method stub
-	return scrollpane;
+//private void separateConsole(boolean docking) {
+//	if(docking) {
+//		if(Console.separate) {
+//			PropertyManager.setProperty("showConsoleSeparately", "false");
+//			Console.showInTab(XModeler.propertyTabs);
+//			Console.stage.close();
+//		}
+//	}else {
+//		if(!Console.separate) {
+//		PropertyManager.setProperty("showConsoleSeparately", "true");
+//		Console.showInStage();
+//		XModeler.propertyTabs.getTabs().remove(Console.tab);
+//		}
+//	} 
+//}
+
+private void setFont(double size) {
+	    try {
+	        Font f = Font.loadFont(new FileInputStream("resources/fonts/DejaVuSansMono.ttf"), size);
+	        textArea.setFont(f);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}	
+}
+
+public Node getView() {
+		return vBox;
   }
 
   public final void setFont(String fileName, String name) {
@@ -171,77 +226,71 @@ public class ConsoleView {
   
   public void addVerifyListener(final TextArea textArea) {
 
-	textArea.textProperty().addListener(new ChangeListener<String>() {
-		public void changed(
-				final ObservableValue<? extends String> observable, 
-				final String oldValue, final String newValue) {
-		  if(!listenerActive) {
-			listenerActive = true; return;
-		  }	 
-		  Diff diff = compare(oldValue, newValue);
-	      int start 		= diff.left;
-	      int end   		= oldValue.length()-diff.right;
-	      String diffText   = diff.textPlus;
+	textArea.textProperty().addListener((observable, oldValue, newValue) -> {
+      if(!listenerActive) {
+        listenerActive = true; return;
+      }
+      Diff diff = compare(oldValue, newValue);
+      int start 		= diff.left;
+      int end   		= oldValue.length()-diff.right;
+      String diffText   = diff.textPlus;
 //	      System.err.println(diff);
-        if (start < inputStart || end < inputStart) {
-        	/* if cursor not at end, 
-        	 *   then revert change, 
-        	 *        move cursor to end, 
-        	 *        append diff there
-        	 */
-        	listenerActive = false;
-        	textArea.setText(oldValue);
-        	textArea.appendText(diffText);
-        	
-        	positionCaret(textArea.getText().length());
-        	
-        } else {
-        	/* Do nothing */
-		}
-        
-        if(newValue.startsWith(oldValue)) {
-        	if(".".equals(diff.textPlus)) {
-	            // Display options based on the type of the input.
-	            String content = textArea.getText();
-	            if (textArea.getCaretPosition() >= inputStart) {
-	                String command = content.substring(inputStart);
-	                WorkbenchClient.theClient().dotConsole(command.substring(0, command.length()-1));
-	            }
-        	}
+if (start < inputStart || end < inputStart) {
+        /* if cursor not at end,
+         *   then revert change,
+         *        move cursor to end,
+         *        append diff there
+         */
+        listenerActive = false;
+        textArea.setText(oldValue);
+        textArea.appendText(diffText);
+
+        positionCaret(textArea.getText().length());
+
+}
+
+if(newValue.startsWith(oldValue)) {
+        if(".".equals(diff.textPlus)) {
+            // Display options based on the type of the input.
+            String content = textArea.getText();
+            if (textArea.getCaretPosition() >= inputStart) {
+                String command = content.substring(inputStart);
+                WorkbenchClient.theClient().dotConsole(command.substring(0, command.length()-1));
+            }
         }
-     }
-    });
+}
+});
 	
 	
 	
-	textArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
-	    @Override
-	    public void handle(KeyEvent keyEvent) {
-	    	
-        if (overwriting(keyEvent.getCharacter())) {
-          try {
-        	positionCaret(textArea.getCaretPosition() + 1);
-          } catch (Exception err) {
-            System.err.println("something's wrong with a caret");
-            err.printStackTrace();
-          }
-          revertInput();
-        } else if (keyEvent.getCode() == KeyCode.ESCAPE) {
-          if (escape != null) escape.interrupt();
-          revertInput();
-        } else if (keyEvent.getCode() == KeyCode.UP) {
-          String command = recallFromHistoryForward();
-          if (command != "") addCommand(textArea, command);
-          revertInput();
-        } else if (keyEvent.getCode() == KeyCode.DOWN) {
-          String command = recallFromHistoryBackward();
-          if (command != "") addCommand(textArea, command);
-          revertInput();
-//        } else if (e.keyCode == '+' && ((e.stateMask & SWT.CTRL) == SWT.CTRL)) {
+	textArea.setOnKeyPressed(keyEvent -> {
+
+    if (overwriting(keyEvent.getCharacter())) {
+      try {
+        positionCaret(textArea.getCaretPosition() + 1);
+      } catch (Exception err) {
+        System.err.println("something's wrong with a caret");
+        err.printStackTrace();
+      }
+      revertInput();
+    } else if (keyEvent.getCode() == KeyCode.ESCAPE) {
+      if (escape != null) escape.interrupt();
+      revertInput();
+    } else if (keyEvent.getCode() == KeyCode.UP) {
+      String command = recallFromHistoryForward();
+      if (!command.equals("")) addCommand(textArea, command);
+      revertInput();
+    } else if (keyEvent.getCode() == KeyCode.DOWN) {
+      String command = recallFromHistoryBackward();
+      if (!command.equals("")) addCommand(textArea, command);
+      revertInput();
+    } else if (keyEvent.getCode() == KeyCode.PLUS && keyEvent.isControlDown()) {
+        setFont(textArea.getFont().getSize() + FONT_INC);
 //          fontData.setHeight(Math.min(fontData.getHeight() + FONT_INC, MAX_FONT_HEIGHT));
 //          text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
 //          revertInput();
-//        } else if (e.keyCode == '-' && ((e.stateMask & SWT.CTRL) == SWT.CTRL)) {
+    } else if (keyEvent.getCode() == KeyCode.MINUS && keyEvent.isControlDown()) {
+        setFont(textArea.getFont().getSize() - FONT_INC);
 //          fontData.setHeight(Math.max(MIN_FONT_HEIGHT, fontData.getHeight() - FONT_INC));
 //          text.setFont(new Font(XModeler.getXModeler().getDisplay(), fontData));
 //          revertInput();
@@ -257,58 +306,64 @@ public class ConsoleView {
 //          revertInput();
 //        } else if (e.keyCode == '/' && ((e.stateMask & SWT.CTRL) == SWT.CTRL) && ((e.stateMask & SWT.SHIFT) == SWT.SHIFT)) {
 //          help();
-        } else if (keyEvent.getCode() == KeyCode.ENTER)  {
-          String output = pushToHistory(textArea);
-          if (out != null) {
-            out.print(output + "\r");
-            out.flush();
-          }
-          revertInput();
-          goToEnd();
-          inputStart = textArea.getText().length();
-        } else if (keyEvent.getCharacter().charAt(0) == '.' /*|| e.keyCode == ' ' && ((e.stateMask & SWT.CTRL) == SWT.CTRL)*/ && autoComplete.isDisplayOptions()) {
-          // Display options based on the type of the input.
-          String content = textArea.getText();
-          if (textArea.getCaretPosition() >= inputStart) {
-          String command = content.substring(inputStart);
-            WorkbenchClient.theClient().dotConsole(command);
-          }
-        } else if (keyEvent.getCharacter().charAt(0) == ':' && autoComplete.isColonAddPath()) {
-          // We might have a :: where there is a path to the left ...
-          String content = textArea.getText();
-          String command = content.substring(inputStart);
-          if (command.endsWith(":")) {
-            WorkbenchClient.theClient().nameLookup(command.substring(0, command.length() - 1));
-          }
-        } else if (keyEvent.getCharacter().charAt(0) == '>' && autoComplete.isRightArrowFillPatterns()) {
-          // We might have a -> and can fill in the standard patterns ...
-          String content = textArea.getText();
-          String command = content.substring(inputStart);
-          if (command.endsWith("-")) {
-            completeArrow();
-          }
-        } else if (keyEvent.getCharacter().charAt(0) == '{' && autoComplete.isSquareStartCollection()) {
-          // Are we starting a collection?
-          String content = textArea.getText();
-          String command = content.substring(inputStart);
-          if (command.endsWith("Set") || command.endsWith("Seq")) {
-            insert("{}");
-            backup(1);
-            revertInput();
-          }
-        } else if (keyEvent.getCharacter().charAt(0) == '(' && autoComplete.isNineAddParenthesis()) {
-          // Insert the corresponding parenthesis...
-          insert("()");
-          backup(1);
-          revertInput();
-        } else if (keyEvent.getCharacter().charAt(0) == '\"' && autoComplete.isApostropheAddQuotes()) {
-          // Insert the corresponding close string...
-          insert("\"\"");
-          backup(1);
-          revertInput();
-        } else prepareTopLevelCommand();
+    } else if (keyEvent.getCode() == KeyCode.ENTER)  {
+      String output = pushToHistory(textArea);
+      if (out != null) {
+        out.print(output + "\r");
+        out.flush();
       }
-    });
+      revertInput();
+      goToEnd();
+      inputStart = textArea.getText().length();
+    } else if (keyEvent.getCharacter().charAt(0) == '.' /*|| e.keyCode == ' ' && ((e.stateMask & SWT.CTRL) == SWT.CTRL)*/ && autoComplete.isDisplayOptions()) {
+      // Display options based on the type of the input.
+      String content = textArea.getText();
+      if (textArea.getCaretPosition() >= inputStart) {
+      String command = content.substring(inputStart);
+        WorkbenchClient.theClient().dotConsole(command);
+      }
+    } else if (keyEvent.getCharacter().charAt(0) == ':' && autoComplete.isColonAddPath()) {
+      // We might have a :: where there is a path to the left ...
+      String content = textArea.getText();
+      String command = content.substring(inputStart);
+      if (command.endsWith(":")) {
+        WorkbenchClient.theClient().nameLookup(command.substring(0, command.length() - 1));
+      }
+    } else if (keyEvent.getCharacter().charAt(0) == '>' && autoComplete.isRightArrowFillPatterns()) {
+      // We might have a -> and can fill in the standard patterns ...
+      String content = textArea.getText();
+      String command = content.substring(inputStart);
+      if (command.endsWith("-")) {
+        completeArrow();
+      }
+    } else if (keyEvent.getCharacter().charAt(0) == '{' && autoComplete.isSquareStartCollection()) {
+      // Are we starting a collection?
+      String content = textArea.getText();
+      String command = content.substring(inputStart);
+      if (command.endsWith("Set") || command.endsWith("Seq")) {
+        insert("{}");
+        backup(1);
+        revertInput();
+      }
+    } else if (keyEvent.getCharacter().charAt(0) == '(' && autoComplete.isNineAddParenthesis()) {
+      // Insert the corresponding parenthesis...
+      insert("()");
+      backup(1);
+      revertInput();
+    } else if (keyEvent.getCharacter().charAt(0) == '\"' && autoComplete.isApostropheAddQuotes()) {
+        // Insert the corresponding close string...
+      insert("\"\"");
+      backup(1);
+      revertInput();
+    } else if (keyEvent.getCode() == KeyCode.DIGIT1 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #ff0000;");
+    } else if (keyEvent.getCode() == KeyCode.DIGIT2 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #ffff00;");
+    } else if (keyEvent.getCode() == KeyCode.DIGIT3 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #00ff00;");
+    } else if (keyEvent.getCode() == KeyCode.DIGIT4 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #00ffff;");
+    } else if (keyEvent.getCode() == KeyCode.DIGIT5 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #0000ff;");
+    } else if (keyEvent.getCode() == KeyCode.DIGIT6 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #ff00ff;");
+    } else if (keyEvent.getCode() == KeyCode.DIGIT7 && keyEvent.isControlDown() && !keyEvent.isAltDown()) { textArea.setStyle("-fx-text-fill: #cccccc;");
+    } else prepareTopLevelCommand();
+  });
 	        	
 //
 //    ConsoleLineStyler consoleLineStyper = new ConsoleLineStyler();
@@ -320,12 +375,7 @@ public class ConsoleView {
 		}
 		
 		private void positionCaret(int pos) {
-    	Platform.runLater( new Runnable() {
-    	    @Override
-    	    public void run() {
-    	        textArea.positionCaret(pos);
-    	    }
-    	});
+    	Platform.runLater(() -> textArea.positionCaret(pos));
 	}
 
   private void help() {
@@ -404,6 +454,18 @@ public class ConsoleView {
   }
 
 	public void processInput(String input) {
+        try {
+            if(Console.colorReverted){
+                region=(Region)textArea.lookup(".content");
+                if(region != null){
+                	region.setBackground(new Background(new BackgroundFill(backgroundColor, CornerRadii.EMPTY, Insets.EMPTY)));
+                	textArea.setStyle("-fx-text-fill: #cccccc;");
+                }
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
 		CountDownLatch l = new CountDownLatch(1);
 		Platform.runLater(() -> {
 			appendText(input);
@@ -460,11 +522,7 @@ public class ConsoleView {
   
     private void addQuickCompleteItem(ContextMenu menu, String text) {
     	MenuItem item = new MenuItem("->" + text);
-    	item.setOnAction(new EventHandler<ActionEvent>() {
-    	    public void handle(ActionEvent e) {
-    	    	insert(text);
-    	    }
-    	});
+    	item.setOnAction(e -> insert(text));
     }
 
   	private void completeArrow() {
@@ -493,7 +551,7 @@ public class ConsoleView {
     
 	public void dot2(final Message message) {
 		try {
-			String insertText = new AutoCompleteBox(XModeler.getStage(), message).show(100, 100);
+			String insertText = new AutoCompleteBox(owner, message).show(100, 100);
 			if (insertText != null)
 				insert(insertText);
 		} catch (Throwable t) {
@@ -508,7 +566,7 @@ public class ConsoleView {
               String name = message.args[0].values[i].strValue();
               message.args[0].values[i].values = new Value[] {new Value(name),new Value(name)};
             }
-            String insertText = new AutoCompleteBox(XModeler.getStage(), message).show(100,100);
+            String insertText = new AutoCompleteBox(owner, message).show(100,100);
             if (insertText != null) insert(insertText);
           } catch (Throwable t) {
             t.printStackTrace();

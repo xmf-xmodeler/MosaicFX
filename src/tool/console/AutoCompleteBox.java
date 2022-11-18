@@ -1,8 +1,5 @@
 package tool.console;
 
-import java.util.Collections;
-import java.util.Vector;
-
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
@@ -24,9 +21,12 @@ import javafx.stage.Stage;
 import xos.Message;
 import xos.Value;
 
+import java.util.Collections;
+import java.util.Vector;
+
 public class AutoCompleteBox extends Dialog<String> {
 
-	Vector<Suggestion> labels = new Vector<Suggestion>();
+	Vector<Suggestion> labels = new Vector<>();
 	TextField searchField;
 	ListView<String> listOfSuggestions; 
 	boolean searchFieldInitialised = false;
@@ -52,6 +52,20 @@ public class AutoCompleteBox extends Dialog<String> {
         javafx.scene.Node closeButton = getDialogPane().lookupButton(ButtonType.CLOSE);
         closeButton.managedProperty().bind(closeButton.visibleProperty());
         closeButton.setVisible(false);
+
+        getDialogPane().addEventHandler(KeyEvent.KEY_PRESSED, (KeyEvent event) -> {
+			if (KeyCode.ESCAPE == event.getCode()) {
+				close();
+			}
+		});
+
+		getDialogPane().addEventHandler(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
+			if (KeyCode.BACK_SPACE == event.getCode()) {
+				if(searchField.getText().equals("")){
+					close();
+				}
+			}
+		});
 	}
 
 	public String show(int x, int y) {
@@ -60,7 +74,7 @@ public class AutoCompleteBox extends Dialog<String> {
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
 		grid.setVgap(10);
-		grid.setPadding(new Insets(20, 150, 10, 10));
+		grid.setPadding(new Insets(5, 5, 5, 5));
 
         searchField = new TextField();
         searchField.setText("Search here...");
@@ -68,15 +82,17 @@ public class AutoCompleteBox extends Dialog<String> {
 		searchField.setOnKeyPressed(new MySearchListener_Pressed());
 		searchField.setOnKeyReleased(new MySearchListener_Released());
 		
-        listOfSuggestions = new ListView<String>();
+        listOfSuggestions = new ListView<>();
         grid.add(listOfSuggestions, 0, 1);
 		listOfSuggestions.setOnMouseClicked(new MyListListener());
 		
 		addAllToListSortedBy("");
         
 		getDialogPane().setContent(grid);
+		getDialogPane().toFront();
 		
 		searchField.requestFocus();
+
 
 		showAndWait();
 
@@ -87,8 +103,9 @@ public class AutoCompleteBox extends Dialog<String> {
 		listOfSuggestions.setItems(FXCollections.observableArrayList());
 		Suggestion.key = key;
 		Collections.sort(labels);
-		for(int i = 0; i < labels.size(); i++) {
-			if(labels.get(i).likelihood > .1) listOfSuggestions.getItems().add(labels.get(i).text);// + " (" + labels.get(i).likelihood + " " + labels.get(i).lastKey + ")");
+		for (Suggestion label : labels) {
+			if (label.likelihood > .1)
+				listOfSuggestions.getItems().add(label.text);// + " (" + labels.get(i).likelihood + " " + labels.get(i).lastKey + ")");
 		}
 		
 		if (listOfSuggestions.getItems().size() > 0) {
@@ -124,7 +141,7 @@ public class AutoCompleteBox extends Dialog<String> {
 		}
 
 		private void  calculateLikelihood() {
-			if (key != lastKey) {
+			if (!key.equals(lastKey)) {
 				likelihood = 0.;
 				if (text.toLowerCase().contains(key.toLowerCase()))
 					likelihood += .5;
@@ -152,11 +169,8 @@ public class AutoCompleteBox extends Dialog<String> {
 				return false;
 			Suggestion other = (Suggestion) obj;
 			if (text == null) {
-				if (other.text != null)
-					return false;
-			} else if (!text.equals(other.text))
-				return false;
-			return true;
+				return other.text == null;
+			} else return text.equals(other.text);
 		}
 	}
 	
