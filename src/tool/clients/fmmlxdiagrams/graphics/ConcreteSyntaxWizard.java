@@ -23,6 +23,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 /**
@@ -59,6 +60,40 @@ public class ConcreteSyntaxWizard extends Application {
 	private AffineController affineController = new AffineController();
 	private ScrollPane syntaxScrollGrid = new ScrollPane();
 	private Vector<AbstractSyntax> syntaxes = new Vector<>();
+	private AbstractPackageViewer model;
+	private FmmlxObject selectedClass;	
+	private Integer selectedLevel;
+	private enum EditMode {NO_MODEL, MODEL_NO_CLASS, MODEL_AND_CLASS}
+	private EditMode editMode; 
+	/**
+	 * Creates a wizard without connection to a model. 
+	 * Used for quickly checking the layout of the wizard.
+	 * Also allows all existing concrete syntaxes to be viewed
+	 */
+	public ConcreteSyntaxWizard() {
+		this(null, null, null);
+	}
+	
+	/**
+	 * Creates a wizard with access to one model.
+	 * @param model
+	 */
+	public ConcreteSyntaxWizard(AbstractPackageViewer model) {
+		this(model, null, null);
+	}
+	
+	/**
+	 * Creates a wizard with access to one model, 
+	 * with one class and a level preselected which a concrete syntax can be assigned to.
+	 * @param model
+	 * @param selectedClass
+	 */
+	public ConcreteSyntaxWizard(AbstractPackageViewer model, FmmlxObject selectedClass, Integer level) {
+		this.model = model;
+		this.selectedClass = selectedClass;
+		this.selectedLevel = level;
+		editMode = model == null?EditMode.NO_MODEL:selectedClass==null?EditMode.MODEL_NO_CLASS:EditMode.MODEL_AND_CLASS;
+	}
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -75,7 +110,17 @@ public class ConcreteSyntaxWizard extends Application {
 		/////////
 		
 		VBox leftControl = new VBox(5.);
-		leftControl.setPadding(new Insets(5.));
+		leftControl.setPadding(new Insets(5.));		
+
+		HBox modelBox = new HBox(new Label("Selected Model"), new TextField(model==null?"NONE":model.getPackagePath()));
+		leftControl.getChildren().add(modelBox);
+		
+		HBox classBox = new HBox(
+				new Label("Selected Class"), 
+				new TextField(selectedClass==null?"NONE":selectedClass.getName()),
+				new Label("@"), 
+				new TextField(selectedLevel==null?"NONE":(selectedLevel+"")));
+		leftControl.getChildren().add(classBox);
 				
 		TextField directoryTextField = new TextField(new File(RESOURCES_CONCRETE_SYNTAX_REPOSITORY).toString());
 		directoryTextField.setDisable(true);
@@ -94,9 +139,8 @@ public class ConcreteSyntaxWizard extends Application {
 		
 		HBox directoryBox = new HBox(fileDirectory, directoryTextField);
 		directoryBox.setPadding(new Insets(10,10,10,10));
-		Label labelListView = new Label("ListView");
-		Label labelTreeView = new Label("TreeView");
 		leftControl.getChildren().add(directoryBox);
+		Label labelListView = new Label("ListView");
 		leftControl.getChildren().add(labelListView);
 			
         syntaxScrollGrid = new ScrollPane(new ConcreteSyntaxGrid());
@@ -113,6 +157,7 @@ public class ConcreteSyntaxWizard extends Application {
 			}			
 		});	
 		SVGtree.setMaxHeight(300);
+		Label labelTreeView = new Label("TreeView");
         leftControl.getChildren().add(labelTreeView);
         leftControl.getChildren().add(SVGtree);
 
@@ -156,6 +201,8 @@ public class ConcreteSyntaxWizard extends Application {
 		splitPane.setDividerPosition(0, 0.2);
 		
 		Scene scene = new Scene(splitPane);
+		primaryStage.setHeight(800);
+		primaryStage.setWidth(1100);
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("Concrete Syntax Wizard");
 		primaryStage.show();

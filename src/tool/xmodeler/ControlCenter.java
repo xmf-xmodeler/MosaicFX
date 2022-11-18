@@ -81,6 +81,7 @@ public class ControlCenter extends Stage {
 		
 		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard"); //Button for ConcreteSyntaxWizard
 		concreteSyntaxWizardStart.setOnAction(e -> { 
+			
 			ConcreteSyntaxWizard wizard = new ConcreteSyntaxWizard();
 			try {
 				wizard.start(new Stage());

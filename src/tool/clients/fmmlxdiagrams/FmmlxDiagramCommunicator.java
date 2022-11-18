@@ -195,22 +195,26 @@ public class FmmlxDiagramCommunicator {
 			        if(silent) {
 			        	System.err.println("Error:" + err.get(0));
 			        } else {
-						CountDownLatch l = new CountDownLatch(1);
+//						CountDownLatch l = new CountDownLatch(1);
 						Platform.runLater(() -> {
 							Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
 							//alert.showAndWait(); NOPE
 							alert.show();
 							if(err.size() > 1) {
 								System.err.println("error handling: " + err.get(1));
-								handleErrorMessage((java.util.Vector<Object>) err.get(1), getDiagram(diagramID));
-								}								
-							l.countDown();
+								try{
+									handleErrorMessage((java.util.Vector<Object>) err.get(1), getDiagram(diagramID));
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}								
+//							l.countDown();
 						});
-						try {
-							l.await();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+//						try {
+////							l.await();
+//						} catch (InterruptedException e) {
+//							e.printStackTrace();
+//						}
 					}
 				}
 			} else {

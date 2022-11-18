@@ -3,14 +3,18 @@ package tool.clients.fmmlxdiagrams.menus;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
+import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxWizard;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 
+import java.util.Optional;
 import java.util.Vector;
 
 public class ObjectContextMenu extends ContextMenu {
@@ -122,6 +126,34 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem assignItem = new MenuItem("Assign to Global Variable");
 		assignItem.setOnAction(e -> actions.assignToGlobal(object));
 		
+		MenuItem editConcreteSyntaxItem = new MenuItem("Edit Concrete Syntax");
+		editConcreteSyntaxItem.setOnAction(e -> {
+			Vector<Integer> choices = new Vector<>();
+			for(Integer i = 0; i < object.getLevel(); i++) {
+				choices.add(i);
+			}
+			if(choices.size() > 0) {
+				ChoiceDialog<Integer> dialog = new ChoiceDialog<Integer>(object.getLevel()-1, choices);
+				dialog.setTitle("Edit Concrete Syntax");
+				dialog.setHeaderText("Edit Concrete Syntax for " + object.getName() + "on which level?" );
+//				dialog.setContentText("Choose level:");
+	
+				// Traditional way to get the response value.
+				Optional<Integer> result = dialog.showAndWait();
+				if (result.isPresent()){
+					ConcreteSyntaxWizard wizard = new ConcreteSyntaxWizard(diagram, object, result.get());
+					try {
+						wizard.start(new Stage());
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
+		
+		
+		
 		getItems().addAll(attributeMenu, 
 				associationMenu, 
 				operationMenu, 
@@ -130,7 +162,8 @@ public class ObjectContextMenu extends ContextMenu {
 				slotMenu, 
 				associationInstanceMenu, 
 				showMenu, 
-				assignItem);
+				assignItem,
+				editConcreteSyntaxItem);
 		
 		addRunMenu();
 		
