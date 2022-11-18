@@ -211,7 +211,7 @@ public class NodeGroup extends NodeElement {
 			if(nodeElement instanceof ConcreteSyntax && ((ConcreteSyntax)nodeElement).isMetaImport()) {
 				Vector<Modification> allMods = new Vector<>(); 
 				allMods.addAll(modifications);
-				allMods.addAll(((ConcreteSyntax)nodeElement).modifications);
+				allMods.addAll(((ConcreteSyntax)nodeElement).getModifications());
 				NodeElement nl = nodeElement.createInstance(object.getOf(), allMods, actions, diagram);
 				nl.action = action;
 				that.addNodeElement(nl);

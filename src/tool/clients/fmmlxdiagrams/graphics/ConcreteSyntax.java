@@ -22,8 +22,10 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 public class ConcreteSyntax extends AbstractSyntax{
 	
-	public Vector<Modification> modifications = new Vector<>();
-	public Vector<ActionInfo> actions = new Vector<>();
+	private Vector<Modification> modifications = new Vector<>();
+	public Vector<Modification> getModifications() {return new Vector<>(modifications);}
+	private Vector<ActionInfo> actions = new Vector<>();
+	public Vector<ActionInfo> getActions() {return new Vector<>(actions);}
 	public String classPath;
 	public int level;
 

@@ -83,6 +83,9 @@ public class AbstractSyntax extends NodeGroup{
 		return object;
 	}
 
+	public Vector<Modification> getModifications() {return new Vector<>();}
+	public Vector<ActionInfo> getActions() {return new Vector<>();}
+	
 	private static NodeLabel readLabel(Element e) {
 		Affine transform = readTransform(e);
 		Pos alignment = Pos.BASELINE_LEFT;
