@@ -18,4 +18,5 @@
     <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="./ini3.txt"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="MosaicFX"/>
     <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="--add-modules javafx.base,javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web"/>
+    <stringAttribute key="yk-options" value="&#13;&#10;additional-options2=onexit\=snapshot&#13;&#10;startup=12&#13;&#10;"/>
 </launchConfiguration>
