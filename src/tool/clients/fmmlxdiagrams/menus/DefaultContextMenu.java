@@ -1,9 +1,14 @@
 package tool.clients.fmmlxdiagrams.menus;
 
+import java.util.Optional;
+import java.util.Vector;
+
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
+import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxWizard;
 
 public class DefaultContextMenu extends ContextMenu {
 
@@ -78,6 +83,17 @@ public class DefaultContextMenu extends ContextMenu {
 		openFindSendersOfMessages.setOnAction(e -> actions.openFindSendersDialog());
 		searchMenu.getItems().addAll(openFindImplementationDialog, openFindClassDialog, openFindSendersOfMessages);
 
+
+		MenuItem editConcreteSyntaxItem = new MenuItem("Edit Concrete Syntaxes");
+		editConcreteSyntaxItem.setOnAction(e -> {
+			ConcreteSyntaxWizard wizard = new ConcreteSyntaxWizard(diagram, null, null);
+			try {
+				wizard.start(new Stage());
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		});
+		
 		getItems().addAll( 
 			levelMenu, 
 			enumerationMenu, 
@@ -88,7 +104,8 @@ public class DefaultContextMenu extends ContextMenu {
 			importDiagram, 
 			filterObjectsMenu,
 			saveModel,
-			searchMenu);
+			searchMenu,
+			editConcreteSyntaxItem);
 	}
 }
 

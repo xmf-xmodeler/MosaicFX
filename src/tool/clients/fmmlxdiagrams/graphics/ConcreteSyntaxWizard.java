@@ -7,6 +7,7 @@ import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -56,15 +57,22 @@ public class ConcreteSyntaxWizard extends Application {
 	private MyCanvas myCanvas;
 	private final TreeView<NodeElement> SVGtree = new TreeView<NodeElement>();
 	private DirectoryChooser directoryChooser;
-	private AbstractSyntax selectedSyntax;
 	private AffineController affineController = new AffineController();
 	private ScrollPane syntaxScrollGrid = new ScrollPane();
+	private ConcreteSyntaxGrid syntaxGrid;
 	private Vector<AbstractSyntax> syntaxes = new Vector<>();
 	private AbstractPackageViewer model;
+	
+	private AbstractSyntax selectedSyntax;
 	private FmmlxObject selectedClass;	
 	private Integer selectedLevel;
-	private enum EditMode {NO_MODEL, MODEL_NO_CLASS, MODEL_AND_CLASS}
-	private EditMode editMode; 
+	
+	private enum EditMode {NO_MODEL, MODEL_NO_CLASS}
+	private EditMode editMode;
+	private ComboBox<FmmlxObject> classSelectionBox;
+	private ComboBox<Integer> levelSelectionBox;
+	private TextField classSelectionField;
+	private TextField levelSelectionField;
 	/**
 	 * Creates a wizard without connection to a model. 
 	 * Used for quickly checking the layout of the wizard.
@@ -92,7 +100,7 @@ public class ConcreteSyntaxWizard extends Application {
 		this.model = model;
 		this.selectedClass = selectedClass;
 		this.selectedLevel = level;
-		editMode = model == null?EditMode.NO_MODEL:selectedClass==null?EditMode.MODEL_NO_CLASS:EditMode.MODEL_AND_CLASS;
+		editMode = model == null?EditMode.NO_MODEL:EditMode.MODEL_NO_CLASS;
 	}
 	
 	@Override
@@ -115,11 +123,56 @@ public class ConcreteSyntaxWizard extends Application {
 		HBox modelBox = new HBox(new Label("Selected Model"), new TextField(model==null?"NONE":model.getPackagePath()));
 		leftControl.getChildren().add(modelBox);
 		
+		Node selectedClassNode = null;
+		Node selectedLevelNode = null;
+		
+		if(editMode == EditMode.NO_MODEL) {
+			classSelectionField = new TextField("N/A");
+			classSelectionField.setDisable(true);
+			levelSelectionField = new TextField("N/A");
+			levelSelectionField.setDisable(true);
+			selectedClassNode = classSelectionField;
+			selectedLevelNode = levelSelectionField;
+		} else {
+			classSelectionBox = new ComboBox<FmmlxObject>();
+			classSelectionBox.getItems().addAll(model.getObjects());
+			levelSelectionBox = new ComboBox<Integer>();
+			selectedClassNode = classSelectionBox;
+			selectedLevelNode = levelSelectionBox;
+		} 
+		
+		Button newButton = new Button("new"); 
+		newButton.setOnAction(a -> {
+			if(editMode == EditMode.NO_MODEL) {
+				// TODO ...
+			} else {
+				if(selectedClass != null && selectedLevel != null && syntaxGrid.selectedIndex == -1) {
+					ConcreteSyntax newSyntax = new ConcreteSyntax();
+					newSyntax.classPath = selectedClass.getPath();
+					newSyntax.level = selectedLevel;
+					String s = selectedClass.getPath() + "." + selectedLevel;
+					s = s.replace("::", ".") + ".xml";
+					if(s.startsWith("Root.")) {
+						s = s.substring(5);
+					} else {
+						System.err.println("Unexpected Path: " + s);
+					}
+					File dir = new File(RESOURCES_CONCRETE_SYNTAX_REPOSITORY, "WizardFiles");
+					File f = new File(dir, s);
+					newSyntax.file = f;
+					System.err.println("File: " + f);
+					syntaxes.add(newSyntax);
+					syntaxGrid.select(newSyntax);
+				}
+			}
+		});
+		
 		HBox classBox = new HBox(
 				new Label("Selected Class"), 
-				new TextField(selectedClass==null?"NONE":selectedClass.getName()),
+				selectedClassNode,
 				new Label("@"), 
-				new TextField(selectedLevel==null?"NONE":(selectedLevel+"")));
+				selectedLevelNode,
+				newButton);
 		leftControl.getChildren().add(classBox);
 				
 		TextField directoryTextField = new TextField(new File(RESOURCES_CONCRETE_SYNTAX_REPOSITORY).toString());
@@ -143,7 +196,8 @@ public class ConcreteSyntaxWizard extends Application {
 		Label labelListView = new Label("ListView");
 		leftControl.getChildren().add(labelListView);
 			
-        syntaxScrollGrid = new ScrollPane(new ConcreteSyntaxGrid());
+		syntaxGrid = new ConcreteSyntaxGrid();
+        syntaxScrollGrid = new ScrollPane(syntaxGrid);
         syntaxScrollGrid.setMaxHeight(300);
         syntaxScrollGrid.setMinWidth(530);
         syntaxScrollGrid.setPrefWidth(530);
@@ -200,6 +254,42 @@ public class ConcreteSyntaxWizard extends Application {
 		splitPane = new SplitPane(leftControl, rightControl);
 		splitPane.setDividerPosition(0, 0.2);
 		
+		/////////		
+		
+		if(classSelectionBox != null) {
+			classSelectionBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+				if(oldVal != newVal && newVal != null) {
+					selectedClass = newVal;
+					levelSelectionBox.getItems().clear();
+					for(int i = 0; i < selectedClass.getLevel(); i++) {
+						levelSelectionBox.getItems().add(i);
+					}
+					if(selectedLevel != null && levelSelectionBox.getItems().size() > 0) {
+						if(levelSelectionBox.getItems().contains(selectedLevel))
+							levelSelectionBox.getSelectionModel().select((Integer) selectedLevel); 
+						else
+							levelSelectionBox.getSelectionModel().select((Integer) 0); 
+					}
+				}
+			});
+		}
+		
+		if(levelSelectionBox != null) {
+			levelSelectionBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+				if(newVal != null) {
+					selectedLevel = newVal;
+					if(selectedClass != null) {
+						selectConcreteSyntaxInPreviewList();
+					}
+				}
+			});
+		}
+
+		if(selectedClass != null) {
+			classSelectionBox.getSelectionModel().select(selectedClass);
+			levelSelectionBox.getSelectionModel().select(selectedLevel);
+		}
+		
 		Scene scene = new Scene(splitPane);
 		primaryStage.setHeight(800);
 		primaryStage.setWidth(1100);
@@ -208,8 +298,21 @@ public class ConcreteSyntaxWizard extends Application {
 		primaryStage.show();
 	}	
 	
+	private void selectConcreteSyntaxInPreviewList() {
+		System.err.println("selectConcreteSyntaxFor(" + selectedClass + ", " + selectedLevel + ")");
+		for(AbstractSyntax syntax : syntaxes) {
+			if(syntax instanceof ConcreteSyntax) {
+				ConcreteSyntax cs = (ConcreteSyntax) syntax;
+				if(cs.classPath.equals(selectedClass.getPath())) {
+					syntaxGrid.select(cs);
+				}
+			}
+		}
+	}
+
 	private Affine getZoomViewTransform(AbstractSyntax o, Canvas canvas) {
 		o.updateBounds();
+		if(o.bounds == null) return new Affine();
 		double minX = o.bounds.getMinX();
 		double minY = o.bounds.getMinY();
 		double maxX = o.bounds.getMaxX();
@@ -412,6 +515,17 @@ public class ConcreteSyntaxWizard extends Application {
 			updateContent();
 		}
 		
+		public void select(ConcreteSyntax cs) {
+			selectedIndex = -1;
+			for(int i = 0; i < syntaxes.size(); i++) {
+				if(syntaxes.get(i) == cs) {
+					selectedIndex = i;
+				}
+			}
+			updateContent();
+			getConcreteSyntax(cs);
+		}
+
 		private void updateContent() {
 			getChildren().clear();
 			for(int i = 0; i < syntaxes.size(); i++) {

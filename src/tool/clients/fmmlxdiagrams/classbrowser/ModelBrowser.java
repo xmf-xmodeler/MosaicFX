@@ -24,6 +24,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.*;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer.ViewerStatus;
@@ -31,6 +32,7 @@ import tool.clients.fmmlxdiagrams.LevelColorScheme.FixedBlueLevelColorScheme;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
+import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxWizard;
 import tool.clients.fmmlxdiagrams.menus.BrowserAssociationContextMenu;
 import tool.clients.fmmlxdiagrams.menus.BrowserAttributeContextMenu;
 import tool.clients.fmmlxdiagrams.menus.BrowserOperationContextMenu;
@@ -403,9 +405,16 @@ public final class ModelBrowser extends CustomStage {
 		button1.setOnAction(e -> activePackage.updateDiagram());
 		modelColumnGrid.add(statusLabel, 0,4);
 		GridPane.setHalignment(statusLabel, javafx.geometry.HPos.CENTER);
-		Button button3 = new Button("Do not push!");
+		Button button3 = new Button("Concrete Syntax Wizard");
 		modelColumnGrid.add(button3, 0,5);
-//		button3.setOnAction(e -> System.exit(0));
+		button3.setOnAction(e -> {
+			ConcreteSyntaxWizard wizard = new ConcreteSyntaxWizard(activePackage, null, null);
+			try {
+				wizard.start(new Stage());
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		});
 		
 		button1.setMaxWidth(300);
 		statusLabel.setMaxWidth(300);
