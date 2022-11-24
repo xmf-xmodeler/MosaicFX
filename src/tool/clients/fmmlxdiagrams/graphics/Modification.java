@@ -65,6 +65,9 @@ public class Modification{
 			} else if("BooleanSlotCondition".equals(conditionType)) {
 				String slotName =  conditionElement.getAttribute("slotName");
 				condition = new Condition.BooleanSlotCondition(slotName);
+			} else if("BooleanOpValCondition".equals(conditionType)) {
+				String opName =  conditionElement.getAttribute("opName");
+				condition = new Condition.BooleanOpValCondition(opName);
 			} else if("ReadFromOpValCondition".equals(conditionType)) {
 				String opName = conditionElement.getAttribute("opName");
 				condition = new Condition.ReadFromOpValCondition(opName);

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ConcreteSyntax classPath="OrgStructure::BasicUnit" level="1">
+	<Import path="abstract_OrgUnitBox.xml"/>
+	<SVG path="Team.svg" tx="100" ty="0" xx="1" xy="0.0" yx="0.0" yy="1"/>
+	<Modification>
+		<Condition type="ReadFromSlot" slotName="maxNumEmp" />
+		<Affected id="maxNumEmpLabel" localId="maxNumEmpLabel" />
+		<Consequence type="READ_FROM_SLOT" />
+	</Modification>
+</ConcreteSyntax>

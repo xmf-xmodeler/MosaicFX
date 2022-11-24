@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <ConcreteSyntax classPath="Challenge::AsynchStart" level="1">
-<SVG path="Start.svg"/>
-<Label align="CENTER" tx="20.0" ty="60" id="bottomLabelID"/>
-<Label align="CENTER" tx="20.0" ty="85.0" id="bottomLabel"/>
-<Modification>
-		<Condition type="ReadFromSlot" slotName="id"/>
-		<Affected id="bottomLabelID" localId="bottomLabelID"/>
-		<Consequence type="READ_FROM_SLOT"/>
-</Modification>
-<Modification>
-		<Condition type="ReadFromSlot" slotName="prettyName"/>
-		<Affected id="bottomLabel" localId="bottomLabel"/>
-		<Consequence type="READ_FROM_SLOT"/>
-</Modification>
+  <SVG path="OrgML_BusinessProcessControlFlowDiagram/Start.svg" tx="0.0" ty="0.0" xx="10.0" xy="0.0" yx="0.0" yy="10.0"/>
+  <Label align="CENTER" id="bottomLabelID" tx="20.0" ty="60.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+  <Label align="CENTER" id="bottomLabel" tx="20.0" ty="85.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
+  <Modification>
+    <Condition slotName="id" type="ReadFromSlot"/>
+    <Affected id="bottomLabelID" localId="bottomLabelID"/>
+    <Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+  <Modification>
+    <Condition slotName="prettyName" type="ReadFromSlot"/>
+    <Affected id="bottomLabel" localId="bottomLabel"/>
+    <Consequence type="READ_FROM_SLOT"/>
+  </Modification>
 </ConcreteSyntax>

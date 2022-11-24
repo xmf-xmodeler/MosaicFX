@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ConcreteSyntax classPath="OrgStructure::CompOrgUnit" level="0">
+	<ImportMeta path="1_CompOrgUnit.xml" id="test"/>
+	<Label align="CENTER" id="nameLable" color="000000" tx="90" ty="60" xx="1" xy="0.0" yx="0.0" yy="1"/>
+	<!-- <Modification>
+		<Condition type="ReadClassName"/>
+		<Affected id="nameLable" localId="nameLable"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification> -->
+	<Modification>
+		<Condition type="ReadFromOpValCondition" opName="getName"/>
+		<Affected id="nameLable" localId="nameLable"/>
+		<Consequence type="READ_FROM_SLOT"/>
+	</Modification>
+</ConcreteSyntax>

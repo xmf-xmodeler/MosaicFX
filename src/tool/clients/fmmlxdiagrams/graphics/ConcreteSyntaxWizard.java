@@ -105,7 +105,7 @@ public class ConcreteSyntaxWizard extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-
+		
 		loadConcreteSyntax();
 		splitPane = new SplitPane();
 		splitPane.setPadding(new Insets(10,10,10,10));
@@ -295,6 +295,7 @@ public class ConcreteSyntaxWizard extends Application {
 		primaryStage.setWidth(1100);
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("Concrete Syntax Wizard");
+		primaryStage.setMaximized(true);
 		primaryStage.show();
 	}	
 	

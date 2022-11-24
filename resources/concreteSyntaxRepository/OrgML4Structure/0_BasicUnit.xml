@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ConcreteSyntax classPath="OrgStructure::BasicUnit" level="0">
+	<ImportMeta path="1_BasicUnit.xml" id="of" xx="0.6" yy="0.6"/>
+	<SVG id="MaxNumEmpException_false" path="MaxNumEmpException_false.svg" tx="-16" ty="24" xx="0.75" xy="0.0" yx="0.0" yy="0.75"/>
+	<SVG id="MaxNumEmpException_true" path="MaxNumEmpException_true.svg" tx="-16" ty="24" xx="0.75" xy="0.0" yx="0.0" yy="0.75"/>
+	<Label align="CENTER" id="numEmpLabel" color="000000" tx="3.0" ty="48" xx="0.5" xy="0.0" yx="0.0" yy="0.5"/>
+	<Label align="CENTER" id="nameLabel" color="000000" tx="90" ty="60" xx="1" xy="0.0" yx="0.0" yy="1"/>
+	<Modification>
+		<Condition type="ReadFromSlot" slotName="numEmp" />
+		<Affected id="numEmpLabel" localId="numEmpLabel" />
+		<Consequence type="READ_FROM_SLOT" />
+	</Modification>
+	<Modification>
+		<Condition type="BooleanOpValCondition" opName="evalNumEmp"/>
+		<Affected id="MaxNumEmpException_false" localId="path253"/>
+		<Consequence type="SHOW_IF_NOT"/>
+	</Modification>
+	<Modification>
+		<Condition type="BooleanOpValCondition" opName="evalNumEmp"/>
+		<Affected id="MaxNumEmpException_true" localId="path254"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification>
+	<Modification>
+		<Condition type="ReadFromOpValCondition" opName="getName"/>
+		<Affected id="nameLabel" localId="nameLabel"/>
+		<Consequence type="READ_FROM_SLOT"/>
+	</Modification>
+</ConcreteSyntax>
