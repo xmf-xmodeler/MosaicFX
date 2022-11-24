@@ -123,7 +123,13 @@ public abstract class Condition<ReturnType>{
 		@Override
 		public void save(Element conditionElement) {
 			conditionElement.setAttribute("type", "BooleanOpValCondition");
-			conditionElement.setAttribute("opName", opName);			
+			conditionElement.setAttribute("opName", opName);
+			
+		}
+
+		public BooleanOpValCondition(String opName) {
+			super();
+			this.opName = opName;
 		}		
 	}
 	

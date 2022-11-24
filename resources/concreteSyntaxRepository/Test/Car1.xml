@@ -1,26 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <ConcreteSyntax classPath="Test::Car" level="1">
-	<SVG path="car.svg" id="main" xx=".25" yy=".25"/>  
-	<Modification>
-		<Condition type="ReadFromSlot" slotName="color"/>
-		<Affected id="main" localId="pathE"/>
-		<Consequence type="SET_COLOR"/>
-	</Modification> 
-	<Modification>
-		<Condition type="ReadFromSlot" slotName="color"/>
-		<Affected id="main" localId="pathV"/>
-		<Consequence type="SET_COLOR"/>
-	</Modification>  
-	<Modification>
-		<Condition type="StringMatchSlotCondition" slotName="fuel" match="E"/>
-		<Affected id="main" localId="groupE"/>
-		<Consequence type="SHOW_IF"/>
-	</Modification> 
-	<Modification>
-		<Condition type="StringMatchSlotCondition" slotName="fuel" match="V"/>
-		<Affected id="main" localId="groupV"/>
-		<Consequence type="SHOW_IF"/>
-	</Modification> 
-	<Action id="main" localId="changeColor" type="CHANGE_SLOT_VALUE:color"/>
-	<Action id="main" localId="changeFuel" type="CHANGE_SLOT_VALUE:fuel"/>
+  <SVG id="main" path="car.svg" tx="0.0" ty="0.0" xx="0.25" xy="0.0" yx="0.0" yy="0.25"/>
+  <Modification>
+    <Condition slotName="color" type="ReadFromSlot"/>
+    <Affected id="main" localId="pathE"/>
+    <Consequence type="SET_COLOR"/>
+  </Modification>
+  <Modification>
+    <Condition slotName="color" type="ReadFromSlot"/>
+    <Affected id="main" localId="pathV"/>
+    <Consequence type="SET_COLOR"/>
+  </Modification>
+  <Modification>
+    <Condition match="E" slotName="fuel" type="StringMatchSlotCondition"/>
+    <Affected id="main" localId="groupE"/>
+    <Consequence type="SHOW_IF"/>
+  </Modification>
+  <Modification>
+    <Condition match="V" slotName="fuel" type="StringMatchSlotCondition"/>
+    <Affected id="main" localId="groupV"/>
+    <Consequence type="SHOW_IF"/>
+  </Modification>
 </ConcreteSyntax>
