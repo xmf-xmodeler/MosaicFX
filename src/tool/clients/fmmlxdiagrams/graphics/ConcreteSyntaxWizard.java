@@ -67,6 +67,8 @@ public class ConcreteSyntaxWizard extends Application {
 	private FmmlxObject selectedClass;	
 	private Integer selectedLevel;
 	
+	private Button newButton;
+	
 	private enum EditMode {NO_MODEL, MODEL_NO_CLASS}
 	private EditMode editMode;
 	private ComboBox<FmmlxObject> classSelectionBox;
@@ -141,12 +143,13 @@ public class ConcreteSyntaxWizard extends Application {
 			selectedLevelNode = levelSelectionBox;
 		} 
 		
-		Button newButton = new Button("new"); 
+		newButton = new Button("new"); 
 		newButton.setOnAction(a -> {
 			if(editMode == EditMode.NO_MODEL) {
 				// TODO ...
 			} else {
-				if(selectedClass != null && selectedLevel != null && syntaxGrid.selectedIndex == -1) {
+				newButton.setDisable(true);
+				if(selectedClass != null && selectedLevel != null) { // && syntaxGrid.selectedIndex == -1) {
 					ConcreteSyntax newSyntax = new ConcreteSyntax();
 					newSyntax.classPath = selectedClass.getPath();
 					newSyntax.level = selectedLevel;
@@ -282,12 +285,14 @@ public class ConcreteSyntaxWizard extends Application {
 						selectConcreteSyntaxInPreviewList();
 					}
 				}
+				checkNewButtonStatus();
 			});
 		}
 
 		if(selectedClass != null) {
 			classSelectionBox.getSelectionModel().select(selectedClass);
 			levelSelectionBox.getSelectionModel().select(selectedLevel);
+			checkNewButtonStatus();
 		}
 		
 		Scene scene = new Scene(splitPane);
@@ -299,12 +304,30 @@ public class ConcreteSyntaxWizard extends Application {
 		primaryStage.show();
 	}	
 	
+	private void checkNewButtonStatus() {
+		boolean found = false;
+		
+		for(AbstractSyntax syntax : syntaxes) {
+			if(syntax instanceof ConcreteSyntax) {
+				ConcreteSyntax cs = (ConcreteSyntax) syntax;
+				if(cs.classPath.equals(selectedClass.getPath()) 
+						&& selectedLevel != null 
+						&& cs.level == selectedLevel) {
+					found = true;
+				}
+			}
+		}
+		newButton.setDisable(found);
+	}
+
 	private void selectConcreteSyntaxInPreviewList() {
 		System.err.println("selectConcreteSyntaxFor(" + selectedClass + ", " + selectedLevel + ")");
 		for(AbstractSyntax syntax : syntaxes) {
 			if(syntax instanceof ConcreteSyntax) {
 				ConcreteSyntax cs = (ConcreteSyntax) syntax;
-				if(cs.classPath.equals(selectedClass.getPath())) {
+				if(cs.classPath.equals(selectedClass.getPath()) 
+						&& selectedLevel != null 
+						&& cs.level == selectedLevel) {
 					syntaxGrid.select(cs);
 				}
 			}
@@ -537,6 +560,25 @@ public class ConcreteSyntaxWizard extends Application {
 		private void fireSelectionChangedEvent(AbstractSyntax selectedGroup) {
 			// TODO only if old != new then
 			// TODO? use a listener
+			if(editMode == EditMode.MODEL_NO_CLASS && selectedGroup instanceof ConcreteSyntax) {
+				ConcreteSyntax cs = (ConcreteSyntax) selectedGroup;
+				boolean found = false;
+				for(FmmlxObject obj : classSelectionBox.getItems()) {
+					if(obj.getPath().equals(cs.classPath)) {
+						classSelectionBox.getSelectionModel().select(obj);
+						levelSelectionBox.getSelectionModel().select((Integer) cs.level);
+						found = true;
+					}
+				}
+				if(!found) {
+					classSelectionBox.getSelectionModel().select(-1);
+					levelSelectionBox.getSelectionModel().select(-1);
+				}
+			}
+			if(editMode == EditMode.MODEL_NO_CLASS && !(selectedGroup instanceof ConcreteSyntax)) {
+				classSelectionBox.getSelectionModel().select(-1);
+				levelSelectionBox.getSelectionModel().select(-1);
+			}
 			getConcreteSyntax(selectedGroup);
 		}
 
