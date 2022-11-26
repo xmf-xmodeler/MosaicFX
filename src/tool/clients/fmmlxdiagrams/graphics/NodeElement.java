@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams.graphics;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.shape.SVGPath;
 
@@ -76,7 +77,7 @@ public abstract class NodeElement {
      * @param canvasTransform the transform of the canvas
      * @return the total transform
      */
-    abstract Affine getTotalTransform(Affine canvasTransform);
+	public abstract Affine getTotalTransform(Affine canvasTransform);
 
 	public abstract void setOwner(NodeGroup owner);
 	public NodeGroup getOwner() {return owner;}
@@ -96,11 +97,15 @@ public abstract class NodeElement {
 		this.bounds = p.getBoundsInParent();
 	}
 
-	protected abstract Vector<NodeElement> getChildren();
+	public abstract Vector<NodeElement> getChildren();
 	
 	protected void setID(SVGOMElement node) {
 		String id = node.getId();
 		this.id = ("".equals(id) || id == null)?null:node.getId();
+	}
+	
+	public void setID(String id) {
+		this.id = id;
 	}
 	
 	// Anchor is CENTRE by default.
@@ -136,19 +141,26 @@ public abstract class NodeElement {
 	public NodeGroup getRoot() {
 		NodeGroup owner = getOwner();
 		return owner == null?null:owner.getRoot();
-	}	
+	}
 	
-//	protected void addActions(Vector<ActionInfo> actions, FmmlxObject o, FmmlxDiagram diagram) {
-//		System.err.println("adding Action for ("+this.id+"): " + action);
-//		for(ActionInfo a : actions) {
-//			if(matchID(a.id, a.localId)) {
-////				if(action == null) {
-//					action = a.getAction(o, diagram);
-//					System.err.println("Adding new action: "+ action + "/" + this.id);
-////				} else {
-////					System.err.println("Duplicate Action detected. Ignore all but first...");
-////				}
-//			}
-//		}
-//	}
+	public void setMyTransform(Affine affine) {
+		this.myTransform = affine;		
+	}
+	
+	public Affine getZoomViewTransform(Canvas canvas) {
+		updateBounds();
+		if(getBounds() == null) return new Affine();
+		double minX = getBounds().getMinX();
+		double minY = getBounds().getMinY();
+		double maxX = getBounds().getMaxX();
+		double maxY = getBounds().getMaxY();
+
+		double xZoom = canvas.getWidth() / (maxX - minX); 
+		double yZoom = canvas.getHeight() / (maxY - minY);
+		double zoom = Math.min(xZoom, yZoom) * 0.7;
+		
+
+		return new Affine(zoom,    0, -zoom*(minX + maxX)/2 + canvas.getWidth()/2,
+	                         0, zoom, -zoom*(minY + maxY)/2 + canvas.getHeight()/2);
+	}
 }

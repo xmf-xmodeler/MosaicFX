@@ -7,6 +7,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javafx.scene.transform.Affine;
+import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 
 public class SVGGroup extends NodeGroup {
 	

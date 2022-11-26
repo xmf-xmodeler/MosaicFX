@@ -1,30 +1,20 @@
-package tool.clients.fmmlxdiagrams.graphics;
+package tool.clients.fmmlxdiagrams.graphics.wizard;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.Vector;
 
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -36,7 +26,17 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.xmodeler.XModeler;
+import tool.clients.fmmlxdiagrams.graphics.AbstractSyntax;
+import tool.clients.fmmlxdiagrams.graphics.ActionInfo;
+import tool.clients.fmmlxdiagrams.graphics.AffineController;
+import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
+import tool.clients.fmmlxdiagrams.graphics.Modification;
+import tool.clients.fmmlxdiagrams.graphics.NodeElement;
+import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
+import tool.clients.fmmlxdiagrams.graphics.NodeLabel;
+import tool.clients.fmmlxdiagrams.graphics.SVGGroup;
+import tool.clients.fmmlxdiagrams.graphics.SVGReader;
+import tool.clients.fmmlxdiagrams.graphics.View;
 
 /**
  * This "wizard" consists of the following parts:
@@ -70,7 +70,7 @@ public class ConcreteSyntaxWizard extends Application {
 	private DirectoryChooser directoryChooser;
 	private AffineController affineController = new AffineController();
 	private ScrollPane syntaxScrollGrid = new ScrollPane();
-	private ConcreteSyntaxGrid syntaxGrid;
+	private PreviewGrid<AbstractSyntax> syntaxGrid;
 	private Vector<AbstractSyntax> syntaxes = new Vector<>();
 	private AbstractPackageViewer model;
 	
@@ -176,7 +176,7 @@ public class ConcreteSyntaxWizard extends Application {
 					}
 					File dir = new File(RESOURCES_CONCRETE_SYNTAX_REPOSITORY, "WizardFiles");
 					File f = new File(dir, s);
-					newSyntax.file = f;
+					newSyntax.setFile(f);
 					System.err.println("File: " + f);
 					syntaxes.add(newSyntax);
 					syntaxGrid.select(newSyntax);
@@ -213,7 +213,8 @@ public class ConcreteSyntaxWizard extends Application {
 		Label labelListView = new Label("ListView");
 		leftControl.getChildren().add(labelListView);
 			
-		syntaxGrid = new ConcreteSyntaxGrid();
+		syntaxGrid = new PreviewGrid<AbstractSyntax>(syntaxes);
+		syntaxGrid.setOnSelectionChanged(newSelection -> newSyntaxSelectedInPreview(newSelection));
         syntaxScrollGrid = new ScrollPane(syntaxGrid);
         syntaxScrollGrid.setMaxHeight(300);
         syntaxScrollGrid.setMinWidth(530);
@@ -231,7 +232,7 @@ public class ConcreteSyntaxWizard extends Application {
 		concreteSyntaxTreeView.setCellFactory(new Callback<TreeView<NodeElement>, TreeCell<NodeElement>>() {
 			@Override
 			public TreeCell<NodeElement> call(TreeView<NodeElement> treeview) {
-				return new TreeCellWithMenu(treeview);
+				return new TreeCellWithMenu();
 			}
 	    });
 		
@@ -325,6 +326,29 @@ public class ConcreteSyntaxWizard extends Application {
 		primaryStage.show();
 	}	
 
+	private void newSyntaxSelectedInPreview(AbstractSyntax selectedGroup) {
+		if(editMode == EditMode.MODEL_NO_CLASS && selectedGroup instanceof ConcreteSyntax) {
+			ConcreteSyntax cs = (ConcreteSyntax) selectedGroup;
+			boolean found = false;
+			for(FmmlxObject obj : classSelectionBox.getItems()) {
+				if(obj.getPath().equals(cs.classPath)) {
+					classSelectionBox.getSelectionModel().select(obj);
+					levelSelectionBox.getSelectionModel().select((Integer) cs.level);
+					found = true;
+				}
+			}
+			if(!found) {
+				classSelectionBox.getSelectionModel().select(-1);
+				levelSelectionBox.getSelectionModel().select(-1);
+			}
+		}
+		if(editMode == EditMode.MODEL_NO_CLASS && !(selectedGroup instanceof ConcreteSyntax)) {
+			classSelectionBox.getSelectionModel().select(-1);
+			levelSelectionBox.getSelectionModel().select(-1);
+		}
+		setSelectedSyntax(selectedGroup);
+	}
+
 	private void checkNewButtonStatus() {
 		boolean found = false;
 		
@@ -355,23 +379,6 @@ public class ConcreteSyntaxWizard extends Application {
 		}
 	}
 
-	private Affine getZoomViewTransform(AbstractSyntax o, Canvas canvas) {
-		o.updateBounds();
-		if(o.bounds == null) return new Affine();
-		double minX = o.bounds.getMinX();
-		double minY = o.bounds.getMinY();
-		double maxX = o.bounds.getMaxX();
-		double maxY = o.bounds.getMaxY();
-
-		double xZoom = canvas.getWidth() / (maxX - minX); 
-		double yZoom = canvas.getHeight() / (maxY - minY);
-		double zoom = Math.min(xZoom, yZoom) * 0.7;
-		
-
-		return new Affine(zoom,    0, -zoom*(minX + maxX)/2 + canvas.getWidth()/2,
-	                         0, zoom, -zoom*(minY + maxY)/2 + canvas.getHeight()/2);
-	}
-
 	private void setCurrentGraphicElement(NodeElement item) {
 		paint(item, myCanvas.zoom);
 		/** an item is editable if it is any kind of a group or a label.
@@ -382,7 +389,7 @@ public class ConcreteSyntaxWizard extends Application {
 		affineController.setAffine(item.getMyTransform());
 		affineController.setListener(() -> {
 			if(editable) {
-				item.myTransform = affineController.getAffine();
+				item.setMyTransform(affineController.getAffine());
 				paint(item, myCanvas.zoom);
 			}
 		});
@@ -395,21 +402,21 @@ public class ConcreteSyntaxWizard extends Application {
 		if(item == null) return;
 		NodeElement item4Bounds = concreteSyntaxTreeView.getRoot().getValue();
 		item4Bounds.updateBounds();
-		if(item4Bounds.bounds != null) {
+		if(item4Bounds.getBounds() != null) {
 			myCanvas.affine = new Affine(zoom,0, 
 				myCanvas.getCanvas().getWidth() / 2
-				-zoom*(item4Bounds.bounds.getMinX() + item4Bounds.bounds.getWidth() / 2),
+				-zoom*(item4Bounds.getBounds().getMinX() + item4Bounds.getBounds().getWidth() / 2),
 				0,zoom, 
 				myCanvas.getCanvas().getHeight() / 2
-				-zoom*(item4Bounds.bounds.getMinY() + item4Bounds.bounds.getHeight() / 2));
+				-zoom*(item4Bounds.getBounds().getMinY() + item4Bounds.getBounds().getHeight() / 2));
 			
 			myCanvas.getCanvas().getGraphicsContext2D().setTransform(myCanvas.affine);
 			myCanvas.getCanvas().getGraphicsContext2D().setFill(Color.WHITE);
 			myCanvas.getCanvas().getGraphicsContext2D().fillRect(
-					item4Bounds.bounds.getMinX(),
-					item4Bounds.bounds.getMinY(),
-					item4Bounds.bounds.getWidth(),
-					item4Bounds.bounds.getHeight());
+					item4Bounds.getBounds().getMinX(),
+					item4Bounds.getBounds().getMinY(),
+					item4Bounds.getBounds().getWidth(),
+					item4Bounds.getBounds().getHeight());
 			item4Bounds.paintOn(myCanvas, false);
 			myCanvas.getCanvas().getGraphicsContext2D().setTransform(new Affine());
 			myCanvas.getCanvas().getGraphicsContext2D().setFill(Color.web("#ffffff88"));
@@ -433,7 +440,7 @@ public class ConcreteSyntaxWizard extends Application {
 		}
 	}
 	
-	private void getConcreteSyntax(AbstractSyntax group) {
+	private void setSelectedSyntax(AbstractSyntax group) {
 		selectedSyntax = null;		
 		try {
 			selectedSyntax = group;
@@ -477,7 +484,7 @@ public class ConcreteSyntaxWizard extends Application {
 		TreeItem<NodeElement> rootElement = new TreeItem<NodeElement>(group);
 		concreteSyntaxTreeView.setRoot(rootElement);
 		
-		for (NodeElement child : group.nodeElements) {
+		for (NodeElement child : group.getChildren()) {
 			addToTree(child,rootElement);
 		}
 		rootElement.setExpanded(true);
@@ -490,27 +497,6 @@ public class ConcreteSyntaxWizard extends Application {
 			addToTree(elm,item);
 		}
 		item.setExpanded(true);
-	}
-	
-	private class MiniCanvas extends Pane implements View {
-		Canvas canvas; 
-		Affine affine;		
-
-		public MiniCanvas() {
-			canvas = new Canvas(125,80);
-			affine = new Affine();
-			getChildren().add(canvas);
-			setMinSize(125,80);
-			setMaxSize(125,80);
-			setPrefSize(125,80);
-			canvas.widthProperty().bind(this.widthProperty());
-			canvas.heightProperty().bind(this.heightProperty());
-		}
-		
-		@Override public Canvas getCanvas() { return canvas; }
-		@Override public Affine getCanvasTransform() { return affine; }
-		@Override public void centerObject() {}
-		@Override public void centerObject(FmmlxObject affectedObject) {}
 	}
 	
 	private class MyCanvas extends Pane implements View {
@@ -553,112 +539,8 @@ public class ConcreteSyntaxWizard extends Application {
 		@Override public void centerObject() {}
 		@Override public void centerObject(FmmlxObject affectedObject) {}
 	}
-	
-	private class ConcreteSyntaxGrid extends GridPane {
-		int selectedIndex = -1;
-		private ConcreteSyntaxGrid() {
-			super();
-			setMaxWidth(500);
-			setMinWidth(500);
-			setPrefWidth(500);
-			updateContent();
-		}
 		
-		public void select(ConcreteSyntax cs) {
-			selectedIndex = -1;
-			for(int i = 0; i < syntaxes.size(); i++) {
-				if(syntaxes.get(i) == cs) {
-					selectedIndex = i;
-				}
-			}
-			updateContent();
-			getConcreteSyntax(cs);
-		}
-
-		private void updateContent() {
-			getChildren().clear();
-			for(int i = 0; i < syntaxes.size(); i++) {
-				add(new ConcreteSyntaxTile(syntaxes.get(i)), i%4, i/4);
-			}
-		}
-		
-		private void fireSelectionChangedEvent(AbstractSyntax selectedGroup) {
-			// TODO only if old != new then
-			// TODO? use a listener
-			if(editMode == EditMode.MODEL_NO_CLASS && selectedGroup instanceof ConcreteSyntax) {
-				ConcreteSyntax cs = (ConcreteSyntax) selectedGroup;
-				boolean found = false;
-				for(FmmlxObject obj : classSelectionBox.getItems()) {
-					if(obj.getPath().equals(cs.classPath)) {
-						classSelectionBox.getSelectionModel().select(obj);
-						levelSelectionBox.getSelectionModel().select((Integer) cs.level);
-						found = true;
-					}
-				}
-				if(!found) {
-					classSelectionBox.getSelectionModel().select(-1);
-					levelSelectionBox.getSelectionModel().select(-1);
-				}
-			}
-			if(editMode == EditMode.MODEL_NO_CLASS && !(selectedGroup instanceof ConcreteSyntax)) {
-				classSelectionBox.getSelectionModel().select(-1);
-				levelSelectionBox.getSelectionModel().select(-1);
-			}
-			getConcreteSyntax(selectedGroup);
-		}
-
-		private class ConcreteSyntaxTile extends VBox {
-			private AbstractSyntax group;
-			private ConcreteSyntaxTile(AbstractSyntax group) {
-				this.group = group;
-				setMinWidth(125);
-				setMinHeight(125);
-				setMaxWidth(125);
-				setMaxHeight(125);
-
-				final MiniCanvas canvas = new MiniCanvas();
-				
-				getChildren().add(canvas);
-				getChildren().add(new Label(group.toString()));
-				getChildren().add(new Label(group.file.getName()));
-				group.paintOn(canvas, false);
-				
-				ChangeListener<Number> canvasChangeListener = (obs, oldVal, newVal) -> {
-					Affine a = getZoomViewTransform(group, canvas.canvas);
-					canvas.affine = a;
-					if(ConcreteSyntaxGrid.this.getChildren().indexOf(this) == selectedIndex) {
-						GraphicsContext gc = canvas.canvas.getGraphicsContext2D();
-						gc.setFill(Color.CORNFLOWERBLUE);
-						gc.setTransform(new Affine());
-						gc.fillRect(0, 0, canvas.canvas.getWidth(), canvas.canvas.getHeight());
-					}
-					group.paintOn(canvas, false);
-				};
-				
-				canvas.widthProperty().addListener(canvasChangeListener);
-				canvas.heightProperty().addListener(canvasChangeListener);
-				
-				setOnMouseClicked(me -> {
-					if(me.getButton() == MouseButton.PRIMARY) {
-						selectedIndex = ConcreteSyntaxGrid.this.getChildren().indexOf(this);
-						updateContent();
-						fireSelectionChangedEvent(this.group);
-					}
-				});
-			}
-		}
-	}
-	
 	private class TreeCellWithMenu extends TextFieldTreeCell<NodeElement> {
-
-//	    ContextMenu men;
-	    private TreeView<NodeElement> treeview;
-
-	    public TreeCellWithMenu(TreeView<NodeElement> treeview) {
-	    	this.treeview = treeview;
-	        //ContextMenu with one entry
-//	        men = new ContextMenu(new MenuItem("Right Click"));
-	    }
 
 	    @Override
 	    public void updateItem(NodeElement item, boolean empty) {
@@ -671,14 +553,6 @@ public class ConcreteSyntaxWizard extends Application {
 	            setText(item.toString());
 	            setContextMenu(getContextMenuForItem(item));
 	        }
-	        
-//	        //Check to show the context menu for this TreeItem
-//	        if (showMenu(t, bln)) {
-//	            setContextMenu(men);
-//	        }else{
-//	            //If no menu for this TreeItem is used, deactivate the menu
-//	            setContextMenu(null);
-//	        }
 	    }
 	    
 	    private ContextMenu getContextMenuForItem(final NodeElement item) {
@@ -706,8 +580,8 @@ public class ConcreteSyntaxWizard extends Application {
 					MenuItem addLabelItem = new MenuItem("Add Label");
 					addLabelItem.setOnAction(event -> {
 						
-						NewLabelDialog nld = new NewLabelDialog();
-						Optional<NewLabelDialogResult> result = nld.showAndWait();
+						EditLabelDialog nld = new EditLabelDialog();
+						Optional<EditLabelDialog.Result> result = nld.showAndWait();
 						
 						if(result.isPresent()) {
 							NodeLabel newLabel = new NodeLabel(
@@ -717,7 +591,7 @@ public class ConcreteSyntaxWizard extends Application {
 								null, null, 
 								result.get().id, 
 								false, -1);
-							newLabel.id = result.get().id;
+							newLabel.setID(result.get().id);
 							((NodeGroup) item).addNodeElement(newLabel);
 							setTree(item.getRoot());
 							setCurrentGraphicElement(item.getRoot());
@@ -752,75 +626,5 @@ public class ConcreteSyntaxWizard extends Application {
 			menu.getItems().add(new MenuItem("Edit " + item.hashCode()));
 			return menu;
 		}
-	    
-	    private class NewLabelDialogResult{
-	    	private final String id;
-	    	private final Color fgColor;
-	    	private final Color bgColor;
-	    	private final Pos alignment;
-	    	
-			public NewLabelDialogResult(String id, Color fgColor, Color bgColor, Pos alignment) {
-				super();
-				this.id = id;
-				this.fgColor = fgColor;
-				this.bgColor = bgColor;
-				this.alignment = alignment;
-			}	    	
-	    }
-
-//		//Deccide if a menu should be shown or not
-//	    private boolean showMenu(String t, boolean bln){
-//	        if (t != null && !t.equals("Root")) {
-//	            return true;
-//	        }
-//	        return false;
-//	    }        
-	    
-	    private class NewLabelDialog extends Dialog<NewLabelDialogResult> {
-	    	private NewLabelDialog() {
-	    		this("label" + Integer.toHexString((int) (Math.random() * Integer.MAX_VALUE)).substring(0,5).toUpperCase(), 
-	    				Color.BLACK, Color.TRANSPARENT, Pos.BASELINE_LEFT);
-	    	}
-	    	
-	    	private NewLabelDialog(String id, Color fgColor, Color bgColor, Pos alignment) {
-				ColorPicker fgColorPicker = new ColorPicker();
-				ColorPicker bgColorPicker = new ColorPicker();
-				TextField idField = new TextField();
-				ComboBox<Pos> alignmentChooser = new ComboBox<Pos>(FXCollections.observableArrayList(Pos.BASELINE_LEFT, Pos.BASELINE_CENTER, Pos.BASELINE_RIGHT));
-				
-				idField.setText(id);
-				fgColorPicker.setValue(fgColor);
-				bgColorPicker.setValue(bgColor);
-				alignmentChooser.getSelectionModel().select(alignment);
-				
-				GridPane pane = new GridPane();
-				pane.add(new Label("id"), 0, 0);
-				pane.add(new Label("Foreground Color"), 0, 1);
-				pane.add(new Label("Background Color"), 0, 2);
-				pane.add(new Label("Alignment"), 0, 3);
-				
-				pane.add(idField, 1, 0);
-				pane.add(fgColorPicker, 1, 1);
-				pane.add(bgColorPicker, 1, 2);
-				pane.add(alignmentChooser, 1, 3);
-				
-				getDialogPane().setContent(pane);
-				getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL, ButtonType.OK);
-				
-				setResultConverter((dialogButton) -> {
-		            if (dialogButton != null && dialogButton.getButtonData() == ButtonData.OK_DONE){
-		        	    return new NewLabelDialogResult(
-        			    idField.getText(),
-        			    fgColorPicker.getValue(),
-        			    bgColorPicker.getValue(),
-        			    alignmentChooser.getSelectionModel().getSelectedItem());
-		            } else {
-		        	    return null;
-		            }
-			    });
-
-	    	}
-	    }
-
 	}
 }

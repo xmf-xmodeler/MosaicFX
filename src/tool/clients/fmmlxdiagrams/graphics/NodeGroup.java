@@ -164,7 +164,7 @@ public class NodeGroup extends NodeElement {
 	}
 
 	@Override
-	protected Vector<NodeElement> getChildren() {
+	public Vector<NodeElement> getChildren() {
 		return nodeElements;
 	}
 	

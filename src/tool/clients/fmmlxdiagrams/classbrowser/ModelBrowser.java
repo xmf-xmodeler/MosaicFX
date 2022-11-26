@@ -32,7 +32,7 @@ import tool.clients.fmmlxdiagrams.LevelColorScheme.FixedBlueLevelColorScheme;
 import tool.clients.fmmlxdiagrams.dialogs.CodeBoxPair;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.dialogs.stringandvalue.StringValue;
-import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxWizard;
+import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.clients.fmmlxdiagrams.menus.BrowserAssociationContextMenu;
 import tool.clients.fmmlxdiagrams.menus.BrowserAttributeContextMenu;
 import tool.clients.fmmlxdiagrams.menus.BrowserOperationContextMenu;

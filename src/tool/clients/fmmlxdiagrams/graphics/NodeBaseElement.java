@@ -80,7 +80,7 @@ public abstract class NodeBaseElement extends NodeElement {
 	}
 	
 	@Override
-	protected final Vector<NodeElement> getChildren() {
+	public final Vector<NodeElement> getChildren() {
 		return new Vector<>();
 	}
 	

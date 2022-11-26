@@ -22,7 +22,7 @@ import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
-import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxWizard;
+import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.clients.workbench.WorkbenchClient;
 import tool.helper.IconGenerator;
 

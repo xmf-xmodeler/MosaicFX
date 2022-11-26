@@ -169,5 +169,9 @@ public class AbstractSyntax extends NodeGroup{
 		return metaImport;
 	}
 
+	public void setFile(File file) {
+		this.file = file;
+	}
 	
+	public File getFile() {return file;}
 }

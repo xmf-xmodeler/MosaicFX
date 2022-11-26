@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.DiagramActions;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram.DiagramViewPane;
-import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntaxWizard;
+import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 
 public class DefaultContextMenu extends ContextMenu {
 
