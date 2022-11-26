@@ -41,7 +41,7 @@ public abstract class NodeBaseElement extends NodeElement {
 		return a;
 	}
 	
-	public void setOwner(NodeElement owner) { // final?
+	public void setOwner(NodeGroup owner) { // final?
 		this.owner = owner;
 	}
 	

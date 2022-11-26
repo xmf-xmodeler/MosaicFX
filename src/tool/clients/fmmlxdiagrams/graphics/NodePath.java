@@ -147,7 +147,7 @@ public class NodePath extends NodeBaseElement{
 	}
 
 	@Override
-	public void setOwner(NodeElement owner) {
+	public void setOwner(NodeGroup owner) {
 		super.setOwner(owner);
 		updateBounds();
 	}

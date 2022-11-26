@@ -1,17 +1,25 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.Vector;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -23,9 +31,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.xmodeler.XModeler;
 
 /**
  * This "wizard" consists of the following parts:
@@ -55,7 +66,7 @@ public class ConcreteSyntaxWizard extends Application {
 	private SplitPane splitPane;
 	private HBox rightControl;
 	private MyCanvas myCanvas;
-	private final TreeView<NodeElement> SVGtree = new TreeView<NodeElement>();
+	private final TreeView<NodeElement> concreteSyntaxTreeView = new TreeView<NodeElement>();
 	private DirectoryChooser directoryChooser;
 	private AffineController affineController = new AffineController();
 	private ScrollPane syntaxScrollGrid = new ScrollPane();
@@ -75,6 +86,8 @@ public class ConcreteSyntaxWizard extends Application {
 	private ComboBox<Integer> levelSelectionBox;
 	private TextField classSelectionField;
 	private TextField levelSelectionField;
+	
+	private Stage primaryStage;
 	/**
 	 * Creates a wizard without connection to a model. 
 	 * Used for quickly checking the layout of the wizard.
@@ -107,6 +120,7 @@ public class ConcreteSyntaxWizard extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		this.primaryStage = primaryStage;
 		
 		loadConcreteSyntax();
 		splitPane = new SplitPane();
@@ -207,16 +221,23 @@ public class ConcreteSyntaxWizard extends Application {
         leftControl.getChildren().add(syntaxScrollGrid);
         
 		TreeItem<NodeElement> rootTreeItem = new TreeItem<>();
-		SVGtree.setRoot(rootTreeItem);
-		SVGtree.getSelectionModel().selectedItemProperty().addListener((a,b,item)->{
+		concreteSyntaxTreeView.setRoot(rootTreeItem);
+		concreteSyntaxTreeView.getSelectionModel().selectedItemProperty().addListener((a,b,item)->{
 			if (item!=null) {
 				setCurrentGraphicElement(item.getValue());	
 			}			
 		});	
-		SVGtree.setMaxHeight(300);
+		concreteSyntaxTreeView.setMaxHeight(300);
+		concreteSyntaxTreeView.setCellFactory(new Callback<TreeView<NodeElement>, TreeCell<NodeElement>>() {
+			@Override
+			public TreeCell<NodeElement> call(TreeView<NodeElement> treeview) {
+				return new TreeCellWithMenu(treeview);
+			}
+	    });
+		
 		Label labelTreeView = new Label("TreeView");
         leftControl.getChildren().add(labelTreeView);
-        leftControl.getChildren().add(SVGtree);
+        leftControl.getChildren().add(concreteSyntaxTreeView);
 
         Button addModButton = new Button("add"); addModButton.setDisable(true);
         Button editModButton = new Button("edit"); editModButton.setDisable(true);
@@ -303,7 +324,7 @@ public class ConcreteSyntaxWizard extends Application {
 		primaryStage.setMaximized(true);
 		primaryStage.show();
 	}	
-	
+
 	private void checkNewButtonStatus() {
 		boolean found = false;
 		
@@ -372,7 +393,7 @@ public class ConcreteSyntaxWizard extends Application {
 		myCanvas.getCanvas().getGraphicsContext2D().setFill(Color.BLACK);
 		myCanvas.getCanvas().getGraphicsContext2D().fillRect(0, 0, myCanvas.getCanvas().getWidth(), myCanvas.getCanvas().getHeight());
 		if(item == null) return;
-		NodeElement item4Bounds = SVGtree.getRoot().getValue();
+		NodeElement item4Bounds = concreteSyntaxTreeView.getRoot().getValue();
 		item4Bounds.updateBounds();
 		if(item4Bounds.bounds != null) {
 			myCanvas.affine = new Affine(zoom,0, 
@@ -418,7 +439,7 @@ public class ConcreteSyntaxWizard extends Application {
 			selectedSyntax = group;
 			group.paintOn(myCanvas, false);
 			setTree(group);
-			SVGtree.getSelectionModel().select(0);
+			concreteSyntaxTreeView.getSelectionModel().select(0);
 			modificationList.getItems().clear();
 			modificationList.getItems().addAll(group.getModifications());
 			actionList.getItems().clear();
@@ -454,7 +475,7 @@ public class ConcreteSyntaxWizard extends Application {
 
 	private void setTree(NodeGroup group) {
 		TreeItem<NodeElement> rootElement = new TreeItem<NodeElement>(group);
-		SVGtree.setRoot(rootElement);
+		concreteSyntaxTreeView.setRoot(rootElement);
 		
 		for (NodeElement child : group.nodeElements) {
 			addToTree(child,rootElement);
@@ -522,7 +543,11 @@ public class ConcreteSyntaxWizard extends Application {
 		private void handleScroll(ScrollEvent e) {
 			double delta = e.getDeltaY();
 			zoom = zoom * Math.pow(Math.pow(2, 1/3.), delta > 0 ? 1 : -1);	
-			paint(SVGtree.getSelectionModel().getSelectedItem().getValue(),zoom);
+			if(concreteSyntaxTreeView.getSelectionModel().getSelectedItem().getValue() != null)
+				paint(concreteSyntaxTreeView.getSelectionModel().getSelectedItem().getValue(),zoom);
+			else {
+				System.err.println("Cannot paint! Nothing selected...");
+			}
 		}
 
 		@Override public void centerObject() {}
@@ -622,5 +647,180 @@ public class ConcreteSyntaxWizard extends Application {
 				});
 			}
 		}
+	}
+	
+	private class TreeCellWithMenu extends TextFieldTreeCell<NodeElement> {
+
+//	    ContextMenu men;
+	    private TreeView<NodeElement> treeview;
+
+	    public TreeCellWithMenu(TreeView<NodeElement> treeview) {
+	    	this.treeview = treeview;
+	        //ContextMenu with one entry
+//	        men = new ContextMenu(new MenuItem("Right Click"));
+	    }
+
+	    @Override
+	    public void updateItem(NodeElement item, boolean empty) {
+	        super.updateItem(item, empty);
+	        if (empty || item == null) {
+	            setText(null);
+	            setGraphic(null);
+	            setContextMenu(null);
+	        } else {
+	            setText(item.toString());
+	            setContextMenu(getContextMenuForItem(item));
+	        }
+	        
+//	        //Check to show the context menu for this TreeItem
+//	        if (showMenu(t, bln)) {
+//	            setContextMenu(men);
+//	        }else{
+//	            //If no menu for this TreeItem is used, deactivate the menu
+//	            setContextMenu(null);
+//	        }
+	    }
+	    
+	    private ContextMenu getContextMenuForItem(final NodeElement item) {
+			ContextMenu menu = new ContextMenu();
+			
+			// Figure out whether the item is inside an SVG:
+			boolean insideSVG = false;
+			NodeElement root = item;
+			while(!insideSVG && root != null) {
+				insideSVG |= (root != item) && (root instanceof SVGGroup);
+				root = root.getOwner();
+			}
+			
+			if(!insideSVG) {
+				if(item instanceof NodeGroup) {
+					MenuItem addgroupItem = new MenuItem("Add Group");
+					addgroupItem.setOnAction(event -> {
+						NodeGroup newGroup = new NodeGroup();
+						((NodeGroup) item).addNodeElement(newGroup);
+						setTree(item.getRoot());
+						setCurrentGraphicElement(item.getRoot());
+						syntaxGrid.updateContent();						
+					});
+					
+					MenuItem addLabelItem = new MenuItem("Add Label");
+					addLabelItem.setOnAction(event -> {
+						
+						NewLabelDialog nld = new NewLabelDialog();
+						Optional<NewLabelDialogResult> result = nld.showAndWait();
+						
+						if(result.isPresent()) {
+							NodeLabel newLabel = new NodeLabel(
+								result.get().alignment, 
+								new Affine(), 
+								result.get().fgColor, result.get().bgColor, 
+								null, null, 
+								result.get().id, 
+								false, -1);
+							newLabel.id = result.get().id;
+							((NodeGroup) item).addNodeElement(newLabel);
+							setTree(item.getRoot());
+							setCurrentGraphicElement(item.getRoot());
+							syntaxGrid.updateContent();		
+						}
+					});
+					
+					MenuItem addSvgItem = new MenuItem("Add SVG");
+					addSvgItem.setOnAction(event -> {
+						FileChooser fc = new FileChooser();
+						fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("svg", "*.svg"));
+						fc.setTitle("Export File");
+						File file = fc.showOpenDialog(ConcreteSyntaxWizard.this.primaryStage);
+						if(file != null) {
+							SVGGroup newSVGGroup;
+							try {
+								newSVGGroup = SVGReader.readSVG(file, new Affine());
+								((NodeGroup) item).addNodeElement(newSVGGroup);
+								setTree(item.getRoot());
+								setCurrentGraphicElement(item.getRoot());
+								syntaxGrid.updateContent();	
+							} catch (Exception e) {
+								e.printStackTrace();
+							}			
+						}							
+					});
+										
+					menu.getItems().addAll(addSvgItem, addLabelItem, addgroupItem);
+				}
+			}
+			
+			menu.getItems().add(new MenuItem("Edit " + item.hashCode()));
+			return menu;
+		}
+	    
+	    private class NewLabelDialogResult{
+	    	private final String id;
+	    	private final Color fgColor;
+	    	private final Color bgColor;
+	    	private final Pos alignment;
+	    	
+			public NewLabelDialogResult(String id, Color fgColor, Color bgColor, Pos alignment) {
+				super();
+				this.id = id;
+				this.fgColor = fgColor;
+				this.bgColor = bgColor;
+				this.alignment = alignment;
+			}	    	
+	    }
+
+//		//Deccide if a menu should be shown or not
+//	    private boolean showMenu(String t, boolean bln){
+//	        if (t != null && !t.equals("Root")) {
+//	            return true;
+//	        }
+//	        return false;
+//	    }        
+	    
+	    private class NewLabelDialog extends Dialog<NewLabelDialogResult> {
+	    	private NewLabelDialog() {
+	    		this("label" + Integer.toHexString((int) (Math.random() * Integer.MAX_VALUE)).substring(0,5).toUpperCase(), 
+	    				Color.BLACK, Color.TRANSPARENT, Pos.BASELINE_LEFT);
+	    	}
+	    	
+	    	private NewLabelDialog(String id, Color fgColor, Color bgColor, Pos alignment) {
+				ColorPicker fgColorPicker = new ColorPicker();
+				ColorPicker bgColorPicker = new ColorPicker();
+				TextField idField = new TextField();
+				ComboBox<Pos> alignmentChooser = new ComboBox<Pos>(FXCollections.observableArrayList(Pos.BASELINE_LEFT, Pos.BASELINE_CENTER, Pos.BASELINE_RIGHT));
+				
+				idField.setText(id);
+				fgColorPicker.setValue(fgColor);
+				bgColorPicker.setValue(bgColor);
+				alignmentChooser.getSelectionModel().select(alignment);
+				
+				GridPane pane = new GridPane();
+				pane.add(new Label("id"), 0, 0);
+				pane.add(new Label("Foreground Color"), 0, 1);
+				pane.add(new Label("Background Color"), 0, 2);
+				pane.add(new Label("Alignment"), 0, 3);
+				
+				pane.add(idField, 1, 0);
+				pane.add(fgColorPicker, 1, 1);
+				pane.add(bgColorPicker, 1, 2);
+				pane.add(alignmentChooser, 1, 3);
+				
+				getDialogPane().setContent(pane);
+				getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL, ButtonType.OK);
+				
+				setResultConverter((dialogButton) -> {
+		            if (dialogButton != null && dialogButton.getButtonData() == ButtonData.OK_DONE){
+		        	    return new NewLabelDialogResult(
+        			    idField.getText(),
+        			    fgColorPicker.getValue(),
+        			    bgColorPicker.getValue(),
+        			    alignmentChooser.getSelectionModel().getSelectedItem());
+		            } else {
+		        	    return null;
+		            }
+			    });
+
+	    	}
+	    }
+
 	}
 }

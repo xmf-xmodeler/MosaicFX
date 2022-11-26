@@ -114,7 +114,7 @@ public class NodeGroup extends NodeElement {
 		return a;
 	}
 
-	public void setOwner(NodeElement owner) {
+	public void setOwner(NodeGroup owner) {
 		this.owner = owner;
 		updateBounds();
 	}
@@ -257,7 +257,11 @@ public class NodeGroup extends NodeElement {
 		}
 		return that;
 	}	
-
+	
+	public NodeGroup getRoot() {
+		NodeGroup owner = getOwner();
+		return owner == null?this:owner.getRoot();
+	}	
 
 	public void setAction(Action action) {
 		this.action=action;

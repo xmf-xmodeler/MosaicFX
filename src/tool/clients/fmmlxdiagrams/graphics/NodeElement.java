@@ -23,7 +23,7 @@ public abstract class NodeElement {
 	protected boolean selected = false;
 		
 	protected Affine myTransform; // where to be painted if the zoom were 1 and the origin has not moved
-	protected NodeElement owner;
+	protected NodeGroup owner;
 	Bounds bounds = new BoundingBox(0, 0, 0, 0);
 	public Style style;
 	protected String id;
@@ -78,7 +78,8 @@ public abstract class NodeElement {
      */
     abstract Affine getTotalTransform(Affine canvasTransform);
 
-	public abstract void setOwner(NodeElement owner);
+	public abstract void setOwner(NodeGroup owner);
+	public NodeGroup getOwner() {return owner;}
 
 	public abstract Bounds getBounds();
 
@@ -126,10 +127,15 @@ public abstract class NodeElement {
 		return matchParentId(svgID);
 	}
 
-	private boolean matchParentId(String parentID) {
+	protected boolean matchParentId(String parentID) {
 		if(parentID.equals(this.id)) return true;
 		if(owner == null) return false;
 		return owner.matchParentId(parentID);
+	}
+	
+	public NodeGroup getRoot() {
+		NodeGroup owner = getOwner();
+		return owner == null?null:owner.getRoot();
 	}	
 	
 //	protected void addActions(Vector<ActionInfo> actions, FmmlxObject o, FmmlxDiagram diagram) {
