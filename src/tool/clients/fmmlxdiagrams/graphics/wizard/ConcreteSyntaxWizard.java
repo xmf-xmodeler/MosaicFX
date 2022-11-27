@@ -636,31 +636,66 @@ public class ConcreteSyntaxWizard extends Application {
 							setTree(item.getRoot());
 							setCurrentGraphicElement(item.getRoot());
 							syntaxGrid.updateContent();	
-						}
-						
-//						FileChooser fc = new FileChooser();
-//						fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("svg", "*.svg"));
-//						fc.setTitle("Export File");
-//						File file = fc.showOpenDialog(ConcreteSyntaxWizard.this.primaryStage);
-//						if(file != null) {
-//							SVGGroup newSVGGroup;
-//							try {
-//								newSVGGroup = SVGReader.readSVG(file, new Affine());
-//								((NodeGroup) item).addNodeElement(newSVGGroup);
-//								setTree(item.getRoot());
-//								setCurrentGraphicElement(item.getRoot());
-//								syntaxGrid.updateContent();	
-//							} catch (Exception e) {
-//								e.printStackTrace();
-//							}			
-//						}							
+						}						
 					});
 										
-					menu.getItems().addAll(addSvgItem, addLabelItem, addgroupItem);
+					menu.getItems().addAll(addSvgItem, addLabelItem, addgroupItem, new  SeparatorMenuItem());
 				}
+				
+				if(root != item && item.getOwner() != null) {
+					NodeGroup itemParent = item.getOwner();
+					int patentSize = itemParent.getChildren().size();
+					int currentPos = itemParent.getChildren().indexOf(item);
+					MenuItem moveTopItem = new MenuItem("Move to Top");
+					moveTopItem.setDisable(currentPos == 0);
+					moveTopItem.setOnAction(event -> {
+						itemParent.getChildren().remove(item);
+						itemParent.getChildren().insertElementAt(item, 0);
+						setTree(item.getRoot());
+						setCurrentGraphicElement(item.getRoot());
+						syntaxGrid.updateContent();	
+					});
+					MenuItem moveUpItem = new MenuItem("Move Up");
+					moveUpItem.setOnAction(event -> {
+						itemParent.getChildren().remove(item);
+						itemParent.getChildren().insertElementAt(item, currentPos - 1);
+						setTree(item.getRoot());
+						setCurrentGraphicElement(item.getRoot());
+						syntaxGrid.updateContent();	
+					});
+					moveUpItem.setDisable(currentPos <= 1);
+					MenuItem moveDownItem = new MenuItem("Move Down");
+					moveDownItem.setOnAction(event -> {
+						itemParent.getChildren().remove(item);
+						itemParent.getChildren().insertElementAt(item, currentPos);
+						setTree(item.getRoot());
+						setCurrentGraphicElement(item.getRoot());
+						syntaxGrid.updateContent();	
+					});
+					moveDownItem.setDisable(currentPos >= patentSize - 2);
+					MenuItem moveBottomItem = new MenuItem("Move to Bottom");
+					moveBottomItem.setDisable(currentPos == patentSize - 1);
+					moveBottomItem.setOnAction(event -> {
+						itemParent.getChildren().remove(item);
+						itemParent.getChildren().add(item);
+						setTree(item.getRoot());
+						setCurrentGraphicElement(item.getRoot());
+						syntaxGrid.updateContent();	
+					});
+					menu.getItems().addAll(moveTopItem, moveUpItem, moveDownItem, moveBottomItem, new  SeparatorMenuItem());
+				}
+				
+				MenuItem deleteItem = new MenuItem("Delete");
+				deleteItem.setOnAction(event -> {
+					item.getOwner().getChildren().remove(item);
+					setTree(item.getRoot());
+					setCurrentGraphicElement(item.getRoot());
+					syntaxGrid.updateContent();	
+				});
+				menu.getItems().addAll(deleteItem, new  SeparatorMenuItem());
 			}
 			
-			menu.getItems().add(new MenuItem("Edit " + item.hashCode()));
+			menu.getItems().add(new MenuItem("TestItem " + item.hashCode()));
 			return menu;
 		}
 	}

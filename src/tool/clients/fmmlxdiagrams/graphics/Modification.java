@@ -104,6 +104,11 @@ public class Modification{
 		}
 		
 	}
+
+	@Override 
+	public String toString() {
+		return affectedParentId + "/" + affectedId + " " + consequence + " " + condition + ".";
+	}
 	
 	public Node save(Document document) { Element modificationElement = document.createElement("Modification");
 		Element conditionElement = document.createElement("Condition");

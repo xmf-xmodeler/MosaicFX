@@ -43,6 +43,11 @@ public abstract class Condition<ReturnType>{
 			 conditionElement.setAttribute("type", "BooleanSlotCondition");
 			 conditionElement.setAttribute("slotName", slotName);		
 		}
+		
+		@Override 
+		public String toString() {
+			return "if slot " + slotName + " is true";
+		}
 	}
 	
 	public static class StringMatchSlotCondition extends Condition<Boolean>{
@@ -71,6 +76,11 @@ public abstract class Condition<ReturnType>{
 			conditionElement.setAttribute("type", "StringMatchSlotCondition");
 			conditionElement.setAttribute("slotName", slotName);
 			conditionElement.setAttribute("match", match);			
+		}
+
+		@Override 
+		public String toString() {
+			return "if slot " + slotName + " equals " + match;
 		}
 	}
 
@@ -104,6 +114,11 @@ public abstract class Condition<ReturnType>{
 			 conditionElement.setAttribute("type", "BooleanSlotCondition");
 			 conditionElement.setAttribute("slotName", slotName);		
 		}
+
+		@Override 
+		public String toString() {
+			return "if slot " + slotName + " is between " + low + " and " + high;
+		}
 	}
 	
 	public static class BooleanOpValCondition extends Condition<Boolean>{
@@ -130,7 +145,12 @@ public abstract class Condition<ReturnType>{
 		public BooleanOpValCondition(String opName) {
 			super();
 			this.opName = opName;
-		}		
+		}
+		
+		@Override 
+		public String toString() {
+			return "if operation " + opName + " returns true";
+		}	
 	}
 	
 	public static class StringMatchOpValCondition extends Condition<Boolean>{
@@ -158,6 +178,11 @@ public abstract class Condition<ReturnType>{
 			conditionElement.setAttribute("opName", opName);
 			conditionElement.setAttribute("match", match );			
 		}
+		
+		@Override 
+		public String toString() {
+			return "if operation " + opName + " returns " + match;
+		}
 	}
 	
 	public static class ReadFromSlotCondition extends Condition<String>{
@@ -181,7 +206,12 @@ public abstract class Condition<ReturnType>{
 		public void save(Element conditionElement) {
 			conditionElement.setAttribute("type", "ReadFromSlot");
 			conditionElement.setAttribute("slotName", slotName);
-		}	
+		}
+
+		@Override 
+		public String toString() {
+			return "from slot " + slotName;
+		}
 	}
 	
 public static class ReadFromOpValCondition extends Condition<String>{
@@ -206,6 +236,11 @@ public static class ReadFromOpValCondition extends Condition<String>{
 			conditionElement.setAttribute("type", "ReadFromOpValCondition");
 			conditionElement.setAttribute("opName", opName);			
 		}	
+		
+		@Override 
+		public String toString() {
+			return "from operation " + opName;
+		}
 	}
 
 	
