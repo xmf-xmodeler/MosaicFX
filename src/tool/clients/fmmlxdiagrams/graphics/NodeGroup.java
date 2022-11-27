@@ -1,5 +1,6 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
+import java.io.File;
 import java.util.Vector;
 
 import org.apache.batik.anim.dom.SVGOMGElement;
@@ -173,10 +174,10 @@ public class NodeGroup extends NodeElement {
 		return "G"+ (id==null?"":("("+id+")"));
 	}
 
-	public Node save(Document document) {
+	public Node save(Document document, File baseFile) {
 		Element myElement = document.createElement("Group");
 		saveTransformation(myElement);
-		ConcreteSyntax.saveChildren(document, nodeElements, new Vector<Modification>(), myElement);
+		ConcreteSyntax.saveChildren(document, nodeElements, new Vector<Modification>(), myElement, baseFile);
 		return myElement;
 	}
 

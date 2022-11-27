@@ -1,4 +1,4 @@
-package tool.clients.fmmlxdiagrams.graphics;
+package tool.clients.fmmlxdiagrams.graphics.wizard;
 
 import java.text.DecimalFormat;
 import java.util.Optional;
@@ -75,7 +75,7 @@ public class AffineController {
 			if(result.isPresent()) {
 				try{
 					Double d = Double.parseDouble(result.get());
-					affine.appendTranslation(d, 0.);
+					affine.prependTranslation(d, 0.);
 					updateGUI();
 					action();
 				} catch (Exception ex) {}
@@ -92,7 +92,7 @@ public class AffineController {
 			if(result.isPresent()) {
 				try{
 					Double d = Double.parseDouble(result.get());
-					affine.appendTranslation(0., d);
+					affine.prependTranslation(0., d);
 					updateGUI();
 					action();
 				} catch (Exception ex) {}

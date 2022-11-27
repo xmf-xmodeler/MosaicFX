@@ -14,7 +14,7 @@ import javafx.scene.paint.Color;
 
 public class EditLabelDialog extends Dialog<EditLabelDialog.Result> {
 	public EditLabelDialog() {
-		this("label" + Integer.toHexString((int) (Math.random() * Integer.MAX_VALUE)).substring(0,5).toUpperCase(), 
+		this("label" + ConcreteSyntaxWizard.getRandomID(), 
 				Color.BLACK, Color.TRANSPARENT, Pos.BASELINE_LEFT);
 	}
 	

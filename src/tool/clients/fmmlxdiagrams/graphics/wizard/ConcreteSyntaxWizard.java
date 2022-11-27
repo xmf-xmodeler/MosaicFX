@@ -21,14 +21,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.graphics.AbstractSyntax;
 import tool.clients.fmmlxdiagrams.graphics.ActionInfo;
-import tool.clients.fmmlxdiagrams.graphics.AffineController;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
 import tool.clients.fmmlxdiagrams.graphics.Modification;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
@@ -72,6 +70,7 @@ public class ConcreteSyntaxWizard extends Application {
 	private ScrollPane syntaxScrollGrid = new ScrollPane();
 	private PreviewGrid<AbstractSyntax> syntaxGrid;
 	private Vector<AbstractSyntax> syntaxes = new Vector<>();
+	private Vector<SVGGroup> svgCache;// = new Vector<>();
 	private AbstractPackageViewer model;
 	
 	private AbstractSyntax selectedSyntax;
@@ -87,7 +86,6 @@ public class ConcreteSyntaxWizard extends Application {
 	private TextField classSelectionField;
 	private TextField levelSelectionField;
 	
-	private Stage primaryStage;
 	/**
 	 * Creates a wizard without connection to a model. 
 	 * Used for quickly checking the layout of the wizard.
@@ -120,7 +118,6 @@ public class ConcreteSyntaxWizard extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		this.primaryStage = primaryStage;
 		
 		loadConcreteSyntax();
 		splitPane = new SplitPane();
@@ -480,6 +477,31 @@ public class ConcreteSyntaxWizard extends Application {
 		}		
 	}
 
+	private Vector<SVGGroup> loadSVGs() {
+		Vector<SVGGroup> svgs = new Vector<>();
+		File initialDirectory = new File(RESOURCES_CONCRETE_SYNTAX_REPOSITORY);
+		if (initialDirectory.isDirectory()) {
+			
+			Vector<File> directories = new Vector<>();
+			directories.add(initialDirectory);
+			while(!directories.isEmpty()) {
+				File dir = directories.remove(0);
+				for (File file : dir.listFiles()) {
+					if(file.isDirectory()) directories.add(file); else
+					if(file.getName().endsWith(".svg")) {
+						try {
+							SVGGroup svgGroup = SVGReader.readSVG(file, new Affine());
+							svgs.add(svgGroup);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}
+		return svgs;
+	}
+	
 	private void setTree(NodeGroup group) {
 		TreeItem<NodeElement> rootElement = new TreeItem<NodeElement>(group);
 		concreteSyntaxTreeView.setRoot(rootElement);
@@ -529,7 +551,11 @@ public class ConcreteSyntaxWizard extends Application {
 		private void handleScroll(ScrollEvent e) {
 			double delta = e.getDeltaY();
 			zoom = zoom * Math.pow(Math.pow(2, 1/3.), delta > 0 ? 1 : -1);	
-			if(concreteSyntaxTreeView.getSelectionModel().getSelectedItem().getValue() != null)
+//			System.err.println("concreteSyntaxTreeView: " + concreteSyntaxTreeView);
+//			System.err.println("concreteSyntaxTreeView.getSelectionModel(): " + concreteSyntaxTreeView.getSelectionModel());
+//			System.err.println("concreteSyntaxTreeView.getSelectionModel().getSelectedItem(): " + concreteSyntaxTreeView.getSelectionModel().getSelectedItem());
+//			System.err.println("concreteSyntaxTreeView.getSelectionModel().getSelectedItem().getValue(): " + concreteSyntaxTreeView.getSelectionModel().getSelectedItem().getValue());
+			if(concreteSyntaxTreeView.getSelectionModel().getSelectedItem() != null)
 				paint(concreteSyntaxTreeView.getSelectionModel().getSelectedItem().getValue(),zoom);
 			else {
 				System.err.println("Cannot paint! Nothing selected...");
@@ -601,22 +627,33 @@ public class ConcreteSyntaxWizard extends Application {
 					
 					MenuItem addSvgItem = new MenuItem("Add SVG");
 					addSvgItem.setOnAction(event -> {
-						FileChooser fc = new FileChooser();
-						fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("svg", "*.svg"));
-						fc.setTitle("Export File");
-						File file = fc.showOpenDialog(ConcreteSyntaxWizard.this.primaryStage);
-						if(file != null) {
-							SVGGroup newSVGGroup;
-							try {
-								newSVGGroup = SVGReader.readSVG(file, new Affine());
-								((NodeGroup) item).addNodeElement(newSVGGroup);
-								setTree(item.getRoot());
-								setCurrentGraphicElement(item.getRoot());
-								syntaxGrid.updateContent();	
-							} catch (Exception e) {
-								e.printStackTrace();
-							}			
-						}							
+						svgCache = loadSVGs();
+						SvgChooseDialog scd = new SvgChooseDialog(svgCache, null);
+						Optional<SVGGroup> result = scd.showAndWait();
+						
+						if(result.isPresent()) {
+							((NodeGroup) item).addNodeElement(result.get());
+							setTree(item.getRoot());
+							setCurrentGraphicElement(item.getRoot());
+							syntaxGrid.updateContent();	
+						}
+						
+//						FileChooser fc = new FileChooser();
+//						fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("svg", "*.svg"));
+//						fc.setTitle("Export File");
+//						File file = fc.showOpenDialog(ConcreteSyntaxWizard.this.primaryStage);
+//						if(file != null) {
+//							SVGGroup newSVGGroup;
+//							try {
+//								newSVGGroup = SVGReader.readSVG(file, new Affine());
+//								((NodeGroup) item).addNodeElement(newSVGGroup);
+//								setTree(item.getRoot());
+//								setCurrentGraphicElement(item.getRoot());
+//								syntaxGrid.updateContent();	
+//							} catch (Exception e) {
+//								e.printStackTrace();
+//							}			
+//						}							
 					});
 										
 					menu.getItems().addAll(addSvgItem, addLabelItem, addgroupItem);
@@ -625,6 +662,35 @@ public class ConcreteSyntaxWizard extends Application {
 			
 			menu.getItems().add(new MenuItem("Edit " + item.hashCode()));
 			return menu;
+		}
+	}
+
+	public static String getRandomID() {
+		String s = "00000" + Integer.toHexString((int) (Math.random() * Integer.MAX_VALUE)).toUpperCase();
+		return s.substring(s.length()-5, s.length());
+	}
+
+	public static String getRelativePath(File dir, File file) {
+//		String dirPath = dir.toURI().normalize().getPath();
+		String filePath = file.toURI().normalize().getPath();
+		String relFilePath = dir.toURI().normalize().relativize(file.toURI().normalize()).getPath();
+//		System.err.println("\ntrying to relativize:");
+//		System.err.println("dirPath: " + dirPath);
+//		System.err.println("filePath: " + filePath);
+//		System.err.println("relFilePath: " + relFilePath);
+		
+		if(!relFilePath.equals(filePath)) {
+			//System.err.println("success: relativized!");
+			return relFilePath;
+		} else {
+			//System.err.println("trying one directory higher, adding ../");
+			File parentDir = dir.getParentFile();
+			if(parentDir == dir || parentDir == null) {
+				System.err.println("fail: reached to of file system!");
+				throw new RuntimeException("Cannot relativize Path!");
+			} else {
+				return "../" + getRelativePath(parentDir, file);
+			}
 		}
 	}
 }

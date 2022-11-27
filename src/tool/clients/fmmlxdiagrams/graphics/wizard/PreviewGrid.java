@@ -21,7 +21,7 @@ public class PreviewGrid<NodeElementType extends NodeGroup> extends GridPane {
 	
 	private int selectedIndex = -1;
 	private Vector<NodeElementType> syntaxes = new Vector<>();
-	private SelectionChangedListener<NodeElementType> selectionChangedListener;
+	private SelectionChangedListener<NodeElementType> selectionChangedListener = e -> {};
 	
 	public PreviewGrid(Vector<NodeElementType> syntaxes) {
 		super();
@@ -102,7 +102,6 @@ public class PreviewGrid<NodeElementType extends NodeGroup> extends GridPane {
 		this.selectionChangedListener = selectionChangedListener;
 	}
 	
-
 	private class MiniCanvas extends Pane implements View {
 		Canvas canvas; 
 		Affine affine;		
@@ -122,5 +121,9 @@ public class PreviewGrid<NodeElementType extends NodeGroup> extends GridPane {
 		@Override public Affine getCanvasTransform() { return affine; }
 		@Override public void centerObject() {}
 		@Override public void centerObject(FmmlxObject affectedObject) {}
+	}
+
+	public NodeElementType getSelectedElement() {
+		return syntaxes.get(selectedIndex);
 	}
 }

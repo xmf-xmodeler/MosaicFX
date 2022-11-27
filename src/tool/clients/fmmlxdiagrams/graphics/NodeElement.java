@@ -5,6 +5,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 
 import java.util.Vector;
@@ -162,5 +163,17 @@ public abstract class NodeElement {
 
 		return new Affine(zoom,    0, -zoom*(minX + maxX)/2 + canvas.getWidth()/2,
 	                         0, zoom, -zoom*(minY + maxY)/2 + canvas.getHeight()/2);
+	}
+	
+	public static String color2Web(Color c) {
+		String r = Integer.toHexString((int)(c.getRed()*255));
+		String g = Integer.toHexString((int)(c.getGreen()*255));
+		String b = Integer.toHexString((int)(c.getBlue()*255));
+		String a = Integer.toHexString((int)(c.getOpacity()*255));
+		if(r.length() == 1) r = "0"+r;
+		if(g.length() == 1) g = "0"+g;
+		if(b.length() == 1) b = "0"+b;
+		if(a.length() == 1) a = "0"+a;
+		return "0x"+r+g+b+a;
 	}
 }
