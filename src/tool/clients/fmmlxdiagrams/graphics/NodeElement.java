@@ -130,14 +130,14 @@ public abstract class NodeElement {
 	
 	public boolean matchID(String svgID, String localID) {
 		if(!localID.equals(this.id)) return false;
-		return matchParentId(svgID);
+		return true; //matchParentId(svgID);
 	}
 
-	protected boolean matchParentId(String parentID) {
-		if(parentID.equals(this.id)) return true;
-		if(owner == null) return false;
-		return owner.matchParentId(parentID);
-	}
+//	protected boolean matchParentId(String parentID) {
+//		if(parentID.equals(this.id)) return true;
+//		if(owner == null) return false;
+//		return owner.matchParentId(parentID);
+//	}
 	
 	public NodeGroup getRoot() {
 		NodeGroup owner = getOwner();
@@ -175,5 +175,9 @@ public abstract class NodeElement {
 		if(b.length() == 1) b = "0"+b;
 		if(a.length() == 1) a = "0"+a;
 		return "0x"+r+g+b+a;
+	}
+	
+	public String getID() {
+		return id;
 	}
 }

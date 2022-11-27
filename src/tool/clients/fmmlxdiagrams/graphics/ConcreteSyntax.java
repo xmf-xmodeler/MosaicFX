@@ -121,4 +121,8 @@ public class ConcreteSyntax extends AbstractSyntax{
 		instance.myTransform = new Affine(1, 0, object.getX(), 0, 1, object.getY());
 		return instance;
 	}
+
+	public void addModification(Modification mod) {
+		modifications.add(mod);		
+	}
 }

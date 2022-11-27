@@ -25,6 +25,13 @@ public class Modification{
 		READ_FROM_SLOT,
 		SET_COLOR}		
 	
+	public Modification(Condition<?> condition, Consequence consequence, String affectedId, String affectedParentId) {
+		this.condition = condition;
+		this.consequence = consequence;
+		this.affectedId = affectedId;
+		this.affectedParentId = affectedParentId;
+	}
+	
 	public Modification(Element modElement) {
 		Element conditionElement = null;
 		Element consequenceElement = null;
