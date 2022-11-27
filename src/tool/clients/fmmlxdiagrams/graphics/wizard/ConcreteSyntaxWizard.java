@@ -24,14 +24,18 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
+import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.graphics.AbstractSyntax;
 import tool.clients.fmmlxdiagrams.graphics.ActionInfo;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
+import tool.clients.fmmlxdiagrams.graphics.Condition;
 import tool.clients.fmmlxdiagrams.graphics.Modification;
+import tool.clients.fmmlxdiagrams.graphics.Modification.Consequence;
 import tool.clients.fmmlxdiagrams.graphics.NodeElement;
 import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
 import tool.clients.fmmlxdiagrams.graphics.NodeLabel;
+import tool.clients.fmmlxdiagrams.graphics.NodePath;
 import tool.clients.fmmlxdiagrams.graphics.SVGGroup;
 import tool.clients.fmmlxdiagrams.graphics.SVGReader;
 import tool.clients.fmmlxdiagrams.graphics.View;
@@ -163,6 +167,7 @@ public class ConcreteSyntaxWizard extends Application {
 				if(selectedClass != null && selectedLevel != null) { // && syntaxGrid.selectedIndex == -1) {
 					ConcreteSyntax newSyntax = new ConcreteSyntax();
 					newSyntax.classPath = selectedClass.getPath();
+					if(newSyntax.classPath.startsWith("Root::")) {newSyntax.classPath = newSyntax.classPath.substring(6);}
 					newSyntax.level = selectedLevel;
 					String s = selectedClass.getPath() + "." + selectedLevel;
 					s = s.replace("::", ".") + ".xml";
@@ -363,7 +368,7 @@ public class ConcreteSyntaxWizard extends Application {
 	}
 
 	private void selectConcreteSyntaxInPreviewList() {
-		System.err.println("selectConcreteSyntaxFor(" + selectedClass + ", " + selectedLevel + ")");
+//		System.err.println("selectConcreteSyntaxFor(" + selectedClass + ", " + selectedLevel + ")");
 		for(AbstractSyntax syntax : syntaxes) {
 			if(syntax instanceof ConcreteSyntax) {
 				ConcreteSyntax cs = (ConcreteSyntax) syntax;
@@ -586,11 +591,14 @@ public class ConcreteSyntaxWizard extends Application {
 			
 			// Figure out whether the item is inside an SVG:
 			boolean insideSVG = false;
-			NodeElement root = item;
-			while(!insideSVG && root != null) {
-				insideSVG |= (root != item) && (root instanceof SVGGroup);
-				root = root.getOwner();
+			NodeElement svgRoot = item;
+			while(!insideSVG && svgRoot != null) {
+				insideSVG |= (svgRoot != item) && (svgRoot instanceof SVGGroup);
+				svgRoot = svgRoot.getOwner();
 			}
+//			NodeElement root2 = item;
+//
+//			final NodeElement root = svgRoot;
 			
 			if(!insideSVG) {
 				if(item instanceof NodeGroup) {
@@ -639,10 +647,10 @@ public class ConcreteSyntaxWizard extends Application {
 						}						
 					});
 										
-					menu.getItems().addAll(addSvgItem, addLabelItem, addgroupItem, new  SeparatorMenuItem());
+					menu.getItems().addAll(addSvgItem, addLabelItem, addgroupItem);
 				}
 				
-				if(root != item && item.getOwner() != null) {
+				if(svgRoot != item && item.getOwner() != null) {
 					NodeGroup itemParent = item.getOwner();
 					int patentSize = itemParent.getChildren().size();
 					int currentPos = itemParent.getChildren().indexOf(item);
@@ -682,7 +690,8 @@ public class ConcreteSyntaxWizard extends Application {
 						setCurrentGraphicElement(item.getRoot());
 						syntaxGrid.updateContent();	
 					});
-					menu.getItems().addAll(moveTopItem, moveUpItem, moveDownItem, moveBottomItem, new  SeparatorMenuItem());
+					if(menu.getItems().size() != 0) menu.getItems().addAll(new SeparatorMenuItem());
+					menu.getItems().addAll(moveTopItem, moveUpItem, moveDownItem, moveBottomItem);
 				}
 				
 				MenuItem deleteItem = new MenuItem("Delete");
@@ -692,10 +701,64 @@ public class ConcreteSyntaxWizard extends Application {
 					setCurrentGraphicElement(item.getRoot());
 					syntaxGrid.updateContent();	
 				});
-				menu.getItems().addAll(deleteItem, new  SeparatorMenuItem());
+				if(menu.getItems().size() != 0) menu.getItems().addAll(new SeparatorMenuItem());
+				menu.getItems().addAll(deleteItem);
 			}
 			
-			menu.getItems().add(new MenuItem("TestItem " + item.hashCode()));
+			Menu modMenu = new Menu("Modifications");
+			if(item instanceof NodeLabel) {
+				MenuItem readFromSlotItem = new MenuItem("Read from Attribute");
+				readFromSlotItem.setDisable(true);
+				MenuItem readFromOpValItem = new MenuItem("Read from Operation");
+				readFromOpValItem.setDisable(true);
+				modMenu.getItems().addAll(readFromSlotItem, readFromOpValItem);
+			} else {
+				MenuItem boolSlotItem = new MenuItem("Depends on Attribute (Boolean)");
+				boolSlotItem.setDisable(selectedClass == null || selectedLevel == null);
+				boolSlotItem.setOnAction(event -> {
+					DefaultModificationDialog dmd = new DefaultModificationDialog(selectedClass, selectedLevel, Condition.BooleanSlotCondition.class);
+					Optional<DefaultModificationDialog.Result> result = dmd.showAndWait();
+					
+					if(result.isPresent()) {
+						FmmlxAttribute att = result.get().att;
+						Consequence consequence = result.get().consequence;
+						
+						if(att != null && consequence != null) {
+							Condition<Boolean> condition = new Condition.BooleanSlotCondition(att.getName());
+							Modification mod = new Modification(
+									condition, 
+									consequence, 
+									item.getID(), 
+									item.getID());
+							
+							
+							((ConcreteSyntax) item.getRoot()).addModification(mod);
+							
+							setTree(item.getRoot());
+							setCurrentGraphicElement(item.getRoot());
+							syntaxGrid.updateContent();	
+						}
+					}						
+				});
+				MenuItem boolOpValItem = new MenuItem("Depends on Operation (Boolean)");
+				boolOpValItem.setDisable(true);
+				MenuItem numSlotItem = new MenuItem("Depends on Attribute (Number Range)");
+				numSlotItem.setDisable(true);
+				MenuItem numOpValItem = new MenuItem("Depends on Operation (Number Range)");
+				numOpValItem.setDisable(true);
+				modMenu.getItems().addAll(boolSlotItem, boolOpValItem, numSlotItem, numOpValItem);
+			}
+			if(item instanceof NodePath) {
+				MenuItem colorSlotItem = new MenuItem("Read Color from Attribute (Hex)");
+				colorSlotItem.setDisable(true);
+				MenuItem colorOpValItem = new MenuItem("Read Color from  on Operation (Hex)");
+				colorOpValItem.setDisable(true);
+				modMenu.getItems().addAll(colorSlotItem, colorOpValItem);
+			}
+			if(menu.getItems().size() != 0) menu.getItems().addAll(new SeparatorMenuItem());
+			menu.getItems().addAll(modMenu);
+			
+//			menu.getItems().add(new MenuItem("TestItem " + item.hashCode()));
 			return menu;
 		}
 	}
@@ -706,19 +769,12 @@ public class ConcreteSyntaxWizard extends Application {
 	}
 
 	public static String getRelativePath(File dir, File file) {
-//		String dirPath = dir.toURI().normalize().getPath();
 		String filePath = file.toURI().normalize().getPath();
 		String relFilePath = dir.toURI().normalize().relativize(file.toURI().normalize()).getPath();
-//		System.err.println("\ntrying to relativize:");
-//		System.err.println("dirPath: " + dirPath);
-//		System.err.println("filePath: " + filePath);
-//		System.err.println("relFilePath: " + relFilePath);
 		
 		if(!relFilePath.equals(filePath)) {
-			//System.err.println("success: relativized!");
 			return relFilePath;
 		} else {
-			//System.err.println("trying one directory higher, adding ../");
 			File parentDir = dir.getParentFile();
 			if(parentDir == dir || parentDir == null) {
 				System.err.println("fail: reached to of file system!");
