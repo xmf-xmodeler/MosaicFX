@@ -56,9 +56,9 @@ public class AffineController {
 			matrixPane.add(f, i%3, i/3);
 			textfields.add(f);
 		}
-		matrixPane.setHgap(6);
-		matrixPane.setHgap(6);
-		matrixPane.setPadding(new Insets(6,6,6,6));
+		matrixPane.setHgap(5.);
+		matrixPane.setVgap(5.);
+		matrixPane.setPadding(new Insets(5.));
 		
 		Button moveHButton = new Button("Move Horizontally"); buttons.add(moveHButton);
 		Button moveVButton = new Button("Move Vertically");   buttons.add(moveVButton);
@@ -134,6 +134,8 @@ public class AffineController {
 		});		
 		
 		editPane.getChildren().addAll(buttons);		
+		editPane.setSpacing(5.);
+		editPane.setPadding(new Insets(5.));
 		
 		for(Button b : buttons) {
 			b.setMaxWidth(Double.POSITIVE_INFINITY);

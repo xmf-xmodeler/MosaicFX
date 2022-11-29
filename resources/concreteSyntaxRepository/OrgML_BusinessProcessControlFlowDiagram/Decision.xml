@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<ConcreteSyntax classPath="Challenge::Fork" level="1">
+<ConcreteSyntax classPath="Root::Challenge::Fork" level="1">
 <SVG path="Decision_notSpeci.svg" id="notSpeci"/>
 <SVG path="Decision_Automated.svg" id="auto"/>
 <SVG path="Decision_Human_clear_Rules.svg" id="human_rules"/>

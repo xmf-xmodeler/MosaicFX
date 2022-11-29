@@ -35,11 +35,14 @@ public class DefaultModificationDialog extends Dialog<DefaultModificationDialog.
 			dataType = DataType.BOOLEAN;
 			cList.add(Consequence.SHOW_IF);
 			cList.add(Consequence.SHOW_IF_NOT);			
+		} else if(condition == Condition.ReadFromSlotCondition.class || condition == Condition.ReadFromOpValCondition.class) {
+			dataType = DataType.STRING;
+			cList.add(Consequence.READ_FROM_SLOT);			
 		}
-		if(condition == Condition.BooleanSlotCondition.class) {
+		if(condition == Condition.BooleanSlotCondition.class || condition == Condition.ReadFromSlotCondition.class) {
 			slot = true;
 		}
-		if(condition == Condition.BooleanOpValCondition.class) {
+		if(condition == Condition.BooleanOpValCondition.class || condition == Condition.ReadFromOpValCondition.class) {
 			slot = false;
 		}
 		
@@ -98,6 +101,19 @@ public class DefaultModificationDialog extends Dialog<DefaultModificationDialog.
 	            				cBox.getValue(),
 	            				null, null, null);
 	        		} else if(condition == Condition.BooleanOpValCondition.class) {
+	            		return new Result(
+	            				null,
+	            				opBox.getValue(),
+	            				null,
+	            				cBox.getValue(),
+	            				null, null, null);
+	        		} else if(condition == Condition.ReadFromSlotCondition.class) {
+	            		return new Result(
+	            				attBox.getValue(),
+	            				null, null, 
+	            				cBox.getValue(),
+	            				null, null, null);
+	        		} else if(condition == Condition.ReadFromOpValCondition.class) {
 	            		return new Result(
 	            				null,
 	            				opBox.getValue(),

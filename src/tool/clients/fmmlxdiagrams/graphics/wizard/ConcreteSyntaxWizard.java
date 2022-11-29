@@ -7,6 +7,7 @@ import java.util.Vector;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -26,6 +27,7 @@ import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
+import tool.clients.fmmlxdiagrams.FmmlxOperation;
 import tool.clients.fmmlxdiagrams.graphics.AbstractSyntax;
 import tool.clients.fmmlxdiagrams.graphics.ActionInfo;
 import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
@@ -89,6 +91,9 @@ public class ConcreteSyntaxWizard extends Application {
 	private ComboBox<Integer> levelSelectionBox;
 	private TextField classSelectionField;
 	private TextField levelSelectionField;
+
+	private Insets defaultPadding = new Insets(5.);
+	private double defaultSpacing= 5.;
 	
 	/**
 	 * Creates a wizard without connection to a model. 
@@ -138,6 +143,8 @@ public class ConcreteSyntaxWizard extends Application {
 		leftControl.setPadding(new Insets(5.));		
 
 		HBox modelBox = new HBox(new Label("Selected Model"), new TextField(model==null?"NONE":model.getPackagePath()));
+		modelBox.setAlignment(Pos.BASELINE_LEFT);
+		modelBox.setSpacing(defaultSpacing);
 		leftControl.getChildren().add(modelBox);
 		
 		Node selectedClassNode = null;
@@ -147,6 +154,7 @@ public class ConcreteSyntaxWizard extends Application {
 			classSelectionField = new TextField("N/A");
 			classSelectionField.setDisable(true);
 			levelSelectionField = new TextField("N/A");
+			levelSelectionField.setMaxWidth(50);
 			levelSelectionField.setDisable(true);
 			selectedClassNode = classSelectionField;
 			selectedLevelNode = levelSelectionField;
@@ -167,7 +175,7 @@ public class ConcreteSyntaxWizard extends Application {
 				if(selectedClass != null && selectedLevel != null) { // && syntaxGrid.selectedIndex == -1) {
 					ConcreteSyntax newSyntax = new ConcreteSyntax();
 					newSyntax.classPath = selectedClass.getPath();
-					if(newSyntax.classPath.startsWith("Root::")) {newSyntax.classPath = newSyntax.classPath.substring(6);}
+//					if(newSyntax.classPath.startsWith("Root::")) {newSyntax.classPath = newSyntax.classPath.substring(6);}
 					newSyntax.level = selectedLevel;
 					String s = selectedClass.getPath() + "." + selectedLevel;
 					s = s.replace("::", ".") + ".xml";
@@ -192,6 +200,8 @@ public class ConcreteSyntaxWizard extends Application {
 				new Label("@"), 
 				selectedLevelNode,
 				newButton);
+		classBox.setAlignment(Pos.BASELINE_LEFT);
+		classBox.setSpacing(defaultSpacing);
 		leftControl.getChildren().add(classBox);
 				
 		TextField directoryTextField = new TextField(new File(RESOURCES_CONCRETE_SYNTAX_REPOSITORY).toString());
@@ -242,26 +252,28 @@ public class ConcreteSyntaxWizard extends Application {
         leftControl.getChildren().add(labelTreeView);
         leftControl.getChildren().add(concreteSyntaxTreeView);
 
-        Button addModButton = new Button("add"); addModButton.setDisable(true);
+//        Button addModButton = new Button("add"); addModButton.setDisable(true);
         Button editModButton = new Button("edit"); editModButton.setDisable(true);
         Button removeModButton = new Button("remove"); removeModButton.setDisable(true);
         HBox modLabelsAndButtons = new HBox(
         		new Label("Modifications"),
-        		addModButton,
         		editModButton,
-        		removeModButton);        
+        		removeModButton);
+        modLabelsAndButtons.setAlignment(Pos.BASELINE_LEFT);
+        modLabelsAndButtons.setSpacing(defaultSpacing);    
         leftControl.getChildren().add(modLabelsAndButtons);
         leftControl.getChildren().add(modificationList);
         modificationList.setMaxHeight(200);
 
-        Button addActionButton = new Button("add"); addActionButton.setDisable(true);
+//        Button addActionButton = new Button("add"); addActionButton.setDisable(true);
         Button editActionButton = new Button("edit"); editActionButton.setDisable(true);
         Button removeActionButton = new Button("remove"); removeActionButton.setDisable(true);
         HBox actionLabelsAndButtons = new HBox(
         		new Label("Actions"),
-        		addActionButton,
         		editActionButton,
-        		removeActionButton);    
+        		removeActionButton);  
+        actionLabelsAndButtons.setAlignment(Pos.BASELINE_LEFT);
+        actionLabelsAndButtons.setSpacing(defaultSpacing);  
         leftControl.getChildren().add(actionLabelsAndButtons);
         leftControl.getChildren().add(actionList);
         actionList.setMaxHeight(200);
@@ -708,9 +720,57 @@ public class ConcreteSyntaxWizard extends Application {
 			Menu modMenu = new Menu("Modifications");
 			if(item instanceof NodeLabel) {
 				MenuItem readFromSlotItem = new MenuItem("Read from Attribute");
-				readFromSlotItem.setDisable(true);
+				readFromSlotItem.setDisable(selectedClass == null || selectedLevel == null);
+				readFromSlotItem.setOnAction(event -> {
+					DefaultModificationDialog dmd = new DefaultModificationDialog(selectedClass, selectedLevel, Condition.ReadFromSlotCondition.class);
+					Optional<DefaultModificationDialog.Result> result = dmd.showAndWait();
+					
+					if(result.isPresent()) {
+						FmmlxAttribute att = result.get().att;
+						Consequence consequence = result.get().consequence;
+						
+						if(att != null && consequence != null) {
+							Condition<String> condition = new Condition.ReadFromSlotCondition(att.getName());
+							Modification mod = new Modification(
+									condition, 
+									consequence, 
+									item.getID(), 
+									item.getID());							
+							
+							((ConcreteSyntax) item.getRoot()).addModification(mod);
+							
+							setTree(item.getRoot());
+							setCurrentGraphicElement(item.getRoot());
+							syntaxGrid.updateContent();	
+						}
+					}						
+				});
 				MenuItem readFromOpValItem = new MenuItem("Read from Operation");
-				readFromOpValItem.setDisable(true);
+				readFromOpValItem.setDisable(selectedClass == null || selectedLevel == null);
+				readFromOpValItem.setOnAction(event -> {
+					DefaultModificationDialog dmd = new DefaultModificationDialog(selectedClass, selectedLevel, Condition.ReadFromOpValCondition.class);
+					Optional<DefaultModificationDialog.Result> result = dmd.showAndWait();
+					
+					if(result.isPresent()) {
+						FmmlxOperation op = result.get().op;
+						Consequence consequence = result.get().consequence;
+						
+						if(op != null && consequence != null) {
+							Condition<Boolean> condition = new Condition.BooleanOpValCondition(op.getName());
+							Modification mod = new Modification(
+									condition, 
+									consequence, 
+									item.getID(), 
+									item.getID());							
+							
+							((ConcreteSyntax) item.getRoot()).addModification(mod);
+							
+							setTree(item.getRoot());
+							setCurrentGraphicElement(item.getRoot());
+							syntaxGrid.updateContent();	
+						}
+					}						
+				});
 				modMenu.getItems().addAll(readFromSlotItem, readFromOpValItem);
 			} else {
 				MenuItem boolSlotItem = new MenuItem("Depends on Attribute (Boolean)");
@@ -729,8 +789,7 @@ public class ConcreteSyntaxWizard extends Application {
 									condition, 
 									consequence, 
 									item.getID(), 
-									item.getID());
-							
+									item.getID());							
 							
 							((ConcreteSyntax) item.getRoot()).addModification(mod);
 							
@@ -741,7 +800,31 @@ public class ConcreteSyntaxWizard extends Application {
 					}						
 				});
 				MenuItem boolOpValItem = new MenuItem("Depends on Operation (Boolean)");
-				boolOpValItem.setDisable(true);
+				boolOpValItem.setDisable(selectedClass == null || selectedLevel == null);
+				boolOpValItem.setOnAction(event -> {
+					DefaultModificationDialog dmd = new DefaultModificationDialog(selectedClass, selectedLevel, Condition.BooleanOpValCondition.class);
+					Optional<DefaultModificationDialog.Result> result = dmd.showAndWait();
+					
+					if(result.isPresent()) {
+						FmmlxOperation op = result.get().op;
+						Consequence consequence = result.get().consequence;
+						
+						if(op != null && consequence != null) {
+							Condition<Boolean> condition = new Condition.BooleanOpValCondition(op.getName());
+							Modification mod = new Modification(
+									condition, 
+									consequence, 
+									item.getID(), 
+									item.getID());							
+							
+							((ConcreteSyntax) item.getRoot()).addModification(mod);
+							
+							setTree(item.getRoot());
+							setCurrentGraphicElement(item.getRoot());
+							syntaxGrid.updateContent();	
+						}
+					}						
+				});
 				MenuItem numSlotItem = new MenuItem("Depends on Attribute (Number Range)");
 				numSlotItem.setDisable(true);
 				MenuItem numOpValItem = new MenuItem("Depends on Operation (Number Range)");

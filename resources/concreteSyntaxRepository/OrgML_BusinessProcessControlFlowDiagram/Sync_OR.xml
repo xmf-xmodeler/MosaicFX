@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<ConcreteSyntax classPath="Challenge::OrSynch" level="1">
+<ConcreteSyntax classPath="Root::Challenge::OrSynch" level="1">
 <SVG path="Sync_OR.svg" id="or"/>
 </ConcreteSyntax>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<ConcreteSyntax classPath="OrgStructure::BugReport" level="1">
+<ConcreteSyntax classPath="Root::OrgStructure::BugReport" level="1">
 	<Import path="abstract_OrgUnitBox.xml" id="abstractImport"/>
 	<SVG path="Department.svg" id="Department" tx="120" ty="0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
 	<SVG path="Department_Low.svg" id="Department_Low" tx="120" ty="0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>

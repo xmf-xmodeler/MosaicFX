@@ -605,7 +605,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		
 		for(ConcreteSyntax c : diagram.syntaxes.values()) if(myConcreteSyntax == null) {
 			try{
-				FmmlxObject classs = diagram.getObjectByPath("Root::" + c.classPath);
+				FmmlxObject classs = diagram.getObjectByPath(c.classPath);
 				if(this.isInstanceOf(classs, this.level) && this.level == c.level) {
 					myConcreteSyntax = c;
 				}
