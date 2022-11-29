@@ -2,5 +2,5 @@
 <AbstractSyntax>
   <SVG path="Textkasten_blau_1.svg" tx="0.0" ty="0.0" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
   	<SVG path="Anzahl_Stellen.svg" tx="-20" ty="20" xx="1.0" xy="0.0" yx="0.0" yy="1.0"/>
-	<Label align="CENTER" id="maxNumEmpLabel" color="000000" tx="5.0" ty="50" xx="0.5" xy="0.0" yx="0.0" yy="0.5"/>
+	<Label align="RIGTH" id="maxNumEmpLabel" color="000000" tx="5.0" ty="50" xx="0.5" xy="0.0" yx="0.0" yy="0.5"/>
 </AbstractSyntax>
