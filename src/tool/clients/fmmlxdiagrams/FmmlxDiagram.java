@@ -1205,6 +1205,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}			
 			
 			try {
+//				System.err.println("p:" + p);
+//				System.err.println("dragStart:" + dragStart);
 				Affine b = new Affine(Transform.translate(p.getX() - dragStart.getX(), p.getY() - dragStart.getY()));
 				Affine a = new Affine(canvasTransform);
 				a.prepend(b);

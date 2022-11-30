@@ -104,7 +104,7 @@ public abstract class Condition<ReturnType>{
 			}
 			try{
 				double value = Double.parseDouble(slot.getValue());
-				return this.low < value && value < this.high;
+				return this.low <= value && value <= this.high;
 			} catch(Exception e) {}
 			return false;
 		}
