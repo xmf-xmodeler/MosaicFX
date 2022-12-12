@@ -35,16 +35,10 @@ import java.util.Vector;
 public class ControlCenter extends Stage {
 	
 	private final ControlCenterClient controlCenterClient;
-	//private final ObservableList<String> categoryList = FXCollections.observableArrayList();
-	//private final ListView<String> categoryLV = new ListView<String>();
-	//private final ObservableList<String> projectList = FXCollections.observableArrayList();
 	private final TreeView<String> projectTree = new TreeView<String>();
 	private final ListView<String> projectLV = new ListView<String>();
-	//private final ObservableList<String> modelList = FXCollections.observableArrayList();
 	private final ListView<String> modelLV = new ListView<String>();
-	//private final ObservableList<String> diagramList = FXCollections.observableArrayList();
 	private final ListView<String> diagramLV = new ListView<String>();
-	//private ModelBrowser stage;
 	private MenuBar menuBar;
 	private HashMap<String, ModelBrowser> modelBrowsers = new HashMap<>();
 
@@ -66,7 +60,7 @@ public class ControlCenter extends Stage {
 				
 		Button newCategorie = new Button("new");
 		newCategorie.setDisable(true);
-//		Label categorieLabel = new Label("Categories");
+
 		
 		Button refreshAll = new Button("refresh");
 		Button newProject = new Button("Create Project");
@@ -133,32 +127,21 @@ public class ControlCenter extends Stage {
 		        }
 	
 		    });
-		
-//		Menu file = new Menu("File");
-//		Menu browsers = new Menu("Browser");
-//		Menu tools = new Menu("Tools");
-//		Menu windows = new Menu("Windows");
-//		Menu settings = new Menu("Settings");
-//		Menu help = new Menu ("Help");
+
 		menuBar = new MenuBar();
-		//menuBar.getMenus().addAll(file, browsers, tools, windows, settings, help);
 		HBox.setHgrow(menuBar, Priority.ALWAYS);
 		hBox.getChildren().add(menuBar);
 		grid.setHgap(10);
 		grid.setVgap(10);
-		//grid.add(categorieLabel, 1, 1);
-		//grid.add(newCategorie, 1, 1);
 		GridPane.setHalignment(newCategorie, HPos.RIGHT);
-		//categoryLV.setPrefSize(200, 150);
-		//grid.add(categoryLV, 1, 2);
+
 	
 		grid.add(projectLabel, 2, 1);
 		grid.add(refreshAll, 2, 1);
 		GridPane.setHalignment(refreshAll, HPos.RIGHT);
 		grid.add(newProject, 2, 1);
 		GridPane.setHalignment(newProject, HPos.CENTER);
-		//projectLV.setPrefSize(250, 150);
-		//grid.add(projectLV, 2, 2);
+
 		projectTree.setPrefSize(250, 150);
 		grid.add(projectTree, 2, 2);
 		grid.add(projectGridPane, 2, 3);
@@ -184,8 +167,6 @@ public class ControlCenter extends Stage {
 		grid.add(concreteSyntaxWizardStart, 4, 4); //Buton for ConcreteSyntaxWizard
 
 		init();
-		//categoryLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->categorySelected(NEWW));
-		//projectLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->controlCenterClient.getProjectModels(NEWW));
 		projectTree.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->controlCenterClient.getProjectModels(getProjectPath(projectTree.getSelectionModel().getSelectedItem())));
 		
 		projectTree.setCellFactory(new Callback<TreeView<String>,TreeCell<String>>(){
@@ -283,15 +264,7 @@ public class ControlCenter extends Stage {
 		
 		Label modified=new Label("31-03-1999");
 		Label created = new Label("31-03-2000");
-				
-		private CreatedModifiedGridPane() {
-			//Labels for creation & last modification of projects, models & diagrams! ToDo!
-			///this.add(new Label("created: "), 1, 1);
-			//this.add(created, 2, 1);
-			//this.add(new Label("modified: "), 1, 2);
-			//this.add(modified, 2, 2);
-		}
-		
+						
 		private void setModified(String modified) {
 			this.modified.setText(modified);
 		}
@@ -322,10 +295,6 @@ public class ControlCenter extends Stage {
 				}
 				currentTreeItemPosition = newTreeItem;
 
-
-//				if(currentTreeItemPosition.getChildren().contains(newTreeItem)){
-//					
-//				}
 			}
 			projectTree.setRoot(root);
 			projectTree.setShowRoot(false);
@@ -337,19 +306,9 @@ public class ControlCenter extends Stage {
 				}
 			}
 		}
+		});
+	}
 		
-		//projectLV.getItems().clear();
-		//projectLV.getItems().addAll(vec);
-		});
-	}
-	
-	public void setAllCategories(Vector<String> vec) {
-		Platform.runLater(()->{
-//		categoryLV.getItems().clear();
-//		categoryLV.getItems().addAll(vec);
-		});
-	}
-	
 	public void setProjectModels(Vector<String> vec) {
 		Platform.runLater(()->{
 			modelLV.getItems().clear();

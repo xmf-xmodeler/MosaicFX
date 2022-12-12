@@ -9,8 +9,6 @@ public class FormTools {
 
 	String id;
 	Vector<FormToolDef> tools = new Vector<FormToolDef>();
-	// ConcurrentHashMap<String, FormToolDef> tools_new = new
-	// ConcurrentHashMap<String, FormToolDef>();
 
 	public FormTools(String id) {
 		super();
@@ -24,21 +22,8 @@ public class FormTools {
 	public Vector<FormToolDef> getTools() {
 		return tools;
 	}
-	//
-	// public ConcurrentHashMap<String, FormToolDef> getTools_new() {
-	// return tools_new;
-	// }
 
 	public void setTools(final String toolName, final String id, final boolean enabled) {
-		// if(tools_new.containsKey(toolName)){
-		// FormsClient.theClient().runOnDisplay(new Runnable() {
-		// public void run() {
-		// tools_new.get(toolName).setEnabled(enabled);;
-		// }
-		// });
-		// }else{
-		// addTool(toolName, id, enabled);
-		// }
 
 		boolean found = false;
 		for (FormToolDef formToolDef : tools) {
@@ -57,13 +42,9 @@ public class FormTools {
 	}
 
 	public void addTool(String toolName, String id, boolean enabled) {
-		// tools.add(FormToolDef ftd = new FormToolDef(eventName(toolName), id,
-		// iconFile(toolName), disabledIconFile(toolName)));
 		FormToolDef ftd = new FormToolDef(eventName(toolName), id, iconFile(toolName), disabledIconFile(toolName),
 				enabled);
-		// ftd.setEnabled(enabled);
 		tools.add(ftd);
-		// tools_new.put(toolName, ftd);
 	}
 
 	public void addTool(String toolName, String id) {
@@ -73,7 +54,6 @@ public class FormTools {
 	public void writeXML(PrintStream out) {
 		out.print("<FormTools id='" + getId() + "'>");
 		for (FormToolDef def : tools)
-			// for (FormToolDef def : tools_new.values())
 			def.writeXML(out);
 		out.print("</FormTools>");
 	}
@@ -108,13 +88,6 @@ public class FormTools {
 		}
 	}
 
-	public void populateToolBar(Object toolBar) {
-//		boolean test = false;
-//		for (FormToolDef def : tools)
-			// for (FormToolDef def : tools_new.values())
-//			def.populateToolBar(toolBar);
-	}
-
 	private String eventName(String toolName) {
 		if (toolName.equals("browseAndClearHistory"))
 			return "clearHistory";
@@ -124,7 +97,6 @@ public class FormTools {
 			return "previousInHistory";
 		else if (toolName.equals("lock"))
 			return "lockForm";
-		// return "switchLockForm";
 		else {
 			System.err.println("unknown tool event name for " + toolName);
 			return toolName;

@@ -120,10 +120,6 @@ public abstract class AbstractPackageViewer {
 			}
 		this.clearDiagram();
 				
-
-
-		
-		
 		ReturnCall<Vector<String>> opValReturn = x3 -> {
 
 			if(TIMER) System.err.println("Object values loaded after      " + (System.currentTimeMillis() - START) + " ms.");
