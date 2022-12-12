@@ -21,7 +21,7 @@ public class SvgChooseDialog  extends Dialog<SVGGroup>{
 		
 		final PreviewGrid<SVGGroup> svgPane = new PreviewGrid<>(svgCache);
 		Label idLabel = new Label("id");
-		TextField idField = new TextField(id == null?("svg"+ConcreteSyntaxWizard.getRandomID()):id);
+		TextField idField = new TextField(id);
 		HBox hBox = new HBox(idLabel, idField);
 		ScrollPane pane = new ScrollPane(svgPane);
 		pane.setMaxHeight(500);

@@ -179,5 +179,14 @@ public abstract class NodeElement {
 	
 	public String getID() {
 		return id;
+	}	
+
+	public NodeElement getElement(String id) {
+		if(id.equals(this.id)) return this;
+		for(NodeElement child : getChildren()) {
+			NodeElement foundElement = child.getElement(id);
+			if(foundElement != null) return foundElement;
+		}
+		return null;
 	}
 }

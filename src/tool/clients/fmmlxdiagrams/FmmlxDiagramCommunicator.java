@@ -2087,6 +2087,8 @@ public class FmmlxDiagramCommunicator {
 		}
 	}
 
+	// this map stored the positions of the nodes and edges of freshly loaded xml-files
+	// until the diagram is opened for the first time
 	private HashMap<Integer, org.w3c.dom.Node> positionInfos = new HashMap<>();
 	
 	public void preparePositionInfo(Integer diagramId, org.w3c.dom.Node diagramNode) {
@@ -2096,6 +2098,10 @@ public class FmmlxDiagramCommunicator {
 	public org.w3c.dom.Node getPositionInfo(Integer id) {
 		org.w3c.dom.Node positionInfos = this.positionInfos.get(id);
 		return positionInfos;
+	}
+	
+	public void removePositionInfo(Integer id) {
+		this.positionInfos.remove(id);
 	}
 
 	public void setSilent(boolean silent) {

@@ -1,10 +1,13 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
+import java.util.Vector;
+
 import org.w3c.dom.Element;
 
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperationValue;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
+import tool.clients.fmmlxdiagrams.Issue;
 
 public abstract class Condition<ReturnType>{
 
@@ -150,6 +153,36 @@ public abstract class Condition<ReturnType>{
 		@Override 
 		public String toString() {
 			return "if operation " + opName + " returns true";
+		}	
+	}
+	
+	public static class BooleanConstraintCondition extends Condition<Boolean>{
+		
+		private String constraintName;
+		private boolean value;		
+		
+		@Override
+		public Boolean eval(FmmlxObject object) throws SlotNotFoundException {
+//			Vector<Issue> issues = object.getIssues();
+//			issues.get(0).getConstraintName();
+			throw new RuntimeException("Not yet implemented!");
+		}
+
+		@Override
+		public void save(Element conditionElement) {
+			conditionElement.setAttribute("type", "BooleanConstraintCondition");
+			conditionElement.setAttribute("opName", constraintName);
+			
+		}
+
+		public BooleanConstraintCondition(String constraintName) {
+			super();
+			this.constraintName = constraintName;
+		}
+		
+		@Override 
+		public String toString() {
+			return "if constraint " + constraintName + " stands";
 		}	
 	}
 	

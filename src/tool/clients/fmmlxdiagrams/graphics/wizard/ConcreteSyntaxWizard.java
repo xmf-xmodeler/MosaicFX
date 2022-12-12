@@ -1,7 +1,6 @@
 package tool.clients.fmmlxdiagrams.graphics.wizard;
 
 import java.io.File;
-import java.util.Optional;
 import java.util.Vector;
 
 import javafx.application.Application;
@@ -12,7 +11,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
@@ -23,24 +21,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
-import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
-import tool.clients.fmmlxdiagrams.FmmlxOperation;
-import tool.clients.fmmlxdiagrams.graphics.AbstractSyntax;
-import tool.clients.fmmlxdiagrams.graphics.ActionInfo;
-import tool.clients.fmmlxdiagrams.graphics.ConcreteSyntax;
-import tool.clients.fmmlxdiagrams.graphics.Condition;
-import tool.clients.fmmlxdiagrams.graphics.Modification;
-import tool.clients.fmmlxdiagrams.graphics.Modification.Consequence;
-import tool.clients.fmmlxdiagrams.graphics.NodeElement;
-import tool.clients.fmmlxdiagrams.graphics.NodeGroup;
-import tool.clients.fmmlxdiagrams.graphics.NodeLabel;
-import tool.clients.fmmlxdiagrams.graphics.NodePath;
-import tool.clients.fmmlxdiagrams.graphics.SVGGroup;
-import tool.clients.fmmlxdiagrams.graphics.SVGReader;
-import tool.clients.fmmlxdiagrams.graphics.View;
+import tool.clients.fmmlxdiagrams.graphics.*;
 
 /**
  * This "wizard" consists of the following parts:
@@ -70,13 +53,12 @@ public class ConcreteSyntaxWizard extends Application {
 	private SplitPane splitPane;
 	private HBox rightControl;
 	private MyCanvas myCanvas;
-	private final TreeView<NodeElement> concreteSyntaxTreeView = new TreeView<NodeElement>();
+	private final ConcreteSyntaxTree concreteSyntaxTreeView = new ConcreteSyntaxTree(this);
 	private DirectoryChooser directoryChooser;
 	private AffineController affineController = new AffineController();
 	private ScrollPane syntaxScrollGrid = new ScrollPane();
 	private PreviewGrid<AbstractSyntax> syntaxGrid;
 	private Vector<AbstractSyntax> syntaxes = new Vector<>();
-	private Vector<SVGGroup> svgCache;// = new Vector<>();
 	private AbstractPackageViewer model;
 	
 	private AbstractSyntax selectedSyntax;
@@ -92,7 +74,7 @@ public class ConcreteSyntaxWizard extends Application {
 	private TextField classSelectionField;
 	private TextField levelSelectionField;
 
-	private Insets defaultPadding = new Insets(5.);
+//	private Insets defaultPadding = new Insets(5.);
 	private double defaultSpacing= 5.;
 	
 	/**
@@ -175,7 +157,6 @@ public class ConcreteSyntaxWizard extends Application {
 				if(selectedClass != null && selectedLevel != null) { // && syntaxGrid.selectedIndex == -1) {
 					ConcreteSyntax newSyntax = new ConcreteSyntax();
 					newSyntax.classPath = selectedClass.getPath();
-//					if(newSyntax.classPath.startsWith("Root::")) {newSyntax.classPath = newSyntax.classPath.substring(6);}
 					newSyntax.level = selectedLevel;
 					String s = selectedClass.getPath() + "." + selectedLevel;
 					s = s.replace("::", ".") + ".xml";
@@ -241,18 +222,11 @@ public class ConcreteSyntaxWizard extends Application {
 			}			
 		});	
 		concreteSyntaxTreeView.setMaxHeight(300);
-		concreteSyntaxTreeView.setCellFactory(new Callback<TreeView<NodeElement>, TreeCell<NodeElement>>() {
-			@Override
-			public TreeCell<NodeElement> call(TreeView<NodeElement> treeview) {
-				return new TreeCellWithMenu();
-			}
-	    });
 		
 		Label labelTreeView = new Label("TreeView");
         leftControl.getChildren().add(labelTreeView);
         leftControl.getChildren().add(concreteSyntaxTreeView);
 
-//        Button addModButton = new Button("add"); addModButton.setDisable(true);
         Button editModButton = new Button("edit"); editModButton.setDisable(true);
         Button removeModButton = new Button("remove"); removeModButton.setDisable(true);
         HBox modLabelsAndButtons = new HBox(
@@ -265,7 +239,6 @@ public class ConcreteSyntaxWizard extends Application {
         leftControl.getChildren().add(modificationList);
         modificationList.setMaxHeight(200);
 
-//        Button addActionButton = new Button("add"); addActionButton.setDisable(true);
         Button editActionButton = new Button("edit"); editActionButton.setDisable(true);
         Button removeActionButton = new Button("remove"); removeActionButton.setDisable(true);
         HBox actionLabelsAndButtons = new HBox(
@@ -380,7 +353,6 @@ public class ConcreteSyntaxWizard extends Application {
 	}
 
 	private void selectConcreteSyntaxInPreviewList() {
-//		System.err.println("selectConcreteSyntaxFor(" + selectedClass + ", " + selectedLevel + ")");
 		for(AbstractSyntax syntax : syntaxes) {
 			if(syntax instanceof ConcreteSyntax) {
 				ConcreteSyntax cs = (ConcreteSyntax) syntax;
@@ -459,7 +431,7 @@ public class ConcreteSyntaxWizard extends Application {
 		try {
 			selectedSyntax = group;
 			group.paintOn(myCanvas, false);
-			setTree(group);
+			concreteSyntaxTreeView.setTree(group);
 			concreteSyntaxTreeView.getSelectionModel().select(0);
 			modificationList.getItems().clear();
 			modificationList.getItems().addAll(group.getModifications());
@@ -494,7 +466,7 @@ public class ConcreteSyntaxWizard extends Application {
 		}		
 	}
 
-	private Vector<SVGGroup> loadSVGs() {
+	public static Vector<SVGGroup> loadSVGs() {
 		Vector<SVGGroup> svgs = new Vector<>();
 		File initialDirectory = new File(RESOURCES_CONCRETE_SYNTAX_REPOSITORY);
 		if (initialDirectory.isDirectory()) {
@@ -519,24 +491,7 @@ public class ConcreteSyntaxWizard extends Application {
 		return svgs;
 	}
 	
-	private void setTree(NodeGroup group) {
-		TreeItem<NodeElement> rootElement = new TreeItem<NodeElement>(group);
-		concreteSyntaxTreeView.setRoot(rootElement);
-		
-		for (NodeElement child : group.getChildren()) {
-			addToTree(child,rootElement);
-		}
-		rootElement.setExpanded(true);
-	}
 
-	private void addToTree(NodeElement element, TreeItem<NodeElement> parentItem) {
-		TreeItem<NodeElement> item = new TreeItem<NodeElement>(element);
-		parentItem.getChildren().add(item);
-		for (NodeElement elm : element.getChildren()) {
-			addToTree(elm,item);
-		}
-		item.setExpanded(true);
-	}
 	
 	private class MyCanvas extends Pane implements View {
 		
@@ -568,10 +523,6 @@ public class ConcreteSyntaxWizard extends Application {
 		private void handleScroll(ScrollEvent e) {
 			double delta = e.getDeltaY();
 			zoom = zoom * Math.pow(Math.pow(2, 1/3.), delta > 0 ? 1 : -1);	
-//			System.err.println("concreteSyntaxTreeView: " + concreteSyntaxTreeView);
-//			System.err.println("concreteSyntaxTreeView.getSelectionModel(): " + concreteSyntaxTreeView.getSelectionModel());
-//			System.err.println("concreteSyntaxTreeView.getSelectionModel().getSelectedItem(): " + concreteSyntaxTreeView.getSelectionModel().getSelectedItem());
-//			System.err.println("concreteSyntaxTreeView.getSelectionModel().getSelectedItem().getValue(): " + concreteSyntaxTreeView.getSelectionModel().getSelectedItem().getValue());
 			if(concreteSyntaxTreeView.getSelectionModel().getSelectedItem() != null)
 				paint(concreteSyntaxTreeView.getSelectionModel().getSelectedItem().getValue(),zoom);
 			else {
@@ -583,272 +534,14 @@ public class ConcreteSyntaxWizard extends Application {
 		@Override public void centerObject(FmmlxObject affectedObject) {}
 	}
 		
-	private class TreeCellWithMenu extends TextFieldTreeCell<NodeElement> {
 
-	    @Override
-	    public void updateItem(NodeElement item, boolean empty) {
-	        super.updateItem(item, empty);
-	        if (empty || item == null) {
-	            setText(null);
-	            setGraphic(null);
-	            setContextMenu(null);
-	        } else {
-	            setText(item.toString());
-	            setContextMenu(getContextMenuForItem(item));
-	        }
-	    }
-	    
-	    private ContextMenu getContextMenuForItem(final NodeElement item) {
-			ContextMenu menu = new ContextMenu();
-			
-			// Figure out whether the item is inside an SVG:
-			boolean insideSVG = false;
-			NodeElement svgRoot = item;
-			while(!insideSVG && svgRoot != null) {
-				insideSVG |= (svgRoot != item) && (svgRoot instanceof SVGGroup);
-				svgRoot = svgRoot.getOwner();
-			}
-//			NodeElement root2 = item;
-//
-//			final NodeElement root = svgRoot;
-			
-			if(!insideSVG) {
-				if(item instanceof NodeGroup) {
-					MenuItem addgroupItem = new MenuItem("Add Group");
-					addgroupItem.setOnAction(event -> {
-						NodeGroup newGroup = new NodeGroup();
-						((NodeGroup) item).addNodeElement(newGroup);
-						setTree(item.getRoot());
-						setCurrentGraphicElement(item.getRoot());
-						syntaxGrid.updateContent();						
-					});
-					
-					MenuItem addLabelItem = new MenuItem("Add Label");
-					addLabelItem.setOnAction(event -> {
-						
-						EditLabelDialog nld = new EditLabelDialog();
-						Optional<EditLabelDialog.Result> result = nld.showAndWait();
-						
-						if(result.isPresent()) {
-							NodeLabel newLabel = new NodeLabel(
-								result.get().alignment, 
-								new Affine(), 
-								result.get().fgColor, result.get().bgColor, 
-								null, null, 
-								result.get().id, 
-								false, -1);
-							newLabel.setID(result.get().id);
-							((NodeGroup) item).addNodeElement(newLabel);
-							setTree(item.getRoot());
-							setCurrentGraphicElement(item.getRoot());
-							syntaxGrid.updateContent();		
-						}
-					});
-					
-					MenuItem addSvgItem = new MenuItem("Add SVG");
-					addSvgItem.setOnAction(event -> {
-						svgCache = loadSVGs();
-						SvgChooseDialog scd = new SvgChooseDialog(svgCache, null);
-						Optional<SVGGroup> result = scd.showAndWait();
-						
-						if(result.isPresent()) {
-							((NodeGroup) item).addNodeElement(result.get());
-							setTree(item.getRoot());
-							setCurrentGraphicElement(item.getRoot());
-							syntaxGrid.updateContent();	
-						}						
-					});
-										
-					menu.getItems().addAll(addSvgItem, addLabelItem, addgroupItem);
-				}
-				
-				if(svgRoot != item && item.getOwner() != null) {
-					NodeGroup itemParent = item.getOwner();
-					int patentSize = itemParent.getChildren().size();
-					int currentPos = itemParent.getChildren().indexOf(item);
-					MenuItem moveTopItem = new MenuItem("Move to Top");
-					moveTopItem.setDisable(currentPos == 0);
-					moveTopItem.setOnAction(event -> {
-						itemParent.getChildren().remove(item);
-						itemParent.getChildren().insertElementAt(item, 0);
-						setTree(item.getRoot());
-						setCurrentGraphicElement(item.getRoot());
-						syntaxGrid.updateContent();	
-					});
-					MenuItem moveUpItem = new MenuItem("Move Up");
-					moveUpItem.setOnAction(event -> {
-						itemParent.getChildren().remove(item);
-						itemParent.getChildren().insertElementAt(item, currentPos - 1);
-						setTree(item.getRoot());
-						setCurrentGraphicElement(item.getRoot());
-						syntaxGrid.updateContent();	
-					});
-					moveUpItem.setDisable(currentPos <= 1);
-					MenuItem moveDownItem = new MenuItem("Move Down");
-					moveDownItem.setOnAction(event -> {
-						itemParent.getChildren().remove(item);
-						itemParent.getChildren().insertElementAt(item, currentPos);
-						setTree(item.getRoot());
-						setCurrentGraphicElement(item.getRoot());
-						syntaxGrid.updateContent();	
-					});
-					moveDownItem.setDisable(currentPos >= patentSize - 2);
-					MenuItem moveBottomItem = new MenuItem("Move to Bottom");
-					moveBottomItem.setDisable(currentPos == patentSize - 1);
-					moveBottomItem.setOnAction(event -> {
-						itemParent.getChildren().remove(item);
-						itemParent.getChildren().add(item);
-						setTree(item.getRoot());
-						setCurrentGraphicElement(item.getRoot());
-						syntaxGrid.updateContent();	
-					});
-					if(menu.getItems().size() != 0) menu.getItems().addAll(new SeparatorMenuItem());
-					menu.getItems().addAll(moveTopItem, moveUpItem, moveDownItem, moveBottomItem);
-				}
-				
-				MenuItem deleteItem = new MenuItem("Delete");
-				deleteItem.setOnAction(event -> {
-					item.getOwner().getChildren().remove(item);
-					setTree(item.getRoot());
-					setCurrentGraphicElement(item.getRoot());
-					syntaxGrid.updateContent();	
-				});
-				if(menu.getItems().size() != 0) menu.getItems().addAll(new SeparatorMenuItem());
-				menu.getItems().addAll(deleteItem);
-			}
-			
-			Menu modMenu = new Menu("Modifications");
-			if(item instanceof NodeLabel) {
-				MenuItem readFromSlotItem = new MenuItem("Read from Attribute");
-				readFromSlotItem.setDisable(selectedClass == null || selectedLevel == null);
-				readFromSlotItem.setOnAction(event -> {
-					DefaultModificationDialog dmd = new DefaultModificationDialog(selectedClass, selectedLevel, Condition.ReadFromSlotCondition.class);
-					Optional<DefaultModificationDialog.Result> result = dmd.showAndWait();
-					
-					if(result.isPresent()) {
-						FmmlxAttribute att = result.get().att;
-						Consequence consequence = result.get().consequence;
-						
-						if(att != null && consequence != null) {
-							Condition<String> condition = new Condition.ReadFromSlotCondition(att.getName());
-							Modification mod = new Modification(
-									condition, 
-									consequence, 
-									item.getID(), 
-									item.getID());							
-							
-							((ConcreteSyntax) item.getRoot()).addModification(mod);
-							
-							setTree(item.getRoot());
-							setCurrentGraphicElement(item.getRoot());
-							syntaxGrid.updateContent();	
-						}
-					}						
-				});
-				MenuItem readFromOpValItem = new MenuItem("Read from Operation");
-				readFromOpValItem.setDisable(selectedClass == null || selectedLevel == null);
-				readFromOpValItem.setOnAction(event -> {
-					DefaultModificationDialog dmd = new DefaultModificationDialog(selectedClass, selectedLevel, Condition.ReadFromOpValCondition.class);
-					Optional<DefaultModificationDialog.Result> result = dmd.showAndWait();
-					
-					if(result.isPresent()) {
-						FmmlxOperation op = result.get().op;
-						Consequence consequence = result.get().consequence;
-						
-						if(op != null && consequence != null) {
-							Condition<Boolean> condition = new Condition.BooleanOpValCondition(op.getName());
-							Modification mod = new Modification(
-									condition, 
-									consequence, 
-									item.getID(), 
-									item.getID());							
-							
-							((ConcreteSyntax) item.getRoot()).addModification(mod);
-							
-							setTree(item.getRoot());
-							setCurrentGraphicElement(item.getRoot());
-							syntaxGrid.updateContent();	
-						}
-					}						
-				});
-				modMenu.getItems().addAll(readFromSlotItem, readFromOpValItem);
-			} else {
-				MenuItem boolSlotItem = new MenuItem("Depends on Attribute (Boolean)");
-				boolSlotItem.setDisable(selectedClass == null || selectedLevel == null);
-				boolSlotItem.setOnAction(event -> {
-					DefaultModificationDialog dmd = new DefaultModificationDialog(selectedClass, selectedLevel, Condition.BooleanSlotCondition.class);
-					Optional<DefaultModificationDialog.Result> result = dmd.showAndWait();
-					
-					if(result.isPresent()) {
-						FmmlxAttribute att = result.get().att;
-						Consequence consequence = result.get().consequence;
-						
-						if(att != null && consequence != null) {
-							Condition<Boolean> condition = new Condition.BooleanSlotCondition(att.getName());
-							Modification mod = new Modification(
-									condition, 
-									consequence, 
-									item.getID(), 
-									item.getID());							
-							
-							((ConcreteSyntax) item.getRoot()).addModification(mod);
-							
-							setTree(item.getRoot());
-							setCurrentGraphicElement(item.getRoot());
-							syntaxGrid.updateContent();	
-						}
-					}						
-				});
-				MenuItem boolOpValItem = new MenuItem("Depends on Operation (Boolean)");
-				boolOpValItem.setDisable(selectedClass == null || selectedLevel == null);
-				boolOpValItem.setOnAction(event -> {
-					DefaultModificationDialog dmd = new DefaultModificationDialog(selectedClass, selectedLevel, Condition.BooleanOpValCondition.class);
-					Optional<DefaultModificationDialog.Result> result = dmd.showAndWait();
-					
-					if(result.isPresent()) {
-						FmmlxOperation op = result.get().op;
-						Consequence consequence = result.get().consequence;
-						
-						if(op != null && consequence != null) {
-							Condition<Boolean> condition = new Condition.BooleanOpValCondition(op.getName());
-							Modification mod = new Modification(
-									condition, 
-									consequence, 
-									item.getID(), 
-									item.getID());							
-							
-							((ConcreteSyntax) item.getRoot()).addModification(mod);
-							
-							setTree(item.getRoot());
-							setCurrentGraphicElement(item.getRoot());
-							syntaxGrid.updateContent();	
-						}
-					}						
-				});
-				MenuItem numSlotItem = new MenuItem("Depends on Attribute (Number Range)");
-				numSlotItem.setDisable(true);
-				MenuItem numOpValItem = new MenuItem("Depends on Operation (Number Range)");
-				numOpValItem.setDisable(true);
-				modMenu.getItems().addAll(boolSlotItem, boolOpValItem, numSlotItem, numOpValItem);
-			}
-			if(item instanceof NodePath) {
-				MenuItem colorSlotItem = new MenuItem("Read Color from Attribute (Hex)");
-				colorSlotItem.setDisable(true);
-				MenuItem colorOpValItem = new MenuItem("Read Color from  on Operation (Hex)");
-				colorOpValItem.setDisable(true);
-				modMenu.getItems().addAll(colorSlotItem, colorOpValItem);
-			}
-			if(menu.getItems().size() != 0) menu.getItems().addAll(new SeparatorMenuItem());
-			menu.getItems().addAll(modMenu);
-			
-//			menu.getItems().add(new MenuItem("TestItem " + item.hashCode()));
-			return menu;
+	
+	public static String getNextAvailableID(String prefix, NodeGroup group) {
+		int n = 0;
+		while(null != group.getElement(prefix + n)) {
+			n++;
 		}
-	}
-
-	public static String getRandomID() {
-		String s = "00000" + Integer.toHexString((int) (Math.random() * Integer.MAX_VALUE)).toUpperCase();
-		return s.substring(s.length()-5, s.length());
+		return prefix + n;
 	}
 
 	public static String getRelativePath(File dir, File file) {
@@ -860,11 +553,25 @@ public class ConcreteSyntaxWizard extends Application {
 		} else {
 			File parentDir = dir.getParentFile();
 			if(parentDir == dir || parentDir == null) {
-				System.err.println("fail: reached to of file system!");
+				System.err.println("fail: reached top of file system!");
 				throw new RuntimeException("Cannot relativize Path!");
 			} else {
 				return "../" + getRelativePath(parentDir, file);
 			}
 		}
+	}
+
+	public void updateUI(NodeElement item) {
+		concreteSyntaxTreeView.setTree(item.getRoot());
+		setCurrentGraphicElement(item.getRoot());
+		syntaxGrid.updateContent();			
+	}
+
+	public FmmlxObject getSelectedClass() {
+		return selectedClass;
+	}
+
+	public Integer getSelectedLevel() {
+		return selectedLevel;
 	}
 }

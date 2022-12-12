@@ -249,4 +249,30 @@ public class NodeLabel extends NodeBaseElement {
 		this.text = newText;
 		textWidth = FmmlxDiagram.calculateTextWidth(text);
 	}
+
+	public Pos getAlignment() {
+		return alignment;
+	}
+
+	public void setAlignment(Pos alignment) {
+		this.alignment = alignment;
+	}
+
+	public Color getFgColor() {
+		return fgColor;
+	}
+
+	public void setFgColor(Color fgColor) {
+		this.fgColor = fgColor;
+	}
+
+	public Color getBgColor() {
+		return bgColor;
+	}
+
+	public void setBgColor(Color bgColor) {
+		this.bgColor = bgColor;
+	}
+
+
 }

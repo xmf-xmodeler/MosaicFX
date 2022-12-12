@@ -984,6 +984,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				FmmlxDeserializer deserializer = new FmmlxDeserializer(new XmlManager(filePath));
 				org.w3c.dom.Node positionInfo = getComm().getPositionInfo(getID());
 				if(positionInfo != null) {
+					getComm().removePositionInfo(getID());
 					deserializer.alignElements(this, (org.w3c.dom.Element) positionInfo);
 					triggerOverallReLayout();
 				}

@@ -647,4 +647,8 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 			throw new IllegalStateException("The meta-class of this element is not available.");
 		}
 	}
+
+	public Vector<Issue> getIssues() {
+		return diagram.getIssues(this);
+	}
 }

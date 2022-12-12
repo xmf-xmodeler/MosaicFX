@@ -11,18 +11,20 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import tool.clients.fmmlxdiagrams.graphics.NodeLabel;
 
 public class EditLabelDialog extends Dialog<EditLabelDialog.Result> {
-	public EditLabelDialog() {
-		this("label" + ConcreteSyntaxWizard.getRandomID(), 
-				Color.BLACK, Color.TRANSPARENT, Pos.BASELINE_LEFT);
+
+	ColorPicker fgColorPicker = new ColorPicker();
+	ColorPicker bgColorPicker = new ColorPicker();
+	TextField idField = new TextField();
+	ComboBox<Pos> alignmentChooser = new ComboBox<Pos>(FXCollections.observableArrayList(Pos.BASELINE_LEFT, Pos.BASELINE_CENTER, Pos.BASELINE_RIGHT));
+	
+	public EditLabelDialog(String initialID) {
+		this(initialID, Color.BLACK, Color.TRANSPARENT, Pos.BASELINE_LEFT);
 	}
 	
 	public EditLabelDialog(String id, Color fgColor, Color bgColor, Pos alignment) {
-		ColorPicker fgColorPicker = new ColorPicker();
-		ColorPicker bgColorPicker = new ColorPicker();
-		TextField idField = new TextField();
-		ComboBox<Pos> alignmentChooser = new ComboBox<Pos>(FXCollections.observableArrayList(Pos.BASELINE_LEFT, Pos.BASELINE_CENTER, Pos.BASELINE_RIGHT));
 		
 		idField.setText(id);
 		fgColorPicker.setValue(fgColor);
@@ -70,4 +72,11 @@ public class EditLabelDialog extends Dialog<EditLabelDialog.Result> {
 			this.alignment = alignment;
 		}	    	
     }
+
+	public void setValues(NodeLabel label) {
+		idField.setText(label.getID());
+		fgColorPicker.setValue(label.getFgColor());
+		bgColorPicker.setValue(label.getBgColor());
+		alignmentChooser.getSelectionModel().select(label.getAlignment());
+	}
 }
