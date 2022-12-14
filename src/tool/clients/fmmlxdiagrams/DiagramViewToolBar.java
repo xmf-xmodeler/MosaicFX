@@ -43,17 +43,17 @@ public class DiagramViewToolBar extends VBox {
 		line1.isResizable();		
 		line1.getItems().add(new Label("Show: "));
 	
-		checkBoxMap.put(DiagramToolBarProperties.OPERATIONS, boxOperations);
-		checkBoxMap.put(DiagramToolBarProperties.OPERATIONVALUES, boxOperationValues);
-		checkBoxMap.put(DiagramToolBarProperties.SLOTS, boxSlots);
-		checkBoxMap.put(DiagramToolBarProperties.GETTERSANDSETTERS, boxGettersAndSetters);
-		checkBoxMap.put(DiagramToolBarProperties.DERIVEDOPERATIONS, boxDerivedOperations);
-		checkBoxMap.put(DiagramToolBarProperties.DERIVEDATTRIBUTES, boxDerivedAttributes);
-		checkBoxMap.put(DiagramToolBarProperties.CONSTRAINTS, boxConstraints);
-		checkBoxMap.put(DiagramToolBarProperties.CONSTRAINTREPORTS, boxConstraintReports);
-		checkBoxMap.put(DiagramToolBarProperties.METACLASSNAME, boxMetaClassName);
-		checkBoxMap.put(DiagramToolBarProperties.CONCRETESYNTAX, boxConcreteSyntax);
-		checkBoxMap.put(DiagramToolBarProperties.ISSUETABLEVISIBLE, boxIssueTable);
+		checkBoxMap.put(DiagramToolBarProperties.SHOWOPERATIONS, boxOperations);
+		checkBoxMap.put(DiagramToolBarProperties.SHOWOPERATIONVALUES, boxOperationValues);
+		checkBoxMap.put(DiagramToolBarProperties.SHOWSLOTS, boxSlots);
+		checkBoxMap.put(DiagramToolBarProperties.SHOWGETTERSANDSETTERS, boxGettersAndSetters);
+		checkBoxMap.put(DiagramToolBarProperties.SHOWDERIVEDOPERATIONS, boxDerivedOperations);
+		checkBoxMap.put(DiagramToolBarProperties.SHOWDERIVEDATTRIBUTES, boxDerivedAttributes);
+		checkBoxMap.put(DiagramToolBarProperties.SHOWCONSTRAINTS, boxConstraints);
+		checkBoxMap.put(DiagramToolBarProperties.SHOWCONSTRAINTREPORTS, boxConstraintReports);
+		checkBoxMap.put(DiagramToolBarProperties.SHOWMETACLASSNAME, boxMetaClassName);
+		checkBoxMap.put(DiagramToolBarProperties.SHOWCONCRETESYNTAX, boxConcreteSyntax);
+		checkBoxMap.put(DiagramToolBarProperties.SHOWISSUETABLEVISIBLE, boxIssueTable);
 		
 		for (Map.Entry<DiagramToolBarProperties, CheckBox> entry : checkBoxMap.entrySet()) {
 				setCheckBoxSelected(entry.getKey());
@@ -80,10 +80,7 @@ public class DiagramViewToolBar extends VBox {
 		addButton("-", e -> diagram.getActiveTab().zoomOut(),line2);
 		line2.getItems().add(new Separator());
 		addButton("Update Diagram", e -> diagram.updateDiagram(),line2);
-		addButton("Print Protocol", e -> {diagram.actions.printProtocol()
-		;	
-		diagram.getComm().getViewOptions(diagram.getID());
-		},line2);
+		addButton("Print Protocol", e -> diagram.actions.printProtocol(),line2);
 		
 		
 		this.getChildren().addAll(line1, line2);

@@ -94,6 +94,7 @@ public class FmmlxDiagramCommunicator {
 			createStage(diagram.getView(), diagramName, this.handler, diagram);	
 			diagrams.add(diagram);
 			l.countDown();
+			diagram.getDiagramViewToolBarModell().recieveToolBarPropertiesFromXMF();
 		});
 		try {
 			l.await();
@@ -2233,7 +2234,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Boolean> getViewOptions(Integer diagramID) {
+	public HashMap<String, Boolean> getDiagramViewToolBarProperties(Integer diagramID) {
 		try {
 			Vector<Object> response = xmfRequest(handler, diagramID, "getViewOptions");
 			HashMap<String, Boolean> result = new HashMap<String, Boolean>();

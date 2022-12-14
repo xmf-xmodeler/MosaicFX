@@ -515,7 +515,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 	}
 
 	protected void layout(FmmlxDiagram diagram, Map<DiagramToolBarProperties, Boolean> diagramToolBarProperties) {
-		if (!diagramToolBarProperties.get(DiagramToolBarProperties.CONCRETESYNTAX)){
+		if (!diagramToolBarProperties.get(DiagramToolBarProperties.SHOWCONCRETESYNTAX)){
 			new DefaultFmmlxObjectDisplay(diagram, this).layout(diagramToolBarProperties);
 			return;
 		}

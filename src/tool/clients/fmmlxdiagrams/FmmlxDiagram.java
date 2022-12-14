@@ -1661,7 +1661,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	public void switchTableOnAndOffForIssues() {
 		mainView.getChildren().clear();
-		if (diagramViewToolBarModell.getPropertieValue(DiagramToolBarProperties.ISSUETABLEVISIBLE)) {
+		if (diagramViewToolBarModell.getPropertieValue(DiagramToolBarProperties.SHOWISSUETABLEVISIBLE)) {
 			tableView.prefHeightProperty().bind(scrollPane.heightProperty());
 	        tableView.prefWidthProperty().bind(scrollPane.widthProperty());
 			splitPane3 = new SplitPane(tabPane, scrollPane);
