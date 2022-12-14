@@ -100,7 +100,6 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem slotMenu = new MenuItem("Change Slot Value");
 		slotMenu.setOnAction(e -> diagram.getActions().changeSlotValue(object, null));
 		Menu associationInstanceMenu = createAssociationInstanceSubMenu();
-		Menu showMenu = createShowSubMenu();
 		Menu delegationMenu = createDelegationSubMenu();
 		
 		/*
@@ -161,7 +160,6 @@ public class ObjectContextMenu extends ContextMenu {
 				delegationMenu, 
 				slotMenu, 
 				associationInstanceMenu, 
-				showMenu, 
 				assignItem,
 				editConcreteSyntaxItem);
 		
@@ -366,19 +364,6 @@ public class ObjectContextMenu extends ContextMenu {
 
 		associationInstanceMenu.getItems().addAll(addValueItem, removeValueItem, changeValueItem);
 		return associationInstanceMenu;
-	}
-
-	private Menu createShowSubMenu() {
-		Menu showSubMenu = new Menu("Show");
-
-		MenuItem operationsItem = new MenuItem("Operations");
-		operationsItem.setOnAction(e -> {
-			object.setShowOperations(true);
-			diagram.redraw();
-		});
-
-		showSubMenu.getItems().addAll(operationsItem);
-		return showSubMenu;
 	}
 	
 	private Menu createDelegationSubMenu() {

@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Vector;
 
 /*This Class is an abstract layer over XML to allow saving the FmmlxDiagram data into XML file
@@ -51,7 +52,6 @@ public class FmmlxSerializer  {
             Vector<Integer> diagramIds = FmmlxDiagramCommunicator.getCommunicator().getAllDiagramIDs(packagePath);
             Collections.sort(diagramIds);
             for(Integer id :diagramIds){
-//                String diagramLabel = communicator.createLabelFromInitLabel(initLabel, id);
                 saveProject(packagePath);                
                 saveDiagram(FmmlxDiagramCommunicator.getDiagram(id).getDiagramLabel(), packagePath, id);
             }
@@ -110,6 +110,7 @@ public class FmmlxSerializer  {
             }
             saveComponentsIntoDiagramElement(diagramElement, diagramPath, id);
             xmlManager.addDiagramIntoDiagramsElement(diagramsElement, diagramElement);
+            serilizeDiagramViewToolBarProperties(id);
         }
     }
 
@@ -120,24 +121,30 @@ public class FmmlxSerializer  {
         saveObjectsIntoDiagramElement(id, ParentElement);
         saveEdgesIntoDiagramElement(id, diagramPath, ParentElement);
         saveLabelsIntoDiagramElement(id, ParentElement);
-        saveViewsIntoDiagramElement(id, ParentElement);
+        serilizeViews(id);
     }
 
-    private void saveViewsIntoDiagramElement(Integer id, Element diagramElement) {
-    	HashMap<String,Boolean> optionsResult = FmmlxDiagramCommunicator.getCommunicator().getViewOptions(id);
+    private void serilizeViews(Integer id) {
     	Vector<Vector<Object>> viewsResult = FmmlxDiagramCommunicator.getCommunicator().getAllViews(id);
-    	for(String key : optionsResult.keySet()) {
-    		diagramElement.setAttribute(key, optionsResult.get(key)?"true":"false");
-    	}	
     	for(Vector<Object> viewVec : viewsResult) {    		
     		Element viewElement = xmlManager.createXmlElement("View");
     		viewElement.setAttribute("name", ""+viewVec.get(0));
     		viewElement.setAttribute("xx", ""+viewVec.get(1));
     		viewElement.setAttribute("tx", ""+viewVec.get(2));
     		viewElement.setAttribute("ty", ""+viewVec.get(3));
-    		diagramElement.appendChild(viewElement);
+    		xmlManager.getDiagramsElement().appendChild(viewElement);
     	}
 	}
+    
+    private void serilizeDiagramViewToolBarProperties(Integer id) {
+    	Element diagramViewToolBarPropertiesElement = xmlManager.getChildWithTag(xmlManager.getRoot(), SerializerConstant.TAG_NAME_DIAGRAM_TOOL_BAR_PROPERTIES);
+    	
+    	HashMap<String,Boolean> diagramViewToolBarPropertiesMap = FmmlxDiagramCommunicator.getCommunicator().getDiagramViewToolBarProperties(id);
+    	
+    	for (Entry<String,Boolean> entry : diagramViewToolBarPropertiesMap.entrySet()) {
+    		diagramViewToolBarPropertiesElement.setAttribute((String)entry.getKey(),String.valueOf(entry.getValue())); 
+		}
+    }
 
 	private void saveLabelsIntoDiagramElement(Integer id, Element diagramElement) {
         HashMap<String, HashMap<String, Object>> result = FmmlxDiagramCommunicator.getCommunicator().getAllLabelPositions(id);

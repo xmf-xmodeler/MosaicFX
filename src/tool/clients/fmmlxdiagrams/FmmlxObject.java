@@ -39,15 +39,6 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	private AbstractPackageViewer diagram;
 
-	 boolean showOperations = true;
-	 boolean showOperationValues = true;
-	 boolean showSlots = true;
-	 boolean showGettersAndSetters = true;
-	 boolean showDerivedOperations = true;
-	 boolean showDerivedAttributes = true;
-	 boolean showConstraints = true;
-	 boolean showConstraintReports = true;
-
 	public FmmlxObject(
 			String name, 
 			int level, 
@@ -63,27 +54,12 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		this.x = lastKnownX;
 		this.y = lastKnownY;
 		this.hidden = hidden;
-
-//		width = 150;
-//		height = 80;
 		this.level = level;
 		this.isAbstract = isAbstract;
 
 		this.ownPath = ownPath;
 		this.ofPath = ofPath;
 		this.parentsPaths = parentPaths;
-		
-		if(diagram instanceof FmmlxDiagram) {
-			FmmlxDiagram D = (FmmlxDiagram) diagram;
-			this.showOperations = D.isShowOperations();
-			this.showOperationValues = D.isShowOperationValues();
-			this.showSlots = D.isShowSlots();
-			this.showDerivedOperations = D.isShowDerivedOperations();
-			this.showDerivedAttributes = D.isShowDerivedAttributes();
-			this.showGettersAndSetters = D.isShowGetterAndSetter();
-			this.showConstraints = D.isConstraintsInDiagram();
-			this.showConstraintReports = D.isConstraintReportsInDiagram();
-		}
 	}
 
 	/// Getters
@@ -308,14 +284,8 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		Vector<FmmlxObject> result1 = new Vector<>();
 		if (ofPath != null) {
 			try{FmmlxObject of = diagram.getObjectByPath(getOfPath());result1.add(of);}
-			catch (PathNotFoundException e) {} // if(of==null){}
+			catch (PathNotFoundException e) {} 
 		}
-//		for (String p : getParentsPaths()) {
-//			try
-//			  {FmmlxObject parent = diagram.getObjectByPath(p); result1.add(parent); }
-//			catch(PathNotFoundException e) {} // if(parent==null){}
-//		}
-		
 		Vector<FmmlxObject> result2 = new Vector<>(result1);
 		while(!result1.isEmpty()) {
 			FmmlxObject first = result1.firstElement();
@@ -327,14 +297,10 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 					try
 					  {FmmlxObject parent = diagram.getObjectByPath(p); 
 					  if(!result1.contains(parent)) result1.add(parent); }
-					catch(PathNotFoundException e) {} // if(parent==null){}
+					catch(PathNotFoundException e) {}
 				}
 			}
 		}
-		
-//		for (FmmlxObject o : result1) if (o.level != -1) {
-//			result2.addAll(o.getAllAncestors());
-//		}
 		return result2;
 	}
 
@@ -449,49 +415,6 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return new Vector<>(constraints);
 	}
 
-/// Graphics
-
-	public void setShowOperations(boolean show) {
-		requiresReLayout |= showOperations!=show;
-		showOperations = show;
-	}
-
-	public void setShowOperationValues(boolean show) {
-		requiresReLayout |= showOperationValues!=show;
-		showOperationValues = show;
-	}
-
-	public void setShowSlots(boolean show) {
-		requiresReLayout |= showSlots!=show;
-		showSlots = show;
-	}
-	
-	public void setShowGettersAndSetters(boolean show) {
-		requiresReLayout |= showGettersAndSetters!=show;
-		showGettersAndSetters = show;
-	}
-	
-	public void setShowDerivedOperations(boolean show) {
-		requiresReLayout |= showDerivedOperations!=show;
-		showDerivedOperations = show;
-	}
-	
-	public void setShowDerivedAttributes(boolean show) {
-		requiresReLayout |= showDerivedAttributes!=show;
-		showDerivedAttributes = show;
-	}
-	
-	public void setShowConstraints(boolean show) {
-		requiresReLayout |= showConstraints!=show;
-		showConstraints = show;
-	}
-	
-	public void setShowConstraintReports(boolean show) {
-		requiresReLayout |= showConstraintReports!=show;
-		showConstraintReports = show;
-	}
-
-	
 	/// Setters
 
 	public void setAttributes(Vector<FmmlxAttribute> ownAttributes, Vector<FmmlxAttribute> otherAttributes) {
@@ -520,13 +443,6 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		this.constraints = constraints;
 	}
 
-//	@Deprecated public void fetchDataValues(FmmlxDiagramCommunicator comm) throws TimeOutException {
-////		slots = comm.fetchSlots(diagram, this, this.getSlotNames());
-//		operationValues = comm.fetchOperationValues(diagram, this.name, this.getMonitoredOperationsNames());
-//	}
-
-	/// User interaction
-	
 	@Override
 	public ObjectContextMenu getContextMenu(FmmlxDiagram.DiagramViewPane fmmlxDiagram, Point2D absolutePoint) {
 		return new ObjectContextMenu(this, fmmlxDiagram, absolutePoint);
@@ -598,8 +514,12 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return false;
 	}
 
-	@Override
-	protected void layout(FmmlxDiagram diagram) {
+	protected void layout(FmmlxDiagram diagram, Map<DiagramToolBarProperties, Boolean> diagramToolBarProperties) {
+		if (!diagramToolBarProperties.get(DiagramToolBarProperties.SHOWCONCRETESYNTAX)){
+			new DefaultFmmlxObjectDisplay(diagram, this).layout(diagramToolBarProperties);
+			return;
+		}
+		
 		// try to find concrete syntax:
 		ConcreteSyntax myConcreteSyntax = null;
 		
@@ -615,7 +535,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		if(myConcreteSyntax != null) {
 			rootNodeElement = myConcreteSyntax.createInstance(this, diagram);
 		} else {	
-			new DefaultFmmlxObjectDisplay(diagram, this).layout();
+			new DefaultFmmlxObjectDisplay(diagram, this).layout(diagramToolBarProperties);
 		}
 		
 		if(rootNodeElement != null) rootNodeElement.updateBounds();
@@ -648,7 +568,12 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		}
 	}
 
+	@Override
+	protected void layout(FmmlxDiagram diagram) {
+		layout(diagram, diagram.getDiagramViewToolBarModell().getShowPropertiesMap());
+	}
+	
 	public Vector<Issue> getIssues() {
-		return diagram.getIssues(this);
+		return diagram.getIssues(this);	
 	}
 }

@@ -52,7 +52,11 @@ public class XmlManager extends XmlHandler {
         }
         return false;
     }
-
+    
+    public String getVersionTextContent() {
+    	return getChildWithTag(getRoot(), SerializerConstant.TAG_NAME_VERSION).getTextContent();
+    }
+     
     public Vector<String> getAllDiagramNames() {
         Vector<String> diagrams = new Vector<>();
         Node diagramsNode = getDiagramsElement();
@@ -114,6 +118,12 @@ public class XmlManager extends XmlHandler {
         Element Root = getRoot();
         return getChildWithTag(Root, SerializerConstant.TAG_NAME_PROJECTS);
     }
+    
+    public Element getDiagramViewToolBarProperties() {
+        Element diagrams = getDiagramsElement();
+        Element diagram = getChildWithTag(diagrams, SerializerConstant.TAG_NAME_DIAGRAM);
+        return getChildWithTag(diagram, SerializerConstant.TAG_NAME_DIAGRAM_TOOL_BAR_PROPERTIES);
+    }
 
     public String getProjectName(String projectPath) {
         String[] projectPathSplit= projectPath.split("::");
@@ -172,7 +182,7 @@ public class XmlManager extends XmlHandler {
         Element Root = getRoot();
         return getChildWithTag(Root, SerializerConstant.TAG_NAME_DIAGRAMS);
     }
-
+    
     public void alignObjects(Element diagramElement, int diagramID, FmmlxDiagramCommunicator communicator) {
         Node objectsNode = getChildWithTag(diagramElement, SerializerConstant.TAG_NAME_OBJECTS);
         NodeList objectList = objectsNode.getChildNodes();

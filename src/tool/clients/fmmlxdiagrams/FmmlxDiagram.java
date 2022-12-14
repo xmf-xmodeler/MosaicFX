@@ -55,9 +55,7 @@ import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
-
 import org.w3c.dom.Element;
-
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.PropertyType;
 import tool.clients.fmmlxdiagrams.graphics.AbstractSyntax;
@@ -72,7 +70,6 @@ import tool.clients.serializer.XmlManager;
 import tool.clients.xmlManipulator.XmlHandler;
 import tool.xmodeler.PropertyManager;
 import tool.xmodeler.XModeler;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -82,7 +79,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
-
 import javax.imageio.ImageIO;
 
 public class FmmlxDiagram extends AbstractPackageViewer{
@@ -102,6 +98,13 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private TableView<Issue> tableView;
 	private Vector<DiagramEdgeLabel<?>> labels = new Vector<>();
 	private TabPane tabPane;
+	private DiagramViewPane zoomView;
+	public  static final Font FONT;
+	static{
+		FONT = Font.font(Font.getDefault().getFamily(), FontPosture.REGULAR, 14);
+	}
+	DiagramViewToolBar diagramViewToolbar;
+	DiagramViewToolBarModell diagramViewToolBarModell;
 
 	// Temporary variables storing the current state of user interactions
 	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
@@ -116,50 +119,21 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	private transient FmmlxObject newEdgeSource;
 	private transient FmmlxProperty lastHitProperty = null;
 	private transient boolean diagramRequiresUpdate = false;
-
-	public  static final Font FONT;
-	Palette palette = new Palette(this);
-	Palette palette2 = new Palette(this,2);
-	private boolean showOperations = true;
-	private boolean showOperationValues = true;
-	private boolean showSlots = true;
-	private boolean showGetterAndSetter = true;
-	private boolean showDerivedOperations=true;
-	private boolean showDerivedAttributes=true;
-	private boolean showMetaClassName = false;
-	private boolean showConstraints = true;
-	private boolean showConstraintReports = true;
-	private boolean issueTableVisible = true;
-	private DiagramViewPane zoomView;
+		
 	@Override protected boolean loadOnlyVisibleObjects() { return false; }	// Did not work. Attributes from invisible classes did not cause slots on visible classes
-
 	public final String diagramName;
 	private final FmmlxPalette newFmmlxPalette;
 	private String filePath;
-
 	public String updateID = null;
-
 	String edgeCreationType = null;
 	String nodeCreationType = null;
-
 	public LevelColorScheme levelColorScheme = new LevelColorScheme.FixedBlueLevelColorScheme();
-
 	public final static FmmlxDiagram NullDiagram = new FmmlxDiagram();
-
-	static{
-		FONT = Font.font(Font.getDefault().getFamily(), FontPosture.REGULAR, 14);
-	}	
-
 	public final HashMap<String, ConcreteSyntax> syntaxes = new HashMap<>();
-	
 	@Deprecated private DiagramViewPane mainViewPane; 
-	private Vector<DiagramViewPane> views = new Vector<>(); 
-
+	private Vector<DiagramViewPane> views = new Vector<>();
 	private final Set<KeyCode> pressedKeys = new HashSet<>();
-	
-	public Set<KeyCode> getPressedKeys () {
-		  return pressedKeys;
-	}
+		
 	
 	private FmmlxDiagram() {
 		super(null,-1,null);
@@ -167,11 +141,18 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		this.diagramName = null;
 	}
 
+	public DiagramViewToolBarModell getDiagramViewToolBarModell() {
+		return diagramViewToolBarModell;
+	}
+
 	public FmmlxDiagram(FmmlxDiagramCommunicator comm, 
 			int diagramID, String name, String packagePath, 
 			Vector<Vector<Object>> listOfViews, 
 			Vector<Vector<Object>> listOfOptions) {
 		super(comm,diagramID,packagePath);
+		diagramViewToolbar = new DiagramViewToolBar(this);
+		diagramViewToolBarModell = diagramViewToolbar.getModell();
+		
 		this.diagramName = name;
 		splitPane = new SplitPane();
 		splitPane2 = new SplitPane();
@@ -214,13 +195,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	            protected void updateItem(FmmlxObject o, boolean empty) {
 	                super.updateItem(o, empty);
 	                if (o != null) {
-//	                    if (getIssues(o).size()>0) {
-//	                    	setStyle("-fx-control-inner-background: tomato;");
-//	                    } 
-//	                    else {
-//	                    	setStyle("-fx-control-inner-background: white;");
-//	                    }
-	                    
 	                	if(o.isAbstract()) setText("(" + o.getName() + " ^"+ o.getMetaClassName() + "^ " + ")"); else setText(o.getName()+ " ^"+ o.getMetaClassName() + "^");
 	                	
 	                    setGraphic(ModelBrowser.getClassLevelGraphic(o.getLevel()));
@@ -245,39 +219,24 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		
 		issueColumn.setCellFactory((listView) -> {
 			return new TableCell<Issue,Issue>() {
-
 				@Override
 	            protected void updateItem(Issue issue, boolean empty) {
 	                super.updateItem(issue, empty);
-	               // setBackground(null);
-	                
-	                	//Issue issue = getTableView().getItems().get(getIndex());
-	                	if(issue!=null) {
-	                		if(Issue.Severity.FATAL.equals(issue.getSeverity())) {
-	                		//	setStyle("-fx-background-color: #FF8888;");
-	                			setGraphic(new ImageView(new javafx.scene.image.Image(new File("resources/gif/Classify/error.gif").toURI().toString())));
-	                		}
-	                		if(Issue.Severity.NORMAL.equals(issue.getSeverity())) {
-	                		//	setStyle("-fx-background-color: #FFDDDD;");
-	                			setGraphic(new ImageView(new javafx.scene.image.Image(new File("resources/gif/Classify/error.gif").toURI().toString())));
-	                		}
-	                		if(Issue.Severity.BAD_PRACTICE.equals(issue.getSeverity())) {
-	                		//	setStyle("-fx-background-color: #DDDDDD;");
-	                			setGraphic(new ImageView(new javafx.scene.image.Image(new File("resources/gif/User/Warning.gif").toURI().toString())));
-	                		}
-	                		if(Issue.Severity.USER_DEFINED.equals(issue.getSeverity())) {
-	                		//	setStyle("-fx-background-color: #FFF6DD;");
-	                			setGraphic(new ImageView(new javafx.scene.image.Image(new File("resources/gif/MDC/Listener.gif").toURI().toString())));
-	                		}
-	                		setText(issue.getText());
-	                	} else { setText(""); setGraphic(null); }
-//	                    if (getIssues(o).size()>0) {
-//	                    	setStyle("-fx-control-inner-background: tomato;");
-//	                    } 
-//	                    else {
-//	                    	setStyle("-fx-control-inner-background: white;");
-//	                    }                                    	
-//	                    setGraphic(ModelBrowser.getClassLevelGraphic(o.getLevel()));
+	                if(issue!=null) {
+                		if(Issue.Severity.FATAL.equals(issue.getSeverity())) {
+                			setGraphic(new ImageView(new javafx.scene.image.Image(new File("resources/gif/Classify/error.gif").toURI().toString())));
+                		}
+                		if(Issue.Severity.NORMAL.equals(issue.getSeverity())) {
+                			setGraphic(new ImageView(new javafx.scene.image.Image(new File("resources/gif/Classify/error.gif").toURI().toString())));
+                		}
+                		if(Issue.Severity.BAD_PRACTICE.equals(issue.getSeverity())) {
+                			setGraphic(new ImageView(new javafx.scene.image.Image(new File("resources/gif/User/Warning.gif").toURI().toString())));
+                		}
+                		if(Issue.Severity.USER_DEFINED.equals(issue.getSeverity())) {
+                			setGraphic(new ImageView(new javafx.scene.image.Image(new File("resources/gif/MDC/Listener.gif").toURI().toString())));
+                		}
+                		setText(issue.getText());
+                		} else { setText(""); setGraphic(null); }
 	            }
 	        };
 	    });
@@ -302,19 +261,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         	tabPane.getTabs().add(new MyTab(dvp));
         	if(mainViewPane == null) mainViewPane = dvp;
         }
-        
-        for(Vector<Object> option : listOfOptions) {
-        	String  key   = (String)  option.get(0);
-        	Boolean value = (Boolean) option.get(1);
-        	if("showDerivedAttributes".equals(key)) setShowDerivedAttributes(value);
-        	if("showDerivedOperations".equals(key)) setShowDerivedOperations(value);
-        	if("showGettersAndSetters".equals(key)) setShowGettersAndSetters(value);
-        	if("showOperations".equals(key)) setShowOperations(value);
-        	if("showOperationValues".equals(key)) setShowOperationValues(value);
-        	if("showSlots".equals(key)) setShowSlots(value);
-        	if("showConstraintReports".equals(key)) setConstraintReportsInDiagram(value);
-        	if("showConstraints".equals(key)) setConstraintsInDiagram(value);
-        }        
 
         tabPane.getTabs().add(new MyTab());
         zoomView = new DiagramViewPane("", true);
@@ -387,7 +333,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
         
         scrollPane = new ScrollPane(tableView);
          
-		mainView.getChildren().addAll(palette, palette2, tabPane);//scrollerCanvas);
+		mainView.getChildren().addAll(diagramViewToolbar, tabPane);
 		
 		splitPane2.setOrientation(Orientation.VERTICAL);
 		splitPane2.setDividerPosition(0, 0.8);
@@ -404,15 +350,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			this.fetchDiagramData( a -> { } );
 		});
 		t.start();
-
-//		java.util.Timer timer = new java.util.Timer();
-//		timer.schedule(new java.util.TimerTask() {
-//
-//			@Override
-//			public void run() {
-//				redraw();
-//			}
-//		}, 200, 200);
 		
 		File syntaxDir = new File(ConcreteSyntaxWizard.RESOURCES_CONCRETE_SYNTAX_REPOSITORY); //TODO: recursively searching all 
 		if (syntaxDir.isDirectory()) {
@@ -426,21 +363,16 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					if(file.getName().endsWith(".xml")) files.add(file);
 				}
 			}
-//			File[] files = syntaxDir.listFiles();
 			for (File file : files) {
-//				if (file.isFile()) {
-//					if(file.getName().endsWith(".xml")) {
-						try {
-							AbstractSyntax group = AbstractSyntax.load(file);
-							if(group instanceof ConcreteSyntax) {
-								ConcreteSyntax c = ((ConcreteSyntax) group);
-								syntaxes.put(c.classPath + "@" + c.level, c);
-							}
-						} catch (Exception e) {
-							System.err.println("reading " + file.getName() + " failed (" + e.getMessage() + "). Ignoring..."); 
-						}
-//					}
-//				}
+				try {
+					AbstractSyntax group = AbstractSyntax.load(file);
+					if(group instanceof ConcreteSyntax) {
+						ConcreteSyntax c = ((ConcreteSyntax) group);
+						syntaxes.put(c.classPath + "@" + c.level, c);
+					}
+				} catch (Exception e) {
+					System.err.println("reading " + file.getName() + " failed (" + e.getMessage() + "). Ignoring..."); 
+				}
 			}
 		}
 	}
@@ -487,6 +419,10 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
 	}
+	
+	public Set<KeyCode> getPressedKeys () {
+		  return pressedKeys;
+	}
 
 	public void savePNG() {
 		mainViewPane.setMaxZoom();
@@ -511,8 +447,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	            e.printStackTrace();
 	        }
 	    }
-
-//	    setZoom(zoom);
 	}
 //	// Only used to set the diagram into the tab. Find a better solution
 	@Deprecated
@@ -564,7 +498,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		// TODO evil hack. not kosher
 		for(int i = 0; i < 2; i++) { 
 			for(FmmlxObject o : new Vector<>(objects)) {
-				o.layout(this);
+				o.layout(this, diagramViewToolBarModell.getShowPropertiesMap());
 			}
 			for(Edge<?> edge : new Vector<>(edges)) {
 				edge.align();
@@ -782,26 +716,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		mainViewPane.canvas.setCursor(c);
 	}
 
-	public void setShowOperations(boolean show) {this.showOperations = show;}
-	public void setShowOperationValues(boolean show) {this.showOperationValues = show;}
-	public void setShowSlots(boolean show) {this.showSlots = show;}
-	public void setShowGettersAndSetters(boolean show) {this.showGetterAndSetter = show;}
-	public void setShowDerivedOperations(boolean show) {this.showDerivedOperations = show;}
-	public void setShowDerivedAttributes(boolean show) {this.showDerivedAttributes = show;}
-	public void setMetaClassNanmeInPalette(boolean show) {this.showMetaClassName = show;} 
-	public void setConstraintsInDiagram(boolean show) {this.showConstraints = show;} 
-	public void setConstraintReportsInDiagram(boolean show) {this.showConstraintReports = show;} 
-
-	public boolean isShowOperations() {return this.showOperations;}
-	public boolean isShowOperationValues() {return this.showOperationValues;}
-	public boolean isShowSlots() {return this.showSlots;}
-	public boolean isShowGetterAndSetter() {return this.showGetterAndSetter;}
-	public boolean isShowDerivedOperations() {return this.showDerivedOperations;}
-	public boolean isShowDerivedAttributes() {return this.showDerivedAttributes;}
-	public boolean isMetaClassNameInPalette() {return this.showMetaClassName;}
-	public boolean isConstraintsInDiagram() {return this.showConstraints;}
-	public boolean isConstraintReportsInDiagram() {return this.showConstraintReports;} 
-
 	public Vector<String> getEnumItems(String enumName) {
 		for (FmmlxEnum e : enums) {
 			if(e.getName().equals(enumName)) return e.getItems();
@@ -867,94 +781,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		return result;
 	}
 
-	public void setShowOperations(CheckBox box) {
-		boolean show = box.isSelected();
-		setShowOperations(show);
-		for (FmmlxObject o : getObjects()) {
-			o.setShowOperations(show);
-		}
-		triggerOverallReLayout();
-		redraw();
-	}
-
-	public void setShowGettersAndSetters(CheckBox box) {
-		boolean show = box.isSelected();
-		setShowGettersAndSetters(show);
-		for (FmmlxObject o : getObjects()) {
-			o.setShowGettersAndSetters(show);
-		}
-		triggerOverallReLayout();
-		redraw();		
-	}
-
-
-	public void setShowOperationValues(CheckBox box) {
-		boolean show = box.isSelected();
-		setShowOperationValues(show);
-		for (FmmlxObject o : getObjects()) {
-			o.setShowOperationValues(show);
-		}
-		triggerOverallReLayout();
-		redraw();
-	}
-
-	public void setShowSlots(CheckBox box) {
-		boolean show = box.isSelected();
-		setShowSlots(show);
-		for (FmmlxObject o : getObjects()) {
-			o.setShowSlots(show);
-		}
-		triggerOverallReLayout();
-		redraw();
-	}
-
-	public void setShowDerivedOperations(CheckBox box) {
-		boolean show = box.isSelected();
-		setShowDerivedOperations(show);
-		for (FmmlxObject o : getObjects()) {
-			o.setShowDerivedOperations(show);
-		}
-		triggerOverallReLayout();
-		redraw();
-
-	}
-
-	public void setShowDerivedAttributes(CheckBox box) {
-		boolean show=box.isSelected();
-		setShowDerivedAttributes(show);
-		for (FmmlxObject o : getObjects()) {
-			o.setShowDerivedAttributes(show);
-		}
-		triggerOverallReLayout();
-		redraw();
-	}
-	
-	public void setShowConstraints(CheckBox box) {
-		boolean show = box.isSelected();
-		setConstraintsInDiagram(show);
-		for (FmmlxObject o : getObjects()) {
-			o.setShowConstraints(show);
-		}
-		triggerOverallReLayout();
-		redraw();
-	}
-	
-	public void setShowConstraintReports(CheckBox box) {
-		boolean show = box.isSelected();
-		setConstraintReportsInDiagram(show);
-		for (FmmlxObject o : getObjects()) {
-			o.setShowConstraintReports(show);
-		}
-		triggerOverallReLayout();
-		redraw();
-	}
-	
-	public void setMetaClassNameInPalette(CheckBox metaClassName) {
-		boolean show=metaClassName.isSelected();
-		setMetaClassNanmeInPalette(show);
-		newFmmlxPalette.setShowMetaClassName(show);
-			newFmmlxPalette.update();
-		}		
+			
 	
 	
 
@@ -966,9 +793,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	@Override
 	protected void fetchDiagramDataSpecific() {
 		for(FmmlxObject o : objects) {
-			o.layout(this);
+			o.layout(this, diagramViewToolBarModell.getShowPropertiesMap());
 		}
-		comm.sendViewOptions(diagramID); // make sure it is at least transferred regularly
 	}
 
 	@Override
@@ -1006,16 +832,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		tableView.getItems().clear();
 		tableView.refresh();
 		tableView.getItems().addAll(issues);
-		
-		palette.updateToolbar(this);
 		redraw();
-	}
-	
-	
-
-	@Override
-	protected void updateViewerStatusInGUI(ViewerStatus newStatus) {
-		// TODO Auto-generated method stub
 	}
 
 	public void paintToSvg(XmlHandler xmlHandler, double extraHeight){
@@ -1068,7 +885,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		Vector<CanvasElement> elements = new Vector<CanvasElement>();
 		elements.addAll(objects);
 		elements.addAll(edges);
-		//elements.addAll(labels);
 		
 		for(CanvasElement cE : elements) if (!cE.isHidden()) {
 			
@@ -1206,8 +1022,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			}			
 			
 			try {
-//				System.err.println("p:" + p);
-//				System.err.println("dragStart:" + dragStart);
 				Affine b = new Affine(Transform.translate(p.getX() - dragStart.getX(), p.getY() - dragStart.getY()));
 				Affine a = new Affine(canvasTransform);
 				a.prepend(b);
@@ -1572,37 +1386,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			
 			g.setTransform(new Affine());	
 			g.setFont(Font.font(FmmlxDiagram.FONT.getFamily(), FontWeight.NORMAL, FontPosture.REGULAR, 14));
-
-//			g.setFill(Color.RED);
-//			if (lastPointPressed!=null) {
-//				
-//			Point2D currentPointHover = lastPointPressed;
-//			g.fillText(""+currentPointHover, currentPointHover.getX(), currentPointHover.getY());
-//					
-//			try {
-//				Point2D hoverRaw = canvasTransform.inverseTransform(currentPointHover);
-//				g.fillText(""+hoverRaw, currentPointHover.getX(), currentPointHover.getY()+15);
-//			} catch (NonInvertibleTransformException e) {}
-//			}
-			//			
-//			g.setFill(Color.PURPLE);
-//			g.fillText(canvas.getWidth() + ":"  +canvas.getHeight(), 0, 20);
-//
-//			
-//			g.setFill(Color.PURPLE);
-//			try{g.fillText((int)(lastPointPressed.getX()) + ":"  +(int)(lastPointPressed.getY()), 0, 20);} catch (Exception E) {}
-//			try{g.fillText((int)(currentPointMoving.getX()) + ":"  +(int)(currentPointMoving.getY()), 0, 40);} catch (Exception E) {}
-//			
-//			g.setStroke(Color.PURPLE);
-//			g.strokeLine(0, 0, canvas.getWidth(), canvas.getHeight());
-//			g.strokeLine(canvas.getWidth(), 0, 0, canvas.getHeight());
-//			
-//			g.setStroke(Color.RED);
-//			g.setTransform(canvasTransform);
-//			for(int x = 0; x <= 10; x++) {
-//				g.strokeLine(x*100, 0, x*100, 1000);
-//				g.strokeLine(0, x*100, 1000, x*100);
-//			}
 		}
 		
 		
@@ -1866,10 +1649,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				}
 			});
 		}
-		
-//		protected void close() {
-//	        Event.fireEvent(this, new Event(Tab.CLOSED_EVENT));
-//	    }
 
 		public MyTab() {
 			super("*", null);
@@ -1882,16 +1661,15 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	}
 
 	public void switchTableOnAndOffForIssues() {
-		issueTableVisible=!issueTableVisible;
 		mainView.getChildren().clear();
-		if (issueTableVisible) {
+		if (diagramViewToolBarModell.getPropertieValue(DiagramToolBarProperties.SHOWISSUETABLEVISIBLE)) {
 			tableView.prefHeightProperty().bind(scrollPane.heightProperty());
 	        tableView.prefWidthProperty().bind(scrollPane.widthProperty());
 			splitPane3 = new SplitPane(tabPane, scrollPane);
 			splitPane3.setOrientation(Orientation.VERTICAL);
-			mainView.getChildren().addAll(palette, palette2, splitPane3);
+			mainView.getChildren().addAll(diagramViewToolbar, splitPane3);
 		} else {
-			mainView.getChildren().addAll(palette, palette2, tabPane);
+			mainView.getChildren().addAll(diagramViewToolbar, tabPane);
 		}
 		Thread t = new Thread(() -> {
 			try {
@@ -1902,10 +1680,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			redraw();
 		});
 		t.start();
-		
-		
 	}
-	
-	
-	
+
+	@Override
+	protected void updateViewerStatusInGUI(ViewerStatus newStatus) {
+		// TODO Auto-generated method stub
+		
+	}	
 }

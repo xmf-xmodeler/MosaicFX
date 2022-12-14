@@ -64,8 +64,6 @@ public class AbstractSyntax extends NodeGroup{
 				Affine transform = readTransform((Element) n);
 				metaSyntax.myTransform = transform;
 				vec.add(metaSyntax);
-			} else {
-//				System.err.println("Child not recognized: " + root + ":" + n);
 			}
 		}
 		
