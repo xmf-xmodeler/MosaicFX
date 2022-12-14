@@ -136,11 +136,12 @@ public class FmmlxSerializer  {
 	}
     
     private void serilizeDiagramViewToolBarProperties(Integer id) {
+    	Element diagramViewToolBarPropertiesElement = xmlManager.getChildWithTag(xmlManager.getRoot(), SerializerConstant.TAG_NAME_DIAGRAM_TOOL_BAR_PROPERTIES);
+    	
     	HashMap<String,Boolean> diagramViewToolBarPropertiesMap = FmmlxDiagramCommunicator.getCommunicator().getDiagramViewToolBarProperties(id);
-    	Element diagramViewToolBarPropertiesElement = xmlManager.createXmlElement(SerializerConstant.TAG_NAME_DIAGRAM_TOOL_BAR_PROPERTIES);
-    	xmlManager.addXmlElement(xmlManager.getRoot(),diagramViewToolBarPropertiesElement);
-    	for (Entry entry : diagramViewToolBarPropertiesMap.entrySet()) {
-			diagramViewToolBarPropertiesElement.setAttribute((String)entry.getKey(), (String)entry.getValue());
+    	
+    	for (Entry<String,Boolean> entry : diagramViewToolBarPropertiesMap.entrySet()) {
+    		diagramViewToolBarPropertiesElement.setAttribute((String)entry.getKey(),String.valueOf(entry.getValue())); 
 		}
     	
     	//    	for(String key : optionsResult.keySet()) {

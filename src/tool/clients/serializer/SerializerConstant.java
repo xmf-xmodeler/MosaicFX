@@ -1,7 +1,7 @@
 package tool.clients.serializer;
 
 public class SerializerConstant {
-    public static final int SERIALIZER_VERSION = 2;
+    public static final int SERIALIZER_VERSION = 3;
 
     public static final String TAG_NAME_ROOT = "XModeler";
     public static final String TAG_NAME_VERSION = "Version";
