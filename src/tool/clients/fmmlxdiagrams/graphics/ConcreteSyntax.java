@@ -28,7 +28,6 @@ public class ConcreteSyntax extends AbstractSyntax{
 	public Vector<ActionInfo> getActions() {return new Vector<>(actions);}
 	public String classPath;
 	public int level;
-
 	
 	public static ConcreteSyntax load2(File arg, Element root) {
 		ConcreteSyntax syntaxGroup = new ConcreteSyntax();

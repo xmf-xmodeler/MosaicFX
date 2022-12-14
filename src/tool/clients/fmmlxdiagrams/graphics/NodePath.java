@@ -241,7 +241,7 @@ public class NodePath extends NodeBaseElement{
 
 	public void setColor(String colorString) {
 		try{overrideFillColor = Color.web(colorString);}
-		catch(Exception e) {e.printStackTrace();}
+		catch(Exception e) {System.err.println("Could not set color \"" + colorString + "\"");}
 	}
 	
 	
