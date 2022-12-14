@@ -56,6 +56,7 @@ public class DiagramViewToolBarModell {
 		diagramViewToolBar.updateCheckBoxValues(getDiagramToolBarProperties());
 	}
 	
+	
 	public void updateCheckBoxValues(List<Boolean> list) {
 		for (Map.Entry<DiagramToolBarProperties, Boolean> entry : showPropertiesMap.entrySet()) {
 			entry.setValue(list.remove(0));
@@ -70,17 +71,9 @@ public class DiagramViewToolBarModell {
 	
 	public void sendToolBarPropertiesToXMF () {
 		Vector<Value> items = new Vector<>();
-		items.add(new Value(new Value[] {new Value("DERIVEDATTRIBUTES"), 	new Value(getPropertieValue(DiagramToolBarProperties.SHOWDERIVEDATTRIBUTES) )}));
-		items.add(new Value(new Value[] {new Value("DERIVEDOPERATIONS"), 	new Value(getPropertieValue(DiagramToolBarProperties.SHOWDERIVEDOPERATIONS))}));
-		items.add(new Value(new Value[] {new Value("GETTERSANDSETTERS"), 	new Value(getPropertieValue(DiagramToolBarProperties.SHOWGETTERSANDSETTERS))}));
-		items.add(new Value(new Value[] {new Value("OPERATIONS"), 			new Value(getPropertieValue(DiagramToolBarProperties.SHOWOPERATIONS))}));
-		items.add(new Value(new Value[] {new Value("OPERATIONVALUES"), 		new Value(getPropertieValue(DiagramToolBarProperties.SHOWOPERATIONVALUES))}));
-		items.add(new Value(new Value[] {new Value("SLOTS"), 				new Value(getPropertieValue(DiagramToolBarProperties.SHOWSLOTS))}));
-		items.add(new Value(new Value[] {new Value("METACLASSNAME"),		new Value(getPropertieValue(DiagramToolBarProperties.SHOWMETACLASSNAME))}));
-		items.add(new Value(new Value[] {new Value("CONSTRAINTS"),		    new Value(getPropertieValue(DiagramToolBarProperties.SHOWCONSTRAINTS))}));
-		items.add(new Value(new Value[] {new Value("CONSTRAINTREPORTS"),    new Value(getPropertieValue(DiagramToolBarProperties.SHOWCONSTRAINTREPORTS))}));
-		items.add(new Value(new Value[] {new Value("CONCRETESYNTAX"),   	new Value(getPropertieValue(DiagramToolBarProperties.SHOWCONCRETESYNTAX))}));
-			
+		for (DiagramToolBarProperties propertie : DiagramToolBarProperties.values()) {
+			items.add(new Value(new Value[] {new Value(propertie.name()), 	new Value(getPropertieValue(propertie) )}));
+		}
 		Value[] itemArray = new Value[items.size()];
 		for(int i = 0; i < itemArray.length; i++) {
 			itemArray[i] = items.get(i);

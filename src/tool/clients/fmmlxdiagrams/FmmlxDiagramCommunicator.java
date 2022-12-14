@@ -95,6 +95,11 @@ public class FmmlxDiagramCommunicator {
 			diagrams.add(diagram);
 			l.countDown();
 			diagram.getDiagramViewToolBarModell().recieveToolBarPropertiesFromXMF();
+			/*
+			If you create a new diagram the backend has no TollBarProperties. If you would save it this way the properties can´t be exported to XML.
+			To avoid this we will send the properties right at the initialization of the model to the backend.
+			*/
+			diagram.getDiagramViewToolBarModell().sendToolBarPropertiesToXMF();
 		});
 		try {
 			l.await();

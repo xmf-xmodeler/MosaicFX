@@ -110,6 +110,7 @@ public class FmmlxSerializer  {
             }
             saveComponentsIntoDiagramElement(diagramElement, diagramPath, id);
             xmlManager.addDiagramIntoDiagramsElement(diagramsElement, diagramElement);
+            serilizeDiagramViewToolBarProperties(id);
         }
     }
 
@@ -143,10 +144,6 @@ public class FmmlxSerializer  {
     	for (Entry<String,Boolean> entry : diagramViewToolBarPropertiesMap.entrySet()) {
     		diagramViewToolBarPropertiesElement.setAttribute((String)entry.getKey(),String.valueOf(entry.getValue())); 
 		}
-    	
-    	//    	for(String key : optionsResult.keySet()) {
-
-//	}	
     }
 
 	private void saveLabelsIntoDiagramElement(Integer id, Element diagramElement) {

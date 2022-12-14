@@ -90,7 +90,7 @@ public class FmmlxDeserializer {
 			Right now all properties are stored in this Tag.
 		*/
     	NamedNodeMap attributes;
-    	// Is there a earlier Version then 2 ? latest Models i found was challenge Modells, these allready have version 2
+    	// Is there a earlier Version then 2 ? latest Models i found was challenge Models, these already have version 2
     	if (xmlManager.getVersionTextContent().equals("2")) {
     		attributes = xmlManager.getChildWithTag(getDiagramsElement(), SerializerConstant.TAG_NAME_DIAGRAM).getAttributes();
     	}else {
