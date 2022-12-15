@@ -110,7 +110,7 @@ public class FmmlxSerializer  {
             }
             saveComponentsIntoDiagramElement(diagramElement, diagramPath, id);
             xmlManager.addDiagramIntoDiagramsElement(diagramsElement, diagramElement);
-            serilizeDiagramViewToolBarProperties(id);
+            serilizeDiagramDisplayProperties(id);
         }
     }
 
@@ -136,11 +136,9 @@ public class FmmlxSerializer  {
     	}
 	}
     
-    private void serilizeDiagramViewToolBarProperties(Integer id) {
-    	Element diagramViewToolBarPropertiesElement = xmlManager.getChildWithTag(xmlManager.getRoot(), SerializerConstant.TAG_NAME_DIAGRAM_TOOL_BAR_PROPERTIES);
-    	
-    	HashMap<String,Boolean> diagramViewToolBarPropertiesMap = FmmlxDiagramCommunicator.getCommunicator().getDiagramViewToolBarProperties(id);
-    	
+    private void serilizeDiagramDisplayProperties(Integer id) {
+    	Element diagramViewToolBarPropertiesElement = xmlManager.getChildWithTag(xmlManager.getRoot(), SerializerConstant.TAG_NAME_DIAGRAM_DISPLAY_PROPERTIES);
+    	HashMap<String,Boolean> diagramViewToolBarPropertiesMap = FmmlxDiagramCommunicator.getCommunicator().getDiagramDisplayProperties(id);
     	for (Entry<String,Boolean> entry : diagramViewToolBarPropertiesMap.entrySet()) {
     		diagramViewToolBarPropertiesElement.setAttribute((String)entry.getKey(),String.valueOf(entry.getValue())); 
 		}

@@ -14,9 +14,9 @@ import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
-public class DiagramViewToolBar extends VBox {
+public class DiagramViewHeadToolBar extends VBox {
 	
-	private DiagramViewToolBarModell modell;
+	private DiagramDisplayModel model;
 	private FmmlxDiagram fmmlxDiagram; 
 	
 	private CheckBox boxOperations = new CheckBox("Operations");
@@ -31,31 +31,31 @@ public class DiagramViewToolBar extends VBox {
 	private CheckBox boxConcreteSyntax= new CheckBox("Concrete Syntax");
 	private CheckBox boxIssueTable= new CheckBox("Issue Table");
 	
-	private Map<DiagramToolBarProperties, CheckBox> checkBoxMap = new LinkedHashMap<>();
+	private Map<DiagramDisplayProperties, CheckBox> checkBoxMap = new LinkedHashMap<>();
 			
-	public DiagramViewToolBar(FmmlxDiagram diagram) {
+	public DiagramViewHeadToolBar(FmmlxDiagram diagram) {
 		
 		fmmlxDiagram = diagram;
-		modell = new DiagramViewToolBarModell(this);
+		model = new DiagramDisplayModel(this);
 		ToolBar line1 = new ToolBar();
 		line1.setPadding(new Insets(5, 5, 5, 5));
 		line1.setOrientation(Orientation.HORIZONTAL);
 		line1.isResizable();		
 		line1.getItems().add(new Label("Show: "));
 	
-		checkBoxMap.put(DiagramToolBarProperties.SHOWOPERATIONS, boxOperations);
-		checkBoxMap.put(DiagramToolBarProperties.SHOWOPERATIONVALUES, boxOperationValues);
-		checkBoxMap.put(DiagramToolBarProperties.SHOWSLOTS, boxSlots);
-		checkBoxMap.put(DiagramToolBarProperties.SHOWGETTERSANDSETTERS, boxGettersAndSetters);
-		checkBoxMap.put(DiagramToolBarProperties.SHOWDERIVEDOPERATIONS, boxDerivedOperations);
-		checkBoxMap.put(DiagramToolBarProperties.SHOWDERIVEDATTRIBUTES, boxDerivedAttributes);
-		checkBoxMap.put(DiagramToolBarProperties.SHOWCONSTRAINTS, boxConstraints);
-		checkBoxMap.put(DiagramToolBarProperties.SHOWCONSTRAINTREPORTS, boxConstraintReports);
-		checkBoxMap.put(DiagramToolBarProperties.SHOWMETACLASSNAME, boxMetaClassName);
-		checkBoxMap.put(DiagramToolBarProperties.SHOWCONCRETESYNTAX, boxConcreteSyntax);
-		checkBoxMap.put(DiagramToolBarProperties.SHOWISSUETABLEVISIBLE, boxIssueTable);
+		checkBoxMap.put(DiagramDisplayProperties.SHOWOPERATIONS, boxOperations);
+		checkBoxMap.put(DiagramDisplayProperties.SHOWOPERATIONVALUES, boxOperationValues);
+		checkBoxMap.put(DiagramDisplayProperties.SHOWSLOTS, boxSlots);
+		checkBoxMap.put(DiagramDisplayProperties.SHOWGETTERSANDSETTERS, boxGettersAndSetters);
+		checkBoxMap.put(DiagramDisplayProperties.SHOWDERIVEDOPERATIONS, boxDerivedOperations);
+		checkBoxMap.put(DiagramDisplayProperties.SHOWDERIVEDATTRIBUTES, boxDerivedAttributes);
+		checkBoxMap.put(DiagramDisplayProperties.SHOWCONSTRAINTS, boxConstraints);
+		checkBoxMap.put(DiagramDisplayProperties.SHOWCONSTRAINTREPORTS, boxConstraintReports);
+		checkBoxMap.put(DiagramDisplayProperties.SHOWMETACLASSNAME, boxMetaClassName);
+		checkBoxMap.put(DiagramDisplayProperties.SHOWCONCRETESYNTAX, boxConcreteSyntax);
+		checkBoxMap.put(DiagramDisplayProperties.SHOWISSUETABLEVISIBLE, boxIssueTable);
 		
-		for (Map.Entry<DiagramToolBarProperties, CheckBox> entry : checkBoxMap.entrySet()) {
+		for (Map.Entry<DiagramDisplayProperties, CheckBox> entry : checkBoxMap.entrySet()) {
 				setCheckBoxSelected(entry.getKey());
 				line1.getItems().add(checkBoxMap.get(entry.getKey()));				
 				entry.getValue().setOnAction(e->{changeModell();
@@ -63,14 +63,8 @@ public class DiagramViewToolBar extends VBox {
 				}
 				);
 			}
-		
-		
 		boxIssueTable.setOnAction(e-> {changeModell();diagram.switchTableOnAndOffForIssues();				
-		;});
-		
-			//Add FMLX- Communication
-		
-			
+		;});	
 		ToolBar line2 = new ToolBar();
 		line2.autosize();
 		line2.setPadding(new Insets(5,5,5,5));
@@ -82,49 +76,28 @@ public class DiagramViewToolBar extends VBox {
 		addButton("Update Diagram", e -> diagram.updateDiagram(),line2);
 		addButton("Print Protocol", e -> diagram.actions.printProtocol(),line2);
 		
-		
 		this.getChildren().addAll(line1, line2);
-			
-		
 	}
 	
 	public FmmlxDiagram getFmmlxDiagram() {
 		return fmmlxDiagram;
 	}
-	
-
-//	public void updateToolbar(FmmlxDiagram diagram) {
-//		boxMetaClassName.setSelected(diagram.isMetaClassNameInPalette()); 
-//		boxOperations.setSelected(diagram.isShowOperations());
-//		boxOperationValues.setSelected(diagram.isShowOperationValues());
-//		boxSlots.setSelected(diagram.isShowSlots());
-//		boxGettersAndSetters.setSelected(diagram.isShowGetterAndSetter());
-//		boxDerivedOperations.setSelected(diagram.isShowDerivedOperations());
-//		boxDerivedAttributes.setSelected(diagram.isShowDerivedAttributes());
-//		boxConstraints.setSelected(diagram.isConstraintsInDiagram());
-//		boxConstraintReports.setSelected(diagram.isConstraintReportsInDiagram());
-//		
-//	}
-		
+			
 	private void addButton(String string, EventHandler<ActionEvent> eventHandler, ToolBar toolbar) {
 		Button button = new Button(string);
 		button.setOnAction(eventHandler);
 		toolbar.getItems().add(button);
 	}
 
-	private void setCheckBoxSelected(DiagramToolBarProperties propertie) {
-		checkBoxMap.get(propertie).setSelected(modell.getPropertieValue(propertie));
+	private void setCheckBoxSelected(DiagramDisplayProperties propertie) {
+		checkBoxMap.get(propertie).setSelected(model.getPropertieValue(propertie));
 	}
 	
 	 private void changeModell() {
-	        modell.updateCheckBoxValues(getDiagramToolBarProperties());
+	        model.updateCheckBoxValues(getDiagramDisplayProperties());
 	        }
 	 
-	 private void forceFxmmlDiagramRedraw() {
-		 fmmlxDiagram.redraw();
-	 }
-	 
-	 private List<Boolean> getDiagramToolBarProperties(){		 
+	 private List<Boolean> getDiagramDisplayProperties(){		 
 		 List<Boolean> diagramToolBarPropertiesList = new ArrayList<>();
 		 for (CheckBox box  : checkBoxMap.values()) {
 			diagramToolBarPropertiesList.add(box.isSelected());
@@ -132,13 +105,13 @@ public class DiagramViewToolBar extends VBox {
 		 return diagramToolBarPropertiesList;
 	 }
 
-	 public DiagramViewToolBarModell getModell() {
-		 return modell;
+	 public DiagramDisplayModel getModell() {
+		 return model;
 	 }
 
 	public void updateCheckBoxValues(List<Boolean> list) {
-			for (Map.Entry<DiagramToolBarProperties, CheckBox> entry : checkBoxMap.entrySet()) {
-				entry.getValue().setSelected(list.remove(0));		
-			}	
+		for (Map.Entry<DiagramDisplayProperties, CheckBox> entry : checkBoxMap.entrySet()) {
+		entry.getValue().setSelected(list.remove(0));		
+		}	
 	}
 }

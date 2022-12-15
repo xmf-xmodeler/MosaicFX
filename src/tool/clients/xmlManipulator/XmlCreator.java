@@ -48,7 +48,7 @@ public class XmlCreator {
         Element projects = document.createElement(SerializerConstant.TAG_NAME_PROJECTS);
         Element diagrams = document.createElement(SerializerConstant.TAG_NAME_DIAGRAMS);
         Element logs = document.createElement(SerializerConstant.TAG_NAME_LOGS);
-        Element diagramViewToolBarPropertiesElement = document.createElement(SerializerConstant.TAG_NAME_DIAGRAM_TOOL_BAR_PROPERTIES);
+        Element diagramViewToolBarPropertiesElement = document.createElement(SerializerConstant.TAG_NAME_DIAGRAM_DISPLAY_PROPERTIES);
         
         root.appendChild(formatVersion);
         root.appendChild(categories);

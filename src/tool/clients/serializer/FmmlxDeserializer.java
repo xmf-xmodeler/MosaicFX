@@ -94,13 +94,13 @@ public class FmmlxDeserializer {
     	if (xmlManager.getVersionTextContent().equals("2")) {
     		attributes = xmlManager.getChildWithTag(getDiagramsElement(), SerializerConstant.TAG_NAME_DIAGRAM).getAttributes();
     	}else {
-    		attributes = xmlManager.getChildWithTag(xmlManager.getRoot(), SerializerConstant.TAG_NAME_DIAGRAM_TOOL_BAR_PROPERTIES).getAttributes();
+    		attributes = xmlManager.getChildWithTag(xmlManager.getRoot(), SerializerConstant.TAG_NAME_DIAGRAM_DISPLAY_PROPERTIES).getAttributes();
 		}	
        	HashMap<String, Boolean> map = new HashMap<>();
     	for(int i = 0; i < attributes.getLength(); i++) { 
 			Node attribute = attributes.item(i);
 			map.put(attribute.getNodeName(), Boolean.valueOf(attribute.getNodeValue()));
-			fmmlxDiagramCommunicator.sendViewOptions(diagramID, map);	
+			fmmlxDiagramCommunicator.sendDiagramDisplayOptions(diagramID, map);	
     	}
     	
 	}

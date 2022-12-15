@@ -119,10 +119,10 @@ public class XmlManager extends XmlHandler {
         return getChildWithTag(Root, SerializerConstant.TAG_NAME_PROJECTS);
     }
     
-    public Element getDiagramViewToolBarProperties() {
+    public Element getDiagramDisplayProperties() {
         Element diagrams = getDiagramsElement();
         Element diagram = getChildWithTag(diagrams, SerializerConstant.TAG_NAME_DIAGRAM);
-        return getChildWithTag(diagram, SerializerConstant.TAG_NAME_DIAGRAM_TOOL_BAR_PROPERTIES);
+        return getChildWithTag(diagram, SerializerConstant.TAG_NAME_DIAGRAM_DISPLAY_PROPERTIES);
     }
 
     public String getProjectName(String projectPath) {

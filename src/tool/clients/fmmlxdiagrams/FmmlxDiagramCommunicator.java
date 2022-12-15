@@ -94,12 +94,12 @@ public class FmmlxDiagramCommunicator {
 			createStage(diagram.getView(), diagramName, this.handler, diagram);	
 			diagrams.add(diagram);
 			l.countDown();
-			diagram.getDiagramViewToolBarModell().recieveToolBarPropertiesFromXMF();
+			diagram.getDiagramViewToolBarModell().recieveDisplayPropertiesFromXMF();
 			/*
 			If you create a new diagram the backend has no TollBarProperties. If you would save it this way the properties can´t be exported to XML.
 			To avoid this we will send the properties right at the initialization of the model to the backend.
 			*/
-			diagram.getDiagramViewToolBarModell().sendToolBarPropertiesToXMF();
+			diagram.getDiagramViewToolBarModell().sendDisplayPropertiesToXMF();
 		});
 		try {
 			l.await();
@@ -2222,7 +2222,7 @@ public class FmmlxDiagramCommunicator {
 			return V;
 		}
 	}
-		public void sendViewOptions(Integer diagramID, HashMap<String, Boolean> map) {
+		public void sendDiagramDisplayOptions(Integer diagramID, HashMap<String, Boolean> map) {
 		Vector<Value> items = new Vector<>();
 		for(String key : map.keySet()) {
 			items.add(new Value(new Value[] {new Value(key), new Value(map.get(key))}));
@@ -2239,7 +2239,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Boolean> getDiagramViewToolBarProperties(Integer diagramID) {
+	public HashMap<String, Boolean> getDiagramDisplayProperties(Integer diagramID) {
 		try {
 			Vector<Object> response = xmfRequest(handler, diagramID, "getViewOptions");
 			HashMap<String, Boolean> result = new HashMap<String, Boolean>();
