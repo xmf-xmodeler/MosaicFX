@@ -1,28 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <ConcreteSyntax classPath="Test::Car" level="0">
-	<ImportMeta path="Car1.xml" id="of" xx="0.6" yy="0.6"/>
-    <Label align="CENTER" tx="19.0" ty="35.0" xx="0.3" yy="0.3" id="reglabel" color="000000"/>
-	<SVG path="car - Kopie.svg" id="warning" xx=".05" yy=".05" tx="0" ty="0"/>  
-	<Modification>
-		<Condition type="BooleanSlotCondition" slotName="ignore"/>
-		<Affected id="main" localId="changeColor"/>
-		<Consequence type="SHOW_NEVER"/>
-	</Modification> 
-	<Modification>
-		<Condition type="BooleanSlotCondition" slotName="ignore"/>
-		<Affected id="main" localId="changeFuel"/>
-		<Consequence type="SHOW_NEVER"/>
-	</Modification> 
-    <Modification>
-		<Condition type="ReadFromSlot" slotName="registration"/>
-		<Affected id="reglabel" localId="reglabel"/>
-		<Consequence type="READ_FROM_SLOT"/>
-    </Modification>
-	<Modification>
-		<Condition type="SlotNumCompareCondition" slotName="speed" lowBound="50"/>
-		<Affected id="warning" localId="warning"/>
-		<Consequence type="SHOW_IF"/>
-	</Modification> 
-	<Action id="of" localId="of" type="CHANGE_SLOT_VALUE:registration"/>
-	<Action id="reglabel" localId="reglabel" type="CHANGE_SLOT_VALUE:registration"/>
+  <Group tx="0.0" ty="0.0" xx="0.6" xy="0.0" yx="0.0" yy="0.6">
+    <SVG id="main" path="car.svg" tx="0.0" ty="0.0" xx="0.25" xy="0.0" yx="0.0" yy="0.25"/>
+  </Group>
+  <Label align="CENTER" bgColor="0x00000000" color="0x000000ff" id="reglabel" tx="19.0" ty="35.0" xx="0.3" xy="0.0" yx="0.0" yy="0.3"/>
+  <Modification>
+    <Condition slotName="ignore" type="BooleanSlotCondition"/>
+    <Affected id="main" localId="changeColor"/>
+    <Consequence type="SHOW_NEVER"/>
+  </Modification>
+  <Modification>
+    <Condition slotName="ignore" type="BooleanSlotCondition"/>
+    <Affected id="main" localId="changeFuel"/>
+    <Consequence type="SHOW_NEVER"/>
+  </Modification>
+  <Modification>
+    <Condition slotName="registration" type="ReadFromSlot"/>
+    <Affected id="reglabel" localId="reglabel"/>
+    <Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+  <Modification>
+    <Condition slotName="speed" type="BooleanSlotCondition"/>
+    <Affected id="warning" localId="warning"/>
+    <Consequence type="SHOW_IF"/>
+  </Modification>
 </ConcreteSyntax>

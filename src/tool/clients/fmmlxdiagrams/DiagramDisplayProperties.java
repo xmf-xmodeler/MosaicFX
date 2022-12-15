@@ -1,6 +1,6 @@
 package tool.clients.fmmlxdiagrams;
 
-public enum DiagramToolBarProperties {
+public enum DiagramDisplayProperties {
 	SHOWOPERATIONS,
 	SHOWOPERATIONVALUES,
 	SHOWSLOTS,

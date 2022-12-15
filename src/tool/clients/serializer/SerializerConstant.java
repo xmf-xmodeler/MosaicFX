@@ -10,7 +10,7 @@ public class SerializerConstant {
     public static final String TAG_NAME_PROJECT = "Project";
     public static final String TAG_NAME_DIAGRAMS = "Diagrams";
     public static final String TAG_NAME_DIAGRAM = "Diagram";
-    public static final String TAG_NAME_DIAGRAM_TOOL_BAR_PROPERTIES = "DiagramToolBarProperties";
+    public static final String TAG_NAME_DIAGRAM_DISPLAY_PROPERTIES = "DiagramDisplayProperties";
     public static final String TAG_NAME_OBJECTS = "Objects";
     public static final String TAG_NAME_OBJECT = "Object";
     public static final String TAG_NAME_LOGS = "Logs";

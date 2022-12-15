@@ -514,8 +514,8 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 		return false;
 	}
 
-	protected void layout(FmmlxDiagram diagram, Map<DiagramToolBarProperties, Boolean> diagramToolBarProperties) {
-		if (!diagramToolBarProperties.get(DiagramToolBarProperties.SHOWCONCRETESYNTAX)){
+	protected void layout(FmmlxDiagram diagram, Map<DiagramDisplayProperties, Boolean> diagramToolBarProperties) {
+		if (!diagramToolBarProperties.get(DiagramDisplayProperties.SHOWCONCRETESYNTAX)){
 			new DefaultFmmlxObjectDisplay(diagram, this).layout(diagramToolBarProperties);
 			return;
 		}
@@ -570,7 +570,7 @@ public class FmmlxObject extends Node implements CanvasElement, FmmlxProperty, C
 
 	@Override
 	protected void layout(FmmlxDiagram diagram) {
-		layout(diagram, diagram.getDiagramViewToolBarModell().getShowPropertiesMap());
+		layout(diagram, diagram.getDiagramViewToolBarModell().getDisplayPropertiesMap());
 	}
 	
 	public Vector<Issue> getIssues() {

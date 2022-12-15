@@ -103,8 +103,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	static{
 		FONT = Font.font(Font.getDefault().getFamily(), FontPosture.REGULAR, 14);
 	}
-	DiagramViewToolBar diagramViewToolbar;
-	DiagramViewToolBarModell diagramViewToolBarModell;
+	DiagramViewHeadToolBar diagramViewToolbar;
+	DiagramDisplayModel diagramViewToolBarModell;
 
 	// Temporary variables storing the current state of user interactions
 	private transient Vector<CanvasElement> selectedObjects = new Vector<>();
@@ -141,7 +141,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		this.diagramName = null;
 	}
 
-	public DiagramViewToolBarModell getDiagramViewToolBarModell() {
+	public DiagramDisplayModel getDiagramViewToolBarModell() {
 		return diagramViewToolBarModell;
 	}
 
@@ -150,7 +150,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 			Vector<Vector<Object>> listOfViews, 
 			Vector<Vector<Object>> listOfOptions) {
 		super(comm,diagramID,packagePath);
-		diagramViewToolbar = new DiagramViewToolBar(this);
+		diagramViewToolbar = new DiagramViewHeadToolBar(this);
 		diagramViewToolBarModell = diagramViewToolbar.getModell();
 		
 		this.diagramName = name;
@@ -503,7 +503,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		// TODO evil hack. not kosher
 		for(int i = 0; i < 2; i++) { 
 			for(FmmlxObject o : new Vector<>(objects)) {
-				o.layout(this, diagramViewToolBarModell.getShowPropertiesMap());
+				o.layout(this, diagramViewToolBarModell.getDisplayPropertiesMap());
 			}
 			for(Edge<?> edge : new Vector<>(edges)) {
 				edge.align();
@@ -798,7 +798,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	@Override
 	protected void fetchDiagramDataSpecific() {
 		for(FmmlxObject o : objects) {
-			o.layout(this, diagramViewToolBarModell.getShowPropertiesMap());
+			o.layout(this, diagramViewToolBarModell.getDisplayPropertiesMap());
 		}
 	}
 
@@ -1667,7 +1667,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 
 	public void switchTableOnAndOffForIssues() {
 		mainView.getChildren().clear();
-		if (diagramViewToolBarModell.getPropertieValue(DiagramToolBarProperties.SHOWISSUETABLEVISIBLE)) {
+		if (diagramViewToolBarModell.getPropertieValue(DiagramDisplayProperties.SHOWISSUETABLEVISIBLE)) {
 			tableView.prefHeightProperty().bind(scrollPane.heightProperty());
 	        tableView.prefWidthProperty().bind(scrollPane.widthProperty());
 			splitPane3 = new SplitPane(tabPane, scrollPane);

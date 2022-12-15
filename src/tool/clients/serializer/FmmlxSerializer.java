@@ -102,15 +102,16 @@ public class FmmlxSerializer  {
     //This methode save the Diagram-Data.
     //This method makes the main XML-node containing Diagram-data and then add the node into xml-document
     public void saveDiagram(String label, String diagramPath, Integer id) throws TransformerException, TimeOutException {
-        if(checkFileExist(xmlManager.getSourcePath())) {
-            Element diagramsElement = xmlManager.getDiagramsElement();
-            Element diagramElement = xmlManager.createDiagramElement(label, diagramPath);
+    	Element diagramsElement = xmlManager.getDiagramsElement();
+    	Element diagramElement = xmlManager.createDiagramElement(label, diagramPath);	
+    	if(checkFileExist(xmlManager.getSourcePath())) {
             if (xmlManager.diagramIsExist(label)) {
                 xmlManager.removeDiagram(label);
             }
             saveComponentsIntoDiagramElement(diagramElement, diagramPath, id);
             xmlManager.addDiagramIntoDiagramsElement(diagramsElement, diagramElement);
-            serilizeDiagramViewToolBarProperties(id);
+            diagramElement.appendChild(xmlManager.createXmlElement(SerializerConstant.TAG_NAME_DIAGRAM_DISPLAY_PROPERTIES));
+            serilizeDiagramDisplayProperties(id);
         }
     }
 
@@ -136,13 +137,11 @@ public class FmmlxSerializer  {
     	}
 	}
     
-    private void serilizeDiagramViewToolBarProperties(Integer id) {
-    	Element diagramViewToolBarPropertiesElement = xmlManager.getChildWithTag(xmlManager.getRoot(), SerializerConstant.TAG_NAME_DIAGRAM_TOOL_BAR_PROPERTIES);
-    	
-    	HashMap<String,Boolean> diagramViewToolBarPropertiesMap = FmmlxDiagramCommunicator.getCommunicator().getDiagramViewToolBarProperties(id);
-    	
+    private void serilizeDiagramDisplayProperties(Integer id) {
+    	Element diagramDisplayProperties = xmlManager.getDiagramDisplayPropertiesElement();
+    	HashMap<String,Boolean> diagramViewToolBarPropertiesMap = FmmlxDiagramCommunicator.getCommunicator().getDiagramDisplayProperties(id);
     	for (Entry<String,Boolean> entry : diagramViewToolBarPropertiesMap.entrySet()) {
-    		diagramViewToolBarPropertiesElement.setAttribute((String)entry.getKey(),String.valueOf(entry.getValue())); 
+    		diagramDisplayProperties.setAttribute((String)entry.getKey(),String.valueOf(entry.getValue())); 
 		}
     }
 
