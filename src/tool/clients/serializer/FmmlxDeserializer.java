@@ -46,7 +46,7 @@ public class FmmlxDeserializer {
             	String diagramName = ((Element) diagramNode).getAttribute(SerializerConstant.ATTRIBUTE_LABEL);
             	Integer diagramId = fmmlxDiagramCommunicator.createDiagram(projectName, diagramName, this.xmlManager.getSourcePath(), FmmlxDiagramCommunicator.DiagramType.ClassDiagram);
             	sendDiagramViewStatus(diagramId, diagramNode, fmmlxDiagramCommunicator);
-            	sendDiagramViewToolbarProperties(diagramId, fmmlxDiagramCommunicator);
+            	sendDiagramDisplayProperties(diagramId, fmmlxDiagramCommunicator);
             	if(!projectPopulated) {
                     fmmlxDiagramCommunicator.preparePositionInfo(diagramId, diagramNode);
             		populateDiagram(diagramId);
@@ -78,13 +78,9 @@ public class FmmlxDeserializer {
 		}    	
     	fmmlxDiagramCommunicator.sendViewStatus(diagramID, names, transformations);
 	}
-    
-	//What is about more then one model in one XML ??
-	
-	
-    private void sendDiagramViewToolbarProperties(Integer diagramID, FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
-    	
-		/*
+ 
+    private void sendDiagramDisplayProperties(Integer diagramID, FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
+   		/*
 			2022-12-13 TS
 			In Version 2 of the XML-Exports all ViewOption related values were stored in the <Diagram>-Tag. In later Version there was created a new Tag <DiagramViewToolBarProperties>.
 			Right now all properties are stored in this Tag.
@@ -94,7 +90,7 @@ public class FmmlxDeserializer {
     	if (xmlManager.getVersionTextContent().equals("2")) {
     		attributes = xmlManager.getChildWithTag(getDiagramsElement(), SerializerConstant.TAG_NAME_DIAGRAM).getAttributes();
     	}else {
-    		attributes = xmlManager.getChildWithTag(xmlManager.getRoot(), SerializerConstant.TAG_NAME_DIAGRAM_DISPLAY_PROPERTIES).getAttributes();
+    		attributes = xmlManager.getDiagramDisplayPropertiesElement().getAttributes();
 		}	
        	HashMap<String, Boolean> map = new HashMap<>();
     	for(int i = 0; i < attributes.getLength(); i++) { 

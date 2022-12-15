@@ -119,12 +119,6 @@ public class XmlManager extends XmlHandler {
         return getChildWithTag(Root, SerializerConstant.TAG_NAME_PROJECTS);
     }
     
-    public Element getDiagramDisplayProperties() {
-        Element diagrams = getDiagramsElement();
-        Element diagram = getChildWithTag(diagrams, SerializerConstant.TAG_NAME_DIAGRAM);
-        return getChildWithTag(diagram, SerializerConstant.TAG_NAME_DIAGRAM_DISPLAY_PROPERTIES);
-    }
-
     public String getProjectName(String projectPath) {
         String[] projectPathSplit= projectPath.split("::");
         return projectPathSplit[1];
@@ -153,6 +147,13 @@ public class XmlManager extends XmlHandler {
             }
         }
         return projects;
+    }
+    
+    public Element getDiagramDisplayPropertiesElement() {
+    	Element diagrams = getDiagramsElement();
+    	Element diagram = getChildWithTag(diagrams, SerializerConstant.TAG_NAME_DIAGRAM);
+    	Element diagramDisplayProperties = getChildWithTag(diagram,SerializerConstant.TAG_NAME_DIAGRAM_DISPLAY_PROPERTIES);
+    	return diagramDisplayProperties;
     }
 
     public void addProject(Element element) {
