@@ -351,6 +351,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		});
 		t.start();
 		
+		updateConcreteSyntaxes();
+	}
+
+	private void updateConcreteSyntaxes() {
+
 		File syntaxDir = new File(ConcreteSyntaxWizard.RESOURCES_CONCRETE_SYNTAX_REPOSITORY); //TODO: recursively searching all 
 		if (syntaxDir.isDirectory()) {
 			Vector<File> directories = new Vector<>();
@@ -374,7 +379,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					System.err.println("reading " + file.getName() + " failed (" + e.getMessage() + "). Ignoring..."); 
 				}
 			}
-		}
+		}		
 	}
 
 	// Only used to set the mouse pointer. Find a better solution
@@ -800,8 +805,8 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 	@Override
 	protected void fetchDiagramDataSpecific2() {
 		
+		updateConcreteSyntaxes();
 		triggerOverallReLayout();
-
 		newFmmlxPalette.update();
 
 		if(filePath !=null && filePath.length()>0){
