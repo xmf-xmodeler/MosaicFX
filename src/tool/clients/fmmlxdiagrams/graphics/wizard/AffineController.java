@@ -52,13 +52,13 @@ public class AffineController {
 		for(int i = 0; i < 6; i++) {
 			TextField f = new TextField();
 			f.setEditable(false);
-			f.setMaxWidth(60);
+			f.setMaxWidth(65);
 			matrixPane.add(f, i%3, i/3);
 			textfields.add(f);
 		}
 		matrixPane.setHgap(5.);
 		matrixPane.setVgap(5.);
-		matrixPane.setPadding(new Insets(5.));
+//		matrixPane.setPadding(new Insets(5.));
 		
 		Button moveHButton = new Button("Move Horizontally"); buttons.add(moveHButton);
 		Button moveVButton = new Button("Move Vertically");   buttons.add(moveVButton);
@@ -135,7 +135,7 @@ public class AffineController {
 		
 		editPane.getChildren().addAll(buttons);		
 		editPane.setSpacing(5.);
-		editPane.setPadding(new Insets(5.));
+//		editPane.setPadding(new Insets(5.));
 		
 		for(Button b : buttons) {
 			b.setMaxWidth(Double.POSITIVE_INFINITY);
@@ -176,6 +176,7 @@ public class AffineController {
 		textfields.get(TY).setText(df.format(affine.getTy()));
 		textfields.get(TX).setText(df.format(affine.getTx()));		
 	}
+	
 	public void setEditable(boolean editable) {
 		this.editable = editable;
 		for(Button b : buttons) b.setDisable(!editable);		

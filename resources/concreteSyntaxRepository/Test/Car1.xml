@@ -21,4 +21,6 @@
     <Affected id="main" localId="groupV"/>
     <Consequence type="SHOW_IF"/>
   </Modification>
+  <Action id="main" localId="changeColor" type="CHANGE_SLOT_VALUE:color"/>
+  <Action id="main" localId="changeFuel" type="CHANGE_SLOT_VALUE:fuel"/>
 </ConcreteSyntax>

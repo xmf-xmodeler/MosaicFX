@@ -24,4 +24,6 @@
     <Affected id="warning" localId="warning"/>
     <Consequence type="SHOW_IF"/>
   </Modification>
+  <Action id="of" localId="of" type="CHANGE_SLOT_VALUE:registration"/>
+  <Action id="reglabel" localId="reglabel" type="CHANGE_SLOT_VALUE:registration"/>
 </ConcreteSyntax>

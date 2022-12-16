@@ -59,7 +59,8 @@ public class DiagramViewHeadToolBar extends VBox {
 				setCheckBoxSelected(entry.getKey());
 				line1.getItems().add(checkBoxMap.get(entry.getKey()));				
 				entry.getValue().setOnAction(e->{changeModell();
-				diagram.updateDiagram();
+				diagram.triggerOverallReLayout();
+				diagram.redraw();
 				}
 				);
 			}

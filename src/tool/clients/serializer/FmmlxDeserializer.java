@@ -82,7 +82,7 @@ public class FmmlxDeserializer {
     private void sendDiagramDisplayProperties(Integer diagramID, FmmlxDiagramCommunicator fmmlxDiagramCommunicator) {
    		/*
 			2022-12-13 TS
-			In Version 2 of the XML-Exports all ViewOption related values were stored in the <Diagram>-Tag. In later Version there was created a new Tag <DiagramViewToolBarProperties>.
+			In Version 2 of the XML-Exports all ViewOption related values were stored in the <Diagram>-Tag. In later Version there was created a new Tag <DiagramViewDisplayProperties>.
 			Right now all properties are stored in this Tag.
 		*/
     	NamedNodeMap attributes;

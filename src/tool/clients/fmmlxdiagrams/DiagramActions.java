@@ -494,8 +494,10 @@ public class DiagramActions {
 	}
 
 	public void changeSlotValue(FmmlxObject hitObject, FmmlxSlot hitProperty) {
-
-//		Platform.runLater(() -> {
+		if(hitProperty != null && "Boolean".equals(hitProperty.getType(diagram))){
+			diagram.getComm().changeSlotValue(diagram.getID(), hitObject.getName(), hitProperty.getName(), "true".equals(hitProperty.getValue())?"false":"true");
+			diagram.updateDiagram();			
+		} else {
 			ChangeSlotValueDialog dlg = new ChangeSlotValueDialog(diagram, hitObject, hitProperty);
 			Optional<ChangeSlotValueDialog.Result> result = dlg.showAndWait();
 
@@ -504,7 +506,7 @@ public class DiagramActions {
 				diagram.getComm().changeSlotValue(diagram.getID(), slotValueDialogResult.object.getName(), slotValueDialogResult.slot.getName(), slotValueDialogResult.newValue);
 				diagram.updateDiagram();
 			}
-//		});
+		}
 	}
 
 	public void updateDiagram() {

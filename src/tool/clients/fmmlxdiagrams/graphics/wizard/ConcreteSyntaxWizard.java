@@ -257,12 +257,14 @@ public class ConcreteSyntaxWizard extends Application {
 		Button freezeSVG = new Button("Freeze");
 		freezeSVG.setGraphic(imageViewSaveIcon);
 		freezeSVG.setOnAction(e -> { if (selectedSyntax !=null)  selectedSyntax.save(); });
-		VBox properties = new VBox(propertiesLabel, affineController.getMatrixPane(), affineController.getEditPane(), freezeSVG);
-		properties.setMinWidth(200);
+		VBox propertiesVBox = new VBox(propertiesLabel, affineController.getMatrixPane(), affineController.getEditPane(), freezeSVG);
+		propertiesVBox.setSpacing(5.);
+		propertiesVBox.setPadding(new Insets(5.));	
+		propertiesVBox.setMinWidth(200);	
 		
 		/////////		
 
-		rightControl  = new HBox(myCanvas,properties);
+		rightControl  = new HBox(myCanvas,propertiesVBox);
 		splitPane = new SplitPane(leftControl, rightControl);
 		splitPane.setDividerPosition(0, 0.2);
 		
@@ -368,9 +370,12 @@ public class ConcreteSyntaxWizard extends Application {
 	private void setCurrentGraphicElement(NodeElement item) {
 		paint(item, myCanvas.zoom);
 		/** an item is editable if it is any kind of a group or a label.
+		 * It further must not be inside an svg nor must it be the overall root
 		 * editable means that the transformation can be changed.
 		 */
-		boolean editable = item instanceof NodeLabel || item instanceof NodeGroup;
+		boolean editable = 
+				(item instanceof NodeLabel || item instanceof NodeGroup) && 
+				(!item.isInsideSVG()) && item.getRoot() != item;
 		affineController.setEditable(editable);
 		affineController.setAffine(item.getMyTransform());
 		affineController.setListener(() -> {

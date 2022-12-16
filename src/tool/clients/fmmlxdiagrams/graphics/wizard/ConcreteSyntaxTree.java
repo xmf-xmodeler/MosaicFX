@@ -83,15 +83,10 @@ public class ConcreteSyntaxTree extends TreeView<NodeElement>{
 		ContextMenu menu = new ContextMenu();
 		
 		// Figure out whether the item is inside an SVG:
-		boolean insideSVG = false;
-		NodeElement svgRoot = item;
-		while(!insideSVG && svgRoot != null) {
-			insideSVG |= (svgRoot != item) && (svgRoot instanceof SVGGroup);
-			svgRoot = svgRoot.getOwner();
-		}
+		boolean insideSVG = item.isInsideSVG();
 		
 		if(!insideSVG) {
-			if(item instanceof NodeGroup) {
+			if(item instanceof NodeGroup && !(item instanceof SVGGroup)) {
 				MenuItem addgroupItem = new MenuItem("Add Group");
 				addgroupItem.setOnAction(event -> {
 					NodeGroup newGroup = new NodeGroup();
@@ -156,7 +151,7 @@ public class ConcreteSyntaxTree extends TreeView<NodeElement>{
 
 			}
 			
-			if(svgRoot != item && item.getOwner() != null) {
+			if(item.getRoot() != item && item.getOwner() != null) {
 				NodeGroup itemParent = item.getOwner();
 				int patentSize = itemParent.getChildren().size();
 				int currentPos = itemParent.getChildren().indexOf(item);
@@ -298,7 +293,7 @@ public class ConcreteSyntaxTree extends TreeView<NodeElement>{
 				}						
 			});
 			MenuItem boolConItem = new MenuItem("Depends on Constraint");
-			boolConItem.setDisable(parent.getSelectedClass() == null || parent.getSelectedLevel() == null);
+			boolConItem.setDisable(true);//parent.getSelectedClass() == null || parent.getSelectedLevel() == null);
 			boolConItem.setOnAction(event -> {
 				DefaultModificationDialog dmd = new DefaultModificationDialog(parent.getSelectedClass(), parent.getSelectedLevel(), Condition.BooleanConstraintCondition.class, item);
 				Optional<DefaultModificationDialog.Result> result = dmd.showAndWait();

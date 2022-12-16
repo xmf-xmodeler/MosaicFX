@@ -189,4 +189,14 @@ public abstract class NodeElement {
 		}
 		return null;
 	}
+	
+	public boolean isInsideSVG() {
+		boolean insideSVG = false;
+		NodeElement svgRoot = this;
+		while(!insideSVG && svgRoot != null) {
+			insideSVG |= (svgRoot != this) && (svgRoot instanceof SVGGroup);
+			svgRoot = svgRoot.getOwner();
+		}
+		return insideSVG;
+	}
 }
