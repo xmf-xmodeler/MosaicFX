@@ -13,10 +13,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
@@ -55,13 +58,8 @@ public class ControlCenter extends Stage {
 		final Image image = new Image(new File("resources/gif/Projects/Project.gif").toURI().toString());
 		
 		VBox vBox = new VBox();
-		HBox hBox = new HBox();
 		GridPane grid = new GridPane();
-				
-		Button newCategorie = new Button("new");
-		newCategorie.setDisable(true);
-
-		
+	
 		Button refreshAll = new Button("refresh");
 		Button newProject = new Button("Create Project");
 		Label projectLabel = new Label("Projects");
@@ -73,18 +71,8 @@ public class ControlCenter extends Stage {
 		Label modelLabel = new Label("Models");
 		CreatedModifiedGridPane modelGridPane = new CreatedModifiedGridPane();
 		
-		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard"); //Button for ConcreteSyntaxWizard
-		concreteSyntaxWizardStart.setOnAction(e -> { 
-			
-			ConcreteSyntaxWizard wizard = new ConcreteSyntaxWizard();
-			try {
-				wizard.start(new Stage());
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		});
-		
+		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard");
+		concreteSyntaxWizardStart.setOnAction(e -> callConcreteSyntaxWizard());		
 		Button newDiagram = new Button("Create Diagram");
 		newDiagram.setDisable(true);
 		newDiagram.disableProperty().bind(
@@ -93,49 +81,14 @@ public class ControlCenter extends Stage {
 		Label diagramLabel = new Label("Diagrams");
 		CreatedModifiedGridPane diagramsGridPane = new CreatedModifiedGridPane();
 		
-		newDiagram.setOnAction(e -> { 
-			TextInputDialog dialog = new TextInputDialog();
-			dialog.setTitle("Create new Diagram");
-			dialog.setContentText("New diagram name:");
-			Optional<String> result = dialog.showAndWait();
-			if (result.isPresent()) {
-				if(InputChecker.isValidIdentifier(result.get())) {
-			    	Integer diagramID = FmmlxDiagramCommunicator.getCommunicator().createDiagram(
-			        modelLV.getSelectionModel().getSelectedItem(), 
-			        result.get(), "", FmmlxDiagramCommunicator.DiagramType.ClassDiagram);
-			    System.err.println("diagramID "  +diagramID);
-			    }  else {
-					new Alert(AlertType.ERROR, 
-							"\"" + result.get() + "\" is not a valid identifier.", 
-							new ButtonType("Damned", ButtonData.YES)).showAndWait();
-				};
-			controlCenterClient.getDiagrams(modelLV.getSelectionModel().getSelectedItem());
-		}}); 
-		diagramLV.setOnMouseClicked(me -> {
-
-		        if (me.getClickCount() == 2 && me.getButton() == MouseButton.PRIMARY) {
-		           String selectedDiagramString = diagramLV.getSelectionModel().getSelectedItem();
-		           if(selectedDiagramString != null) {
-		        	   String selectedModelString = modelLV.getSelectionModel().getSelectedItem();
-			           if(selectedModelString != null) {
-			        	  FmmlxDiagramCommunicator.getCommunicator().openDiagram(
-			        			  selectedModelString, 
-			        			  selectedDiagramString);
-			        	  
-			           }
-		           }
-		        }
-	
-		    });
+		newDiagram.setOnAction(e -> callNewDiagramDialog()); 
+		diagramLV.setOnMouseClicked(me -> handelClickOnDiagramListView(me));
 
 		menuBar = new MenuBar();
 		HBox.setHgrow(menuBar, Priority.ALWAYS);
-		hBox.getChildren().add(menuBar);
 		grid.setHgap(10);
 		grid.setVgap(10);
-		GridPane.setHalignment(newCategorie, HPos.RIGHT);
 
-	
 		grid.add(projectLabel, 2, 1);
 		grid.add(refreshAll, 2, 1);
 		GridPane.setHalignment(refreshAll, HPos.RIGHT);
@@ -169,31 +122,9 @@ public class ControlCenter extends Stage {
 		init();
 		projectTree.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->controlCenterClient.getProjectModels(getProjectPath(projectTree.getSelectionModel().getSelectedItem())));
 		
-		projectTree.setCellFactory(new Callback<TreeView<String>,TreeCell<String>>(){
-            @Override
-            public TreeCell<String> call(TreeView<String> p) {
-                return new TreeCell<String>() {
-                	@Override
-                    public void updateItem(String item, boolean empty) {
-                        super.updateItem(item, empty);
-             
-                        if (empty) {
-                            setText(null);
-                            setGraphic(null);
-                        } else {
-                        	setText(getTreeItem().getValue());
-                            if (getTreeItem().isLeaf()) {
-                            	setGraphic(new ImageView(image));
-                            } else {
-                            	setGraphic(null);
-                            }
-                        }
-                    }
-                };
-            }
-        });
+		projectTree.setCellFactory(new ProjectTreeCellFactory(image));
 
-		vBox.getChildren().addAll(hBox, grid);
+		vBox.getChildren().addAll(menuBar, grid);
 		Scene scene = new Scene(vBox, 800, 300);
 		setScene(scene);
 		this.setOnShown((event) -> controlCenterClient.getAllCategories());
@@ -218,13 +149,51 @@ public class ControlCenter extends Stage {
 		);
 	}
 
+	private void handelClickOnDiagramListView(MouseEvent me) {
+		if(me.getClickCount() == 2 && me.getButton() == MouseButton.PRIMARY) {
+			String selectedDiagramString = diagramLV.getSelectionModel().getSelectedItem();
+			if(selectedDiagramString != null) {
+				String selectedModelString = modelLV.getSelectionModel().getSelectedItem();
+				if(selectedModelString != null) {
+					FmmlxDiagramCommunicator.getCommunicator().openDiagram(selectedModelString, selectedDiagramString);
+		       }
+		   }
+		}
+	}
 
+	private void callConcreteSyntaxWizard() {
+		ConcreteSyntaxWizard wizard = new ConcreteSyntaxWizard();
+		try {
+			wizard.start(new Stage());
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+
+	private void callNewDiagramDialog() {
+		TextInputDialog dialog = new TextInputDialog();
+		dialog.setTitle("Create new Diagram");
+		dialog.setContentText("New diagram name:");
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()) {
+			if(InputChecker.isValidIdentifier(result.get())) {
+			Integer diagramID = FmmlxDiagramCommunicator.getCommunicator().createDiagram(
+				modelLV.getSelectionModel().getSelectedItem(), 
+				result.get(), "", FmmlxDiagramCommunicator.DiagramType.ClassDiagram);
+				System.err.println("diagramID "  +diagramID);
+			}  else {
+				new Alert(AlertType.ERROR, 
+					"\"" + result.get() + "\" is not a valid identifier.", 
+					new ButtonType("Damned", ButtonData.YES)).showAndWait();
+			};
+		controlCenterClient.getDiagrams(modelLV.getSelectionModel().getSelectedItem());
+		}
+	}
 
 	private void newModelSelected(String modelName) {
 		controlCenterClient.getDiagrams(modelName);
 	}
-
-
 
 	public MenuBar getMenuBar() {
 		return menuBar;
@@ -260,6 +229,34 @@ public class ControlCenter extends Stage {
 		return new Stage();
 	}
 	
+	private final class ProjectTreeCellFactory implements Callback<TreeView<String>, TreeCell<String>> {
+		private final Image image;
+		private ProjectTreeCellFactory(Image image) {
+			this.image = image;
+		}
+
+		@Override
+		public TreeCell<String> call(TreeView<String> p){
+			return new TreeCell<String>() {
+				@Override
+				public void updateItem(String item, boolean empty) {
+					super.updateItem(item, empty);
+					if(empty) {
+						setText(null);
+						setGraphic(null);
+					}else {
+						setText(getTreeItem().getValue());
+						if(getTreeItem().isLeaf()) {
+							setGraphic(new ImageView(image));
+						}else {
+							setGraphic(null);
+						}
+					}
+				}
+			};
+		}
+	}
+
 	private static class CreatedModifiedGridPane extends GridPane{
 		
 		Label modified=new Label("31-03-1999");
@@ -277,7 +274,6 @@ public class ControlCenter extends Stage {
 		Platform.runLater(()->{
 		TreeItem<String> root = new TreeItem<>("root");
 		
-		
 		for (String projectString : vec) {
 			String[] projectPath = projectString.split("::");
 			TreeItem<String> currentTreeItemPosition = root;
@@ -291,10 +287,8 @@ public class ControlCenter extends Stage {
 				if (newTreeItem == null) {
 					newTreeItem = new TreeItem<>(s);
 					currentTreeItemPosition.getChildren().add(newTreeItem);
-
 				}
 				currentTreeItemPosition = newTreeItem;
-
 			}
 			projectTree.setRoot(root);
 			projectTree.setShowRoot(false);
@@ -316,8 +310,7 @@ public class ControlCenter extends Stage {
 			if(vec.size()>=1) {
 				modelLV.getSelectionModel().selectFirst();
 			}
-		});
-		
+		});		
 	}
 	
 	public String getProjectPath(TreeItem<String> item) {

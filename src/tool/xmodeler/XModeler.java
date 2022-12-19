@@ -455,6 +455,7 @@ public class XModeler extends Application {
       newStage = new ControlCenter();
       stage= newStage;
       newStage.show();
+      System.out.println(version);
       
   }
 
