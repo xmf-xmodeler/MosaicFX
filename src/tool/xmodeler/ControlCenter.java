@@ -1,26 +1,47 @@
 package tool.xmodeler;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Optional;
+import java.util.Vector;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.value.ObservableListValue;
-import javafx.collections.ObservableList;
+import javafx.beans.property.FloatProperty;
 import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import tool.clients.fmmlxdiagrams.FmmlxDiagramCommunicator;
 import tool.clients.fmmlxdiagrams.classbrowser.ModelBrowser;
@@ -28,12 +49,6 @@ import tool.clients.fmmlxdiagrams.dialogs.InputChecker;
 import tool.clients.fmmlxdiagrams.graphics.wizard.ConcreteSyntaxWizard;
 import tool.clients.workbench.WorkbenchClient;
 import tool.helper.IconGenerator;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.Vector;
 
 public class ControlCenter extends Stage {
 	
@@ -54,99 +69,176 @@ public class ControlCenter extends Stage {
 		getIcons().add(IconGenerator.getImage("shell/mosaic32"));
 		ControlCenterClient.init(this);
 		controlCenterClient = ControlCenterClient.getClient();
-		
-		final Image image = new Image(new File("resources/gif/Projects/Project.gif").toURI().toString());
-		
-		VBox vBox = new VBox();
-		GridPane grid = new GridPane();
 	
-		Button refreshAll = new Button("refresh");
-		Button newProject = new Button("Create Project");
-		Label projectLabel = new Label("Projects");
-		CreatedModifiedGridPane projectGridPane = new CreatedModifiedGridPane();
+		VBox root = new VBox();
+		menuBar = new ControlCenterMenuBar();
+		GridPane grid = buildGridPane(); 
+		root.getChildren().addAll(menuBar, grid);
+		Scene scene = new Scene(root, 800, 300);
+		setScene(scene);
+				
+		this.setOnShown((event) -> controlCenterClient.getAllCategories());
+		this.setOnCloseRequest(event -> handleStageCloseRequest(event));
+		new java.util.Timer().schedule(new java.util.TimerTask() {
+			@Override
+			public void run() {
+				controlCenterClient.getAllProjects();
+			} 
+		}, 2500);
+	}
+	
+	private final class ControlCenterMenuBar extends MenuBar{
 		
-		Button newModel = new Button("Create Model");
-		newModel.setDisable(true);
+		public ControlCenterMenuBar() {
+			Menu helpMenu = new Menu("Help");
+			getMenus().add(helpMenu);
+			
+			MenuItem getProjectInformationItem = new MenuItem("Get Project Information");
+			getProjectInformationItem.setOnAction(e->openWebpage("https://le4mm.org/"));
+			
+			MenuItem getSourceCodeItem = new MenuItem("Get Source Code");
+			getSourceCodeItem.setOnAction(e->openWebpage("https://github.com/xmf-xmodeler"));
+			
+			MenuItem getBluebook = new MenuItem("Show XMF Bluebook");
+			getBluebook.setOnAction(e-> openBluebook());
+			
+			MenuItem aboutItem = new MenuItem("About");
+			aboutItem.setOnAction(e-> callAboutStage());
+							
+			helpMenu.getItems().addAll(getProjectInformationItem,getSourceCodeItem, getBluebook, aboutItem);		
+		}
 		
-		Label modelLabel = new Label("Models");
-		CreatedModifiedGridPane modelGridPane = new CreatedModifiedGridPane();
+		private void openWebpage(String url) {
+			Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+			if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+				try {
+					desktop.browse(new URL(url).toURI());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}	
+			}
+		}
 		
-		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard");
-		concreteSyntaxWizardStart.setOnAction(e -> callConcreteSyntaxWizard());		
-		Button newDiagram = new Button("Create Diagram");
-		newDiagram.setDisable(true);
-		newDiagram.disableProperty().bind(
-			    Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
-			);
-		Label diagramLabel = new Label("Diagrams");
-		CreatedModifiedGridPane diagramsGridPane = new CreatedModifiedGridPane();
+		private void openBluebook() {
+			File file = new File("doc/Bluebook.pdf");
+			Desktop desktop = Desktop.getDesktop();
+			if(file.exists() && Desktop.isDesktopSupported()) {
+				try {
+					desktop.open(file);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		
-		newDiagram.setOnAction(e -> callNewDiagramDialog()); 
-		diagramLV.setOnMouseClicked(me -> handelClickOnDiagramListView(me));
+		private void callAboutStage() {
+			Stage stage = new Stage();
+			stage.setTitle("About XModeler");
+			VBox root = new VBox();
+			root.setAlignment(Pos.BASELINE_CENTER);
+			Scene scene = new Scene(root,400,400);
+			Image image = null;
+			FileInputStream inputstream;
+			try {
+				inputstream = new FileInputStream("resources/jpeg/LE4MM-Hintergrund-Terassen.jpg");
+				image = new Image(inputstream); 
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+			
+			Label header = new Label("Imagine you had a tool...");
+			header.fontProperty().setValue(new Font(25));
+			Label filler = new Label(); 
+			
+			ImageView imageView = new ImageView(image);
+			imageView.setFitHeight(300); 
+			imageView.setFitWidth(300);
+			
+			Label versionLable = new Label("Version: " + XModeler.getVersion()); 
+			Label dateLable = new Label("Build Date: " + XModeler.getBuildDate());
+			
+			root.getChildren().addAll(header, filler, imageView, versionLable, dateLable);
+			
+			stage.setScene(scene);
+			stage.initModality(Modality.APPLICATION_MODAL);
+			stage.show();
+		}
+	}
+		
 
-		menuBar = new MenuBar();
-		HBox.setHgrow(menuBar, Priority.ALWAYS);
+	private GridPane buildGridPane() {
+		GridPane grid = new GridPane();
 		grid.setHgap(10);
 		grid.setVgap(10);
-
+		
+		//build first row
+		Label projectLabel = new Label("Projects");
 		grid.add(projectLabel, 2, 1);
-		grid.add(refreshAll, 2, 1);
-		GridPane.setHalignment(refreshAll, HPos.RIGHT);
+				
+		Button newProject = new Button("Create Project");
+		newProject.setOnAction((event) -> {controlCenterClient.createNewProject();controlCenterClient.getAllProjects();});
 		grid.add(newProject, 2, 1);
 		GridPane.setHalignment(newProject, HPos.CENTER);
 
-		projectTree.setPrefSize(250, 150);
-		grid.add(projectTree, 2, 2);
-		grid.add(projectGridPane, 2, 3);
-	
+		Button refreshAll = new Button("refresh");
+		refreshAll.setOnAction((event) -> controlCenterClient.getAllProjects());
+		grid.add(refreshAll, 2, 1);
+		GridPane.setHalignment(refreshAll, HPos.RIGHT);
+		
+		Label modelLabel = new Label("Models");
 		grid.add(modelLabel, 3, 1);
+		
+		Button newModel = new Button("Create Model");
+		newModel.setDisable(true);
 		grid.add(newModel, 3, 1);
 		GridPane.setHalignment(newModel, HPos.RIGHT);
-		modelLV.setPrefSize(250, 150);
-		grid.add(modelLV, 3, 2);
-		grid.add(modelGridPane, 3, 3);
 		
-		modelLV.setOnMouseClicked(e->{if (e.getClickCount()==2 && e.getButton()==MouseButton.PRIMARY) modelDoubleClick(e);});
-		modelLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->newModelSelected(NEWW));
-		TreeItem loading = new TreeItem("Loading");
-		projectTree.setRoot(loading);
-		
+		Label diagramLabel = new Label("Diagrams");
 		grid.add(diagramLabel, 4, 1);
+		
+		Button newDiagram = new Button("Create Diagram");
+		newDiagram.setDisable(true);
+		newDiagram.disableProperty().bind(
+				Bindings.isNull(modelLV.getSelectionModel().selectedItemProperty())
+				);
+		newDiagram.setOnAction(e -> callNewDiagramDialog()); 
 		grid.add(newDiagram, 4, 1);
 		GridPane.setHalignment(newDiagram, HPos.RIGHT);
+		
+		//build second column
+		projectTree.setPrefSize(250, 150);
+		grid.add(projectTree, 2, 2);
+		TreeItem loading = new TreeItem("Loading");
+		projectTree.setRoot(loading);
+		projectTree.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->controlCenterClient.getProjectModels(getProjectPath(projectTree.getSelectionModel().getSelectedItem())));
+		final Image image = new Image(new File("resources/gif/Projects/Project.gif").toURI().toString());
+		projectTree.setCellFactory(new ProjectTreeCellFactory(image));
+		
+		modelLV.setPrefSize(250, 150);
+		grid.add(modelLV, 3, 2);
+		modelLV.setOnMouseClicked(e->{if (e.getClickCount()==2 && e.getButton()==MouseButton.PRIMARY) modelDoubleClick(e);});
+		modelLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->newModelSelected(NEWW));
+		
+		diagramLV.setOnMouseClicked(me -> handelClickOnDiagramListView(me));
 		diagramLV.setPrefSize(250, 150);
 		grid.add(diagramLV, 4, 2);
-		grid.add(diagramsGridPane, 4, 3);
-		grid.add(concreteSyntaxWizardStart, 4, 4); //Buton for ConcreteSyntaxWizard
 
-		init();
-		projectTree.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->controlCenterClient.getProjectModels(getProjectPath(projectTree.getSelectionModel().getSelectedItem())));
+		//build third row
+		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard");
+		concreteSyntaxWizardStart.setOnAction(e -> callConcreteSyntaxWizard());		
+		grid.add(concreteSyntaxWizardStart, 4, 4);
 		
-		projectTree.setCellFactory(new ProjectTreeCellFactory(image));
+		return grid;
+	}
 
-		vBox.getChildren().addAll(menuBar, grid);
-		Scene scene = new Scene(vBox, 800, 300);
-		setScene(scene);
-		this.setOnShown((event) -> controlCenterClient.getAllCategories());
-		refreshAll.setOnAction((event) -> controlCenterClient.getAllProjects());
-		newProject.setOnAction((event) -> {controlCenterClient.createNewProject();controlCenterClient.getAllProjects();});	
-		
-		this.setOnCloseRequest(event -> {
-			if (PropertyManager.getProperty("IGNORE_SAVE_IMAGE", true)) {
-				Runtime.getRuntime().halt(0);
-			} else {
-			    WorkbenchClient.theClient().shutdownEvent();
-			}
-			event.consume();
-		});
-		new java.util.Timer().schedule( 
-		        new java.util.TimerTask() {
-		            @Override
-		            public void run() {
-		            	controlCenterClient.getAllProjects();
-		            } 
-		        }, 2500
-		);
+	private void handleStageCloseRequest(WindowEvent event) {
+		if (PropertyManager.getProperty("IGNORE_SAVE_IMAGE", true)) {
+			Runtime.getRuntime().halt(0);
+		} else {
+		    WorkbenchClient.theClient().shutdownEvent();
+		}
+		event.consume();
 	}
 
 	private void handelClickOnDiagramListView(MouseEvent me) {
@@ -217,10 +309,6 @@ public class ControlCenter extends Stage {
 		return modelBrowser;
 	}
 
-	private void init() {
-
-	}
-
 	public Stage getStageForConsole() {
 		return new Stage();
 	}
@@ -254,19 +342,6 @@ public class ControlCenter extends Stage {
 					}
 				}
 			};
-		}
-	}
-
-	private static class CreatedModifiedGridPane extends GridPane{
-		
-		Label modified=new Label("31-03-1999");
-		Label created = new Label("31-03-2000");
-						
-		private void setModified(String modified) {
-			this.modified.setText(modified);
-		}
-		private void setCreated(String created) {
-			this.created.setText(created);
 		}
 	}
 

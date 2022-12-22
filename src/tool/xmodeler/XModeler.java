@@ -70,6 +70,7 @@ public class XModeler extends Application {
   static String          projDir             = null;
   static String          loadedImagePath     = null;
   static String          version             = "";
+  static String          buildDate           = null;
   static String[]        copyOfArgs          = null;
   static boolean         showLoad            = false;
   public static String   textEditorClass     = "tool.clients.editors.TextEditor";
@@ -89,7 +90,15 @@ public class XModeler extends Application {
   
   public static ControlCenter  newStage            = null;
 
-    public static ControlCenter getNewStage() {
+  public static String getVersion() {
+	return version;
+  }
+
+  public static String getBuildDate() {
+	return buildDate;
+  }
+
+	public static ControlCenter getNewStage() {
         return newStage;
     }
 
@@ -166,10 +175,19 @@ public class XModeler extends Application {
     return menuBar;
   }
 
-  private static String getVersion(String[] args) {
+  private static String setVersion(String[] args) {
       for (String arg : args) {
           if (arg.startsWith("version:")) {
               return arg.replace("version:", "");
+          }
+      }
+    return "";
+  }
+  
+  private static String setBuildDate(String[] args) {
+      for (String arg : args) {
+          if (arg.startsWith("buildDate:")) {
+              return arg.replace("buildDate:", "");
           }
       }
     return "";
@@ -454,9 +472,7 @@ public class XModeler extends Application {
       startClients();
       newStage = new ControlCenter();
       stage= newStage;
-      newStage.show();
-      System.out.println(version);
-      
+      newStage.show();   
   }
 
 
@@ -540,7 +556,9 @@ public class XModeler extends Application {
     final String[] args = xos.getInitArgs(initFile);
     // /*QUICKFIX FOR HI_RES*/FormsClient.HIGH_RESOLUTION = checkHiRes(args);
     setProjectDirectory(args);
-    version = getVersion(args);
+    version = setVersion(args);
+    buildDate = setBuildDate(args);
+    
     setImage(args);
     Thread t = new Thread() {
       public void run() {
