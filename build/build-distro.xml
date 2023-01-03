@@ -8,9 +8,11 @@
 	-->
 
 	<target name="init">
+		<property file="build.properties"/>
+		<property name="loadedVersion" value="${version}"  />
+		<property name="loadedBuildDate" value="${builddate}"  />
 		<property name="output" location="output/" />
 		<property name="archiveDir" location="${output}/archiv/" />
-		<loadfile property="loadedVersion" srcFile="version.txt" />
 		<condition property="version" value="${loadedVersion}-SNAPSHOT" else="${loadedVersion}">
 			<or>
 				<resourceexists>
@@ -171,6 +173,8 @@
 		<!-- set version -->
 		<replace file="./output/ini-linux.txt" token="@@VERSION@@" value="${version}" />
 		<replace file="./output/ini-win.txt" token="@@VERSION@@" value="${version}" />
+		<replace file="./output/ini-linux.txt" token="@@BUILDDATE@@" value="${loadedBuildDate}" />
+		<replace file="./output/ini-win.txt" token="@@BUILDDATE@@" value="${loadedBuildDate}" />
 
 		<zip destfile="${outputArchive}" compress="yes" duplicate="fail">
 			<zipfileset dir=".." prefix="${prefix}">
