@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Vector;
 
 import javafx.application.Application;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -73,6 +74,11 @@ public class ConcreteSyntaxWizard extends Application {
 	private ComboBox<Integer> levelSelectionBox;
 	private TextField classSelectionField;
 	private TextField levelSelectionField;
+	
+	private Button editModButton;
+    private Button removeModButton;
+    private Button editActionButton;
+    private Button removeActionButton;
 
 //	private Insets defaultPadding = new Insets(5.);
 	private double defaultSpacing= 5.;
@@ -227,8 +233,9 @@ public class ConcreteSyntaxWizard extends Application {
         leftControl.getChildren().add(labelTreeView);
         leftControl.getChildren().add(concreteSyntaxTreeView);
 
-        Button editModButton = new Button("edit"); editModButton.setDisable(true);
-        Button removeModButton = new Button("remove"); removeModButton.setDisable(true);
+        editModButton = new Button("edit"); editModButton.setDisable(true);
+        removeModButton = new Button("remove"); removeModButton.setDisable(true);
+        removeModButton.setOnAction(e->removeSelectedModification()); 
         HBox modLabelsAndButtons = new HBox(
         		new Label("Modifications"),
         		editModButton,
@@ -238,9 +245,11 @@ public class ConcreteSyntaxWizard extends Application {
         leftControl.getChildren().add(modLabelsAndButtons);
         leftControl.getChildren().add(modificationList);
         modificationList.setMaxHeight(200);
+        modificationList.getSelectionModel().selectedItemProperty().addListener((obs,oldVal,newVal)->newModificationItemSelected(oldVal,newVal));
 
-        Button editActionButton = new Button("edit"); editActionButton.setDisable(true);
-        Button removeActionButton = new Button("remove"); removeActionButton.setDisable(true);
+        editActionButton = new Button("edit"); editActionButton.setDisable(true);
+        removeActionButton = new Button("remove"); removeActionButton.setDisable(true);
+        removeActionButton.setOnAction(e->removeSelectedAction()); 
         HBox actionLabelsAndButtons = new HBox(
         		new Label("Actions"),
         		editActionButton,
@@ -250,6 +259,7 @@ public class ConcreteSyntaxWizard extends Application {
         leftControl.getChildren().add(actionLabelsAndButtons);
         leftControl.getChildren().add(actionList);
         actionList.setMaxHeight(200);
+        actionList.getSelectionModel().selectedItemProperty().addListener((obs,oldVal,newVal)->newActionItemSelected(oldVal,newVal));
 		
 		/////////		
 
@@ -338,6 +348,34 @@ public class ConcreteSyntaxWizard extends Application {
 		setSelectedSyntax(selectedGroup);
 	}
 
+	private void newModificationItemSelected(Modification oldVal, Modification newVal) {
+		removeModButton.setDisable(newVal == null);
+	}
+	
+	private void newActionItemSelected(ActionInfo oldVal, ActionInfo newVal) {
+		removeActionButton.setDisable(newVal == null);
+	}
+
+	private void removeSelectedModification() {
+		Modification m = modificationList.getSelectionModel().getSelectedItem();
+		if(m != null && selectedSyntax != null && selectedSyntax instanceof ConcreteSyntax) {
+			((ConcreteSyntax) selectedSyntax).removeModification(m);
+			
+			modificationList.getItems().clear();
+			modificationList.getItems().addAll(selectedSyntax.getModifications());
+		}
+	}
+	
+	private void removeSelectedAction() {
+		ActionInfo a = actionList.getSelectionModel().getSelectedItem();
+		if(a != null && selectedSyntax != null && selectedSyntax instanceof ConcreteSyntax) {
+			((ConcreteSyntax) selectedSyntax).removeAction(a);
+			
+			actionList.getItems().clear();
+			actionList.getItems().addAll(selectedSyntax.getActions());
+		}
+	}
+	
 	private void checkNewButtonStatus() {
 		boolean found = false;
 		
@@ -569,7 +607,14 @@ public class ConcreteSyntaxWizard extends Application {
 	public void updateUI(NodeElement item) {
 		concreteSyntaxTreeView.setTree(item.getRoot());
 		setCurrentGraphicElement(item.getRoot());
-		syntaxGrid.updateContent();			
+		syntaxGrid.updateContent();
+
+		if(selectedSyntax != null) {
+			modificationList.getItems().clear();
+			modificationList.getItems().addAll(selectedSyntax.getModifications());
+			actionList.getItems().clear();
+			actionList.getItems().addAll(selectedSyntax.getActions());
+		}
 	}
 
 	public FmmlxObject getSelectedClass() {

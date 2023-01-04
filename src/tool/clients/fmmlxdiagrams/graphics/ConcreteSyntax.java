@@ -124,4 +124,16 @@ public class ConcreteSyntax extends AbstractSyntax{
 	public void addModification(Modification mod) {
 		modifications.add(mod);		
 	}
+	
+	public void removeModification(Modification mod) {
+		modifications.remove(mod);		
+	}
+
+	public void addAction(ActionInfo a) {
+		actions.add(a);		
+	}
+	
+	public void removeAction(ActionInfo a) {
+		actions.remove(a);		
+	}
 }
