@@ -118,14 +118,14 @@ public class FmmlxSerializer  {
     //Part of saveDiagram-process
     //this method contains the steps of saving process in more detail
     //All steps create the XML-Element and add this element as a child into its parent (Diagram Node)
-    private void saveComponentsIntoDiagramElement(Element ParentElement, String diagramPath, Integer id) {
-        saveObjectsIntoDiagramElement(id, ParentElement);
-        saveEdgesIntoDiagramElement(id, diagramPath, ParentElement);
-        saveLabelsIntoDiagramElement(id, ParentElement);
-        serilizeViews(id);
+    private void saveComponentsIntoDiagramElement(Element diagramElement, String diagramPath, Integer id) {
+        saveObjectsIntoDiagramElement(id, diagramElement);
+        saveEdgesIntoDiagramElement(id, diagramPath, diagramElement);
+        saveLabelsIntoDiagramElement(id, diagramElement);
+        serilizeViews(id, diagramElement);
     }
 
-    private void serilizeViews(Integer id) {
+    private void serilizeViews(Integer id, Element diagramElement) {
     	Vector<Vector<Object>> viewsResult = FmmlxDiagramCommunicator.getCommunicator().getAllViews(id);
     	for(Vector<Object> viewVec : viewsResult) {    		
     		Element viewElement = xmlManager.createXmlElement("View");
@@ -133,7 +133,7 @@ public class FmmlxSerializer  {
     		viewElement.setAttribute("xx", ""+viewVec.get(1));
     		viewElement.setAttribute("tx", ""+viewVec.get(2));
     		viewElement.setAttribute("ty", ""+viewVec.get(3));
-    		xmlManager.getDiagramsElement().appendChild(viewElement);
+    		diagramElement.appendChild(viewElement);
     	}
 	}
     
