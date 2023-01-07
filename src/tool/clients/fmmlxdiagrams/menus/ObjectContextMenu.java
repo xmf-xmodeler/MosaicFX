@@ -35,6 +35,10 @@ public class ObjectContextMenu extends ContextMenu {
 		MenuItem addInstanceItem = new MenuItem("Add instance");
 		addInstanceItem.setOnAction(e -> actions.addInstanceDialog(object, view));
 		if((object.getLevel() >= 1 || object.getLevel() == -1) && !object.isAbstract()) getItems().add(addInstanceItem);
+
+		MenuItem instanceWizardItem = new MenuItem("Instance Wizard...");
+		instanceWizardItem.setOnAction(e -> actions.openInstanceWizard(object, view));
+		if((object.getLevel() >= 1 || object.getLevel() == -1) && !object.isAbstract()) getItems().add(instanceWizardItem);
 		
 		MenuItem removeItem = new MenuItem("Remove");
 		removeItem.setOnAction(e -> actions.removeDialog(object, PropertyType.Class));

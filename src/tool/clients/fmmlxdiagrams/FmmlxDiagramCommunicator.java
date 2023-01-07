@@ -847,6 +847,19 @@ public class FmmlxDiagramCommunicator {
 		};
 		xmfRequestAsync(handler, diagram.getID(), "checkSyntax", returnCall, new Value(operationBody));
 	}
+	
+	public void evalString(AbstractPackageViewer diagram, String text, ReturnCall<Vector<Object>> result) {
+		ReturnCall<Vector<Object>> returnCall = syntaxCheckResponse -> {
+			Object response = syntaxCheckResponse.get(0);
+			if(response == null) {
+				result.run(null);
+			} else {
+				Vector<Object> responseV = (Vector<Object>) response;
+				result.run(responseV);
+			}
+		};
+		xmfRequestAsync(handler, diagram.getID(), "evalString", returnCall, new Value(text));
+	}
 
     @SuppressWarnings("unchecked")
     public void fetchAllOperationValues(AbstractPackageViewer diagram, HashMap<FmmlxObject, Vector<String>> monOpNames, ReturnCall<?> opValReceivedReturn) {
@@ -1050,6 +1063,41 @@ public class FmmlxDiagramCommunicator {
 		Value[] message = new Value[]{getNoReturnExpectedMessageID(diagramID), new Value(className), new Value(instanceName),
 				new Value(parentsArray), new Value(false), new Value(x), new Value(y), new Value(slotList)};
 		sendMessage("addInstance", message);
+	}
+	
+	public void addGeneratedInstance(
+			AbstractPackageViewer diagram,
+			String namePrefix, 
+			Vector<Vector<String>> slotValues,
+			Vector<String> mandatoryConstraints, 
+			ReturnCall<Boolean> wizardReturn) {
+
+		int i = 0;
+		Value[] slotList = new Value[slotValues.size()];
+		for(Vector<String> slotItem : slotValues) {
+			Value name = new Value(slotItem.get(0));
+			Value value = new Value(slotItem.get(1));
+			Value pair = new Value(new Value[] {name, value});
+			slotList[i] = pair;
+			i++;
+		}
+		
+		i = 0;
+		Value[] constraintList = new Value[mandatoryConstraints.size()];
+		for(String c : mandatoryConstraints) {
+			constraintList[i] = new Value(c);
+			i++;
+		}
+		
+		ReturnCall<Vector<Object>> localReturn = (response) -> {
+			System.err.println("Instance Generator response from XMF: "+ response);
+			wizardReturn.run(true);
+		};
+		
+		xmfRequestAsync(handler, diagram.getID(), "addGeneratedInstance", localReturn, 
+			new Value(namePrefix),
+			new Value(slotList),
+			new Value(constraintList));		
 	}
 	
 	public void classify(int diagramID, Vector<FmmlxObject> objects, String className) {
@@ -2265,4 +2313,5 @@ public class FmmlxDiagramCommunicator {
 			getNoReturnExpectedMessageID(diagramID),
 			new Value(text)});
     }
+
 }
