@@ -6,7 +6,6 @@ import javafx.scene.Node;
 
 public abstract class Generator {
 	
-	public abstract String getName();
 	public abstract Node getEditorPane();
 	public abstract String generate();
 	public abstract Vector<String> getProblems();

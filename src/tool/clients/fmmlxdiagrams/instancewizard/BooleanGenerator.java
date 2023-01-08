@@ -13,7 +13,7 @@ public class BooleanGenerator extends Generator {
 	
 	private VBox pane;
 	private Slider pSlider;
-	private Label pDisplay = new Label("not yet initialized");
+	private Label pDisplay = new Label("50% false, 50% true");
 	public static String name = "Probablistic (Boolean)";
 	
 	public BooleanGenerator(FmmlxAttribute att) {
@@ -31,12 +31,7 @@ public class BooleanGenerator extends Generator {
 		});
 		pSlider.setValue(.5);
 	}
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
+	
 	@Override
 	public Node getEditorPane() {
 		return pane;

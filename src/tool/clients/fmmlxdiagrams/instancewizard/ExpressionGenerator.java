@@ -9,35 +9,39 @@ import javafx.scene.layout.VBox;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 
-public class ListGenerator extends Generator {
+public class ExpressionGenerator extends Generator {
 	
 	private VBox pane;
-	public static String name = "Pick from List (XMF)";
+	public static String name = "Evaluate Expression";
 	private TextArea exprField =   new TextArea();
 	private TextArea evalResult0 = new TextArea("N/A");
 	private TextArea evalResult1 = new TextArea("N/A");
 	
-	public ListGenerator(FmmlxAttribute att, final AbstractPackageViewer diagram) {
+	public ExpressionGenerator(FmmlxAttribute att, final AbstractPackageViewer diagram) {
 
 		pane = new VBox(
-			new Label("Supply list for " + att.getName() + " to be chosen from randomly:"),
+			new Label("Supply expression for " + att.getName() + " to be evaluated for each instance:"),
 			new Label("Expression to be evaluated:"),
-			new Label("must evaluate to a list, e.g \"[ , , ]\" or a global variable"),
+			new Label("must evaluate in a global context,"),
+			new Label("should avoid side effects"),
 			exprField,
 			new Label("Test evaluation: "),
-			new Label("This should show the list as \"Seq{...}\""),
+			new Label("This should show the evaluated expression."),
+			new Label("Be aware that the value chosen may be "),
+			new Label("different if using randomizers."),
 			evalResult0,
 			new Label("Evaluation Errors:"),
 			evalResult1,
 			new Label("WARNING:"),
-			new Label("This feature fails if the test does "),
-			new Label("not show the list as described"));
+			new Label("This feature fails if there are any evaluation errors."),
+			new Label("Be aware that there may be other "),
+			new Label("errors if using randomizers."));
 		
 		exprField.textProperty().addListener((obs, oldVal, newVal) -> {
 			diagram.getComm().evalString(diagram, newVal, (result) -> resultReceived(result));
 		});
 		
-		exprField.setText("[\"yes\", \"no\", \"maybe\"] + 1.to(20)->select(p|p.isPrime())");
+		exprField.setText("Integer::random(20)");
 		
 	}
 	
@@ -45,7 +49,7 @@ public class ListGenerator extends Generator {
 		evalResult0.setText(result.get(0)+"");
 		evalResult1.setText(result.get(1)+"");
 	}
-	
+
 	@Override
 	public Node getEditorPane() {
 		return pane;
@@ -53,8 +57,7 @@ public class ListGenerator extends Generator {
 
 	@Override
 	public String generate() {
-		String list = "("+exprField.getText()+")";
-		return list + ".at(Integer::random(" + list + ".size()-1))";
+		return exprField.getText();
 	}
 
 	@Override

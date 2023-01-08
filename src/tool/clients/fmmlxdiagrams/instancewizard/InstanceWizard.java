@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams.instancewizard;
 import java.util.HashMap;
 import java.util.Vector;
 
+import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -10,11 +11,12 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.Constraint;
@@ -42,8 +44,9 @@ public class InstanceWizard extends Dialog<InstanceWizard.Result> {
 		}
 		
 		VBox constraintBox = new VBox();
-		constraintBox.getChildren().add(new Label("Selects constraints which must be met:"));
-		constraintBox.getChildren().add(new Label("Otherwise the instance is discarded and tried again."));
+		constraintBox.getChildren().add(new Separator());
+		constraintBox.getChildren().add(new Label("Select constraints which must be met:"));
+		constraintBox.getChildren().add(new Label("If failed, the instance is discarded and tried again."));
 		for(Constraint c : theClass.getConstraints()) { // TODO: gather all constraints from meta-classes as well
 			CheckBox checkBox = new CheckBox(c.getName());
 			constraintBox.getChildren().add(checkBox);
@@ -52,14 +55,23 @@ public class InstanceWizard extends Dialog<InstanceWizard.Result> {
 
 		tabPane.setMinHeight(500);
 		tabPane.setMinWidth(400);
+		VBox.setVgrow(tabPane, Priority.ALWAYS);
 
 		GridPane spinnerPane = new GridPane();
 		spinnerPane.add(new Label("Number of Instances:"), 0, 0);
-		spinnerPane.add(new Label("Max failed attempts:"), 1, 0);
-		spinnerPane.add(instanceSpinner, 0, 1);
+		spinnerPane.add(new Label("Max failed attempts:"), 0, 1);
+		spinnerPane.add(instanceSpinner, 1, 0);
 		spinnerPane.add(timeoutSpinner, 1, 1);
+		spinnerPane.setHgap(5.);
+		spinnerPane.setVgap(5.);
 		
-		VBox vBox = new VBox(new Label("Instance Generator for " + theClass.getName()), spinnerPane, tabPane, constraintBox);
+		VBox vBox = new VBox(
+				new Label("Instance Generator for " + theClass.getName()), 
+				spinnerPane, 
+				tabPane, 
+				constraintBox);
+		vBox.setSpacing(5.);
+		vBox.setPadding(new Insets(5.));	
 		getDialogPane().setContent(vBox);
 		
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -81,19 +93,7 @@ public class InstanceWizard extends Dialog<InstanceWizard.Result> {
 				return null; 
 		});
 	}
-		
-//	private Result generateInstances() {
-//		// only demo so far
-//		for(int i = 0; i < instanceSpinner.getValue(); i++) {
-//			System.err.println("generating instance no. " + (i+1));
-//			for(Tab t : tabPane.getTabs()) {
-//				AttributeTab aTab = (AttributeTab) t;
-//				System.err.println("\t" + aTab.getAttribute().getName() + ": " + aTab.generate());
-//			}
-//		}
-//		return null;
-//	}
-	
+
 	private void generateInstances(int numberOfInstances, int maxTimeOut) {
 		instanceCreationCounter = numberOfInstances;
 		maxTimeOutCounter = maxTimeOut;
@@ -101,7 +101,6 @@ public class InstanceWizard extends Dialog<InstanceWizard.Result> {
 	}
 	
 	public void notifyInstanceCreated(Boolean success) {
-		System.err.println("notifyInstanceCreated: " + success);
 		if(success) {
 			instanceCreationCounter--;
 			timeoutCounter = maxTimeOutCounter;
@@ -110,18 +109,19 @@ public class InstanceWizard extends Dialog<InstanceWizard.Result> {
 		}
 		if(instanceCreationCounter > 0 && timeoutCounter > 0) {
 			generateInstance();
+		} else {
+			diagram.updateDiagram();
 		}
 	}
 	
 	private void generateInstance() {
-		System.err.println("Start generateInstance, " + instanceCreationCounter + " instances left");
 		String namePrefix = theClass.getName();
 		if(theClass.getLevel() == 1) namePrefix = namePrefix.substring(0,1).toLowerCase() + namePrefix.substring(1);
 		
 		Vector<Vector<String>> slotValues = new Vector<>();
 		for(Tab t : tabPane.getTabs()) {
 			AttributeTab aTab = (AttributeTab) t;
-			System.err.println("\t" + aTab.getAttribute().getName() + ": " + aTab.generate());
+//			System.err.println("\t" + aTab.getAttribute().getName() + ": " + aTab.generate());
 			Vector<String> slotItem = new Vector<>();
 			slotItem.add(aTab.getAttribute().getName());
 			slotItem.add(aTab.generate());
@@ -138,6 +138,8 @@ public class InstanceWizard extends Dialog<InstanceWizard.Result> {
 		
 		diagram.getComm().addGeneratedInstance(
 				diagram,
+				theClass,
+				theClass.getLevel()-1,
 				namePrefix,
 				slotValues,
 				mandatoryConstraints,

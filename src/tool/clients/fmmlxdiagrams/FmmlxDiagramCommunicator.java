@@ -1067,6 +1067,8 @@ public class FmmlxDiagramCommunicator {
 	
 	public void addGeneratedInstance(
 			AbstractPackageViewer diagram,
+			FmmlxObject theClass,
+			int level,
 			String namePrefix, 
 			Vector<Vector<String>> slotValues,
 			Vector<String> mandatoryConstraints, 
@@ -1091,10 +1093,13 @@ public class FmmlxDiagramCommunicator {
 		
 		ReturnCall<Vector<Object>> localReturn = (response) -> {
 			System.err.println("Instance Generator response from XMF: "+ response);
-			wizardReturn.run(true);
+			Boolean success = (Boolean) response.get(0);
+			wizardReturn.run(success);
 		};
 		
 		xmfRequestAsync(handler, diagram.getID(), "addGeneratedInstance", localReturn, 
+			new Value(theClass.name),
+			new Value(level),
 			new Value(namePrefix),
 			new Value(slotList),
 			new Value(constraintList));		

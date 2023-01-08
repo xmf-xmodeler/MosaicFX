@@ -3,6 +3,7 @@ package tool.clients.fmmlxdiagrams.instancewizard;
 import java.util.Random;
 import java.util.Vector;
 
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -10,16 +11,16 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import tool.clients.fmmlxdiagrams.FmmlxAttribute;
 
-public class GaussianGenerator extends Generator {	
+public class FloatGaussianGenerator extends Generator {
 
 	private VBox pane;
 	private TextField meanField;
 	private TextField devField;
-	public static String name = "Gaussian";
+	public static String name = "Gaussian (Float)";
 	private static Random r = new Random();
 	private FmmlxAttribute att;
 	
-	public GaussianGenerator(FmmlxAttribute att) {
+	public FloatGaussianGenerator(FmmlxAttribute att) {
 		this.att = att;
 		Label meanLabel = new Label("Mean:");
 		Label devLabel = new Label("Standard Deviation:");
@@ -27,6 +28,8 @@ public class GaussianGenerator extends Generator {
 		devField = new TextField("1.0");
 		
 		GridPane gridPane = new GridPane();
+		gridPane.setHgap(5.);
+		gridPane.setVgap(5.);
 
 		gridPane.add(meanLabel, 0, 0);
 		gridPane.add(meanField, 1, 0);
@@ -36,16 +39,12 @@ public class GaussianGenerator extends Generator {
 		pane = new VBox(
 				new Label("Choose normal distribution for attribute " + att.getName() + ":"),
 				gridPane);
-	}
-
-	@Override
-	public String getName() {
-		return name;
+		pane.setSpacing(5.);
+		pane.setPadding(new Insets(5.));	
 	}
 
 	@Override
 	public Node getEditorPane() {		
-
 		return pane;
 	}
 
