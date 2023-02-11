@@ -126,8 +126,7 @@ public abstract class Condition<ReturnType>{
 	
 	public static class BooleanOpValCondition extends Condition<Boolean>{
 		
-		private String opName;
-		private boolean value;		
+		private String opName;	
 		
 		@Override
 		public Boolean eval(FmmlxObject object) throws SlotNotFoundException {
@@ -135,14 +134,13 @@ public abstract class Condition<ReturnType>{
 			if (opVal == null) {
 				throw new SlotNotFoundException();
 			}
-			return value=="true".equals(opVal.getValue());
+			return "true".equals(opVal.getValue());
 		}
 
 		@Override
 		public void save(Element conditionElement) {
 			conditionElement.setAttribute("type", "BooleanOpValCondition");
-			conditionElement.setAttribute("opName", opName);
-			
+			conditionElement.setAttribute("opName", opName);			
 		}
 
 		public BooleanOpValCondition(String opName) {
@@ -159,7 +157,6 @@ public abstract class Condition<ReturnType>{
 	public static class BooleanConstraintCondition extends Condition<Boolean>{
 		
 		private String constraintName;
-		private boolean value;		
 		
 		@Override
 		public Boolean eval(FmmlxObject object) throws SlotNotFoundException {

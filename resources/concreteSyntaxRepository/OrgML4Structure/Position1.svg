@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1-rc (52f87abb86, 2021-05-02)"
+   sodipodi:docname="Position1.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     objecttolerance="10.0"
+     gridtolerance="10.0"
+     guidetolerance="10.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="1.8973437"
+     inkscape:cx="541.01953"
+     inkscape:cy="476.98264"
+     inkscape:window-width="2364"
+     inkscape:window-height="1950"
+     inkscape:window-x="677"
+     inkscape:window-y="48"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient1075">
+      <stop
+         style="stop-color:#c8cc9a;stop-opacity:1;"
+         offset="0"
+         id="stop1071" />
+      <stop
+         style="stop-color:#c8cc9a;stop-opacity:0;"
+         offset="1"
+         id="stop1073" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1075"
+       id="linearGradient1077"
+       x1="26.725"
+       y1="55.962"
+       x2="148.325"
+       y2="55.962"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="rect850"
+       style="opacity:1;fill:#f5c400;stroke:#8b8b8b;stroke-width:0.4;paint-order:fill markers stroke"
+       d="m 124.66771,74.74485 h 24.26418 c 2.31765,0 4.18348,1.865832 4.18348,4.18348 v 3.486233 c 0,2.317648 -1.86583,4.18348 -4.18348,4.18348 h -24.26418 c -2.31765,0 -4.18348,-1.865832 -4.18348,-4.18348 V 78.92833 c 0,-2.317648 1.86583,-4.18348 4.18348,-4.18348 z" />
+  </g>
+</svg>

@@ -25,8 +25,8 @@ import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 public class InstanceWizard extends Dialog<InstanceWizard.Result> {
 	TabPane tabPane = new TabPane();
-	Spinner<Integer> instanceSpinner = new Spinner<Integer>(0, Integer.MAX_VALUE, 10);
-	Spinner<Integer> timeoutSpinner = new Spinner<Integer>(0, Integer.MAX_VALUE, 10);
+	Spinner<Integer> instanceSpinner = new Spinner<Integer>(1, Integer.MAX_VALUE, 10);
+	Spinner<Integer> timeoutSpinner = new Spinner<Integer>(1, Integer.MAX_VALUE, 10);
 	private int instanceCreationCounter = 0;
 	private int timeoutCounter = 0;
 	private int maxTimeOutCounter;
@@ -37,6 +37,8 @@ public class InstanceWizard extends Dialog<InstanceWizard.Result> {
 	public InstanceWizard(AbstractPackageViewer diagram, FmmlxObject theClass, int level) {
 		this.diagram = diagram;
 		this.theClass = theClass;
+		
+		this.setResizable(true);
 		
 		for(FmmlxAttribute att : theClass.getAllAttributes()) if(att.getLevel() == level) {
 			AttributeTab t = new AttributeTab(att, diagram);
@@ -53,8 +55,8 @@ public class InstanceWizard extends Dialog<InstanceWizard.Result> {
 			constraintBoxes.put(c, checkBox);
 		}
 
-		tabPane.setMinHeight(500);
-		tabPane.setMinWidth(400);
+		tabPane.setMinHeight(600);
+		tabPane.setMinWidth(450);
 		VBox.setVgrow(tabPane, Priority.ALWAYS);
 
 		GridPane spinnerPane = new GridPane();
@@ -62,6 +64,12 @@ public class InstanceWizard extends Dialog<InstanceWizard.Result> {
 		spinnerPane.add(new Label("Max failed attempts:"), 0, 1);
 		spinnerPane.add(instanceSpinner, 1, 0);
 		spinnerPane.add(timeoutSpinner, 1, 1);
+		instanceSpinner.setEditable(true);
+		instanceSpinner.focusedProperty().addListener((observable, oldValue, newValue) -> {
+			if (!newValue) instanceSpinner.increment(0); }); // Javafx-Bug
+		timeoutSpinner.setEditable(true);
+		timeoutSpinner.focusedProperty().addListener((observable, oldValue, newValue) -> {
+			if (!newValue) timeoutSpinner.increment(0); }); // Javafx-Bug
 		spinnerPane.setHgap(5.);
 		spinnerPane.setVgap(5.);
 		

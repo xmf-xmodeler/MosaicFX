@@ -721,13 +721,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		mainViewPane.canvas.setCursor(c);
 	}
 
-	public Vector<String> getEnumItems(String enumName) {
-		for (FmmlxEnum e : enums) {
-			if(e.getName().equals(enumName)) return e.getItems();
-		}
-		return null;
-	}
-
 	public ObservableList<FmmlxEnum> getEnumsObservableList() {
 		Vector<FmmlxEnum> objectList = new Vector<>();
 

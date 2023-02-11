@@ -43,6 +43,10 @@ public class ExpressionGenerator extends Generator {
 		
 		exprField.setText("Integer::random(20)");
 		
+		exprField.setMinHeight(150);
+		evalResult0.setMinHeight(50);
+		evalResult1.setMinHeight(50);
+		
 	}
 	
 	private void resultReceived(Vector<Object> result) {

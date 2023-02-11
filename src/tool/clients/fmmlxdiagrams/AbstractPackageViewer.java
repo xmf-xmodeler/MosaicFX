@@ -39,7 +39,6 @@ public abstract class AbstractPackageViewer {
 	}
 
 	public abstract FmmlxProperty getSelectedProperty();
-	public abstract Vector<String> getEnumItems(String type);
 	public abstract ObservableList<FmmlxObject> getPossibleAssociationEnds();
 	
 	public int getID() {
@@ -98,7 +97,7 @@ public abstract class AbstractPackageViewer {
 				
 		ReturnCall<Vector<String>> opValReturn = x3 -> {
 
-			if(TIMER) System.err.println("Object values loaded after      " + (System.currentTimeMillis() - START) + " ms.");
+			if(TIMER) System.err.println("Operation values loaded after      " + (System.currentTimeMillis() - START) + " ms.");
 			
 			fetchDiagramDataSpecific();
 			
@@ -111,6 +110,7 @@ public abstract class AbstractPackageViewer {
 		};
 		
 		ReturnCall<Vector<String>> slotsReturn = x2 -> {
+			if(TIMER) System.err.println("Slot values loaded after      " + (System.currentTimeMillis() - START) + " ms.");
 			HashMap<FmmlxObject, Vector<String>> opValNames = new HashMap<>();
 			for(FmmlxObject o : objects) {
 				opValNames.put(o, o.getMonitoredOperationsNames());
@@ -284,6 +284,13 @@ public abstract class AbstractPackageViewer {
 			}
 		}
 		return result; // read-only
+	}
+	
+	public Vector<String> getEnumItems(String enumName) {
+		for (FmmlxEnum e : enums) {
+			if(e.getName().equals(enumName)) return e.getItems();
+		}
+		return null;
 	}
 	
 	public final String getPackagePath() {
