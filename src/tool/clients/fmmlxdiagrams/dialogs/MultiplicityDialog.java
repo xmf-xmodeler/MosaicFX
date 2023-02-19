@@ -135,6 +135,7 @@ public class MultiplicityDialog extends CustomDialog<Multiplicity> {
 	}
 
 	private boolean validateMax() {
+		if(!isUpperLimitCheckBox.isSelected()) return true;
 		int min = getComboBoxIntegerValue(minimumComboBox);
 		int max = getComboBoxIntegerValue(maximumComboBox);
 		if (max < 0) {

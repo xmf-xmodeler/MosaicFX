@@ -86,6 +86,7 @@ public class NodeLabel extends NodeBaseElement {
 		}
 		Affine total = getTotalTransform(canvasTransform);
 		total.append(new Translate( - hAlign - BOX_GAP,  - BOX_GAP - textHeight));
+		total.append(getDragAffine());
 		return total;
 	}
 	
@@ -96,6 +97,7 @@ public class NodeLabel extends NodeBaseElement {
 		}
 		Affine total = getTotalTransform(canvasTransform);
 		total.append(new Translate( - hAlign, - Y_BASELINE_DIFF));
+		total.append(getDragAffine());
 		return total;
 	}
 

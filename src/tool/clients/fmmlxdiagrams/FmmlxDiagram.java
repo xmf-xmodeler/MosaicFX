@@ -542,10 +542,6 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		objectsMoved = false;
 	}
 
-	private boolean isLeftButton(MouseEvent e) {return e.getButton() == MouseButton.PRIMARY;}
-	private boolean isRightButton(MouseEvent e) {return e.getButton() == MouseButton.SECONDARY;}
-	private boolean isCenterButton(MouseEvent e) {return e.getButton() == MouseButton.MIDDLE;}
-
 	private final double ZOOM_STEP = Math.sqrt(Math.sqrt(Math.sqrt(2)));
 
 	/* Setters for MouseMode */
@@ -941,19 +937,28 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 		////						MouseListener						////
 		////////////////////////////////////////////////////////////////////
 
+		private boolean isLeftButton(MouseEvent e) {
+			return e.getButton() == MouseButton.PRIMARY && !getPressedKeys().contains(KeyCode.ALT) && !getPressedKeys().contains(KeyCode.SPACE);}
+		
+		private boolean isRightButton(MouseEvent e) {
+			return e.getButton() == MouseButton.SECONDARY;}
+		
+		private boolean isCenterButton(MouseEvent e) {
+			return e.getButton() == MouseButton.MIDDLE || 
+				   e.getButton() == MouseButton.PRIMARY && getPressedKeys().contains(KeyCode.ALT) ||
+				   e.getButton() == MouseButton.PRIMARY && getPressedKeys().contains(KeyCode.SPACE);}
 
 		private void mousePressed(MouseEvent e) {
 			if(fetchingData) return;
 			clearContextMenus();
-			if (isLeftButton(e) && !getPressedKeys().contains(KeyCode.ALT) && !getPressedKeys().contains(KeyCode.SPACE)) {
+			if (isLeftButton(e)) {
 				handleLeftPressed(e);
 				dragStart = new Point2D(e.getX(), e.getY());
 			}
 			if (isRightButton(e)) {
 				handleRightPressed(e);
 			}
-			if (isCenterButton(e) || (isLeftButton(e) && getPressedKeys().contains(KeyCode.ALT)) ||
-					isLeftButton(e) && getPressedKeys().contains(KeyCode.SPACE)) {
+			if (isCenterButton(e)) {
 				handleCenterPressed(e);
 			}
 		}
@@ -969,11 +974,11 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 				canvasTransform);
 				}
 				mouseDraggedStandard(new Point2D(e.getX(), e.getY()));
-				if (!pressedKeys.contains(KeyCode.ALT) && !pressedKeys.contains(KeyCode.SPACE) && !isCenterButton(e)) {
+				if (isLeftButton(e)) {
 					moveObjectsOnDrag(new Point2D(e.getX(), e.getY()));
 				}
 			}
-			if (isCenterButton(e) || (isLeftButton(e) && getPressedKeys().contains(KeyCode.ALT) || isLeftButton(e) && getPressedKeys().contains(KeyCode.SPACE))){
+			if (isCenterButton(e)){
 				handleCenterDragged(e);
 			}
 		}
@@ -1231,7 +1236,7 @@ public class FmmlxDiagram extends AbstractPackageViewer{
 					if (!selectedObjects.contains(hitObject)) {
 						selectedObjects.clear();
 						selectedObjects.add(hitObject);
-						highlightElementAt(hitObject, p);
+//						highlightElementAt(hitObject, p);
 					}
 				}
 				handlePressedOnNodeElement(p, hitObject);

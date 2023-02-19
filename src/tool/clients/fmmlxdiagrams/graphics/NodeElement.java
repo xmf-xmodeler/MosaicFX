@@ -43,6 +43,10 @@ public abstract class NodeElement {
 	public final FmmlxProperty getActionObject() { return actionObject;}
 	public final void performDoubleClickAction(View view) { if(action!=null) action.perform();}
 	
+	public NodeElement() {
+		this.dragAffine = new Affine();
+	}
+	
 	/**
 	 * Paints this NodeElement and all its children to the diagramView's canvas.
 	 * @param diagramView the view the element will be painted on
@@ -198,5 +202,21 @@ public abstract class NodeElement {
 			svgRoot = svgRoot.getOwner();
 		}
 		return insideSVG;
+	}
+	
+	private transient Affine dragAffine;
+
+	public void dragTo(Affine dragAffine) {
+		this.dragAffine = dragAffine;		
+	}
+
+	public void drop() {
+		myTransform.append(dragAffine);
+		dragAffine = new Affine();		
+	}
+
+	public Transform getDragAffine() {
+		if(dragAffine == null) return new Affine(); // HACK
+		return dragAffine;
 	}
 }

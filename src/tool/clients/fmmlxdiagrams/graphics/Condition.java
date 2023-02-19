@@ -1,13 +1,10 @@
 package tool.clients.fmmlxdiagrams.graphics;
 
-import java.util.Vector;
-
 import org.w3c.dom.Element;
 
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.fmmlxdiagrams.FmmlxOperationValue;
 import tool.clients.fmmlxdiagrams.FmmlxSlot;
-import tool.clients.fmmlxdiagrams.Issue;
 
 public abstract class Condition<ReturnType>{
 

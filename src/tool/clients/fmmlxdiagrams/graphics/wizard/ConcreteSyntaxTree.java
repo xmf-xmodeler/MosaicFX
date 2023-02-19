@@ -267,7 +267,7 @@ public class ConcreteSyntaxTree extends TreeView<NodeElement>{
 
 						parent.updateUI(item);
 					}
-				}						
+				}			
 			});
 			MenuItem boolOpValItem = new MenuItem("Depends on Operation (Boolean)");
 			boolOpValItem.setDisable(parent.getSelectedClass() == null || parent.getSelectedLevel() == null);

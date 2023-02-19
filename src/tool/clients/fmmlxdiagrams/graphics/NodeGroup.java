@@ -14,7 +14,6 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.transform.Affine;
-import javafx.scene.transform.Transform;
 import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 import tool.clients.xmlManipulator.XmlHandler;
@@ -22,15 +21,10 @@ import tool.clients.xmlManipulator.XmlHandler;
 public class NodeGroup extends NodeElement {
 	
 	protected Vector<NodeElement> nodeElements = new Vector<>();
-	
-	/*
-	 * This should be on a higher level, as only the whole group can be dragged
-	 */
-	private transient Affine dragAffine;
-	
+		
 	public NodeGroup(Affine myTransform) {
+		super();
 		this.myTransform = myTransform;
-		dragAffine = new Affine();
 		updateBounds();
 	}
 	
@@ -141,20 +135,6 @@ public class NodeGroup extends NodeElement {
 			}
 		}
 		this.bounds = bounds;
-	}
-
-	public void dragTo(Affine dragAffine) {
-		this.dragAffine = dragAffine;		
-	}
-
-	public void drop() {
-		myTransform.append(dragAffine);
-		dragAffine = new Affine();		
-	}
-
-	public Transform getDragAffine() {
-		if(dragAffine == null) return new Affine(); // HACK
-		return dragAffine;
 	}
 
 	@Override

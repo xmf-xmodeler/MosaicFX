@@ -4,22 +4,25 @@ import java.io.File;
 import java.util.Vector;
 
 import javafx.application.Application;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
+import javafx.scene.transform.NonInvertibleTransformException;
+import javafx.scene.transform.Transform;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
@@ -61,6 +64,7 @@ public class ConcreteSyntaxWizard extends Application {
 	private PreviewGrid<AbstractSyntax> syntaxGrid;
 	private Vector<AbstractSyntax> syntaxes = new Vector<>();
 	private AbstractPackageViewer model;
+	private NodeElement selectedNodeElement = null;
 	
 	private AbstractSyntax selectedSyntax;
 	private FmmlxObject selectedClass;	
@@ -406,6 +410,7 @@ public class ConcreteSyntaxWizard extends Application {
 	}
 
 	private void setCurrentGraphicElement(NodeElement item) {
+		selectedNodeElement = item;
 		paint(item, myCanvas.zoom);
 		/** an item is editable if it is any kind of a group or a label.
 		 * It further must not be inside an svg nor must it be the overall root
@@ -432,14 +437,14 @@ public class ConcreteSyntaxWizard extends Application {
 		NodeElement item4Bounds = concreteSyntaxTreeView.getRoot().getValue();
 		item4Bounds.updateBounds();
 		if(item4Bounds.getBounds() != null) {
-			myCanvas.affine = new Affine(zoom,0, 
+			myCanvas.canvasTransform = new Affine(zoom,0, 
 				myCanvas.getCanvas().getWidth() / 2
 				-zoom*(item4Bounds.getBounds().getMinX() + item4Bounds.getBounds().getWidth() / 2),
 				0,zoom, 
 				myCanvas.getCanvas().getHeight() / 2
 				-zoom*(item4Bounds.getBounds().getMinY() + item4Bounds.getBounds().getHeight() / 2));
 			
-			myCanvas.getCanvas().getGraphicsContext2D().setTransform(myCanvas.affine);
+			myCanvas.getCanvas().getGraphicsContext2D().setTransform(myCanvas.canvasTransform);
 			myCanvas.getCanvas().getGraphicsContext2D().setFill(Color.WHITE);
 			myCanvas.getCanvas().getGraphicsContext2D().fillRect(
 					item4Bounds.getBounds().getMinX(),
@@ -454,8 +459,8 @@ public class ConcreteSyntaxWizard extends Application {
 		
 		item.paintOn(myCanvas, false);
 		
-		try{ 
-			Affine a = item4Bounds.getTotalTransform(myCanvas.affine);
+		try{ // paint x/y-axis
+			Affine a = item4Bounds.getTotalTransform(myCanvas.canvasTransform);
 			Point2D o = a.transform(new Point2D(0, 0));
 			myCanvas.getCanvas().getGraphicsContext2D().setTransform(new Affine());
 			myCanvas.getCanvas().getGraphicsContext2D().setStroke(Color.GRAY);
@@ -467,6 +472,18 @@ public class ConcreteSyntaxWizard extends Application {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		{
+			GraphicsContext g = myCanvas.getCanvas().getGraphicsContext2D();
+			g.setTransform(new Affine());
+			g.setFill(Color.YELLOW);
+			g.fillText("MouseMode: " + myCanvas.mouseMode, 10, 20);
+			g.fillText("Mouse: " + myCanvas.startMousePosition, 10, 40);
+			g.fillText("Mouse: " + myCanvas.currentMousePosition, 10, 60);
+			g.fillText("Pivot: " + myCanvas.pivot, 10, 80);
+			g.fillText("Drag Transform: " + myCanvas.dragAffine, 10, 100);
+		}
+		
 	}
 	
 	private void setSelectedSyntax(AbstractSyntax group) {
@@ -535,22 +552,123 @@ public class ConcreteSyntaxWizard extends Application {
 	}
 	
 
+	private enum MouseMode {TRANSLATE, SCALE, NONE};
 	
 	private class MyCanvas extends Pane implements View {
 		
 		Canvas canvas; 
-		Affine affine;
+		Affine canvasTransform;
+		private MouseMode mouseMode = MouseMode.NONE;
+		private transient Point2D pivot;
+		private transient Point2D currentMousePosition;
+		private transient Point2D startMousePosition;
+		private transient Affine dragAffine;
 		
 		public MyCanvas() {
 			canvas = new Canvas(1000,800);
-			affine = new Affine();
+			canvasTransform = new Affine();
 			getChildren().add(canvas);
 			canvas.widthProperty().bind(this.widthProperty());
 			canvas.heightProperty().bind(this.heightProperty());
 			setPrefSize(1400, 1000);
 			canvas.addEventFilter(ScrollEvent.ANY, this::handleScroll);
+			canvas.setOnMousePressed(e->mousePressed(e));
+			canvas.setOnMouseReleased(e->mouseReleased(e));
+			canvas.setOnMouseDragged(e->mouseDragged(e));
 		}
 		
+		private void mousePressed(MouseEvent e) {
+			startMousePosition = new Point2D(e.getX(), e.getY());
+			currentMousePosition = startMousePosition;
+			mouseMode = MouseMode.NONE;
+			if(selectedNodeElement == null) return;
+			
+			{   // TODO: COPYPASTE see above, avoid redundancy
+				/** an item is editable if it is any kind of a group or a label.
+				 * It further must not be inside an svg nor must it be the overall root
+				 * editable means that the transformation can be changed.
+				 */
+				boolean editable = 
+						(selectedNodeElement instanceof NodeLabel || selectedNodeElement instanceof NodeGroup) && 
+						(!selectedNodeElement.isInsideSVG()) && selectedNodeElement.getRoot() != selectedNodeElement;
+				
+				if(!editable) return;
+			}
+			
+			if(e.isPrimaryButtonDown()) {
+				if(e.isControlDown()) {
+					mouseMode = MouseMode.SCALE;
+					setPivot(e);
+					repaintCanvas();
+				} else {
+					mouseMode = MouseMode.TRANSLATE;
+					repaintCanvas();
+				}
+			}
+		}
+		
+		private void repaintCanvas() {
+			if(selectedNodeElement != null)
+			paint(selectedNodeElement, zoom);
+		}
+
+		private void setPivot(MouseEvent e) {
+			try{
+				Affine selectedElementAffine = selectedNodeElement.getTotalTransform(canvasTransform);
+				Point2D relativePoint = selectedElementAffine.inverseTransform(new Point2D(e.getX(), e.getY()));
+				pivot = relativePoint;
+			} catch (NonInvertibleTransformException niEx) {
+				System.err.println("setPivot cancelled: NonInvertibleTransformException");
+				mouseMode = MouseMode.NONE;
+			}
+		}
+
+		private void mouseReleased(MouseEvent e) {
+			try{
+				currentMousePosition = new Point2D(e.getX(), e.getY());
+				if(mouseMode == MouseMode.TRANSLATE || mouseMode == MouseMode.SCALE) {
+					selectedNodeElement.drop();
+					updateUI(selectedNodeElement);
+				} 
+			} finally {
+				mouseMode = MouseMode.NONE;
+				dragAffine = null;
+				repaintCanvas();
+			}
+		}
+		
+		private void mouseDragged(MouseEvent e) {
+			try{
+				currentMousePosition = new Point2D(e.getX(), e.getY());
+				if(mouseMode == MouseMode.TRANSLATE) {
+					
+					Affine b = new Affine(Transform.translate(e.getX() - startMousePosition.getX(), e.getY() - startMousePosition.getY()));
+					b.prepend(selectedNodeElement.getMyTransform().createInverse());
+					b.append(selectedNodeElement.getMyTransform());
+					
+					Affine a = new Affine(canvasTransform);
+					a.prepend(b);
+					a.prepend(canvasTransform.createInverse());
+					
+					dragAffine = a;
+					selectedNodeElement.dragTo(dragAffine);
+					repaintCanvas();
+				} else if(mouseMode == MouseMode.SCALE) {
+					double mouseRight = e.getX() - startMousePosition.getX();
+					double exponent = mouseRight / 20;
+					double scale = Math.pow(2, exponent);
+					Affine a = new Affine(Affine.scale(scale, scale, pivot.getX(), pivot.getY()));
+					dragAffine = a;
+					selectedNodeElement.dragTo(dragAffine);
+					repaintCanvas();
+				}
+			} catch (NonInvertibleTransformException niEx) {
+				System.err.println("mouseDragged cancelled: NonInvertibleTransformException");
+				mouseMode = MouseMode.NONE;
+				repaintCanvas();
+			}
+		}
+
 		@Override
 		public Canvas getCanvas() {
 			return canvas;
@@ -558,7 +676,7 @@ public class ConcreteSyntaxWizard extends Application {
 
 		@Override
 		public Affine getCanvasTransform() {
-			return affine;
+			return canvasTransform;
 		}
 		
 		private double zoom = 1.;
