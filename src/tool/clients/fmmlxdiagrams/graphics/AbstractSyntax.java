@@ -21,6 +21,7 @@ import javafx.scene.transform.Affine;
 public class AbstractSyntax extends NodeGroup{
 	
 	protected File file;
+	private boolean metaImport = false;
 
 	public void save() {
 		throw new RuntimeException("Not yet implemented!");
@@ -50,6 +51,19 @@ public class AbstractSyntax extends NodeGroup{
 				vec.add(readLabel((Element) n));
 			} else if("Group".equals(n.getNodeName())){
 				vec.add(readGroup((Element) n, file.getParentFile()));
+			} else if("Import".equals(n.getNodeName())){
+				File f = new File(file.getParentFile(), ((Element) n).getAttribute("path"));
+				AbstractSyntax importElements = load(f);
+				Affine transform = readTransform((Element) n);
+				importElements.myTransform = transform;
+				vec.add(importElements);
+			} else if("ImportMeta".equals(n.getNodeName())){
+				File f = new File(file.getParentFile(), ((Element) n).getAttribute("path"));
+				AbstractSyntax metaSyntax = load(f);
+				metaSyntax.metaImport = true;
+				Affine transform = readTransform((Element) n);
+				metaSyntax.myTransform = transform;
+				vec.add(metaSyntax);
 			} else {
 //				System.err.println("Child not recognized: " + root + ":" + n);
 			}
@@ -64,10 +78,14 @@ public class AbstractSyntax extends NodeGroup{
 		}
 		
 		object.nodeElements = vec;
+		for(NodeElement e : object.nodeElements) e.owner = object;
 		object.file=file;
 		return object;
 	}
 
+	public Vector<Modification> getModifications() {return new Vector<>();}
+	public Vector<ActionInfo> getActions() {return new Vector<>();}
+	
 	private static NodeLabel readLabel(Element e) {
 		Affine transform = readTransform(e);
 		Pos alignment = Pos.BASELINE_LEFT;
@@ -77,11 +95,20 @@ public class AbstractSyntax extends NodeGroup{
 			if("CENTER".equals(s)) alignment = Pos.BASELINE_CENTER;
 			if("RIGHT".equals(s)) alignment = Pos.BASELINE_RIGHT;
 		}
+		Color c = Color.BLACK;
+		if(e.hasAttribute("color")) {
+			String s = e.getAttribute("color");
+			try{
+				c = Color.web(s);
+			} catch(Exception ex) {
+				System.err.println("Color not found: " + s);
+			}
+		}
 		NodeLabel label = new NodeLabel(
 				alignment, 
-				transform.getTx(), transform.getTy(), 
-				Color.BLACK, new Color(.9,1.,1.,1.), 
-				null, ()->{}, 
+				transform, 
+				c, Color.TRANSPARENT,//new Color(.9,1.,1.,1.), 
+				null, null, 
 				"label test", 
 				false, -1);
 		if(e.hasAttribute("id")) label.id = e.getAttribute("id");
@@ -136,7 +163,11 @@ public class AbstractSyntax extends NodeGroup{
 	@Override
 	public String toString() {
 		return "G"+ (id==null?"":("("+id+")"));
-	}	
+	}
+
+	public boolean isMetaImport() {
+		return metaImport;
+	}
 
 	
 }

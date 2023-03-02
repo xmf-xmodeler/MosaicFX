@@ -26,18 +26,9 @@ public class NodePath extends NodeBaseElement{
 
 	@Deprecated Color bgColor;
 	@Deprecated Color fgColor;
+	Color overrideFillColor = null;
 	String textPath;
 	final String type;
-	
-	@Deprecated
-	public NodePath(Affine myTransform, String textPath, Color bgColor, Color fgColor, FmmlxProperty actionObject, Action action, CSSStyleDeclaration styleDeclaration) {
-		super(myTransform, styleDeclaration, actionObject, action);
-		this.bgColor = bgColor;
-		this.fgColor = fgColor;
-		this.textPath = textPath;
-		this.type = "Path";
-		updateBounds();
-	}
 	
 	public NodePath(Affine myTransform, String textPath, FmmlxProperty actionObject, Action action, CSSStyleDeclaration styleDeclaration, String type) {
 		super(myTransform, styleDeclaration, actionObject, action);
@@ -48,14 +39,10 @@ public class NodePath extends NodeBaseElement{
 
 	public NodePath(SVGOMPathElement n, SVGOMSVGElement root) {
 		super(n.getAttributes().getNamedItem("transform")==null?new Affine():SVGReader.readTransform(n.getAttributes().getNamedItem("transform").getNodeValue()), 
-				root.getComputedStyle(n, null), null, ()->{});
+				root.getComputedStyle(n, null), null, null);
 		this.type = "Path";
-		this.action= ()->{};
 		this.textPath = n.getAttributes().getNamedItem("d").getNodeValue();
-		setID(n);
-		
-//		Node transformNode = n.getAttributes().getNamedItem("transform");
-//		this.myTransform = transformNode==null?new Affine():TransformReader.getTransform(transformNode.getNodeValue());
+		setID(n);		
 		updateBounds();
 	}
 
@@ -66,7 +53,7 @@ public class NodePath extends NodeBaseElement{
 				","   + n.getAttributes().getNamedItem("y1").getNodeValue() + 
 				" L " + n.getAttributes().getNamedItem("x2").getNodeValue() +
 				","   + n.getAttributes().getNamedItem("y2").getNodeValue()
-				, null, ()->{}, styleDeclaration, "Line");
+				, null, null, styleDeclaration, "Line");
 		newPath.setID(n);
 		return newPath;
 	}
@@ -85,7 +72,7 @@ public class NodePath extends NodeBaseElement{
 		completeString += "z";
 		
 		CSSStyleDeclaration styleDeclaration = root.getComputedStyle(n, null);
-		NodePath newPath = new NodePath(SVGReader.readTransform(n), completeString, null, ()->{}, styleDeclaration, "Polygon");
+		NodePath newPath = new NodePath(SVGReader.readTransform(n), completeString, null, null, styleDeclaration, "Polygon");
 		newPath.setID(n);
 		return newPath;
 	}
@@ -114,14 +101,18 @@ public class NodePath extends NodeBaseElement{
 
 
 	private void setFill(GraphicsContext g, CSSStyleDeclaration styleDeclaration) {
-		String fillColor = styleDeclaration.getPropertyValue("fill");
-		if("none".equals(fillColor)) {
-			g.setFill(Color.TRANSPARENT);
-		} else if(fillColor.startsWith("url")) {
-			g.setFill(Color.MAGENTA);
+		if(overrideFillColor == null) {
+			String fillColor = styleDeclaration.getPropertyValue("fill");
+			if("none".equals(fillColor)) {
+				g.setFill(Color.TRANSPARENT);
+			} else if(fillColor.startsWith("url")) {
+				g.setFill(Color.MAGENTA);
+			} else {
+				g.setFill(Color.web(fillColor));
+			}		
 		} else {
-			g.setFill(Color.web(fillColor));
-		}		
+			g.setFill(overrideFillColor);
+		}
 	}
 
 	@Override
@@ -184,7 +175,7 @@ public class NodePath extends NodeBaseElement{
 		
 		String path = getEllipsePath(cx, cy, rx, rx);
 
-		NodePath nE = new NodePath(SVGReader.readTransform(n), path, null, () -> {}, rootNode.getComputedStyle(n, null), "Circle");
+		NodePath nE = new NodePath(SVGReader.readTransform(n), path, null, null, rootNode.getComputedStyle(n, null), "Circle");
 		nE.setID(n);
 		return nE;
 	}
@@ -198,7 +189,7 @@ public class NodePath extends NodeBaseElement{
 
 		String path = getEllipsePath(cx, cy, rx, ry);
 				
-		NodePath nE = new NodePath(SVGReader.readTransform(n), path,  null, () -> {}, rootNode.getComputedStyle(n, null),"Ellipse");
+		NodePath nE = new NodePath(SVGReader.readTransform(n), path,  null, null, rootNode.getComputedStyle(n, null),"Ellipse");
 		nE.setID(n);
 		return nE;	
 	}
@@ -237,15 +228,20 @@ public class NodePath extends NodeBaseElement{
 		if(rx>0 || ry >0) path=path + " a " + rx + " " + ry + " 0 0 1 " + " " + rx + " " + (-ry);
 
 		
-		NodePath nR = new NodePath(SVGReader.readTransform(n), path,  null, ()->{}, rootNode.getComputedStyle(n, null), "Rectangle");
+		NodePath nR = new NodePath(SVGReader.readTransform(n), path,  null, null, rootNode.getComputedStyle(n, null), "Rectangle");
 		nR.setID(n);
 		return nR;
 	}
 
 	@Override
-	protected NodeElement createInstance(FmmlxObject object, Vector<Modification> modifications) {
+	protected NodePath createInstance(FmmlxObject object, Vector<Modification> modifications, Vector<ActionInfo> actions, FmmlxDiagram diagram) {
 		NodePath n = new NodePath(new Affine(myTransform), textPath, actionObject, action, styleDeclaration, type);
 		return n;
+	}
+
+	public void setColor(String colorString) {
+		try{overrideFillColor = Color.web(colorString);}
+		catch(Exception e) {e.printStackTrace();}
 	}
 	
 	

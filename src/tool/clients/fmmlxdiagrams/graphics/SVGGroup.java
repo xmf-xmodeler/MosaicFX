@@ -30,6 +30,10 @@ public class SVGGroup extends NodeGroup {
 		myElement.setAttribute("yx", myTransform.getMyx()+"");
 		myElement.setAttribute("tx", myTransform.getTx()+"");
 		myElement.setAttribute("ty", myTransform.getTy()+"");
+		if(!("".equals(id) || id == null)) {
+			myElement.setAttribute("id", id );
+		}
+				
 		return myElement;
 	};
 }

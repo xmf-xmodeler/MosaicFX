@@ -8,10 +8,11 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import tool.clients.fmmlxdiagrams.AbstractPackageViewer;
 import tool.clients.fmmlxdiagrams.Constraint;
@@ -23,24 +24,36 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 	private TextField nameField = new TextField();
 	private Label label2 = new Label();
 	private TextField levelField = new TextField();
-	//private TextArea bodyBox = new TextArea();
 	private CodeBoxPair bodyBox;
 	private Label label3 = new Label();
-	//private TextArea reasonBox = new TextArea();
 	private CodeBoxPair reasonBox;
 	private Label label4 = new Label();
 	private Label statusLabel = new Label();
 
 	private DialogPane dialogPane;
-	private GridPane grid;
 	
 	public AddConstraintDialog(AbstractPackageViewer diagram, FmmlxObject object) {
-		layoutContent(object,diagram);
 		setTitle("Add constraint to " + object.getName());
+		init(object,diagram);
 		nameField.setText("enterConstraintNameHere");
 		levelField.setText((object.getLevel() - 1) + "");
 		bodyBox.setBodyText("false");
 		reasonBox.setBodyText("\"This constraint always fails.\"");
+	}
+
+	public AddConstraintDialog(AbstractPackageViewer diagram, FmmlxObject object, Constraint constraint) {
+		setTitle("Edit Constraint " + constraint.getName() + " from " + object.getName());
+		init(object,diagram);
+		nameField.setText(constraint.getName());
+		levelField.setText(constraint.getLevel()+"");
+		bodyBox.setBodyText(constraint.getBodyRaw());
+		reasonBox.setBodyText(constraint.getReasonRaw());
+	}
+	
+	private void init(FmmlxObject object, AbstractPackageViewer diagram) {
+		layoutContent(object,diagram);
+		addValidator();
+		setResizable(true);
 		setResultConverter(button -> {
 			if (button != null && button.getButtonData() == ButtonData.OK_DONE) {
 				return new Result(object, nameField.getText(),
@@ -52,29 +65,7 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 			}
 		});
 	}
-
-	public AddConstraintDialog(AbstractPackageViewer diagram, FmmlxObject object, Constraint constraint) {
-		layoutContent(object,diagram);
-		setTitle("Edit Constraint " + constraint.getName() + " from " + object.getName());
-		nameField.setText(constraint.getName());
-		levelField.setText(constraint.getLevel()+"");
-		bodyBox.setBodyText(constraint.getBodyRaw());
-		reasonBox.setBodyText(constraint.getReasonRaw());
-		validator();
-		setResultConverter(button -> {
-			if (button != null && button.getButtonData() == ButtonData.OK_DONE) {
-				return new Result(object, nameField.getText(),
-						Integer.parseInt(levelField.getText()),
-						bodyBox.getBodyText(),
-						reasonBox.getBodyText()
-						);
-			} else {
-				return null;
-			}
-		});
-	}
 	
-
 	private boolean validateUserInput() {
 		statusLabel.setText("");
 		try {
@@ -94,16 +85,17 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 		bodyBox = new CodeBoxPair(diagram,checkActionForSyntax, true);
 		reasonBox = new CodeBoxPair(diagram,checkActionForSyntax, true);
 		
-		bodyBox.getBodyScrollPane().setMinHeight(250);
-		bodyBox.getBodyScrollPane().setMaxHeight(250);
-		reasonBox.getBodyScrollPane().setMinHeight(250);
-		reasonBox.getBodyScrollPane().setMaxHeight(250);
+		bodyBox.getBodyScrollPane().setMinHeight(200);
+		bodyBox.getBodyScrollPane().setPrefHeight(200);
+		bodyBox.getBodyScrollPane().setMaxHeight(750);
+		reasonBox.getBodyScrollPane().setMinHeight(100);
+		bodyBox.getBodyScrollPane().setPrefHeight(100);
+		reasonBox.getBodyScrollPane().setMaxHeight(500);
 		
-		bodyBox.getErrorTextArea().setMinHeight(100);
-		bodyBox.getErrorTextArea().setMaxHeight(100);
-		reasonBox.getErrorTextArea().setMinHeight(100);
-		reasonBox.getErrorTextArea().setMaxHeight(100);
-		
+		bodyBox.getErrorTextArea().setMinHeight(40);
+		bodyBox.getErrorTextArea().setMaxHeight(80);
+		reasonBox.getErrorTextArea().setMinHeight(40);
+		reasonBox.getErrorTextArea().setMaxHeight(80);
 		
 		label1.setText("@Constraint");
 		label2.setText("@");
@@ -113,28 +105,24 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 		
 		dialogPane = getDialogPane();
 		dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		grid = new GridPane();
-		dialogPane.setContent(grid);
+		HBox hBox1 = new HBox(5,
+				label1, nameField, label2, levelField);
+		VBox mainBox = new VBox(5, 
+				hBox1, 
+				bodyBox.getBodyScrollPane(),
+				bodyBox.getErrorTextArea(),
+				label3,
+				reasonBox.getBodyScrollPane(),
+				reasonBox.getErrorTextArea(),
+				label4,
+				statusLabel
+				);
+		VBox.setVgrow(bodyBox.getBodyScrollPane(), Priority.ALWAYS);
+		VBox.setVgrow(reasonBox.getBodyScrollPane(), Priority.ALWAYS);
+		dialogPane.setContent(mainBox);
 		statusLabel.setTextFill(Color.RED);
-		
-		
-		
-		grid.setHgap(10);
-		grid.setVgap(10);
-		grid.add(label1, 0, 0);
-		grid.add(nameField, 1, 0);
-		grid.add(label2, 2, 0);
-		grid.add(levelField, 3, 0);
-
-		grid.add(bodyBox.getBodyScrollPane(), 0, 1, 4, 1);
-		grid.add(bodyBox.getErrorTextArea(), 0,2,4,1);
-		grid.add(label3, 0, 3, 4, 1);
-		grid.add(reasonBox.getBodyScrollPane(), 0, 4, 4, 1);
-		grid.add(reasonBox.getErrorTextArea(), 0, 5, 4, 1);
-		grid.add(label4, 0, 6, 4, 1);
-		grid.add(statusLabel, 0, 7, 4, 1);
-		
-		validator();
+				
+		addValidator();
 	}
 
 	public class Result {
@@ -144,7 +132,6 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 		public final Integer instLevel;
 		public final String body;
 		public final String reason;
-		public Constraint constraint;
 
 		public Result(FmmlxObject object, String constName, Integer instLevel, String body,
 				String reason) {
@@ -154,19 +141,9 @@ public class AddConstraintDialog extends Dialog<AddConstraintDialog.Result> {
 			this.body = body;
 			this.reason = reason;
 		}
-		
-//		public Result(FmmlxObject object, String constName, Integer instLevel, String body,
-//				String reason, Constraint constraint) {
-//			this.object = object;
-//			this.constName = constName;
-//			this.instLevel = instLevel;
-//			this.body = body;
-//			this.reason = reason;
-//			this.constraint = constraint;
-//		}
 	}
 	
-	private void validator() {
+	private void addValidator() {
 		final Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
 		okButton.addEventFilter(ActionEvent.ACTION, e -> {
 			if (!validateUserInput()) {

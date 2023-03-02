@@ -2,6 +2,8 @@ package tool.xmodeler;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.value.ObservableListValue;
+import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -25,6 +27,8 @@ import tool.clients.workbench.WorkbenchClient;
 import tool.helper.IconGenerator;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.Vector;
 
@@ -42,6 +46,7 @@ public class ControlCenter extends Stage {
 	private final ListView<String> diagramLV = new ListView<String>();
 	//private ModelBrowser stage;
 	private MenuBar menuBar;
+	private HashMap<String, ModelBrowser> modelBrowsers = new HashMap<>();
 
 	public ControlCenterClient getControlCenterClient() {
 		return controlCenterClient;
@@ -76,6 +81,7 @@ public class ControlCenter extends Stage {
 		
 		Button concreteSyntaxWizardStart = new Button("Concrete Syntax Wizard"); //Button for ConcreteSyntaxWizard
 		concreteSyntaxWizardStart.setOnAction(e -> { 
+			
 			ConcreteSyntaxWizard wizard = new ConcreteSyntaxWizard();
 			try {
 				wizard.start(new Stage());
@@ -175,7 +181,7 @@ public class ControlCenter extends Stage {
 		diagramLV.setPrefSize(250, 150);
 		grid.add(diagramLV, 4, 2);
 		grid.add(diagramsGridPane, 4, 3);
-		//grid.add(concreteSyntaxWizardStart, 4, 4); //Buton for ConcreteSyntaxWizard
+		grid.add(concreteSyntaxWizardStart, 4, 4); //Buton for ConcreteSyntaxWizard
 
 		init();
 		//categoryLV.getSelectionModel().selectedItemProperty().addListener((prop, old, NEWW)->categorySelected(NEWW));
@@ -244,26 +250,26 @@ public class ControlCenter extends Stage {
 	}
 
 	private void modelDoubleClick(MouseEvent e) {
-		ModelBrowser stage = new ModelBrowser(projectLV.getSelectionModel().getSelectedItem(), modelLV.getSelectionModel().getSelectedItem(), modelLV.getItems() );
-		stage.show();
+		showModelBrowser(projectLV.getSelectionModel().getSelectedItem(), modelLV.getSelectionModel().getSelectedItem(), modelLV.getItems());
+	}
+	
+	public ModelBrowser showModelBrowser(String project, String model, Collection<String> models) {
+		ModelBrowser modelBrowser = modelBrowsers.get(model);
+		if(modelBrowser==null) {
+			modelBrowser = new ModelBrowser(project, model, models);
+			modelBrowsers.put(model, modelBrowser);
+			modelBrowser.setOnCloseRequest((b)-> modelBrowsers.remove(model));
+			modelBrowser.show();	
+		} else {
+			if(modelBrowser.isIconified()) modelBrowser.setIconified(false);
+			modelBrowser.toFront();
+		}
+		return modelBrowser;
 	}
 
-//	private void categorySelected(String nEWW) {
-//		
-//	}
-	
-	public void getModelsFromProject() {
-		
-	}
-	
-	public void getDiagramsFromModel() {
-		
-	}
-	
 	private void init() {
-		//categoryLV.getItems().clear();
-		//categoryLV.getItems().addAll(controlCenterClient.getAllCategories());
-		}
+
+	}
 
 	public Stage getStageForConsole() {
 		return new Stage();
@@ -284,7 +290,6 @@ public class ControlCenter extends Stage {
 			//this.add(created, 2, 1);
 			//this.add(new Label("modified: "), 1, 2);
 			//this.add(modified, 2, 2);
-			
 		}
 		
 		private void setModified(String modified) {
@@ -344,8 +349,7 @@ public class ControlCenter extends Stage {
 //		categoryLV.getItems().addAll(vec);
 		});
 	}
-
-
+	
 	public void setProjectModels(Vector<String> vec) {
 		Platform.runLater(()->{
 			modelLV.getItems().clear();
@@ -353,7 +357,6 @@ public class ControlCenter extends Stage {
 			if(vec.size()>=1) {
 				modelLV.getSelectionModel().selectFirst();
 			}
-			
 		});
 		
 	}

@@ -1,27 +1,34 @@
 package tool.clients.fmmlxdiagrams;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Vector;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
-import javafx.scene.Node;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import tool.clients.dialogs.enquiries.FindClassDialog;
 import tool.clients.dialogs.enquiries.FindImplementationDialog;
 import tool.clients.dialogs.enquiries.FindSendersOfMessages;
-import tool.clients.fmmlxdiagrams.LevelColorScheme.FixedBlueLevelColorScheme;
 import tool.clients.fmmlxdiagrams.classbrowser.ClassBrowserClient;
 import tool.clients.fmmlxdiagrams.classbrowser.ObjectBrowser;
 import tool.clients.fmmlxdiagrams.dialogs.*;
@@ -34,19 +41,13 @@ import tool.clients.importer.FMMLxImporter;
 import tool.clients.serializer.FmmlxSerializer;
 import tool.xmodeler.XModeler;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Vector;
-
 public class DiagramActions {
 
 	private final AbstractPackageViewer diagram;
+
+	public AbstractPackageViewer getDiagram() {
+		return diagram;
+	}
 
 	public DiagramActions(AbstractPackageViewer diagram) {
 		this.diagram = diagram;
@@ -191,15 +192,12 @@ public class DiagramActions {
 
 			if (result.isPresent()) {
 				final AddInstanceDialog.Result aidResult = result.get();
-
 				diagram.getComm().addNewInstance(
 						diagram.getID(), aidResult.getOfName(), aidResult.name,
 						aidResult.level,
                         aidResult.getParentNames(), aidResult.isAbstract, 
                         (int) (p.getX()+.5), (int) (p.getY()+.5), false);
-
 				diagram.updateDiagram();
-
 			}
 		});
 	}
@@ -281,7 +279,6 @@ public class DiagramActions {
 	}
 	
 	public <Property extends FmmlxProperty> void removeDialog(FmmlxObject object, PropertyType type, Property selectedFmmlxProperty) {
-//		FmmlxProperty selectedFmmlxProperty = diagram.getSelectedProperty();
 
 		Platform.runLater(() -> {
 			RemoveDialog<Property> dlg = new RemoveDialog<Property>(object, type);
@@ -537,6 +534,24 @@ public class DiagramActions {
 		});
 	}
 	
+	public void changeBodyDialog(FmmlxObject object, FmmlxOperation initiallySelectedOperation) {
+		if(initiallySelectedOperation == null) {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setContentText("This MenuItem requires an Operation to be selected.");
+			alert.show(); return;
+		} 
+		Platform.runLater(() -> {
+			AddOperationDialog dlg = new AddOperationDialog(diagram, object, initiallySelectedOperation);
+			Optional<AddOperationDialog.Result> opt = dlg.showAndWait();
+
+			if (opt.isPresent()) {
+				final AddOperationDialog.Result result = opt.get();
+				diagram.getComm().changeOperationBody(diagram.getID(), result.object.getName(), result.name, result.body);
+				diagram.updateDiagram();
+			}
+		});
+	}
+	
 	public void addConstraintDialog(FmmlxObject object) {
 
 		Platform.runLater(() -> {
@@ -643,19 +658,6 @@ public class DiagramActions {
 		});
 	}
 
-	public void changeBodyDialog(FmmlxObject object, FmmlxOperation initiallySelectedOperation) {
-		Platform.runLater(() -> {
-			ChangeBodyDialog dlg = new ChangeBodyDialog(diagram, object, initiallySelectedOperation);
-			Optional<ChangeBodyDialog.Result> opt = dlg.showAndWait();
-
-			if (opt.isPresent()) {
-				final ChangeBodyDialog.Result result = opt.get();
-				diagram.getComm().changeOperationBody(diagram.getID(), result.object.getName(), result.selectedItem.getName(), result.body);
-				diagram.updateDiagram();
-			}
-		});
-	}
-
 	public void addAssociationDialog(FmmlxObject source, FmmlxObject target) {
 
 		Platform.runLater(() -> {
@@ -719,7 +721,7 @@ public class DiagramActions {
 				}
 				
 				if(!result.selectedAssociation.getName().equals(result.newDisplayName)) {
-					System.err.println("getName:" +result.selectedAssociation.getName()  + "--> " + result.newDisplayName);
+					System.err.println("changeName:" +result.selectedAssociation.getName()  + "-->" + result.newDisplayName);
 					diagram.getComm().changeAssociationForwardName(diagram.getID(), result.selectedAssociation.getName(), result.newDisplayName);
 				}
 					
@@ -1077,132 +1079,9 @@ public class DiagramActions {
 		new Thread(task).start();
 	}
 
-	public void unhideElementsDialog() {
-		Dialog<Vector<FmmlxObject>> unhideElementsDialog = new Dialog<>();
-		unhideElementsDialog.setTitle("Unhide Elements");
-		
-		ButtonType okButtonType = new ButtonType("Close", ButtonData.CANCEL_CLOSE);
-		unhideElementsDialog.getDialogPane().getButtonTypes().add(okButtonType);
-		
-		
-		Vector<FmmlxObject> hiddenElements = new Vector<>();
-		Vector<FmmlxObject> shownElements = new Vector<>();
-		Vector<FmmlxObject> objects = diagram.getObjects();
-		Collections.sort(objects);
-		for(FmmlxObject o : objects) {
-			if(o.hidden) {
-				hiddenElements.add(o);
-			} else if (o.hidden==false) {
-				shownElements.add(o);
-			}
-		}
-		
-		ListView<FmmlxObject> hiddenElementsListView = new ListView<>();
-		hiddenElementsListView.getItems().addAll(hiddenElements);
-		sortListView(hiddenElementsListView);
-		hiddenElementsListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		ListView<FmmlxObject> shownElementsListView = new ListView<>();
-		shownElementsListView.getItems().addAll(shownElements);
-		sortListView(shownElementsListView);
-		shownElementsListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		
-		GridPane gridPane = new GridPane();
-		Button toShow = new Button("<<");
-		toShow.setOnAction(e->{
-			shownElementsListView.getItems().addAll(hiddenElementsListView.getSelectionModel().getSelectedItems());
-			hiddenElementsListView.getItems().removeAll(hiddenElementsListView.getSelectionModel().getSelectedItems());
-			sortListView(shownElementsListView);
-		});
-		Button toHide = new Button(">>");
-		toHide.setOnAction(e->{
-			hiddenElementsListView.getItems().addAll(shownElementsListView.getSelectionModel().getSelectedItems());
-			shownElementsListView.getItems().removeAll(shownElementsListView.getSelectionModel().getSelectedItems());
-			sortListView(hiddenElementsListView);
-		});
-		
-		addCellFactory(shownElementsListView);
-		addCellFactory(hiddenElementsListView);
-		Button filter = new Button("Filters");
-		
-		Label shownElementsLabel = new Label("Shown Elements");
-		Label hiddenElementsLabel = new Label("Hidden Elements");
-		gridPane.add(shownElementsLabel, 0, 0,1,1);
-		gridPane.add(shownElementsListView, 0, 1,1,5);
-		gridPane.add(toHide, 1, 3,1,1);
-		gridPane.add(toShow, 1, 4,1,1);
-		gridPane.add(filter, 1, 5,1,1);
-		gridPane.add(hiddenElementsLabel, 2, 0,1,1);
-		gridPane.add(hiddenElementsListView, 2, 1,1,5);
-		gridPane.setPadding(new Insets(15,15,15,15));
-		unhideElementsDialog.getDialogPane().setContent(gridPane);
 	
-
-		unhideElementsDialog.setResultConverter(dialogButton -> {
-		    if (dialogButton == okButtonType) {
-		    	Vector<FmmlxObject> result = new Vector<>();
-		    	result.addAll(shownElementsListView.getItems());
-		        return result;
-		    }
-		    return null;
-		});
-		
-		
-		Optional<Vector<FmmlxObject>> result = unhideElementsDialog.showAndWait();
-				
-    	result.ifPresent(vec -> {hide(vec, false);});
-    	
-    	Vector<FmmlxObject> resultHide = new Vector<>();
-    	resultHide.addAll(hiddenElementsListView.getItems());
-    	hide(resultHide,true);
-    	
-	}
 	
-	private void addCellFactory(ListView<FmmlxObject> listView) {
-		listView.setCellFactory( lv -> { return new ListCell<FmmlxObject>() {
-    		protected void updateItem(FmmlxObject o, boolean empty) {
-    			super.updateItem(o, empty);
-    			if (o != null) {
-    				if(o.isAbstract()) setText("(" + o.getName() + " ^"+ o.getMetaClassName() + "^ " + ")"); else setText(o.getName()+ " ^"+ o.getMetaClassName() + "^");
-    				setGraphic(getClassLevelGraphic(o.getLevel()));
-    			} else { setText(""); setGraphic(null); }
-    		}
-    	};	
-    	});
-	}
-
-	private Node getClassLevelGraphic(int level) {
-//		if(level == -1) return null;
-		FixedBlueLevelColorScheme levelColorScheme = new FixedBlueLevelColorScheme();
-		double SIZE = 16;
-		Canvas canvas = new Canvas(SIZE, SIZE);
-		String text = level == -1 ? "?" : (level+"");
-		Text temp = new Text(text);
-		GraphicsContext g = canvas.getGraphicsContext2D();
-		g.setFill(levelColorScheme.getLevelBgColor(level));
-		g.fillRoundRect(0, 0, SIZE, SIZE, SIZE/2, SIZE/2);
-		g.setFill(levelColorScheme.getLevelFgColor(level, 1.));
-		g.fillText(text, 
-				SIZE/2 - temp.getLayoutBounds().getWidth()/2., 
-				SIZE/2 + temp.getLayoutBounds().getHeight()/2. - 4);
-		return canvas;
-	}
 	
-	public void sortListView(ListView<FmmlxObject> listView) {
-		Vector<FmmlxObject> v = new Vector<>(listView.getItems());
-		Collections.sort(v,new Comparator<FmmlxObject>() {
-			public int compare(FmmlxObject thisObject, FmmlxObject anotherObject) {
-				if(thisObject.getLevel()>anotherObject.getLevel()) {
-					return -1;
-				} else if (thisObject.getLevel()<anotherObject.getLevel()) {
-					return 1;
-				} else {
-					return thisObject.name.compareTo(anotherObject.getName());
-				}
-			}	
-		});
-		listView.getItems().clear();
-		listView.getItems().addAll(v);
-	}
 		
 	public void showObjectBrowser(FmmlxObject object) {
 			
@@ -1329,5 +1208,8 @@ public class DiagramActions {
 			diagram.getComm().mergeProperties(mergeIntoClass, result.get().createMessage());
 			diagram.updateDiagram();
 		}
+	}
+	public void showUnhideElementsDialog(AbstractPackageViewer dialog) {
+		new UnhideElementsDialog(dialog).showDialog();
 	}
 }

@@ -3,7 +3,6 @@ package tool.clients.fmmlxdiagrams.graphics;
 import java.io.File;
 import java.util.Vector;
 
-import javax.management.RuntimeErrorException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -18,25 +17,29 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javafx.scene.transform.Affine;
+import tool.clients.fmmlxdiagrams.FmmlxDiagram;
 import tool.clients.fmmlxdiagrams.FmmlxObject;
 
 public class ConcreteSyntax extends AbstractSyntax{
 	
-	public Vector<Modification> modifications = new Vector<>();
+	private Vector<Modification> modifications = new Vector<>();
+	public Vector<Modification> getModifications() {return new Vector<>(modifications);}
+	private Vector<ActionInfo> actions = new Vector<>();
+	public Vector<ActionInfo> getActions() {return new Vector<>(actions);}
 	public String classPath;
 	public int level;
 
 	
 	public static ConcreteSyntax load2(File arg, Element root) {
-		ConcreteSyntax object = new ConcreteSyntax();
+		ConcreteSyntax syntaxGroup = new ConcreteSyntax();
 		
 		if (!root.hasAttribute("classPath")) {
 			throw new RuntimeException("ClassPath not found!");
 		}
-		object.classPath = root.getAttribute("classPath");
+		syntaxGroup.classPath = root.getAttribute("classPath");
 		
 		try {
-			object.level = Integer.parseInt(root.getAttribute("level"));
+			syntaxGroup.level = Integer.parseInt(root.getAttribute("level"));
 		} catch (Exception e) {
 			throw new RuntimeException("Level not found!");
 		}
@@ -47,12 +50,18 @@ public class ConcreteSyntax extends AbstractSyntax{
 			if("Modification".equals(n.getNodeName())) {
 				Element e = (Element) n;
 				Modification m = new Modification(e);
-				object.modifications.add(m);
+				syntaxGroup.modifications.add(m);
+			} else if("Action".equals(n.getNodeName()))  {
+				Element actionElement = (Element) n;
+				String id = actionElement.getAttribute("id");
+				String localId = actionElement.getAttribute("localId");
+				String actionType = actionElement.getAttribute("type");
+				syntaxGroup.actions.add(new ActionInfo(id, localId, actionType));
 			} else {
 				//System.err.println("Child not recognized: " + root + ":" + n);
 			}
 		}
-	return object;	
+	return syntaxGroup;	
 	}
 	
 	@Override
@@ -70,7 +79,7 @@ public class ConcreteSyntax extends AbstractSyntax{
 	        root.setAttribute("classPath", classPath);
 	        root.setAttribute("level",  "" + level);
 	        
-	        saveChildren(document, nodeElements,root);
+	        saveChildren(document, nodeElements, modifications, root);
 	               
 	        TransformerFactory transformerFactory = TransformerFactory.newInstance();
 	        Transformer transformer = transformerFactory.newTransformer();
@@ -86,7 +95,7 @@ public class ConcreteSyntax extends AbstractSyntax{
 		}
 	}
 	
-	public static void saveChildren(Document document, Vector<NodeElement> nodeElements, Element parent) {
+	public static void saveChildren(Document document, Vector<NodeElement> nodeElements, Vector<Modification> modifications, Element parent) {
 		 for (NodeElement element : nodeElements) {
 	        	if (element instanceof SVGGroup) {
 	        		parent.appendChild(((SVGGroup)element).save(document));
@@ -97,6 +106,9 @@ public class ConcreteSyntax extends AbstractSyntax{
 	        		parent.appendChild(((NodeGroup)element).save(document));
 	        	}
 	        }
+		 for (Modification modification: modifications) {
+			 parent.appendChild(modification.save(document));
+		 }
 	}
 	
 	@Override
@@ -105,8 +117,8 @@ public class ConcreteSyntax extends AbstractSyntax{
 	}	
 	
 	
-	public NodeGroup createInstance(final FmmlxObject object) {
-		NodeGroup instance = createInstance(object, modifications);
+	public NodeGroup createInstance(final FmmlxObject object, FmmlxDiagram diagram) {
+		NodeGroup instance = createInstance(object, modifications, actions, diagram);
 		instance.myTransform = new Affine(1, 0, object.getX(), 0, 1, object.getY());
 		return instance;
 	}

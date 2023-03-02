@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ConcreteSyntax classPath="Test::AusfahrKombisignalLichtZs3" level="0">
+	<Import path="Licht-Hauptsignal.xml" id="main"/>  
+	<SVG path="hl-zs3.svg" id="ZS3"/>  
+    <Label align="CENTER" ty="-157.0" xx="0.6" yy="0.6" id="zs3" color="ffeedd"/>
+	<Modification>
+		<Condition type="StringMatchSlotCondition" slotName="status" match="1"/>
+		<Affected id="haupt" localId="hp1"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification>  
+	<Modification>
+		<Condition type="StringMatchSlotCondition" slotName="status" match="2"/>
+		<Affected id="haupt" localId="hp2"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification> 
+	<Modification>
+		<Condition type="StringMatchSlotCondition" slotName="status" match="0"/>
+		<Affected id="haupt" localId="hp0"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification>  
+	<Modification>
+		<Condition type="StringMatchSlotCondition" slotName="status" match="E"/>
+		<Affected id="haupt" localId="zs1"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification>  
+	<Modification>
+		<Condition type="StringMatchSlotCondition" slotName="status" match="R"/>
+		<Affected id="haupt" localId="sh1"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification>		 
+	<Modification>
+		<Condition type="StringMatchSlotCondition" slotName="status" match="E"/>
+		<Affected id="ersatz" localId="zs1"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification>		 
+	<Modification>
+		<Condition type="StringMatchOpValCondition" opName="getVrStatus" match="0"/>
+		<Affected id="vor" localId="vr0"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification>			 
+	<Modification>
+		<Condition type="StringMatchOpValCondition" opName="getVrStatus" match="E"/>
+		<Affected id="vor" localId="vrE"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification>			 
+	<Modification>
+		<Condition type="StringMatchOpValCondition" opName="getVrStatus" match="R"/>
+		<Affected id="vor" localId="vrR"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification>			 
+	<Modification>
+		<Condition type="StringMatchOpValCondition" opName="getVrStatus" match="1"/>
+		<Affected id="vor" localId="vr1"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification>			 
+	<Modification>
+		<Condition type="StringMatchOpValCondition" opName="getVrStatus" match="2"/>
+		<Affected id="vor" localId="vr2"/>
+		<Consequence type="SHOW_IF"/>
+	</Modification>
+  <Modification>
+		<Condition type="ReadFromSlot" slotName="zs3"/>
+		<Affected id="zs3" localId="zs3"/>
+		<Consequence type="READ_FROM_SLOT"/>
+  </Modification>
+  <Action id="haupt" localId="layer3" type="CHANGE_SLOT_VALUE:status"/>
+</ConcreteSyntax>

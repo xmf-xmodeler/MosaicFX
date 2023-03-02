@@ -33,7 +33,9 @@ public class FmmlxLink extends Edge<FmmlxObject> implements FmmlxProperty{
 		try{
 			createLabel(getAssociation().getName(), 0, Anchor.CENTRE, ()->{}, 0, diagram);
 			layoutingFinishedSuccesfully = true;
-		} catch(Exception e) {}
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public FmmlxAssociation getAssociation() {

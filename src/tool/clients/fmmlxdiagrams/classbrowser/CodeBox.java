@@ -13,6 +13,8 @@ import org.fxmisc.richtext.model.StyleSpansBuilder;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
@@ -32,18 +34,23 @@ public class CodeBox {
 	private transient int syntaxDirty = 0;
 	private Vector<WordRule> wordRules = new Vector<WordRule>();
 	public VirtualizedScrollPane<InlineCssTextArea> virtualizedScrollPane;
-	
+	private static final boolean INVERSE_COLOR = false;
 	
 	public CodeBox(int fontsize, boolean editable, String s) {
 		
 		initWordRules();
 
 		textArea = new InlineCssTextArea(s);
+		textArea.wrapTextProperty().set(true);
 		textArea.setParagraphGraphicFactory(LineNumberFactory.get(textArea));
 		virtualizedScrollPane = new VirtualizedScrollPane<InlineCssTextArea>(textArea);
 		textArea.setEditable(editable);
 		textArea.setStyle("-fx-font-size:" + fontsize + "pt;");
 		textArea.setStyle("-fx-font-family: 'DejaVu Sans Mono'");
+		if(INVERSE_COLOR) {
+			textArea.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
+			textArea.setStyle("-fx-fill:rgb(255,255,255)");
+		}
 		BorderStroke borderStroke =
 		        new BorderStroke(
 		                Color.valueOf("BABABA"),
@@ -79,10 +86,20 @@ public class CodeBox {
 	}
 
 	private void initWordRules() {
-		addMultilineRule("//", "\n", 120, 120, 120);
-	    addMultilineRule("/*","*/",102,0,204);
-	    addMultilineRule("@Doc","end",180,0,0);
-	    addMultilineRule("\"","\"",0,180,0);
+		if(INVERSE_COLOR) {
+			addMultilineRule("//", "\n", 200, 200, 200);
+		    addMultilineRule("/*","*/",102,255,204);
+		    addMultilineRule("@Doc","end",180,255,255);
+		    addMultilineRule("\"","\"",255,180,255);
+	        addWordRule("@",255,255,127);
+		
+		} else {
+			addMultilineRule("//", "\n", 120, 120, 120);
+		    addMultilineRule("/*","*/",102,0,204);
+		    addMultilineRule("@Doc","end",180,0,0);
+		    addMultilineRule("\"","\"",0,180,0);
+	        addWordRule("@",255,0,127);
+		}
 	    
 	    String[] literals = new String[]{
 	        "do",
@@ -95,10 +112,14 @@ public class CodeBox {
 	    	"(","Set{","if",")","[","]","else","then","elseif","end","::","|","{","}"};
 	    
 	    for(String s : literals) {
-	    	addWordRule(s,0,0,222);
+	    	if(INVERSE_COLOR) {
+	    		addWordRule(s,255,255,33);
+	    	} else {
+	    		addWordRule(s,0,0,222);
+	    	}
+	    	
 	    }
 	    
-        addWordRule("@",255,0,127);
 		
 	}
 

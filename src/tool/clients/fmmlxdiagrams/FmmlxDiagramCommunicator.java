@@ -7,6 +7,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
@@ -28,7 +29,9 @@ import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
@@ -44,8 +47,10 @@ public class FmmlxDiagramCommunicator {
 	private static final Vector<FmmlxDiagram> diagrams = new Vector<>();
 	private static final boolean DEBUG = false;
 	static TabPane tabPane;
-	public static Value getNoReturnExpectedMessageID(int diagramID) {return new Value(new Value[] {new Value(diagramID), new Value(-1)});}
+	private static transient int msgID = -1; private static int nextMsgID() {if(msgID < -10000) msgID=-1; msgID-=1; return msgID;}
+	public static Value getNoReturnExpectedMessageID(int diagramID) {return new Value(new Value[] {new Value(diagramID), new Value(nextMsgID())});}
 	private boolean silent;
+	private HashMap<Integer, Long> timeMap = new HashMap<>();
 	
 	/* Operations for setting up the Communicator */
 	
@@ -98,6 +103,7 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	private transient Integer _newDiagramID = null;
+
 
     public static enum DiagramType {ClassDiagram, ModelBrowser};
 	
@@ -174,33 +180,41 @@ public class FmmlxDiagramCommunicator {
 			java.util.Vector<Object> msgAsVec = (java.util.Vector<Object>) msgAsObj;
 			java.util.Vector<Object> ids = (java.util.Vector<Object>) msgAsVec.get(0);
 			int diagramID = (Integer) (ids.get(0));
+//			System.err.println("diagramID: " + diagramID);
 			if(diagramID == -1) return; // Ignore completely for now. Message not for any open diagram
 			int requestID = (Integer) (ids.get(1));
-			if (DEBUG) System.err.println(": Receiving request " + requestID);
+//			if (DEBUG) System.err.println(": Receiving request " + requestID);
 			msgAsVec.remove(0);
-			if (requestID == -1) {
-				if (DEBUG) System.err.println("v.get(0)= " + msgAsVec.get(0));
+			if (requestID <= -1) {
+//				if (DEBUG) System.err.println("v.get(0)= " + msgAsVec.get(0));
+				try{
+					if (DEBUG) System.err.println("\tmessage" + requestID + " returned after " + (System.currentTimeMillis() - timeMap.get(requestID)) + "ms");
+				} catch(Exception e) {System.err.println("message" + requestID + " returned anyway");}
 				java.util.Vector<Object> err = (java.util.Vector<Object>) msgAsVec.get(0);
 				if (err != null && err.size() > 0 && err.get(0) != null ) {
 			        if(silent) {
 			        	System.err.println("Error:" + err.get(0));
 			        } else {
-						CountDownLatch l = new CountDownLatch(1);
+//						CountDownLatch l = new CountDownLatch(1);
 						Platform.runLater(() -> {
 							Alert alert = new Alert(AlertType.ERROR, err.get(0) + "", ButtonType.CLOSE);
 							//alert.showAndWait(); NOPE
 							alert.show();
 							if(err.size() > 1) {
 								System.err.println("error handling: " + err.get(1));
-								handleErrorMessage((java.util.Vector<Object>) err.get(1), getDiagram(diagramID));
-								}								
-							l.countDown();
+								try{
+									handleErrorMessage((java.util.Vector<Object>) err.get(1), getDiagram(diagramID));
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}								
+//							l.countDown();
 						});
-						try {
-							l.await();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+//						try {
+////							l.await();
+//						} catch (InterruptedException e) {
+//							e.printStackTrace();
+//						}
 					}
 				}
 			} else {
@@ -248,7 +262,7 @@ public class FmmlxDiagramCommunicator {
 		int sleep = 2;
 		long START = System.currentTimeMillis();
 		while (waiting && sleep < 200 * 100) {
-			if (DEBUG) System.err.println(attempts + ". attempt");
+			//if (DEBUG) System.err.println(attempts + ". attempt");
 			attempts++;
 			try {
 				Thread.sleep(sleep);
@@ -258,7 +272,7 @@ public class FmmlxDiagramCommunicator {
 			}
 			if (results.containsKey(requestID)) {
 				waiting = false;
-				if (DEBUG) System.err.println("  received after " + (System.currentTimeMillis() - START) + "ms.");
+				//if (DEBUG) System.err.println("  received after " + (System.currentTimeMillis() - START) + "ms.");
 			}
 		}
 
@@ -280,7 +294,13 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	private void sendMessage(String command, Value[] message) {
-		if (DEBUG) System.err.println(": Sending command " + command);
+		if (DEBUG) {
+			
+			try{int n = message[0].values[1].intValue;
+			System.err.println(": Sending command" +n+ ": " + command);
+			timeMap.put(n, System.currentTimeMillis());}
+			catch(Exception e) {}
+		}
 		WorkbenchClient.theClient().send(handler, command, message);
 	}
 
@@ -1740,8 +1760,8 @@ public class FmmlxDiagramCommunicator {
     public void createProject(String projectName, Vector<String> diagramNames, String file) {
         Value[] diagramNamesValue = createValueArray(diagramNames);
         Value[] message = new Value[]{
-                new Value(-1),
-                new Value(projectName),
+        		getNoReturnExpectedMessageID(-1),
+        		new Value(projectName),
                 new Value(diagramNamesValue),
                 new Value(file)
         };
@@ -1852,9 +1872,10 @@ public class FmmlxDiagramCommunicator {
 	}
 
 	// ########################## Tab ### Stage #######################
-
+		
 	private void createStage(javafx.scene.Node node, String name, int id, final FmmlxDiagram diagram) {
 		Stage stage = new Stage();
+		stage.setMaximized(true);
 		BorderPane border = new BorderPane();
 		border.setCenter(node);
 		Scene scene = new Scene(border, 1000, 605);
